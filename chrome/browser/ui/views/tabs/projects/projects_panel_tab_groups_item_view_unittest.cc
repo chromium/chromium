@@ -5,13 +5,30 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
 
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 #include "components/saved_tab_groups/public/saved_tab_group_tab.h"
 #include "components/sync/base/collaboration_id.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/test/views_test_base.h"
+#include "ui/views/widget/widget.h"
 
-class ProjectsPanelTabGroupsItemViewTest : public views::ViewsTestBase {};
+namespace {
+
+class ScopedAnimationDisabler {
+ public:
+  ScopedAnimationDisabler() {
+    ProjectsPanelTabGroupsItemView::disable_animations_for_testing();
+  }
+  ~ScopedAnimationDisabler() {
+    ProjectsPanelTabGroupsItemView::enable_animations_for_testing();
+  }
+};
+
+}  // namespace
+
+class ProjectsPanelTabGroupsItemViewTest : public ChromeViewsTestBase {};
 
 TEST_F(ProjectsPanelTabGroupsItemViewTest, TestDisplay) {
   tab_groups::SavedTabGroup group(std::u16string(u"my_group"),
@@ -70,4 +87,47 @@ TEST_F(ProjectsPanelTabGroupsItemViewTest, TestChildrenSharedTabGroup) {
   EXPECT_TRUE(collaboration_view->GetImageModel().IsVectorIcon());
   EXPECT_EQ(&kPeopleGroupIcon,
             collaboration_view->GetImageModel().GetVectorIcon().vector_icon());
+}
+
+TEST_F(ProjectsPanelTabGroupsItemViewTest, HoverStateChanges) {
+  ScopedAnimationDisabler animation_disabler;
+
+  tab_groups::SavedTabGroup group(std::u16string(u"my_group"),
+                                  tab_groups::TabGroupColorId::kGrey, {},
+                                  std::nullopt);
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  auto* item_view =
+      widget->SetContentsView(std::make_unique<ProjectsPanelTabGroupsItemView>(
+          group, base::DoNothing(), base::DoNothing()));
+  widget->Show();
+
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+
+  auto move_mouse_to = [&](bool inside_view) {
+    if (inside_view) {
+      generator.MoveMouseTo(item_view->GetBoundsInScreen().CenterPoint());
+    } else {
+      generator.MoveMouseTo(item_view->GetBoundsInScreen().bottom_right() +
+                            gfx::Vector2d(10, 10));
+    }
+  };
+
+  auto check_more_button_visible = [&](bool expected_visibility) {
+    EXPECT_EQ(expected_visibility,
+              item_view->more_button_for_testing()->GetVisible());
+  };
+
+  // Move mouse outside the view.
+  move_mouse_to(false);
+  check_more_button_visible(false);
+
+  // Move mouse over the view.
+  move_mouse_to(true);
+  check_more_button_visible(true);
+
+  // Move mouse outside the view again.
+  move_mouse_to(false);
+  check_more_button_visible(false);
 }

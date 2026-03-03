@@ -87,6 +87,9 @@ class VerticalTabGroupHeaderView : public views::FlexLayoutView,
 
  private:
   void UpdateEditorBubbleButtonVisibility();
+  // Bypasses the synchronous IsMouseHovered() check which can be stale on Linux
+  // Wayland/X11 due to asynchronous cursor updates during mouse exit events.
+  void SetEditorBubbleButtonVisibilityOnHover(bool is_hovered);
   void ShowEditorBubble();
   void UpdateAccessibleName(
       const tab_groups::TabGroupVisualData* tab_group_visual_data,

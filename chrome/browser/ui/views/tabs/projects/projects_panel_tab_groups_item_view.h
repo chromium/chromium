@@ -71,12 +71,16 @@ class ProjectsPanelTabGroupsItemView : public views::Button {
   }
 
   static void disable_animations_for_testing();
+  static void enable_animations_for_testing();
 
  private:
   void OnMoreButtonPressed();
   void OnMoreButtonStateChanged();
 
   void UpdateHoverState();
+  // Bypasses the synchronous IsMouseHovered() check which can be stale on Linux
+  // Wayland/X11 due to asynchronous cursor updates during mouse exit events.
+  void UpdateHoverStateForced(bool is_hovered);
 
   const base::Uuid group_guid_;
   MoreButtonPressedCallback more_button_callback_;

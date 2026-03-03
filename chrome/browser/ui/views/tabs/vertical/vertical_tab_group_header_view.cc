@@ -6,6 +6,8 @@
 
 #include <numeric>
 
+#include "build/build_config.h"
+#include "build/buildflag.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/tabs/tab_group_theme.h"
@@ -248,7 +250,13 @@ void VerticalTabGroupHeaderView::OnMouseEntered(const ui::MouseEvent& event) {
 }
 
 void VerticalTabGroupHeaderView::OnMouseExited(const ui::MouseEvent& event) {
+#if BUILDFLAG(IS_LINUX)
+  // Bypasses the synchronous IsMouseHovered() check which can be stale on Linux
+  // Wayland/X11 due to asynchronous cursor updates during mouse exit events.
+  SetEditorBubbleButtonVisibilityOnHover(/*is_hovered=*/false);
+#else
   UpdateEditorBubbleButtonVisibility();
+#endif
 }
 
 void VerticalTabGroupHeaderView::ShowContextMenuForViewImpl(
@@ -402,8 +410,15 @@ void VerticalTabGroupHeaderView::UpdateAccessibleName(
 }
 
 void VerticalTabGroupHeaderView::UpdateEditorBubbleButtonVisibility() {
-  editor_bubble_button_->SetVisible(editor_bubble_tracker_.is_open() ||
-                                    IsMouseHovered());
+  SetEditorBubbleButtonVisibilityOnHover(IsMouseHovered());
+}
+
+void VerticalTabGroupHeaderView::SetEditorBubbleButtonVisibilityOnHover(
+    bool is_hovered) {
+  if (editor_bubble_button_) {
+    editor_bubble_button_->SetVisible(editor_bubble_tracker_.is_open() ||
+                                      is_hovered);
+  }
 }
 
 void VerticalTabGroupHeaderView::ShowEditorBubble() {

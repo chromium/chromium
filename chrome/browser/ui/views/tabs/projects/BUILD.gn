@@ -93,6 +93,7 @@ source_set("unit_tests") {
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//components/sync/base",
+    "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
   ]
