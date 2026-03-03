@@ -98,21 +98,24 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
 
   bool IsSchedulerAttachedForTest(FrameOrWorkerScheduler*);
 
-  class PauseMicrotasksHandle {
+  class PLATFORM_EXPORT PauseMicrotasksHandle {
    public:
-    ~PauseMicrotasksHandle() = default;
+    ~PauseMicrotasksHandle();
 
    private:
     friend class EventLoop;
-    PauseMicrotasksHandle(v8::Isolate* isolate, v8::MicrotaskQueue* queue);
-
-    v8::Isolate::SuppressMicrotaskExecutionScope scope_;
+    explicit PauseMicrotasksHandle(scoped_refptr<EventLoop> loop)
+        : loop_(std::move(loop)) {
+      ++loop_->microtasks_pause_count_;
+    }
+    scoped_refptr<EventLoop> loop_;
   };
 
   // Suppresses microtask execution for the lifetime of the returned handle.
   // Pending microtasks would be executed as soon as all issued handles go
   // out of scope.
   [[nodiscard]] std::unique_ptr<PauseMicrotasksHandle> PauseMicrotasks();
+  bool AreMicrotasksPaused() const { return !!microtasks_pause_count_; }
 
  private:
   friend class RefCounted<EventLoop>;
@@ -127,7 +130,8 @@ class PLATFORM_EXPORT EventLoop final : public RefCounted<EventLoop> {
   static void RunEndOfCheckpointTasks(v8::Isolate* isolat, void* data);
 
   WeakPersistent<Delegate> delegate_;
-  raw_ptr<v8::Isolate> isolate_;
+  const raw_ptr<v8::Isolate> isolate_;
+  int microtasks_pause_count_ = 0;
   bool loop_enabled_ = true;
   Deque<base::OnceClosure> pending_microtasks_;
   Vector<base::OnceClosure> end_of_checkpoint_tasks_;

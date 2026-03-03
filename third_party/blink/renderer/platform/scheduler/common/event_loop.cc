@@ -17,10 +17,10 @@
 namespace blink {
 namespace scheduler {
 
-EventLoop::PauseMicrotasksHandle::PauseMicrotasksHandle(
-    v8::Isolate* isolate,
-    v8::MicrotaskQueue* queue)
-    : scope_(isolate, queue) {}
+EventLoop::PauseMicrotasksHandle::~PauseMicrotasksHandle() {
+  CHECK_GT(loop_->microtasks_pause_count_, 0);
+  --loop_->microtasks_pause_count_;
+}
 
 EventLoop::EventLoop(Delegate* delegate,
                      v8::Isolate* isolate,
@@ -74,8 +74,9 @@ void EventLoop::RunEndOfMicrotaskCheckpointTasks() {
 }
 
 void EventLoop::PerformMicrotaskCheckpoint() {
-  if (ScriptForbiddenScope::IsScriptForbidden())
+  if (AreMicrotasksPaused() || ScriptForbiddenScope::IsScriptForbidden()) {
     return;
+  }
 
   microtask_queue_->PerformCheckpoint(isolate_);
 }
@@ -102,8 +103,7 @@ bool EventLoop::IsSchedulerAttachedForTest(FrameOrWorkerScheduler* scheduler) {
 }
 
 std::unique_ptr<EventLoop::PauseMicrotasksHandle> EventLoop::PauseMicrotasks() {
-  return base::WrapUnique(
-      new PauseMicrotasksHandle(isolate_, microtask_queue_.get()));
+  return base::WrapUnique(new PauseMicrotasksHandle(this));
 }
 
 // static

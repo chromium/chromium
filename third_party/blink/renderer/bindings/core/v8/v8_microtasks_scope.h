@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "v8/include/v8-microtask-queue.h"
 
 namespace blink {
@@ -21,19 +22,26 @@ template <MicrotasksScopeMode kMode>
 class V8MicrotasksScope {
  public:
   explicit V8MicrotasksScope(ScriptState* script_state)
-      : scope_(script_state->GetIsolate(),
-               ToMicrotaskQueue(script_state),
-               kMode) {}
+      : V8MicrotasksScope(ExecutionContext::From(script_state)) {}
 
   explicit V8MicrotasksScope(ExecutionContext* execution_context)
       : scope_(execution_context->GetIsolate(),
                ToMicrotaskQueue(execution_context),
-               kMode) {}
+               EffectiveMode(execution_context)) {}
 
   V8MicrotasksScope(const V8MicrotasksScope&) = delete;
   V8MicrotasksScope& operator=(const V8MicrotasksScope&) = delete;
 
  private:
+  static v8::MicrotasksScope::Type EffectiveMode(
+      ExecutionContext* execution_context) {
+    if constexpr (kMode == MicrotasksScopeMode::kDoNotRunMicrotasks) {
+      return MicrotasksScopeMode::kDoNotRunMicrotasks;
+    }
+    return ToEventLoop(execution_context).AreMicrotasksPaused()
+               ? MicrotasksScopeMode::kDoNotRunMicrotasks
+               : MicrotasksScopeMode::kRunMicrotasks;
+  }
   v8::MicrotasksScope scope_;
 };
 

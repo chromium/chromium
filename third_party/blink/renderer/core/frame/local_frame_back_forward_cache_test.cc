@@ -87,8 +87,11 @@ class LocalFrameBackForwardCacheTest : public testing::Test,
 // JavaScript execution at a microtask. Eviction is necessary to ensure that the
 // frame state is immutable when the frame is in the bfcache.
 // (https://www.chromestatus.com/feature/5815270035685376).
-// TODO(469686890): feature speculatively disabled now.
-TEST_F(LocalFrameBackForwardCacheTest, DISABLED_PauseMicrotaskExecution) {
+TEST_F(LocalFrameBackForwardCacheTest, PauseMicrotaskExecution) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kBackForwardCachePauseMicrotasks);
+
   frame_test_helpers::TestWebFrameClient web_frame_client;
   TestLocalFrameBackForwardCacheClient frame_host(
       web_frame_client.GetRemoteNavigationAssociatedInterfaces());
