@@ -227,11 +227,17 @@ void IOSPromoBubbleView::AddedToWidget() {
 gfx::Rect IOSPromoBubbleView::GetBubbleBounds() {
   gfx::Rect bubble_bounds = BubbleDialogDelegateView::GetBubbleBounds();
   gfx::Rect anchor_rect = GetAnchorRect();
-  // Manually position the bubble to be right-aligned with the anchor and below
-  // it. This mimics TOP_RIGHT anchor behavior but without the arrow inset
-  // logic.
-  bubble_bounds.set_x(anchor_rect.right() - bubble_bounds.width());
-  bubble_bounds.set_y(anchor_rect.bottom());
+
+  // Manually position the bubble relative to the anchor. This mimics TOP_RIGHT
+  // anchor behavior but without the arrow inset logic. For the Lens promo,
+  // the bubble is attached at the top-left corner of the anchor.
+  if (promo_type_ == PromoType::kLens) {
+    bubble_bounds.set_x(anchor_rect.x());
+    bubble_bounds.set_y(anchor_rect.y());
+  } else {
+    bubble_bounds.set_x(anchor_rect.right() - bubble_bounds.width());
+    bubble_bounds.set_y(anchor_rect.bottom());
+  }
   return bubble_bounds;
 }
 

@@ -1490,6 +1490,11 @@ void LensOverlayController::NotifyTabForegrounded() {
 
 void LensOverlayController::NotifyTabWillEnterBackground() {
   UpdateEntryPointsState();
+  if (auto* interface = BrowserUserEducationInterface::From(
+          tab_->GetBrowserWindowInterface())) {
+    interface->AbortFeaturePromo(
+        feature_engagement::kIPHiOSLensPromoDesktopFeature);
+  }
 }
 
 bool LensOverlayController::IsOverlayViewShared() const {

@@ -1627,7 +1627,7 @@ void MaybeRegisterChromeFeaturePromos(
     registry.RegisterFeature(
         std::move(FeaturePromoSpecification::CreateForCustomUi(
                       feature_engagement::kIPHiOSLensPromoDesktopFeature,
-                      kToolbarAppMenuButtonElementId,
+                      kIOSLensPromoAnchorElementId,
                       user_education::CreateCustomHelpBubbleViewFactoryCallback(
                           base::BindRepeating(
                               &IOSPromoBubbleView::Create,

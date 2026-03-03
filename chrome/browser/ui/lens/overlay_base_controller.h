@@ -390,6 +390,10 @@ class OverlayBaseController : public content::WebContentsDelegate,
   // Pointer to the web view within the overlay view if it exists.
   raw_ptr<views::WebView> overlay_web_view_;
 
+  // Pointer to the anchor view for the top left corner. Used to anchor the
+  // mobile Lens promo bubble.
+  raw_ptr<views::View> promo_anchor_ = nullptr;
+
   // Preselection toast bubble. Weak; owns itself. NULL when closed.
   raw_ptr<views::Widget> preselection_widget_ = nullptr;
 

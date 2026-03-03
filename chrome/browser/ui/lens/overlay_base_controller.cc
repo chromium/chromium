@@ -128,6 +128,10 @@ void OverlayBaseController::OnViewBoundsChanged(views::View* observed_view) {
     overlay_blur_layer_delegate_->layer()->SetBounds(
         overlay_view_->GetLocalBounds());
   }
+
+  if (promo_anchor_) {
+    promo_anchor_->SetBounds(0, 0, 1, 1);
+  }
 }
 
 #if BUILDFLAG(IS_MAC)
@@ -226,6 +230,14 @@ raw_ptr<views::View> OverlayBaseController::CreateViewForOverlay() {
   std::unique_ptr<views::View> anchor_view = std::make_unique<views::View>();
   anchor_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   preselection_widget_anchor_ = host_view->AddChildView(std::move(anchor_view));
+
+  // Create top left anchor.
+  auto promo_anchor = std::make_unique<views::View>();
+  promo_anchor->SetProperty(views::kElementIdentifierKey,
+                            kIOSLensPromoAnchorElementId);
+  promo_anchor->SetCanProcessEventsWithinSubtree(false);
+  promo_anchor->SetProperty(views::kViewIgnoredByLayoutKey, true);
+  promo_anchor_ = host_view->AddChildView(std::move(promo_anchor));
 
   // Create the web view.
   std::unique_ptr<views::WebView> web_view = std::make_unique<views::WebView>(
@@ -566,6 +578,7 @@ void OverlayBaseController::ShowOverlay() {
     overlay_view_->SetVisible(true);
     preselection_widget_anchor_->SetVisible(true);
     overlay_web_view_->SetVisible(true);
+    promo_anchor_->SetVisible(true);
     SetOverlayRoundedCorner();
 
     // Restart the live blur since the view is visible again.
@@ -643,6 +656,9 @@ void OverlayBaseController::HideOverlay() {
   if (overlay_web_view_) {
     overlay_web_view_->SetVisible(false);
   }
+  if (promo_anchor_) {
+    promo_anchor_->SetVisible(false);
+  }
   MaybeHideSharedOverlayView();
 
   // Save the current value of whether live blur is enabled so that it can be
@@ -718,6 +734,7 @@ void OverlayBaseController::CloseUI() {
   if (overlay_view_) {
     overlay_view_->RemoveChildViewT(
         std::exchange(preselection_widget_anchor_, nullptr));
+    overlay_view_->RemoveChildViewT(std::exchange(promo_anchor_, nullptr));
     overlay_view_->RemoveChildViewT(std::exchange(overlay_web_view_, nullptr));
     MaybeHideSharedOverlayView();
     overlay_view_ = nullptr;
