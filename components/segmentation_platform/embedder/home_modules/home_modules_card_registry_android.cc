@@ -143,6 +143,17 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
 }
 
 void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
+  // For unmigrated cards, `OnShow()` is empty, so this is a no-op.
+  // Execution continues to the legacy blocks below.
+  for (const auto& card : get_all_cards_by_priority()) {
+    if (strcmp(card->card_name(), card_name) == 0) {
+      card->OnShow(profile_prefs_, local_state_prefs_);
+      break;
+    }
+  }
+
+  // TODO(crbug.com/489042527): Remove the legacy if/else block below when
+  // all cards have been migrated to the new `OnShow()` lifecycle hook.
   if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
     int freshness_impression_count =
         profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
@@ -188,6 +199,17 @@ void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
 
 void HomeModulesCardRegistryAndroid::NotifyCardInteracted(
     const char* card_name) {
+  // For unmigrated cards, `OnInteract()` is empty, so this is a no-op.
+  // Execution continues to the legacy blocks below.
+  for (const auto& card : get_all_cards_by_priority()) {
+    if (strcmp(card->card_name(), card_name) == 0) {
+      card->OnInteract(profile_prefs_, local_state_prefs_);
+      break;
+    }
+  }
+
+  // TODO(crbug.com/489042527): Remove the legacy if/else block below when
+  // all cards have been migrated to the new `OnInteract()` lifecycle hook.
   if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
     profile_prefs_->SetBoolean(kDefaultBrowserPromoInteractedPref, true);
   } else if (strcmp(card_name, kTabGroupPromo) == 0) {

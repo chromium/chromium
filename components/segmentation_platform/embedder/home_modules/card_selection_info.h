@@ -12,6 +12,8 @@
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/internal/metadata/feature_query.h"
 
+class PrefService;
+
 namespace segmentation_platform::home_modules {
 
 // Interface implemented by each ephemeral card shown on home modules stack.
@@ -54,6 +56,15 @@ class CardSelectionInfo {
   // The logic to decide whether the card should be shown in the home modules.
   virtual ShowResult ComputeCardResult(
       const CardSelectionSignals& signals) const = 0;
+
+  // Called when the card is displayed to the user. Subclasses should override
+  // to log the impression or other related metrics.
+  virtual void OnShow(PrefService* profile_prefs, PrefService* local_state) {}
+
+  // Called when the user interacts with the card (e.g., tap). Subclasses should
+  // override to record the interaction or log other related metrics.
+  virtual void OnInteract(PrefService* profile_prefs,
+                          PrefService* local_state) {}
 
   const char* card_name() const { return card_name_; }
 
