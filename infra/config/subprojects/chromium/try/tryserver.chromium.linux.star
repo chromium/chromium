@@ -420,7 +420,6 @@ try_.orchestrator_builder(
     gn_args = gn_args.config(
         configs = [
             "ci/Linux Builder",
-            "enable_rust_clippy",
             "release_try_builder",
             "use_clang_coverage",
             "partial_code_coverage_instrumentation",
