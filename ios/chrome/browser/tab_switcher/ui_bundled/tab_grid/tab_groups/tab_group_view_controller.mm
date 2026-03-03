@@ -71,6 +71,7 @@ constexpr CGFloat kContainerMargin = 12;
 constexpr CGFloat kContainerMultiplier = 0.8;
 constexpr CGFloat kContainerCornerRadius = 24;
 constexpr CGFloat kContainerBackgroundAlpha = 0.8;
+constexpr CGFloat kContainerBackgroundAlphaWithGradient = 0.6;
 
 // Returns a button to be added to the top toolbar.
 UIButton* TopToolbarButton(NSString* symbol_name,
@@ -173,6 +174,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   id<FacePileProviding> _facePileProvider;
   // The color palette for the tab group view.
   TabGroupColorPalette* _tabGroupColorPalette;
+  // The gradient for the container background.
+  CAGradientLayer* _gradientBackground;
 }
 
 #pragma mark - Public
@@ -315,11 +318,9 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   _container.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_container];
 
-  _containerBackground = [[UIView alloc] init];
-  _containerBackground.translatesAutoresizingMaskIntoConstraints = NO;
-  _containerBackground.backgroundColor =
-      [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
+  _containerBackground = [self configuredBackground];
   [_container addSubview:_containerBackground];
+
   AddSameConstraints(_container, _containerBackground);
 
   _container.layer.cornerRadius = kContainerCornerRadius;
@@ -412,6 +413,13 @@ UIButton* TopToolbarButton(NSString* symbol_name,
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
   [self updateGridInsets];
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    _gradientBackground.frame = _containerBackground.bounds;
+  }
 }
 
 #pragma mark - UINavigationBarDelegate
@@ -749,6 +757,32 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   ]];
 
   [self updateGridInsets];
+}
+
+// Returns the background, with a gradient if TabGroupColorOnSurface is enabled.
+- (UIView*)configuredBackground {
+  UIView* background = [[UIView alloc] init];
+  background.translatesAutoresizingMaskIntoConstraints = NO;
+
+  if (!IsTabGroupColorOnSurfaceEnabled()) {
+    background.backgroundColor =
+        [UIColor.blackColor colorWithAlphaComponent:kContainerBackgroundAlpha];
+    return background;
+  }
+
+  UIView* gradientBackgroundContainer = [[UIView alloc] init];
+  gradientBackgroundContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  _gradientBackground = [CAGradientLayer layer];
+  _gradientBackground.colors = _tabGroupColorPalette.backgroundGradientColors;
+  _gradientBackground.locations = @[ @0.0, @0.15, @1.0 ];
+  [gradientBackgroundContainer.layer addSublayer:_gradientBackground];
+
+  background.backgroundColor = [UIColor.blackColor
+      colorWithAlphaComponent:kContainerBackgroundAlphaWithGradient];
+  [gradientBackgroundContainer addSubview:background];
+  AddSameConstraints(gradientBackgroundContainer, background);
+
+  return gradientBackgroundContainer;
 }
 
 // Displays the menu to rename and change the color of the currently displayed

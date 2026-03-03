@@ -16,7 +16,7 @@ enum class TabGroupColorId;
 
 // Initializes from a tabGroupColorId to generate a color palette for the grid
 // cell and group views.
-- (instancetype)initWithColorId:(tab_groups::TabGroupColorId)tabGroupColorId
+- (instancetype)initWithColorId:(tab_groups::TabGroupColorId)tabGroupColorID
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
@@ -36,7 +36,12 @@ enum class TabGroupColorId;
 // which is the same in light and dark theme.
 @property(nonatomic, readonly) UIColor* commonColor;
 
-+ (UIColor*)commonColor:(tab_groups::TabGroupColorId)tab_group_color_id;
+// An array of colors for the gradient background in TabGroupView.
+@property(nonatomic, readonly) NSArray* backgroundGradientColors;
+
+// A static method that returns the commonColor without instantiating the whole
+// palette.
++ (UIColor*)commonColor:(tab_groups::TabGroupColorId)tabGroupColorID;
 
 @end
 
