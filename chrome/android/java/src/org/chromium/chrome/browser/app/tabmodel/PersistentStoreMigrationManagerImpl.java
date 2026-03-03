@@ -86,6 +86,11 @@ public class PersistentStoreMigrationManagerImpl implements PersistentStoreMigra
     }
 
     @Override
+    public boolean shouldRazeShadowStoreForWindow() {
+        return !getPrefs().contains(mShadowWrittenStoreKey);
+    }
+
+    @Override
     public void onShadowStoreRazed() {
         getPrefs().removeKey(mShadowWrittenStoreKey);
     }

@@ -61,6 +61,9 @@ public interface PersistentStoreMigrationManager {
     /** Whether the shadow store is caught up. */
     boolean isShadowStoreCaughtUp();
 
+    /** Whether the shadow store should be razed for the given window before a load occurs. */
+    boolean shouldRazeShadowStoreForWindow();
+
     /**
      * Called upon the permanent destruction of a window's persisted shadow store data, such as upon
      * merging, or closing.

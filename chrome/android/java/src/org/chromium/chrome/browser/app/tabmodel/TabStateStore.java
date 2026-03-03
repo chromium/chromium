@@ -213,6 +213,11 @@ public class TabStateStore implements TabPersistentStore {
         } else {
             mHasCipherFactory = false;
         }
+
+        if (!mIsAuthoritative && mMigrationManager.shouldRazeShadowStoreForWindow()) {
+            clearCurrentWindow();
+        }
+
         mModelTrackingManager =
                 mOrchestratorFactory.build(
                         mWindowTag,
@@ -448,7 +453,7 @@ public class TabStateStore implements TabPersistentStore {
 
     @Override
     public void clearCurrentWindow() {
-        assertInitialized();
+        assert mTabStateStorageService != null;
 
         mTabStateStorageService.clearWindow(mWindowTag);
         mTabCountTracker.clearCurrentWindow();

@@ -356,6 +356,39 @@ public class PersistentStoreMigrationManagerImplUnitTest {
     }
 
     @Test
+    public void testShouldRazeShadowStoreForWindow() {
+        assertTrue(mManager.shouldRazeShadowStoreForWindow());
+
+        mManager.onShadowStoreCreated(StoreType.TAB_STATE_STORE);
+        mManager.onShadowStoreCaughtUp();
+        assertFalse(mManager.shouldRazeShadowStoreForWindow());
+
+        mManager.onShadowStoreRazed();
+        assertTrue(mManager.shouldRazeShadowStoreForWindow());
+    }
+
+    @Test
+    public void testShouldRazeShadowStoreForWindow_FullMigration() {
+        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(true);
+        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(true);
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.INVALID, mManager.getShadowStoreType());
+
+        // Perform a rollback.
+        ChromeFeatureList.sTabStorageSqlitePrototypeAuthoritativeReadSource.setForTesting(false);
+        ChromeFeatureList.sTabStorageSqlitePrototypeAllowFullMigration.setForTesting(false);
+        mManager = new PersistentStoreMigrationManagerImpl(WINDOW_TAG_1);
+
+        assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
+        assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());
+
+        // 3. Verify that the shadow store should be razed.
+        assertTrue(mManager.shouldRazeShadowStoreForWindow());
+    }
+
+    @Test
     public void testDefaultStore_TabStateStorageEnabled() {
         assertEquals(StoreType.LEGACY, mManager.getAuthoritativeStoreType());
         assertEquals(StoreType.TAB_STATE_STORE, mManager.getShadowStoreType());

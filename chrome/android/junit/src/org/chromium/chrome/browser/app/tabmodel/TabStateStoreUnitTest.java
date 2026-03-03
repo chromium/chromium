@@ -160,6 +160,69 @@ public class TabStateStoreUnitTest {
     }
 
     @Test
+    public void testOnNativeLibraryReady_RazesShadowStore_WhenNonAuthoritativeAndShouldRaze() {
+        mTabStateStore =
+                new TabStateStore(
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mFactory,
+                        /* isAuthoritative= */ false);
+        when(mMigrationManager.shouldRazeShadowStoreForWindow()).thenReturn(true);
+
+        mTabStateStore.onNativeLibraryReady();
+
+        verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
+        verify(mTabCountTracker).clearCurrentWindow();
+    }
+
+    @Test
+    public void testOnNativeLibraryReady_DoesNotRazeShadowStore_WhenAuthoritative() {
+        mTabStateStore =
+                new TabStateStore(
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mFactory,
+                        /* isAuthoritative= */ true);
+        when(mMigrationManager.shouldRazeShadowStoreForWindow()).thenReturn(true);
+
+        mTabStateStore.onNativeLibraryReady();
+
+        verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
+        verify(mTabCountTracker, never()).clearCurrentWindow();
+    }
+
+    @Test
+    public void testOnNativeLibraryReady_DoesNotRazeShadowStore_WhenShouldNotRaze() {
+        mTabStateStore =
+                new TabStateStore(
+                        mTabModelSelector,
+                        WINDOW_TAG,
+                        mTabCreatorManager,
+                        mTabPersistencePolicy,
+                        mMigrationManager,
+                        mCipherFactory,
+                        mTabCountTracker,
+                        mFactory,
+                        /* isAuthoritative= */ false);
+        when(mMigrationManager.shouldRazeShadowStoreForWindow()).thenReturn(false);
+
+        mTabStateStore.onNativeLibraryReady();
+
+        verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
+        verify(mTabCountTracker, never()).clearCurrentWindow();
+    }
+
+    @Test
     public void testOnNativeLibraryReady_withKey() {
         byte[] key = new byte[] {1, 2, 3};
         when(mCipherFactory.getKeyForTabStateStorage()).thenReturn(key);

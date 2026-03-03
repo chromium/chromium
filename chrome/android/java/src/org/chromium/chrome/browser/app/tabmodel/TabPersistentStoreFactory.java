@@ -60,6 +60,11 @@ public class TabPersistentStoreFactory {
                 }
 
                 @Override
+                public boolean shouldRazeShadowStoreForWindow() {
+                    return false;
+                }
+
+                @Override
                 public void onShadowStoreRazed() {}
 
                 @Override
