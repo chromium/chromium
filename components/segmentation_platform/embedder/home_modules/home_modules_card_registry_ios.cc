@@ -39,9 +39,6 @@ namespace {
 // Impression counter for the Send Tab ephemeral module.
 const char kSendTabPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.send_tab_promo_counter";
-// Impression counter for the App Bundle promo ephemeral module.
-const char kAppBundlePromoEphemeralModuleImpressionCounterPref[] =
-    "ephemeral_pref_counter.app_bundle_promo_ephemeral_module_counter";
 // Impression counter for the Default Browser promo ephemeral module.
 const char kDefaultBrowserPromoEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.default_browser_promo_ephemeral_module_counter";
@@ -111,8 +108,6 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
 
   int send_tab_promo_count =
       profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
-  int app_bundle_promo_count = local_state_prefs_->GetInteger(
-      kAppBundlePromoEphemeralModuleImpressionCounterPref);
   int default_browser_promo_count = profile_prefs_->GetInteger(
       kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
 
@@ -158,7 +153,7 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
         std::make_unique<SendTabNotificationPromo>(send_tab_promo_count));
   }
 
-  if (AppBundlePromoEphemeralModule::IsEnabled(app_bundle_promo_count)) {
+  if (AppBundlePromoEphemeralModule::IsEnabled(local_state_prefs_)) {
     all_cards_by_priority_.push_back(
         std::make_unique<AppBundlePromoEphemeralModule>());
   }
@@ -180,8 +175,7 @@ void HomeModulesCardRegistryIOS::RegisterLocalStatePrefs(
   // Local state prefs are used for the `AppBundleEphemeralModule` because this
   // promo relates to app installations on the device level, meaning impressions
   // should be tracked per-device rather than per profile.
-  registry->RegisterIntegerPref(
-      kAppBundlePromoEphemeralModuleImpressionCounterPref, 0);
+  AppBundlePromoEphemeralModule::RegisterLocalStatePrefs(registry);
 }
 
 // static
@@ -227,12 +221,6 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
         profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
     profile_prefs_->SetInteger(kSendTabPromoImpressionCounterPref,
                                impression_count + 1);
-  } else if (strcmp(card_name, kAppBundlePromoEphemeralModule) == 0) {
-    int local_impression_count = local_state_prefs_->GetInteger(
-        kAppBundlePromoEphemeralModuleImpressionCounterPref);
-    local_state_prefs_->SetInteger(
-        kAppBundlePromoEphemeralModuleImpressionCounterPref,
-        local_impression_count + 1);
   } else if (strcmp(card_name, kDefaultBrowserPromoEphemeralModule) == 0) {
     int impression_count = profile_prefs_->GetInteger(
         kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);

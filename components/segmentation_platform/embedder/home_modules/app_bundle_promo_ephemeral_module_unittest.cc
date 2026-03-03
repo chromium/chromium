@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/home_modules/app_bundle_promo_ephemeral_module.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/test_utils.h"
@@ -22,6 +23,8 @@ class AppBundlePromoEphemeralModuleTest : public testing::Test {
 
   void SetUp() override {
     Test::SetUp();
+    AppBundlePromoEphemeralModule::RegisterLocalStatePrefs(
+        local_state_.registry());
     feature_list_.InitAndEnableFeature(features::kAppBundlePromoEphemeralCard);
   }
 
@@ -43,6 +46,7 @@ class AppBundlePromoEphemeralModuleTest : public testing::Test {
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple local_state_;
 };
 
 // Tests that the `GetInputs(...)` method returns the expected inputs.
@@ -70,13 +74,25 @@ TEST_F(AppBundlePromoEphemeralModuleTest, TestComputeCardResult) {
       /* expectedRank */ EphemeralHomeModuleRank::kNotShown);
 }
 
-// Tests that IsEnabled() returns `true` when under impression limit and false
-// otherwise.
-TEST_F(AppBundlePromoEphemeralModuleTest, TestIsEnabled) {
-  EXPECT_TRUE(AppBundlePromoEphemeralModule::IsEnabled(
-      /* impressions */ features::kMaxAppBundlePromoImpressions.Get() - 1));
-  EXPECT_FALSE(AppBundlePromoEphemeralModule::IsEnabled(
-      /* impressions */ features::kMaxAppBundlePromoImpressions.Get()));
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(AppBundlePromoEphemeralModuleTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<AppBundlePromoEphemeralModule>();
+
+  EXPECT_TRUE(AppBundlePromoEphemeralModule::IsEnabled(&local_state_));
+
+  int max_impressions = features::kMaxAppBundlePromoImpressions.Get();
+
+  // Loop through and show the card exactly the max amount of times allowed.
+  for (int i = 0; i < max_impressions; ++i) {
+    EXPECT_TRUE(AppBundlePromoEphemeralModule::IsEnabled(&local_state_));
+    // App Bundle uses local_state, so pass it in as the second parameter.
+    card->OnShow(nullptr, &local_state_);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(AppBundlePromoEphemeralModule::IsEnabled(&local_state_));
 }
 
 }  // namespace home_modules

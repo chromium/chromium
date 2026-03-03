@@ -7,6 +7,9 @@
 
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace segmentation_platform::home_modules {
 
 // Signal Keys for this card.
@@ -18,21 +21,24 @@ extern const char kAppBundleAppsInstalledCountSignalKey[];
 // signals and card impression count, and the user's interaction history.
 class AppBundlePromoEphemeralModule : public CardSelectionInfo {
  public:
-  explicit AppBundlePromoEphemeralModule();
+  AppBundlePromoEphemeralModule();
   ~AppBundlePromoEphemeralModule() override = default;
+
+  static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Returns `true` if the given label corresponds to an
   // `AppBundlePromoEphemeralModule` variation.
   static bool IsModuleLabel(std::string_view label);
 
   // Returns `true` if the `AppBundlePromoEphemeralModule` should be enabled,
-  // considering the given impression count.
-  static bool IsEnabled(int impression_count);
+  // considering the given `local_state` prefs.
+  static bool IsEnabled(PrefService* local_state);
 
   // CardSelectionInfo
   std::map<SignalKey, FeatureQuery> GetInputs() override;
   ShowResult ComputeCardResult(
       const CardSelectionSignals& signals) const override;
+  void OnShow(PrefService* profile_prefs, PrefService* local_state) override;
 };
 
 }  // namespace segmentation_platform::home_modules
