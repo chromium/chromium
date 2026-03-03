@@ -2025,7 +2025,16 @@ void URLLoader::NotifyCompleted(int error_code) {
     status.exists_in_cache = url_request_->response_info().was_cached;
     status.completion_time = base::TimeTicks::Now();
     status.encoded_data_length = url_request_->GetTotalReceivedBytes();
-    status.encoded_body_length = url_request_->GetRawBodyBytes();
+    // For responses served from cache where the original encoded body size
+    // is stored (e.g., shared dictionary compressed responses where the cache
+    // stores the decompressed body), use the stored value. Otherwise, use the
+    // raw body bytes from the request.
+    const auto& resp_info = url_request_->response_info();
+    if (resp_info.encoded_body_size.has_value()) {
+      status.encoded_body_length = resp_info.encoded_body_size.value();
+    } else {
+      status.encoded_body_length = url_request_->GetRawBodyBytes();
+    }
     status.decoded_body_length = total_written_bytes_;
     status.resolve_error_info =
         url_request_->response_info().resolve_error_info;

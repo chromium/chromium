@@ -285,8 +285,13 @@ int64_t URLRequest::GetRawBodyBytes() const {
     return bytes;
   }
 
-  // GetReceivedBodyBytes() is available only when the body was received from
-  // the network. Otherwise, returns prefilter_bytes_read() instead.
+  // GetReceivedBodyBytes() returns the pre-filter (encoded) byte count when
+  // the body was received from the network. For cached responses, it returns 0
+  // and we fall back to prefilter_bytes_read(), which reflects bytes read from
+  // the cache (post-content-decoding for shared dictionary responses).
+  // Note: For shared dictionary cached responses, the correct encoded body
+  // size is stored in HttpResponseInfo::encoded_body_size and should be used
+  // instead of this method when the total encoded size is needed.
   return job_->prefilter_bytes_read();
 }
 

@@ -107,6 +107,7 @@ struct MockTransaction {
   // asynchronously if |!(test_mode & TEST_MODE_SYNC_NET_START)|.)
   Error read_return_code;
   bool is_shared_resource = false;
+  bool did_use_shared_dictionary = false;
 };
 
 extern const MockTransaction kSimpleGET_Transaction;

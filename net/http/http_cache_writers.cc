@@ -280,6 +280,35 @@ void HttpCache::Writers::TruncateEntry() {
                                 base::DoNothing(), true);
 }
 
+void HttpCache::Writers::UpdateEncodedBodySizeInCacheEntry() {
+  if (!network_transaction_ || !entry_) {
+    return;
+  }
+
+  // Only store the encoded body size for shared dictionary responses, where
+  // the cache stores the decompressed body and we need to remember the
+  // original on-the-wire size. For other content encodings (e.g., gzip),
+  // decompression happens after cache, so the cached size already matches
+  // the encoded size.
+  if (!response_info_truncation_.did_use_shared_dictionary) {
+    return;
+  }
+
+  int64_t encoded_body_bytes = network_transaction_->GetReceivedBodyBytes();
+  if (encoded_body_bytes <= 0) {
+    return;
+  }
+
+  response_info_truncation_.encoded_body_size = encoded_body_bytes;
+  auto data = base::MakeRefCounted<PickledIOBuffer>(
+      response_info_truncation_.MakePickle(
+          /*skip_transient_headers=*/true,
+          /*response_truncated=*/false));
+  io_buf_len_ = data->size();
+  entry_->GetEntry()->WriteData(kResponseInfoIndex, 0, data.get(), io_buf_len_,
+                                base::DoNothing(), true);
+}
+
 bool HttpCache::Writers::ShouldTruncate() {
   // Don't set the flag for sparse entries or for entries that cannot be
   // resumed.
@@ -528,6 +557,11 @@ void HttpCache::Writers::OnDataReceived(int result) {
       OnNetworkReadFailure(result);
       return;
     }
+
+    // Store the original encoded body size in the cached response info so
+    // that future reads from cache can report the correct encodedBodySize
+    // for Resource Timing.
+    UpdateEncodedBodySizeInCacheEntry();
 
     if (active_transaction_) {
       EraseTransaction(active_transaction_, result);

@@ -223,6 +223,11 @@ class NET_EXPORT_PRIVATE HttpCache::Writers {
   // Enqueues a truncation operation to the entry. Ignores the response.
   void TruncateEntry();
 
+  // Updates the cached response info with the original encoded body size
+  // from the network transaction. This ensures that future reads from cache
+  // can report the correct encodedBodySize for Resource Timing.
+  void UpdateEncodedBodySizeInCacheEntry();
+
   // Remove the transaction.
   void EraseTransaction(Transaction* transaction, int result);
   TransactionMap::iterator EraseTransaction(TransactionMap::iterator it,

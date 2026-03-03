@@ -657,6 +657,9 @@ int MockNetworkTransaction::DoSendRequest() {
     DCHECK(response_.unused_since_prefetch);
     response_.restricted_prefetch = true;
   }
+
+  response_.did_use_shared_dictionary = t->did_use_shared_dictionary;
+
   return OK;
 }
 

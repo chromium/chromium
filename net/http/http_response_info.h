@@ -201,6 +201,13 @@ class NET_EXPORT HttpResponseInfo {
   // This is always false for resources served from cache (where
   // dictionary-compressed responses are stored uncompressed).
   bool did_use_shared_dictionary = false;
+
+  // The original encoded (on-the-wire, before content decoding) body size.
+  // This is stored so that when the response is served from the disk cache
+  // (which stores the decoded body), we can still report the correct
+  // encodedBodySize for Resource Timing.
+  // Only set after the full body has been received.
+  std::optional<int64_t> encoded_body_size;
 };
 
 }  // namespace net
