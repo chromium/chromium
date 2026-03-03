@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/media_export.h"
 #include "media/base/video_types.h"
 #include "ui/gfx/geometry/size.h"
@@ -50,7 +51,8 @@ struct MEDIA_EXPORT VideoEncoderInfo {
   VideoEncoderInfo(const VideoEncoderInfo&);
   ~VideoEncoderInfo();
 
-  bool DoesSupportGpuSharedImages(VideoPixelFormat format);
+  bool DoesSupportGpuSharedImages(gpu::SharedImageUsageSet usage,
+                                  VideoPixelFormat format) const;
 
   std::string implementation_name;
 

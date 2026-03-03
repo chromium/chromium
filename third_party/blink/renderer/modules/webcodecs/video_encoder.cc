@@ -1097,8 +1097,9 @@ void VideoEncoder::ProcessEncode(Request* request) {
   bool mappable =
       frame->HasDirectCpuAccess() || frame->HasMappableSharedImage();
   bool can_handle_shared_image =
-      encoder_info_.DoesSupportGpuSharedImages(frame->format()) &&
-      frame->HasSharedImage();
+      frame->HasSharedImage() &&
+      encoder_info_.DoesSupportGpuSharedImages(frame->shared_image()->usage(),
+                                               frame->format());
 
   // Currently underlying encoders can't handle frame backed by textures,
   // so let's readback pixel data to CPU memory.

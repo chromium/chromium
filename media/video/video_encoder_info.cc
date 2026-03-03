@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <tuple>
 
+#include "build/build_config.h"
+
 namespace media {
 
 ResolutionRateLimit::ResolutionRateLimit() = default;
@@ -58,11 +60,24 @@ bool operator==(const VideoEncoderInfo& lhs, const VideoEncoderInfo& rhs) {
                   rhs.gpu_supported_pixel_formats);
 }
 
-bool VideoEncoderInfo::DoesSupportGpuSharedImages(VideoPixelFormat format) {
-  bool is_gpu_supported_format =
-      std::ranges::find(gpu_supported_pixel_formats, format) !=
-      gpu_supported_pixel_formats.end();
-  return supports_gpu_shared_images && is_gpu_supported_format;
+bool VideoEncoderInfo::DoesSupportGpuSharedImages(
+    gpu::SharedImageUsageSet usage,
+    VideoPixelFormat format) const {
+#if BUILDFLAG(IS_ANDROID)
+  // Temporarily enforce VEA usage for shared images only on Android,
+  // before we had a chance to audit shared image sources and types
+  // on other platforms.
+  if (!usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_ENCODE_ACCELERATOR)) {
+    return false;
+  }
+#endif
+
+  if (!supports_gpu_shared_images) {
+    return false;
+  }
+
+  return std::ranges::find(gpu_supported_pixel_formats, format) !=
+         gpu_supported_pixel_formats.end();
 }
 
 }  // namespace media
