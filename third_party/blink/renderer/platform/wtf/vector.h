@@ -1527,10 +1527,6 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   }
   template <typename U>
   void Append(const U*, wtf_size_t);
-  // TODO(crbug.com/487938766): Remove after all uses are migrated to
-  // append_range().
-  template <typename U, wtf_size_t otherCapacity, typename V>
-  void AppendVector(const Vector<U, otherCapacity, V>&);
   // TODO(crbug.com/487938766): Rename to `Append()`?
   template <typename Iterator>
   void AppendRange(Iterator begin, Iterator end);
@@ -2294,13 +2290,6 @@ Vector<T, InlineCapacity, Allocator>::AppendSlowCase(U&& val) {
   ConstructTraits<T, VectorTraits<T>, Allocator>::ConstructAndNotifyElement(
       DataEnd(), std::forward<U>(*ptr));
   ++size_;
-}
-
-template <typename T, wtf_size_t InlineCapacity, typename Allocator>
-template <typename U, wtf_size_t otherCapacity, typename OtherAllocator>
-inline void Vector<T, InlineCapacity, Allocator>::AppendVector(
-    const Vector<U, otherCapacity, OtherAllocator>& val) {
-  Append(val.data(), val.size());
 }
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
