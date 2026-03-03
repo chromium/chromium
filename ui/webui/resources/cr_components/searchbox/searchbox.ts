@@ -82,8 +82,6 @@ export interface SearchboxElement {
     icon: SearchboxIconElement,
     input: HTMLInputElement|HTMLTextAreaElement,
     inputWrapper: HTMLElement,
-    matches: SearchboxDropdownElement,
-    context: ContextualEntrypointAndMenuElement,
   };
 }
 
@@ -489,7 +487,10 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   getSuggestionsElement(): SearchboxDropdownElement {
-    return this.$.matches;
+    const matches =
+        this.shadowRoot.querySelector<SearchboxDropdownElement>('#matches');
+    assert(matches);
+    return matches;
   }
 
   getDropTarget() {
@@ -576,7 +577,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       // Select the default match and update the input.
-      this.$.matches.selectFirst();
+      this.getSuggestionsElement().selectFirst();
       this.updateInput_({
         text: this.lastQueriedInput_,
         inline: firstMatch.inlineAutocompletion,
@@ -595,7 +596,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       // Restore the selection and update the input. Don't restore when the
       // user deletes all their input and autocomplete is queried or else the
       // empty input will change to the value of the first result.
-      await this.$.matches.selectIndex(this.selectedMatchIndex_);
+      await this.getSuggestionsElement().selectIndex(this.selectedMatchIndex_);
       this.updateInput_({
         text: this.selectedMatch_!.fillIntoEdit,
         inline: '',
@@ -603,7 +604,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       });
     } else {
       // Remove the selection and update the input.
-      this.$.matches.unselect();
+      this.getSuggestionsElement().unselect();
       this.updateInput_({
         inline: '',
       });
@@ -956,7 +957,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         return;
       }
       e.preventDefault();
-      const array: HTMLElement[] = [this.$.matches, this.$.input];
+      const array: HTMLElement[] = [this.getSuggestionsElement(), this.$.input];
       if (!array.includes(e.target as HTMLElement)) {
         return;
       }
@@ -993,24 +994,24 @@ export class SearchboxElement extends SearchboxElementBase implements
     e.preventDefault();
 
     if (e.key === 'ArrowDown') {
-      await this.$.matches.selectNext();
+      await this.getSuggestionsElement().selectNext();
       this.pageHandler_.onNavigationLikely(
           this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
           NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'ArrowUp') {
-      await this.$.matches.selectPrevious();
+      await this.getSuggestionsElement().selectPrevious();
       this.pageHandler_.onNavigationLikely(
           this.selectedMatchIndex_, this.selectedMatch_!.destinationUrl,
           NavigationPredictor.kUpOrDownArrowButton);
     } else if (e.key === 'Escape' || e.key === 'PageUp') {
-      await this.$.matches.selectFirst();
+      await this.getSuggestionsElement().selectFirst();
     } else if (e.key === 'PageDown') {
-      await this.$.matches.selectLast();
+      await this.getSuggestionsElement().selectLast();
     }
 
     // Focus the selected match if focus is currently in the matches.
-    if (this.shadowRoot.activeElement === this.$.matches) {
-      this.$.matches.focusSelected();
+    if (this.shadowRoot.activeElement === this.getSuggestionsElement()) {
+      this.getSuggestionsElement().focusSelected();
     }
 
     // Update the input.
@@ -1034,7 +1035,7 @@ export class SearchboxElement extends SearchboxElementBase implements
    */
   protected async onMatchFocusin_(e: CustomEvent<number>) {
     // Select the match that received focus.
-    await this.$.matches.selectIndex(e.detail);
+    await this.getSuggestionsElement().selectIndex(e.detail);
     // Input selection (if any) likely drops due to focus change. Simply fill
     // the input with the match and move the cursor to the end.
     this.updateInput_({
@@ -1209,7 +1210,11 @@ export class SearchboxElement extends SearchboxElementBase implements
       uploads: ContextualUpload[] = [], mode: ToolMode = ToolMode.kUnspecified,
       model: ModelMode = ModelMode.kUnspecified) {
     if (this.ntpRealboxNextEnabled) {
-      this.$.context.closeMenu();
+      const context =
+          this.shadowRoot.querySelector<ContextualEntrypointAndMenuElement>(
+              '#context');
+      assert(context);
+      context.closeMenu();
     }
     this.fire('open-composebox', {
       searchboxText: this.$.input.value,
@@ -1282,7 +1287,7 @@ export class SearchboxElement extends SearchboxElementBase implements
   private clearAutocompleteMatches_() {
     this.dropdownIsVisible = false;
     this.result_ = null;
-    this.$.matches.unselect();
+    this.getSuggestionsElement().unselect();
     this.pageHandler_.stopAutocomplete(/*clearResult=*/ true);
     // Autocomplete sends updates once it is stopped. Invalidate those results
     // by setting the |this.lastQueriedInput_| to its default value.

@@ -4,7 +4,6 @@
 
 import 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 
-import type {HelpBubbleElement} from 'chrome://resources/cr_components/help_bubble/help_bubble.js';
 import type {HelpBubbleClientRemote, HelpBubbleHandlerInterface, HelpBubbleParams} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import {HelpBubbleArrowPosition, HelpBubbleClientCallbackRouter, HelpBubbleClosedReason} from 'chrome://resources/cr_components/help_bubble/help_bubble.mojom-webui.js';
 import type {HelpBubbleController} from 'chrome://resources/cr_components/help_bubble/help_bubble_controller.js';
@@ -36,7 +35,6 @@ interface HelpBubbleMixinTestElement {
   $: {
     bulletList: HTMLElement,
     container: HTMLElement,
-    helpBubble: HelpBubbleElement,
     p1: HTMLElement,
     title: HTMLElement,
   };

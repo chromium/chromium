@@ -60,7 +60,8 @@ suite('SearchboxFocusTest', () => {
     // Force a synchronous render.
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    return window.getComputedStyle(realbox.$.matches).display !== 'none';
+    return window.getComputedStyle(realbox.getSuggestionsElement()).display !==
+        'none';
   }
 
   test('tabbing with inline autocompletion', async () => {

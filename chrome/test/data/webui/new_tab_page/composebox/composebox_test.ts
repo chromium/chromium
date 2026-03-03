@@ -13,7 +13,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, mockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, createComposeboxElement, FAKE_TOKEN_STRING, getSubmitContainer, mockInputState, setupComposeboxTest} from './test_support.js';
 
 suite('NewTabPageComposeboxTest', () => {
   const testProxy = setupComposeboxTest();
@@ -28,7 +28,7 @@ suite('NewTabPageComposeboxTest', () => {
             0);
 
         // Default: submit is disabled with empty input, clicking does nothing.
-        testProxy.element.$.submitContainer.click();
+        getSubmitContainer(testProxy).click();
         await microtasksFinished();
         assertEquals(
             testProxy.searchboxHandler.getCallCount('openAutocompleteMatch'),
@@ -45,7 +45,7 @@ suite('NewTabPageComposeboxTest', () => {
 
         // Submit should still be DISABLED because entrypoint is not
         // ContextualTasks.
-        testProxy.element.$.submitContainer.click();
+        getSubmitContainer(testProxy).click();
         await microtasksFinished();
         assertEquals(testProxy.searchboxHandler.getCallCount('submitQuery'), 0);
       });
@@ -57,7 +57,7 @@ suite('NewTabPageComposeboxTest', () => {
         ADD_FILE_CONTEXT_FN, {low: BigInt(1), high: BigInt(2)});
 
     // Check submit button disabled.
-    assertStyle(testProxy.element.$.submitContainer, 'cursor', 'not-allowed');
+    assertStyle(getSubmitContainer(testProxy), 'cursor', 'not-allowed');
     // Add input.
     testProxy.element.$.input.value = 'test';
     testProxy.element.$.input.dispatchEvent(new Event('input'));
@@ -85,7 +85,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(testProxy.searchboxHandler.getCallCount('clearFiles'), 1);
 
     // Check submit button disabled and files empty.
-    assertStyle(testProxy.element.$.submitContainer, 'cursor', 'not-allowed');
+    assertStyle(getSubmitContainer(testProxy), 'cursor', 'not-allowed');
     assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
 
     // Close composebox.
@@ -269,7 +269,7 @@ suite('NewTabPageComposeboxTest', () => {
         }));
     await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
-    testProxy.element.$.submitContainer.click();
+    getSubmitContainer(testProxy).click();
     await microtasksFinished();
 
     // Assert call occurs.
@@ -294,7 +294,7 @@ suite('NewTabPageComposeboxTest', () => {
     assertTrue(submitButton!.hasAttribute('disabled'));
 
     // Act.
-    testProxy.element.$.submitContainer.click();
+    getSubmitContainer(testProxy).click();
     await microtasksFinished();
 
     // Assert no calls were made.
@@ -536,12 +536,15 @@ suite('NewTabPageComposeboxTest', () => {
     await collapsibleBox.updateComplete;
 
     // Submit query.
-    collapsibleBox.$.submitContainer.click();
+    const submit = collapsibleBox.shadowRoot.querySelector<HTMLElement>(
+        '#submitContainer');
+    assertTrue(!!submit);
+    submit.click();
     await collapsibleBox.updateComplete;
     await microtasksFinished();
 
     // Submit container should be disabled.
-    assertStyle(testProxy.element.$.submitContainer, 'cursor', 'not-allowed');
+    assertStyle(getSubmitContainer(testProxy), 'cursor', 'not-allowed');
     assertEquals('', collapsibleInput.value, 'Input should be cleared');
   });
 

@@ -13,7 +13,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, mockInputState, setupComposeboxTest} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, ADD_TAB_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, getSubmitContainer, mockInputState, setupComposeboxTest} from './test_support.js';
 
 enum Attributes {
   SELECTED = 'selected',
@@ -964,9 +964,8 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
         testProxy.element.shadowRoot.activeElement, testProxy.element.$.input);
 
     // Simulate submit button click.
-    testProxy.element.$.submitContainer.dispatchEvent(
-        new FocusEvent('focusin'));
-    testProxy.element.$.submitContainer.click();
+    getSubmitContainer(testProxy).dispatchEvent(new FocusEvent('focusin'));
+    getSubmitContainer(testProxy).click();
 
     // Since a match is selected, openAutocompleteMatch is called instead of
     // submitQuery.

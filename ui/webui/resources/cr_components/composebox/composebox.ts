@@ -73,8 +73,6 @@ export interface ComposeboxElement {
     composebox: HTMLElement,
     carousel: ComposeboxFileCarouselElement,
     fileInputs: ComposeboxFileInputsElement,
-    submitContainer: HTMLElement,
-    submitOverlay: HTMLElement,
     matches: ComposeboxDropdownElement,
     errorScrim: ErrorScrimElement,
     voiceSearch: ComposeboxVoiceSearchElement,

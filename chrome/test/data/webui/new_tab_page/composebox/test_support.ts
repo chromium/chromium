@@ -288,3 +288,11 @@ export async function addTab(testProxy: ComposeboxTestElement): Promise<string> 
   assertEquals(files[0]!.name, sampleTabTitle);
   return FAKE_TOKEN_STRING;
 }
+
+export function getSubmitContainer(testProxy: ComposeboxTestElement):
+    HTMLElement {
+  const container = testProxy.element.shadowRoot.querySelector<HTMLElement>(
+      '#submitContainer');
+  assertTrue(!!container);
+  return container;
+}

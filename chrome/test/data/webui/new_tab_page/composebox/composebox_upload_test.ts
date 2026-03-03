@@ -11,7 +11,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, addTab, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, generateZeroId, getInputForFileType, getMockFileChangeEventForType, mockInputState, setupComposeboxTest, uploadFileAndVerify, waitForAddFileCallCount} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, addTab, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, generateZeroId, getInputForFileType, getMockFileChangeEventForType, getSubmitContainer, mockInputState, setupComposeboxTest, uploadFileAndVerify, waitForAddFileCallCount} from './test_support.js';
 
 suite('NewTabPageComposeboxUploadTest', () => {
   const testProxy = setupComposeboxTest();
@@ -19,7 +19,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
   test('upload image', async () => {
     createComposeboxElement(testProxy);
     // Submit button is disabled without any input.
-    assertStyle(testProxy.element.$.submitContainer, 'cursor', 'not-allowed');
+    assertStyle(getSubmitContainer(testProxy), 'cursor', 'not-allowed');
     await uploadFileAndVerify(
         testProxy, FAKE_TOKEN_STRING,
         new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
@@ -31,7 +31,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     await testProxy.element.updateComplete;
     await microtasksFinished();
 
-    assertStyle(testProxy.element.$.submitContainer, 'cursor', 'pointer');
+    assertStyle(getSubmitContainer(testProxy), 'cursor', 'pointer');
   });
 
   test(
@@ -929,7 +929,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     );
     await microtasksFinished();
 
-    testProxy.element.$.submitContainer.click();
+    getSubmitContainer(testProxy).click();
     await microtasksFinished();
 
     // Assert call occurs.

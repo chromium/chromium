@@ -57,7 +57,7 @@ export interface SearchboxMatchElement {
     description: HTMLElement,
     remove: HTMLElement,
     separator: HTMLElement,
-    'focus-indicator': HTMLElement,
+    focusIndicator: HTMLElement,
   };
 }
 

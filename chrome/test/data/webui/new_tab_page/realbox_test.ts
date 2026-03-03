@@ -362,7 +362,7 @@ suite('NewTabPageRealboxNextTest', () => {
           searchboxLayoutMode: 'TallTopContext',
           ntpRealboxNextEnabled: true,
         });
-        const contextElement = realbox.shadowRoot.querySelector(
+        const contextElement = realbox.shadowRoot.querySelector<HTMLElement>(
             'contextual-entrypoint-and-carousel');
         assertTrue(!!contextElement);
         contextElement.dispatchEvent(
