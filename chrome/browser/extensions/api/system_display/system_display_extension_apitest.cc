@@ -125,6 +125,70 @@ IN_PROC_BROWSER_TEST_P(SystemDisplayExtensionApiFunctionTest, SetDisplay) {
 
 #if BUILDFLAG(IS_ANDROID)
 
+class AndroidMultiDisplayMockProvider : public MockDisplayInfoProvider {
+ public:
+  AndroidMultiDisplayMockProvider() = default;
+  ~AndroidMultiDisplayMockProvider() override = default;
+
+  void GetAllDisplaysInfo(
+      bool /*single_unified*/,
+      base::OnceCallback<void(DisplayUnitInfoList result)> callback) override {
+    DisplayUnitInfoList units;
+
+    display::Display d1(111, gfx::Rect(0, 0, 1920, 1080));
+    auto unit1 = CreateDisplayUnitInfo(d1, /*primary_display_id=*/111);
+    unit1.name = "Primary Monitor";
+    unit1.dpi_x = 160.0;
+    unit1.dpi_y = 160.0;
+    units.push_back(std::move(unit1));
+
+    display::Display d2(222, gfx::Rect(1920, 0, 1280, 720));
+    auto unit2 = CreateDisplayUnitInfo(d2, /*primary_display_id=*/111);
+    unit2.name = "External Display 1";
+    unit2.dpi_x = 96.0;
+    unit2.dpi_y = 96.0;
+    units.push_back(std::move(unit2));
+
+    display::Display d3(333, gfx::Rect(0, 1080, 3840, 2160));
+    auto unit3 = CreateDisplayUnitInfo(d3, /*primary_display_id=*/111);
+    unit3.name = "External Display 2";
+    unit3.dpi_x = 320.0;
+    unit3.dpi_y = 320.0;
+    units.push_back(std::move(unit3));
+
+    std::move(callback).Run(std::move(units));
+  }
+};
+
+// Deterministic browser-level getInfo() coverage. "Mock" means this fixture
+// bypasses the real platform display provider and returns a fixed 3-display
+// payload so JS assertions stay stable.
+class SystemDisplayExtensionApiAndroidMockTest : public ExtensionApiTest {
+ public:
+  SystemDisplayExtensionApiAndroidMockTest()
+      : ExtensionApiTest(ContextType::kServiceWorker) {}
+
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
+    provider_ = std::make_unique<AndroidMultiDisplayMockProvider>();
+    DisplayInfoProvider::InitializeForTesting(provider_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    DisplayInfoProvider::ResetForTesting();
+    provider_.reset();
+    ExtensionApiTest::TearDownOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<AndroidMultiDisplayMockProvider> provider_;
+};
+
+IN_PROC_BROWSER_TEST_F(SystemDisplayExtensionApiAndroidMockTest,
+                       GetDisplayInfoWithMockProvider) {
+  ASSERT_TRUE(RunExtensionTest("system_display/info_android_mock")) << message_;
+}
+
 class SystemDisplayExtensionApiAndroidProviderTest : public ExtensionApiTest {
  public:
   SystemDisplayExtensionApiAndroidProviderTest()

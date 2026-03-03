@@ -1,0 +1,10 @@
+{
+    "name": "system.display info_android_mock",
+    "manifest_version": 3,
+    "version": "1.0",
+    "description": "Test system.display API with a deterministic mock provider",
+    "permissions": ["system.display"],
+    "background": {
+        "service_worker": "background.js"
+    }
+}

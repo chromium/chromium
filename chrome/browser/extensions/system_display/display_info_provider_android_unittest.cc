@@ -71,5 +71,57 @@ TEST_F(DisplayInfoProviderAndroidTest,
   EXPECT_DOUBLE_EQ(96.0, info[0].dpi_y);
 }
 
+TEST_F(DisplayInfoProviderAndroidTest, MultiDisplayListMapping) {
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  display1.set_label("Display One");
+
+  display::Display display2(2, gfx::Rect(1920, 0, 800, 600));
+  display2.set_label("");
+
+  display::Display display3(3, gfx::Rect(0, 1080, 1024, 768));
+  display3.set_label("Display Three");
+
+  std::vector<display::Display> displays = {display1, display2, display3};
+  const DisplayInfoProvider::DisplayUnitInfoList info =
+      provider_.GetAllDisplaysInfoList(displays, /*primary_id=*/display1.id());
+
+  ASSERT_EQ(3u, info.size());
+
+  EXPECT_EQ("1", info[0].id);
+  EXPECT_EQ("Display One", info[0].name);
+
+  EXPECT_EQ("2", info[1].id);
+  EXPECT_EQ("2", info[1].name);
+
+  EXPECT_EQ("3", info[2].id);
+  EXPECT_EQ("Display Three", info[2].name);
+}
+
+TEST_F(DisplayInfoProviderAndroidTest, MixedDpiFallbackMultiDisplay) {
+  display::Display display1(1, gfx::Rect(0, 0, 1920, 1080));
+  display1.set_pixels_per_inch(100.0f, 110.0f);
+  display1.set_device_scale_factor(2.0f);
+
+  display::Display display2(2, gfx::Rect(1920, 0, 800, 600));
+  display2.set_pixels_per_inch(0.0f, 0.0f);
+  display2.set_device_scale_factor(2.5f);
+
+  display::Display display3(3, gfx::Rect(0, 1080, 1024, 768));
+  display3.set_pixels_per_inch(0.0f, 0.0f);
+  display3.set_device_scale_factor(0.0f);
+
+  std::vector<display::Display> displays = {display1, display2, display3};
+  const DisplayInfoProvider::DisplayUnitInfoList info =
+      provider_.GetAllDisplaysInfoList(displays, /*primary_id=*/display1.id());
+
+  ASSERT_EQ(3u, info.size());
+  EXPECT_DOUBLE_EQ(100.0, info[0].dpi_x);
+  EXPECT_DOUBLE_EQ(110.0, info[0].dpi_y);
+  EXPECT_DOUBLE_EQ(240.0, info[1].dpi_x);
+  EXPECT_DOUBLE_EQ(240.0, info[1].dpi_y);
+  EXPECT_DOUBLE_EQ(96.0, info[2].dpi_x);
+  EXPECT_DOUBLE_EQ(96.0, info[2].dpi_y);
+}
+
 }  // namespace
 }  // namespace extensions
