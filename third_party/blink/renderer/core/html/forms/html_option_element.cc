@@ -720,22 +720,26 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
         // Nothing below can do anything, if the options list is empty.
         return;
       }
-      if (key == keywords::kArrowUp) {
-        // TODO(crbug.com/485286877): Consider looking at other arrow keys for
-        // other writing modes.
-        if (auto* previous_option =
-                options.FindPreviousOption(*this, is_option_focusable)) {
-          previous_option->Focus(focus_params);
+      if (key == keywords::kArrowUp || key == keywords::kArrowDown ||
+          key == keywords::kArrowLeft || key == keywords::kArrowRight) {
+        if (std::optional<Direction> direction =
+                GetFocusDirectionFromKeyboardEvent(key)) {
+          if (*direction == Direction::kPrevious) {
+            if (auto* previous_option =
+                    options.FindPreviousOption(*this, is_option_focusable)) {
+              previous_option->Focus(focus_params);
+            }
+            event.SetDefaultHandled();
+            return;
+          } else {
+            if (auto* next_option =
+                    options.FindNextOption(*this, is_option_focusable)) {
+              next_option->Focus(focus_params);
+            }
+            event.SetDefaultHandled();
+            return;
+          }
         }
-        event.SetDefaultHandled();
-        return;
-      } else if (key == keywords::kArrowDown) {
-        if (auto* next_option =
-                options.FindNextOption(*this, is_option_focusable)) {
-          next_option->Focus(focus_params);
-        }
-        event.SetDefaultHandled();
-        return;
       } else if (key == keywords::kHome) {
         if (auto* first_option = options.FindNextOption(
                 *options.begin(), is_option_focusable, /*inclusive*/ true)) {
@@ -825,6 +829,39 @@ void HTMLOptionElement::DefaultEventHandlerInternal(Event& event) {
       return;
     }
   }
+}
+
+std::optional<HTMLOptionElement::Direction>
+HTMLOptionElement::GetFocusDirectionFromKeyboardEvent(const AtomicString& key) {
+  HTMLSelectElement* select = OwnerSelectElement();
+  CHECK(select);
+
+  if (key == keywords::kArrowUp) {
+    return Direction::kPrevious;
+  }
+  if (key == keywords::kArrowDown) {
+    return Direction::kNext;
+  }
+
+  const ComputedStyle* style = select->GetComputedStyle();
+  if (!style) {
+    return std::nullopt;
+  }
+  if (IsHorizontalWritingMode(style->GetWritingMode())) {
+    return std::nullopt;
+  }
+
+  // vertical-rl or sideways-rl: Left=next, Right=previous
+  // vertical-lr or sideways-lr: Left=previous, Right=next
+  bool next = key == keywords::kArrowRight;
+  if (!next) {
+    CHECK_EQ(key, keywords::kArrowLeft);
+  }
+  if (IsFlippedBlocksWritingMode(style->GetWritingMode())) {
+    // vertical-rl and sideways-rl
+    next = !next;
+  }
+  return next ? Direction::kNext : Direction::kPrevious;
 }
 
 void HTMLOptionElement::ChooseOption(Event& event) {

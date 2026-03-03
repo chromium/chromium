@@ -173,6 +173,19 @@ class CORE_EXPORT HTMLOptionElement final : public HTMLElement {
 
   void DefaultEventHandlerInternal(Event&);
 
+  enum Direction {
+    kNext,
+    kPrevious,
+  };
+  // This is called when the left, right, up, or down arrow keys are pressed on
+  // an option in a select element which is a customizable select or is a
+  // desktop <select multiple size=1>. If kNext is returned, then the next
+  // focusable option should be focused. If kPrevious is returned, then the
+  // previous focusable option should be focused. If nullopt is returned, then
+  // focus should not change and this event should not be handled.
+  std::optional<Direction> GetFocusDirectionFromKeyboardEvent(
+      const AtomicString& key);
+
   void RecalcOwnerSelectElement() const;
 
   bool IsVisibleInViewport();
