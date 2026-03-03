@@ -329,4 +329,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // Disable No-Vary-Search in disk cache on WebView.
   // See https://crbug.com/382394774.
   aw_feature_overrides.DisableFeature(net::features::kHttpCacheNoVarySearch);
+
+  // TODO(crbug.com/489450060): Disable DirectReceiver on Viz for WebView until
+  // its Viz thread is updated to handle IO.
+  aw_feature_overrides.DisableFeature(
+      ::features::kVizDirectCompositorThreadIpcFrameSinkManager);
 }
