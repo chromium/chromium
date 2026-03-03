@@ -324,6 +324,22 @@ std::string GetContextualTasksAiPageUrl() {
   return kContextualTasksAiPageUrl.Get();
 }
 
+std::string GetContextualTasksDisplayUrlScheme() {
+  return kContextualTasksDisplayUrlScheme.Get();
+}
+
+std::string GetContextualTasksDisplayUrlHost() {
+  return kContextualTasksDisplayUrlHost.Get();
+}
+
+std::string GetContextualTasksDisplayUrlPath() {
+  return kContextualTasksDisplayUrlPath.Get();
+}
+
+bool ShouldShowExpandedSecurityChip() {
+  return kContextualTasksShowExpandedSecurityChip.Get();
+}
+
 std::string GetForcedEmbeddedPageHost() {
   std::string host = kContextualTasksForcedEmbeddedPageHost.Get();
 

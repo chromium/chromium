@@ -203,7 +203,7 @@ GURL AppendAimEntryPointParams(GURL url,
 
 ContextualTasksUiService::ContextualTasksUiService(
     Profile* profile,
-    contextual_tasks::ContextualTasksService* contextual_tasks_service,
+    ContextualTasksService* contextual_tasks_service,
     signin::IdentityManager* identity_manager,
     AimEligibilityService* aim_eligibility_service)
     : profile_(profile),
@@ -499,8 +499,7 @@ void ContextualTasksUiService::OnThreadLinkClicked(
     }
 
     if (auto* controller =
-            contextual_tasks::ContextualTasksPanelController::From(
-                browser.get())) {
+            ContextualTasksPanelController::From(browser.get())) {
       // Count as part of a cobrowsing session if the user interacted with the
       // AI response.
       controller->OnAiInteraction();
@@ -1072,8 +1071,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
     const base::Uuid& task_id,
     BrowserWindowInterface* browser,
     const GURL& inner_frame_url) {
-  auto* controller =
-      contextual_tasks::ContextualTasksPanelController::From(browser);
+  auto* controller = ContextualTasksPanelController::From(browser);
   CHECK(controller);
 
   // If the side panel wasn't showing an AI page, don't embed the page in the
@@ -1112,8 +1110,7 @@ void ContextualTasksUiService::MoveTaskUiToNewTab(
   controller->Close();
 
   ContextualTasksService* task_service =
-      contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
-          browser->GetProfile());
+      ContextualTasksServiceFactory::GetForProfile(browser->GetProfile());
   CHECK(task_service);
   task_service->DisassociateAllTabsFromTask(task_id);
 }
@@ -1185,8 +1182,7 @@ void ContextualTasksUiService::StartTaskUiInSidePanelWithErrorPage(
 
   if (!panel_was_closed) {
     if (auto* web_ui_interface = GetWebUiInterface(web_contents)) {
-      contextual_tasks::ShowAndRecordErrorPage(
-          web_ui_interface->GetPageRemote(), source);
+      ShowAndRecordErrorPage(web_ui_interface->GetPageRemote(), source);
     }
   }
 }
@@ -1203,7 +1199,7 @@ bool ContextualTasksUiService::IsPendingErrorPage(const base::Uuid& task_id) {
   if (!pending_error_page_tasks_.contains(task_id)) {
     return false;
   }
-  contextual_tasks::RecordErrorPageShown(pending_error_page_tasks_[task_id]);
+  RecordErrorPageShown(pending_error_page_tasks_[task_id]);
   return true;
 }
 
@@ -1213,10 +1209,9 @@ bool ContextualTasksUiService::IsContextualTasksUrl(const GURL& url) {
 }
 
 bool ContextualTasksUiService::IsContextualTasksDisplayUrl(const GURL& url) {
-  return url.scheme() ==
-             contextual_tasks::kContextualTasksDisplayUrlScheme.Get() &&
-         url.host() == contextual_tasks::kContextualTasksDisplayUrlHost.Get() &&
-         url.path() == contextual_tasks::kContextualTasksDisplayUrlPath.Get();
+  return url.scheme() == GetContextualTasksDisplayUrlScheme() &&
+         url.host() == GetContextualTasksDisplayUrlHost() &&
+         url.path() == GetContextualTasksDisplayUrlPath();
 }
 
 bool ContextualTasksUiService::IsSearchResultsUrl(const GURL& url) {
@@ -1379,7 +1374,7 @@ bool ContextualTasksUiService::IsAllowedHost(const GURL& url) {
   if (net::SchemefulSite::IsSameSite(url, GURL(kAiPageHost))) {
     return true;
   }
-  std::string forced_host = contextual_tasks::GetForcedEmbeddedPageHost();
+  std::string forced_host = GetForcedEmbeddedPageHost();
   if (!forced_host.empty() &&
       net::SchemefulSite::IsSameSite(
           url,
