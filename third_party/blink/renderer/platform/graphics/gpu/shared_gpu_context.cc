@@ -47,17 +47,17 @@ bool Canvas2DSharedImagesBackedByIOSurface() {
 
 }  // namespace
 
-SharedGpuContext* SharedGpuContext::GetInstanceForCurrentThread() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(ThreadSpecific<SharedGpuContext>,
-                                  thread_specific_instance, ());
-  return thread_specific_instance;
+SharedGpuContext* SharedGpuContext::GetInstanceForCurrentSequence() {
+  static base::SequenceLocalStorageSlot<SharedGpuContext>
+      sequence_local_instance;
+  return &sequence_local_instance.GetOrCreateValue();
 }
 
 SharedGpuContext::SharedGpuContext() = default;
 
 // static
 bool SharedGpuContext::IsGpuCompositingEnabled() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   if (IsMainThread()) {
     // On the main thread we have the opportunity to keep
     // is_gpu_compositing_disabled_ up to date continuously without locking
@@ -82,7 +82,7 @@ bool SharedGpuContext::IsGpuCompositingEnabled() {
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 SharedGpuContext::ContextProviderWrapper() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   bool only_if_gpu_compositing = false;
   this_ptr->CreateContextProviderIfNeeded(only_if_gpu_compositing);
   if (!this_ptr->context_provider_wrapper_)
@@ -92,7 +92,7 @@ SharedGpuContext::ContextProviderWrapper() {
 
 base::WeakPtr<WebGraphicsContext3DProviderWrapper>
 SharedGpuContext::GetExistingContextProviderWrapper() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   if (!this_ptr->context_provider_wrapper_) {
     return nullptr;
   }
@@ -102,7 +102,7 @@ SharedGpuContext::GetExistingContextProviderWrapper() {
 // static
 WebGraphicsSharedImageInterfaceProvider*
 SharedGpuContext::SharedImageInterfaceProvider() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   this_ptr->CreateSharedImageInterfaceProviderIfNeeded();
   if (!this_ptr->shared_image_interface_provider_) {
     return nullptr;
@@ -239,7 +239,7 @@ void SharedGpuContext::CreateSharedImageInterfaceProviderIfNeeded() {
 // static
 void SharedGpuContext::SetContextProviderFactoryForTesting(
     ContextProviderFactory factory) {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   DCHECK(!this_ptr->context_provider_wrapper_)
       << this_ptr->context_provider_wrapper_.get();
 
@@ -248,7 +248,7 @@ void SharedGpuContext::SetContextProviderFactoryForTesting(
 
 // static
 void SharedGpuContext::Reset() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   this_ptr->is_gpu_compositing_disabled_ = false;
   this_ptr->shared_image_interface_provider_.reset();
   this_ptr->context_provider_wrapper_.reset();
@@ -258,7 +258,7 @@ void SharedGpuContext::Reset() {
 }
 
 bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   if (!this_ptr->context_provider_wrapper_)
     return false;
   auto* gl_context =
@@ -275,7 +275,7 @@ bool SharedGpuContext::IsValidWithoutRestoringForTesting() {
 }
 
 bool SharedGpuContext::AllowSoftwareToAcceleratedCanvasUpgrade() {
-  SharedGpuContext* this_ptr = GetInstanceForCurrentThread();
+  SharedGpuContext* this_ptr = GetInstanceForCurrentSequence();
   bool only_if_gpu_compositing = false;
   this_ptr->CreateContextProviderIfNeeded(only_if_gpu_compositing);
   if (!this_ptr->context_provider_wrapper_)

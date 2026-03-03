@@ -1,5 +1,6 @@
 specific_include_rules = {
   ".*_test.cc": [
+    "+base/threading/sequence_local_storage_map.h",
     "+mojo/public/cpp/test_support",
   ],
 }
