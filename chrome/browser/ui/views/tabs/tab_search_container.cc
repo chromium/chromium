@@ -487,9 +487,7 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
 
 void TabSearchContainer::OnTabDeclutterButtonClicked() {
   BrowserView::GetBrowserViewForBrowser(browser_window_interface_)
-      ->CreateTabSearchBubble(
-          tab_search::mojom::TabSearchSection::kOrganize,
-          tab_search::mojom::TabOrganizationFeature::kDeclutter);
+      ->CreateTabSearchBubble(tab_search::mojom::TabSearchSection::kOrganize);
 
   // Force hide the button when pressed, bypassing locked expansion mode.
   ExecuteHideTabOrganization(tab_declutter_button_);

@@ -202,8 +202,8 @@ class WebUIBrowserWindow : public BrowserWindow,
       content::EyeDropperListener* listener) override;
   void ShowCaretBrowsingDialog() override;
   void CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection section,
-      tab_search::mojom::TabOrganizationFeature organization_feature) override;
+      tab_search::mojom::TabSearchSection section =
+          tab_search::mojom::TabSearchSection::kSearch) override;
   void CloseTabSearchBubble() override;
   void ShowIncognitoClearBrowsingDataDialog() override;
   void ShowIncognitoHistoryDisclaimerDialog() override;

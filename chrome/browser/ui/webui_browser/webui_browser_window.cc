@@ -1092,8 +1092,7 @@ void WebUIBrowserWindow::ShowCaretBrowsingDialog() {
 }
 
 void WebUIBrowserWindow::CreateTabSearchBubble(
-    tab_search::mojom::TabSearchSection section,
-    tab_search::mojom::TabOrganizationFeature organization_feature) {
+    tab_search::mojom::TabSearchSection section) {
   NOTIMPLEMENTED_LOG_ONCE();
 }
 

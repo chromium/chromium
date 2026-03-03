@@ -592,15 +592,10 @@ class BrowserWindow : public ui::BaseWindow {
   virtual void ShowCaretBrowsingDialog() = 0;
 
   // Create and open the tab search bubble. Optionally force it to open to the
-  // given section and organization feature.
+  // given section.
   virtual void CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection section,
-      tab_search::mojom::TabOrganizationFeature organization_feature) = 0;
-  void CreateTabSearchBubble(tab_search::mojom::TabSearchSection section =
-                                 tab_search::mojom::TabSearchSection::kSearch) {
-    CreateTabSearchBubble(section,
-                          tab_search::mojom::TabOrganizationFeature::kNone);
-  }
+      tab_search::mojom::TabSearchSection section =
+          tab_search::mojom::TabSearchSection::kSearch) = 0;
 
   // Closes the tab search bubble if open for the given browser instance.
   virtual void CloseTabSearchBubble() = 0;

@@ -21,8 +21,6 @@ extern const char kTabSearchTabIndex[];
 
 extern const char kTabSearchUsed[];
 
-extern const char kTabOrganizationFeature[];
-
 extern const char kTabOrganizationShowFRE[];
 
 extern const char kTabOrganizationModelStrategy[];
@@ -36,12 +34,6 @@ tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(
 
 int GetIntFromTabSearchSection(
     const tab_search::mojom::TabSearchSection section);
-
-tab_search::mojom::TabOrganizationFeature GetTabOrganizationFeatureFromInt(
-    const int feature);
-
-int GetIntFromTabOrganizationFeature(
-    const tab_search::mojom::TabOrganizationFeature feature);
 
 }  // namespace tab_search_prefs
 

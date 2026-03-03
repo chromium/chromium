@@ -246,9 +246,7 @@ class TestBrowserWindow : public BrowserWindow, public BrowserListObserver {
 
   void CreateTabSearchBubble(
       tab_search::mojom::TabSearchSection section =
-          tab_search::mojom::TabSearchSection::kSearch,
-      tab_search::mojom::TabOrganizationFeature feature =
-          tab_search::mojom::TabOrganizationFeature::kNone) override {}
+          tab_search::mojom::TabSearchSection::kSearch) override {}
   void CloseTabSearchBubble() override {}
 
   bool IsTabModalPopupDeprecated() const override;

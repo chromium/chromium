@@ -10234,54 +10234,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Strings for tab declutter -->
-      <message name="IDS_DECLUTTER_SELECTOR_HEADING_NO_DEDUPE" desc="Heading for the declutter button in the tab organization selector when dedupe is disabled.">
-        {NUM_TABS, plural,
-          =0 {No inactive tabs}
-          =1 {Review 1 inactive tab}
-          other {Review # inactive tabs}}
-      </message>
-      <message name="IDS_DECLUTTER_SELECTOR_HEADING" desc="Heading for the declutter button in the tab organization selector.">
-        {NUM_TABS, plural,
-          =0 {No unused tabs}
-          =1 {Review 1 unused tab}
-          other {Review # unused tabs}}
-      </message>
-      <message name="IDS_DECLUTTER_SELECTOR_SUBHEADING" desc="Subheading for the declutter button in the tab organization selector.">
-        Keep your tabs clutter-free
-      </message>
-      <message name="IDS_DECLUTTER_TITLE" desc="The header text for the declutter UI">
-        Clean up unused tabs
-      </message>
-      <message name="IDS_DECLUTTER_INACTIVE_TITLE_NO_DEDUPE" desc="The header text for the declutter inactive tab UI when dedupe is disabled">
-        Review inactive tabs
-      </message>
-      <message name="IDS_DECLUTTER_INACTIVE_TITLE" desc="The header text for the declutter inactive tab UI">
-        Inactive tabs
-      </message>
-      <message name="IDS_DECLUTTER_INACTIVE_BODY" desc="The body text for the declutter inactive tab UI">
-        Tabs you haven't used in <ph name="COUNT">$1<ex>7</ex></ph> or more days
-      </message>
-      <message name="IDS_DECLUTTER_DUPLICATE_TITLE" desc="The header text for the declutter duplicate tab UI">
-        Duplicate tabs
-      </message>
-      <message name="IDS_DECLUTTER_DUPLICATE_BODY" desc="The body text for the declutter duplicate tab UI">
-        Oldest copy kept when you close duplicates
-      </message>
-      <message name="IDS_DECLUTTER_EMPTY_TITLE" desc="The header text for the declutter empty state UI">
-        Things look neat!
-      </message>
-      <message name="IDS_DECLUTTER_EMPTY_BODY_NO_DEDUPE" desc="The body text for the declutter empty state UI when dedupe is disabled">
-        No inactive tabs right now
-      </message>
-      <message name="IDS_DECLUTTER_EMPTY_BODY" desc="The body text for the declutter empty state UI">
-        No unused tabs right now
-      </message>
-      <message name="IDS_DUPLICATE_ITEM_TITLE_SINGLE" desc="The title for an item in the duplicate tabs list with 1 duplicate">
-        <ph name="URL">$1<ex>google.com</ex></ph> • 1 duplicate
-      </message>
-      <message name="IDS_DUPLICATE_ITEM_TITLE_MULTI" desc="The title for an item in the duplicate tabs list with multiple duplicates">
-        <ph name="URL">$1<ex>google.com</ex></ph> • <ph name="DUPLICATE_COUNT">$2<ex>2</ex></ph> duplicates
-      </message>
       <message name="IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE" desc="The tooltip for the Tab Declutter button when dedupe is disabled.">
         Review inactive tabs?
       </message>
@@ -10299,12 +10251,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
         Clean up unused tabs
-      </message>
-      <message name="IDS_DECLUTTER_TIMESTAMP" desc="The description of when a tab was last accessed, for use in a declutter row.">
-        {NUM_DAYS, plural,
-          =0 {Visited 0 days ago}
-          =1 {Visited 1 day ago}
-          other {Visited # days ago}}
       </message>
       <if expr="use_titlecase">
         <then>
@@ -10324,18 +10270,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
           </message>
         </else>
       </if>
-      <message name="IDS_DECLUTTER_CLOSE_TABS" desc="The text label of the action button in the Tab Declutter UI.">
-        Close all
-      </message>
-      <message name="IDS_DECLUTTER_CLOSE_TAB_ARIA_LABEL" desc="The accessible label declutter for the button which excludes a tab from the list" is_accessibility_with_no_ui="true">
-        Remove <ph name="TAB_TITLE">$1<ex>New Tab</ex></ph>, <ph name="LAST_ACTIVE">$2<ex>Visited 9 days ago</ex></ph> from list
-      </message>
-      <message name="IDS_DECLUTTER_CLOSE_TAB_TOOLTIP" desc="The declutter tooltip for the button which excludes a tab from the list">
-        Remove tab from list
-      </message>
-      <message name="IDS_DECLUTTER_A11Y_TAB_EXCLUDED" desc="A11y message after user clicks on the close tab button in the declutter list item." is_accessibility_with_no_ui="true">
-        Tab excluded from list
-      </message>
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
         Organize tabs?
@@ -10364,9 +10298,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       <message name="IDS_TAB_ORGANIZATION_SUCCESS_IPH_SCREENREADER" desc="The screen reader text of the IPH describing how to interact with a tab group resulting from tab organization." is_accessibility_with_no_ui="true">
         Select the tab group and activate the context menu to edit
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_SELECTOR_ARIA_LABEL" desc="The screen reader text describing the tab organization selector button" is_accessibility_with_no_ui="true">
-        <ph name="HEADING">$1<ex>Group tabs with AI</ex></ph>. <ph name="SUBHEADING">$2<ex>Get your tabs sorted</ex></ph>
       </message>
 
       <!-- Strings for split view -->
@@ -12556,15 +12487,6 @@ Check your passwords anytime in <ph name="GOOGLE_PASSWORD_MANAGER">$1<ex>Google 
       </message>
       <message name="IDS_TAB_ORGANIZATION_THUMBS_UP" desc="Accessibility label for the thumbs up icon that a user can click to provide positive feedback about a tab organization." is_accessibility_with_no_ui="true">
         Thumbs up submits feedback that you like this tab group suggestion
-      </message>
-      <message name="IDS_AUTO_TAB_GROUPS_SELECTOR_HEADING" desc="Heading for the auto tab groups button in the tab organization selector.">
-        Group tabs with AI
-      </message>
-      <message name="IDS_AUTO_TAB_GROUPS_SELECTOR_SUBHEADING" desc="Subheading for the auto tab groups button in the tab organization selector.">
-        Get your tabs sorted
-      </message>
-      <message name="IDS_TAB_ORGANIZATION_BACK_BUTTON_ARIA_LABEL" desc="Accessibility label for the back button within a tab organization subpage." is_accessibility_with_no_ui="true">
-        Click to navigate away from <ph name="TITLE">$1<ex>Auto Tab Groups</ex></ph>
       </message>
       <message name="IDS_TAB_ORGANIZATION_A11Y_TAB_EXCLUDED" desc="A11y message after user clicks on the close tab button in the tab organization list item." is_accessibility_with_no_ui="true">
         Tab excluded from suggested group

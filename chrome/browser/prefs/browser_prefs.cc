@@ -995,6 +995,9 @@ constexpr char kDiceMigrationRestoredFromBackup[] =
 // Deprecated 02/2026.
 inline constexpr char kTabSearchOpened[] = "tab_search.opened";
 
+// Deprecated 02/2026.
+constexpr char kTabOrganizationFeature[] = "tab_organization.feature";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1387,6 +1390,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 02/2026.
   registry->RegisterBooleanPref(kTabSearchOpened, false);
+
+  // Deprecated 02/2026.
+  registry->RegisterIntegerPref(kTabOrganizationFeature, 0);
 }
 
 }  // namespace

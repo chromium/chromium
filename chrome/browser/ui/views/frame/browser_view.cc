@@ -4333,8 +4333,7 @@ const views::Widget* BrowserView::GetWidget() const {
 }
 
 void BrowserView::CreateTabSearchBubble(
-    const tab_search::mojom::TabSearchSection section,
-    const tab_search::mojom::TabOrganizationFeature organization_feature) {
+    const tab_search::mojom::TabSearchSection section) {
   // Do not spawn the bubble if using the WebUITabStrip.
 #if BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
   if (WebUITabStripContainerView::UseTouchableTabStrip(browser_.get())) {
@@ -4343,7 +4342,7 @@ void BrowserView::CreateTabSearchBubble(
 #endif  // BUILDFLAG(ENABLE_WEBUI_TAB_STRIP)
 
   if (auto* tab_search_host = GetTabSearchBubbleHost()) {
-    tab_search_host->ShowTabSearchBubble(true, section, organization_feature);
+    tab_search_host->ShowTabSearchBubble(true, section);
   }
 }
 
