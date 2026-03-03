@@ -167,7 +167,8 @@ void GlicSidePanelUi::SwitchConversation(
 void GlicSidePanelUi::CaptureScreenshot(
     glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   // Not implemented on Android yet.
-  std::move(callback).Run(nullptr);
+  std::move(callback).Run(mojom::CaptureScreenshotResult::NewErrorReason(
+      mojom::CaptureScreenshotErrorReason::kUnknown));
 }
 
 bool GlicSidePanelUi::IsShowing() const {
