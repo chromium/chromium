@@ -35,9 +35,6 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
-// Impression counter for the Price Tracking notification promo card.
-const char kPriceTrackingPromoImpressionCounterPref[] =
-    "ephemeral_pref_counter.price_tracking_promo_counter";
 // Impression counter for the Address Bar Position ephemeral module.
 const char kAddressBarPositionEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.address_bar_position_ephemeral_module_counter";
@@ -131,19 +128,15 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
     PrefService* profile_prefs,
     PrefService* local_state_prefs)
     : HomeModulesCardRegistry(profile_prefs, local_state_prefs) {
-  int price_tracking_promo_count =
-      profile_prefs_->GetInteger(kPriceTrackingPromoImpressionCounterPref);
+  if (PriceTrackingNotificationPromo::IsEnabled(profile_prefs_)) {
+    all_cards_by_priority_.push_back(
+        std::make_unique<PriceTrackingNotificationPromo>());
+  }
+
   int send_tab_promo_count =
       profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
   int app_bundle_promo_count = local_state_prefs_->GetInteger(
       kAppBundlePromoEphemeralModuleImpressionCounterPref);
-
-  if (PriceTrackingNotificationPromo::IsEnabled(price_tracking_promo_count)) {
-    all_cards_by_priority_.push_back(
-        std::make_unique<PriceTrackingNotificationPromo>(
-            price_tracking_promo_count));
-  }
-
   int default_browser_promo_count = profile_prefs_->GetInteger(
       kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
 
@@ -218,7 +211,7 @@ void HomeModulesCardRegistryIOS::RegisterLocalStatePrefs(
 // static
 void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterIntegerPref(kPriceTrackingPromoImpressionCounterPref, 0);
+  PriceTrackingNotificationPromo::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kSendTabPromoImpressionCounterPref, 0);
   registry->RegisterIntegerPref(
       kAddressBarPositionEphemeralModuleImpressionCounterPref, 0);
@@ -270,12 +263,7 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kPriceTrackingNotificationPromo) == 0) {
-    int freshness_impression_count =
-        profile_prefs_->GetInteger(kPriceTrackingPromoImpressionCounterPref);
-    profile_prefs_->SetInteger(kPriceTrackingPromoImpressionCounterPref,
-                               freshness_impression_count + 1);
-  } else if (strcmp(card_name, kAddressBarPositionEphemeralModule) == 0) {
+  if (strcmp(card_name, kAddressBarPositionEphemeralModule) == 0) {
     int freshness_impression_count = profile_prefs_->GetInteger(
         kAddressBarPositionEphemeralModuleImpressionCounterPref);
     profile_prefs_->SetInteger(

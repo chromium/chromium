@@ -6,6 +6,8 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
@@ -15,6 +17,10 @@
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace {
+
+// Impression counter for the Price Tracking notification promo card.
+const char kPriceTrackingPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.price_tracking_promo_counter";
 
 // The maximum number of times a card can be visible to the user.
 const int kMaxPriceTrackingNotificationCardImpressions = 3;
@@ -29,9 +35,14 @@ const char kHasSubscriptionSignalKey[] = "has_subscription";
 const char kIsNewUserSignalKey[] = "is_new_user";
 const char kIsSyncedSignalKey[] = "is_sycned";
 
-PriceTrackingNotificationPromo::PriceTrackingNotificationPromo(
-    int price_tracking_promo_count)
+PriceTrackingNotificationPromo::PriceTrackingNotificationPromo()
     : CardSelectionInfo(kPriceTrackingNotificationPromo) {}
+
+// static
+void PriceTrackingNotificationPromo::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kPriceTrackingPromoImpressionCounterPref, 0);
+}
 
 std::map<SignalKey, FeatureQuery> PriceTrackingNotificationPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
@@ -80,7 +91,16 @@ CardSelectionInfo::ShowResult PriceTrackingNotificationPromo::ComputeCardResult(
   return result;
 }
 
-bool PriceTrackingNotificationPromo::IsEnabled(int impression_count) {
+void PriceTrackingNotificationPromo::OnShow(PrefService* profile_prefs,
+                                            PrefService* local_state) {
+  int freshness_impression_count =
+      profile_prefs->GetInteger(kPriceTrackingPromoImpressionCounterPref);
+
+  profile_prefs->SetInteger(kPriceTrackingPromoImpressionCounterPref,
+                            freshness_impression_count + 1);
+}
+
+bool PriceTrackingNotificationPromo::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -92,6 +112,9 @@ bool PriceTrackingNotificationPromo::IsEnabled(int impression_count) {
           forced_result.value().result_label.value()) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
+
+  int impression_count =
+      profile_prefs->GetInteger(kPriceTrackingPromoImpressionCounterPref);
 
   if (impression_count < kMaxPriceTrackingNotificationCardImpressions) {
     return true;
