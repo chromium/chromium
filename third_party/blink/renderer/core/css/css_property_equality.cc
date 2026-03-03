@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 // TODO(ikilpatrick): generate this file.
 
@@ -275,6 +276,11 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderBottomStyle:
       return a.BorderBottomStyle() == b.BorderBottomStyle();
     case CSSPropertyID::kBorderBottomWidth:
+      if (RuntimeEnabledFeatures::
+              DecoupleComputedBorderWidthFromStyleEnabled()) {
+        return a.BorderBottomWidthInternal() ==
+               b.BorderBottomWidthInternal();
+      }
       return a.BorderBottomWidth() == b.BorderBottomWidth();
     case CSSPropertyID::kBorderCollapse:
       return a.BorderCollapse() == b.BorderCollapse();
@@ -298,6 +304,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderLeftStyle:
       return a.BorderLeftStyle() == b.BorderLeftStyle();
     case CSSPropertyID::kBorderLeftWidth:
+      if (RuntimeEnabledFeatures::
+              DecoupleComputedBorderWidthFromStyleEnabled()) {
+        return a.BorderLeftWidthInternal() == b.BorderLeftWidthInternal();
+      }
       return a.BorderLeftWidth() == b.BorderLeftWidth();
     case CSSPropertyID::kBorderRightColor:
       return a.BorderRightColor() == b.BorderRightColor() &&
@@ -306,6 +316,11 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderRightStyle:
       return a.BorderRightStyle() == b.BorderRightStyle();
     case CSSPropertyID::kBorderRightWidth:
+      if (RuntimeEnabledFeatures::
+              DecoupleComputedBorderWidthFromStyleEnabled()) {
+        return a.BorderRightWidthInternal() ==
+               b.BorderRightWidthInternal();
+      }
       return a.BorderRightWidth() == b.BorderRightWidth();
     case CSSPropertyID::kBorderTopColor:
       return a.BorderTopColor() == b.BorderTopColor() &&
@@ -318,6 +333,10 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
     case CSSPropertyID::kBorderTopStyle:
       return a.BorderTopStyle() == b.BorderTopStyle();
     case CSSPropertyID::kBorderTopWidth:
+      if (RuntimeEnabledFeatures::
+              DecoupleComputedBorderWidthFromStyleEnabled()) {
+        return a.BorderTopWidthInternal() == b.BorderTopWidthInternal();
+      }
       return a.BorderTopWidth() == b.BorderTopWidth();
     case CSSPropertyID::kBorderShape:
       return base::ValuesEquivalent(a.BorderShape(), b.BorderShape());
