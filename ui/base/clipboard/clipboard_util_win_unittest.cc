@@ -8,6 +8,8 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/win/scoped_hglobal.h"
 #include "base/win/shlwapi.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,6 +163,45 @@ TEST_F(ClipboardUtilWinTest,
   EXPECT_TRUE(clipboard_util::HasFilenames(data_object.Get()));
   EXPECT_FALSE(clipboard_util::HasRealFiles(data_object.Get()));
   EXPECT_TRUE(clipboard_util::HasVirtualFilenames(data_object.Get()));
+}
+
+// Unit test for GetFilenames(HDROP) with a HDROP structure.
+TEST_F(ClipboardUtilWinTest, GetFilenamesFromHDROP) {
+  const std::wstring file1 = L"C:\\foo\\bar.txt";
+  // Long path
+  std::wstring file2 = L"D:\\long_path\\";
+  file2.append(5000, L'a');
+  file2 += L"\\file.txt";
+
+  // Double-null-terminated list
+  std::wstring files_block = file1 + L'\0' + file2 + L'\0' + L'\0';
+  const SIZE_T dropfiles_size = sizeof(DROPFILES);
+  const SIZE_T total_size =
+      dropfiles_size + files_block.size() * sizeof(wchar_t);
+  HGLOBAL hglobal = ::GlobalAlloc(GHND, total_size);
+  ASSERT_NE(hglobal, nullptr);
+  base::ScopedClosureRunner free_hglobal(
+      base::BindOnce([](HGLOBAL h) { ::GlobalFree(h); }, hglobal));
+
+  base::win::ScopedHGlobal<DROPFILES*> locked_mem(hglobal);
+  DROPFILES* dropfiles = locked_mem.data();
+  ASSERT_NE(dropfiles, nullptr);
+
+  dropfiles->pFiles = sizeof(DROPFILES);
+  dropfiles->fWide = TRUE;
+
+  // SAFETY: `total_size` explicitly includes space for `DROPFILES` plus
+  // `files_block.size()` wchar_t elements immediately following it.
+  auto data_span = UNSAFE_BUFFERS(base::span<wchar_t>(
+      reinterpret_cast<wchar_t*>(dropfiles + 1), files_block.size()));
+  data_span.copy_from(base::span<const wchar_t>(files_block));
+
+  std::vector<std::wstring> filenames =
+      clipboard_util::GetFilenames(static_cast<HDROP>(hglobal));
+
+  ASSERT_EQ(filenames.size(), 2u);
+  EXPECT_EQ(filenames[0], file1);
+  EXPECT_EQ(filenames[1], file2);
 }
 }  // namespace
 }  // namespace ui

@@ -718,13 +718,19 @@ std::vector<std::wstring> GetFilenames(HDROP hdrop) {
     return filenames;
   }
 
-  const int kMaxFilenameLen = 4096;
   const unsigned num_files = DragQueryFileW(hdrop, 0xffffffff, 0, 0);
   for (unsigned int i = 0; i < num_files; ++i) {
-    wchar_t filename[kMaxFilenameLen];
-    if (DragQueryFileW(hdrop, i, filename, kMaxFilenameLen)) {
-      filenames.push_back(filename);
+    const UINT required_len = DragQueryFileW(hdrop, i, nullptr, 0);
+    if (!required_len) {
+      continue;
     }
+    const UINT buffer_size = required_len + 1;
+    std::wstring filename;
+    if (!DragQueryFileW(hdrop, i, base::WriteInto(&filename, buffer_size),
+                        buffer_size)) {
+      continue;
+    }
+    filenames.push_back(std::move(filename));
   }
   return filenames;
 }
