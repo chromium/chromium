@@ -402,9 +402,7 @@ bool AVCodecContextToAudioDecoderConfig(const AVCodecContext* codec_context,
       codec_context->sample_fmt, codec_context->codec_id);
 
   ChannelLayout channel_layout =
-      codec_context->ch_layout.nb_channels > 8
-          ? CHANNEL_LAYOUT_DISCRETE
-          : ChannelLayoutToChromeChannelLayout(codec_context->ch_layout);
+      ChannelLayoutToChromeChannelLayout(codec_context->ch_layout);
 
   // If there is a mismatch of `channel_layout` and `nb_channels`, we trust the
   // count. We skip this check for DISCRETE layouts since it does not have a

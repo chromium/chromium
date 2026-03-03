@@ -35,19 +35,16 @@ void WebAudioMediaStreamSource::SetFormat(int number_of_channels,
   VLOG(1) << "WebAudio media stream source changed format to: channels="
           << number_of_channels << ", sample_rate=" << sample_rate;
 
-  // If the channel count is greater than 8, use discrete layout. However,
-  // anything beyond 8 is ignored by some audio tracks/sinks.
-  media::ChannelLayout channel_layout =
-      number_of_channels > 8 ? media::CHANNEL_LAYOUT_DISCRETE
-                             : media::GuessChannelLayout(number_of_channels);
+  CHECK_LE(number_of_channels, 32, base::NotFatalUntil::M151);
 
   // Set the format used by this WebAudioMediaStreamSource. We are using 10ms
   // data as a buffer size since that is the native buffer size of WebRtc packet
   // running on.
   fifo_.Reset(sample_rate / 100);
-  media::AudioParameters params(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-                                {channel_layout, number_of_channels},
-                                sample_rate, fifo_.frames_per_buffer());
+  media::AudioParameters params(
+      media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
+      media::ChannelLayoutConfig::Guess(number_of_channels), sample_rate,
+      fifo_.frames_per_buffer());
   MediaStreamAudioSource::SetFormat(params);
 
   if (!wrapper_bus_ || wrapper_bus_->channels() != params.channels())
