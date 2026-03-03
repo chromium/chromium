@@ -537,6 +537,9 @@ TEST_F(InfoBarContainerWithPriorityTest, UmaStarvedCountRecorded) {
 
   histogram_tester_.ExpectUniqueSample("InfoBar.Prioritization.StarvedCount", 3,
                                        1);
+  histogram_tester_.ExpectBucketCount(
+      "InfoBar.Prioritization.Starved",
+      InfoBarDelegate::ALTERNATE_NAV_INFOBAR_DELEGATE, 3);
 }
 
 TEST_F(InfoBarContainerWithPriorityTest, NoAnimationOnManagerChange) {

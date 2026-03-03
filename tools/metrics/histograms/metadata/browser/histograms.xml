@@ -2102,6 +2102,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InfoBar.Prioritization.Starved" enum="InfoBarIdentifier"
+    expires_after="2026-06-30">
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records the identifier of pending infobars that were discarded (starved)
+    when the InfobarManager was reset or the tab was closed.
+  </summary>
+</histogram>
+
 <histogram name="InfoBar.Prioritization.StarvedCount" units="InfoBars"
     expires_after="2026-08-30">
   <owner>koretadaniel@chromium.org</owner>

@@ -77,6 +77,12 @@ void InfoBarContainerWithPriority::ChangeInfoBarManager(
     if (!pending_infobars_.empty()) {
       base::UmaHistogramCounts100("InfoBar.Prioritization.StarvedCount",
                                   pending_infobars_.size());
+      for (const auto& entry : pending_infobars_) {
+        if (entry.infobar && entry.infobar->delegate()) {
+          base::UmaHistogramSparse("InfoBar.Prioritization.Starved",
+                                   entry.infobar->delegate()->GetIdentifier());
+        }
+      }
     }
 
     pending_infobars_.clear();
