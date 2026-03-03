@@ -1852,86 +1852,6 @@ bool TabStripModel::IsActiveTabSplit() const {
   return active_tab && active_tab->IsSplit();
 }
 
-std::optional<split_tabs::SplitTabId>
-TabStripModel::InsertionBreaksSplitContiguity(int index) {
-  CHECK(index >= 0 && index <= count());
-  if (!ContainsIndex(index)) {
-    return std::nullopt;
-  }
-  tabs::TabInterface* tab = GetTabAtIndex(index);
-  if (tab->IsSplit() &&
-      contents_data_->GetSplitTabCollection(tab->GetSplit().value())
-              ->GetIndexOfTab(tab) > 0) {
-    return tab->GetSplit();
-  }
-  return std::nullopt;
-}
-
-std::optional<split_tabs::SplitTabId> TabStripModel::MoveBreaksSplitContiguity(
-    int start_index,
-    int length,
-    int final_index) {
-  // The logic for finding the previous and next tabs depends on
-  //  the relative position of the start_index and final_index as the indices of
-  //  the previous tab and next tab get updated if start_index < final_index but
-  //  otherwise the ordering is the same.
-  const int previous_tab_index =
-      start_index < final_index ? final_index - 1 + length : final_index - 1;
-
-  const int next_tab_index = previous_tab_index + 1;
-
-  if (!ContainsIndex(previous_tab_index) || !ContainsIndex(next_tab_index)) {
-    return std::nullopt;
-  }
-
-  std::optional<split_tabs::SplitTabId> previous_split =
-      GetSplitForTab(previous_tab_index);
-  std::optional<split_tabs::SplitTabId> next_split =
-      GetSplitForTab(next_tab_index);
-
-  // If both previous and next splits are nullopt this will return nullopt.
-  return (previous_split == next_split) ? previous_split : std::nullopt;
-}
-
-void TabStripModel::MaybeRemoveSplitsForMove(
-    int initial_index,
-    int final_index,
-    const std::optional<tab_groups::TabGroupId> group,
-    bool pin) {
-  tabs::TabInterface* const tab = GetTabAtIndex(initial_index);
-  const bool pinned_state_changed = tab->IsPinned() != pin;
-  const bool group_state_changed = tab->GetGroup() != group;
-
-  // This expects the tab should move in the collection hierarchy tree.
-  CHECK((initial_index != final_index) || pinned_state_changed ||
-        group_state_changed);
-
-  // If the move is within a split collection there is no need to remove any
-  // split.
-  if (tab->IsSplit() &&
-      tab->GetSplit() == GetTabAtIndex(final_index)->GetSplit() &&
-      !pinned_state_changed && !group_state_changed) {
-    return;
-  }
-
-  // Remove the split of the origin tab if it is not moving within the
-  // split collection.
-  if (tab->IsSplit()) {
-    RemoveSplitImpl(tab->GetSplit().value(),
-                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
-  }
-
-  // Maybe remove the split tab of the destination if it results in
-  // discontiguity.
-  std::optional<split_tabs::SplitTabId> destination_split =
-      MoveBreaksSplitContiguity(initial_index, 1, final_index);
-
-  if (destination_split.has_value()) {
-    RemoveSplitImpl(destination_split.value(),
-                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
-  }
-}
-
 void TabStripModel::UpdateSplitLayout(split_tabs::SplitTabId split_id,
                                       split_tabs::SplitTabLayout tab_layout) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
@@ -2061,6 +1981,10 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
   CHECK(std::ranges::is_sorted(indices));
   CHECK(std::ranges::adjacent_find(indices) == indices.end());
 
+  // Extensions API may call this function on indices that contain only part of
+  // a split. In that case, unsplit said split tabs.
+  RemovePartialSplits(indices);
+
   // The odds of |new_group| colliding with an existing group are astronomically
   // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
   // in which case there is probably something wrong with
@@ -2092,6 +2016,10 @@ void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
   CHECK(ContainsIndex(*(indices.begin())));
   CHECK(ContainsIndex(*(indices.rbegin())));
 
+  // Extensions API may call this function on indices that contain only part of
+  // a split. In that case, unsplit said split tabs.
+  RemovePartialSplits(indices);
+
   AddToExistingGroupImpl(indices, group, add_to_end);
 }
 
@@ -2118,6 +2046,10 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
   if (!group_model_) {
     return;
   }
+
+  // Tab groups sync may call this function on indices that contain only part of
+  // a split. In that case, unsplit those split tabs.
+  RemovePartialSplits(indices);
 
   std::map<tab_groups::TabGroupId, std::vector<int>> indices_per_tab_group;
 
@@ -2165,13 +2097,7 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 void TabStripModel::RemoveSplit(split_tabs::SplitTabId split_id) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
-  for (tabs::TabInterface* foreground_tab : GetForegroundTabs()) {
-    if (!foreground_tab->IsActivated()) {
-      static_cast<tabs::TabModel*>(foreground_tab)
-          ->WillBecomeHidden(base::PassKey<TabStripModel>());
-    }
-  }
-
+  NotifyInactiveSplitTabWillBecomeHidden(split_id);
   RemoveSplitImpl(split_id,
                   SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
 
@@ -5537,6 +5463,107 @@ gfx::Range TabStripModel::GetIndexRangeOfSplit(
   return split_data->GetIndexRange();
 }
 
+std::optional<split_tabs::SplitTabId>
+TabStripModel::InsertionBreaksSplitContiguity(int index) {
+  CHECK(index >= 0 && index <= count());
+  if (!ContainsIndex(index)) {
+    return std::nullopt;
+  }
+  tabs::TabInterface* tab = GetTabAtIndex(index);
+  if (tab->IsSplit() &&
+      contents_data_->GetSplitTabCollection(tab->GetSplit().value())
+              ->GetIndexOfTab(tab) > 0) {
+    return tab->GetSplit();
+  }
+  return std::nullopt;
+}
+
+std::optional<split_tabs::SplitTabId> TabStripModel::MoveBreaksSplitContiguity(
+    int start_index,
+    int length,
+    int final_index) {
+  // The logic for finding the previous and next tabs depends on
+  //  the relative position of the start_index and final_index as the indices of
+  //  the previous tab and next tab get updated if start_index < final_index but
+  //  otherwise the ordering is the same.
+  const int previous_tab_index =
+      start_index < final_index ? final_index - 1 + length : final_index - 1;
+
+  const int next_tab_index = previous_tab_index + 1;
+
+  if (!ContainsIndex(previous_tab_index) || !ContainsIndex(next_tab_index)) {
+    return std::nullopt;
+  }
+
+  std::optional<split_tabs::SplitTabId> previous_split =
+      GetSplitForTab(previous_tab_index);
+  std::optional<split_tabs::SplitTabId> next_split =
+      GetSplitForTab(next_tab_index);
+
+  // If both previous and next splits are nullopt this will return nullopt.
+  return (previous_split == next_split) ? previous_split : std::nullopt;
+}
+
+void TabStripModel::MaybeRemoveSplitsForMove(
+    int initial_index,
+    int final_index,
+    const std::optional<tab_groups::TabGroupId> group,
+    bool pin) {
+  tabs::TabInterface* const tab = GetTabAtIndex(initial_index);
+  const bool pinned_state_changed = tab->IsPinned() != pin;
+  const bool group_state_changed = tab->GetGroup() != group;
+
+  // This expects the tab should move in the collection hierarchy tree.
+  CHECK((initial_index != final_index) || pinned_state_changed ||
+        group_state_changed);
+
+  // If the move is within a split collection there is no need to remove any
+  // split.
+  if (tab->IsSplit() &&
+      tab->GetSplit() == GetTabAtIndex(final_index)->GetSplit() &&
+      !pinned_state_changed && !group_state_changed) {
+    return;
+  }
+
+  // Remove the split of the origin tab if it is not moving within the
+  // split collection.
+  if (tab->IsSplit()) {
+    RemoveSplitImpl(tab->GetSplit().value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
+  }
+
+  // Maybe remove the split tab of the destination if it results in
+  // discontiguity.
+  std::optional<split_tabs::SplitTabId> destination_split =
+      MoveBreaksSplitContiguity(initial_index, 1, final_index);
+
+  if (destination_split.has_value()) {
+    RemoveSplitImpl(destination_split.value(),
+                    SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
+  }
+}
+
+void TabStripModel::RemovePartialSplits(const std::vector<int>& indices) {
+  std::map<split_tabs::SplitTabId, size_t> num_tabs_per_split;
+
+  for (int index : indices) {
+    std::optional<split_tabs::SplitTabId> split = GetSplitForTab(index);
+    if (!split.has_value()) {
+      continue;
+    }
+    num_tabs_per_split[*split]++;
+  }
+
+  for (const auto& [split, count] : num_tabs_per_split) {
+    if (count <
+        contents_data_->GetSplitTabCollection(split)->TabCountRecursive()) {
+      NotifyInactiveSplitTabWillBecomeHidden(split);
+      RemoveSplitImpl(split,
+                      SplitTabChange::SplitTabRemoveReason::kSplitTabRemoved);
+    }
+  }
+}
+
 void TabStripModel::NotifyForegroundTabsWillEnterBackground() {
   for (tabs::TabInterface* tab : GetForegroundTabs()) {
     if (tab->IsActivated()) {
@@ -5545,6 +5572,20 @@ void TabStripModel::NotifyForegroundTabsWillEnterBackground() {
     }
     static_cast<tabs::TabModel*>(tab)->WillBecomeHidden(
         base::PassKey<TabStripModel>());
+  }
+}
+
+void TabStripModel::NotifyInactiveSplitTabWillBecomeHidden(
+    split_tabs::SplitTabId split_id) {
+  if (GetActiveTab()->GetSplit() != split_id) {
+    return;
+  }
+
+  for (tabs::TabInterface* foreground_tab : GetForegroundTabs()) {
+    if (!foreground_tab->IsActivated()) {
+      static_cast<tabs::TabModel*>(foreground_tab)
+          ->WillBecomeHidden(base::PassKey<TabStripModel>());
+    }
   }
 }
 

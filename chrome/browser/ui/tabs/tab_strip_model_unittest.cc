@@ -2596,6 +2596,93 @@ TEST_P(TabStripModelTest, MoveGroupWithinSplitRemovesSplit) {
   EXPECT_TRUE(tabstrip()->empty());
 }
 
+TEST_P(TabStripModelTest, AddToNewGroupRemovesPartialSplits) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {0}));
+
+  // Create a split with tabs 0 and 1.
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId retain_split = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a split with tabs 2 and 3.
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId remove_split = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Add the entire first split, and part of the second split to a new group.
+  // Expect only the second split to be removed.
+  tabstrip()->AddToNewGroup({0, 1, 2});
+  EXPECT_TRUE(tabstrip()->ContainsSplit(retain_split));
+  EXPECT_FALSE(tabstrip()->ContainsSplit(remove_split));
+}
+
+TEST_P(TabStripModelTest, AddToExistingGroupRemovesPartialSplits) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 6, 0, {0}));
+
+  // Create an existing group with tab 5.
+  tab_groups::TabGroupId group = tabstrip()->AddToNewGroup({5});
+
+  // Create a split with tabs 0 and 1.
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId retain_split = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a split with tabs 2 and 3.
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId remove_split = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Add the entire first split, and part of the second split to the existing
+  // group. Expect only the second split to be removed.
+  tabstrip()->AddToExistingGroup({0, 1, 2}, group);
+  EXPECT_TRUE(tabstrip()->ContainsSplit(retain_split));
+  EXPECT_FALSE(tabstrip()->ContainsSplit(remove_split));
+}
+
+TEST_P(TabStripModelTest, RemoveFromGroupRemovesPartialSplits) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 0, {0}));
+
+  // Add tabs 0 - 3 to a group.
+  tabstrip()->AddToNewGroup({0, 1, 2, 3});
+
+  // Create a split with tabs 0 and 1.
+  tabstrip()->ActivateTabAt(
+      0, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId retain_split = tabstrip()->AddToNewSplit(
+      {1}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Create a split with tabs 2 and 3.
+  tabstrip()->ActivateTabAt(
+      2, TabStripUserGestureDetails(
+             TabStripUserGestureDetails::GestureType::kOther));
+  split_tabs::SplitTabId remove_split = tabstrip()->AddToNewSplit(
+      {3}, split_tabs::SplitTabVisualData(),
+      split_tabs::SplitTabCreatedSource::kToolbarButton);
+
+  // Remove the entire first split, and part of the second split. Expect only
+  // the second split to be removed.
+  tabstrip()->RemoveFromGroup({0, 1, 2});
+  EXPECT_TRUE(tabstrip()->ContainsSplit(retain_split));
+  EXPECT_FALSE(tabstrip()->ContainsSplit(remove_split));
+}
+
 TEST_P(TabStripModelTest, SplitLayoutTest) {
   // Create five tabs with two pinned, select the last.
   ASSERT_NO_FATAL_FAILURE(

@@ -662,14 +662,16 @@ class TabStripModel {
   // Create a new tab group and add the set of tabs pointed to be |indices| to
   // it. Pins all of the tabs if any of them were pinned, and reorders the tabs
   // so they are contiguous and do not split an existing group in half. Returns
-  // the new group. |indices| must be sorted in ascending order.
+  // the new group. This may unsplit split tabs if they are only partially
+  // contained in |indices|. |indices| must be sorted in ascending order.
   tab_groups::TabGroupId AddToNewGroup(const std::vector<int> indices);
 
   // Add the set of tabs pointed to by |indices| to the given tab group |group|.
   // The tabs take on the pinnedness of the tabs already in the group. Tabs
   // before the group will move to the start, while tabs after the group will
   // move to the end. If |add_to_end| is true, all tabs will instead move to
-  // the end. |indices| must be sorted in ascending order.
+  // the end. This may unsplit split tabs if they are only partially contained
+  // in |indices|. |indices| must be sorted in ascending order.
   void AddToExistingGroup(const std::vector<int> indices,
                           const tab_groups::TabGroupId group,
                           const bool add_to_end = false);
@@ -681,8 +683,9 @@ class TabStripModel {
                             const tab_groups::TabGroupId& group);
 
   // Removes the set of tabs pointed to by |indices| from the the groups they
-  // are in, if any. The tabs are moved out of the group if necessary. |indices|
-  // must be sorted in ascending order.
+  // are in, if any. The tabs are moved out of the group if necessary. This
+  // may unsplit split tabs if they are only partially contained in |indices|.
+  // |indices| must be sorted in ascending order.
   void RemoveFromGroup(const std::vector<int>& indices);
 
   // Unsplits all the tabs that are part of the split with `split_id`. The tabs
@@ -1399,7 +1402,16 @@ class TabStripModel {
       const std::optional<tab_groups::TabGroupId> group,
       bool pin);
 
+  // For each split that has tabs in `indices`, remove any of them that contain
+  // tabs not in `indices`.
+  void RemovePartialSplits(const std::vector<int>& indices);
+
   void NotifyForegroundTabsWillEnterBackground();
+
+  // Prior to a split being removed, if the split is currently active, notify
+  // the inactive tab(s) in the split will become hidden as a result of the
+  // split being removed.
+  void NotifyInactiveSplitTabWillBecomeHidden(split_tabs::SplitTabId split_id);
 
   // Assues |left| and |right| have the same root tab collection, and that
   // |left| comes before |right| in traversal order. Returns a vector of tabs
