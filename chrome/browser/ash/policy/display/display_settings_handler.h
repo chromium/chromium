@@ -42,13 +42,12 @@ class DisplaySettingsPolicyHandler {
 // Enforces the settings controlled by device policies related to display
 // configuration (i.e. DisplayRotationDefault, DeviceDisplayResolution)
 // On construction this class registers itself with
-// crosapi::mojom::CrosDisplayConfigObserver for display changes and with
+// ash::CrosDisplayConfig::Observer for display changes and with
 // CrosSettings for settings changes. Every display configuration policy
 // provides a handler class inherited from |DisplaySettingsPolicyHandler|
 // and is registered in |DisplaySettingsHandler| instance.
 // see |DisplayResolutionHandler| and |DisplayRotationDefaultHandler|
-class DisplaySettingsHandler
-    : public crosapi::mojom::CrosDisplayConfigObserver {
+class DisplaySettingsHandler : public ash::CrosDisplayConfig::Observer {
  public:
   // This class must be constructed after CrosSettings is initialized.
   DisplaySettingsHandler();
@@ -58,7 +57,7 @@ class DisplaySettingsHandler
 
   ~DisplaySettingsHandler() override;
 
-  // crosapi::mojom::CrosDisplayConfigObserver
+  // ash::CrosDisplayConfig::Observer
   void OnDisplayConfigChanged() override;
 
   // Registers handler for some policy-controlled setting. All handlers must be
@@ -97,7 +96,7 @@ class DisplaySettingsHandler
   const raw_ptr<ash::CrosDisplayConfig> cros_display_config_;
   std::vector<std::unique_ptr<DisplaySettingsPolicyHandler>> handlers_;
   base::ScopedObservation<ash::CrosDisplayConfig,
-                          crosapi::mojom::CrosDisplayConfigObserver>
+                          ash::CrosDisplayConfig::Observer>
       cros_display_config_observation_{this};
   std::vector<base::CallbackListSubscription> settings_subscriptions_;
   bool started_ = false;

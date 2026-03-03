@@ -10,6 +10,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/observer_list_types.h"
 #include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 
 namespace ash {
@@ -46,12 +47,14 @@ class CrosDisplayConfig {
   using TouchCalibrationMojoCallback =
       base::OnceCallback<void(crosapi::mojom::DisplayConfigResult)>;
 
-  // Observers are notified when the display layout or any display properties
-  // change.
-  virtual void AddObserver(
-      crosapi::mojom::CrosDisplayConfigObserver* observer) = 0;
-  virtual void RemoveObserver(
-      crosapi::mojom::CrosDisplayConfigObserver* observer) = 0;
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called when the display layout or any display properties change.
+    virtual void OnDisplayConfigChanged() = 0;
+  };
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Returns the display layout info, including the list of layouts.
   virtual void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) = 0;
@@ -125,10 +128,8 @@ class ASH_EXPORT CrosDisplayConfigImpl final : public CrosDisplayConfig {
   ~CrosDisplayConfigImpl();
 
   // CrosDisplayConfig:
-  void AddObserver(
-      crosapi::mojom::CrosDisplayConfigObserver* observer) override;
-  void RemoveObserver(
-      crosapi::mojom::CrosDisplayConfigObserver* observer) override;
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override;
   void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override;

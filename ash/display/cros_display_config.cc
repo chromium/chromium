@@ -546,9 +546,9 @@ display::TouchCalibrationData::CalibrationPointPair GetCalibrationPair(
 // -----------------------------------------------------------------------------
 // CrosDisplayConfigImpl::ObserverImpl:
 
-// Observes display and tablet mode events, and notifies the
-// CrosDisplayConfigObservers with OnDisplayConfigChanged() in response to those
-// events.
+// Observes display and tablet mode events, and notifies each
+// CrosDisplayConfig::Observer with OnDisplayConfigChanged() in response to
+// those events.
 class CrosDisplayConfigImpl::ObserverImpl
     : public display::DisplayObserver,
       public TabletModeObserver,
@@ -567,11 +567,11 @@ class CrosDisplayConfigImpl::ObserverImpl
     Shell::Get()->tablet_mode_controller()->RemoveObserver(this);
   }
 
-  void AddObserver(crosapi::mojom::CrosDisplayConfigObserver* observer) {
+  void AddObserver(CrosDisplayConfig::Observer* observer) {
     observers_.AddObserver(observer);
   }
 
-  void RemoveObserver(crosapi::mojom::CrosDisplayConfigObserver* observer) {
+  void RemoveObserver(CrosDisplayConfig::Observer* observer) {
     observers_.RemoveObserver(observer);
   }
 
@@ -601,14 +601,10 @@ class CrosDisplayConfigImpl::ObserverImpl
 
  private:
   void NotifyObserversDisplayConfigChanged() {
-    observers_.Notify(
-        &crosapi::mojom::CrosDisplayConfigObserver::OnDisplayConfigChanged);
+    observers_.Notify(&CrosDisplayConfig::Observer::OnDisplayConfigChanged);
   }
 
-  // TODO(crbug.com/485123493): Make "checked" after migrating
-  // CrosDisplayConfigObserver out of mojo.
-  base::ObserverList<crosapi::mojom::CrosDisplayConfigObserver>::Unchecked
-      observers_;
+  base::ObserverList<CrosDisplayConfig::Observer> observers_;
   display::ScopedDisplayObserver display_observer_{this};
 };
 
@@ -620,13 +616,12 @@ CrosDisplayConfigImpl::CrosDisplayConfigImpl()
 
 CrosDisplayConfigImpl::~CrosDisplayConfigImpl() = default;
 
-void CrosDisplayConfigImpl::AddObserver(
-    crosapi::mojom::CrosDisplayConfigObserver* observer) {
+void CrosDisplayConfigImpl::AddObserver(CrosDisplayConfig::Observer* observer) {
   observer_impl_->AddObserver(observer);
 }
 
 void CrosDisplayConfigImpl::RemoveObserver(
-    crosapi::mojom::CrosDisplayConfigObserver* observer) {
+    CrosDisplayConfig::Observer* observer) {
   observer_impl_->RemoveObserver(observer);
 }
 

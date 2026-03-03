@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "ash/display/cros_display_config.h"
 #include "ash/public/cpp/night_light_controller.h"
 #include "ash/shell_observer.h"
 #include "ash/webui/settings/public/constants/setting.mojom-forward.h"
@@ -25,7 +26,6 @@
 class PrefService;
 
 namespace ash {
-class CrosDisplayConfig;
 class Shell;
 }  // namespace ash
 
@@ -42,7 +42,7 @@ class DeviceSection : public OsSettingsSection,
                       public system::PointerDeviceObserver::Observer,
                       public ui::InputDeviceEventObserver,
                       public NightLightController::Observer,
-                      public crosapi::mojom::CrosDisplayConfigObserver,
+                      public ash::CrosDisplayConfig::Observer,
                       public ash::ShellObserver {
  public:
   DeviceSection(Profile* profile,
@@ -78,7 +78,7 @@ class DeviceSection : public OsSettingsSection,
   // NightLightController::Observer:
   void OnNightLightEnabledChanged(bool enabled) override;
 
-  // mojom::CrosDisplayConfigObserver:
+  // ash::CrosDisplayConfig::Observer:
   void OnDisplayConfigChanged() override;
 
   void UpdateStylusSearchTags();
@@ -101,7 +101,7 @@ class DeviceSection : public OsSettingsSection,
   PrintingSection printing_subsection_;
   raw_ptr<ash::CrosDisplayConfig> cros_display_config_ = nullptr;
   base::ScopedObservation<ash::CrosDisplayConfig,
-                          crosapi::mojom::CrosDisplayConfigObserver>
+                          ash::CrosDisplayConfig::Observer>
       cros_display_config_observation_{this};
   // TODO(crbug.com/485123493): Remove the observation and OnShellDestroying
   // override once profiles (and thus DeviceSection) get destroyed

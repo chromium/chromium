@@ -97,10 +97,8 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   }
 
   // ash::CrosDisplayConfig:
-  void AddObserver(
-      crosapi::mojom::CrosDisplayConfigObserver* observer) override {}
-  void RemoveObserver(
-      crosapi::mojom::CrosDisplayConfigObserver* observer) override {}
+  void AddObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override {}
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override {}
   void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override {}

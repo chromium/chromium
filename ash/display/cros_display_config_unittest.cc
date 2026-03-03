@@ -62,14 +62,14 @@ void InitExternalTouchDevices(int64_t display_id) {
       ->ConfigureTouchDevices(transforms);
 }
 
-class TestObserver : public crosapi::mojom::CrosDisplayConfigObserver {
+class TestObserver : public ash::CrosDisplayConfig::Observer {
  public:
   TestObserver() = default;
 
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
 
-  // crosapi::mojom::CrosDisplayConfigObserver:
+  // ash::CrosDisplayConfig::Observer:
   void OnDisplayConfigChanged() override { display_changes_++; }
 
   int display_changes() const { return display_changes_; }

@@ -21,10 +21,9 @@ class Shell;
 
 namespace extensions {
 
-class DisplayInfoProviderChromeOS
-    : public DisplayInfoProviderBase,
-      public ash::ShellObserver,
-      public crosapi::mojom::CrosDisplayConfigObserver {
+class DisplayInfoProviderChromeOS : public DisplayInfoProviderBase,
+                                    public ash::ShellObserver,
+                                    public ash::CrosDisplayConfig::Observer {
  public:
   DisplayInfoProviderChromeOS();
 
@@ -68,7 +67,7 @@ class DisplayInfoProviderChromeOS
   // ash::ShellObserver:
   void OnShellDestroying() override;
 
-  // crosapi::mojom::CrosDisplayConfigObserver
+  // ash::CrosDisplayConfig::Observer
   void OnDisplayConfigChanged() override;
 
  private:
@@ -93,7 +92,7 @@ class DisplayInfoProviderChromeOS
   base::ScopedObservation<ash::Shell, ash::ShellObserver> shell_observation_{
       this};
   base::ScopedObservation<ash::CrosDisplayConfig,
-                          crosapi::mojom::CrosDisplayConfigObserver>
+                          ash::CrosDisplayConfig::Observer>
       cros_display_config_observation_{this};
   std::string touch_calibration_target_id_;
   base::WeakPtrFactory<DisplayInfoProviderChromeOS> weak_ptr_factory_{this};
