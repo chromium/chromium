@@ -972,6 +972,10 @@ void TaskManagerTableModel::UpdateRefreshTypes(int column_id, bool visibility) {
 }
 
 bool TaskManagerTableModel::IsTaskKillable(size_t row_index) const {
+  if (row_index >= tasks_.size()) {
+    return false;
+  }
+
   return observed_task_manager()->IsTaskKillable(tasks_[row_index]);
 }
 
