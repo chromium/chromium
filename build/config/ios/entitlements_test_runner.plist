@@ -4,9 +4,9 @@
 <dict>
 	<key>application-identifier</key>
 	<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
-	<key>com.apple.developer.web-browser-engine.webcontent</key>
-	<true/>
-	<key>com.apple.developer.cs.allow-jit</key>
-	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
+	</array>
 </dict>
 </plist>

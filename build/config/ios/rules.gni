@@ -1457,6 +1457,7 @@ template("ios_xcuitest_test_runner_bundle") {
   _xctest_bundle = invoker.xctest_bundle
   ios_create_signed_bundle(_target_name) {
     testonly = true
+    entitlements_path = "//build/config/ios/entitlements_test_runner.plist"
 
     bundle_binary_target = "//build/config/ios:xctest_runner_without_arm64e"
     bundle_binary_output = "XCTRunner"

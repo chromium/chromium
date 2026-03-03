@@ -2,6 +2,14 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+        <key>application-identifier</key>
+        <string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
+        <key>keychain-access-groups</key>
+        <array>
+                <string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
+        </array>
+        <key>com.apple.developer.kernel.extended-virtual-addressing</key>
+        <true/>
         <key>com.apple.developer.web-browser</key>
         <true/>
         <key>com.apple.developer.web-browser-engine.host</key>

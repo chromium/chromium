@@ -8,5 +8,7 @@
 	<array>
 		<string>$(AppIdentifierPrefix)$(CFBundleIdentifier)</string>
 	</array>
+  <key>com.apple.developer.kernel.extended-virtual-addressing</key>
+  <true/>
 </dict>
 </plist>
