@@ -1,3 +1,4 @@
+file://third_party/blink/renderer/modules/content_extraction/OWNERS
 file://components/optimization_guide/OWNERS
 
 ssid@chromium.org
