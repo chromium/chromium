@@ -91,6 +91,31 @@ bool ShouldSaveBackupFile(
   NOTREACHED();
 }
 
+void SaveDictionaryToSecondaryFile(
+    base::DictValue value,
+    scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+        encryptor,
+    const base::FilePath file_path) {
+  // TODO(crbug.com/435317726): Add metrics to measure the success/failure and
+  // impact on write duration of encrypting the bookmarks file.
+  CHECK(encryptor);
+  std::string json_content;
+  if (!base::JSONWriter::WriteWithOptions(
+          value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json_content)) {
+    return;
+  }
+  std::string encrypted_json_content;
+  if (!encryptor->data.EncryptString(json_content, &encrypted_json_content)) {
+    return;
+  }
+
+  if (!base::ImportantFileWriter::WriteFileAtomically(
+          file_path, std::move(encrypted_json_content),
+          kBookmarkStorageEncryptedHistogramSuffix)) {
+    return;
+  }
+}
+
 }  // namespace
 
 // static
@@ -144,13 +169,14 @@ void BookmarkStorage::ScheduleSave() {
 base::ImportantFileWriter::BackgroundDataProducerCallback
 BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
   base::DictValue value = EncodeModelToDict(model_, permanent_node_selection_);
-
   return base::BindOnce(
       [](base::DictValue value,
          scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
              encryptor,
-         const std::optional<base::FilePath> encrypted_file_path)
+         const base::FilePath encrypted_file_path)
           -> std::optional<std::string> {
+        // TODO(crbug.com/435317726): Add metrics to measure the success/failure
+        // and impact on write duration of encrypting the bookmarks file.
         std::string output;
         if (!base::JSONWriter::WriteWithOptions(
                 value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &output)) {
@@ -159,7 +185,6 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
 
         if (ShouldWriteEncryptedBookmarksToDisk()) {
           CHECK(encryptor);
-          CHECK(encrypted_file_path);
           std::string encrypted;
           if (encryptor->data.EncryptString(output, &encrypted)) {
             // Also write the encrypted data to disk. Make sure this second
@@ -169,7 +194,7 @@ BookmarkStorage::GetSerializedDataProducerForBackgroundSequence() {
                 base::BindOnce(
                     base::IgnoreResult(
                         &base::ImportantFileWriter::WriteFileAtomically),
-                    encrypted_file_path.value(), std::move(encrypted),
+                    encrypted_file_path, std::move(encrypted),
                     kBookmarkStorageEncryptedHistogramSuffix));
           }
         }
@@ -191,6 +216,16 @@ void BookmarkStorage::SaveNowIfScheduled() {
   if (writer_.HasPendingWrite()) {
     writer_.DoScheduledWrite();
   }
+}
+
+void BookmarkStorage::SaveBookmarksToSecondaryFile() {
+  CHECK(ShouldWriteEncryptedBookmarksToDisk());
+  CHECK(encryptor_);
+  base::DictValue value = EncodeModelToDict(model_, permanent_node_selection_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SaveDictionaryToSecondaryFile, std::move(value),
+                     encryptor_, encrypted_file_path_));
 }
 
 }  // namespace bookmarks

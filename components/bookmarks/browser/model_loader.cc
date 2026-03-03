@@ -14,6 +14,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/numerics/clamped_math.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/bookmarks/browser/bookmark_codec.h"
@@ -92,7 +93,8 @@ void ReadEncryptedDataAndVerifyHashOnBackgroundSequence(
     scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
     const base::FilePath encrypted_file_path,
-    metrics::StorageFileForUma storage_file_for_uma) {
+    metrics::StorageFileForUma storage_file_for_uma,
+    base::OnceClosure save_bookmarks_to_secondary_file_callback) {
   base::expected<std::string, metrics::BookmarksFileLoadResult>
       encrypted_json_string =
           ReadFile(encryptor, encrypted_file_path, storage_file_for_uma);
@@ -100,13 +102,16 @@ void ReadEncryptedDataAndVerifyHashOnBackgroundSequence(
       storage_file_for_uma, metrics::EncryptionTypeForUma::kEncrypted,
       encrypted_json_string.error_or(
           metrics::BookmarksFileLoadResult::kSuccess));
-  // TODO(crbug.com/435317726): If comparison isn't successful, we
-  // should save the encrypted file to disk again.
+  bool file_matches = false;
   if (encrypted_json_string.has_value()) {
     const size_t encrypted_json_string_hash =
         base::FastHash(encrypted_json_string.value());
-    metrics::RecordEncryptedBookmarksFileMatchesResult(
-        storage_file_for_uma, encrypted_json_string_hash == json_string_hash);
+    file_matches = encrypted_json_string_hash == json_string_hash;
+    metrics::RecordEncryptedBookmarksFileMatchesResult(storage_file_for_uma,
+                                                       file_matches);
+  }
+  if (!file_matches) {
+    std::move(save_bookmarks_to_secondary_file_callback).Run();
   }
 }
 
@@ -115,7 +120,8 @@ void MaybeScheduleReadEncryptedDataAndVerifyHash(
     const scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
         encryptor,
     const base::FilePath& encrypted_file_path,
-    metrics::StorageFileForUma storage_file_for_umage) {
+    metrics::StorageFileForUma storage_file_for_uma,
+    base::OnceClosure save_bookmarks_to_secondary_file_callback) {
   if (!ShouldVerifyEncryptedBookmarksDataOnLoad()) {
     return;
   }
@@ -128,7 +134,8 @@ void MaybeScheduleReadEncryptedDataAndVerifyHash(
       FROM_HERE,
       base::BindOnce(&ReadEncryptedDataAndVerifyHashOnBackgroundSequence,
                      json_string_hash, encryptor, encrypted_file_path,
-                     storage_file_for_umage));
+                     storage_file_for_uma,
+                     std::move(save_bookmarks_to_secondary_file_callback)));
 }
 
 std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
@@ -137,7 +144,9 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
     const base::FilePath& local_or_syncable_file_path,
     const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
-    const base::FilePath& encrypted_account_file_path) {
+    const base::FilePath& encrypted_account_file_path,
+    base::OnceClosure save_local_or_syncable_secondary_file_callback,
+    base::OnceClosure save_account_secondary_file_callback) {
   auto details = std::make_unique<BookmarkLoadDetails>();
 
   std::set<int64_t> ids_assigned_to_account_nodes;
@@ -207,7 +216,8 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
           metrics::BookmarksFileLoadResult::kSuccess);
       MaybeScheduleReadEncryptedDataAndVerifyHash(
           json_string.value(), encryptor, encrypted_account_file_path,
-          metrics::StorageFileForUma::kAccount);
+          metrics::StorageFileForUma::kAccount,
+          std::move(save_account_secondary_file_callback));
     } else {
       // In the failure case, it is still possible that sync metadata was
       // decoded, which includes legit scenarios like sync metadata indicating
@@ -260,7 +270,8 @@ std::unique_ptr<BookmarkLoadDetails> LoadBookmarks(
           metrics::BookmarksFileLoadResult::kSuccess);
       MaybeScheduleReadEncryptedDataAndVerifyHash(
           json_string.value(), encryptor, encrypted_local_or_syncable_file_path,
-          metrics::StorageFileForUma::kLocalOrSyncable);
+          metrics::StorageFileForUma::kLocalOrSyncable,
+          std::move(save_local_or_syncable_secondary_file_callback));
     } else {
       metrics::RecordBookmarksFileLoadResult(
           metrics::StorageFileForUma::kLocalOrSyncable,
@@ -357,6 +368,8 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
     const base::FilePath& account_file_path,
     const base::FilePath& encrypted_account_file_path,
     LoadManagedNodeCallback load_managed_node_callback,
+    base::OnceClosure save_local_or_syncable_secondary_file_callback,
+    base::OnceClosure save_account_secondary_file_callback,
     LoadCallback callback) {
   CHECK(!local_or_syncable_file_path.empty());
   // Note: base::MakeRefCounted is not available here, as ModelLoader's
@@ -366,14 +379,23 @@ scoped_refptr<ModelLoader> ModelLoader::Create(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+  auto save_local_or_syncable_secondary_file_callback_on_main_sequence =
+      base::BindPostTaskToCurrentDefault(
+          std::move(save_local_or_syncable_secondary_file_callback));
+  auto save_account_secondary_file_callback_on_main_sequence =
+      base::BindPostTaskToCurrentDefault(
+          std::move(save_account_secondary_file_callback));
 
   model_loader->backend_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&ModelLoader::DoLoadOnBackgroundThread, model_loader,
-                     encryptor, local_or_syncable_file_path,
-                     encrypted_local_or_syncable_file_path, account_file_path,
-                     encrypted_account_file_path,
-                     std::move(load_managed_node_callback)),
+      base::BindOnce(
+          &ModelLoader::DoLoadOnBackgroundThread, model_loader, encryptor,
+          local_or_syncable_file_path, encrypted_local_or_syncable_file_path,
+          account_file_path, encrypted_account_file_path,
+          std::move(
+              save_local_or_syncable_secondary_file_callback_on_main_sequence),
+          std::move(save_account_secondary_file_callback_on_main_sequence),
+          std::move(load_managed_node_callback)),
       std::move(callback));
   return model_loader;
 }
@@ -395,11 +417,15 @@ std::unique_ptr<BookmarkLoadDetails> ModelLoader::DoLoadOnBackgroundThread(
     const base::FilePath& encrypted_local_or_syncable_file_path,
     const base::FilePath& account_file_path,
     const base::FilePath& encrypted_account_file_path,
+    base::OnceClosure save_local_or_syncable_secondary_file_callback,
+    base::OnceClosure save_account_secondary_file_callback,
     LoadManagedNodeCallback load_managed_node_callback) {
   std::unique_ptr<BookmarkLoadDetails> details =
       LoadBookmarks(encryptor, local_or_syncable_file_path,
                     encrypted_local_or_syncable_file_path, account_file_path,
-                    encrypted_account_file_path);
+                    encrypted_account_file_path,
+                    std::move(save_local_or_syncable_secondary_file_callback),
+                    std::move(save_account_secondary_file_callback));
   CHECK(details);
 
   details->PopulateNodeIdsForLocalOrSyncablePermanentNodes();

@@ -3442,6 +3442,55 @@ TEST(BookmarkModelEncryptedStorageTest, CheckEncryptedBookmarksFile) {
       /*expected_count=*/1);
 }
 
+TEST(BookmarkModelEncryptedStorageTest, EncryptedBookmarksFileCreatedOnLoad) {
+  base::test::ScopedFeatureList features{
+      switches::kSyncEnableBookmarksInTransportMode};
+
+  base::HistogramTester histogram_tester;
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  // Create local-or-syncable bookmarks file.
+  model->AddURL(model->bookmark_bar_node(), 0, u"Foo", GURL("http://foo.com"));
+  task_environment.FastForwardUntilNoTasksRemain();
+  // Create account bookmarks file.
+  model->CreateAccountPermanentFolders();
+  // Only clear-text files should be created.
+  task_environment.FastForwardUntilNoTasksRemain();
+  ASSERT_TRUE(base::PathExists(
+      tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName)));
+  ASSERT_TRUE(
+      base::PathExists(tmp_dir.GetPath().Append(kAccountBookmarksFileName)));
+  ASSERT_FALSE(base::PathExists(
+      tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName)));
+  ASSERT_FALSE(base::PathExists(
+      tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName)));
+
+  base::test::ScopedFeatureList encryption_features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      encryption_features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+  model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->Load(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+  task_environment.FastForwardUntilNoTasksRemain();
+  // Both clear-text and encrypted files should be created.
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kLocalOrSyncableBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedLocalOrSyncableBookmarksFileName),
+      model->client());
+  AssertSameFileContent(
+      tmp_dir.GetPath().Append(kAccountBookmarksFileName),
+      tmp_dir.GetPath().Append(kEncryptedAccountBookmarksFileName),
+      model->client());
+}
+
 TEST(BookmarkNodeTest, NodeMetaInfo) {
   BookmarkNode node(/*id=*/0, base::Uuid::GenerateRandomV4(), GURL());
   EXPECT_FALSE(node.GetMetaInfoMap());

@@ -47,6 +47,11 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
   // `encrypted_local_or_syncable_file_path` must be non-empty and
   // `encrypted_account_file_path` should be empty only if
   // `account_file_path` is empty.
+  // `save_local_or_syncable_secondary_file_callback` and
+  // `save_account_secondary_file_callback`  will be called if bookmarks need to
+  // be saved to a secondary file. The secondary file might contain the
+  // unencrypted or encrypted bookmarks, see
+  // BookmarkStorage::SaveBookmarksToSecondaryFile for more details.
   static scoped_refptr<ModelLoader> Create(
       scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
           encryptor,
@@ -55,6 +60,8 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
       const base::FilePath& account_file_path,
       const base::FilePath& encrypted_account_file_path,
       LoadManagedNodeCallback load_managed_node_callback,
+      base::OnceClosure save_local_or_syncable_secondary_file_callback,
+      base::OnceClosure save_account_secondary_file_callback,
       LoadCallback callback);
 
   ModelLoader(const ModelLoader&) = delete;
@@ -89,6 +96,8 @@ class ModelLoader : public base::RefCountedThreadSafe<ModelLoader> {
       const base::FilePath& encrypted_local_or_syncable_file_path,
       const base::FilePath& account_file_path,
       const base::FilePath& encrypted_account_file_path,
+      base::OnceClosure save_local_or_syncable_secondary_file_callback,
+      base::OnceClosure save_account_secondary_file_callback,
       LoadManagedNodeCallback load_managed_node_callback);
 
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;

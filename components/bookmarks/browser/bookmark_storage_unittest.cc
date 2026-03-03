@@ -368,4 +368,47 @@ TEST(BookmarkStorageTest, ShouldGenerateTwoBackupFilesUponFirstSave) {
   EXPECT_FALSE(base::PathExists(encrypted_backup_file_path));
 }
 
+TEST(BookmarkStorageTest,
+     ShouldOnlySaveEncryptedLocalOrSyncableBookmarksRightAway) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+  base::HistogramTester histogram_tester;
+  std::unique_ptr<BookmarkModel> model = CreateModelWithOneBookmark();
+
+  const base::FilePath bookmarks_file_path =
+      GetTestBookmarksFileNameInNewTempDir();
+  const base::FilePath encrypted_bookmarks_file_path =
+      GetTestEncryptedBookmarksFileNameInNewTempDir();
+
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  BookmarkStorage storage(
+      model.get(), BookmarkStorage::kSelectLocalOrSyncableNodes, encryptor,
+      bookmarks_file_path, encrypted_bookmarks_file_path);
+
+  storage.SaveBookmarksToSecondaryFile();
+  // No impact on the unencrypted bookmarks file.
+  EXPECT_FALSE(storage.HasScheduledSaveForTesting());
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  ASSERT_FALSE(base::PathExists(bookmarks_file_path));
+  std::optional<base::DictValue> decrypted_file_content =
+      ReadEncryptedFileToDict(encrypted_bookmarks_file_path, encryptor->data);
+  ASSERT_TRUE(decrypted_file_content.has_value());
+  BookmarkCodec codec;
+  base::DictValue expected_file_content = codec.Encode(
+      model->bookmark_bar_node(), model->other_node(), model->mobile_node(),
+      model->client()->EncodeLocalOrSyncableBookmarkSyncMetadata());
+  EXPECT_EQ(expected_file_content, *decrypted_file_content);
+  histogram_tester.ExpectTotalCount(
+      "ImportantFile.WriteDuration.BookmarkStorage", 0);
+  histogram_tester.ExpectTotalCount(
+      "ImportantFile.WriteDuration.BookmarkStorageEncrypted", 1);
+}
+
 }  // namespace bookmarks

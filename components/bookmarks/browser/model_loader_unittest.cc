@@ -81,7 +81,9 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInexistentFile) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/base::FilePath(),
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
@@ -158,7 +160,9 @@ TEST(ModelLoaderTest, LoadEmptyModelFromInvalidJson) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/base::FilePath(),
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
@@ -235,7 +239,9 @@ TEST(ModelLoaderTest, LoadEmptyFromImproperlyEncodedJSON) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/base::FilePath(),
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails>& details = details_future.Get();
@@ -312,7 +318,9 @@ TEST(ModelLoaderTest, LoadNonEmptyModel) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/base::FilePath(),
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -394,7 +402,9 @@ TEST(ModelLoaderTest, LoadNonEmptyModelFromOneFileWithInternalIdCollisions) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/base::FilePath(),
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -469,7 +479,9 @@ TEST(ModelLoaderTest, LoadTwoFilesWithNonCollidingIds) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/test_file2,
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -573,7 +585,9 @@ TEST(ModelLoaderTest, LoadTwoFilesWithCollidingIdsAcross) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/test_file,
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -648,7 +662,9 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereFirstHasInternalIdCollisions) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/test_file2,
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -725,7 +741,9 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereSecondHasInternalIdCollisions) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/test_file2,
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -801,7 +819,9 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereBothHaveInternalIdCollisions) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/test_file2,
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -877,7 +897,9 @@ TEST(ModelLoaderTest, LoadTwoFilesWhereTheLocalOrSyncableFileDoesNotExist) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/test_file2,
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -960,7 +982,9 @@ TEST(ModelLoaderTest, LoadModelWithNestedUserFolders) {
       /*encrypted_local_or_syncable_file_path=*/base::FilePath(),
       /*account_file_path=*/base::FilePath(),
       /*encrypted_account_file_path=*/base::FilePath(),
-      /*load_managed_node_callback=*/LoadManagedNodeCallback(),
+      LoadManagedNodeCallback(),
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
       details_future.GetCallback());
 
   const std::unique_ptr<BookmarkLoadDetails> details = details_future.Take();
@@ -1048,17 +1072,24 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_EncryptedFilesMissing) {
   const base::FilePath encrypted_account_file_path =
       GetTestDataDir().AppendASCII("bookmarks/encrypted_missing_file_2.json");
 
+  base::test::TestFuture<void> save_local_or_syncable_secondary_file_future;
+  base::test::TestFuture<void> save_account_secondary_file_future;
   base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
   scoped_refptr<ModelLoader> loader = ModelLoader::Create(
       encryptor, local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path, account_file_path,
       encrypted_account_file_path, LoadManagedNodeCallback(),
+      save_local_or_syncable_secondary_file_future.GetCallback(),
+      save_account_secondary_file_future.GetCallback(),
       details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
 
   VerifyEncryptedBookmarksFileCheckResult(
       histogram_tester, metrics::BookmarksFileLoadResult::kFileMissing);
+  // Verify that the save encrypted file callback is called for both files.
+  EXPECT_TRUE(save_local_or_syncable_secondary_file_future.IsReady());
+  EXPECT_TRUE(save_account_secondary_file_future.IsReady());
 }
 
 TEST(ModelLoaderTest, LoadEncryptedFiles_DecryptionFailed) {
@@ -1083,17 +1114,24 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_DecryptionFailed) {
   const base::FilePath encrypted_account_file_path =
       GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
 
+  base::test::TestFuture<void> save_local_or_syncable_secondary_file_future;
+  base::test::TestFuture<void> save_account_secondary_file_future;
   base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
   scoped_refptr<ModelLoader> loader = ModelLoader::Create(
       encryptor, local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path, account_file_path,
       encrypted_account_file_path, LoadManagedNodeCallback(),
+      save_local_or_syncable_secondary_file_future.GetCallback(),
+      save_account_secondary_file_future.GetCallback(),
       details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
 
   VerifyEncryptedBookmarksFileCheckResult(
       histogram_tester, metrics::BookmarksFileLoadResult::kDecryptionFailed);
+  // Verify that the save encrypted file callback is called for both files.
+  EXPECT_TRUE(save_local_or_syncable_secondary_file_future.IsReady());
+  EXPECT_TRUE(save_account_secondary_file_future.IsReady());
 }
 
 std::optional<base::FilePath> CreateTempEncryptedFile(
@@ -1142,11 +1180,15 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_ContentMismatch) {
                               "TestEncryptedBookmarks2", encryptor);
   ASSERT_TRUE(encrypted_account_file_path);
 
+  base::test::TestFuture<void> save_local_or_syncable_secondary_file_future;
+  base::test::TestFuture<void> save_account_secondary_file_future;
   base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
   scoped_refptr<ModelLoader> loader = ModelLoader::Create(
       encryptor, local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path.value(), account_file_path,
       encrypted_account_file_path.value(), LoadManagedNodeCallback(),
+      save_local_or_syncable_secondary_file_future.GetCallback(),
+      save_account_secondary_file_future.GetCallback(),
       details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
@@ -1171,6 +1213,9 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_ContentMismatch) {
           {kEncryptedBookmarksFileMatchesResultMetricName, ".Account"}),
       false,
       /*expected_count=*/1);
+  // Verify that the save encrypted file callback is called for both files.
+  EXPECT_TRUE(save_local_or_syncable_secondary_file_future.IsReady());
+  EXPECT_TRUE(save_account_secondary_file_future.IsReady());
 }
 
 TEST(ModelLoaderTest, LoadEncryptedFiles_EncryptedFilesOk) {
@@ -1198,11 +1243,15 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_EncryptedFilesOk) {
                               encryptor);
   ASSERT_TRUE(encrypted_account_file_path);
 
+  base::test::TestFuture<void> save_local_or_syncable_secondary_file_future;
+  base::test::TestFuture<void> save_account_secondary_file_future;
   base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
   scoped_refptr<ModelLoader> loader = ModelLoader::Create(
       encryptor, local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path.value(), account_file_path,
       encrypted_account_file_path.value(), LoadManagedNodeCallback(),
+      save_local_or_syncable_secondary_file_future.GetCallback(),
+      save_account_secondary_file_future.GetCallback(),
       details_future.GetCallback());
 
   task_environment.FastForwardUntilNoTasksRemain();
@@ -1227,6 +1276,79 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_EncryptedFilesOk) {
           {kEncryptedBookmarksFileMatchesResultMetricName, ".Account"}),
       true,
       /*expected_count=*/1);
+  // Verify that the save encrypted file callback hasn't been called.
+  EXPECT_FALSE(save_local_or_syncable_secondary_file_future.IsReady());
+  EXPECT_FALSE(save_account_secondary_file_future.IsReady());
+}
+
+TEST(ModelLoaderTest, LoadEncryptedFiles_OnlyAccountCallbackCalled) {
+  base::test::ScopedFeatureList features;
+  test::InitFeaturesForBookmarkTestEncryptionStage(
+      features, BookmarkEncryptionStage::kWriteBothReadOnlyClear);
+  base::HistogramTester histogram_tester;
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  scoped_refptr<base::RefCountedData<const os_crypt_async::Encryptor>>
+      encryptor = base::MakeRefCounted<
+          base::RefCountedData<const os_crypt_async::Encryptor>>(
+          std::in_place, os_crypt_async::GetTestEncryptorForTesting());
+
+  const base::FilePath local_or_syncable_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_1.json");
+  std::optional<base::FilePath> encrypted_local_or_syncable_file_path =
+      CreateTempEncryptedFile(local_or_syncable_file_path,
+                              "TestEncryptedBookmarks", encryptor);
+  ASSERT_TRUE(encrypted_local_or_syncable_file_path);
+  const base::FilePath account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/model_with_sync_metadata_2.json");
+  std::optional<base::FilePath> encrypted_account_file_path =
+      GetTestDataDir().AppendASCII("bookmarks/encrypted_missing_file_2.json");
+
+  base::test::TestFuture<void> save_local_or_syncable_secondary_file_future;
+  base::test::TestFuture<void> save_account_secondary_file_future;
+  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
+  scoped_refptr<ModelLoader> loader = ModelLoader::Create(
+      encryptor, local_or_syncable_file_path,
+      encrypted_local_or_syncable_file_path.value(), account_file_path,
+      encrypted_account_file_path.value(), LoadManagedNodeCallback(),
+      save_local_or_syncable_secondary_file_future.GetCallback(),
+      save_account_secondary_file_future.GetCallback(),
+      details_future.GetCallback());
+
+  task_environment.FastForwardUntilNoTasksRemain();
+
+  // Local or syncable reads succeed
+  histogram_tester.ExpectTotalCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".Encrypted"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat({kBookmarksFileLoadResultMetricName, ".LocalOrSyncable",
+                    ".Encrypted"}),
+      metrics::BookmarksFileLoadResult::kSuccess,
+      /*expected_count=*/1);
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kEncryptedBookmarksFileMatchesResultMetricName, ".LocalOrSyncable"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kEncryptedBookmarksFileMatchesResultMetricName, ".LocalOrSyncable"}),
+      true,
+      /*expected_count=*/1);
+  EXPECT_FALSE(save_local_or_syncable_secondary_file_future.IsReady());
+
+  // Account reads fail
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".Encrypted"}),
+      /*expected_count=*/1);
+  histogram_tester.ExpectBucketCount(
+      base::StrCat(
+          {kBookmarksFileLoadResultMetricName, ".Account", ".Encrypted"}),
+      metrics::BookmarksFileLoadResult::kFileMissing,
+      /*expected_count=*/1);
+  EXPECT_TRUE(save_account_secondary_file_future.IsReady());
 }
 
 TEST(ModelLoaderTest, LoadEncryptedFiles_SizeAndReadTimeAreRecorded) {
@@ -1254,12 +1376,13 @@ TEST(ModelLoaderTest, LoadEncryptedFiles_SizeAndReadTimeAreRecorded) {
                               encryptor);
   ASSERT_TRUE(encrypted_account_file_path);
 
-  base::test::TestFuture<std::unique_ptr<BookmarkLoadDetails>> details_future;
   scoped_refptr<ModelLoader> loader = ModelLoader::Create(
       encryptor, local_or_syncable_file_path,
       encrypted_local_or_syncable_file_path.value(), account_file_path,
       encrypted_account_file_path.value(), LoadManagedNodeCallback(),
-      details_future.GetCallback());
+      /*save_local_or_syncable_secondary_file_callback=*/base::DoNothing(),
+      /*save_account_secondary_file_callback=*/base::DoNothing(),
+      /*callback=*/base::DoNothing());
 
   task_environment.FastForwardUntilNoTasksRemain();
 

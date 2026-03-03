@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/titled_url_index.h"
+#include "components/bookmarks/common/bookmark_constants.h"
 #include "components/os_crypt/async/common/encryptor.h"
 
 namespace base {
@@ -84,6 +85,20 @@ class BookmarkStorage
 
   // If there is a pending write, performs it immediately.
   void SaveNowIfScheduledForTesting();
+
+  // Saves the bookmarks to the secondary file on disk right away.
+  //
+  // While transitioning from unencrypted to encrypted bookmarks, bookmarks will
+  // be saved in two files, the primary file used as source of truth and the
+  // secondary one used for verification or backup. In the first stage of the
+  // encryption ramp-up where we write both files but only read the unencrypted
+  // file to load the data, the unencrypted file will be the primary file. In
+  // following stages, the encrypted file will be the primary file
+  // (see crbug.com/435317726).
+  //
+  // The primary bookmarks file will not be touched. This write operation is
+  // scheduled on the backend task runner.
+  void SaveBookmarksToSecondaryFile();
 
  private:
   // The state of the bookmark file backup. We lazily backup this file in order
