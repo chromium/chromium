@@ -60,17 +60,6 @@ class UsageHistoryInformation {
   bool HasGreaterRankingThan(const UsageHistoryInformation& other,
                              base::Time comparison_time) const;
 
-  // Given two ranking scores for two data model suggestions, returns if `score`
-  // is greater than `other_score`. In the case of a tie-breaker, uses the most
-  // recent use date as the winner.
-  //
-  // The absolute value of the scores must be at most
-  //   std::log(std::numeric_limits<double>::max()) / std::log(2)
-  // which is ~1023.
-  bool CompareRankingScores(double lhs_score,
-                            double rhs_score,
-                            base::Time rhs_use_date) const;
-
   // Merges the use count and use dates `*this` and `other` into `*this`.
   // The higher of the two use counts is retained. Te use dates prefer the most
   // recent one.

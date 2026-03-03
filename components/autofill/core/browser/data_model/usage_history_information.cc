@@ -84,31 +84,8 @@ bool UsageHistoryInformation::HasGreaterRankingThan(
     base::Time comparison_time) const {
   double score = GetRankingScore(comparison_time);
   double other_score = other.GetRankingScore(comparison_time);
-  return UsageHistoryInformation::CompareRankingScores(score, other_score,
-                                                       other.use_date());
-}
-
-bool UsageHistoryInformation::CompareRankingScores(
-    double lhs_score,
-    double rhs_score,
-    base::Time rhs_use_date) const {
-  // We use rounded values to express near equivalence.
-  //
-  // We cannot use `std::fabs(x - y) < kEpsilon` because that'd break
-  // transitivity of equivalence, which is required by std::sort().
-  //
-  // We don't need to worry about overflows because the maximum absolute values
-  // of the scores are
-  //   std::log(std::numeric_limits<double>::max()) / std::log(2)
-  // which is ~1023.
-  static constexpr double kEpsilon = 0.00001;
-  const int32_t lhs_score_rounded = std::lround(lhs_score / kEpsilon);
-  const int32_t rhs_score_rounded = std::lround(rhs_score / kEpsilon);
-
-  if (lhs_score_rounded != rhs_score_rounded) {
-    return lhs_score_rounded > rhs_score_rounded;
-  }
-  return use_date() > rhs_use_date;
+  return std::tuple(score, use_date()) >
+         std::tuple(other_score, other.use_date());
 }
 
 }  // namespace autofill

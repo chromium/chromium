@@ -684,23 +684,8 @@ bool EntityInstance::FrecencyOrder::operator()(
            log(static_cast<double>(entity.use_count()) + 2);
   };
 
-  // We use rounded values to express near equivalence.
-  //
-  // We cannot use `std::fabs(x - y) < kEpsilon` because that'd break
-  // transitivity of equivalence, which is required by std::sort().
-  //
-  // We don't need to worry about overflows because the maximum absolute value
-  // of get_ranking_score() is
-  //   std::log(std::numeric_limits<double>::max()) / std::log(2)
-  // which is ~1023.
-  static constexpr double kEpsilon = 0.00001;
-  const int32_t lhs_score = std::lround(get_ranking_score(lhs) / kEpsilon);
-  const int32_t rhs_score = std::lround(get_ranking_score(rhs) / kEpsilon);
-
-  if (lhs_score != rhs_score) {
-    return lhs_score > rhs_score;
-  }
-  return lhs.use_date() > rhs.use_date();
+  return std::tuple(get_ranking_score(lhs), lhs.use_date()) >
+         std::tuple(get_ranking_score(rhs), rhs.use_date());
 }
 
 bool IsMaskedStorageSupported(EntityType type,

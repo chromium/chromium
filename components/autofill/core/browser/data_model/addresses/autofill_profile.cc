@@ -362,10 +362,8 @@ double AutofillProfile::GetRankingScore(base::Time current_time) const {
 
 bool AutofillProfile::HasGreaterRankingThan(const AutofillProfile* other,
                                             base::Time comparison_time) const {
-  const double score = GetRankingScore(comparison_time);
-  const double other_score = other->GetRankingScore(comparison_time);
-  return usage_history_information_.CompareRankingScores(
-      score, other_score, other->usage_history().use_date());
+  return usage_history_information_.HasGreaterRankingThan(
+      other->usage_history_information_, comparison_time);
 }
 
 void AutofillProfile::GetMatchingTypes(std::u16string_view text,
