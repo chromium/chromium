@@ -5,8 +5,12 @@
 package org.chromium.components.browser_ui.widget;
 
 import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
 
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.view.View.OnClickListener;
 
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
@@ -17,21 +21,28 @@ import androidx.annotation.StyleRes;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.List;
 
 /** Builder for creating a {@link ListItem}. */
 @NullMarked
 public class ListItemBuilder {
     private @StringRes int mTitleRes;
     private @IdRes int mMenuId;
+    private @Nullable Bitmap mStartIconBitmap;
+    private @Nullable Drawable mStartIconDrawable;
     private @DrawableRes int mStartIconRes;
     private @DrawableRes int mEndIconRes;
     private boolean mEnabled;
+    private @Nullable OnClickListener mClickListener;
     private @Nullable String mContentDescription;
     private boolean mIsTextEllipsizedAtEnd;
     private boolean mIsIncognito;
     private @ColorRes int mIconTintColorStateList;
+    private @Nullable List<ListItem> mSubmenuItems;
     private @StyleRes int mTextAppearanceStyle;
     private @Nullable String mTitle;
 
@@ -73,7 +84,23 @@ public class ListItemBuilder {
     }
 
     /**
-     * @param startIconId The icon on the start of the menu item. Pass 0 for no icon. By default,
+     * @param startIconBitmap The icon on the start of the menu item. Pass null for no icon.
+     */
+    public ListItemBuilder withStartIconBitmap(@Nullable Bitmap startIconBitmap) {
+        mStartIconBitmap = startIconBitmap;
+        return this;
+    }
+
+    /**
+     * @param startIconDrawable The icon on the start of the menu item. Pass null for no icon.
+     */
+    public ListItemBuilder withStartIconDrawable(@Nullable Drawable startIconDrawable) {
+        mStartIconDrawable = startIconDrawable;
+        return this;
+    }
+
+    /**
+     * @param startIconRes The icon on the start of the menu item. Pass 0 for no icon. By default,
      *     this is set to {@link Resources#ID_NULL}.
      */
     public ListItemBuilder withStartIconRes(@DrawableRes int startIconRes) {
@@ -95,6 +122,14 @@ public class ListItemBuilder {
      */
     public ListItemBuilder withEnabled(boolean enabled) {
         mEnabled = enabled;
+        return this;
+    }
+
+    /**
+     * @param clickListener The {@link OnClickListener} fired when the item is clicked.
+     */
+    public ListItemBuilder withClickListener(OnClickListener clickListener) {
+        mClickListener = clickListener;
         return this;
     }
 
@@ -135,6 +170,14 @@ public class ListItemBuilder {
     }
 
     /**
+     * @param submenuItems The submenu items that are children of this item.
+     */
+    public ListItemBuilder withSubmenuItems(List<ListItem> submenuItems) {
+        mSubmenuItems = submenuItems;
+        return this;
+    }
+
+    /**
      * @param textAppearanceStyle The appearance of the text in the menu item. By default, this is
      *     set to {@link Resources#ID_NULL}.
      */
@@ -145,25 +188,50 @@ public class ListItemBuilder {
 
     /** Builds the {@link ListItem} with the specified properties. */
     public ListItem build() {
+        boolean hasSubmenu = mSubmenuItems != null;
         PropertyModel.Builder builder =
-                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                (hasSubmenu
+                                ? new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                                : new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS))
                         .with(
                                 ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                                BrowserUiListMenuUtils.getDefaultIconTintColorStateListId())
+                                mIconTintColorStateList != Resources.ID_NULL
+                                        ? mIconTintColorStateList
+                                        : BrowserUiListMenuUtils
+                                                .getDefaultIconTintColorStateListId())
                         .with(
                                 ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                                BrowserUiListMenuUtils.getDefaultTextAppearanceStyle());
+                                mTextAppearanceStyle != Resources.ID_NULL
+                                        ? mTextAppearanceStyle
+                                        : BrowserUiListMenuUtils.getDefaultTextAppearanceStyle());
 
         if (mTitle != null) {
             builder.with(ListMenuItemProperties.TITLE, mTitle);
-        } else {
+        } else if (!hasSubmenu) {
             builder.with(ListMenuItemProperties.TITLE_ID, mTitleRes);
         }
 
-        builder.with(ListMenuItemProperties.MENU_ITEM_ID, mMenuId)
-                .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
-                .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes)
-                .with(ListMenuItemProperties.ENABLED, mEnabled);
+        builder.with(ListMenuItemProperties.ENABLED, mEnabled);
+
+        if (!hasSubmenu) {
+            builder.with(ListMenuItemProperties.MENU_ITEM_ID, mMenuId)
+                    .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
+                    .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes);
+
+            if (mStartIconDrawable != null) {
+                builder.with(ListMenuItemProperties.START_ICON_DRAWABLE, mStartIconDrawable);
+            }
+        } else {
+            builder.with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, mSubmenuItems);
+        }
+
+        if (mStartIconBitmap != null) {
+            builder.with(ListMenuItemProperties.START_ICON_BITMAP, mStartIconBitmap);
+        }
+
+        if (mClickListener != null) {
+            builder.with(ListMenuItemProperties.CLICK_LISTENER, mClickListener);
+        }
 
         if (mContentDescription != null) {
             builder.with(ListMenuItemProperties.CONTENT_DESCRIPTION, mContentDescription);
@@ -187,7 +255,9 @@ public class ListItemBuilder {
                                     : R.color.default_icon_color_light_tint_list);
         }
 
-        return new ListItem(MENU_ITEM, builder.build());
+        return hasSubmenu
+                ? new ListItem(MENU_ITEM_WITH_SUBMENU, builder.build())
+                : new ListItem(MENU_ITEM, builder.build());
     }
 
     /**

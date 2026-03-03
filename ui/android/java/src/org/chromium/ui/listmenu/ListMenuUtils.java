@@ -160,6 +160,20 @@ public class ListMenuUtils {
                             keyProvider,
                             clickedItem.model.get(ListMenuItemProperties.TITLE),
                             backRunnable);
+
+                    if (clickedItem.model.containsKey(ListMenuItemProperties.TEXT_APPEARANCE_ID)) {
+                        builder.with(
+                                ListMenuItemProperties.TEXT_APPEARANCE_ID,
+                                clickedItem.model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+                    }
+                    if (clickedItem.model.containsKey(
+                            ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID)) {
+                        builder.with(
+                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                                clickedItem.model.get(
+                                        ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+                    }
+
                     return new ListItem(ListItemType.SUBMENU_HEADER, builder.build());
                 };
         return new HierarchicalMenuController(context, keyProvider, headerFactory);

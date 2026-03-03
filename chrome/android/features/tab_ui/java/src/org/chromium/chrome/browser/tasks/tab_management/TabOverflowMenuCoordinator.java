@@ -5,13 +5,6 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.chrome.browser.multiwindow.UiUtils.getItemTitle;
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
-import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
-import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
-import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.content.Context;
@@ -51,13 +44,10 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
-import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController.AccessibilityListObserver;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -480,17 +470,11 @@ public abstract class TabOverflowMenuCoordinator<T>
         }
         List<ListItem> submenuItems = new ArrayList<>();
         submenuItems.add(
-                new ListItem(
-                        MENU_ITEM,
-                        new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                .with(TITLE_ID, R.string.menu_new_window)
-                                .with(ENABLED, true)
-                                .with(
-                                        CLICK_LISTENER,
-                                        v -> {
-                                            moveToNewWindow(id);
-                                        })
-                                .build()));
+                new ListItemBuilder()
+                        .withTitleRes(R.string.menu_new_window)
+                        .withIsIncognito(isIncognito)
+                        .withClickListener(v -> moveToNewWindow(id))
+                        .build());
         if (activeInstances.size() > 1) {
             for (InstanceInfo instanceInfo : activeInstances) {
                 if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
@@ -498,30 +482,18 @@ public abstract class TabOverflowMenuCoordinator<T>
                 }
                 String windowDisplayName = getItemTitle(mActivity, instanceInfo);
                 submenuItems.add(
-                        new ListItem(
-                                MENU_ITEM,
-                                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
-                                        .with(TITLE, windowDisplayName)
-                                        .with(
-                                                CLICK_LISTENER,
-                                                (v) -> {
-                                                    moveToWindow(instanceInfo, id);
-                                                })
-                                        .with(ENABLED, true)
-                                        .build()));
+                        new ListItemBuilder()
+                                .withTitle(windowDisplayName)
+                                .withClickListener((v) -> moveToWindow(instanceInfo, id))
+                                .build());
             }
         }
-        return new ListItem(
-                MENU_ITEM_WITH_SUBMENU,
-                new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
-                        .with(
-                                TITLE,
-                                mActivity
-                                        .getResources()
-                                        .getQuantityString(pluralsRes, 2)) // Any # > 1
-                        .with(SUBMENU_ITEMS, submenuItems)
-                        .with(ENABLED, true)
-                        .build());
+        return new ListItemBuilder()
+                .withTitle(
+                        mActivity.getResources().getQuantityString(pluralsRes, 2) // Any # > 1
+                        )
+                .withSubmenuItems(submenuItems)
+                .build();
     }
 
     /** Creates a new window and moves item with ID {@param id} to it. */

@@ -459,7 +459,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -506,7 +507,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 2);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -547,7 +549,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, "1 tab", 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, "1 tab", 1, /* isIncognito= */ false);
     }
 
     @Test
@@ -570,7 +573,7 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, "1 tab", 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, "1 tab", 1, /* isIncognito= */ true);
     }
 
     @Test
@@ -592,7 +595,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -646,7 +650,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 2);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -689,7 +694,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
 
         // List item 2
         assertEquals(DIVIDER, modelList.get(1).type);
@@ -732,7 +738,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 4, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 2);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
 
         // List item 2
         assertEquals(DIVIDER, modelList.get(1).type);
@@ -765,7 +772,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 6, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -804,7 +812,15 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ true);
+        assertEquals(
+                "Expected text appearance ID to be set to"
+                        + " R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light"
+                        + " in incognito for submenu parent",
+                org.chromium.chrome.R.style
+                        .TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                modelList.get(0).model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
 
         // List item 2
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -864,7 +880,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 2);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ true);
 
         // List item 2
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -913,7 +930,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -961,7 +979,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 2);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -1006,7 +1025,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 1);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 1, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -1057,7 +1077,8 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
         // List item 1
-        verifyAddToGroupSubmenuForTabOutsideOfGroup(modelList, TAB_GROUP_TITLE, 2);
+        verifyAddToGroupSubmenuForTabOutsideOfGroup(
+                modelList, TAB_GROUP_TITLE, 2, /* isIncognito= */ false);
 
         // List item 2
         StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
@@ -1569,7 +1590,10 @@ public class TabContextMenuCoordinatorUnitTest {
     }
 
     private void verifyAddToGroupSubmenuForTabOutsideOfGroup(
-            ModelList modelList, String expectedTabGroupName, int expectedTabCount) {
+            ModelList modelList,
+            String expectedTabGroupName,
+            int expectedTabCount,
+            boolean isIncognito) {
         int modelListSizeBeforeNav = modelList.size();
         var addToGroupItem = modelList.get(0);
         assertTrue("Expected 'Add to group' item to be enabled", addToGroupItem.model.get(ENABLED));
@@ -1616,7 +1640,7 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(
                 "Expected circle to have correct color",
                 TabGroupColorPickerUtils.getTabGroupColorPickerItemColor(
-                        mActivity, TAB_GROUP_INDICATOR_COLOR_ID, /* isIncognito= */ false),
+                        mActivity, TAB_GROUP_INDICATOR_COLOR_ID, isIncognito),
                 drawable.getColor().getDefaultColor());
         assertTrue("Expected tab group row to be enabled", tabGroupRowModel.get(ENABLED));
         headerItem.model.get(CLICK_LISTENER).onClick(mView);

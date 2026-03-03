@@ -11,24 +11,41 @@ import static org.junit.Assert.assertTrue;
 
 import static org.chromium.components.browser_ui.widget.ListItemBuilder.buildSimpleMenuItem;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.view.View.OnClickListener;
+
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.StringRes;
 import androidx.annotation.StyleRes;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.Collections;
+import java.util.List;
 
 /** Unit tests for {@link ListItemBuilder}. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ListItemBuilderUnitTest {
+    @Mock private Bitmap mBitmap;
+    @Mock private Drawable mDrawable;
+    @Mock private OnClickListener mClickListener;
+
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     private static final @StringRes int FAKE_TITLE_ID = R.string.search_menu_title;
     private static final @IdRes int FAKE_MENU_ID = R.id.menu;
@@ -90,13 +107,9 @@ public class ListItemBuilderUnitTest {
         assertEquals(FAKE_CONTENT_DESC, model.get(ListMenuItemProperties.CONTENT_DESCRIPTION));
         assertTrue(model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END));
 
-        // When not incognito, custom appearance/tint should not override defaults.
-        assertEquals(
-                BrowserUiListMenuUtils.getDefaultTextAppearanceStyle(),
-                model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
-        assertEquals(
-                BrowserUiListMenuUtils.getDefaultIconTintColorStateListId(),
-                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+        // Custom appearance/tint should override defaults.
+        assertEquals(FAKE_STYLE_ID, model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(FAKE_TINT_ID, model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
     }
 
     @Test
@@ -162,5 +175,59 @@ public class ListItemBuilderUnitTest {
         assertFalse(
                 "Ellipsize property should not be present or false in the model if not set",
                 model.get(ListMenuItemProperties.IS_TEXT_ELLIPSIZED_AT_END));
+    }
+
+    @Test
+    public void testBuild_withStartIconBitmap() {
+        ListItem listItem = new ListItemBuilder().withStartIconBitmap(mBitmap).build();
+        assertEquals(mBitmap, listItem.model.get(ListMenuItemProperties.START_ICON_BITMAP));
+    }
+
+    @Test
+    public void testBuild_withStartIconDrawable() {
+        ListItem listItem = new ListItemBuilder().withStartIconDrawable(mDrawable).build();
+        assertEquals(mDrawable, listItem.model.get(ListMenuItemProperties.START_ICON_DRAWABLE));
+    }
+
+    @Test
+    public void testBuild_withClickListener() {
+        ListItem listItem = new ListItemBuilder().withClickListener(mClickListener).build();
+        assertEquals(mClickListener, listItem.model.get(ListMenuItemProperties.CLICK_LISTENER));
+    }
+
+    @Test
+    public void testBuild_withSubmenu() {
+        List<ListItem> submenuItems = Collections.singletonList(new ListItemBuilder().build());
+        ListItem listItem =
+                new ListItemBuilder()
+                        .withTitle(FAKE_TITLE_STRING)
+                        .withSubmenuItems(submenuItems)
+                        .build();
+
+        assertEquals(ListItemType.MENU_ITEM_WITH_SUBMENU, listItem.type);
+        assertEquals(FAKE_TITLE_STRING, listItem.model.get(ListMenuItemProperties.TITLE));
+        assertEquals(submenuItems, listItem.model.get(ListMenuSubmenuItemProperties.SUBMENU_ITEMS));
+    }
+
+    @Test
+    public void testBuild_submenu_incognito() {
+        List<ListItem> submenuItems = Collections.singletonList(new ListItemBuilder().build());
+        ListItem listItem =
+                new ListItemBuilder()
+                        .withTitle(FAKE_TITLE_STRING)
+                        .withSubmenuItems(submenuItems)
+                        .withIsIncognito(true)
+                        .build();
+
+        PropertyModel model = listItem.model;
+        assertEquals(ListItemType.MENU_ITEM_WITH_SUBMENU, listItem.type);
+        assertEquals(FAKE_TITLE_STRING, model.get(ListMenuItemProperties.TITLE));
+        assertEquals(submenuItems, model.get(ListMenuSubmenuItemProperties.SUBMENU_ITEMS));
+        assertEquals(
+                R.style.TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light,
+                model.get(ListMenuItemProperties.TEXT_APPEARANCE_ID));
+        assertEquals(
+                R.color.default_icon_color_light_tint_list,
+                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
     }
 }

@@ -11,13 +11,16 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CONTENT_DESCRIPTION;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.HOVER_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.IS_HIGHLIGHTED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.START_ICON_BITMAP;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TEXT_APPEARANCE_ID;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TOOLTIP;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.IS_EXPANDED;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -25,6 +28,11 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.annotation.ColorRes;
+import androidx.annotation.StyleRes;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.widget.ImageViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
@@ -77,6 +85,22 @@ class ListMenuItemWithSubmenuViewBinder {
             }
         } else if (propertyKey == KEY_LISTENER) {
             view.setOnKeyListener(model.get(KEY_LISTENER));
+        } else if (propertyKey == TEXT_APPEARANCE_ID) {
+            @StyleRes int textAppearanceId = model.get(TEXT_APPEARANCE_ID);
+            if (textAppearanceId != Resources.ID_NULL) {
+                textView.setTextAppearance(textAppearanceId);
+            }
+        } else if (propertyKey == ICON_TINT_COLOR_STATE_LIST_ID) {
+            @ColorRes int iconTintColorId = model.get(ICON_TINT_COLOR_STATE_LIST_ID);
+            ImageView icon = view.findViewById(org.chromium.ui.R.id.menu_item_icon);
+            if (icon == null) return;
+            if (iconTintColorId != Resources.ID_NULL) {
+                ImageViewCompat.setImageTintList(
+                        icon,
+                        AppCompatResources.getColorStateList(view.getContext(), iconTintColorId));
+            } else {
+                ImageViewCompat.setImageTintList(icon, null);
+            }
         }
     }
 }
