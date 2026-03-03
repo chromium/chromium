@@ -11,7 +11,7 @@ import("//extensions/buildflags/buildflags.gni")
 # TODO(https://crbug.com/356905053): Continue moving more here.
 extensions_api_schema_files_ = [
   "alarms.webidl",
-  "declarative_net_request.idl",
+  "declarative_net_request.webidl",
   "dns.webidl",
   "events.json",
   "extension_types.json",

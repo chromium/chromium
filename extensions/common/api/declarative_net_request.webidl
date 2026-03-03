@@ -1,0 +1,948 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+[ExternalExtensionType="extensionTypes.FrameType"]
+typedef object ExtensionTypesFrameType;
+
+[ExternalExtensionType="extensionTypes.DocumentLifecycle"]
+typedef object ExtensionTypesDocumentLifecycle;
+
+// This describes the resource type of the network request.
+enum ResourceType {
+  "main_frame",
+  "sub_frame",
+  "stylesheet",
+  "script",
+  "image",
+  "font",
+  "object",
+  "xmlhttprequest",
+  "ping",
+  "csp_report",
+  "media",
+  "websocket",
+  "webtransport",
+  "webbundle",
+  "other"
+};
+
+// This describes the HTTP request method of a network request.
+enum RequestMethod {
+  "connect",
+  "delete",
+  "get",
+  "head",
+  "options",
+  "patch",
+  "post",
+  "put",
+  "other"
+};
+
+// This describes whether the request is first or third party to the frame in
+// which it originated. A request is said to be first party if it has the same
+// domain (eTLD+1) as the frame in which the request originated.
+enum DomainType {
+  // The network request is first party to the frame in which it originated.
+  "firstParty",
+  // The network request is third party to the frame in which it originated.
+  "thirdParty"
+};
+
+// This describes the possible operations for a "modifyHeaders" rule.
+enum HeaderOperation {
+  // Adds a new entry for the specified header. When modifying the headers of
+  // a request, this operation is only supported for
+  // <a href="#header_modification">specific headers</a>.
+  "append",
+  // Sets a new value for the specified header, removing any existing headers
+  // with the same name.
+  "set",
+  // Removes all entries for the specified header.
+  "remove"
+};
+
+// Describes the kind of action to take if a given RuleCondition matches.
+enum RuleActionType {
+  // Block the network request.
+  "block",
+  // Redirect the network request.
+  "redirect",
+  // Allow the network request. The request won't be intercepted if there is
+  // an allow rule which matches it.
+  "allow",
+  // Upgrade the network request url's scheme to https if the request is http
+  // or ftp.
+  "upgradeScheme",
+  // Modify request/response headers from the network request.
+  "modifyHeaders",
+  // Allow all requests within a frame hierarchy, including the frame request
+  // itself.
+  "allowAllRequests"
+};
+
+// Describes the reason why a given regular expression isn't supported.
+enum UnsupportedRegexReason {
+  // The regular expression is syntactically incorrect, or uses features
+  // not available in the
+  // <a href = "https://github.com/google/re2/wiki/Syntax">RE2 syntax</a>.
+  "syntaxError",
+  // The regular expression exceeds the memory limit.
+  "memoryLimitExceeded"
+};
+
+// <!-- Lists the types of condition currently supported by RuleCondition, to
+// aid feature detection. Must be kept consistent with the RuleCondition
+// dictionary. -->
+enum RuleConditionKeys {
+  "urlFilter",
+  "regexFilter",
+  "isUrlFilterCaseSensitive",
+  "initiatorDomains",
+  "excludedInitiatorDomains",
+  "requestDomains",
+  "excludedRequestDomains",
+  "topDomains",
+  "excludedTopDomains",
+  "domains",
+  "excludedDomains",
+  "resourceTypes",
+  "excludedResourceTypes",
+  "requestMethods",
+  "excludedRequestMethods",
+  "domainType",
+  "tabIds",
+  "excludedTabIds",
+  "responseHeaders",
+  "excludedResponseHeaders"
+};
+
+// Describes a single static ruleset.
+dictionary Ruleset {
+  // A non-empty string uniquely identifying the ruleset. IDs beginning with
+  // '_' are reserved for internal use.
+  required DOMString id;
+  // The path of the JSON ruleset relative to the extension directory.
+  required DOMString path;
+  // Whether the ruleset is enabled by default.
+  required boolean enabled;
+};
+
+// Represents a query key-value pair.
+dictionary QueryKeyValue {
+  required DOMString key;
+  required DOMString value;
+
+  // If true, the query key is replaced only if it's already present.
+  // Otherwise, the key is also added if it's missing. Defaults to false.
+  boolean replaceOnly;
+};
+
+// Describes modification to the url query.
+dictionary QueryTransform {
+  // The list of query keys to be removed.
+  sequence<DOMString> removeParams;
+  // The list of query key-value pairs to be added or replaced.
+  sequence<QueryKeyValue> addOrReplaceParams;
+};
+
+// Describes modification to various url components.
+dictionary URLTransform {
+  // The new scheme for the request. Allowed values are "http", "https",
+  // "ftp" and "chrome-extension".
+  DOMString scheme;
+
+  // The new host for the request.
+  DOMString host;
+
+  // The new port for the request. If empty, the existing port is cleared.
+  DOMString port;
+
+  // The new path for the request. If empty, the existing path is cleared.
+  DOMString path;
+
+  // The new query for the request. Should be either empty, in which case the
+  // existing query is cleared; or should begin with '?'.
+  DOMString query;
+
+  // Add, remove or replace query key-value pairs.
+  QueryTransform queryTransform;
+
+  // The new fragment for the request. Should be either empty, in which case
+  // the existing fragment is cleared; or should begin with '#'.
+  DOMString fragment;
+
+  // The new username for the request.
+  DOMString username;
+
+  // The new password for the request.
+  DOMString password;
+};
+
+dictionary Redirect {
+  // Path relative to the extension directory. Should start with '/'.
+  DOMString extensionPath;
+  // Url transformations to perform.
+  URLTransform transform;
+  // The redirect url. Redirects to JavaScript urls are not allowed.
+  DOMString url;
+
+  // Substitution pattern for rules which specify a <code>regexFilter</code>.
+  // The first match of <code>regexFilter</code> within the url will be
+  // replaced with this pattern. Within <code>regexSubstitution</code>,
+  // backslash-escaped digits (\1 to \9) can be used to insert the
+  // corresponding capture groups. \0 refers to the entire matching text.
+  DOMString regexSubstitution;
+};
+
+dictionary HeaderInfo {
+  // The name of the header. This condition matches on the name
+  // only if both `values` and `excludedValues` are not specified.
+  required DOMString header;
+  // If specified, this condition matches if the header's value matches at
+  // least one pattern in this list. This supports case-insensitive header
+  // value matching plus the following constructs:
+  //
+  // <b>'*'</b>  : Matches any number of characters.
+  //
+  // <b>'?'</b>  : Matches zero or one character(s).
+  //
+  // '*' and '?' can be escaped with a backslash, e.g. '\*' and '\?'
+  sequence<DOMString> values;
+  // If specified, this condition is not matched if the header exists but its
+  // value contains at least one element in this list. This uses the same
+  // match pattern syntax as `values`.
+  sequence<DOMString> excludedValues;
+};
+
+// <!-- When adding/removing keys from this dictionary, also update the
+// RuleConditionKeys enum. -->
+dictionary RuleCondition {
+
+  // The pattern which is matched against the network request url.
+  // Supported constructs:
+  //
+  // <b>'*'</b>  : Wildcard: Matches any number of characters.
+  //
+  // <b>'|'</b>  : Left/right anchor: If used at either end of the pattern,
+  //               specifies the beginning/end of the url respectively.
+  //
+  // <b>'||'</b> : Domain name anchor: If used at the beginning of the
+  //               pattern, specifies the start of a (sub-)domain of the URL.
+  //
+  // <b>'^'</b>  : Separator character: This matches anything except a letter,
+  //               a digit, or one of the following: <code>_</code>,
+  //               <code>-</code>, <code>.</code>, or <code>%</code>. This
+  //               also match the end of the URL.
+  //
+  // Therefore <code>urlFilter</code> is composed of the following parts:
+  // (optional Left/Domain name anchor) + pattern + (optional Right anchor).
+  //
+  // If omitted, all urls are matched. An empty string is not allowed.
+  //
+  // A pattern beginning with <code>||*</code> is not allowed. Use
+  // <code>*</code> instead.
+  //
+  // Note: Only one of <code>urlFilter</code> or <code>regexFilter</code> can
+  // be specified.
+  //
+  // Note: The <code>urlFilter</code> must be composed of only ASCII
+  // characters. This is matched against a url where the host is encoded in
+  // the punycode format (in case of internationalized domains) and any other
+  // non-ascii characters are url encoded in utf-8.
+  // For example, when the request url is
+  // http://abc.&#x0440;&#x0444;?q=&#x0444;, the
+  // <code>urlFilter</code> will be matched against the url
+  // http://abc.xn--p1ai/?q=%D1%84.
+  DOMString urlFilter;
+
+  // Regular expression to match against the network request url. This follows
+  // the <a href = "https://github.com/google/re2/wiki/Syntax">RE2 syntax</a>.
+  //
+  // Note: Only one of <code>urlFilter</code> or <code>regexFilter</code> can
+  // be specified.
+  //
+  // Note: The <code>regexFilter</code> must be composed of only ASCII
+  // characters. This is matched against a url where the host is encoded in
+  // the punycode format (in case of internationalized domains) and any other
+  // non-ascii characters are url encoded in utf-8.
+  DOMString regexFilter;
+
+  // Whether the <code>urlFilter</code> or <code>regexFilter</code>
+  // (whichever is specified) is case sensitive. Default is false.
+  boolean isUrlFilterCaseSensitive;
+
+  // The rule will only match network requests originating from the list of
+  // <code>initiatorDomains</code>. If the list is omitted, the rule is
+  // applied to requests from all domains. An empty list is not allowed.
+  //
+  // Notes:
+  // <ul>
+  //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+  //  <li>The entries must consist of only ascii characters.</li>
+  //  <li>Use punycode encoding for internationalized domains.</li>
+  //  <li>
+  //    This matches against the request initiator and not the request url.
+  //  </li>
+  //  <li>Sub-domains of the listed domains are also matched.</li>
+  // </ul>
+  sequence<DOMString> initiatorDomains;
+
+  // The rule will not match network requests originating from the list of
+  // <code>excludedInitiatorDomains</code>. If the list is empty or omitted,
+  // no domains are excluded. This takes precedence over
+  // <code>initiatorDomains</code>.
+  //
+  // Notes:
+  // <ul>
+  //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+  //  <li>The entries must consist of only ascii characters.</li>
+  //  <li>Use punycode encoding for internationalized domains.</li>
+  //  <li>
+  //    This matches against the request initiator and not the request url.
+  //  </li>
+  //  <li>Sub-domains of the listed domains are also excluded.</li>
+  // </ul>
+  sequence<DOMString> excludedInitiatorDomains;
+
+  // The rule will only match network requests when the domain matches one
+  // from the list of <code>requestDomains</code>. If the list is omitted,
+  // the rule is applied to requests from all domains. An empty list is not
+  // allowed.
+  //
+  // Notes:
+  // <ul>
+  //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+  //  <li>The entries must consist of only ascii characters.</li>
+  //  <li>Use punycode encoding for internationalized domains.</li>
+  //  <li>Sub-domains of the listed domains are also matched.</li>
+  // </ul>
+  sequence<DOMString> requestDomains;
+
+  // The rule will not match network requests when the domains matches one
+  // from the list of <code>excludedRequestDomains</code>. If the list is
+  // empty or omitted, no domains are excluded. This takes precedence over
+  // <code>requestDomains</code>.
+  //
+  // Notes:
+  // <ul>
+  //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+  //  <li>The entries must consist of only ascii characters.</li>
+  //  <li>Use punycode encoding for internationalized domains.</li>
+  //  <li>Sub-domains of the listed domains are also excluded.</li>
+  // </ul>
+  sequence<DOMString> excludedRequestDomains;
+
+  // The rule will only match network requests when the associated top-level
+  // frame's domain matches one from the list of <code>topDomains</code>. If
+  // the list is omitted, the rule is applied to requests associated with all
+  // top-level frame domains. An empty list is not allowed.
+  //
+  // Notes:
+  // <ul>
+  //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+  //  <li>The entries must consist of only ascii characters.</li>
+  //  <li>Use punycode encoding for internationalized domains.</li>
+  //  <li>Sub-domains of the listed domains are also matched.</li>
+  //  <li>For requests with no associated top-level frame (e.g. ServiceWorker
+  //      initiated requests, the request initiator's domain is considered
+  //      instead.</li>
+  // </ul>
+  sequence<DOMString> topDomains;
+
+  // The rule will not match network requests when the associated top-level
+  // frame's domain matches one from the list of
+  // <code>excludedTopDomains</code>. If the list is empty or omitted, no
+  // domains are excluded. This takes precedence over
+  // <code>topDomains</code>.
+  //
+  // Notes:
+  // <ul>
+  //  <li>Sub-domains like "a.example.com" are also allowed.</li>
+  //  <li>The entries must consist of only ascii characters.</li>
+  //  <li>Use punycode encoding for internationalized domains.</li>
+  //  <li>Sub-domains of the listed domains are also excluded.</li>
+  //  <li>For requests with no associated top-level frame (e.g. ServiceWorker
+  //      initiated requests, the request initiator's domain is considered
+  //      instead.</li>
+  // </ul>
+  sequence<DOMString> excludedTopDomains;
+
+  // The rule will only match network requests originating from the list of
+  // <code>domains</code>.
+  [deprecated="Use $(ref:initiatorDomains) instead"]
+  sequence<DOMString> domains;
+
+  // The rule will not match network requests originating from the list of
+  // <code>excludedDomains</code>.
+  [deprecated="Use $(ref:excludedInitiatorDomains) instead"]
+  sequence<DOMString> excludedDomains;
+
+  // List of resource types which the rule can match. An empty list is not
+  // allowed.
+  //
+  // Note: this must be specified for <code>allowAllRequests</code> rules and
+  // may only include the <code>sub_frame</code> and <code>main_frame</code>
+  // resource types.
+  sequence<ResourceType> resourceTypes;
+
+  // List of resource types which the rule won't match. Only one of
+  // <code>resourceTypes</code> and <code>excludedResourceTypes</code> should
+  // be specified. If neither of them is specified, all resource types except
+  // "main_frame" are blocked.
+  sequence<ResourceType> excludedResourceTypes;
+
+  // List of HTTP request methods which the rule can match. An empty list is
+  // not allowed.
+  //
+  // Note: Specifying a <code>requestMethods</code> rule condition will also
+  // exclude non-HTTP(s) requests, whereas specifying
+  // <code>excludedRequestMethods</code> will not.
+  sequence<RequestMethod> requestMethods;
+
+  // List of request methods which the rule won't match. Only one of
+  // <code>requestMethods</code> and <code>excludedRequestMethods</code>
+  // should be specified. If neither of them is specified, all request methods
+  // are matched.
+  sequence<RequestMethod> excludedRequestMethods;
+
+  // Specifies whether the network request is first-party or third-party to
+  // the domain from which it originated. If omitted, all requests are
+  // accepted.
+  DomainType domainType;
+
+  // List of $(ref:tabs.Tab.id) which the rule should match. An ID of
+  // $(ref:tabs.TAB_ID_NONE) matches requests which don't originate from a
+  // tab. An empty list is not allowed. Only supported for session-scoped
+  // rules.
+  sequence<long> tabIds;
+
+  // List of $(ref:tabs.Tab.id) which the rule should not match. An ID of
+  // $(ref:tabs.TAB_ID_NONE) excludes requests which don't originate from a
+  // tab. Only supported for session-scoped rules.
+  sequence<long> excludedTabIds;
+
+  // Rule matches if the request matches any response header condition in this
+  // list (if specified).
+  sequence<HeaderInfo> responseHeaders;
+
+  // Rule does not match if the request matches any response header
+  // condition in this list (if specified). If both `excludedResponseHeaders`
+  // and `responseHeaders` are specified, then the `excludedResponseHeaders`
+  // property takes precedence.
+  sequence<HeaderInfo> excludedResponseHeaders;
+};
+
+// Options for regex filters and substitutions for headers.
+[nodoc] dictionary HeaderRegexOptions {
+  // Whether the regex should match all groups for the value. This is only
+  // relevant if a regex substitution is present and would thus need to be
+  // applied onto all matching groups. Equivalent to the "g" flag.
+  // Defaults to false.
+  [nodoc] boolean matchAll;
+};
+
+dictionary ModifyHeaderInfo {
+  // The name of the header to be modified.
+  required DOMString header;
+
+  // The operation to be performed on a header.
+  // <!-- TODO(crbug.com/352093575): Make this field optional: It is ignored
+  // if `regexSubstitution` is specified but is required otherwise. -->
+  required HeaderOperation operation;
+
+  // The new value for the header. Must be specified for <code>append</code>
+  // and <code>set</code> operations.
+  // <!-- TODO(crbug.com/352093575): Ignored if `regexSubstitution` is
+  // specified, -->
+  DOMString value;
+
+  // A regular expression to match against the header value. This follows the
+  // RE2 syntax for consistency with the rest of the API.
+  [nodoc] DOMString regexFilter;
+
+  // Substitution pattern for the response header. `regexFilter` must be
+  // specified for this to be valid. Takes precedence over `value` and
+  // `operation` if specified and valid.
+  [nodoc] DOMString regexSubstitution;
+
+  // Options for the regex filter. If not specified, all options will be
+  // default.
+  [nodoc] HeaderRegexOptions regexOptions;
+};
+
+dictionary RuleAction {
+  // The type of action to perform.
+  required RuleActionType type;
+
+  // Describes how the redirect should be performed. Only valid for redirect
+  // rules.
+  Redirect redirect;
+
+  // The request headers to modify for the request. Only valid if
+  // RuleActionType is "modifyHeaders".
+  sequence<ModifyHeaderInfo> requestHeaders;
+
+  // The response headers to modify for the request. Only valid if
+  // RuleActionType is "modifyHeaders".
+  sequence<ModifyHeaderInfo> responseHeaders;
+};
+
+dictionary Rule {
+  // An id which uniquely identifies a rule. Mandatory and should be >= 1.
+  required long id;
+
+  // Rule priority. Defaults to 1. When specified, should be >= 1.
+  long priority;
+
+  // The condition under which this rule is triggered.
+  required RuleCondition condition;
+
+  // The action to take if this rule is matched.
+  required RuleAction action;
+};
+
+// Uniquely describes a declarative rule specified by the extension.
+dictionary MatchedRule {
+  // A matching rule's ID.
+  required long ruleId;
+
+  // ID of the $(ref:Ruleset) this rule belongs to. For a rule originating
+  // from the set of dynamic rules, this will be equal to
+  // $(ref:DYNAMIC_RULESET_ID).
+  required DOMString rulesetId;
+};
+
+dictionary GetRulesFilter {
+  // If specified, only rules with matching IDs are included.
+  sequence<long> ruleIds;
+};
+
+dictionary MatchedRuleInfo {
+  required MatchedRule rule;
+
+  // The time the rule was matched. Timestamps will correspond to the
+  // Javascript convention for times, i.e. number of milliseconds since the
+  // epoch.
+  required double timeStamp;
+
+  // The tabId of the tab from which the request originated if the tab is
+  // still active. Else -1.
+  required long tabId;
+};
+
+dictionary MatchedRulesFilter {
+  // If specified, only matches rules for the given tab. Matches rules not
+  // associated with any active tab if set to -1.
+  long tabId;
+
+  // If specified, only matches rules after the given timestamp.
+  double minTimeStamp;
+};
+
+dictionary RulesMatchedDetails {
+   // Rules matching the given filter.
+   required sequence<MatchedRuleInfo> rulesMatchedInfo;
+};
+
+dictionary RequestDetails {
+  // The ID of the request. Request IDs are unique within a browser session.
+  required DOMString requestId;
+
+  // The URL of the request.
+  required DOMString url;
+
+  // The origin where the request was initiated. This does not change through
+  // redirects. If this is an opaque origin, the string 'null' will be used.
+  DOMString initiator;
+
+  // Standard HTTP method.
+  required DOMString method;
+
+  // The value 0 indicates that the request happens in the main frame; a
+  // positive value indicates the ID of a subframe in which the request
+  // happens. If the document of a (sub-)frame is loaded (<code>type</code> is
+  // <code>main_frame</code> or <code>sub_frame</code>), <code>frameId</code>
+  // indicates the ID of this frame, not the ID of the outer frame. Frame IDs
+  // are unique within a tab.
+  required long frameId;
+
+  // The unique identifier for the frame's document, if this request is for a
+  // frame.
+  DOMString documentId;
+
+  // The type of the frame, if this request is for a frame.
+  ExtensionTypesFrameType frameType;
+
+  // The lifecycle of the frame's document, if this request is for a
+  // frame.
+  ExtensionTypesDocumentLifecycle documentLifecycle;
+
+  // ID of frame that wraps the frame which sent the request. Set to -1 if no
+  // parent frame exists.
+  required long parentFrameId;
+
+  // The unique identifier for the frame's parent document, if this request
+  // is for a frame and has a parent.
+  DOMString parentDocumentId;
+
+  // The ID of the tab in which the request takes place. Set to -1 if the
+  // request isn't related to a tab.
+  required long tabId;
+
+  // The resource type of the request.
+  required ResourceType type;
+};
+
+dictionary TestMatchRequestDetails {
+  // The URL of the hypothetical request.
+  required DOMString url;
+
+  // The initiator URL (if any) for the hypothetical request.
+  DOMString initiator;
+
+  // Standard HTTP method of the hypothetical request. Defaults to "get" for
+  // HTTP requests and is ignored for non-HTTP requests.
+  RequestMethod method;
+
+  // The resource type of the hypothetical request.
+  required ResourceType type;
+
+  // The ID of the tab in which the hypothetical request takes place. Does
+  // not need to correspond to a real tab ID. Default is -1, meaning that
+  // the request isn't related to a tab.
+  long tabId;
+
+  // The associated top-level frame URL (if any) for the request.
+  DOMString topUrl;
+
+  // The headers provided by a hypothetical response if the request does not
+  // get blocked or redirected before it is sent. Represented as an object
+  // which maps a header name to a list of string values. If not specified,
+  // the hypothetical response would return empty response headers, which can
+  // match rules which match on the non-existence of headers.
+  // E.g. <code>{"content-type": ["text/html; charset=utf-8",
+  // "multipart/form-data"]}</code>
+  object responseHeaders;
+};
+
+dictionary MatchedRuleInfoDebug {
+  required MatchedRule rule;
+
+  // Details about the request for which the rule was matched.
+  required RequestDetails request;
+};
+
+[nodoc] dictionary DNRInfo {
+  [nodoc] required sequence<Ruleset> rule_resources;
+};
+
+[nodoc] partial dictionary ExtensionManifest {
+  [nodoc] DNRInfo declarative_net_request;
+};
+
+dictionary RegexOptions {
+  // The regular expresson to check.
+  required DOMString regex;
+
+  // Whether the <code>regex</code> specified is case sensitive. Default is
+  // true.
+  boolean isCaseSensitive;
+
+  // Whether the <code>regex</code> specified requires capturing. Capturing is
+  // only required for redirect rules which specify a
+  // <code>regexSubstition</code> action. The default is false.
+  boolean requireCapturing;
+};
+
+dictionary IsRegexSupportedResult {
+  required boolean isSupported;
+
+  // Specifies the reason why the regular expression is not supported. Only
+  // provided if <code>isSupported</code> is false.
+  UnsupportedRegexReason reason;
+};
+
+dictionary TestMatchOutcomeResult {
+  // The rules (if any) that match the hypothetical request.
+  required sequence<MatchedRule> matchedRules;
+};
+
+dictionary UpdateRuleOptions {
+  // IDs of the rules to remove. Any invalid IDs will be ignored.
+  sequence<long> removeRuleIds;
+  // Rules to add.
+  sequence<Rule> addRules;
+};
+
+dictionary UpdateRulesetOptions {
+  // The set of ids corresponding to a static $(ref:Ruleset) that should be
+  // disabled.
+  sequence<DOMString> disableRulesetIds;
+  // The set of ids corresponding to a static $(ref:Ruleset) that should be
+  // enabled.
+  sequence<DOMString> enableRulesetIds;
+};
+
+dictionary UpdateStaticRulesOptions {
+  // The id corresponding to a static $(ref:Ruleset).
+  required DOMString rulesetId;
+  // Set of ids corresponding to rules in the $(ref:Ruleset) to disable.
+  sequence<long> disableRuleIds;
+  // Set of ids corresponding to rules in the $(ref:Ruleset) to enable.
+  sequence<long> enableRuleIds;
+};
+
+dictionary GetDisabledRuleIdsOptions {
+  // The id corresponding to a static $(ref:Ruleset).
+  required DOMString rulesetId;
+};
+
+dictionary TabActionCountUpdate {
+  // The tab for which to update the action count.
+  required long tabId;
+  // The amount to increment the tab's action count by. Negative values will
+  // decrement the count.
+  required long increment;
+};
+
+dictionary ExtensionActionOptions {
+  // Whether to automatically display the action count for a page as the
+  // extension's badge text. This preference is persisted across sessions.
+  boolean displayActionCountAsBadgeText;
+  // Details of how the tab's action count should be adjusted.
+  TabActionCountUpdate tabUpdate;
+};
+
+// Listener callback for the onRuleMatchedDebug event.
+// |info|: The rule that has been matched along with information about the
+// associated request.
+callback OnRuleMatchedDebugListener = undefined (MatchedRuleInfoDebug info);
+
+interface OnRuleMatchedDebugEvent : ExtensionEvent {
+  static undefined addListener(OnRuleMatchedDebugListener listener);
+  static undefined removeListener(OnRuleMatchedDebugListener listener);
+  static boolean hasListener(OnRuleMatchedDebugListener listener);
+};
+
+// The <code>chrome.declarativeNetRequest</code> API is used to block or modify
+// network requests by specifying declarative rules. This lets extensions
+// modify network requests without intercepting them and viewing their content,
+// thus providing more privacy.
+[generate_error_messages]
+interface DeclarativeNetRequest {
+  // Modifies the current set of dynamic rules for the extension.
+  // The rules with IDs listed in <code>options.removeRuleIds</code> are first
+  // removed, and then the rules given in <code>options.addRules</code> are
+  // added. Notes:
+  // <ul>
+  // <li>This update happens as a single atomic operation: either all
+  // specified rules are added and removed, or an error is returned.</li>
+  // <li>These rules are persisted across browser sessions and across
+  // extension updates.</li>
+  // <li>Static rules specified as part of the extension package can not be
+  // removed using this function.</li>
+  // <li>$(ref:MAX_NUMBER_OF_DYNAMIC_RULES) is the maximum number
+  // of dynamic rules an extension can add. The number of
+  // <a href="#safe_rules">unsafe rules</a> must not exceed
+  // $(ref:MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES).</li>
+  // </ul>
+  // |Returns|: Promise that resolves once the update is complete.
+  // In case of an error, the promise will be rejected and no change will be
+  // made to the rule set. This can happen for multiple reasons, such as
+  // invalid rule format, duplicate rule ID, rule count limit exceeded,
+  // internal errors, and others.
+  static Promise<undefined> updateDynamicRules(
+      UpdateRuleOptions options);
+
+  // Returns the current set of dynamic rules for the extension. Callers can
+  // optionally filter the list of fetched rules by specifying a
+  // <code>filter</code>.
+  // |filter|: An object to filter the list of fetched rules.
+  // |Returns|: Promise that resolves with the set of dynamic rules. The
+  // Promise may be rejected in case of transient internal errors.
+  // |PromiseValue|: rules
+  [requiredCallback] static Promise<sequence<Rule>> getDynamicRules(
+      optional GetRulesFilter filter);
+
+  // Modifies the current set of session scoped rules for the extension.
+  // The rules with IDs listed in <code>options.removeRuleIds</code> are first
+  // removed, and then the rules given in <code>options.addRules</code> are
+  // added. Notes:
+  // <ul>
+  // <li>This update happens as a single atomic operation: either all
+  // specified rules are added and removed, or an error is returned.</li>
+  // <li>These rules are not persisted across sessions and are backed in
+  // memory.</li>
+  // <li>$(ref:MAX_NUMBER_OF_SESSION_RULES) is the maximum number
+  // of session rules an extension can add.</li>
+  // </ul>
+  // |Returns|: Promise that resolves once the update is complete. In case
+  // of an error, the promise will be rejected and no change will be
+  // made to the rule set. This can happen for multiple reasons, such as
+  // invalid rule format, duplicate rule ID, rule count limit exceeded, and
+  // others.
+  static Promise<undefined> updateSessionRules(
+      UpdateRuleOptions options);
+
+  // Returns the current set of session scoped rules for the extension.
+  // Callers can optionally filter the list of fetched rules by specifying a
+  // <code>filter</code>.
+  // |filter|: An object to filter the list of fetched rules.
+  // |Returns|: Promise that resolves with the set of session scoped rules.
+  // |PromiseValue|: rules
+  [requiredCallback] static Promise<sequence<Rule>> getSessionRules(
+      optional GetRulesFilter filter);
+
+  // Updates the set of enabled static rulesets for the extension. The
+  // rulesets with IDs listed in <code>options.disableRulesetIds</code> are
+  // first removed, and then the rulesets listed in
+  // <code>options.enableRulesetIds</code> are added.<br/>
+  // Note that the set of enabled static rulesets is persisted across sessions
+  // but not across extension updates, i.e. the <code>rule_resources</code>
+  // manifest key will determine the set of enabled static rulesets on each
+  // extension update.
+  // |Returns|: Promise that resolves once the update is complete. In case of
+  // an error, the promise will be rejected and no change will be made to the
+  // set of enabled rulesets. This can happen for multiple reasons, such as
+  // invalid ruleset IDs, rule count limit exceeded, or internal errors.
+  static Promise<undefined> updateEnabledRulesets(
+      UpdateRulesetOptions options);
+
+  // Returns the ids for the current set of enabled static rulesets.
+  // |Returns|: Promise that resolves with a list of ids, where each id
+  // corresponds to an enabled static $(ref:Ruleset).
+  // |PromiseValue|: rulesetIds
+  [requiredCallback] static Promise<sequence<DOMString>> getEnabledRulesets();
+
+  // Disables and enables individual static rules in a $(ref:Ruleset).
+  // Changes to rules belonging to a disabled $(ref:Ruleset) will take
+  // effect the next time that it becomes enabled.
+  // |Returns|: Promise that resolves when the update is complete. In case of
+  // an error, the promise will be rejected and no change will be made to the
+  // enabled static rules.
+  static Promise<undefined> updateStaticRules(
+      UpdateStaticRulesOptions options);
+
+  // Returns the list of static rules in the given $(ref:Ruleset) that are
+  // currently disabled.
+  // |options|: Specifies the ruleset to query.
+  // |Returns|: Promise that resolves with a list of ids that correspond to
+  //  the disabled rules in that ruleset.
+  // |PromiseValue|: disabledRuleIds
+  [requiredCallback] static Promise<sequence<long>> getDisabledRuleIds(
+      GetDisabledRuleIdsOptions options);
+
+  // Returns all rules matched for the extension. Callers can optionally
+  // filter the list of matched rules by specifying a <code>filter</code>.
+  // This method is only available to extensions with the
+  // <code>"declarativeNetRequestFeedback"</code> permission or having the
+  // <code>"activeTab"</code> permission granted for the <code>tabId</code>
+  // specified in <code>filter</code>.
+  // Note: Rules not associated with an active document that were matched more
+  // than five minutes ago will not be returned.
+  // |filter|: An object to filter the list of matched rules.
+  // |Returns|: Promise that resolves once the list of matched rules has been
+  // fetched. In case of an error, the Promise will be rejected. This can
+  // happen for multiple reasons, such as insufficient permissions, or
+  // exceeding the quota.
+  // |PromiseValue|: details
+  [requiredCallback] static Promise<RulesMatchedDetails> getMatchedRules(
+      optional MatchedRulesFilter filter);
+
+  // Configures if the action count for tabs should be displayed as the
+  // extension action's badge text and provides a way for that action count to
+  // be incremented.
+  static Promise<undefined> setExtensionActionOptions(
+      ExtensionActionOptions options);
+
+  // Checks if the given regular expression will be supported as a
+  // <code>regexFilter</code> rule condition.
+  // |regexOptions|: The regular expression to check.
+  // |Returns|: Promise that resolves with details consisting of whether the
+  // regular expression is supported and the reason if not.
+  // |PromiseValue|: result
+  [requiredCallback] static Promise<IsRegexSupportedResult> isRegexSupported(
+      RegexOptions regexOptions);
+
+  // Returns the number of static rules an extension can enable before the
+  // <a href="#global-static-rule-limit">global static rule limit</a> is
+  // reached.
+  // |PromiseValue|: count
+  [requiredCallback] static Promise<long> getAvailableStaticRuleCount();
+
+  // Checks if any of the extension's declarativeNetRequest rules would match
+  // a hypothetical request.
+  // Note: Only available for unpacked extensions as this is only intended to
+  // be used during extension development.
+  // |requestDetails|: The request details to test.
+  // |Returns|: Promise that resolves with the details of matched rules.
+  // |PromiseValue|: result
+  [requiredCallback] static Promise<TestMatchOutcomeResult> testMatchOutcome(
+      TestMatchRequestDetails request);
+
+  // The minimum number of static rules guaranteed to an extension across its
+  // enabled static rulesets. Any rules above this limit will count towards
+  // the <a href="#global-static-rule-limit">global static rule limit</a>.
+  const long GUARANTEED_MINIMUM_STATIC_RULES = 30000;
+
+  // The maximum number of combined dynamic and session scoped rules an
+  // extension can add.
+  [nodoc, deprecated="There is no longer a combined limit. See $(ref:MAX_NUMBER_OF_DYNAMIC_RULES) and $(ref:MAX_NUMBER_OF_SESSION_RULES)."]
+  const long MAX_NUMBER_OF_DYNAMIC_AND_SESSION_RULES = 5000;
+
+  // The maximum number of dynamic rules that an extension can add.
+  const long MAX_NUMBER_OF_DYNAMIC_RULES = 30000;
+
+  // The maximum number of "unsafe" dynamic rules that an extension can add.
+  const long MAX_NUMBER_OF_UNSAFE_DYNAMIC_RULES = 5000;
+
+  // The maximum number of session scoped rules that an extension can add.
+  const long MAX_NUMBER_OF_SESSION_RULES = 5000;
+
+  // The maximum number of "unsafe" session scoped rules that an extension can
+  // add.
+  const long MAX_NUMBER_OF_UNSAFE_SESSION_RULES = 5000;
+
+  // Time interval within which <code>MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL
+  // getMatchedRules</code> calls can be made, specified in minutes.
+  // Additional calls will fail immediately and set $(ref:runtime.lastError).
+  // Note: <code>getMatchedRules</code> calls associated with a user gesture
+  // are exempt from the quota.
+  const long GETMATCHEDRULES_QUOTA_INTERVAL = 10;
+
+  // The number of times <code>getMatchedRules</code> can be called within a
+  // period of <code>GETMATCHEDRULES_QUOTA_INTERVAL</code>.
+  const long MAX_GETMATCHEDRULES_CALLS_PER_INTERVAL = 20;
+
+  // The maximum number of regular expression rules that an extension can
+  // add. This limit is evaluated separately for the set of dynamic rules and
+  // those specified in the rule resources file.
+  const long MAX_NUMBER_OF_REGEX_RULES = 1000;
+
+  // The maximum number of static <code>Rulesets</code> an extension can
+  // specify as part of the <code>"rule_resources"</code> manifest key.
+  const long MAX_NUMBER_OF_STATIC_RULESETS = 100;
+
+  // The maximum number of static <code>Rulesets</code> an extension can
+  // enable at any one time.
+  const long MAX_NUMBER_OF_ENABLED_STATIC_RULESETS = 50;
+
+  // Ruleset ID for the dynamic rules added by the extension.
+  [StringValue="_dynamic"]
+  const DOMString DYNAMIC_RULESET_ID = 0;
+
+  // Ruleset ID for the session-scoped rules added by the extension.
+  [StringValue="_session"]
+  const DOMString SESSION_RULESET_ID = 0;
+
+  // Fired when a rule is matched with a request. Only available for unpacked
+  // extensions with the <code>"declarativeNetRequestFeedback"</code> permission
+  // as this is intended to be used for debugging purposes only.
+  static attribute OnRuleMatchedDebugEvent onRuleMatchedDebug;
+};
+
+partial interface Browser {
+  static attribute DeclarativeNetRequest declarativeNetRequest;
+};
