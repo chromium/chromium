@@ -35,9 +35,6 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
-// Impression counter for the Save Passwords ephemeral module.
-const char kSavePasswordsEphemeralModuleImpressionCounterPref[] =
-    "ephemeral_pref_counter.save_passwords_ephemeral_module_counter";
 // Impression counter for the Lens ephemeral module.
 const char kLensEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.lens_ephemeral_module_counter";
@@ -77,9 +74,7 @@ void AddCardForTip(TipIdentifier tip,
       break;
     }
     case TipIdentifier::kSavePasswords: {
-      int impression_count =
-          prefs->GetInteger(kSavePasswordsEphemeralModuleImpressionCounterPref);
-      if (SavePasswordsEphemeralModule::IsEnabled(impression_count)) {
+      if (SavePasswordsEphemeralModule::IsEnabled(prefs)) {
         cards.push_back(std::make_unique<SavePasswordsEphemeralModule>(prefs));
       }
       break;
@@ -200,12 +195,9 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   AddressBarPositionEphemeralModule::RegisterProfilePrefs(registry);
   AutofillPasswordsEphemeralModule::RegisterProfilePrefs(registry);
   EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(registry);
+  SavePasswordsEphemeralModule::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kSendTabPromoImpressionCounterPref, 0);
-  registry->RegisterIntegerPref(
-      kSavePasswordsEphemeralModuleImpressionCounterPref, 0);
   registry->RegisterIntegerPref(kLensEphemeralModuleImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(kSavePasswordsEphemeralModuleInteractedPref,
-                                false);
   registry->RegisterBooleanPref(kLensEphemeralModuleInteractedPref, false);
   registry->RegisterBooleanPref(
       kLensEphemeralModuleSearchVariationInteractedPref, false);
@@ -239,16 +231,10 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kSavePasswordsEphemeralModule) == 0) {
-    int freshness_impression_count = profile_prefs_->GetInteger(
-        kSavePasswordsEphemeralModuleImpressionCounterPref);
-    profile_prefs_->SetInteger(
-        kSavePasswordsEphemeralModuleImpressionCounterPref,
-        freshness_impression_count + 1);
-  } else if (strcmp(card_name, kLensEphemeralModule) == 0 ||
-             strcmp(card_name, kLensEphemeralModuleSearchVariation) == 0 ||
-             strcmp(card_name, kLensEphemeralModuleShopVariation) == 0 ||
-             strcmp(card_name, kLensEphemeralModuleTranslateVariation) == 0) {
+  if (strcmp(card_name, kLensEphemeralModule) == 0 ||
+      strcmp(card_name, kLensEphemeralModuleSearchVariation) == 0 ||
+      strcmp(card_name, kLensEphemeralModuleShopVariation) == 0 ||
+      strcmp(card_name, kLensEphemeralModuleTranslateVariation) == 0) {
     int freshness_impression_count =
         profile_prefs_->GetInteger(kLensEphemeralModuleImpressionCounterPref);
     profile_prefs_->SetInteger(kLensEphemeralModuleImpressionCounterPref,
@@ -285,10 +271,7 @@ void HomeModulesCardRegistryIOS::NotifyCardInteracted(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnInteract()` lifecycle hook.
-  if (strcmp(card_name, kSavePasswordsEphemeralModule) == 0) {
-    profile_prefs_->SetBoolean(kSavePasswordsEphemeralModuleInteractedPref,
-                               true);
-  } else if (strcmp(card_name, kLensEphemeralModule) == 0) {
+  if (strcmp(card_name, kLensEphemeralModule) == 0) {
     profile_prefs_->SetBoolean(kLensEphemeralModuleInteractedPref, true);
   } else if (strcmp(card_name, kLensEphemeralModuleSearchVariation) == 0) {
     profile_prefs_->SetBoolean(

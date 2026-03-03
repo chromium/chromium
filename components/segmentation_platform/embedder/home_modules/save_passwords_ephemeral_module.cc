@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/tips_manager/signal_constants.h"
@@ -21,6 +23,14 @@
 namespace segmentation_platform::home_modules {
 
 namespace {
+
+// Impression counter for the Save Passwords ephemeral module.
+const char kSavePasswordsEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.save_passwords_ephemeral_module_counter";
+
+// Interaction counter for the Save Passwords ephemeral module.
+const char kSavePasswordsEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted.save_passwords_ephemeral_module_interacted";
 
 // Defines the signals that must all evaluate to true for
 // `SavePasswordsEphemeralModule` to be shown.
@@ -39,12 +49,21 @@ constexpr auto kDisqualifyingSignals =
 }  // namespace
 
 // static
+void SavePasswordsEphemeralModule::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kSavePasswordsEphemeralModuleImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kSavePasswordsEphemeralModuleInteractedPref,
+                                false);
+}
+
+// static
 bool SavePasswordsEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kSavePasswordsEphemeralModule;
 }
 
 // static
-bool SavePasswordsEphemeralModule::IsEnabled(int impression_count) {
+bool SavePasswordsEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -57,7 +76,24 @@ bool SavePasswordsEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
+  int impression_count = profile_prefs->GetInteger(
+      kSavePasswordsEphemeralModuleImpressionCounterPref);
+
   return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+}
+
+void SavePasswordsEphemeralModule::OnShow(PrefService* profile_prefs,
+                                          PrefService* local_state) {
+  int freshness_impression_count = profile_prefs->GetInteger(
+      kSavePasswordsEphemeralModuleImpressionCounterPref);
+
+  profile_prefs->SetInteger(kSavePasswordsEphemeralModuleImpressionCounterPref,
+                            freshness_impression_count + 1);
+}
+
+void SavePasswordsEphemeralModule::OnInteract(PrefService* profile_prefs,
+                                              PrefService* local_state) {
+  profile_prefs->SetBoolean(kSavePasswordsEphemeralModuleInteractedPref, true);
 }
 
 // Defines the input signals required by this module.
@@ -95,8 +131,8 @@ CardSelectionInfo::ShowResult SavePasswordsEphemeralModule::ComputeCardResult(
     return CardSelectionInfo::ShowResult(EphemeralHomeModuleRank::kNotShown);
   }
 
-  // Checks if all the required signals are present and have a positive value
-  // in the provided `signals`.
+  // Checks if all the required signals are present and have a positive value in
+  // the provided `signals`.
   for (const auto& signal : kRequiredSignals) {
     std::optional<float> result = signals.GetSignal(std::string(signal));
 

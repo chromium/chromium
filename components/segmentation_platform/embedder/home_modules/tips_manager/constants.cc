@@ -70,9 +70,6 @@ constexpr char kTotalOccurrences[] = "total_occurrences";
 constexpr char kTipsSignalHistory[] =
     "segmentation_platform.tips.signal_history";
 
-const char kSavePasswordsEphemeralModuleInteractedPref[] =
-    "ephemeral_pref_interacted."
-    "save_passwords_ephemeral_module_interacted";
 const char kLensEphemeralModuleInteractedPref[] =
     "ephemeral_pref_interacted.lens_ephemeral_module_interacted";
 const char kLensEphemeralModuleSearchVariationInteractedPref[] =

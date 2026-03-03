@@ -100,8 +100,6 @@ extern const char kTipsSignalHistory[];
 
 // Pref names
 
-// Whether or not the Save Passwords ephemeral module has been interacted with.
-extern const char kSavePasswordsEphemeralModuleInteractedPref[];
 // Whether or not the Lens ephemeral module has been interacted with.
 extern const char kLensEphemeralModuleInteractedPref[];
 // Whether or not the Lens Search variation has been interacted with.
