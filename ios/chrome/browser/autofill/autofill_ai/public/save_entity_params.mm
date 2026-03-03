@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 
 #import "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#import "components/strings/grit/components_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
@@ -25,10 +26,41 @@ SaveEntityParams& SaveEntityParams::operator=(SaveEntityParams&&) = default;
 SaveEntityParams::~SaveEntityParams() = default;
 
 std::u16string SaveEntityParams::GetTitleText() const {
-  return l10n_util::GetStringFUTF16(IsUpdate()
-                                        ? IDS_IOS_AUTOFILL_AI_UPDATE_PROMPT
-                                        : IDS_IOS_AUTOFILL_AI_SAVE_PROMPT,
-                                    new_entity.type().GetNameForI18n());
+  switch (new_entity.type().name()) {
+    case EntityTypeName::kDriversLicense:
+      return l10n_util::GetStringUTF16(
+          IsUpdate()
+              ? IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE
+              : IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kNationalIdCard:
+      return l10n_util::GetStringUTF16(
+          IsUpdate()
+              ? IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE
+              : IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kPassport:
+      return l10n_util::GetStringUTF16(
+          IsUpdate() ? IDS_AUTOFILL_AI_UPDATE_PASSPORT_ENTITY_DIALOG_TITLE
+                     : IDS_AUTOFILL_AI_SAVE_PASSPORT_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kVehicle:
+      return l10n_util::GetStringUTF16(
+          IsUpdate() ? IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE
+                     : IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetStringUTF16(
+          IsUpdate()
+              ? IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE
+              : IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kRedressNumber:
+      return l10n_util::GetStringUTF16(
+          IsUpdate() ? IDS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE
+                     : IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE);
+    case EntityTypeName::kFlightReservation:
+    case EntityTypeName::kOrder:
+      return l10n_util::GetStringFUTF16(IsUpdate()
+                                            ? IDS_IOS_AUTOFILL_AI_UPDATE_PROMPT
+                                            : IDS_IOS_AUTOFILL_AI_SAVE_PROMPT,
+                                        new_entity.type().GetNameForI18n());
+  }
 }
 
 std::u16string SaveEntityParams::GetMessageText() const {

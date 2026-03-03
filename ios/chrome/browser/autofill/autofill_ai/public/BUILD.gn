@@ -11,6 +11,7 @@ source_set("public") {
   deps = [
     "//base",
     "//components/autofill/core/browser",
+    "//components/strings:components_strings__strings_grit",
     "//ios/chrome/app/strings:ios_strings__strings_grit",
   ]
   frameworks = [ "Foundation.framework" ]
