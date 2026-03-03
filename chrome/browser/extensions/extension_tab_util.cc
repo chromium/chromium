@@ -1065,27 +1065,17 @@ GURL ExtensionTabUtil::ResolvePossiblyRelativeURL(const std::string& url_string,
 void ExtensionTabUtil::NavigateToURL(WindowOpenDisposition disposition,
                                      content::WebContents* web_contents,
                                      const GURL& url) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  NavigateParams params(chrome::FindBrowserWithTab(web_contents), url,
-                        ui::PAGE_TRANSITION_FROM_API);
+  BrowserWindowInterface* browser =
+      web_contents
+          ? browser_window_util::GetBrowserForTabContents(*web_contents)
+          : nullptr;
+  NavigateParams params(browser, url, ui::PAGE_TRANSITION_FROM_API);
   params.disposition = disposition;
   params.window_action = NavigateParams::WindowAction::kShowWindow;
   if (web_contents) {
     params.source_contents = web_contents;
   }
   Navigate(&params);
-#else
-  // Fow now, only current tab and new foreground tab disposition are supported
-  // on Android.
-  // TODO(crbug.com//440173000): Support other window dispositions for Android.
-  CHECK(disposition == WindowOpenDisposition::CURRENT_TAB ||
-        disposition == WindowOpenDisposition::NEW_FOREGROUND_TAB);
-  content::OpenURLParams params(url, content::Referrer(), disposition,
-                                ui::PAGE_TRANSITION_FROM_API,
-                                /*is_renderer_initiated=*/false);
-  web_contents->OpenURL(params,
-                        /*navigation_handle_callback=*/{});
-#endif
 }
 
 bool ExtensionTabUtil::IsKillURL(const GURL& url) {
