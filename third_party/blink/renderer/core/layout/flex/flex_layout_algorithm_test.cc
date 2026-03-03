@@ -876,8 +876,8 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsContentDistributionGaps) {
   // Validate per-line effective gap sizes (column-gap + content distribution
   // space). Line 1: 5 items, free = 50px, space-between = 12.5px.
   // Line 2: 4 items, free = 120px, space-between = 40px.
-  EXPECT_EQ(gap_geometry->GetFlexCrossGapSizes(0), LayoutUnit(12.5));
-  EXPECT_EQ(gap_geometry->GetFlexCrossGapSizes(1), LayoutUnit(40));
+  EXPECT_EQ(gap_geometry->GetFlexCrossGapSize(0), LayoutUnit(12.5));
+  EXPECT_EQ(gap_geometry->GetFlexCrossGapSize(1), LayoutUnit(40));
 
   VerifyCrossGaps(expected_column_gaps, column_gaps);
 }

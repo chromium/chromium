@@ -991,14 +991,6 @@ crbug.com/336604 external/wpt/css/css-flexbox/flexbox-collapsed-item-horiz-003.h
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse-line-wrapping.html [ Failure ]
 crbug.com/336604 external/wpt/css/css-flexbox/flexbox_visibility-collapse.html [ Failure ]
 
-# [css-gaps]
-crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
-crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-005.html [ Failure ]
-crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-006.html [ Failure ]
-# [css-gaps] Known bug here, suppressed rows gaps in grid where a spanning item exists
-# should see the particular row expanded to occupy what the gap space would have been.
-crbug.com/394042462 external/wpt/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-028.html [ Failure ]
-
 # [css-lists]
 crbug.com/1123457 external/wpt/css/css-lists/counter-list-item-2.html [ Failure ]
 crbug.com/1066577 external/wpt/css/css-lists/foo-counter-reversed-007a.html [ Failure ]
@@ -6672,12 +6664,23 @@ crbug.com/458113204 external/wpt/html/semantics/forms/the-select-element/customi
 # The height of the appearance:auto <select> button on mac is different from the reference.
 crbug.com/440471997 [ Mac ] wpt_internal/html/semantics/forms/the-select-element/select-multiple-popup-auto-appearance.html [ Failure ]
 
-### Tests failing with CSSGapDecorations Enabled:
+### [css-gaps] Tests failing with CSSGapDecorations Enabled:
 # These tests are failing for multicol OOF items.
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-097.html [ Failure ]
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-098.html [ Failure ]
 crbug.com/429365670 external/wpt/css/css-break/out-of-flow-in-multicolumn-109.html [ Failure ]
 crbug.com/429365670 external/wpt/css/css-multicol/multicol-nested-column-rule-002.html [ Failure ]
+
+crbug.com/487338359 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-012.html [ Crash Failure ]
+
+crbug.com/487338358 external/wpt/css/css-gaps/flex/flex-gap-decorations-053.html [ Failure ]
+
+crbug.com/445971864 external/wpt/css/css-gaps/multicol/multicol-gap-decorations-007.html [ Failure ]
+crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-005.html [ Failure ]
+crbug.com/357648037 external/wpt/css/css-gaps/flex/fragmentation/flex-gap-decorations-fragmentation-006.html [ Failure ]
+# [css-gaps] Known bug here, suppressed rows gaps in grid where a spanning item exists
+# should see the particular row expanded to occupy what the gap space would have been.
+crbug.com/394042462 external/wpt/css/css-gaps/grid/fragmentation/grid-gap-decorations-fragmentation-028.html [ Failure ]
 
 ### End of tests failing with CSSGapDecorations Enabled
 ### Tests for CSSGapDecorations disabled

@@ -213,8 +213,15 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   GridTrackSizingDirection cross_direction =
       direction == kForRows ? kForColumns : kForRows;
 
-  const LayoutUnit cross_gap_size =
-      direction == kForRows ? inline_gap_size_ : block_gap_size_;
+  std::optional<LayoutUnit> cross_gap_size_above;
+  if (has_cross_gaps_before) {
+    cross_gap_size_above = GetFlexCrossGapSize(gap_index);
+  }
+
+  std::optional<LayoutUnit> cross_gap_size_below;
+  if (has_cross_gaps_after) {
+    cross_gap_size_below = GetFlexCrossGapSize(gap_index + 1);
+  }
 
   // In flexbox, cross gaps from adjacent flex lines can overlap in a
   // non-uniform fashion along the main axis. To determine where to paint gap
@@ -223,7 +230,7 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   // overlapping regions ("overlap windows") start and end.
   //
   // Each intersection is initially pushed as a preemptive open
-  // (`kWindowOpen*`). If the next intersection overlaps, the open state is
+  // (`kWindowOpen`). If the next intersection overlaps, the open state is
   // confirmed and the new intersection is added as an initial preemptive close
   // edge. If it does not overlap, the preemptive open is cleared back to a
   // regular intersection. Interior points of the window are added as close
@@ -235,12 +242,16 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   auto ProcessCrossGapIntersection = [&](LayoutUnit intersection_offset,
                                          bool is_above_main_gap) {
     CHECK(!intersections.empty());
+
+    // The cross gap size depends on which side of the main gap the
+    // intersection comes from. "Above" corresponds to the flex line at
+    // `gap_index`, while "below" corresponds to the next line.
+    const LayoutUnit cross_gap_size = is_above_main_gap
+                                          ? cross_gap_size_above.value()
+                                          : cross_gap_size_below.value();
+
     // Two consecutive intersections produce overlapping decorations when their
     // distance is less than `cross_gap_size`.
-    //
-    // TODO(samomekarajr): This needs to factor in different sized gaps when
-    // that is implemented. For now, the implementation only supports uniform
-    // gaps in flexbox, so this is sufficient.
     const bool overlaps_with_intersection =
         intersections.size() > 1 &&
         (intersection_offset - intersections.back().GetOffset() <
@@ -255,9 +266,8 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
         // edge, which can only be known when we hit an intersection that does
         // not overlap the current open window.
         intersections.push_back(GapIntersection(
-            intersection_offset, is_above_main_gap
-                                     ? OverlapWindowState::kWindowCloseAbove
-                                     : OverlapWindowState::kWindowCloseBelow));
+            intersection_offset, OverlapWindowState::kWindowClose,
+            is_above_main_gap));
       } else {
         CHECK(intersections.back().IsOverlapWindowClose());
         // Interiors and possible closing edge of a window: If the current
@@ -265,9 +275,8 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
         // the last intersection wasn't the end of the overlap window. Update
         // the end point to the current intersection point, instead.
         intersections.back().SetOffset(intersection_offset);
-        intersections.back().SetOverlapState(
-            is_above_main_gap ? OverlapWindowState::kWindowCloseAbove
-                              : OverlapWindowState::kWindowCloseBelow);
+        intersections.back().SetOverlapState(OverlapWindowState::kWindowClose);
+        intersections.back().SetIsAboveMainGap(is_above_main_gap);
       }
     } else {
       if (intersections.back().IsOverlapWindowOpen()) {
@@ -279,10 +288,9 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
       // Add the current intersection as a potential overlap window opening. If
       // the next intersection overlaps, this will be confirmed as the open edge
       // of a new overlap window. Otherwise, it will be cleared.
-      intersections.push_back(GapIntersection(
-          intersection_offset, is_above_main_gap
-                                   ? OverlapWindowState::kWindowOpenAbove
-                                   : OverlapWindowState::kWindowOpenBelow));
+      intersections.push_back(GapIntersection(intersection_offset,
+                                              OverlapWindowState::kWindowOpen,
+                                              is_above_main_gap));
     }
   };
 
@@ -299,8 +307,8 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
   // ordered by offset. Intersections that don't overlap or overlap uniformly
   // are represented by a single `GapIntersection` with no overlap state.
   // Non-uniform overlaps produce an overlap window bounded by two
-  // `GapIntersection`s: one with an `kWindowOpen*` state and one with a
-  // `kWindowClose*` state. See `OverlapWindowState` for details on each value.
+  // `GapIntersection`s: one with an `kWindowOpen` state and one with a
+  // `kWindowClose` state. See `OverlapWindowState` for details on each value.
   while (cross_gaps_before_current_idx <= cross_gaps_before_end_idx &&
          cross_gaps_after_current_idx <= cross_gaps_after_end_idx) {
     LayoutUnit cross_gap_before_offset =
@@ -554,6 +562,79 @@ bool GapGeometry::IsEdgeIntersection(
   }
 
   return false;
+}
+
+LayoutUnit GapGeometry::GetMaxInsetWidth(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    bool is_main_gap,
+    const Vector<GapIntersection>& intersections) const {
+  // For all intersection points other than flex main-direction overlap
+  // intersections, the max inset width is the same as the width of the cross
+  // gutter width since the gaps are always uniform.
+  const GapIntersection& intersection = intersections[intersection_index];
+  if (GetContainerType() != ContainerType::kFlex ||
+      !IsMainDirection(track_direction) || !intersection.HasOverlapState()) {
+    return GetCrossWidthForIntersection(track_direction, gap_index,
+                                        intersection_index, is_main_gap,
+                                        intersections);
+  }
+
+  CHECK(!IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                            is_main_gap, intersections));
+
+  // For flex main-direction overlap intersections, compute the interior width
+  // as the distance of the overlap window, which is defined by the two
+  // intersections that bound the window. The start and end of the window are
+  // determined by the offsets of the two overlap intersections.
+  const GapIntersection& open_intersection =
+      intersections[intersection.IsOverlapWindowOpen()
+                        ? intersection_index
+                        : intersection_index - 1];
+  const GapIntersection& close_intersection =
+      intersections[intersection.IsOverlapWindowClose()
+                        ? intersection_index
+                        : intersection_index + 1];
+  CHECK(open_intersection.IsOverlapWindowOpen());
+  CHECK(close_intersection.IsOverlapWindowClose());
+
+  // Get the per-line gap size for each intersection based on which side
+  // of the main gap it originates from.
+  const LayoutUnit open_gap_width = GetFlexCrossGapSize(
+      open_intersection.IsAboveMainGap() ? gap_index : gap_index + 1);
+  const LayoutUnit close_gap_width = GetFlexCrossGapSize(
+      close_intersection.IsAboveMainGap() ? gap_index : gap_index + 1);
+
+  return close_intersection.GetOffset() + (close_gap_width / 2) -
+         (open_intersection.GetOffset() - (open_gap_width / 2));
+}
+
+LayoutUnit GapGeometry::GetCrossWidthForIntersection(
+    GridTrackSizingDirection track_direction,
+    wtf_size_t gap_index,
+    wtf_size_t intersection_index,
+    bool is_main_gap,
+    const Vector<GapIntersection>& intersections) const {
+  if (IsEdgeIntersection(gap_index, intersection_index, intersections.size(),
+                         is_main_gap, intersections)) {
+    return LayoutUnit();
+  }
+
+  const LayoutUnit cross_gutter_width =
+      track_direction == kForRows ? GetInlineGapSize() : GetBlockGapSize();
+
+  // For grid, multicol and flex cross gaps, cross width is always the cross
+  // gutter width.
+  if (GetContainerType() != ContainerType::kFlex ||
+      !IsMainDirection(track_direction)) {
+    return cross_gutter_width;
+  }
+
+  // For flex main intersections, return the per-line cross gap size.
+  return GetFlexCrossGapSize(intersections[intersection_index].IsAboveMainGap()
+                                 ? gap_index
+                                 : gap_index + 1);
 }
 
 GapSegmentState GapGeometry::GetIntersectionGapSegmentState(
