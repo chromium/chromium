@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import argparse
 import csv
+import shutil
 import pathlib
 import sys
 import tempfile
@@ -28,28 +29,7 @@ def _get_schedule_files(directory: pathlib.Path) -> list[pathlib.Path]:
 
 
 def load_benchmark(path: pathlib.Path) -> list[dict[str, str]]:
-  with path.open('r', newline='', encoding='utf-8') as f:
-    return list(csv.DictReader(f))
-
-
-def save_benchmark(path: pathlib.Path, data: list[dict[str, str]],
-                   fieldnames: list[str]):
-  if 'flags' in fieldnames:
-    fieldnames.append(fieldnames.pop(fieldnames.index('flags')))
-
-  with tempfile.TemporaryDirectory() as tmp_dir:
-    temp_path = pathlib.Path(tmp_dir) / path.name
-    with temp_path.open('w', newline='', encoding='utf-8') as f:
-      writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator='\n')
-      writer.writeheader()
-      for row in data:
-        writer.writerow({k: row.get(k, '') for k in fieldnames})
-
-    # Validate the generated file before overwriting the original
-    bot_platforms.LoadScheduleFile(temp_path, {})
-
-    # If validation passes, move the temp file to the original path
-    path.write_bytes(temp_path.read_bytes())
+  return list(bot_platforms.ReadCSV(path))
 
 
 def cmd_list(args):
@@ -89,70 +69,102 @@ def _format_bot_row(row) -> str:
   return ', '.join(f'{k}={v}' for k, v in row.items() if k != 'bot' and v)
 
 
-def cmd_add(args):
+def _get_filtered_schedule_files(benchmarks: list[str]) -> list[pathlib.Path]:
   directory = pathlib.Path(__file__).resolve().parent
-  files = _get_schedule_files(directory)
-
-  targets = [
-      p for p in files if any(
-          p.match(pat) or p.stem == pat for pat in args.benchmarks)
+  csv_files = _get_schedule_files(directory)
+  filtered_files = [
+      csv_file for csv_file in csv_files if any(
+          csv_file.match(pattern) or csv_file.stem == pattern
+          for pattern in benchmarks)
   ]
-  if not targets:
+  return filtered_files
+
+
+def cmd_add(args):
+  csv_files = _get_filtered_schedule_files(args.benchmarks)
+  if not csv_files:
     print('No matching benchmarks found.')
     return
+  for csv_file in csv_files:
+    add_bot(csv_file, args.bot, args.repeat, args.shard, args.flags)
 
-  for path in targets:
-    data = load_benchmark(path)
-    with path.open('r', newline='', encoding='utf-8') as f:
-      fieldnames = list(csv.DictReader(f).fieldnames)
 
-    bot_row = next((r for r in data if r['bot'] == args.bot), None)
-    if not bot_row:
-      bot_row = {'bot': args.bot}
-      data.append(bot_row)
+def add_bot(path: pathlib.Path, bot: str, repeat: int | None, shard: int | None,
+            flags: str | None):
+  data = load_benchmark(path)
+  reader = bot_platforms.ReadCSV(path)
+  fieldnames = list(reader.fieldnames or [])
 
-    if repeat := args.repeat:
-      bot_row['repeat'] = str(repeat)
-    if shard := args.shard:
-      bot_row['shard'] = str(shard)
-    # Explicit None check since we also want to look for no flags:
-    if args.flags is not None:
-      if 'flags' not in fieldnames:
-        fieldnames.append('flags')
-      bot_row['flags'] = args.flags
+  if any(row['bot'] == bot for row in data):
+    print(f'Error: Bot {bot!r} already exists in {path.name}. '
+          'Updates are not supported to preserve comments.')
+    return
 
-    # Ensure default values for new rows
-    bot_row.setdefault('repeat', '1')
-    bot_row.setdefault('shard', '1')
+  new_row = {
+      'bot': bot,
+      'repeat': '1',
+      'shard': '1',
+  }
+  if repeat:
+    new_row['repeat'] = str(repeat)
+  if shard:
+    new_row['shard'] = str(shard)
+  if flags is not None:
+    if 'flags' not in fieldnames:
+      print(f'Error: "flags" column missing in {path.name}. '
+            'Cannot add flags without overwriting the header. '
+            'Please add the column manually first.')
+      return
+    new_row['flags'] = flags
 
-    data.sort(key=lambda x: x['bot'])
-    save_benchmark(path, data, fieldnames)
-    print(f'Updated {path.name}')
+  with tempfile.TemporaryDirectory() as tmp_dir:
+    temp_path = pathlib.Path(tmp_dir) / path.name
+    shutil.copy(path, temp_path)
+    with temp_path.open('a', newline='', encoding='utf-8') as f:
+      writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator='\n')
+      writer.writerow(new_row)
+    # validation of the temp file.
+    bot_platforms.LoadScheduleFile(temp_path, {})
+    # If validation passes, replace the original
+    shutil.move(temp_path, path)
+  print(f'Added {bot} to {path.name}')
 
 
 def cmd_remove(args):
-  directory = pathlib.Path(__file__).resolve().parent
-  files = _get_schedule_files(directory)
-
-  schedule_files = []
-  for csv_file in files:
-    for benchmark_name in args.benchmarks:
-      if csv_file.match(benchmark_name) or csv_file.stem == benchmark_name:
-        schedule_files.append(csv_file)
-        break
-
-  if not schedule_files:
+  csv_files = _get_filtered_schedule_files(args.benchmakrs)
+  if not csv_files:
     print('No matching benchmarks found.')
     return
 
-  for schedule_file in schedule_files:
-    data = load_benchmark(schedule_file)
-    new_data = [row for row in data if row['bot'] != args.bot]
-    if len(new_data) != len(data):
-      with schedule_file.open('r', newline='', encoding='utf-8') as f:
-        fieldnames = list(csv.DictReader(f).fieldnames)
-      save_benchmark(schedule_file, new_data, fieldnames)
-      print(f'Removed {args.bot} from {schedule_file.name}')
+  for csv_file in csv_files:
+    remove_bot(csv_file, args.bot)
+
+
+def remove_bot(path: pathlib.Path, bot: str):
+  lines = path.read_text(encoding='utf-8').splitlines(keepends=True)
+  if filtered_rows := _filter_bot_rows(lines, bot):
+    path.write_text(''.join(filtered_rows), encoding='utf-8')
+    print(f'Removed {bot} from {path.name}')
+
+
+def _filter_bot_rows(rows: list[str], bot: str) -> list[str]:
+  assert ',' not in bot, 'Invalid bot name {bot!r}'
+  bot_prefix = bot + ','
+  filtered_rows: list[str] = []
+  removed = False
+  previous_row = ''
+  for row in rows:
+    if not row.startswith(bot_prefix):
+      filtered_rows.append(row)
+      previous_row = row
+    else:
+      removed = True
+      if previous_row.startswith('#'):
+        filtered_rows.pop()
+      previous_row = ''
+  if removed:
+    return filtered_rows
+  return []
 
 
 def main():

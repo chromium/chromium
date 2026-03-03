@@ -1737,8 +1737,7 @@ def LoadScheduleFile(file_path: pathlib.Path,
   name = file_path.stem
   factory = _BENCHMARKS_CONFIG_FACTORIES[name]
   is_telemetry = (factory == _TelemetryConfig)  # pylint: disable=comparison-with-callable)
-  contents = file_path.read_text(encoding='utf-8')
-  reader = csv.DictReader(io.StringIO(contents), restkey='*flag')
+  reader = ReadCSV(file_path)
   fieldnames = reader.fieldnames
   assert fieldnames, 'Missing field names'
   has_flags = 'flags' in fieldnames
@@ -1753,6 +1752,18 @@ def LoadScheduleFile(file_path: pathlib.Path,
     config = _ParseScheduleConfigRow(row, name, factory, is_telemetry)
     configs.setdefault(bot, []).append(config)
 
+
+def ReadCSV(file_path: pathlib.Path):
+  contents = file_path.read_text(encoding='utf-8')
+  reader = csv.DictReader(_StripComments(io.StringIO(contents)),
+                          restkey='*flag')
+  return reader
+
+
+def _StripComments(iterator):
+  for line in iterator:
+    if line and line[0] != '#':
+      yield line
 
 def ParseFlags(file_path: pathlib.Path, row, has_flags: bool) -> str | None:
   if extraFlags := row.pop('*flag', None):

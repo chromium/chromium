@@ -3,8 +3,8 @@
 # found in the LICENSE file.
 
 import unittest
-import csv
 import sys
+import tempfile
 from pathlib import Path
 
 # Add tools/perf to sys.path
@@ -22,6 +22,24 @@ from core import dump_bot_platforms
 
 class ScheduleValidationTest(unittest.TestCase):
 
+  def testInlineComments(self):
+    with tempfile.TemporaryDirectory() as tmp_dir:
+      benchmark_name = 'speedometer3.crossbench'
+      csv_path = Path(tmp_dir) / f"{benchmark_name}.csv"
+      csv_content = """bot,repeat,shard
+# Full line comment
+linux-perf,1,1 # Inline comment
+# Another full line comment
+win-10-perf,2,1
+"""
+      csv_path.write_text(csv_content, encoding='utf-8')
+
+      configs = {}
+      bot_platforms.LoadScheduleFile(csv_path, configs)
+      self.assertIn('linux-perf', configs)
+      self.assertIn('win-10-perf', configs)
+      self.assertEqual(len(configs), 2)
+
   def testScheduleFiles(self):
     schedule_dir = FILE_PATH.absolute().parent / 'schedule'
     if not schedule_dir.is_dir():
@@ -32,11 +50,15 @@ class ScheduleValidationTest(unittest.TestCase):
 
     for path in csv_files:
       with self.subTest(path=path):
-        with path.open('r') as f:
-          reader = csv.DictReader(f)
-          self.verify_schedule(path, reader)
+        self.verify_schedule(path)
 
-  def verify_schedule(self, path, reader):
+  def verify_schedule(self, path):
+    content = path.read_text(encoding='utf-8')
+    assert content, "Unexpected empty file"
+    self.assertTrue(content.endswith('\n'),
+                    f"File {path.name} must end with a newline")
+    reader = bot_platforms.ReadCSV(path)
+    assert reader.fieldnames, "Missing header"
     if 'flags' in reader.fieldnames:
       self.assertEqual(reader.fieldnames[-1], 'flags',
                        f"'flags' must be the last column in {path}")
