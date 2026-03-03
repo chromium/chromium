@@ -6,11 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/domain_reliability/domain_reliability_prefs.h"
-#include "components/prefs/pref_service.h"
 
 namespace domain_reliability {
 
@@ -23,26 +19,22 @@ const bool kDefaultEnabled = true;
 const char kFieldTrialName[] = "DomRel-Enable";
 const char kFieldTrialValueEnable[] = "enable";
 
-bool IsDomainReliabilityAllowed() {
-  return g_browser_process->local_state()->GetBoolean(
-      prefs::kDomainReliabilityAllowedByPolicy);
-}
-
 }  // namespace
 
 const char kUploadReporterString[] = "chrome";
 
-bool ShouldCreateService() {
+bool ShouldCreateService(const DomainReliabilityServiceDelegate* delegate) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(switches::kDisableDomainReliability))
     return false;
   if (command_line->HasSwitch(switches::kEnableDomainReliability))
     return true;
-  if (!IsDomainReliabilityAllowed()) {
+  if (!delegate->IsDomainReliabilityAllowed()) {
     return false;
   }
-  if (!ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled())
+  if (!delegate->IsMetricsAndCrashReportingEnabled()) {
     return false;
+  }
   if (base::FieldTrialList::TrialExists(kFieldTrialName)) {
     std::string value = base::FieldTrialList::FindFullName(kFieldTrialName);
     return (value == kFieldTrialValueEnable);

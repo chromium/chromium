@@ -7,10 +7,17 @@
 
 namespace domain_reliability {
 
+class DomainReliabilityServiceDelegate {
+ public:
+  virtual ~DomainReliabilityServiceDelegate() = default;
+  virtual bool IsDomainReliabilityAllowed() const = 0;
+  virtual bool IsMetricsAndCrashReportingEnabled() const = 0;
+};
+
 // Determines if Domain Reliability service should be created based on
 // command line flags, Chrome policies, and field trials.
 // Used in //chrome/browser/net/profile_network_context_service.cc.
-bool ShouldCreateService();
+bool ShouldCreateService(const DomainReliabilityServiceDelegate* delegate);
 
 // Identifies Chrome as the source of Domain Reliability uploads it sends.
 extern const char kUploadReporterString[];

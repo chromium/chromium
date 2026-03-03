@@ -39,8 +39,9 @@ namespace browser_sync {
 class ChromeSyncClient;
 }
 
+class ChromeDomainReliabilityDelegate;
 namespace domain_reliability {
-bool ShouldCreateService();
+class TestDomainReliabilityServiceDelegate;
 }
 
 namespace extensions {
@@ -140,7 +141,8 @@ class ChromeMetricsServiceAccessor : public metrics::MetricsServiceAccessor {
   friend class ChromeMetricsServicesManagerClient;
   friend class ChromeSigninClient;
   friend class browser_sync::ChromeSyncClient;
-  friend bool domain_reliability::ShouldCreateService();
+  friend class ChromeDomainReliabilityDelegate;
+  friend class domain_reliability::TestDomainReliabilityServiceDelegate;
   friend class extensions::ChromeGuestViewManagerDelegate;
   friend class extensions::ChromeMetricsPrivateDelegate;
   friend void ChangeMetricsReportingStateWithReply(

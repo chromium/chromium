@@ -1,0 +1,48 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("domain_reliability") {
+  public = [ "service_factory.h" ]
+  public_deps = []
+}
+
+source_set("impl") {
+  sources = [ "service_factory.cc" ]
+  deps = [
+    ":domain_reliability",
+    "//base",
+    "//chrome/common:constants",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "browsertest.cc" ]
+    deps = [
+      ":domain_reliability",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser",
+      "//chrome/browser/policy:test_support",
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui",
+      "//chrome/common:constants",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/domain_reliability:prefs",
+      "//components/policy/core/common",
+      "//components/prefs",
+      "//content/public/browser",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//services/network/public/cpp",
+      "//services/network/public/mojom",
+      "//testing/gtest",
+      "//url",
+    ]
+  }
+}

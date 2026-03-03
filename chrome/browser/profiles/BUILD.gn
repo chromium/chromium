@@ -304,6 +304,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/custom_handlers",
     "//chrome/browser/data_sharing",
     "//chrome/browser/dom_distiller",
+    "//chrome/browser/domain_reliability",
     "//chrome/browser/engagement",
     "//chrome/browser/favicon",
     "//chrome/browser/feature_engagement",

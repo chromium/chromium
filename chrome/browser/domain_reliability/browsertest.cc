@@ -39,6 +39,22 @@
 
 namespace domain_reliability {
 
+class TestDomainReliabilityServiceDelegate
+    : public domain_reliability::DomainReliabilityServiceDelegate {
+ public:
+  TestDomainReliabilityServiceDelegate() = default;
+  ~TestDomainReliabilityServiceDelegate() override = default;
+
+  bool IsDomainReliabilityAllowed() const override {
+    return g_browser_process->local_state()->GetBoolean(
+        domain_reliability::prefs::kDomainReliabilityAllowedByPolicy);
+  }
+
+  bool IsMetricsAndCrashReportingEnabled() const override {
+    return ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled();
+  }
+};
+
 class DomainReliabilityBrowserTest : public InProcessBrowserTest {
  public:
   DomainReliabilityBrowserTest()
@@ -143,7 +159,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
   // Confirm behavior with policy true and metrics enabled
   SetAndUpdateDomainReliabilityAllowedPolicy(true);
   SetAndUpdateIsMetricsReporting(true);
-  EXPECT_TRUE(domain_reliability::ShouldCreateService());
+  TestDomainReliabilityServiceDelegate delegate;
+  EXPECT_TRUE(domain_reliability::ShouldCreateService(&delegate));
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
@@ -152,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
   // Confirm behavior with policy true and metrics disabled
   SetAndUpdateDomainReliabilityAllowedPolicy(true);
   SetAndUpdateIsMetricsReporting(false);
-  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  TestDomainReliabilityServiceDelegate delegate;
+  EXPECT_FALSE(domain_reliability::ShouldCreateService(&delegate));
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
@@ -161,7 +179,8 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
   // Confirm behavior with policy false and metrics enabled
   SetAndUpdateDomainReliabilityAllowedPolicy(false);
   SetAndUpdateIsMetricsReporting(true);
-  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  TestDomainReliabilityServiceDelegate delegate;
+  EXPECT_FALSE(domain_reliability::ShouldCreateService(&delegate));
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
@@ -170,17 +189,20 @@ IN_PROC_BROWSER_TEST_F(DomainReliabilityPolicyTest,
   // Confirm behavior with policy false and metrics disabled
   SetAndUpdateDomainReliabilityAllowedPolicy(false);
   SetAndUpdateIsMetricsReporting(false);
-  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  TestDomainReliabilityServiceDelegate delegate;
+  EXPECT_FALSE(domain_reliability::ShouldCreateService(&delegate));
   ChromeMetricsServiceAccessor::SetMetricsAndCrashReportingForTesting(nullptr);
 }
 
 IN_PROC_BROWSER_TEST_F(DomainReliabilityDisabledBrowserTest,
                        ServiceNotCreated) {
-  EXPECT_FALSE(domain_reliability::ShouldCreateService());
+  TestDomainReliabilityServiceDelegate delegate;
+  EXPECT_FALSE(domain_reliability::ShouldCreateService(&delegate));
 }
 
 IN_PROC_BROWSER_TEST_F(DomainReliabilityBrowserTest, ServiceCreated) {
-  EXPECT_TRUE(domain_reliability::ShouldCreateService());
+  TestDomainReliabilityServiceDelegate delegate;
+  EXPECT_TRUE(domain_reliability::ShouldCreateService(&delegate));
 }
 
 static const char kUploadPath[] = "/domainreliability/upload";

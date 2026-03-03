@@ -1,0 +1,16 @@
+include_rules = [
+  "-chrome/browser",
+  "+chrome/browser/domain_reliability",
+  "+chrome/common/chrome_switches.h",
+]
+
+specific_include_rules = {
+  "browsertest\.cc": [
+    "+chrome/browser/browser_process.h",
+    "+chrome/browser/metrics/chrome_metrics_service_accessor.h",
+    "+chrome/browser/net/profile_network_context_service.h",
+    "+chrome/browser/policy/policy_test_utils.h",
+    "+chrome/browser/profiles/profile.h",
+    "+chrome/browser/ui/browser.h",
+  ],
+}
