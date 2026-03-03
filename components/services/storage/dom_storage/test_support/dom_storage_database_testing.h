@@ -11,15 +11,14 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/scoped_refptr.h"
 #include "components/services/storage/dom_storage/async_dom_storage_database.h"
 #include "components/services/storage/dom_storage/dom_storage_database.h"
-#include "components/services/storage/dom_storage/session_storage_metadata.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace base {
+class FilePath;
 class RunLoop;
-}
+}  // namespace base
 
 namespace storage {
 
@@ -135,6 +134,13 @@ class FakeCommitter : public AsyncDomStorageDatabase::Committer {
 // Overwrites the database's version to simulate a corrupt, invalid version.
 void PutVersionForTesting(AsyncDomStorageDatabase& async_database,
                           int64_t version);
+
+// Enumerates all files under `directory_path`, searching for `query` in the
+// file's content. Fails when `query` results differ from `expected_is_found`.
+// Also fails after file read errors.
+void SearchDirectoryContent(const base::FilePath& directory_path,
+                            std::string query,
+                            bool expected_is_found);
 
 }  // namespace storage
 

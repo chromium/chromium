@@ -307,7 +307,7 @@ DbStatus LocalStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
 }
 
 DbStatus LocalStorageSqlite::RewriteDB() {
-  // SQLite does not need to rewrite its database to fully erase deleted data.
+  RETURN_STATUS_ON_ERROR(database_->CheckpointDatabase(/*truncate=*/true));
   return DbStatus::OK();
 }
 

@@ -872,4 +872,49 @@ TEST_F(LocalStorageSqliteTest, PurgeOriginsWithMatchingThirdPartyContext) {
   EXPECT_EQ(actual_entries, kFirstPartyMapEntries);
 }
 
+TEST_F(LocalStorageSqliteTest, RewriteDB) {
+  std::unique_ptr<LocalStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+  // Add one metadata row to the database, which includes `kFirstStorageKey`.
+  const DomStorageDatabase::MapMetadata kExpectedMapMetadata{
+      .map_locator{kFirstMapLocator.Clone()},
+      .last_accessed{kMapLastAccessed},
+  };
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateMapWithMetadata(*database, kExpectedMapMetadata));
+
+  // Add one key/value pair to the database.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kFirstMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kFirstMapEntries));
+
+  // Delete the storage key's metadata and key/value pair from the database.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.push_back(kFirstMapLocator.Clone());
+
+  DbStatus status = database->DeleteStorageKeysFromSession(
+      /*session_id=*/std::string(), {kFirstStorageKey},
+      std::move(maps_to_delete));
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // After deletion, `kFirstStorageKey` still exists in SQLite's WAL file.
+  const std::string kSerializedFirstStorageKey = kFirstStorageKey.Serialize();
+  ASSERT_NO_FATAL_FAILURE(SearchDirectoryContent(
+      temp_dir_.GetPath(), /*query=*/kSerializedFirstStorageKey,
+      /*expected_is_found=*/true));
+
+  // Use `RewriteDB()` to checkpoint and truncate the WAL file.
+  status = database->RewriteDB();
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // `kFirstStorageKey` must not exist on disk.
+  ASSERT_NO_FATAL_FAILURE(SearchDirectoryContent(
+      temp_dir_.GetPath(), /*query=*/kSerializedFirstStorageKey,
+      /*expected_is_found=*/false));
+}
+
 }  // namespace storage

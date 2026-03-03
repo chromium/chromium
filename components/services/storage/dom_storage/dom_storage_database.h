@@ -310,13 +310,8 @@ class DomStorageDatabase {
   // the top-level site is same-site with one of those origins.
   virtual DbStatus PurgeOrigins(std::set<url::Origin> origins) = 0;
 
-  // For LevelDB only. Rewrites the database on disk to
-  // clean up traces of deleted entries.
-  //
-  // NOTE: If `RewriteDB()` fails, this DomStorageDatabase may no longer
-  // be usable; in such cases, all future operations will return an IOError
-  // status.
-  // TODO(crbug.com/485785252): Also implement this for the SQLite backend.
+  // Removes all traces of deleted data from the backing storage.  For example,
+  // removes all traces of an origin URL that might exist in the deleted data.
   virtual DbStatus RewriteDB() = 0;
 
   // Test-only functions.

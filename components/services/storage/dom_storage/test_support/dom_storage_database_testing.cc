@@ -6,10 +6,10 @@
 
 #include <algorithm>
 
-#include "base/memory/scoped_refptr.h"
+#include "base/files/file_enumerator.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/task/sequenced_task_runner.h"
-#include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
@@ -368,6 +368,30 @@ void PutVersionForTesting(AsyncDomStorageDatabase& async_database,
 
   run_loop.Run();
   EXPECT_TRUE(status.ok()) << status.ToString();
+}
+
+void SearchDirectoryContent(const base::FilePath& directory_path,
+                            std::string query,
+                            bool expected_is_found) {
+  int query_found_count = 0;
+  base::FileEnumerator file_enumerator(directory_path, /*recursive=*/true,
+                                       base::FileEnumerator::FILES);
+
+  for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
+       file_path = file_enumerator.Next()) {
+    std::string file_contents;
+    ASSERT_TRUE(base::ReadFileToString(file_path, &file_contents));
+
+    if (file_contents.find(query) != std::string::npos) {
+      ++query_found_count;
+      if (!expected_is_found) {
+        LOG(ERROR) << "Found '" << query << "' in " << file_path;
+      }
+    }
+  }
+
+  EXPECT_EQ(query_found_count > 0, expected_is_found)
+      << "Found '" << query << "' " << query_found_count << " times";
 }
 
 }  // namespace storage

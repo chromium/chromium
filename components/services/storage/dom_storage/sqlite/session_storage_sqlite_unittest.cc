@@ -992,4 +992,46 @@ TEST_F(SessionStorageSqliteTest, DeleteMultipleStorageKeysFromSession) {
   EXPECT_EQ(actual_map_entries, kThirdMapEntries);
 }
 
+TEST_F(SessionStorageSqliteTest, RewriteDB) {
+  std::unique_ptr<SessionStorageSqlite> database;
+  ASSERT_NO_FATAL_FAILURE(OpenOnDisk(&database));
+
+  // Add one metadata row to the database, which includes `kFirstStorageKey`.
+  ASSERT_NO_FATAL_FAILURE(InitializeMetadata(
+      *database, DomStorageDatabase::Metadata(CloneMapMetadataVector(
+                     {{.map_locator{kFirstMapLocator.Clone()}}}))));
+
+  // Add one key/value pair to the database.
+  const std::map<DomStorageDatabase::Key, DomStorageDatabase::Value>
+      kFirstMapEntries{
+          {ToBytes("key_1"), ToBytes("value_1")},
+      };
+  ASSERT_NO_FATAL_FAILURE(
+      InsertMapEntries(*database, kFirstMapLocator.Clone(), kFirstMapEntries));
+
+  // Delete the storage key's metadata and key/value pair from the database.
+  std::vector<DomStorageDatabase::MapLocator> maps_to_delete;
+  maps_to_delete.push_back(kFirstMapLocator.Clone());
+
+  DbStatus status = database->DeleteStorageKeysFromSession(
+      kFirstSessionId, /*metadata_to_delete=*/{kFirstStorageKey},
+      /*maps_to_delete=*/{});
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // After deletion, `kFirstStorageKey` still exists in SQLite's WAL file.
+  const std::string kSerializedFirstStorageKey = kFirstStorageKey.Serialize();
+  ASSERT_NO_FATAL_FAILURE(SearchDirectoryContent(
+      temp_dir_.GetPath(), /*query=*/kSerializedFirstStorageKey,
+      /*expected_is_found=*/true));
+
+  // Use `RewriteDB()` to checkpoint and truncate the WAL file.
+  status = database->RewriteDB();
+  EXPECT_TRUE(status.ok()) << status.ToString();
+
+  // `kFirstStorageKey` must not exist on disk.
+  ASSERT_NO_FATAL_FAILURE(SearchDirectoryContent(
+      temp_dir_.GetPath(), /*query=*/kSerializedFirstStorageKey,
+      /*expected_is_found=*/false));
+}
+
 }  // namespace storage
