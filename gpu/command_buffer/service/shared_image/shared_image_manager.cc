@@ -542,6 +542,20 @@ void SharedImageManager::OnRepresentationDestroyed(
   }
 }
 
+bool SharedImageManager::UpdateSharedImage(
+    const Mailbox& mailbox,
+    std::unique_ptr<gfx::GpuFence> in_fence) {
+  AutoLock autolock(this);
+  auto* backing = GetBacking(mailbox);
+  if (!backing) {
+    LOG(ERROR)
+        << "SharedImageManager::UpdateSharedImage: Non-existent mailbox.";
+    return false;
+  }
+  backing->Update(std::move(in_fence));
+  return true;
+}
+
 void SharedImageManager::SetPurgeable(const Mailbox& mailbox, bool purgeable) {
   AutoLock autolock(this);
   auto* backing = GetBacking(mailbox);

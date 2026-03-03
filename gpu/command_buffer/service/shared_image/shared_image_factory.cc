@@ -676,13 +676,7 @@ bool SharedImageFactory::CreateSharedImage(
 bool SharedImageFactory::UpdateSharedImage(
     const Mailbox& mailbox,
     std::unique_ptr<gfx::GpuFence> in_fence) {
-  auto* shared_image = GetFactoryRef(mailbox);
-  if (!shared_image) {
-    LOG(ERROR) << "UpdateSharedImage: Could not find shared image mailbox";
-    return false;
-  }
-  shared_image->Update(std::move(in_fence));
-  return true;
+  return shared_image_manager_->UpdateSharedImage(mailbox, std::move(in_fence));
 }
 
 bool SharedImageFactory::DestroySharedImage(const Mailbox& mailbox) {
@@ -695,16 +689,10 @@ bool SharedImageFactory::DestroySharedImage(const Mailbox& mailbox) {
   return true;
 }
 
-bool SharedImageFactory::SetSharedImagePurgeable(const Mailbox& mailbox,
+void SharedImageFactory::SetSharedImagePurgeable(const Mailbox& mailbox,
                                                  bool purgeable) {
-  auto* shared_image = GetFactoryRef(mailbox);
-  if (!shared_image) {
-    LOG(ERROR)
-        << "SetSharedImagePurgeable: Could not find shared image mailbox";
-    return false;
-  }
-  shared_image->SetPurgeable(purgeable);
-  return true;
+  return shared_image_manager_->SetPurgeable(mailbox,
+                                             memory_type_tracker_.get());
 }
 
 void SharedImageFactory::DestroyAllSharedImages(bool have_context) {

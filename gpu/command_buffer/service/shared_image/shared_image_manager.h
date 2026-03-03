@@ -140,6 +140,9 @@ class GPU_GLES2_EXPORT SharedImageManager
       MemoryTypeTracker* ref);
 #endif
 
+  bool UpdateSharedImage(const Mailbox& mailbox,
+                         std::unique_ptr<gfx::GpuFence> in_fence);
+
 #if BUILDFLAG(IS_WIN)
   void UpdateExternalFence(const Mailbox& mailbox,
                            scoped_refptr<gfx::D3DSharedFence> external_fence);

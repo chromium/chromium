@@ -41,28 +41,26 @@ class VulkanDeviceQueue;
 class VulkanImage;
 class VulkanImplementation;
 }  // namespace gpu
-#endif
-
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/dc_layer_overlay_image.h"
-#endif
-
-#if BUILDFLAG(IS_APPLE)
-#include "ui/gfx/mac/io_surface.h"
-#include "ui/gfx/mac/mtl_shared_event_fence.h"
-#endif
-
-#if BUILDFLAG(IS_ANDROID)
-#include "base/android/scoped_hardware_buffer_fence_sync.h"
-
-extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
-#endif
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 
 #if BUILDFLAG(IS_WIN)
 #include <d3d11.h>
 #include <d3d12.h>
 #include <wrl/client.h>
-#endif
+
+#include "ui/gl/dc_layer_overlay_image.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_APPLE)
+#include "ui/gfx/mac/io_surface.h"
+#include "ui/gfx/mac/mtl_shared_event_fence.h"
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_hardware_buffer_fence_sync.h"
+
+extern "C" typedef struct AHardwareBuffer AHardwareBuffer;
+#endif  // BUILDFLAG(IS_ANDROID)
 
 typedef unsigned int GLenum;
 namespace skgpu {
@@ -193,10 +191,6 @@ class SharedImageRepresentationFactoryRef : public SharedImageRepresentation {
   ~SharedImageRepresentationFactoryRef() override;
 
   const Mailbox& mailbox() const { return backing()->mailbox(); }
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) {
-    backing()->Update(std::move(in_fence));
-  }
-  void SetPurgeable(bool purgeable) { backing()->SetPurgeable(purgeable); }
   bool CopyToGpuMemoryBuffer() { return backing()->CopyToGpuMemoryBuffer(); }
   void CopyToGpuMemoryBufferAsync(base::OnceCallback<void(bool)> callback) {
     backing()->CopyToGpuMemoryBufferAsync(std::move(callback));
