@@ -368,7 +368,7 @@ CreateMemoryPressureMonitor(const base::CommandLine& command_line) {
   std::unique_ptr<memory_pressure::MultiSourceMemoryPressureMonitor> monitor;
 
 #if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || \
-    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   monitor =
       std::make_unique<memory_pressure::MultiSourceMemoryPressureMonitor>();
 #endif
@@ -376,6 +376,13 @@ CreateMemoryPressureMonitor(const base::CommandLine& command_line) {
 
   if (monitor)
     monitor->MaybeStartPlatformVoter();
+
+#if BUILDFLAG(IS_ANDROID)
+  if (auto evaluator = UserLevelMemoryPressureSignalGenerator::MaybeCreate(
+          monitor->CreateVoter())) {
+    monitor->SetSystemEvaluator(std::move(evaluator));
+  }
+#endif
 
   return monitor;
 }
@@ -774,9 +781,6 @@ int BrowserMainLoop::PreCreateThreads() {
   }
 
   InitializeMemoryManagementComponent();
-#if BUILDFLAG(IS_ANDROID)
-  content::UserLevelMemoryPressureSignalGenerator::Initialize();
-#endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   // Prior to any processing happening on the IO thread, we create the

@@ -5,14 +5,18 @@
 #ifndef CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 #define CONTENT_BROWSER_MEMORY_PRESSURE_USER_LEVEL_MEMORY_PRESSURE_SIGNAL_GENERATOR_H_
 
+#include <memory>
 #include <optional>
 #include <utility>
 
 #include "base/byte_count.h"
 #include "base/memory/memory_pressure_level.h"
-#include "base/no_destructor.h"
+#include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/memory_pressure/memory_pressure_voter.h"
+#include "components/memory_pressure/multi_source_memory_pressure_monitor.h"
+#include "components/memory_pressure/system_memory_pressure_evaluator.h"
 #include "content/public/browser/user_level_memory_pressure_metrics.h"
 
 namespace base {
@@ -24,34 +28,33 @@ namespace content {
 
 // Generates extra memory pressure signals (on top of the OS generated ones)
 // when the memory usage exceeds a threshold.
-class UserLevelMemoryPressureSignalGenerator {
+class UserLevelMemoryPressureSignalGenerator
+    : public memory_pressure::SystemMemoryPressureEvaluator {
  public:
-  static void Initialize();
+  // Creates an instance. Returns nullptr if
+  // UserLevelMemoryPressureSignalGenerator if disabled on this device.
+  static std::unique_ptr<UserLevelMemoryPressureSignalGenerator> MaybeCreate(
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
+
+  ~UserLevelMemoryPressureSignalGenerator() override;
 
   // Returns the latest memory metrics if the metrics collection is enabled.
   static std::optional<content::UserLevelMemoryPressureMetrics>
   GetLatestMemoryMetrics();
 
  private:
-  friend class base::NoDestructor<UserLevelMemoryPressureSignalGenerator>;
-
-  // Singleton
-  static UserLevelMemoryPressureSignalGenerator& Get();
-
-  UserLevelMemoryPressureSignalGenerator();
-  ~UserLevelMemoryPressureSignalGenerator();
-
-  void Start(base::ByteCount memory_threshold,
-             base::TimeDelta measure_interval,
-             base::TimeDelta minimum_interval);
-  void OnTimerFired();
-  void OnReportingTimerFired();
-
-  void StartPeriodicTimer(base::TimeDelta interval);
-  void StartReportingTimer();
+  explicit UserLevelMemoryPressureSignalGenerator(
+      std::unique_ptr<memory_pressure::MemoryPressureVoter> voter);
 
   void StartMetricsCollection();
+
   void CollectMemoryMetrics();
+
+  void StartPeriodicTimer(base::TimeDelta interval);
+  void OnTimerFired();
+
+  void StartReportingTimer();
+  void OnReportingTimerFired();
 
   static base::ByteCount
   GetTotalPrivateFootprintVisibleOrHigherPriorityRenderers();
@@ -65,6 +68,9 @@ class UserLevelMemoryPressureSignalGenerator {
   static std::optional<base::ByteCount> GetPrivateFootprint(
       const base::Process& process);
 
+  std::optional<content::UserLevelMemoryPressureMetrics>
+  GetLatestMemoryMetricsImpl();
+
   base::ByteCount memory_threshold_;
   base::TimeDelta measure_interval_;
   base::TimeDelta minimum_interval_;
@@ -74,6 +80,8 @@ class UserLevelMemoryPressureSignalGenerator {
   base::MemoryPressureLevel current_level_ = base::MEMORY_PRESSURE_LEVEL_NONE;
 
   std::optional<UserLevelMemoryPressureMetrics> latest_metrics_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace content
