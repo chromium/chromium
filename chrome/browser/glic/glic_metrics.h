@@ -205,7 +205,11 @@ enum class ResponseSegmentation {
   kNavigationCaptureAttachedAudio = 74,
   kNavigationCaptureDetachedText = 75,
   kNavigationCaptureDetachedAudio = 76,
-  kMaxValue = kNavigationCaptureDetachedAudio,
+  kAutoOpenedForPdfAttachedText = 77,
+  kAutoOpenedForPdfAttachedAudio = 78,
+  kAutoOpenedForPdfDetachedText = 79,
+  kAutoOpenedForPdfDetachedAudio = 80,
+  kMaxValue = kAutoOpenedForPdfDetachedAudio,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicResponseSegmentation)
 

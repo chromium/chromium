@@ -2701,6 +2701,10 @@ class ApiTests extends ApiTestFixtureBase {
         return 'TRUST_FIRST_ONBOARDING_ARM_1';
       case HostCapability.TRUST_FIRST_ONBOARDING_ARM2:
         return 'TRUST_FIRST_ONBOARDING_ARM_2';
+      case HostCapability.SHARE_ADDITIONAL_IMAGE_CONTEXT:
+        return 'SHARE_ADDITIONAL_IMAGE_CONTEXT';
+      case HostCapability.PDF_ZERO_STATE:
+        return 'PDF_ZERO_STATE';
       default:
         return 'NEW_ENUM_NOT_IMPLEMENTED';
     }

@@ -16,7 +16,6 @@ BASE_DECLARE_FEATURE(kGlicChromeStatusIcon);
 BASE_DECLARE_FEATURE(kGlicOrphanedReattachment);
 
 BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
-extern const base::FeatureParam<std::string> kAutoOpenGlicForPdfArm;
 
 }  // namespace features
 

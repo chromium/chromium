@@ -53,6 +53,7 @@
 #include "chrome/browser/glic/host/page_metadata_manager.h"
 #include "chrome/browser/glic/media/glic_media_link_helper.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
@@ -961,6 +962,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       state->host_capabilities.push_back(mojom::HostCapability::kMultiInstance);
     }
 
+    if (base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
+      state->host_capabilities.push_back(mojom::HostCapability::kPdfZeroState);
+    }
+
     const mojom::InvocationSource invocation_source =
         host().invocation_source().value_or(
             mojom::InvocationSource::kUnsupported);
@@ -1008,6 +1013,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
         base::FeatureList::IsEnabled(
             features::kGlicOpenPasswordManagerSettingsPageApi);
     state->enable_trust_first_onboarding =
+        !should_bypass_fre_ui &&
         GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_);
     state->onboarding_completed =
         GlicEnabling::HasConsentedForProfile(profile_);

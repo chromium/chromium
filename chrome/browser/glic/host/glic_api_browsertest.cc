@@ -56,6 +56,7 @@
 #include "chrome/browser/glic/host/glic_web_contents_warming_pool.h"
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/host/webui_contents_container.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/public/glic_side_panel_coordinator.h"
@@ -199,6 +200,7 @@ struct TestParams {
   bool enable_scroll_to_pdf = false;
   bool trust_first_onboarding_arm1 = false;
   bool trust_first_onboarding_arm2 = false;
+  bool auto_open_pdf = false;
 };
 
 class WithTestParams : public testing::WithParamInterface<TestParams> {
@@ -225,6 +227,9 @@ class WithTestParams : public testing::WithParamInterface<TestParams> {
     }
     if (info.param.trust_first_onboarding_arm2) {
       result.push_back("TrustFirstOnboardingArm2");
+    }
+    if (info.param.auto_open_pdf) {
+      result.push_back("AutoOpenPdf");
     }
     if (result.empty()) {
       return "Default";
@@ -3534,6 +3539,10 @@ class GlicGetHostCapabilityApiTest : public GlicApiTestWithOneTab {
       disabled_features.push_back(features::kGlicTrustFirstOnboarding);
     }
 
+    if (GetParam().auto_open_pdf) {
+      enabled_features.push_back({features::kAutoOpenGlicForPdf, {}});
+    }
+
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features,
                                                        disabled_features);
   }
@@ -3559,6 +3568,10 @@ IN_PROC_BROWSER_TEST_P(GlicGetHostCapabilityApiTest, testGetHostCapabilities) {
   if (GetParam().trust_first_onboarding_arm2) {
     expected_capabilities.Append(
         std::to_underlying(mojom::HostCapability::kTrustFirstOnboardingArm2));
+  }
+  if (GetParam().auto_open_pdf) {
+    expected_capabilities.Append(
+        std::to_underlying(mojom::HostCapability::kPdfZeroState));
   }
   ExecuteJsTest({.params = base::Value(std::move(expected_capabilities))});
 }
@@ -3929,7 +3942,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Values(TestParams{},
                     TestParams{.enable_scroll_to_pdf = true},
                     TestParams{.trust_first_onboarding_arm1 = true},
-                    TestParams{.trust_first_onboarding_arm2 = true}),
+                    TestParams{.trust_first_onboarding_arm2 = true},
+                    TestParams{.auto_open_pdf = true}),
     &WithTestParams::PrintTestVariant);
 
 auto DefaultTestParamSet() {
