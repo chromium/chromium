@@ -12,7 +12,7 @@ AdScriptIdentifier::AdScriptIdentifier() : id(kEmptyId) {}
 
 AdScriptIdentifier::AdScriptIdentifier(
     const v8_inspector::V8DebuggerId& context_id,
-    int id,
+    V8ScriptId id,
     String name)
     : context_id(context_id), id(id), name(name) {
   CHECK_NE(id, kEmptyId);

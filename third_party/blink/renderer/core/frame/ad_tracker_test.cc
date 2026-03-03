@@ -212,7 +212,6 @@ class TestAdTracker : public AdTracker {
 
  private:
   HashMap<String, bool> is_ad_;
-  HashMap<String, int> script_ids_;
 
   bool sim_test_ = false;
 
@@ -1615,7 +1614,8 @@ TEST_F(AdTrackerSimTest, AdScriptAncestry_AdScriptAtTopOfStack) {
 
   // Verify that IsAdScriptInStack() returned the right script information.
   EXPECT_EQ(ad_tracker_->last_ad_script_ancestry().ancestry_chain.size(), 1u);
-  EXPECT_GT(ad_tracker_->last_ad_script_ancestry().ancestry_chain[0].id, 0);
+  EXPECT_GT(ad_tracker_->last_ad_script_ancestry().ancestry_chain[0].id.value(),
+            0);
   EXPECT_EQ(String(ad_tracker_->last_ad_script_ancestry()
                        .root_script_filterlist_rule.ToString()),
             "ad=true|");

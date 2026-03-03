@@ -123,13 +123,14 @@ bool IsKnownAdExecutionContext(ExecutionContext* execution_context) {
   return false;
 }
 
-String GenerateFakeUrlFromScriptId(int script_id) {
+String GenerateFakeUrlFromScriptId(V8ScriptId script_id) {
   // Null string is used to represent scripts with neither a name nor an ID.
-  if (script_id == v8::Message::kNoScriptIdInfo)
+  if (script_id == AdScriptIdentifier::kEmptyId) {
     return String();
+  }
 
   // The prefix cannot appear in real URLs.
-  return String::Format("{ id %d }", script_id);
+  return String::Format("{ id %d }", script_id.value());
 }
 
 v8_inspector::V8DebuggerId GetDebuggerIdForContext(
@@ -214,11 +215,13 @@ void AdTracker::Will(const probe::ExecuteScript& probe) {
     return;
   }
 
+  V8ScriptId script_id(probe.script_id);
+
   // We're executing a script's top-level. This is our first time seeing the
   // script id for the given url.
   bool is_inline_script = probe.script_url.empty();
 
-  String url = is_inline_script ? GenerateFakeUrlFromScriptId(probe.script_id)
+  String url = is_inline_script ? GenerateFakeUrlFromScriptId(script_id)
                                 : probe.script_url;
 
   bool is_ad = IsKnownAdScript(probe.context, url);
@@ -248,11 +251,11 @@ void AdTracker::Will(const probe::ExecuteScript& probe) {
   // by id rather than string.
   if (is_ad && !IsKnownAdExecutionContext(probe.context)) {
     OnScriptIdAvailableForKnownAdScript(probe.context, probe.v8_context, url,
-                                        probe.script_id);
+                                        script_id);
   }
 
   if (is_ad && !bottom_most_ad_script_.has_value()) {
-    bottom_most_ad_script_ = probe.script_id;
+    bottom_most_ad_script_ = script_id;
   }
 }
 
@@ -263,7 +266,7 @@ void AdTracker::Did(const probe::ExecuteScript& probe) {
   }
 
   if (bottom_most_ad_script_.has_value() &&
-      bottom_most_ad_script_.value() == probe.script_id) {
+      bottom_most_ad_script_.value() == V8ScriptId(probe.script_id)) {
     bottom_most_ad_script_.reset();
   }
 }
@@ -277,9 +280,10 @@ void AdTracker::Will(const probe::CallFunction& probe) {
     return;
   }
 
+  V8ScriptId script_id(probe.function->ScriptId());
   if (!bottom_most_ad_script_.has_value() &&
-      ad_script_data_.Contains(probe.function->ScriptId())) {
-    bottom_most_ad_script_ = probe.function->ScriptId();
+      ad_script_data_.Contains(script_id)) {
+    bottom_most_ad_script_ = script_id;
   }
 }
 
@@ -293,7 +297,8 @@ void AdTracker::Did(const probe::CallFunction& probe) {
     return;
   }
   if (bottom_most_ad_script_.has_value() &&
-      bottom_most_ad_script_.value() == probe.function->ScriptId()) {
+      bottom_most_ad_script_.value() ==
+          V8ScriptId(probe.function->ScriptId())) {
     bottom_most_ad_script_.reset();
   }
 }
@@ -475,14 +480,14 @@ bool AdTracker::IsAdScriptInStackHelper(
   int ad_script_index = -1;
 
   for (size_t i = 0; i < stack.size(); ++i) {
-    int script_id = stack[i].id;
-    if (script_id <= 0) {
+    V8ScriptId script_id(stack[i].id);
+    if (script_id.value() <= 0) {
       return false;
     }
 
     auto it = ad_script_data_.find(script_id);
     if (it != ad_script_data_.end()) {
-      ad_script_index = i;
+      ad_script_index = static_cast<int>(i);
       ad_script_it = it;
       break;
     }
@@ -585,7 +590,7 @@ bool AdTracker::WasApiCalledByNonAdScript(v8::Isolate* isolate,
     v8::StackTrace::ScriptData& frame = stack_trace[i];
 
     // If this frame is still ad related, continue up the stack.
-    if (ad_script_data_.Contains(frame.id)) {
+    if (ad_script_data_.Contains(V8ScriptId(frame.id))) {
       continue;
     }
 
@@ -684,9 +689,9 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
     ExecutionContext* execution_context,
     const v8::Local<v8::Context>& v8_context,
     const String& script_name,
-    int script_id) {
+    V8ScriptId script_id) {
   DCHECK(!script_name.empty());
-  DCHECK_NE(v8::Message::kNoScriptIdInfo, script_id);
+  DCHECK_NE(v8::Message::kNoScriptIdInfo, script_id.value());
   auto it = context_known_ad_scripts_.find(execution_context);
   DCHECK(it != context_known_ad_scripts_.end());
 
@@ -720,7 +725,7 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     return ancestry;
   }
 
-  HashSet<int> seen_script_ids;
+  HashSet<V8ScriptId> seen_script_ids;
   bool duplicate = false;
 
   ancestry.ancestry_chain.push_back(provenance_it->value.id);
@@ -732,7 +737,7 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     // Update `ancestry` based on the type of the `ad_provenance` variant.
     bool root_reached = std::visit(
         absl::Overload{[&](NoProvenance) { return true; },
-                       [&](int script_id) {
+                       [&](V8ScriptId script_id) {
                          // Prevent an infinite loop due to cycles.
                          if (!seen_script_ids.insert(script_id).is_new_entry) {
                            duplicate = true;

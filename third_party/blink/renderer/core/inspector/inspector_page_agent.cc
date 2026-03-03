@@ -814,7 +814,7 @@ protocol::Response InspectorPageAgent::getAdScriptAncestry(
     for (const auto& ad_script_identifier : ad_script_ancestry.ancestry_chain) {
       ancestry_chain.push_back(
           protocol::Page::AdScriptId::create()
-              .setScriptId(String::Number(ad_script_identifier.id))
+              .setScriptId(String::Number(ad_script_identifier.id.value()))
               .setDebuggerId(ToCoreString(
                   ad_script_identifier.context_id.toString()->string()))
               .build());

@@ -61,10 +61,10 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   // - NoProvenance: The script has neither an ancestor nor a rule match.
   // - subresource_filter::ScopedRule: The script is flagged by the subresource
   //   filter.
-  // - script_id: The script itself is not flagged, but another ad
+  // - V8ScriptId: The script itself is not flagged, but another ad
   //   script (the "ancestor") exists in its creation stack.
   using AdProvenance =
-      std::variant<NoProvenance, subresource_filter::ScopedRule, int>;
+      std::variant<NoProvenance, subresource_filter::ScopedRule, V8ScriptId>;
 
   // Stack scans of `kBottomOnly` will only scan the bottom frame of the sync
   // stack and also include async frames. `kTopOnly` will scan the top
@@ -229,7 +229,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       ExecutionContext* execution_context,
       const v8::Local<v8::Context>& v8_context,
       const String& script_name,
-      int script_id);
+      V8ScriptId script_id);
 
   // Retrieves the ancestry chain of a given ad script (inclusive) and and the
   // triggering filterlist rule. See `AdScriptAncestry` for more details on the
@@ -240,7 +240,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   // Indicates the bottom-most synchronous ad script on the stack or
   // `std::nullopt` if there isn't one.
-  std::optional<int> bottom_most_ad_script_;
+  std::optional<V8ScriptId> bottom_most_ad_script_;
 
   // The current async script stack. The optional is set for ad-related async
   // events and nullopt otherwise. We prefer to calculate ad relatedness from
@@ -262,7 +262,7 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
       context_known_ad_scripts_;
 
   // A map of all known ad script ids to their metadata.
-  HashMap<int, AdScriptData> ad_script_data_;
+  HashMap<V8ScriptId, AdScriptData> ad_script_data_;
 
   // Tracks APIs that have been identified as being called through an ad
   // script's monkey patch within the current synchronous task. This set is
