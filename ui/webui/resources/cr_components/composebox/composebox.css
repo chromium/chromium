@@ -105,7 +105,11 @@
 :host([searchbox-next-enabled]) {
   --cr-composebox-font-size: var(--cr-composebox-custom-font-size, 16px);
   --contextual-entrypoint-and-carousel-context-menu-container-padding-inline-start: 0px;
-  --input-bottom-spacing: var(--cr-composebox-input-bottom-spacing, 12px);
+  /*
+   * TODO(crbug.com/470081925): Refactor and keep necessary
+   * --input-bottom-spacing values in this file.
+   */
+  --input-bottom-spacing: 12px;
   --text-input-inline-start-spacing: var(--cr-composebox-text-input-inline-start, 18px);
 }
 
@@ -132,6 +136,10 @@
   transition:
     opacity var(--fade-duration) ease-in-out,
     visibility var(--fade-duration) ease-in-out;
+}
+
+:host([searchbox-next-enabled]) #composebox {
+  padding-bottom: 10px;
 }
 
 :host([is-dragging-file_]) #composebox * {
@@ -187,6 +195,10 @@ search-animated-glow {
   padding-bottom: var(--input-bottom-spacing);
   overflow: hidden;
   width: 100%;
+}
+
+:host([searchbox-next-enabled]) #inputContainer {
+  --input-bottom-spacing: 0;
 }
 
 #textContainer {
@@ -328,10 +340,6 @@ search-animated-glow {
 #input::-webkit-search-results-decoration,
 #input::-webkit-search-cancel-button{
   display: none;
-}
-
-:host([expanding_][show-dropdown_]) cr-composebox-dropdown {
-  padding-bottom: 8px;
 }
 
 .action-icon {

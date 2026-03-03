@@ -31,6 +31,7 @@ ${this.showContextEntrypoint_ ? html`
     getContextualEntrypointHtml.call(this) : nothing}
 </div>` : html`
 <!-- WebUI Omnibox popup w/o "Add Context" button -->
+<div class="dropdownContainer">
   <cr-searchbox-dropdown part="searchbox-dropdown"
       exportparts="dropdown-content"
       role="listbox" .result="${this.result_}"
@@ -40,6 +41,7 @@ ${this.showContextEntrypoint_ ? html`
       @dom-change="${this.onResultRepaint_}"
       ?hidden="${!this.hasVisibleMatches_}">
   </cr-searchbox-dropdown>
+</div>
 `}
 <!--_html_template_end_-->`;
   // clang-format on
