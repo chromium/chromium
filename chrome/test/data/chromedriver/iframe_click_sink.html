@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>IFrame click sink</title>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: #fff;
+    }
+    #hint {
+      font: 14px/1.3 sans-serif;
+      padding: 8px;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <div id="hint">IFRAME_CLICK_SINK</div>
+  <script>
+    (() => {
+      function post(type, payload) {
+        try {
+          parent.postMessage(type, '*');
+        } catch (e) {}
+        try {
+          parent.postMessage({type: 'IFRAME_EVENT', eventType: type, payload}, '*');
+        } catch (e) {}
+      }
+
+      window.addEventListener('load', () => {
+        post('IFRAME_READY', {origin: window.location.origin});
+      });
+
+      window.addEventListener('mousedown', (e) => {
+        post('IFRAME_CLICK', {
+          clientX: e.clientX,
+          clientY: e.clientY,
+          button: e.button,
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
+

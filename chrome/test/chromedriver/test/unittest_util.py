@@ -9,7 +9,11 @@ import sys
 import unittest
 
 
-class _TextTestResult(unittest._TextTestResult):
+_BaseTextTestResult = getattr(
+    unittest, '_TextTestResult', unittest.TextTestResult)
+
+
+class _TextTestResult(_BaseTextTestResult):
   """A test result class that can print formatted text results to a stream.
 
   Results printed in conformance with gtest output format, like:
@@ -21,7 +25,7 @@ class _TextTestResult(unittest._TextTestResult):
   [         OK ] autofill.AutofillTest.testFillProfileCrazyCharacters
   """
   def __init__(self, stream, descriptions, verbosity):
-    unittest._TextTestResult.__init__(self, stream, descriptions, verbosity)
+    super(_TextTestResult, self).__init__(stream, descriptions, verbosity)
     self._fails = set()
 
   def _GetTestURI(self, test):
