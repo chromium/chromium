@@ -446,9 +446,10 @@ void AppHomePageHandler::FillWebAppInfoList(
   web_app::WebAppRegistrar& registrar = web_app_provider_->registrar_unsafe();
 
   for (const webapps::AppId& web_app_id : registrar.GetAppIds()) {
-    // Do not show apps that are migration targets on chrome://apps.
-    if (registrar.AppMatches(
-            web_app_id, web_app::WebAppFilter::IsAppSuggestedForMigration())) {
+    // Only expose apps on chrome://apps that should be surfaceable to users.
+    // I.e. this excludes apps that are only suggested migration targets.
+    if (!registrar.AppMatches(
+            web_app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
       continue;
     }
     result->emplace_back(CreateAppInfoPtrFromWebApp(web_app_id));
@@ -569,10 +570,18 @@ void AppHomePageHandler::OnWebAppWillBeUninstalled(
 }
 
 void AppHomePageHandler::OnWebAppInstalled(const webapps::AppId& app_id) {
+  if (!web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
+    return;
+  }
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
 void AppHomePageHandler::OnWebAppManifestUpdated(const webapps::AppId& app_id) {
+  if (!web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
+    return;
+  }
   page_->UpdateApp(CreateAppInfoPtrFromWebApp(app_id, /*is_update=*/true));
 }
 
@@ -661,17 +670,29 @@ void AppHomePageHandler::GetDeprecationLinkString(
 void AppHomePageHandler::OnWebAppRunOnOsLoginModeChanged(
     const webapps::AppId& app_id,
     web_app::RunOnOsLoginMode run_on_os_login_mode) {
+  if (!web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
+    return;
+  }
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
 void AppHomePageHandler::OnWebAppUserDisplayModeChanged(
     const webapps::AppId& app_id,
     web_app::mojom::UserDisplayMode user_display_mode) {
+  if (!web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
+    return;
+  }
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
 void AppHomePageHandler::OnWebAppInstalledWithOsHooks(
     const webapps::AppId& app_id) {
+  if (!web_app_provider_->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::IsAppSurfaceableToUser())) {
+    return;
+  }
   page_->AddApp(CreateAppInfoPtrFromWebApp(app_id));
 }
 
