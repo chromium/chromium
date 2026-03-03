@@ -1069,6 +1069,8 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   closeButtonConfig.background.backgroundColor = buttonColor;
   _closeButton.configuration = closeButtonConfig;
 
+  _gradientBackground.colors = _tabGroupColorPalette.backgroundGradientColors;
+
   [_facePileView
       setShareButtonBackgroundColor:[_tabGroupColorPalette.commonColor
                                         colorWithAlphaComponent:kButtonAlpha]];
