@@ -4,6 +4,7 @@
 
 #include "components/on_device_translation/test/fake_service_controller_manager.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/on_device_translation/service_controller.h"
 
@@ -27,9 +28,19 @@ FakeServiceControllerManager::GetServiceControllerForOrigin(
     return service_controllers_.begin()->second;
   }
 
+  auto can_start_service_check = base::BindRepeating(
+      [](base::WeakPtr<FakeServiceControllerManager> manager) {
+        return manager && manager->CanStartNewService();
+      },
+      weak_ptr_factory_.GetWeakPtr());
+  auto on_deleted_callback =
+      base::BindOnce(&FakeServiceControllerManager::OnServiceControllerDeleted,
+                     weak_ptr_factory_.GetWeakPtr(), origin);
+
   auto service_controller =
-      base::MakeRefCounted<OnDeviceTranslationServiceController>(local_state_,
-                                                                 this, origin);
+      base::MakeRefCounted<OnDeviceTranslationServiceController>(
+          local_state_, std::move(can_start_service_check),
+          std::move(on_deleted_callback), origin.Serialize());
   service_controllers_[origin] = service_controller;
   return service_controller;
 }
@@ -39,8 +50,7 @@ bool FakeServiceControllerManager::CanStartNewService() const {
 }
 
 void FakeServiceControllerManager::OnServiceControllerDeleted(
-    const url::Origin& origin,
-    base::PassKey<OnDeviceTranslationServiceController>) {
+    const url::Origin& origin) {
   service_controllers_.erase(origin);
 }
 

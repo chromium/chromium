@@ -14,6 +14,7 @@
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
+#include "base/strings/string_util.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
@@ -31,7 +32,6 @@
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/public/pref_names.h"
-#include "components/on_device_translation/service_controller_manager.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -216,10 +216,12 @@ OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
     PrefService* local_state,
-    ServiceControllerManager* manager,
-    const url::Origin& origin)
-    : manager_(manager),
-      origin_(origin),
+    base::RepeatingCallback<bool()> can_start_service_check,
+    base::OnceClosure on_deleted_callback,
+    const std::string& service_display_name_suffix)
+    : can_start_service_check_(std::move(can_start_service_check)),
+      on_deleted_callback_(std::move(on_deleted_callback)),
+      service_display_name_suffix_(service_display_name_suffix),
       service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
       file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       language_packs_from_command_line_(GetLanguagePackInfoFromCommandLine()) {
@@ -227,8 +229,9 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
-  manager_->OnServiceControllerDeleted(
-      origin_, base::PassKey<OnDeviceTranslationServiceController>());
+  if (on_deleted_callback_) {
+    std::move(on_deleted_callback_).Run();
+  }
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(this);
 }
 
@@ -385,7 +388,7 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(source_lang, target_lang);
 
-  if (!service_remote_ && !manager_->CanStartNewService()) {
+  if (!service_remote_ && !can_start_service_check_.Run()) {
     // If the service can't be started, returns
     // `kNoExceedsServiceCountLimitation`.
     return CanCreateTranslatorResult::kNoExceedsServiceCountLimitation;
@@ -464,7 +467,7 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
     return true;
   }
 
-  if (!manager_->CanStartNewService()) {
+  if (!can_start_service_check_.Run()) {
     return false;
   }
 
@@ -489,7 +492,7 @@ bool OnDeviceTranslationServiceController::MaybeStartService() {
       content::ServiceProcessHost::Options()
           .WithDisplayName(
               base::StrCat({kOnDeviceTranslationServiceDisplayNamePrefix,
-                            origin_.Serialize()}))
+                            service_display_name_suffix_}))
           .WithExtraCommandLineSwitches(extra_switches)
 #if BUILDFLAG(IS_WIN)
           .WithPreloadedLibraries(

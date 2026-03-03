@@ -4,6 +4,7 @@
 
 #include "components/on_device_translation/service_controller_manager.h"
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/on_device_translation/features.h"
 #include "components/on_device_translation/service_controller.h"
@@ -27,9 +28,18 @@ ServiceControllerManager::GetServiceControllerForOrigin(
   if (it != service_controllers_.end()) {
     return it->second.get();
   }
+  auto can_start_service_check = base::BindRepeating(
+      [](base::WeakPtr<ServiceControllerManager> manager) {
+        return manager && manager->CanStartNewService();
+      },
+      weak_ptr_factory_.GetWeakPtr());
+  auto on_deleted_callback =
+      base::BindOnce(&ServiceControllerManager::OnServiceControllerDeleted,
+                     weak_ptr_factory_.GetWeakPtr(), origin);
   auto service_controller =
-      base::MakeRefCounted<OnDeviceTranslationServiceController>(local_state_,
-                                                                 this, origin);
+      base::MakeRefCounted<OnDeviceTranslationServiceController>(
+          local_state_, std::move(can_start_service_check),
+          std::move(on_deleted_callback), origin.Serialize());
   service_controllers_[origin] = service_controller.get();
   return service_controller;
 }
@@ -50,8 +60,7 @@ bool ServiceControllerManager::CanStartNewService() const {
 }
 
 void ServiceControllerManager::OnServiceControllerDeleted(
-    const url::Origin& origin,
-    base::PassKey<OnDeviceTranslationServiceController>) {
+    const url::Origin& origin) {
   CHECK_EQ(service_controllers_.erase(origin), 1u);
   if (service_controller_deleted_observer_for_testing_) {
     std::move(service_controller_deleted_observer_for_testing_).Run();

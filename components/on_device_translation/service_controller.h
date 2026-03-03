@@ -14,6 +14,7 @@
 #include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
+#include "base/types/pass_key.h"
 #include "components/on_device_translation/installer.h"
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
@@ -21,7 +22,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom-forward.h"
-#include "url/origin.h"
 
 class PrefService;
 
@@ -29,7 +29,6 @@ namespace on_device_translation {
 
 class FileOperationProxyImpl;
 enum class LanguagePackKey;
-class ServiceControllerManager;
 
 // This class is the controller that launches the on-device translation service
 // and delegates the functionalities. It is designed to be shared by multiple
@@ -40,9 +39,11 @@ class OnDeviceTranslationServiceController
     : public base::RefCounted<OnDeviceTranslationServiceController>,
       public OnDeviceTranslationInstaller::Observer {
  public:
-  OnDeviceTranslationServiceController(PrefService* local_state,
-                                       ServiceControllerManager* manager,
-                                       const url::Origin& origin);
+  OnDeviceTranslationServiceController(
+      PrefService* local_state,
+      base::RepeatingCallback<bool()> can_start_service_check,
+      base::OnceClosure on_deleted_callback,
+      const std::string& service_display_name_suffix);
 
   OnDeviceTranslationServiceController(
       const OnDeviceTranslationServiceController&) = delete;
@@ -134,13 +135,11 @@ class OnDeviceTranslationServiceController
   // Called when the service is idle and the idle timeout is reached.
   void OnServiceIdle();
 
-  // The manager that manages the service controller. This `manager_` is owned
-  // by the BrowserContext, and `this` is owned by the `TranslationManagerImpl`
-  // instances which are DocumentUserData. So `manager_` must outlive `this`.
-  const raw_ptr<ServiceControllerManager> manager_;
+  base::RepeatingCallback<bool()> can_start_service_check_;
+  base::OnceClosure on_deleted_callback_;
 
-  // The origin of the web page that created this service controller.
-  const url::Origin origin_;
+  // The suffix of the service display name.
+  const std::string service_display_name_suffix_;
 
   // The idle timeout for the translation service. When the service is idle for
   // this amount of time, the service will be terminated.

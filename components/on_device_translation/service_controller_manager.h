@@ -50,11 +50,6 @@ class ServiceControllerManager : public KeyedService {
   // Returns true if a new service can be started.
   virtual bool CanStartNewService() const;
 
-  // Called when a service controller is deleted.
-  virtual void OnServiceControllerDeleted(
-      const url::Origin& origin,
-      base::PassKey<OnDeviceTranslationServiceController>);
-
   // Sets the service controller deleted observer for testing.
   void set_service_controller_deleted_observer_for_testing(
       base::OnceClosure observer) {
@@ -62,11 +57,15 @@ class ServiceControllerManager : public KeyedService {
   }
 
  private:
+  // Called when a service controller is deleted.
+  void OnServiceControllerDeleted(const url::Origin& origin);
+
   std::map<url::Origin, raw_ptr<OnDeviceTranslationServiceController>>
       service_controllers_;
   base::OnceClosure service_controller_deleted_observer_for_testing_;
   // Safe because BrowserProcess::local_state() outlives the Profile.
   raw_ptr<PrefService> local_state_;
+  base::WeakPtrFactory<ServiceControllerManager> weak_ptr_factory_{this};
 };
 
 }  // namespace on_device_translation

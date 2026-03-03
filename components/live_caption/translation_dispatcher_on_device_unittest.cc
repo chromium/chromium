@@ -32,10 +32,12 @@ class MockOnDeviceTranslationServiceController
  public:
   MockOnDeviceTranslationServiceController(
       PrefService* local_state,
-      on_device_translation::ServiceControllerManager* manager)
+      base::RepeatingCallback<bool()> can_start_service_check,
+      base::OnceClosure on_deleted_callback)
       : OnDeviceTranslationServiceController(local_state,
-                                             manager,
-                                             url::Origin()) {}
+                                             std::move(can_start_service_check),
+                                             std::move(on_deleted_callback),
+                                             url::Origin().Serialize()) {}
   MOCK_METHOD(void,
               CreateTranslator,
               (const std::string& source_lang,
@@ -64,7 +66,8 @@ class TranslationDispatcherOnDeviceTest : public testing::Test {
             &local_state_);
     mock_service_controller_ =
         base::MakeRefCounted<MockOnDeviceTranslationServiceController>(
-            &local_state_, service_controller_manager_.get());
+            &local_state_, base::BindRepeating([]() { return true; }),
+            base::OnceClosure());
     service_controller_manager_->SetServiceControllerForTest(
         url::Origin(), mock_service_controller_);
     translation_dispatcher_on_device_ =

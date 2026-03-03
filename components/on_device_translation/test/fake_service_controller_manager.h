@@ -8,7 +8,6 @@
 #include <map>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/types/pass_key.h"
 #include "components/on_device_translation/service_controller_manager.h"
 #include "url/origin.h"
 
@@ -31,9 +30,6 @@ class FakeServiceControllerManager : public ServiceControllerManager {
   scoped_refptr<OnDeviceTranslationServiceController>
   GetServiceControllerForOrigin(const url::Origin& origin) override;
   bool CanStartNewService() const override;
-  void OnServiceControllerDeleted(
-      const url::Origin& origin,
-      base::PassKey<OnDeviceTranslationServiceController>) override;
 
   // Test-only methods:
   void SetCanStartNewService(bool can_start);
@@ -43,10 +39,13 @@ class FakeServiceControllerManager : public ServiceControllerManager {
       scoped_refptr<OnDeviceTranslationServiceController> service_controller);
 
  private:
+  void OnServiceControllerDeleted(const url::Origin& origin);
+
   raw_ptr<PrefService> local_state_;
   bool can_start_new_service_ = true;
   std::map<url::Origin, scoped_refptr<OnDeviceTranslationServiceController>>
       service_controllers_;
+  base::WeakPtrFactory<FakeServiceControllerManager> weak_ptr_factory_{this};
 };
 
 }  // namespace on_device_translation
