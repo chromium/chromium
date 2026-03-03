@@ -190,9 +190,9 @@ class VisitRow {
   // by an app. This is set only on Android if the Custom Tab knows which app
   // launched it; otherwise remains null.
   std::optional<std::string> app_id;
-  // The source of the visit
-  // TODO(crbug.com/464528977): Wrap source with std::optional.
-  history::VisitSource source = history::SOURCE_BROWSED;
+  // The source of the visit. While all visits have a source, this can be null
+  // for visit rows that do not join with the visit_source table.
+  std::optional<history::VisitSource> source;
   // We allow the implicit copy constructor and operator=.
 };
 

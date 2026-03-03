@@ -269,6 +269,7 @@ void ExpireHistoryTest::AddExampleData(base::span<URLID, 3> url_ids,
   VisitRow visit_row1;
   visit_row1.url_id = url_ids[0];
   visit_row1.visit_time = visit_times[0];
+  visit_row1.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row1);
 
   VisitRow visit_row2;
@@ -277,6 +278,7 @@ void ExpireHistoryTest::AddExampleData(base::span<URLID, 3> url_ids,
   if (set_app_id) {
     visit_row2.app_id = kTestAppId;
   }
+  visit_row2.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row2);
 
   VisitRow visit_row3;
@@ -287,11 +289,13 @@ void ExpireHistoryTest::AddExampleData(base::span<URLID, 3> url_ids,
   if (set_app_id) {
     visit_row3.app_id = kTestAppId;
   }
+  visit_row3.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row3);
 
   VisitRow visit_row4;
   visit_row4.url_id = url_ids[2];
   visit_row4.visit_time = visit_times[3];
+  visit_row4.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row4);
 }
 
@@ -1388,6 +1392,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
   visit_row1.url_id = url1;
   visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_START;
+  visit_row1.source = SOURCE_BROWSED;
 
   main_db_->AddVisit(&visit_row1);
 
@@ -1396,6 +1401,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirects) {
   visit_row2.visit_time = now;
   visit_row2.referring_visit = visit_row1.visit_id;
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_END;
+  visit_row2.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row2);
 
   // Expiring visit_row2 should also expire visit_row1 which is its redirect
@@ -1430,6 +1436,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
   visit_row1.url_id = url1;
   visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_START;
+  visit_row1.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row1);
 
   VisitRow visit_row2;
@@ -1437,6 +1444,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitAndRedirectsWithLoop) {
   visit_row2.visit_time = now;
   visit_row2.referring_visit = visit_row1.visit_id;
   visit_row1.transition = ui::PAGE_TRANSITION_CHAIN_END;
+  visit_row2.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row2);
 
   // Set the first visit to be redirect parented to the second visit.
@@ -1477,6 +1485,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   visit_row1.visit_time = now - base::Days(1);
   visit_row1.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_CHAIN_START | ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row1.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row1);
 
   VisitRow visit_row2;
@@ -1485,6 +1494,7 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   visit_row2.referring_visit = visit_row1.visit_id;
   visit_row2.transition = ui::PageTransitionFromInt(
       ui::PAGE_TRANSITION_CHAIN_START | ui::PAGE_TRANSITION_CHAIN_END);
+  visit_row2.source = SOURCE_BROWSED;
   main_db_->AddVisit(&visit_row2);
 
   // Expiring visit_row2 should not expire visit_row1 which is its referer

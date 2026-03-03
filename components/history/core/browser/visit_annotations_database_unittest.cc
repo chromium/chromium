@@ -54,6 +54,7 @@ class VisitAnnotationsDatabaseTest : public testing::Test,
                            bool add_context_annotation = true) {
     VisitRow visit_row;
     visit_row.visit_time = visit_time;
+    visit_row.source = SOURCE_BROWSED;
     auto visit_id = AddVisit(&visit_row);
     if (add_context_annotation)
       AddContextAnnotationsForVisit(visit_id, {});
