@@ -53,7 +53,7 @@ void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
     std::unique_ptr<LayoutManagerBase> target_layout_manager,
-    Delegate* delegate,
+    Delegate& delegate,
     AnimationAxis animation_axis,
     bool animate_host_size)
     : target_layout_manager_(
@@ -137,9 +137,7 @@ void TabCollectionAnimatingLayoutManager::AnimationEnded(
   // Clear any View-specific metadata and state no longer needed once the most
   // recent animation has finished.
   ClearViewAnimationMetadata();
-  if (delegate_) {
-    delegate_->OnAnimationEnded();
-  }
+  delegate_->OnAnimationEnded();
 }
 
 // static.
@@ -313,7 +311,7 @@ void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
     std::unique_ptr<views::View> view_to_reparent,
     const gfx::Rect& previous_bounds_in_screen) {
   auto* child_view = host_view()->AddChildView(std::move(view_to_reparent));
-  if (!delegate_ || !delegate_->IsViewDragging(*child_view)) {
+  if (!delegate_->IsViewDragging(*child_view)) {
     child_view->SetPaintToLayer();
     child_view->SetProperty(kPreviousCollectionBounds,
                             previous_bounds_in_screen);
@@ -336,7 +334,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
     if (target_it != target_view_layout_map_.end()) {
       views::ChildLayout interpolated_child = target_it->second;
 
-      if (delegate_ && delegate_->IsViewDragging(*child_view)) {
+      if (delegate_->IsViewDragging(*child_view)) {
         // Always use the target bounds for dragging views.
         // The drag target should handle layout and animations as
         // needed.
@@ -348,7 +346,7 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
             value, start_it->second.bounds, target_it->second.bounds);
         // Snap visibility to target.
         interpolated_child.visible = target_it->second.visible;
-      } else if (!delegate_ || !delegate_->ShouldSnapToTarget(*child_view)) {
+      } else if (!delegate_->ShouldSnapToTarget(*child_view)) {
         // Added child.
         // Animate-in new Views from empty bounds.
         gfx::Rect* previous_container_bounds =

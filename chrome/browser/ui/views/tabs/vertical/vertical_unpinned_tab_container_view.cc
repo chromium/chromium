@@ -84,7 +84,7 @@ VerticalUnpinnedTabContainerView::VerticalUnpinnedTabContainerView(
       layout_manager_(*SetLayoutManager(
           std::make_unique<TabCollectionAnimatingLayoutManager>(
               std::make_unique<views::DelegatingLayoutManager>(this),
-              /*delegate=*/this,
+              /*delegate=*/*this,
               /*animation_axis=*/
               TabCollectionAnimatingLayoutManager::AnimationAxis::kVertical,
               /*animate_host_size=*/true))) {

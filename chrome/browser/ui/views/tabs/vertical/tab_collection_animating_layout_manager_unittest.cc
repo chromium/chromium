@@ -78,7 +78,7 @@ class TabCollectionAnimatingLayoutManagerTest
     layout_manager_ = host_view_->SetLayoutManager(
         std::make_unique<TabCollectionAnimatingLayoutManager>(
             std::make_unique<TestLayoutManager>(),
-            layout_manager_delegate_.get()));
+            *layout_manager_delegate_.get()));
     widget_->Show();
   }
   void TearDown() override {
