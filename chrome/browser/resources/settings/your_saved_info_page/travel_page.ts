@@ -177,12 +177,11 @@ export class SettingsTravelPageElement extends SettingsTravelPageElementBase {
   }
 
   private computeTravelOptedIn_(): chrome.settingsPrivate.PrefObject<boolean> {
+    const pref = this.get('prefs.autofill.autofill_ai.travel_entities_enabled');
     const fakePref: chrome.settingsPrivate.PrefObject<boolean> = {
       key: 'fake',
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
-      value:
-          this.getPref<boolean>('autofill.autofill_ai.travel_entities_enabled')
-              .value,
+      value: pref ? pref.value : false,
     };
 
     if (this.optInToggleDisabled_()) {
