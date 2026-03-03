@@ -563,6 +563,9 @@ For more settings that use data to improve your Chrome experience, go to <ph nam
       <message name="IDS_SITE_SEARCH_DIALOG_CANCEL" desc="Button label to cancel the changes in the Edit Site Search dialog.">
         Cancel
       </message>
+      <message name="IDS_SITE_SEARCH_DIALOG_INPUT_NOT_VALID_ERROR" desc="Error message shown when a required field is not valid in the Edit Site Search dialog.">
+        Not valid
+      </message>
 
 
 
