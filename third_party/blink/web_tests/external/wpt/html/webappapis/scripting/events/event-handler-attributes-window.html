@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<title>HTMLBodyElement event handlers: reflection from document.body</title>
+<title>HTMLBodyElement event handlers: reflection from window</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/WebIDLParser.js"></script>
@@ -11,7 +11,7 @@ setup({ explicit_done: true });
 
 handlersListPromise.then(({ shadowedHandlers, notShadowedHandlers }) => {
   const altBody = document.createElement("body");
-  runEventHandlerReflectionTest(shadowedHandlers, notShadowedHandlers, "document.body", document.body, altBody, window, "body", "alternative body", "window");
+  runEventHandlerReflectionTest(shadowedHandlers, notShadowedHandlers, "window", window, document.body, altBody, "window", "body", "alternative body");
 
   done();
 });
