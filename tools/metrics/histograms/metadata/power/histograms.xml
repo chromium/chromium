@@ -348,7 +348,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </variants>
 
 <histogram name="PerformanceMonitor.AverageCPU9.Total{UsageScenario}"
-    units="1/100 %" expires_after="2026-06-28">
+    units="1/100 %" expires_after="2026-08-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -383,7 +383,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="PerformanceMonitor.AverageCPU9.{ProcessName}" units="1/100 %"
-    expires_after="2026-06-28">
+    expires_after="2026-08-30">
   <owner>fdoray@chromium.org</owner>
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
@@ -523,7 +523,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.AdaptiveChargingDelayDelta.{AdaptiveChargingState}.{OnTimeStatus}"
-    units="minutes" expires_after="2026-06-28">
+    units="minutes" expires_after="2026-08-30">
   <owner>dbasehore@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <summary>
@@ -667,7 +667,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.AmbientLightOnResume" units="lux"
-    expires_after="2026-06-28">
+    expires_after="2026-08-30">
   <owner>bkersten@chromium.org</owner>
   <owner>slangley@chromium.org</owner>
   <summary>
@@ -900,7 +900,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 
 <histogram
     name="Power.BatteryDischargeRatePreciseMilliwatts{UsageScenario}{IntervalType}{BatterySaverMode}"
-    units="milliwatts" expires_after="2026-06-28">
+    units="milliwatts" expires_after="2026-08-30">
   <owner>pmonette@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
@@ -1019,7 +1019,7 @@ tools/metrics/histograms/metadata/stability/enums.xml
 </histogram>
 
 <histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
-    expires_after="2026-06-28">
+    expires_after="2026-08-30">
   <owner>puthik@chromium.org</owner>
   <owner>chromeos-platform-power@google.com</owner>
   <improvement direction="HIGHER_IS_BETTER"/>

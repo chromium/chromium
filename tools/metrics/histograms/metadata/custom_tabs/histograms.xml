@@ -635,7 +635,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Omnibox.EnabledState" enum="BooleanEnabled"
-    expires_after="2026-07-01">
+    expires_after="2026-08-30">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
   <summary>
@@ -658,7 +658,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.Omnibox.NumNavigationsPerSession" units="count"
-    expires_after="2026-07-01">
+    expires_after="2026-08-30">
   <owner>ender@google.com</owner>
   <owner>sinansahin@google.com</owner>
   <summary>

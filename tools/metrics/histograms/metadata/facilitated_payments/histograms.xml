@@ -107,7 +107,7 @@ reviewer.
 </histogram>
 
 <histogram name="FacilitatedPayments.A2A.PayflowExitedReason"
-    enum="FacilitatedPayments.A2AFlowExitedReason" expires_after="2026-07-01">
+    enum="FacilitatedPayments.A2AFlowExitedReason" expires_after="2026-08-30">
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>
@@ -719,7 +719,7 @@ reviewer.
 
 <histogram
     name="FacilitatedPayments.SettingsPage.NonCardPaymentMethodsManagement.Shown"
-    enum="BooleanShown" expires_after="2026-07-01">
+    enum="BooleanShown" expires_after="2026-08-30">
   <owner>joshuatan@google.com</owner>
   <owner>junhuihe@google.com</owner>
   <owner>tushartushar@google.com</owner>

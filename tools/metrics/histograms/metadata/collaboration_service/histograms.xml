@@ -96,7 +96,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CollaborationService.ShareOrManageFlow"
-    enum="CollaborationServiceShareOrManageEvent" expires_after="2026-06-28">
+    enum="CollaborationServiceShareOrManageEvent" expires_after="2026-08-30">
   <owner>dljames@chromium.org</owner>
   <owner>chrome-tab-group-eng@google.com</owner>
   <summary>
