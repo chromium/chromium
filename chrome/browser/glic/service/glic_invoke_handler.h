@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/host/host.h"
 #include "chrome/browser/glic/public/glic_instance.h"
 #include "chrome/browser/glic/public/glic_invoke_options.h"
+#include "chrome/browser/glic/public/glic_passkeys.h"
 
 namespace tabs {
 class TabInterface;
@@ -30,10 +31,12 @@ class GlicInvokeHandler : public Host::Observer {
   using CompletionCallback =
       base::OnceCallback<void(GlicInstance*, GlicInvokeHandler*)>;
 
-  GlicInvokeHandler(GlicInstanceImpl& instance,
-                    tabs::TabInterface* tab,
-                    GlicInvokeOptions options,
-                    CompletionCallback completion_callback);
+  GlicInvokeHandler(
+      GlicInstanceImpl& instance,
+      tabs::TabInterface* tab,
+      GlicInvokeOptions options,
+      std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
+      CompletionCallback completion_callback);
   ~GlicInvokeHandler() override;
 
   GlicInvokeHandler(const GlicInvokeHandler&) = delete;
@@ -58,6 +61,7 @@ class GlicInvokeHandler : public Host::Observer {
 
   const base::raw_ref<GlicInstanceImpl> instance_;
   GlicInvokeOptions options_;
+  std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey_;
   CompletionCallback completion_callback_;
 
   base::CallbackListSubscription tab_destruction_subscription_;

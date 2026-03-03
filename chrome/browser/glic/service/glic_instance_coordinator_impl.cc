@@ -290,6 +290,20 @@ void GlicInstanceCoordinatorImpl::Close(const CloseOptions& options) {
 
 void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
                                          GlicInvokeOptions options) {
+  InvokeInternal(std::nullopt, tab, std::move(options));
+}
+
+void GlicInstanceCoordinatorImpl::InvokeWithAutoSubmit(
+    InvokeWithAutoSubmitPasskey auto_submit_passkey,
+    tabs::TabInterface* tab,
+    GlicInvokeOptions options) {
+  InvokeInternal(auto_submit_passkey, tab, std::move(options));
+}
+
+void GlicInstanceCoordinatorImpl::InvokeInternal(
+    std::optional<InvokeWithAutoSubmitPasskey> auto_submit_passkey,
+    tabs::TabInterface* tab,
+    GlicInvokeOptions options) {
   if (!tab || !GlicInstanceHelper::From(tab)) {
     if (options.on_error) {
       std::move(options.on_error).Run(GlicInvokeError::kInvalidTab);
@@ -336,7 +350,7 @@ void GlicInstanceCoordinatorImpl::Invoke(tabs::TabInterface* tab,
       *tab, GlicPinTrigger::kInstanceCreation, options.invocation_source));
 
   invoke_handlers_[instance] = std::make_unique<GlicInvokeHandler>(
-      *instance, tab, std::move(options),
+      *instance, tab, std::move(options), auto_submit_passkey,
       base::BindOnce(&GlicInstanceCoordinatorImpl::OnInvokeHandlerComplete,
                      base::Unretained(this)));
   invoke_handlers_[instance]->Invoke();
