@@ -203,14 +203,6 @@ bool NativePixmapEGLBinding::InitializeFromNativePixmap(
     attrs.push_back(EGL_NONE);
   } else {
     size_t pixmap_plane = plane_index_.value();
-    // Gate the pixmap_plane to be either 0 or 1 to preserve historical
-    // behavior which assumed multiplanar format's plane config to be kY_UV
-    // always.
-    // TODO(b/482199461): Verify that flows other than kY_UV can reach here and
-    // eliminate this conditional.
-    if (pixmap_plane > 1) {
-      pixmap_plane = 1;
-    }
 
     attrs.push_back(EGL_DMA_BUF_PLANE0_FD_EXT);
     attrs.push_back(pixmap->GetDmaBufFd(pixmap_plane));
