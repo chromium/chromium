@@ -19,6 +19,7 @@
 #import "ios/web/public/thread/web_thread.h"
 #import "ios/web/security/wk_web_view_security_util.h"
 #import "net/cert/cert_verify_proc_ios.h"
+#import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
 
@@ -210,7 +211,12 @@ using web::WebThread;
                                      trustResult == kSecTrustResultUnspecified;
         DCHECK(isTrusted == expectedTrusted)
             << "Trust mismatch! isTrusted: " << (isTrusted ? "true" : "false")
-            << ", trustResult: " << trustResult;
+            << ", trustResult: " << trustResult << ", cert: "
+            << (web::CreateCertFromTrust(trust.get())
+                    ? web::CreateCertFromTrust(trust.get())
+                          ->subject()
+                          .common_name
+                    : "unknown");
 
         // TODO(crbug.com/40588591): This should use PostTask to post to
         // WebThread::UI with BLOCK_SHUTDOWN once shutdown behaviors are
