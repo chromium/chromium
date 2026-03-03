@@ -623,7 +623,7 @@ IN_PROC_BROWSER_TEST_F(TabListBridgeBrowserTest,
       /*user_gesture=*/true);
   // params.window = window2.release();
   Browser* browser2 = Browser::Create(params);
-  BrowserList::SetLastActive(browser2);
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser2);
 
   ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());
 

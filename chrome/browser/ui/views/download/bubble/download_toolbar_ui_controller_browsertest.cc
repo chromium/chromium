@@ -176,7 +176,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_TRUE(toolbar_button(browser())->GetVisible());
   // Create another browser and set it as active so the button becomes dormant.
   Browser* extra_browser = CreateBrowser(browser()->profile());
-  BrowserList::SetLastActive(extra_browser);
+  ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(browser()));
   EXPECT_NE(toolbar_button(extra_browser), nullptr);
   EXPECT_TRUE(toolbar_button(extra_browser)->GetVisible());
@@ -355,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(DownloadToolbarUIControllerBrowserTest,
   EXPECT_FALSE(controller(browser())->IsProgressRingInDormantStateForTesting());
   // Create another browser and set it as active so the button becomes dormant.
   Browser* extra_browser = CreateBrowser(browser()->profile());
-  BrowserList::SetLastActive(extra_browser);
+  ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
   views::test::WaitForAnimatingLayoutManager(toolbar_container(extra_browser));
 
   EXPECT_TRUE(controller(browser())->IsProgressRingInDormantStateForTesting());

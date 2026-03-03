@@ -30,6 +30,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window_aura.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
@@ -1272,7 +1273,7 @@ TEST_F(UserActivityManagerTest, DISABLED_BasicTabs) {
 
   std::unique_ptr<Browser> browser =
       CreateTestBrowser(true /* is_visible */, true /* is_focused */);
-  BrowserList::GetInstance()->SetLastActive(browser.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   const ukm::SourceId source_id1 = CreateTestWebContents(
       tab_strip_model, url1_, true /* is_active */, "application/pdf");
@@ -1313,9 +1314,9 @@ TEST_F(UserActivityManagerTest, DISABLED_MultiBrowsersAndTabs) {
   std::unique_ptr<Browser> browser3 =
       CreateTestBrowser(true /* is_visible */, false /* is_focused */);
 
-  BrowserList::GetInstance()->SetLastActive(browser3.get());
-  BrowserList::GetInstance()->SetLastActive(browser2.get());
-  BrowserList::GetInstance()->SetLastActive(browser1.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser3.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser1.get());
 
   TabStripModel* tab_strip_model1 = browser1->tab_strip_model();
   CreateTestWebContents(tab_strip_model1, url1_, false /* is_active */);
@@ -1352,7 +1353,7 @@ TEST_F(UserActivityManagerTest, Incognito) {
 
   std::unique_ptr<Browser> browser = CreateTestBrowser(
       true /* is_visible */, true /* is_focused */, true /* is_incognito */);
-  BrowserList::GetInstance()->SetLastActive(browser.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser.get());
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   CreateTestWebContents(tab_strip_model, url1_, true /* is_active */);

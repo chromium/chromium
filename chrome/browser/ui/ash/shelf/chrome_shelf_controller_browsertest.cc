@@ -1068,7 +1068,6 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus0) {
 
   // Ensures that display 0 has one browser with focus and display 1 has two
   // browsers. Each browser only has one tab.
-  BrowserList* browser_list = BrowserList::GetInstance();
   BrowserWindowInterface* const browser0 = browser();
   BrowserWindowInterface* const browser1 = CreateBrowser(browser()->profile());
   BrowserWindowInterface* const browser2 = CreateBrowser(browser()->profile());
@@ -1076,8 +1075,8 @@ IN_PROC_BROWSER_TEST_F(ShelfAppBrowserTest, LaunchAppFromDisplayWithoutFocus0) {
   browser1->GetWindow()->SetBounds(displays[1].work_area());
   browser2->GetWindow()->SetBounds(displays[1].work_area());
   // Ensures browser 2 is above browser 1 in display 1.
-  browser_list->SetLastActive(browser2->GetBrowserForMigrationOnly());
-  browser_list->SetLastActive(browser0->GetBrowserForMigrationOnly());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser2);
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser0);
   EXPECT_EQ(chrome::GetTotalBrowserCount(), 3U);
   EXPECT_EQ(displays[0].id(),
             GetDisplayIdForBrowserWindow(browser0->GetWindow()));

@@ -62,7 +62,7 @@ class WebUsbDetectorTest : public InProcessBrowserTest {
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
-    BrowserList::SetLastActive(browser());
+    ui_test_utils::DeprecatedFakeActivateBrowser(browser());
     display_service_ = std::make_unique<NotificationDisplayServiceTester>(
         /*profile=*/nullptr);
 

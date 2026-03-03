@@ -18,6 +18,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -130,7 +131,7 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoDelegateTest, BrowserRemoved) {
           signin_metrics::AccessPoint::kBookmarkBubble,
           syncer::LocalDataItemModel::DataId());
 
-  BrowserList::SetLastActive(extra_browser);
+  ui_test_utils::DeprecatedFakeActivateBrowser(extra_browser);
 
   // Close all tabs in the original browser.  Run all pending messages
   // to make sure the browser window closes before continuing.

@@ -2965,7 +2965,7 @@ IN_PROC_BROWSER_TEST_F(BrowserTest,
 
 IN_PROC_BROWSER_TEST_F(BrowserTest, TestActiveBrowserChangedUserAction) {
   base::UserActionTester user_action_tester;
-  BrowserList::SetLastActive(browser());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser());
   EXPECT_EQ(user_action_tester.GetActionCount("ActiveBrowserChanged"), 1);
 }
 

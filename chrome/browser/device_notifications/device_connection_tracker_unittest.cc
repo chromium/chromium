@@ -12,6 +12,7 @@
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "extensions/browser/extension_registrar.h"
 
 namespace {
@@ -34,7 +35,7 @@ DeviceConnectionTrackerTestBase::~DeviceConnectionTrackerTestBase() = default;
 
 void DeviceConnectionTrackerTestBase::SetUp() {
   BrowserWithTestWindowTest::SetUp();
-  BrowserList::SetLastActive(browser());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser());
 }
 
 Profile* DeviceConnectionTrackerTestBase::CreateTestingProfile(

@@ -361,6 +361,16 @@ void WaitForBrowserSetLastActive(
     BrowserWindowInterface* browser,
     bool wait_for_set_last_active_observed = false);
 
+// DEPRECATED - DO NOT USE. This function exists only to assist with deprecation
+// of existing tests incorrectly manipulating browser activation state. If you
+// want to write tests that handle browser activation, please create an
+// interactive ui test and activate the browser's ui::BaseWindow.
+//
+// This function fakes the activation state managed by `browser`. It does not
+// change the activation state of the underlying ui::BaseWindow. This creates
+// inconsistencies in tests and may yield unexpected results.
+void DeprecatedFakeActivateBrowser(BrowserWindowInterface* browser);
+
 // Send the given text to the omnibox and wait until it's updated.
 void SendToOmniboxAndSubmit(
     BrowserWindowInterface* browser,

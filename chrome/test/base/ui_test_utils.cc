@@ -650,6 +650,18 @@ void WaitForBrowserSetLastActive(BrowserWindowInterface* browser,
   waiter.Wait();
 }
 
+void DeprecatedFakeActivateBrowser(BrowserWindowInterface* browser) {
+  CHECK(browser);
+
+  // We must deactivate the currently active browser first.
+  GetLastActiveBrowserWindowInterfaceWithAnyProfile()
+      ->GetBrowserForMigrationOnly()
+      ->DidBecomeInactive();
+
+  // Fake activation of the target browser.
+  browser->GetBrowserForMigrationOnly()->DidBecomeActive();
+}
+
 void SendToOmniboxAndSubmit(BrowserWindowInterface* browser,
                             std::string_view input,
                             base::TimeTicks match_selection_timestamp,

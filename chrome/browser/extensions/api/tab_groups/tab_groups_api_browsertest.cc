@@ -212,7 +212,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest,
   // Create a new window that doesn't support groups. App windows don't allow
   // tab groups.
   Browser* browser2 = CreateBrowserForApp("some app", profile());
-  BrowserList::SetLastActive(browser2);
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser2);
 
   ASSERT_FALSE(browser2->tab_strip_model()->SupportsTabGroups());
 

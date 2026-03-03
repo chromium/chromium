@@ -19,6 +19,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_test_utils.h"
@@ -90,7 +91,7 @@ class TestReadingListPageHandlerTest : public BrowserWithTestWindowTest {
  public:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    BrowserList::SetLastActive(browser());
+    ui_test_utils::DeprecatedFakeActivateBrowser(browser());
 
     incognito_browser_ =
         CreateBrowserWithTestWindowForParams(Browser::CreateParams(

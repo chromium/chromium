@@ -17,6 +17,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 
 namespace sync_sessions {
@@ -124,7 +125,7 @@ TEST_F(BrowserListRouterHelperTest, NotifyOnDiscardTab) {
   AddTab(browser(), gurl_1);
 
   // Tab needs to have been active to be found when discarding.
-  BrowserList::GetInstance()->SetLastActive(browser());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser());
 
   EXPECT_EQ(gurl_1, *handler_1.seen_urls()->rbegin());
   SessionID old_id = *handler_1.seen_ids()->rbegin();

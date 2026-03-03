@@ -32,6 +32,7 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/test_browser_window.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
@@ -842,7 +843,7 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindows) {
   params.type = Browser::TYPE_NORMAL;
   params.window = window2.release();
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
-  BrowserList::SetLastActive(browser2.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
 
   constexpr int kNumTabs2 = 3;
@@ -910,7 +911,7 @@ TEST_F(TabsApiUnitTest, TabsMoveAcrossWindowsShouldRespectGroupContiguity) {
   params.type = Browser::TYPE_NORMAL;
   params.window = window2.release();
   auto browser2 = Browser::DeprecatedCreateOwnedForTesting(params);
-  BrowserList::SetLastActive(browser2.get());
+  ui_test_utils::DeprecatedFakeActivateBrowser(browser2.get());
   int window_id2 = ExtensionTabUtil::GetWindowId(browser2.get());
 
   constexpr int kNumTabs2 = 3;
