@@ -329,8 +329,6 @@ ci/chromeos-amd64-generic-rel-tast
 ci/chromeos-arm-generic-dbg
 ci/chromeos-arm-generic-rel
 ci/chromeos-arm64-generic-rel
-ci/chromeos-jacuzzi-rel
-ci/chromeos-octopus-rel
 ci/chromeos-x64-libfuzzer-asan-rel-tests
 ci/fuchsia-angle-builder
 ci/fuchsia-arm64-cast-receiver-rel
@@ -504,10 +502,8 @@ try/chromeos-amd64-generic-rel-gtest-and-tast
 try/chromeos-arm-generic-dbg
 try/chromeos-arm-generic-rel
 try/chromeos-arm64-generic-rel
-try/chromeos-jacuzzi-rel
 try/chromeos-js-coverage-rel
 try/chromeos-libfuzzer-asan-rel
-try/chromeos-octopus-rel
 try/chromeos-x64-libfuzzer-asan-rel-tests
 try/compile-size
 try/fuchsia-angle-try
