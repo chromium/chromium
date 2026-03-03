@@ -1,0 +1,3 @@
+per-file *.json=file://extensions/common/api/API_OWNERS
+per-file *.idl=file://extensions/common/api/API_OWNERS
+per-file *.webidl=file://extensions/common/api/API_OWNERS
