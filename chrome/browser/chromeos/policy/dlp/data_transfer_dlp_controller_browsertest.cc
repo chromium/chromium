@@ -256,7 +256,7 @@ class DataTransferDlpBrowserTest : public InProcessBrowserTest {
     widget_ = std::make_unique<views::Widget>();
 
     views::Widget::InitParams params(
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET,
+        views::Widget::InitParams::CLIENT_OWNS_WIDGET,
         views::Widget::InitParams::TYPE_WINDOW_FRAMELESS);
     widget_->Init(std::move(params));
     textfield_ = widget_->SetContentsView(std::make_unique<views::Textfield>());
