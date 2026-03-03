@@ -8,6 +8,7 @@
 #include "base/json/json_reader.h"
 #include "base/strings/escape.h"
 #include "base/task/single_thread_task_runner.h"
+#include "build/buildflag.h"
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/widget/browser_conditions.h"
@@ -83,16 +84,14 @@ GURL GetGlicWebContinuityOriginatingHostUrl() {
 // static
 void GlicNavigationThrottle::MaybeCreateAndAdd(
     content::NavigationThrottleRegistry& registry) {
-  if (!base::FeatureList::IsEnabled(features::kGlicWebContinuity)) {
+  // We won't create a throttle if neither feature is enabled.
+  if (!base::FeatureList::IsEnabled(features::kGlicGeminiContinueURLRedirect) &&
+      !base::FeatureList::IsEnabled(features::kGlicWebContinuity)) {
     return;
   }
   content::NavigationHandle& handle = registry.GetNavigationHandle();
   content::WebContents* web_contents = handle.GetWebContents();
   if (!web_contents) {
-    return;
-  }
-  if (!GlicEnabling::IsEnabledForProfile(
-          Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
     return;
   }
   if (!handle.IsInPrimaryMainFrame() ||
@@ -137,12 +136,12 @@ content::NavigationThrottle::ThrottleCheckResult
 GlicNavigationThrottle::WillStartRequest() {
   content::WebContents* web_contents = navigation_handle()->GetWebContents();
   if (!web_contents) {
-    return CANCEL;
+    return PROCEED;
   }
 
   GURL url = navigation_handle()->GetURL();
   std::optional<std::string> cid;
-  std::optional<std::string> continue_url_str;
+  std::optional<std::string> target_url_str;
 
   size_t max_cid_length = features::kGlicWebContinuityMaxCIDLength.Get();
   size_t max_target_url_length =
@@ -152,41 +151,45 @@ GlicNavigationThrottle::WillStartRequest() {
     if (it.GetKey() == "cid") {
       std::string unescaped_cid = it.GetUnescapedValue();
       if (unescaped_cid.length() > max_cid_length) {
-        return CANCEL;
+        return PROCEED;
       }
       cid = unescaped_cid;
     } else if (it.GetKey() == "targetUrl") {
-      continue_url_str = it.GetUnescapedValue();
-      if (continue_url_str->length() > max_target_url_length) {
-        return CANCEL;
+      target_url_str = it.GetUnescapedValue();
+      if (target_url_str->length() > max_target_url_length) {
+        return PROCEED;
       }
     }
   }
 
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  GlicKeyedService* glic_service = GlicKeyedService::Get(profile);
-  if (!glic_service) {
-    return PROCEED;
-  }
 
-  if (continue_url_str) {
-    GURL continue_url(*continue_url_str);
+  if (target_url_str) {
+    GURL target_url(*target_url_str);
     // TODO (b/484408637): Add support for non-HTTPS schemes.
-    CHECK(continue_url.is_valid() && continue_url.SchemeIs(url::kHttpsScheme));
-    if (continue_url.is_valid() && continue_url.SchemeIs(url::kHttpsScheme)) {
-      tabs::TabInterface* tab =
-          tabs::TabInterface::MaybeGetFromContents(web_contents);
-      if (tab && tab->GetBrowserWindowInterface()) {
+    CHECK(target_url.is_valid() && target_url.SchemeIs(url::kHttpsScheme));
+    if (target_url.is_valid() && target_url.SchemeIs(url::kHttpsScheme)) {
+      if (GlicEnabling::IsEnabledForProfile(
+              Profile::FromBrowserContext(web_contents->GetBrowserContext())) &&
+          base::FeatureList::IsEnabled(features::kGlicWebContinuity)) {
+        GlicKeyedService* glic_service = GlicKeyedService::Get(profile);
+        if (glic_service) {
+          tabs::TabInterface* tab =
+              tabs::TabInterface::MaybeGetFromContents(web_contents);
+          if (tab && tab->GetBrowserWindowInterface()) {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        glic_service->ShowUiWithConversationID(
-            tab->GetBrowserWindowInterface(),
-            glic::mojom::InvocationSource::kNavigationCapture, *cid);
+            glic_service->ShowUiWithConversationID(
+                tab->GetBrowserWindowInterface(),
+                glic::mojom::InvocationSource::kNavigationCapture, *cid);
 #pragma clang diagnostic pop
+          }
+        }
       }
 
-      NavigateParams params(profile, continue_url,
+      // Navigate to the target URL.
+      NavigateParams params(profile, target_url,
                             ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
       params.disposition = WindowOpenDisposition::CURRENT_TAB;
       params.source_contents = web_contents;
@@ -194,10 +197,11 @@ GlicNavigationThrottle::WillStartRequest() {
           FROM_HERE,
           base::BindOnce([](NavigateParams params) { Navigate(&params); },
                          std::move(params)));
+      return CANCEL;
     }
   }
 
-  return CANCEL;
+  return PROCEED;
 }
 
 const char* GlicNavigationThrottle::GetNameForLogging() {
