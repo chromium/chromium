@@ -305,6 +305,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/contextual_tasks:ui",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/data_sharing",
+    "//chrome/browser/digital_credentials",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/domain_reliability",
     "//chrome/browser/engagement",

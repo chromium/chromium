@@ -1,14 +1,83 @@
-import("//build/config/android/rules.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("digital_credentials") {
+  sources = [
+    "digital_credentials_keyed_service.h",
+    "digital_identity_interstitial_closed_reason.h",
+    "digital_identity_low_risk_origins.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/core",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [ "digital_identity_provider_android.h" ]
+    public_deps += [ "//content/public/browser" ]
+  } else {
+    sources += [ "digital_identity_provider_desktop.h" ]
+    public_deps += [ "//content/public/browser" ]
+  }
+}
+
+source_set("impl") {
+  sources = [
+    "digital_credentials_keyed_service.cc",
+    "digital_identity_low_risk_origins.cc",
+  ]
+  deps = [
+    ":digital_credentials",
+    "//base",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/profiles:profile",
+    "//components/keyed_service/content",
+    "//components/optimization_guide/core:features",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//content/public/browser",
+    "//url",
+  ]
+
+  if (is_android) {
+    sources += [ "digital_identity_provider_android.cc" ]
+    deps += [
+      "//chrome/browser/ui/digital_credentials",
+      "//chrome/browser/webid:jni_headers",
+      "//ui/android",
+    ]
+  } else {
+    sources += [ "digital_identity_provider_desktop.cc" ]
+    deps += [
+      "//chrome/browser/ui",
+      "//components/constrained_window",
+      "//components/qr_code_generator:bitmap_generator",
+      "//device/fido",
+      "//ui/base",
+      "//ui/views",
+    ]
+  }
+
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "digital_identity_provider_android_unittest.cc" ]
+  sources = [ "digital_identity_low_risk_origins_unittest.cc" ]
   deps = [
-    "//base",
-    "//base/test:test_support",
-    "//chrome/browser",
-    "//content/public/browser",
+    ":digital_credentials",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/optimization_guide:test_support",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core",
+    "//content/test:test_support",
+    "//testing/gmock",
     "//testing/gtest",
-    "//url",
   ]
+
+  if (is_android) {
+    sources += [ "digital_identity_provider_android_unittest.cc" ]
+  }
 }

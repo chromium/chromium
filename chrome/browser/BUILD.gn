@@ -334,11 +334,6 @@ static_library("browser") {
     "data_sharing/personal_collaboration_data/personal_collaboration_data_service_factory.h",
     "defaults.cc",
     "defaults.h",
-    "digital_credentials/digital_credentials_keyed_service.cc",
-    "digital_credentials/digital_credentials_keyed_service.h",
-    "digital_credentials/digital_identity_interstitial_closed_reason.h",
-    "digital_credentials/digital_identity_low_risk_origins.cc",
-    "digital_credentials/digital_identity_low_risk_origins.h",
     "download/background_download_service_factory.cc",
     "download/background_download_service_factory.h",
     "download/chrome_download_manager_delegate.cc",
@@ -1563,7 +1558,7 @@ static_library("browser") {
     # - c/b/password_manager/chrome_password_manager_client.h
     "//chrome/browser/ui/passwords:impl",
 
-    # TODO(crbug.com/): Remove this circular dependency when
+    # TODO(crbug.com/353332589): Remove this circular dependency when
     # c/b/net/system_network_context_manager.h gets componentized.
     "//chrome/browser/assist_ranker:impl",
 
@@ -1735,6 +1730,8 @@ static_library("browser") {
     "//chrome/browser/devtools",
     "//chrome/browser/diagnostics",
     "//chrome/browser/diagnostics:impl",
+    "//chrome/browser/digital_credentials",
+    "//chrome/browser/digital_credentials:impl",
     "//chrome/browser/dom_distiller",
     "//chrome/browser/dom_distiller:impl",
     "//chrome/browser/domain_reliability",
@@ -2896,8 +2893,6 @@ static_library("browser") {
       "device_reauth/android/device_authenticator_bridge_impl.h",
       "device_reauth/android/reauthenticator_bridge.cc",
       "device_reauth/android/reauthenticator_bridge.h",
-      "digital_credentials/digital_identity_provider_android.cc",
-      "digital_credentials/digital_identity_provider_android.h",
       "download/android/dangerous_download_dialog_bridge.cc",
       "download/android/dangerous_download_dialog_bridge.h",
       "download/android/download_callback_validator.cc",
@@ -3640,8 +3635,6 @@ static_library("browser") {
       "data_sharing/desktop/data_sharing_sdk_delegate_desktop.h",
       "data_sharing/desktop/data_sharing_ui_delegate_desktop.cc",
       "data_sharing/desktop/data_sharing_ui_delegate_desktop.h",
-      "digital_credentials/digital_identity_provider_desktop.cc",
-      "digital_credentials/digital_identity_provider_desktop.h",
       "download/default_download_dir_policy_handler.cc",
       "download/default_download_dir_policy_handler.h",
       "download/download_auto_open_policy_handler.cc",
@@ -4544,6 +4537,10 @@ static_library("browser") {
       "//chrome/browser/device_api:impl",
 
       "//chrome/browser/glic/media",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/net/system_network_context_manager.h gets componentized.
+      "//chrome/browser/digital_credentials:impl",
     ]
 
     if (is_win || is_chromeos) {
