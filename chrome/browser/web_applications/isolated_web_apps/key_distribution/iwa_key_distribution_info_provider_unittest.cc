@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "build/build_config.h"
 #include "chrome/browser/component_updater/iwa_key_distribution_component_installer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/chrome_iwa_client.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
@@ -164,6 +165,37 @@ TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentFaultyData) {
                   IwaComponentUpdateError::kProtoParsingFailure, 1)));
 }
 
+TEST_F(IwaIwaKeyDistributionInfoProviderTest, LoadComponentWithEntitlements) {
+  IwaKeyDistribution key_distribution;
+  auto* user_install_allowlist = key_distribution.mutable_iwa_access_control()
+                                     ->mutable_user_install_allowlist();
+  auto& item = (*user_install_allowlist)[kWebBundleId];
+  item.set_enterprise_name("Test Enterprise");
+
+  auto* entitlement_set = item.add_entitlements();
+  entitlement_set->mutable_version_range()->set_begin("1.0.0");
+  entitlement_set->add_entitlement(
+      IwaAccessControl::UserInstallAllowlistItemData::DIRECT_SOCKETS);
+  entitlement_set->add_entitlement(
+      IwaAccessControl::UserInstallAllowlistItemData::SMART_CARD);
+
+  EXPECT_THAT(
+      test::UpdateKeyDistributionInfo(base::Version("1.0.0"), key_distribution),
+      HasValue());
+
+  const auto& provider =
+      IwaKeyDistributionInfoProvider::GetInstanceForTesting();
+  const auto* data = provider.GetUserInstallAllowlistData(kWebBundleId);
+  ASSERT_THAT(data, testing::NotNull());
+  EXPECT_EQ(data->enterprise_name, "Test Enterprise");
+  ASSERT_EQ(data->entitlements.size(), 1u);
+  EXPECT_EQ(data->entitlements[0].version_range.begin(), "1.0.0");
+  EXPECT_THAT(
+      data->entitlements[0].entitlements,
+      ElementsAre(
+          IwaAccessControl::UserInstallAllowlistItemData::DIRECT_SOCKETS,
+          IwaAccessControl::UserInstallAllowlistItemData::SMART_CARD));
+}
 namespace {
 
 struct DebugInfoTestParam {

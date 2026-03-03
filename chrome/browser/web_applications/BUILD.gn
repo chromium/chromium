@@ -1005,6 +1005,7 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/policy/isolated_web_app_external_install_options_unittest.cc",
     "isolated_web_apps/policy/isolated_web_app_installer_unittest.cc",
     "isolated_web_apps/policy/isolated_web_app_policy_manager_unittest.cc",
+    "isolated_web_apps/runtime_data/iwa_entitlements_unittest.cc",
     "isolated_web_apps/signed_web_bundle_metadata_unittest.cc",
     "isolated_web_apps/test/isolated_web_app_test.cc",
     "isolated_web_apps/test/isolated_web_app_test.h",

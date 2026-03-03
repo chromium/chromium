@@ -6,6 +6,7 @@
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features_generated.h"
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/no_destructor.h"
 #include "base/feature_list.h"
 #include "services/network/public/cpp/features.h"
@@ -61,6 +62,12 @@ PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll() {
     return map;
   }());
   return *feature_list;
+}
+
+bool IsPermissionsPolicyFeatureGuardedByIsolatedContext(
+    std::string_view feature_name) {
+  static constexpr auto kIsolatedContextFeatures = base::MakeFixedFlatSet<std::string_view>({  });
+  return kIsolatedContextFeatures.contains(feature_name);
 }
 
 } // namespace network

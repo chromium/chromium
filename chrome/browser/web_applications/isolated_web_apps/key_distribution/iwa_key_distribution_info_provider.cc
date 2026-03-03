@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_value_list.h"
+#include "base/containers/to_vector.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/features.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/iwa_key_distribution_histograms.h"
 #include "chrome/browser/web_applications/isolated_web_apps/key_distribution/proto/key_distribution.pb.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/iwa_entitlements.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 namespace web_app {
@@ -351,10 +353,29 @@ IwaKeyDistributionInfoProvider::ParseKeyDistributionData(
         /*comp=*/{},
         /*proj=*/[](const auto& entry) {
           const auto& [web_bundle_id, data] = entry;
+          std::vector<web_app::IwaEntitlementsSet> entitlements;
+          for (const auto& entitlement_set_proto : data.entitlements()) {
+            web_app::IwaEntitlementsSet set;
+            if (entitlement_set_proto.has_version_range()) {
+              set.version_range.set_begin(
+                  entitlement_set_proto.version_range().begin());
+              set.version_range.set_end(
+                  entitlement_set_proto.version_range().end());
+            }
+            set.entitlements = base::ToVector(
+                entitlement_set_proto.entitlement(),
+                [](const auto& entitlement_proto) {
+                  return IwaAccessControl::UserInstallAllowlistItemData::
+                      Entitlement(entitlement_proto);
+                });
+            entitlements.push_back(std::move(set));
+          }
+
           return std::make_pair(
               web_bundle_id,
               ChromeIwaRuntimeDataProvider::UserInstallAllowlistItemData(
-                  data.has_enterprise_name() ? data.enterprise_name() : ""));
+                  data.has_enterprise_name() ? data.enterprise_name() : "",
+                  std::move(entitlements)));
         });
   }
 

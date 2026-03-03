@@ -61,6 +61,30 @@ message IwaAccessControl {
     // This information is needed to present the enterprise
     // name in the install wizard.
     string enterprise_name = 1;
+
+    enum Entitlement {
+      UNKNOWN = 0;
+      CONTROLLED_FRAME = 1;
+      DIRECT_SOCKETS = 2;
+      DIRECT_SOCKETS_MULTICAST = 3;
+      DIRECT_SOCKETS_PRIVATE = 4;
+      SMART_CARD = 5;
+      SUB_APPS = 6;
+      UNRESTRICTED_WEBUSB = 7;
+      WEB_PRINTING = 8;
+    }
+
+    message VersionRange {
+      string begin = 1;
+      string end = 2;
+    }
+
+    message Entitlements {
+      VersionRange version_range = 1;
+      repeated Entitlement entitlement = 2;
+    }
+
+    repeated Entitlements entitlements = 2;
   }
 
   // Keys represent web bundle ids of allowed apps.
@@ -68,6 +92,7 @@ message IwaAccessControl {
   map<string, ManagedAllowlistItemData> managed_allowlist = 1;
 
   // Keys represent web bundle ids of blocked apps.
+  // Only allowed apps can be installed and updated.
   map<string, BlocklistItemData> blocklist = 2;
 
   // Keys represent web bundle ids of apps allowed for manual installation.

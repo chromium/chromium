@@ -6,10 +6,14 @@ source_set("runtime_data") {
   sources = [
     "chrome_iwa_runtime_data_provider.cc",
     "chrome_iwa_runtime_data_provider.h",
+    "iwa_entitlements.cc",
+    "iwa_entitlements.h",
   ]
 
   public_deps = [
     "//base",
+    "//chrome/browser/web_applications/isolated_web_apps/key_distribution/proto",
     "//components/webapps/isolated_web_apps/public",
+    "//services/network/public/cpp",
   ]
 }

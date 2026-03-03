@@ -5,6 +5,8 @@
 #ifndef SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
 #define SERVICES_NETWORK_PUBLIC_CPP_PERMISSIONS_POLICY_PERMISSIONS_POLICY_FEATURES_GENERATED_H_
 
+#include <string_view>
+
 #include "services/network/public/cpp/permissions_policy/permissions_policy_features.h"
 
 // Headers for the generated code from
@@ -16,6 +18,12 @@ void UpdatePermissionsPolicyFeatureListFlagDefaults(
     PermissionsPolicyFeatureList& mutable_feature_list);
 PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadNone();
 PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureListUnloadAll();
+
+// This means that `permissions_policy_features.json5` specifies
+// `visibility: "IsolatedContext"` for this feature.
+COMPONENT_EXPORT(NETWORK_CPP_WEB_PLATFORM)
+bool IsPermissionsPolicyFeatureGuardedByIsolatedContext(
+    std::string_view feature_name);
 
 }  // namespace network
 

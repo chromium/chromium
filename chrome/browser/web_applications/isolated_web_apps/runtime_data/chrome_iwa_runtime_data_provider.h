@@ -12,6 +12,7 @@
 
 #include "base/types/pass_key.h"
 #include "base/values.h"
+#include "chrome/browser/web_applications/isolated_web_apps/runtime_data/iwa_entitlements.h"
 #include "components/webapps/isolated_web_apps/public/iwa_runtime_data_provider.h"
 
 class BrowserProcessImpl;
@@ -29,13 +30,16 @@ class ChromeIwaRuntimeDataProvider : public IwaRuntimeDataProvider {
   };
 
   struct UserInstallAllowlistItemData {
-    explicit UserInstallAllowlistItemData(const std::string& enterprise_name);
+    explicit UserInstallAllowlistItemData(
+        const std::string& enterprise_name,
+        std::vector<IwaEntitlementsSet> entitlements = {});
     ~UserInstallAllowlistItemData();
     UserInstallAllowlistItemData(const UserInstallAllowlistItemData&);
 
     base::Value AsDebugValue() const;
 
     std::string enterprise_name;
+    std::vector<IwaEntitlementsSet> entitlements;
   };
 
   static ChromeIwaRuntimeDataProvider& GetInstance();
