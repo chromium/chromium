@@ -842,6 +842,7 @@ crbug.com/475181552 [ sequoia angle-metal graphite-enabled intel-0x3e9b ] deqp/f
 
 crbug.com/1115314 [ linux nvidia-0x2184 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/40144307 [ linux nvidia-0x2783 angle-opengl passthrough ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
+crbug.com/488451405 [ linux nvidia angle-opengl passthrough ] conformance/textures/canvas_sub_rectangle/* [ RetryOnFailure ]
 
 ## Linux AMD RX 5500 XT ##
 
