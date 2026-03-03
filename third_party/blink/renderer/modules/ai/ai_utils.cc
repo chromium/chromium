@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_message_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_language_model_tool_call_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_performance_preference.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_language_model_message_value.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -49,6 +50,18 @@ bool ContainsNoneType(const base::Value& value) {
 }
 
 namespace {
+
+mojom::blink::PerformancePreference ToMojoSummarizerPreference(
+    V8PerformancePreference preference) {
+  switch (preference.AsEnum()) {
+    case V8PerformancePreference::Enum::kAuto:
+      return mojom::blink::PerformancePreference::kAuto;
+    case V8PerformancePreference::Enum::kSpeed:
+      return mojom::blink::PerformancePreference::kSpeed;
+    case V8PerformancePreference::Enum::kCapability:
+      return mojom::blink::PerformancePreference::kCapability;
+  }
+}
 
 mojom::blink::AISummarizerType ToMojoSummarizerType(V8SummarizerType type) {
   switch (type.AsEnum()) {
@@ -156,6 +169,7 @@ mojom::blink::AISummarizerCreateOptionsPtr ToMojoSummarizerCreateOptionsImpl(
       shared_context, ToMojoSummarizerType(options->type()),
       ToMojoSummarizerFormat(options->format()),
       ToMojoSummarizerLength(options->length()),
+      ToMojoSummarizerPreference(options->preference()),
       ToMojoLanguageCodes(options->getExpectedInputLanguagesOr({})),
       ToMojoLanguageCodes(options->getExpectedContextLanguagesOr({})),
       mojom::blink::AILanguageCode::New(

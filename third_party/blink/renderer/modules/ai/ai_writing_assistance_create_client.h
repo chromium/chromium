@@ -158,6 +158,12 @@ class AIWritingAssistanceCreateClient
             kExceptionMessageUnsupportedLanguages);
         break;
       }
+      case AIManagerCreateClientError::kUnsupportedPerformancePreference: {
+        this->GetResolver()->RejectWithDOMException(
+            DOMExceptionCode::kNotSupportedError,
+            kExceptionMessageUnsupportedPerformancePreference);
+        break;
+      }
     }
   }
 

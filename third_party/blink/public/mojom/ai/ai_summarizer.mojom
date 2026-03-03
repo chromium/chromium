@@ -31,12 +31,20 @@ enum AISummarizerLength {
   kLong,
 };
 
+// The preference of the model.
+enum PerformancePreference {
+  kAuto,
+  kSpeed,
+  kCapability,
+};
+
 // This is used when creating a new AISummarizer.
 struct AISummarizerCreateOptions {
   string? shared_context;
   AISummarizerType type;
   AISummarizerFormat format;
   AISummarizerLength length;
+  PerformancePreference preference;
 
   // Creation fails if a model is not available for specified languages.
   array<AILanguageCode> expected_input_languages;

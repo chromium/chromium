@@ -94,6 +94,7 @@ blink::mojom::AISummarizerCreateOptionsPtr GetDefaultOptions() {
       kSharedContextString, blink::mojom::AISummarizerType::kTLDR,
       blink::mojom::AISummarizerFormat::kPlainText,
       blink::mojom::AISummarizerLength::kMedium,
+      blink::mojom::PerformancePreference::kAuto,
       /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
       /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
       /*output_language=*/AILanguageCode::New(""));
@@ -169,6 +170,7 @@ class AISummarizerTest : public AITestUtils::AITestBase {
 
     const auto options = blink::mojom::AISummarizerCreateOptions::New(
         kSharedContextString, type, format, length,
+        blink::mojom::PerformancePreference::kAuto,
         /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
         /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
         /*output_language=*/AILanguageCode::New(""));
@@ -245,6 +247,17 @@ TEST_F(AISummarizerTest, CanCreateUnIsLanguagesSupported) {
                                                callback.Get());
 }
 
+// TODO(https://crbug.com/488092645): Remove once we support speed.
+TEST_F(AISummarizerTest, CanCreateUnsupportedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+  base::MockCallback<AIManager::CanCreateSummarizerCallback> callback;
+  EXPECT_CALL(callback, Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedPerformancePreference));
+  GetAIManagerInterface()->CanCreateSummarizer(std::move(options),
+                                               callback.Get());
+}
+
 TEST_F(AISummarizerTest, ToProtoOptionsLanguagesSupported) {
   // Summarizer proto expects a limited set of BCP 47 base language codes.
   std::vector<std::pair<std::string, std::string>> languages = {
@@ -271,6 +284,21 @@ TEST_F(AISummarizerTest, CreateSummarizerNoService) {
   EXPECT_FALSE(result.has_value());
   EXPECT_EQ(result.error().error,
             blink::mojom::AIManagerCreateClientError::kUnableToCreateSession);
+}
+
+// TODO(https://crbug.com/488092645): Remove once we support speed.
+TEST_F(AISummarizerTest, CreateUnsupportedPreference) {
+  auto options = GetDefaultOptions();
+  options->preference = blink::mojom::PerformancePreference::kSpeed;
+
+  TestCreateSummarizerClient create_summarizer_client;
+  GetAIManagerRemote()->CreateSummarizer(
+      create_summarizer_client.BindNewPipeAndPassRemote(), std::move(options));
+
+  CreateSummarizerResult result = create_summarizer_client.result().Take();
+  EXPECT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().error, blink::mojom::AIManagerCreateClientError::
+                                      kUnsupportedPerformancePreference);
 }
 
 TEST_F(AISummarizerTest, CanCreateWaitsForEligibility) {
@@ -607,6 +635,7 @@ TEST_F(AISummarizerTest, TextSafetySharedContext) {
       "unsafe", blink::mojom::AISummarizerType::kTLDR,
       blink::mojom::AISummarizerFormat::kPlainText,
       blink::mojom::AISummarizerLength::kMedium,
+      blink::mojom::PerformancePreference::kAuto,
       /*expected_input_languages=*/std::vector<AILanguageCodePtr>(),
       /*expected_context_languages=*/std::vector<AILanguageCodePtr>(),
       /*output_language=*/AILanguageCode::New(""));

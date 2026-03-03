@@ -500,6 +500,12 @@ void LanguageModelCreateClient::OnError(
           kExceptionMessageUnsupportedLanguages);
       break;
     }
+    case AIManagerCreateClientError::kUnsupportedPerformancePreference: {
+      GetResolver()->RejectWithDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          kExceptionMessageUnsupportedPerformancePreference);
+      break;
+    }
   }
   Cleanup();
 }

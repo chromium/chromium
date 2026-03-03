@@ -508,6 +508,16 @@ void AIManager::CanCreateSummarizer(
                                 kUnavailableUnsupportedLanguage);
     return;
   }
+
+  // TODO(crbug.com/488092645): Support capability and speed preference for
+  // summarizer. This is currently a No-Op.
+  if (options &&
+      options->preference == blink::mojom::PerformancePreference::kSpeed) {
+    std::move(callback).Run(blink::mojom::ModelAvailabilityCheckResult::
+                                kUnavailableUnsupportedPerformancePreference);
+    return;
+  }
+
   CanCreateSession(optimization_guide::mojom::OnDeviceFeature::kSummarize,
                    on_device_model::Capabilities(), std::move(callback));
 }
@@ -522,6 +532,23 @@ void AIManager::CreateSummarizer(
     on_device_ai::SendClientRemoteError(
         client_remote,
         blink::mojom::AIManagerCreateClientError::kUnsupportedLanguage);
+    return;
+  }
+
+  // TODO(crbug.com/488092645): Support capability and speed preference for
+  // summarizer. This is currently a No-Op.
+
+  // CanCreateSummarizer should have been called which has already verified
+  // that the preference is supported, but if the renderer is compromised, the
+  // CreateSummarizer mojo function could be called directly with invalid
+  // values.
+  if (options &&
+      options->preference == blink::mojom::PerformancePreference::kSpeed) {
+    mojo::Remote<blink::mojom::AIManagerCreateSummarizerClient> client_remote(
+        std::move(client));
+    on_device_ai::SendClientRemoteError(
+        client_remote, blink::mojom::AIManagerCreateClientError::
+                           kUnsupportedPerformancePreference);
     return;
   }
 

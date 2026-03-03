@@ -46,6 +46,8 @@ Availability ConvertModelAvailabilityCheckResult(
     case ModelAvailabilityCheckResult::kUnavailableInsufficientDiskSpace:
     case ModelAvailabilityCheckResult::kUnavailableTranslationNotEligible:
     case ModelAvailabilityCheckResult::kUnavailableEnterprisePolicyDisabled:
+    case ModelAvailabilityCheckResult::
+        kUnavailableUnsupportedPerformancePreference:
       return Availability::kUnavailable;
   }
 }
