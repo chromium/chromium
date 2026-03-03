@@ -188,8 +188,6 @@ public class AutocompleteMediatorUnitTest {
                 .when(mFuseboxCoordinator)
                 .getFuseboxStateSupplier();
 
-        lenient().doReturn(0).when(mFuseboxCoordinator).getAttachmentsCount();
-
         mMediator =
                 new AutocompleteMediator(
                         mContext,

@@ -29,7 +29,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.FuseboxSessionState;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -71,7 +70,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
     private final PropertyModel mModel;
     private final Context mContext;
     private final WindowAndroid mWindowAndroid;
-    private final FuseboxAttachmentModelList mModelList;
     private final MonotonicObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
     private @Nullable FuseboxMediator mMediator;
     private @Nullable AutocompleteInput mInput;
@@ -108,7 +106,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         mProfileSupplier = profileObservableSupplier;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mSnackbarManager = snackbarManager;
-        mModelList = new FuseboxAttachmentModelList();
 
         if (!OmniboxFeatures.sOmniboxMultimodalInput.isEnabled()
                 || parent.findViewById(R.id.fusebox_request_type) == null) {
@@ -145,13 +142,8 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
 
         var popup = new FuseboxPopup(mContext, popupWindowBuilder.build(), popupView);
         mViewHolder = new FuseboxViewHolder(parent, popup);
-
-        var adapter = mModelList.getAdapter();
-        mViewHolder.attachmentsView.setAdapter(adapter);
-
         mModel =
                 new PropertyModel.Builder(FuseboxProperties.ALL_KEYS)
-                        .with(FuseboxProperties.ADAPTER, adapter)
                         .with(FuseboxProperties.ATTACHMENTS_TOOLBAR_VISIBLE, false)
                         .with(
                                 FuseboxProperties.AUTOCOMPLETE_REQUEST_TYPE,
@@ -200,7 +192,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
         if (mTemplateUrlService != null) {
             mTemplateUrlService.removeObserver(this);
         }
-        mModelList.destroy();
         if (mViewportRectProvider != null) {
             mViewportRectProvider.destroy();
         }
@@ -333,21 +324,6 @@ public class FuseboxCoordinator implements TemplateUrlServiceObserver {
      */
     public NonNullObservableSupplier<@FuseboxState Integer> getFuseboxStateSupplier() {
         return mFuseboxStateSupplier;
-    }
-
-    /** Registers the listener notified whenever attachments list is changed. */
-    public void addAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
-        mModelList.addAttachmentChangeListener(listener);
-    }
-
-    /** Unregisters the listener from being notified that attachments list has been changed. */
-    public void removeAttachmentChangeListener(FuseboxAttachmentChangeListener listener) {
-        mModelList.removeAttachmentChangeListener(listener);
-    }
-
-    /** Returns the number of attachments in the Fusebox Attachments list. */
-    public int getAttachmentsCount() {
-        return mModelList.size();
     }
 
     /**
