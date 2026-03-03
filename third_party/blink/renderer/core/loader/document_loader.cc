@@ -1845,8 +1845,15 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
         base::Milliseconds(100);
     cross_origin_parent_load_event_task_ = PostDelayedCancellableTask(
         *frame_->GetTaskRunner(TaskType::kInternalLoading), FROM_HERE,
-        BindOnce([](FrameOwner* owner) { owner->DispatchLoad(); },
-                 WrapWeakPersistent(frame_->Owner())),
+        BindOnce(
+            [](Frame* frame) {
+              // The delay might mean the frame is no longer attached to the
+              // owner (e.g., iframe detach).
+              if (auto* owner = frame->Owner()) {
+                owner->DispatchLoad();
+              }
+            },
+            WrapWeakPersistent(frame_.Get())),
         cross_origin_load_event_delay);
   }
 
