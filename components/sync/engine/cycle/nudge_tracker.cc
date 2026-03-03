@@ -266,8 +266,8 @@ void NudgeTracker::FillProtoMessage(DataType type,
 
 void NudgeTracker::UpdateLocalChangeDelay(DataType type,
                                           const base::TimeDelta& delay) {
-  if (type_trackers_.contains(type)) {
-    type_trackers_[type]->UpdateLocalChangeNudgeDelay(delay);
+  if (auto it = type_trackers_.find(type); it != type_trackers_.end()) {
+    it->second->UpdateLocalChangeNudgeDelay(delay);
   }
 }
 
