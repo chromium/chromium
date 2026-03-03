@@ -347,7 +347,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
 
         int taskId = IdSequencer.next();
         var activityScopedObjects =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(taskId);
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        taskId, mockParams.getProfile());
 
         // Act.
         var task =
@@ -835,7 +836,8 @@ public class ChromeAndroidTaskTrackerImplUnitTest {
         mFakeTime.advanceMillis(100);
 
         var newActivityScopedObjects =
-                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(/* taskId= */ 2);
+                ChromeAndroidTaskUnitTestSupport.createMockActivityScopedObjects(
+                        /* taskId= */ 2, mockParams.getProfile());
         var newTask =
                 (ChromeAndroidTaskImpl)
                         mChromeAndroidTaskTracker.obtainTask(

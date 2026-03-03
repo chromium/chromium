@@ -247,15 +247,16 @@ final class ChromeAndroidTaskTrackerImpl implements ChromeAndroidTaskTracker {
      * <p>This method must be called on the UI thread.
      */
     void removeAllForTesting() {
-        ThreadUtils.assertOnUiThread();
-        for (var task : mTasks.values()) {
-            task.destroy();
-        }
+        List<ChromeAndroidTask> tasks = new ArrayList<>(mTasks.values());
         mTasks.clear();
-        for (var task : mPendingTasks.values()) {
+        for (var task : tasks) {
             task.destroy();
         }
+        List<ChromeAndroidTask> pendingTasks = new ArrayList<>(mPendingTasks.values());
         mPendingTasks.clear();
+        for (var task : pendingTasks) {
+            task.destroy();
+        }
     }
 
     boolean hasObserverForTesting(ChromeAndroidTaskTrackerObserver observer) {

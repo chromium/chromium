@@ -262,7 +262,12 @@ public final class ChromeAndroidTaskUnitTestSupport {
         var chromeAndroidTask =
                 isPendingTask
                         ? chromeAndroidTaskTracker.createPendingTask(
-                                createPendingTaskInfo().mCreateParams, null)
+                                createMockAndroidBrowserWindowCreateParams(
+                                        BrowserWindowType.NORMAL,
+                                        new Rect(),
+                                        WindowShowState.DEFAULT,
+                                        profile),
+                                null)
                         : chromeAndroidTaskTracker.obtainTask(
                                 BrowserWindowType.NORMAL,
                                 activityScopedObjects,
@@ -486,7 +491,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
     }
 
     /**
-     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int)
+     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int, Profile)
      */
     static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams() {
         return createMockAndroidBrowserWindowCreateParams(
@@ -494,7 +499,7 @@ public final class ChromeAndroidTaskUnitTestSupport {
     }
 
     /**
-     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int)
+     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int, Profile)
      */
     static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams(
             @BrowserWindowType int windowType) {
@@ -503,21 +508,33 @@ public final class ChromeAndroidTaskUnitTestSupport {
     }
 
     /**
-     * Creates an {@link AndroidBrowserWindowCreateParams} mock.
-     *
-     * @param windowType The mock {@link BrowserWindowType} to set in the create params.
-     * @param launchBounds The launch bounds to set in the create params.
-     * @param showState The mock {@link WindowShowState} to set in the create params.
-     * @return The {@link AndroidBrowserWindowCreateParams} mock.
+     * @see #createMockAndroidBrowserWindowCreateParams(int, Rect, int, Profile)
      */
     static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams(
             @BrowserWindowType int windowType,
             Rect launchBounds,
             @WindowShowState.EnumType int showState) {
+        return createMockAndroidBrowserWindowCreateParams(
+                windowType, launchBounds, showState, mock(Profile.class));
+    }
+
+    /**
+     * Creates an {@link AndroidBrowserWindowCreateParams} mock.
+     *
+     * @param windowType The mock {@link BrowserWindowType} to set in the create params.
+     * @param launchBounds The launch bounds to set in the create params.
+     * @param showState The mock {@link WindowShowState} to set in the create params.
+     * @param profile The {@link Profile} to set in the create params.
+     * @return The {@link AndroidBrowserWindowCreateParams} mock.
+     */
+    static AndroidBrowserWindowCreateParams createMockAndroidBrowserWindowCreateParams(
+            @BrowserWindowType int windowType,
+            Rect launchBounds,
+            @WindowShowState.EnumType int showState,
+            Profile profile) {
         var mockParams = mock(AndroidBrowserWindowCreateParams.class);
         when(mockParams.getWindowType()).thenReturn(windowType);
-        Profile mockProfile = mock(Profile.class);
-        when(mockParams.getProfile()).thenReturn(mockProfile);
+        when(mockParams.getProfile()).thenReturn(profile);
         when(mockParams.getInitialBoundsInDp()).thenReturn(launchBounds);
         when(mockParams.getInitialShowState()).thenReturn(showState);
         mockPopupIntentCreator();

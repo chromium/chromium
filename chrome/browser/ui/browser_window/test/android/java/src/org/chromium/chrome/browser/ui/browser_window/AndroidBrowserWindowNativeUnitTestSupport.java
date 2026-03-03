@@ -12,6 +12,7 @@ import org.jni_zero.CalledByNative;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
  * Supports {@code android_browser_window_unittest.cc}.
@@ -38,7 +39,9 @@ final class AndroidBrowserWindowNativeUnitTestSupport {
             @BrowserWindowType int browserWindowType, Profile profile) {
         mMockChromeAndroidTask = mock(ChromeAndroidTask.class);
         when(mMockChromeAndroidTask.getBrowserWindowType()).thenReturn(browserWindowType);
-        mAndroidBrowserWindow = new AndroidBrowserWindow(mMockChromeAndroidTask, profile);
+        mAndroidBrowserWindow =
+                new AndroidBrowserWindow(
+                        mMockChromeAndroidTask, profile, mock(ActivityWindowAndroid.class));
 
         ProfileManager.setLastUsedProfileForTesting(profile);
     }

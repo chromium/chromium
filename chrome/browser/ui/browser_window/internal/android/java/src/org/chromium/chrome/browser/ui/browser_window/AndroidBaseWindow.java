@@ -17,16 +17,13 @@ import org.chromium.ui.base.WindowAndroid;
 /** Java class for communicating with the native {@code AndroidBaseWindow}. */
 @NullMarked
 final class AndroidBaseWindow {
-
-    /** Supports windowing functionalities of the native {@code AndroidBaseWindow}. */
-    @SuppressWarnings("UnusedVariable")
-    private final ChromeAndroidTask mChromeAndroidTask;
+    private final AndroidBrowserWindow mAndroidBrowserWindow;
 
     /** Address of the native {@code AndroidBaseWindow}. */
     private long mNativeAndroidBaseWindow;
 
-    AndroidBaseWindow(ChromeAndroidTask chromeAndroidTask) {
-        mChromeAndroidTask = chromeAndroidTask;
+    AndroidBaseWindow(AndroidBrowserWindow androidBrowserWindow) {
+        mAndroidBrowserWindow = androidBrowserWindow;
     }
 
     /**
@@ -51,86 +48,86 @@ final class AndroidBaseWindow {
 
     @CalledByNative
     private boolean isActive() {
-        return mChromeAndroidTask.isActive();
+        return mAndroidBrowserWindow.getTask().isActive();
     }
 
     @CalledByNative
     private boolean isMaximized() {
-        return mChromeAndroidTask.isMaximized();
+        return mAndroidBrowserWindow.getTask().isMaximized();
     }
 
     @CalledByNative
     private boolean isMinimized() {
-        return mChromeAndroidTask.isMinimized();
+        return mAndroidBrowserWindow.getTask().isMinimized();
     }
 
     @CalledByNative
     private boolean isFullscreen() {
-        return mChromeAndroidTask.isFullscreen();
+        return mAndroidBrowserWindow.getTask().isFullscreen();
     }
 
     @CalledByNative
     @JniType("std::vector<int>")
     private int[] getRestoredBounds() {
-        Rect bounds = mChromeAndroidTask.getRestoredBoundsInDp();
+        Rect bounds = mAndroidBrowserWindow.getTask().getRestoredBoundsInDp();
         return new int[] {bounds.left, bounds.top, bounds.width(), bounds.height()};
     }
 
     @CalledByNative
     @JniType("std::vector<int>")
     private int[] getBounds() {
-        Rect bounds = mChromeAndroidTask.getBoundsInDp();
+        Rect bounds = mAndroidBrowserWindow.getTask().getBoundsInDp();
         return new int[] {bounds.left, bounds.top, bounds.width(), bounds.height()};
     }
 
     @CalledByNative
     private void show() {
-        mChromeAndroidTask.show();
+        mAndroidBrowserWindow.getTask().show();
     }
 
     @CalledByNative
     private boolean isVisible() {
-        return mChromeAndroidTask.isVisible();
+        return mAndroidBrowserWindow.getTask().isVisible();
     }
 
     @CalledByNative
     private void showInactive() {
-        mChromeAndroidTask.showInactive();
+        mAndroidBrowserWindow.getTask().showInactive();
     }
 
     @CalledByNative
     private void close() {
-        mChromeAndroidTask.close();
+        mAndroidBrowserWindow.getTask().close();
     }
 
     @CalledByNative
     private void activate() {
-        mChromeAndroidTask.activate();
+        mAndroidBrowserWindow.getTask().activate();
     }
 
     @CalledByNative
     private void deactivate() {
-        mChromeAndroidTask.deactivate();
+        mAndroidBrowserWindow.getTask().deactivate();
     }
 
     @CalledByNative
     private void maximize() {
-        mChromeAndroidTask.maximize();
+        mAndroidBrowserWindow.getTask().maximize();
     }
 
     @CalledByNative
     private void minimize() {
-        mChromeAndroidTask.minimize();
+        mAndroidBrowserWindow.getTask().minimize();
     }
 
     @CalledByNative
     private void restore() {
-        mChromeAndroidTask.restore();
+        mAndroidBrowserWindow.getTask().restore();
     }
 
     @CalledByNative
     private void setBounds(int left, int top, int right, int bottom) {
-        mChromeAndroidTask.setBoundsInDp(new Rect(left, top, right, bottom));
+        mAndroidBrowserWindow.getTask().setBoundsInDp(new Rect(left, top, right, bottom));
     }
 
     @CalledByNative
@@ -140,7 +137,7 @@ final class AndroidBaseWindow {
 
     @CalledByNative
     private @Nullable WindowAndroid getWindowAndroid() {
-        return mChromeAndroidTask.getTopActivityWindowAndroid();
+        return mAndroidBrowserWindow.getActivityWindowAndroid();
     }
 
     long getNativePtrForTesting() {

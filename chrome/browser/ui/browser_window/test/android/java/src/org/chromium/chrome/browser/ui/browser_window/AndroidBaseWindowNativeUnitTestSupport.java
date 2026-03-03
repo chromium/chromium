@@ -14,6 +14,8 @@ import android.graphics.Rect;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.ui.base.ActivityWindowAndroid;
 
 /**
  * Supports {@code android_base_window_unittest.cc}.
@@ -28,12 +30,16 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 final class AndroidBaseWindowNativeUnitTestSupport {
     private final AndroidBaseWindow mAndroidBaseWindow;
+    private final AndroidBrowserWindow mAndroidBrowserWindow;
     private final ChromeAndroidTask mChromeAndroidTask;
 
     @CalledByNative
     private AndroidBaseWindowNativeUnitTestSupport() {
         mChromeAndroidTask = mock(ChromeAndroidTask.class);
-        mAndroidBaseWindow = new AndroidBaseWindow(mChromeAndroidTask);
+        mAndroidBrowserWindow =
+                new AndroidBrowserWindow(
+                        mChromeAndroidTask, mock(Profile.class), mock(ActivityWindowAndroid.class));
+        mAndroidBaseWindow = new AndroidBaseWindow(mAndroidBrowserWindow);
     }
 
     @CalledByNative
