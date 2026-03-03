@@ -26,6 +26,7 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/common/actor/task_id.h"
 #include "chrome/common/actor_webui.mojom-forward.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/visibility.h"
 #include "content/public/common/buildflags.h"
@@ -225,6 +226,17 @@ class ActorTask : public base::SupportsUserData {
 
   ActorKeyedService& actor_keyed_service() const { return service_.get(); }
 
+  // These observations will be added to the final ActionsResult returned by the
+  // task. This is currently only used by the load and extract content tool. A
+  // check ensures that feature is enabled.
+  void AddAdditionalTabObservations(
+      std::vector<optimization_guide::proto::TabObservation> tab_observations);
+
+  const std::vector<optimization_guide::proto::TabObservation>&
+  GetAdditionalTabObservations() const {
+    return additional_tab_observations_;
+  }
+
  private:
   class ActorControlledTabState : public content::WebContentsObserver {
    public:
@@ -278,6 +290,7 @@ class ActorTask : public base::SupportsUserData {
                        tabs::TabInterface::DetachReason reason);
 
   void ResetToObserveTabsSet();
+  void ResetAdditionalTabObservations();
 
   // Recomputes the visible tab. This is necessary to capture the previous
   // visibility state for UpdateVisibilityTimes() when called after
@@ -344,6 +357,10 @@ class ActorTask : public base::SupportsUserData {
   // turn. Reset at the beginning of each call to Act.
   absl::flat_hash_map<tabs::TabHandle, std::unique_ptr<ActorControlledTabState>>
       to_observe_tabs_;
+
+  // A set of additional tab observations performed directly by the tools.
+  std::vector<optimization_guide::proto::TabObservation>
+      additional_tab_observations_;
 
   // Running number of actions taken in the current state.
   size_t actions_in_current_state_ = 0;

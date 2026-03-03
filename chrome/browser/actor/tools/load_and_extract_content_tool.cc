@@ -31,6 +31,7 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -41,28 +42,6 @@ using TabObservation = ::optimization_guide::proto::TabObservation;
 namespace actor {
 
 namespace {
-
-TabObservation::TabObservationResult ToTabObservationResult(
-    mojom::ActionResultCode code) {
-  switch (code) {
-    case mojom::ActionResultCode::kOk:
-      return TabObservation::TAB_OBSERVATION_OK;
-    case mojom::ActionResultCode::kNavigateCommittedErrorPage:
-      return TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR;
-    case mojom::ActionResultCode::kTabWentAway:
-    case mojom::ActionResultCode::kWindowWentAway:
-      return TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY;
-    case mojom::ActionResultCode::kToolTimeout:
-      return TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR;
-    case mojom::ActionResultCode::kLoadAndExtractContentExtractionFailed:
-      return TabObservation::TAB_OBSERVATION_FETCH_ERROR;
-    case mojom::ActionResultCode::kNewTabCreationFailed:
-      // New tab creation failure results in no tab observation.
-    default:
-      // This switch should be exhaustive.
-      NOTREACHED();
-  }
-}
 
 // TODO(b/484078735): Remove this once we can hook into existing tab
 // observation infra.
@@ -85,18 +64,45 @@ void FillInTabObservationMetadata(
   }
 }
 
+void OnValidatedAllUrls(ToolCallback overall_callback,
+                        std::vector<mojom::ActionResultPtr> results) {
+  for (auto& result : results) {
+    // In the case of multiple errors, we arbitrarily return the first.
+    if (!IsOk(result->code)) {
+      PostResponseTask(std::move(overall_callback), std::move(result));
+      return;
+    }
+  }
+  PostResponseTask(std::move(overall_callback), MakeOkResult());
+}
+
+}  // namespace
+
+// The internal result for a single tab.
+enum class LoadAndExtractContentTool::PerTabResultCode {
+  kOk,
+  kNewTabCreationFailed,
+  kNavigateCommittedErrorPage,
+  kLoadAndExtractContentExtractionFailed,
+  kTabWentAway,
+  kWindowWentAway,
+  kToolTimeout,
+};
+
 // Manages waiting for a tab to finish navigating and then delegation to the
 // `ObservationDelayController` to wait for page stability. Begins waiting on
 // construction, invoking the callback once the page is stable (or an error
 // occurs).
-class TabObservationDelayer : public content::WebContentsObserver {
+class LoadAndExtractContentTool::TabObservationDelayer
+    : public content::WebContentsObserver {
  public:
   TabObservationDelayer(
       content::WebContents* web_contents,
       TaskId task_id,
       AggregatedJournal& journal,
       ObservationDelayController::PageStabilityConfig page_stability_config,
-      ToolCallback callback);
+      base::OnceCallback<void(LoadAndExtractContentTool::PerTabResultCode)>
+          callback);
   ~TabObservationDelayer() override = default;
 
  private:
@@ -110,7 +116,8 @@ class TabObservationDelayer : public content::WebContentsObserver {
   TaskId task_id_;
   AggregatedJournal& journal_;
   ObservationDelayController::PageStabilityConfig page_stability_config_;
-  ToolCallback callback_;
+  base::OnceCallback<void(LoadAndExtractContentTool::PerTabResultCode)>
+      callback_;
 
   std::unique_ptr<ObservationDelayController> observation_delay_controller_;
   bool has_finished_main_frame_navigation_ = false;
@@ -118,12 +125,12 @@ class TabObservationDelayer : public content::WebContentsObserver {
   base::WeakPtrFactory<TabObservationDelayer> weak_ptr_factory_{this};
 };
 
-TabObservationDelayer::TabObservationDelayer(
+LoadAndExtractContentTool::TabObservationDelayer::TabObservationDelayer(
     content::WebContents* web_contents,
     TaskId task_id,
     AggregatedJournal& journal,
     ObservationDelayController::PageStabilityConfig page_stability_config,
-    ToolCallback callback)
+    base::OnceCallback<void(PerTabResultCode)> callback)
     : content::WebContentsObserver(web_contents),
       task_id_(task_id),
       journal_(journal),
@@ -138,7 +145,7 @@ TabObservationDelayer::TabObservationDelayer(
                                       base::Unretained(this)));
 }
 
-void TabObservationDelayer::DidFinishNavigation(
+void LoadAndExtractContentTool::TabObservationDelayer::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!navigation_handle->IsInMainFrame()) {
     return;
@@ -153,9 +160,7 @@ void TabObservationDelayer::DidFinishNavigation(
 
   if (!navigation_handle->HasCommitted() || navigation_handle->IsErrorPage()) {
     if (callback_) {
-      PostResponseTask(
-          std::move(callback_),
-          MakeResult(mojom::ActionResultCode::kNavigateCommittedErrorPage));
+      std::move(callback_).Run(PerTabResultCode::kNavigateCommittedErrorPage);
     }
     return;
   }
@@ -163,8 +168,7 @@ void TabObservationDelayer::DidFinishNavigation(
   tabs::TabInterface* tab = tabs::TabInterface::GetFromContents(web_contents());
   if (!tab) {
     if (callback_) {
-      PostResponseTask(std::move(callback_),
-                       MakeResult(mojom::ActionResultCode::kTabWentAway));
+      std::move(callback_).Run(PerTabResultCode::kTabWentAway);
     }
     return;
   }
@@ -174,19 +178,18 @@ void TabObservationDelayer::DidFinishNavigation(
                            weak_ptr_factory_.GetWeakPtr()));
 }
 
-void TabObservationDelayer::OnTimeout() {
+void LoadAndExtractContentTool::TabObservationDelayer::OnTimeout() {
   if (callback_) {
-    PostResponseTask(std::move(callback_),
-                     MakeResult(mojom::ActionResultCode::kToolTimeout));
+    std::move(callback_).Run(PerTabResultCode::kToolTimeout);
   }
 }
 
-void TabObservationDelayer::OnObservationDelayComplete(
-    ObservationDelayController::Result result) {
+void LoadAndExtractContentTool::TabObservationDelayer::
+    OnObservationDelayComplete(ObservationDelayController::Result result) {
   switch (result) {
     case ObservationDelayController::Result::kOk:
       if (callback_) {
-        PostResponseTask(std::move(callback_), MakeOkResult());
+        std::move(callback_).Run(PerTabResultCode::kOk);
       }
       return;
     case ObservationDelayController::Result::kPageNavigated: {
@@ -207,8 +210,7 @@ void TabObservationDelayer::OnObservationDelayComplete(
                            weak_ptr_factory_.GetWeakPtr()));
       } else {
         if (callback_) {
-          PostResponseTask(std::move(callback_),
-                           MakeResult(mojom::ActionResultCode::kTabWentAway));
+          std::move(callback_).Run(PerTabResultCode::kTabWentAway);
         }
         return;
       }
@@ -216,35 +218,63 @@ void TabObservationDelayer::OnObservationDelayComplete(
   }
 }
 
-void OnValidatedAllUrls(ToolCallback overall_callback,
-                        std::vector<mojom::ActionResultPtr> results) {
-  for (auto& result : results) {
-    // In the case of multiple errors, we arbitrarily return the first.
-    if (!IsOk(result->code)) {
-      if (overall_callback) {
-        PostResponseTask(std::move(overall_callback), std::move(result));
-      }
-      return;
-    }
-  }
-  if (overall_callback) {
-    PostResponseTask(std::move(overall_callback), MakeOkResult());
+TabObservation::TabObservationResult
+LoadAndExtractContentTool::ToTabObservationResult(
+    LoadAndExtractContentTool::PerTabResultCode result_code) {
+  switch (result_code) {
+    case PerTabResultCode::kOk:
+      return TabObservation::TAB_OBSERVATION_OK;
+    case PerTabResultCode::kNewTabCreationFailed:
+      // New tab creation failure results in no tab observation.
+      NOTREACHED();
+    case PerTabResultCode::kNavigateCommittedErrorPage:
+      return TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR;
+    case PerTabResultCode::kLoadAndExtractContentExtractionFailed:
+      return TabObservation::TAB_OBSERVATION_FETCH_ERROR;
+    case PerTabResultCode::kTabWentAway:
+    case PerTabResultCode::kWindowWentAway:
+      return TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY;
+    case PerTabResultCode::kToolTimeout:
+      return TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR;
+    default:
+      // This switch should be exhaustive.
+      NOTREACHED();
   }
 }
 
-}  // namespace
+mojom::ActionResultCode LoadAndExtractContentTool::ToActionResultCode(
+    LoadAndExtractContentTool::PerTabResultCode result_code) {
+  switch (result_code) {
+    case PerTabResultCode::kNewTabCreationFailed:
+      return mojom::ActionResultCode::kNewTabCreationFailed;
+    case PerTabResultCode::kOk:
+    case PerTabResultCode::kNavigateCommittedErrorPage:
+    case PerTabResultCode::kLoadAndExtractContentExtractionFailed:
+    case PerTabResultCode::kTabWentAway:
+    case PerTabResultCode::kWindowWentAway:
+    case PerTabResultCode::kToolTimeout:
+      // As long as tab creation succeeds, ignore all subsequent failures in the
+      // overall result code so that we don't prevent any further actions or
+      // drop successful tab observations. See also b/409333494.
+      return mojom::ActionResultCode::kOk;
+    default:
+      // This switch should be exhaustive.
+      NOTREACHED();
+  }
+}
 
 struct LoadAndExtractContentTool::PerTabState {
   tabs::TabHandle tab_handle;
-  std::unique_ptr<TabObservationDelayer> tab_observation_delayer;
+  std::unique_ptr<LoadAndExtractContentTool::TabObservationDelayer>
+      tab_observation_delayer;
 
   // Only empty if the tab was not even able to be opened.
   std::optional<TabObservation> tab_observation;
 
-  // This starts null. After invocation for this tab, it should have a kOk
+  // This starts nullopt. After invocation for this tab, it should have a kOk
   // result code if all phases succeeded, otherwise it should be the first error
   // encountered.
-  mojom::ActionResultPtr result;
+  std::optional<PerTabResultCode> result_code;
 };
 
 LoadAndExtractContentTool::LoadAndExtractContentTool(
@@ -316,8 +346,7 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
     if (!web_contents) {
       per_tab_state_.emplace(
           url_index,
-          PerTabState{.result = MakeResult(
-                          mojom::ActionResultCode::kNewTabCreationFailed)});
+          PerTabState{.result_code = PerTabResultCode::kNewTabCreationFailed});
       per_url_completion_closure_.Run();
       continue;
     }
@@ -349,12 +378,11 @@ void LoadAndExtractContentTool::Invoke(ToolCallback callback) {
 
 void LoadAndExtractContentTool::OnTabObservationDelayComplete(
     UrlIndex index,
-    mojom::ActionResultPtr result) {
-  if (!IsOk(result->code)) {
-    PostResponseTask(
+    PerTabResultCode result_code) {
+  if (result_code != PerTabResultCode::kOk) {
+    PostFinishedTask(
         base::BindOnce(&LoadAndExtractContentTool::OnTabReadyToClose,
-                       weak_ptr_factory_.GetWeakPtr(), index),
-        std::move(result));
+                       weak_ptr_factory_.GetWeakPtr(), index, result_code));
     return;
   }
 
@@ -364,8 +392,7 @@ void LoadAndExtractContentTool::OnTabObservationDelayComplete(
   // 'finalization' phase after observation where we can close the tabs.
   tabs::TabInterface* tab = per_tab_state_[index].tab_handle.Get();
   if (!tab) {
-    per_tab_state_[index].result =
-        MakeResult(mojom::ActionResultCode::kTabWentAway);
+    per_tab_state_[index].result_code = PerTabResultCode::kTabWentAway;
     per_url_completion_closure_.Run();
     return;
   }
@@ -381,7 +408,7 @@ void LoadAndExtractContentTool::OnTabObservationDelayComplete(
 void LoadAndExtractContentTool::OnGotAIPageContent(
     UrlIndex index,
     optimization_guide::AIPageContentResultOrError result_or_error) {
-  mojom::ActionResultPtr result;
+  PerTabResultCode result_code = PerTabResultCode::kOk;
 
   TabObservation& tab_observation =
       per_tab_state_[index].tab_observation.value();
@@ -392,31 +419,29 @@ void LoadAndExtractContentTool::OnGotAIPageContent(
     *tab_observation.mutable_annotated_page_content() =
         std::move(result_or_error->proto);
     FillInTabObservationMetadata(result_or_error->metadata, tab_observation);
-
-    result = MakeOkResult();
   } else {
     tab_observation.set_annotated_page_content_result(
         TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
-    result = MakeResult(
-        mojom::ActionResultCode::kLoadAndExtractContentExtractionFailed);
+    result_code = PerTabResultCode::kLoadAndExtractContentExtractionFailed;
   }
-  PostResponseTask(base::BindOnce(&LoadAndExtractContentTool::OnTabReadyToClose,
-                                  weak_ptr_factory_.GetWeakPtr(), index),
-                   std::move(result));
+  PostFinishedTask(base::BindOnce(&LoadAndExtractContentTool::OnTabReadyToClose,
+                                  weak_ptr_factory_.GetWeakPtr(), index,
+                                  result_code));
 }
 
 void LoadAndExtractContentTool::OnTabReadyToClose(
     UrlIndex index,
-    mojom::ActionResultPtr result) {
+    PerTabResultCode result_code) {
   if (tabs::TabInterface* tab = per_tab_state_[index].tab_handle.Get()) {
     tab->Close();
   } else if (!per_tab_state_[index]
                   .tab_observation->has_annotated_page_content()) {
-    // Throw an error if the tab was closed before we could extract the APC.
-    result = MakeResult(mojom::ActionResultCode::kTabWentAway);
+    // Record an error code if the tab was closed before we could extract the
+    // APC.
+    result_code = PerTabResultCode::kTabWentAway;
   }
 
-  per_tab_state_[index].result = std::move(result);
+  per_tab_state_[index].result_code = result_code;
   per_url_completion_closure_.Run();
 }
 
@@ -437,22 +462,38 @@ void LoadAndExtractContentTool::OnAllUrlsCompleted() {
                   : TabObservation::ANNOTATED_PAGE_CONTENT_ERROR);
 
       tab_observation.set_result(
-          ToTabObservationResult(per_tab_state.result->code));
+          ToTabObservationResult(per_tab_state.result_code.value()));
     }
   }
 
   for (auto& [_, per_tab_state] : per_tab_state_) {
-    CHECK(per_tab_state.result);
-    if (!IsOk(per_tab_state.result->code)) {
+    CHECK(per_tab_state.result_code.has_value());
+    mojom::ActionResultCode action_result_code =
+        ToActionResultCode(per_tab_state.result_code.value());
+    if (!IsOk(action_result_code)) {
       PostResponseTask(std::move(invoke_callback_),
-                       std::move(per_tab_state.result));
+                       MakeResult(action_result_code));
 
       return;
     }
   }
 
-  // TODO(b/478282022): Plumb the TabObservation results back to the caller.
   PostResponseTask(std::move(invoke_callback_), MakeOkResult());
+}
+
+void LoadAndExtractContentTool::UpdateTaskAfterInvoke(
+    ActorTask& task,
+    mojom::ActionResultPtr result,
+    ToolCallback callback) const {
+  std::vector<TabObservation> tab_observations;
+  for (const auto& [_, per_tab_state] : per_tab_state_) {
+    if (per_tab_state.tab_observation.has_value()) {
+      tab_observations.push_back(per_tab_state.tab_observation.value());
+    }
+  }
+  task.AddAdditionalTabObservations(std::move(tab_observations));
+
+  std::move(callback).Run(std::move(result));
 }
 
 std::string LoadAndExtractContentTool::DebugString() const {

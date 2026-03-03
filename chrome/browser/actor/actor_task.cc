@@ -263,6 +263,7 @@ void ActorTask::SetState(State new_state) {
       DidTabExitActorControl(tab);
     }
     ResetToObserveTabsSet();
+    ResetAdditionalTabObservations();
   }
   if (IsInterruptedState(new_state)) {
     ++total_number_of_interruptions_;
@@ -320,6 +321,7 @@ void ActorTask::Act(std::vector<std::unique_ptr<ToolRequest>>&& actions,
   }
 
   ResetToObserveTabsSet();
+  ResetAdditionalTabObservations();
 
   callback_for_act_ = std::move(callback);
 
@@ -745,6 +747,10 @@ void ActorTask::ResetToObserveTabsSet() {
   to_observe_tabs_.clear();
 }
 
+void ActorTask::ResetAdditionalTabObservations() {
+  additional_tab_observations_.clear();
+}
+
 bool ActorTask::HasTab(tabs::TabHandle tab) const {
   return controlled_tabs_.contains(tab);
 }
@@ -854,6 +860,15 @@ void ActorTask::DidContentsExitActorControl(
 #if BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
   state->reenable_external_popups = {};
 #endif  // BUILDFLAG(IS_MAC) && BUILDFLAG(USE_EXTERNAL_POPUP_MENU)
+}
+
+void ActorTask::AddAdditionalTabObservations(
+    std::vector<optimization_guide::proto::TabObservation> tab_observations) {
+  // This is currently only used by the load and extract content tool.
+  CHECK(base::FeatureList::IsEnabled(kGlicActorLoadAndExtractContentTool));
+  CHECK(additional_tab_observations_.empty());
+
+  additional_tab_observations_ = std::move(tab_observations);
 }
 
 std::string ToString(const ActorTask::State& state) {

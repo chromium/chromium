@@ -21,11 +21,11 @@
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/task_id.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents_observer.h"
-
-class GURL;
+#include "url/gurl.h"
 
 namespace actor {
 
@@ -43,6 +43,9 @@ class LoadAndExtractContentTool : public Tool {
   // actor::Tool:
   void Validate(ToolCallback callback) override;
   void Invoke(ToolCallback callback) override;
+  void UpdateTaskAfterInvoke(ActorTask& task,
+                             mojom::ActionResultPtr result,
+                             ToolCallback callback) const override;
   std::string DebugString() const override;
   std::string JournalEvent() const override;
   std::unique_ptr<ObservationDelayController> GetObservationDelayer(
@@ -54,17 +57,25 @@ class LoadAndExtractContentTool : public Tool {
   using UrlIndex = base::StrongAlias<class UrlIndexTag, size_t>;
 
   struct PerTabState;
+  enum class PerTabResultCode;
+  class TabObservationDelayer;
+  friend class TabObservationDelayer;  // Allow access to PerTabResultCode.
 
   // Should be called once we no longer need to keep the tab open, i.e. it has
   // navigated and we've extracted the content (or encountered an error).
-  void OnTabReadyToClose(UrlIndex index, mojom::ActionResultPtr result);
+  void OnTabReadyToClose(UrlIndex index, PerTabResultCode result_code);
 
   void OnTabObservationDelayComplete(UrlIndex index,
-                                     mojom::ActionResultPtr result);
+                                     PerTabResultCode result_code);
   void OnGotAIPageContent(
       UrlIndex index,
       optimization_guide::AIPageContentResultOrError result_or_error);
   void OnAllUrlsCompleted();
+
+  optimization_guide::proto::TabObservation::TabObservationResult
+  ToTabObservationResult(PerTabResultCode result_code);
+  mojom::ActionResultCode ToActionResultCode(
+      LoadAndExtractContentTool::PerTabResultCode result_code);
 
   ToolCallback invoke_callback_;
 

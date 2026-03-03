@@ -3,26 +3,39 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <optional>
+#include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/functional/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/tools/load_and_extract_content_tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -31,6 +44,10 @@
 namespace actor {
 
 namespace {
+
+using TabObservation = optimization_guide::proto::TabObservation;
+using TabObservationResult = TabObservation::TabObservationResult;
+using ActionsResult = optimization_guide::proto::ActionsResult;
 
 class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
  public:
@@ -48,12 +65,113 @@ class ActorLoadAndExtractContentToolBrowserTest : public ActorToolsTest {
   }
 
  protected:
+  struct ExpectedNode {
+    optimization_guide::proto::ContentAttributeType type;
+    std::optional<std::string> text = std::nullopt;
+    std::vector<ExpectedNode> children;
+  };
+
+  struct ExpectedTabObservation {
+    TabObservationResult result;
+    std::optional<std::string> expected_url = std::nullopt;
+    std::optional<std::string> expected_title = std::nullopt;
+    std::optional<ExpectedNode> expected_root_node = std::nullopt;
+  };
+
   std::unique_ptr<net::test_server::HttpResponse> HandleStallRequest(
       const net::test_server::HttpRequest& request) {
     if (request.GetURL().path() != "/stall") {
       return nullptr;
     }
     return std::make_unique<net::test_server::HungResponse>();
+  }
+
+  void VerifyActionsResult(
+      mojom::ActionResultCode expected_code,
+      ActResultFuture& result_future,
+      std::vector<ExpectedTabObservation> expected_tab_observations) {
+    base::test::TestFuture<
+        base::TimeTicks, mojom::ActionResultCode, std::optional<size_t>,
+        std::vector<actor::ActionResultWithLatencyInfo>, actor::TaskId, bool,
+        std::optional<page_content_annotations::ScreenshotOptions::
+                          ScreenshotCollectionOptions>,
+        std::unique_ptr<ActionsResult>,
+        std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry>>
+        future;
+
+    const std::vector<actor::ActionResultWithLatencyInfo>& action_results =
+        result_future.Get<2>();
+    actor::BuildActionsResultWithObservations(
+        *browser()->profile(), /*start_time=*/base::TimeTicks::Now(),
+        expected_code,
+        /*index_of_failed_action=*/
+        expected_code == mojom::ActionResultCode::kOk
+            ? std::nullopt
+            : std::optional<size_t>(0),
+        action_results, actor_task(),
+        /*skip_async_observation_information=*/true,
+        /*screenshot_collection_options=*/std::nullopt, future.GetCallback());
+
+    const std::unique_ptr<ActionsResult>& actions_result = future.Get<7>();
+    ASSERT_TRUE(actions_result);
+    EXPECT_EQ(actions_result->action_result(),
+              static_cast<int32_t>(expected_code));
+
+    ASSERT_EQ(static_cast<size_t>(actions_result->tabs_size()),
+              expected_tab_observations.size());
+
+    for (size_t i = 0; i < expected_tab_observations.size(); ++i) {
+      VerifyTabObservation(actions_result->tabs(i),
+                           expected_tab_observations[i]);
+    }
+  }
+
+  void VerifyTabObservation(const TabObservation& observation,
+                            const ExpectedTabObservation& expected) {
+    EXPECT_EQ(observation.result(), expected.result);
+
+    const bool is_ok = expected.result == TabObservation::TAB_OBSERVATION_OK;
+    EXPECT_EQ(observation.has_annotated_page_content(), is_ok);
+
+    ASSERT_EQ(is_ok, expected.expected_url.has_value());
+    ASSERT_EQ(is_ok, expected.expected_title.has_value());
+    ASSERT_EQ(is_ok, expected.expected_root_node.has_value());
+
+    if (is_ok) {
+      const auto& apc = observation.annotated_page_content();
+      ASSERT_TRUE(apc.has_main_frame_data());
+      EXPECT_EQ(apc.main_frame_data().url(), *expected.expected_url);
+      EXPECT_EQ(apc.main_frame_data().title(), *expected.expected_title);
+      VerifyAPCStructure(apc.root_node(), *expected.expected_root_node);
+    }
+  }
+
+  void VerifyAPCStructure(const optimization_guide::proto::ContentNode& actual,
+                          const ExpectedNode& expected) {
+    EXPECT_EQ(actual.content_attributes().attribute_type(), expected.type);
+    ASSERT_EQ(actual.content_attributes().has_text_data(),
+              expected.text.has_value());
+    if (expected.text) {
+      EXPECT_EQ(actual.content_attributes().text_data().text_content(),
+                *expected.text);
+    }
+
+    ASSERT_EQ(static_cast<size_t>(actual.children_nodes_size()),
+              expected.children.size());
+    for (size_t i = 0; i < expected.children.size(); ++i) {
+      VerifyAPCStructure(actual.children_nodes(i), expected.children[i]);
+    }
+  }
+
+  ExpectedNode GetSimplePageExpectedNode() {
+    return {.type = optimization_guide::proto::CONTENT_ATTRIBUTE_ROOT,
+            .text = std::nullopt,
+            .children = {
+                {.type = optimization_guide::proto::CONTENT_ATTRIBUTE_PARAGRAPH,
+                 .text = std::nullopt,
+                 .children = {
+                     {.type = optimization_guide::proto::CONTENT_ATTRIBUTE_TEXT,
+                      .text = "This is a simple test page"}}}}};
   }
 
  private:
@@ -166,9 +284,14 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, Success) {
   actor_task().Act(ToRequestList(request), result.GetCallback());
   ExpectOkResult(result);
 
-  // TODO(b/478282022): Verify the tool returns the correct extracted content
-  // (APCs) once implemented. The content should match the text in
-  // `simple.html`.
+  std::vector<ExpectedTabObservation> expected_tab_observations = {
+      {TabObservation::TAB_OBSERVATION_OK, url1.spec(),
+       /*expected_title=*/"Simple Page", GetSimplePageExpectedNode()},
+      {TabObservation::TAB_OBSERVATION_OK, url2.spec(),
+       /*expected_title=*/"Simple Page", GetSimplePageExpectedNode()}};
+
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
+                      expected_tab_observations);
 
   // The tool should have opened two tabs.
   EXPECT_EQ(observer.tabs_added_count(), expected_urls.size());
@@ -195,6 +318,13 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, SingleURL) {
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
 
+  std::vector<ExpectedTabObservation> expected_tab_observations = {
+      {TabObservation::TAB_OBSERVATION_OK, url.spec(),
+       /*expected_title=*/"Simple Page", GetSimplePageExpectedNode()}};
+
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
+                      expected_tab_observations);
+
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(url));
   observer.VerifyTabCountRestored();
@@ -218,6 +348,13 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest, Redirect) {
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
   ExpectOkResult(result);
 
+  std::vector<ExpectedTabObservation> expected_tab_observations = {
+      {TabObservation::TAB_OBSERVATION_OK, destination_url.spec(),
+       /*expected_title=*/"Simple Page", GetSimplePageExpectedNode()}};
+
+  VerifyActionsResult(mojom::ActionResultCode::kOk, result,
+                      expected_tab_observations);
+
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(destination_url));
   observer.VerifyTabCountRestored();
@@ -237,8 +374,15 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kNavigateCommittedErrorPage);
+
+  // The overall tool result is ok unless new tab creation fails.
+  ExpectOkResult(result);
+
+  std::vector<ExpectedTabObservation> expected_tab_observations = {
+      {TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR}};
+
+  VerifyActionsResult(mojom::ActionResultCode::kNavigateCommittedErrorPage,
+                      result, expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
@@ -280,9 +424,17 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
 
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
-  // Returns the first error encountered.
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kNavigateCommittedErrorPage);
+
+  // The overall tool result is ok unless new tab creation fails.
+  ExpectOkResult(result);
+
+  std::vector<ExpectedTabObservation> expected_tab_observations = {
+      {TabObservation::TAB_OBSERVATION_OK, valid_url.spec(),
+       /*expected_title=*/"Simple Page", GetSimplePageExpectedNode()},
+      {TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR}};
+
+  VerifyActionsResult(mojom::ActionResultCode::kNavigateCommittedErrorPage,
+                      result, expected_tab_observations);
 
   EXPECT_EQ(observer.tabs_added_count(), 2);
   EXPECT_THAT(observer.navigated_urls(), testing::ElementsAre(valid_url));
@@ -307,7 +459,14 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   browser()->tab_strip_model()->CloseWebContentsAt(1,
                                                    TabCloseTypes::CLOSE_NONE);
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kTabWentAway);
+  // The overall tool result is ok unless new tab creation fails.
+  ExpectOkResult(result);
+
+  std::vector<ExpectedTabObservation> expected_tab_observations = {
+      {TabObservation::TAB_OBSERVATION_TAB_WENT_AWAY}};
+
+  VerifyActionsResult(mojom::ActionResultCode::kTabWentAway, result,
+                      expected_tab_observations);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
@@ -413,7 +572,12 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolTimeoutBrowserTest,
   ActResultFuture result;
   actor_task().Act(ToRequestList(std::move(request)), result.GetCallback());
 
-  ExpectErrorResult(result, mojom::ActionResultCode::kToolTimeout);
+  // The overall tool result is ok unless new tab creation fails.
+  ExpectOkResult(result);
+
+  VerifyActionsResult(mojom::ActionResultCode::kToolTimeout, result,
+                      {{TabObservation::TAB_OBSERVATION_UNKNOWN_ERROR}});
+
   observer.VerifyTabCountRestored();
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
@@ -444,8 +608,9 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   // Stop the navigation while it's stalled.
   web_contents->Stop();
 
-  ExpectErrorResult(result,
-                    mojom::ActionResultCode::kNavigateCommittedErrorPage);
+  // The overall tool result is ok unless new tab creation fails.
+  ExpectOkResult(result);
+
   observer.VerifyTabCountRestored();
   EXPECT_EQ(observer.tabs_added_count(), 1);
   EXPECT_THAT(observer.navigated_urls(), testing::IsEmpty());
@@ -476,9 +641,6 @@ IN_PROC_BROWSER_TEST_F(ActorLoadAndExtractContentToolBrowserTest,
   observer.VerifyTabCountRestored();
   ExpectErrorResult(result, mojom::ActionResultCode::kTaskWentAway);
 }
-
-// TODO(b/478282478): Add a test to simulate a failure during content
-// extraction and verify the resulting error.
 
 }  // namespace
 

@@ -1269,6 +1269,24 @@ void BuildActionsResultWithObservations(
     }
   }
 
+  // TODO(b/484078735): Consider hooking into the tab observation infrastructure
+  // here rather than re-implementing it in the tool. This would require
+  // supporting a new 'finalization' phase after observation where we can close
+  // the tabs.
+  for (const apc::TabObservation& tab_observation :
+       task.GetAdditionalTabObservations()) {
+    // These observations should be additional to the above, i.e. no overlap,
+    // because they're intended to be used only from the LoadAndExtractTool,
+    // which doesn't add any tabs to the task's set, and is always the only
+    // action in the task. Still, if there is overlap, use the new observation.
+    tabs::TabHandle handle(tab_observation.id());
+    if (last_acted_tabs.contains(handle)) {
+      continue;
+    }
+
+    *response->add_tabs() = tab_observation;
+  }
+
   actor_service->GetJournal().Log(
       GURL(), task.id(), "Observing Tabs",
       JournalDetailsBuilder()
