@@ -200,4 +200,51 @@ TEST_F(VerticalTabStripStateControllerTest, State) {
   EXPECT_EQ(1, call_count);
 }
 
+TEST_F(VerticalTabStripStateControllerTest, ImmersiveModeLock) {
+  int call_count = 0;
+  auto subscription = controller()->RegisterOnModeChanged(base::BindRepeating(
+      [](int* call_count, VerticalTabStripStateController* controller) {
+        (*call_count)++;
+      },
+      &call_count));
+
+  // Initially disabled.
+  ASSERT_FALSE(controller()->ShouldDisplayVerticalTabs());
+
+  // Take a lock.
+  std::unique_ptr<VerticalTabStripStateController::ScopedEnableStateLock> lock =
+      controller()->GetEnableStateLock();
+
+  // Enable vertical tabs via preference.
+  pref_service()->SetBoolean(prefs::kVerticalTabsEnabled, true);
+
+  // Verify that the state has NOT changed and no notification was sent.
+  EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_EQ(0, call_count);
+
+  // Release the lock.
+  lock.reset();
+
+  // Verify that the state HAS changed and notification was sent.
+  EXPECT_TRUE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_EQ(1, call_count);
+
+  // Take lock again.
+  lock = controller()->GetEnableStateLock();
+
+  // Disable vertical tabs via preference.
+  pref_service()->SetBoolean(prefs::kVerticalTabsEnabled, false);
+
+  // Verify state hasn't changed.
+  EXPECT_TRUE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_EQ(1, call_count);
+
+  // Release lock.
+  lock.reset();
+
+  // Verify state changed.
+  EXPECT_FALSE(controller()->ShouldDisplayVerticalTabs());
+  EXPECT_EQ(2, call_count);
+}
+
 }  // namespace tabs

@@ -832,3 +832,43 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest,
   EXPECT_TRUE(views::IsViewClass<VerticalTabStripRegionView>(final_view));
   EXPECT_EQ(region_view(), final_view);
 }
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripRegionViewTest, ImmersiveModeLock) {
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  tabs::VerticalTabStripStateController* controller = state_controller();
+
+  // The mixin starts us in vertical tabs mode.
+  ASSERT_TRUE(controller->ShouldDisplayVerticalTabs());
+
+  // 1. Simulate entering immersive mode.
+  browser_view->OnImmersiveFullscreenEntered();
+
+  // 2. Try to disable vertical tabs via pref.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                               false);
+
+  // 3. Verify vertical tabs are STILL enabled (deferred).
+  EXPECT_TRUE(controller->ShouldDisplayVerticalTabs());
+
+  // 4. Simulate exiting immersive mode.
+  browser_view->OnImmersiveFullscreenExited();
+
+  // 5. Verify vertical tabs are now disabled.
+  EXPECT_FALSE(controller->ShouldDisplayVerticalTabs());
+
+  // 6. Simulate entering immersive mode again.
+  browser_view->OnImmersiveFullscreenEntered();
+
+  // 7. Try to enable vertical tabs via pref.
+  browser()->profile()->GetPrefs()->SetBoolean(prefs::kVerticalTabsEnabled,
+                                               true);
+
+  // 8. Verify vertical tabs are STILL disabled.
+  EXPECT_FALSE(controller->ShouldDisplayVerticalTabs());
+
+  // 9. Simulate exiting immersive mode.
+  browser_view->OnImmersiveFullscreenExited();
+
+  // 10. Verify vertical tabs are now enabled.
+  EXPECT_TRUE(controller->ShouldDisplayVerticalTabs());
+}

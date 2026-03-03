@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/sessions/session_service_base_observer.h"
 #include "chrome/browser/ui/browser_window/public/browser_collection_observer.h"
@@ -31,6 +32,18 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
  public:
   DECLARE_USER_DATA(VerticalTabStripStateController);
 
+  class ScopedEnableStateLock {
+   public:
+    explicit ScopedEnableStateLock(
+        base::WeakPtr<VerticalTabStripStateController> controller);
+    ScopedEnableStateLock(const ScopedEnableStateLock&) = delete;
+    ScopedEnableStateLock& operator=(const ScopedEnableStateLock&) = delete;
+    ~ScopedEnableStateLock();
+
+   private:
+    base::WeakPtr<VerticalTabStripStateController> controller_;
+  };
+
   explicit VerticalTabStripStateController(
       BrowserWindowInterface* browser_window,
       PrefService* pref_service,
@@ -52,6 +65,8 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
 
   bool ShouldDisplayVerticalTabs() const;
   void SetVerticalTabsEnabled(bool enabled);
+
+  std::unique_ptr<ScopedEnableStateLock> GetEnableStateLock();
 
   bool IsCollapsed() const;
   void SetCollapsed(bool collapsed);
@@ -96,6 +111,9 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
   // BrowserCollectionObserver:
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
 
+  void OnLockCreated();
+  void OnLockDestroyed();
+
   const raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   raw_ptr<actions::ActionItem> root_action_item_;
@@ -115,6 +133,11 @@ class VerticalTabStripStateController : public SessionServiceBaseObserver,
       browser_collection_observation_{this};
   ui::ScopedUnownedUserData<VerticalTabStripStateController>
       scoped_unowned_user_data_;
+
+  bool is_vertical_tabs_enabled_ = false;
+  int enable_state_lock_count_ = 0;
+
+  base::WeakPtrFactory<VerticalTabStripStateController> weak_ptr_factory_{this};
 };
 
 }  // namespace tabs
