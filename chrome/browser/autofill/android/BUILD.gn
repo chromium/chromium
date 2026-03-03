@@ -64,6 +64,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorObserverForTest.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/EditorViewBase.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/date_field/DateFieldProperties.java",
+    "java/src/org/chromium/chrome/browser/autofill/editors/common/date_field/DateFieldValidator.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/date_field/DateFieldView.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/date_field/DateFieldViewBinder.java",
     "java/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldAdapter.java",

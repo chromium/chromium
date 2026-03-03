@@ -76,6 +76,7 @@ public class TextFieldView extends FrameLayout implements FieldView {
     private boolean mInFocusChange;
     private boolean mInValueChange;
 
+    // <p> TODO: crbug.com/489405975 - Remove PropertyModel references.
     public TextFieldView(Context context, final PropertyModel fieldModel) {
         super(context);
         mEditorFieldModel = fieldModel;

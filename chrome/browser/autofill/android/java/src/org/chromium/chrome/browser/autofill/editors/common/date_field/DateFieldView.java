@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.date_field.Dat
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_HINT;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.autofill.R;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldView;
 import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldViewBinder;
+import org.chromium.chrome.browser.autofill.editors.common.field.EditorFieldValidator;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.components.autofill.DropdownKeyValue;
 import org.chromium.components.autofill.autofill_ai.AttributeInstance;
@@ -53,7 +55,9 @@ public class DateFieldView extends LinearLayout implements FieldView {
     private final DropdownFieldView mDayDropdown;
     private final DropdownFieldView mYearDropdown;
     private final TextView mErrorMessage;
+    private @Nullable EditorFieldValidator mValidator;
 
+    // TODO: crbug.com/489405975 - Remove PropertyModel references.
     public DateFieldView(Context context, PropertyModel propertyModel) {
         super(context);
         setOrientation(LinearLayout.VERTICAL);
@@ -179,7 +183,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
                 /* bottom= */ getResources()
                         .getDimensionPixelSize(R.dimen.editor_dialog_section_large_spacing));
         // Initialize the `DATE_VALID` property;
-        validate();
+        updateDateValid();
     }
 
     /**
@@ -215,7 +219,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
             mYearDropdown.getFieldModel().set(VALUE, yearValue);
         }
         // Update the `DATE_VALID` property.
-        validate();
+        updateDateValid();
     }
 
     @Override
@@ -228,18 +232,24 @@ public class DateFieldView extends LinearLayout implements FieldView {
         return mPropertyModel.get(IS_REQUIRED);
     }
 
+    public void setValidator(@Nullable EditorFieldValidator validator) {
+        mValidator = validator;
+    }
+
     @Override
     public boolean validate() {
-        final boolean isDateValid = isEmptyDateSelected() || (getSelectedDate() != null);
-        mPropertyModel.set(DATE_VALID, isDateValid);
-        return isDateValid;
+        updateDateValid();
+        if (mValidator != null) {
+            mValidator.validate(mPropertyModel);
+        }
+        return TextUtils.isEmpty(mPropertyModel.get(ERROR_MESSAGE));
     }
 
     private void onDropdownItemSelected(String unused) {
         // Always validate the date to update the `DATE_VALID` property.
-        final boolean isDateValid = validate();
+        updateDateValid();
         if (isEmptyDateSelected()) {
-            assert isDateValid : "An empty date is valid";
+            assert mPropertyModel.get(DATE_VALID) : "An empty date is valid";
             // First case: the user has completely reset the date field. Propagate an empty value to
             // the model.
             mPropertyModel.set(VALUE, "");
@@ -248,13 +258,13 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
         @Nullable LocalDate date = getSelectedDate();
         if (date != null) {
-            assert isDateValid : "A non-null date is valid";
+            assert mPropertyModel.get(DATE_VALID) : "A non-null date is valid";
             // Second case: the user has selected a valid date. Propagate it to the model. Partially
             // valid dates are never propagated to the model.
             mPropertyModel.set(VALUE, date.toString());
             return;
         }
-        assert !isDateValid
+        assert !mPropertyModel.get(DATE_VALID)
                 : "The date is invalid if it can't be contructed from the selected items";
     }
 
@@ -336,6 +346,10 @@ public class DateFieldView extends LinearLayout implements FieldView {
             yearList.add(new DropdownKeyValue(String.valueOf(year), String.valueOf(year)));
         }
         return yearList;
+    }
+
+    private void updateDateValid() {
+        mPropertyModel.set(DATE_VALID, isEmptyDateSelected() || (getSelectedDate() != null));
     }
 
     private static int getMinYear() {

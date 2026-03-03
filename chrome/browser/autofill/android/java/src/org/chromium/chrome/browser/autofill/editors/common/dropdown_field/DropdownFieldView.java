@@ -60,6 +60,8 @@ public class DropdownFieldView implements FieldView {
     /**
      * Builds a dropdown view.
      *
+     * <p>TODO: crbug.com/489405975 - Remove PropertyModel references.
+     *
      * @param context The application context to use when creating widgets.
      * @param root The object that provides a set of LayoutParams values for the view.
      * @param fieldModel The data model of the dropdown.

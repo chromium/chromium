@@ -370,4 +370,34 @@ public class DateFieldViewTest {
                 DateFieldView.getMonthName(mActivity, currentDate.getMonthValue()));
         assertTrue(TextUtils.isEmpty(mDateFieldView.getFieldModel().get(ERROR_MESSAGE)));
     }
+
+    @Test
+    public void testDateFieldValidator() {
+        mDateFieldView = new DateFieldView(mActivity, getDateFieldModel(null));
+        mDateFieldView.setValidator(new DateFieldValidator("Error message"));
+        assertTrue(mDateFieldView.validate());
+        assertTrue(TextUtils.isEmpty(mDateFieldView.getFieldModel().get(ERROR_MESSAGE)));
+
+        // Set only the month -> validation should fail.
+        setDropdownValue(
+                mDateFieldView.getMonthPickerForTest(),
+                DateFieldView.getMonthName(mActivity, /* month= */ 2));
+        assertFalse(mDateFieldView.validate());
+        assertEquals("Error message", mDateFieldView.getFieldModel().get(ERROR_MESSAGE));
+
+        // Set only the month and the day -> validation should fail.
+        setDropdownValue(mDateFieldView.getDayPickerForTest(), "20");
+        assertFalse(mDateFieldView.validate());
+        assertEquals("Error message", mDateFieldView.getFieldModel().get(ERROR_MESSAGE));
+
+        // Set the whole date -> validation should succeed.
+        setDropdownValue(mDateFieldView.getYearPickerForTest(), "2026");
+        assertTrue(mDateFieldView.validate());
+        assertTrue(TextUtils.isEmpty(mDateFieldView.getFieldModel().get(ERROR_MESSAGE)));
+
+        // Set an invalid 02/31/2026 date -> validation should fail.
+        setDropdownValue(mDateFieldView.getDayPickerForTest(), "31");
+        assertFalse(mDateFieldView.validate());
+        assertEquals("Error message", mDateFieldView.getFieldModel().get(ERROR_MESSAGE));
+    }
 }
