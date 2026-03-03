@@ -4,10 +4,17 @@
 
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_tab_helper.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/constants/chromeos_features.h"
+#endif
 #include "chrome/test/base/testing_profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
@@ -16,6 +23,7 @@
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,10 +40,12 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
           page_content_extraction_service,
       optimization_guide::RemoteModelExecutor&
           optimization_guide_remote_model_executor,
+      passage_embeddings::PageEmbeddingsService& page_embeddings_service,
       std::unique_ptr<ContentClassifier> content_classifier)
       : ContentAnnotatorService(page_content_annotations_service,
                                 page_content_extraction_service,
                                 optimization_guide_remote_model_executor,
+                                page_embeddings_service,
                                 std::move(content_classifier)) {}
   ~MockContentAnnotatorService() override = default;
 
@@ -48,6 +58,13 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
 class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
  public:
   void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+#if BUILDFLAG(IS_CHROMEOS)
+    enabled_features.push_back(
+        chromeos::features::kFeatureManagementPassageEmbedder);
+#endif
+    feature_list_.InitWithFeatures(enabled_features, {});
+
     ChromeRenderViewHostTestHarness::SetUp();
 
     page_content_annotations_service_ =
@@ -59,6 +76,11 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
             PageContentExtractionServiceFactory::GetForProfile(profile());
     ASSERT_TRUE(page_content_extraction_service);
 
+    passage_embeddings::PageEmbeddingsService* page_embeddings_service =
+        passage_embeddings::PageEmbeddingsServiceFactory::GetForProfile(
+            profile());
+    ASSERT_TRUE(page_embeddings_service);
+
     std::unique_ptr<ContentClassifier> content_classifier_ =
         ContentClassifier::Create();
     ASSERT_TRUE(content_classifier_);
@@ -67,7 +89,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<testing::StrictMock<MockContentAnnotatorService>>(
             *page_content_annotations_service_,
             *page_content_extraction_service, mock_remote_model_executor_,
-            std::move(content_classifier_));
+            *page_embeddings_service, std::move(content_classifier_));
 
     tab_interface_ = std::make_unique<tabs::MockTabInterface>();
     EXPECT_CALL(*tab_interface_, GetContents())
@@ -89,6 +111,7 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
 
   MockContentAnnotatorService* mock_service() { return mock_service_.get(); }
 
+  base::test::ScopedFeatureList feature_list_;
   history::HistoryService history_service_;
   optimization_guide::TestOptimizationGuideModelProvider
       optimization_guide_model_provider_;

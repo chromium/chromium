@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -36,6 +37,8 @@ TEST(ContentClassificationInputTest, IsComplete) {
   annotated_page_content->data.mutable_main_frame_data()->set_title(
       "Test Title");
   complete_input.annotated_page_content = std::move(annotated_page_content);
+  complete_input.page_title_embedding =
+      passage_embeddings::Embedding({1.0f, 2.0f, 3.0f});
   EXPECT_TRUE(complete_input.IsComplete());
 
   {
@@ -61,6 +64,11 @@ TEST(ContentClassificationInputTest, IsComplete) {
   {
     ContentClassificationInput input = complete_input;
     input.annotated_page_content.reset();
+    EXPECT_FALSE(input.IsComplete());
+  }
+  {
+    ContentClassificationInput input = complete_input;
+    input.page_title_embedding.reset();
     EXPECT_FALSE(input.IsComplete());
   }
 

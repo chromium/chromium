@@ -5,6 +5,7 @@ include_rules = [
   "+components/optimization_guide/proto",
   "+components/page_content_annotations/content",
   "+components/page_content_annotations/core",
+  "+components/passage_embeddings",
   "+components/translate/core",
   "+components/ukm",
   "+components/url_matcher",

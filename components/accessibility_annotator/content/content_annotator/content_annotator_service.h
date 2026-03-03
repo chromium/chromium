@@ -17,6 +17,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "url/gurl.h"
 
 namespace optimization_guide {
@@ -37,7 +38,8 @@ class ContentAnnotatorService
     : public KeyedService,
       public page_content_annotations::PageContentAnnotationsService::
           PageContentAnnotationsObserver,
-      public page_content_annotations::PageContentExtractionService::Observer {
+      public page_content_annotations::PageContentExtractionService::Observer,
+      public passage_embeddings::PageEmbeddingsService::Observer {
  public:
   static std::unique_ptr<ContentAnnotatorService> Create(
       page_content_annotations::PageContentAnnotationsService&
@@ -45,7 +47,8 @@ class ContentAnnotatorService
       page_content_annotations::PageContentExtractionService&
           page_content_extraction_service,
       optimization_guide::RemoteModelExecutor&
-          optimization_guide_remote_model_executor);
+          optimization_guide_remote_model_executor,
+      passage_embeddings::PageEmbeddingsService& page_embeddings_service);
 
   ~ContentAnnotatorService() override;
 
@@ -74,6 +77,11 @@ class ContentAnnotatorService
           const page_content_annotations::RefCountedAnnotatedPageContent>
           page_content) override;
 
+  // passage_embeddings::PageEmbeddingsService::Observer:
+  passage_embeddings::PageEmbeddingsService::UsageMode GetUsageMode()
+      const override;
+  void OnPageEmbeddingsAvailable(content::WebContents* web_contents) override;
+
  protected:
   ContentAnnotatorService(
       page_content_annotations::PageContentAnnotationsService&
@@ -82,6 +90,7 @@ class ContentAnnotatorService
           page_content_extraction_service,
       optimization_guide::RemoteModelExecutor&
           optimization_guide_remote_model_executor,
+      passage_embeddings::PageEmbeddingsService& page_embeddings_service,
       std::unique_ptr<ContentClassifier> content_classifier);
 
  private:
@@ -115,10 +124,17 @@ class ContentAnnotatorService
   const raw_ref<optimization_guide::RemoteModelExecutor>
       optimization_guide_remote_model_executor_;
 
+  const raw_ref<passage_embeddings::PageEmbeddingsService>
+      page_embeddings_service_;
+
   base::ScopedObservation<
       page_content_annotations::PageContentExtractionService,
       page_content_annotations::PageContentExtractionService::Observer>
       page_content_extraction_service_observation_{this};
+
+  base::ScopedObservation<passage_embeddings::PageEmbeddingsService,
+                          passage_embeddings::PageEmbeddingsService::Observer>
+      page_embeddings_service_observation_{this};
 
   // Stores and joins data for URLs that are pending annotation. The cache size
   // is `kContentAnnotatorMaxPendingUrls`. When the cache is full, the last

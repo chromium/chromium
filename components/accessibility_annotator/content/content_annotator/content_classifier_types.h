@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "url/gurl.h"
 
@@ -26,7 +27,8 @@ enum class ContentAnnotatorMissingDependentInformation {
   kAdoptedLanguageMissing = 2,
   kPageTitleMissing = 3,
   kAnnotatedPageContentMissing = 4,
-  kMaxValue = kAnnotatedPageContentMissing,
+  kPageTitleEmbeddingMissing = 5,
+  kMaxValue = kPageTitleEmbeddingMissing,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility_annotator/enums.xml:ContentAnnotatorDependentInformationTypes)
 
@@ -50,6 +52,7 @@ struct ContentClassificationInput {
   scoped_refptr<const base::RefCountedData<
       optimization_guide::proto::AnnotatedPageContent>>
       annotated_page_content;
+  std::optional<passage_embeddings::Embedding> page_title_embedding;
   // LINT.ThenChange(//components/accessibility_annotator/content/content_annotator/content_classifier_types.cc:ContentClassificationInputIsComplete)
 
   // Returns true if all fields are populated.

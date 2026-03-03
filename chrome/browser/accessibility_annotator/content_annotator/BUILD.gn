@@ -15,6 +15,7 @@ source_set("content_annotator") {
     "//chrome/browser/optimization_guide",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/passage_embeddings",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/translate",
     "//chrome/browser/ui/tabs",
@@ -38,6 +39,7 @@ source_set("unit_tests") {
     "//chrome/browser/optimization_guide:test_support",
     "//chrome/browser/page_content_annotations",
     "//chrome/browser/page_content_annotations:extraction_service",
+    "//chrome/browser/passage_embeddings",
     "//chrome/test:test_support",
     "//components/accessibility_annotator/content/content_annotator",
     "//components/accessibility_annotator/core:features",
@@ -45,8 +47,13 @@ source_set("unit_tests") {
     "//components/optimization_guide/core:model_execution_test_support",
     "//components/optimization_guide/core:test_support",
     "//components/page_content_annotations/core:test_support",
+    "//components/passage_embeddings/content",
     "//components/tabs:test_support",
     "//content/test:test_support",
     "//testing/gtest",
   ]
+
+  if (is_chromeos) {
+    deps += [ "//chromeos/constants" ]
+  }
 }
