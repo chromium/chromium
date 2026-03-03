@@ -9710,3 +9710,8 @@ crbug.com/487829615 [ Linux ] virtual/run-snapshot-post-layout/external/wpt/scro
 
 # Gardener 2026-02-27: Flaky on headless_shell_wpt_tests Mac bot
 crbug.com/488351815 [ Mac ] external/wpt/html/semantics/forms/the-textarea-element/wrapping-transformation.window.html [ Failure Pass ]
+
+# Gardener 2026-03-03: Flaky on multiple Mac bots
+crbug.com/489297473 [ Mac ] virtual/webnn-service-on-cpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?cpu [ Failure Pass ]
+crbug.com/489297473 [ Mac ] virtual/webnn-service-on-npu/external/wpt/webnn/conformance_tests/gemm.https.any.html?npu [ Failure Pass ]
+crbug.com/489297473 [ Mac ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gemm.https.any.html?gpu [ Failure Pass ]
