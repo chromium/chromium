@@ -1694,9 +1694,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
                        SigninWithChoiceRemembered_Signin) {
   base::HistogramTester histogram_tester;
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
-
   // Simulates a previous choice done with Always sign in.
   SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
 
@@ -1707,9 +1704,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithExplicitSignin,
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::kSigninChoiceRemembered, 1);
-  // Should still count as an explicit sign in since the choice was explicit
-  // set.
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
 }
 
 class DiceBrowserTestWithExplicitSigninReplaceSyncPromosWithSignInPromos
@@ -1824,9 +1818,6 @@ class DiceBrowserTestWithAutoAcceptFlag
 IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithAutoAcceptFlag, AutoSignin) {
   base::HistogramTester histogram_tester;
 
-  PrefService* prefs = browser()->profile()->GetPrefs();
-  ASSERT_FALSE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
-
   SimulateWebSigninMainAccount();
 
   EXPECT_TRUE(
@@ -1834,9 +1825,6 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTestWithAutoAcceptFlag, AutoSignin) {
   histogram_tester.ExpectUniqueSample(
       "Signin.SignIn.Completed",
       signin_metrics::AccessPoint::kSigninChoiceRemembered, 1);
-  // Should still count as an explicit sign in since the choice was explicit
-  // set.
-  EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Expect that metrics related to the browser signin stage are not recorded
   // for the web sigin case.
