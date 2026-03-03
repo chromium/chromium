@@ -93,12 +93,27 @@ class NET_EXPORT_PRIVATE TransportSocketParams
 // a headstart) and return the one that completes first to the socket pool.
 class NET_EXPORT_PRIVATE TransportConnectJob : public ConnectJob {
  public:
+  // May return TcpConnectJobs instead of TransportConnectJobs, based on enabled
+  // features.
+  //
+  // TODO(crbug.com/484073410): Once TcpConnectJob ships and TransportConnectJob
+  // is removed, move this into TcpConnectJob.
   class NET_EXPORT_PRIVATE Factory {
    public:
     Factory() = default;
     virtual ~Factory() = default;
 
-    virtual std::unique_ptr<TransportConnectJob> Create(
+    virtual std::unique_ptr<ConnectJob> Create(
+        RequestPriority priority,
+        const SocketTag& socket_tag,
+        const CommonConnectJobParams* common_connect_job_params,
+        const scoped_refptr<TransportSocketParams>& params,
+        Delegate* delegate,
+        const NetLogWithSource* net_log);
+
+    // Same as Create(), but without an associated factory. Will create a
+    // TcpConnectJob or TransportConnectJob, based on enabled features.
+    static std::unique_ptr<ConnectJob> CreateJob(
         RequestPriority priority,
         const SocketTag& socket_tag,
         const CommonConnectJobParams* common_connect_job_params,

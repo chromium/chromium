@@ -105,6 +105,14 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 // transactions complete.
 NET_EXPORT BASE_DECLARE_FEATURE(kUseHostResolverCache);
 
+// Enables Happy Eyeballs V2 by using TcpConnectJobs in place of
+// TransportConnectJobs. TcpConnectJobs start establishing TCP connections even
+// while only partial DNS results are available.
+//
+// `kHappyEyeballsV3` takes precedence over this, though this will still affect
+// proxy connections if both are enabled.
+NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV2);
+
 // Enables the Happy Eyeballs v3, where we use intermediate DNS resolution
 // results to make connection attempts as soon as possible.
 NET_EXPORT BASE_DECLARE_FEATURE(kHappyEyeballsV3);

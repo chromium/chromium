@@ -17,8 +17,10 @@
 #include "base/containers/to_vector.h"
 #include "base/functional/bind.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -72,7 +74,9 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
             /*ignore_certificate_errors=*/nullptr,
-            /*enable_early_data=*/nullptr) {}
+            /*enable_early_data=*/nullptr) {
+    scoped_feature_list_.InitAndEnableFeature(features::kHappyEyeballsV2);
+  }
 
   ~TcpConnectJobTest() override {
     EXPECT_TRUE(client_socket_factory_.AllDataProvidersUsed());
@@ -337,6 +341,8 @@ class TcpConnectJobTest : public TestWithTaskEnvironment {
                                            /*is_secure_network_error=*/true};
 
   const std::set<std::string> kDnsAliases{"bar", "foo"};
+
+  base::test::ScopedFeatureList scoped_feature_list_;
 
   // Socket data for `client_socket_factory_`. Only the connect data matters.
   std::vector<std::unique_ptr<SequencedSocketData>> socket_data_;

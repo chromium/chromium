@@ -118,7 +118,7 @@ class TestSslConnectJobFactory : public SSLConnectJob::Factory {
 // passes on to a real factory.
 class TestTransportConnectJobFactory : public TransportConnectJob::Factory {
  public:
-  std::unique_ptr<TransportConnectJob> Create(
+  std::unique_ptr<ConnectJob> Create(
       RequestPriority priority,
       const SocketTag& socket_tag,
       const CommonConnectJobParams* common_connect_job_params,

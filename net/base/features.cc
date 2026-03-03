@@ -80,6 +80,8 @@ BASE_FEATURE(kUseStructuredDnsErrors, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kUseHostResolverCache, base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kHappyEyeballsV2, base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kHappyEyeballsV3, base::FEATURE_DISABLED_BY_DEFAULT);
 
 const base::FeatureParam<int> kAlternativePortForGloballyReachableCheck{

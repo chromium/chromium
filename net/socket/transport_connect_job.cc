@@ -28,6 +28,7 @@
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_event_type.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/tcp_connect_job.h"
 #include "net/socket/transport_connect_sub_job.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
@@ -90,13 +91,29 @@ TransportSocketParams::TransportSocketParams(
 
 TransportSocketParams::~TransportSocketParams() = default;
 
-std::unique_ptr<TransportConnectJob> TransportConnectJob::Factory::Create(
+std::unique_ptr<ConnectJob> TransportConnectJob::Factory::Create(
     RequestPriority priority,
     const SocketTag& socket_tag,
     const CommonConnectJobParams* common_connect_job_params,
     const scoped_refptr<TransportSocketParams>& params,
     Delegate* delegate,
     const NetLogWithSource* net_log) {
+  return CreateJob(priority, socket_tag, common_connect_job_params, params,
+                   delegate, net_log);
+}
+
+std::unique_ptr<ConnectJob> TransportConnectJob::Factory::CreateJob(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    const scoped_refptr<TransportSocketParams>& params,
+    Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV2)) {
+    return std::make_unique<TcpConnectJob>(priority, socket_tag,
+                                           common_connect_job_params, params,
+                                           delegate, net_log);
+  }
   return std::make_unique<TransportConnectJob>(priority, socket_tag,
                                                common_connect_job_params,
                                                params, delegate, net_log);

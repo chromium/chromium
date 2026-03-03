@@ -83,6 +83,7 @@ TcpConnectJob::TcpConnectJob(
       params_(params),
       endpoint_override_(std::move(endpoint_result_override)),
       primary_connector_(std::make_unique<Connector>(this, "first")) {
+  DCHECK(base::FeatureList::IsEnabled(features::kHappyEyeballsV2));
   if (endpoint_override_) {
     UpdateSvcbOptional();
     DCHECK(!endpoint_override_->endpoints.front().ipv4_endpoints.empty() ||

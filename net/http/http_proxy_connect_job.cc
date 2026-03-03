@@ -496,7 +496,7 @@ int HttpProxyConnectJob::DoBeginConnect() {
 int HttpProxyConnectJob::DoTransportConnect() {
   ProxyServer::Scheme scheme = GetProxyServerScheme();
   if (scheme == ProxyServer::SCHEME_HTTP) {
-    nested_connect_job_ = std::make_unique<TransportConnectJob>(
+    nested_connect_job_ = TransportConnectJob::Factory::CreateJob(
         priority(), socket_tag(), common_connect_job_params(),
         params_->transport_params(), this, &net_log());
   } else {

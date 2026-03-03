@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-
 #include "net/socket/transport_connect_job.h"
 
 #include <memory>
@@ -74,7 +73,9 @@ class TransportConnectJobTest : public WithTaskEnvironment,
             /*alpn_protos=*/nullptr,
             /*application_settings=*/nullptr,
             /*ignore_certificate_errors=*/nullptr,
-            /*early_data_enabled=*/nullptr) {}
+            /*enable_early_data=*/nullptr) {
+    scoped_feature_list_.InitAndDisableFeature(features::kHappyEyeballsV2);
+  }
 
   ~TransportConnectJobTest() override = default;
 
@@ -95,6 +96,8 @@ class TransportConnectJobTest : public WithTaskEnvironment,
   }
 
  protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
                                       RuleResolver::GetLocalhostResult()};
   MockTransportClientSocketFactory client_socket_factory_;

@@ -80,8 +80,14 @@ void RunLoopForTimePeriod(base::TimeDelta period) {
   run_loop.Run();
 }
 
-class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
-                                               public WithTaskEnvironment {
+// Test fixture runs with Happy Eyeballs v2 both enabled and disabled, based on
+// the boolean test parameter.
+//
+// TODO(https://crbug.com/484073410): Remove the param, once HappyEyeballs v2 is
+// enabled by default.
+class WebSocketTransportClientSocketPoolTest
+    : public ::testing::TestWithParam<bool>,
+      public WithTaskEnvironment {
  protected:
   WebSocketTransportClientSocketPoolTest()
       : WithTaskEnvironment(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
@@ -120,6 +126,11 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
               SocketPoolAdditionalCapacity::CreateEmpty(),
               ProxyChain::Direct(),
               &common_connect_job_params_) {
+    if (use_happy_eyeballs_v2()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kHappyEyeballsV2);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kHappyEyeballsV2);
+    }
     websocket_endpoint_lock_manager_.SetUnlockDelayForTesting(
         base::TimeDelta());
   }
@@ -138,6 +149,8 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
   }
 
   static void RunUntilIdle() { base::RunLoop().RunUntilIdle(); }
+
+  bool use_happy_eyeballs_v2() const { return GetParam(); }
 
   int StartRequest(
       RequestPriority priority,
@@ -166,6 +179,8 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
   }
   size_t completion_count() const { return test_base_.completion_count(); }
 
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   // |group_id_| and |params_| correspond to the same socket parameters.
   const ClientSocketPool::GroupId group_id_;
   scoped_refptr<ClientSocketPool::SocketParams> params_;
@@ -179,7 +194,11 @@ class WebSocketTransportClientSocketPoolTest : public ::testing::Test,
   ClientSocketPoolTest test_base_;
 };
 
-TEST_F(WebSocketTransportClientSocketPoolTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(,
+                         WebSocketTransportClientSocketPoolTest,
+                         testing::Bool());
+
+TEST_P(WebSocketTransportClientSocketPoolTest, Basic) {
   TestCompletionCallback callback;
   ClientSocketHandle handle;
   int rv =
@@ -199,7 +218,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, Basic) {
 
 // Make sure that the ConnectJob passes on its priority to its HostResolver
 // request on Init.
-TEST_F(WebSocketTransportClientSocketPoolTest, SetResolvePriorityOnInit) {
+TEST_P(WebSocketTransportClientSocketPoolTest, SetResolvePriorityOnInit) {
   for (int i = MINIMUM_PRIORITY; i <= MAXIMUM_PRIORITY; ++i) {
     RequestPriority priority = static_cast<RequestPriority>(i);
     TestCompletionCallback callback;
@@ -215,7 +234,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, SetResolvePriorityOnInit) {
   }
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
+TEST_P(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
   url::SchemeHostPort endpoint(url::kHttpScheme, "unresolvable.host.name", 80);
   host_resolver_->rules()->AddSimulatedTimeoutFailure(endpoint.host());
   TestCompletionCallback callback;
@@ -238,7 +257,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitHostResolutionFailure) {
                   ConnectionAttempt(IPEndPoint(), ERR_NAME_NOT_RESOLVED)));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
+TEST_P(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kFailing);
   TestCompletionCallback callback;
@@ -271,7 +290,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, InitConnectionFailure) {
           IPEndPoint(IPAddress::IPv4Localhost(), 80), ERR_CONNECTION_FAILED)));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequestsFinishFifo) {
+TEST_P(WebSocketTransportClientSocketPoolTest, PendingRequestsFinishFifo) {
   // First request finishes asynchronously.
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(request(0)->WaitForResult(), IsOk());
@@ -305,7 +324,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequestsFinishFifo) {
   EXPECT_EQ(ClientSocketPoolTest::kIndexOutOfBounds, GetOrderOfRequest(7));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequests_NoKeepAlive) {
+TEST_P(WebSocketTransportClientSocketPoolTest, PendingRequests_NoKeepAlive) {
   // First request finishes asynchronously.
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(request(0)->WaitForResult(), IsOk());
@@ -339,7 +358,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, PendingRequests_NoKeepAlive) {
 // This test will start up a RequestSocket() and then immediately Cancel() it.
 // The pending host resolution will eventually complete, and destroy the
 // ClientSocketPool which will crash if the group was not cleared properly.
-TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequestClearGroup) {
+TEST_P(WebSocketTransportClientSocketPoolTest, CancelRequestClearGroup) {
   TestCompletionCallback callback;
   ClientSocketHandle handle;
   EXPECT_EQ(
@@ -352,7 +371,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequestClearGroup) {
   handle.Reset();
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, TwoRequestsCancelOne) {
+TEST_P(WebSocketTransportClientSocketPoolTest, TwoRequestsCancelOne) {
   ClientSocketHandle handle;
   TestCompletionCallback callback;
   ClientSocketHandle handle2;
@@ -379,7 +398,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, TwoRequestsCancelOne) {
   handle2.Reset();
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, ConnectCancelConnect) {
+TEST_P(WebSocketTransportClientSocketPoolTest, ConnectCancelConnect) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kPending);
   ClientSocketHandle handle;
@@ -419,7 +438,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, ConnectCancelConnect) {
   handle.Reset();
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequest) {
+TEST_P(WebSocketTransportClientSocketPoolTest, CancelRequest) {
   // First request finishes asynchronously.
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(request(0)->WaitForResult(), IsOk());
@@ -487,7 +506,7 @@ void RequestSocketOnComplete(const ClientSocketPool::GroupId& group_id,
 // Tests the case where a second socket is requested in a completion callback,
 // and the second socket connects asynchronously.  Reuses the same
 // ClientSocketHandle for the second socket, after disconnecting the first.
-TEST_F(WebSocketTransportClientSocketPoolTest, RequestTwice) {
+TEST_P(WebSocketTransportClientSocketPoolTest, RequestTwice) {
   ClientSocketHandle handle;
   TestCompletionCallback second_result_callback;
   int rv = handle.Init(
@@ -505,7 +524,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, RequestTwice) {
 
 // Make sure that pending requests get serviced after active requests get
 // cancelled.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        CancelActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kPending);
@@ -537,7 +556,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 }
 
 // Make sure that pending requests get serviced after active requests fail.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        FailingActiveRequestWithPendingRequests) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kPendingFailing);
@@ -556,7 +575,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 }
 
 // The lock on the endpoint is released when a ClientSocketHandle is reset.
-TEST_F(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleReset) {
+TEST_P(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleReset) {
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(request(0)->WaitForResult(), IsOk());
@@ -567,7 +586,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleReset) {
 }
 
 // The lock on the endpoint is released when a ClientSocketHandle is deleted.
-TEST_F(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleDelete) {
+TEST_P(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleDelete) {
   TestCompletionCallback callback;
   auto handle = std::make_unique<ClientSocketHandle>();
   int rv =
@@ -587,7 +606,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LockReleasedOnHandleDelete) {
 
 // A new connection is performed when the lock on the previous connection is
 // explicitly released.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        ConnectionProceedsOnExplicitRelease) {
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -601,7 +620,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 
 // A connection which is cancelled before completion does not block subsequent
 // connections.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        CancelDuringConnectionReleasesLock) {
   MockTransportClientSocketFactory::Rule rules[] = {
       MockTransportClientSocketFactory::Rule(
@@ -621,7 +640,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 
 // Test the case of the IPv6 address stalling, and falling back to the IPv4
 // socket which finishes first.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        IPv6FallbackSocketIPv4FinishesFirst) {
   MockTransportClientSocketFactory::Rule rules[] = {
       // This is the IPv6 socket.
@@ -660,7 +679,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // Test the case of the IPv6 address being slow, thus falling back to trying to
 // connect to the IPv4 address, but having the connect to the IPv6 address
 // finish first.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        IPv6FallbackSocketIPv6FinishesFirst) {
   MockTransportClientSocketFactory::Rule rules[] = {
       // This is the IPv6 socket.
@@ -698,7 +717,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   EXPECT_EQ(2, client_socket_factory_.allocation_count());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        IPv6NoIPv4AddressesToFallbackTo) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kDelayed);
@@ -727,7 +746,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   EXPECT_EQ(1, client_socket_factory_.allocation_count());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
+TEST_P(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kDelayed);
 
@@ -754,25 +773,22 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv4HasNoFallback) {
   EXPECT_EQ(1, client_socket_factory_.allocation_count());
 }
 
-// If all IPv6 addresses fail to connect synchronously, then IPv4 connections
+// If IPv6 address fails to connect synchronously, then IPv4 connections
 // proceeed immediately.
-TEST_F(WebSocketTransportClientSocketPoolTest, IPv6InstantFail) {
+TEST_P(WebSocketTransportClientSocketPoolTest, IPv6InstantFail) {
   MockTransportClientSocketFactory::Rule rules[] = {
-      // First IPv6 socket.
+      // IPv6 socket.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kFailing),
-      // Second IPv6 socket.
-      MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kFailing),
-      // This is the IPv4 socket.
+      // IPv4 socket.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kSynchronous)};
 
   client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with two IPv6 addresses and then an IPv4 address.
-  host_resolver_->rules()->AddIPLiteralRule(
-      "*", "2:abcd::3:4:ff,2:abcd::3:5:ff,2.2.2.2", std::string());
+  host_resolver_->rules()->AddIPLiteralRule("*", "2:abcd::3:5:ff,2.2.2.2",
+                                            std::string());
   host_resolver_->set_synchronous_mode(true);
   TestCompletionCallback callback;
   ClientSocketHandle handle;
@@ -789,25 +805,22 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv6InstantFail) {
   EXPECT_EQ("2.2.2.2", endpoint.ToStringWithoutPort());
 }
 
-// If all IPv6 addresses fail before the IPv4 fallback timeout, then the IPv4
+// If IPv6 address fails before the IPv4 fallback timeout, then the IPv4
 // connections proceed immediately.
-TEST_F(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
+TEST_P(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
   MockTransportClientSocketFactory::Rule rules[] = {
-      // First IPv6 socket.
+      // IPv6 socket.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kPendingFailing),
-      // Second IPv6 socket.
-      MockTransportClientSocketFactory::Rule(
-          MockTransportClientSocketFactory::Type::kPendingFailing),
-      // This is the IPv4 socket.
+      // IPv4 socket.
       MockTransportClientSocketFactory::Rule(
           MockTransportClientSocketFactory::Type::kSynchronous)};
 
   client_socket_factory_.SetRules(rules);
 
   // Resolve an AddressList with two IPv6 addresses and then an IPv4 address.
-  host_resolver_->rules()->AddIPLiteralRule(
-      "*", "2:abcd::3:4:ff,2:abcd::3:5:ff,2.2.2.2", std::string());
+  host_resolver_->rules()->AddIPLiteralRule("*", "2:abcd::3:4:ff,2.2.2.2",
+                                            std::string());
 
   TestCompletionCallback callback;
   ClientSocketHandle handle;
@@ -833,7 +846,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IPv6RapidFail) {
 // If two sockets connect successfully, the one which connected first wins (this
 // can only happen if the sockets are different types, since sockets of the same
 // type do not race).
-TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
+TEST_P(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kTriggerable);
 
@@ -868,7 +881,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, FirstSuccessWins) {
 }
 
 // We should not report failure until all connections have failed.
-TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
+TEST_P(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
   client_socket_factory_.set_default_client_socket_type(
       MockTransportClientSocketFactory::Type::kDelayedFailing);
   base::TimeDelta delay = TransportConnectJob::kIPv6FallbackTime / 3;
@@ -921,7 +934,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LastFailureWins) {
 
 // Test that, if an address fails due to `ERR_NETWORK_IO_SUSPENDED`, we do not
 // try subsequent addresses.
-TEST_F(WebSocketTransportClientSocketPoolTest, Suspend) {
+TEST_P(WebSocketTransportClientSocketPoolTest, Suspend) {
   // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
   host_resolver_->rules()->AddIPLiteralRule("*",
                                             "1:abcd::3:4:ff,2:abcd::3:4:ff,"
@@ -952,7 +965,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, Suspend) {
 }
 
 // Same as above, but with a asynchronous failure.
-TEST_F(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
+TEST_P(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
   // Resolve an AddressList with 4 IPv6 addresses and 2 IPv4 addresses.
   host_resolver_->rules()->AddIPLiteralRule("*",
                                             "1:abcd::3:4:ff,2:abcd::3:4:ff,"
@@ -983,7 +996,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, SuspendAsync) {
 }
 
 // Global timeout for all connects applies.
-TEST_F(WebSocketTransportClientSocketPoolTest, OverallTimeoutApplies) {
+TEST_P(WebSocketTransportClientSocketPoolTest, OverallTimeoutApplies) {
   const base::TimeDelta connect_job_timeout =
       TransportConnectJob::ConnectionTimeout();
 
@@ -1022,7 +1035,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, OverallTimeoutApplies) {
   EXPECT_THAT(callback.WaitForResult(), IsError(ERR_TIMED_OUT));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, MaxSocketsEnforced) {
+TEST_P(WebSocketTransportClientSocketPoolTest, MaxSocketsEnforced) {
   host_resolver_->set_synchronous_mode(true);
   for (int i = 0; i < kMaxSockets; ++i) {
     ASSERT_THAT(StartRequest(kDefaultPriority), IsOk());
@@ -1033,7 +1046,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, MaxSocketsEnforced) {
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, MaxSocketsEnforcedWhenPending) {
+TEST_P(WebSocketTransportClientSocketPoolTest, MaxSocketsEnforcedWhenPending) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   }
@@ -1051,7 +1064,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, MaxSocketsEnforcedWhenPending) {
   EXPECT_FALSE(request(kMaxSockets)->handle()->socket());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, StalledSocketReleased) {
+TEST_P(WebSocketTransportClientSocketPoolTest, StalledSocketReleased) {
   host_resolver_->set_synchronous_mode(true);
   for (int i = 0; i < kMaxSockets; ++i) {
     ASSERT_THAT(StartRequest(kDefaultPriority), IsOk());
@@ -1066,7 +1079,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, StalledSocketReleased) {
   EXPECT_TRUE(request(kMaxSockets)->handle()->socket());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, IsStalledTrueWhenStalled) {
+TEST_P(WebSocketTransportClientSocketPoolTest, IsStalledTrueWhenStalled) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   }
@@ -1074,7 +1087,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, IsStalledTrueWhenStalled) {
   EXPECT_TRUE(pool_.IsStalled());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        CancellingPendingSocketUnstallsStalledSocket) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -1085,7 +1098,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   EXPECT_FALSE(pool_.IsStalled());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        LoadStateOfStalledSocketIsWaitingForAvailableSocket) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -1094,7 +1107,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
             pool_.GetLoadState(group_id_, request(kMaxSockets)->handle()));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        CancellingStalledSocketUnstallsPool) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -1104,14 +1117,14 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   EXPECT_FALSE(pool_.IsStalled());
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorFlushesPendingConnections) {
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
   pool_.FlushWithError(ERR_FAILED, "Very good reason");
   EXPECT_THAT(request(0)->WaitForResult(), IsError(ERR_FAILED));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorFlushesStalledConnections) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -1120,7 +1133,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
   EXPECT_THAT(request(kMaxSockets)->WaitForResult(), IsError(ERR_FAILED));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        AfterFlushWithErrorCanMakeNewConnections) {
   for (int i = 0; i < kMaxSockets + 1; ++i) {
     EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -1133,7 +1146,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // Deleting pending connections can release the lock on the endpoint, which can
 // in principle lead to other pending connections succeeding. However, when we
 // call FlushWithError(), everything should fail.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorDoesNotCauseSuccessfulConnections) {
   host_resolver_->set_synchronous_mode(true);
   MockTransportClientSocketFactory::Rule first_rule[] = {
@@ -1161,7 +1174,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 // FlushWithErrorDoesNotCauseSuccessfulConnections. Because a ConnectJob can
 // have both IPv4 and IPv6 subjobs, it can be both connecting and waiting for
 // the lock at the same time.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorDoesNotCauseSuccessfulConnectionsMultipleAddressTypes) {
   host_resolver_->set_synchronous_mode(true);
   // The first |kMaxSockets| sockets to connect will be IPv6. Then we will have
@@ -1199,7 +1212,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 
 // Sockets that have had ownership transferred to a ClientSocketHandle should
 // not be affected by FlushWithError.
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        FlushWithErrorDoesNotAffectHandedOutSockets) {
   host_resolver_->set_synchronous_mode(true);
   MockTransportClientSocketFactory::Rule rules[] = {
@@ -1224,7 +1237,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
 
 // Sockets should not be leaked if CancelRequest() is called in between
 // SetSocket() being called on the ClientSocketHandle and InvokeUserCallback().
-TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequestReclaimsSockets) {
+TEST_P(WebSocketTransportClientSocketPoolTest, CancelRequestReclaimsSockets) {
   host_resolver_->set_synchronous_mode(true);
   MockTransportClientSocketFactory::Rule rules[] = {
       MockTransportClientSocketFactory::Rule(
@@ -1251,7 +1264,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, CancelRequestReclaimsSockets) {
 
 // A handshake completing and then the WebSocket closing should only release one
 // Endpoint, not two.
-TEST_F(WebSocketTransportClientSocketPoolTest, EndpointLockIsOnlyReleasedOnce) {
+TEST_P(WebSocketTransportClientSocketPoolTest, EndpointLockIsOnlyReleasedOnce) {
   host_resolver_->set_synchronous_mode(true);
   ASSERT_THAT(StartRequest(kDefaultPriority), IsOk());
   EXPECT_THAT(StartRequest(kDefaultPriority), IsError(ERR_IO_PENDING));
@@ -1271,7 +1284,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, EndpointLockIsOnlyReleasedOnce) {
 }
 
 // Make sure that WebSocket requests use the correct NetworkAnonymizationKey.
-TEST_F(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
+TEST_P(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
   const SchemefulSite kSite(GURL("https://foo.test/"));
   const auto kNetworkAnonymizationKey =
       NetworkAnonymizationKey::CreateSameSite(kSite);
@@ -1301,7 +1314,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest, NetworkAnonymizationKey) {
             host_resolver_->request_network_anonymization_key(1));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        TransportConnectJobWithDnsAliases) {
   host_resolver_->set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
@@ -1320,11 +1333,11 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
           SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>());
 
-  TransportConnectJob transport_connect_job(
+  auto transport_connect_job = TransportConnectJob::Factory::CreateJob(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
       &test_delegate, nullptr /* net_log */);
 
-  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+  test_delegate.StartJobExpectingResult(transport_connect_job.get(), OK,
                                         true /* expect_sync_result */);
 
   // Verify that the elements of the alias list are those from the
@@ -1333,7 +1346,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
               testing::ElementsAre("alias1", "alias2", kHostName));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        TransportConnectJobWithNoAdditionalDnsAliases) {
   host_resolver_->set_synchronous_mode(true);
   client_socket_factory_.set_default_client_socket_type(
@@ -1353,11 +1366,11 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
           SecureDnsPolicy::kAllow, OnHostResolutionCallback(),
           /*supported_alpns=*/base::flat_set<std::string>());
 
-  TransportConnectJob transport_connect_job(
+  auto transport_connect_job = TransportConnectJob::Factory::CreateJob(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_, params,
       &test_delegate, nullptr /* net_log */);
 
-  test_delegate.StartJobExpectingResult(&transport_connect_job, OK,
+  test_delegate.StartJobExpectingResult(transport_connect_job.get(), OK,
                                         true /* expect_sync_result */);
 
   // Verify that the alias list only contains kHostName.
@@ -1365,7 +1378,7 @@ TEST_F(WebSocketTransportClientSocketPoolTest,
               testing::ElementsAre(kHostName));
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
+TEST_P(WebSocketTransportClientSocketPoolTest, LoadState) {
   host_resolver_->rules()->AddRule("v6-only.test", "1:abcd::3:4:ff");
   host_resolver_->rules()->AddRule("v6-and-v4.test", "1:abcd::3:4:ff,2.2.2.2");
   host_resolver_->set_ondemand_mode(true);
@@ -1384,24 +1397,24 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
 
   // v6-only.test will first block on DNS.
   TestConnectJobDelegate test_delegate_v6_only;
-  TransportConnectJob connect_job_v6_only(
+  auto connect_job_v6_only = TransportConnectJob::Factory::CreateJob(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
       params_v6_only, &test_delegate_v6_only, /*net_log=*/nullptr);
-  EXPECT_THAT(connect_job_v6_only.Connect(), test::IsError(ERR_IO_PENDING));
-  EXPECT_THAT(connect_job_v6_only.GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+  EXPECT_THAT(connect_job_v6_only->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(connect_job_v6_only->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   // When DNS is resolved, it should block on making a connection.
   host_resolver_->ResolveOnlyRequestNow();
   base::RunLoop().RunUntilIdle();
-  EXPECT_THAT(connect_job_v6_only.GetLoadState(), LOAD_STATE_CONNECTING);
+  EXPECT_THAT(connect_job_v6_only->GetLoadState(), LOAD_STATE_CONNECTING);
 
   // v6-and-v4.test will also first block on DNS.
   TestConnectJobDelegate test_delegate_v6_and_v4;
-  TransportConnectJob connect_job_v6_and_v4(
+  auto connect_job_v6_and_v4 = TransportConnectJob::Factory::CreateJob(
       DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
       params_v6_and_v4, &test_delegate_v6_and_v4, /*net_log=*/nullptr);
-  EXPECT_THAT(connect_job_v6_and_v4.Connect(), test::IsError(ERR_IO_PENDING));
-  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_RESOLVING_HOST);
+  EXPECT_THAT(connect_job_v6_and_v4->Connect(), test::IsError(ERR_IO_PENDING));
+  EXPECT_THAT(connect_job_v6_and_v4->GetLoadState(), LOAD_STATE_RESOLVING_HOST);
 
   // When DNS is resolved, it should attempt to connect to the IPv6 address, but
   // `connect_job_v6_only` holds the lock. GetLoadState() reports
@@ -1409,17 +1422,17 @@ TEST_F(WebSocketTransportClientSocketPoolTest, LoadState) {
   // lock.
   host_resolver_->ResolveOnlyRequestNow();
   RunUntilIdle();
-  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_CONNECTING);
+  EXPECT_THAT(connect_job_v6_and_v4->GetLoadState(), LOAD_STATE_CONNECTING);
 
   // After the IPv6 fallback timeout, it should attempt to connect to the IPv4
   // address. This lock is available, so `GetLoadState` should report it is now
   // actively connecting.
   RunLoopForTimePeriod(TransportConnectJob::kIPv6FallbackTime +
                        base::Milliseconds(50));
-  EXPECT_THAT(connect_job_v6_and_v4.GetLoadState(), LOAD_STATE_CONNECTING);
+  EXPECT_THAT(connect_job_v6_and_v4->GetLoadState(), LOAD_STATE_CONNECTING);
 }
 
-TEST_F(WebSocketTransportClientSocketPoolTest,
+TEST_P(WebSocketTransportClientSocketPoolTest,
        ValidateAdditionalCapacityForWebSocketTransportClientSocketPool) {
   WebSocketTransportClientSocketPool pool(
       /*socket_soft_cap=*/256, SocketPoolAdditionalCapacity::Create(),
