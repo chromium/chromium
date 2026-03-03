@@ -9995,6 +9995,16 @@ bool Element::ShouldStoreComputedStyle(const ComputedStyle& style) const {
     // from its `::column`.
     return true;
   }
+
+  if (IsPseudoElement() && style.Display() == EDisplay::kNone) {
+    if (const ComputedStyle* base = style.GetBaseComputedStyle()) {
+      if (base->Display() != EDisplay::kNone) {
+        // Store the computed style  if animating to or from display:none.
+        return true;
+      }
+    }
+  }
+
   if (auto* svg_element = DynamicTo<SVGElement>(this)) {
     if (!svg_element->HasSVGParent()) {
       return false;
@@ -10313,17 +10323,28 @@ PseudoElement* Element::UpdatePseudoElement(
         cache->RemoveSubtree(this, /*remove_root*/ false);
       }
       element->RecalcStyle(change.ForPseudoElement(), style_recalc_context);
+      const ComputedStyle* style = element->GetComputedStyle();
+      if (!style) {
+        generate_pseudo = false;
+      }
       if (element->NeedsReattachLayoutTree() &&
           !PseudoElementLayoutObjectIsNeeded(
               pseudo_id, element->GetComputedStyle(), this)) {
-        generate_pseudo = false;
-        // If the content property is relying on attr(), we add the
+        if (!element->HasAnimations()) {
+          // Pseudo-element still needed even if no layout object required
+          // in cases where there is a running animation. Otherwise the
+          // pseudo popping back into existence would cause animations to
+          // restart. Display:none is explicitly called out in the spec that
+          // it should not cancel the animation. Similarly, the content property
+          // can be animated (discrete animation type).
+          generate_pseudo = false;
+        }
+        // If the content property is relying on attr(), we should add the
         // pseudo-element's ComputedStyle to the originating element's style
         // cache, so that when the attribute value changes we will cause a
         // pseudo-element update via
         // ComputedStyle::Difference::kPseudoElementStyle.
-        if (element->GetComputedStyle() &&
-            element->GetComputedStyle()->HasAttrFunction() &&
+        if (style && style->HasAttrFunction() &&
             !GetComputedStyle()->GetCachedPseudoElementStyle(pseudo_id,
                                                              g_null_atom)) {
           GetComputedStyle()->AddCachedPseudoElementStyle(
