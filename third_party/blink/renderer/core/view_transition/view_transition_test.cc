@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/core/view_transition/dom_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/scoped_view_transition.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_supplement.h"
+#include "third_party/blink/renderer/core/view_transition/view_transition_transition_element.h"
 #include "third_party/blink/renderer/core/view_transition/view_transition_utils.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -152,7 +153,12 @@ class ViewTransitionTest : public testing::Test,
       Element* scope,
       const Vector<AtomicString>& view_transition_names,
       bool has_incoming_image) {
-    auto* transition_pseudo = scope->GetPseudoElement(kPseudoIdViewTransition);
+    // Scoped view transitions use nested groups. Limit tree builder traversal
+    // check to document view transitions.
+    bool document_transition = scope == GetDocument().documentElement();
+    auto* transition_pseudo = DynamicTo<ViewTransitionTransitionElement>(
+        scope->GetPseudoElement(kPseudoIdViewTransition));
+
     ASSERT_TRUE(transition_pseudo);
     EXPECT_TRUE(transition_pseudo->GetComputedStyle());
     EXPECT_TRUE(transition_pseudo->GetLayoutObject());
@@ -160,13 +166,13 @@ class ViewTransitionTest : public testing::Test,
     PseudoElement* previous_container = nullptr;
     for (const auto& view_transition_name : view_transition_names) {
       SCOPED_TRACE(view_transition_name);
-      auto* container_pseudo = transition_pseudo->GetPseudoElement(
-          kPseudoIdViewTransitionGroup, view_transition_name);
+      auto* container_pseudo =
+          transition_pseudo->FindViewTransitionGroupPseudoElement(
+              view_transition_name);
       ASSERT_TRUE(container_pseudo);
       EXPECT_TRUE(container_pseudo->GetComputedStyle());
       EXPECT_TRUE(container_pseudo->GetLayoutObject());
-
-      if (previous_container) {
+      if (previous_container && document_transition) {
         EXPECT_EQ(LayoutTreeBuilderTraversal::NextSibling(*previous_container),
                   container_pseudo);
       }

@@ -660,6 +660,20 @@ bool ViewTransitionStyleTracker::MatchForOnlyChild(
 void ViewTransitionStyleTracker::AddTransitionElementsFromCSS() {
   DCHECK(document_ && document_->View());
 
+  if (element_ && element_ != document_->documentElement()) {
+    // Scoped view transition apply auto-nesting. The nested group applies
+    // clipping unless overflow explicitly set to visible.
+    // TODO(https://github.com/w3c/csswg-drafts/issues/13445) we might consider
+    // having per axis values here. Revisit once we have a resolution for this
+    // issue.
+    if (const ComputedStyle* style = element_->GetComputedStyle()) {
+      if (style->OverflowX() != EOverflow::kVisible ||
+          style->OverflowY() != EOverflow::kVisible) {
+        apply_overflow_clip_ = true;
+      }
+    }
+  }
+
   // We need our paint layers, and z-order lists which is done during
   // compositing inputs update.
   DCHECK_GE(document_->Lifecycle().GetState(),
@@ -1622,6 +1636,10 @@ bool ViewTransitionStyleTracker::RunPostPrePaintStepsForElement(
 
   for (CSSPropertyID id : kPropertiesToCaptureOnGroupChildren) {
     capture_property(id, group_children_css_property_builder);
+  }
+  if (apply_overflow_clip_) {
+    group_children_css_property_builder.Insert(CSSPropertyID::kOverflow,
+                                               "clip");
   }
 
   auto css_properties = std::move(css_property_builder).Finish();

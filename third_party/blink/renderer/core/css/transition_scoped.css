@@ -52,3 +52,7 @@
   animation-direction: inherit;
   animation-play-state: inherit;
 }
+
+:active-view-transition:not(:root) {
+  view-transition-group: contain;
+}

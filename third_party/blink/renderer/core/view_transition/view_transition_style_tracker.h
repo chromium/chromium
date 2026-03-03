@@ -515,6 +515,12 @@ class ViewTransitionStyleTracker
   Vector<AtomicString> view_transition_names_;
 
   bool in_get_computed_style_scope_ = false;
+
+  // Whether or not to automatically apply overflow: clip to nested group
+  // children. Determined by inspecting the overflow property of the scoped
+  // element if a scoped-view-transitions. Unless overflow is set to visible,
+  // automatically apply overflow: clip to the group-children.
+  bool apply_overflow_clip_ = false;
 };
 
 }  // namespace blink
