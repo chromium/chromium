@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -110,6 +111,34 @@ base::expected<gfx::PointF, SVGParseStatus> ParsePoint(const String& string) {
     }
   }
   return base::unexpected(SVGParseStatus::kParsingFailed);
+}
+
+// Used to collect the points of each path segment for discrete calcMode.
+struct PointCollector {
+  Vector<gfx::PointF>& points;
+  gfx::PointF subpath_start;
+};
+
+void CollectPoint(void* info, const PathElement& element) {
+  auto* collector = static_cast<PointCollector*>(info);
+  switch (element.type) {
+    case kPathElementMoveToPoint:
+      collector->subpath_start = element.points[0];
+      collector->points.push_back(element.points[0]);
+      break;
+    case kPathElementAddLineToPoint:
+      collector->points.push_back(element.points[0]);
+      break;
+    case kPathElementAddQuadCurveToPoint:
+      collector->points.push_back(element.points[1]);
+      break;
+    case kPathElementAddCurveToPoint:
+      collector->points.push_back(element.points[2]);
+      break;
+    case kPathElementCloseSubpath:
+      collector->points.push_back(collector->subpath_start);
+      break;
+  }
 }
 
 }  // namespace
@@ -191,10 +220,30 @@ void SVGAnimateMotionElement::ClearAnimationValue() {
   target_element->ClearAnimatedMotionTransform();
 }
 
+wtf_size_t SVGAnimateMotionElement::DiscretePathKeyframeCount() const {
+  CHECK(RuntimeEnabledFeatures::SvgAnimateMotionDiscreteCalcModeEnabled());
+  return discrete_points_.size();
+}
+
+bool SVGAnimateMotionElement::CalculatePathValues() {
+  discrete_points_.clear();
+  if (RuntimeEnabledFeatures::SvgAnimateMotionDiscreteCalcModeEnabled() &&
+      GetCalcMode() == kCalcModeDiscrete && !animation_path_.IsEmpty()) {
+    PointCollector collector{discrete_points_, {}};
+    animation_path_.Apply(&collector, CollectPoint);
+  }
+  return true;
+}
+
 void SVGAnimateMotionElement::UpdateKeyframeValues(const Keyframe& keyframe) {
   DCHECK(targetElement());
-  from_point_ = values_[keyframe.from_index];
-  to_point_ = values_[keyframe.to_index];
+  if (GetAnimationMode() == kPathAnimation) {
+    // Discrete path animation: keyframe index refers to a cached point.
+    discrete_path_index_ = keyframe.from_index;
+  } else {
+    from_point_ = values_[keyframe.from_index];
+    to_point_ = values_[keyframe.to_index];
+  }
 }
 
 bool SVGAnimateMotionElement::CalculateFromAndToValues(
@@ -274,13 +323,31 @@ void SVGAnimateMotionElement::CalculateAnimationValue(
     DCHECK(!animation_path_.IsEmpty());
 
     const float path_length = animation_path_.length();
-    const float position_on_path = path_length * percentage;
-    position = animation_path_.PointAndNormalAtLength(position_on_path);
 
-    // Handle accumulate="sum".
+    if (RuntimeEnabledFeatures::SvgAnimateMotionDiscreteCalcModeEnabled() &&
+        GetCalcMode() == kCalcModeDiscrete && !HasKeyPoints()) {
+      // Discrete path animation without keyPoints: the keyframe index was
+      // already computed by `ApplyAnimation()` and stored via
+      // `UpdateKeyframeValues()`.
+      position.point = discrete_points_[discrete_path_index_];
+    } else {
+      // Non-discrete path animation (linear / paced / spline), or discrete
+      // with keyPoints (where percentage is already mapped to a path fraction
+      // by `CalculatePercentFromKeyPoints()` in `ApplyAnimation()`).
+      const float position_on_path = path_length * percentage;
+      position = animation_path_.PointAndNormalAtLength(position_on_path);
+    }
+
+    // Handle accumulate="sum" for path animation.
     if (repeat_count && parameters.is_cumulative) {
-      const gfx::PointF position_at_end_of_duration =
-          animation_path_.PointAtLength(path_length);
+      gfx::PointF position_at_end_of_duration;
+      if (RuntimeEnabledFeatures::SvgAnimateMotionDiscreteCalcModeEnabled() &&
+          GetCalcMode() == kCalcModeDiscrete && !HasKeyPoints()) {
+        position_at_end_of_duration = discrete_points_.back();
+      } else {
+        position_at_end_of_duration =
+            animation_path_.PointAtLength(path_length);
+      }
       position.point +=
           gfx::ScalePoint(position_at_end_of_duration, repeat_count)
               .OffsetFromOrigin();

@@ -119,6 +119,8 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
     friend bool operator==(const Keyframe&, const Keyframe&) = default;
   };
 
+  bool HasKeyPoints() const { return !key_points_.empty(); }
+
  private:
   bool IsValid() const final { return SVGTests::IsValid(); }
 
@@ -134,11 +136,18 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
   bool UpdateAnimationValues();
 
   virtual void UpdateKeyframeValues(const Keyframe& keyframe) = 0;
+  // Returns the number of discrete keyframes for discrete `calcMode` path
+  // animation, used by `ApplyAnimation()` to compute the keyframe index.
+  // Only called for path animations. Returns 0 by default.
+  virtual wtf_size_t DiscretePathKeyframeCount() const { return 0; }
   virtual bool CalculateFromAndToValues(const String& from_string,
                                         const String& to_string) = 0;
   virtual bool CalculateFromAndByValues(const String& from_string,
                                         const String& by_string) = 0;
   virtual bool CalculateValues(const Vector<String>& values) = 0;
+  // Hook for subclasses to initialize path-animation-specific state.
+  // Called from `UpdateAnimationValues()` for `kPathAnimation` mode.
+  virtual bool CalculatePathValues() { return true; }
   virtual wtf_size_t ValuesCount() const = 0;
   virtual void CalculateAnimationValue(SMILAnimationValue&,
                                        float percent,
@@ -147,6 +156,7 @@ class CORE_EXPORT SVGAnimationElement : public SVGSMILElement {
 
   float CurrentValuesForValuesAnimation(float percent,
                                         Keyframe& keyframe) const;
+  float CurrentValuesForPathAnimation(float percent, Keyframe& keyframe) const;
   // Also decides which list is to be used, either key_times_from_attribute_
   // or key_times_for_paced_ by toggling the flag use_paced_key_times_.
   void CalculateKeyTimesForCalcModePaced();

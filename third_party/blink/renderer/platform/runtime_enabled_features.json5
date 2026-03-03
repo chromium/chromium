@@ -5352,6 +5352,10 @@
       status: "stable",
     },
     {
+      name: "SvgAnimateMotionDiscreteCalcMode",
+      status: "stable",
+    },
+    {
       name: "SvgAvoidCullingElementsWithTransformOperations",
       status: "stable",
     },
