@@ -24,3 +24,18 @@ source_set("ui") {
     "//ui/base",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "assistant_container_detent_utils_unittest.mm",
+    "assistant_container_view_controller_unittest.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+    "//third_party/ocmock",
+  ]
+}
