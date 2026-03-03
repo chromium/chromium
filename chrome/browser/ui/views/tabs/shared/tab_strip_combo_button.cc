@@ -179,6 +179,7 @@ std::unique_ptr<TabStripFlatEdgeButton>
 TabStripComboButton::CreateFlatEdgeButtonFor(actions::ActionId action_id,
                                              ui::ElementIdentifier element_id) {
   auto button = std::make_unique<TabStripFlatEdgeButton>();
+  button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_CENTER);
   button->set_context_menu_controller(this);
   if (!browser_ || !browser_->GetActions()) {
     return button;
@@ -436,7 +437,7 @@ gfx::Size TabStripComboButton::GetPreferredSizeForOrientation(
       height = std::max(height, child_size.height());
     } else {
       if (has_visible_child) {
-        width += spacing;
+        height += spacing;
       }
       height += child_size.height();
       width = std::max(width, child_size.width());

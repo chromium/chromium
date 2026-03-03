@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
+#include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_combo_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
@@ -77,9 +78,10 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
           : parent()->GetAvailableSize(this).width().value_or(0);
 
   if (combo_button_
-          ->GetPreferredSizeForOrientation(
-              views::LayoutOrientation::kHorizontal)
-          .width() >= available_width) {
+              ->GetPreferredSizeForOrientation(
+                  views::LayoutOrientation::kHorizontal)
+              .width() >= available_width ||
+      available_width <= VerticalTabStripRegionView::kCollapsedWidth) {
     combo_button_orientation_ = views::LayoutOrientation::kVertical;
     int current_y = 0;
 
