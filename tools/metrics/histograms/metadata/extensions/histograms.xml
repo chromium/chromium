@@ -2166,8 +2166,10 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.FileAccessAllowed2" units="units"
-    expires_after="2026-01-18">
+<histogram name="Extensions.FileAccessAllowed2" units="Number of extensions"
+    expires_after="never">
+<!-- expires-never: Used for monitoring user extension usage. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -2182,8 +2184,10 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.FileAccessNotAllowed2" units="units"
-    expires_after="2026-11-15">
+<histogram name="Extensions.FileAccessNotAllowed2" units="Number of extensions"
+    expires_after="never">
+<!-- expires-never: Used for monitoring user extension usage. -->
+
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
