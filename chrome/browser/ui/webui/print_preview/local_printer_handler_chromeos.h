@@ -76,8 +76,6 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
 
   // Returns a LocalDestinationInfo object (defined in
   // chrome/browser/resources/print_preview/data/local_parsers.js).
-  static base::DictValue PrinterToValue(
-      const crosapi::mojom::LocalDestinationInfo& printer);
   static base::DictValue PrinterToValue(const chromeos::Printer& printer);
 
   // Converts `caps` to a CapabilitiesResponse object (defined in
@@ -92,14 +90,10 @@ class LocalPrinterHandlerChromeos : public PrinterHandler {
   // Returns a PrinterStatus object (defined in
   // chrome/browser/resources/print_preview/data/printer_status_cros.ts).
   static base::DictValue StatusToValue(
-      const crosapi::mojom::PrinterStatus& status);
-  static base::DictValue StatusToValue(
       const chromeos::CupsPrinterStatus& status);
 
   // Return a ManagedPrintOptions object (defined in
   // chrome/browser/resources/print_preview/data/managed_print_options_cros.ts).
-  static base::DictValue ManagedPrintOptionsToValue(
-      const crosapi::mojom::ManagedPrintOptions& managed_print_options);
   static base::DictValue ManagedPrintOptionsToValue(
       const chromeos::Printer::ManagedPrintOptions& managed_print_options);
 

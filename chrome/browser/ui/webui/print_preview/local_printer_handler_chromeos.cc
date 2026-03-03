@@ -263,24 +263,6 @@ base::DictValue LocalPrinterHandlerChromeos::PrinterToValue(
 }
 
 // static
-base::DictValue LocalPrinterHandlerChromeos::PrinterToValue(
-    const crosapi::mojom::LocalDestinationInfo& printer) {
-  base::DictValue value;
-  value.Set(kSettingDeviceName, printer.id);
-  value.Set(kSettingPrinterName, printer.name);
-  value.Set(kSettingPrinterDescription, printer.description);
-  value.Set(kCUPSEnterprisePrinter, printer.configured_via_policy);
-  value.Set(kPrinterStatus, printer.printer_status
-                                ? StatusToValue(*printer.printer_status)
-                                : base::DictValue());
-  value.Set(kManagedPrintOptions,
-            printer.managed_print_options
-                ? ManagedPrintOptionsToValue(*printer.managed_print_options)
-                : base::DictValue());
-  return value;
-}
-
-// static
 base::DictValue LocalPrinterHandlerChromeos::CapabilityToValue(
     base::optional_ref<const chromeos::Printer> printer,
     const std::optional<::printing::PrinterSemanticCapsAndDefaults>& caps) {
@@ -320,25 +302,6 @@ base::DictValue LocalPrinterHandlerChromeos::StatusToValue(
     base::DictValue status_reason;
     status_reason.Set("reason", static_cast<int>(reason.GetReason()));
     status_reason.Set("severity", static_cast<int>(reason.GetSeverity()));
-    status_reasons.Append(std::move(status_reason));
-  }
-  dict.Set("statusReasons", std::move(status_reasons));
-  return dict;
-}
-
-// static
-base::DictValue LocalPrinterHandlerChromeos::StatusToValue(
-    const crosapi::mojom::PrinterStatus& status) {
-  base::DictValue dict;
-  dict.Set("printerId", status.printer_id);
-  dict.Set("timestamp",
-           status.timestamp.InMillisecondsFSinceUnixEpochIgnoringNull());
-  base::ListValue status_reasons;
-  for (const crosapi::mojom::StatusReasonPtr& reason_ptr :
-       status.status_reasons) {
-    base::DictValue status_reason;
-    status_reason.Set("reason", static_cast<int>(reason_ptr->reason));
-    status_reason.Set("severity", static_cast<int>(reason_ptr->severity));
     status_reasons.Append(std::move(status_reason));
   }
   dict.Set("statusReasons", std::move(status_reasons));
@@ -397,84 +360,6 @@ base::DictValue LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
       kManagedPrintOptions_PrintAsImage,
       PrintOptionToValue(managed_print_options.print_as_image,
                          [](const bool& value) -> bool { return value; }));
-
-  return result;
-}
-
-// static
-base::DictValue LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
-    const crosapi::mojom::ManagedPrintOptions& managed_print_options) {
-  base::DictValue result;
-
-  if (managed_print_options.media_size) {
-    result.Set(kManagedPrintOptions_MediaSize,
-               CustomTypePrintOptionMojomToDict(
-                   managed_print_options.media_size,
-                   base::BindRepeating([](const crosapi::mojom::Size& value) {
-                     base::DictValue result;
-                     result.Set(kManagedPrintOptions_SizeWidth,
-                                static_cast<int>(value.width));
-                     result.Set(kManagedPrintOptions_SizeHeight,
-                                static_cast<int>(value.height));
-                     return result;
-                   })));
-  }
-
-  if (managed_print_options.media_type) {
-    result.Set(kManagedPrintOptions_MediaType,
-               SimpleTypePrintOptionMojomToDict(
-                   managed_print_options.media_type,
-                   base::BindRepeating(
-                       [](const std::string& value) { return value; })));
-  }
-
-  if (managed_print_options.duplex) {
-    result.Set(kManagedPrintOptions_Duplex,
-               SimpleTypePrintOptionMojomToDict(
-                   managed_print_options.duplex,
-                   base::BindRepeating([](crosapi::mojom::DuplexType value) {
-                     return static_cast<int>(ToKnownEnumValue(value));
-                   })));
-  }
-
-  if (managed_print_options.color) {
-    result.Set(
-        kManagedPrintOptions_Color,
-        SimpleTypePrintOptionMojomToDict(
-            managed_print_options.color,
-            base::BindRepeating([](bool value) -> bool { return value; })));
-  }
-
-  if (managed_print_options.dpi) {
-    result.Set(kManagedPrintOptions_Dpi,
-               CustomTypePrintOptionMojomToDict(
-                   managed_print_options.dpi,
-                   base::BindRepeating([](const crosapi::mojom::Dpi& value) {
-                     base::DictValue result;
-                     result.Set(kManagedPrintOptions_DpiHorizontal,
-                                static_cast<int>(value.horizontal));
-                     result.Set(kManagedPrintOptions_DpiVertical,
-                                static_cast<int>(value.vertical));
-                     return result;
-                   })));
-  }
-
-  if (managed_print_options.quality) {
-    result.Set(kManagedPrintOptions_Quality,
-               SimpleTypePrintOptionMojomToDict(
-                   managed_print_options.quality,
-                   base::BindRepeating([](crosapi::mojom::QualityType value) {
-                     return static_cast<int>(ToKnownEnumValue(value));
-                   })));
-  }
-
-  if (managed_print_options.print_as_image) {
-    result.Set(
-        kManagedPrintOptions_PrintAsImage,
-        SimpleTypePrintOptionMojomToDict(
-            managed_print_options.print_as_image,
-            base::BindRepeating([](bool value) -> bool { return value; })));
-  }
 
   return result;
 }

@@ -16,7 +16,6 @@ namespace ash {
 class LocalPrinterImpl : public LocalPrinter {
  public:
   static void Initialize();
-  static LocalPrinter* Get();
 
   LocalPrinterImpl();
   LocalPrinterImpl(const LocalPrinterImpl&) = delete;

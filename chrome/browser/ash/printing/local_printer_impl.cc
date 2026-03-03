@@ -21,8 +21,6 @@ namespace ash {
 
 namespace {
 
-LocalPrinter* g_instance = nullptr;
-
 std::vector<chromeos::Printer> GetLocalPrinters(const AccountId& accountId) {
   static constexpr chromeos::PrinterClass printer_classes_to_fetch[] = {
       chromeos::PrinterClass::kSaved, chromeos::PrinterClass::kEnterprise,
@@ -141,19 +139,9 @@ void OnPrinterAuthenticated(
 
 }  // namespace
 
-LocalPrinter* LocalPrinterImpl::Get() {
-  CHECK(g_instance);
-  return g_instance;
-}
+LocalPrinterImpl::LocalPrinterImpl() = default;
 
-LocalPrinterImpl::LocalPrinterImpl() {
-  CHECK(!g_instance);
-  g_instance = this;
-}
-
-LocalPrinterImpl::~LocalPrinterImpl() {
-  g_instance = nullptr;
-}
+LocalPrinterImpl::~LocalPrinterImpl() = default;
 
 void LocalPrinterImpl::GetPrinters(const AccountId& accountId,
                                    LocalPrinter::GetPrintersCallback callback) {

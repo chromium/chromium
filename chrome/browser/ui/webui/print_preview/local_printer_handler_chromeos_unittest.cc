@@ -16,10 +16,12 @@
 #include "base/memory/ref_counted.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_mock_clock_override.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/test/chromeos/printing/fake_local_printer_chromeos.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
+#include "chromeos/printing/printer_configuration.h"
 #include "content/public/test/browser_task_environment.h"
 #include "printing/backend/print_backend.h"
 #include "printing/print_job_constants.h"
@@ -365,24 +367,26 @@ TEST_F(LocalPrinterHandlerChromeosWithAshTest, GetAshJobSettingsClientInfo) {
 }
 
 TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
+  base::ScopedMockClockOverride clock_override;
+  // Advance to kStatusTimestamp
+  clock_override.Advance(kStatusTimestamp - base::Time::Now());
   // Printer status.
-  crosapi::mojom::PrinterStatusPtr status =
-      crosapi::mojom::PrinterStatus::New();
-  status->printer_id = "printer_id";
-  status->timestamp = kStatusTimestamp;
-  status->status_reasons.push_back(crosapi::mojom::StatusReason::New(
-      crosapi::mojom::StatusReason::Reason::kOutOfInk,
-      crosapi::mojom::StatusReason::Severity::kWarning));
+  chromeos::CupsPrinterStatus status("printer_id");
+  status.AddStatusReason(
+      chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason::kOutOfInk,
+      chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kWarning);
   // Managed print options.
-  crosapi::mojom::ManagedPrintOptionsPtr managed_print_options =
-      crosapi::mojom::ManagedPrintOptions::New();
-  managed_print_options->color = crosapi::mojom::BoolOption::New();
-  managed_print_options->color->default_value = false;
-  managed_print_options->color->allowed_values = {false, true};
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.color.default_value = false;
+  managed_print_options.color.allowed_values = {false, true};
 
-  crosapi::mojom::LocalDestinationInfo input(
-      "device_name", "printer_name", "printer_description", false, "",
-      std::move(status), std::move(managed_print_options));
+  chromeos::Printer printer("device_name");
+  printer.set_display_name("printer_name");
+  printer.set_description("printer_description");
+  printer.set_source(chromeos::Printer::Source::SRC_USER_PREFS);
+  printer.set_printer_status(status);
+  printer.set_print_job_options(managed_print_options);
+
   const base::Value kExpectedValue = base::test::ParseJson(R"({
    "cupsEnterprisePrinter": false,
    "deviceName": "device_name",
@@ -390,6 +394,24 @@ TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
       "color": {
         "defaultValue": false,
         "allowedValues": [false, true],
+      },
+      "dpi": {
+         "allowedValues": []
+      },
+      "duplex": {
+         "allowedValues": []
+      },
+      "mediaSize": {
+         "allowedValues": []
+      },
+      "mediaType": {
+         "allowedValues": []
+      },
+      "printAsImage": {
+         "allowedValues": []
+      },
+      "quality": {
+         "allowedValues": []
       },
    },
    "printerDescription": "printer_description",
@@ -403,34 +425,33 @@ TEST(LocalPrinterHandlerChromeos, PrinterToValue) {
       "timestamp": 1e+12
     }
 })");
-  EXPECT_EQ(kExpectedValue, LocalPrinterHandlerChromeos::PrinterToValue(input));
-}
-
-TEST(LocalPrinterHandlerChromeos, PrinterToValue_ConfiguredViaPolicy) {
-  crosapi::mojom::LocalDestinationInfo printer("device_name", "printer_name",
-                                               "printer_description", true);
-  const base::Value kExpectedValue = base::test::ParseJson(R"({
-   "cupsEnterprisePrinter": true,
-   "deviceName": "device_name",
-   "managedPrintOptions": {},
-   "printerDescription": "printer_description",
-   "printerName": "printer_name",
-   "printerStatus": {}
-})");
   EXPECT_EQ(kExpectedValue,
             LocalPrinterHandlerChromeos::PrinterToValue(printer));
 }
 
+TEST(LocalPrinterHandlerChromeos, PrinterToValue_ConfiguredViaPolicy) {
+  chromeos::Printer printer("device_name");
+  printer.set_display_name("printer_name");
+  printer.set_description("printer_description");
+  printer.set_source(chromeos::Printer::Source::SRC_POLICY);
+
+  const base::DictValue printer_dict =
+      LocalPrinterHandlerChromeos::PrinterToValue(printer);
+  EXPECT_EQ("device_name", *printer_dict.FindString("deviceName"));
+  EXPECT_EQ("printer_name", *printer_dict.FindString("printerName"));
+  EXPECT_EQ("printer_description",
+            *printer_dict.FindString("printerDescription"));
+  EXPECT_EQ(true, *printer_dict.FindBool("cupsEnterprisePrinter"));
+}
+
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_MediaSize) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.media_size = crosapi::mojom::SizeOption::New();
-  managed_print_options.media_size->default_value = crosapi::mojom::Size::New();
-  managed_print_options.media_size->default_value->width = 5;
-  managed_print_options.media_size->default_value->height = 10;
-  std::vector<crosapi::mojom::SizePtr> allowed_values(2);
-  allowed_values[0] = crosapi::mojom::Size::New(5, 10);
-  allowed_values[1] = crosapi::mojom::Size::New(15, 20);
-  managed_print_options.media_size->allowed_values = std::move(allowed_values);
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.media_size.default_value =
+      chromeos::Printer::Size(5, 10);
+  managed_print_options.media_size.allowed_values = {
+      chromeos::Printer::Size(5, 10),
+      chromeos::Printer::Size(15, 20),
+  };
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -455,10 +476,9 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_MediaSize) {
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_MediaType) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.media_type = crosapi::mojom::StringOption::New();
-  managed_print_options.media_type->default_value = "paper";
-  managed_print_options.media_type->allowed_values = {"paper", "metal", "wood"};
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.media_type.default_value = "paper";
+  managed_print_options.media_type.allowed_values = {"paper", "metal", "wood"};
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -475,13 +495,12 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_MediaType) {
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Duplex) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.duplex = crosapi::mojom::DuplexOption::New();
-  managed_print_options.duplex->default_value =
-      crosapi::mojom::DuplexType::kOneSided;
-  managed_print_options.duplex->allowed_values = {
-      crosapi::mojom::DuplexType::kOneSided,
-      crosapi::mojom::DuplexType::kShortEdge};
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.duplex.default_value =
+      chromeos::Printer::DuplexType::kOneSided;
+  managed_print_options.duplex.allowed_values = {
+      chromeos::Printer::DuplexType::kOneSided,
+      chromeos::Printer::DuplexType::kShortEdge};
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -498,10 +517,9 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Duplex) {
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Color) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.color = crosapi::mojom::BoolOption::New();
-  managed_print_options.color->default_value = false;
-  managed_print_options.color->allowed_values = {false, true};
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.color.default_value = false;
+  managed_print_options.color.allowed_values = {false, true};
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -516,13 +534,8 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Color) {
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Dpi) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.dpi = crosapi::mojom::DpiOption::New();
-  managed_print_options.dpi->default_value = crosapi::mojom::Dpi::New();
-  managed_print_options.dpi->default_value->vertical = 1000;
-  managed_print_options.dpi->default_value->horizontal = 1500;
-  managed_print_options.dpi->allowed_values =
-      std::vector<crosapi::mojom::DpiPtr>();
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.dpi.default_value = chromeos::Printer::Dpi(1500, 1000);
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -539,12 +552,12 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Dpi) {
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Quality) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.quality = crosapi::mojom::QualityOption::New();
-  managed_print_options.quality->default_value =
-      crosapi::mojom::QualityType::kDraft;
-  managed_print_options.quality->allowed_values = {
-      crosapi::mojom::QualityType::kDraft, crosapi::mojom::QualityType::kHigh};
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.quality.default_value =
+      chromeos::Printer::QualityType::kDraft;
+  managed_print_options.quality.allowed_values = {
+      chromeos::Printer::QualityType::kDraft,
+      chromeos::Printer::QualityType::kHigh};
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -561,10 +574,9 @@ TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_Quality) {
 }
 
 TEST(LocalPrinterHandlerChromeos, ManagedPrintOptionsToValue_PrintAsImage) {
-  crosapi::mojom::ManagedPrintOptions managed_print_options;
-  managed_print_options.print_as_image = crosapi::mojom::BoolOption::New();
-  managed_print_options.print_as_image->default_value = std::nullopt;
-  managed_print_options.print_as_image->allowed_values = {false, true};
+  chromeos::Printer::ManagedPrintOptions managed_print_options;
+  managed_print_options.print_as_image.default_value = std::nullopt;
+  managed_print_options.print_as_image.allowed_values = {false, true};
 
   const base::DictValue managed_print_options_dict =
       LocalPrinterHandlerChromeos::ManagedPrintOptionsToValue(
@@ -698,12 +710,14 @@ TEST(LocalPrinterHandlerChromeos, CapabilityToValue_EmptyInput) {
 }
 
 TEST(LocalPrinterHandlerChromeos, StatusToValue) {
-  crosapi::mojom::PrinterStatus status;
-  status.printer_id = "printer_id";
-  status.timestamp = kStatusTimestamp;
-  status.status_reasons.push_back(crosapi::mojom::StatusReason::New(
-      crosapi::mojom::StatusReason::Reason::kOutOfInk,
-      crosapi::mojom::StatusReason::Severity::kWarning));
+  base::ScopedMockClockOverride clock_override;
+  // Advance to kStatusTimestamp
+  clock_override.Advance(kStatusTimestamp - base::Time::Now());
+  // Printer status.
+  chromeos::CupsPrinterStatus status("printer_id");
+  status.AddStatusReason(
+      chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Reason::kOutOfInk,
+      chromeos::CupsPrinterStatus::CupsPrinterStatusReason::Severity::kWarning);
   const base::Value kExpectedValue = base::test::ParseJson(R"({
    "printerId": "printer_id",
    "statusReasons": [ {

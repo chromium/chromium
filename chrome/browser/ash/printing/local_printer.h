@@ -29,7 +29,13 @@ class LocalPrinter {
   using GetStatusCallback =
       base::OnceCallback<void(const chromeos::CupsPrinterStatus&)>;
 
-  virtual ~LocalPrinter() = default;
+  LocalPrinter();
+  virtual ~LocalPrinter();
+
+  // Returns the global instance of LocalPrinter. It CHECKs if it is not
+  // created. Check IsSet if it may not be initialized.
+  static LocalPrinter* Get();
+  static bool IsSet();
 
   // Gets a list of printers.
   virtual void GetPrinters(const AccountId& accountId,

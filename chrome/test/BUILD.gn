@@ -10560,6 +10560,7 @@ test("unit_tests") {
           "../browser/ui/webui/print_preview/local_printer_handler_chromeos_unittest.cc",
           "../browser/ui/webui/print_preview/print_preview_handler_chromeos_unittest.cc",
         ]
+        deps += [ "//components/session_manager/test:test_support" ]
       } else {
         sources += [ "../browser/ui/webui/print_preview/local_printer_handler_default_unittest.cc" ]
       }

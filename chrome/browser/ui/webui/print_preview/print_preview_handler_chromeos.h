@@ -9,7 +9,9 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/values.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ash/printing/print_servers_manager.h"
 #include "chrome/common/buildflags.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -20,6 +22,10 @@
 #include "printing/backend/print_backend.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/print_job_constants.h"
+
+namespace ash {
+class LocalPrinter;
+}
 
 namespace content {
 class WebContents;
@@ -38,7 +44,7 @@ class PrintPreviewHandler;
 class PrintPreviewHandlerChromeOS
     : public content::WebUIMessageHandler,
       public crosapi::mojom::PrintServerObserver,
-      public crosapi::mojom::LocalPrintersObserver {
+      public ash::CupsPrintersManager::LocalPrintersObserver {
  public:
   PrintPreviewHandlerChromeOS();
   PrintPreviewHandlerChromeOS(const PrintPreviewHandlerChromeOS&) = delete;
@@ -50,6 +56,9 @@ class PrintPreviewHandlerChromeOS
   void RegisterMessages() override;
   void OnJavascriptDisallowed() override;
   void OnJavascriptAllowed() override;
+
+  // CupsPrintersManager::LocalPrintersObserver:
+  void OnLocalPrintersUpdated() override;
 
  protected:
   // Protected so unit tests can override.
@@ -125,27 +134,24 @@ class PrintPreviewHandlerChromeOS
       const std::string& callback_id,
       std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers);
 
-  // crosapi::mojom::LocalPrintersObserver Implementation:
-  void OnLocalPrintersUpdated(
-      std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) override;
-
   void SetInitiatorForTesting(content::WebContents* test_initiator);
 
   mojo::Receiver<crosapi::mojom::PrintServerObserver> receiver_{this};
-
-  mojo::Receiver<crosapi::mojom::LocalPrintersObserver>
-      local_printers_receiver_{this};
 
   // Used for testing, when `GetInitiator` called and `test_initiator` is set
   // then it will be returned instead of calling `PrintPreviewDialogController`
   // to find the initiator.
   raw_ptr<content::WebContents> test_initiator_ = nullptr;
 
+  raw_ptr<ash::LocalPrinter> local_printer_ = nullptr;
+  base::ScopedObservation<ash::CupsPrintersManager,
+                          ash::CupsPrintersManager::LocalPrintersObserver>
+      observation_{this};
   // Used to transmit mojo interface method calls to ash chrome. Null if
   // CrosapiManager is unavailable. In the post-Lacros world, it still bears the
   // responsibility of talking to other parts of Ash for printer related
   // business logic.
-  raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
+  raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> cros_local_printer_ =
       nullptr;
 
   base::WeakPtrFactory<PrintPreviewHandlerChromeOS> weak_factory_{this};

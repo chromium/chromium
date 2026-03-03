@@ -12,6 +12,7 @@
 
 #include "ash/constants/webui_url_constants.h"
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/to_value_list.h"
 #include "base/functional/bind.h"
@@ -25,6 +26,8 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/local_printer_impl.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"
@@ -33,13 +36,17 @@
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/browser/ui/webui/print_preview/printer_handler.h"
 #include "chrome/common/printing/printer_capabilities.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printing_constants.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/session_manager/core/session.h"
+#include "components/session_manager/core/session_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "printing/buildflags/buildflags.h"  // USE_CUPS
 #include "printing/mojom/print.mojom.h"
 #include "url/gurl.h"
 
@@ -66,9 +73,9 @@ base::DictValue PrintServersConfigMojomToValue(
 }
 
 base::ListValue ConvertPrintersToValues(
-    const std::vector<crosapi::mojom::LocalDestinationInfoPtr>& printers) {
+    std::vector<chromeos::Printer> printers) {
   return base::ToValueList(printers, [](const auto& printer) {
-    return LocalPrinterHandlerChromeos::PrinterToValue(*printer);
+    return LocalPrinterHandlerChromeos::PrinterToValue(printer);
   });
 }
 
@@ -76,8 +83,20 @@ base::ListValue ConvertPrintersToValues(
 
 PrintPreviewHandlerChromeOS::PrintPreviewHandlerChromeOS() {
   DCHECK(crosapi::CrosapiManager::IsInitialized());
-  local_printer_ =
+  cros_local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
+#if BUILDFLAG(USE_CUPS)
+  // PrintPreviewDialogControllerUnitTest will bring up the whole stack upon UI
+  // creation including this PrintPreviewHandlerChromeOS.
+  // This is no easy way to inject a stub since the ui creation is real
+  // implementation.
+  // So ash::LocalPrinter may not be initialized at the unittest.
+  if (ash::LocalPrinter::IsSet()) {
+    local_printer_ = ash::LocalPrinter::Get();
+  } else {
+    CHECK_IS_TEST();
+  }
+#endif
 }
 
 PrintPreviewHandlerChromeOS::~PrintPreviewHandlerChromeOS() = default;
@@ -130,11 +149,11 @@ void PrintPreviewHandlerChromeOS::RegisterMessages() {
 
 void PrintPreviewHandlerChromeOS::OnJavascriptAllowed() {
   receiver_.reset();  // Just in case this method is called multiple times.
-  if (!local_printer_) {
+  if (!cros_local_printer_) {
     PRINTER_LOG(DEBUG) << "Local printer not available";
     return;
   }
-  local_printer_->AddPrintServerObserver(
+  cros_local_printer_->AddPrintServerObserver(
       receiver_.BindNewPipeAndPassRemoteWithVersion(), base::DoNothing());
 }
 
@@ -301,11 +320,11 @@ void PrintPreviewHandlerChromeOS::HandleChoosePrintServers(
   }
   MaybeAllowJavascript();
   FireWebUIListener("server-printers-loading", base::Value(true));
-  if (!local_printer_) {
+  if (!cros_local_printer_) {
     PRINTER_LOG(DEBUG) << "Local printer not available";
     return;
   }
-  local_printer_->ChoosePrintServers(print_server_ids, base::DoNothing());
+  cros_local_printer_->ChoosePrintServers(print_server_ids, base::DoNothing());
 }
 
 void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
@@ -314,12 +333,12 @@ void PrintPreviewHandlerChromeOS::HandleGetPrintServersConfig(
   std::string callback_id = args[0].GetString();
   CHECK(!callback_id.empty());
   MaybeAllowJavascript();
-  if (!local_printer_) {
+  if (!cros_local_printer_) {
     PRINTER_LOG(DEBUG) << "Local printer not available";
     ResolveJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
-  local_printer_->GetPrintServersConfig(
+  cros_local_printer_->GetPrintServersConfig(
       base::BindOnce(PrintServersConfigMojomToValue)
           .Then(base::BindOnce(
               &PrintPreviewHandlerChromeOS::ResolveJavascriptCallback,
@@ -390,28 +409,49 @@ void PrintPreviewHandlerChromeOS::HandleObserveLocalPrinters(
     return;
   }
 
-  // Each instance of Print Preview only needs to subscribe once.
-  if (local_printers_receiver_.is_bound()) {
-    ResolveJavascriptCallback(callback_id, base::ListValue());
+  CHECK(user_manager::UserManager::IsInitialized());
+  CHECK(user_manager::UserManager::Get()->IsUserLoggedIn());
+  AccountId account_id =
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id();
+  if (!observation_.IsObserving()) {
+    ash::CupsPrintersManager* printers_manager =
+        ash::CupsPrintersManagerFactory::GetForBrowserContext(
+            ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+                account_id));
+    observation_.Observe(printers_manager);
+  }
+  local_printer_->GetPrinters(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      account_id,
+      base::BindOnce(ConvertPrintersToValues)
+          .Then(base::BindOnce(
+              &PrintPreviewHandlerChromeOS::ResolveJavascriptCallback,
+              weak_factory_.GetWeakPtr(), callback_id)));
+}
+
+void PrintPreviewHandlerChromeOS::OnLocalPrintersUpdated() {
+  if (!local_printer_) {
+    PRINTER_LOG(DEBUG) << "Local printer not available";
     return;
   }
 
-  local_printer_->AddLocalPrintersObserver(
-      local_printers_receiver_.BindNewPipeAndPassRemoteWithVersion(),
-      base::BindOnce(&PrintPreviewHandlerChromeOS::OnHandleObserveLocalPrinters,
-                     weak_factory_.GetWeakPtr(), callback_id));
-}
-
-void PrintPreviewHandlerChromeOS::OnHandleObserveLocalPrinters(
-    const std::string& callback_id,
-    std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
-  ResolveJavascriptCallback(callback_id, ConvertPrintersToValues(printers));
-}
-
-void PrintPreviewHandlerChromeOS::OnLocalPrintersUpdated(
-    std::vector<crosapi::mojom::LocalDestinationInfoPtr> printers) {
-  FireWebUIListener("local-printers-updated",
-                    ConvertPrintersToValues(printers));
+  local_printer_->GetPrinters(
+      // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
+      // TODO(crbug.com/479647640): Check if we should use current user than
+      // primary user.
+      session_manager::SessionManager::Get()->GetPrimarySession()->account_id(),
+      base::BindOnce(ConvertPrintersToValues)
+          .Then(base::BindOnce(
+              [](base::WeakPtr<PrintPreviewHandlerChromeOS> self,
+                 base::ListValue value) {
+                if (!self) {
+                  return;
+                }
+                self->FireWebUIListener("local-printers-updated", value);
+              },
+              weak_factory_.GetWeakPtr())));
 }
 
 void PrintPreviewHandlerChromeOS::SetInitiatorForTesting(
