@@ -1083,6 +1083,21 @@
             ]
         }
     ],
+    "AndroidPkAutocorrectUnderline": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidPkAutocorrectUnderline"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidReaderModeFastFollows": [
         {
             "platforms": [
