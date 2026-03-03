@@ -246,9 +246,8 @@ void DualLayerUserPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   // Remove from the list of merge prefs if exists.
   merged_prefs_.RemoveValue(key);
 
-  for (PrefStore::Observer& observer : observers_) {
-    observer.OnPrefValueChanged(key);
-  }
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   key);
 }
 
 bool DualLayerUserPrefStore::GetMutableValue(std::string_view key,
@@ -316,9 +315,8 @@ void DualLayerUserPrefStore::ReportValueChanged(std::string_view key,
     }
   }
 
-  for (PrefStore::Observer& observer : observers_) {
-    observer.OnPrefValueChanged(key);
-  }
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   key);
 }
 
 void DualLayerUserPrefStore::DoSetValue(std::string_view key,
@@ -584,9 +582,8 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
       merged_prefs_.RemoveValue(pref_name);
     }
     if (should_notify) {
-      for (PrefStore::Observer& observer : observers_) {
-        observer.OnPrefValueChanged(pref_name);
-      }
+      observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                       pref_name);
     }
   }
 
@@ -932,9 +929,8 @@ void DualLayerUserPrefStore::OnStateChanged(syncer::SyncService* sync_service) {
 
     // Only notify the observers if the effective value is changing.
     if (old_value != new_value) {
-      for (PrefStore::Observer& observer : observers_) {
-        observer.OnPrefValueChanged(pref_name);
-      }
+      observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                       pref_name);
     }
   }
 }
@@ -957,9 +953,8 @@ void DualLayerUserPrefStore::SetValueInAccountStoreOnly(std::string_view key,
   }
 
   if (should_notify) {
-    for (PrefStore::Observer& observer : observers_) {
-      observer.OnPrefValueChanged(key);
-    }
+    observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                     key);
   }
 }
 

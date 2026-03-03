@@ -37,15 +37,15 @@ void ValueMapPrefStore::SetValue(std::string_view key,
                                  base::Value value,
                                  uint32_t flags) {
   if (prefs_.SetValue(key, std::move(value))) {
-    for (Observer& observer : observers_)
-      observer.OnPrefValueChanged(key);
+    observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                     key);
   }
 }
 
 void ValueMapPrefStore::RemoveValue(std::string_view key, uint32_t flags) {
   if (prefs_.RemoveValue(key)) {
-    for (Observer& observer : observers_)
-      observer.OnPrefValueChanged(key);
+    observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                     key);
   }
 }
 
@@ -56,8 +56,8 @@ bool ValueMapPrefStore::GetMutableValue(std::string_view key,
 
 void ValueMapPrefStore::ReportValueChanged(std::string_view key,
                                            uint32_t flags) {
-  for (Observer& observer : observers_)
-    observer.OnPrefValueChanged(key);
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   key);
 }
 
 void ValueMapPrefStore::SetValueSilently(std::string_view key,

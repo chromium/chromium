@@ -27,10 +27,8 @@ void SegregatedPrefStore::UnderlyingPrefStoreObserver::OnPrefValueChanged(
   if (!outer_->IsInitializationComplete()) {
     return;
   }
-
-  for (auto& observer : outer_->observers_) {
-    observer.OnPrefValueChanged(key);
-  }
+  outer_->observers_.NotifyAllowReentrancy(
+      &PrefStore::Observer::OnPrefValueChanged, key);
 }
 
 void SegregatedPrefStore::UnderlyingPrefStoreObserver::

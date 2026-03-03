@@ -201,8 +201,8 @@ void OverlayUserPrefStore::SchedulePendingLossyWrites() {
 
 void OverlayUserPrefStore::ReportValueChanged(std::string_view key,
                                               uint32_t flags) {
-  for (PrefStore::Observer& observer : observers_)
-    observer.OnPrefValueChanged(key);
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   key);
 }
 
 void OverlayUserPrefStore::RegisterPersistentPref(std::string_view key) {

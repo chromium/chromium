@@ -137,9 +137,8 @@ void WrapWithPrefixPrefStore::OnPrefValueChanged(std::string_view key) {
     return;
   }
   std::string_view original_key(RemoveDottedPrefix(key));
-  for (PrefStore::Observer& observer : observers_) {
-    observer.OnPrefValueChanged(original_key);
-  }
+  observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                   original_key);
 }
 
 void WrapWithPrefixPrefStore::OnInitializationCompleted(bool succeeded) {

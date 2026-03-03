@@ -44,8 +44,8 @@ void DefaultPrefStore::ReplaceDefaultValue(std::string_view key, Value value) {
   DCHECK(GetValue(key, nullptr));
   bool notify = prefs_.SetValue(key, std::move(value));
   if (notify) {
-    for (Observer& observer : observers_)
-      observer.OnPrefValueChanged(key);
+    observers_.NotifyAllowReentrancy(&PrefStore::Observer::OnPrefValueChanged,
+                                     key);
   }
 }
 
