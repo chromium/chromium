@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.app.tabmodel;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.SequencedTaskRunner;
 import org.chromium.base.task.TaskTraits;
@@ -20,12 +21,16 @@ import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Supplier;
 
 /** Cleaner that allows a window to clean up persisted state for another window. */
 @NullMarked
 public class PersistentStoreCleaner {
-    private final TabModelOrchestrator mTabModelOrchestrator;
+    private static Supplier<TabStateStoreCleaner> sTabStateStoreCleaner = TabStateStoreCleaner::new;
+    private static Supplier<TabPersistentStoreImplCleaner> sLegacyCleaner =
+            TabPersistentStoreImplCleaner::new;
 
+    private final TabModelOrchestrator mTabModelOrchestrator;
     private final boolean mTabStorageEnabled;
     private final SequencedTaskRunner mSequencedTaskRunner;
     private final TabbedModeTabPersistencePolicy mPersistencePolicy;
@@ -83,8 +88,10 @@ public class PersistentStoreCleaner {
         // We will not have merged if an instance is not present, so this set will remain empty.
         Set<String> mergedFileNames = new HashSet<>();
 
-        TabPersistentStoreImplCleaner.cleanupStateFile(
-                windowIdToClean, mPersistencePolicy, mSequencedTaskRunner, mergedFileNames);
+        sLegacyCleaner
+                .get()
+                .cleanupStateFile(
+                        windowIdToClean, mPersistencePolicy, mSequencedTaskRunner, mergedFileNames);
     }
 
     private void maybeCleanTabStateStore(int windowIdToClean) {
@@ -98,7 +105,7 @@ public class PersistentStoreCleaner {
         Profile profile = selector.getModel(/* incognito= */ false).getProfile();
         if (profile == null) return;
 
-        TabStateStoreCleaner.cleanupStateFile(windowIdToClean, profile);
+        sTabStateStoreCleaner.get().cleanupStateFile(windowIdToClean, profile);
     }
 
     private boolean storeDoesNotExist(@StoreType int type) {
@@ -111,7 +118,7 @@ public class PersistentStoreCleaner {
 
     private void clearState() {
         if (storeDoesNotExist(StoreType.LEGACY)) {
-            TabPersistentStoreImplCleaner.clearState(mPersistencePolicy, mSequencedTaskRunner);
+            sLegacyCleaner.get().clearState(mPersistencePolicy, mSequencedTaskRunner);
         }
 
         if (storeDoesNotExist(StoreType.TAB_STATE_STORE)) {
@@ -128,6 +135,18 @@ public class PersistentStoreCleaner {
         Profile profile = selector.getModel(/* incognito= */ false).getProfile();
         assert profile != null;
 
-        TabStateStoreCleaner.clearState(profile);
+        sTabStateStoreCleaner.get().clearState(profile);
+    }
+
+    public static void setTabStateStoreCleanerForTesting(
+            Supplier<TabStateStoreCleaner> cleanerFactory) {
+        sTabStateStoreCleaner = cleanerFactory;
+        ResettersForTesting.register(() -> sTabStateStoreCleaner = TabStateStoreCleaner::new);
+    }
+
+    public static void setTabPersistentStoreImplCleanerForTesting(
+            Supplier<TabPersistentStoreImplCleaner> cleanerFactory) {
+        sLegacyCleaner = cleanerFactory;
+        ResettersForTesting.register(() -> sLegacyCleaner = TabPersistentStoreImplCleaner::new);
     }
 }

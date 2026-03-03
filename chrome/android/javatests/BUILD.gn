@@ -61,6 +61,7 @@ android_library("chrome_test_java_helper") {
     "//base:base_java_test_support",
     "//base:base_java_test_support_uncommon",
     "//base:content_uri_utils_java",
+    "//base:holder_java",
     "//base:service_loader_java",
     "//base/test:public_transit_java",
     "//base/test:test_support_java",
@@ -546,6 +547,7 @@ android_library("chrome_test_java_org.chromium.chrome.browser.app") {
     "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabModelOrchestratorTest.java",
     "src/org/chromium/chrome/browser/app/tabmodel/ArchivedTabsTest.java",
     "src/org/chromium/chrome/browser/app/tabmodel/ChromeNextTabPolicySupplierTest.java",
+    "src/org/chromium/chrome/browser/app/tabmodel/PersistentStoreCleanerTest.java",
   ]
 
   deps = [

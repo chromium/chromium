@@ -382,7 +382,7 @@ public class TabStateStore implements TabPersistentStore {
         // Clearing the state globally is intentional.
         Profile profile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
         assert profile != null;
-        TabStateStoreCleaner.clearState(profile);
+        new TabStateStoreCleaner().clearState(profile);
 
         for (TabPersistentStoreObserver observer : mObservers) {
             observer.onStateLoaded();
@@ -443,7 +443,7 @@ public class TabStateStore implements TabPersistentStore {
     public void cleanupStateFile(int windowId) {
         Profile profile = mTabModelSelector.getModel(/* incognito= */ false).getProfile();
         assert profile != null;
-        TabStateStoreCleaner.cleanupStateFile(windowId, profile);
+        new TabStateStoreCleaner().cleanupStateFile(windowId, profile);
     }
 
     @Override
@@ -658,7 +658,7 @@ public class TabStateStore implements TabPersistentStore {
          *
          * @param profile The profile associated with the window.
          */
-        public static void clearState(Profile profile) {
+        public void clearState(Profile profile) {
             TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
             assert service != null;
             service.clearState();
@@ -671,7 +671,7 @@ public class TabStateStore implements TabPersistentStore {
          * @param windowId The ID of the window to clean up.
          * @param profile The profile associated with the window.
          */
-        public static void cleanupStateFile(int windowId, Profile profile) {
+        public void cleanupStateFile(int windowId, Profile profile) {
             TabStateStorageService service = TabStateStorageServiceFactory.getForProfile(profile);
             assert service != null;
 

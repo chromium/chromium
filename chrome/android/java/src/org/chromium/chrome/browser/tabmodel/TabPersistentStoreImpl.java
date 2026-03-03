@@ -877,7 +877,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void clearState() {
-        TabPersistentStoreImplCleaner.clearState(mPersistencePolicy, mSequencedTaskRunner);
+        new TabPersistentStoreImplCleaner().clearState(mPersistencePolicy, mSequencedTaskRunner);
         onStateLoaded();
     }
 
@@ -1648,8 +1648,12 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
 
     @Override
     public void cleanupStateFile(int windowIdToClean) {
-        TabPersistentStoreImplCleaner.cleanupStateFile(
-                windowIdToClean, mPersistencePolicy, mSequencedTaskRunner, mMergedFileNames);
+        new TabPersistentStoreImplCleaner()
+                .cleanupStateFile(
+                        windowIdToClean,
+                        mPersistencePolicy,
+                        mSequencedTaskRunner,
+                        mMergedFileNames);
     }
 
     /**
@@ -2015,7 +2019,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
          * @param persistencePolicy The policy used to manage persistence.
          * @param sequencedTaskRunner The task runner to execute file operations on.
          */
-        public static void clearState(
+        public void clearState(
                 TabPersistencePolicy persistencePolicy, SequencedTaskRunner sequencedTaskRunner) {
             persistencePolicy.cancelCleanupInProgress();
 
@@ -2054,7 +2058,7 @@ public class TabPersistentStoreImpl implements TabPersistentStore {
          * @param sequencedTaskRunner The task runner to execute file operations on.
          * @param mergedFileNames A set of file names that are tracked for merging.
          */
-        public static void cleanupStateFile(
+        public void cleanupStateFile(
                 int windowIdToClean,
                 TabPersistencePolicy persistencePolicy,
                 SequencedTaskRunner sequencedTaskRunner,
