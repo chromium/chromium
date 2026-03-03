@@ -7540,7 +7540,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Autofill your passwords
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_DESCRIPTION_PASSWORD_AUTOFILL" desc="Description of the Password Autofill feature tip main page promo.">
-        Create, save, and manage your passwords so you can easily sign in to sites and apps using Chrome
+        Create, save, and manage your passwords so you can easily sign in
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_TITLE_CUSTOMIZE_MVT" desc="Title of the Customize MVT feature tip main page promo. [CHAR_LIMIT=32]">
         Customize your shortcuts
@@ -7600,7 +7600,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Chrome will offer to save your password
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_PASSWORD_AUTOFILL" desc="Description of the Password Autofill feature tip third step detail page promo.">
-        Tap Save to easily access this password the next time you sign in
+        Tap save
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_SIGNIN" desc="Description of the Sign in feature tip first step detail page promo.">
         Tap profile in top right
@@ -7618,7 +7618,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Drag and drop one tab over another
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_CREATE_TAB_GROUPS" desc="Description of the Create Tab Groups feature tip third step detail page promo.">
-        Customize tab group and hit Done
+        Customize tab group and hit done
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip first step detail page promo.">
         Open a new tab page
@@ -7627,7 +7627,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
         Long press on website and open menu
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_THIRD_STEP_CUSTOMIZE_MVT" desc="Description of the Customize MVT feature tip third step detail page promo.">
-        Tap Pin this shortcut
+        Tap pin this shortcut
       </message>
       <message name="IDS_TIPS_PROMO_BOTTOM_SHEET_FIRST_STEP_RECENT_TABS" desc="Description of the Recent tabs feature tip first step detail page promo.">
         Open Chrome menu
