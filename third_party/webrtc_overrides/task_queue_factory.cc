@@ -156,16 +156,32 @@ base::TaskTraits TaskQueuePriority2Traits(
   // for OS_ANDROID.
   // The libvpx threading adapters also need to wait for an event.
   switch (priority) {
-    case webrtc::TaskQueueFactory::Priority::HIGH:
+    case webrtc::TaskQueueFactory::Priority::kAudio:
+      return {base::InheritThreadType(),
+              base::MaxThreadType(base::ThreadType::kAudioProcessing)};
+
+    case webrtc::TaskQueueFactory::Priority::kVideo:
+#if defined(OS_ANDROID)
+      return {base::MayBlock(), base::WithBaseSyncPrimitives(),
+              base::InheritThreadType(),
+              base::MaxThreadType(base::ThreadType::kPresentation)};
+#else
+      return {base::MayBlock(), base::InheritThreadType(),
+              base::MaxThreadType(base::ThreadType::kPresentation)};
+#endif
+
+    case webrtc::TaskQueueFactory::Priority::kHigh:
 #if defined(OS_ANDROID)
       return {base::MayBlock(), base::WithBaseSyncPrimitives(),
               base::TaskPriority::HIGHEST};
 #else
       return {base::MayBlock(), base::TaskPriority::HIGHEST};
 #endif
-    case webrtc::TaskQueueFactory::Priority::LOW:
+
+    case webrtc::TaskQueueFactory::Priority::kLow:
       return {base::MayBlock(), base::TaskPriority::BEST_EFFORT};
-    case webrtc::TaskQueueFactory::Priority::NORMAL:
+
+    case webrtc::TaskQueueFactory::Priority::kNormal:
     default:
 #if defined(OS_ANDROID)
       return {base::MayBlock(), base::WithBaseSyncPrimitives()};
