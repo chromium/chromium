@@ -16,7 +16,6 @@
 #include "chrome/browser/devtools/protocol/protocol.h"
 #include "chrome/browser/extensions/browser_window_util.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/extensions/extension_action_view_model.h"
 #include "chrome/browser/ui/extensions/extensions_container.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_model.h"
@@ -221,7 +220,8 @@ void ExtensionsHandler::LoadUnpacked(
     return;
   }
 
-  content::BrowserContext* context = ProfileManager::GetLastUsedProfile();
+  content::BrowserContext* context =
+      DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
   DCHECK(context);
   scoped_refptr<extensions::UnpackedInstaller> installer(
       extensions::UnpackedInstaller::Create(context));
@@ -299,7 +299,8 @@ void ExtensionsHandler::Uninstall(const protocol::String& id,
     return;
   }
 
-  content::BrowserContext* context = ProfileManager::GetLastUsedProfile();
+  content::BrowserContext* context =
+      DevToolsBrowserContextManager::GetInstance().GetDefaultBrowserContext();
   DCHECK(context);
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(context);
