@@ -81,10 +81,9 @@ void OmniboxPopupAimHandler::SetPreserveContextOnClose(
   page_->SetPreserveContextOnClose(preserve_context_on_close);
 }
 
-void OmniboxPopupAimHandler::OnPopupHidden() {
-  // Unretained() is safe because `page_` is a mojo remote owned by `this`.
-  page_->OnPopupHidden(base::BindOnce(
-      &OmniboxPopupAimHandler::OnPopupHiddenCallback, base::Unretained(this)));
+void OmniboxPopupAimHandler::ClearPopup(
+    base::OnceCallback<void(const std::string&)> callback) {
+  page_->ClearPopup(std::move(callback));
 }
 
 void OmniboxPopupAimHandler::AddContext(
@@ -94,12 +93,6 @@ void OmniboxPopupAimHandler::AddContext(
     return;
   }
   page_->AddContext(std::move(search_context));
-}
-
-void OmniboxPopupAimHandler::OnPopupHiddenCallback(const std::string& input) {
-  if (auto* aim_popup_content = GetAimPopupContent()) {
-    aim_popup_content->OnPageClosedWithInput(input);
-  }
 }
 
 OmniboxAimPopupWebUIContent* OmniboxPopupAimHandler::GetAimPopupContent() {

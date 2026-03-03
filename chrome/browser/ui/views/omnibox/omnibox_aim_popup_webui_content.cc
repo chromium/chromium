@@ -42,15 +42,25 @@ OmniboxAimPopupWebUIContent::OmniboxAimPopupWebUIContent(
 
 OmniboxAimPopupWebUIContent::~OmniboxAimPopupWebUIContent() = default;
 
-void OmniboxAimPopupWebUIContent::OnPopupHidden() {
-  OmniboxPopupWebUIBaseContent::OnPopupHidden();
+void OmniboxAimPopupWebUIContent::Clear() {
   auto* handler = popup_aim_handler();
   if (handler) {
-    handler->OnPopupHidden();
+    // Defer cleanup until the WebUI can paint a clean frame.
+    handler->ClearPopup(
+        base::BindOnce(&OmniboxAimPopupWebUIContent::OnClearCallback,
+                       weak_factory_.GetWeakPtr()));
+  } else {
+    Detach();
   }
 }
 
-void OmniboxAimPopupWebUIContent::OnPageClosedWithInput(
+void OmniboxAimPopupWebUIContent::OnClearCallback(const std::string& input) {
+  // Now that the WebUI has painted, it is safe to detach and cleanup.
+  Detach();
+  ApplyInputAndCleanup(input);
+}
+
+void OmniboxAimPopupWebUIContent::ApplyInputAndCleanup(
     const std::string& input) {
   location_bar_view()->GetOmniboxView()->RevertAll();
   if (!input.empty()) {

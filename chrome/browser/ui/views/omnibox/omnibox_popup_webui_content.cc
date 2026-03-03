@@ -52,6 +52,10 @@ OmniboxPopupWebUIContent::OmniboxPopupWebUIContent(
 
 OmniboxPopupWebUIContent::~OmniboxPopupWebUIContent() = default;
 
+void OmniboxPopupWebUIContent::Clear() {
+  Detach();
+}
+
 void OmniboxPopupWebUIContent::ShowUI() {
   OmniboxPopupWebUIBaseContent::ShowUI();
 

@@ -29,13 +29,24 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
   ~OmniboxAimPopupWebUIContent() override;
 
   // OmniboxPopupWebUIBaseContent:
-  // Called from the browser after popup has already closed. Will notify page
-  // handler and WebUI.
-  void OnPopupHidden() override;
+  // The call flow for hiding the popup is:
+  // 1. `OmniboxPopupPresenterBase::Hide()` hides the widget
+  //    and calls `Clear()` in sequence, which calls
+  // 2. OmniboxAimPopupWebUIContent::Clear(), which calls
+  // 3. OmniboxPopupAimHandler::ClearPopup(), which calls
+  // 4. omnibox_popup_aim.mojom.Page::ClearPopup() (Mojo call to JS).
+  // 5. JS runs and eventually executes the Mojo callback, which runs the C++
+  //    callback:
+  //    a. OmniboxAimPopupWebUIContent::OnClearCallback() which calls
+  //    b. OmniboxPopupWebUIBaseContent::Detach() (Detaches WebContents
+  //       and breaks recursion loops).
+  //    c. OmniboxAimPopupWebUIContent::ApplyInputAndCleanup() (Resets the
+  //       OmniboxView text).
+  void Clear() override;
 
-  // Called from page handler after `OnPopupClosed()` notified it. `input` is
+  // Called from the browser after popup has already closed. `input` is
   // the possibly empty input that should replace the omnibox text.
-  void OnPageClosedWithInput(const std::string& input);
+  void ApplyInputAndCleanup(const std::string& input);
 
   // Refocuses the location bar if screen readers are enabled and the popup is
   // active.
@@ -55,6 +66,11 @@ class OmniboxAimPopupWebUIContent : public OmniboxPopupWebUIBaseContent {
 
   // Returns the WebUI Handler. Can return null.
   OmniboxPopupAimHandler* popup_aim_handler();
+
+  // Called when the popup is hidden and the WebUI has painted a clean frame.
+  void OnClearCallback(const std::string& input);
+
+  base::WeakPtrFactory<OmniboxAimPopupWebUIContent> weak_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

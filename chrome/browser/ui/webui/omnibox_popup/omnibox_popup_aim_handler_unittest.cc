@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
@@ -38,10 +39,7 @@ class MockOmniboxPopupAimPage : public omnibox_popup_aim::mojom::Page {
               AddContext,
               (searchbox::mojom::SearchContextPtr context),
               (override));
-  MOCK_METHOD(void,
-              OnPopupHidden,
-              (OnPopupHiddenCallback callback),
-              (override));
+  MOCK_METHOD(void, ClearPopup, (ClearPopupCallback callback), (override));
   MOCK_METHOD(void,
               SetPreserveContextOnClose,
               (bool preserve_context_on_close),
@@ -132,4 +130,15 @@ TEST_F(OmniboxPopupAimHandlerTest, AddContext) {
       });
 
   handler_->AddContext(std::move(context));
+}
+
+TEST_F(OmniboxPopupAimHandlerTest, ClearPopup) {
+  EXPECT_CALL(page_, ClearPopup(testing::_))
+      .WillOnce([](omnibox_popup_aim::mojom::Page::ClearPopupCallback callback) {
+        std::move(callback).Run("final input");
+      });
+
+  base::test::TestFuture<const std::string&> future;
+  handler_->ClearPopup(future.GetCallback());
+  EXPECT_EQ("final input", future.Get());
 }
