@@ -1326,6 +1326,7 @@ template("ios_xctest_test") {
       if (xcode_version_int >= 2640) {
         extra_system_frameworks += [
           "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
+          "$ios_sdk_platform_path/Developer/Library/Frameworks/_Testing_Foundation.framework",
           "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
         ]
       }
@@ -1483,6 +1484,7 @@ template("ios_xcuitest_test_runner_bundle") {
       if (xcode_version_int >= 2640) {
         extra_system_frameworks += [
           "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
+          "$ios_sdk_platform_path/Developer/Library/Frameworks/_Testing_Foundation.framework",
           "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
         ]
       }

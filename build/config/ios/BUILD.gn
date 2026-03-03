@@ -279,6 +279,7 @@ config("xctest_config") {
       "-Wl,--ignore-auto-link-option,UIUtilities",
       "-Wl,-rpath,/Developer/Library/Frameworks",
       "-Wl,-rpath,/Developer/Library/PrivateFrameworks",
+      "-Wl,-needed-lXCTestSwiftSupport,-lXCTestSwiftSupport",
     ]
   }
 }
