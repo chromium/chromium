@@ -66,8 +66,10 @@ OnHostResolutionCallbackResult OnHostResolution(
     return spdy_session_pool->OnHostResolutionComplete(
         spdy_session_key, is_for_websockets, *host_resolver_endpoints, aliases);
   } else {
-    // TODO(crbug.com/484073410): Implement this case.
-    NOTREACHED();
+    base::span<const ServiceEndpoint> service_endpoints =
+        std::get<base::span<const ServiceEndpoint>>(endpoint_results);
+    return spdy_session_pool->OnHostResolutionComplete(
+        spdy_session_key, is_for_websockets, service_endpoints, aliases);
   }
 }
 

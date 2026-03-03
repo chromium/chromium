@@ -29,6 +29,7 @@
 #include "net/socket/client_socket_handle.h"
 #include "net/socket/socks_connect_job.h"
 #include "net/socket/ssl_client_socket.h"
+#include "net/socket/tcp_connect_job.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
@@ -105,6 +106,7 @@ SSLConnectJob::SSLConnectJob(
 SSLConnectJob::~SSLConnectJob() {
   // In the case the job was canceled, need to delete nested job first to
   // correctly order NetLog events.
+  tcp_connect_job_ = nullptr;
   nested_connect_job_.reset();
 }
 
@@ -239,24 +241,49 @@ int SSLConnectJob::DoTransportConnect() {
   DCHECK(!TimerIsRunning());
 
   next_state_ = STATE_TRANSPORT_CONNECT_COMPLETE;
-  // If this is an ECH or Trust Anchor IDs retry, connect to the same server as
-  // before.
-  std::optional<TransportConnectJob::EndpointResultOverride>
-      endpoint_result_override;
-  if (ech_retry_configs_ || trust_anchor_ids_for_retry_.has_value()) {
-    if (ech_retry_configs_) {
-      DCHECK(ssl_client_context()->config().ech_enabled);
+
+  if (base::FeatureList::IsEnabled(features::kHappyEyeballsV2)) {
+    // If this is an ECH or Trust Anchor IDs retry, connect to the same server
+    // as before.
+    std::optional<TcpConnectJob::ServiceEndpointOverride>
+        service_endpoint_override;
+    if (ech_retry_configs_ || trust_anchor_ids_for_retry_.has_value()) {
+      if (ech_retry_configs_) {
+        DCHECK(ssl_client_context()->config().ech_enabled);
+      }
+      if (trust_anchor_ids_for_retry_.has_value()) {
+        DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
+      }
+      DCHECK(service_endpoint_result_);
+      service_endpoint_override.emplace(*service_endpoint_result_,
+                                        dns_aliases_);
     }
-    if (trust_anchor_ids_for_retry_.has_value()) {
-      DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
+    auto connect_job = std::make_unique<TcpConnectJob>(
+        priority(), socket_tag(), common_connect_job_params(),
+        params_->GetDirectConnectionParams(), this, &net_log(),
+        std::move(service_endpoint_override));
+    tcp_connect_job_ = connect_job.get();
+    nested_connect_job_ = std::move(connect_job);
+  } else {
+    // If this is an ECH or Trust Anchor IDs retry, connect to the same server
+    // as before.
+    std::optional<TransportConnectJob::EndpointResultOverride>
+        endpoint_result_override;
+    if (ech_retry_configs_ || trust_anchor_ids_for_retry_.has_value()) {
+      if (ech_retry_configs_) {
+        DCHECK(ssl_client_context()->config().ech_enabled);
+      }
+      if (trust_anchor_ids_for_retry_.has_value()) {
+        DCHECK(base::FeatureList::IsEnabled(features::kTLSTrustAnchorIDs));
+      }
+      DCHECK(endpoint_result_);
+      endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
     }
-    DCHECK(endpoint_result_);
-    endpoint_result_override.emplace(*endpoint_result_, dns_aliases_);
+    nested_connect_job_ = std::make_unique<TransportConnectJob>(
+        priority(), socket_tag(), common_connect_job_params(),
+        params_->GetDirectConnectionParams(), this, &net_log(),
+        std::move(endpoint_result_override));
   }
-  nested_connect_job_ = std::make_unique<TransportConnectJob>(
-      priority(), socket_tag(), common_connect_job_params(),
-      params_->GetDirectConnectionParams(), this, &net_log(),
-      std::move(endpoint_result_override));
   return nested_connect_job_->Connect();
 }
 
@@ -355,7 +382,11 @@ int SSLConnectJob::DoSSLConnect() {
 
   // Save the `HostResolverEndpointResult`. `nested_connect_job_` is destroyed
   // at the end of this function.
-  endpoint_result_ = nested_connect_job_->GetHostResolverEndpointResult();
+  if (!tcp_connect_job_) {
+    endpoint_result_ = nested_connect_job_->GetHostResolverEndpointResult();
+  } else {
+    service_endpoint_result_ = tcp_connect_job_->PassServiceEndpoint();
+  }
 
   SSLConfig ssl_config = params_->ssl_config();
   ssl_config.ignore_certificate_errors =
@@ -367,6 +398,9 @@ int SSLConnectJob::DoSSLConnect() {
       ssl_config.ech_config_list = *ech_retry_configs_;
     } else if (endpoint_result_) {
       ssl_config.ech_config_list = endpoint_result_->metadata.ech_config_list;
+    } else if (service_endpoint_result_) {
+      ssl_config.ech_config_list =
+          service_endpoint_result_->metadata.ech_config_list;
     }
     if (!ssl_config.ech_config_list.empty()) {
       // Overriding the DNS lookup only works for direct connections. We
@@ -382,6 +416,10 @@ int SSLConnectJob::DoSSLConnect() {
       ssl_config.trust_anchor_ids =
           ssl_client_context()->config().SelectTrustAnchorIDs(
               endpoint_result_->metadata.trust_anchor_ids);
+    } else if (service_endpoint_result_) {
+      ssl_config.trust_anchor_ids =
+          ssl_client_context()->config().SelectTrustAnchorIDs(
+              service_endpoint_result_->metadata.trust_anchor_ids);
     } else {
       // Send an empty trust_anchors extension to signal we support the
       // extension and can trigger the retry flow if the server picked a
@@ -413,11 +451,18 @@ int SSLConnectJob::DoSSLConnect() {
                x509_util::TrustAnchorIDsToString(
                    endpoint_result_->metadata.trust_anchor_ids));
     }
+    if (service_endpoint_result_ &&
+        !service_endpoint_result_->metadata.trust_anchor_ids.empty()) {
+      dict.Set("trust_anchor_ids_from_dns",
+               x509_util::TrustAnchorIDsToString(
+                   service_endpoint_result_->metadata.trust_anchor_ids));
+    }
     return dict;
   });
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
       ssl_client_context(), std::move(nested_socket_), params_->host_and_port(),
       ssl_config);
+  tcp_connect_job_ = nullptr;
   nested_connect_job_.reset();
   return ssl_socket_->Connect(callback_);
 }
@@ -454,7 +499,10 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   // DNS. This allows the metrics to measure the same set of servers in both
   // control and experiment group.
   const bool is_ech_capable =
-      endpoint_result_ && !endpoint_result_->metadata.ech_config_list.empty();
+      (endpoint_result_ &&
+       !endpoint_result_->metadata.ech_config_list.empty()) ||
+      (service_endpoint_result_ &&
+       !service_endpoint_result_->metadata.ech_config_list.empty());
   const bool ech_enabled = ssl_client_context()->config().ech_enabled;
 
   if (!ech_retry_configs_ && result == ERR_ECH_NOT_NEGOTIATED && ech_enabled) {
@@ -512,7 +560,10 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
   SSLClientSocket::RecordSSLConnectResult(
       ssl_socket_.get(), result, is_ech_capable, ech_enabled,
       ech_retry_configs_,
-      endpoint_result_ && !endpoint_result_->metadata.trust_anchor_ids.empty(),
+      (endpoint_result_ &&
+       !endpoint_result_->metadata.trust_anchor_ids.empty()) ||
+          (service_endpoint_result_ &&
+           !service_endpoint_result_->metadata.trust_anchor_ids.empty()),
       trust_anchor_ids_for_retry_.has_value(),
       trust_anchor_retry_used_mtc_fallback_, connect_timing_);
 
@@ -546,6 +597,7 @@ int SSLConnectJob::ConnectInternal() {
 
 void SSLConnectJob::ResetStateForRestart() {
   ResetTimer(base::TimeDelta());
+  tcp_connect_job_ = nullptr;
   nested_connect_job_ = nullptr;
   nested_socket_ = nullptr;
   ssl_socket_ = nullptr;

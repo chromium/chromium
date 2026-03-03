@@ -284,10 +284,20 @@ class NET_EXPORT SpdySessionPool
   // Invoked when a host resolution completes. Returns
   // OnHostResolutionCallbackResult::kMayBeDeletedAsync if there's a SPDY
   // session that's a suitable alias for |key|, setting up the alias if needed.
+  //
+  // TODO(crbug.com/484073410): Once TcpConnectJob ships and TransportConnectJob
+  // is removed,remove this overload in favor of the other one.
   OnHostResolutionCallbackResult OnHostResolutionComplete(
       const SpdySessionKey& key,
       bool is_websocket,
       base::span<const HostResolverEndpointResult> endpoint_results,
+      const std::set<std::string>& aliases);
+
+  // Overload of above function that takes a ServiceEndpoint.
+  OnHostResolutionCallbackResult OnHostResolutionComplete(
+      const SpdySessionKey& key,
+      bool is_websocket,
+      base::span<const ServiceEndpoint> endpoint_results,
       const std::set<std::string>& aliases);
 
   // Remove all mappings and aliases for the given session, which must
@@ -476,6 +486,20 @@ class NET_EXPORT SpdySessionPool
   void NotifyOnNetworkEvent(net::NetworkChangeEvent event);
   void NotifyOnSessionClosed(const SpdySessionKey& session_key);
   void NotifyOnConnectionFailure(const SpdySessionKey& session_key);
+
+  // Shared logic for the two OnHostResolutionComplete() overloads. Checks if
+  // any of the passed in endpoints can be used to set up an aliased session for
+  // `key`. Returns true if it set up an alias, and the caller should thus
+  // return kMayBeDeletedAsync.
+  //
+  // TODO(crbug.com/484073410): Once TcpConnectJob ships and TransportConnectJob
+  // is removed, merge this back into OnHostResolutionComplete().
+  bool OnHostResolutionCompleteShared(
+      const SpdySessionKey& key,
+      bool is_websocket,
+      const ConnectionEndpointMetadata& metadata,
+      base::span<const IPEndPoint> ip_endpoints,
+      const std::set<std::string>& aliases);
 
   raw_ptr<HttpServerProperties> http_server_properties_;
 

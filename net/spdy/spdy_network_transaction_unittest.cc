@@ -101,15 +101,20 @@ using testing::Eq;
 const int32_t kBufferSize = SpdyHttpStream::kRequestBodyBufferSize;
 
 struct TestParams {
-  explicit TestParams(bool happy_eyeballs_v3_enabled)
-      : happy_eyeballs_v3_enabled(happy_eyeballs_v3_enabled) {}
+  explicit TestParams(int happy_eyeballs_version)
+      : happy_eyeballs_version(happy_eyeballs_version) {
+    CHECK_LE(1, happy_eyeballs_version);
+    CHECK_LE(happy_eyeballs_version, 3);
+  }
 
-  bool happy_eyeballs_v3_enabled;
+  // Value from 1 to 3.
+  int happy_eyeballs_version;
 };
 
 std::vector<TestParams> GetTestParams() {
-  return {TestParams(/*happy_eyeballs_v3_enabled=*/false),
-          TestParams(/*happy_eyeballs_v3_enabled=*/true)};
+  return {TestParams(/*happy_eyeballs_version=*/1),
+          TestParams(/*happy_eyeballs_version=*/2),
+          TestParams(/*happy_eyeballs_version=*/3)};
 }
 
 }  // namespace
@@ -129,6 +134,11 @@ class SpdyNetworkTransactionTest
     std::vector<base::test::FeatureRef> enabled_features;
     std::vector<base::test::FeatureRef> disabled_features;
 
+    if (HappyEyeballsV2Enabled()) {
+      enabled_features.emplace_back(features::kHappyEyeballsV2);
+    } else {
+      disabled_features.emplace_back(features::kHappyEyeballsV2);
+    }
     if (HappyEyeballsV3Enabled()) {
       enabled_features.emplace_back(features::kHappyEyeballsV3);
     } else {
@@ -523,8 +533,12 @@ class SpdyNetworkTransactionTest
                                base::Unretained(this), delta);
   }
 
+  bool HappyEyeballsV2Enabled() const {
+    return GetParam().happy_eyeballs_version == 2;
+  }
+
   bool HappyEyeballsV3Enabled() const {
-    return GetParam().happy_eyeballs_v3_enabled;
+    return GetParam().happy_eyeballs_version == 3;
   }
 
   const GURL default_url_;

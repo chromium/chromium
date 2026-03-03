@@ -147,6 +147,7 @@ TransportConnectJob::TransportConnectJob(
                  NetLogSourceType::TRANSPORT_CONNECT_JOB,
                  NetLogEventType::TRANSPORT_CONNECT_JOB_CONNECT),
       params_(params) {
+  DCHECK(!base::FeatureList::IsEnabled(features::kHappyEyeballsV2));
   if (endpoint_result_override) {
     has_dns_override_ = true;
     endpoint_results_ = {std::move(endpoint_result_override->result)};
