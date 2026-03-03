@@ -290,9 +290,7 @@ are declared in tools/grit/grit_args.gni.
       <part file="bookmarks_strings.grdp" />
 
       <!-- Glic specific strings -->
-      <if expr="enable_glic">
-        <part file="glic_strings.grdp" />
-      </if>
+      <part file="glic_strings.grdp" />
 
       <!-- Global Media Controls specific strings -->
       <part file="gmc_strings.grdp" />
@@ -19865,7 +19863,7 @@ Please help our engineers fix this problem. Tell us what happened right before y
     </if>
 
     <!-- Chrome-specific PDF strings -->
-    <if expr="enable_glic and enable_pdf">
+    <if expr="enable_pdf">
       <message name="IDS_PDF_GLIC_SUMMARIZE" desc="Button label for the button to summarize PDFs.">
         Summarize
       </message>

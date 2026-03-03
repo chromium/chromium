@@ -8,10 +8,16 @@
 #include "build/config/coverage/buildflags.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
+#include "chrome/browser/glic/glic_pref_names.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/test_support/glic_test_util.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
+#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/settings/on_device_ai_settings_handler.h"
 #include "chrome/common/chrome_features.h"
@@ -43,18 +49,6 @@
 #include "third_party/blink/public/common/features_generated.h"
 #include "ui/compositor/compositor_switches.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/glic_pref_names.h"
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#include "chrome/browser/glic/test_support/glic_test_util.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service.h"
-#include "chrome/browser/subscription_eligibility/subscription_eligibility_service_factory.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
-#include "components/signin/public/identity_manager/identity_test_utils.h"
-#endif
-
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/toasts/toast_features.h"  // nogncheck
 #endif
@@ -77,19 +71,13 @@ class SettingsBrowserTest : public WebUIMochaBrowserTest {
 #endif
         },
         /*disabled_features=*/
-        {
-#if BUILDFLAG(ENABLE_GLIC)
-            features::kGlicDefaultTabContextSetting
-#endif
-        });
+        {features::kGlicDefaultTabContextSetting});
     set_test_loader_host(chrome::kChromeUISettingsHost);
   }
 
  private:
-#if BUILDFLAG(ENABLE_GLIC)
   glic::GlicTestEnvironment glic_test_environment_{
       {.force_signin_and_glic_capability = false }};
-#endif
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -436,7 +424,6 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, SecurityPageFeatureRow) {
   RunTest("settings/security_page_feature_row_test.js", "mocha.run()");
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 IN_PROC_BROWSER_TEST_F(SettingsTest, GlicPage) {
   RunTest("settings/glic_page_test.js", "runMochaSuite('GlicPage Default')");
 }
@@ -935,7 +922,6 @@ IN_PROC_BROWSER_TEST_F(
       "settings/glic_subpage_test.js",
       "runMochaSuite('GlicSubpage DataProtection_UserStatusCheckDisabled')");
 }
-#endif
 
 // Timeout on Linux dbg bots: https://crbug.com/1394737
 #if !(BUILDFLAG(IS_LINUX) && !defined(NDEBUG))

@@ -59,6 +59,9 @@ build_webui_tests("build") {
     "file_system_site_list_test.ts",
     "fingerprint_progress_arc_test.ts",
     "geolocation_page_test.ts",
+    "glic_page_test.ts",
+    "glic_subpage_focus_test.ts",
+    "glic_subpage_test.ts",
     "help_page_test.ts",
     "identity_docs_page_test.ts",
     "memory_page_test.ts",
@@ -166,6 +169,7 @@ build_webui_tests("build") {
     "test_country_detail_manager_proxy.ts",
     "test_entity_data_manager_proxy.ts",
     "test_extension_control_browser_proxy.ts",
+    "test_glic_browser_proxy.ts",
     "test_hats_browser_proxy.ts",
     "test_lifetime_browser_proxy.ts",
     "test_metrics_browser_proxy.ts",
@@ -192,15 +196,6 @@ build_webui_tests("build") {
     "your_saved_info_page_test.ts",
     "zoom_levels_test.ts",
   ]
-
-  if (enable_glic) {
-    files += [
-      "glic_page_test.ts",
-      "glic_subpage_focus_test.ts",
-      "glic_subpage_test.ts",
-      "test_glic_browser_proxy.ts",
-    ]
-  }
 
   if (is_chromeos) {
     files += [

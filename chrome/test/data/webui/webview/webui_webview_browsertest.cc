@@ -16,6 +16,7 @@
 #include "build/config/coverage/buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/ui/browser.h"
@@ -43,9 +44,6 @@
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if BUILDFLAG(ENABLE_GLIC)
-#include "chrome/browser/glic/test_support/glic_test_environment.h"
-#endif
 
 // Turn these tests off on Mac while we collect data on windows server crashes
 // on mac chromium builders.
@@ -199,10 +197,8 @@ class WebUIWebViewBrowserTest : public WebUIMochaBrowserTest {
             false);
   }
 
-#if BUILDFLAG(ENABLE_GLIC)
   // Required to enable chrome://glic.
   glic::GlicTestEnvironment glic_test_env_;
-#endif
 
   std::unique_ptr<content::ScopedWebUIConfigRegistration>
       web_ui_config_registration_;
@@ -217,7 +213,6 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest, DisplayNone) {
       "runMochaTest('WebviewBasicTest', 'DisplayNone')", true));
 }
 
-#if BUILDFLAG(ENABLE_GLIC)
 // TODO(crbug.com/460836171): Enable on ChromeOS.
 #if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MediaRequestAllowOnGlic DISABLED_MediaRequestAllowOnGlic
@@ -254,7 +249,6 @@ IN_PROC_BROWSER_TEST_F(WebUIWebViewBrowserTest,
   RunBasicTestCase("MediaRequestAllowOnSignIn",
                    GetTestUrl("webview/mediarequest.html").spec());
 }
-#endif  // BUILDFLAG(ENABLE_GLIC)
 
 // TODO(crbug.com/41400417) Flaky on CrOS trybots.
 #if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)

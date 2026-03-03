@@ -39,9 +39,7 @@ suite('AiPageIndex', function() {
       showComposeControl: true,
       showHistorySearchControl: true,
       showTabOrganizationControl: true,
-      // <if expr="enable_glic">
       showGlicSettings: true,
-      // </if>
     });
     resetRouterForTesting();
     return createAiPageIndex();
@@ -50,9 +48,7 @@ suite('AiPageIndex', function() {
   test('Routing', async function() {
     const defaultViews = [
       'aiInfoCard',
-      // <if expr="enable_glic">
       'glic',
-      // </if>
       'parent',
     ];
 
@@ -75,11 +71,9 @@ suite('AiPageIndex', function() {
     await microtasksFinished();
     assertActiveViews(['compose']);
 
-    // <if expr="enable_glic">
     Router.getInstance().navigateTo(routes.GEMINI);
     await microtasksFinished();
     assertActiveViews(['gemini']);
-    // </if>
   });
 
   test('aiFeaturesSectionVisibility', async function() {
@@ -94,7 +88,6 @@ suite('AiPageIndex', function() {
     assertFalse(!!index.$.viewManager.querySelector('#parent[slot=view]'));
   });
 
-  // <if expr="enable_glic">
   test('glicSectionVisibility', async function() {
     assertTrue(!!index.$.viewManager.querySelector('#glic[slot=view]'));
 
@@ -106,7 +99,6 @@ suite('AiPageIndex', function() {
     await createAiPageIndex();
     assertFalse(!!index.$.viewManager.querySelector('#glic[slot=view]'));
   });
-  // </if>
 
   // Test that the child views are properly annotated.
   test('DataParentViewId', function() {
@@ -116,10 +108,8 @@ suite('AiPageIndex', function() {
           `#${id}[slot=view][data-parent-view-id=parent]`));
     }
 
-    // <if expr="enable_glic">
     assertTrue(!!index.$.viewManager.querySelector(
         '#gemini[slot=view][data-parent-view-id=glic]'));
-    // </if>
   });
 
   // Minimal (non-exhaustive) tests to ensure SearchableViewContainerMixin is
@@ -142,14 +132,12 @@ suite('AiPageIndex', function() {
     assertFalse(result.wasClearSearch);
     assertVisibleViews(['parent'], ['glic']);
 
-    // <if expr="enable_glic">
     // Case2: Results only in the "Glic" card.
     result = await index.searchContents('keyboard shortcut');
     assertFalse(result.canceled);
     assertGT(result.matchCount, 0);
     assertFalse(result.wasClearSearch);
     assertVisibleViews(['glic'], ['parent']);
-    // </if>
 
     // Case3: Results only in both "AI Innovations" and "Glic" card.
     result = await index.searchContents('a');
@@ -159,9 +147,7 @@ suite('AiPageIndex', function() {
     assertVisibleViews(
         [
           'parent',
-          // <if expr="enable_glic">
           'glic',
-          // </if>
         ],
         []);
   });

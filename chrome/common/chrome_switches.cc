@@ -976,7 +976,6 @@ const char kGuest[] = "guest";
 
 #endif
 
-#if BUILDFLAG(ENABLE_GLIC)
 // Overrides the glic guest URL.
 const char kGlicGuestURL[] = "glic-guest-url";
 const char kGlicAlwaysOpenFre[] = "glic-always-open-fre";
@@ -1020,7 +1019,6 @@ const char kGlicGuestUrlPresetAutopush[] = "glic-guest-url-preset-autopush";
 const char kGlicGuestUrlPresetStaging[] = "glic-guest-url-preset-staging";
 const char kGlicGuestUrlPresetPreprod[] = "glic-guest-url-preset-preprod";
 const char kGlicGuestUrlPresetProd[] = "glic-guest-url-preset-prod";
-#endif
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 // Writes open and installed web apps for each profile to the specified file

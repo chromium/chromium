@@ -57,6 +57,7 @@ source_set("browser_tests") {
       "downloads/downloads_browsertest.cc",
       "engagement/site_engagement_browsertest.cc",
       "feedback/feedback_browsertest.cc",
+      "glic/glic_browsertest.cc",
       "histograms/histograms_internals_browsertest.cc",
       "history/history_supervised_user_browsertest.cc",
       "history/history_ui_browsertest.cc",
@@ -95,14 +96,12 @@ source_set("browser_tests") {
     deps += [
       "//chrome/browser/actor",
       "//chrome/browser/engagement",
+      "//chrome/browser/glic",
+      "//chrome/browser/glic/test_support",
       "//chrome/browser/preloading",
       "//chrome/browser/signin:signin_promo",
       "//chrome/browser/subscription_eligibility",
     ]
-
-    if (enable_glic) {
-      deps += [ "//chrome/browser/glic" ]
-    }
 
     if (is_chrome_branded) {
       sources += [ "media_router/cast_feedback_ui_browsertest.cc" ]
@@ -138,11 +137,6 @@ source_set("browser_tests") {
 
   if (chrome_root_store_cert_management_ui) {
     sources += [ "certificate_manager/certificate_manager_browsertest.cc" ]
-  }
-
-  if (enable_glic && !is_android) {
-    sources += [ "glic/glic_browsertest.cc" ]
-    deps += [ "//chrome/browser/glic/test_support" ]
   }
 
   if (is_chromeos) {
@@ -332,7 +326,7 @@ source_set("interactive_ui_tests") {
 
   sources = [ "cr_elements/cr_elements_focus_test.cc" ]
 
-  deps = []
+  deps = [ "//chrome/browser/glic/test_support" ]
 
   if (!is_android) {
     sources += [
@@ -403,10 +397,6 @@ source_set("interactive_ui_tests") {
       "//chrome/browser/compose",
       "//components/compose/core/browser:features",
     ]
-  }
-
-  if (enable_glic) {
-    deps += [ "//chrome/browser/glic/test_support" ]
   }
 }
 
@@ -533,6 +523,7 @@ generate_grd("build_grd") {
     "commerce_internals:build_grdp",
     "cr_elements:build_grdp",
     "flags:build_grdp",
+    "glic:build_grdp",
     "js:build_grdp",
     "location_internals:build_grdp",
     "sync_internals:build_grdp",
@@ -546,6 +537,7 @@ generate_grd("build_grd") {
     "$target_gen_dir/commerce_internals/resources.grdp",
     "$target_gen_dir/cr_elements/resources.grdp",
     "$target_gen_dir/flags/resources.grdp",
+    "$target_gen_dir/glic/resources.grdp",
     "$target_gen_dir/js/resources.grdp",
     "$target_gen_dir/location_internals/resources.grdp",
     "$target_gen_dir/mocha_resources.grdp",
@@ -740,11 +732,6 @@ generate_grd("build_grd") {
   if (is_win || is_chromeos) {
     deps += [ "gaia_auth_host:build_grdp" ]
     grdp_files += [ "$target_gen_dir/gaia_auth_host/resources.grdp" ]
-  }
-
-  if (enable_glic) {
-    grdp_files += [ "$target_gen_dir/glic/resources.grdp" ]
-    deps += [ "glic:build_grdp" ]
   }
 
   if (is_chromeos) {

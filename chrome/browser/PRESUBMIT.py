@@ -406,39 +406,6 @@ def _CheckNewDirectoryHasBuildGn(input_api, output_api):
 
     return []
 
-
-def _CheckNoNewEnableGlicUsage(input_api, output_api):
-    """Checks that there is no new usage of enable_glic or ENABLE_GLIC in
-    chrome/browser/.
-    """
-    problems = []
-    pattern = re.compile(r'\b(enable_glic|ENABLE_GLIC)\b')
-
-    for f in input_api.AffectedFiles(include_deletes=False):
-        if not f.UnixLocalPath().startswith('chrome/browser/') :
-            continue
-
-        if f.UnixLocalPath().endswith('PRESUBMIT.py'):
-            continue
-
-        for line_num, line in f.ChangedContents():
-            if pattern.search(line):
-                problems.append('  %s:%d:%s' %
-                                (f.LocalPath(), line_num, line.strip()))
-
-    if not problems:
-        return []
-
-    return [
-        output_api.PresubmitPromptWarning(
-            'New usage of "enable_glic" or "ENABLE_GLIC" found in '
-            'chrome/browser/. Ignore this warning if this might be a false '
-            'positive. Otherwise, revise the code to retain code blocks that '
-            'are ran when the flag is enabled. See crbug.com/486982086.',
-            items=problems)
-    ]
-
-
 ###############################################################################
 # Presubmit aggregator
 ###############################################################################
@@ -446,7 +413,6 @@ def _CheckNoNewEnableGlicUsage(input_api, output_api):
 def _CommonChecks(input_api, output_api):
     """Checks common to both upload and commit."""
     results = []
-    results.extend(_CheckNoNewEnableGlicUsage(input_api, output_api))
     results.extend(_CheckNewDirectoryHasBuildGn(input_api, output_api))
     results.extend(
         _CheckNoAutofillBrowserTestsWithoutAutofillBrowserTestEnvironment(

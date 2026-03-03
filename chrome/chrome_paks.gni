@@ -119,9 +119,13 @@ template("chrome_extra_paks") {
     output = "${invoker.output_dir}/resources.pak"
     sources = [
       "$root_gen_dir/base/tracing/protos/tracing_proto_resources.pak",
+      "$root_gen_dir/chrome/browser/glic/resources/glic_browser_resources.pak",
       "$root_gen_dir/chrome/browser_resources.pak",
       "$root_gen_dir/chrome/chrome_unscaled_resources.pak",
       "$root_gen_dir/chrome/common_resources.pak",
+      "$root_gen_dir/chrome/glic_fre_resources.pak",
+      "$root_gen_dir/chrome/glic_resources.pak",
+      "$root_gen_dir/chrome/glic_shared_resources.pak",
       "$root_gen_dir/chrome/saved_tab_groups_unsupported_resources.pak",
       "$root_gen_dir/chrome/segmentation_internals_resources.pak",
       "$root_gen_dir/components/autofill/core/browser/geo/autofill_address_rewriter_resources.pak",
@@ -160,7 +164,11 @@ template("chrome_extra_paks") {
       "//base/tracing/protos:chrome_track_event_resources",
       "//chrome/app/theme:chrome_unscaled_resources",
       "//chrome/browser:resources",
+      "//chrome/browser/glic/resources:browser_resources",
       "//chrome/browser/resources",
+      "//chrome/browser/resources/glic:resources",
+      "//chrome/browser/resources/glic/fre:resources",
+      "//chrome/browser/resources/glic/shared:resources",
       "//chrome/browser/resources/saved_tab_groups_unsupported:resources",
       "//chrome/common:resources",
       "//components/autofill/core/browser:autofill_address_rewriter_resources",
@@ -515,8 +523,14 @@ template("chrome_extra_paks") {
     }
 
     if (!is_android) {
-      sources += [ "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak" ]
-      deps += [ "//components/headless/command_handler" ]
+      sources += [
+        "$root_gen_dir/chrome/glic_untrusted_resources.pak",
+        "$root_gen_dir/components/headless/command_handler/headless_command_resources.pak",
+      ]
+      deps += [
+        "//chrome/browser/resources/glic/selection_overlay:resources",
+        "//components/headless/command_handler",
+      ]
     }
 
     if (enable_extensions_core) {
@@ -558,25 +572,6 @@ template("chrome_extra_paks") {
     if (enable_compose) {
       sources += [ "$root_gen_dir/chrome/compose_resources.pak" ]
       deps += [ "//chrome/browser/resources/compose:resources" ]
-    }
-    if (enable_glic) {
-      sources += [
-        "$root_gen_dir/chrome/browser/glic/resources/glic_browser_resources.pak",
-        "$root_gen_dir/chrome/glic_fre_resources.pak",
-        "$root_gen_dir/chrome/glic_resources.pak",
-        "$root_gen_dir/chrome/glic_shared_resources.pak",
-      ]
-      deps += [
-        "//chrome/browser/glic/resources:browser_resources",
-        "//chrome/browser/resources/glic:resources",
-        "//chrome/browser/resources/glic/fre:resources",
-        "//chrome/browser/resources/glic/shared:resources",
-      ]
-      if (!is_android) {
-        sources += [ "$root_gen_dir/chrome/glic_untrusted_resources.pak" ]
-        deps +=
-            [ "//chrome/browser/resources/glic/selection_overlay:resources" ]
-      }
     }
 
     if (enterprise_watermark) {
