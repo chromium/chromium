@@ -75,6 +75,7 @@
     "credentialless",
     "crossorigin",
     "csp",
+    "customelementregistry",
     "data",
     "data-src",
     "datetime",

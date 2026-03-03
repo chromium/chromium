@@ -1240,6 +1240,12 @@ Element* HTMLConstructionSite::CreateElement(
         registry = CurrentElement()->customElementRegistry();
       }
     }
+    // If the token has the "customelementregistry" content attribute, override
+    // the registry to null. This allows declarative opt-out from the default
+    // registry during parsing.
+    if (token->GetAttributeItem(html_names::kCustomelementregistryAttr)) {
+      registry = nullptr;
+    }
   }
   // 8. Let definition be the result of looking up a custom element definition
   // given registry, given namespace, local name and is.

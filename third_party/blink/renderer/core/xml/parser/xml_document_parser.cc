@@ -1102,10 +1102,13 @@ void XMLDocumentParser::StartElementNs(
   }
 
   AtomicString is;
+  bool has_customelementregistry_attr = false;
   for (const auto& attr : prefixed_attributes) {
     if (attr.GetName() == html_names::kIsAttr) {
       is = attr.Value();
-      break;
+    } else if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+               attr.GetName() == html_names::kCustomelementregistryAttr) {
+      has_customelementregistry_attr = true;
     }
   }
 
@@ -1114,6 +1117,19 @@ void XMLDocumentParser::StartElementNs(
     q_name = QualifiedName(g_null_atom,
                            AtomicString(StrCat({prefix, ":", local_name})),
                            g_null_atom);
+  }
+
+  CustomElementRegistry* registry = nullptr;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      !has_customelementregistry_attr) {
+    // If the element doesn't have the customelementregistry attribute, then
+    // it should inherit its registry from its parent.
+    if (auto* parent_element = DynamicTo<Element>(current_node_.Get())) {
+      registry = parent_element->customElementRegistry();
+    } else {
+      registry =
+          CustomElementRegistry::DefaultRegistry(current_node_->GetDocument());
+    }
   }
 
   // If we are constructing a custom element, then we must run extra steps as
@@ -1125,8 +1141,8 @@ void XMLDocumentParser::StartElementNs(
   std::optional<ThrowOnDynamicMarkupInsertionCountIncrementer>
       throw_on_dynamic_markup_insertions;
   if (!parsing_fragment_) {
-    if (HTMLConstructionSite::LookUpCustomElementDefinition(
-            *document_, q_name, is, document_->customElementRegistry())) {
+    if (HTMLConstructionSite::LookUpCustomElementDefinition(*document_, q_name,
+                                                            is, registry)) {
       throw_on_dynamic_markup_insertions.emplace(document_);
       document_->GetAgent().event_loop()->PerformMicrotaskCheckpoint();
       reactions.emplace(isolate);
@@ -1137,7 +1153,7 @@ void XMLDocumentParser::StartElementNs(
       q_name,
       parsing_fragment_ ? CreateElementFlags::ByFragmentParser(document_)
                         : CreateElementFlags::ByParser(document_),
-      is, CustomElementRegistry::DefaultRegistry(current_node_->GetDocument()));
+      is, registry);
   // Check IsStopped() because custom element constructors may synchronously
   // trigger removal of the document and cancellation of this parser.
   if (IsStopped()) {
