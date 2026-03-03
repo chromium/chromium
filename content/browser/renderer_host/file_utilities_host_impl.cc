@@ -10,19 +10,18 @@
 
 #include "base/files/file_util.h"
 #include "content/browser/child_process_security_policy_impl.h"
-#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
-FileUtilitiesHostImpl::FileUtilitiesHostImpl(int process_id)
+FileUtilitiesHostImpl::FileUtilitiesHostImpl(ChildProcessId process_id)
     : process_id_(process_id) {}
 
 FileUtilitiesHostImpl::~FileUtilitiesHostImpl() = default;
 
 void FileUtilitiesHostImpl::Create(
-    int process_id,
+    ChildProcessId process_id,
     mojo::PendingReceiver<blink::mojom::FileUtilitiesHost> receiver) {
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<FileUtilitiesHostImpl>(process_id), std::move(receiver));
@@ -33,9 +32,7 @@ void FileUtilitiesHostImpl::GetFileInfo(const base::FilePath& path,
   // Get file metadata only when the child process has been granted
   // permission to read the file.
   auto* security_policy = ChildProcessSecurityPolicyImpl::GetInstance();
-  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
-  if (!security_policy->CanReadFile(
-          ChildProcessId::FromUnsafeValue(process_id_), path)) {
+  if (!security_policy->CanReadFile(process_id_, path)) {
     std::move(callback).Run(std::nullopt);
     return;
   }
