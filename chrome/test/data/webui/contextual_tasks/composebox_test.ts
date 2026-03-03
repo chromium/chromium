@@ -1315,6 +1315,27 @@ suite('ContextualTasksComposeboxTest', () => {
   });
 
   test(
+      'Injected input with icon can be added, then deleted from AIM',
+      async () => {
+        composebox.injectInput('title', '', FAKE_TOKEN_STRING, 'quoteFilled');
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        // Avoid using $.carousel since may be cached.
+        const carousel = composebox.shadowRoot.querySelector('#carousel');
+        assertTrue(!!carousel, 'Carousel should be in the DOM');
+        const files = carousel.files;
+        assertEquals(1, files.length);
+
+        composebox.deleteFile(FAKE_TOKEN_STRING);
+        await composebox.updateComplete;
+        await microtasksFinished();
+        assertFalse(
+            !!composebox.shadowRoot.querySelector('#carousel'),
+            'Carousel should be removed from the DOM');
+      });
+
+  test(
       'Injected input can be added, then deleted from composebox', async () => {
         composebox.injectInput('title', 'thumbnail.jpg', FAKE_TOKEN_STRING);
         await composebox.updateComplete;

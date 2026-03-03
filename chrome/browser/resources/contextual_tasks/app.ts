@@ -24,7 +24,7 @@ import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 // <if expr="not is_android">
 import type {ContextualTasksComposeboxElement} from './composebox.js';
-import type {ComposeboxPosition} from './contextual_tasks.mojom-webui.js';
+import type {ComposeboxPosition, IconType} from './contextual_tasks.mojom-webui.js';
 // </if>
 import type {BrowserProxy} from './contextual_tasks_browser_proxy.js';
 import {BrowserProxyImpl} from './contextual_tasks_browser_proxy.js';
@@ -32,6 +32,7 @@ import {PostMessageHandler} from './post_message_handler.js';
 // <if expr="not is_android">
 import type {Rect} from './post_message_handler.js';
 import {getNonOccludedClipPath} from './utils/clip_path.js';
+
 // </if>
 
 declare global {
@@ -348,6 +349,10 @@ export class ContextualTasksAppElement extends CrLitElement {
                 title, 'chrome://image?url=' + encodeURIComponent(thumbnail),
                 fileToken);
           }),
+      callbackRouter.injectInputWithIcon.addListener(
+          (title: string, iconId: IconType, fileToken: UnguessableToken) => {
+            this.$.composebox.injectInputWithIcon(title, iconId, fileToken);
+          }),
       callbackRouter.removeInjectedInput.addListener(
           (fileToken: UnguessableToken) => {
             this.$.composebox.deleteFile(fileToken);
@@ -370,7 +375,6 @@ export class ContextualTasksAppElement extends CrLitElement {
           this.forcedComposeboxBounds_ = null;
           // </if>
         }
-
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
           (isOverlayShowing: boolean, maybeShowOverlayHintText: boolean) => {

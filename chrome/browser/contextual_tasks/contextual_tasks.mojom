@@ -49,6 +49,15 @@ struct ComposeboxPosition {
   int32? margin_left;
 };
 
+enum IconType {
+  kUnspecified = 0,
+  kAdd = 9,
+  kCheck = 30,
+  kFormatQuoteFilled = 79,
+  kImage = 84,
+  kDrivePdf = 101,
+};
+
 // Browser-side handler for requests from the WebUI page.
 // The WebUI page calls these methods to interact with the browser process.
 // (TypeScript -> C++)
@@ -189,10 +198,19 @@ interface Page {
   RestoreInput();
 
   // Called by the browser process (C++) when the AIM server sends an
-  // InjectInput command to inject an input into the compose box.
+  // InjectInput command to inject an input into the compose box and specifies
+  // a thumbnail source.
   InjectInput(
     string title,
     string thumbnail,
+    mojo_base.mojom.UnguessableToken file_token);
+
+  // Called by the browser process (C++) when the AIM server sends an
+  // InjectInput command to inject an input into the compose box and specifies
+  // an icon type.
+  InjectInputWithIcon(
+    string title,
+    IconType icon_id,
     mojo_base.mojom.UnguessableToken file_token);
 
   // Called by the browser process (C++) when the AIM server sends a

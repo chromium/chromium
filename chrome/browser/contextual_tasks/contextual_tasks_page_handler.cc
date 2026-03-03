@@ -11,6 +11,7 @@
 #include "base/uuid.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/contextual_tasks/ai_mode_context_library_converter.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks.mojom-shared.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/feedback/public/feedback_source.h"
@@ -108,6 +109,23 @@ PopulateContextualResources(contextual_tasks::ContextualTaskContext* context) {
     }
   }
   return context_items;
+}
+
+contextual_tasks::mojom::IconType IconTypeToMojom(lens::IconType icon_id) {
+  switch (icon_id) {
+    case lens::IconType::ICON_TYPE_ADD:
+      return contextual_tasks::mojom::IconType::kAdd;
+    case lens::IconType::ICON_TYPE_CHECK:
+      return contextual_tasks::mojom::IconType::kCheck;
+    case lens::IconType::ICON_TYPE_FORMAT_QUOTE_FILLED:
+      return contextual_tasks::mojom::IconType::kFormatQuoteFilled;
+    case lens::IconType::ICON_TYPE_IMAGE:
+      return contextual_tasks::mojom::IconType::kImage;
+    case lens::IconType::ICON_TYPE_DRIVE_PDF:
+      return contextual_tasks::mojom::IconType::kDrivePdf;
+    default:
+      return contextual_tasks::mojom::IconType::kUnspecified;
+  }
 }
 
 }  // namespace
@@ -510,9 +528,15 @@ void ContextualTasksPageHandler::OnReceivedInjectInput(
   contextual_search::ContextualSearchSessionHandle* handle =
       web_ui_controller_->GetOrCreateContextualSessionHandle();
   auto token = handle->CreateContextToken();
-  web_ui_controller_->GetPageRemote()->InjectInput(
-      std::string(modality->title()), std::string(modality->thumbnail_src()),
-      token);
+  if (modality->has_icon_id()) {
+    web_ui_controller_->GetPageRemote()->InjectInputWithIcon(
+        std::string(modality->title()), IconTypeToMojom(modality->icon_id()),
+        token);
+  } else {
+    web_ui_controller_->GetPageRemote()->InjectInput(
+        std::string(modality->title()), std::string(modality->thumbnail_src()),
+        token);
+  }
   // This does not actually upload anything, but allows the injected input to be
   // shown in the chip carousel in the UI.
   handle->StartModalityChipUploadFlow(token, std::move(modality));
