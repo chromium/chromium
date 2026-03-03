@@ -718,6 +718,20 @@ void NetworkService::SetSSLKeyLogFile(base::File file) {
 void NetworkService::CreateNetworkContext(
     mojo::PendingReceiver<mojom::NetworkContext> receiver,
     mojom::NetworkContextParamsPtr params) {
+#if BUILDFLAG(IS_ANDROID)
+  if (params->cookie_store_ready_callback) {
+    auto pending = std::make_unique<PendingNetworkContext>(
+        this, std::move(receiver), std::move(params));
+    pending->ready_receiver.Bind(
+        std::move(pending->params->cookie_store_ready_callback));
+    auto* raw = pending.get();
+    pending->ready_receiver.set_disconnect_handler(
+        base::BindOnce(&NetworkService::OnPendingNetworkContextDisconnected,
+                       base::Unretained(this), raw));
+    pending_network_contexts_.emplace(std::move(pending));
+    return;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
   owned_network_contexts_.emplace(std::make_unique<NetworkContext>(
       this, std::move(receiver), std::move(params),
       base::BindOnce(&NetworkService::OnNetworkContextConnectionClosed,
@@ -1170,6 +1184,9 @@ void NetworkService::InitMockNetworkChangeNotifierForTesting() {
 }
 
 void NetworkService::DestroyNetworkContexts() {
+#if BUILDFLAG(IS_ANDROID)
+  pending_network_contexts_.clear();
+#endif  // BUILDFLAG(IS_ANDROID)
   owned_network_contexts_.clear();
 }
 
@@ -1183,6 +1200,42 @@ void NetworkService::OnNetworkContextConnectionClosed(
   }
   owned_network_contexts_.erase(it);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+NetworkService::PendingNetworkContext::PendingNetworkContext(
+    NetworkService* service,
+    mojo::PendingReceiver<mojom::NetworkContext> receiver,
+    mojom::NetworkContextParamsPtr params)
+    : service(service),
+      context_receiver(std::move(receiver)),
+      params(std::move(params)) {}
+
+NetworkService::PendingNetworkContext::~PendingNetworkContext() = default;
+
+void NetworkService::PendingNetworkContext::OnCookieStoreReady() {
+  service->OnPendingNetworkContextReady(this);
+}
+
+void NetworkService::OnPendingNetworkContextReady(
+    PendingNetworkContext* pending) {
+  auto it = pending_network_contexts_.find(pending);
+  CHECK(it != pending_network_contexts_.end());
+  auto node = pending_network_contexts_.extract(it);
+  std::unique_ptr<PendingNetworkContext> owned = std::move(node.value());
+
+  owned_network_contexts_.emplace(std::make_unique<NetworkContext>(
+      this, std::move(owned->context_receiver), std::move(owned->params),
+      base::BindOnce(&NetworkService::OnNetworkContextConnectionClosed,
+                     base::Unretained(this))));
+}
+
+void NetworkService::OnPendingNetworkContextDisconnected(
+    PendingNetworkContext* pending) {
+  auto it = pending_network_contexts_.find(pending);
+  CHECK(it != pending_network_contexts_.end());
+  pending_network_contexts_.erase(it);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void NetworkService::Bind(
     mojo::PendingReceiver<mojom::NetworkService> receiver) {

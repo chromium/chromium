@@ -168,6 +168,96 @@ TEST_F(NetworkServiceTest, DestroyingServiceDestroysContext) {
   run_loop.Run();
 }
 
+#if BUILDFLAG(IS_ANDROID)
+// Test that when cookie_store_ready_callback is provided, NetworkContext
+// creation is deferred until OnCookieStoreReady() is signaled, and that
+// mojo messages sent to the NetworkContext remote are naturally buffered.
+TEST_F(NetworkServiceTest, DeferredNetworkContextCreation_WaitsForReady) {
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+
+  mojo::Remote<mojom::CookieStoreReadyCallback> ready_callback_remote;
+  params->cookie_store_ready_callback =
+      ready_callback_remote.BindNewPipeAndPassReceiver();
+
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+
+  // Send a mojo call that will be buffered in the pipe until the
+  // NetworkContext is actually created.
+  mojo::Remote<mojom::CookieManager> cookie_manager;
+  network_context->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+
+  // Signal that the cookie store is ready.
+  ready_callback_remote->OnCookieStoreReady();
+
+  // The buffered GetCookieManager call should now work.
+  base::test::TestFuture<net::CookieList> future;
+  cookie_manager->GetAllCookies(future.GetCallback<const net::CookieList&>());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Test backward compatibility: when no cookie_store_ready_callback is
+// provided, the NetworkContext is created immediately.
+TEST_F(NetworkServiceTest, DeferredNetworkContextCreation_NoCallback) {
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  CreateContextParams());
+
+  // The NetworkContext should be immediately available.
+  mojo::Remote<mojom::CookieManager> cookie_manager;
+  network_context->GetCookieManager(
+      cookie_manager.BindNewPipeAndPassReceiver());
+
+  base::test::TestFuture<net::CookieList> future;
+  cookie_manager->GetAllCookies(future.GetCallback<const net::CookieList&>());
+  EXPECT_TRUE(future.Get().empty());
+}
+
+// Test that destroying the NetworkService with pending (not yet ready)
+// network contexts does not crash.
+TEST_F(NetworkServiceTest, DeferredNetworkContextCreation_ShutdownBeforeReady) {
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+
+  mojo::Remote<mojom::CookieStoreReadyCallback> ready_callback_remote;
+  params->cookie_store_ready_callback =
+      ready_callback_remote.BindNewPipeAndPassReceiver();
+
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+
+  // Destroy the service without ever signaling OnCookieStoreReady().
+  // This should not crash.
+  DestroyService();
+}
+
+// Test that disconnecting the ready callback before signaling cleans up
+// the pending context without crashing.
+TEST_F(NetworkServiceTest,
+       DeferredNetworkContextCreation_ReadyCallbackDisconnect) {
+  mojom::NetworkContextParamsPtr params = CreateContextParams();
+
+  mojo::Remote<mojom::CookieStoreReadyCallback> ready_callback_remote;
+  params->cookie_store_ready_callback =
+      ready_callback_remote.BindNewPipeAndPassReceiver();
+
+  mojo::Remote<mojom::NetworkContext> network_context;
+  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
+                                  std::move(params));
+
+  // Disconnect the ready callback without calling OnCookieStoreReady().
+  ready_callback_remote.reset();
+
+  // The pending context should be cleaned up, and the NetworkContext remote
+  // should see a disconnect.
+  base::RunLoop run_loop;
+  network_context.set_disconnect_handler(run_loop.QuitClosure());
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
+
 TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
   mojom::NetworkContextParamsPtr params = CreateContextParams();
   mojo::Remote<mojom::NetworkContext> network_context;

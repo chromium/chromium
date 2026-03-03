@@ -152,6 +152,17 @@ struct CertVerifierServiceRemoteParams {
       cert_verifier_service_client_receiver;
 };
 
+// Callback interface for signaling that the provisional cookie store has
+// been closed and it's safe to open the cookie database file. Used by Android
+// WebView to synchronize cookie store handoff from the provisional store
+// to the Network Service's store.
+[EnableIf=is_android]
+interface CookieStoreReadyCallback {
+  // Called when the provisional cookie store has been fully closed and the
+  // cookie database file is available for the Network Service to open.
+  OnCookieStoreReady();
+};
+
 // Client to update the custom proxy config.
 interface CustomProxyConfigClient {
   OnCustomProxyConfigUpdated(CustomProxyConfig proxy_config) => ();
@@ -479,6 +490,13 @@ struct NetworkContextParams {
   // should only be handed out to trusted processes.
   [EnableIf=is_android]
   pending_receiver<CookieManager>? cookie_manager;
+
+  // Callback interface for signaling that the provisional cookie store has
+  // been closed and it's safe to open the cookie database. Used by Android
+  // WebView to synchronize cookie store handoff from the provisional store
+  // to the Network Service's store.
+  [EnableIf=is_android]
+  pending_receiver<CookieStoreReadyCallback>? cookie_store_ready_callback;
 
   // Whether to enable Domain Reliability.
   bool enable_domain_reliability = false;

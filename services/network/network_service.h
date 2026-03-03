@@ -56,6 +56,9 @@
 #include "services/network/public/mojom/network_change_manager.mojom.h"
 #include "services/network/public/mojom/network_quality_estimator_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "services/network/public/mojom/network_context.mojom.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 #include "services/network/public/mojom/system_dns_resolution.mojom.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
@@ -504,6 +507,31 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // NetworkService itself is.
   std::set<std::unique_ptr<NetworkContext>, base::UniquePtrComparator>
       owned_network_contexts_;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Holds state for a NetworkContext whose creation is deferred until
+  // CookieStoreReadyCallback::OnCookieStoreReady() is received.
+  struct PendingNetworkContext : public mojom::CookieStoreReadyCallback {
+    PendingNetworkContext(NetworkService* service,
+                          mojo::PendingReceiver<mojom::NetworkContext> receiver,
+                          mojom::NetworkContextParamsPtr params);
+    ~PendingNetworkContext() override;
+
+    // mojom::CookieStoreReadyCallback:
+    void OnCookieStoreReady() override;
+
+    raw_ptr<NetworkService> service;
+    mojo::PendingReceiver<mojom::NetworkContext> context_receiver;
+    mojom::NetworkContextParamsPtr params;
+    mojo::Receiver<mojom::CookieStoreReadyCallback> ready_receiver{this};
+  };
+
+  void OnPendingNetworkContextReady(PendingNetworkContext* pending);
+  void OnPendingNetworkContextDisconnected(PendingNetworkContext* pending);
+
+  std::set<std::unique_ptr<PendingNetworkContext>, base::UniquePtrComparator>
+      pending_network_contexts_;
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // List of all NetworkContexts that are associated with the NetworkService,
   // including ones it does not own.
