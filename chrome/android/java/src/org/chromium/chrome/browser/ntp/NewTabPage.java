@@ -818,7 +818,11 @@ public class NewTabPage
         // When consumeTopInset is false, it is possible: 1) the next Tab isn't NTP and 2) the next
         // Tab is NTP while NTP should show regular toolbar. NewTabPageLayout should only be
         // adjusted based on supportsEdgeToEdgeOnTop(), not the parent view's decision.
-        mNewTabPageLayout.onToEdgeChange(systemTopInset, supportsEdgeToEdgeOnTop());
+        // However, consumeTopInset being false takes priority — if the parent is not consuming top
+        // insets (e.g. status indicator is visible), the NTP must not apply its own top inset
+        // either, since the content view already has the system top padding.
+        mNewTabPageLayout.onToEdgeChange(
+                systemTopInset, consumeTopInset && supportsEdgeToEdgeOnTop());
     }
 
     /**

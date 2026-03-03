@@ -408,6 +408,7 @@ public class RootUiCoordinator
     protected final NonNullObservableSupplier<Boolean> mXrSpaceModeObservableSupplier;
     private final boolean mIsTablet;
     private final TopInsetProvider mTopInsetProvider;
+    protected @Nullable TopInsetCoordinator mTopInsetCoordinator;
     private @Nullable ToolbarControlContainer mToolbarContainer;
     private @Nullable DesktopWindowStateManager mDesktopWindowStateManager;
     private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
@@ -1232,6 +1233,7 @@ public class RootUiCoordinator
                                 mActivityTabProvider.asObservable(),
                                 mWindowAndroid.getInsetObserver(),
                                 mLayoutStateProviderOneShotSupplier);
+                mTopInsetCoordinator = topInsetCoordinator;
                 transitiveTopInsetProvider.set(topInsetCoordinator);
             }
         }

@@ -1570,6 +1570,12 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         if (hubManager != null) {
                             hubManager.setStatusIndicatorHeight(indicatorHeight);
                         }
+                        // Disable edge-to-edge on top when the status indicator is visible
+                        // to avoid the indicator being obscured by the status bar in e2e
+                        // mode.
+                        if (mTopInsetCoordinator != null) {
+                            mTopInsetCoordinator.setStatusIndicatorVisible(indicatorHeight > 0);
+                        }
                     }
                 };
         mStatusIndicatorCoordinator.addObserver(mStatusIndicatorObserver);

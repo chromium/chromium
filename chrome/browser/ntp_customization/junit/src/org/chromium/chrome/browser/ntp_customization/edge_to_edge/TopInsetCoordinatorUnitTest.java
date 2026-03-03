@@ -430,6 +430,33 @@ public class TopInsetCoordinatorUnitTest {
         verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
     }
 
+    @Test
+    @SuppressWarnings("DirectInvocationOnMock")
+    public void testSetStatusIndicatorVisible() {
+        // Set current tab to NTP and verify top inset is consumed.
+        setCurrentTab(mNtpTab);
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+        assertTrue(mTopInsetCoordinator.getConsumeTopInsetForTesting());
+
+        // Verify setting the same value (false) is a no-op.
+        clearInvocations(mInsetObserver);
+        mTopInsetCoordinator.setStatusIndicatorVisible(false);
+        verify(mInsetObserver, never()).retriggerOnApplyWindowInsets();
+
+        // Set status indicator visible — top inset should NOT be consumed on NTP.
+        mTopInsetCoordinator.setStatusIndicatorVisible(true);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+        assertFalse(mTopInsetCoordinator.getConsumeTopInsetForTesting());
+
+        // Hide status indicator — top inset should be consumed again on NTP.
+        clearInvocations(mInsetObserver);
+        mTopInsetCoordinator.setStatusIndicatorVisible(false);
+        verify(mInsetObserver).retriggerOnApplyWindowInsets();
+        mTopInsetCoordinator.onApplyWindowInsets(mView, mWindowInsetsCompat);
+        assertTrue(mTopInsetCoordinator.getConsumeTopInsetForTesting());
+    }
+
     private WindowInsetsCompat createWindowInsetsCompat(int top) {
         Insets systemInsets = Insets.of(0, top, 0, 0);
         Insets displayCutoutInsets = Insets.of(0, top, 0, 0);
