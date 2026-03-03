@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<title>Iframer</title>
+<title>WebSocket</title>
 
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
@@ -8,11 +8,11 @@
 <script>
 "use strict";
 
-// Set the 'local-network' permission then attempt to iframe a resource
-// in the local address space.
+// Set the 'loopback-network' permission then attempt to open a websocket
+// connection to the loopback address space.
 //
-// By default, 'local-network' permission is set to 'granted'. This can be
-// changed by passing in a different value via the 'permission' URL parameter.
+// By default, 'loopback-network' permission is set to 'granted'. This can
+// be changed by passing in a different value via the 'permission' URL parameter.
 // Valid values:
 //
 //    * granted
@@ -20,20 +20,23 @@
 //    * prompt
 Promise.resolve().then(async () => {
     const window_url = new URL(window.location.href);
-    let permission_name = 'local-network'
+    let permission_name = 'loopback-network'
     let permission_value = 'granted';
-    if (window_url.searchParams.has('permission-name')) {
-        permission_name = window_url.searchParams.get('permission-name');
-    }
     if (window_url.searchParams.has('permission')) {
         permission_value = window_url.searchParams.get('permission');
     }
-
     test_driver.set_test_context(opener);
     await test_driver.set_permission({ name: permission_name }, permission_value);
 
-    const child = document.createElement('iframe');
-    child.src = new URL(window.location).searchParams.get('url');
-    document.body.appendChild(child);
+    const targetUrl = resolveUrl("/echo", Server.WSS_LOOPBACK);
+    const socket = new WebSocket(targetUrl);
+
+    socket.onopen = () => {
+      opener.postMessage("open", "*");
+    };
+
+    socket.onclose = (evt) => {
+      opener.postMessage(`close: code ${evt.code}`, "*");
+    };
 });
 </script>
