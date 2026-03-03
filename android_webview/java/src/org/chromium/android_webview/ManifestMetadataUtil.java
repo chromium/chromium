@@ -18,6 +18,8 @@ import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import javax.annotation.concurrent.GuardedBy;
+
 /**
  * Utility class to fetch metadata declared in the ApplicationManifest.xml file of the embedding
  * app.
@@ -60,7 +62,11 @@ public class ManifestMetadataUtil {
     private static final String XRW_ALLOWLIST_METADATA_NAME =
             "REQUESTED_WITH_HEADER_ORIGIN_ALLOW_LIST";
 
-    @Nullable private static volatile MetadataCache sMetadataCache;
+    private static final Object sLock = new Object();
+
+    @GuardedBy("sLock")
+    @Nullable
+    private static volatile MetadataCache sMetadataCache;
 
     /**
      * Cache for all AndroidManifest.xml meta-data. All meta-data should be fetched at the time this
@@ -95,17 +101,28 @@ public class ManifestMetadataUtil {
      * initialize the cache with the given context otherwise.
      */
     public static void ensureMetadataCacheInitialized(Context context) {
-        if (sMetadataCache == null) {
-            sMetadataCache = new MetadataCache(context);
+        synchronized (sLock) {
+            if (sMetadataCache == null) {
+                sMetadataCache = new MetadataCache(context);
+            }
         }
     }
 
     @VisibleForTesting
     public static MetadataCache getMetadataCache() {
-        if (sMetadataCache == null) {
-            sMetadataCache = new MetadataCache(ContextUtils.getApplicationContext());
+        synchronized (sLock) {
+            if (sMetadataCache == null) {
+                sMetadataCache = new MetadataCache(ContextUtils.getApplicationContext());
+            }
+            return sMetadataCache;
         }
-        return sMetadataCache;
+    }
+
+    @VisibleForTesting
+    public static void clearMetadataCache() {
+        synchronized (sLock) {
+            sMetadataCache = null;
+        }
     }
 
     /**

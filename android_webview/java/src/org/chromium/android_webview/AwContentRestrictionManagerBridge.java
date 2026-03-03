@@ -25,7 +25,9 @@ public class AwContentRestrictionManagerBridge {
     @CalledByNative
     public static boolean isContentRestrictionEnabled() {
         if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_CONTENT_RESTRICTION_SUPPORT)) {
-            Log.w(TAG, "Content restriction feature support is disabled.");
+            return false;
+        }
+        if (!Boolean.TRUE.equals(ManifestMetadataUtil.getContentRestrictionAppOptInPreference())) {
             return false;
         }
         AconfigFlaggedApiDelegate delegate =

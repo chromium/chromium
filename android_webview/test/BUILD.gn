@@ -946,6 +946,7 @@ robolectric_binary("android_webview_junit_tests") {
 
   deps = [
     ":crash_test_utils_java",
+    ":webview_instrumentation_test_utils_java",
     "//android_webview:android_webview_java",
     "//android_webview/nonembedded:crash_java",
     "//android_webview/nonembedded:services_java",
