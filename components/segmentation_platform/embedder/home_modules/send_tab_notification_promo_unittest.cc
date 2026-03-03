@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/send_tab_to_self/features.h"
@@ -18,12 +19,16 @@ class SendTabNotificationPromoTest : public testing::Test {
   SendTabNotificationPromoTest() = default;
   ~SendTabNotificationPromoTest() override = default;
 
-  void SetUp() override { Test::SetUp(); }
+  void SetUp() override {
+    Test::SetUp();
+    SendTabNotificationPromo::RegisterProfilePrefs(pref_service_.registry());
+  }
 
   void TearDown() override { Test::TearDown(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
+  TestingPrefServiceSimple pref_service_;
 };
 
 // Validates that ComputeCardResult() returns kTop with the valid signals.
@@ -36,27 +41,35 @@ TEST_F(SendTabNotificationPromoTest, TestComputeCardResult) {
 
   CardSelectionSignals card_signal(&all_signals, kSendTabNotificationPromo);
   std::unique_ptr<SendTabNotificationPromo> card =
-      std::make_unique<SendTabNotificationPromo>(0);
+      std::make_unique<SendTabNotificationPromo>();
   CardSelectionInfo::ShowResult result = card->ComputeCardResult(card_signal);
   EXPECT_EQ(EphemeralHomeModuleRank::kTop, result.position);
 }
 
-// Validates that `IsEnabled(…)` returns true when under the impression limit
+#if BUILDFLAG(IS_IOS)
+// Validates that `IsEnabled()` returns true when under the impression limit
 // and false otherwise.
 //
 // Note: `kMaxSendTabNotificationCardImpressions` is 1.
-TEST_F(SendTabNotificationPromoTest, TestIsEnabled) {
-#if BUILDFLAG(IS_IOS)
+TEST_F(SendTabNotificationPromoTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
   feature_list_.InitWithFeaturesAndParameters(
       {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
         {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
           "true"}}}},
       {});
 
-  EXPECT_TRUE(SendTabNotificationPromo::IsEnabled(0));
-  EXPECT_FALSE(SendTabNotificationPromo::IsEnabled(1));
-  EXPECT_FALSE(SendTabNotificationPromo::IsEnabled(2));
-#endif  // BUILDFLAG(IS_IOS)
+  auto card = std::make_unique<SendTabNotificationPromo>();
+
+  // 0 impressions.
+  EXPECT_TRUE(SendTabNotificationPromo::IsEnabled(&pref_service_));
+
+  // Simulate an impression.
+  card->OnShow(&pref_service_, nullptr);
+
+  // 1 impression (limit reached).
+  EXPECT_FALSE(SendTabNotificationPromo::IsEnabled(&pref_service_));
 }
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace segmentation_platform::home_modules

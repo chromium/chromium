@@ -36,9 +36,6 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
-// Impression counter for the Send Tab ephemeral module.
-const char kSendTabPromoImpressionCounterPref[] =
-    "ephemeral_pref_counter.send_tab_promo_counter";
 // Impression counter for the Default Browser promo ephemeral module.
 const char kDefaultBrowserPromoEphemeralModuleImpressionCounterPref[] =
     "ephemeral_pref_counter.default_browser_promo_ephemeral_module_counter";
@@ -106,8 +103,6 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
         std::make_unique<PriceTrackingNotificationPromo>());
   }
 
-  int send_tab_promo_count =
-      profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
   int default_browser_promo_count = profile_prefs_->GetInteger(
       kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
 
@@ -148,9 +143,9 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
     AddCardForTip(identifier, all_cards_by_priority_, profile_prefs_);
   }
 
-  if (SendTabNotificationPromo::IsEnabled(send_tab_promo_count)) {
+  if (SendTabNotificationPromo::IsEnabled(profile_prefs_)) {
     all_cards_by_priority_.push_back(
-        std::make_unique<SendTabNotificationPromo>(send_tab_promo_count));
+        std::make_unique<SendTabNotificationPromo>());
   }
 
   if (AppBundlePromoEphemeralModule::IsEnabled(local_state_prefs_)) {
@@ -187,7 +182,7 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   EnhancedSafeBrowsingEphemeralModule::RegisterProfilePrefs(registry);
   SavePasswordsEphemeralModule::RegisterProfilePrefs(registry);
   LensEphemeralModule::RegisterProfilePrefs(registry);
-  registry->RegisterIntegerPref(kSendTabPromoImpressionCounterPref, 0);
+  SendTabNotificationPromo::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(
       kDefaultBrowserPromoEphemeralModuleImpressionCounterPref, 0);
 }
@@ -216,12 +211,7 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kSendTabNotificationPromo) == 0) {
-    int impression_count =
-        profile_prefs_->GetInteger(kSendTabPromoImpressionCounterPref);
-    profile_prefs_->SetInteger(kSendTabPromoImpressionCounterPref,
-                               impression_count + 1);
-  } else if (strcmp(card_name, kDefaultBrowserPromoEphemeralModule) == 0) {
+  if (strcmp(card_name, kDefaultBrowserPromoEphemeralModule) == 0) {
     int impression_count = profile_prefs_->GetInteger(
         kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
     profile_prefs_->SetInteger(
