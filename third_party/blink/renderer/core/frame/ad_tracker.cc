@@ -10,6 +10,7 @@
 #include <variant>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -38,12 +39,17 @@ namespace {
 
 // Maps a MonkeyPatchableApi enum value to the corresponding property path
 // to access that API, starting from the context's global object.
-std::vector<const char*> GetApiPropertyPath(AdTracker::MonkeyPatchableApi api) {
+base::span<const char* const> GetApiPropertyPath(
+    AdTracker::MonkeyPatchableApi api) {
   switch (api) {
-    case AdTracker::MonkeyPatchableApi::kHistoryPushState:
-      return {"history", "pushState"};
-    case AdTracker::MonkeyPatchableApi::kNodeAppendChild:
-      return {"Node", "prototype", "appendChild"};
+    case AdTracker::MonkeyPatchableApi::kHistoryPushState: {
+      static const char* const kPath[] = {"history", "pushState"};
+      return kPath;
+    }
+    case AdTracker::MonkeyPatchableApi::kNodeAppendChild: {
+      static const char* const kPath[] = {"Node", "prototype", "appendChild"};
+      return kPath;
+    }
     case AdTracker::MonkeyPatchableApi::kNone:
       NOTREACHED();
   }
@@ -73,7 +79,7 @@ ApiFunctionInfo GetApiFunctionInfo(v8::Isolate* isolate,
 
   // Start with the global object.
   v8::Local<v8::Value> current_value = context->Global();
-  const std::vector<const char*> property_path = GetApiPropertyPath(api);
+  const base::span<const char* const> property_path = GetApiPropertyPath(api);
 
   // Traverse the property path (e.g., global object -> `history` ->
   // `pushState`).
@@ -84,8 +90,7 @@ ApiFunctionInfo GetApiFunctionInfo(v8::Isolate* isolate,
     }
 
     v8::Local<v8::Object> current_object = current_value.As<v8::Object>();
-    v8::Local<v8::String> property_key =
-        v8::String::NewFromUtf8(isolate, property_name).ToLocalChecked();
+    v8::Local<v8::String> property_key = V8AtomicString(isolate, property_name);
 
     v8::MaybeLocal<v8::Value> maybe_next_value =
         current_object->Get(context, property_key);
