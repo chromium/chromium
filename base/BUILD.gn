@@ -2893,7 +2893,6 @@ if (is_mac) {
 static_library("base_static") {
   sources = [
     "base_export.h",
-    "base_switches.cc",
     "base_switches.h",
     "immediate_crash.h",
   ]
@@ -4679,7 +4678,7 @@ if (is_android) {
   java_cpp_strings("java_switches_srcjar") {
     # External code should depend on ":base_java" instead.
     visibility = [ ":*" ]
-    sources = [ "base_switches.cc" ]
+    sources = [ "base_switches.h" ]
     template = "android/java/src/org/chromium/base/BaseSwitches.java.tmpl"
   }
 
