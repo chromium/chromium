@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.printing;
 
+import static org.chromium.components.embedder_support.util.UrlConstants.CONTENT_SCHEME;
+
+import android.net.Uri;
 import android.text.TextUtils;
 
 import org.jni_zero.CalledByNative;
@@ -23,6 +26,9 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.printing.Printable;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
 
 /**
@@ -111,13 +117,31 @@ public class TabPrinter implements Printable {
     }
 
     @Override
-    public @Nullable String getPdfFilePath() {
+    public @Nullable InputStream getPdfInputStream() {
         Tab tab = mTab.get();
         if (tab == null || !tab.isInitialized()) {
             return null;
         }
+
         if (tab.isNativePage() && tab.getNativePage() instanceof PdfPage) {
-            return tab.getNativePage().getCanonicalFilepath();
+            String pdfFilePath = tab.getNativePage().getCanonicalFilepath();
+            if (pdfFilePath == null) {
+                return null;
+            }
+
+            try {
+                if (pdfFilePath.startsWith(CONTENT_SCHEME)) {
+                    return ContextUtils.getApplicationContext()
+                            .getContentResolver()
+                            .openInputStream(Uri.parse(pdfFilePath));
+                } else {
+                    File file = new File(pdfFilePath);
+                    return new FileInputStream(file);
+                }
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to open PDF input stream.", e);
+                return null;
+            }
         } else {
             return null;
         }

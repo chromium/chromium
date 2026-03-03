@@ -7,6 +7,8 @@ package org.chromium.printing;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
+import java.io.InputStream;
+
 /**
  * Describes a class that can initiate the printing process.
  *
@@ -26,6 +28,6 @@ public interface Printable {
     /** Check if the current Printable can print. */
     boolean canPrint();
 
-    /** Get the file path if the print job is already a pdf. Otherwise return null. */
-    @Nullable String getPdfFilePath();
+    /** Get the InputStream if the print job is already a pdf. Otherwise return null. */
+    @Nullable InputStream getPdfInputStream();
 }

@@ -25,8 +25,6 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.printing.PrintDocumentAdapterWrapper.PdfGenerator;
 import org.chromium.ui.base.WindowAndroid;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -364,12 +362,11 @@ public class PrintingControllerImpl
             return;
         }
         mPages = convertPageRangesToIntegerArray(ranges);
-        String pdfFilePath = assumeNonNull(mPrintable).getPdfFilePath();
+        InputStream pdfInputStream = assumeNonNull(mPrintable).getPdfInputStream();
 
-        if (pdfFilePath == null) {
+        if (pdfInputStream == null) {
             // mRenderProcessId and mRenderFrameId could be invalid values, in this case we are
-            // going to
-            // print the main frame.
+            // going to print the main frame.
             if (mPrintable.print(mRenderProcessId, mRenderFrameId)) {
                 mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
             } else {
@@ -380,8 +377,8 @@ public class PrintingControllerImpl
             // We may get a CancellationSignal, after replying it (via WriteResultCallback) we might
             // get another onWrite call.
         } else {
-            // The print job is already a pdf. Copy to destination from the provided filepath.
-            onWriteForPdfPage(pdfFilePath, cancellationSignal);
+            // The print job is already a pdf. Copy to destination from the provided InputStream.
+            onWriteForPdfPage(pdfInputStream, cancellationSignal);
         }
     }
 
@@ -403,13 +400,10 @@ public class PrintingControllerImpl
     }
 
     private void onWriteForPdfPage(
-            final String pdfFilePath, final CancellationSignal cancellationSignal) {
+            final InputStream inputStream, final CancellationSignal cancellationSignal) {
         mPrintingState = PRINTING_STATE_STARTED_FROM_ONWRITE;
-        InputStream inputStream = null;
         OutputStream outputStream = null;
         try {
-            File file = new File(pdfFilePath);
-            inputStream = new FileInputStream(file);
             outputStream = new FileOutputStream(assumeNonNull(mFileDescriptor).getFileDescriptor());
 
             int count;

@@ -978,17 +978,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
         // The print functionality is enabled if:
         // 1. The device is running Desktop Android, OR
-        // 2. The current tab is a web-based PDF (transient).
-        // Note: Printing local PDFs (chrome-native://) is not yet supported.
+        // 2. The current tab is a PDF page.
         NativePage nativePage = currentTab.getNativePage();
         boolean isPdf = nativePage != null && nativePage.isPdf();
-        boolean isLocalPdf =
-                isPdf && currentTab.getUrl().getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
-
-        if (isLocalPdf) {
-            return false;
-        }
-
         return DeviceInfo.isDesktop() || isPdf;
     }
 
