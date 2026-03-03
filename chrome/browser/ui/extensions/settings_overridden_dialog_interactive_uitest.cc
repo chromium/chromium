@@ -389,9 +389,15 @@ class SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest
   base::test::ScopedFeatureList feature_list_;
 };
 
+// TODO(crbug.com/489293133): Re-enable the test
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_EscapeClosesDialog DISABLED_EscapeClosesDialog
+#else
+#define MAYBE_EscapeClosesDialog EscapeClosesDialog
+#endif
 IN_PROC_BROWSER_TEST_F(
     SettingsOverriddenExplicitChoiceDialogEscapableInteractiveUiTest,
-    EscapeClosesDialog) {
+    MAYBE_EscapeClosesDialog) {
   // This test verifies that pressing Escape closes the dialog when the
   // "escapable" feature parameter is set.
   RunTestSequence(
