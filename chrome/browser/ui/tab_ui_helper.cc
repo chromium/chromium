@@ -300,6 +300,14 @@ void TabUIHelper::DidFinishNavigation(
   tab_ui_change_callbacks_.Notify();
 }
 
+void TabUIHelper::PrimaryMainFrameRenderProcessGone(
+    base::TerminationStatus status) {
+  // The tab's main frame was crashed so observers should be notified.
+  if (IsCrashed()) {
+    tab_ui_change_callbacks_.Notify();
+  }
+}
+
 #if !BUILDFLAG(IS_ANDROID)
 void TabUIHelper::PrimaryPageChanged(content::Page& page) {
   if (tab().IsSplit()) {
@@ -309,6 +317,14 @@ void TabUIHelper::PrimaryPageChanged(content::Page& page) {
   }
 }
 #endif
+
+void TabUIHelper::SetCreatedBySessionRestore(bool created_by_session_restore) {
+  const bool was_hiding_throbber = ShouldHideThrobber();
+  created_by_session_restore_ = created_by_session_restore;
+  if (was_hiding_throbber != ShouldHideThrobber()) {
+    tab_ui_change_callbacks_.Notify();
+  }
+}
 
 void TabUIHelper::SetNeedsAttention(bool needs_attention) {
   if (needs_attention == needs_attention_) {

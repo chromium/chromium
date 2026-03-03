@@ -350,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldHideThrobber) {
       browser()->GetTabStripModel()->GetTabAtIndex(1);
   TabUIHelper* const helper = TabUIHelper::From(tab_interface);
   ASSERT_NE(nullptr, helper);
-  helper->set_created_by_session_restore(true);
+  helper->SetCreatedBySessionRestore(true);
   TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
   EXPECT_TRUE(helper->ShouldHideThrobber());
   EXPECT_TRUE(data.should_hide_throbber);
