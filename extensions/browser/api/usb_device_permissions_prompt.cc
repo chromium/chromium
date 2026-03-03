@@ -212,13 +212,4 @@ void UsbDevicePermissionsPrompt::AskForDevices(
   ShowDialog();
 }
 
-// static
-scoped_refptr<UsbDevicePermissionsPrompt::Prompt>
-UsbDevicePermissionsPrompt::CreateForTest(const Extension* extension,
-                                          bool multiple) {
-  return base::MakeRefCounted<UsbDevicePermissionsPrompt::Prompt>(
-      extension, nullptr, multiple, std::vector<UsbDeviceFilterPtr>(),
-      base::DoNothing());
-}
-
 }  // namespace extensions

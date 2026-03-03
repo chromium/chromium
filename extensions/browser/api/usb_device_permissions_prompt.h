@@ -149,9 +149,6 @@ class UsbDevicePermissionsPrompt {
                      std::vector<device::mojom::UsbDeviceFilterPtr> filters,
                      UsbDevicesCallback callback);
 
-  static scoped_refptr<Prompt> CreateForTest(const Extension* extension,
-                                             bool multiple);
-
  protected:
   virtual void ShowDialog() = 0;
 
