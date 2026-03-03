@@ -24,12 +24,12 @@ namespace actor {
 
 namespace {
 
-constexpr std::string_view kAllowedFieldName = "navigation_allowed";
-constexpr std::string_view kBlockedFieldName = "navigation_blocked";
+constexpr std::string_view kNavigationAllowedFieldName = "navigation_allowed";
+constexpr std::string_view kNavigationBlockedFieldName = "navigation_blocked";
 
-constexpr std::string_view kAllowedHistogramName =
+constexpr std::string_view kNavigationAllowedHistogramName =
     "Actor.SafetyListParseResult.NavigationAllowed";
-constexpr std::string_view kBlockedHistogramName =
+constexpr std::string_view kNavigationBlockedHistogramName =
     "Actor.SafetyListParseResult.NavigationBlocked";
 
 struct SafetyListEntry {
@@ -137,7 +137,7 @@ SafetyListManager::Decision SafetyListManager::Find(
     const GURL& source,
     const GURL& destination) const {
   const content_settings::RuleEntry* rule_entry =
-      host_indexed_content_settings_.Find(source, destination);
+      navigation_settings_.Find(source, destination);
 
   if (!rule_entry) {
     return Decision::kNone;
@@ -160,7 +160,7 @@ SafetyListManager::Decision SafetyListManager::Find(
 }
 
 SafetyListManager::SafetyListManager() {
-  MaybeSetHardcodedBlocklistEntries(host_indexed_content_settings_);
+  MaybeSetHardcodedBlocklistEntries(navigation_settings_);
 }
 SafetyListManager::~SafetyListManager() = default;
 
@@ -190,18 +190,16 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
   };
 
   base::expected<std::vector<SafetyListEntry>, ParseResult> allowed_result =
-      parse_one_list(kAllowedFieldName);
+      parse_one_list(kNavigationAllowedFieldName);
   base::expected<std::vector<SafetyListEntry>, ParseResult> blocked_result =
-      parse_one_list(kBlockedFieldName);
+      parse_one_list(kNavigationBlockedFieldName);
   if (allowed_result.has_value() || blocked_result.has_value()) {
-    host_indexed_content_settings_.Clear();
+    navigation_settings_.Clear();
     SetAll(SpanOverExpected(allowed_result),
-           ContentSetting::CONTENT_SETTING_ALLOW,
-           host_indexed_content_settings_);
+           ContentSetting::CONTENT_SETTING_ALLOW, navigation_settings_);
     SetAll(SpanOverExpected(blocked_result),
-           ContentSetting::CONTENT_SETTING_BLOCK,
-           host_indexed_content_settings_);
-    MaybeSetHardcodedBlocklistEntries(host_indexed_content_settings_);
+           ContentSetting::CONTENT_SETTING_BLOCK, navigation_settings_);
+    MaybeSetHardcodedBlocklistEntries(navigation_settings_);
   }
 
   return {allowed_result.error_or(ParseResult::kSuccess),
@@ -211,8 +209,10 @@ SafetyListManager::ParseStatus SafetyListManager::ParseSafetyListsInternal(
 void SafetyListManager::ParseSafetyLists(std::string_view json_string) {
   ParseStatus status = ParseSafetyListsInternal(json_string);
 
-  base::UmaHistogramEnumeration(kAllowedHistogramName, status.allowed_result);
-  base::UmaHistogramEnumeration(kBlockedHistogramName, status.blocked_result);
+  base::UmaHistogramEnumeration(kNavigationAllowedHistogramName,
+                                status.allowed_result);
+  base::UmaHistogramEnumeration(kNavigationBlockedHistogramName,
+                                status.blocked_result);
 }
 
 }  // namespace actor

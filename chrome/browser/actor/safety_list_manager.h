@@ -63,8 +63,8 @@ class SafetyListManager {
   static SafetyListManager* GetInstance();
   static SafetyListManager CreateForTesting();
 
-  // Looks up the most specific rule applying to `source` and `destination`. If
-  // no such rule exists, returns `Decision::kNone`.
+  // Looks up the most specific rule applying to a navigation from `source` to
+  // `destination`. If no such rule exists, returns `Decision::kNone`.
   Decision Find(const GURL& source, const GURL& destination) const;
 
   void ParseSafetyLists(std::string_view json);
@@ -81,8 +81,8 @@ class SafetyListManager {
 
   ParseStatus ParseSafetyListsInternal(std::string_view json_string);
 
-  // TODO(crbug.com/453660392): Add hashmap with JSON key -> SafetyList pairing.
-  content_settings::HostIndexedContentSettings host_indexed_content_settings_;
+  // Settings for allowing/blocking navigations.
+  content_settings::HostIndexedContentSettings navigation_settings_;
 };
 
 }  // namespace actor
