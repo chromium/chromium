@@ -227,7 +227,6 @@ BASE_DECLARE_FEATURE(kProtectRecentlyVisibleTab);
 BASE_DECLARE_FEATURE(kProtectedTabsAndroid);
 BASE_DECLARE_FEATURE(kPwaRestoreUi);
 BASE_DECLARE_FEATURE(kPwaRestoreUiAtStartup);
-BASE_DECLARE_FEATURE(kReadAloud);
 BASE_DECLARE_FEATURE(kReadAloudAudioOverviews);
 BASE_DECLARE_FEATURE(kReadAloudIPHMenuButtonHighlightCCT);
 BASE_DECLARE_FEATURE(kReadAloudPlayback);
@@ -360,12 +359,6 @@ inline constexpr base::FeatureParam<bool>
         "read_aloud_audio_overviews_should_consider_language_in_overview_"
         "readability",
         /* default_value=*/false);
-
-inline constexpr base::FeatureParam<int>
-    kReadAloudAudioReadabilityDelayMsAfterPageLoad(
-        &kReadAloud,
-        "read_aloud_readability_delay_ms_after_page_load",
-        /* default_value=*/500);
 
 inline constexpr base::FeatureParam<std::string>
     kReadAloudAudioOverviewsSupportedLanguages(

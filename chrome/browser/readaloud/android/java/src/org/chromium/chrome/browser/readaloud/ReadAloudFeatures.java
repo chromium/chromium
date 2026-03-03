@@ -10,7 +10,6 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -28,8 +27,7 @@ import java.util.List;
 @JNINamespace("readaloud")
 @NullMarked
 public final class ReadAloudFeatures {
-    private static final String API_KEY_OVERRIDE_PARAM_NAME = "api_key_override";
-    private static final String VOICES_OVERRIDE_PARAM_NAME = "voices_override";
+    private static final int READABILITY_DELAY_MS_AFTER_PAGE_LOAD = 500;
 
     private static @IneligibilityReason int sIneligibilityReason = IneligibilityReason.UNKNOWN;
 
@@ -37,7 +35,6 @@ public final class ReadAloudFeatures {
      * Returns true if Read Aloud is allowed. All must be true:
      *
      * <ul>
-     *   <li>Feature flag enabled
      *   <li>Not incognito mode
      *   <li>User opted into "Make search and browsing better"
      *   <li>Google is the default search engine
@@ -82,11 +79,6 @@ public final class ReadAloudFeatures {
             return false;
         }
 
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
-            sIneligibilityReason = IneligibilityReason.FEATURE_FLAG_DISABLED;
-            return false;
-        }
-
         return true;
     }
 
@@ -103,7 +95,7 @@ public final class ReadAloudFeatures {
     }
 
     public static int getReadabilityDelayMsAfterPageLoad() {
-      return ChromeFeatureList.sReadAloudReadabilityDelayMsAfterPageLoad.getValue();
+        return READABILITY_DELAY_MS_AFTER_PAGE_LOAD;
     }
 
     public static @IneligibilityReason int getIneligibilityReason() {
@@ -119,24 +111,6 @@ public final class ReadAloudFeatures {
     public static boolean isIPHMenuButtonHighlightCctEnabled() {
         return ChromeFeatureList.isEnabled(
                 ChromeFeatureList.READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT);
-    }
-
-    /** Returns the API key override feature param if present, or null otherwise. */
-    public static @Nullable String getApiKeyOverride() {
-        String apiKeyOverride =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.READALOUD, API_KEY_OVERRIDE_PARAM_NAME);
-        return apiKeyOverride.isEmpty() ? null : apiKeyOverride;
-    }
-
-    /**
-     * Returns the voice list override param value in serialized form, or empty
-     * string if the param is absent. Value is a base64-encoded ListVoicesResponse
-     * binarypb.
-     */
-    public static String getVoicesParam() {
-        return ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.READALOUD, VOICES_OVERRIDE_PARAM_NAME);
     }
 
     /** Return the metrics client ID or empty string if it isn't available. */

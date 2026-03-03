@@ -559,7 +559,6 @@ public abstract class ChromeFeatureList {
     public static final String PWA_RESTORE_UI_AT_STARTUP = "PwaRestoreUiAtStartup";
     public static final String PWA_UPDATE_DIALOG_FOR_ICON = "PwaUpdateDialogForIcon";
     public static final String QUIET_NOTIFICATION_PROMPTS = "QuietNotificationPrompts";
-    public static final String READALOUD = "ReadAloud";
     public static final String READALOUD_AUDIO_OVERVIEWS = "ReadAloudAudioOverviews";
     public static final String READALOUD_IPH_MENU_BUTTON_HIGHLIGHT_CCT =
             "ReadAloudIPHMenuButtonHighlightCCT";
@@ -1697,10 +1696,6 @@ public abstract class ChromeFeatureList {
                     "read_aloud_audio_overviews_speed_addition_percentage",
                     10);
 
-    public static final IntCachedFeatureParam sReadAloudReadabilityDelayMsAfterPageLoad =
-            newIntCachedFeatureParam(
-                    READALOUD, "read_aloud_readability_delay_ms_after_page_load", 500);
-
     public static final StringCachedFeatureParam sReadAloudAudioOverviewsSupportedLanguages =
             newStringCachedFeatureParam(
                     READALOUD_AUDIO_OVERVIEWS,
@@ -1838,7 +1833,6 @@ public abstract class ChromeFeatureList {
                     sPriceChangeModuleSkipShoppingPersistedTabDataDelayedInit,
                     sReadAloudAudioOverviewsSpeedAdditionPercentage,
                     sReadAloudAudioOverviewsSupportedLanguages,
-                    sReadAloudReadabilityDelayMsAfterPageLoad,
                     sSearchinCctApplyReferrerId,
                     sShouldConsiderLanguageInOverviewReadability,
                     sStartSurfaceReturnTimeTabletSecs,

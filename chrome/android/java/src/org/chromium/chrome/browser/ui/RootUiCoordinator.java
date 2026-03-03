@@ -1161,39 +1161,36 @@ public class RootUiCoordinator
                             getBottomSheetController(),
                             contextMenuPopulatorFactory));
         }
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.READALOUD)) {
-            TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
-            ReadAloudController controller =
-                    new ReadAloudController(
-                            mActivity,
-                            mProfileSupplier,
-                            tabModelSelector.getModel(/* incognito= */ false),
-                            tabModelSelector.getModel(/* incognito= */ true),
-                            getBottomSheetController(),
-                            mBottomControlsStacker,
-                            mLayoutManagerSupplier,
-                            mWindowAndroid,
-                            mActivityLifecycleDispatcher,
-                            mLayoutStateProviderOneShotSupplier,
-                            mFullscreenManager);
-            mReadAloudControllerSupplier.set(controller);
-            mReadAloudContextualSearchObserver =
-                    new ContextualSearchObserver() {
-                        @Override
-                        public void onShowContextualSearch() {
-                            controller.maybeHidePlayer();
-                        }
+        TabModelSelector tabModelSelector = mTabModelSelectorSupplier.get();
+        ReadAloudController controller =
+                new ReadAloudController(
+                        mActivity,
+                        mProfileSupplier,
+                        tabModelSelector.getModel(/* incognito= */ false),
+                        tabModelSelector.getModel(/* incognito= */ true),
+                        getBottomSheetController(),
+                        mBottomControlsStacker,
+                        mLayoutManagerSupplier,
+                        mWindowAndroid,
+                        mActivityLifecycleDispatcher,
+                        mLayoutStateProviderOneShotSupplier,
+                        mFullscreenManager);
+        mReadAloudControllerSupplier.set(controller);
+        mReadAloudContextualSearchObserver =
+                new ContextualSearchObserver() {
+                    @Override
+                    public void onShowContextualSearch() {
+                        controller.maybeHidePlayer();
+                    }
 
-                        @Override
-                        public void onHideContextualSearch() {
-                            controller.maybeShowPlayer();
-                        }
-                    };
-            ContextualSearchManager contextualSearchManager =
-                    mContextualSearchManagerSupplier.get();
-            if (contextualSearchManager != null) {
-                contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
-            }
+                    @Override
+                    public void onHideContextualSearch() {
+                        controller.maybeShowPlayer();
+                    }
+                };
+        ContextualSearchManager contextualSearchManager = mContextualSearchManagerSupplier.get();
+        if (contextualSearchManager != null) {
+            contextualSearchManager.addObserver(mReadAloudContextualSearchObserver);
         }
         if (DomDistillerFeatures.sReaderModeDistillInApp.isEnabled()) {
             mReaderModeBottomSheetManager =

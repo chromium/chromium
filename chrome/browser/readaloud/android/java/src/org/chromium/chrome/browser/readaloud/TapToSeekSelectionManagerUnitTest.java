@@ -35,7 +35,7 @@ import org.chromium.url.JUnitTestGURLs;
 /** Unit tests for {@link TapToSeekSelectionManager} */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-@EnableFeatures({ChromeFeatureList.READALOUD, ChromeFeatureList.READALOUD_PLAYBACK})
+@EnableFeatures({ChromeFeatureList.READALOUD_PLAYBACK})
 public class TapToSeekSelectionManagerUnitTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
