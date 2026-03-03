@@ -171,11 +171,13 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void AddLayoutShiftEntry(LayoutShift*);
   void AddVisibilityStateEntry(bool is_visible, base::TimeTicks start_time);
-  void AddSoftNavigationEntry(const AtomicString& name,
-                              base::TimeTicks start_time,
-                              const DOMPaintTimingInfo& paint_timing_info,
-                              uint32_t navigation_id,
-                              V8NavigationType::Enum navigation_type);
+  void AddSoftNavigationEntry(
+      const AtomicString& name,
+      base::TimeTicks start_time,
+      const DOMPaintTimingInfo& paint_timing_info,
+      uint32_t navigation_id,
+      V8NavigationType::Enum navigation_type,
+      InteractionContentfulPaint* largest_interaction_contentful_paint);
 
   // For soft navigations and back-forward cache restoration. This increments
   // the navigation ID, as specified in

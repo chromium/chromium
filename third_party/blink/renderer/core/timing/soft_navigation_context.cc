@@ -227,12 +227,14 @@ void SoftNavigationContext::Trace(Visitor* visitor) const {
   visitor->Trace(lcp_calculator_);
   visitor->Trace(first_image_or_text_);
   visitor->Trace(window_);
+  visitor->Trace(largest_icp_entry_);
 }
 
 void SoftNavigationContext::Shutdown() {
   lcp_calculator_ = nullptr;
   first_image_or_text_ = nullptr;
   window_ = nullptr;
+  largest_icp_entry_ = nullptr;
 }
 
 void SoftNavigationContext::EmitSoftNavigation() {
@@ -255,7 +257,8 @@ void SoftNavigationContext::EmitSoftNavigation() {
   CHECK(performance);
   performance->AddSoftNavigationEntry(
       AtomicString(AttributionUrl()), TimeOrigin(),
-      FirstContentfulPaintTimingInfo(), NavigationId(), NavigationType());
+      FirstContentfulPaintTimingInfo(), NavigationId(), NavigationType(),
+      largest_icp_entry_);
 }
 
 void SoftNavigationContext::Dispose() {
@@ -288,12 +291,15 @@ void SoftNavigationContext::EmitLcpPerformanceEntry(
   CHECK(window_);
   WindowPerformance* performance = DOMWindowPerformance::performance(*window_);
   auto* entry = MakeGarbageCollected<InteractionContentfulPaint>(
-      /*start_time=*/paint_timing_info.presentation_time,
+      /*start_time=*/performance->MonotonicTimeToDOMHighResTimeStamp(
+          TimeOrigin()),
       /*render_time=*/paint_timing_info.presentation_time, paint_size,
       performance->MonotonicTimeToDOMHighResTimeStamp(load_time), id, url,
       element, window_, navigation_id_);
   entry->SetPaintTimingInfo(paint_timing_info);
   performance->OnInteractionContentfulPaintUpdated(entry);
+
+  largest_icp_entry_ = entry;
 }
 
 void SoftNavigationContext::OnLcpMetricsForReportingChanged() {

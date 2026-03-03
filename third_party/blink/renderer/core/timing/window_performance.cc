@@ -1522,12 +1522,14 @@ void WindowPerformance::AddSoftNavigationEntry(
     base::TimeTicks timestamp,
     const DOMPaintTimingInfo& paint_timing_info,
     uint32_t navigation_id,
-    V8NavigationType::Enum navigation_type) {
+    V8NavigationType::Enum navigation_type,
+    InteractionContentfulPaint* largest_interaction_contentful_paint) {
   CHECK(RuntimeEnabledFeatures::SoftNavigationHeuristicsEnabled(
       GetExecutionContext()));
   SoftNavigationEntry* entry = MakeGarbageCollected<SoftNavigationEntry>(
       name, MonotonicTimeToDOMHighResTimeStamp(timestamp), paint_timing_info,
-      DomWindow(), navigation_id, navigation_type);
+      DomWindow(), navigation_id, navigation_type,
+      largest_interaction_contentful_paint);
 
   if (HasObserverFor(PerformanceEntry::kSoftNavigation)) {
     UseCounter::Count(GetExecutionContext(),

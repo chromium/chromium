@@ -10,18 +10,21 @@
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
 
 namespace blink {
+class InteractionContentfulPaint;
 class V8ObjectBuilder;
 
 class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  SoftNavigationEntry(AtomicString name,
-                      double start_time,
-                      const DOMPaintTimingInfo& paint_timing_info,
-                      DOMWindow* source,
-                      uint32_t navigation_id,
-                      V8NavigationType::Enum navigation_type);
+  SoftNavigationEntry(
+      AtomicString name,
+      double start_time,
+      const DOMPaintTimingInfo& paint_timing_info,
+      DOMWindow* source,
+      uint32_t navigation_id,
+      V8NavigationType::Enum navigation_type,
+      InteractionContentfulPaint* largest_interaction_contentful_paint);
   ~SoftNavigationEntry() override;
 
   const AtomicString& entryType() const override;
@@ -31,10 +34,17 @@ class CORE_EXPORT SoftNavigationEntry final : public PerformanceEntry {
     return V8NavigationType(navigation_type_);
   }
 
+  InteractionContentfulPaint* largestInteractionContentfulPaint() const {
+    return largest_interaction_contentful_paint_.Get();
+  }
+
+  void Trace(Visitor*) const override;
+
  private:
-  void BuildJSONValue(V8ObjectBuilder& builder) const override;
+  void BuildJSONValue(V8ObjectBuilder&) const override;
 
   const V8NavigationType::Enum navigation_type_;
+  Member<InteractionContentfulPaint> largest_interaction_contentful_paint_;
 };
 
 }  // namespace blink

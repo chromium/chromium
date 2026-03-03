@@ -21,7 +21,7 @@ InteractionContentfulPaint::InteractionContentfulPaint(
     Element* element,
     DOMWindow* source,
     uint32_t navigation_id)
-    : PerformanceEntry(/*duration=*/0.0,
+    : PerformanceEntry(/*duration=*/render_time - start_time,
                        g_empty_atom,
                        start_time,
                        source,

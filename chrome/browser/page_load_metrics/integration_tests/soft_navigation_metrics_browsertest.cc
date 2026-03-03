@@ -368,12 +368,14 @@ class SoftNavigationTest : public MetricIntegrationTest,
         observer.observe({type: 'interaction-contentful-paint', buffered: true,
                            includeSoftNavigationObservations: true});
         const lcpCandidates = observer.takeRecords();
-        // For each soft navigation, report the last LCP candidate's start time.
-        const startTimeByNavigationId = new Map();
+        // For each soft navigation, report the last LCP candidate's timing.
+        const timingByNavigationId = new Map();
         for (c of lcpCandidates) {
-          startTimeByNavigationId.set(c.navigationId, c.startTime);
+          timingByNavigationId.set(c.navigationId,
+                                   {startTime: c.startTime,
+                                    renderTime: c.renderTime});
         }
-        return Array.from(startTimeByNavigationId.values());
+        return Array.from(timingByNavigationId.values());
       })();
     )";
   }
@@ -430,8 +432,11 @@ class SoftNavigationTest : public MetricIntegrationTest,
       EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
       for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
         SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
+        const base::DictValue& timing = soft_nav_lcp_list[i].GetDict();
         double expected_lcp = soft_nav_lcp[i] + soft_nav_start_times[i];
-        EXPECT_NEAR(soft_nav_lcp_list[i].GetDouble(), expected_lcp, 6);
+        EXPECT_NEAR(timing.FindDouble("renderTime").value(), expected_lcp, 6);
+        EXPECT_NEAR(timing.FindDouble("startTime").value(),
+                    soft_nav_start_times[i], 6);
       }
     }
 

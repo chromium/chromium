@@ -162,6 +162,11 @@ class CORE_EXPORT PerformanceEntry : public ScriptWrappable {
   DOMHighResTimeStamp paintTime() const;
   std::optional<DOMHighResTimeStamp> presentationTime() const;
 
+  const DOMPaintTimingInfo& GetPaintTimingInfo() const {
+    CHECK(paint_timing_info_.has_value());
+    return paint_timing_info_.value();
+  }
+
   void Trace(Visitor*) const override;
 
   void SetPaintTimingInfo(const DOMPaintTimingInfo& paint_timing_info) {
