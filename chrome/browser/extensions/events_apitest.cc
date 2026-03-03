@@ -1075,7 +1075,8 @@ IN_PROC_BROWSER_TEST_F(
   ExtensionTestMessageListener registered_async("registered async");
 
   // Load the extension and wait for the async handler to kick off.
-  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  const Extension* extension = LoadExtension(
+      test_dir.UnpackedPath(), {.wait_for_registration_stored = true});
   ASSERT_TRUE(extension);
   ASSERT_TRUE(async_handler.WaitUntilSatisfied());
   // Let the async registration continue, and wait for the event to register.
