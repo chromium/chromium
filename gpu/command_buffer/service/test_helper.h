@@ -218,7 +218,6 @@ class TestHelper {
   static sh::InterfaceBlock ConstructInterfaceBlock(
       GLint array_size,
       sh::BlockLayoutType layout,
-      bool is_row_major_layout,
       bool static_use,
       const std::string& name,
       const std::string& instance_name,

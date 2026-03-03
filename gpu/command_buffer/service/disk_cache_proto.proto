@@ -43,9 +43,8 @@ message ShaderInterfaceBlockProto {
   optional string instance_name = 3;
   optional uint32 array_size = 4;
   optional int32 layout = 5;
-  optional bool is_row_major_layout = 6;
-  optional bool static_use = 7;
-  repeated ShaderInterfaceBlockFieldProto fields = 8;
+  optional bool static_use = 6;
+  repeated ShaderInterfaceBlockFieldProto fields = 7;
 }
 
 message ShaderProto {

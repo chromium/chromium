@@ -132,7 +132,6 @@ TEST_F(ShaderManagerTest, DoCompile) {
 
   const GLint kInterfaceBlock1Size = 1;
   const sh::BlockLayoutType kInterfaceBlock1Layout = sh::BLOCKLAYOUT_STANDARD;
-  const bool kInterfaceBlock1RowMajor = false;
   const bool kInterfaceBlock1StaticUse = false;
   const char* kInterfaceBlock1Name = "block1";
   const char* kInterfaceBlock1InstanceName = "block1instance";
@@ -216,9 +215,8 @@ TEST_F(ShaderManagerTest, DoCompile) {
   interface_block_map[kInterfaceBlock1Name] =
       TestHelper::ConstructInterfaceBlock(
           kInterfaceBlock1Size, kInterfaceBlock1Layout,
-          kInterfaceBlock1RowMajor, kInterfaceBlock1StaticUse,
-          kInterfaceBlock1Name, kInterfaceBlock1InstanceName,
-          interface_block1_fields);
+          kInterfaceBlock1StaticUse, kInterfaceBlock1Name,
+          kInterfaceBlock1InstanceName, interface_block1_fields);
 
   TestHelper::SetShaderStates(gl_.get(), shader1, true, &kLog,
                               &kTranslatedSource, nullptr, &attrib_map,
@@ -284,7 +282,6 @@ TEST_F(ShaderManagerTest, DoCompile) {
     ASSERT_TRUE(block_info != nullptr);
     EXPECT_EQ(it.second.arraySize, block_info->arraySize);
     EXPECT_EQ(it.second.layout, block_info->layout);
-    EXPECT_EQ(it.second.isRowMajorLayout, block_info->isRowMajorLayout);
     EXPECT_EQ(it.second.staticUse, block_info->staticUse);
     EXPECT_STREQ(it.second.name.c_str(), block_info->name.c_str());
     EXPECT_STREQ(it.second.name.c_str(),
