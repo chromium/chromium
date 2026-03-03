@@ -9,6 +9,7 @@
 
 #include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -22,10 +23,46 @@ class LoggerImpl : mojom::Logger {
  public:
   enum class Severity { kInfo, kWarning, kError };
 
+  struct Entry {
+    Entry(Severity severity,
+          mojom::LogCategory category,
+          base::Time time,
+          std::string_view component,
+          std::string_view message,
+          std::string_view sink_id,
+          std::string media_source,
+          std::string_view session_id);
+    Entry(Entry&& other);
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
+    Entry& operator=(Entry&& other);
+    ~Entry();
+
+    Severity severity;
+    mojom::LogCategory category;
+    base::Time time;
+    // This is usually the name of the class that is emitting the log.
+    std::string component;
+    std::string message;
+    // May be empty if the entry is not associated with a sink.
+    std::string sink_id;
+    // May be empty if the entry is not associated with a media source.
+    std::string media_source;
+    // May be empty if the entry is not associated with a session.
+    std::string session_id;
+  };
+
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnLogAdded(const Entry& entry) = 0;
+  };
+
   LoggerImpl();
-  ~LoggerImpl() override;
   LoggerImpl(const LoggerImpl&) = delete;
+  LoggerImpl(LoggerImpl&&) = delete;
   LoggerImpl& operator=(const LoggerImpl&) = delete;
+  LoggerImpl& operator=(LoggerImpl&&) = delete;
+  ~LoggerImpl() override;
 
   // mojom::Logger overrides:
   void LogInfo(mojom::LogCategory category,
@@ -58,41 +95,18 @@ class LoggerImpl : mojom::Logger {
            const std::string& media_source,
            const std::string& session_id);
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   std::string GetLogsAsJson() const;
   base::Value GetLogsAsValue() const;
+
+  static base::DictValue AsValue(const Entry& entry);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(LoggerImplTest, RecordAndGetLogs);
 
-  struct Entry {
-   public:
-    Entry(Severity severity,
-          mojom::LogCategory category,
-          base::Time time,
-          std::string_view component,
-          std::string_view message,
-          std::string_view sink_id,
-          std::string media_source,
-          std::string_view session_id);
-    Entry(Entry&& other);
-    Entry(const Entry&) = delete;
-    ~Entry();
-
-    Severity severity;
-    mojom::LogCategory category;
-    base::Time time;
-    // This is usually the name of the class that is emitting the log.
-    std::string component;
-    std::string message;
-    // May be empty if the entry is not associated with a sink.
-    std::string sink_id;
-    // May be empty if the entry is not associated with a media source.
-    std::string media_source;
-    // May be empty if the entry is not associated with a session.
-    std::string session_id;
-  };
-
-  static base::DictValue AsValue(const Entry& entry);
+  base::ObserverList<Observer> observers_;
 
   mojo::ReceiverSet<mojom::Logger> receivers_;
   base::circular_deque<Entry> entries_;

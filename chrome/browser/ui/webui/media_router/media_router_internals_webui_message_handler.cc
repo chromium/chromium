@@ -28,16 +28,29 @@ base::ListValue CastProviderStateToValue(
 }  // namespace
 
 MediaRouterInternalsWebUIMessageHandler::
-    MediaRouterInternalsWebUIMessageHandler(const MediaRouter* router,
+    MediaRouterInternalsWebUIMessageHandler(MediaRouter* router,
                                             MediaRouterDebugger& debugger)
     : router_(router), debugger_(debugger) {
   DCHECK(router_);
   debugger_->AddObserver(*this);
+  if (router_->GetLogger()) {
+    router_->GetLogger()->AddObserver(this);
+  }
 }
 
 MediaRouterInternalsWebUIMessageHandler::
     ~MediaRouterInternalsWebUIMessageHandler() {
   debugger_->RemoveObserver(*this);
+  if (router_->GetLogger()) {
+    router_->GetLogger()->RemoveObserver(this);
+  }
+}
+
+void MediaRouterInternalsWebUIMessageHandler::OnLogAdded(
+    const LoggerImpl::Entry& entry) {
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("on-log-added", LoggerImpl::AsValue(entry));
+  }
 }
 
 void MediaRouterInternalsWebUIMessageHandler::RegisterMessages() {
@@ -159,8 +172,9 @@ void MediaRouterInternalsWebUIMessageHandler::HandleIsMirroringStatsEnabled(
 
 void MediaRouterInternalsWebUIMessageHandler::OnMirroringStatsUpdated(
     const base::DictValue& json_logs) {
-  AllowJavascript();
-  FireWebUIListener("on-mirroring-stats-update", std::move(json_logs));
+  if (IsJavascriptAllowed()) {
+    FireWebUIListener("on-mirroring-stats-update", std::move(json_logs));
+  }
 }
 
 }  // namespace media_router

@@ -42,3 +42,13 @@ th {
 tr:nth-child(even) {
   background-color: lightgray;
 }
+
+#button-container {
+  margin-bottom: 10px;
+}
+
+button {
+  font-size: 14px;
+  margin-inline-end: 10px;
+  padding: 5px 10px;
+}

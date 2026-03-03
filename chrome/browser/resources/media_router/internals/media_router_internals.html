@@ -1,4 +1,4 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -10,6 +10,13 @@
 
 <body>
   <h1>Media Router Internals</h1>
+  <div id="button-container">
+    <button id="download-session">Download Session</button>
+    <button id="import-session">Import Session</button>
+    <button id="clear-session">Clear Session</button>
+    <input type="file" id="import-input" accept=".json,application/json"
+      style="display: none">
+  </div>
   <cr-tab-box>
     <div slot="tab">Sink status</div>
     <div slot="tab">Cast media route provider</div>
@@ -26,16 +33,19 @@
     </div>
     <div id="logs-slot" slot="panel">
       <table id="logs-table">
-        <tr>
-          <th>Time</th>
-          <th class="log-message">Message</th>
-          <th>SessionID</th>
-          <th>SinkID</th>
-          <th>MediaSource</th>
-          <th>Category</th>
-          <th>Component</th>
-          <th>Severity</th>
-        </tr>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th class="log-message">Message</th>
+            <th>SessionID</th>
+            <th>SinkID</th>
+            <th>MediaSource</th>
+            <th>Category</th>
+            <th>Component</th>
+            <th>Severity</th>
+          </tr>
+        </thead>
+        <tbody id="logs-tbody"></tbody>
       </table>
     </div>
   </cr-tab-box>
