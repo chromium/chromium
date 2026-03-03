@@ -2764,7 +2764,7 @@
         This account is managed
       </message>
       <message name="IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_CONTINUE_BUTTON" desc="Continue dialog button label for warning before saving or sharing the file. [iOS only]">
-        Share
+        Continue
       </message>
       <message name="IDS_IOS_ENTERPRISE_FILE_DOWNLOAD_WARN_LABEL" desc="Text displayed at the top of a dialog telling the user that saving or sharing the file is not recommended. [iOS only]">
         Based on your organization's policies, this file may contain sensitive information
