@@ -582,7 +582,7 @@ void PreloadHelper::PreloadIfNeeded(
   if (pending_preload) {
     if (RenderBlockingResourceManager* manager =
             document.GetRenderBlockingResourceManager()) {
-      if (EqualIgnoringASCIICase(params.as, "font")) {
+      if (EqualIgnoringAsciiCase(params.as, "font")) {
         manager->AddPendingFontPreload(*pending_preload);
       }
     }
@@ -795,7 +795,7 @@ void PreloadHelper::PrefetchIfNeeded(const LinkLoadParameters& params,
 
   ResourceRequest resource_request(params.href);
 
-  bool as_document = EqualIgnoringASCIICase(params.as, "document");
+  bool as_document = EqualIgnoringAsciiCase(params.as, "document");
 
   // If this corresponds to a preload that we promoted to a prefetch, and the
   // preload had `as="document"`, don't proceed because the original preload

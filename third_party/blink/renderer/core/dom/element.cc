@@ -6181,7 +6181,7 @@ bool Element::RecalcSelfOrAncestorHasDirAuto() {
   if (IsHTMLElement()) {
     AtomicString dir_attribute_value = FastGetAttribute(html_names::kDirAttr);
     if (HTMLElement::IsValidDirAttribute(dir_attribute_value)) {
-      return EqualIgnoringASCIICase(dir_attribute_value, "auto");
+      return EqualIgnoringAsciiCase(dir_attribute_value, "auto");
     }
   }
   Node* parent = parentNode();
@@ -7349,9 +7349,9 @@ const char* Element::ErrorMessageForAttachShadow(
       return "attachShadow() is disabled by disabledFeatures static field.";
     }
   }
-  if (EqualIgnoringASCIICase(mode, keywords::kOpen)) {
+  if (EqualIgnoringAsciiCase(mode, keywords::kOpen)) {
     mode_out = ShadowRootMode::kOpen;
-  } else if (EqualIgnoringASCIICase(mode, keywords::kClosed)) {
+  } else if (EqualIgnoringAsciiCase(mode, keywords::kClosed)) {
     mode_out = ShadowRootMode::kClosed;
   } else {
     CHECK(for_declarative);
@@ -9334,7 +9334,7 @@ void Element::setOuterHTML(
 Node* Element::InsertAdjacent(const String& where,
                               Node* new_child,
                               ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(where, "beforeBegin")) {
+  if (EqualIgnoringAsciiCase(where, "beforeBegin")) {
     if (ContainerNode* parent = parentNode()) {
       parent->InsertBefore(new_child, this, exception_state);
       if (!exception_state.HadException()) {
@@ -9344,17 +9344,17 @@ Node* Element::InsertAdjacent(const String& where,
     return nullptr;
   }
 
-  if (EqualIgnoringASCIICase(where, "afterBegin")) {
+  if (EqualIgnoringAsciiCase(where, "afterBegin")) {
     InsertBefore(new_child, firstChild(), exception_state);
     return exception_state.HadException() ? nullptr : new_child;
   }
 
-  if (EqualIgnoringASCIICase(where, "beforeEnd")) {
+  if (EqualIgnoringAsciiCase(where, "beforeEnd")) {
     AppendChild(new_child, exception_state);
     return exception_state.HadException() ? nullptr : new_child;
   }
 
-  if (EqualIgnoringASCIICase(where, "afterEnd")) {
+  if (EqualIgnoringAsciiCase(where, "afterEnd")) {
     if (ContainerNode* parent = parentNode()) {
       parent->InsertBefore(new_child, nextSibling(), exception_state);
       if (!exception_state.HadException()) {
@@ -9494,8 +9494,8 @@ bool Element::SkippedContainerStyleRecalc() const {
 static Node* ContextNodeForInsertion(const String& where,
                                      Element* element,
                                      ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(where, "beforeBegin") ||
-      EqualIgnoringASCIICase(where, "afterEnd")) {
+  if (EqualIgnoringAsciiCase(where, "beforeBegin") ||
+      EqualIgnoringAsciiCase(where, "afterEnd")) {
     Node* parent = element->parentNode();
     if (!parent || IsA<Document>(parent)) {
       exception_state.ThrowDOMException(
@@ -9505,8 +9505,8 @@ static Node* ContextNodeForInsertion(const String& where,
     }
     return parent;
   }
-  if (EqualIgnoringASCIICase(where, "afterBegin") ||
-      EqualIgnoringASCIICase(where, "beforeEnd")) {
+  if (EqualIgnoringAsciiCase(where, "afterBegin") ||
+      EqualIgnoringAsciiCase(where, "beforeEnd")) {
     return element;
   }
   exception_state.ThrowDOMException(
@@ -11137,11 +11137,11 @@ SpellcheckAttributeState Element::GetSpellcheckAttributeState() const {
   if (value == g_null_atom) {
     return kSpellcheckAttributeDefault;
   }
-  if (EqualIgnoringASCIICase(value, "true") ||
-      EqualIgnoringASCIICase(value, "")) {
+  if (EqualIgnoringAsciiCase(value, "true") ||
+      EqualIgnoringAsciiCase(value, "")) {
     return kSpellcheckAttributeTrue;
   }
-  if (EqualIgnoringASCIICase(value, "false")) {
+  if (EqualIgnoringAsciiCase(value, "false")) {
     return kSpellcheckAttributeFalse;
   }
 

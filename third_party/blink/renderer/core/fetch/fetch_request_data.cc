@@ -95,8 +95,9 @@ FetchRequestData* FetchRequestData::Create(
   for (const auto& pair : fetch_api_request->headers) {
     // TODO(leonhsl): Check sources of |fetch_api_request.headers| to make clear
     // whether we really need this filter.
-    if (EqualIgnoringASCIICase(pair.key, "referer"))
+    if (EqualIgnoringAsciiCase(pair.key, "referer")) {
       continue;
+    }
     if (for_service_worker_fetch_event == ForServiceWorkerFetchEvent::kTrue &&
         IsExcludedHeaderForServiceWorkerFetchEvent(pair.key)) {
       continue;

@@ -26,18 +26,18 @@ MathMLElement::MathMLElement(const QualifiedName& tagName,
 MathMLElement::~MathMLElement() {}
 
 static inline bool IsValidDirAttribute(const AtomicString& value) {
-  return EqualIgnoringASCIICase(value, "ltr") ||
-         EqualIgnoringASCIICase(value, "rtl");
+  return EqualIgnoringAsciiCase(value, "ltr") ||
+         EqualIgnoringAsciiCase(value, "rtl");
 }
 
 // Keywords from CSS font-size are skipped.
 static inline bool IsDisallowedMathSizeAttribute(const AtomicString& value) {
-  return EqualIgnoringASCIICase(value, "medium") ||
+  return EqualIgnoringAsciiCase(value, "medium") ||
          value.EndsWithIgnoringAsciiCase("large") ||
          value.EndsWithIgnoringAsciiCase("small") ||
-         EqualIgnoringASCIICase(value, "smaller") ||
-         EqualIgnoringASCIICase(value, "larger") ||
-         EqualIgnoringASCIICase(value, "math");
+         EqualIgnoringAsciiCase(value, "smaller") ||
+         EqualIgnoringAsciiCase(value, "larger") ||
+         EqualIgnoringAsciiCase(value, "math");
 }
 
 bool MathMLElement::IsPresentationAttribute(const QualifiedName& name) const {
@@ -107,10 +107,10 @@ void MathMLElement::CollectStyleForPresentationAttribute(
       }
     }
   } else if (name == mathml_names::kDisplaystyleAttr) {
-    if (EqualIgnoringASCIICase(value, "false")) {
+    if (EqualIgnoringAsciiCase(value, "false")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
                                               CSSValueID::kCompact);
-    } else if (EqualIgnoringASCIICase(value, "true")) {
+    } else if (EqualIgnoringAsciiCase(value, "true")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kMathStyle,
                                               CSSValueID::kNormal);
     }
@@ -135,10 +135,12 @@ void MathMLElement::ParseAttribute(const AttributeModificationParams& param) {
 std::optional<bool> MathMLElement::BooleanAttribute(
     const QualifiedName& name) const {
   const AtomicString& value = FastGetAttribute(name);
-  if (EqualIgnoringASCIICase(value, "true"))
+  if (EqualIgnoringAsciiCase(value, "true")) {
     return true;
-  if (EqualIgnoringASCIICase(value, "false"))
+  }
+  if (EqualIgnoringAsciiCase(value, "false")) {
     return false;
+  }
   return std::nullopt;
 }
 

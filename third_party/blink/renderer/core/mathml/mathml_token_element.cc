@@ -50,7 +50,7 @@ void MathMLTokenElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     HeapVector<CSSPropertyValue, 8>& style) {
   if (name == mathml_names::kMathvariantAttr &&
-      EqualIgnoringASCIICase(value, "normal")) {
+      EqualIgnoringAsciiCase(value, "normal")) {
     AddPropertyToPresentationAttributeStyle(
         style, CSSPropertyID::kTextTransform, CSSValueID::kNone);
   } else {

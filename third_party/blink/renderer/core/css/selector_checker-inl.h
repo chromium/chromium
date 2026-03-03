@@ -235,7 +235,7 @@ bool EasySelectorChecker::AttributeMatches(const Element& element,
 #endif
       return attribute_item.Value() == value ||
              (case_insensitive &&
-              EqualIgnoringASCIICase(attribute_item.Value(), value));
+              EqualIgnoringAsciiCase(attribute_item.Value(), value));
     }
   }
   return false;

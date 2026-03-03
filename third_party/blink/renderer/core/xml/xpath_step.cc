@@ -194,7 +194,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
         if (attr->GetDocument().IsHTMLDocument() && attr->ownerElement() &&
             attr->ownerElement()->IsHTMLElement() && namespace_uri.IsNull() &&
             attr->namespaceURI().IsNull())
-          return EqualIgnoringASCIICase(attr->localName(), name);
+          return EqualIgnoringAsciiCase(attr->localName(), name);
 
         return attr->localName() == name &&
                attr->namespaceURI() == namespace_uri;
@@ -222,7 +222,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
           // Paths without namespaces should match HTML elements in HTML
           // documents despite those having an XHTML namespace. Names are
           // compared case-insensitively.
-          return EqualIgnoringASCIICase(element->localName(), name) &&
+          return EqualIgnoringAsciiCase(element->localName(), name) &&
                  (namespace_uri.IsNull() ||
                   namespace_uri == element->namespaceURI());
         }

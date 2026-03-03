@@ -6090,7 +6090,7 @@ void Document::SendFocusNotification(Element* new_focused_element,
     is_editable =
         IsEditable(*new_focused_element) ||
         (text_control && !text_control->IsDisabledOrReadOnly()) ||
-        EqualIgnoringASCIICase(
+        EqualIgnoringAsciiCase(
             new_focused_element->FastGetAttribute(html_names::kRoleAttr),
             "textbox");
     is_richly_editable = IsRichlyEditable(*new_focused_element);
@@ -6644,10 +6644,11 @@ Event* Document::createEvent(ScriptState* script_state,
     if (event) {
       // createEvent for TouchEvent should throw DOM exception if touch event
       // feature detection is not enabled. See crbug.com/392584#c22
-      if (EqualIgnoringASCIICase(event_type, "TouchEvent") &&
+      if (EqualIgnoringAsciiCase(event_type, "TouchEvent") &&
           !RuntimeEnabledFeatures::TouchEventFeatureDetectionEnabled(
-              execution_context))
+              execution_context)) {
         break;
+      }
       return event;
     }
   }
@@ -7642,9 +7643,10 @@ KURL Document::OpenSearchDescriptionURL() {
            Traversal<HTMLLinkElement>::FirstChild(*head());
        link_element;
        link_element = Traversal<HTMLLinkElement>::NextSibling(*link_element)) {
-    if (!EqualIgnoringASCIICase(link_element->GetType(), kOpenSearchMIMEType) ||
-        !EqualIgnoringASCIICase(link_element->Rel(), kOpenSearchRelation))
+    if (!EqualIgnoringAsciiCase(link_element->GetType(), kOpenSearchMIMEType) ||
+        !EqualIgnoringAsciiCase(link_element->Rel(), kOpenSearchRelation)) {
       continue;
+    }
     if (link_element->Href().IsEmpty())
       continue;
 
@@ -7699,10 +7701,10 @@ String Document::designMode() const {
 
 void Document::setDesignMode(const String& value) {
   bool new_value = design_mode_;
-  if (EqualIgnoringASCIICase(value, keywords::kOn)) {
+  if (EqualIgnoringAsciiCase(value, keywords::kOn)) {
     new_value = true;
     UseCounter::Count(*this, WebFeature::kDocumentDesignModeEnabeld);
-  } else if (EqualIgnoringASCIICase(value, keywords::kOff)) {
+  } else if (EqualIgnoringAsciiCase(value, keywords::kOff)) {
     new_value = false;
   }
   if (new_value == design_mode_)
@@ -8195,8 +8197,9 @@ void Document::UpdateThemeColorCache() {
 
   for (HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(), "theme-color"))
+    if (EqualIgnoringAsciiCase(meta_element.GetName(), "theme-color")) {
       meta_theme_color_elements_.push_back(meta_element);
+    }
   }
 }
 
@@ -8228,7 +8231,7 @@ void Document::UpdateApplicationTitle() {
 
   for (HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(), "application-title")) {
+    if (EqualIgnoringAsciiCase(meta_element.GetName(), "application-title")) {
       GetFrame()->GetLocalFrameHostRemote().UpdateApplicationTitle(
           meta_element.Content().GetString());
       return;
@@ -8245,7 +8248,7 @@ void Document::ColorSchemeMetaChanged() {
   if (auto* root_element = documentElement()) {
     for (HTMLMetaElement& meta_element :
          Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-      if (EqualIgnoringASCIICase(meta_element.GetName(),
+      if (EqualIgnoringAsciiCase(meta_element.GetName(),
                                  keywords::kColorScheme)) {
         if ((color_scheme = CSSParser::ParseSingleValue(
                  CSSPropertyID::kColorScheme,
@@ -8290,7 +8293,7 @@ void Document::ResponsiveEmbeddedSizingChanged() {
   if (const auto* root_element = documentElement()) {
     for (const HTMLMetaElement& meta_element :
          Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-      if (EqualIgnoringASCIICase(meta_element.GetName(),
+      if (EqualIgnoringAsciiCase(meta_element.GetName(),
                                  keywords::kResponsiveEmbeddedSizing)) {
         responsive_embedded_sizing_ = true;
         break;
@@ -8336,9 +8339,9 @@ void Document::TextScaleMetaChanged() {
   if (const auto* root_element = documentElement()) {
     for (const HTMLMetaElement& meta_element :
          Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-      if (EqualIgnoringASCIICase(meta_element.GetName(), "text-scale")) {
+      if (EqualIgnoringAsciiCase(meta_element.GetName(), "text-scale")) {
         SetTextScaleMetaTagPresent(
-            EqualIgnoringASCIICase(meta_element.Content(), "scale"));
+            EqualIgnoringAsciiCase(meta_element.Content(), "scale"));
         // We only look at the first <meta name="text-scale"> tag.
         return;
       }
@@ -8355,7 +8358,7 @@ void Document::SupportsReducedMotionMetaChanged() {
   bool supports_reduced_motion = false;
   for (HTMLMetaElement& meta_element :
        Traversal<HTMLMetaElement>::DescendantsOf(*root_element)) {
-    if (EqualIgnoringASCIICase(meta_element.GetName(),
+    if (EqualIgnoringAsciiCase(meta_element.GetName(),
                                "supports-reduced-motion")) {
       SpaceSplitString split_content(
           AtomicString(meta_element.Content().GetString().LowerASCII()));
@@ -8508,7 +8511,7 @@ void Document::InitDNSPrefetch() {
 
 void Document::ParseDNSPrefetchControlHeader(
     const String& dns_prefetch_control) {
-  if (EqualIgnoringASCIICase(dns_prefetch_control, "on") &&
+  if (EqualIgnoringAsciiCase(dns_prefetch_control, "on") &&
       !have_explicitly_disabled_dns_prefetch_) {
     is_dns_prefetch_enabled_ = true;
     return;

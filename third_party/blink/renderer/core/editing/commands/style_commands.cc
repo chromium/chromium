@@ -385,7 +385,7 @@ bool StyleCommands::ExecuteStyleWithCSS(LocalFrame& frame,
                                         EditorCommandSource,
                                         const String& value) {
   frame.GetEditor().SetShouldStyleWithCSS(
-      !EqualIgnoringASCIICase(value, "false"));
+      !EqualIgnoringAsciiCase(value, "false"));
   return true;
 }
 
@@ -394,7 +394,7 @@ bool StyleCommands::ExecuteUseCSS(LocalFrame& frame,
                                   EditorCommandSource,
                                   const String& value) {
   frame.GetEditor().SetShouldStyleWithCSS(
-      EqualIgnoringASCIICase(value, "false"));
+      EqualIgnoringAsciiCase(value, "false"));
   return true;
 }
 

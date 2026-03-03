@@ -290,7 +290,7 @@ void DetectFrameworkVersions(Document& document,
   if (document.head()) {
     for (HTMLMetaElement& meta_element :
          Traversal<HTMLMetaElement>::DescendantsOf(*document.head())) {
-      if (EqualIgnoringASCIICase(meta_element.GetName(), "generator")) {
+      if (EqualIgnoringAsciiCase(meta_element.GetName(), "generator")) {
         generator_meta = &meta_element;
         break;
       }

@@ -61,11 +61,11 @@ void InternalSettings::ResetToConsistentState() {
 
 void InternalSettings::setViewportStyle(const String& style,
                                         ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(style, "default")) {
+  if (EqualIgnoringAsciiCase(style, "default")) {
     GetSettings().SetViewportStyle(mojom::blink::ViewportStyle::kDefault);
-  } else if (EqualIgnoringASCIICase(style, "mobile")) {
+  } else if (EqualIgnoringAsciiCase(style, "mobile")) {
     GetSettings().SetViewportStyle(mojom::blink::ViewportStyle::kMobile);
-  } else if (EqualIgnoringASCIICase(style, "television")) {
+  } else if (EqualIgnoringAsciiCase(style, "television")) {
     GetSettings().SetViewportStyle(mojom::blink::ViewportStyle::kTelevision);
   } else {
     exception_state.ThrowDOMException(
@@ -154,19 +154,19 @@ void InternalSettings::setTextTrackKindUserPreference(
 
 void InternalSettings::setEditingBehavior(const String& editing_behavior,
                                           ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(editing_behavior, "win")) {
+  if (EqualIgnoringAsciiCase(editing_behavior, "win")) {
     GetSettings().SetEditingBehaviorType(
         mojom::EditingBehavior::kEditingWindowsBehavior);
-  } else if (EqualIgnoringASCIICase(editing_behavior, "mac")) {
+  } else if (EqualIgnoringAsciiCase(editing_behavior, "mac")) {
     GetSettings().SetEditingBehaviorType(
         mojom::EditingBehavior::kEditingMacBehavior);
-  } else if (EqualIgnoringASCIICase(editing_behavior, "unix")) {
+  } else if (EqualIgnoringAsciiCase(editing_behavior, "unix")) {
     GetSettings().SetEditingBehaviorType(
         mojom::EditingBehavior::kEditingUnixBehavior);
-  } else if (EqualIgnoringASCIICase(editing_behavior, "android")) {
+  } else if (EqualIgnoringAsciiCase(editing_behavior, "android")) {
     GetSettings().SetEditingBehaviorType(
         mojom::EditingBehavior::kEditingAndroidBehavior);
-  } else if (EqualIgnoringASCIICase(editing_behavior, "chromeos")) {
+  } else if (EqualIgnoringAsciiCase(editing_behavior, "chromeos")) {
     GetSettings().SetEditingBehaviorType(
         mojom::EditingBehavior::kEditingChromeOSBehavior);
   } else {
@@ -295,13 +295,13 @@ void InternalSettings::setPrimaryHoverType(const String& type,
 void InternalSettings::setImageAnimationPolicy(
     const String& policy,
     ExceptionState& exception_state) {
-  if (EqualIgnoringASCIICase(policy, "allowed")) {
+  if (EqualIgnoringAsciiCase(policy, "allowed")) {
     GetSettings().SetImageAnimationPolicy(
         mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAllowed);
-  } else if (EqualIgnoringASCIICase(policy, "once")) {
+  } else if (EqualIgnoringAsciiCase(policy, "once")) {
     GetSettings().SetImageAnimationPolicy(
         mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyAnimateOnce);
-  } else if (EqualIgnoringASCIICase(policy, "none")) {
+  } else if (EqualIgnoringAsciiCase(policy, "none")) {
     GetSettings().SetImageAnimationPolicy(
         mojom::blink::ImageAnimationPolicy::kImageAnimationPolicyNoAnimation);
   } else {

@@ -177,7 +177,7 @@ class WebAssociatedURLLoaderTest : public testing::Test,
     WebURLRequest request(ToKURL("http://www.test.com/success.html"));
     request.SetMode(network::mojom::RequestMode::kSameOrigin);
     request.SetCredentialsMode(network::mojom::CredentialsMode::kOmit);
-    if (EqualIgnoringASCIICase(WebString::FromUTF8(header_field), "referer")) {
+    if (EqualIgnoringAsciiCase(WebString::FromUTF8(header_field), "referer")) {
       request.SetReferrerString(WebString::FromUTF8(header_value));
       request.SetReferrerPolicy(network::mojom::ReferrerPolicy::kDefault);
     } else {

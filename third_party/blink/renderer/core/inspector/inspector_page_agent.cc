@@ -273,7 +273,7 @@ static std::unique_ptr<TextResourceDecoder> CreateResourceTextDecoder(
     options.SetUseLenientXMLDecoding();
     return std::make_unique<TextResourceDecoder>(options);
   }
-  if (EqualIgnoringASCIICase(mime_type, "text/html")) {
+  if (EqualIgnoringAsciiCase(mime_type, "text/html")) {
     return std::make_unique<TextResourceDecoder>(TextResourceDecoderOptions(
         TextResourceDecoderOptions::kHTMLContent, Utf8Encoding()));
   }

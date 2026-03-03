@@ -264,7 +264,7 @@ bool IsElementNotNullAndEditable(Element* element) {
   if (text_control && !text_control->IsDisabledOrReadOnly())
     return true;
 
-  if (EqualIgnoringASCIICase(element->FastGetAttribute(html_names::kRoleAttr),
+  if (EqualIgnoringAsciiCase(element->FastGetAttribute(html_names::kRoleAttr),
                              "textbox")) {
     return true;
   }

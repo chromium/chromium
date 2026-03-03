@@ -53,8 +53,9 @@ bool HasNoTranslate(const Document& document) {
     AtomicString content = meta_element.Content();
     if (content.IsNull())
       content = meta_element.FastGetAttribute(html_names::kValueAttr);
-    if (EqualIgnoringASCIICase(content, "notranslate"))
+    if (EqualIgnoringAsciiCase(content, "notranslate")) {
       return true;
+    }
   }
 
   return false;

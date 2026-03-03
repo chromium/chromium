@@ -97,7 +97,7 @@ void Headers::append(ScriptState* script_state,
     return;
   }
   // UseCounter for usages of "set-cookie" in kRequestGuard'ed Headers.
-  if (guard_ == kRequestGuard && EqualIgnoringASCIICase(name, "set-cookie")) {
+  if (guard_ == kRequestGuard && EqualIgnoringAsciiCase(name, "set-cookie")) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     UseCounter::Count(execution_context,
                       WebFeature::kFetchSetCookieInRequestGuardedHeaders);
@@ -162,7 +162,7 @@ void Headers::remove(ScriptState* script_state,
     return;
   }
   // UseCounter for usages of "set-cookie" in kRequestGuard'ed Headers.
-  if (guard_ == kRequestGuard && EqualIgnoringASCIICase(name, "set-cookie")) {
+  if (guard_ == kRequestGuard && EqualIgnoringAsciiCase(name, "set-cookie")) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     UseCounter::Count(execution_context,
                       WebFeature::kFetchSetCookieInRequestGuardedHeaders);
@@ -254,7 +254,7 @@ void Headers::set(ScriptState* script_state,
     return;
   }
   // UseCounter for usages of "set-cookie" in kRequestGuard'ed Headers.
-  if (guard_ == kRequestGuard && EqualIgnoringASCIICase(name, "set-cookie")) {
+  if (guard_ == kRequestGuard && EqualIgnoringAsciiCase(name, "set-cookie")) {
     ExecutionContext* execution_context = ExecutionContext::From(script_state);
     UseCounter::Count(execution_context,
                       WebFeature::kFetchSetCookieInRequestGuardedHeaders);

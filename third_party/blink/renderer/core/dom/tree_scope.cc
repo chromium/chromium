@@ -582,8 +582,9 @@ Node* TreeScope::FindAnchor(const String& fragment) {
 
   // 7. If decodedFragment is "top", top of the document.
   // TODO(1117212) Move the IsEmpty check to step 2.
-  if (fragment.empty() || EqualIgnoringASCIICase(name, "top"))
+  if (fragment.empty() || EqualIgnoringAsciiCase(name, "top")) {
     anchor = &GetDocument();
+  }
 
   return anchor;
 }

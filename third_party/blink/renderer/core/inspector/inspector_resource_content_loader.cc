@@ -155,7 +155,7 @@ void InspectorResourceContentLoader::Start() {
     if (link_element)
       link = link_element->Href();
     if (!ShouldSkipFetchingUrl(link)) {
-      auto use_credentials = EqualIgnoringASCIICase(
+      auto use_credentials = EqualIgnoringAsciiCase(
           link_element->FastGetAttribute(html_names::kCrossoriginAttr),
           "use-credentials");
       ResourceRequest manifest_request(link);

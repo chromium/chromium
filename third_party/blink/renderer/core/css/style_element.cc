@@ -55,11 +55,11 @@ namespace blink {
 
 namespace {
 bool IsCSS(const AtomicString& type) {
-  return type.empty() || EqualIgnoringASCIICase(type, keywords::kTextCss);
+  return type.empty() || EqualIgnoringAsciiCase(type, keywords::kTextCss);
 }
 
 bool IsCSSModule(const AtomicString& type) {
-  return EqualIgnoringASCIICase(type, keywords::kModule);
+  return EqualIgnoringAsciiCase(type, keywords::kModule);
 }
 }  // namespace
 

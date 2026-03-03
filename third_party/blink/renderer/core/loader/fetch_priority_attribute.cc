@@ -9,10 +9,12 @@ namespace blink {
 
 mojom::blink::FetchPriorityHint GetFetchPriorityAttributeValue(
     const String& value) {
-  if (EqualIgnoringASCIICase(value, "low"))
+  if (EqualIgnoringAsciiCase(value, "low")) {
     return mojom::blink::FetchPriorityHint::kLow;
-  if (EqualIgnoringASCIICase(value, "high"))
+  }
+  if (EqualIgnoringAsciiCase(value, "high")) {
     return mojom::blink::FetchPriorityHint::kHigh;
+  }
   return mojom::blink::FetchPriorityHint::kAuto;
 }
 

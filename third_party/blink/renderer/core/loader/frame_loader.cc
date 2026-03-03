@@ -1561,7 +1561,7 @@ bool FrameLoader::ShouldPerformFragmentNavigation(bool is_form_submission,
   // We don't do this if we are submitting a form with method other than "GET",
   // explicitly reloading, currently displaying a frameset, or if the URL does
   // not have a fragment.
-  return EqualIgnoringASCIICase(http_method, http_names::kGET) &&
+  return EqualIgnoringAsciiCase(http_method, http_names::kGET) &&
          !IsReloadLoadType(load_type) && !IsBackForwardOrRestore(load_type) &&
          url.HasFragmentIdentifier() &&
          // For provisional LocalFrame, there is no real document loaded and

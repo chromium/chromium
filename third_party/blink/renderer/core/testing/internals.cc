@@ -638,19 +638,25 @@ void OnLCPPredicted(ScriptPromiseResolver<IDLString>* resolver,
 
 static std::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
     const String& marker_type) {
-  if (EqualIgnoringASCIICase(marker_type, "Spelling"))
+  if (EqualIgnoringAsciiCase(marker_type, "Spelling")) {
     return DocumentMarker::kSpelling;
-  if (EqualIgnoringASCIICase(marker_type, "Grammar"))
+  }
+  if (EqualIgnoringAsciiCase(marker_type, "Grammar")) {
     return DocumentMarker::kGrammar;
-  if (EqualIgnoringASCIICase(marker_type, "TextMatch"))
+  }
+  if (EqualIgnoringAsciiCase(marker_type, "TextMatch")) {
     return DocumentMarker::kTextMatch;
-  if (EqualIgnoringASCIICase(marker_type, "Composition"))
+  }
+  if (EqualIgnoringAsciiCase(marker_type, "Composition")) {
     return DocumentMarker::kComposition;
-  if (EqualIgnoringASCIICase(marker_type, "ActiveSuggestion"))
+  }
+  if (EqualIgnoringAsciiCase(marker_type, "ActiveSuggestion")) {
     return DocumentMarker::kActiveSuggestion;
-  if (EqualIgnoringASCIICase(marker_type, "Suggestion"))
+  }
+  if (EqualIgnoringAsciiCase(marker_type, "Suggestion")) {
     return DocumentMarker::kSuggestion;
-  if (EqualIgnoringASCIICase(marker_type, "Glic")) {
+  }
+  if (EqualIgnoringAsciiCase(marker_type, "Glic")) {
     return DocumentMarker::kGlic;
   }
   return std::nullopt;
@@ -658,8 +664,9 @@ static std::optional<DocumentMarker::MarkerType> MarkerTypeFrom(
 
 static std::optional<DocumentMarker::MarkerTypes> MarkerTypesFrom(
     const String& marker_type) {
-  if (marker_type.empty() || EqualIgnoringASCIICase(marker_type, "all"))
+  if (marker_type.empty() || EqualIgnoringAsciiCase(marker_type, "all")) {
     return DocumentMarker::MarkerTypes::All();
+  }
   std::optional<DocumentMarker::MarkerType> type = MarkerTypeFrom(marker_type);
   if (!type)
     return std::nullopt;
@@ -1512,10 +1519,12 @@ unsigned Internals::markerUnderlineColorForNode(
 
 static std::optional<TextMatchMarker::MatchStatus> MatchStatusFrom(
     const String& match_status) {
-  if (EqualIgnoringASCIICase(match_status, "kActive"))
+  if (EqualIgnoringAsciiCase(match_status, "kActive")) {
     return TextMatchMarker::MatchStatus::kActive;
-  if (EqualIgnoringASCIICase(match_status, "kInactive"))
+  }
+  if (EqualIgnoringAsciiCase(match_status, "kInactive")) {
     return TextMatchMarker::MatchStatus::kInactive;
+  }
   return std::nullopt;
 }
 
@@ -1558,27 +1567,35 @@ static bool ParseColor(const String& value,
 
 static std::optional<ImeTextSpanThickness> ThicknessFrom(
     const String& thickness) {
-  if (EqualIgnoringASCIICase(thickness, "none"))
+  if (EqualIgnoringAsciiCase(thickness, "none")) {
     return ImeTextSpanThickness::kNone;
-  if (EqualIgnoringASCIICase(thickness, "thin"))
+  }
+  if (EqualIgnoringAsciiCase(thickness, "thin")) {
     return ImeTextSpanThickness::kThin;
-  if (EqualIgnoringASCIICase(thickness, "thick"))
+  }
+  if (EqualIgnoringAsciiCase(thickness, "thick")) {
     return ImeTextSpanThickness::kThick;
+  }
   return std::nullopt;
 }
 
 static std::optional<ImeTextSpanUnderlineStyle> UnderlineStyleFrom(
     const String& underline_style) {
-  if (EqualIgnoringASCIICase(underline_style, "none"))
+  if (EqualIgnoringAsciiCase(underline_style, "none")) {
     return ImeTextSpanUnderlineStyle::kNone;
-  if (EqualIgnoringASCIICase(underline_style, "solid"))
+  }
+  if (EqualIgnoringAsciiCase(underline_style, "solid")) {
     return ImeTextSpanUnderlineStyle::kSolid;
-  if (EqualIgnoringASCIICase(underline_style, "dot"))
+  }
+  if (EqualIgnoringAsciiCase(underline_style, "dot")) {
     return ImeTextSpanUnderlineStyle::kDot;
-  if (EqualIgnoringASCIICase(underline_style, "dash"))
+  }
+  if (EqualIgnoringAsciiCase(underline_style, "dash")) {
     return ImeTextSpanUnderlineStyle::kDash;
-  if (EqualIgnoringASCIICase(underline_style, "squiggle"))
+  }
+  if (EqualIgnoringAsciiCase(underline_style, "squiggle")) {
     return ImeTextSpanUnderlineStyle::kSquiggle;
+  }
   return std::nullopt;
 }
 

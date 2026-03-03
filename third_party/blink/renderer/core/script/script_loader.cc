@@ -460,26 +460,26 @@ ScriptLoader::ScriptTypeAtPrepare ScriptLoader::GetScriptTypeAtPrepare(
     return ScriptTypeAtPrepare::kClassic;
   }
 
-  if (EqualIgnoringASCIICase(type, script_type_names::kModule)) {
+  if (EqualIgnoringAsciiCase(type, script_type_names::kModule)) {
     // <spec step="10">Otherwise, if the script block's type string is an ASCII
     // case-insensitive match for the string "module", then set el's type to
     // "module".</spec>
     return ScriptTypeAtPrepare::kModule;
   }
 
-  if (EqualIgnoringASCIICase(type, script_type_names::kImportmap)) {
+  if (EqualIgnoringAsciiCase(type, script_type_names::kImportmap)) {
     return ScriptTypeAtPrepare::kImportMap;
   }
 
-  if (EqualIgnoringASCIICase(type, script_type_names::kRoutemap) &&
+  if (EqualIgnoringAsciiCase(type, script_type_names::kRoutemap) &&
       RuntimeEnabledFeatures::RouteMatchingEnabled()) {
     return ScriptTypeAtPrepare::kRouteMap;
   }
 
-  if (EqualIgnoringASCIICase(type, script_type_names::kSpeculationrules)) {
+  if (EqualIgnoringAsciiCase(type, script_type_names::kSpeculationrules)) {
     return ScriptTypeAtPrepare::kSpeculationRules;
   }
-  if (EqualIgnoringASCIICase(type, script_type_names::kWebbundle)) {
+  if (EqualIgnoringAsciiCase(type, script_type_names::kWebbundle)) {
     return ScriptTypeAtPrepare::kWebBundle;
   }
 
@@ -1328,14 +1328,14 @@ bool ScriptLoader::IsScriptForEventSupported() const {
   for_attribute = for_attribute.StripWhiteSpace();
   // <spec step="19.4">If for is not an ASCII case-insensitive match for the
   // string "window", then return.</spec>
-  if (!EqualIgnoringASCIICase(for_attribute, "window")) {
+  if (!EqualIgnoringAsciiCase(for_attribute, "window")) {
     return false;
   }
   event_attribute = event_attribute.StripWhiteSpace();
   // <spec step="19.5">If event is not an ASCII case-insensitive match for
   // either the string "onload" or the string "onload()", then return.</spec>
-  return EqualIgnoringASCIICase(event_attribute, "onload") ||
-         EqualIgnoringASCIICase(event_attribute, "onload()");
+  return EqualIgnoringAsciiCase(event_attribute, "onload") ||
+         EqualIgnoringAsciiCase(event_attribute, "onload()");
 }
 
 String ScriptLoader::GetScriptText() const {

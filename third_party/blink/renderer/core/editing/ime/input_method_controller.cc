@@ -1797,18 +1797,18 @@ int InputMethodController::TextInputFlags() const {
 
   if (const AtomicString& autocomplete =
           element->FastGetAttribute(html_names::kAutocompleteAttr)) {
-    if (EqualIgnoringASCIICase(autocomplete, keywords::kOn)) {
+    if (EqualIgnoringAsciiCase(autocomplete, keywords::kOn)) {
       flags |= kWebTextInputFlagAutocompleteOn;
-    } else if (EqualIgnoringASCIICase(autocomplete, keywords::kOff)) {
+    } else if (EqualIgnoringAsciiCase(autocomplete, keywords::kOff)) {
       flags |= kWebTextInputFlagAutocompleteOff;
     }
   }
 
   if (const AtomicString& autocorrect =
           element->FastGetAttribute(html_names::kAutocorrectAttr)) {
-    if (EqualIgnoringASCIICase(autocorrect, keywords::kOn)) {
+    if (EqualIgnoringAsciiCase(autocorrect, keywords::kOn)) {
       flags |= kWebTextInputFlagAutocorrectOn;
-    } else if (EqualIgnoringASCIICase(autocorrect, keywords::kOff)) {
+    } else if (EqualIgnoringAsciiCase(autocorrect, keywords::kOff)) {
       flags |= kWebTextInputFlagAutocorrectOff;
     }
   }

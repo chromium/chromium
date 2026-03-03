@@ -57,7 +57,7 @@ void SpeculationRuleLoader::NotifyFinished() {
     return;
   }
 
-  if (!EqualIgnoringASCIICase(resource_->HttpContentType(),
+  if (!EqualIgnoringAsciiCase(resource_->HttpContentType(),
                               "application/speculationrules+json")) {
     CountSpeculationRulesLoadOutcome(
         SpeculationRulesLoadOutcome::kInvalidMimeType);

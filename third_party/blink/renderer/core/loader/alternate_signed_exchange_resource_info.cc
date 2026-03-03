@@ -45,7 +45,7 @@ void AddAlternateUrlIfValid(
     HashMap<AlternateSignedExchangeMachingKey, KURL>* alternate_urls) {
   if (!header.Valid() || header.Url().empty() || !header.Anchor().has_value() ||
       header.Anchor()->empty() ||
-      !EqualIgnoringASCIICase(header.Rel(), kAlternate) ||
+      !EqualIgnoringAsciiCase(header.Rel(), kAlternate) ||
       header.MimeType() != kSignedExchangeMimeType) {
     return;
   }
@@ -64,7 +64,7 @@ CreateEntryForLinkHeaderIfValid(
     const HashMap<AlternateSignedExchangeMachingKey, KURL>& alternate_urls) {
   if (!header.Valid() || header.Url().empty() ||
       header.HeaderIntegrity().empty() ||
-      !EqualIgnoringASCIICase(header.Rel(), kAllowedAltSxg)) {
+      !EqualIgnoringAsciiCase(header.Rel(), kAllowedAltSxg)) {
     return nullptr;
   }
   const KURL anchor_url(header.Url());

@@ -36,32 +36,32 @@ void HttpEquiv::Process(Document& document,
   DCHECK(!equiv.IsNull());
   DCHECK(!content.IsNull());
 
-  if (EqualIgnoringASCIICase(equiv, "default-style")) {
+  if (EqualIgnoringAsciiCase(equiv, "default-style")) {
     ProcessHttpEquivDefaultStyle(document, content);
-  } else if (EqualIgnoringASCIICase(equiv, "refresh")) {
+  } else if (EqualIgnoringAsciiCase(equiv, "refresh")) {
     ProcessHttpEquivRefresh(document.domWindow(), content, element);
-  } else if (EqualIgnoringASCIICase(equiv, "set-cookie")) {
+  } else if (EqualIgnoringAsciiCase(equiv, "set-cookie")) {
     ProcessHttpEquivSetCookie(document, content, element);
-  } else if (EqualIgnoringASCIICase(equiv, "content-language")) {
+  } else if (EqualIgnoringAsciiCase(equiv, "content-language")) {
     document.SetContentLanguage(content);
-  } else if (EqualIgnoringASCIICase(equiv, "x-dns-prefetch-control")) {
+  } else if (EqualIgnoringAsciiCase(equiv, "x-dns-prefetch-control")) {
     document.ParseDNSPrefetchControlHeader(content);
-  } else if (EqualIgnoringASCIICase(equiv, "x-frame-options")) {
+  } else if (EqualIgnoringAsciiCase(equiv, "x-frame-options")) {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kSecurity,
         mojom::ConsoleMessageLevel::kError,
         "X-Frame-Options may only be set via an HTTP header sent along with a "
         "document. It may not be set inside <meta>."));
-  } else if (EqualIgnoringASCIICase(equiv, http_names::kAcceptCH)) {
+  } else if (EqualIgnoringAsciiCase(equiv, http_names::kAcceptCH)) {
     HTMLMetaElement::ProcessMetaCH(document, content,
                                    network::MetaCHType::HttpEquivAcceptCH,
                                    /*is_doc_preloader=*/false, is_sync_parser);
-  } else if (EqualIgnoringASCIICase(equiv, http_names::kDelegateCH)) {
+  } else if (EqualIgnoringAsciiCase(equiv, http_names::kDelegateCH)) {
     HTMLMetaElement::ProcessMetaCH(document, content,
                                    network::MetaCHType::HttpEquivDelegateCH,
                                    /*is_doc_preloader=*/false, is_sync_parser);
-  } else if (EqualIgnoringASCIICase(equiv, "content-security-policy") ||
-             EqualIgnoringASCIICase(equiv,
+  } else if (EqualIgnoringAsciiCase(equiv, "content-security-policy") ||
+             EqualIgnoringAsciiCase(equiv,
                                     "content-security-policy-report-only")) {
     if (in_document_head_element) {
       ProcessHttpEquivContentSecurityPolicy(document.domWindow(), equiv,
@@ -69,7 +69,7 @@ void HttpEquiv::Process(Document& document,
     } else if (auto* window = document.domWindow()) {
       window->GetContentSecurityPolicy()->ReportMetaOutsideHead(content);
     }
-  } else if (EqualIgnoringASCIICase(equiv, http_names::kOriginTrial)) {
+  } else if (EqualIgnoringAsciiCase(equiv, http_names::kOriginTrial)) {
     if (in_document_head_element) {
       ProcessHttpEquivOriginTrial(document.domWindow(), content);
     }
@@ -84,7 +84,7 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
     return;
   if (window->GetFrame()->GetSettings()->GetBypassCSP())
     return;
-  if (EqualIgnoringASCIICase(equiv, "content-security-policy")) {
+  if (EqualIgnoringAsciiCase(equiv, "content-security-policy")) {
     Vector<network::mojom::blink::ContentSecurityPolicyPtr> parsed =
         ParseContentSecurityPolicies(
             content, network::mojom::blink::ContentSecurityPolicyType::kEnforce,
@@ -92,7 +92,7 @@ void HttpEquiv::ProcessHttpEquivContentSecurityPolicy(
             *(window->GetSecurityOrigin()));
     window->GetContentSecurityPolicy()->AddPolicies(mojo::Clone(parsed));
     window->GetPolicyContainer()->AddContentSecurityPolicies(std::move(parsed));
-  } else if (EqualIgnoringASCIICase(equiv,
+  } else if (EqualIgnoringAsciiCase(equiv,
                                     "content-security-policy-report-only")) {
     window->GetContentSecurityPolicy()->ReportReportOnlyInMeta(content);
   } else {

@@ -137,8 +137,8 @@ const String MediaQueryEvaluator::MediaType() const {
 bool MediaQueryEvaluator::MediaTypeMatch(
     const String& media_type_to_match) const {
   return media_type_to_match.empty() ||
-         EqualIgnoringASCIICase(media_type_to_match, media_type_names::kAll) ||
-         EqualIgnoringASCIICase(media_type_to_match, MediaType());
+         EqualIgnoringAsciiCase(media_type_to_match, media_type_names::kAll) ||
+         EqualIgnoringAsciiCase(media_type_to_match, MediaType());
 }
 
 static bool ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
@@ -545,10 +545,10 @@ static bool EvalResolution(const MediaQueryExpValue& value,
   // this method only got called if this media type matches the one defined
   // in the query. Thus, if if the document's media type is "print", the
   // media type of the query will either be "print" or "all".
-  if (EqualIgnoringASCIICase(media_values.MediaType(),
+  if (EqualIgnoringAsciiCase(media_values.MediaType(),
                              media_type_names::kScreen)) {
     actual_resolution = ClampTo<float>(media_values.DevicePixelRatio());
-  } else if (EqualIgnoringASCIICase(media_values.MediaType(),
+  } else if (EqualIgnoringAsciiCase(media_values.MediaType(),
                                     media_type_names::kPrint)) {
     // The resolution of images while printing should not depend on the DPI
     // of the screen. Until we support proper ways of querying this info
@@ -1082,7 +1082,7 @@ static bool ScanMediaFeatureEval(const MediaQueryExpValue& value,
                                  MediaQueryOperator,
                                  const MediaValues& media_values) {
   // Scan only applies to 'tv' media.
-  if (!EqualIgnoringASCIICase(media_values.MediaType(),
+  if (!EqualIgnoringAsciiCase(media_values.MediaType(),
                               media_type_names::kTv)) {
     return false;
   }
@@ -1284,7 +1284,7 @@ static bool OverflowInlineMediaFeatureEval(const MediaQueryExpValue& value,
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kOverflowMediaQuery);
 
-  bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
+  bool can_scroll = !EqualIgnoringAsciiCase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
   // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
@@ -1308,7 +1308,7 @@ static bool OverflowBlockMediaFeatureEval(const MediaQueryExpValue& value,
   UseCounter::Count(media_values.GetDocument(),
                     WebFeature::kOverflowMediaQuery);
 
-  bool can_scroll = !EqualIgnoringASCIICase(media_values.MediaType(),
+  bool can_scroll = !EqualIgnoringAsciiCase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
   // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context
@@ -1360,7 +1360,7 @@ static bool UpdateMediaFeatureEval(const MediaQueryExpValue& value,
                                    const MediaValues& media_values) {
   UseCounter::Count(media_values.GetDocument(), WebFeature::kUpdateMediaQuery);
 
-  bool can_update = !EqualIgnoringASCIICase(media_values.MediaType(),
+  bool can_update = !EqualIgnoringAsciiCase(media_values.MediaType(),
                                             media_type_names::kPrint);
   // No value = boolean context:
   // https://w3c.github.io/csswg-drafts/mediaqueries/#mq-boolean-context

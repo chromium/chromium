@@ -1321,8 +1321,9 @@ mojom::blink::FetchAPIRequestPtr Request::CreateFetchAPIRequest() const {
 
   HTTPHeaderMap headers;
   for (const auto& header : headers_->HeaderList()->List()) {
-    if (EqualIgnoringASCIICase(header.first, "referer"))
+    if (EqualIgnoringAsciiCase(header.first, "referer")) {
       continue;
+    }
     AtomicString key(header.first);
     AtomicString value(header.second);
     HTTPHeaderMap::AddResult result = headers.Add(key, value);

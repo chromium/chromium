@@ -199,7 +199,7 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
       StringView extension = last_path_component.substr(last_dot + 1);
       mime_type = MIMETypeRegistry::GetMIMETypeForExtension(extension);
     }
-    if (!EqualIgnoringASCIICase(mime_type, "text/css")) {
+    if (!EqualIgnoringAsciiCase(mime_type, "text/css")) {
       if (parser_context) {
         parser_context->CountDeprecation(
             WebFeature::kLocalCSSFileExtensionRejected);
@@ -219,8 +219,8 @@ bool CSSStyleSheetResource::CanUseSheet(const CSSParserContext* parser_context,
     return true;
   AtomicString content_type = HttpContentType();
   return content_type.empty() ||
-         EqualIgnoringASCIICase(content_type, "text/css") ||
-         EqualIgnoringASCIICase(content_type,
+         EqualIgnoringAsciiCase(content_type, "text/css") ||
+         EqualIgnoringAsciiCase(content_type,
                                 "application/x-unknown-content-type");
 }
 

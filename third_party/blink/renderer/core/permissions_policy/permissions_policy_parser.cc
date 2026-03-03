@@ -269,14 +269,14 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
       url::Origin self;
 
       // 'self' origin is used if the origin is exactly 'self'.
-      if (EqualIgnoringASCIICase(origin_string, "'self'")) {
+      if (EqualIgnoringAsciiCase(origin_string, "'self'")) {
         target_is_self = true;
         self = self_origin_.ToUrlOrigin();
       }
       // 'src' origin is used if |src_origin| is available and the
       // origin is a match for 'src'. |src_origin| is only set
       // when parsing an iframe allow attribute.
-      else if (src_origin_ && EqualIgnoringASCIICase(origin_string, "'src'")) {
+      else if (src_origin_ && EqualIgnoringAsciiCase(origin_string, "'src'")) {
         if (!src_origin_->IsOpaque()) {
           std::optional<network::OriginWithPossibleWildcards>
               maybe_origin_with_possible_wildcards =
@@ -291,7 +291,7 @@ ParsingContext::ParsedAllowlist ParsingContext::ParseAllowlist(
         } else {
           target_is_opaque = true;
         }
-      } else if (EqualIgnoringASCIICase(origin_string, "'none'")) {
+      } else if (EqualIgnoringAsciiCase(origin_string, "'none'")) {
         continue;
       } else if (origin_string == "*") {
         target_is_all = true;

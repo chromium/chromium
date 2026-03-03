@@ -1625,7 +1625,7 @@ void XMLHttpRequest::UpdateContentTypeAndCharset(
 
   if (original_content_type != content_type) {
     UseCounter::Count(GetExecutionContext(), WebFeature::kReplaceCharsetInXHR);
-    if (!EqualIgnoringASCIICase(original_content_type, content_type)) {
+    if (!EqualIgnoringAsciiCase(original_content_type, content_type)) {
       UseCounter::Count(GetExecutionContext(),
                         WebFeature::kReplaceCharsetInXHRIgnoringCase);
     }
@@ -1637,7 +1637,7 @@ bool XMLHttpRequest::ResponseIsXML() const {
 }
 
 bool XMLHttpRequest::ResponseIsHTML() const {
-  return EqualIgnoringASCIICase(FinalResponseMIMETypeInternal(), "text/html");
+  return EqualIgnoringAsciiCase(FinalResponseMIMETypeInternal(), "text/html");
 }
 
 int XMLHttpRequest::status() const {

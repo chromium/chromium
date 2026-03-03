@@ -908,7 +908,7 @@ bool LegacyRevealHiddenUntilFoundAncestors(const Node& node) {
 
   for (Node& parent : AncestorTraversal<FlatTreeTraversal>(&node, true)) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(parent)) {
-      if (EqualIgnoringASCIICase(
+      if (EqualIgnoringAsciiCase(
               element->FastGetAttribute(html_names::kHiddenAttr),
               keywords::kUntilFound)) {
         elements_to_reveal.push_back(element);
@@ -950,7 +950,7 @@ DisplayLockUtilities::RevealAutoExpandableAncestors(const Node& target) {
 
   for (Node& ancestor : AncestorTraversal<FlatTreeTraversal>(&target, true)) {
     if (HTMLElement* element = DynamicTo<HTMLElement>(ancestor)) {
-      if (EqualIgnoringASCIICase(
+      if (EqualIgnoringAsciiCase(
               element->FastGetAttribute(html_names::kHiddenAttr),
               keywords::kUntilFound)) {
         ancestors_to_reveal.push_back(
@@ -974,7 +974,7 @@ DisplayLockUtilities::RevealAutoExpandableAncestors(const Node& target) {
       return reveal_result;
     }
     if (reveal_pair.second == AncestorType::kHiddenUntilFound) {
-      if (!EqualIgnoringASCIICase(
+      if (!EqualIgnoringAsciiCase(
               reveal_pair.first->FastGetAttribute(html_names::kHiddenAttr),
               keywords::kUntilFound)) {
         return reveal_result;
@@ -983,7 +983,7 @@ DisplayLockUtilities::RevealAutoExpandableAncestors(const Node& target) {
       reveal_pair.first->DispatchEvent(
           *Event::CreateBubble(event_type_names::kBeforematch));
       if (!reveal_pair.first->isConnected() ||
-          !EqualIgnoringASCIICase(
+          !EqualIgnoringAsciiCase(
               reveal_pair.first->FastGetAttribute(html_names::kHiddenAttr),
               keywords::kUntilFound)) {
         return reveal_result;

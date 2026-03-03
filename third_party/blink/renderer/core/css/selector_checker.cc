@@ -267,7 +267,7 @@ static bool MatchesLangPseudoClass(
       return {language_range_, subtag_start_, subtag_end_ - subtag_start_};
     }
     bool Matches(const LanguageTagIterator& other) const {
-      return EqualIgnoringASCIICase(CurrentSubtag(), other.CurrentSubtag());
+      return EqualIgnoringAsciiCase(CurrentSubtag(), other.CurrentSubtag());
     }
     bool MatchesWildcard() const {
       StringView subtag = CurrentSubtag();
@@ -1260,7 +1260,7 @@ static bool AttributeValueMatches(const Attribute& attribute_item,
       // so even for a case-insensitive match, we test that first.
       return selector_value == value ||
              (case_insensitive &&
-              EqualIgnoringASCIICase(selector_value, value));
+              EqualIgnoringAsciiCase(selector_value, value));
     case CSSSelector::kAttributeSet:
       return true;
     case CSSSelector::kAttributeList: {
@@ -2892,9 +2892,9 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
 
       TextDirection direction;
-      if (EqualIgnoringASCIICase(argument, "ltr")) {
+      if (EqualIgnoringAsciiCase(argument, "ltr")) {
         direction = TextDirection::kLtr;
-      } else if (EqualIgnoringASCIICase(argument, "rtl")) {
+      } else if (EqualIgnoringAsciiCase(argument, "rtl")) {
         direction = TextDirection::kRtl;
       } else {
         break;

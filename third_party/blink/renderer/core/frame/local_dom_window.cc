@@ -2431,9 +2431,9 @@ DOMWindow* LocalDOMWindow::open(v8::Isolate* isolate,
   // the special case target names (_top, _parent, _self) ignore opener
   // policy (by always returning a non-null window, and by never overriding
   // the opener). The spec doesn't mention this.
-  if (EqualIgnoringASCIICase(target, "_top") ||
-      EqualIgnoringASCIICase(target, "_parent") ||
-      EqualIgnoringASCIICase(target, "_self")) {
+  if (EqualIgnoringAsciiCase(target, "_top") ||
+      EqualIgnoringAsciiCase(target, "_parent") ||
+      EqualIgnoringAsciiCase(target, "_self")) {
     return result.frame->DomWindow();
   }
 

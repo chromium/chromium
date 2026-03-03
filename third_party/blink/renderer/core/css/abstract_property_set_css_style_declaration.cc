@@ -144,7 +144,7 @@ void AbstractPropertySetCSSStyleDeclaration::setProperty(
     return;
   }
 
-  bool important = EqualIgnoringASCIICase(priority, "important");
+  bool important = EqualIgnoringAsciiCase(priority, "important");
   if (!important && !priority.empty()) {
     return;
   }

@@ -106,10 +106,10 @@ bool IsValidBrowsingContextNameOrKeyword(const String& name_or_keyword) {
   // valid browsing context name or that is an ASCII case-insensitive match for
   // one of: _blank, _self, _parent, or _top."
   if (IsValidContextName(name_or_keyword) ||
-      EqualIgnoringASCIICase(name_or_keyword, "_blank") ||
-      EqualIgnoringASCIICase(name_or_keyword, "_self") ||
-      EqualIgnoringASCIICase(name_or_keyword, "_parent") ||
-      EqualIgnoringASCIICase(name_or_keyword, "_top")) {
+      EqualIgnoringAsciiCase(name_or_keyword, "_blank") ||
+      EqualIgnoringAsciiCase(name_or_keyword, "_self") ||
+      EqualIgnoringAsciiCase(name_or_keyword, "_parent") ||
+      EqualIgnoringAsciiCase(name_or_keyword, "_top")) {
     return true;
   }
   return false;
@@ -836,9 +836,9 @@ SpeculationRuleSet::SpeculationTargetHintFromString(
   // Currently only "_blank" and "_self" are supported.
   // TODO(https://crbug.com/1354049): Support more browsing context names and
   // keywords.
-  if (EqualIgnoringASCIICase(target_hint_str, "_blank")) {
+  if (EqualIgnoringAsciiCase(target_hint_str, "_blank")) {
     return mojom::blink::SpeculationTargetHint::kBlank;
-  } else if (EqualIgnoringASCIICase(target_hint_str, "_self")) {
+  } else if (EqualIgnoringAsciiCase(target_hint_str, "_self")) {
     return mojom::blink::SpeculationTargetHint::kSelf;
   } else {
     return mojom::blink::SpeculationTargetHint::kNoHint;

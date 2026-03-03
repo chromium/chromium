@@ -454,46 +454,49 @@ void DOMSelection::modify(const String& alter_string,
     return;
 
   SelectionModifyAlteration alter;
-  if (EqualIgnoringASCIICase(alter_string, "extend"))
+  if (EqualIgnoringAsciiCase(alter_string, "extend")) {
     alter = SelectionModifyAlteration::kExtend;
-  else if (EqualIgnoringASCIICase(alter_string, "move"))
+  } else if (EqualIgnoringAsciiCase(alter_string, "move")) {
     alter = SelectionModifyAlteration::kMove;
-  else
+  } else {
     return;
+  }
 
   SelectionModifyDirection direction;
-  if (EqualIgnoringASCIICase(direction_string, "forward"))
+  if (EqualIgnoringAsciiCase(direction_string, "forward")) {
     direction = SelectionModifyDirection::kForward;
-  else if (EqualIgnoringASCIICase(direction_string, "backward"))
+  } else if (EqualIgnoringAsciiCase(direction_string, "backward")) {
     direction = SelectionModifyDirection::kBackward;
-  else if (EqualIgnoringASCIICase(direction_string, "left"))
+  } else if (EqualIgnoringAsciiCase(direction_string, "left")) {
     direction = SelectionModifyDirection::kLeft;
-  else if (EqualIgnoringASCIICase(direction_string, "right"))
+  } else if (EqualIgnoringAsciiCase(direction_string, "right")) {
     direction = SelectionModifyDirection::kRight;
-  else
+  } else {
     return;
+  }
 
   TextGranularity granularity;
-  if (EqualIgnoringASCIICase(granularity_string, "character"))
+  if (EqualIgnoringAsciiCase(granularity_string, "character")) {
     granularity = TextGranularity::kCharacter;
-  else if (EqualIgnoringASCIICase(granularity_string, "word"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "word")) {
     granularity = TextGranularity::kWord;
-  else if (EqualIgnoringASCIICase(granularity_string, "sentence"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "sentence")) {
     granularity = TextGranularity::kSentence;
-  else if (EqualIgnoringASCIICase(granularity_string, "line"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "line")) {
     granularity = TextGranularity::kLine;
-  else if (EqualIgnoringASCIICase(granularity_string, "paragraph"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "paragraph")) {
     granularity = TextGranularity::kParagraph;
-  else if (EqualIgnoringASCIICase(granularity_string, "lineboundary"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "lineboundary")) {
     granularity = TextGranularity::kLineBoundary;
-  else if (EqualIgnoringASCIICase(granularity_string, "sentenceboundary"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "sentenceboundary")) {
     granularity = TextGranularity::kSentenceBoundary;
-  else if (EqualIgnoringASCIICase(granularity_string, "paragraphboundary"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "paragraphboundary")) {
     granularity = TextGranularity::kParagraphBoundary;
-  else if (EqualIgnoringASCIICase(granularity_string, "documentboundary"))
+  } else if (EqualIgnoringAsciiCase(granularity_string, "documentboundary")) {
     granularity = TextGranularity::kDocumentBoundary;
-  else
+  } else {
     return;
+  }
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.

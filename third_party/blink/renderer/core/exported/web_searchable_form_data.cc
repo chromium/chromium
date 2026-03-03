@@ -227,9 +227,10 @@ WebSearchableFormData::WebSearchableFormData(
       static_cast<HTMLInputElement*>(selected_input_element);
 
   // Only consider forms that GET data.
-  if (EqualIgnoringASCIICase(
-          form_element->FastGetAttribute(html_names::kMethodAttr), "post"))
+  if (EqualIgnoringAsciiCase(
+          form_element->FastGetAttribute(html_names::kMethodAttr), "post")) {
     return;
+  }
 
   TextEncoding encoding;
   GetFormEncoding(*form_element, &encoding);

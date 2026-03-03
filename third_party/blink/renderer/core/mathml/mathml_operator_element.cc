@@ -145,11 +145,11 @@ void MathMLOperatorElement::ComputeDictionaryCategory() {
   const auto& value = FastGetAttribute(mathml_names::kFormAttr);
   bool explicit_form = true;
   MathMLOperatorDictionaryForm form;
-  if (EqualIgnoringASCIICase(value, "prefix")) {
+  if (EqualIgnoringAsciiCase(value, "prefix")) {
     form = MathMLOperatorDictionaryForm::kPrefix;
-  } else if (EqualIgnoringASCIICase(value, "infix")) {
+  } else if (EqualIgnoringAsciiCase(value, "infix")) {
     form = MathMLOperatorDictionaryForm::kInfix;
-  } else if (EqualIgnoringASCIICase(value, "postfix")) {
+  } else if (EqualIgnoringAsciiCase(value, "postfix")) {
     form = MathMLOperatorDictionaryForm::kPostfix;
   } else {
     // TODO(crbug.com/1121113): Implement the remaining rules for determining

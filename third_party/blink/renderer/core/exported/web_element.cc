@@ -100,7 +100,7 @@ bool WebElement::IsEditable() const {
       return true;
   }
 
-  return EqualIgnoringASCIICase(
+  return EqualIgnoringAsciiCase(
       element->FastGetAttribute(html_names::kRoleAttr), "textbox");
 }
 
@@ -156,7 +156,7 @@ bool WebElement::WritingSuggestions() const {
   const auto* html_element =
       blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());
   return html_element &&
-         !EqualIgnoringASCIICase(html_element->writingSuggestions(),
+         !EqualIgnoringAsciiCase(html_element->writingSuggestions(),
                                  keywords::kFalse);
 }
 

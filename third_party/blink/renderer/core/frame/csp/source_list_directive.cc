@@ -59,7 +59,7 @@ CSPCheckResult CSPSourceListAllows(
   if (source_list.allow_star) {
     if (url.ProtocolIsInHttpFamily() ||
         (!url.Protocol().empty() &&
-         EqualIgnoringASCIICase(url.Protocol(), self_source.scheme))) {
+         EqualIgnoringAsciiCase(url.Protocol(), self_source.scheme))) {
       return CSPCheckResult::Allowed();
     }
   }

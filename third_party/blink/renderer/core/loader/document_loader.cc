@@ -1199,7 +1199,7 @@ void DocumentLoader::SetHistoryItemStateForCommit(
 
   history_item_->SetURL(UrlForHistory());
   history_item_->SetReferrer(referrer_.GetString());
-  if (EqualIgnoringASCIICase(http_method_, "POST")) {
+  if (EqualIgnoringAsciiCase(http_method_, "POST")) {
     // FIXME: Eventually we have to make this smart enough to handle the case
     // where we have a stream for the body to handle the "data interspersed with
     // files" feature.
@@ -2041,8 +2041,8 @@ void DocumentLoader::StartLoadingInternal() {
   HandleResponse();
 
   loading_main_document_from_mhtml_archive_ =
-      EqualIgnoringASCIICase("multipart/related", response_.MimeType()) ||
-      EqualIgnoringASCIICase("message/rfc822", response_.MimeType());
+      EqualIgnoringAsciiCase("multipart/related", response_.MimeType()) ||
+      EqualIgnoringAsciiCase("message/rfc822", response_.MimeType());
   if (loading_main_document_from_mhtml_archive_) {
     // The browser process should block any navigation to an MHTML archive
     // inside iframes. See NavigationRequest::OnResponseStarted().
@@ -3452,7 +3452,7 @@ void DocumentLoader::RecordUseCountersForCommit() {
   }
   AtomicString content_encoding =
       response_.HttpHeaderField(http_names::kContentEncoding);
-  if (EqualIgnoringASCIICase(content_encoding, "zstd")) {
+  if (EqualIgnoringAsciiCase(content_encoding, "zstd")) {
     CountUse(WebFeature::kZstdContentEncoding);
     CountUse(WebFeature::kZstdContentEncodingForNavigation);
     if (frame_->IsOutermostMainFrame()) {
@@ -3471,9 +3471,9 @@ void DocumentLoader::RecordUseCountersForCommit() {
     CountUse(frame_->IsOutermostMainFrame()
                  ? WebFeature::kSharedDictionaryUsedForMainFrameNavigation
                  : WebFeature::kSharedDictionaryUsedForSubFrameNavigation);
-    if (EqualIgnoringASCIICase(content_encoding, "dcb")) {
+    if (EqualIgnoringAsciiCase(content_encoding, "dcb")) {
       CountUse(WebFeature::kSharedDictionaryUsedWithSharedBrotli);
-    } else if (EqualIgnoringASCIICase(content_encoding, "dcz")) {
+    } else if (EqualIgnoringAsciiCase(content_encoding, "dcz")) {
       CountUse(WebFeature::kSharedDictionaryUsedWithSharedZstd);
     }
   }
@@ -3742,7 +3742,7 @@ void DocumentLoader::MaybeStartLoadingBodyInBackground(
     const ResourceResponse& response) {
   if (!body_loader ||
       !base::FeatureList::IsEnabled(features::kThreadedBodyLoader) ||
-      !EqualIgnoringASCIICase(response.MimeType(), "text/html")) {
+      !EqualIgnoringAsciiCase(response.MimeType(), "text/html")) {
     return;
   }
 

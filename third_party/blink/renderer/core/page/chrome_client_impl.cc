@@ -385,7 +385,7 @@ Page* ChromeClientImpl::CreateWindowDelegate(
 
   NotifyPopupOpeningObservers();
   const AtomicString& frame_name =
-      !EqualIgnoringASCIICase(name, "_blank") ? name : g_empty_atom;
+      !EqualIgnoringAsciiCase(name, "_blank") ? name : g_empty_atom;
   WebViewImpl* new_view =
       static_cast<WebViewImpl*>(web_frame->Client()->CreateNewWindow(
           WrappedResourceRequest(r.GetResourceRequest()), features, frame_name,

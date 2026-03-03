@@ -145,8 +145,8 @@ String SavableResources::GetSubResourceLinkFromElement(Element* element) {
     // If the link element is not linked to css, ignore it.
     String type = element->getAttribute(html_names::kTypeAttr);
     String rel = element->getAttribute(html_names::kRelAttr);
-    if (EqualIgnoringASCIICase(type, "text/css") ||
-        EqualIgnoringASCIICase(rel, "stylesheet")) {
+    if (EqualIgnoringAsciiCase(type, "text/css") ||
+        EqualIgnoringAsciiCase(rel, "stylesheet")) {
       // TODO(jnd): Add support for extracting links of sub-resources which
       // are inside style-sheet such as @import, url(), etc.
       // See bug: http://b/issue?id=1111667.

@@ -233,7 +233,7 @@ static bool AttributeValueMatchesExact(const Attribute& attribute_item,
     return false;
   }
   return selector_value == value ||
-         (case_insensitive && EqualIgnoringASCIICase(selector_value, value));
+         (case_insensitive && EqualIgnoringAsciiCase(selector_value, value));
 }
 
 static Element::AttributesToExcludeHashesFor ExclusionPolicy(
