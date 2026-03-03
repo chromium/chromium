@@ -104,8 +104,9 @@ python_library("process_perf_results_py") {
     "//third_party/catapult/tracing/third_party/",
     "//third_party/catapult/tracing/tracing/",
 
-    # This file is read at script run-time.
+    # These files are read at script run-time.
     "//tools/perf/core/perf_dashboard_machine_group_mapping.json",
+    "//tools/perf/core/schedule/",
     "//tools/perf/public_builders.json",
   ]
 }

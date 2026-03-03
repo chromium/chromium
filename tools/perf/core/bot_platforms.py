@@ -1809,7 +1809,7 @@ def _ParseScheduleConfigValue(k, v):
   return int(v)
 
 # TODO(cbruni): use this to generate all perf configs.
-_USE_CSV_SCHEDULE_FILES: Final[bool] = False
+_USE_CSV_SCHEDULE_FILES: Final[bool] = True
 
 ALL_PLATFORMS: set[_PerfPlatform] = set()
 if _USE_CSV_SCHEDULE_FILES:
