@@ -591,25 +591,35 @@ public class NewTabPageLayout extends LinearLayout
 
     private void initializeLayoutChangeListener() {
         TraceEvent.begin(TAG + ".initializeLayoutChangeListener()");
-        mOnLayoutChangeListener =
-                (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
-                    int oldHeight = oldBottom - oldTop;
-                    int newHeight = bottom - top;
-
-                    if (oldHeight == newHeight && !mTileCountChanged) return;
-                    mTileCountChanged = false;
-
-                    // Re-apply the url focus change amount after a rotation to ensure the views are
-                    // correctly placed with their new layout configurations.
-                    onUrlFocusAnimationChanged();
-                    updateSearchBoxOnScroll();
-
-                    // The positioning of elements may have been changed (since the elements expand
-                    // to fill the available vertical space), so adjust the scroll.
-                    if (mScrollDelegate.isScrollViewInitialized()) mScrollDelegate.snapScroll();
-                };
+        mOnLayoutChangeListener = this::onLayoutChanged;
         addOnLayoutChangeListener(mOnLayoutChangeListener);
         TraceEvent.end(TAG + ".initializeLayoutChangeListener()");
+    }
+
+    private void onLayoutChanged(
+            View view,
+            int left,
+            int top,
+            int right,
+            int bottom,
+            int oldLeft,
+            int oldTop,
+            int oldRight,
+            int oldBottom) {
+        int oldHeight = oldBottom - oldTop;
+        int newHeight = bottom - top;
+
+        if (oldHeight == newHeight && !mTileCountChanged) return;
+        mTileCountChanged = false;
+
+        // Re-apply the url focus change amount after a rotation to ensure the views are
+        // correctly placed with their new layout configurations.
+        onUrlFocusAnimationChanged();
+        updateSearchBoxOnScroll();
+
+        // The positioning of elements may have been changed (since the elements expand
+        // to fill the available vertical space), so adjust the scroll.
+        if (mScrollDelegate.isScrollViewInitialized()) mScrollDelegate.snapScroll();
     }
 
     private void initializeLogoCoordinator() {
