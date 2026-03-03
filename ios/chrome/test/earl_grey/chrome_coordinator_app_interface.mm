@@ -262,10 +262,21 @@
 
 #pragma mark - Methods to start coordinators
 
-+ (void)startLensPromoCoordinator {
-  self.helper.coordinator = [[LensPromoCoordinator alloc]
-      initWithBaseViewController:[self rootViewController]
-                         browser:self.helper.browser];
++ (void)startBookmarksCoordinator {
+  BookmarksCoordinator* coordinator =
+      [[BookmarksCoordinator alloc] initWithBrowser:self.helper.browser];
+  coordinator.baseViewController = [self rootViewController];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+  [coordinator presentBookmarks];
+}
+
++ (void)startComposeboxCoordinator {
+  ComposeboxInttestCoordinator* coordinator =
+      [[ComposeboxInttestCoordinator alloc]
+          initWithBaseViewController:[self rootViewController]
+                             browser:self.helper.browser];
+  self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
 }
 
@@ -283,6 +294,13 @@
   coordinator.delegate = self.helper.mockObject;
 
   self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
++ (void)startLensPromoCoordinator {
+  self.helper.coordinator = [[LensPromoCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
   [self.helper.coordinator start];
 }
 
@@ -315,6 +333,35 @@
       presentViewController:coordinator.viewController
                    animated:NO
                  completion:nil];
+}
+
++ (void)startOmniboxCoordinator {
+  AutocompleteBrowserAgent::CreateForBrowser(self.helper.browser);
+  OmniboxInttestCoordinator* coordinator = [[OmniboxInttestCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
++ (void)startPasswordSuggestionCoordinator {
+  NSString* testPasswordSuggestion = @"TestSuggestion123!";
+  base::WeakPtr<web::WebFrame> nullWebFrame;
+  void (^testDecisionHandler)(BOOL) = ^(BOOL accept) {
+  };
+  BOOL isProactive = YES;
+
+  PasswordSuggestionCoordinator* coordinator =
+      [[PasswordSuggestionCoordinator alloc]
+          initWithBaseViewController:[self rootViewController]
+                             browser:self.helper.browser
+                  passwordSuggestion:testPasswordSuggestion
+                               frame:nullWebFrame
+                     decisionHandler:testDecisionHandler
+                           proactive:isProactive];
+
+  self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
 }
 
 + (void)startPopupMenuCoordinator {
@@ -351,29 +398,18 @@
   [self.helper.coordinator start];
 }
 
-+ (void)startOmniboxCoordinator {
-  AutocompleteBrowserAgent::CreateForBrowser(self.helper.browser);
-  OmniboxInttestCoordinator* coordinator = [[OmniboxInttestCoordinator alloc]
-      initWithBaseViewController:[self rootViewController]
-                         browser:self.helper.browser];
-  self.helper.coordinator = coordinator;
-  [self.helper.coordinator start];
-}
-
-+ (void)startComposeboxCoordinator {
-  ComposeboxInttestCoordinator* coordinator =
-      [[ComposeboxInttestCoordinator alloc]
-          initWithBaseViewController:[self rootViewController]
-                             browser:self.helper.browser];
-  self.helper.coordinator = coordinator;
-  [self.helper.coordinator start];
-}
-
 + (void)startQRScannerLegacyCoordinator {
   QRScannerLegacyCoordinator* coordinator =
       [[QRScannerLegacyCoordinator alloc] initWithBrowser:self.helper.browser];
   coordinator.baseViewController = [self rootViewController];
   self.helper.coordinator = coordinator;
+  [self.helper.coordinator start];
+}
+
++ (void)startReadingListCoordinator {
+  self.helper.coordinator = [[ReadingListCoordinator alloc]
+      initWithBaseViewController:[self rootViewController]
+                         browser:self.helper.browser];
   [self.helper.coordinator start];
 }
 
@@ -390,42 +426,6 @@
       initWithBaseViewController:[self rootViewController]
                          browser:self.helper.browser
                         delegate:self.helper.mockObject];
-  [self.helper.coordinator start];
-}
-
-+ (void)startReadingListCoordinator {
-  self.helper.coordinator = [[ReadingListCoordinator alloc]
-      initWithBaseViewController:[self rootViewController]
-                         browser:self.helper.browser];
-  [self.helper.coordinator start];
-}
-
-+ (void)startBookmarksCoordinator {
-  BookmarksCoordinator* coordinator =
-      [[BookmarksCoordinator alloc] initWithBrowser:self.helper.browser];
-  coordinator.baseViewController = [self rootViewController];
-  self.helper.coordinator = coordinator;
-  [self.helper.coordinator start];
-  [coordinator presentBookmarks];
-}
-
-+ (void)startPasswordSuggestionCoordinator {
-  NSString* testPasswordSuggestion = @"TestSuggestion123!";
-  base::WeakPtr<web::WebFrame> nullWebFrame;
-  void (^testDecisionHandler)(BOOL) = ^(BOOL accept) {
-  };
-  BOOL isProactive = YES;
-
-  PasswordSuggestionCoordinator* coordinator =
-      [[PasswordSuggestionCoordinator alloc]
-          initWithBaseViewController:[self rootViewController]
-                             browser:self.helper.browser
-                  passwordSuggestion:testPasswordSuggestion
-                               frame:nullWebFrame
-                     decisionHandler:testDecisionHandler
-                           proactive:isProactive];
-
-  self.helper.coordinator = coordinator;
   [self.helper.coordinator start];
 }
 

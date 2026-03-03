@@ -45,20 +45,22 @@
 + (void)startBrowser;
 
 // Methods to start coordinators.
+// keep-sorted start
++ (void)startBookmarksCoordinator;
++ (void)startComposeboxCoordinator;
 + (void)startEnhancedSafeBrowsingPromoCoordinator;
-+ (void)startLensPromoCoordinator;
 + (void)startHistoryCoordinator;
++ (void)startLensPromoCoordinator;
 + (void)startNewTabPageCoordinator;
++ (void)startOmniboxCoordinator;
++ (void)startPasswordSuggestionCoordinator;
 + (void)startPopupMenuCoordinator;
 + (void)startPrivacySafeBrowsingCoordinator;
-+ (void)startOmniboxCoordinator;
 + (void)startQRScannerLegacyCoordinator;
++ (void)startReadingListCoordinator;
 + (void)startSearchWhatYouSeePromoCoordinator;
 + (void)startSnackbarCoordinator;
-+ (void)startReadingListCoordinator;
-+ (void)startBookmarksCoordinator;
-+ (void)startPasswordSuggestionCoordinator;
-+ (void)startComposeboxCoordinator;
+// keep-sorted end
 
 // Stops the currently started coordinator.
 + (void)stopCoordinator;
