@@ -94,7 +94,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
   }
 
   void TearDown() override {
-    [agent_ sceneStateDidDisableUI:scene_state_];
+    scene_state_.UIEnabled = NO;
     [scene_state_ shutdown];
     scene_state_ = nil;
     PlatformTest::TearDown();
@@ -137,7 +137,7 @@ class IdleTimeoutPolicySceneAgentTest : public PlatformTest {
                     mainBrowser:browser];
 
     agent_.sceneState = scene_state_;
-    [agent_ sceneStateDidEnableUI:scene_state_];
+    scene_state_.UIEnabled = YES;
   }
 
  protected:

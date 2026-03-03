@@ -39,6 +39,11 @@ class GeminiPromoSceneAgentTest : public PlatformTest {
         initWithPromosManager:promos_manager_.get()];
 
     agent_.sceneState = scene_state_;
+    scene_state_.UIEnabled = YES;
+  }
+
+  void TearDown() override {
+    scene_state_.UIEnabled = NO;
   }
 
  protected:

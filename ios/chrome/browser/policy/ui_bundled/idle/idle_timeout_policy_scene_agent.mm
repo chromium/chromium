@@ -66,7 +66,7 @@
 
   // Service handling IdleTimeout and IdleTimeoutActions policies.
   // IdleTimeoutPolicySceneAgents observe this service.
-  raw_ptr<enterprise_idle::IdleService, DanglingUntriaged> _idleService;
+  raw_ptr<enterprise_idle::IdleService> _idleService;
 
   // Flag indicating whether this dialog is allowed to display the snackbar.
   // This is used to show the snackbar on the same scene that shows the timeout
@@ -106,6 +106,7 @@
   // Tear down objects tied to the scene state before it is deleted.
   [self tearDownObservers];
   _mainBrowser = nullptr;
+  _idleService = nullptr;
   [self stopIdleTimeoutConfirmationCoordinator];
 }
 

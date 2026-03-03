@@ -10,7 +10,7 @@
 #import "ios/chrome/browser/promos_manager/model/promos_manager.h"
 
 @implementation GeminiPromoSceneAgent {
-  raw_ptr<PromosManager, DanglingUntriaged> _promosManager;
+  raw_ptr<PromosManager> _promosManager;
 }
 
 - (instancetype)initWithPromosManager:(PromosManager*)promosManager {
@@ -19,6 +19,12 @@
     _promosManager = promosManager;
   }
   return self;
+}
+
+#pragma mark - ObservingSceneAgent
+
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  _promosManager = nullptr;
 }
 
 #pragma mark - SceneStateObserver
