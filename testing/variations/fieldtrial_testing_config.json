@@ -9207,7 +9207,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnableADPFAsyncAndScrollNoRendererMain",
+                    "enable_features": [
+                        "EnableADPFAsyncSetThreads",
+                        "EnableADPFScrollNoRendererMain"
+                    ]
+                },
+                {
+                    "name": "EnableADPFAsyncSetThreadsOnly",
                     "enable_features": [
                         "EnableADPFAsyncSetThreads"
                     ]
@@ -9240,21 +9247,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "EnableADPFIgnoreThrottledTime"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableADPFScrollNoRendererMain": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableADPFScrollNoRendererMain"
                     ]
                 }
             ]
