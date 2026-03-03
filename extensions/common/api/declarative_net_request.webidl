@@ -440,7 +440,7 @@ dictionary RuleCondition {
   // relevant if a regex substitution is present and would thus need to be
   // applied onto all matching groups. Equivalent to the "g" flag.
   // Defaults to false.
-  [nodoc] boolean matchAll;
+  boolean matchAll;
 };
 
 dictionary ModifyHeaderInfo {
@@ -635,11 +635,11 @@ dictionary MatchedRuleInfoDebug {
 };
 
 [nodoc] dictionary DNRInfo {
-  [nodoc] required sequence<Ruleset> rule_resources;
+  required sequence<Ruleset> rule_resources;
 };
 
 [nodoc] partial dictionary ExtensionManifest {
-  [nodoc] DNRInfo declarative_net_request;
+  DNRInfo declarative_net_request;
 };
 
 dictionary RegexOptions {
