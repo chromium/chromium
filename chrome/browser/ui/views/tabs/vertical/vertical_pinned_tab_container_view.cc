@@ -171,7 +171,7 @@ bool VerticalPinnedTabContainerView::IsViewDragging(
 std::optional<BrowserRootView::DropIndex>
 VerticalPinnedTabContainerView::GetLinkDropIndex(
     const gfx::Point& loc_in_container) {
-  if (!collection_node_) {
+  if (!collection_node_ || collection_node_->children().size() == 0) {
     return std::nullopt;
   }
 
@@ -183,9 +183,9 @@ VerticalPinnedTabContainerView::GetLinkDropIndex(
     return index;
   }
 
-  // Fallback to the end of the container.
-  return GetDragHandler().GetLinkDropIndexForNode(*collection_node_,
-                                                  std::nullopt);
+  // Fallback to the end of the pinned container.
+  return GetDragHandler().GetLinkDropIndexForNode(
+      *collection_node_->children().back(), DragPositionHint::kAfter);
 }
 
 std::optional<BrowserRootView::DropIndex>
@@ -229,6 +229,7 @@ VerticalPinnedTabContainerView::GetLinkDropIndexForCollapsed(
 std::optional<BrowserRootView::DropIndex>
 VerticalPinnedTabContainerView::GetLinkDropIndexForExpanded(
     const gfx::Point& loc_in_container) {
+  const int logical_x = GetMirroredXInView(loc_in_container.x());
   for (auto& child_node : collection_node_->children()) {
     auto* view = child_node->view();
     CHECK(view);
@@ -245,7 +246,7 @@ VerticalPinnedTabContainerView::GetLinkDropIndexForExpanded(
     // The x-based calculation uses a margin to determine if the link should
     // be inserted before/after, so the cutoff point between tabs in a row
     // doesn't have to be exact.
-    if (loc_in_container.x() >= view->bounds().right() + kTabPadding) {
+    if (logical_x >= view->bounds().right() + kTabPadding) {
       continue;
     }
 
@@ -255,11 +256,13 @@ VerticalPinnedTabContainerView::GetLinkDropIndexForExpanded(
     constexpr double kDragOverMargins = 0.2;
     std::optional<DragPositionHint> hint;
 
+    const int logical_x_in_child = view->GetMirroredXInView(loc_in_child.x());
+
     // Determine whether the drag is to the right, left, or above the tab/tab
     // split.
-    if (loc_in_child.x() < view->width() * kDragOverMargins) {
+    if (logical_x_in_child < view->width() * kDragOverMargins) {
       hint = DragPositionHint::kBefore;
-    } else if (loc_in_child.x() > view->width() * (1 - kDragOverMargins)) {
+    } else if (logical_x_in_child > view->width() * (1 - kDragOverMargins)) {
       hint = DragPositionHint::kAfter;
     } else if (child_node->type() == TabCollectionNode::Type::SPLIT) {
       // If landing in the middle of the split, let the split view decide
