@@ -1178,48 +1178,6 @@ base::expected<GURL, std::string> ExtensionTabUtil::PrepareURLForNavigation(
   return url;
 }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-void ExtensionTabUtil::CreateTab(
-    std::unique_ptr<WebContents> web_contents,
-    const std::string& extension_id,
-    WindowOpenDisposition disposition,
-    const blink::mojom::WindowFeatures& window_features,
-    bool user_gesture) {
-  Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  CHECK(profile);
-  BrowserWindowInterface* browser =
-      browser_window_util::GetLastActiveNormalBrowserWithProfile(
-          *profile, /*include_incognito_or_parent=*/false);
-  const bool browser_created = !browser;
-  if (!browser)
-    browser = CreateBrowser(profile, user_gesture);
-  if (!browser)
-    return;
-
-  NavigateParams params(browser, std::move(web_contents));
-
-  // The extension_app_id parameter ends up as app_name in the Browser
-  // which causes the Browser to return true for is_app().  This affects
-  // among other things, whether the location bar gets displayed.
-  // TODO(mpcomplete): This seems wrong. What if the extension content is hosted
-  // in a tab?
-  if (disposition == WindowOpenDisposition::NEW_POPUP)
-    params.app_id = extension_id;
-
-  params.disposition = disposition;
-  params.window_features = window_features;
-  params.window_action = NavigateParams::WindowAction::kShowWindow;
-  params.user_gesture = user_gesture;
-  Navigate(&params);
-
-  // Close the browser if Navigate created a new one.
-  if (browser_created && (browser != params.browser)) {
-    browser->GetWindow()->Close();
-  }
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
 // static
 void ExtensionTabUtil::ForEachTab(
     base::RepeatingCallback<void(WebContents*)> callback) {
