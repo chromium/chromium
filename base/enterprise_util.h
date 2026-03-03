@@ -5,9 +5,12 @@
 #ifndef BASE_ENTERPRISE_UTIL_H_
 #define BASE_ENTERPRISE_UTIL_H_
 
-#include "base/auto_reset.h"
 #include "base/base_export.h"
 #include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
+#include "base/auto_reset.h"
+#endif
 
 namespace base {
 

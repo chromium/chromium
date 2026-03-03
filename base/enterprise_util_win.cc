@@ -33,8 +33,7 @@ bool IsEnterpriseDevice() {
   return base::win::IsEnrolledToDomain() || base::win::IsJoinedToAzureAD();
 }
 
-[[nodiscard]] AutoReset<bool> SetIsEnterpriseDeviceForTesting(
-    bool is_enterprise) {
+AutoReset<bool> SetIsEnterpriseDeviceForTesting(bool is_enterprise) {
   return AutoReset<bool>(&g_is_enterprise_device_for_testing_, is_enterprise);
 }
 
