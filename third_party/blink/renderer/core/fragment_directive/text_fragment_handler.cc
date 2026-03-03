@@ -187,8 +187,19 @@ void TextFragmentHandler::ExtractFirstFragmentRect(
       continue;
     }
 
-    const gfx::RectF bounding_box =
-        ComputeTextRectF(annotation->GetAttachedRange().ToEphemeralRange());
+    if (!RuntimeEnabledFeatures::FractionalScrollOffsetsEnabled()) {
+      PhysicalRect bounding_box(
+          ComputeTextRect(annotation->GetAttachedRange().ToEphemeralRange()));
+      rect_in_viewport =
+          GetFrame()->View()->FrameToViewport(ToEnclosingRect(bounding_box));
+      break;
+    }
+
+    gfx::RectF bounding_box;
+    for (const auto& quad :
+         ComputeTextBounds(annotation->GetAttachedRange().ToEphemeralRange())) {
+      bounding_box.Union(quad.BoundingBox());
+    }
     const gfx::PointF top_left =
         GetFrame()->View()->FrameToViewport(bounding_box.origin());
     const gfx::PointF bottom_right =

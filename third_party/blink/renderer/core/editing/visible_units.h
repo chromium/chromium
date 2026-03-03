@@ -290,7 +290,6 @@ Vector<gfx::QuadF> ComputeTextBounds(const EphemeralRangeTemplate<Strategy>&);
 CORE_EXPORT gfx::Rect ComputeTextRect(const EphemeralRange&);
 gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree&);
 gfx::RectF ComputeTextRectF(const EphemeralRange&);
-gfx::RectF ComputeTextRectF(const EphemeralRangeInFlatTree&);
 
 // |FirstRectForRange| requires up-to-date layout.
 CORE_EXPORT gfx::Rect FirstRectForRange(const EphemeralRange&);
