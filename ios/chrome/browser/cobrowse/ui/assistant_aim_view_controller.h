@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-@interface AssistantAIMViewController : UIViewController
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
+
+@interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>
 
 @end
 

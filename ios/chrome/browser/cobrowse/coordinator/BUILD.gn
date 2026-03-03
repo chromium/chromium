@@ -6,6 +6,8 @@ source_set("coordinator") {
   sources = [
     "assistant_aim_coordinator.h",
     "assistant_aim_coordinator.mm",
+    "assistant_aim_mediator.h",
+    "assistant_aim_mediator.mm",
   ]
   deps = [
     "//ios/chrome/browser/assistant/coordinator:commands",
@@ -13,6 +15,10 @@ source_set("coordinator") {
     "//ios/chrome/browser/cobrowse/ui",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/public/commands",
+    "//ios/web/public",
+    "//ios/web/public/navigation",
+    "//url",
   ]
 }

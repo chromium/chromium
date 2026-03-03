@@ -5,53 +5,67 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
-constexpr CGFloat kContentMargin = 16.0;
 constexpr CGFloat kTitleVerticalMargin = 12.0;
 
 }  // namespace
 
 @implementation AssistantAIMViewController {
   UILabel* _titleLabel;
-  UILabel* _label;
+  UIView* _webStateView;
+  NSArray<NSLayoutConstraint*>* _webStateViewConstraints;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
 
   [self setUpHeader];
+  [self setUpWebStateView];
+}
 
-  // TODO(crbug.com/469050167): Replace with real UI.
-  _label = [[UILabel alloc] init];
-  _label.text = @"Lorem ipsum dolor sit amet, consectetur adipiscing elit, "
-                @"sed do eiusmod tempor incididunt ut labore et dolore "
-                @"magna aliqua. Ut enim ad minim veniam, quis nostrud "
-                @"exercitation ullamco laboris nisi ut aliquip ex ea "
-                @"commodo consequat. Duis aute irure dolor in reprehenderit "
-                @"in voluptate velit esse cillum dolore eu fugiat nulla "
-                @"pariatur. Excepteur sint occaecat cupidatat non proident, "
-                @"sunt in culpa qui officia deserunt mollit anim id est "
-                @"laborum.";
-  _label.numberOfLines = 0;
-  _label.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_label];
+#pragma mark - AssistantAIMConsumer
 
-  [NSLayoutConstraint activateConstraints:@[
-    [_label.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
-                                     constant:kContentMargin],
-    [_label.bottomAnchor
-        constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
-                                 constant:-kContentMargin],
-    [_label.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor
-                                         constant:kContentMargin],
-    [_label.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
-                                          constant:-kContentMargin],
-  ]];
+- (void)setWebStateView:(UIView*)webStateView {
+  if (_webStateView == webStateView) {
+    return;
+  }
+
+  [_webStateView removeFromSuperview];
+  _webStateView = webStateView;
+
+  [self setUpWebStateView];
 }
 
 #pragma mark - Private
+
+// Sets up the web state view.
+- (void)setUpWebStateView {
+  if (!_webStateView || !self.isViewLoaded) {
+    return;
+  }
+
+  if (_webStateViewConstraints) {
+    [NSLayoutConstraint deactivateConstraints:_webStateViewConstraints];
+    _webStateViewConstraints = nil;
+  }
+
+  _webStateView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:_webStateView];
+
+  _webStateViewConstraints = @[
+    [_webStateView.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
+                                            constant:kTitleVerticalMargin],
+    [_webStateView.leadingAnchor
+        constraintEqualToAnchor:self.view.leadingAnchor],
+    [_webStateView.trailingAnchor
+        constraintEqualToAnchor:self.view.trailingAnchor],
+    [_webStateView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
+  ];
+  [NSLayoutConstraint activateConstraints:_webStateViewConstraints];
+}
 
 // Sets up the title.
 - (void)setUpHeader {
@@ -66,8 +80,8 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
   [NSLayoutConstraint activateConstraints:@[
     [_titleLabel.topAnchor constraintEqualToAnchor:self.view.topAnchor
                                           constant:kTitleVerticalMargin],
-    [_titleLabel.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
   ]];
+  AddSameCenterXConstraint(_titleLabel, self.view);
 }
 
 @end
