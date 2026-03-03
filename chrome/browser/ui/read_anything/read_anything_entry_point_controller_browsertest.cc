@@ -9,7 +9,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/pdf/pdf_extension_test_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -22,12 +24,14 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_triggers.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "url/url_constants.h"
 
@@ -195,7 +199,10 @@ INSTANTIATE_TEST_SUITE_P(
 class ReadAnythingEntryPointControllerOmniboxBrowserTest
     : public InProcessBrowserTest {
  public:
-  ReadAnythingEntryPointControllerOmniboxBrowserTest() = default;
+  ReadAnythingEntryPointControllerOmniboxBrowserTest()
+      : test_min_pdf_text_length_for_omnibox_(
+            read_anything::ReadAnythingEntryPointController::
+                SetMinPdfTextLengthForTesting(500)) {}
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
@@ -206,6 +213,7 @@ class ReadAnythingEntryPointControllerOmniboxBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+  base::AutoReset<size_t> test_min_pdf_text_length_for_omnibox_;
 };
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
@@ -260,14 +268,69 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
       browser(), GURL("https://www.google.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  static bool called_back = false;
-  auto result_callback =
-      base::BindOnce([](bool is_good_candidate) { called_back = true; });
+  base::test::TestFuture<bool> future;
 
   read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
 
-  ASSERT_TRUE(base::test::RunUntil([&]() { return called_back; }));
+  EXPECT_TRUE(future.Wait());
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
+                       CheckIfShouldSuggestReadingMode_LongerPdfIsCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/pdf/accessibility/paragraphs-and-heading-untagged.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  base::test::TestFuture<bool> future;
+
+  read_anything::ReadAnythingEntryPointController::
+      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_TRUE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_ShorterPdfIsNotCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/pdf/test.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  base::test::TestFuture<bool> future;
+
+  read_anything::ReadAnythingEntryPointController::
+      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    ReadAnythingEntryPointControllerOmniboxBrowserTest,
+    CheckIfShouldSuggestReadingMode_LongerPdfWithLotsOfSymbolsIsNotCandidate) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(),
+      embedded_test_server()->GetURL(
+          "/pdf/accessibility/paragraphs-and-heading-untagged-nonsense.pdf")));
+  ASSERT_TRUE(pdf_extension_test_util::EnsurePDFHasLoaded(web_contents));
+  base::test::TestFuture<bool> future;
+
+  read_anything::ReadAnythingEntryPointController::
+      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
+
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
@@ -276,14 +339,13 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingEntryPointControllerOmniboxBrowserTest,
       browser(), GURL(url::kAboutBlankURL),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  static bool is_good_candidate_ = true;
-  auto result_callback = base::BindOnce(
-      [](bool is_good_candidate) { is_good_candidate_ = is_good_candidate; });
+  base::test::TestFuture<bool> future;
 
   read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
 
-  ASSERT_TRUE(base::test::RunUntil([&]() { return !is_good_candidate_; }));
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(
@@ -293,14 +355,13 @@ IN_PROC_BROWSER_TEST_F(
       browser(), GURL("https://www.docs.google.com"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
-  static bool is_good_candidate_ = true;
-  auto result_callback = base::BindOnce(
-      [](bool is_good_candidate) { is_good_candidate_ = is_good_candidate; });
+  base::test::TestFuture<bool> future;
 
   read_anything::ReadAnythingEntryPointController::
-      CheckIfShouldSuggestReadingMode(browser(), std::move(result_callback));
+      CheckIfShouldSuggestReadingMode(browser(), future.GetCallback());
 
-  ASSERT_TRUE(base::test::RunUntil([&]() { return !is_good_candidate_; }));
+  EXPECT_TRUE(future.Wait());
+  EXPECT_FALSE(future.Get());
 }
 
 IN_PROC_BROWSER_TEST_F(

@@ -60,6 +60,8 @@ class ReadAnythingEntryPointController {
       BrowserWindowInterface* bwi,
       base::OnceCallback<void(bool)> result_callback);
 
+  static base::AutoReset<size_t> SetMinPdfTextLengthForTesting(size_t length);
+
  private:
   static void ToggleUI(BrowserWindowInterface* bwi,
                        ReadAnythingOpenTrigger open_trigger);

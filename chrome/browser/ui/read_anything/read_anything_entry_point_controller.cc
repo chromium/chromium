@@ -28,7 +28,12 @@
 #include "components/prefs/pref_filter.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "pdf/buildflags.h"
 #include "ui/accessibility/accessibility_features.h"
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "components/pdf/browser/pdf_document_helper.h"
+#endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
 
@@ -66,9 +71,43 @@ bool IsTriggeredByOmnibox(const actions::ActionInvocationContext& context) {
          base::FeatureList::IsEnabled(features::kPageActionsMigration);
 }
 
+#if BUILDFLAG(ENABLE_PDF)
+size_t g_min_pdf_text_length_for_omnibox = 1100;
+constexpr float kMaxNonAlphaFraction = 0.33;
+
+bool IsMostlyAlphaChars(const std::u16string& text) {
+  long non_alpha_chars =
+      std::count_if(text.begin(), text.end(), [](char16_t c) {
+        // Check specifically for certain non-alphabetic characters rather than
+        // for alphabetic characters. IsAsciiAlpha is only true for certain
+        // scripts, so this avoids excluding other languages.
+        return base::IsAsciiPunctuation(c) || base::IsAsciiDigit(c) ||
+               base::IsWhitespace(c) || base::IsUnicodeControl(c);
+      });
+
+  return (static_cast<float>(non_alpha_chars) / text.size()) <
+         kMaxNonAlphaFraction;
+}
+
+void OnPdfTextReceived(base::OnceCallback<void(bool)> result_callback,
+                       const std::u16string& text) {
+  // Show the omnibox on PDFs above a certain length, with a high percentage of
+  // alphabetic characters. In this case, it is likely going to distill well in
+  // Reading mode.
+  std::move(result_callback)
+      .Run((text.length() > g_min_pdf_text_length_for_omnibox) &&
+           IsMostlyAlphaChars(text));
+}
+#endif
+
 }  // namespace
 
 namespace read_anything {
+
+base::AutoReset<size_t>
+ReadAnythingEntryPointController::SetMinPdfTextLengthForTesting(size_t length) {
+  return {&g_min_pdf_text_length_for_omnibox, length};
+}
 
 // static
 void ReadAnythingEntryPointController::InvokePageAction(
@@ -265,9 +304,25 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
     return;
   }
 
+  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
+
+#if BUILDFLAG(ENABLE_PDF)
+  // If this contents is a PDF, then Readability will always return false. But
+  // since PDFs are distilled via Screen2x, use our own heuristic to determine
+  // if the PDF will distill well with RM.
+  auto* pdf_helper = pdf::PDFDocumentHelper::MaybeGetForWebContents(contents);
+  if (pdf_helper) {
+    // Use the text on the first page of the document to estimate if this could
+    // be a distillable PDF.
+    pdf_helper->GetPageText(
+        /*page_index=*/0,
+        base::BindOnce(&OnPdfTextReceived, std::move(result_callback)));
+    return;
+  }
+#endif  // BUILDFLAG(ENABLE_PDF)
+
   // Readability will callback with whether or not the current contents are a
   // good candidate for distillation.
-  content::WebContents* contents = bwi->GetActiveTabInterface()->GetContents();
   RunReadabilityHeuristicsOnWebContents(contents, std::move(result_callback));
 }
 
