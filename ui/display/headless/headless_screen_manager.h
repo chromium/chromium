@@ -30,6 +30,7 @@ class DISPLAY_EXPORT HeadlessScreenManager {
     virtual ~Delegate() = default;
 
     virtual int64_t AddDisplay(const Display& display) = 0;
+    virtual void UpdateDisplay(const Display& display) = 0;
     virtual void RemoveDisplay(int64_t display_id) = 0;
     virtual void SetPrimaryDisplay(int64_t display_id) = 0;
   };
@@ -47,6 +48,9 @@ class DISPLAY_EXPORT HeadlessScreenManager {
 
   // Adds a new display. Returns the newly added display unique id.
   int64_t AddDisplay(const Display& display);
+
+  // Update existing display. Crashes if specified display id does not exist.
+  void UpdateDisplay(const Display& display);
 
   // Removes the specified display.
   void RemoveDisplay(int64_t display_id);

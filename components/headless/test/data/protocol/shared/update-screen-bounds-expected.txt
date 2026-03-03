@@ -1,0 +1,22 @@
+Tests CDP Emulation.updateScreen() API bounds handling.
+Updated screen info: {
+    availHeight : 800
+    availLeft : 800
+    availTop : 600
+    availWidth : 600
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 800
+    id : <string>
+    isExtended : true
+    isInternal : false
+    isPrimary : false
+    label : 2nd
+    left : 800
+    orientation : {
+        angle : 0
+        type : portraitPrimary
+    }
+    top : 600
+    width : 600
+}

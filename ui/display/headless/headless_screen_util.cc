@@ -8,7 +8,10 @@
 
 #include "ui/display/display.h"
 #include "ui/display/display_list.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/insets_conversions.h"
+#include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -55,6 +58,90 @@ void SetDisplayGeometry(Display& display,
         work_area_insets_pixels, 1.0f / display.device_scale_factor()));
   }
   display.set_work_area(work_area);
+}
+
+void UpdateDisplay(Display& display,
+                   std::optional<int> left,
+                   std::optional<int> top,
+                   std::optional<int> width,
+                   std::optional<int> height,
+                   std::optional<int> top_work_area_inset,
+                   std::optional<int> left_work_area_inset,
+                   std::optional<int> bottom_work_area_inset,
+                   std::optional<int> right_work_area_inset,
+                   std::optional<double> device_pixel_ratio,
+                   std::optional<int> rotation,
+                   std::optional<int> color_depth,
+                   std::optional<std::string> label,
+                   std::optional<bool> is_internal) {
+  // Display maintains its size scaled, so convert it to physical pixels.
+  gfx::SizeF size(display.bounds().size());
+  size.Scale(display.device_scale_factor());
+  gfx::Rect bounds_in_pixels(display.bounds().origin(),
+                             gfx::ToCeiledSize(size));
+  if (left) {
+    bounds_in_pixels.set_x(left.value());
+  }
+  if (top) {
+    bounds_in_pixels.set_y(top.value());
+  }
+  if (width) {
+    bounds_in_pixels.set_width(width.value());
+  }
+  if (height) {
+    bounds_in_pixels.set_height(height.value());
+  }
+
+  // Display maintains its work area scaled, so convert it to physical pixels.
+  gfx::Insets work_area_insets_pixels;
+  if (display.device_scale_factor() == 1.0f) {
+    work_area_insets_pixels = display.GetWorkAreaInsets();
+  } else {
+    gfx::InsetsF insets =
+        static_cast<gfx::InsetsF>(display.GetWorkAreaInsets());
+    insets.Scale(display.device_scale_factor());
+    work_area_insets_pixels = gfx::ToCeiledInsets(insets);
+  }
+
+  if (top_work_area_inset) {
+    work_area_insets_pixels.set_top(top_work_area_inset.value());
+  }
+  if (left_work_area_inset) {
+    work_area_insets_pixels.set_left(left_work_area_inset.value());
+  }
+  if (bottom_work_area_inset) {
+    work_area_insets_pixels.set_bottom(bottom_work_area_inset.value());
+  }
+  if (right_work_area_inset) {
+    work_area_insets_pixels.set_right(right_work_area_inset.value());
+  }
+
+  SetDisplayGeometry(
+      display, bounds_in_pixels, work_area_insets_pixels,
+      device_pixel_ratio.value_or(display.device_scale_factor()));
+
+  if (rotation) {
+    int rotation_degrees = rotation.value();
+    CHECK(Display::IsValidRotation(rotation_degrees));
+    display.SetRotationAsDegree(rotation_degrees);
+  }
+
+  if (color_depth) {
+    display.set_color_depth(color_depth.value());
+  }
+
+  if (label) {
+    display.set_label(label.value());
+  }
+
+  if (is_internal &&
+      is_internal.value() != display::IsInternalDisplayId(display.id())) {
+    if (is_internal.value()) {
+      display::AddInternalDisplayId(display.id());
+    } else {
+      display::RemoveInternalDisplayId(display.id());
+    }
+  }
 }
 
 void SetPrimaryDisplay(DisplayList& display_list, int64_t display_id) {

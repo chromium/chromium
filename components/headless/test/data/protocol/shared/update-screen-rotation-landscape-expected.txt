@@ -1,0 +1,85 @@
+Tests CDP Emulation.updateScreen() API landscape rotation handling.
+Rotation=0 degrees screen info: {
+    availHeight : 600
+    availLeft : 0
+    availTop : 0
+    availWidth : 800
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 600
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 0
+        type : landscapePrimary
+    }
+    top : 0
+    width : 800
+}
+Rotation=90 degrees screen info: {
+    availHeight : 600
+    availLeft : 0
+    availTop : 0
+    availWidth : 800
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 600
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 90
+        type : landscapeSecondary
+    }
+    top : 0
+    width : 800
+}
+Rotation=180 degrees screen info: {
+    availHeight : 600
+    availLeft : 0
+    availTop : 0
+    availWidth : 800
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 600
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 180
+        type : landscapeSecondary
+    }
+    top : 0
+    width : 800
+}
+Rotation=270 degrees screen info: {
+    availHeight : 600
+    availLeft : 0
+    availTop : 0
+    availWidth : 800
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 600
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 270
+        type : landscapeSecondary
+    }
+    top : 0
+    width : 800
+}

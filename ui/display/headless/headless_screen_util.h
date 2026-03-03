@@ -7,6 +7,9 @@
 
 #include <stdint.h>
 
+#include <optional>
+#include <string>
+
 #include "ui/display/display_export.h"
 
 namespace display {
@@ -22,14 +25,32 @@ class Insets;
 namespace headless {
 
 // Sets headless display geometry according to the specified physical bounds,
-// work area insets and device pixel ratio. This is a helper function intended
-// to be used by all headless screen driver implementations to ensure consistent
-// headless screen geometry handling.
+// work area insets and device pixel ratio. This is intended to be used by all
+// headless screen driver implementations to ensure consistent headless screen
+// geometry handling.
 DISPLAY_EXPORT void SetDisplayGeometry(
     display::Display& display,
     const gfx::Rect& bounds_in_pixels,
     const gfx::Insets& work_area_insets_pixels,
     float device_pixel_ratio);
+
+// Updates the given display according to the specified parameters. This is
+// intended to be used by all CDP Emulation::UpdateScreen() implementations to
+// ensure consistent display update handling.
+DISPLAY_EXPORT void UpdateDisplay(display::Display& display,
+                                  std::optional<int> left,
+                                  std::optional<int> top,
+                                  std::optional<int> width,
+                                  std::optional<int> height,
+                                  std::optional<int> top_work_area_inset,
+                                  std::optional<int> left_work_area_inset,
+                                  std::optional<int> bottom_work_area_inset,
+                                  std::optional<int> right_work_area_inset,
+                                  std::optional<double> device_pixel_ratio,
+                                  std::optional<int> rotation,
+                                  std::optional<int> color_depth,
+                                  std::optional<std::string> label,
+                                  std::optional<bool> is_internal);
 
 // Sets primary display for the given display list. Will crash if specified
 // display does not exist in the given display list.

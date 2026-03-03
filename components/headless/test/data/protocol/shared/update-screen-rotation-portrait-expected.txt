@@ -1,0 +1,85 @@
+Tests CDP Emulation.updateScreen() API portrait rotation handling.
+Rotation=0 degrees screen info: {
+    availHeight : 800
+    availLeft : 0
+    availTop : 0
+    availWidth : 600
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 800
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 0
+        type : portraitPrimary
+    }
+    top : 0
+    width : 600
+}
+Rotation=90 degrees screen info: {
+    availHeight : 800
+    availLeft : 0
+    availTop : 0
+    availWidth : 600
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 800
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 90
+        type : portraitSecondary
+    }
+    top : 0
+    width : 600
+}
+Rotation=180 degrees screen info: {
+    availHeight : 800
+    availLeft : 0
+    availTop : 0
+    availWidth : 600
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 800
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 180
+        type : portraitSecondary
+    }
+    top : 0
+    width : 600
+}
+Rotation=270 degrees screen info: {
+    availHeight : 800
+    availLeft : 0
+    availTop : 0
+    availWidth : 600
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 800
+    id : <string>
+    isExtended : false
+    isInternal : false
+    isPrimary : true
+    label :
+    left : 0
+    orientation : {
+        angle : 270
+        type : portraitSecondary
+    }
+    top : 0
+    width : 600
+}

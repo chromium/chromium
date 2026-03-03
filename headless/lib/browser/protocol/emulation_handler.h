@@ -43,6 +43,21 @@ class EmulationHandler : public DomainHandler, public Emulation::Backend {
       std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info)
       override;
 
+  Response UpdateScreen(
+      const String& screen_id,
+      std::optional<int> left,
+      std::optional<int> top,
+      std::optional<int> width,
+      std::optional<int> height,
+      std::unique_ptr<protocol::Emulation::WorkAreaInsets> work_area_insets,
+      std::optional<double> device_pixel_ratio,
+      std::optional<int> rotation,
+      std::optional<int> color_depth,
+      std::optional<String> label,
+      std::optional<bool> is_internal,
+      std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info)
+      override;
+
   Response RemoveScreen(const String& screen_id) override;
 
   Response SetPrimaryScreen(const String& screen_id) override;

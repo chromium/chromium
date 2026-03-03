@@ -20,6 +20,9 @@
 #include "ui/aura/window.h"
 #endif
 
+using display::Display;
+using display::DisplayList;
+
 namespace headless {
 
 // static
@@ -47,14 +50,14 @@ gfx::NativeWindow HeadlessScreen::GetLocalProcessWindowAtPoint(
   return gfx::NativeWindow();
 }
 
-display::Display HeadlessScreen::GetDisplayNearestWindow(
+Display HeadlessScreen::GetDisplayNearestWindow(
     gfx::NativeWindow window) const {
   // On Windows and Linux native window is abstracted by aura::Window so we can
   // use its bounds to find the nearest display.
 #if defined(USE_AURA)
   if (window) {
     const gfx::Rect bounds = window->GetBoundsInScreen();
-    if (std::optional<display::Display> display =
+    if (std::optional<Display> display =
             GetDisplayFromScreenRect(display_list().displays(), bounds)) {
       return display.value();
     }
@@ -95,7 +98,7 @@ void HeadlessScreen::CreateDisplayList(const gfx::Size& window_size,
   bool is_primary = true;
   base::flat_set<int64_t> internal_display_ids;
   for (const auto& it : screen_info) {
-    display::Display display(display::HeadlessScreenManager::GetNewDisplayId());
+    Display display(display::HeadlessScreenManager::GetNewDisplayId());
     display.set_label(it.label);
     display.set_color_depth(it.color_depth);
 
@@ -103,7 +106,7 @@ void HeadlessScreen::CreateDisplayList(const gfx::Size& window_size,
                                  it.device_pixel_ratio);
 
     if (it.rotation) {
-      CHECK(display::Display::IsValidRotation(it.rotation));
+      CHECK(Display::IsValidRotation(it.rotation));
       display.SetRotationAsDegree(it.rotation);
     }
 
@@ -141,7 +144,7 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientation(
 void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
     int64_t display_id,
     display::mojom::ScreenOrientation screen_orientation) {
-  display::Display display = GetDisplayById(display_id);
+  Display display = GetDisplayById(display_id);
 
   bool needs_swap = false;
   switch (screen_orientation) {
@@ -150,26 +153,26 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
     case display::mojom::ScreenOrientation::kPortraitPrimary:
       needs_swap = display.is_landscape();
       display.set_panel_rotation(IsNaturalPortrait(display_id)
-                                     ? display::Display::ROTATE_0
-                                     : display::Display::ROTATE_90);
+                                     ? Display::ROTATE_0
+                                     : Display::ROTATE_90);
       break;
     case display::mojom::ScreenOrientation::kPortraitSecondary:
       needs_swap = display.is_landscape();
       display.set_panel_rotation(IsNaturalPortrait(display_id)
-                                     ? display::Display::ROTATE_180
-                                     : display::Display::ROTATE_270);
+                                     ? Display::ROTATE_180
+                                     : Display::ROTATE_270);
       break;
     case display::mojom::ScreenOrientation::kLandscapePrimary:
       needs_swap = !display.is_landscape();
       display.set_panel_rotation(IsNaturalLandscape(display_id)
-                                     ? display::Display::ROTATE_0
-                                     : display::Display::ROTATE_90);
+                                     ? Display::ROTATE_0
+                                     : Display::ROTATE_90);
       break;
     case display::mojom::ScreenOrientation::kLandscapeSecondary:
       needs_swap = !display.is_landscape();
       display.set_panel_rotation(IsNaturalLandscape(display_id)
-                                     ? display::Display::ROTATE_180
-                                     : display::Display::ROTATE_270);
+                                     ? Display::ROTATE_180
+                                     : Display::ROTATE_270);
       break;
   }
 
@@ -187,15 +190,19 @@ void HeadlessScreen::UpdateScreenSizeForScreenOrientationImpl(
   ProcessDisplayChanged(display, is_primary);
 }
 
-int64_t HeadlessScreen::AddDisplay(const display::Display& display) {
-  display::Display new_display(display);
+int64_t HeadlessScreen::AddDisplay(const Display& display) {
+  Display new_display(display);
   new_display.set_id(display::HeadlessScreenManager::GetNewDisplayId());
 
   bool is_primary = display_list().displays().empty();
-  display_list().AddDisplay(
-      new_display, is_primary ? display::DisplayList::Type::PRIMARY
-                              : display::DisplayList::Type::NOT_PRIMARY);
+  display_list().AddDisplay(new_display, is_primary
+                                             ? DisplayList::Type::PRIMARY
+                                             : DisplayList::Type::NOT_PRIMARY);
   return new_display.id();
+}
+
+void HeadlessScreen::UpdateDisplay(const Display& display) {
+  display_list().UpdateDisplay(display);
 }
 
 void HeadlessScreen::RemoveDisplay(int64_t display_id) {
@@ -207,7 +214,7 @@ void HeadlessScreen::SetPrimaryDisplay(int64_t display_id) {
   headless::SetPrimaryDisplay(display_list(), display_id);
 }
 
-display::Display HeadlessScreen::GetDisplayById(int64_t display_id) {
+Display HeadlessScreen::GetDisplayById(int64_t display_id) {
   auto it = display_list().FindDisplayById(display_id);
   if (it != display_list().displays().end()) {
     return *it;

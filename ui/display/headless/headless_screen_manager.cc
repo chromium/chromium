@@ -41,6 +41,15 @@ int64_t HeadlessScreenManager::AddDisplay(const Display& display) {
   return delegate_->AddDisplay(display);
 }
 
+void HeadlessScreenManager::UpdateDisplay(const Display& display) {
+  if (!delegate_) {
+    NOTIMPLEMENTED();
+    return;
+  }
+
+  return delegate_->UpdateDisplay(display);
+}
+
 void HeadlessScreenManager::RemoveDisplay(int64_t display_id) {
   if (!delegate_) {
     NOTIMPLEMENTED();

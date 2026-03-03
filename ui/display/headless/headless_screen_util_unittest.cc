@@ -11,6 +11,7 @@
 #include "ui/display/display.h"
 #include "ui/display/display_list.h"
 #include "ui/display/display_observer.h"
+#include "ui/display/util/display_util.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -69,6 +70,191 @@ TEST_F(HeadlessDisplayGeometryTest, Scaled2xDisplayWorkArea) {
   EXPECT_EQ(display_.bounds(), gfx::Rect(100, 100, 800, 600));
   EXPECT_EQ(display_.work_area(), gfx::Rect(105, 105, 790, 590));
   EXPECT_EQ(display_.device_scale_factor(), 2.0f);
+}
+
+// headless::UpdateDisplay tests ----------------------------------------------
+
+class HeadlessUpdateDisplayTest : public ::testing::Test {
+ public:
+  HeadlessUpdateDisplayTest() = default;
+  ~HeadlessUpdateDisplayTest() override = default;
+
+  HeadlessUpdateDisplayTest(const HeadlessUpdateDisplayTest&) = delete;
+  HeadlessUpdateDisplayTest& operator=(const HeadlessUpdateDisplayTest&) =
+      delete;
+
+ protected:
+  // NOLINTNEXTLINE(google-explicit-constructor)
+  struct UpdateDisplayParams {
+    std::optional<int> left;
+    std::optional<int> top;
+    std::optional<int> width;
+    std::optional<int> height;
+    std::optional<int> top_work_area_inset;
+    std::optional<int> left_work_area_inset;
+    std::optional<int> bottom_work_area_inset;
+    std::optional<int> right_work_area_inset;
+    std::optional<double> device_pixel_ratio;
+    std::optional<int> rotation;
+    std::optional<int> color_depth;
+    std::optional<std::string> label;
+    std::optional<bool> is_internal;
+  };
+
+  void UpdateDisplay(const UpdateDisplayParams& params) {
+    headless::UpdateDisplay(
+        display_, params.left, params.top, params.width, params.height,
+        params.top_work_area_inset, params.left_work_area_inset,
+        params.bottom_work_area_inset, params.right_work_area_inset,
+        params.device_pixel_ratio, params.rotation, params.color_depth,
+        params.label, params.is_internal);
+  }
+
+  int64_t display_id() const { return display_.id(); }
+  const gfx::Rect& bounds() const { return display_.bounds(); }
+  const gfx::Rect& work_area() const { return display_.work_area(); }
+  Display::Rotation rotation() const { return display_.rotation(); }
+  int color_depth() const { return display_.color_depth(); }
+  const std::string& label() const { return display_.label(); }
+
+  static constexpr gfx::Rect kDefaultBounds = gfx::Rect(0, 0, 800, 600);
+  Display display_ = Display(1L, kDefaultBounds);
+};
+
+TEST_F(HeadlessUpdateDisplayTest, Bounds) {
+  UpdateDisplay({.left = 10});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 0, 800, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 0, 800, 600));
+
+  UpdateDisplay({.top = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 800, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 800, 600));
+
+  UpdateDisplay({.width = 1000});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 1000, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 1000, 600));
+
+  UpdateDisplay({.height = 2000});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 1000, 2000));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 1000, 2000));
+}
+
+TEST_F(HeadlessUpdateDisplayTest, BoundsScaled) {
+  display_.SetScaleAndBounds(2.0f, kDefaultBounds);
+  ASSERT_EQ(bounds(), gfx::Rect(0, 0, 400, 300));
+  ASSERT_EQ(work_area(), gfx::Rect(0, 0, 400, 300));
+
+  UpdateDisplay({.left = 10});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 0, 400, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 0, 400, 300));
+
+  UpdateDisplay({.top = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 400, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 400, 300));
+
+  UpdateDisplay({.width = 1000});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 500, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 500, 300));
+
+  UpdateDisplay({.height = 2000});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 500, 1000));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 500, 1000));
+}
+
+TEST_F(HeadlessUpdateDisplayTest, WorkArea) {
+  UpdateDisplay({.top_work_area_inset = 10});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 800, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(0, 10, 800, 590));
+
+  UpdateDisplay({.left_work_area_inset = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 800, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(20, 10, 780, 590));
+
+  UpdateDisplay({.bottom_work_area_inset = 10});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 800, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(20, 10, 780, 580));
+
+  UpdateDisplay({.right_work_area_inset = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 800, 600));
+  EXPECT_EQ(work_area(), gfx::Rect(20, 10, 760, 580));
+}
+
+TEST_F(HeadlessUpdateDisplayTest, WorkAreaScaled) {
+  display_.SetScaleAndBounds(2.0f, kDefaultBounds);
+  ASSERT_EQ(bounds(), gfx::Rect(0, 0, 400, 300));
+  ASSERT_EQ(work_area(), gfx::Rect(0, 0, 400, 300));
+
+  UpdateDisplay({.top_work_area_inset = 10});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(0, 5, 400, 295));
+
+  UpdateDisplay({.left_work_area_inset = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 5, 390, 295));
+
+  UpdateDisplay({.bottom_work_area_inset = 10});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 5, 390, 290));
+
+  UpdateDisplay({.right_work_area_inset = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(0, 0, 400, 300));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 5, 380, 290));
+}
+
+TEST_F(HeadlessUpdateDisplayTest, BoundsWorkAreaAndScale) {
+  UpdateDisplay({.left = 10,
+                 .top = 20,
+                 .width = 1000,
+                 .height = 2000,
+                 .device_pixel_ratio = 2.0f});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 500, 1000));
+  EXPECT_EQ(work_area(), gfx::Rect(10, 20, 500, 1000));
+
+  UpdateDisplay({.top_work_area_inset = 10,
+                 .left_work_area_inset = 20,
+                 .bottom_work_area_inset = 10,
+                 .right_work_area_inset = 20});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 500, 1000));
+  EXPECT_EQ(work_area(), gfx::Rect(20, 25, 480, 990));
+
+  UpdateDisplay({.device_pixel_ratio = 1.0f});
+  EXPECT_EQ(bounds(), gfx::Rect(10, 20, 1000, 2000));
+  EXPECT_EQ(work_area(), gfx::Rect(30, 30, 960, 1980));
+}
+
+TEST_F(HeadlessUpdateDisplayTest, Rotation) {
+  UpdateDisplay({.rotation = 0});
+  EXPECT_EQ(rotation(), Display::Rotation::ROTATE_0);
+
+  UpdateDisplay({.rotation = 90});
+  EXPECT_EQ(rotation(), Display::Rotation::ROTATE_90);
+
+  UpdateDisplay({.rotation = 180});
+  EXPECT_EQ(rotation(), Display::Rotation::ROTATE_180);
+
+  UpdateDisplay({.rotation = 270});
+  EXPECT_EQ(rotation(), Display::Rotation::ROTATE_270);
+}
+
+TEST_F(HeadlessUpdateDisplayTest, ColorDepth) {
+  UpdateDisplay({.color_depth = 24});
+  EXPECT_EQ(color_depth(), 24);
+
+  UpdateDisplay({.color_depth = 32});
+  EXPECT_EQ(color_depth(), 32);
+}
+
+TEST_F(HeadlessUpdateDisplayTest, Label) {
+  UpdateDisplay({.label = "FooBar"});
+  EXPECT_EQ(label(), "FooBar");
+}
+
+TEST_F(HeadlessUpdateDisplayTest, IsInternal) {
+  UpdateDisplay({.is_internal = true});
+  EXPECT_TRUE(IsInternalDisplayId(display_id()));
+
+  UpdateDisplay({.is_internal = false});
+  EXPECT_FALSE(IsInternalDisplayId(display_id()));
 }
 
 // HeadlessScreenManager::SetPrimaryDisplay tests -----------------------------

@@ -406,6 +406,11 @@ int64_t ScreenWinHeadless::AddDisplay(const Display& display) {
   return display_id;
 }
 
+void ScreenWinHeadless::UpdateDisplay(const Display& display) {
+  // TODO(crbug.com/397350115): Implement.
+  NOTIMPLEMENTED();
+}
+
 void ScreenWinHeadless::RemoveDisplay(int64_t display_id) {
   CHECK_NE(display_id, GetPrimaryDisplay().id());
 
@@ -421,6 +426,7 @@ void ScreenWinHeadless::RemoveDisplay(int64_t display_id) {
 }
 
 void ScreenWinHeadless::SetPrimaryDisplay(int64_t display_id) {
+  // TODO(crbug.com/397350115): Implement.
   NOTIMPLEMENTED();
 }
 

@@ -1,0 +1,22 @@
+Tests CDP Emulation.updateScreen() API work area handling.
+Updated screen info: {
+    availHeight : 560
+    availLeft : 820
+    availTop : 10
+    availWidth : 740
+    colorDepth : 24
+    devicePixelRatio : 1
+    height : 600
+    id : <string>
+    isExtended : true
+    isInternal : false
+    isPrimary : false
+    label : 2nd
+    left : 800
+    orientation : {
+        angle : 0
+        type : landscapePrimary
+    }
+    top : 0
+    width : 800
+}

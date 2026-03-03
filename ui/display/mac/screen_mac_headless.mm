@@ -133,12 +133,18 @@ int64_t ScreenMacHeadless::AddDisplay(const Display& display) {
   return new_display.id();
 }
 
+void ScreenMacHeadless::UpdateDisplay(const Display& display) {
+  // TODO(crbug.com/397350115): Implement.
+  NOTIMPLEMENTED();
+}
+
 void ScreenMacHeadless::RemoveDisplay(int64_t display_id) {
   display_list().RemoveDisplay(display_id);
   display::RemoveInternalDisplayId(display_id);
 }
 
 void ScreenMacHeadless::SetPrimaryDisplay(int64_t display_id) {
+  // TODO(crbug.com/397350115): Implement.
   NOTIMPLEMENTED();
 }
 
