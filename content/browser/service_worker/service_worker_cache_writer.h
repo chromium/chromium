@@ -105,26 +105,24 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
 
   ~ServiceWorkerCacheWriter();
 
-  // Writes the supplied |response_head| back to the cache. Returns
-  // ERR_IO_PENDING if the write will complete asynchronously, in which case
-  // |callback| will be called when it completes. Otherwise, returns a code
-  // other than ERR_IO_PENDING and does not invoke |callback|. Note that this
-  // method will not necessarily write data back to the cache if the incoming
-  // data is equivalent to the existing cached data. See the source of this
-  // function for details about how this function drives the state machine.
-  net::Error MaybeWriteHeaders(network::mojom::URLResponseHeadPtr response_head,
-                               OnWriteCompleteCallback callback);
+  // Writes the supplied |response_head| back to the cache. The callback is
+  // always invoked (synchronously if the operation completes immediately,
+  // asynchronously otherwise). Note that this method will not necessarily write
+  // data back to the cache if the incoming data is equivalent to the existing
+  // cached data. See the source of this function for details about how this
+  // function drives the state machine.
+  void MaybeWriteHeaders(network::mojom::URLResponseHeadPtr response_head,
+                         OnWriteCompleteCallback callback);
 
-  // Writes the supplied body data |data| back to the cache. Returns
-  // ERR_IO_PENDING if the write will complete asynchronously, in which case
-  // |callback| will be called when it completes. Otherwise, returns a code
-  // other than ERR_IO_PENDING and does not invoke |callback|. Note that this
-  // method will not necessarily write data back to the cache if the incoming
-  // data is equivalent to the existing cached data. See the source of this
-  // function for details about how this function drives the state machine.
-  net::Error MaybeWriteData(net::IOBuffer* buf,
-                            size_t buf_size,
-                            OnWriteCompleteCallback callback);
+  // Writes the supplied body data |data| back to the cache. The callback is
+  // always invoked (synchronously if the operation completes immediately,
+  // asynchronously otherwise). Note that this method will not necessarily write
+  // data back to the cache if the incoming data is equivalent to the existing
+  // cached data. See the source of this function for details about how this
+  // function drives the state machine.
+  void MaybeWriteData(net::IOBuffer* buf,
+                      size_t buf_size,
+                      OnWriteCompleteCallback callback);
 
   // Returns a count of bytes written back to the cache.
   base::ByteSize bytes_written() const { return bytes_written_; }
@@ -134,8 +132,10 @@ class CONTENT_EXPORT ServiceWorkerCacheWriter {
   // Resumes a cache writer which were paused when a block of data from the
   // network wasn't identical to the data in the storage. It is valid to call
   // this method only when |pause_when_not_identical| is true in the constructor
-  // and |state_| is STATE_PAUSING.
-  net::Error Resume(OnWriteCompleteCallback callback);
+  // and |state_| is STATE_PAUSING. The callback is always invoked
+  // (synchronously if the operation completes immediately, asynchronously
+  // otherwise).
+  void Resume(OnWriteCompleteCallback callback);
 
   // Start to copy a script in storage to a new position. |callback| is
   // called when the work is done. This is used when an installed script

@@ -171,18 +171,19 @@ class ServiceWorkerCacheWriterTest : public ::testing::Test {
     response_head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         std::string(data, std::size(data)));
     response_head->content_length = len;
-    net::Error error = cache_writer_->MaybeWriteHeaders(
-        std::move(response_head), CreateWriteCallback());
-    return error;
+    write_complete_ = false;
+    cache_writer_->MaybeWriteHeaders(std::move(response_head),
+                                     CreateWriteCallback());
+    return write_complete_ ? last_error_ : net::ERR_IO_PENDING;
   }
 
   net::Error WriteData(const std::string& data) {
     scoped_refptr<net::IOBuffer> buf =
         base::MakeRefCounted<net::StringIOBuffer>(data);
-    net::Error error = cache_writer_->MaybeWriteData(buf.get(), data.size(),
-                                                     CreateWriteCallback());
-    base::RunLoop().RunUntilIdle();
-    return error;
+    write_complete_ = false;
+    cache_writer_->MaybeWriteData(buf.get(), data.size(),
+                                  CreateWriteCallback());
+    return write_complete_ ? last_error_ : net::ERR_IO_PENDING;
   }
 };
 
@@ -712,8 +713,7 @@ TEST_F(ServiceWorkerCacheWriterTest, PauseWhenNotIdentical_AsyncWriteData) {
   // |last_error_| when it's called.
   // |copy_reader| does an asynchronous read here.
   write_complete_ = false;
-  error = cache_writer_->Resume(CreateWriteCallback());
-  EXPECT_EQ(net::ERR_IO_PENDING, error);
+  cache_writer_->Resume(CreateWriteCallback());
   EXPECT_FALSE(write_complete_);
 
   // Complete the asynchronous read of the header. Since there's nothing to copy

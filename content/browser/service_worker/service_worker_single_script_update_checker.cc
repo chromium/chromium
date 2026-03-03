@@ -421,18 +421,11 @@ void ServiceWorkerSingleScriptUpdateChecker::WriteHeaders(
 
   // Pass the header to the cache_writer_. This is written to the storage when
   // the body had changes.
-  net::Error error = cache_writer_->MaybeWriteHeaders(
+  cache_writer_->MaybeWriteHeaders(
       std::move(response_head),
       base::BindOnce(
           &ServiceWorkerSingleScriptUpdateChecker::OnWriteHeadersComplete,
           weak_factory_.GetWeakPtr()));
-  if (error == net::ERR_IO_PENDING) {
-    // OnWriteHeadersComplete() will be called asynchronously.
-    return;
-  }
-  // MaybeWriteHeaders() doesn't run the callback if it finishes synchronously,
-  // so explicitly call it here.
-  OnWriteHeadersComplete(error);
 }
 
 void ServiceWorkerSingleScriptUpdateChecker::OnWriteHeadersComplete(
@@ -563,19 +556,11 @@ void ServiceWorkerSingleScriptUpdateChecker::CompareData(
                  pending_buffer ? pending_buffer->size() : 0)));
 
   // Compare the network data and the stored data.
-  net::Error error = cache_writer_->MaybeWriteData(
+  cache_writer_->MaybeWriteData(
       buffer.get(), bytes_to_compare.InBytes(),
       base::BindOnce(
           &ServiceWorkerSingleScriptUpdateChecker::OnCompareDataComplete,
           weak_factory_.GetWeakPtr(), pending_buffer, bytes_to_compare));
-
-  if (error == net::ERR_IO_PENDING && !cache_writer_->is_pausing()) {
-    // OnCompareDataComplete() will be called asynchronously.
-    return;
-  }
-  // MaybeWriteData() doesn't run the callback if it finishes synchronously, so
-  // explicitly call it here.
-  OnCompareDataComplete(std::move(pending_buffer), bytes_to_compare, error);
 }
 
 // |pending_buffer| is a buffer passed from CompareData(). Please refer to the

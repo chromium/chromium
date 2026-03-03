@@ -120,15 +120,10 @@ ServiceWorkerUpdatedScriptLoader::ServiceWorkerUpdatedScriptLoader(
   // Resume the cache writer and observe its writes, so all data written
   // is sent to |client_|.
   cache_writer_->set_write_observer(this);
-  net::Error error = cache_writer_->Resume(base::BindOnce(
+  cache_writer_->Resume(base::BindOnce(
       &ServiceWorkerUpdatedScriptLoader::OnCacheWriterResumed,
       weak_factory_.GetWeakPtr(), info.paused_state->pending_network_buffer,
       info.paused_state->consumed_bytes));
-
-  if (error != net::ERR_IO_PENDING) {
-    OnCacheWriterResumed(info.paused_state->pending_network_buffer,
-                         info.paused_state->consumed_bytes, error);
-  }
 }
 
 ServiceWorkerUpdatedScriptLoader::~ServiceWorkerUpdatedScriptLoader() = default;
@@ -423,18 +418,11 @@ void ServiceWorkerUpdatedScriptLoader::WriteData(
   // successfully wrote to the data pipe (i.e., |actually_written_bytes|).  A
   // null buffer and zero |actually_written_bytes| are passed when this is the
   // end of the body.
-  net::Error error = cache_writer_->MaybeWriteData(
+  cache_writer_->MaybeWriteData(
       buffer.get(), actually_written_bytes,
       base::BindOnce(&ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete,
                      weak_factory_.GetWeakPtr(), pending_buffer,
                      actually_written_bytes));
-  if (error == net::ERR_IO_PENDING) {
-    // OnWriteDataComplete() will be called asynchronously.
-    return;
-  }
-  // MaybeWriteData() doesn't run the callback if it finishes synchronously, so
-  // explicitly call it here.
-  OnWriteDataComplete(std::move(pending_buffer), actually_written_bytes, error);
 }
 
 void ServiceWorkerUpdatedScriptLoader::OnWriteDataComplete(

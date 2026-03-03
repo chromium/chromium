@@ -443,17 +443,10 @@ void ServiceWorkerNewScriptLoader::WriteHeaders(
                   request_id_, kServiceWorkerNewScriptLoaderScope));
   CHECK_EQ(WriterState::kNotStarted, header_writer_state_);
   header_writer_state_ = WriterState::kWriting;
-  net::Error error = cache_writer_->MaybeWriteHeaders(
+  cache_writer_->MaybeWriteHeaders(
       std::move(response_head),
       base::BindOnce(&ServiceWorkerNewScriptLoader::OnWriteHeadersComplete,
                      weak_factory_.GetWeakPtr()));
-  if (error == net::ERR_IO_PENDING) {
-    // OnWriteHeadersComplete() will be called asynchronously.
-    return;
-  }
-  // MaybeWriteHeaders() doesn't run the callback if it finishes synchronously,
-  // so explicitly call it here.
-  OnWriteHeadersComplete(error);
 }
 
 void ServiceWorkerNewScriptLoader::OnWriteHeadersComplete(net::Error error) {
@@ -603,18 +596,11 @@ void ServiceWorkerNewScriptLoader::WriteData(
   // successfully wrote to the data pipe (i.e., |bytes_written|).
   // A null buffer and zero |bytes_written| are passed when this is the end of
   // the body.
-  net::Error error = cache_writer_->MaybeWriteData(
+  cache_writer_->MaybeWriteData(
       buffer.get(), bytes_written,
       base::BindOnce(&ServiceWorkerNewScriptLoader::OnWriteDataComplete,
                      weak_factory_.GetWeakPtr(), pending_buffer,
                      bytes_written));
-  if (error == net::ERR_IO_PENDING) {
-    // OnWriteDataComplete() will be called asynchronously.
-    return;
-  }
-  // MaybeWriteData() doesn't run the callback if it finishes synchronously, so
-  // explicitly call it here.
-  OnWriteDataComplete(std::move(pending_buffer), bytes_written, error);
 }
 
 void ServiceWorkerNewScriptLoader::OnWriteDataComplete(
