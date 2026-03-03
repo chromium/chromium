@@ -23,7 +23,7 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires [Visual Studio 2022](https://learn.microsoft.com/en-us/visualstudio/releases/2022/release-notes)
+Chromium requires [Visual Studio 2026](https://learn.microsoft.com/en-us/visualstudio/releases/2026/release-notes)
 (>=17.0.0) to build. Visual Studio can also be used to debug Chromium.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
@@ -52,7 +52,7 @@ $ PATH_TO_INSTALLER.EXE ^
 Required
 
 * [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
-version 10.0.26100.4654. This can be installed separately or by checking the
+version 10.0.26100.7705. This can be installed separately or by checking the
 appropriate box in the Visual Studio Installer.
 * (Windows 11) SDK Debugging Tools 10.0.26100.3323 or higher. This version of the
 Debugging tools is needed in order to support reading the large-page PDBs that
@@ -138,9 +138,9 @@ set it to 0. This tells depot_tools to use your locally installed version of
 Visual Studio (by default, depot_tools will try to use a google-internal
 version).
 
-You may also have to set variable `vs2022_install` to your installation path of
-Visual Studio 2022, like
-`set vs2022_install=C:\Program Files\Microsoft Visual Studio\2022\Professional`.
+You may also have to set variable `vs2026_install` to your installation path of
+Visual Studio 2026, like
+`set vs2026_install=C:\Program Files\Microsoft Visual Studio\2026\Professional`.
 
 From a cmd.exe shell, run:
 ```shell
@@ -555,7 +555,7 @@ $ git config core.untrackedCache true
 
 #### Configure git to use fsmonitor
 
-You can significantly speed up git by using [fsmonitor.](https://github.blog/2022-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/)
+You can significantly speed up git by using [fsmonitor.](https://github.blog/2026-06-29-improve-git-monorepo-performance-with-a-file-system-monitor/)
 You should enable fsmonitor in large repos, such as Chromium and v8. Enabling
 it globally will launch many processes and consume excess commit/memory and
 probably isn't worthwhile. The command to enable fsmonitor in the current repo

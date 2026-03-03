@@ -17,7 +17,7 @@ import sys
 
 from gn_helpers import ToGNString
 
-# VS 2022 17.13.4 with 10.0.26100.4654 SDK with ARM64 libraries and UWP support.
+# VS 2026 17.13.4 with 10.0.26100.7705 SDK with ARM64 libraries and UWP support.
 # See go/win-toolchain-reference for instructions about how to update the
 # toolchain.
 #
@@ -59,7 +59,7 @@ from gn_helpers import ToGNString
 # * docs/windows_build_instructions.md
 #   Make sure any version numbers in the documentation match the code.
 #
-TOOLCHAIN_HASH = 'e4305f407e'
+TOOLCHAIN_HASH = 'e66617bc68'
 SDK_VERSION = '10.0.26100.0'
 
 # Visual Studio versions are listed in descending order of priority.
@@ -67,7 +67,8 @@ SDK_VERSION = '10.0.26100.0'
 # which makes a difference for the arm64 runtime.
 # The second number is an alternate version number, only used in an error string
 MSVS_VERSIONS = collections.OrderedDict([
-    ('2022', '17.0'),  # The VS version in our packaged toolchain.
+    ('2026', '18.0'),  # The VS version in our packaged toolchain.
+    ('2022', '17.0'),
     ('2019', '16.0'),
     ('2017', '15.0'),
 ])
@@ -75,6 +76,7 @@ MSVS_VERSIONS = collections.OrderedDict([
 # List of preferred VC toolset version based on MSVS
 # Order is not relevant for this dictionary.
 MSVC_TOOLSET_VERSION = {
+    '2026': 'VC145',
     '2022': 'VC143',
     '2019': 'VC142',
     '2017': 'VC141',
@@ -201,7 +203,8 @@ def GetVisualStudioVersion():
     # Checking vs%s_install environment variables.
     # For example, vs2019_install could have the value
     # "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community".
-    # Only vs2017_install, vs2019_install and vs2022_install are supported.
+    # Only vs2017_install, vs2019_install, vs2022_install, and vs2026_install
+    # are supported.
     path = os.environ.get('vs%s_install' % version)
     if path and os.path.exists(path):
       available_versions.append(version)
