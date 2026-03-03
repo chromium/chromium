@@ -422,10 +422,8 @@ void PhoneStatusProcessor::OnPhoneStatusUpdateReceived(
   SetReceivedPhoneStatusModelStates(phone_status_update.properties());
 
   if (!phone_status_update.removed_notification_ids().empty()) {
-    base::flat_set<int64_t> removed_notification_ids;
-    for (auto& id : phone_status_update.removed_notification_ids()) {
-      removed_notification_ids.emplace(id);
-    }
+    base::flat_set<int64_t> removed_notification_ids(
+        std::from_range, phone_status_update.removed_notification_ids());
 
     notification_processor_->RemoveNotifications(removed_notification_ids);
   }

@@ -1853,10 +1853,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
   }
 
   if (update->surface_ranges) {
-    base::flat_set<SurfaceRange> surface_ranges;
-    for (auto& surface_range : *(update->surface_ranges)) {
-      surface_ranges.insert(surface_range);
-    }
+    base::flat_set<SurfaceRange> surface_ranges(std::from_range,
+                                                *(update->surface_ranges));
     layers.ClearSurfaceRanges();
     layers.SetSurfaceRanges(surface_ranges);
   }
