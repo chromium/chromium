@@ -638,9 +638,11 @@ bool CanCopySharedImageToGLTextureViaSkia(VideoPixelFormat video_frame_format,
                                           unsigned int dst_type,
                                           int dst_level,
                                           SkAlphaType dst_alpha_type) {
-  // NOTE: The direct upload path is not supported on Android (see comment on
-  // CopyVideoFrameTexturesToGLTexture()).
-  // TODO(crbug.com/40075313): Enable on Android.
+  // NOTE: CopySharedImageToGLTextureINTERNAL() is implemented only in the
+  // passthrough command decoder, which is not yet fully rolled out on Android.
+  // Hence, disable this codepath on Android.
+  // TODO(crbug.com/40075313): Enable on Android once the passthrough command
+  // decoder is used universally there.
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
