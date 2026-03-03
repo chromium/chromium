@@ -25,6 +25,7 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 -webkit-mask-position-x: 0%
 -webkit-mask-position-y: 0%
 -webkit-rtl-ordering: logical
+-webkit-ruby-position: before
 -webkit-text-combine: none
 -webkit-text-decorations-in-effect: none
 -webkit-text-fill-color: rgb(0, 0, 0)
@@ -57,6 +58,7 @@ animation-timing-function: ease
 animation-trigger: none
 app-region: none
 appearance: none
+aspect-ratio: auto
 backdrop-filter: none
 backface-visibility: visible
 background-attachment: scroll
@@ -134,7 +136,9 @@ color: rgb(0, 0, 0)
 color-interpolation: srgb
 color-interpolation-filters: linearrgb
 color-rendering: auto
+color-scheme: normal
 column-count: auto
+column-fill: balance
 column-gap: normal
 column-height: auto
 column-rule-break: normal
@@ -149,6 +153,7 @@ column-rule-width: 3px
 column-span: none
 column-width: auto
 column-wrap: auto
+contain: none
 contain-intrinsic-block-size: none
 contain-intrinsic-height: none
 contain-intrinsic-inline-size: none
@@ -157,6 +162,7 @@ contain-intrinsic-width: none
 container-name: none
 container-type: normal
 content: normal
+content-visibility: visible
 continue: auto
 corner-bottom-left-shape: round
 corner-bottom-right-shape: round
@@ -166,6 +172,9 @@ corner-start-end-shape: round
 corner-start-start-shape: round
 corner-top-left-shape: round
 corner-top-right-shape: round
+counter-increment: none
+counter-reset: none
+counter-set: none
 cursor: auto
 cx: 0px
 cy: 0px
@@ -189,6 +198,7 @@ float: none
 flood-color: rgb(0, 0, 0)
 flood-opacity: 1
 flow-tolerance: normal
+font-feature-settings: normal
 font-kerning: auto
 font-language-override: normal
 font-optical-sizing: auto
@@ -208,7 +218,9 @@ font-variant-emoji: normal
 font-variant-ligatures: normal
 font-variant-numeric: normal
 font-variant-position: normal
+font-variation-settings: normal
 font-weight: 400
+forced-color-adjust: auto
 frame-sizing: auto
 grid-auto-columns: auto
 grid-auto-flow: row
@@ -311,6 +323,8 @@ overflow-y: visible
 overlay: none
 overscroll-behavior-block: auto
 overscroll-behavior-inline: auto
+overscroll-behavior-x: auto
+overscroll-behavior-y: auto
 padding-block-end: 0px
 padding-block-start: 0px
 padding-bottom: 0px
@@ -330,6 +344,7 @@ position-try-fallbacks: none
 position-try-order: normal
 position-visibility: anchors-visible
 print-color-adjust: economy
+quotes: auto
 r: 0px
 reading-flow: normal
 reading-order: 0
@@ -357,13 +372,24 @@ scroll-behavior: auto
 scroll-initial-target: none
 scroll-margin-block-end: 0px
 scroll-margin-block-start: 0px
+scroll-margin-bottom: 0px
 scroll-margin-inline-end: 0px
 scroll-margin-inline-start: 0px
+scroll-margin-left: 0px
+scroll-margin-right: 0px
+scroll-margin-top: 0px
 scroll-marker-group: none
 scroll-padding-block-end: auto
 scroll-padding-block-start: auto
+scroll-padding-bottom: auto
 scroll-padding-inline-end: auto
 scroll-padding-inline-start: auto
+scroll-padding-left: auto
+scroll-padding-right: auto
+scroll-padding-top: auto
+scroll-snap-align: none
+scroll-snap-stop: normal
+scroll-snap-type: none
 scroll-target-group: none
 scroll-timeline-axis: block
 scroll-timeline-name: none
@@ -393,23 +419,27 @@ text-anchor: start
 text-autospace: no-autospace
 text-box-edge: auto
 text-box-trim: none
+text-combine-upright: none
 text-decoration: none
 text-decoration-color: rgb(0, 0, 0)
 text-decoration-line: none
 text-decoration-skip-ink: auto
 text-decoration-style: solid
+text-decoration-thickness: auto
 text-emphasis-color: rgb(0, 0, 0)
 text-emphasis-position: auto
 text-emphasis-style: none
 text-fit: none
 text-indent: 0px
 text-justify: auto
+text-orientation: mixed
 text-overflow: clip
 text-rendering: auto
 text-shadow: none
 text-size-adjust: auto
 text-spacing-trim: normal
 text-transform: none
+text-underline-offset: auto
 text-underline-position: auto
 text-wrap-mode: wrap
 text-wrap-style: auto
@@ -423,6 +453,7 @@ timeline-trigger-source: auto
 top: auto
 touch-action: auto
 transform: none
+transform-box: view-box
 transform-origin: 50% 50%
 transform-style: flat
 transition-behavior: normal

@@ -6,8 +6,6 @@ function listGetComputedStyle(target) {
     ]);
     var properties = [
         // These properties don't show up when iterating a computed style object so we add them explicitly.
-        "-webkit-mask-position-x",
-        "-webkit-mask-position-y",
         "background-position-x",
         "background-position-y",
         "border-spacing",

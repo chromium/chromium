@@ -1,6 +1,7 @@
 Font attributes. The font-family should list the empty string:
 
 font-family: "";
+font-feature-settings: normal;
 font-kerning: auto;
 font-language-override: normal;
 font-optical-sizing: auto;
@@ -20,5 +21,6 @@ font-variant-emoji: normal;
 font-variant-ligatures: normal;
 font-variant-numeric: normal;
 font-variant-position: normal;
+font-variation-settings: normal;
 font-weight: 400;
 
