@@ -594,12 +594,7 @@ SlotSpanMetadata::ToSlotSpanStart(const SlotSpanMetadata* slot_span,
 // partition page.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
     uintptr_t address) {
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  std::ptrdiff_t metadata_offset =
-      PartitionAddressSpace::MetadataOffset(GetPool(address));
-#else
-  constexpr std::ptrdiff_t metadata_offset = 0;
-#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  const std::ptrdiff_t metadata_offset = GetMetadataOffsetFromAddr(address);
   return FromAddr(address, metadata_offset);
 }
 
@@ -649,12 +644,8 @@ PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromAddr(
 // This works on direct maps too.
 PA_ALWAYS_INLINE SlotSpanMetadata* SlotSpanMetadata::FromSlotStart(
     UntaggedSlotStart slot_start) {
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  std::ptrdiff_t metadata_offset =
-      PartitionAddressSpace::MetadataOffset(GetPool(slot_start.value()));
-#else
-  constexpr std::ptrdiff_t metadata_offset = 0;
-#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  const std::ptrdiff_t metadata_offset =
+      GetMetadataOffsetFromAddr(slot_start.value());
   return FromSlotStart(slot_start, metadata_offset);
 }
 

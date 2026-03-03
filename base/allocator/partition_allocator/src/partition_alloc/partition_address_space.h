@@ -567,4 +567,29 @@ PA_ALWAYS_INLINE bool IsConfigurablePoolAvailable() {
 
 #endif  // PA_BUILDFLAG(HAS_64_BIT_POINTERS)
 
+// To reduce boilerplate code include some simple free functions directly for
+// both 32-bit and 64-bit platforms. These should always be trivial either
+// calling PartitionAddressSpace or having simple values to compute.
+namespace partition_alloc::internal {
+// On 32-bit platforms, METADATA_OUT_OF_GIGACAGE is not supported and thus
+// offset is always 0.
+PA_ALWAYS_INLINE std::ptrdiff_t GetMetadataOffset(pool_handle pool) {
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  return PartitionAddressSpace::MetadataOffset(pool);
+#else
+  return 0;
+#endif
+}
+
+// On 32-bit platforms, METADATA_OUT_OF_GIGACAGE is not supported and thus
+// offset is always 0.
+PA_ALWAYS_INLINE std::ptrdiff_t GetMetadataOffsetFromAddr(uintptr_t address) {
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+  return PartitionAddressSpace::MetadataOffsetFromAddr(address);
+#else
+  return 0;
+#endif
+}
+}  // namespace partition_alloc::internal
+
 #endif  // PARTITION_ALLOC_PARTITION_ADDRESS_SPACE_H_

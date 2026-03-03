@@ -1145,12 +1145,8 @@ PartitionAllocGetDirectMapSlotStartAndSizeInBRPPool(uintptr_t address) {
                               .size = size_t(0)};
   }
 
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  std::ptrdiff_t metadata_offset =
-      PartitionAddressSpace::MetadataOffset(pool_handle::kBRPPoolHandle);
-#else
-  constexpr std::ptrdiff_t metadata_offset = 0;
-#endif
+  const std::ptrdiff_t metadata_offset =
+      GetMetadataOffset(pool_handle::kBRPPoolHandle);
   // The direct map allocation may not start exactly from the first page, as
   // there may be padding for alignment. The first page metadata holds an offset
   // to where direct map metadata, and thus direct map start, are located.
@@ -1198,12 +1194,8 @@ PartitionAllocGetSlotStartAndSizeInBRPPool(uintptr_t address) {
     return directmap_slot_info;
   }
 
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  std::ptrdiff_t metadata_offset =
-      PartitionAddressSpace::MetadataOffset(pool_handle::kBRPPoolHandle);
-#else
-  constexpr std::ptrdiff_t metadata_offset = 0;
-#endif
+  const std::ptrdiff_t metadata_offset =
+      GetMetadataOffset(pool_handle::kBRPPoolHandle);
   auto* slot_span = SlotSpanMetadata::FromAddr(address, metadata_offset);
 
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
@@ -1946,13 +1938,8 @@ PA_ALWAYS_INLINE PartitionRoot* PartitionRoot::FromFirstSuperPage(
     uintptr_t super_page) {
   PA_DCHECK(internal::ReservationOffsetTable::Get(super_page)
                 .IsReservationStart(super_page));
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
   // Slow
-  std::ptrdiff_t offset =
-      internal::PartitionAddressSpace::MetadataOffsetFromAddr(super_page);
-#else
-  std::ptrdiff_t offset = 0;
-#endif
+  const std::ptrdiff_t offset = internal::GetMetadataOffsetFromAddr(super_page);
   auto* extent_entry = internal::PartitionSuperPageToExtent(super_page, offset);
   PartitionRoot* root = extent_entry->root;
   PA_DCHECK(root->inverted_self_ == ~reinterpret_cast<uintptr_t>(root));
@@ -2138,13 +2125,8 @@ PA_ALWAYS_INLINE size_t PartitionRoot::GetUsableSize(const void* ptr) {
   if (!ptr) {
     return 0;
   }
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  std::ptrdiff_t offset =
-      internal::PartitionAddressSpace::MetadataOffsetFromAddr(
-          internal::ObjectInnerPtr2Addr(ptr));
-#else
-  constexpr std::ptrdiff_t offset = 0;
-#endif
+  const std::ptrdiff_t offset =
+      internal::GetMetadataOffsetFromAddr(internal::ObjectInnerPtr2Addr(ptr));
   auto* slot_span = SlotSpanMetadata::FromObjectInnerPtr(ptr, offset);
   auto* root = FromSlotSpanMetadata(slot_span);
   return root->GetSlotUsableSize(slot_span);

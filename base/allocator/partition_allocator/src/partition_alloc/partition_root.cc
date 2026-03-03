@@ -80,12 +80,8 @@ PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
   // Zero it just in case, to catch errors.
   orig_address = 0;
 
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  std::ptrdiff_t offset = internal::PartitionAddressSpace::MetadataOffset(
-      pool_handle::kBRPPoolHandle);
-#else
-  std::ptrdiff_t offset = 0;
-#endif
+  const std::ptrdiff_t offset =
+      internal::GetMetadataOffset(pool_handle::kBRPPoolHandle);
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, offset);
   auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
   // Double check that in-slot metadata is indeed present. Currently that's the
@@ -1159,7 +1155,7 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
     settings_.metadata_offset_ =
-        internal::PartitionAddressSpace::MetadataOffset(settings_.pool_handle);
+        internal::GetMetadataOffset(settings_.pool_handle);
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
 
     settings_.enable_free_with_size =
