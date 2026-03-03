@@ -301,6 +301,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/options/autofill_ai/EntityDataManagerTest.java",
   ]
 
   deps = [
