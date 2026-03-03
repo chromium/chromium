@@ -126,8 +126,7 @@ public class PreferenceParserTest {
                 textMessageBundle);
     }
 
-    @Nullable
-    private Bundle findBundleByKey(List<Bundle> metadata, String key) {
+    private @Nullable Bundle findBundleByKey(List<Bundle> metadata, String key) {
         for (Bundle bundle : metadata) {
             if (key.equals(bundle.getString(PreferenceParser.METADATA_KEY))) {
                 return bundle;

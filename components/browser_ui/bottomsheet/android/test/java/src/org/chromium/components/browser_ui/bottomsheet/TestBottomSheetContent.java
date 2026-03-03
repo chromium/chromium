@@ -124,9 +124,8 @@ public class TestBottomSheetContent implements BottomSheetContent {
         return mContentView;
     }
 
-    @Nullable
     @Override
-    public View getToolbarView() {
+    public @Nullable View getToolbarView() {
         return mToolbarView;
     }
 

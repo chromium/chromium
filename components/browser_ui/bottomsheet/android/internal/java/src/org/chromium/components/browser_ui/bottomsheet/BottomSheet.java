@@ -575,7 +575,7 @@ class BottomSheet extends FrameLayout
      *
      * @param content The {@link BottomSheetContent} to show, or null if no content should be shown.
      */
-    void showContent(@Nullable final BottomSheetContent content) {
+    void showContent(final @Nullable BottomSheetContent content) {
         // If the desired content is already showing, do nothing.
         if (mSheetContent == content) return;
 
@@ -1350,7 +1350,7 @@ class BottomSheet extends FrameLayout
      *
      * @param content The new sheet content, or null if the sheet has no content.
      */
-    protected void onSheetContentChanged(@Nullable final BottomSheetContent content) {
+    protected void onSheetContentChanged(final @Nullable BottomSheetContent content) {
         mSheetContent = content;
 
         boolean shouldLongPressMoveSheet =

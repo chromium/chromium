@@ -58,9 +58,9 @@ public class ClipDrawableProgressBar extends ImageView {
     // http://developer.android.com/reference/android/graphics/drawable/ScaleDrawable.html
     private static final int DRAWABLE_MAX_LEVEL = 10000;
 
-    @Nullable private ColorDrawable mForegroundColorDrawable;
-    @Nullable private GradientDrawable mForegroundGradientDrawable;
-    @Nullable private GradientDrawable mBackgroundGradientDrawable;
+    private @Nullable ColorDrawable mForegroundColorDrawable;
+    private @Nullable GradientDrawable mForegroundGradientDrawable;
+    private @Nullable GradientDrawable mBackgroundGradientDrawable;
     private int mForegroundColor;
     private int mBackgroundColor;
     private int mStaticBackgroundColor;

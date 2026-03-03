@@ -64,8 +64,7 @@ public class SettingsIndexData {
         return sInstance;
     }
 
-    @Nullable
-    public static SettingsIndexData getInstance() {
+    public static @Nullable SettingsIndexData getInstance() {
         return sInstance;
     }
 
@@ -79,8 +78,7 @@ public class SettingsIndexData {
      * @param input The string to normalize.
      * @return The normalized string, or null if the input was null.
      */
-    @Nullable
-    private static String normalizeString(@Nullable String input) {
+    private static @Nullable String normalizeString(@Nullable String input) {
         if (input == null) return null;
 
         // 1. Decompose characters into base letters and combining accent marks.
@@ -479,8 +477,7 @@ public class SettingsIndexData {
         addEntry(id, builder.build());
     }
 
-    @Nullable
-    public Entry getEntry(String id) {
+    public @Nullable Entry getEntry(String id) {
         return mEntries.get(id);
     }
 
@@ -491,8 +488,7 @@ public class SettingsIndexData {
      * @param key Key name of the preference entry.
      * @return entry The entry if it exists, null otherwise.
      */
-    @Nullable
-    public Entry getEntryForKey(String prefFragment, String key) {
+    public @Nullable Entry getEntryForKey(String prefFragment, String key) {
         return getEntry(PreferenceParser.createUniqueId(prefFragment, key));
     }
 
@@ -706,8 +702,7 @@ public class SettingsIndexData {
      * @return The title of the top-level preference that leads to this fragment, or {@code null} if
      *     no valid path back to the root can be found (i.e., the fragment is an orphan).
      */
-    @Nullable
-    private String findVisibleHeader(
+    private @Nullable String findVisibleHeader(
             String fragmentName, Map<String, String> cache, String rootFragmentName) {
         if (cache.containsKey(fragmentName)) {
             return cache.get(fragmentName);

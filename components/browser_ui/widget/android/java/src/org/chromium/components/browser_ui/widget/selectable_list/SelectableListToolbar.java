@@ -118,7 +118,7 @@ public class SelectableListToolbar<E> extends Toolbar
     protected boolean mIsSelectionEnabled;
     // When we assign mSelectedItems, make sure we copy the contents so that we can properly track
     // whether the content actually changed.
-    @Nullable private Set<E> mSelectedItems;
+    private @Nullable Set<E> mSelectedItems;
 
     @SuppressWarnings("NullAway.Init")
     protected SelectionDelegate<E> mSelectionDelegate;

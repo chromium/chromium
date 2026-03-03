@@ -62,8 +62,7 @@ public interface ManagedPreferenceDelegate {
      *     enterprise policy, false if recommendation is not followed, null if there is no
      *     recommendation.
      */
-    @Nullable
-    default Boolean isPreferenceRecommendation(Preference preference) {
+    default @Nullable Boolean isPreferenceRecommendation(Preference preference) {
         // TODO(crbug.com/428544701) Remove default after adding to existing child classes.
         // This is almost a feature flag insofar as it prevents behavior from changing.
         return null;

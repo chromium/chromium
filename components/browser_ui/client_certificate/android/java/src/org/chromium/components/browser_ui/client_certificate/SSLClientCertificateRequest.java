@@ -62,7 +62,7 @@ public class SSLClientCertificateRequest {
         // These fields will store the results computed in doInBackground so that they can be posted
         // back in onPostExecute.
         private byte @Nullable [][] mEncodedChain;
-        @Nullable private PrivateKey mPrivateKey;
+        private @Nullable PrivateKey mPrivateKey;
 
         // Pointer to the native certificate request needed to return the results.
         private final long mNativePtr;
