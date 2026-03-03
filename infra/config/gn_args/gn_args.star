@@ -645,6 +645,13 @@ gn_args.config(
 )
 
 gn_args.config(
+    name = "enable_rust_clippy",
+    args = {
+        "enable_rust_clippy": True,
+    },
+)
+
+gn_args.config(
     name = "enable_vulkan",
     args = {
         "enable_vulkan": True,

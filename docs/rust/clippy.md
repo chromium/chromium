@@ -2,22 +2,16 @@
 
 ## How to run Clippy lints against Rust code in Chromium
 
-To opt into running Clippy, please set `enable_rust_clippy = true` in `args.gn`.
-With this `args.gn` setting building a 1st-party Rust library will also
-invoke Clippy.
+When building locally, Clippy is disabled by default to avoid adding build
+overhead to Chromium engineers primarily working with C, C++, or Java.
 
-Clippy is disabled by default to avoid adding build overhead to
-Chromium engineers primarily working with C, C++, or Java.
+However, Clippy warnings are enforced by the CQ. Therefore, it is strongly
+recommended that engineers working with Rust code enable Clippy warnings by
+setting  `enable_rust_clippy = true` in their `args.gn`.
 
-> TODO(https://crbug.com/41484295): Another, _temporary_ reason for disabling
-> Clippy by default, is that we don't yet enforce Clippy-cleaniness and
-> therefore Chromium is not yet Clippy-clean.
-> Once Clippy is enabled on some CQ bots, then we should:
->
-> - Delete this snippet that talks about "temporary reason"
-> - Mention CQ coverage (the fact that it exists + which bots).
-> - Encourage everyone working with Rust sources to "shift left"
->   and set `enable_rust_clippy = true`.
+Doing so allows you to fix Clippy warnings as they occur, rather than waiting to
+discover them until after uploading a CL and running it through the CQ.  It also
+lets you verify that you've fixed all the problems when rebuilding locally.
 
 ## Chromium policy
 
@@ -60,19 +54,19 @@ see the `//build/config/compiler:default_clippy_lints` target.
   `clippy::missing_safety_doc` triggers on `cxx::bridge`-generated code
   ([Example `#[allow(...)]` used as a workaround](https://source.chromium.org/chromium/chromium/src/+/main:mojo/public/rust/sequences/cxx.rs;l=24-25;drc=3abf739f4b711e4339c793af95ab482ca3a6c7fc))
 
+## Clippy coverage in Chromium CQ/CI
+
+Clippy is enabled on a subset of CQ bots:
+
+* `linux-rel`
+* TODO(https://crbug.com/41484295): Add other bots and target platforms - e.g.:
+  `android-arm64-rel`, `ios-simulator`, `linux-chromeos-rel`, `mac-rel`, and
+  `win-rel`.
+
 ## Future work
 
 Next steps:
 
-* Fix preexisting Clippy violations: https://crbug.com/472355480
-* Enable Clippy on `linux-rel-compilator` (CI + CQ)
-  for initial enforcement
-* Enable Clippy on `android-arm64-rel-compilator` (CI + CQ)
-  to cover `ui/android/texture_compressor`
-* Consider enabling Clippy on
-  `ios-simulator-compilator`, `linux-chromeos-rel-compilator`,
-  `mac-rel-compilator`, and `win-rel-compilator` (CI + CQ)
-  to cover remaining target platforms in their basic configurations
 * Figure out how Chromium-specific lints can be added
 * Consider opting into additional lints.  Examples:
     - [`undocumented_unsafe_blocks`](https://rust-lang.github.io/rust-clippy/master/index.html#undocumented_unsafe_blocks)
