@@ -8,6 +8,7 @@
 
 #include <string_view>
 
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/views/side_panel/side_panel.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_util.h"
 #include "ui/views/widget/widget.h"
@@ -27,7 +28,7 @@ SidePanelAnimationPerfReporter::~SidePanelAnimationPerfReporter() {
   int animation_fps = static_cast<int>(std::round(
       animation_presented_times_.size() / animation_duration_.InSecondsF()));
 
-  SidePanelUtil::RecordSidePanelAnimationMetrics(
+  SidePanelMetrics::RecordSidePanelAnimationMetrics(
       side_panel_->type(), animation_type_, largest_animation_step_time_,
       animation_fps);
 }

@@ -43,6 +43,8 @@ source_set("side_panel_views_dependent") {
     "side_panel_entry.h",
     "side_panel_entry_waiter.cc",
     "side_panel_entry_waiter.h",
+    "side_panel_metrics.cc",
+    "side_panel_metrics.h",
     "side_panel_registry.cc",
     "side_panel_registry.h",
     "side_panel_ui.h",

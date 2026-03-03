@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -785,7 +786,7 @@ void SidePanel::RecordMetricsIfResized() {
 
     int side_panel_contents_width = width() - GetBorderInsets().width();
     int browser_window_width = browser_view_->width();
-    SidePanelUtil::RecordSidePanelResizeMetrics(
+    SidePanelMetrics::RecordSidePanelResizeMetrics(
         type_, id.value(), side_panel_contents_width, browser_window_width);
     did_resize_ = false;
   }

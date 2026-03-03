@@ -24,7 +24,7 @@ namespace {
 constexpr base::TimeDelta kSidePanelAnimationDuration = base::Milliseconds(350);
 
 // Returns true if the AnimationCoordinator is in an open state.
-bool IsAnimatingOpen(SidePanelAnimationCoordinator ::AnimationType type) {
+bool IsAnimatingOpen(SidePanelAnimationCoordinator::AnimationType type) {
   return type != SidePanelAnimationCoordinator::AnimationType::kClose;
 }
 

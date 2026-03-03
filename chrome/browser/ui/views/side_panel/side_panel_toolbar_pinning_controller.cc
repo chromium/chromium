@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_desktop.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -100,7 +101,8 @@ void SidePanelToolbarPinningController::UpdatePinState(
     actions_model->UpdatePinnedState(action_id.value(), updated_pin_state);
   }
 
-  SidePanelUtil::RecordPinnedButtonClicked(entry_key.id(), updated_pin_state);
+  SidePanelMetrics::RecordPinnedButtonClicked(entry_key.id(),
+                                              updated_pin_state);
 }
 
 void SidePanelToolbarPinningController::UpdateActiveState(

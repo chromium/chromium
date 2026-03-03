@@ -13,12 +13,12 @@
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_waiter.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
@@ -148,7 +148,7 @@ void SidePanelCoordinator::Show(
 
   if (!IsSidePanelShowing(entry->type())) {
     SetOpenedTimestamp(entry->type(), base::TimeTicks::Now());
-    SidePanelUtil::RecordSidePanelOpen(entry->type(), open_trigger);
+    SidePanelMetrics::RecordSidePanelOpen(entry->type(), open_trigger);
 
     // If opening the toolbar height side panel, make sure the content height
     // side panel is closed and vice versa.
@@ -156,7 +156,7 @@ void SidePanelCoordinator::Show(
                               ? SidePanelEntry::PanelType::kToolbar
                               : SidePanelEntry::PanelType::kContent;
         IsSidePanelShowing(other_type)) {
-      SidePanelUtil::RecordPanelClosedForOtherPanelTypeMetrics(
+      SidePanelMetrics::RecordPanelClosedForOtherPanelTypeMetrics(
           other_type, entry->type(), GetCurrentEntryId(other_type).value(),
           entry->key().id());
       Close(other_type, SidePanelEntryHideReason::kSidePanelClosed,
@@ -180,8 +180,8 @@ void SidePanelCoordinator::Show(
     }
   }
 
-  SidePanelUtil::RecordSidePanelShowOrChangeEntryTrigger(entry->type(),
-                                                         open_trigger);
+  SidePanelMetrics::RecordSidePanelShowOrChangeEntryTrigger(entry->type(),
+                                                            open_trigger);
 
   // If the side panel is already showing, cancel all loads and do nothing.
   if (IsSidePanelShowing(entry->type()) &&
@@ -200,8 +200,8 @@ void SidePanelCoordinator::Show(
     return;
   }
 
-  SidePanelUtil::RecordEntryShowTriggeredMetrics(
-      entry->type(), browser_view_->browser(), entry->key().id(), open_trigger);
+  SidePanelMetrics::RecordEntryShowTriggeredMetrics(
+      entry->type(), entry->key().id(), open_trigger);
 
   waiter(entry->type())
       ->WaitForEntry(entry,
@@ -470,8 +470,8 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
     content_wrapper->RemoveChildViewT(content_wrapper->children().front());
   }
   side_panel->RemoveHeaderView();
-  SidePanelUtil::RecordSidePanelClosed(side_panel->type(),
-                                       opened_timestamp(side_panel->type()));
+  SidePanelMetrics::RecordSidePanelClosed(side_panel->type(),
+                                          opened_timestamp(side_panel->type()));
 }
 
 void SidePanelCoordinator::ClosePromoAndMaybeNotifyUsed(

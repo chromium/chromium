@@ -21,6 +21,7 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -327,7 +328,7 @@ void SidePanelHeaderController::OpenInNewTab() {
 
   base::WeakPtr<SidePanelHeaderController> weak_this =
       weak_pointer_factor_.GetWeakPtr();
-  SidePanelUtil::RecordNewTabButtonClicked(side_panel_entry_->key().id());
+  SidePanelMetrics::RecordNewTabButtonClicked(side_panel_entry_->key().id());
   content::OpenURLParams params(new_tab_url, content::Referrer(),
                                 WindowOpenDisposition::NEW_FOREGROUND_TAB,
                                 ui::PAGE_TRANSITION_AUTO_BOOKMARK,

@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list_types.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/side_panel/side_panel_enums.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_animation_ids.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/slide_animation.h"
@@ -51,10 +52,7 @@ class Animation;
 class SidePanelAnimationCoordinator : public views::AnimationDelegateViews {
  public:
   using SidePanelAnimationId = ui::ElementIdentifier;
-
-  // LINT.IfChange(AnimationType)
-  enum class AnimationType { kOpen, kOpenWithContentTransition, kClose };
-  // LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelAnimationType)
+  using AnimationType = SidePanelAnimationType;
 
   // Represents a single animation sequence for a specific animation id.
   struct AnimationSequence {

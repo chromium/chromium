@@ -9,7 +9,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_observer.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
-#include "chrome/browser/ui/views/side_panel/side_panel_util.h"
+#include "chrome/browser/ui/side_panel/side_panel_metrics.h"
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kShouldShowTitleInSidePanelHeaderKey, true)
 
@@ -73,8 +73,8 @@ void SidePanelEntry::ClearCachedView() {
 
 void SidePanelEntry::OnEntryShown() {
   entry_shown_timestamp_ = base::TimeTicks::Now();
-  SidePanelUtil::RecordEntryShownMetrics(type(), key_.id(),
-                                         entry_show_triggered_timestamp_);
+  SidePanelMetrics::RecordEntryShownMetrics(type(), key_.id(),
+                                            entry_show_triggered_timestamp_);
   // After the initial load time is recorded, we need to reset the triggered
   // timestamp so we don't keep recording this entry after its selected from the
   // combobox.
@@ -91,8 +91,8 @@ void SidePanelEntry::OnEntryHideCancelled() {
 }
 
 void SidePanelEntry::OnEntryHidden() {
-  SidePanelUtil::RecordEntryHiddenMetrics(type(), key_.id(),
-                                          entry_shown_timestamp_);
+  SidePanelMetrics::RecordEntryHiddenMetrics(type(), key_.id(),
+                                             entry_shown_timestamp_);
   observers_.Notify(&SidePanelEntryObserver::OnEntryHidden, this);
 }
 

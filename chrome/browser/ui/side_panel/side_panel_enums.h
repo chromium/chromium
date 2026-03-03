@@ -64,4 +64,12 @@ enum class SidePanelEntryHideReason {
   kBackgrounded = 2,
 };
 
+// LINT.IfChange(SidePanelAnimationType)
+enum class SidePanelAnimationType {
+  kOpen = 0,
+  kOpenWithContentTransition = 1,
+  kClose = 2,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/browser/enums.xml:SidePanelAnimationType)
+
 #endif  // CHROME_BROWSER_UI_SIDE_PANEL_SIDE_PANEL_ENUMS_H_
