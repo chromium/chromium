@@ -90,6 +90,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -359,7 +360,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         mSnackbarManagerSupplier.set(
                 new SnackbarManager(this, getContentView(), null, null, getModalDialogManager()));
 
-        mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        mIntentRequestTracker = IntentRequestTrackerImpl.createFromActivity(this);
         mWindowAndroidSupplier.set(
                 ActivityWindowAndroid.create(
                         this,

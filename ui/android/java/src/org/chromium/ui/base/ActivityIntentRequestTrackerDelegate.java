@@ -12,7 +12,7 @@ import android.content.IntentSender.SendIntentException;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.ui.base.IntentRequestTracker.Delegate;
+import org.chromium.ui.base.IntentRequestTrackerImpl.Delegate;
 
 import java.lang.ref.WeakReference;
 

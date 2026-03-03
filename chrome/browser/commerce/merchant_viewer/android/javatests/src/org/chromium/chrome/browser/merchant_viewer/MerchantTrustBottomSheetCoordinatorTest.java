@@ -42,7 +42,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.thinwebview.ThinWebView;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -104,7 +104,7 @@ public class MerchantTrustBottomSheetCoordinatorTest {
                                     mMockBottomSheetController,
                                     mMockDecorView,
                                     mMockMetrics,
-                                    IntentRequestTracker.createFromActivity(sActivity),
+                                    IntentRequestTrackerImpl.createFromActivity(sActivity),
                                     ObservableSuppliers.createNonNull(mMockProfile));
                 });
         mDetailsTabCoordinator.setMediatorForTesting(mMockMediator);

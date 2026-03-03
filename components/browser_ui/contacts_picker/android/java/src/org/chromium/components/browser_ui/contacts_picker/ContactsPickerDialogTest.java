@@ -52,7 +52,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -148,7 +148,7 @@ public class ContactsPickerDialogTest
                             return ActivityWindowAndroid.create(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(mActivity),
+                                    IntentRequestTrackerImpl.createFromActivity(mActivity),
                                     mInsetObserver,
                                     /* trackOcclusion= */ true);
                         });

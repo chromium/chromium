@@ -83,7 +83,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
@@ -166,7 +166,7 @@ public class AndroidShareSheetControllerUnitTest {
                 ActivityWindowAndroid.create(
                         mActivity,
                         /* listenToActivityState= */ false,
-                        IntentRequestTracker.createFromActivity(mActivity),
+                        IntentRequestTrackerImpl.createFromActivity(mActivity),
                         mInsetObserver,
                         /* trackOcclusion= */ true);
         mPrintCallback = new PayloadCallbackHelper<>();

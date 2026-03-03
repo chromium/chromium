@@ -61,7 +61,7 @@ import org.chromium.components.messages.MessageIdentifier;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -129,7 +129,7 @@ public class DefaultBrowserPromoUtilsTest {
                 ActivityWindowAndroid.create(
                         mActivity,
                         /* listenToActivityState= */ false,
-                        IntentRequestTracker.createFromActivity(mActivity),
+                        IntentRequestTrackerImpl.createFromActivity(mActivity),
                         mInsetObserver,
                         /* trackOcclusion= */ true);
         TrackerFactory.setTrackerForTests(mMockTracker);

@@ -28,6 +28,7 @@ import org.chromium.google_apis.gaia.CoreAccountId;
 import org.chromium.google_apis.gaia.GaiaId;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -72,7 +73,7 @@ public class DeviceLockActivity extends SynchronousInitializationActivity
                 ActivityWindowAndroid.create(
                         this,
                         /* listenToActivityState= */ true,
-                        IntentRequestTracker.createFromActivity(this),
+                        IntentRequestTrackerImpl.createFromActivity(this),
                         getInsetObserver(),
                         /* trackOcclusion= */ true);
         mIntentRequestTracker = mWindowAndroid.getIntentRequestTracker();

@@ -55,6 +55,7 @@ import org.chromium.ui.base.ActivityIntentRequestTrackerDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayUtil;
@@ -128,7 +129,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     public AsyncInitializationActivity() {
         mHandler = new Handler();
         mIntentRequestTracker =
-                IntentRequestTracker.createFromDelegate(
+                IntentRequestTrackerImpl.createFromDelegate(
                         new ActivityIntentRequestTrackerDelegate(this) {
                             @Override
                             public boolean onCallbackNotFoundError(String error) {

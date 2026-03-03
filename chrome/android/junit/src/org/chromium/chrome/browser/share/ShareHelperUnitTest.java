@@ -43,7 +43,7 @@ import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.components.browser_ui.share.ShareHelper.TargetChosenReceiver;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -78,7 +78,7 @@ public class ShareHelperUnitTest {
                 ActivityWindowAndroid.create(
                         mActivity,
                         /* listenToActivityState= */ false,
-                        IntentRequestTracker.createFromActivity(mActivity),
+                        IntentRequestTrackerImpl.createFromActivity(mActivity),
                         /* insetObserver= */ null,
                         /* trackOcclusion= */ true);
         mWindowDestroyRef.set(mWindow);

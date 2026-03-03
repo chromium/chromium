@@ -45,7 +45,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -145,7 +145,7 @@ public class PhotoPickerDialogTest
                             return ActivityWindowAndroid.create(
                                     mActivityTestRule.getActivity(),
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(
+                                    IntentRequestTrackerImpl.createFromActivity(
                                             mActivityTestRule.getActivity()),
                                     /* insetObserver= */ null,
                                     /* trackOcclusion= */ true);

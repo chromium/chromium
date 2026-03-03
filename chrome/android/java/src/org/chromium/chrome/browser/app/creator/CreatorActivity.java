@@ -39,6 +39,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 
 import java.util.function.Supplier;
 
@@ -109,7 +110,8 @@ public class CreatorActivity extends SnackbarActivity {
         int parentTabId =
                 getIntent().getIntExtra(CreatorIntentConstants.CREATOR_TAB_ID, INVALID_TAB_ID);
 
-        IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        IntentRequestTracker intentRequestTracker =
+                IntentRequestTrackerImpl.createFromActivity(this);
         mWindowAndroid =
                 ActivityWindowAndroid.create(
                         this,

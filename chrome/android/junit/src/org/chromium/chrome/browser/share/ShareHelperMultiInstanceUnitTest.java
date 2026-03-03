@@ -45,6 +45,7 @@ import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -201,7 +202,7 @@ public class ShareHelperMultiInstanceUnitTest {
                             .onActivity(activity -> mActivity = spy(activity))
                             .moveToState(State.STARTED);
             doReturn(taskId).when(mActivity).getTaskId();
-            mIntentRequestTracker = IntentRequestTracker.createFromActivity(mActivity);
+            mIntentRequestTracker = IntentRequestTrackerImpl.createFromActivity(mActivity);
             mWindow =
                     ActivityWindowAndroid.create(
                             mActivity,

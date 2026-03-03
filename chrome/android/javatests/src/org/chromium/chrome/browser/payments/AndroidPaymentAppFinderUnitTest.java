@@ -60,7 +60,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -117,7 +117,7 @@ public class AndroidPaymentAppFinderUnitTest {
                             return ActivityWindowAndroid.create(
                                     sActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTracker.createFromActivity(sActivity),
+                                    IntentRequestTrackerImpl.createFromActivity(sActivity),
                                     mInsetObserver,
                                     /* trackOcclusion= */ true);
                         });

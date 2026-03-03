@@ -25,6 +25,7 @@ import org.chromium.native_test.NativeBrowserTest;
 import org.chromium.native_test.NativeBrowserTestActivity;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
+import org.chromium.ui.base.IntentRequestTrackerImpl;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.io.File;
@@ -63,7 +64,8 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         FileProviderUtils.setFileProviderUtil(new FileProviderHelper());
         setContentView(getTestActivityViewId());
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
-        IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
+        IntentRequestTracker intentRequestTracker =
+                IntentRequestTrackerImpl.createFromActivity(this);
         mWindowAndroid =
                 ActivityWindowAndroid.create(
                         this,
