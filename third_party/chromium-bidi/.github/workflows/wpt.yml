@@ -140,7 +140,7 @@ jobs:
           GITHUB_EVENT_INPUTS_TESTS: ${{ github.event.inputs.tests }}
       - name: Upload artifacts
         if: ${{ !cancelled() }}
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: ${{ matrix.kind }}-${{ matrix.head }}-${{ matrix.this_chunk }}.${{ matrix.total_chunks }}-artifacts
           path: |
@@ -190,7 +190,7 @@ jobs:
       - name: Download Artifact
         # Get all the artifacts from the previous WPT run in order to get all the
         # test reports.
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           path: wpt_artifacts
           # Merge the artifacts from all jobs in the same file.
@@ -243,7 +243,7 @@ jobs:
         env:
           STEPS_PATHS_OUTPUTS_SRC_DIR_NAME: ${{ steps.paths.outputs.src_dir_name }}
       - name: Upload artifacts
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: updated-wpt-metadata-${{ matrix.kind }}-${{ matrix.head }}
           path: ./artifacts
@@ -266,7 +266,7 @@ jobs:
         # There is no way to download artifacts by wildcard, so we need to download
         # all of them. The `updated-wpt-metadata` directory should contain all the
         # updated expectations from the `update_expectations` matrix.
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           path: all-artifacts
           merge-multiple: true
@@ -303,7 +303,7 @@ jobs:
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
       - name: Install and build npm dependencies
         run: npm ci
-      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+      - uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           pattern: cd-headful-*
           merge-multiple: true

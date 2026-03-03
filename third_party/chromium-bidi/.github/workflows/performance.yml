@@ -68,7 +68,7 @@ jobs:
           DEBUG_CDP_DATA=debug.cdp.log DEBUG_BIDI_DATA=debug.bidi.log node tools/benchmark-puppeteer.mjs
           cat puppeteer_perf_metrics.json
       - name: Upload performance result as artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: puppeteer-perf-metrics-${{ matrix.os }}
           path: |
@@ -118,7 +118,7 @@ jobs:
           node tools/benchmark-selenium.mjs
           cat selenium_perf_metrics.json
       - name: Upload performance result as artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: selenium-perf-metrics-${{ matrix.os }}
           path: |
@@ -181,7 +181,7 @@ jobs:
           npm run e2e:${{ matrix.head }} -- tests/performance/ -s
           cat e2e_perf_metrics.json
       - name: Upload performance result as artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: e2e-perf-metrics-${{ matrix.os }}-${{ matrix.head }}-${{ matrix.kind }}
           path: e2e_perf_metrics.json
@@ -206,7 +206,7 @@ jobs:
       - name: Setup Pages
         uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5.0.0
       - name: Download all performance metrics artifacts
-        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
         with:
           path: artifacts
       - name: Combine metrics into a single file
@@ -223,7 +223,7 @@ jobs:
           echo "Combined performance metrics in JSON format:"
           cat performance-metrics-all.json
       - name: Upload combined performance metrics
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: all-performance-metrics
           path: |

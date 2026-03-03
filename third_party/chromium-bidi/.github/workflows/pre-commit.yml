@@ -25,7 +25,7 @@ jobs:
           node-version-file: '.nvmrc'
           cache: npm
       - name: Setup Go
-        uses: actions/setup-go@7a3fe6cf4cb3a834922a1244abfce67bcef6a0c5 # v5.0.0
+        uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v5.0.0
         with:
           go-version: '1.21.x'
       - uses: google/wireit@f21db1f3a6a4db31f42787a958cf2a18308effed # setup-github-actions-caching/v2.0.3
