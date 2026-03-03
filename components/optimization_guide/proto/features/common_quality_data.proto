@@ -635,7 +635,7 @@ message FormInfo {
   string action_url = 2 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 11
+// Next ID: 12
 message FormControlData {
   // The name for the field.
   string field_name = 1 [features = { field_presence: EXPLICIT }];
@@ -673,6 +673,9 @@ message FormControlData {
   // in AnnotatedPageContent traversal order according to Autofill's
   // understanding of forms).
   uint32 autofill_section_id = 10 [features = { field_presence: EXPLICIT }];
+
+  // Whether the field is readonly.
+  bool is_readonly = 11 [features = { field_presence: EXPLICIT }];
 }
 
 // Represents an option in a select field. See below for example.
@@ -1214,6 +1217,14 @@ message FrameMetadata {
 message PageMetadata {
   // The main frame is the first entry in the array.
   repeated FrameMetadata frame_metadata = 1;
+}
+
+message DocumentSelection {
+  // The document identifier of the document/frame that this selection is from.
+  DocumentIdentifier document_identifier = 1 [features = { field_presence: EXPLICIT }];
+
+  // The selection in the document.
+  Selection selection = 2 [features = { field_presence: EXPLICIT }];
 }
 
 // Selection text affinity, part of the a11y snapshot.
