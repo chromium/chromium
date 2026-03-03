@@ -955,6 +955,21 @@
             ]
         }
     ],
+    "AndroidMediaInsertion": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidMediaInsertion"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidMediaPickerAdoption": [
         {
             "platforms": [
