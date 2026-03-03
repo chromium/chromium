@@ -1,0 +1,44 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("obsolete_system") {
+  sources = [ "obsolete_system.h" ]
+}
+
+source_set("impl") {
+  sources = []
+  deps = [ ":obsolete_system" ]
+
+  if (!is_android) {
+    if (is_win) {
+      sources += [ "obsolete_system_win.cc" ]
+      deps += [
+        "//base",
+        "//chrome/app:branded_strings",
+        "//chrome/common",
+        "//chrome/common:version_header",
+        "//ui/base",
+      ]
+    } else if (is_mac) {
+      sources += [ "obsolete_system_mac.cc" ]
+      deps += [
+        "//base",
+        "//chrome/app:branded_strings",
+        "//chrome/common",
+        "//chrome/common:version_header",
+        "//ui/base",
+      ]
+    } else if (is_linux) {
+      sources += [ "obsolete_system_linux.cc" ]
+      deps += [
+        "//base",
+        "//chrome/app:branded_strings",
+        "//ui/base",
+      ]
+    } else {
+      # ChromeOS and other non-Android platforms use a stub implementation.
+      sources += [ "obsolete_system_stub.cc" ]
+    }
+  }
+}

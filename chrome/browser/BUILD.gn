@@ -1634,6 +1634,7 @@ static_library("browser") {
     ":chrome_content_browser_client_parts",
     "//chrome/browser/google",
     "//chrome/browser/headless",
+    "//chrome/browser/obsolete_system",
     "//chrome/browser/profiles",
     "//chrome/browser/ui/tabs:tab_enums",
   ]
@@ -1787,6 +1788,7 @@ static_library("browser") {
     "//chrome/browser/notifications:system_notification_helper_impl",
     "//chrome/browser/notifications/scheduler:factory",
     "//chrome/browser/notifications/scheduler/public",
+    "//chrome/browser/obsolete_system:impl",
     "//chrome/browser/offline_items_collection",
     "//chrome/browser/omnibox",
     "//chrome/browser/optimization_guide",
@@ -3868,7 +3870,6 @@ static_library("browser") {
       "notifications/profile_notification.h",
       "notifications/screen_capture_notification_blocker.cc",
       "notifications/screen_capture_notification_blocker.h",
-      "obsolete_system/obsolete_system.h",
       "page_info/web_view_side_panel_throttle.cc",
       "page_info/web_view_side_panel_throttle.h",
       "page_load_metrics/observers/initial_webui_page_load_metrics_observer.cc",
@@ -4522,7 +4523,6 @@ static_library("browser") {
       # TODO(crbug.com/441020158): Remove this circular dependency when the following headers get
       # componentized:
       # - c/b/enterprise/browser_management/management_service_factory.h
-      # - c/b/obsolete_system/obsolete_system.h
       # - c/b/lifetime/application_lifetime.h
       "//chrome/browser/upgrade_detector:impl",
 
@@ -5003,7 +5003,6 @@ static_library("browser") {
       "notifications/passphrase_textfield.h",
       "notifications/web_page_notifier_controller.cc",
       "notifications/web_page_notifier_controller.h",
-      "obsolete_system/obsolete_system_stub.cc",
       "page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.cc",
       "page_load_metrics/observers/ash_session_restore_page_load_metrics_observer.h",
       "performance_manager/mechanisms/working_set_trimmer_chromeos.cc",
@@ -6236,7 +6235,6 @@ static_library("browser") {
       "notifications/win/notification_template_builder.h",
       "notifications/win/notification_util.cc",
       "notifications/win/notification_util.h",
-      "obsolete_system/obsolete_system_win.cc",
       "password_manager/password_manager_util_win.cc",
       "password_manager/password_manager_util_win.h",
       "performance_manager/policies/dll_pre_read_policy_win.cc",
@@ -6480,7 +6478,6 @@ static_library("browser") {
       "notifications/mac/notification_platform_bridge_mac.h",
       "notifications/mac/notification_utils.cc",
       "notifications/mac/notification_utils.h",
-      "obsolete_system/obsolete_system_mac.cc",
       "password_manager/password_manager_util_mac.h",
       "password_manager/password_manager_util_mac.mm",
       "platform_util_mac.mm",
@@ -6947,7 +6944,6 @@ static_library("browser") {
       "metrics/pressure/pressure_metrics.h",
       "metrics/pressure/pressure_metrics_reporter.cc",
       "metrics/pressure/pressure_metrics_reporter.h",
-      "obsolete_system/obsolete_system_linux.cc",
       "shell_integration_linux.cc",
       "shell_integration_linux.h",
     ]

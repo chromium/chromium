@@ -199,6 +199,7 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/headless",
       "//chrome/browser/headless:command_processor",
+      "//chrome/browser/obsolete_system",
       "//chrome/browser/prefs",
       "//chrome/browser/prefs:util",
       "//chrome/browser/privacy_sandbox:headers",
