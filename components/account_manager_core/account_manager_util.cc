@@ -156,6 +156,8 @@ crosapi::mojom::GoogleServiceAuthError::State ToMojoGoogleServiceAuthErrorState(
       return cm::GoogleServiceAuthError::State::kScopeLimitedUnrecoverableError;
     case GoogleServiceAuthError::State::CHALLENGE_RESPONSE_REQUIRED:
       return cm::GoogleServiceAuthError::State::kChallengeResponseRequired;
+    case GoogleServiceAuthError::State::DEVICE_MANAGEMENT_ERROR:
+      NOTREACHED();
     case GoogleServiceAuthError::State::NUM_STATES:
       NOTREACHED();
   }

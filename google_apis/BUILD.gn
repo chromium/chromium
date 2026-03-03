@@ -103,6 +103,8 @@ component("google_apis") {
     "default_api_keys.h",
     "gaia/core_account_id.cc",
     "gaia/core_account_id.h",
+    "gaia/device_management_error_details.cc",
+    "gaia/device_management_error_details.h",
     "gaia/gaia_access_token_fetcher.cc",
     "gaia/gaia_access_token_fetcher.h",
     "gaia/gaia_auth_consumer.cc",
@@ -210,6 +212,8 @@ proto_library("proto") {
 static_library("test_support") {
   testonly = true
   sources = [
+    "gaia/fake_device_management_error_details.cc",
+    "gaia/fake_device_management_error_details.h",
     "gaia/fake_gaia.cc",
     "gaia/fake_gaia.h",
     "gaia/fake_oauth2_access_token_manager.cc",

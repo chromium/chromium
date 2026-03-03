@@ -5148,6 +5148,7 @@ shown properly on the user-facing crash UI.
   <int value="13" label="WEB_LOGIN_REQUIRED (deprecated)"/>
   <int value="14" label="SCOPE_LIMITED_UNRECOVERABLE_ERROR"/>
   <int value="15" label="CHALLENGE_RESPONSE_REQUIRED"/>
+  <int value="16" label="DEVICE_MANAGEMENT_ERROR"/>
 </enum>
 
 <enum name="GpuImageUsageState">

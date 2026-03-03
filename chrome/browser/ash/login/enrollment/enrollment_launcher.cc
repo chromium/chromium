@@ -484,6 +484,9 @@ void EnrollmentLauncherImpl::ReportAuthStatus(
       UMA(policy::kMetricEnrollmentNetworkFailed);
       LOG(WARNING) << "Network error " << error.state();
       break;
+    case GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR:
+      // DEVICE_MANAGEMENT_ERROR is not supported on ChromeOS.
+      NOTREACHED();
     case GoogleServiceAuthError::NUM_STATES:
       NOTREACHED();
   }

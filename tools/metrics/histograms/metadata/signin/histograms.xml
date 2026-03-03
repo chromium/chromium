@@ -29,6 +29,7 @@ chromium-metrics-reviews@google.com.
   <variant name="ChallengeResponseRequired"
       summary="challenge response required"/>
   <variant name="ConnectionFailed" summary="connection failed"/>
+  <variant name="DeviceManagementError" summary="device management error"/>
   <variant name="InvalidGaiaCredentials" summary="invalid gaia credentials"/>
   <variant name="RequestCanceled" summary="request canceled"/>
   <variant name="ScopeLimitedUnrecoverableError"

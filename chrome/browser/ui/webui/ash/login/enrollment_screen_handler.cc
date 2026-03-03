@@ -269,8 +269,11 @@ void EnrollmentScreenHandler::ShowAuthError(
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
       ShowError(IDS_ENTERPRISE_ENROLLMENT_AUTH_NETWORK_ERROR, /*retry=*/true);
       return;
+    case GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR:
+      // DEVICE_MANAGEMENT_ERROR is not supported on ChromeOS.
+      NOTREACHED();
     case GoogleServiceAuthError::NUM_STATES:
-      break;
+      NOTREACHED();
   }
   NOTREACHED();
 }

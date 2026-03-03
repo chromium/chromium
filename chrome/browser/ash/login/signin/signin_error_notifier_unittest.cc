@@ -229,10 +229,11 @@ TEST_F(SigninErrorNotifierTest, AuthStatusEnumerateAllErrors) {
       GoogleServiceAuthError::SERVICE_ERROR,
       GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
       GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED,
+      // DEVICE_MANAGEMENT_ERROR is not supported in ash.
   };
   static_assert(
       std::size(table) == GoogleServiceAuthError::NUM_STATES -
-                              GoogleServiceAuthError::kDeprecatedStateCount,
+                              GoogleServiceAuthError::kDeprecatedStateCount - 1,
       "table size should match number of auth error types");
   CoreAccountId account_id =
       identity_test_env()

@@ -40,6 +40,8 @@ std::string ErrorToString(GoogleServiceAuthError::State error_state) {
       return "ScopeLimitedUnrecoverableError";
     case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
       return "ChallengeResponseRequired";
+    case GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR:
+      return "DeviceManagementError";
     default:
       NOTREACHED() << "Unexpected error state: " << error_state;
   }

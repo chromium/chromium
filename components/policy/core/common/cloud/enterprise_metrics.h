@@ -161,8 +161,10 @@ enum MetricEnrollment {
   kMetricEnrollmentRegistrationCertificateFetchNotAvailable = 68,
   // Enrollment failed: Organization unit enrollment limit exceeded.
   kMetricEnrollmentOrgUnitEnrollmentLimitExceeded = 69,
+  // Device management error
+  kMetricEnrollmentDeviceManagementError = 70,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentOrgUnitEnrollmentLimitExceeded
+  kMaxValue = kMetricEnrollmentDeviceManagementError
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/enterprise/enums.xml:EnterpriseEnrollmentType)
 

@@ -125,6 +125,7 @@ source_set("unit_tests") {
     "//components/supervised_user/core/common:features",
     "//components/sync_preferences:test_support",
     "//google_apis",
+    "//google_apis:test_support",
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//services/network:test_support",

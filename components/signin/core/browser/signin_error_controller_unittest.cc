@@ -160,6 +160,7 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
       GoogleServiceAuthError::SERVICE_ERROR,
       GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
       GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED,
+      GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR,
   };
   static_assert(
       std::size(table) == GoogleServiceAuthError::NUM_STATES -
@@ -167,6 +168,10 @@ TEST(SigninErrorControllerTest, AuthStatusEnumerateAllErrors) {
       "table array does not match the number of auth error types");
 
   for (GoogleServiceAuthError::State state : table) {
+    if (state == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
+      continue;
+    }
+
     GoogleServiceAuthError error;
     if (state == GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR) {
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(

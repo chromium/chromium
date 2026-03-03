@@ -199,6 +199,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//extensions/browser",
     "//google_apis",
+    "//google_apis:test_support",
     "//testing/gtest",
     "//ui/base",
     "//ui/message_center/public/cpp",

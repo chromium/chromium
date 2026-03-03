@@ -73,6 +73,9 @@ bool IsTransientError(GoogleServiceAuthError::State state) {
 }
 }  // namespace
 
+bool operator==(const GoogleServiceAuthError&,
+                const GoogleServiceAuthError&) = default;
+
 GoogleServiceAuthError::GoogleServiceAuthError() : details_(None()) {}
 
 GoogleServiceAuthError::GoogleServiceAuthError(State s) {
@@ -107,6 +110,9 @@ GoogleServiceAuthError::GoogleServiceAuthError(State s) {
     case CHALLENGE_RESPONSE_REQUIRED:
       details_.emplace<ChallengeResponseRequired>();
       break;
+    case DEVICE_MANAGEMENT_ERROR:
+      // A mdm error requires details, so constructing it only with the state
+      // DEVICE_MANAGEMENT_ERROR is an invalid operation
     case NUM_STATES:
       NOTREACHED();
   }
@@ -175,6 +181,13 @@ GoogleServiceAuthError GoogleServiceAuthError::AuthErrorNone() {
 }
 
 // static
+GoogleServiceAuthError GoogleServiceAuthError::FromDeviceManagementError(
+    std::unique_ptr<DeviceManagementErrorDetails> details) {
+  CHECK(details);
+  return GoogleServiceAuthError(DeviceManagementError(std::move(details)));
+}
+
+// static
 bool GoogleServiceAuthError::IsValid(State state) {
   switch (state) {
     case NONE:
@@ -187,6 +200,7 @@ bool GoogleServiceAuthError::IsValid(State state) {
     case SERVICE_ERROR:
     case SCOPE_LIMITED_UNRECOVERABLE_ERROR:
     case CHALLENGE_RESPONSE_REQUIRED:
+    case DEVICE_MANAGEMENT_ERROR:
       return true;
     case NUM_STATES:
       return false;
@@ -215,6 +229,9 @@ GoogleServiceAuthError::State GoogleServiceAuthError::state() const {
           },
           [](const ChallengeResponseRequired&) {
             return CHALLENGE_RESPONSE_REQUIRED;
+          },
+          [](const DeviceManagementError& e) {
+            return DEVICE_MANAGEMENT_ERROR;
           },
       },
       details_);
@@ -307,6 +324,11 @@ std::string GoogleServiceAuthError::ToString() const {
             return std::string(
                 "Service responded with a token binding challenge.");
           },
+          [](const DeviceManagementError& e) {
+            return base::StringPrintf(
+                "Device management error (is_user_actionable: %s)",
+                e.details->IsUserActionable() ? "true" : "false");
+          },
       },
       details_);
 }
@@ -324,6 +346,12 @@ bool GoogleServiceAuthError::IsScopePersistentError() const {
 
 bool GoogleServiceAuthError::IsTransientError() const {
   return ::IsTransientError(state());
+}
+
+bool GoogleServiceAuthError::IsDeviceManagementErrorUserActionable() const {
+  const auto* dmerror = std::get_if<DeviceManagementError>(&details_);
+  CHECK(dmerror);
+  return dmerror->details->IsUserActionable();
 }
 
 GoogleServiceAuthError::GoogleServiceAuthError(Details details)
@@ -364,3 +392,41 @@ static bool JNI_GoogleServiceAuthError_IsTransientError(JNIEnv* env,
 #if BUILDFLAG(IS_ANDROID)
 DEFINE_JNI(GoogleServiceAuthError)
 #endif
+
+GoogleServiceAuthError::DeviceManagementError::DeviceManagementError(
+    std::unique_ptr<DeviceManagementErrorDetails> detail)
+    : details(std::move(detail)) {
+  CHECK(details);
+}
+
+GoogleServiceAuthError::DeviceManagementError::~DeviceManagementError() =
+    default;
+
+GoogleServiceAuthError::DeviceManagementError::DeviceManagementError(
+    const DeviceManagementError& other) {
+  details = other.details->Clone();
+  CHECK(details);
+}
+
+GoogleServiceAuthError::DeviceManagementError&
+GoogleServiceAuthError::DeviceManagementError::operator=(
+    const DeviceManagementError& other) {
+  if (this != &other) {
+    details = other.details->Clone();
+    CHECK(details);
+  }
+  return *this;
+}
+
+bool GoogleServiceAuthError::DeviceManagementError::operator==(
+    const DeviceManagementError& other) const {
+  CHECK(details && other.details);
+  return details->Equals(*other.details);
+}
+
+GoogleServiceAuthError::DeviceManagementError::DeviceManagementError(
+    DeviceManagementError&& other) noexcept = default;
+
+GoogleServiceAuthError::DeviceManagementError&
+GoogleServiceAuthError::DeviceManagementError::operator=(
+    DeviceManagementError&& other) noexcept = default;

@@ -189,6 +189,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/webdata/common",
     "//google_apis",
+    "//google_apis:test_support",
     "//net",
     "//net:test_support",
     "//services/network:test_support",

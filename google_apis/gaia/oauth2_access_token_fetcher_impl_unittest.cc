@@ -385,6 +385,7 @@ class OAuth2ErrorCodesTest
       case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
       case GoogleServiceAuthError::REQUEST_CANCELED:
       case GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED:
+      case GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR:
       case GoogleServiceAuthError::NUM_STATES:
         NOTREACHED();
     }

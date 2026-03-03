@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "google_apis/gaia/fake_device_management_error_details.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,6 +25,9 @@ TEST(GoogleServiceAuthErrorTest, State) {
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kInvalidScope);
+    } else if (i == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
+      error = GoogleServiceAuthError::FromDeviceManagementError(
+          std::make_unique<FakeDeviceManagementErrorDetails>());
     } else {
       error = GoogleServiceAuthError(i);
     }

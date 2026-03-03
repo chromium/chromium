@@ -15,6 +15,7 @@
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_observer.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "google_apis/gaia/core_account_id.h"
+#include "google_apis/gaia/fake_device_management_error_details.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/test/test_utils.h"
@@ -91,6 +92,7 @@ const GoogleServiceAuthError::State table[] = {
     GoogleServiceAuthError::SERVICE_ERROR,
     GoogleServiceAuthError::SCOPE_LIMITED_UNRECOVERABLE_ERROR,
     GoogleServiceAuthError::CHALLENGE_RESPONSE_REQUIRED,
+    GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR,
 };
 
 TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
@@ -109,6 +111,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorPersistenErrors) {
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kInvalidScope);
+    } else if (state == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
+      error = GoogleServiceAuthError::FromDeviceManagementError(
+          std::make_unique<FakeDeviceManagementErrorDetails>());
     } else {
       error = GoogleServiceAuthError(state);
     }
@@ -148,6 +153,9 @@ TEST_F(ProfileOAuth2TokenServiceDelegateTest, UpdateAuthErrorTransientErrors) {
       error = GoogleServiceAuthError::FromScopeLimitedUnrecoverableErrorReason(
           GoogleServiceAuthError::ScopeLimitedUnrecoverableErrorReason::
               kInvalidScope);
+    } else if (state == GoogleServiceAuthError::DEVICE_MANAGEMENT_ERROR) {
+      error = GoogleServiceAuthError::FromDeviceManagementError(
+          std::make_unique<FakeDeviceManagementErrorDetails>());
     } else {
       error = GoogleServiceAuthError(state);
     }
