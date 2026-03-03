@@ -17,6 +17,8 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/ref_counted.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/omnibox/browser/in_memory_url_index_types.h"
@@ -333,6 +335,8 @@ class URLIndexPrivateData
   // A one-to-one mapping from HistoryID to the word starts detected in each
   // item's URL and page title.
   WordStartsMap word_starts_map_;
+
+  base::SequenceCheckerImpl sequence_checker_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_URL_INDEX_PRIVATE_DATA_H_

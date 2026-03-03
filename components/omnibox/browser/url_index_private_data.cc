@@ -25,6 +25,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/not_fatal_until.h"
 #include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -138,6 +139,7 @@ ScoredHistoryMatches URLIndexPrivateData::HistoryItemsForTerms(
     bookmarks::BookmarkModel* bookmark_model,
     TemplateURLService* template_url_service,
     OmniboxTriggeredFeatureService* triggered_feature_service) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   // This list will contain the original search string and any other string
   // transformations.
   String16Vector search_strings;
@@ -264,6 +266,7 @@ bool URLIndexPrivateData::UpdateURL(
     const history::URLRow& row,
     const std::set<std::string>& scheme_allowlist,
     base::CancelableTaskTracker* tracker) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   // The row may or may not already be in our index. If it is not already
   // indexed and it qualifies then it gets indexed. If it is already
   // indexed and still qualifies then it gets updated, otherwise it
@@ -320,6 +323,7 @@ bool URLIndexPrivateData::UpdateURL(
 void URLIndexPrivateData::UpdateRecentVisits(
     history::URLID url_id,
     const history::VisitVector& recent_visits) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   auto row_pos = history_info_map_.find(url_id);
   if (row_pos != history_info_map_.end()) {
     VisitInfoVector* visits = &row_pos->second.visits;
@@ -351,6 +355,7 @@ void URLIndexPrivateData::ScheduleUpdateRecentVisits(
 }
 
 bool URLIndexPrivateData::DeleteURL(const GURL& url) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   // Find the matching entry in the history_info_map_.
   // To avoid creating a temporary GURL instance,
   // the lambda expression should return the GURL reference.
@@ -399,10 +404,12 @@ scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::RebuildFromHistory(
   UMA_HISTOGRAM_COUNTS_1M("History.InMemoryURLHistoryItems",
                           rebuilt_data->history_id_word_map_.size());
 
+  rebuilt_data->sequence_checker_.DetachFromSequence();
   return rebuilt_data;
 }
 
 scoped_refptr<URLIndexPrivateData> URLIndexPrivateData::Duplicate() const {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   scoped_refptr<URLIndexPrivateData> data_copy = new URLIndexPrivateData;
   data_copy->word_list_ = word_list_;
   data_copy->available_words_ = available_words_;
@@ -422,6 +429,7 @@ bool URLIndexPrivateData::Empty() const {
 }
 
 void URLIndexPrivateData::Clear() {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   word_list_.clear();
   available_words_ = base::stack<WordID>();
   word_map_.clear();
@@ -782,6 +790,7 @@ bool URLIndexPrivateData::IndexRow(
 
 void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
                                              RowWordStarts* word_starts) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   HistoryID history_id = static_cast<HistoryID>(row.id());
   // Split URL into individual, unique words then add in the title words.
   const GURL& gurl(row.url());
@@ -809,6 +818,7 @@ void URLIndexPrivateData::AddRowWordsToIndex(const history::URLRow& row,
 
 void URLIndexPrivateData::AddWordToIndex(const std::u16string& term,
                                          HistoryID history_id) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   auto [word_pos, is_new] = word_map_.insert(std::make_pair(term, WordID()));
 
   // Adding a new word (i.e. a word that is not already in the word index).
@@ -826,6 +836,7 @@ void URLIndexPrivateData::AddWordToIndex(const std::u16string& term,
 }
 
 WordID URLIndexPrivateData::AddNewWordToWordList(const std::u16string& term) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   WordID word_id = word_list_.size();
   if (available_words_.empty()) {
     word_list_.push_back(term);
@@ -846,6 +857,7 @@ void URLIndexPrivateData::RemoveRowFromIndex(const history::URLRow& row) {
 }
 
 void URLIndexPrivateData::RemoveRowWordsFromIndex(const history::URLRow& row) {
+  CHECK(sequence_checker_.CalledOnValidSequence(), base::NotFatalUntil::M149);
   // Remove the entries in history_id_word_map_ and word_id_history_map_ for
   // this row.
   HistoryID history_id = static_cast<HistoryID>(row.id());
