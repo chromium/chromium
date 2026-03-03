@@ -835,7 +835,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     // TODO(crbug.com/485648942): Update to drive Deep Search behavior from the
-    // PEC API's ToolSubstateConfig.
+    //   PEC API's ToolSubstateConfig.
     // Allow empty query for Deep Search follow-ups.
     if (this.inputState_?.activeTool === ComposeboxToolMode.kDeepSearch &&
         this.isFollowupQuery) {
