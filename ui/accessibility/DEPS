@@ -2,6 +2,7 @@ include_rules = [
   "+ash/constants",
   "+mojo/public",
   "+third_party/cld_3",
+  "+third_party/fuzztest",
   "+third_party/iaccessible2",
   "+third_party/isimpledom",
   "+third_party/skia",

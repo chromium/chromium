@@ -362,6 +362,11 @@ test("accessibility_unittests") {
     "test_ax_tree_update_unittest.cc",
   ]
 
+  fuzztests = [
+    "AXModeMojomTraitsFuzzTest.RoundtripEquality",
+    "AXModeMojomTraitsFuzzTest.DeserializationSafety",
+  ]
+
   deps = [
     ":accessibility",
     ":test_support",
