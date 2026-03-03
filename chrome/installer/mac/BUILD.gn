@@ -97,6 +97,7 @@ copy("copies") {
     "pkg-dmg",
     "pkg_postinstall.in",
     "pkg_preinstall.in",
+    "rebrand_chrome.py",
     "sign_chrome.py",
     "universalizer.py",
   ]
@@ -149,11 +150,17 @@ script_test("mac_signing_tests") {
            "signing/notarize_test.py",
            "signing/parts_test.py",
            "signing/pipeline_test.py",
+           "signing/rebranding_test.py",
            "signing/run_mac_signing_tests.py",
            "signing/signing_test.py",
            "signing/test_config.py",
            "//third_party/catapult/third_party/typ/",
          ]
+
+  data_deps = [
+    "//third_party/libdmg-hfsplus:dmg_tool",
+    "//third_party/libdmg-hfsplus:hfs_tool",
+  ]
 
   if (is_chrome_branded) {
     data += [ "internal/internal_invoker_test.py" ]
