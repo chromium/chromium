@@ -16,18 +16,22 @@ public class AccessibilityTestHelperService extends Service {
     private final IAccessibilityTestHelperService.Stub mBinder =
             new IAccessibilityTestHelperService.Stub() {
                 @Override
-                public boolean waitForEvent(
-                        int eventType, String className, String text, long timeoutMs) {
+                public boolean waitForEvent(EventQueryParams params) {
                     Log.i(
                             TAG,
                             "waitForEvent called with type: "
-                                    + eventType
+                                    + params.eventType
                                     + ", class: "
-                                    + className
+                                    + params.className
                                     + ", text: "
-                                    + text);
-                    return AccessibilityTestService.tryWaitForEvent(
-                            eventType, className, text, timeoutMs);
+                                    + params.text);
+                    return AccessibilityTestService.tryWaitForEvent(params);
+                }
+
+                @Override
+                public boolean performActionOnNode(String className, String text, int action) {
+                    Log.i(TAG, "performActionOnNode called in HelperService");
+                    return AccessibilityTestService.tryPerformActionOnNode(className, text, action);
                 }
             };
 

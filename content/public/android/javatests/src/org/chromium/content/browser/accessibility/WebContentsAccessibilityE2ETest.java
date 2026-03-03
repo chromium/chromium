@@ -13,6 +13,7 @@ import android.os.Build;
 import android.os.IBinder;
 import android.view.accessibility.AccessibilityEvent;
 
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 
@@ -27,6 +28,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.ui.accessibility.testservice.EventQueryParams;
 import org.chromium.ui.accessibility.testservice.IAccessibilityTestHelperService;
 
 import java.io.IOException;
@@ -166,10 +168,9 @@ public class WebContentsAccessibilityE2ETest {
         boolean wscReceived =
                 getAccessibilityHelperService()
                         .waitForEvent(
-                                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                                "",
-                                "",
-                                EVENT_TIMEOUT_MS);
+                                new EventQueryParamsBuilder()
+                                        .setEventType(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
+                                        .build());
         Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
     }
 
@@ -186,20 +187,91 @@ public class WebContentsAccessibilityE2ETest {
         boolean wscReceived =
                 getAccessibilityHelperService()
                         .waitForEvent(
-                                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                                "",
-                                "",
-                                EVENT_TIMEOUT_MS);
+                                new EventQueryParamsBuilder()
+                                        .setEventType(AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED)
+                                        .build());
         Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
 
         // Ask the service to wait for a text selection changed on the omnibox.
         boolean tscReceived =
                 getAccessibilityHelperService()
                         .waitForEvent(
-                                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
-                                "android.widget.EditText",
-                                url,
-                                EVENT_TIMEOUT_MS);
+                                new EventQueryParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED)
+                                        .setClassName("android.widget.EditText")
+                                        .setText(url)
+                                        .build());
         Assert.assertTrue("Service did not receive TEXT_SELECTION_CHANGED", tscReceived);
+    }
+
+    @Test
+    @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.BAKLAVA)
+    public void testAccessibilityServiceReceivesAccessibilityFocusEvent() throws Throwable {
+        // Load a page with a focusable element.
+        mActivityTestRule.launchContentShellWithUrl(
+                UrlUtils.encodeHtmlDataUri("<button>Click Me</button>"));
+
+        // Wait for the page to settle.
+        getAccessibilityHelperService()
+                .waitForEvent(
+                        new EventQueryParamsBuilder()
+                                .setEventType(AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED)
+                                .build());
+
+        // Find the button and perform a focus action.
+        boolean actionRes =
+                getAccessibilityHelperService()
+                        .performActionOnNode(
+                                "android.widget.Button",
+                                "Click Me",
+                                AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS);
+        Assert.assertTrue("Failed to perform accessibility focus action", actionRes);
+
+        // Ask the service to wait for the event.
+        boolean eventReceived =
+                getAccessibilityHelperService()
+                        .waitForEvent(
+                                new EventQueryParamsBuilder()
+                                        .setEventType(
+                                                AccessibilityEvent.TYPE_VIEW_ACCESSIBILITY_FOCUSED)
+                                        .setClassName("android.widget.Button")
+                                        .setText("Click Me")
+                                        .build());
+        Assert.assertTrue("Service did not receive accessibility focus event", eventReceived);
+    }
+
+    private static class EventQueryParamsBuilder {
+        private static final long DEFAULT_TIMEOUT_MS = 5000;
+
+        private int mEventType;
+        private String mClassName = "";
+        private String mText = "";
+        private final long mTimeoutMs = DEFAULT_TIMEOUT_MS;
+
+        public EventQueryParamsBuilder setEventType(int eventType) {
+            mEventType = eventType;
+            return this;
+        }
+
+        public EventQueryParamsBuilder setClassName(String className) {
+            mClassName = className;
+            return this;
+        }
+
+        public EventQueryParamsBuilder setText(String text) {
+            mText = text;
+            return this;
+        }
+
+        public EventQueryParams build() {
+            EventQueryParams params = new EventQueryParams();
+            params.eventType = mEventType;
+            params.className = mClassName;
+            params.text = mText;
+            params.timeoutMs = mTimeoutMs;
+            return params;
+        }
     }
 }
