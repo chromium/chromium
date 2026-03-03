@@ -11,6 +11,8 @@
 #include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/optimization_guide/browser_test_util.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
+#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/feedback/feedback_dialog.h"
 #include "chrome/browser/ui/webui/test_support/webui_interactive_test_mixin.h"
@@ -58,6 +60,30 @@ class HistoryEmbeddingsInteractiveTest
                   passage_embeddings_test_env_.embedder(),
                   /*answerer=*/nullptr, /*intent_classifier=*/nullptr);
         }));
+
+    const auto generate_embeddings_candidates =
+        [](const optimization_guide::proto::AnnotatedPageContent&,
+           int page_content_passages_to_generate) {
+          return std::vector<
+              std::pair<std::string, passage_embeddings::PassageType>>{
+              std::make_pair("A a B C b a 2 D",
+                             passage_embeddings::PassageType::kPageContent)};
+        };
+
+    passage_embeddings::PageEmbeddingsServiceFactory::GetInstance()
+        ->SetTestingFactory(
+            context,
+            base::BindLambdaForTesting([this, generate_embeddings_candidates](
+                                           content::BrowserContext* context)
+                                           -> std::unique_ptr<KeyedService> {
+              return std::make_unique<
+                  passage_embeddings::PageEmbeddingsService>(
+                  base::BindLambdaForTesting(generate_embeddings_candidates),
+                  page_content_annotations::
+                      PageContentExtractionServiceFactory::GetForProfile(
+                          Profile::FromBrowserContext(context)),
+                  passage_embeddings_test_env_.embedder());
+            }));
   }
 
   void SetUp() override {

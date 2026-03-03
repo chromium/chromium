@@ -35,6 +35,7 @@
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
 #include "chrome/browser/history_embeddings/history_embeddings_tab_helper.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/login_detection/login_detection_tab_helper.h"
@@ -447,8 +448,10 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
         HistoryTabHelper::GetOrCreateForWebContents(web_contents);
     HistoryClustersTabHelper::CreateForWebContents(web_contents,
                                                    history_tab_helper);
-    HistoryEmbeddingsTabHelper::CreateForWebContents(web_contents,
-                                                     history_tab_helper);
+    if (HistoryEmbeddingsServiceFactory::GetForProfile(profile)) {
+      HistoryEmbeddingsTabHelper::CreateForWebContents(web_contents,
+                                                       history_tab_helper);
+    }
   }
   HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
   webapps::InstallableManager::CreateForWebContents(web_contents);

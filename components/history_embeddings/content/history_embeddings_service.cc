@@ -34,7 +34,7 @@
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
-#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
+#include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "url/gurl.h"
 
@@ -122,6 +122,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+    passage_embeddings::PageEmbeddingsService* page_embeddings_service,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* embedder,
     std::unique_ptr<Answerer> answerer,
@@ -130,6 +131,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
       history_service_(history_service),
       page_content_annotations_service_(page_content_annotations_service),
       optimization_guide_decider_(optimization_guide_decider),
+      page_embeddings_service_(page_embeddings_service),
       embedder_(embedder),
       answerer_(std::move(answerer)),
       intent_classifier_(std::move(intent_classifier)),
@@ -159,6 +161,8 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
         {optimization_guide::proto::HISTORY_EMBEDDINGS});
   }
 
+  page_embeddings_observation_.Observe(page_embeddings_service_);
+
   // Observation needs to be set up after the `storage_` construction since the
   // update notification could be invoked immediately.
   if (embedder_metadata_provider) {
@@ -186,17 +190,14 @@ bool HistoryEmbeddingsService::IsEligible(const GURL& url) {
   return eligible;
 }
 
-void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddings(
-    history::URLID url_id,
-    history::VisitID visit_id,
-    base::Time visit_time,
-    std::vector<std::string> passages) {
-  GetUrlData(url_id, base::BindOnce(
-                         &HistoryEmbeddingsService::
-                             ComputeAndStorePassageEmbeddingsWithExistingData,
-                         weak_ptr_factory_.GetWeakPtr(),
-                         UrlData(url_id, visit_id, visit_time),
-                         std::move(passages), base::ElapsedTimer()));
+void HistoryEmbeddingsService::UpdateVisitMetadata(
+    content::WebContents* web_contents,
+    const std::optional<VisitMetadata>& visit_metadata) {
+  if (visit_metadata.has_value()) {
+    last_history_visit_[web_contents] = *visit_metadata;
+  } else {
+    last_history_visit_.erase(web_contents);
+  }
 }
 
 void HistoryEmbeddingsService::OnOsCryptAsyncReady(
@@ -473,6 +474,30 @@ void HistoryEmbeddingsService::OnHistoryDeletions(
                 deletion_info.deleted_visit_ids());
 }
 
+passage_embeddings::PageEmbeddingsService::Priority
+HistoryEmbeddingsService::GetDefaultPriority() const {
+  return passage_embeddings::PageEmbeddingsService::kBackground;
+}
+
+passage_embeddings::PageEmbeddingsService::UsageMode
+HistoryEmbeddingsService::GetUsageMode() const {
+  return passage_embeddings::PageEmbeddingsService::kContinuous;
+}
+
+void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(
+    content::WebContents* web_contents) {
+  const auto loc = last_history_visit_.find(web_contents);
+  if (loc == last_history_visit_.end()) {
+    return;
+  }
+  const VisitMetadata& visit = loc->second;
+
+  std::vector<passage_embeddings::PassageEmbedding> passage_embeddings =
+      page_embeddings_service_->GetEmbeddings(web_contents);
+  StorePassageEmbeddings(visit.url_id, visit.visit_id, visit.visit_time,
+                         passage_embeddings);
+}
+
 void HistoryEmbeddingsService::EmbedderMetadataUpdated(
     passage_embeddings::EmbedderMetadata metadata) {
   if (embedder_metadata_.IsValid()) {
@@ -505,17 +530,6 @@ void HistoryEmbeddingsService::GetUrlDataInTimeRange(
     base::OnceCallback<void(std::vector<UrlData>)> callback) const {
   storage_.AsyncCall(&Storage::GetUrlDataInTimeRange)
       .WithArgs(from_time, to_time, limit, offset)
-      .Then(std::move(callback));
-}
-
-void HistoryEmbeddingsService::DeleteDataForTesting(
-    bool delete_passages,
-    bool delete_embeddings,
-    base::OnceClosure callback) {
-  storage_
-      .AsyncCall(&history_embeddings::HistoryEmbeddingsService::Storage::
-                     DeleteDataForTesting)
-      .WithArgs(delete_passages, delete_embeddings)
       .Then(std::move(callback));
 }
 
@@ -664,12 +678,6 @@ void HistoryEmbeddingsService::Storage::HandleHistoryDeletions(
   }
 }
 
-void HistoryEmbeddingsService::Storage::DeleteDataForTesting(
-    bool delete_passages,
-    bool delete_embeddings) {
-  sql_database.DeleteAllData(delete_passages, delete_embeddings);
-}
-
 std::vector<UrlData>
 HistoryEmbeddingsService::Storage::CollectPassagesWithoutEmbeddings() {
   return sql_database.GetUrlPassagesWithoutEmbeddings();
@@ -696,93 +704,21 @@ QualityLogEntry HistoryEmbeddingsService::PrepareQualityLogEntry() {
   return nullptr;
 }
 
-void HistoryEmbeddingsService::ComputeAndStorePassageEmbeddingsWithExistingData(
-    UrlData url_data,
-    std::vector<std::string> passages,
-    base::ElapsedTimer database_access_timer,
-    std::optional<UrlData> existing_url_data) {
-  VLOG(4) << "All " << passages.size() << " passages for url_id "
-          << url_data.url_id << ":";
-  for (size_t i = 0; i < passages.size(); i++) {
-    VLOG(4) << i << ": \"" << passages[i] << '"';
+void HistoryEmbeddingsService::StorePassageEmbeddings(
+    history::URLID url_id,
+    history::VisitID visit_id,
+    base::Time visit_time,
+    std::vector<passage_embeddings::PassageEmbedding> passage_embeddings) {
+  UrlData url_data(url_id, visit_id, visit_time);
+  for (const passage_embeddings::PassageEmbedding& passage_embedding :
+       passage_embeddings) {
+    url_data.passages.add_passages(std::move(passage_embedding.passage.first));
+    url_data.embeddings.emplace_back(std::move(passage_embedding.embedding));
   }
 
-  base::UmaHistogramTimes(
-      "History.Embeddings.DatabaseAsCacheAccessTime.TotalWait",
-      database_access_timer.Elapsed());
-
-  // Move existing passages and associated embeddings into map for quick
-  // hash-based lookup instead of many string comparisons.
-  absl::flat_hash_map<std::string, passage_embeddings::Embedding>
-      embedding_cache;
-  if (existing_url_data.has_value()) {
-    size_t passages_size = existing_url_data->passages.passages_size();
-    // It's possible to get passages but no embeddings if the model version
-    // changed and caused embeddings to be deleted, and they're not rebuilt yet.
-    if (passages_size == existing_url_data->embeddings.size()) {
-      auto passages_iter = existing_url_data->passages.passages().begin();
-      auto embeddings_iter = existing_url_data->embeddings.begin();
-      for (size_t i = 0; i < passages_size; i++) {
-        embedding_cache.emplace(std::move(*passages_iter),
-                                std::move(*embeddings_iter));
-        passages_iter++;
-        embeddings_iter++;
-      }
-    }
-  }
-
-  // Check the map for identical passages, which can reuse stored embeddings
-  // instead of recomputing them with the embedder. Preserve the structure
-  // in `url_data` and move any passages that still need embedding to
-  // `noncached_passages`. The missing embeddings will be filled in
-  // with the computed embeddings in `OnPassagesEmbeddingsComputed()`.
-  std::vector<std::string> noncached_passages;
-  noncached_passages.reserve(passages.size());
-  for (std::string& passage : passages) {
-    if (embedding_cache.contains(passage)) {
-      VLOG(6) << "Cached passage: " << passage;
-      // Reuse the embeddings from the cache.
-      url_data.embeddings.emplace_back(embedding_cache[passage]);
-    } else {
-      VLOG(6) << "Noncached passage: " << passage;
-      // Reserve room for the embeddings to be filled in once computed.
-      url_data.embeddings.emplace_back(std::vector<float>{});
-      noncached_passages.push_back(passage);
-    }
-    url_data.passages.add_passages(std::move(passage));
-  }
-
-  if (passages.size() > 0) {
-    base::UmaHistogramPercentage(
-        "History.Embeddings.DatabaseCachedPassageRatio",
-        100 * (passages.size() - noncached_passages.size()) / passages.size());
-    base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseCachedPassageHitCount",
-        passages.size() - noncached_passages.size());
-    base::UmaHistogramCounts100(
-        "History.Embeddings.DatabaseCachedPassageTryCount", passages.size());
-    for (size_t i = 0; i < passages.size(); i++) {
-      base::UmaHistogramBoolean("History.Embeddings.DatabaseCacheHit",
-                                i >= noncached_passages.size());
-    }
-  }
-
-  VLOG(4) << "All " << noncached_passages.size()
-          << " noncached passages for url_id " << url_data.url_id << ":";
-  for (size_t i = 0; i < noncached_passages.size(); i++) {
-    VLOG(5) << i << ": \"" << noncached_passages[i] << '"';
-  }
-
-  // TODO(crbug.com/390241271): Move this inside Embedder implementations once
-  //  they are no longer wrapped inside the SchedulingEmbedder.
-  if (GetFeatureParameters().erase_non_ascii_characters) {
-    EraseNonAsciiCharacters(noncached_passages);
-  }
-  embedder_->ComputePassagesEmbeddings(
-      passage_embeddings::PassagePriority::kPassive,
-      std::move(noncached_passages),
-      base::BindOnce(&HistoryEmbeddingsService::OnPassagesEmbeddingsComputed,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(url_data)));
+  storage_.AsyncCall(&Storage::ProcessAndStorePassages)
+      .WithArgs(url_data)
+      .Then(base::BindOnce(passages_stored_callback_for_tests_, url_data));
 }
 
 void HistoryEmbeddingsService::OnPassagesEmbeddingsComputed(

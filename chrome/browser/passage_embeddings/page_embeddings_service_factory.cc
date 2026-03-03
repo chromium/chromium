@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
@@ -14,10 +15,6 @@
 #include "components/passage_embeddings/content/embeddings_candidate_generator.h"
 #include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
-
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace passage_embeddings {
 
@@ -51,22 +48,14 @@ PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
 std::unique_ptr<KeyedService>
 PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* browser_context) const {
-#if BUILDFLAG(IS_CHROMEOS)
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kFeatureManagementPassageEmbedder)) {
-    return nullptr;
-  }
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  return nullptr;
+#else
   Profile* profile = Profile::FromBrowserContext(browser_context);
 
   // Don't bother running if we don't have a model observer since we won't have
   // a model to run.
   if (!PassageEmbedderModelObserverFactory::GetForProfile(profile)) {
-    return nullptr;
-  }
-
-  if (!base::FeatureList::IsEnabled(passage_embeddings::kPassageEmbedder)) {
     return nullptr;
   }
 
@@ -83,6 +72,7 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
       base::BindRepeating(&GenerateEmbeddingsCandidates),
       page_content_extraction_service,
       ChromePassageEmbeddingsServiceController::Get()->GetEmbedder());
+#endif
 }
 
 bool PageEmbeddingsServiceFactory::ServiceIsCreatedWithBrowserContext() const {

@@ -128,6 +128,9 @@ class PageEmbeddingsService
                         page_content_annotations::PageContentExtractionService*
                             page_content_extraction_service,
                         passage_embeddings::Embedder* embedder);
+  explicit PageEmbeddingsService(
+      page_content_annotations::PageContentExtractionService*
+          page_content_extraction_service);
   ~PageEmbeddingsService() override;
 
   virtual void AddObserver(Observer* observer);
@@ -153,11 +156,6 @@ class PageEmbeddingsService
       scoped_refptr<
           const page_content_annotations::RefCountedAnnotatedPageContent>
           page_content) override;
-
- protected:
-  explicit PageEmbeddingsService(
-      page_content_annotations::PageContentExtractionService*
-          page_content_extraction_service);
 
  private:
   class WebContentsEventsObserver;

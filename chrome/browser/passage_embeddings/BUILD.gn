@@ -8,16 +8,11 @@ source_set("passage_embeddings") {
     "chrome_passage_embeddings_service_controller.h",
     "cpu_histogram_logger.cc",
     "cpu_histogram_logger.h",
+    "page_embeddings_service_factory.cc",
+    "page_embeddings_service_factory.h",
     "passage_embedder_model_observer_factory.cc",
     "passage_embedder_model_observer_factory.h",
   ]
-
-  if (!is_android) {
-    sources += [
-      "page_embeddings_service_factory.cc",
-      "page_embeddings_service_factory.h",
-    ]
-  }
 
   public_deps = [
     "//components/passage_embeddings/content",

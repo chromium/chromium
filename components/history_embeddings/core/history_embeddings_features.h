@@ -118,10 +118,6 @@ struct FeatureParameters {
   bool send_quality_log = true;
   bool send_quality_log_v2 = true;
 
-  // The max number of passages that can be extracted from a page. Passages over
-  // this limit will be dropped by passage extraction.
-  int max_passages_per_page = 30;
-
   // These parameters control deletion and rebuilding of the embeddings
   // database. If `kDeleteEmbeddings` is true, the embeddings table will
   // be cleared on startup, effectively simulating a model version change.
@@ -170,12 +166,6 @@ struct FeatureParameters {
   // characters. See also `word_match_min_embedding_score`, which this bypasses.
   // Note, when `erase_non_ascii_characters` is true, this will have no effect.
   bool word_match_search_non_ascii_passages = false;
-
-  // Whether to insert the web contents title as the first passage when it
-  // isn't already in the set of extracted passages. Enabling this can help
-  // recall for URLs that have a title after the tab loads, for example PDF
-  // documents where there is no DOM and hence no <title> tag text to extract.
-  bool insert_title_passage = false;
 };
 
 // Use this to apply changes for testing only while an instance lives.

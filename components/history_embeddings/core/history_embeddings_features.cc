@@ -144,10 +144,6 @@ const base::FeatureParam<bool> kSendQualityLogV2(&kHistoryEmbeddings,
                                                  "SendQualityLogV2",
                                                  false);
 
-const base::FeatureParam<int> kMaxPassagesPerPage(&kHistoryEmbeddings,
-                                                  "MaxPassagesPerPage",
-                                                  30);
-
 const base::FeatureParam<bool> kDeleteEmbeddings(&kHistoryEmbeddings,
                                                  "DeleteEmbeddings",
                                                  false);
@@ -218,10 +214,6 @@ const base::FeatureParam<bool> kWordMatchSearchNonAsciiPassages(
     "WordMatchSearchNonAsciiPassages",
     false);
 
-const base::FeatureParam<bool> kInsertTitlePassage(&kHistoryEmbeddings,
-                                                   "InsertTitlePassage",
-                                                   false);
-
 FeatureParameters::FeatureParameters(bool load_finch) {
   if (!load_finch) {
     return;
@@ -251,7 +243,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   answers_in_omnibox_scoped = kAnswersInOmniboxScoped.Get();
   send_quality_log = kSendQualityLog.Get();
   send_quality_log_v2 = kSendQualityLogV2.Get();
-  max_passages_per_page = kMaxPassagesPerPage.Get();
   delete_embeddings = kDeleteEmbeddings.Get();
   rebuild_embeddings = kRebuildEmbeddings.Get();
   use_url_filter = kUseUrlFilter.Get();
@@ -268,7 +259,6 @@ FeatureParameters::FeatureParameters(bool load_finch) {
   scroll_tags_enabled = kScrollTagsEnabled.Get();
   erase_non_ascii_characters = kEraseNonAsciiCharacters.Get();
   word_match_search_non_ascii_passages = kWordMatchSearchNonAsciiPassages.Get();
-  insert_title_passage = kInsertTitlePassage.Get();
 }
 
 FeatureParameters::FeatureParameters(const FeatureParameters&) = default;

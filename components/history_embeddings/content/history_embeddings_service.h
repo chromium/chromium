@@ -10,10 +10,12 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -31,6 +33,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
+#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace optimization_guide {
@@ -41,6 +44,10 @@ namespace page_content_annotations {
 class BatchAnnotationResult;
 class PageContentAnnotationsService;
 }  // namespace page_content_annotations
+
+namespace passage_embeddings {
+class PageEmbeddingsService;
+}
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -59,8 +66,15 @@ class HistoryEmbeddingsService
     : public KeyedService,
       public HistoryEmbeddingsSearch,
       public history::HistoryServiceObserver,
-      public passage_embeddings::EmbedderMetadataObserver {
+      public passage_embeddings::EmbedderMetadataObserver,
+      public passage_embeddings::PageEmbeddingsService::Observer {
  public:
+  struct VisitMetadata {
+    history::URLID url_id;
+    history::VisitID visit_id;
+    base::Time visit_time;
+  };
+
   // Number of low-order bits to use in session_id for sequence number.
   static constexpr uint64_t kSessionIdSequenceBits = 16;
   static constexpr uint64_t kSessionIdSequenceBitMask =
@@ -74,6 +88,7 @@ class HistoryEmbeddingsService
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
+      passage_embeddings::PageEmbeddingsService* page_embeddings_service,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       passage_embeddings::Embedder* embedder,
       std::unique_ptr<Answerer> answerer,
@@ -85,14 +100,11 @@ class HistoryEmbeddingsService
   // Identify if the given URL is eligible for history embeddings.
   bool IsEligible(const GURL& url);
 
-  // Called by `HistoryEmbeddingsTabHelper` when passage extraction completes.
-  // Retrieves existing passages and embeddings for `url_id` from the database
-  // before calling
-  // `ComputeAndStorePassageEmbeddingsWithExistingData()`.
-  void ComputeAndStorePassageEmbeddings(history::URLID url_id,
-                                        history::VisitID visit_id,
-                                        base::Time visit_time,
-                                        std::vector<std::string> passages);
+  // Updates the current history visit metadata for the current navigation in
+  // the WebContents. std::nullopt should be passed if the navigation does not
+  // have a history visit.
+  void UpdateVisitMetadata(content::WebContents* web_contents,
+                           const std::optional<VisitMetadata>& visit_metadata);
 
   // HistoryEmbeddingsSearch:
   SearchResult Search(SearchResult* previous_search_result,
@@ -120,6 +132,13 @@ class HistoryEmbeddingsService
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
+  // passage_embeddings::PageEmbeddingsService::Observer:
+  passage_embeddings::PageEmbeddingsService::Priority GetDefaultPriority()
+      const override;
+  passage_embeddings::PageEmbeddingsService::UsageMode GetUsageMode()
+      const override;
+  void OnPageEmbeddingsAvailable(content::WebContents* web_contents) override;
+
   // This can be overridden to gate answer generation for some accounts.
   virtual bool IsAnswererUseAllowed() const;
 
@@ -138,11 +157,6 @@ class HistoryEmbeddingsService
       size_t limit,
       size_t offset,
       base::OnceCallback<void(std::vector<UrlData>)> callback) const;
-
-  // Targeted deletion for testing scenarios like model version change.
-  void DeleteDataForTesting(bool delete_passages,
-                            bool delete_embeddings,
-                            base::OnceClosure callback);
 
   // Set a callback to be called when `ProcessAndStorePassages` completes.
   void SetPassagesStoredCallbackForTesting(PassagesStoredCallback callback);
@@ -179,9 +193,6 @@ class HistoryEmbeddingsService
                                 history::URLRows deleted_rows,
                                 std::set<history::VisitID> deleted_visit_ids);
 
-    // Targeted deletion for testing scenarios like model version change.
-    void DeleteDataForTesting(bool delete_passages, bool delete_embeddings);
-
     // Gathers URL and passage data from the database where corresponding
     // embeddings are absent. This is used to rebuild the embeddings table
     // when the model changes.
@@ -216,14 +227,12 @@ class HistoryEmbeddingsService
   // with data and sent on destruction. Default implementation returns null.
   virtual QualityLogEntry PrepareQualityLogEntry();
 
-  // Called by `ComputeAndStorePassageEmbeddings()` after retrieving existing
-  // passages and embeddings for `url_data.url_id` from the database.
-  // `existing_url_data` may be nullopt if no existing data was found.
-  void ComputeAndStorePassageEmbeddingsWithExistingData(
-      UrlData url_data,
-      std::vector<std::string> passages,
-      base::ElapsedTimer database_access_timer,
-      std::optional<UrlData> existing_url_data);
+  // Stores the passages and embeddings for the URL in the database.
+  void StorePassageEmbeddings(
+      history::URLID url_id,
+      history::VisitID visit_id,
+      base::Time visit_time,
+      std::vector<passage_embeddings::PassageEmbedding> passage_embeddings);
 
   // Invoked after the embeddings for `passages` has been computed. Stores the
   // passages along with their embeddings in the database.
@@ -315,6 +324,8 @@ class HistoryEmbeddingsService
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
 
+  raw_ptr<passage_embeddings::PageEmbeddingsService> page_embeddings_service_;
+
   // Tracks the observed history service, for cleanup.
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>
@@ -329,6 +340,10 @@ class HistoryEmbeddingsService
 
   // The intent classifier used to determine query intent and answerability.
   std::unique_ptr<IntentClassifier> intent_classifier_;
+
+  // If the current navigation in the WebContents corresponds to a history
+  // visit, holds information about the visit.
+  base::flat_map<content::WebContents*, VisitMetadata> last_history_visit_;
 
   // Metadata about the embedder; Set when valid metadata is received from
   // `embedder_metadata_provider`.
@@ -353,6 +368,10 @@ class HistoryEmbeddingsService
 
   // Used to cancel the in-flight embedding task for the previous stale query.
   std::optional<passage_embeddings::Embedder::TaskId> query_embedding_task_id_;
+
+  base::ScopedObservation<passage_embeddings::PageEmbeddingsService,
+                          passage_embeddings::PageEmbeddingsService::Observer>
+      page_embeddings_observation_{this};
 
   // Scoped observation for when the embedder metadata is available.
   base::ScopedObservation<passage_embeddings::EmbedderMetadataProvider,
