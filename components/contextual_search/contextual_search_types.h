@@ -23,7 +23,7 @@ namespace contextual_search {
 
 // Upload status of a file.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.contextual_search
-enum class FileUploadStatus {
+enum class ContextUploadStatus {
   // Not uploaded.
   kNotUploaded = 0,
   // File being processed.
@@ -44,8 +44,10 @@ enum class FileUploadStatus {
   kUploadReplaced = 8,
 };
 
+using FileUploadStatus = ContextUploadStatus;
+
 // For upload error notifications and metrics.
-enum class FileUploadErrorType {
+enum class ContextUploadErrorType {
   // Unknown.
   kUnknown = 0,
   // Browser error before/during request, not covered by validation.
@@ -61,6 +63,8 @@ enum class FileUploadErrorType {
   // Image processing error.
   kImageProcessingError = 6,
 };
+
+using FileUploadErrorType = ContextUploadErrorType;
 
 // Struct containing file information for a file upload.
 struct FileInfo {
@@ -93,13 +97,13 @@ struct FileInfo {
 
   // The upload status of the file.
   // Do not modify this field directly.
-  contextual_search::FileUploadStatus upload_status =
-      contextual_search::FileUploadStatus::kNotUploaded;
+  contextual_search::ContextUploadStatus upload_status =
+      contextual_search::ContextUploadStatus::kNotUploaded;
 
   // The error type if the upload failed.
   // Do not modify this field directly.
-  contextual_search::FileUploadErrorType upload_error_type =
-      contextual_search::FileUploadErrorType::kUnknown;
+  contextual_search::ContextUploadErrorType upload_error_type =
+      contextual_search::ContextUploadErrorType::kUnknown;
 
   // If populated, the url of the tab corresponding to this uploaded file.
   std::optional<GURL> tab_url;

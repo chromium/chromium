@@ -16,7 +16,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.contextual_search.FileUploadStatus;
+import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.contextual_search.InputState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -37,7 +37,7 @@ public class ComposeboxQueryControllerBridge {
          * @param token Unique string identifier for the file.
          * @param status The status of the file's upload.
          */
-        void onFileUploadStatusChanged(String token, @FileUploadStatus int status);
+        void onFileUploadStatusChanged(String token, @ContextUploadStatus int status);
     }
 
     private long mNativeInstance;
@@ -168,7 +168,7 @@ public class ComposeboxQueryControllerBridge {
     }
 
     @CalledByNative
-    void onFileUploadStatusChanged(String token, @FileUploadStatus int fileUploadStatus) {
+    void onFileUploadStatusChanged(String token, @ContextUploadStatus int fileUploadStatus) {
         if (mFileUploadObserver != null) {
             mFileUploadObserver.onFileUploadStatusChanged(token, fileUploadStatus);
         }

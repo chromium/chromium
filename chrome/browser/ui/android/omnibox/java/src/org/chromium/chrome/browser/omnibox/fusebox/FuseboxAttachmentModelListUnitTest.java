@@ -37,7 +37,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxMetrics.FuseboxAttachmentButtonType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.components.contextual_search.FileUploadStatus;
+import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
@@ -339,7 +339,7 @@ public class FuseboxAttachmentModelListUnitTest {
         assertFalse(attachment.isUploadComplete());
 
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
-                "uploaded-token", FileUploadStatus.UPLOAD_SUCCESSFUL);
+                "uploaded-token", ContextUploadStatus.UPLOAD_SUCCESSFUL);
         assertTrue(attachment.isUploadComplete());
         verifyNoMoreInteractions(mComposeboxQueryControllerBridge);
     }
@@ -390,9 +390,9 @@ public class FuseboxAttachmentModelListUnitTest {
         assertFalse(uploadedAttachment.isUploadComplete());
 
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
-                "pretokenized-token", FileUploadStatus.UPLOAD_SUCCESSFUL);
+                "pretokenized-token", ContextUploadStatus.UPLOAD_SUCCESSFUL);
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
-                "uploaded-token", FileUploadStatus.UPLOAD_FAILED);
+                "uploaded-token", ContextUploadStatus.UPLOAD_FAILED);
         assertTrue(uploadFailedNotified.get());
 
         assertTrue(preTokenizedAttachment.isUploadComplete());
@@ -523,11 +523,11 @@ public class FuseboxAttachmentModelListUnitTest {
 
         when(mComposeboxQueryControllerBridge.addTabContext(tab)).thenReturn("token2");
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
-                "token", FileUploadStatus.VALIDATION_FAILED);
+                "token", ContextUploadStatus.VALIDATION_FAILED);
         assertEquals("token2", tabAttachment.getToken());
 
         mFuseboxAttachmentModelList.onFileUploadStatusChanged(
-                "token2", FileUploadStatus.VALIDATION_FAILED);
+                "token2", ContextUploadStatus.VALIDATION_FAILED);
         assertTrue(mFuseboxAttachmentModelList.isEmpty());
     }
 
@@ -622,7 +622,7 @@ public class FuseboxAttachmentModelListUnitTest {
             FuseboxAttachment attachment = createTestAttachment("test");
             mFuseboxAttachmentModelList.add(attachment);
             mFuseboxAttachmentModelList.onFileUploadStatusChanged(
-                    "token1", FileUploadStatus.UPLOAD_SUCCESSFUL);
+                    "token1", ContextUploadStatus.UPLOAD_SUCCESSFUL);
         }
     }
 

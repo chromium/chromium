@@ -22,7 +22,7 @@ import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentRecyclerView
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
-import org.chromium.components.contextual_search.FileUploadStatus;
+import org.chromium.components.contextual_search.ContextUploadStatus;
 import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
@@ -365,15 +365,15 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
     }
 
     @Override
-    public void onFileUploadStatusChanged(String token, @FileUploadStatus int status) {
+    public void onFileUploadStatusChanged(String token, @ContextUploadStatus int status) {
         if (TextUtils.isEmpty(token)) return;
         FuseboxAttachment pendingAttachment = findAttachmentWithToken(token);
         if (pendingAttachment == null) return;
 
         switch (status) {
-            case FileUploadStatus.VALIDATION_FAILED:
-            case FileUploadStatus.UPLOAD_FAILED:
-            case FileUploadStatus.UPLOAD_EXPIRED:
+            case ContextUploadStatus.VALIDATION_FAILED:
+            case ContextUploadStatus.UPLOAD_FAILED:
+            case ContextUploadStatus.UPLOAD_EXPIRED:
                 if (pendingAttachment.retryUpload(
                         mTabModelSelectorSupplier.get(),
                         assumeNonNull(mComposeboxQueryControllerBridge))) {
@@ -383,7 +383,7 @@ public class FuseboxAttachmentModelList implements FileUploadObserver, Iterable<
                 pendingAttachment.setUploadIsComplete();
                 remove(pendingAttachment, /* isFailure= */ true);
                 break;
-            case FileUploadStatus.UPLOAD_SUCCESSFUL:
+            case ContextUploadStatus.UPLOAD_SUCCESSFUL:
                 pendingAttachment.setUploadIsComplete();
                 int index = indexOf(pendingAttachment);
                 mModelList.update(index, pendingAttachment);
