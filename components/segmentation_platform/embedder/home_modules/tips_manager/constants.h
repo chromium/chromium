@@ -100,9 +100,6 @@ extern const char kTipsSignalHistory[];
 
 // Pref names
 
-// Whether or not the Address Bar Position ephemeral module has been
-// interacted with.
-extern const char kAddressBarPositionEphemeralModuleInteractedPref[];
 // Whether or not the Autofill Passwords ephemeral module has been interacted
 // with.
 extern const char kAutofillPasswordsEphemeralModuleInteractedPref[];

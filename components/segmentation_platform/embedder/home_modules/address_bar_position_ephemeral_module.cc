@@ -22,6 +22,15 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
+// Impression counter for the Address Bar Position ephemeral module.
+const char kAddressBarPositionEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.address_bar_position_ephemeral_module_counter";
+
+// Interaction counter for the Address Bar Position ephemeral module.
+const char kAddressBarPositionEphemeralModuleInteractedPref[] =
+    "ephemeral_pref_interacted.address_bar_position_ephemeral_module_"
+    "interacted";
+
 // Defines the signals that must all evaluate to true for
 // `AddressBarPositionEphemeralModule` to be shown.
 constexpr auto kRequiredSignals = base::MakeFixedFlatSet<std::string_view>({
@@ -39,12 +48,21 @@ constexpr auto kDisqualifyingSignals =
 }  // namespace
 
 // static
+void AddressBarPositionEphemeralModule::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kAddressBarPositionEphemeralModuleImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(
+      kAddressBarPositionEphemeralModuleInteractedPref, false);
+}
+
+// static
 bool AddressBarPositionEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kAddressBarPositionEphemeralModule;
 }
 
 // static
-bool AddressBarPositionEphemeralModule::IsEnabled(int impression_count) {
+bool AddressBarPositionEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -57,7 +75,26 @@ bool AddressBarPositionEphemeralModule::IsEnabled(int impression_count) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
 
+  int impression_count = profile_prefs->GetInteger(
+      kAddressBarPositionEphemeralModuleImpressionCounterPref);
+
   return impression_count < kTipsEphemeralCardModuleMaxImpressionCount;
+}
+
+void AddressBarPositionEphemeralModule::OnShow(PrefService* profile_prefs,
+                                               PrefService* local_state) {
+  int freshness_impression_count = profile_prefs->GetInteger(
+      kAddressBarPositionEphemeralModuleImpressionCounterPref);
+
+  profile_prefs->SetInteger(
+      kAddressBarPositionEphemeralModuleImpressionCounterPref,
+      freshness_impression_count + 1);
+}
+
+void AddressBarPositionEphemeralModule::OnInteract(PrefService* profile_prefs,
+                                                   PrefService* local_state) {
+  profile_prefs->SetBoolean(kAddressBarPositionEphemeralModuleInteractedPref,
+                            true);
 }
 
 // Defines the input signals required by this module.
