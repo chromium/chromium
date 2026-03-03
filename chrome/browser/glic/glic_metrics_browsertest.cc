@@ -10,6 +10,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
 #include "chrome/browser/glic/test_support/glic_test_util.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
@@ -104,6 +105,63 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
 
   EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Dismissed.Onboarding"),
             1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
+                       ToggleAndOpenSourceMetrics_SidePanel) {
+  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
+
+  base::HistogramTester histogram_tester;
+
+  // Open the side panel
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.ToggleSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+
+  // Close the side panel
+  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+      ->ToggleUI(browser(), /*prevent_close=*/false,
+                 mojom::InvocationSource::kOsButton);
+
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.ToggleSource",
+                                      mojom::InvocationSource::kOsButton, 2);
+  histogram_tester.ExpectUniqueSample("Glic.Instance.SidePanel.OpenSource",
+                                      mojom::InvocationSource::kOsButton, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
+                       ToggleAndOpenSourceMetrics_Floaty) {
+  ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
+
+  base::HistogramTester histogram_tester;
+
+  auto* glic_service =
+      GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile());
+
+  // First toggle the UI to create the floaty instance.
+  glic_service->window_controller().Toggle(
+      /*browser=*/nullptr, /*prevent_close=*/false,
+      mojom::InvocationSource::kOsHotkey, std::nullopt, false, std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.ToggleSource",
+                                      mojom::InvocationSource::kOsHotkey, 1);
+  histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.OpenSource",
+                                      mojom::InvocationSource::kOsHotkey, 1);
+
+  // Close the floaty panel.
+  glic_service->window_controller().Toggle(
+      /*browser=*/nullptr, /*prevent_close=*/false,
+      mojom::InvocationSource::kOsHotkey, std::nullopt, false, std::nullopt);
+
+  histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.ToggleSource",
+                                      mojom::InvocationSource::kOsHotkey, 2);
+  histogram_tester.ExpectUniqueSample("Glic.Instance.Floaty.OpenSource",
+                                      mojom::InvocationSource::kOsHotkey, 1);
 }
 
 }  // namespace

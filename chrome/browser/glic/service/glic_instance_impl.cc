@@ -415,7 +415,6 @@ bool GlicInstanceImpl::Toggle(ShowOptions&& options,
   if (GlicEnabling::IsTrustFirstOnboardingEnabledForProfile(profile_)) {
     service_->metrics()->OnTrustFirstOnboardingShown();
   }
-
   instance_metrics_.OnToggle(source, options, IsShowing());
   EmbedderKey key = GetEmbedderKey(options);
   // Close instance on toggle when it has an active embedder.
