@@ -269,10 +269,18 @@ bool RecursiveBuildStructureTree(const ui::AXNode* ax_node,
           chrome_pdf::kPDFTableCellHeadersAttribute, header_ids);
       break;
     }
+    case ax::mojom::Role::kCanvas:
+    case ax::mojom::Role::kDocCover:
+    case ax::mojom::Role::kSvgRoot:
+      // These roles may contain rich fallback/descendant semantics.
+      // Only map to Figure when there are no children.
+      if (ax_node->GetUnignoredChildCount() > 0) {
+        tag->fTypeString = chrome_pdf::kPDFStructureTypeNonStruct;
+        break;
+      }
+      [[fallthrough]];
+    case ax::mojom::Role::kGraphicsSymbol:
     case ax::mojom::Role::kImage:
-      // TODO(thestig): Figure out if the `ax::mojom::Role::kFigure` case should
-      // share code with the `ax::mojom::Role::kImage` case, and if `valid`
-      // should be set.
       valid = true;
       [[fallthrough]];
     case ax::mojom::Role::kFigure: {

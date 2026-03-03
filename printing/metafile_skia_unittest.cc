@@ -4,6 +4,7 @@
 
 #include "printing/metafile_skia.h"
 
+#include <string>
 #include <utility>
 
 #include "base/containers/span_reader.h"
@@ -13,6 +14,7 @@
 #include "printing/common/metafile_utils.h"
 #include "printing/mojom/print.mojom.h"
 #include "skia/ext/font_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/codec/SkCodec.h"
 #include "third_party/skia/include/codec/SkJpegDecoder.h"
@@ -33,10 +35,17 @@
 #include "third_party/skia/include/core/SkSurfaceProps.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
 #include "third_party/skia/include/core/SkTypeface.h"
+#include "third_party/skia/include/docs/SkPDFDocument.h"
 #include "third_party/skia/include/encode/SkJpegEncoder.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
+#include "ui/accessibility/ax_tree_update.h"
 #include "ui/gfx/skia_span_util.h"
 
 namespace printing {
+
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 TEST(MetafileSkiaTest, FrameContent) {
   constexpr int kPictureSideLen = 100;
@@ -388,6 +397,161 @@ TEST(MetafileSkiaTest, SerializeUniqueImages) {
       encoded_data2->data(), encoded_data2->size(), d_procs.fImageCtx);
   ASSERT_TRUE(decoded_image2);
   EXPECT_EQ(decoded_image1->uniqueID(), decoded_image2->uniqueID());
+}
+
+// Helper to create a minimal AXTreeUpdate with a root document node and a
+// single child image-like node with the given role and accessible name.
+ui::AXTreeUpdate CreateImageAXTree(ax::mojom::Role image_role,
+                                   const std::string& alt_text) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.has_tree_data = true;
+
+  // Root: Document.
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  // Child: image-like node.
+  ui::AXNodeData image_node;
+  image_node.id = 2;
+  image_node.role = image_role;
+  image_node.AddStringAttribute(ax::mojom::StringAttribute::kName, alt_text);
+
+  tree.nodes = {root, image_node};
+  return tree;
+}
+
+// Helper to create an AXTreeUpdate where the image-like node has a static text
+// child (to model fallback/descendant semantics).
+ui::AXTreeUpdate CreateImageAXTreeWithChild(ax::mojom::Role image_role,
+                                            const std::string& alt_text) {
+  ui::AXTreeUpdate tree;
+  tree.root_id = 1;
+  tree.has_tree_data = true;
+
+  ui::AXNodeData root;
+  root.id = 1;
+  root.role = ax::mojom::Role::kRootWebArea;
+  root.child_ids = {2};
+
+  ui::AXNodeData image_node;
+  image_node.id = 2;
+  image_node.role = image_role;
+  image_node.child_ids = {3};
+  image_node.AddStringAttribute(ax::mojom::StringAttribute::kName, alt_text);
+
+  ui::AXNodeData fallback_text;
+  fallback_text.id = 3;
+  fallback_text.role = ax::mojom::Role::kStaticText;
+  fallback_text.AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                   "fallback text");
+
+  tree.nodes = {root, image_node, fallback_text};
+  return tree;
+}
+
+// Helper to generate a single-page tagged PDF and return its contents as a
+// string. Draws a rectangle marked with node ID 2 (the image-like child).
+std::string GenerateTaggedPdf(const ui::AXTreeUpdate& tree) {
+  SkDynamicMemoryWStream stream;
+  auto doc = MakePdfDocument("test", "test", tree,
+                             mojom::GenerateDocumentOutline::kNone, &stream);
+  EXPECT_TRUE(doc);
+  if (!doc) {
+    return {};
+  }
+  SkCanvas* canvas = doc->beginPage(100, 100);
+  // Mark subsequent drawing operations as belonging to node ID 2 (the
+  // image-like child in the accessibility tree).
+  SkPDF::SetNodeId(canvas, 2);
+  // Draw a rectangle so the structure element is actually used.
+  SkPaint paint;
+  canvas->drawRect(SkRect::MakeXYWH(10, 10, 50, 50), paint);
+  doc->endPage();
+  doc->close();
+  sk_sp<SkData> data = stream.detachAsData();
+  return std::string(static_cast<const char*>(data->data()), data->size());
+}
+
+// Verify that kSvgRoot produces /Figure with /Alt in the PDF structure tree.
+// Regression test for https://crbug.com/40883733.
+TEST(MetafileSkiaTest, SvgRootTaggedAsFigureInPdf) {
+  const std::string kAltText = "Lightbulb moment!";
+  ui::AXTreeUpdate tree =
+      CreateImageAXTree(ax::mojom::Role::kSvgRoot, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  // The PDF should contain /S /Figure for the structure element type.
+  EXPECT_THAT(pdf, HasSubstr("/S /Figure"));
+  // The PDF should contain the alt text.
+  EXPECT_THAT(pdf, HasSubstr(kAltText));
+}
+
+// Verify that kImage produces /Figure with /Alt (existing behavior, sanity
+// check).
+TEST(MetafileSkiaTest, ImageTaggedAsFigureInPdf) {
+  const std::string kAltText = "A test image";
+  ui::AXTreeUpdate tree = CreateImageAXTree(ax::mojom::Role::kImage, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  EXPECT_THAT(pdf, HasSubstr("/S /Figure"));
+  EXPECT_THAT(pdf, HasSubstr(kAltText));
+}
+
+// Verify that kCanvas produces /Figure with /Alt.
+TEST(MetafileSkiaTest, CanvasTaggedAsFigureInPdf) {
+  const std::string kAltText = "Canvas drawing";
+  ui::AXTreeUpdate tree = CreateImageAXTree(ax::mojom::Role::kCanvas, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  EXPECT_THAT(pdf, HasSubstr("/S /Figure"));
+  EXPECT_THAT(pdf, HasSubstr(kAltText));
+}
+
+// Verify that kCanvas with children is not mapped to /Figure.
+TEST(MetafileSkiaTest, CanvasWithChildrenNotTaggedAsFigureInPdf) {
+  const std::string kAltText = "Canvas drawing with fallback";
+  ui::AXTreeUpdate tree =
+      CreateImageAXTreeWithChild(ax::mojom::Role::kCanvas, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  EXPECT_THAT(pdf, Not(HasSubstr("/S /Figure")));
+  EXPECT_THAT(pdf, Not(HasSubstr(kAltText)));
+}
+
+// Verify that kDocCover with children is not mapped to /Figure.
+TEST(MetafileSkiaTest, DocCoverWithChildrenNotTaggedAsFigureInPdf) {
+  const std::string kAltText = "Cover with child content";
+  ui::AXTreeUpdate tree =
+      CreateImageAXTreeWithChild(ax::mojom::Role::kDocCover, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  EXPECT_THAT(pdf, Not(HasSubstr("/S /Figure")));
+  EXPECT_THAT(pdf, Not(HasSubstr(kAltText)));
+}
+
+// Verify that kSvgRoot with children is not mapped to /Figure.
+TEST(MetafileSkiaTest, SvgRootWithChildrenNotTaggedAsFigureInPdf) {
+  const std::string kAltText = "SVG with fallback content";
+  ui::AXTreeUpdate tree =
+      CreateImageAXTreeWithChild(ax::mojom::Role::kSvgRoot, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  EXPECT_THAT(pdf, Not(HasSubstr("/S /Figure")));
+  EXPECT_THAT(pdf, Not(HasSubstr(kAltText)));
+}
+
+// Verify that kGraphicsSymbol produces /Figure with /Alt.
+TEST(MetafileSkiaTest, GraphicsSymbolTaggedAsFigureInPdf) {
+  const std::string kAltText = "A decorative symbol";
+  ui::AXTreeUpdate tree =
+      CreateImageAXTree(ax::mojom::Role::kGraphicsSymbol, kAltText);
+  std::string pdf = GenerateTaggedPdf(tree);
+
+  EXPECT_THAT(pdf, HasSubstr("/S /Figure"));
+  EXPECT_THAT(pdf, HasSubstr(kAltText));
 }
 
 }  // namespace printing
