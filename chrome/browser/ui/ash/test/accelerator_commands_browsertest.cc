@@ -147,7 +147,7 @@ IN_PROC_BROWSER_TEST_P(AcceleratorCommandsFullscreenBrowserTest,
 
   // 5) Miscellaneous windows (e.g. task manager).
   views::Widget::InitParams params(
-      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET);
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
   params.delegate =
       new views::WidgetDelegateView(views::WidgetDelegateView::CreatePassKey());
   params.delegate->SetCanMaximize(true);
