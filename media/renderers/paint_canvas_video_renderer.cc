@@ -137,7 +137,7 @@ base::span<const T> CastConstSpan(base::span<const uint8_t> span) {
                                    span.size() / sizeof(T)));
 }
 
-gpu::SyncToken CopySharedImageToTexture(
+gpu::SyncToken CopySharedImageToGLTextureViaTextureCopy(
     gpu::gles2::GLES2Interface* gl,
     const gfx::Size& coded_size,
     const gfx::Rect& visible_rect,
@@ -1406,7 +1406,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
   bool can_obtain_texture_from_shared_image =
       si_format_has_single_texture && si_usable_by_gles2_interface;
   if (can_obtain_texture_from_shared_image) {
-    CopySharedImageToTexture(
+    CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         shared_image.get(), video_frame->acquire_sync_token(), target, texture,
         internal_format, format, type, level, dst_alpha_type, dst_origin);
@@ -1506,7 +1506,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     gpu::SyncToken sync_token =
         gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
 
-    gpu::SyncToken dest_sync_token = CopySharedImageToTexture(
+    gpu::SyncToken dest_sync_token = CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         rgb_shared_image.get(), sync_token, target, texture, internal_format,
         format, type, level, dst_alpha_type, dst_origin);
@@ -1607,7 +1607,7 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
-  rgb_sync_token = CopySharedImageToTexture(
+  rgb_sync_token = CopySharedImageToGLTextureViaTextureCopy(
       destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
       rgb_shared_image.get(), post_conversion_sync_token, target, texture,
       internal_format, format, type, level, dst_alpha_type, dst_origin);
