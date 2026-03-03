@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 dljames@chromium.org
-shibalik@chromium.org
 atharvmaan@chromium.org
 
 per-file *.mojom=set noparent
