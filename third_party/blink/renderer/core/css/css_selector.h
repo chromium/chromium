@@ -262,6 +262,7 @@ class CORE_EXPORT CSSSelector {
     kPseudoEnabled,
     kPseudoEnd,
     kPseudoFileSelectorButton,
+    kPseudoFiltered,
     kPseudoFirstChild,
     kPseudoFirstLetter,
     kPseudoFirstLine,

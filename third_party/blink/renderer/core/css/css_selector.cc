@@ -432,6 +432,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoEmpty:
     case kPseudoEnabled:
     case kPseudoEnd:
+    case kPseudoFiltered:
     case kPseudoFirstChild:
     case kPseudoFirstOfType:
     case kPseudoFirstPage:
@@ -635,6 +636,7 @@ constexpr static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"enabled", CSSSelector::kPseudoEnabled},
     {"end", CSSSelector::kPseudoEnd},
     {"file-selector-button", CSSSelector::kPseudoFileSelectorButton},
+    {"filtered", CSSSelector::kPseudoFiltered},
     {"first", CSSSelector::kPseudoFirstPage},
     {"first-child", CSSSelector::kPseudoFirstChild},
     {"first-letter", CSSSelector::kPseudoFirstLetter},
@@ -855,7 +857,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
     return CSSSelector::kPseudoUnknown;
   }
 
-  if (match->type == CSSSelector::kPseudoActiveOption &&
+  if ((match->type == CSSSelector::kPseudoActiveOption ||
+       match->type == CSSSelector::kPseudoFiltered) &&
       !RuntimeEnabledFeatures::CustomizableComboboxEnabled() &&
       !RuntimeEnabledFeatures::FilterableSelectEnabled()) {
     return CSSSelector::kPseudoUnknown;
@@ -1028,6 +1031,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoEmpty:
     case kPseudoEnabled:
     case kPseudoEnd:
+    case kPseudoFiltered:
     case kPseudoFirstChild:
     case kPseudoFirstOfType:
     case kPseudoFocus:
@@ -1815,6 +1819,7 @@ bool CSSSelector::IsAllowedAfterPart() const {
     case kPseudoDisabled:
     case kPseudoDrag:
     case kPseudoEnabled:
+    case kPseudoFiltered:
     case kPseudoFocus:
     case kPseudoFocusVisible:
     case kPseudoFocusWithin:
@@ -2172,6 +2177,7 @@ bool CSSSelector::SupportsPseudoStateChange(PseudoType type) {
     case CSSSelector::kPseudoDrag:
     case CSSSelector::kPseudoEmpty:
     case CSSSelector::kPseudoEnabled:
+    case CSSSelector::kPseudoFiltered:
     case CSSSelector::kPseudoFirstChild:
     case CSSSelector::kPseudoFirstOfType:
     case CSSSelector::kPseudoFocus:

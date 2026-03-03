@@ -567,6 +567,7 @@ void HTMLOptionElement::UpdateAncestors() {
   nearest_ancestor_select_ = ancestors.select;
   nearest_ancestor_optgroup_ = ancestors.optgroup;
   nearest_ancestor_datalist_ = ancestors.datalist;
+  SetFiltered(false);
 }
 
 Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
@@ -894,6 +895,18 @@ bool HTMLOptionElement::IsLabelContainerElement(const Element& element) {
 
 bool HTMLOptionElement::SupportsActiveOptionPseudo() {
   return GetLayoutObject() && !IsDisabledFormControl();
+}
+
+void HTMLOptionElement::SetFiltered(bool new_filtered) {
+  if (!RuntimeEnabledFeatures::CustomizableComboboxEnabled() &&
+      !RuntimeEnabledFeatures::FilterableSelectEnabled()) {
+    return;
+  }
+  if (is_filtered_ == new_filtered) {
+    return;
+  }
+  is_filtered_ = new_filtered;
+  PseudoStateChanged(CSSSelector::kPseudoFiltered);
 }
 
 }  // namespace blink

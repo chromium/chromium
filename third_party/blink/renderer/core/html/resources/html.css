@@ -2469,4 +2469,16 @@ select:-internal-select-has-slotted-button::-internal-select-button-slot {
   datalist option:active-option {
     outline: black auto 1px;
   }
+
+  /* This is redundant with the option:filtered rule in the FilterableSelect
+   * block. It should be removed when either of the flags are removed. */
+  option:filtered {
+    display: none;
+  }
+}
+
+@supports blink-feature(FilterableSelect) {
+  option:filtered {
+    display: none;
+  }
 }

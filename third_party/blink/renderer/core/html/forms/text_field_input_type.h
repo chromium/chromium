@@ -105,6 +105,10 @@ class TextFieldInputType : public InputType,
 
   SpinButtonElement* GetSpinButtonElement() const;
   void DisabledOrReadonlyAttributeChanged();
+
+  // Applies the :filtered pseudo-class to the options of the corresponding
+  // datalist or filterable select this input is linked to, if there is one.
+  void FilterOptions();
 };
 
 template <>

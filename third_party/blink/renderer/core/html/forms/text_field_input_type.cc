@@ -222,6 +222,12 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
     case TextFieldEventBehavior::kDispatchNoEvent:
       break;
   }
+
+  // We have to call FilterOptions here in order to catch when input.value is
+  // set from script, and we also have to call FilterOptions in ForwardEvent in
+  // order to catch when the user actually types into the input. This method is
+  // not called when the user types despite the calls to DispatchInputEvent.
+  FilterOptions();
 }
 
 void TextFieldInputType::HandleKeydownEvent(KeyboardEvent& event) {
@@ -346,6 +352,10 @@ void TextFieldInputType::ForwardEvent(Event& event) {
     spin_button->ForwardEvent(event);
     if (event.DefaultHandled())
       return;
+  }
+
+  if (event.type() == event_type_names::kInput) {
+    FilterOptions();
   }
 
   // Style and layout may be dirty at this point. E.g. if an event handler for
@@ -811,6 +821,35 @@ void TextFieldInputType::HandleFocusInEvent(
     // TODO(crbug.com/453705243): Track the target select element like we are
     // already doing for the list attribute in order to remove the
     // :active-option pseudo.
+  }
+}
+
+namespace {
+
+void UpdateOptionFiltered(HTMLInputElement& input, HTMLOptionElement& option) {
+  // TODO(crbug.com/453705243): Consider doing something more sophisticated like
+  // HTMLInputElement::FilteredDataListOptions, but probably with DisplayLabel
+  // instead of option.value and option.label.
+  if (option.DisplayLabel().contains(input.Value())) {
+    option.SetFiltered(false);
+  } else {
+    option.SetFiltered(true);
+  }
+}
+
+}  // namespace
+
+void TextFieldInputType::FilterOptions() {
+  if (GetElement().IsBaseAppearanceCombobox()) {
+    for (Element* element : *GetElement().DataList()->options()) {
+      HTMLOptionElement* option = To<HTMLOptionElement>(element);
+      UpdateOptionFiltered(GetElement(), *option);
+    }
+  } else if (GetElement().FilterTarget()) {
+    for (HTMLOptionElement& option :
+         GetElement().FilterTarget()->GetOptionList()) {
+      UpdateOptionFiltered(GetElement(), option);
+    }
   }
 }
 

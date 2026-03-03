@@ -713,6 +713,7 @@ SelectorChecker::FeaturelessMatch SelectorChecker::MatchShadowHost(
     case CSSSelector::kPseudoEnabled:
     case CSSSelector::kPseudoEnd:
     case CSSSelector::kPseudoFileSelectorButton:
+    case CSSSelector::kPseudoFiltered:
     case CSSSelector::kPseudoFirstChild:
     case CSSSelector::kPseudoFirstLetter:
     case CSSSelector::kPseudoFirstLine:
@@ -2560,6 +2561,13 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
             return option == select->ActiveOption();
           }
         }
+      }
+      return false;
+    case CSSSelector::kPseudoFiltered:
+      CHECK(RuntimeEnabledFeatures::CustomizableComboboxEnabled() ||
+            RuntimeEnabledFeatures::FilterableSelectEnabled());
+      if (auto* option = DynamicTo<HTMLOptionElement>(element)) {
+        return option->IsFiltered();
       }
       return false;
     case CSSSelector::kPseudoInterestSource:
