@@ -25,6 +25,7 @@
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/prefs/pref_service.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "net/base/schemeful_site.h"
 #include "url/origin.h"
@@ -82,7 +83,9 @@ void WebRtcLoggingController::SetMetaData(
     GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
-
+  if (!CheckCanOperationProceed(callback)) {
+    return;
+  }
   if (GetApiType() == webrtc_logging::ApiType::kExtension) {
     // Set the web app ID if there's a "client" key, otherwise leave it
     // unchanged.
@@ -94,7 +97,6 @@ void WebRtcLoggingController::SetMetaData(
       }
     }
   }
-
   text_log_handler_->SetMetaData(std::move(meta_data), std::move(callback));
 }
 
@@ -129,6 +131,9 @@ void WebRtcLoggingController::StartLogging(
 void WebRtcLoggingController::StopLogging(GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
+  if (!CheckCanOperationProceed(callback)) {
+    return;
+  }
 
   // Change the state to STOPPING and disable logging in the browser.
   if (text_log_handler_->StopLogging(std::move(callback))) {
@@ -141,6 +146,9 @@ void WebRtcLoggingController::StopLogging(GenericDoneCallback callback) {
 void WebRtcLoggingController::UploadLog(UploadDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
+  if (!CheckCanOperationProceed(callback)) {
+    return;
+  }
 
   // This functions uploads both text logs (mandatory) and RTP dumps (optional).
   // TODO(terelius): If there's no text log available (either because it hasn't
@@ -161,6 +169,9 @@ void WebRtcLoggingController::UploadLog(UploadDoneCallback callback) {
 void WebRtcLoggingController::DiscardLog(GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
+  if (!CheckCanOperationProceed(callback)) {
+    return;
+  }
 
   if (!text_log_handler_->ExpectLoggingStateStopped(&callback)) {
     // The callback is fired with an error message by ExpectLoggingStateStopped.
@@ -179,6 +190,9 @@ void WebRtcLoggingController::StoreLog(const std::string& log_id,
                                        GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
+  if (!CheckCanOperationProceed(callback)) {
+    return;
+  }
 
   if (!text_log_handler_->ExpectLoggingStateStopped(&callback)) {
     // The callback is fired with an error message by ExpectLoggingStateStopped.
@@ -220,6 +234,10 @@ void WebRtcLoggingController::StoreLogContinue(const std::string& log_id,
 void WebRtcLoggingController::StartRtpDump(RtpDumpType type,
                                            GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetApiType() == webrtc_logging::ApiType::kWeb) {
+    std::move(callback).Run(false, "Not authorized");
+    return;
+  }
 
   if (stop_rtp_dump_callback_) {
     DCHECK(rtp_dump_handler_);
@@ -253,6 +271,10 @@ void WebRtcLoggingController::StopRtpDump(RtpDumpType type,
                                           GenericDoneCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!callback.is_null());
+  if (GetApiType() == webrtc_logging::ApiType::kWeb) {
+    std::move(callback).Run(false, "Not authorized");
+    return;
+  }
 
   if (!rtp_dump_handler_) {
     FireGenericDoneCallback(std::move(callback), false,
@@ -343,6 +365,9 @@ void WebRtcLoggingController::OnRtpPacket(
     size_t packet_length,
     bool incoming) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetApiType() == webrtc_logging::ApiType::kWeb) {
+    return;
+  }
 
   // |rtp_dump_handler_| could be null if we are waiting for the FILE thread to
   // create/ensure the log directory.
@@ -355,6 +380,9 @@ void WebRtcLoggingController::OnRtpPacket(
 void WebRtcLoggingController::OnAddMessages(
     std::vector<chrome::mojom::WebRtcLoggingMessagePtr> messages) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!CanOperationProceedInWebApiMode()) {
+    return;
+  }
 
   if (text_log_handler_->GetState() == WebRtcTextLogHandler::STARTED ||
       text_log_handler_->GetState() == WebRtcTextLogHandler::STOPPING) {
@@ -689,6 +717,54 @@ std::string WebRtcLoggingController::GetContentName() const {
                  ? kUploadSiteContentName
                  : kNonUploadSiteContentName;
   }
+}
+
+bool WebRtcLoggingController::CanOperationProceedInWebApiMode() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (GetApiType() != webrtc_logging::ApiType::kWeb) {
+    return true;
+  }
+  CHECK(web_api_settings_.has_value());
+  content::RenderProcessHost* process_host =
+      content::RenderProcessHost::FromID(render_process_id_);
+  if (!process_host) {
+    return false;
+  }
+
+  bool authorized = false;
+  process_host->ForEachRenderFrameHost(
+      [this, &authorized](content::RenderFrameHost* frame_host) {
+        if (frame_host->IsInPrimaryMainFrame() &&
+            web_api_settings_->origin.IsSameOriginWith(
+                frame_host->GetLastCommittedOrigin())) {
+          authorized = true;
+        }
+      });
+  return authorized;
+}
+
+// If the operation cannot proceed, the callback is invoked with an error.
+// Otherwise, it is the responsibility of the caller to invoke the callback
+// when the operation is completed.
+bool WebRtcLoggingController::CheckCanOperationProceed(
+    GenericDoneCallback& callback) {
+  if (CanOperationProceedInWebApiMode()) {
+    return true;
+  }
+  std::move(callback).Run(false, "Not authorized");
+  return false;
+}
+
+// If the operation cannot proceed, the callback is invoked with an error.
+// Otherwise, it is the responsibility of the caller to invoke the callback
+// when the operation is completed.
+bool WebRtcLoggingController::CheckCanOperationProceed(
+    UploadDoneCallback& callback) {
+  if (CanOperationProceedInWebApiMode()) {
+    return true;
+  }
+  std::move(callback).Run(false, std::string(), "Not authorized");
+  return false;
 }
 
 // static

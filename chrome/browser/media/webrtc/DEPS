@@ -35,5 +35,8 @@ specific_include_rules = {
   ],
   "multi_capture/multi_capture_usage_indicator_service_browsertest\.cc": [
     "+components/web_package/test_support/signed_web_bundles/key_pair.h",
-  ]
+  ],
+  "rtc_diagnostic_logging_unittest\.cc": [
+    "+chrome/renderer/media/webrtc_logging_agent_impl.h",
+  ],
 }

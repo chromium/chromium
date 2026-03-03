@@ -108,6 +108,13 @@ class WebRtcLoggingController
     upload_log_on_render_close_ = should_upload;
   }
 
+  void set_should_upload_on_stop(bool should_upload) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (web_api_settings_.has_value()) {
+      web_api_settings_->should_upload_on_stop = should_upload;
+    }
+  }
+
   // Starts dumping the RTP headers for the specified direction. Must be called
   // on the UI thread. |type| specifies which direction(s) of RTP packets should
   // be dumped. |callback| will be called when starting the dump is done.
@@ -158,7 +165,8 @@ class WebRtcLoggingController
   void OnStopped() override;
 
   // Checks whether WebRTC text-logs is permitted by
-  // the relevant policies (prefs::kWebRtcTextLogCollectionAllowed).
+  // the relevant policies (prefs::kWebRtcTextLogCollectionAllowed and
+  // prefs::kWebRTCDiagnosticLogCollectionAllowedForOrigins).
   static bool IsWebRtcTextLogAllowed(
       content::BrowserContext* browser_context,
       webrtc_logging::ApiType api_type = webrtc_logging::ApiType::kExtension,
@@ -211,6 +219,12 @@ class WebRtcLoggingController
 
   webrtc_logging::ApiType GetApiType() const;
   std::string GetContentName() const;
+  bool CanOperationProceedInWebApiMode() const;
+
+  // Returns true if the operation can proceed in Web API mode. If not, it
+  // runs the callback with an error and returns false.
+  bool CheckCanOperationProceed(GenericDoneCallback& callback);
+  bool CheckCanOperationProceed(UploadDoneCallback& callback);
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // Grants the render process access to the 'WebRTC Logs' directory, and

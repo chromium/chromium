@@ -13,7 +13,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/prefs/browser_prefs.h"
+#include "chrome/common/media/webrtc_logging.mojom.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -23,10 +25,18 @@
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/origin.h"
+
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chromeos/ash/components/system/fake_statistics_provider.h"
+#endif
 
 namespace webrtc_text_log {
 
@@ -36,12 +46,43 @@ using BrowserContext = content::BrowserContext;
 using MockRenderProcessHost = content::MockRenderProcessHost;
 using RenderProcessHost = content::RenderProcessHost;
 
+class FakeWebRtcLoggingAgent : public chrome::mojom::WebRtcLoggingAgent {
+ public:
+  FakeWebRtcLoggingAgent() = default;
+  ~FakeWebRtcLoggingAgent() override = default;
+
+  void Start(
+      mojo::PendingRemote<chrome::mojom::WebRtcLoggingClient> client) override {
+    client_.Bind(std::move(client));
+  }
+
+  void Stop() override {
+    if (client_.is_bound()) {
+      client_->OnStopped();
+    }
+  }
+
+  void Bind(mojo::ScopedMessagePipeHandle pipe) {
+    receivers_.Add(this,
+                   mojo::PendingReceiver<chrome::mojom::WebRtcLoggingAgent>(
+                       std::move(pipe)));
+  }
+
+ private:
+  mojo::ReceiverSet<chrome::mojom::WebRtcLoggingAgent> receivers_;
+  mojo::Remote<chrome::mojom::WebRtcLoggingClient> client_;
+};
+
 class WebRtcLoggingControllerTest : public ::testing::Test {
  public:
   WebRtcLoggingControllerTest()
       : browser_context_(nullptr),
         test_shared_url_loader_factory_(
             test_url_loader_factory_.GetSafeWeakWrapper()) {
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::system::StatisticsProvider::SetTestProvider(
+        &fake_statistics_provider_);
+#endif
     TestingBrowserProcess::GetGlobal()->SetSharedURLLoaderFactory(
         test_shared_url_loader_factory_);
 
@@ -57,6 +98,9 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
     if (browser_context_) {
       UnloadMainTestProfile();
     }
+#if BUILDFLAG(IS_CHROMEOS)
+    ash::system::StatisticsProvider::SetTestProvider(nullptr);
+#endif
   }
 
   void LoadMainTestProfile(std::optional<bool> text_log_collection_allowed) {
@@ -74,6 +118,10 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
 
   void CreateRenderHost() {
     rph_ = std::make_unique<MockRenderProcessHost>(browser_context_.get());
+    rph_->OverrideBinderForTesting(
+        chrome::mojom::WebRtcLoggingAgent::Name_,
+        base::BindRepeating(&FakeWebRtcLoggingAgent::Bind,
+                            base::Unretained(&fake_agent_)));
     auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
     TestingBrowserProcess::GetGlobal()->SetWebRtcLogUploader(
         std::move(webrtc_log_uploader));
@@ -145,6 +193,7 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
   // Default BrowserContext
   std::unique_ptr<TestingProfile> browser_context_;
   std::unique_ptr<MockRenderProcessHost> rph_;
+  FakeWebRtcLoggingAgent fake_agent_;
 
   // Class under test.
   raw_ptr<WebRtcLoggingController> webrtc_logging_controller_ = nullptr;
@@ -154,6 +203,10 @@ class WebRtcLoggingControllerTest : public ::testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>
       test_shared_url_loader_factory_;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  ash::system::FakeStatisticsProvider fake_statistics_provider_;
+#endif
 };
 
 TEST_F(WebRtcLoggingControllerTest, ManagedProfileWithTruePolicy) {
@@ -237,5 +290,87 @@ TEST_F(WebRtcLoggingControllerTest, WebApiPatternPolicy) {
 
   EXPECT_TRUE(webrtc_logging_controller_->IsWebRtcTextLogAllowed(
       browser_context_.get(), webrtc_logging::ApiType::kWeb, origin));
+}
+
+TEST_F(WebRtcLoggingControllerTest, StartRtpDump_KWeb_ReturnsError) {
+  LoadMainTestProfile(true);
+  WebRtcLoggingController::WebApiSettings settings;
+  settings.origin = url::Origin::Create(GURL("https://example.com"));
+
+  // StartLogging with settings enters kWeb mode.
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback(),
+                                           settings);
+  EXPECT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+  if (!start_future.Get<0>()) {
+    return;
+  }
+
+  // StartRtpDump is explicitly blocked when GetApiType() is kWeb.
+  base::test::TestFuture<bool, const std::string&> rtp_future;
+  webrtc_logging_controller_->StartRtpDump(RTP_DUMP_BOTH,
+                                           rtp_future.GetCallback());
+  EXPECT_FALSE(rtp_future.Get<0>());
+  EXPECT_EQ(rtp_future.Get<1>(), "Not authorized");
+}
+
+TEST_F(WebRtcLoggingControllerTest, StopLogging_KWeb_NotAuthorized) {
+  LoadMainTestProfile(true);
+  WebRtcLoggingController::WebApiSettings settings;
+  settings.origin = url::Origin::Create(GURL("https://example.com"));
+
+  // StartLogging with settings enters kWeb mode.
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback(),
+                                           settings);
+  EXPECT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+  if (!start_future.Get<0>()) {
+    return;
+  }
+
+  base::test::TestFuture<bool, const std::string&> stop_future;
+  webrtc_logging_controller_->StopLogging(stop_future.GetCallback());
+  EXPECT_FALSE(stop_future.Get<0>());
+  EXPECT_EQ(stop_future.Get<1>(), "Not authorized");
+}
+
+TEST_F(WebRtcLoggingControllerTest, SetMetaData_KWeb_NotAuthorized) {
+  LoadMainTestProfile(true);
+  WebRtcLoggingController::WebApiSettings settings;
+  settings.origin = url::Origin::Create(GURL("https://example.com"));
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback(),
+                                           settings);
+  EXPECT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+  if (!start_future.Get<0>()) {
+    return;
+  }
+
+  base::test::TestFuture<bool, const std::string&> meta_future;
+  webrtc_logging_controller_->SetMetaData(
+      std::make_unique<WebRtcLogMetaDataMap>(), meta_future.GetCallback());
+  EXPECT_FALSE(meta_future.Get<0>());
+  EXPECT_EQ(meta_future.Get<1>(), "Not authorized");
+}
+
+TEST_F(WebRtcLoggingControllerTest, UploadLog_KWeb_NotAuthorized) {
+  LoadMainTestProfile(true);
+  WebRtcLoggingController::WebApiSettings settings;
+  settings.origin = url::Origin::Create(GURL("https://example.com"));
+
+  base::test::TestFuture<bool, const std::string&> start_future;
+  webrtc_logging_controller_->StartLogging(start_future.GetCallback(),
+                                           settings);
+  EXPECT_TRUE(start_future.Get<0>()) << start_future.Get<1>();
+  if (!start_future.Get<0>()) {
+    return;
+  }
+
+  base::test::TestFuture<bool, const std::string&, const std::string&>
+      upload_future;
+  webrtc_logging_controller_->UploadLog(upload_future.GetCallback());
+  EXPECT_FALSE(upload_future.Get<0>());
+  EXPECT_EQ(upload_future.Get<2>(), "Not authorized");
 }
 }  // namespace webrtc_text_log
