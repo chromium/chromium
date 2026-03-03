@@ -8335,30 +8335,35 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_Dev_Canary_Beta",
+                    "name": "Enabled",
                     "params": {
                         "ModuleMinStalenessUpdateTimeInterval": "1d",
+                        "StaleModulesCountThreshold": "14"
+                    },
+                    "enable_features": [
+                        "NtpFeatureOptimizationDismissModulesRemoval",
+                        "NtpFeatureOptimizationModuleRemoval"
+                    ]
+                }
+            ]
+        }
+    ],
+    "DesktopNtpSimplificationShortcutsRemoval": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dev_Canary_Beta",
+                    "params": {
                         "ShortcutsMinStalenessUpdateTimeInterval": "1d",
-                        "StaleModulesCountThreshold": "1",
                         "StaleShortcutsCountThreshold": "2"
                     },
                     "enable_features": [
-                        "NtpFeatureOptimizationDismissModulesRemoval",
-                        "NtpFeatureOptimizationModuleRemoval",
-                        "NtpFeatureOptimizationShortcutsRemoval"
-                    ]
-                },
-                {
-                    "name": "Enabled_Stable",
-                    "params": {
-                        "ModuleMinStalenessUpdateTimeInterval": "1d",
-                        "ShortcutsMinStalenessUpdateTimeInterval": "1d",
-                        "StaleModulesCountThreshold": "14",
-                        "StaleShortcutsCountThreshold": "60"
-                    },
-                    "enable_features": [
-                        "NtpFeatureOptimizationDismissModulesRemoval",
-                        "NtpFeatureOptimizationModuleRemoval",
                         "NtpFeatureOptimizationShortcutsRemoval"
                     ]
                 }
