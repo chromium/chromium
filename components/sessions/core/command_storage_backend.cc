@@ -364,18 +364,7 @@ base::FilePath::StringType TimestampToString(const base::Time time) {
 #endif
 }
 
-// Returns the directory the files are stored in.
-base::FilePath GetSessionDirName(SessionType type,
-                                 const base::FilePath& supplied_path) {
-  if (type == SessionType::kOther) {
-    return supplied_path.DirName();
-  }
-  return supplied_path.Append(kSessionsDirectory);
-}
-
-base::FilePath::StringType GetSessionBaseName(
-    SessionType type,
-    const base::FilePath& supplied_path) {
+base::FilePath::StringType GetSessionBaseName(SessionType type) {
   switch (type) {
     case SessionType::kAppRestore:
       return kAppSessionFileNamePrefix;
@@ -383,18 +372,14 @@ base::FilePath::StringType GetSessionBaseName(
       return kTabSessionFileNamePrefix;
     case SessionType::kSessionRestore:
       return kSessionFileNamePrefix;
-    case SessionType::kOther:
-      return supplied_path.BaseName().value();
   }
 }
 
 base::FilePath::StringType GetSessionFilename(
     SessionType type,
-    const base::FilePath& supplied_path,
     const base::FilePath::StringType& timestamp_str) {
-  return base::JoinString(
-      {GetSessionBaseName(type, supplied_path), timestamp_str},
-      kTimestampSeparator);
+  return base::JoinString({GetSessionBaseName(type), timestamp_str},
+                          kTimestampSeparator);
 }
 
 }  // namespace
@@ -552,9 +537,6 @@ void CommandStorageBackend::DeleteLastSession() {
 }
 
 void CommandStorageBackend::MoveCurrentSessionToLastSession() {
-  // TODO(sky): make this work for kOther.
-  DCHECK_NE(SessionType::kOther, type_);
-
   InitIfNecessary();
   CloseFile();
   DeleteLastSession();
@@ -604,7 +586,7 @@ void CommandStorageBackend::InitIfNecessary() {
   }
 
   inited_ = true;
-  base::CreateDirectory(GetSessionDirName(type_, supplied_path_));
+  base::CreateDirectory(supplied_path_.Append(kSessionsDirectory));
 
   // TODO(sky): this is expensive. See if it can be delayed.
   last_session_info_ = FindLastSessionFile();
@@ -618,8 +600,8 @@ base::FilePath CommandStorageBackend::FilePathFromTime(
     const SessionType type,
     const base::FilePath& path,
     base::Time time) {
-  return GetSessionDirName(type, path)
-      .Append(GetSessionFilename(type, path, TimestampToString(time)));
+  return path.Append(kSessionsDirectory)
+      .Append(GetSessionFilename(type, TimestampToString(time)));
 }
 
 // static
@@ -747,8 +729,8 @@ CommandStorageBackend::GetSessionFilesSortedByReverseTimestamp(
     SessionType type) {
   std::vector<SessionInfo> sessions;
   base::FileEnumerator file_enum(
-      GetSessionDirName(type, path), false, base::FileEnumerator::FILES,
-      GetSessionFilename(type, path, FILE_PATH_LITERAL("*")));
+      path.Append(kSessionsDirectory), false, base::FileEnumerator::FILES,
+      GetSessionFilename(type, FILE_PATH_LITERAL("*")));
   for (base::FilePath name = file_enum.Next(); !name.empty();
        name = file_enum.Next()) {
     base::Time file_time;

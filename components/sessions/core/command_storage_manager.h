@@ -45,19 +45,12 @@ class SESSIONS_EXPORT CommandStorageManager {
 
   // Identifies the type of session service this is. This is used by the
   // backend to determine the name of the files.
-  // TODO(sky): this enum is purely for legacy reasons, and should be replaced
-  // with consumers building the path. Remove in approximately a year (1/2022),
-  // when we shouldn't need to worry too much about migrating older data.
-  enum class SessionType { kAppRestore, kSessionRestore, kTabRestore, kOther };
+  enum class SessionType { kAppRestore, kSessionRestore, kTabRestore };
 
   // Creates a new CommandStorageManager. `delegate` is not owned by this and
   // must outlive this.
   //
-  // The meaning of `path` depends upon the type. If `type` is `kOther`, then
-  // the path is a file name to which `_TIMESTAMP` is added. If `type` is not
-  // `kOther`, then it is a path to a directory. The actual file name used
-  // depends upon the type. Once SessionType can be removed, this logic can
-  // standardize on that of `kOther`.
+  // `path` is the base directory into which session files are written.
   CommandStorageManager(
       SessionType type,
       const base::FilePath& path,

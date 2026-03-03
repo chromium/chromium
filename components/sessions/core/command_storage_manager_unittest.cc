@@ -22,7 +22,7 @@ class CommandStorageManagerTest : public testing::Test {
   // testing::TestWithParam:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-    path_ = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Session"));
+    path_ = temp_dir_.GetPath();
   }
 
   base::FilePath path_;
@@ -49,7 +49,7 @@ class TestCommandStorageManagerDelegate : public CommandStorageManagerDelegate {
 
 TEST_F(CommandStorageManagerTest, OnErrorWritingSessionCommands) {
   TestCommandStorageManagerDelegate delegate;
-  CommandStorageManager manager(SessionType::kOther, path_, &delegate);
+  CommandStorageManager manager(SessionType::kSessionRestore, path_, &delegate);
   CommandStorageManagerTestHelper test_helper(&manager);
   manager.set_pending_reset(true);
   // Write a command, the delegate should not be notified of an error.
