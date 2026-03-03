@@ -8289,6 +8289,11 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerSyntheticResponseBrowserTest,
   // 2. Enable interception
   browser_client->set_intercept(true);
   // 3. Second navigation triggers the interception.
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(NavigateToURL(shell(), url));
+  histogram_tester.ExpectUniqueSample(
+      "ServiceWorker.SyntheticResponse.Eligibility",
+      static_cast<int>(ServiceWorkerMetrics::SyntheticResponseEligibility::
+                           kNotEligibleByIntercepted), 1);
 }
 }  // namespace content

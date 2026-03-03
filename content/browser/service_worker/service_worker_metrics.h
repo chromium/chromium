@@ -124,7 +124,8 @@ class ServiceWorkerMetrics {
     kEligible = 0,
     kNotEligibleByReload = 1,
     kNotEligibleByNoHeaderStored = 2,
-    kMaxValue = kNotEligibleByNoHeaderStored,
+    kNotEligibleByIntercepted = 3,
+    kMaxValue = kNotEligibleByIntercepted,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseEligibility)
 

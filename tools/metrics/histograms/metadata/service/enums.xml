@@ -326,6 +326,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Eligible"/>
   <int value="1" label="NotEligibleByReload"/>
   <int value="2" label="NotEligibleByNoHeaderStored"/>
+  <int value="3" label="NotEligibleByIntercepted"/>
 </enum>
 
 <!-- LINT.ThenChange(//content/browser/service_worker/service_worker_metrics.h:SyntheticResponseEligibility) -->

@@ -1045,6 +1045,29 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
     return false;
   }
 
+  // Check if an embedder-level interceptor (like Search Prefetch) wants to
+  // handle this request.
+  //
+  // NOTE: We must take the handler here rather than just checking if it
+  // exists. Some interceptors (specifically Search Prefetch) destructively
+  // remove the cached response from memory when queried. If we only checked
+  // for existence and then let the request fall back to the default network
+  // stack, the cache would be empty when the network stack tries to claim it.
+  // Instead, we take ownership of the callback and execute it directly during
+  // Fallback().
+  std::optional<ContentBrowserClient::URLLoaderRequestHandler> handler =
+      service_worker_client_->TakeInterceptingPreloadHandler(resource_request_);
+  if (handler.has_value()) {
+    RecordSyntheticResponseEligibility(
+        SyntheticResponseEligibility::kNotEligibleByIntercepted);
+    CHECK(url_loader_client_.is_bound());
+    CHECK(receiver_.is_bound());
+    std::move(handler.value())
+        .Run(resource_request_, receiver_.Unbind(),
+             url_loader_client_.Unbind());
+    return true;
+  }
+
   if (service_worker_loader_helpers::IsSyntheticResponseDryRunModeEnabled()) {
     if (version->GetResponseHeadForSyntheticResponse()) {
       // With dry-run mode, update `is_synthetic_response_used_` here. This will

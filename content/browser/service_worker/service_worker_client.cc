@@ -1238,6 +1238,29 @@ void ServiceWorkerClient::SetNetworkURLLoaderFactoryForTesting(
   network_url_loader_factory_override_for_testing_ = url_loader_factory;
 }
 
+std::optional<ContentBrowserClient::URLLoaderRequestHandler>
+ServiceWorkerClient::TakeInterceptingPreloadHandler(
+    const network::ResourceRequest& resource_request) {
+  CHECK(!is_response_committed());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (is_initiated_by_prefetch_) {
+    return std::nullopt;
+  }
+
+  if (ContentBrowserClient::URLLoaderRequestHandler
+          embedder_url_loader_handler =
+              GetContentClient()
+                  ->browser()
+                  ->CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+                      ongoing_navigation_frame_tree_node_id_,
+                      resource_request)) {
+    return std::move(embedder_url_loader_handler);
+  }
+
+  return std::nullopt;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ServiceWorkerClient::CreateNetworkURLLoaderFactory(
     CreateNetworkURLLoaderFactoryType type,
@@ -1264,16 +1287,11 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
 
   switch (type) {
     case CreateNetworkURLLoaderFactoryType::kNavigationPreload:
-    case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       // Allow the embedder to intercept the URLLoader request if necessary.
       // This must be a synchronous decision by the embedder. In the future, we
       // may wish to support asynchronous decisions using
       // |URLLoaderRequestInterceptor| in the same fashion that they are used
       // for navigation requests.
-      //
-      // TODO(crbug.com/352578800): Rename
-      // `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`. This is used
-      // by not only navigation preload, but also synthetic response.
       if (ContentBrowserClient::URLLoaderRequestHandler
               embedder_url_loader_handler =
                   GetContentClient()
@@ -1286,6 +1304,7 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       }
       break;
     case CreateNetworkURLLoaderFactoryType::kRaceNetworkRequest:
+    case CreateNetworkURLLoaderFactoryType::kSyntheticNetworkRequest:
       break;
   }
 
