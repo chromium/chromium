@@ -463,6 +463,10 @@ bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
   if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
     return false;
   }
+  if (!box_.StyleRef().IsGapDecorationsContainer() ||
+      !box_.StyleRef().HasGapRule()) {
+    return false;
+  }
   for (const PhysicalBoxFragment& fragment : box_.PhysicalFragments()) {
     if (fragment.GetGapGeometry()) {
       return true;
@@ -473,6 +477,10 @@ bool BoxPaintInvalidator::NeedsToSavePreviousGapGeometries() {
 
 void BoxPaintInvalidator::InvalidateGapDecorations() {
   if (!RuntimeEnabledFeatures::CSSGapDecorationEnabled()) {
+    return;
+  }
+  if (!box_.StyleRef().IsGapDecorationsContainer() ||
+      !box_.StyleRef().HasGapRule()) {
     return;
   }
 

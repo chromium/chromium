@@ -440,4 +440,34 @@ TEST_P(BoxPaintInvalidatorTest, GapDecorationRemovedFromGrid) {
   UpdateAllLifecyclePhasesForTest();
 }
 
+// Verify that multicol column-rule invalidation works correctly with
+// CSSGapDecoration enabled (BoxPaintInvalidator handles gap decoration
+// invalidation via per-fragment geometry comparison).
+TEST_P(BoxPaintInvalidatorTest, GapDecorationMulticolColumnRuleInvalidation) {
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #multicol {
+        columns: 2;
+        column-fill: auto;
+        width: 200px;
+        height: 100px;
+        column-rule: 2px solid black;
+      }
+    </style>
+    <div id="multicol">
+      <div style="height: 300px;"></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Changing column-rule should not cause under-invalidation.
+  auto* multicol = GetDocument().getElementById(AtomicString("multicol"));
+  ASSERT_TRUE(multicol);
+  multicol->setAttribute(html_names::kStyleAttr,
+                         AtomicString("column-rule: 4px solid red"));
+  UpdateAllLifecyclePhasesForTest();
+}
+
 }  // namespace blink
