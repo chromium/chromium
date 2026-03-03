@@ -65,6 +65,10 @@ TEST_F(MimeTypesHandlerTest, Load) {
 
   EXPECT_THAT(handler->mime_type_set(),
               ElementsAre("application/octet-stream", "text/plain"));
+
+  EXPECT_FALSE(handler->CanHandleMIMEType("text/html"));
+  EXPECT_TRUE(handler->CanHandleMIMEType("text/plain"));
+  EXPECT_TRUE(handler->CanHandleMIMEType("application/octet-stream"));
 }
 
 }  // namespace extensions
