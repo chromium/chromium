@@ -131,7 +131,9 @@ class ApplyManifestMigrationCommandTest : public WebAppTest {
       source.set_manifest_id("https://app.source.com/");
       source.set_behavior(
           proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-      info->migration_sources.push_back(std::move(source));
+      info->migration_sources.emplace_back(
+          webapps::ManifestId(GURL("https://app.source.com/")),
+          MigrationBehavior::kSuggest);
     }
 
     fake_provider().scheduler().InstallFromInfoWithParams(

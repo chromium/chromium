@@ -57,10 +57,9 @@ bool IsSourceAppInDestinationAppMigrationSources(
   const WebApp* destination_app =
       all_apps_lock.registrar().GetAppById(destination_id);
   CHECK(destination_app);
-  for (const auto& migration_sources :
+  for (const auto& migration_source :
        destination_app->validated_migration_sources()) {
-    CHECK(migration_sources.has_manifest_id());
-    if (migration_sources.manifest_id() == source_manifest_id) {
+    if (migration_source.manifest_id() == source_manifest_id) {
       return true;
     }
   }

@@ -25,6 +25,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom-forward.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -572,22 +573,18 @@ class WebApp {
 
   void SetStoredTrustedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
 
-  const std::vector<proto::WebAppMigrationSource>&
-  unvalidated_migration_sources() const {
+  const std::vector<MigrationSource>& unvalidated_migration_sources() const {
     return unvalidated_migration_sources_;
   }
-  const std::vector<proto::WebAppMigrationSource>& validated_migration_sources()
-      const {
+  const std::vector<MigrationSource>& validated_migration_sources() const {
     return validated_migration_sources_;
   }
   const std::optional<PendingMigrationInfo>& pending_migration_info() const {
     return pending_migration_info_;
   }
 
-  void SetUnvalidatedMigrationSources(
-      std::vector<proto::WebAppMigrationSource> sources);
-  void SetValidatedMigrationSources(
-      std::vector<proto::WebAppMigrationSource> sources);
+  void SetUnvalidatedMigrationSources(std::vector<MigrationSource> sources);
+  void SetValidatedMigrationSources(std::vector<MigrationSource> sources);
   void SetPendingMigrationInfo(std::optional<PendingMigrationInfo> info);
 
   void SetInstalledBy(InstalledByPassKey,
@@ -750,8 +747,8 @@ class WebApp {
 
   std::deque<AppInstalledBy> installed_by_;
 
-  std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources_;
-  std::vector<proto::WebAppMigrationSource> validated_migration_sources_;
+  std::vector<MigrationSource> unvalidated_migration_sources_;
+  std::vector<MigrationSource> validated_migration_sources_;
   std::optional<PendingMigrationInfo> pending_migration_info_;
   // LINT.ThenChange(//chrome/browser/web_applications/proto/web_app.proto)
 

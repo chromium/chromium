@@ -893,31 +893,13 @@ void WebApp::SetStoredTrustedIconSizes(IconPurpose purpose,
   }
 }
 
-namespace {
-void ValidateMigrationSources(
-    const std::vector<proto::WebAppMigrationSource>& sources) {
-  for (const auto& source : sources) {
-    GURL manifest_id(source.manifest_id());
-    CHECK(manifest_id.is_valid());
-    CHECK(!url::Origin::Create(manifest_id).opaque());
-    if (source.has_install_url()) {
-      GURL install_url(source.install_url());
-      CHECK(install_url.is_valid());
-      CHECK(url::IsSameOriginWith(manifest_id, install_url));
-    }
-  }
-}
-}  // namespace
-
 void WebApp::SetUnvalidatedMigrationSources(
-    std::vector<proto::WebAppMigrationSource> sources) {
-  ValidateMigrationSources(sources);
+    std::vector<MigrationSource> sources) {
   unvalidated_migration_sources_ = std::move(sources);
 }
 
 void WebApp::SetValidatedMigrationSources(
-    std::vector<proto::WebAppMigrationSource> sources) {
-  ValidateMigrationSources(sources);
+    std::vector<MigrationSource> sources) {
   validated_migration_sources_ = std::move(sources);
 }
 
@@ -1416,15 +1398,9 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   root.Set("installed_by", std::move(installed_by_list));
 
   root.Set("unvalidated_migration_sources",
-           base::ToValueList(unvalidated_migration_sources_,
-                             [](const proto::WebAppMigrationSource& source) {
-                               return proto::ToValue(source);
-                             }));
+           ConvertDebugValueList(unvalidated_migration_sources_));
   root.Set("validated_migration_sources",
-           base::ToValueList(validated_migration_sources_,
-                             [](const proto::WebAppMigrationSource& source) {
-                               return proto::ToValue(source);
-                             }));
+           ConvertDebugValueList(validated_migration_sources_));
   root.Set("pending_migration_info",
            OptionalAsDebugValue(pending_migration_info_));
 

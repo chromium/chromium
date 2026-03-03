@@ -257,6 +257,8 @@ source_set("web_applications") {
     "model/localized_text.h",
     "model/migration_behavior.cc",
     "model/migration_behavior.h",
+    "model/migration_source.cc",
+    "model/migration_source.h",
     "model/pending_migration_info.cc",
     "model/pending_migration_info.h",
     "model/web_app_comparison.cc",

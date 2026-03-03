@@ -22,6 +22,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/localized_text.h"
+#include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
@@ -508,7 +509,7 @@ struct WebAppInstallInfo {
   std::optional<GURL> iwa_update_manifest_url;
 
   // Migration sources to be associated with the app.
-  std::vector<proto::WebAppMigrationSource> migration_sources;
+  std::vector<MigrationSource> migration_sources;
 
  private:
   // Used this method in Clone() method. Use Clone() to deep copy explicitly.

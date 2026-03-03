@@ -11,6 +11,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_fetcher.h"
@@ -32,7 +33,7 @@ struct OriginAssociations {
   bool operator==(const OriginAssociations&) const;
 
   ScopeExtensions scope_extensions;
-  std::vector<web_app::proto::WebAppMigrationSource> migration_sources;
+  std::vector<MigrationSource> migration_sources;
 };
 
 // Callback type that sends back the valid |origin_associations|.

@@ -1480,48 +1480,30 @@ std::unique_ptr<WebApp> ParseWebAppProto(
   }
   web_app->SetInstalledBy(InstalledByPassKey(), std::move(installed_by_data));
 
-  auto is_valid_migration_source =
-      [](const proto::WebAppMigrationSource& source) {
-        if (!source.has_manifest_id() || !source.has_behavior()) {
-          return false;
-        }
-        GURL manifest_id(source.manifest_id());
-        if (!manifest_id.is_valid() ||
-            url::Origin::Create(manifest_id).opaque()) {
-          return false;
-        }
-        if (source.has_install_url()) {
-          GURL install_url(source.install_url());
-          if (!install_url.is_valid() ||
-              !url::IsSameOriginWith(manifest_id, install_url)) {
-            return false;
-          }
-        }
-        return true;
-      };
-
-  std::vector<proto::WebAppMigrationSource> unvalidated_migration_sources;
+  std::vector<MigrationSource> unvalidated_migration_sources;
   for (const auto& source_proto : proto.unvalidated_migration_sources()) {
-    if (!is_valid_migration_source(source_proto)) {
+    std::optional<MigrationSource> source =
+        MigrationSource::ParseAndCreate(source_proto);
+    if (!source) {
       RecordProtoParseResult(
           ProtoParseResult::kInvalidWebAppUnvalidatedMigrationSource);
-      DLOG(ERROR) << "WebApp proto Unvalidated MigrationSource parse error";
       return nullptr;
     }
-    unvalidated_migration_sources.push_back(source_proto);
+    unvalidated_migration_sources.push_back(std::move(*source));
   }
   web_app->SetUnvalidatedMigrationSources(
       std::move(unvalidated_migration_sources));
 
-  std::vector<proto::WebAppMigrationSource> validated_migration_sources;
+  std::vector<MigrationSource> validated_migration_sources;
   for (const auto& source_proto : proto.validated_migration_sources()) {
-    if (!is_valid_migration_source(source_proto)) {
+    std::optional<MigrationSource> source =
+        MigrationSource::ParseAndCreate(source_proto);
+    if (!source) {
       RecordProtoParseResult(
           ProtoParseResult::kInvalidWebAppValidatedMigrationSource);
-      DLOG(ERROR) << "WebApp proto Validated MigrationSource parse error";
       return nullptr;
     }
-    validated_migration_sources.push_back(source_proto);
+    validated_migration_sources.push_back(std::move(*source));
   }
   web_app->SetValidatedMigrationSources(std::move(validated_migration_sources));
 
@@ -2072,11 +2054,11 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
   }
 
   for (const auto& source : web_app.unvalidated_migration_sources()) {
-    *local_data->add_unvalidated_migration_sources() = source;
+    *local_data->add_unvalidated_migration_sources() = source.ToProto();
   }
 
   for (const auto& source : web_app.validated_migration_sources()) {
-    *local_data->add_validated_migration_sources() = source;
+    *local_data->add_validated_migration_sources() = source.ToProto();
   }
 
   if (web_app.pending_migration_info().has_value()) {

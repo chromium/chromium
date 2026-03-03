@@ -261,7 +261,7 @@
    "parent_app_id": null,
    "pending_migration_info": {
       "behavior": "kForce",
-      "manifest_id": "https://example.com/manifest_id_771601322"
+      "manifest_id": "https://example.com/manifest_id_1548098189"
    },
    "pending_update_info": {
       "downloaded_manifest_icons": [ {
@@ -541,14 +541,14 @@
       "url": "https://example.com/icons1481177892"
    } ],
    "unvalidated_migration_sources": [ {
-      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
-      "install_url": "https://example.com/install_url_554811270",
+      "behavior": "kForce",
+      "install_url": "https://example.com/install_url_771601322",
       "manifest_id": "https://example.com/manifest_id_2069295071"
    } ],
    "user_link_capturing_preference": "1",
    "validated_migration_sources": [ {
-      "behavior": "WEB_APP_MIGRATION_BEHAVIOR_FORCE",
-      "install_url": "https://example.com/install_url_554811270",
+      "behavior": "kForce",
+      "install_url": "https://example.com/install_url_771601322",
       "manifest_id": "https://example.com/manifest_id_2069295071"
    } ],
    "was_shortcut_app": true,

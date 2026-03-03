@@ -51,13 +51,8 @@ void ResolveWebAppPendingMigrationInfoCommand::StartWithLock(
     // If 'app' claims to be migrated from 'source', then 'source' should know
     // about 'app' via PendingMigrationInfo.
     for (const auto& source : app.validated_migration_sources()) {
-      CHECK(source.has_manifest_id());
-      CHECK(source.has_behavior());
-      CHECK(IsValidProtoMigrationBehavior(source.behavior()));
-      PendingMigrationInfo info(app.manifest_id(),
-                                FromProtoMigrationBehavior(source.behavior()));
-      pending_migrations[webapps::ManifestId(source.manifest_id())].push_back(
-          std::move(info));
+      pending_migrations[source.manifest_id()].emplace_back(app.manifest_id(),
+                                                            source.behavior());
     }
   }
 

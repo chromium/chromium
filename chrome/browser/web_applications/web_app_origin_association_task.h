@@ -13,6 +13,7 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/web_app_origin_association_manager.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser.h"
 
@@ -48,7 +49,7 @@ class WebAppOriginAssociationManager::Task {
   std::deque<url::Origin> pending_origins_;
   std::map<url::Origin, webapps::AssociatedWebApp> fetched_associations_;
   ScopeExtensions scope_extensions_input_;
-  std::vector<web_app::proto::WebAppMigrationSource> migration_sources_input_;
+  std::vector<MigrationSource> migration_sources_input_;
   // The manager that owns this task.
   const raw_ref<WebAppOriginAssociationManager> owner_;
   // Callback to send the result back.

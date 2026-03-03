@@ -654,11 +654,9 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateMigrationSourcesApproved) {
   info->title = u"Foo Title";
   FinalizeJobOptions options(webapps::WebappInstallSource::INTERNAL_DEFAULT);
 
-  proto::WebAppMigrationSource source;
-  source.set_manifest_id("https://migration.foo.example/");
-  source.set_behavior(
-      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-  info->migration_sources = {source};
+  info->migration_sources = {MigrationSource(
+      webapps::ManifestId(GURL("https://migration.foo.example/")),
+      MigrationBehavior::kSuggest)};
 
   // Set data such that migration source will be returned in validated data.
   static_cast<FakeWebAppOriginAssociationManager&>(
@@ -673,14 +671,14 @@ TEST_F(WebAppInstallFinalizerUnitTest, ValidateMigrationSourcesApproved) {
 
   EXPECT_EQ(webapps::InstallResultCode::kSuccessNewInstall, result.code);
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
-  EXPECT_THAT(installed_app->unvalidated_migration_sources(),
-              testing::ElementsAre(
-                  testing::Property(&proto::WebAppMigrationSource::manifest_id,
-                                    "https://migration.foo.example/")));
-  EXPECT_THAT(installed_app->validated_migration_sources(),
-              testing::ElementsAre(
-                  testing::Property(&proto::WebAppMigrationSource::manifest_id,
-                                    "https://migration.foo.example/")));
+  EXPECT_THAT(
+      installed_app->unvalidated_migration_sources(),
+      testing::ElementsAre(testing::Property(
+          &MigrationSource::manifest_id, "https://migration.foo.example/")));
+  EXPECT_THAT(
+      installed_app->validated_migration_sources(),
+      testing::ElementsAre(testing::Property(
+          &MigrationSource::manifest_id, "https://migration.foo.example/")));
 }
 
 TEST_F(WebAppInstallFinalizerUnitTest,
@@ -694,11 +692,9 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   options.add_to_desktop = false;
   options.add_to_quick_launch_bar = false;
 
-  proto::WebAppMigrationSource source;
-  source.set_manifest_id("https://migration.foo.example/");
-  source.set_behavior(
-      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-  info->migration_sources = {source};
+  info->migration_sources = {MigrationSource(
+      webapps::ManifestId(GURL("https://migration.foo.example/")),
+      MigrationBehavior::kSuggest)};
 
   // Set data such that migration source will NOT be returned in validated data.
   static_cast<FakeWebAppOriginAssociationManager&>(
@@ -711,10 +707,10 @@ TEST_F(WebAppInstallFinalizerUnitTest,
   const WebApp* installed_app = registrar().GetAppById(result.installed_app_id);
   EXPECT_EQ(proto::InstallState::SUGGESTED_FROM_MIGRATION,
             installed_app->install_state());
-  EXPECT_THAT(installed_app->unvalidated_migration_sources(),
-              testing::ElementsAre(
-                  testing::Property(&proto::WebAppMigrationSource::manifest_id,
-                                    "https://migration.foo.example/")));
+  EXPECT_THAT(
+      installed_app->unvalidated_migration_sources(),
+      testing::ElementsAre(testing::Property(
+          &MigrationSource::manifest_id, "https://migration.foo.example/")));
   EXPECT_TRUE(installed_app->validated_migration_sources().empty());
 }
 
@@ -755,11 +751,9 @@ TEST_F(WebAppInstallFinalizerUnitTest, MigrationSourceChangeSchedulesSync) {
       .WillOnce(base::test::RunOnceClosure<0>());
 
   // 3. Finalize update with migration sources.
-  proto::WebAppMigrationSource source;
-  source.set_manifest_id("https://migration.foo.example/");
-  source.set_behavior(
-      proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-  info->migration_sources = {source};
+  info->migration_sources = {MigrationSource(
+      webapps::ManifestId(GURL("https://migration.foo.example/")),
+      MigrationBehavior::kSuggest)};
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       update_future;

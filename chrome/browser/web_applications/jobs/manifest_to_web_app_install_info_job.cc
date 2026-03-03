@@ -32,6 +32,7 @@
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/web_applications/icons/trusted_icon_filter.h"
 #include "chrome/browser/web_applications/model/display_override.h"
+#include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/scope_extension_info.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -464,24 +465,10 @@ ScopeExtensions ToWebAppScopeExtensions(
   return apps_scope_extensions;
 }
 
-proto::WebAppMigrationSource ToWebAppMigrationSource(
+MigrationSource ToMigrationSource(
     const blink::mojom::ManifestMigrateFrom& migrate_from) {
-  proto::WebAppMigrationSource result;
-  result.set_manifest_id(migrate_from.id.spec());
-  if (migrate_from.install_url && migrate_from.install_url->is_valid()) {
-    result.set_install_url(migrate_from.install_url->spec());
-  }
-  switch (migrate_from.behavior) {
-    case blink::mojom::ManifestMigrationBehavior::kSuggest:
-      result.set_behavior(
-          proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
-      break;
-    case blink::mojom::ManifestMigrationBehavior::kForce:
-      result.set_behavior(
-          proto::WebAppMigrationBehavior::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
-      break;
-  }
-  return result;
+  return MigrationSource(migrate_from.id, migrate_from.behavior,
+                         migrate_from.install_url);
 }
 
 base::flat_map<std::string, blink::Manifest::TranslationItem>
@@ -869,7 +856,7 @@ void ManifestToWebAppInstallInfoJob::ParseManifestAndPopulateInfo() {
 
   for (const auto& migrate_from : manifest_->migrate_from) {
     install_info().migration_sources.push_back(
-        ToWebAppMigrationSource(*migrate_from));
+        ToMigrationSource(*migrate_from));
   }
 
   if (manifest_->manifest_url.is_valid()) {

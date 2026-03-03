@@ -65,13 +65,11 @@ TEST_F(ResolveWebAppPendingMigrationInfoCommandTest, SingleMigration) {
     ScopedRegistryUpdate update =
         provider()->sync_bridge_unsafe().BeginUpdate();
     WebApp* app_target = update->UpdateApp(app_id_target);
-    std::vector<proto::WebAppMigrationSource> sources;
-    proto::WebAppMigrationSource source;
-    source.set_manifest_id(
-        GenerateManifestIdFromStartUrlOnly(GURL(kSourceAppUrl)).spec());
-    source.set_behavior(proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE);
-    sources.push_back(source);
-    app_target->SetValidatedMigrationSources(sources);
+    std::vector<MigrationSource> sources;
+    sources.emplace_back(
+        GenerateManifestIdFromStartUrlOnly(GURL(kSourceAppUrl)),
+        MigrationBehavior::kForce, std::nullopt);
+    app_target->SetValidatedMigrationSources(std::move(sources));
   }
 
   RunCommand();

@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/model/migration_behavior.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -305,9 +306,9 @@ IN_PROC_BROWSER_TEST_F(LaunchWebAppCommandTest,
   web_app_info->title = u"Name";
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
 
-  web_app::proto::WebAppMigrationSource source;
-  source.set_manifest_id("https://migration.example.com/start.html");
-  web_app_info->migration_sources.push_back(std::move(source));
+  web_app_info->migration_sources.emplace_back(
+      webapps::ManifestId(GURL("https://migration.example.com/start.html")),
+      MigrationBehavior::kSuggest);
 
   // Install & bypass os integration.
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>

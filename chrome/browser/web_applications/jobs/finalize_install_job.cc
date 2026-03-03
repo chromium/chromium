@@ -666,7 +666,7 @@ void FinalizeInstallJob::AdjustAppStateBeforeCommit(const WebApp* existing_app,
   if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
     auto old_sources = existing_app
                            ? existing_app->validated_migration_sources()
-                           : std::vector<proto::WebAppMigrationSource>{};
+                           : std::vector<MigrationSource>{};
     if (old_sources != web_app.validated_migration_sources()) {
       provider.scheduler().ScheduleResolveWebAppPendingMigrationInfo(
           base::DoNothing());

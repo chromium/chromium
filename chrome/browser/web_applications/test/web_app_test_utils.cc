@@ -55,6 +55,7 @@
 #include "chrome/browser/web_applications/model/app_installed_by.h"
 #include "chrome/browser/web_applications/model/display_override.h"
 #include "chrome/browser/web_applications/model/migration_behavior.h"
+#include "chrome/browser/web_applications/model/migration_source.h"
 #include "chrome/browser/web_applications/model/pending_migration_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
@@ -663,22 +664,21 @@ std::vector<apps::IconInfo> CreateRandomIconMetadata(RandomHelper& random,
   return icons;
 }
 
-std::vector<proto::WebAppMigrationSource> CreateRandomMigrationSources(
+std::vector<MigrationSource> CreateRandomMigrationSources(
     RandomHelper& random) {
-  std::vector<proto::WebAppMigrationSource> sources;
+  std::vector<MigrationSource> sources;
   int num_sources = random.next_uint(3);
   for (int i = 0; i < num_sources; ++i) {
-    proto::WebAppMigrationSource source;
-    source.set_manifest_id("https://example.com/manifest_id_" +
-                           base::NumberToString(random.next_uint()));
-    source.set_behavior(random.next_bool()
-                            ? proto::WEB_APP_MIGRATION_BEHAVIOR_FORCE
-                            : proto::WEB_APP_MIGRATION_BEHAVIOR_SUGGEST);
+    GURL manifest_id("https://example.com/manifest_id_" +
+                     base::NumberToString(random.next_uint()));
+    MigrationBehavior behavior = random.next_enum<MigrationBehavior>();
+    std::optional<GURL> install_url;
     if (random.next_bool()) {
-      source.set_install_url("https://example.com/install_url_" +
-                             base::NumberToString(random.next_uint()));
+      install_url = GURL("https://example.com/install_url_" +
+                         base::NumberToString(random.next_uint()));
     }
-    sources.push_back(std::move(source));
+    sources.emplace_back(std::move(manifest_id), behavior,
+                         std::move(install_url));
   }
   return sources;
 }
@@ -1334,12 +1334,11 @@ std::unique_ptr<WebApp> CreateRandomWebApp(
   }
 
   app->SetUnvalidatedMigrationSources(CreateRandomMigrationSources(random));
-  std::vector<proto::WebAppMigrationSource> validated_sources;
-  std::ranges::copy_if(app->unvalidated_migration_sources(),
-                       std::back_inserter(validated_sources),
-                       [&random](const proto::WebAppMigrationSource&) {
-                         return random.next_bool();
-                       });
+  std::vector<MigrationSource> validated_sources;
+  std::ranges::copy_if(
+      app->unvalidated_migration_sources(),
+      std::back_inserter(validated_sources),
+      [&random](const MigrationSource&) { return random.next_bool(); });
   app->SetValidatedMigrationSources(std::move(validated_sources));
   app->SetPendingMigrationInfo(CreateRandomPendingMigrationInfos(random));
 
