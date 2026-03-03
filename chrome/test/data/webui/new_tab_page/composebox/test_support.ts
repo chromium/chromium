@@ -11,7 +11,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {InputState} from 'chrome://resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
-import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -262,4 +262,29 @@ export async function verifyFileUpload(
       testProxy.searchboxHandler.getArgs(ADD_FILE_CONTEXT_FN);
   assertEquals(fileInfo.fileName, file.name);
   assertDeepEquals(fileData.bytes, fileArray);
+}
+
+export async function addTab(testProxy: ComposeboxTestElement): Promise<string> {
+  testProxy.searchboxHandler.setPromiseResolveFor(
+      ADD_TAB_CONTEXT_FN, FAKE_TOKEN_STRING);
+
+  // Assert no files.
+  assertFalse(!!$$<HTMLElement>(testProxy.element, '#carousel'));
+
+  const contextMenuButton = $$(testProxy.element, '#contextEntrypoint');
+  assertTrue(!!contextMenuButton);
+  const sampleTabTitle = 'Sample Tab';
+  contextMenuButton.dispatchEvent(new CustomEvent('add-tab-context', {
+    detail: {id: 1, title: sampleTabTitle},
+    bubbles: true,
+    composed: true,
+  }));
+
+  await testProxy.searchboxHandler.whenCalled(ADD_TAB_CONTEXT_FN);
+  await microtasksFinished();
+  const files = testProxy.element.$.carousel.files;
+  assertEquals(files.length, 1);
+  assertEquals(files[0]!.type, 'tab');
+  assertEquals(files[0]!.name, sampleTabTitle);
+  return FAKE_TOKEN_STRING;
 }

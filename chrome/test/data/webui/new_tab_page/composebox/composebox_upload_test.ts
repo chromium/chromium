@@ -11,7 +11,7 @@ import {eventToPromise, microtasksFinished} from 'chrome://webui-test/test_util.
 
 import {assertStyle} from '../test_support.js';
 
-import {ADD_FILE_CONTEXT_FN, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, generateZeroId, getInputForFileType, getMockFileChangeEventForType, mockInputState, setupComposeboxTest, uploadFileAndVerify, waitForAddFileCallCount} from './test_support.js';
+import {ADD_FILE_CONTEXT_FN, addTab, areMatchesShowing, createComposeboxElement, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, generateZeroId, getInputForFileType, getMockFileChangeEventForType, mockInputState, setupComposeboxTest, uploadFileAndVerify, waitForAddFileCallCount} from './test_support.js';
 
 suite('NewTabPageComposeboxUploadTest', () => {
   const testProxy = setupComposeboxTest();
@@ -1009,5 +1009,56 @@ suite('NewTabPageComposeboxUploadTest', () => {
     assertEquals(
         loadTimeData.getString('composeboxFileUploadFailed'),
         testProxy.element.$.errorScrim.errorMessage);
+  });
+
+  test('when flag enabled, adds tab context of ghost file', async () => {
+    createComposeboxElement(testProxy);
+    testProxy.element.shouldShowGhostFiles = true;
+
+    await addTab(testProxy);
+
+    await testProxy.element.updateComplete;
+    await microtasksFinished();
+
+    assertTrue(
+        testProxy.element.getNumOfFilesForTesting() === 1,
+        'Tab should be added');
+
+    const bad_token = FAKE_TOKEN_STRING_2;
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        bad_token,
+        FileUploadStatus.kUploadSuccessful,
+        null,
+    );
+    await testProxy.element.updateComplete;
+    await microtasksFinished();
+    assertTrue(
+        testProxy.element.getNumOfFilesForTesting() === 2,
+        'Ghost file should be added');
+  });
+
+  test('does not add tab context of ghost file', async () => {
+    createComposeboxElement(testProxy);
+    testProxy.element.shouldShowGhostFiles = false;
+
+    await addTab(testProxy);
+    await testProxy.element.updateComplete;
+    await microtasksFinished();
+
+
+    assertTrue(
+        testProxy.element.getNumOfFilesForTesting() === 1,
+        'Tab should be added');
+    const bad_token = FAKE_TOKEN_STRING_2;
+    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
+        bad_token,
+        FileUploadStatus.kUploadSuccessful,
+        null,
+    );
+    await testProxy.element.updateComplete;
+    await microtasksFinished();
+    assertTrue(
+        testProxy.element.getNumOfFilesForTesting() === 1,
+        'Ghost file should not be added');
   });
 });
