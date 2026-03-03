@@ -224,4 +224,21 @@ TEST_F(TabModelTest, SplitViewVisibleAndActiveCallbacks) {
   testing::Mock::VerifyAndClearExpectations(&did_tab_1_activate_callback);
 }
 
+TEST_F(TabModelTest, TabModelBlockedStateChanged) {
+  TestTabStripModelDelegate delegate;
+  TabStripModel tab_strip(&delegate, profile());
+  AppendTab(tab_strip);
+  tabs::TabModel* const tab_model =
+      static_cast<tabs::TabModel*>(tab_strip.GetTabAtIndex(0));
+
+  base::MockCallback<TabInterface::BlockedStateChangedCallback>
+      blocked_state_changed_callback;
+  EXPECT_CALL(blocked_state_changed_callback, Run).Times(1);
+  base::CallbackListSubscription subscription =
+      tab_model->RegisterBlockedStateChanged(
+          blocked_state_changed_callback.Get());
+  tab_model->SetBlocked(true);
+  testing::Mock::VerifyAndClearExpectations(&blocked_state_changed_callback);
+}
+
 }  // namespace tabs

@@ -67,7 +67,7 @@ class TabModel final : public TabInterface,
   void SetPinned(bool pinned);
   void SetGroup(std::optional<tab_groups::TabGroupId> group);
 
-  void set_blocked(bool blocked) { blocked_ = blocked; }
+  void SetBlocked(bool blocked);
   void set_split(std::optional<split_tabs::SplitTabId> split) {
     split_ = split;
   }
@@ -147,6 +147,8 @@ class TabModel final : public TabInterface,
       TabInterface::PinnedStateChangedCallback callback) override;
   base::CallbackListSubscription RegisterGroupChanged(
       TabInterface::GroupChangedCallback callback) override;
+  base::CallbackListSubscription RegisterBlockedStateChanged(
+      TabInterface::BlockedStateChangedCallback callback) override;
 
   bool CanShowModalUI() const override;
   std::unique_ptr<ScopedTabModalUI> ShowModalUI() override;
@@ -278,6 +280,10 @@ class TabModel final : public TabInterface,
   using GroupChangedCallbackList = base::RepeatingCallbackList<
       void(TabInterface*, std::optional<tab_groups::TabGroupId> new_group)>;
   GroupChangedCallbackList group_changed_callback_list_;
+
+  using BlockedStateChangedCallbackList =
+      base::RepeatingCallbackList<void(TabInterface*, bool new_blocked_state)>;
+  BlockedStateChangedCallbackList blocked_state_changed_callback_list_;
 
   using TabInterfaceCallbackList =
       base::RepeatingCallbackList<void(TabInterface*)>;

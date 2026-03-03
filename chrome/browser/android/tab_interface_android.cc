@@ -127,6 +127,15 @@ base::CallbackListSubscription TabInterfaceAndroid::RegisterGroupChanged(
   return weak_tab_android_->RegisterGroupChanged(std::move(callback));
 }
 
+base::CallbackListSubscription TabInterfaceAndroid::RegisterBlockedStateChanged(
+    BlockedStateChangedCallback callback) {
+  if (!weak_tab_android_) {
+    return base::CallbackListSubscription();
+  }
+
+  return weak_tab_android_->RegisterBlockedStateChanged(std::move(callback));
+}
+
 bool TabInterfaceAndroid::CanShowModalUI() const {
   if (!weak_tab_android_) {
     return false;

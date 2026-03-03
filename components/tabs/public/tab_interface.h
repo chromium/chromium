@@ -217,6 +217,12 @@ class TabInterface : public SupportsTabHandles {
   virtual base::CallbackListSubscription RegisterGroupChanged(
       GroupChangedCallback callback) = 0;
 
+  // Register for this callback to detect when the blocked state changes.
+  using BlockedStateChangedCallback =
+      base::RepeatingCallback<void(TabInterface*, bool new_blocked_state)>;
+  virtual base::CallbackListSubscription RegisterBlockedStateChanged(
+      BlockedStateChangedCallback callback) = 0;
+
   // Features that want to show tab-modal UI are mutually exclusive. Before
   // showing a modal UI first check `CanShowModal`. Then call ShowModal() and
   // keep `ScopedTabModal` alive to prevent other features from showing

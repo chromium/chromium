@@ -166,6 +166,15 @@ void TabModel::SetGroup(std::optional<tab_groups::TabGroupId> group) {
   group_changed_callback_list_.Notify(this, group_);
 }
 
+void TabModel::SetBlocked(bool blocked) {
+  if (blocked_ == blocked) {
+    return;
+  }
+
+  blocked_ = blocked;
+  blocked_state_changed_callback_list_.Notify(this, blocked_);
+}
+
 void TabModel::WillBecomeHidden(base::PassKey<TabStripModel>) {
   will_become_hidden_callback_list_.Notify(this);
 }
@@ -251,6 +260,11 @@ base::CallbackListSubscription TabModel::RegisterPinnedStateChanged(
 base::CallbackListSubscription TabModel::RegisterGroupChanged(
     TabInterface::GroupChangedCallback callback) {
   return group_changed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription TabModel::RegisterBlockedStateChanged(
+    TabInterface::BlockedStateChangedCallback callback) {
+  return blocked_state_changed_callback_list_.Add(std::move(callback));
 }
 
 bool TabModel::CanShowModalUI() const {

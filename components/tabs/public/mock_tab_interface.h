@@ -76,6 +76,10 @@ class MockTabInterface : public testing::NiceMock<TabInterface> {
               RegisterGroupChanged,
               (GroupChangedCallback),
               (override));
+  MOCK_METHOD(base::CallbackListSubscription,
+              RegisterBlockedStateChanged,
+              (BlockedStateChangedCallback),
+              (override));
   MOCK_METHOD(bool, CanShowModalUI, (), (const, override));
   MOCK_METHOD(std::unique_ptr<ScopedTabModalUI>, ShowModalUI, (), (override));
   MOCK_METHOD(base::CallbackListSubscription,

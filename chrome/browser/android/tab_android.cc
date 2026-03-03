@@ -695,6 +695,12 @@ base::CallbackListSubscription TabAndroid::RegisterGroupChanged(
   return group_changed_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription TabAndroid::RegisterBlockedStateChanged(
+    BlockedStateChangedCallback callback) {
+  NOTIMPLEMENTED();
+  return base::CallbackListSubscription();
+}
+
 // For now tab scoped modals should continue to be handled by the window-scoped
 // ModalDialogManager class in Java.
 // TODO(crbug.com/422208977): Investigate adding a capability to trigger tab
