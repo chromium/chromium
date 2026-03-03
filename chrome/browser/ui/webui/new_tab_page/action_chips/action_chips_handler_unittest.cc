@@ -142,9 +142,10 @@ ActionChipPtr MakeActionChip(const ActionChipFields& fields) {
     tab = TabInfo::New(tab_fields.tab_id, tab_fields.title, tab_fields.url,
                        tab_fields.last_active_time);
   }
-  return ActionChip::New(fields.title, fields.subtitle, fields.suggestion,
-                         SuggestTemplateInfo::New(fields.icon_type),
-                         std::move(tab));
+  return ActionChip::New(
+      fields.title, fields.subtitle, fields.suggestion,
+      SuggestTemplateInfo::New(fields.icon_type, nullptr, nullptr),
+      std::move(tab));
 }
 
 ActionChipFields CreateStaticRecentTabChip(const TabInfoFields tab) {
@@ -485,9 +486,13 @@ TEST_F(
   EXPECT_CALL(*mock_action_chips_generator_, GenerateActionChips(_, _))
       .WillOnce(base::test::RunOnceCallback<1>(MakeActionChipsVector(
           ActionChip::New("title1", "subtitle1", "suggention1",
-                          SuggestTemplateInfo::New(), nullptr),
+                          SuggestTemplateInfo::New(
+                              IconType::kIconTypeUnspecified, nullptr, nullptr),
+                          nullptr),
           ActionChip::New("title2", "subtitle2", "suggention2",
-                          SuggestTemplateInfo::New(), nullptr))));
+                          SuggestTemplateInfo::New(
+                              IconType::kIconTypeUnspecified, nullptr, nullptr),
+                          nullptr))));
 
   // Act
   handler().StartActionChipsRetrieval();

@@ -37,7 +37,11 @@ suite('NewTabPageActionChipsTest', () => {
     const defaultOptions: InitializeChipsOptions = {
       actionChips: [
         {
-          suggestTemplateInfo: {typeIcon: IconType.kFavicon},
+          suggestTemplateInfo: {
+            typeIcon: IconType.kFavicon,
+            primaryText: null,
+            secondaryText: null,
+          },
           title: 'Example Tab',
           subtitle: 'Subtitle for recent tab',
           suggestion: 'Suggestion for recent tab',
@@ -49,14 +53,22 @@ suite('NewTabPageActionChipsTest', () => {
           },
         },
         {
-          suggestTemplateInfo: {typeIcon: IconType.kBanana},
+          suggestTemplateInfo: {
+            typeIcon: IconType.kBanana,
+            primaryText: null,
+            secondaryText: null,
+          },
           title: 'Nano Banana',
           subtitle: 'Subtitle for image',
           suggestion: 'Suggestion for image',
           tab: null,
         },
         {
-          suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
+          suggestTemplateInfo: {
+            typeIcon: IconType.kGlobeWithSearchLoop,
+            primaryText: null,
+            secondaryText: null,
+          },
           title: 'Deep Search',
           subtitle: 'Subtitle for deep search',
           suggestion: 'Suggestion for deep search',
@@ -119,7 +131,11 @@ suite('NewTabPageActionChipsTest', () => {
     await initializeChips({
       actionChips: [
         {
-          suggestTemplateInfo: {typeIcon: IconType.kFavicon},
+          suggestTemplateInfo: {
+            typeIcon: IconType.kFavicon,
+            primaryText: null,
+            secondaryText: null,
+          },
           title: 'Example Tab',
           subtitle: 'Subtitle for recent tab',
           suggestion: 'Suggestion for recent tab',
@@ -152,7 +168,11 @@ suite('NewTabPageActionChipsTest', () => {
   test('recent tab chip renders favicon', async () => {
     await initializeChips({
       actionChips: [{
-        suggestTemplateInfo: {typeIcon: IconType.kFavicon},
+        suggestTemplateInfo: {
+          typeIcon: IconType.kFavicon,
+          primaryText: null,
+          secondaryText: null,
+        },
         title: 'Example Tab',
         subtitle: 'Subtitle for recent tab',
         suggestion: 'Suggestion for recent tab',
@@ -172,7 +192,11 @@ suite('NewTabPageActionChipsTest', () => {
   test('deep dive chip renders correct format', async () => {
     await initializeChips({
       actionChips: [{
-        suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
+        suggestTemplateInfo: {
+          typeIcon: IconType.kSubArrowRight,
+          primaryText: null,
+          secondaryText: null,
+        },
         title: 'Example Tab',
         subtitle: 'Subtitle for deep dive',
         suggestion: 'Suggestion for deep dive',
@@ -262,7 +286,11 @@ suite('NewTabPageActionChipsTest', () => {
       // Setup.
       await initializeChips({
         actionChips: [{
-          suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
+          suggestTemplateInfo: {
+            typeIcon: IconType.kSubArrowRight,
+            primaryText: null,
+            secondaryText: null,
+          },
           title: 'Example Tab',
           subtitle: 'Subtitle for deep dive',
           suggestion: 'Suggestion for deep dive',
@@ -453,7 +481,11 @@ suite('NewTabPageActionChipsTest', () => {
           });
           await initializeChips({
             actionChips: [{
-              suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
+              suggestTemplateInfo: {
+                typeIcon: IconType.kGlobeWithSearchLoop,
+                primaryText: null,
+                secondaryText: null,
+              },
               title: 'Deep Search',
               subtitle: 'Subtitle for deep search',
               suggestion: '',
@@ -477,7 +509,11 @@ suite('NewTabPageActionChipsTest', () => {
           });
           await initializeChips({
             actionChips: [{
-              suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
+              suggestTemplateInfo: {
+                typeIcon: IconType.kGlobeWithSearchLoop,
+                primaryText: null,
+                secondaryText: null,
+              },
               title: 'Deep Search',
               subtitle: '',
               suggestion: '',
@@ -522,7 +558,11 @@ suite('NewTabPageActionChipsTest', () => {
           await initializeChips({
             actionChips: [
               {
-                suggestTemplateInfo: {typeIcon: IconType.kBanana},
+                suggestTemplateInfo: {
+                  typeIcon: IconType.kBanana,
+                  primaryText: null,
+                  secondaryText: null,
+                },
                 title: 'Nano Banana',
                 subtitle: 'Subtitle for image',
                 suggestion: 'Suggestion for image',

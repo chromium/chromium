@@ -2298,21 +2298,33 @@ suite('NewTabPageAppTest', () => {
             title: 'TabContext',
             subtitle: 'tab-subtitle',
             suggestion: 'tab-suggestion',
-            suggestTemplateInfo: {typeIcon: IconType.kFavicon},
+            suggestTemplateInfo: {
+              typeIcon: IconType.kFavicon,
+              primaryText: null,
+              secondaryText: null,
+            },
             tab: fakeTab,
           },
           {
             title: 'Nano Banana',
             subtitle: 'image-subtitle',
             suggestion: 'image-suggestion',
-            suggestTemplateInfo: {typeIcon: IconType.kBanana},
+            suggestTemplateInfo: {
+              typeIcon: IconType.kBanana,
+              primaryText: null,
+              secondaryText: null,
+            },
             tab: null,
           },
           {
             title: 'DeepSearch',
             subtitle: 'ds-subtitle',
             suggestion: 'ds-suggestion',
-            suggestTemplateInfo: {typeIcon: IconType.kGlobeWithSearchLoop},
+            suggestTemplateInfo: {
+              typeIcon: IconType.kGlobeWithSearchLoop,
+              primaryText: null,
+              secondaryText: null,
+            },
             tab: null,
           },
         ]);
@@ -2469,7 +2481,11 @@ suite('NewTabPageAppTest', () => {
             title: 'Deep dive',
             subtitle: subtitle,
             suggestion: suggestion,
-            suggestTemplateInfo: {typeIcon: IconType.kSubArrowRight},
+            suggestTemplateInfo: {
+              typeIcon: IconType.kSubArrowRight,
+              primaryText: null,
+              secondaryText: null,
+            },
             tab: {
               tabId: 1,
               title: 'Test Title',

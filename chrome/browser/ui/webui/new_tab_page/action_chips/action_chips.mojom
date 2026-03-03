@@ -31,15 +31,22 @@ enum IconType {
   kBanana = 7,
   kFavicon = 8,
   kNotesSpark = 9,
+  kDraftSpark = 10,
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/new_tab_page/enums.xml:ActionChipIconType)
+struct FormattedString {
+  string text;
+  string? a11y_text;
+};
 
 // SuggestTemplateInfo contains a subset of the fields of SuggestTemplateInfo in
 // third_party/omnibox_proto/suggest_template_info.proto.
 // The field names must match.
 struct SuggestTemplateInfo {
   IconType type_icon;
+  FormattedString? primary_text;
+  FormattedString? secondary_text;
 };
 
 // The information representing a single action chip.
