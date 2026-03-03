@@ -944,12 +944,19 @@ void ReplacePasteToFindBar(
     return;
   }
 
-  std::optional<ui::DataTransferEndpoint> source_dte =
-      clipboard->GetSource(ui::ClipboardBuffer::kCopyPaste);
-  content::GetSourceClipboardEndpoint(
-      base::OptionalToPtr(source_dte), ui::ClipboardBuffer::kCopyPaste,
-      base::BindOnce(&OnGetSourceClipboardEndpointForFindBar,
-                     std::move(*destination), std::move(callback)));
+  clipboard->GetSource(
+      ui::ClipboardBuffer::kCopyPaste,
+      base::BindOnce(
+          [](content::ClipboardEndpoint destination,
+             base::OnceCallback<void(std::optional<std::u16string>)> callback,
+             std::optional<ui::DataTransferEndpoint> source_dte) {
+            content::GetSourceClipboardEndpoint(
+                base::OptionalToPtr(source_dte),
+                ui::ClipboardBuffer::kCopyPaste,
+                base::BindOnce(&OnGetSourceClipboardEndpointForFindBar,
+                               std::move(destination), std::move(callback)));
+          },
+          std::move(*destination), std::move(callback)));
 }
 
 void OnGetSourceClipboardEndpointForFindBar(

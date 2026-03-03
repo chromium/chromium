@@ -286,19 +286,21 @@ ClipboardWin::~ClipboardWin() {
 
 void ClipboardWin::OnPreShutdown() {}
 
-std::optional<DataTransferEndpoint> ClipboardWin::GetSource(
-    ClipboardBuffer buffer) const {
+void ClipboardWin::GetSource(ClipboardBuffer buffer,
+                             GetSourceCallback callback) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   ScopedClipboard clipboard;
   if (!clipboard.Acquire(GetClipboardWindow())) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   HANDLE data = GetClipboardDataWithLimit(
       ClipboardFormatType::InternalSourceUrlType().ToFormatEtc().cfFormat);
   if (!data) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   std::string source_string;
@@ -309,10 +311,11 @@ std::optional<DataTransferEndpoint> ClipboardWin::GetSource(
 
   GURL source_url(source_string);
   if (!source_url.is_valid()) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
-  return DataTransferEndpoint(std::move(source_url));
+  std::move(callback).Run(DataTransferEndpoint(std::move(source_url)));
 }
 
 const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(

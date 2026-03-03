@@ -159,29 +159,31 @@ void ClipboardMac::StopNotifying() {
 
 void ClipboardMac::OnPreShutdown() {}
 
-std::optional<DataTransferEndpoint> ClipboardMac::GetSource(
-    ClipboardBuffer buffer) const {
-  return GetSourceInternal(buffer, GetPasteboard());
+void ClipboardMac::GetSource(ClipboardBuffer buffer,
+                             GetSourceCallback callback) const {
+  GetSourceInternal(buffer, GetPasteboard(), std::move(callback));
 }
 
-std::optional<DataTransferEndpoint> ClipboardMac::GetSourceInternal(
-    ClipboardBuffer buffer,
-    NSPasteboard* pasteboard) const {
+void ClipboardMac::GetSourceInternal(ClipboardBuffer buffer,
+                                     NSPasteboard* pasteboard,
+                                     GetSourceCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
   NSString* source_url = [pasteboard stringForType:kUTTypeChromiumSourceUrl];
 
   if (!source_url) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
   GURL gurl(base::SysNSStringToUTF8(source_url));
   if (!gurl.is_valid()) {
-    return std::nullopt;
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
-  return DataTransferEndpoint(std::move(gurl));
+  std::move(callback).Run(DataTransferEndpoint(std::move(gurl)));
 }
 
 const ClipboardSequenceNumberToken& ClipboardMac::GetSequenceNumber(

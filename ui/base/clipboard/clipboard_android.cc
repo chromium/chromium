@@ -135,7 +135,7 @@ class ClipboardMap {
   const std::vector<ui::FileInfo>& GetFilenames();
   void SetFilenames(std::vector<ui::FileInfo> filenames);
   void CommitToAndroidClipboard(GURL data_source);
-  std::optional<DataTransferEndpoint> GetSource();
+  void GetSource(Clipboard::GetSourceCallback callback);
   void Clear();
   std::vector<std::u16string> GetCustomTypes();
   void MarkPasswordData();
@@ -387,15 +387,16 @@ void ClipboardMap::CommitToAndroidClipboard(GURL data_source) {
   UpdateLastModifiedTime(base::Time::Now());
 }
 
-std::optional<DataTransferEndpoint> ClipboardMap::GetSource() {
+void ClipboardMap::GetSource(Clipboard::GetSourceCallback callback) {
   base::AutoLock lock(lock_);
 
   auto iter = map_.find(ClipboardFormatType::InternalSourceUrlType());
   if (iter == map_.end()) {
-    return {};
+    std::move(callback).Run(std::nullopt);
+    return;
   }
 
-  return DataTransferEndpoint(GURL(iter->second));
+  std::move(callback).Run(DataTransferEndpoint(GURL(iter->second)));
 }
 
 void ClipboardMap::Clear() {
@@ -557,12 +558,12 @@ ClipboardAndroid::~ClipboardAndroid() {
 
 void ClipboardAndroid::OnPreShutdown() {}
 
-std::optional<DataTransferEndpoint> ClipboardAndroid::GetSource(
-    ClipboardBuffer buffer) const {
+void ClipboardAndroid::GetSource(ClipboardBuffer buffer,
+                                 GetSourceCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
-  return GetClipboardMap().GetSource();
+  GetClipboardMap().GetSource(std::move(callback));
 }
 
 const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(

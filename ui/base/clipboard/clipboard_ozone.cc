@@ -473,9 +473,9 @@ void ClipboardOzone::OnPreShutdown() {
   async_clipboard_ozone_->OnPreShutdown();
 }
 
-std::optional<DataTransferEndpoint> ClipboardOzone::GetSource(
-    ClipboardBuffer buffer) const {
-  return async_clipboard_ozone_->ReadSourceAndWait(buffer);
+void ClipboardOzone::GetSource(ClipboardBuffer buffer,
+                               GetSourceCallback callback) const {
+  async_clipboard_ozone_->ReadSourceAsync(buffer, std::move(callback));
 }
 
 const ClipboardSequenceNumberToken& ClipboardOzone::GetSequenceNumber(
@@ -489,8 +489,10 @@ bool ClipboardOzone::IsFormatAvailable(
     const DataTransferEndpoint* data_dst) const {
   DCHECK(CalledOnValidThread());
 
-  if (!IsReadAllowed(GetSource(buffer), data_dst, base::span<uint8_t>()))
+  if (!IsReadAllowed(async_clipboard_ozone_->ReadSourceAndWait(buffer),
+                     data_dst, base::span<uint8_t>())) {
     return false;
+  }
 
   auto available_types = async_clipboard_ozone_->RequestMimeTypes(buffer);
   return std::ranges::contains(available_types, format.GetName());

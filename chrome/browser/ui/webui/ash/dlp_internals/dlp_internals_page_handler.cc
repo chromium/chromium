@@ -201,54 +201,65 @@ DlpInternalsPageHandler::~DlpInternalsPageHandler() = default;
 
 void DlpInternalsPageHandler::GetClipboardDataSource(
     GetClipboardDataSourceCallback callback) {
-  auto source = ui::Clipboard::GetForCurrentThread()->GetSource(
-      ui::ClipboardBuffer::kCopyPaste);
-  if (!source) {
-    std::move(callback).Run(std::move(nullptr));
-    return;
-  }
+  ui::Clipboard::GetForCurrentThread()->GetSource(
+      ui::ClipboardBuffer::kCopyPaste,
+      base::BindOnce(
+          [](GetClipboardDataSourceCallback callback,
+             std::optional<ui::DataTransferEndpoint> source) {
+            if (!source) {
+              std::move(callback).Run(std::move(nullptr));
+              return;
+            }
 
-  auto mojom_source = dlp_internals::mojom::DataTransferEndpoint::New();
-  switch (source->type()) {
-    case ui::EndpointType::kDefault:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kDefault;
-      break;
+            auto mojom_source =
+                dlp_internals::mojom::DataTransferEndpoint::New();
+            switch (source->type()) {
+              case ui::EndpointType::kDefault:
+                mojom_source->type =
+                    dlp_internals::mojom::EndpointType::kDefault;
+                break;
 
-    case ui::EndpointType::kUrl:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kUrl;
-      break;
+              case ui::EndpointType::kUrl:
+                mojom_source->type = dlp_internals::mojom::EndpointType::kUrl;
+                break;
 
-    case ui::EndpointType::kClipboardHistory:
-      mojom_source->type =
-          dlp_internals::mojom::EndpointType::kClipboardHistory;
-      break;
+              case ui::EndpointType::kClipboardHistory:
+                mojom_source->type =
+                    dlp_internals::mojom::EndpointType::kClipboardHistory;
+                break;
 
-    case ui::EndpointType::kUnknownVm:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kUnknownVm;
-      break;
+              case ui::EndpointType::kUnknownVm:
+                mojom_source->type =
+                    dlp_internals::mojom::EndpointType::kUnknownVm;
+                break;
 
-    case ui::EndpointType::kArc:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kArc;
-      break;
+              case ui::EndpointType::kArc:
+                mojom_source->type = dlp_internals::mojom::EndpointType::kArc;
+                break;
 
-    case ui::EndpointType::kBorealis:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kBorealis;
-      break;
+              case ui::EndpointType::kBorealis:
+                mojom_source->type =
+                    dlp_internals::mojom::EndpointType::kBorealis;
+                break;
 
-    case ui::EndpointType::kCrostini:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kCrostini;
-      break;
+              case ui::EndpointType::kCrostini:
+                mojom_source->type =
+                    dlp_internals::mojom::EndpointType::kCrostini;
+                break;
 
-    case ui::EndpointType::kPluginVm:
-      mojom_source->type = dlp_internals::mojom::EndpointType::kPluginVm;
-      break;
-  }
+              case ui::EndpointType::kPluginVm:
+                mojom_source->type =
+                    dlp_internals::mojom::EndpointType::kPluginVm;
+                break;
+            }
 
-  if (source->IsUrlType()) {
-    mojom_source->url = *source->GetURL();
-  }
+            if (source->IsUrlType()) {
+              mojom_source->url = *source->GetURL();
+            }
 
-  std::move(callback).Run(std::move(mojom_source));
+            std::move(callback).Run(std::move(mojom_source));
+          },
+          std::move(callback)));
 }
 
 void DlpInternalsPageHandler::GetContentRestrictionsInfo(

@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       base::OnceCallback<void(std::map<std::string, std::string>)>;
   using ReadAvailableStandardAndCustomFormatNamesCallback =
       base::OnceCallback<void(std::vector<std::u16string>)>;
+  using GetSourceCallback =
+      base::OnceCallback<void(std::optional<DataTransferEndpoint>)>;
 
   // This enum is used to specify different privacy types of the clipboard
   // data. If a password is copied to the clipboard, based on platform support,
@@ -151,8 +153,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void OnPreShutdown() = 0;
 
   // Gets the source of the current clipboard buffer contents.
-  virtual std::optional<DataTransferEndpoint> GetSource(
-      ClipboardBuffer buffer) const = 0;
+  virtual void GetSource(ClipboardBuffer buffer,
+                         GetSourceCallback callback) const = 0;
 
   // Returns a token which uniquely identifies clipboard state.
   // ClipboardSequenceNumberTokens are used since there may be multiple

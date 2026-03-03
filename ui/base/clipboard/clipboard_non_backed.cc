@@ -498,10 +498,10 @@ std::unique_ptr<ClipboardData> ClipboardNonBacked::WriteClipboardData(
 
 void ClipboardNonBacked::OnPreShutdown() {}
 
-std::optional<DataTransferEndpoint> ClipboardNonBacked::GetSource(
-    ClipboardBuffer buffer) const {
+void ClipboardNonBacked::GetSource(ClipboardBuffer buffer,
+                                   GetSourceCallback callback) const {
   const ClipboardData* data = GetInternalClipboard(buffer).GetData();
-  return data ? data->source() : std::nullopt;
+  std::move(callback).Run(data ? data->source() : std::nullopt);
 }
 
 const ClipboardSequenceNumberToken& ClipboardNonBacked::GetSequenceNumber(

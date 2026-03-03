@@ -110,8 +110,10 @@ class ClipboardMacTest : public PlatformTest {
   std::optional<DataTransferEndpoint> GetSource(
       const ClipboardMac* clipboard_mac,
       NSPasteboard* pasteboard) {
-    return clipboard_mac->GetSourceInternal(ClipboardBuffer::kCopyPaste,
-                                            pasteboard);
+    base::test::TestFuture<std::optional<DataTransferEndpoint>> future;
+    clipboard_mac->GetSourceInternal(ClipboardBuffer::kCopyPaste, pasteboard,
+                                     future.GetCallback());
+    return future.Get();
   }
 
   void Clear(ClipboardMac* clipboard_mac, NSPasteboard* pasteboard) {

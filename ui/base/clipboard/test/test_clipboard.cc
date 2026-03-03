@@ -63,9 +63,9 @@ void TestClipboard::SetLastModifiedTime(const base::Time& time) {
 
 void TestClipboard::OnPreShutdown() {}
 
-std::optional<DataTransferEndpoint> TestClipboard::GetSource(
-    ClipboardBuffer buffer) const {
-  return GetStore(buffer).GetDataSource();
+void TestClipboard::GetSource(ClipboardBuffer buffer,
+                              GetSourceCallback callback) const {
+  std::move(callback).Run(GetStore(buffer).GetDataSource());
 }
 
 const ClipboardSequenceNumberToken& TestClipboard::GetSequenceNumber(

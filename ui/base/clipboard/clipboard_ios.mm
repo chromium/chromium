@@ -63,11 +63,11 @@ ClipboardIOS::~ClipboardIOS() {
 void ClipboardIOS::OnPreShutdown() {}
 
 // DataTransferEndpoint is not used on this platform.
-std::optional<DataTransferEndpoint> ClipboardIOS::GetSource(
-    ClipboardBuffer buffer) const {
+void ClipboardIOS::GetSource(ClipboardBuffer buffer,
+                             GetSourceCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return std::nullopt;
+  std::move(callback).Run(std::nullopt);
 }
 
 const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
