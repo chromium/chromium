@@ -7,6 +7,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
@@ -53,7 +54,7 @@ class V8TestingScope {
   v8::Local<v8::Context> context_;
   v8::Context::Scope context_scope_;
   v8::TryCatch try_catch_;
-  v8::MicrotasksScope microtasks_scope_;
+  V8DoNotRunMicrotasksScope microtasks_scope_;
   DummyExceptionStateForTesting exception_state_;
 };
 

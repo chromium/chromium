@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -220,9 +221,7 @@ class ScriptPromise {
     }
 
     v8::Local<v8::Context> context = script_state->GetContext();
-    v8::MicrotasksScope microtasks_scope(
-        isolate, ToMicrotaskQueue(script_state),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
     auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();
     std::ignore = resolver->Resolve(context, value);
     return ScriptPromise<IDLResolvedType>(isolate, resolver->GetPromise());
@@ -246,9 +245,7 @@ class ScriptPromise {
     }
     v8::Isolate* isolate = script_state->GetIsolate();
     v8::Local<v8::Context> context = script_state->GetContext();
-    v8::MicrotasksScope microtasks_scope(
-        isolate, ToMicrotaskQueue(script_state),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
     auto resolver = v8::Promise::Resolver::New(context).ToLocalChecked();
     std::ignore = resolver->Reject(context, value);
     return ScriptPromise<IDLResolvedType>(isolate, resolver->GetPromise());

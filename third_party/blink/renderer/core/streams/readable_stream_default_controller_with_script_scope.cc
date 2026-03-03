@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -62,10 +63,7 @@ void ReadableStreamDefaultControllerWithScriptScope::Enqueue(
 
   ScriptState::Scope scope(script_state_);
 
-  v8::Isolate* isolate = script_state_->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state_),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   ReadableStreamDefaultController::Enqueue(script_state_, controller_, js_chunk,
                                            IGNORE_EXCEPTION);
 }

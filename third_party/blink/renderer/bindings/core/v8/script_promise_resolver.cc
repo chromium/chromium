@@ -7,6 +7,7 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -179,9 +180,7 @@ void ScriptPromiseResolverBase::ResolveOrRejectImmediately() {
       exception_context_.GetClassName(), exception_context_.GetPropertyName(),
       lazy_source_location_.Get());
 
-  v8::MicrotasksScope microtasks_scope(
-      script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   auto resolver = resolver_.Get(script_state_->GetIsolate());
   if (state_ == kResolving) {
     // TODO(462010740): clean up call sites with pending exceptions.

@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_queuing_strategy_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_arraybuffer_arraybufferview_blob_usvstring_writeparams.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_write_params.h"
@@ -36,9 +37,7 @@ FileSystemWritableFileStream* FileSystemWritableFileStream::Create(
   stream->underlying_sink_ = underlying_sink;
 
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
   stream->InitWithCountQueueingStrategy(script_state, underlying_sink,
                                         /*high_water_mark=*/1, nullptr,
                                         PassThroughException(isolate));

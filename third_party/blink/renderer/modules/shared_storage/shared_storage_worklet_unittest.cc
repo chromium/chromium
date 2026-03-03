@@ -52,6 +52,7 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/core/messaging/blink_cloneable_message_mojom_traits.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/workers/worker_thread_test_helper.h"
@@ -569,8 +570,7 @@ class SharedStorageWorkletTest : public PageTestBase {
       const std::map<std::string, std::string>* dict) {
     ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
     ScriptState::Scope scope(script_state);
-    v8::MicrotasksScope microtasksScope(script_state->GetContext(),
-                                        v8::MicrotasksScope::kRunMicrotasks);
+    V8RunMicrotasksScope microtasksScope(script_state);
 
     v8::Isolate* isolate = script_state->GetIsolate();
 

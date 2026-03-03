@@ -5,10 +5,11 @@
 #include "third_party/blink/renderer/core/layout/custom/layout_worklet.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -56,9 +57,7 @@ class LayoutWorkletTest : public PageTestBase, public ModuleTestBase {
 
   ScriptEvaluationResult EvaluateScriptModule(const String& source_code) {
     ScriptState* script_state = GetScriptState();
-    v8::MicrotasksScope microtasks_scope(
-        script_state->GetIsolate(), ToMicrotaskQueue(script_state),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
     EXPECT_TRUE(script_state);
 
     KURL js_url("https://example.com/worklet.js");

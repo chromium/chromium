@@ -46,6 +46,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_inspector_overlay_host.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/node.h"
@@ -1418,9 +1419,7 @@ void InspectorOverlayAgent::LoadOverlayPageResource() {
   ScriptState* script_state = ToScriptStateForMainWorld(frame);
   DCHECK(script_state);
   ScriptState::Scope scope(script_state);
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
   v8::Local<v8::Value> overlay_host_obj =
       ToV8Traits<InspectorOverlayHost>::ToV8(script_state, overlay_host_.Get());
   DCHECK(!overlay_host_obj.IsEmpty());

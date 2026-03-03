@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/boxed_v8_module.h"
 #include "third_party/blink/renderer/bindings/core/v8/referrer_script_info.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_compile_hints_common.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/loader/modulescript/module_script_creation_params.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
@@ -112,9 +112,7 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
 
   DCHECK(!record.IsEmpty());
   v8::Local<v8::Context> context = script_state->GetContext();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
 
   // Script IDs are not available on errored modules or on non-source text
   // modules, so we give them a default value.

@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream_get_reader_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_writable_pair.h"
@@ -312,10 +313,7 @@ ReadableStream* ReadableStream::CreateWithCountQueueingStrategy(
     size_t high_water_mark,
     AllowPerChunkTransferring allow_per_chunk_transferring,
     std::unique_ptr<ReadableStreamTransferringOptimizer> optimizer) {
-  auto* isolate = script_state->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
 
   auto* stream = MakeGarbageCollected<ReadableStream>();
   stream->InitWithCountQueueingStrategy(

@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigate_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_current_entry_change_event_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_defer_page_swap_restore_callback.h"
@@ -276,8 +277,7 @@ void NavigationApi::UpdateForNavigation(HistoryItem& item,
   // Without the microtasks scope deferring promise continuations, the order
   // inverts when committing a browser-initiated same-document navigation and
   // an event listener is present for either currententrychange or dispose.
-  v8::MicrotasksScope scope(window_->GetIsolate(), ToMicrotaskQueue(window_),
-                            v8::MicrotasksScope::kRunMicrotasks);
+  V8RunMicrotasksScope scope(window_.Get());
 
   auto* init = NavigationCurrentEntryChangeEventInit::Create();
   init->setNavigationType(ToV8NavigationType(type));

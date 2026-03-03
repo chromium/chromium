@@ -13,6 +13,7 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
@@ -415,9 +416,7 @@ CORE_EXPORT ScriptPromise<IDLUndefined> PromiseCall(
   DCHECK_GE(argc, 0);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::TryCatch trycatch(isolate);
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
 
   // https://streams.spec.whatwg.org/#promise-call
   // 4. Let returnValue be Call(F, V, args).

@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_web_transport_close_info.h"
@@ -692,9 +693,7 @@ class WebTransport::ReceiveStreamVendor final
     auto* receive_stream = MakeGarbageCollected<ReceiveStream>(
         script_state_, web_transport_, stream_id, std::move(readable));
     auto* isolate = script_state_->GetIsolate();
-    v8::MicrotasksScope microtasks_scope(
-        isolate, ToMicrotaskQueue(script_state_),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
     v8::TryCatch try_catch(isolate);
     receive_stream->Init(PassThroughException(isolate));
 
@@ -762,9 +761,7 @@ class WebTransport::BidirectionalStreamVendor final
         std::move(incoming_consumer));
 
     auto* isolate = script_state_->GetIsolate();
-    v8::MicrotasksScope microtasks_scope(
-        isolate, ToMicrotaskQueue(script_state_),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
     v8::TryCatch try_catch(isolate);
     bidirectional_stream->Init(PassThroughException(isolate));
     if (try_catch.HasCaught()) {
@@ -1634,9 +1631,7 @@ void WebTransport::OnCreateSendStreamResponse(
       script_state_, this, stream_id, std::move(producer));
 
   auto* isolate = script_state_->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state_),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   v8::TryCatch try_catch(isolate);
   send_stream->Init(PassThroughException(isolate));
   if (try_catch.HasCaught()) {
@@ -1681,9 +1676,7 @@ void WebTransport::OnCreateBidirectionalStreamResponse(
       script_state_, this, stream_id, std::move(outgoing_producer),
       std::move(incoming_consumer));
 
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state_),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   v8::TryCatch try_catch(isolate);
   bidirectional_stream->Init(PassThroughException(isolate));
   if (try_catch.HasCaught()) {

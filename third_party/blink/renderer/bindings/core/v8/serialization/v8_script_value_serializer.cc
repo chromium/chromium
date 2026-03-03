@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_data.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_message_port.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_offscreen_canvas.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
@@ -252,9 +253,7 @@ scoped_refptr<SerializedScriptValue> V8ScriptValueSerializer::Serialize(
   // Serialize the value and handle errors.
   v8::Isolate* isolate = script_state_->GetIsolate();
   TryRethrowScope rethrow_scope(isolate, exception_state);
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state_),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
   bool wrote_value;
   if (!serializer_.WriteValue(script_state_->GetContext(), value)
            .To(&wrote_value)) {

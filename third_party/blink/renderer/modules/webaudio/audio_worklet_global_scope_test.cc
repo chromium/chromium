@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -290,9 +291,7 @@ class AudioWorkletGlobalScopeTest : public PageTestBase, public ModuleTestBase {
     ScriptState::Scope scope(script_state);
     v8::Isolate* isolate = script_state->GetIsolate();
     EXPECT_TRUE(isolate);
-    v8::MicrotasksScope microtasks_scope(
-        isolate, ToMicrotaskQueue(script_state),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
 
     String source_code =
         R"JS(

@@ -119,13 +119,9 @@ bool CSSLayoutDefinition::Instance::Layout(
           definition_->custom_invalidation_properties_);
 
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(execution_context);
-  DCHECK(microtask_queue);
-
   ScriptValue return_value;
   {
-    v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
-                                         v8::MicrotasksScope::kRunMicrotasks);
+    V8RunMicrotasksScope microtasks_scope(script_state);
     if (!definition_->layout_
              ->Invoke(instance_.Get(isolate), children, edges, constraints,
                       style_map)
@@ -145,11 +141,11 @@ bool CSSLayoutDefinition::Instance::Layout(
   }
 
   // Run the work queue until exhaustion.
+  v8::MicrotaskQueue* microtask_queue = ToMicrotaskQueue(execution_context);
   auto& queue = *custom_layout_scope->Queue();
   while (!queue.empty()) {
     {
-      v8::MicrotasksScope microtasks_scope(
-          isolate, microtask_queue, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      V8DoNotRunMicrotasksScope microtasks_scope(script_state);
       // The queue may mutate (re-allocating the vector) while running a task.
       for (wtf_size_t index = 0; index < queue.size(); ++index) {
         auto task = queue[index];
@@ -192,8 +188,7 @@ bool CSSLayoutDefinition::Instance::Layout(
   // Serialize any extra data provided by the web-developer to potentially pass
   // up to the parent custom layout.
   if (fragment_result_options->hasData()) {
-    v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
-                                         v8::MicrotasksScope::kRunMicrotasks);
+    V8RunMicrotasksScope microtasks_scope(script_state);
     // We serialize "kForStorage" so that SharedArrayBuffers can't be shared
     // between LayoutWorkletGlobalScopes.
     *fragment_result_data = SerializedScriptValue::Serialize(
@@ -253,8 +248,7 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
 
   ScriptValue return_value;
   {
-    v8::MicrotasksScope microtasks_scope(isolate, microtask_queue,
-                                         v8::MicrotasksScope::kRunMicrotasks);
+    V8RunMicrotasksScope microtasks_scope(script_state);
     if (!definition_->intrinsic_sizes_
              ->Invoke(instance_.Get(isolate), children, edges, style_map)
              .To(&return_value)) {
@@ -276,8 +270,7 @@ bool CSSLayoutDefinition::Instance::IntrinsicSizes(
   auto& queue = *custom_layout_scope->Queue();
   while (!queue.empty()) {
     {
-      v8::MicrotasksScope microtasks_scope(
-          isolate, microtask_queue, v8::MicrotasksScope::kDoNotRunMicrotasks);
+      V8DoNotRunMicrotasksScope microtasks_scope(script_state);
       // The queue may mutate (re-allocating the vector) while running a task.
       for (wtf_size_t index = 0; index < queue.size(); ++index) {
         auto task = queue[index];

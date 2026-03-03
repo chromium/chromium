@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dev_tools_host.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -86,9 +87,7 @@ void DevToolsFrontendImpl::DidClearWindowObject() {
     ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
     DCHECK(script_state);
     ScriptState::Scope scope(script_state);
-    v8::MicrotasksScope microtasks_scope(
-        isolate, ToMicrotaskQueue(script_state),
-        v8::MicrotasksScope::kDoNotRunMicrotasks);
+    V8DoNotRunMicrotasksScope microtasks_scope(script_state);
     if (devtools_host_)
       devtools_host_->DisconnectClient();
     devtools_host_ =

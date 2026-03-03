@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_blink_audio_worklet_process_callback.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
@@ -461,9 +462,7 @@ bool AudioWorkletProcessor::Process(
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
   v8::Local<v8::Context> context = script_state->GetContext();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
 
   // 1st JS arg `inputs_`. Compare `inputs` and `inputs_`. Then allocates the
   // data container if necessary.

@@ -1814,8 +1814,7 @@ void FrameLoader::DispatchDidClearDocumentOfWindowObject() {
       &dispatching_did_clear_window_object_in_main_world_, true);
   // We just cleared the document, not the entire window object, but for the
   // embedder that's close enough.
-  Client()->DispatchDidClearWindowObjectInMainWorld(
-      window->GetIsolate(), window->GetMicrotaskQueue());
+  Client()->DispatchDidClearWindowObjectInMainWorld(window);
 }
 
 void FrameLoader::DispatchDidClearWindowObjectInMainWorld() {
@@ -1827,8 +1826,7 @@ void FrameLoader::DispatchDidClearWindowObjectInMainWorld() {
     return;
   base::AutoReset<bool> in_did_clear_window_object(
       &dispatching_did_clear_window_object_in_main_world_, true);
-  Client()->DispatchDidClearWindowObjectInMainWorld(
-      window->GetIsolate(), window->GetMicrotaskQueue());
+  Client()->DispatchDidClearWindowObjectInMainWorld(window);
 }
 
 network::mojom::blink::WebSandboxFlags

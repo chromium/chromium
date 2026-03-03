@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/remote_objects/remote_object.h"
@@ -29,9 +30,7 @@ void RemoteObjectGatewayImpl::InjectNamed(const String& object_name,
   ScriptState* script_state = ToScriptStateForMainWorld(GetSupplementable());
   ScriptState::Scope scope(script_state);
   v8::Isolate* isolate = script_state->GetIsolate();
-  v8::MicrotasksScope microtasks_scope(
-      isolate, ToMicrotaskQueue(script_state),
-      v8::MicrotasksScope::kDoNotRunMicrotasks);
+  V8DoNotRunMicrotasksScope microtasks_scope(script_state);
   v8::Local<v8::Context> context = script_state->GetContext();
   if (context.IsEmpty()) {
     return;

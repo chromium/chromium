@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_no_argument_constructor.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
@@ -1074,8 +1075,8 @@ SharedStorageWorkletGlobalScope::interestGroups(
                         resolver->GetScriptState(),
                         String(gin::V8ToString(isolate, v8_metadata_string)));
 
-                    v8::MicrotasksScope microtasks(
-                        context, v8::MicrotasksScope::kDoNotRunMicrotasks);
+                    V8DoNotRunMicrotasksScope microtasks(
+                        resolver->GetScriptState());
 
                     std::ignore = ad_dict->Set(
                         context, V8AtomicString(isolate, "metadata"),

@@ -24,9 +24,7 @@ V8TestingScope::V8TestingScope(std::unique_ptr<DummyPageHolder> holder)
       context_(GetScriptState()->GetContext()),
       context_scope_(GetContext()),
       try_catch_(isolate_),
-      microtasks_scope_(isolate_,
-                        ToMicrotaskQueue(GetScriptState()),
-                        v8::MicrotasksScope::kDoNotRunMicrotasks) {
+      microtasks_scope_(GetScriptState()) {
   GetFrame().GetSettings()->SetScriptEnabled(true);
 }
 

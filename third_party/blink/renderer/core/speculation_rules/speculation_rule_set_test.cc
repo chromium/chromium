@@ -18,6 +18,7 @@
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-blink.h"
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_microtasks_scope.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpatterninit_usvstring.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
@@ -924,9 +925,7 @@ void PropagateRulesToStubSpeculationHost(
   speculation_host.SetDoneClosure(run_loop.QuitClosure());
   {
     auto* script_state = ToScriptStateForMainWorld(&frame);
-    v8::MicrotasksScope microtasks_scope(script_state->GetIsolate(),
-                                         ToMicrotaskQueue(script_state),
-                                         v8::MicrotasksScope::kRunMicrotasks);
+    V8RunMicrotasksScope microtasks_scope(script_state);
     functor();
     if (includes_style_update) {
       page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
@@ -964,9 +963,7 @@ testing::AssertionResult NoRulesPropagatedToStubSpeculationHost(
       [&done_was_called] { done_was_called = true; }));
   {
     auto* script_state = ToScriptStateForMainWorld(&frame);
-    v8::MicrotasksScope microtasks_scope(script_state->GetIsolate(),
-                                         ToMicrotaskQueue(script_state),
-                                         v8::MicrotasksScope::kRunMicrotasks);
+    V8RunMicrotasksScope microtasks_scope(script_state);
     functor();
     if (includes_style_update) {
       page_holder.GetFrameView().UpdateAllLifecyclePhasesForTest();
