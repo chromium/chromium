@@ -21318,7 +21318,7 @@ from previous Chrome versions.
   <int value="17" label="SHOULD_WAIT"/>
 </enum>
 
-<!-- LINT.ThenChange(//mojo/public/cpp/system/result_for_metrics.h) -->
+<!-- LINT.ThenChange(//mojo/public/c/system/types.h:MojoResult) -->
 
 <enum name="Month">
   <int value="1" label="January"/>

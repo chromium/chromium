@@ -81,6 +81,8 @@ inline constexpr MojoHandle MOJO_HANDLE_INVALID = 0;
 //
 // The codes from |MOJO_RESULT_OK| to |MOJO_RESULT_DATA_LOSS| come from
 // Google3's canonical error codes.
+//
+// LINT.IfChange(MojoResult)
 
 typedef uint32_t MojoResult;
 
@@ -123,6 +125,8 @@ inline constexpr MojoResult MOJO_RESULT_SHOULD_WAIT = 17;
 #define MOJO_RESULT_BUSY ((MojoResult)16)
 #define MOJO_RESULT_SHOULD_WAIT ((MojoResult)17)
 #endif
+
+// LINT.ThenChange(//mojo/public/cpp/system/result_for_metrics.h:MojoResultForMetrics)
 
 // Flags passed to |MojoInitialize()| via |MojoInitializeOptions|.
 typedef uint32_t MojoInitializeFlags;
