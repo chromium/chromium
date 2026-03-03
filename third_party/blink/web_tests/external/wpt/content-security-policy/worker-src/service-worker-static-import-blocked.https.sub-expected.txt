@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Cross-origin service worker static import blocked by worker-src 'self'.
+  assert_unreached: Should have rejected: undefined Reached unreachable code
+[FAIL] Cross-origin service worker static import blocked by worker-src 'self' triggers CSP violation.
+  promise_test: Unhandled rejection with value: "No CSP violation triggered"
+Harness: the test ran to completion.
+
