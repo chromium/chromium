@@ -23,6 +23,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/hang_watcher.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -652,6 +653,10 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .allow_fp16 = kAllowFp16.Get(),
       .performance_hint = params->performance_hint,
   };
+
+  // `SessionCreateModel` may take a long time to load the model. Deactivate
+  // hang watcher so it doesn't report it as a hang.
+  base::HangWatcher::InvalidateActiveExpectations();
   model_ = chrome_ml_->api().SessionCreateModel(
       &descriptor, reinterpret_cast<uintptr_t>(this),
       OnDeviceModelExecutor::Schedule);
