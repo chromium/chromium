@@ -1647,12 +1647,7 @@ public class MediaDrmBridge {
                 int extra,
                 byte @Nullable [] data) {
             if (drmSessionId == null) {
-                // Prior to Android M EVENT_PROVISION_REQUIRED was used to signify that provisioning
-                // was required before the session could be created. Unprovisioned errors are
-                // handled elsewhere, so no need to log a message.
-                if (event != MediaDrm.EVENT_PROVISION_REQUIRED) {
-                    Log.e(TAG, "EventListener: No session for event %d.", event);
-                }
+                Log.e(TAG, "EventListener: No session for event %d.", event);
                 return;
             }
 
@@ -1691,11 +1686,8 @@ public class MediaDrmBridge {
                         return;
                     }
                     break;
-                case MediaDrm.EVENT_KEY_EXPIRED:
-                    Log.d(TAG, "MediaDrm.EVENT_KEY_EXPIRED for session %s", sessionId);
-                    break;
-                    // (b/271451225) This event is generated during ClearKey implementation in
-                    // Android.
+                // (b/271451225) This event is generated during ClearKey implementation in
+                // Android.
                 case MediaDrm.EVENT_VENDOR_DEFINED:
                     Log.d(TAG, "MediaDrm.EVENT_VENDOR_DEFINED for session %s", sessionId);
                     request =
