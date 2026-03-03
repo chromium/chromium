@@ -535,7 +535,6 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
     const GURL& service_worker_scope,
     const GURL& script_url,
     const blink::ServiceWorkerToken& service_worker_token) {
-  const base::TimeTicks start_time = base::TimeTicks::Now();
   service_worker_context_state = ServiceWorkerContextState::kInitializing;
 
   // TODO(crbug.com/40626913): We may want to give service workers not
@@ -673,9 +672,6 @@ void Dispatcher::WillEvaluateServiceWorkerOnWorkerThread(
   WorkerThreadDispatcher::GetServiceWorkerData()->Init();
   g_worker_script_context_set.Get().Insert(base::WrapUnique(context));
 
-  const base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-  UMA_HISTOGRAM_TIMES(
-      "Extensions.DidInitializeServiceWorkerContextOnWorkerThread2", elapsed);
   service_worker_context_state = ServiceWorkerContextState::kInitialized;
 }
 

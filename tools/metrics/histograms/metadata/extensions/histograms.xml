@@ -1590,17 +1590,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.DidInitializeServiceWorkerContextOnWorkerThread2"
-    units="ms" expires_after="2025-06-01">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Records the time taken to install Extension JavaScript bindings per service
-    worker context. This is only emitted for the primary extension service
-    worker, as all other service workers do not receive extension bindings.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.Disabled2" units="units" expires_after="never">
 <!-- expires-never: Used for monitoring user extension usage. -->
 
