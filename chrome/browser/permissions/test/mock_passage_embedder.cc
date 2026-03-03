@@ -19,10 +19,22 @@ using TaskId = passage_embeddings::Embedder::TaskId;
 // --------------------------- PassageEmbedderMock ---------------------------
 // ---------------------------------------------------------------------------
 
+PassageEmbedderMock::PassageEmbedderMock() = default;
+PassageEmbedderMock::~PassageEmbedderMock() = default;
+
+PassageEmbedderMock::PassageEmbedderMock(const PassageEmbedderMock&) = default;
+PassageEmbedderMock& PassageEmbedderMock::operator=(
+    const PassageEmbedderMock&) = default;
+
+PassageEmbedderMock::PassageEmbedderMock(PassageEmbedderMock&&) = default;
+PassageEmbedderMock& PassageEmbedderMock::operator=(PassageEmbedderMock&&) =
+    default;
+
 TaskId PassageEmbedderMock::ComputePassagesEmbeddings(
     PassagePriority priority,
     std::vector<std::string> passages,
     ComputePassagesEmbeddingsCallback callback) {
+  last_passages_ = passages;
   if (status_ == ComputeEmbeddingsStatus::kSuccess) {
     TestEmbedder::ComputePassagesEmbeddings(priority, std::move(passages),
                                             std::move(callback));

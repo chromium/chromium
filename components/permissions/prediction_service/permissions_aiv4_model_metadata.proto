@@ -56,4 +56,7 @@ message PermissionsAiv4ModelMetadata {
   // Depends on the output size of the passage embeddings model:
   // services/passage_embeddings/passage_embedder.h
   optional int32 text_embeddings_input_size = 3;
+
+  // The number of passages that should be extracted from the page content.
+  optional int32 passage_count = 4;
 }

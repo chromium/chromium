@@ -875,7 +875,6 @@ class AivXModelPredictionServiceBrowserTest
   }
 };
 
-
 class Aiv4ModelPredictionServiceBrowserTestBase
     : public AivXModelPredictionServiceBrowserTest<PermissionsAiv4HandlerFake> {
  public:
@@ -935,7 +934,7 @@ class Aiv4ModelPredictionServiceBrowserTestBase
 
   EmbedderMetadataProviderFake embedder_metadata_provider_fake;
 
- private:
+ protected:
   PassageEmbedderMock passage_embedder_;
 };
 
@@ -1699,5 +1698,77 @@ INSTANTIATE_TEST_SUITE_P(
             .expected_accuracy = GeolocationAccuracy::kApproximate,
         },
     }));
+
+class Aiv4ModelMultiplePassagesBrowserTest
+    : public Aiv4ModelPredictionServiceBrowserTestBase {
+ public:
+  Aiv4ModelMultiplePassagesBrowserTest() = default;
+
+  void SetPassageCount(int passage_count) {
+    PermissionsAiv4ModelMetadata metadata;
+    metadata.set_passage_count(passage_count);
+    std::string serialized_metadata;
+    metadata.SerializeToString(&serialized_metadata);
+
+    auto any = std::make_optional<optimization_guide::proto::Any>();
+    any->set_value(serialized_metadata);
+    any->set_type_url(
+        "type.googleapis.com/"
+        "permissions.PermissionsAiv4ModelMetadata");
+
+    opt_guide()->OverrideTargetModelForTesting(
+        optimization_target(),
+        optimization_guide::TestModelInfoBuilder()
+            .SetModelFilePath(ModelFilePath(kOneReturnAiv4Model))
+            .SetModelMetadata(any)
+            .Build());
+    model_handler()->WaitForModelLoadForTesting();
+  }
+
+  const std::vector<std::string>& GetLastPassages() const {
+    return passage_embedder_.GetLastPassages();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(Aiv4ModelMultiplePassagesBrowserTest,
+                       MultiplePassagesAreExtracted) {
+  ASSERT_TRUE(aiv4_model_handler());
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  SetPassageCount(2);
+
+  // Set dummy inner text long enough for 2 passages (500 chars each).
+  std::string long_text(1200, 'a');
+  set_dummy_inner_text_for_testing(long_text);
+  set_dummy_screenshot_for_testing();
+
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(kLikelihoodVeryUnlikely);
+
+  // Expect relevance high because kOneReturnAiv4Model returns 1.
+  PredictionRequestFeatures expected_features =
+      BuildRequestFeatures(request_type(), ExperimentId::kAiV4ExperimentId,
+                           PermissionRequestRelevance::kVeryHigh);
+
+  EXPECT_CALL(prediction_service(),
+              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
+      .WillRepeatedly(WithArg<2>(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/true, prediction_service_response);
+          }));
+
+  TriggerPromptAndVerifyUi(
+      /*test_url=*/"test.a", PermissionAction::DISMISSED,
+      /*should_expect_quiet_ui=*/true,
+      /*expected_relevance=*/PermissionRequestRelevance::kVeryHigh,
+      /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely);
+
+  const auto& passages = GetLastPassages();
+  ASSERT_EQ(passages.size(), 2u);
+  EXPECT_EQ(passages[0].size(), 500u);
+  EXPECT_EQ(passages[1].size(), 500u);
+}
 
 }  // namespace permissions

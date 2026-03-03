@@ -243,6 +243,10 @@ source_set("unit_tests") {
     "pref_based_quiet_permission_ui_selector_unittest.cc",
   ]
 
+  if (build_with_tflite_lib) {
+    sources += [ "prediction_service/passage_embedder_delegate_unittest.cc" ]
+  }
+
   if (!is_android) {
     sources += [ "one_time_permissions_tracker_unittest.cc" ]
   }
@@ -268,6 +272,10 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (build_with_tflite_lib) {
+    deps += [ "//components/passage_embeddings/core" ]
+  }
 
   if (is_android) {
     sources += [

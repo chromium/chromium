@@ -19,8 +19,7 @@ namespace permissions {
 class PassageEmbedderDelegate {
  public:
   explicit PassageEmbedderDelegate(Profile* profile);
-  ~PassageEmbedderDelegate();
-
+  virtual ~PassageEmbedderDelegate();
   // The timeout for the passage embedding computation in seconds. If the
   // passage embeddings computation takes longer than this, the fallback
   // callback will be invoked.
@@ -31,17 +30,24 @@ class PassageEmbedderDelegate {
   using PassageEmbeddingsComputedCallback =
       base::OnceCallback<void(passage_embeddings::Embedding passage_embedding)>;
 
-  // Computes a passage embedding from the given `rendered_text`.
+  // Computes passage embeddings from the given `text`.
+  // The `text` is split into `passage_count` chunks, each of size
+  // `kPageContentMaxLength`.
   // This function will cancel any pending embedding tasks before starting a new
-  // one. On success, `callback` is invoked with the computed embedding.
-  // If the computation fails or times out, `fallback_callback` is invoked.
-  void CreatePassageEmbeddingFromRenderedText(
-      std::string rendered_text,
+  // one. On success, `callback` is invoked with the computed averaged
+  // embedding. If the computation fails or times out, `fallback_callback` is
+  // invoked.
+  void CreatePassageEmbeddingsFromRenderedText(
+      std::string text,
+      int passage_count,
       PassageEmbeddingsComputedCallback callback,
       base::OnceCallback<void()> fallback_callback);
 
   // Clears the task ID.
   void Reset();
+
+ protected:
+  virtual passage_embeddings::Embedder* GetPassageEmbedder();
 
  private:
   // Callback for the passage embeddings model.
@@ -58,8 +64,6 @@ class PassageEmbedderDelegate {
   // Called when the passage embedding computation times out.
   // This will invoke the `fallback_callback_`.
   void OnTimeout();
-
-  passage_embeddings::Embedder* get_passage_embedder();
 
   // The ID of the current passage embedding task. This is used to cancel
   // a still running embedding task for a previous, stale query.

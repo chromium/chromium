@@ -54,6 +54,9 @@ class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
+  // Returns the passage count from the model metadata, if available.
+  std::optional<int32_t> GetPassageCount() const;
+
   virtual void ExecuteModel(ExecutionCallback callback, ModelInput model_input);
 
  private:

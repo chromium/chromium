@@ -10,13 +10,21 @@
 #include "components/permissions/permission_uma_util.h"
 
 namespace permissions {
+
+namespace {
+// The maximum length of a page's content. For now, page content is limited by
+// the passage embedders 64 token limit. We therefore limit the input text as
+// well.
+constexpr size_t kPageContentMaxLength = 500;
+}  // namespace
+
 using passage_embeddings::Embedder;
 
 PassageEmbedderDelegate::~PassageEmbedderDelegate() = default;
 PassageEmbedderDelegate::PassageEmbedderDelegate(Profile* profile)
     : profile_(profile) {}
 
-Embedder* PassageEmbedderDelegate::get_passage_embedder() {
+Embedder* PassageEmbedderDelegate::GetPassageEmbedder() {
   if (auto* prediction_model_handler_provider =
           PredictionModelHandlerProviderFactory::GetForBrowserContext(
               profile_)) {
@@ -24,7 +32,7 @@ Embedder* PassageEmbedderDelegate::get_passage_embedder() {
     PermissionUmaUtil::RecordPassageEmbedderMetadataValid(is_ready);
     if (!is_ready) {
       VLOG(1) << "[PermissionsAIv4] "
-                 "PassageEmbedderDelegate::get_passage_embedder is not ready.";
+                 "PassageEmbedderDelegate::GetPassageEmbedder is not ready.";
       return nullptr;
     }
     return prediction_model_handler_provider->GetPassageEmbedder();
@@ -33,17 +41,37 @@ Embedder* PassageEmbedderDelegate::get_passage_embedder() {
   return nullptr;
 }
 
-void PassageEmbedderDelegate::CreatePassageEmbeddingFromRenderedText(
-    std::string rendered_text,
+void PassageEmbedderDelegate::CreatePassageEmbeddingsFromRenderedText(
+    std::string text,
+    int passage_count,
     PassageEmbeddingsComputedCallback on_passage_embeddings_computed,
     base::OnceCallback<void()> fallback_callback) {
   VLOG(1) << "[PermissionsAIv4] "
-             "PassageEmbedderDelegate::CreatePassageEmbeddingFromRenderedText";
-  DCHECK(rendered_text.size() != 0);
+             "PassageEmbedderDelegate::CreatePassageEmbeddingsFromRenderedText";
+  if (text.empty() || passage_count < 1) {
+    std::move(fallback_callback_).Run();
+    return;
+  }
 
   fallback_callback_ = std::move(fallback_callback);
   on_passage_embeddings_computed_ = std::move(on_passage_embeddings_computed);
-  if (Embedder* passage_embedder = get_passage_embedder()) {
+
+  // Split text into passages.
+  std::vector<std::string> passages;
+  size_t current_index = 0;
+  while (passages.size() < static_cast<size_t>(passage_count) &&
+         current_index < text.size()) {
+    size_t len = std::min(kPageContentMaxLength, text.size() - current_index);
+    passages.push_back(text.substr(current_index, len));
+    current_index += len;
+  }
+
+  if (passages.empty()) {
+    std::move(fallback_callback_).Run();
+    return;
+  }
+
+  if (Embedder* passage_embedder = GetPassageEmbedder()) {
     bool previous_task_needs_canceling =
         (passage_embeddings_task_id_ != std::nullopt);
     PermissionUmaUtil::RecordTryCancelPreviousEmbeddingsModelExecution(
@@ -59,7 +87,7 @@ void PassageEmbedderDelegate::CreatePassageEmbeddingFromRenderedText(
         << "[PermissionsAIv4]: Starting Embedder::ComputePassagesEmbeddings";
     passage_embeddings_task_id_ = passage_embedder->ComputePassagesEmbeddings(
         passage_embeddings::PassagePriority::kUserInitiated,
-        {std::move(rendered_text)},
+        std::move(passages),
         base::BindOnce(&PassageEmbedderDelegate::OnPassageEmbeddingsComputed,
                        weak_ptr_factory_.GetWeakPtr(),
                        /*model_inquire_start_time=*/base::TimeTicks::Now()));
@@ -114,14 +142,12 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
   VLOG(1) << "[PermissionsAIv4]: TextEmbedding computed with "
           << (succeeded ? "" : "no ") << "success.";
 
-  if (!succeeded) {
+  if (!succeeded || passages.empty()) {
     if (passage_embeddings_task_id_ == task_id) {
       passage_embeddings_task_id_ = std::nullopt;
     }
     return std::move(fallback_callback_).Run();
   }
-
-  DCHECK(passages.size() == 1);
 
   bool is_outdated_task = passage_embeddings_task_id_ != task_id;
   PermissionUmaUtil::RecordFinishedPassageEmbeddingsTaskOutdated(
@@ -134,7 +160,39 @@ void PassageEmbedderDelegate::OnPassageEmbeddingsComputed(
     passage_embeddings_task_id_ = std::nullopt;
   }
 
-  std::move(on_passage_embeddings_computed_).Run(std::move(embeddings[0]));
+  if (embeddings.empty()) {
+    std::move(fallback_callback_).Run();
+    return;
+  }
+
+  if (embeddings.size() == 1) {
+    std::move(on_passage_embeddings_computed_).Run(std::move(embeddings[0]));
+    return;
+  }
+
+  // We currently average the up to 5 passages we get from the passage embedder
+  // as the AIv4 model expects only one vector as input. We do this by
+  // computing the mathematical mean of the embedding vectors.
+  // This matches how the model is trained by the AI researchers.
+  size_t dimensions = embeddings[0].Dimensions();
+  std::vector<float> averaged_data(dimensions, 0.0f);
+  for (const auto& embedding : embeddings) {
+    if (embedding.Dimensions() != dimensions) {
+      std::move(fallback_callback_).Run();
+      return;
+    }
+    const auto& data = embedding.GetData();
+    for (size_t i = 0; i < dimensions; ++i) {
+      averaged_data[i] += data[i];
+    }
+  }
+
+  for (size_t i = 0; i < dimensions; ++i) {
+    averaged_data[i] /= embeddings.size();
+  }
+
+  std::move(on_passage_embeddings_computed_)
+      .Run(passage_embeddings::Embedding(std::move(averaged_data)));
 }
 
 }  // namespace permissions

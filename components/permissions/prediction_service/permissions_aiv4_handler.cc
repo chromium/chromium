@@ -73,6 +73,13 @@ void PermissionsAiv4Handler::OnModelUpdated(
   }
 }
 
+std::optional<int32_t> PermissionsAiv4Handler::GetPassageCount() const {
+  if (model_metadata_ && model_metadata_->has_passage_count()) {
+    return model_metadata_->passage_count();
+  }
+  return std::nullopt;
+}
+
 void PermissionsAiv4Handler::ExecuteModel(ExecutionCallback callback,
                                           ModelInput model_input) {
   DCHECK(!model_input.snapshot.drawsNothing());

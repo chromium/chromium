@@ -15,8 +15,14 @@ namespace test {
 
 class PassageEmbedderMock : public passage_embeddings::TestEmbedder {
  public:
-  PassageEmbedderMock() = default;
-  ~PassageEmbedderMock() override = default;
+  PassageEmbedderMock();
+  ~PassageEmbedderMock() override;
+
+  PassageEmbedderMock(const PassageEmbedderMock&);
+  PassageEmbedderMock& operator=(const PassageEmbedderMock&);
+
+  PassageEmbedderMock(PassageEmbedderMock&&);
+  PassageEmbedderMock& operator=(PassageEmbedderMock&&);
 
   // passage_embeddings::TestEmbedder:
   passage_embeddings::Embedder::TaskId ComputePassagesEmbeddings(
@@ -26,9 +32,14 @@ class PassageEmbedderMock : public passage_embeddings::TestEmbedder {
 
   void set_status(passage_embeddings::ComputeEmbeddingsStatus status);
 
+  const std::vector<std::string>& GetLastPassages() const {
+    return last_passages_;
+  }
+
  private:
   passage_embeddings::ComputeEmbeddingsStatus status_ =
       passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
+  std::vector<std::string> last_passages_;
 };
 
 // A mock that simulates a delayed execution of passage embeddings computation.
