@@ -48,6 +48,55 @@ ImageOrientationToVideoTransformation(ImageOrientationEnum orientation);
 // `snapshot_provider` is given to CreateImageFromVideoFrame().
 PLATFORM_EXPORT bool WillCreateAcceleratedImagesFromVideoFrame();
 
+// Returns an accelerated StaticBitmapImage for the given frame.
+// `snapshot_provider` should have a size equal to frame->natural_size() and
+// color space equal to frame->CompatRGBColorSpace().
+//
+// `video_renderer` may optionally be provided in cases where the same frame may
+// end up repeatedly converted.
+//
+// If `prefer_tagged_orientation` is true, the method will just tag the
+// StaticBitmapImage with the correct orientation ("soft flip") instead of
+// drawing the frame with the correct orientation ("hard flip").
+//
+// If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
+// being originally having been in sRGB.
+//
+// Returns nullptr if a StaticBitmapImage can't be created.
+PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
+CreateAcceleratedImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasNon2DResourceProviderSharedImage* snapshot_provider,
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+    bool prefer_tagged_orientation = true,
+    bool reinterpret_video_as_srgb = false);
+
+// Returns an unaccelerated StaticBitmapImage for the given frame.
+//
+// `video_renderer` may optionally be provided in cases where the same frame may
+// end up repeatedly converted.
+//
+// If `prefer_tagged_orientation` is true, the method will just tag the
+// StaticBitmapImage with the correct orientation ("soft flip") instead of
+// drawing the frame with the correct orientation ("hard flip").
+//
+// If `reinterpret_video_as_srgb` true, then the video will be reinterpreted as
+// being originally having been in sRGB.
+//
+// The client may optionally provide a cached SkSurface for the software draw to
+// occur into; if not provided, the draw will create a new SkSurface to draw
+// into.
+//
+// Returns nullptr if a StaticBitmapImage can't be created.
+PLATFORM_EXPORT scoped_refptr<StaticBitmapImage>
+CreateUnacceleratedImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    const CanvasSnapshotProvider::Info& draw_info,
+    sk_sp<SkSurface> cached_draw_surface,
+    media::PaintCanvasVideoRenderer* video_renderer = nullptr,
+    bool prefer_tagged_orientation = true,
+    bool reinterpret_video_as_srgb = false);
+
 // Returns a StaticBitmapImage for the given frame that is either accelerated or
 // unaccelerated via exactly one of `snapshot_provider` and `sw_draw_info` being
 // valid. If non-null, `snapshot_provider` should have a size equal to

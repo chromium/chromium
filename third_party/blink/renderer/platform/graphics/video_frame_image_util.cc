@@ -108,6 +108,32 @@ bool WillCreateAcceleratedImagesFromVideoFrame() {
   return ShouldCreateAcceleratedImages(GetRasterContextProvider().get());
 }
 
+scoped_refptr<StaticBitmapImage> CreateAcceleratedImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    CanvasNon2DResourceProviderSharedImage* snapshot_provider,
+    media::PaintCanvasVideoRenderer* video_renderer,
+    bool prefer_tagged_orientation,
+    bool reinterpret_video_as_srgb) {
+  CHECK(snapshot_provider);
+  return CreateImageFromVideoFrame(
+      std::move(frame), snapshot_provider, /*sw_draw_info=*/std::nullopt,
+      /*cached_sw_draw_surface=*/nullptr, video_renderer,
+      prefer_tagged_orientation, reinterpret_video_as_srgb);
+}
+
+scoped_refptr<StaticBitmapImage> CreateUnacceleratedImageFromVideoFrame(
+    scoped_refptr<media::VideoFrame> frame,
+    const CanvasSnapshotProvider::Info& draw_info,
+    sk_sp<SkSurface> cached_draw_surface,
+    media::PaintCanvasVideoRenderer* video_renderer,
+    bool prefer_tagged_orientation,
+    bool reinterpret_video_as_srgb) {
+  return CreateImageFromVideoFrame(
+      std::move(frame), /*snapshot_provider=*/nullptr, draw_info,
+      cached_draw_surface, video_renderer, prefer_tagged_orientation,
+      reinterpret_video_as_srgb);
+}
+
 scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
     CanvasNon2DResourceProviderSharedImage* snapshot_provider,
