@@ -1,0 +1,141 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Messages for describing the on-device model manifest.
+edition = "2023";
+
+package optimization_guide.proto;
+
+import "components/optimization_guide/proto/common_types.proto";
+
+option optimize_for = LITE_RUNTIME;
+option features.field_presence = IMPLICIT;
+
+// A manifest contains definitions for several types of objects, keyed by
+// unique identifier strings.
+// These names should not be referenced outside of the manifest, and a manifest
+// should only define a single object with a given name, even across different
+// types of objects.
+
+// An asset that can be requested from components updater.
+message OnDemandComponent {
+  // The public key of the component.
+  string public_key = 1;
+  // The target version of the component.
+  string target_version = 2;
+}
+
+// Defines the set of additional assets the client can request as needed.
+// Assets are usually components, but this could be extended to include other
+// things if needed (such as files on disk in local development).
+// A special "manifest" asset is implicitly defined to refer to the manifest
+// component itself.
+message Assets {
+  // Defines a set of component-updater components, keyed by identifier strings.
+  map<string, OnDemandComponent> on_demand_components = 1;
+}
+
+// A reference to a file within an asset.
+message FileReference {
+  // The identifier of the asset (defined by the Assets message) that contains
+  // the file.
+  string asset_id = 1;
+  // The relative path of the file within the asset, e.g. "path/to/file".
+  string relative_path = 2;
+}
+
+// A recipe for a base model (may or may not be general purpose).
+message BaseModelRecipe {
+  FileReference weights_file = 1;
+
+  enum BackendType {
+    BACKEND_TYPE_UNSPECIFIED = 0;
+    BACKEND_TYPE_GPU = 1;
+    BACKEND_TYPE_CPU = 2;
+  }
+  BackendType backend_type = 2;
+
+  enum PerformanceHint {
+    PERFORMANCE_HINT_UNSPECIFIED = 0;
+    PERFORMANCE_HINT_FASTEST_INFERENCE = 1;
+    PERFORMANCE_HINT_HIGHEST_QUALITY = 2;
+  }
+  PerformanceHint performance_hint = 3;
+
+  // Specifies the adaptation ranks that are supported by this model.
+  repeated int32 supported_adaptation_ranks = 4;
+  int32 max_tokens = 5;
+}
+
+// A recipe for a LoRA model.
+message AdaptationRecipe {
+  // The identifier of a BaseModelRecipe for this adaptation.
+  string base_model_recipe_id = 1;
+  FileReference weights_file = 2;
+}
+
+// A recipe for a safety model.
+message SafetyModelRecipe {
+  FileReference weights_file = 1;
+}
+
+// A recipe for a ModelSolution provided by the ModelBroker.
+message SolutionRecipe {
+  // The identifier of a BaseModelRecipe or AdaptationRecipe that provides the
+  // model for this use case.
+  string model_recipe_id = 1;
+  // The identifier of a SafetyModelRecipe that provides the safety model for
+  // this use case.  May be empty if no safety model is required.
+  string safety_model_recipe_id = 2 [features.field_presence = EXPLICIT];
+  // Which file contains the configuration proto for this use case.
+  // e.g. an "OnDeviceModelExecutionFeatureConfig"
+  FileReference config_file = 3;
+}
+
+// A collection of recipes that can be loaded from Assets.
+// The recipes are keyed by manifest-internal IDs.
+// The keys for different types of recipes should not overlap.
+message Recipes {
+  // Defines a set of base model recipes, keyed by identifier strings.
+  map<string, BaseModelRecipe> base_models = 1;
+  // Defines a set of adaptation recipes, keyed by identifier strings.
+  map<string, AdaptationRecipe> adaptations = 2;
+  // Defines a set of safety model recipes, keyed by identifier strings.
+  map<string, SafetyModelRecipe> safety_models = 3;
+  // Defines a set of solution recipes, keyed by identifier strings.
+  map<string, SolutionRecipe> solutions = 4;
+}
+
+message UseCaseConfig {
+  // The identifier of the solution recipe that implements this use case for
+  // the device category.
+  string solution_recipe_id = 1;
+
+  // This could be extended to include multiple solution recipe IDs per use
+  // case, if the Broker needs to select solutions for e.g. memory pressure.
+}
+
+// Device category specific configuration.
+message DeviceCategoryConfig {
+  // A mapping from a BrokerClient-visible use-case name to the configuration
+  // for that use case.
+  map<string, UseCaseConfig> use_cases = 1;
+
+  // A collection of configs that can be served by the Broker.
+  // These are opaque to the Broker, and are intended to allow the feature to
+  // configure how use cases are selected based on feature specific parameters.
+  map<string, Any> feature_configs = 2;
+}
+
+// The top-level message in the manifest file of manifest component.
+message Manifest {
+  // A list of on-demand downloadable assets (components updater components)
+  Assets assets = 1;
+  // The recipes that can be constructed from the assets.
+  Recipes recipes = 2;
+  // Device category specific configuration, which configures the externally
+  // visible use-cases. The device category names are hardcoded in chromium.
+  // See DeviceCategoryToString.
+  map<string, DeviceCategoryConfig> category_configs = 3;
+}

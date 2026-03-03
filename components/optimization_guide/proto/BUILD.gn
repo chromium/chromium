@@ -59,6 +59,7 @@ proto_library("optimization_guide_proto") {
     "history_query_intent_model_metadata.proto",
     "icon_view_metadata.proto",
     "loading_predictor_metadata.proto",
+    "manifest.proto",
     "model_execution.proto",
     "model_quality_metadata.proto",
     "model_quality_service.proto",
