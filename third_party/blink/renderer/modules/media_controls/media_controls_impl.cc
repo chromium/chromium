@@ -34,7 +34,9 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mutation_observer_init.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -1035,6 +1037,7 @@ void MediaControlsImpl::MaybeShow() {
   panel_->SetIsWanted(true);
   panel_->SetIsDisplayed(true);
 
+  UpdateContainerDisplay();
   UpdateCurrentTimeDisplay();
 
   if (overlay_play_button_ && !is_paused_for_scrubbing_)
@@ -1085,6 +1088,31 @@ void MediaControlsImpl::Hide() {
   // when the media element is connected.
   if (MediaElement().isConnected())
     UpdateActingAsAudioControls();
+
+  UpdateContainerDisplay();
+}
+
+void MediaControlsImpl::UpdateContainerDisplay() {
+  if (!RuntimeEnabledFeatures::HideVideoControlsWhenUnneededEnabled()) {
+    return;
+  }
+
+  // When native controls are not shown and no overlay needs the container, hide
+  // it entirely to avoid creating layers that interfere with hit-test ordering.
+  bool should_hide =
+      !MediaElement().ShouldShowControls() && !overlay_cast_button_->IsWanted();
+  bool is_hidden = InlineStyle() && InlineStyle()->GetPropertyValue(
+                                        CSSPropertyID::kDisplay) == "none";
+
+  if (should_hide == is_hidden) {
+    return;
+  }
+
+  if (should_hide) {
+    SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
+  } else {
+    RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  }
 }
 
 bool MediaControlsImpl::IsVisible() const {
@@ -1094,6 +1122,16 @@ bool MediaControlsImpl::IsVisible() const {
 void MediaControlsImpl::MaybeShowOverlayPlayButton() {
   if (overlay_play_button_)
     overlay_play_button_->SetIsDisplayed(true);
+}
+
+void MediaControlsImpl::MaybeShowOverlayCastButton() {
+  if (RuntimeEnabledFeatures::HideVideoControlsWhenUnneededEnabled()) {
+    // Ensure the container is visible before TryShowOverlay(), which needs
+    // layout to determine if the button is covered by another element.
+    RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+  }
+
+  overlay_cast_button_->TryShowOverlay();
 }
 
 void MediaControlsImpl::MakeOpaque() {
@@ -1311,6 +1349,7 @@ void MediaControlsImpl::RefreshCastButtonVisibilityWithoutUpdate() {
   if (!ShouldShowCastButton(MediaElement())) {
     cast_button_->SetIsWanted(false);
     overlay_cast_button_->SetIsWanted(false);
+    UpdateContainerDisplay();
     return;
   }
 
@@ -1331,19 +1370,22 @@ void MediaControlsImpl::RefreshCastButtonVisibilityWithoutUpdate() {
     // non-cast changes (e.g., resize) occur.  If the panel button
     // is shown, however, compute...() will take control of the
     // overlay cast button if it needs to hide it from the panel.
-      overlay_cast_button_->TryShowOverlay();
+    MaybeShowOverlayCastButton();
   } else {
     overlay_cast_button_->SetIsWanted(false);
   }
+  UpdateContainerDisplay();
 }
 
 void MediaControlsImpl::ShowOverlayCastButtonIfNeeded() {
   if (!ShouldShowCastOverlayButton(MediaElement())) {
     overlay_cast_button_->SetIsWanted(false);
+    UpdateContainerDisplay();
     return;
   }
 
-  overlay_cast_button_->TryShowOverlay();
+  MaybeShowOverlayCastButton();
+  UpdateContainerDisplay();
   ResetHideMediaControlsTimer();
 }
 

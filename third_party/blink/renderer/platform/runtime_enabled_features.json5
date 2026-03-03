@@ -3032,6 +3032,13 @@
       status: "experimental",
     },
     {
+      // Kill switch for setting `display: none` on the media controls
+      // container when it is not needed.
+      // Lands in M147 and can be removed in M149. https://crbug.com/40591804
+      name: "HideVideoControlsWhenUnneeded",
+      status: "stable",
+    },
+    {
       name: "HighlightPointerEvents",
     },
     {

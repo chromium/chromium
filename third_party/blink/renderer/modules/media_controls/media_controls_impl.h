@@ -265,8 +265,10 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void MakeTransparent();
   bool IsVisible() const;
 
-  // If the overlay play button is present then make sure it is displayed.
+  // If the overlay play/cast buttons are present then make
+  // sure they are displayed.
   void MaybeShowOverlayPlayButton();
+  void MaybeShowOverlayCastButton();
 
   void UpdatePlayState();
 
@@ -341,6 +343,11 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   void MaybeJump(int);
   bool IsOnLeftSide(Event*);
   void TapTimerFired(TimerBase*);
+
+  // Hides or shows the container depending on whether the native controls
+  // or the overlay cast button need to be shown, to prevent shadow DOM paint
+  // layers from interfering with hit-test ordering.
+  void UpdateContainerDisplay();
 
   // Internal cast related methods.
   void RemotePlaybackStateChanged();
