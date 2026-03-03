@@ -39,7 +39,6 @@ import java.util.concurrent.TimeoutException;
 // test suite. TODO(crbug.com/377778493): To fix this test to work properly w/ EdgeToEdge.
 @Features.DisableFeatures({
     ChromeFeatureList.DRAW_CUTOUT_EDGE_TO_EDGE,
-    ChromeFeatureList.EDGE_TO_EDGE_BOTTOM_CHIN
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/376095153
 public class DisplayCutoutTest {
