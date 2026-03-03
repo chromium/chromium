@@ -56,20 +56,16 @@ class NET_EXPORT CertVerifyProc
     // Note: has no effect if VERIFY_DISABLE_NETWORK_FETCHES is set.
     VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS = 1 << 1,
 
-    // If set, certificates with SHA-1 signatures will be allowed, but only if
-    // they are issued by non-public trust anchors.
-    VERIFY_ENABLE_SHA1_LOCAL_ANCHORS = 1 << 2,
-
     // Disable network fetches during verification. This will override
     // VERIFY_REV_CHECKING_ENABLED and
     // VERIFY_REV_CHECKING_REQUIRED_LOCAL_ANCHORS if they are also specified.
     // (Note that this entirely disables the online revocation/AIA code paths.
     // Theoretically we could still check for cached results.)
-    VERIFY_DISABLE_NETWORK_FETCHES = 1 << 3,
+    VERIFY_DISABLE_NETWORK_FETCHES = 1 << 2,
 
     // If set, Certificate Transparency requirements are evaluated in a
     // stricter fashion as required by Signed Exchanges.
-    VERIFY_SXG_CT_REQUIREMENTS = 1 << 4,
+    VERIFY_SXG_CT_REQUIREMENTS = 1 << 3,
 
     // Also update GetNetConstants() in net/log/net_log_util.cc when updating
     // this enum.

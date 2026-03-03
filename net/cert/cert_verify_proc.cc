@@ -525,14 +525,26 @@ int CertVerifyProc::Verify(X509Certificate* cert,
       rv = MapCertStatusToNetError(verify_result->cert_status);
   }
 
-  if (verify_result->has_sha1)
-    verify_result->cert_status |= CERT_STATUS_SHA1_SIGNATURE_PRESENT;
-
   // Flag certificates using weak signature algorithms.
-  bool sha1_allowed = (flags & VERIFY_ENABLE_SHA1_LOCAL_ANCHORS) &&
-                      !verify_result->is_issued_by_known_root;
-  if (!sha1_allowed && verify_result->has_sha1) {
-    verify_result->cert_status |= CERT_STATUS_WEAK_SIGNATURE_ALGORITHM;
+  if (verify_result->has_sha1) {
+    // TODO(crbug.com/487349971): remove CERT_STATUS_SHA1_SIGNATURE_PRESENT.
+    // This is a non-error status to indicate the cases when a verification
+    // with a SHA-1 certificate could succeed when
+    // VERIFY_ENABLE_SHA1_LOCAL_ANCHORS was set. It no longer has a purpose
+    // now that SHA-1 is never allowed.
+    // TODO(crbug.com/487349971): remove the CertVerifyResult has_sha1 field
+    // and the CERT_STATUS_WEAK_SIGNATURE_ALGORITHM status. has_sha1 is only
+    // used to smuggle some state from InspectSignatureAlgorithmForCert up to
+    // here so that we can set a different status. We could just make
+    // InspectSignatureAlgorithmForCert fail on a SHA-1 sigalg instead of
+    // having a dedicated cert status code / error code for weak signature. In
+    // general, the underlying verifier has likely already failed due to the
+    // SHA-1 signature with a CERT_STATUS_INVALID error, so all we are doing
+    // here is adding an additional, lower priority error status. (The only
+    // case this is check should be load-bearing is when cronet is running on
+    // an ancient android version that wouldn't fail on SHA-1 itself.)
+    verify_result->cert_status |= CERT_STATUS_WEAK_SIGNATURE_ALGORITHM |
+                                  CERT_STATUS_SHA1_SIGNATURE_PRESENT;
     // Avoid replacing a more serious error, such as an OS/library failure,
     // by ensuring that if verification failed, it failed with a certificate
     // error.

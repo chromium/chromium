@@ -5351,18 +5351,9 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1) {
       /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-
-  // VERIFY_ENABLE_SHA1_LOCAL_ANCHORS should not impact this.
-  flags = CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS;
-  verify_result.Reset();
-  error = verify_proc->Verify(
-      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
 }
 
-TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
+TEST(CertVerifyProcTest, RejectsPrivateSHA1) {
   scoped_refptr<X509Certificate> cert(
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
   ASSERT_TRUE(cert);
@@ -5372,22 +5363,12 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1UnlessFlag) {
   result.is_issued_by_known_root = false;
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
-  // SHA-1 should be rejected by default for private roots...
   int flags = 0;
   CertVerifyResult verify_result;
   int error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-
-  // ... unless VERIFY_ENABLE_SHA1_LOCAL_ANCHORS was supplied.
-  flags = CertVerifyProc::VERIFY_ENABLE_SHA1_LOCAL_ANCHORS;
-  verify_result.Reset();
-  error = verify_proc->Verify(
-      cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
-      /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsOk());
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
 }
 
