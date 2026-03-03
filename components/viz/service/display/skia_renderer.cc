@@ -1097,9 +1097,7 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
 #endif
 
   if (buffer_queue_) {
-    gfx::Rect damage_rect = output_frame.sub_buffer_rect.value_or(
-        gfx::Rect(surface_size_for_swap_buffers()));
-    buffer_queue_->SwapBuffers(damage_rect);
+    buffer_queue_->SwapBuffers();
   }
 
   skia_output_surface_->SwapBuffers(std::move(output_frame));
@@ -1123,8 +1121,9 @@ void SkiaRenderer::SwapBuffers(SwapFrameData swap_frame_data) {
     // Note that we still call BufferQueue::SwapBuffers() even when we suspect
     // our buffer queue is idle because there might still be in-flight frames
     // that need to be managed.
-    protected_buffer_queue_->SwapBuffers(
+    protected_buffer_queue_->UpdateBufferDamage(
         gfx::Rect(kMaxProtectedContentWidth, kMaxProtectedContentHeight));
+    protected_buffer_queue_->SwapBuffers();
   }
 
   MaybeFreeProtectedPool();
@@ -1142,9 +1141,6 @@ void SkiaRenderer::SwapBuffersSkipped() {
 
   pending_overlay_locks_.pop_back();
   skia_output_surface_->SwapBuffersSkipped(root_pass_damage_rect);
-  if (buffer_queue_) {
-    buffer_queue_->SwapBuffersSkipped(root_pass_damage_rect);
-  }
   swap_buffer_rect_ = gfx::Rect();
 
   FlushOutputSurface();
@@ -3422,6 +3418,12 @@ void SkiaRenderer::FinishDrawingRenderPass() {
   // Pops a layer that is pushed at the start of |BeginDrawingRenderPass|. This
   // applies color space conversion for HDR passes, if present.
   hdr_color_conversion_layer_reset_.reset();
+
+  // TODO(crbug.com/489157990) Use the render pass update rect, which contains
+  // expanded backdrop filter and delegated ink damage.
+  if (buffer_queue_ && is_root_render_pass) {
+    buffer_queue_->UpdateBufferDamage(current_frame()->root_damage_rect);
+  }
 
   current_canvas_ = nullptr;
   // Non-root render passes that are scheduled as overlays will be painted in

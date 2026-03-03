@@ -63,8 +63,7 @@ gfx::Rect BufferQueue::CurrentBufferDamage() const {
   return gfx::Rect(size_);
 }
 
-void BufferQueue::SwapBuffers(const gfx::Rect& damage) {
-  UpdateBufferDamage(damage);
+void BufferQueue::SwapBuffers() {
   if (current_buffer_) {
     current_buffer_->damage = gfx::Rect();
   }
@@ -105,10 +104,6 @@ void BufferQueue::SwapBuffersComplete(bool did_present) {
       }
     }
   }
-}
-
-void BufferQueue::SwapBuffersSkipped(const gfx::Rect& damage) {
-  UpdateBufferDamage(damage);
 }
 
 bool BufferQueue::Reshape(const gfx::Size& size,
