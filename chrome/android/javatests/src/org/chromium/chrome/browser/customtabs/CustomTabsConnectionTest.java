@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.content.ComponentName;
@@ -39,6 +38,7 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -150,7 +150,7 @@ public class CustomTabsConnectionTest {
 
     @Test
     @SmallTest
-    @Restriction(RESTRICTION_TYPE_LOW_END_DEVICE)
+    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
     public void testDoNotCreateSpareRendererOnLowEnd() throws Exception {
         CustomTabsTestUtils.warmUpAndWait();
         // On UI thread because:
@@ -442,7 +442,7 @@ public class CustomTabsConnectionTest {
 
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
 
-        final OnEvaluateJavaScriptResultHelper JsHelper = new OnEvaluateJavaScriptResultHelper();
+        final OnEvaluateJavaScriptResultHelper jsHelper = new OnEvaluateJavaScriptResultHelper();
 
         // Launch a custom tab and load the url.
         Assert.assertTrue("Failed warmup()", mCustomTabsConnection.warmup());
@@ -460,15 +460,15 @@ public class CustomTabsConnectionTest {
         // Set a cookie.
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    JsHelper.evaluateJavaScriptForTests(
+                    jsHelper.evaluateJavaScriptForTests(
                             normalTab.getWebContents(),
                             "document.cookie = \"foo=bar; max-age = 1000 \";" + " document.cookie");
                 });
 
-        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
-        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        jsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", jsHelper.hasValue());
         // Verify the tab has the expected cookie.
-        Assert.assertEquals("\"foo=bar\"", JsHelper.getJsonResultAndClear());
+        Assert.assertEquals("\"foo=bar\"", jsHelper.getJsonResultAndClear());
         mCustomTabActivityTestRule.finishActivity();
 
         // Launch the first hidden tab. This tab should use a separate storage partition and
@@ -505,16 +505,16 @@ public class CustomTabsConnectionTest {
                 50);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    JsHelper.evaluateJavaScriptForTests(
+                    jsHelper.evaluateJavaScriptForTests(
                             hiddenTab.getWebContents(),
                             "document.cookie = \"foo_hidden=bar; max-age =1000 \";"
                                     + " document.cookie");
                 });
 
-        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
-        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        jsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", jsHelper.hasValue());
         // The hidden tab should only see the cookie it set.
-        Assert.assertEquals("\"foo_hidden=bar\"", JsHelper.getJsonResultAndClear());
+        Assert.assertEquals("\"foo_hidden=bar\"", jsHelper.getJsonResultAndClear());
 
         // Launch another hidden tab. Doing this closes the first hidden tab and causes the cookie
         // jar to be cleared.
@@ -542,14 +542,14 @@ public class CustomTabsConnectionTest {
                 50);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    JsHelper.evaluateJavaScriptForTests(
+                    jsHelper.evaluateJavaScriptForTests(
                             hiddenTab2.getWebContents(), "document.cookie=\"foo_hidden2=baz\"");
                 });
 
-        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
-        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        jsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", jsHelper.hasValue());
         // The second hidden tab should only have the cookie it set.
-        Assert.assertEquals("\"foo_hidden2=baz\"", JsHelper.getJsonResultAndClear());
+        Assert.assertEquals("\"foo_hidden2=baz\"", jsHelper.getJsonResultAndClear());
 
         // Launch the second custom tab. Because there is already a hidden tab for the same url this
         // custom tab should just re-use the hidden tab. This means that this tab will use the same
@@ -563,14 +563,14 @@ public class CustomTabsConnectionTest {
                                 Matchers.is("Activity test page")));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    JsHelper.evaluateJavaScriptForTests(
+                    jsHelper.evaluateJavaScriptForTests(
                             normalTab2.getWebContents(), "document.cookie");
                 });
 
-        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
-        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        jsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", jsHelper.hasValue());
         // This custom tab should see the third cookie set.
-        Assert.assertEquals("\"foo_hidden2=baz\"", JsHelper.getJsonResultAndClear());
+        Assert.assertEquals("\"foo_hidden2=baz\"", jsHelper.getJsonResultAndClear());
         mCustomTabActivityTestRule.finishActivity();
 
         // Finally, launch a third custom tab. Because there isn't an associated mayLaunchUrl this
@@ -588,14 +588,14 @@ public class CustomTabsConnectionTest {
                                 Matchers.is("Activity test page")));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    JsHelper.evaluateJavaScriptForTests(
+                    jsHelper.evaluateJavaScriptForTests(
                             normalTab3.getWebContents(), "document.cookie");
                 });
 
-        JsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
-        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", JsHelper.hasValue());
+        jsHelper.waitUntilHasValue(5, TimeUnit.SECONDS);
+        Assert.assertTrue("Failed to retrieve JavaScript evaluation results.", jsHelper.hasValue());
         // This custom tab should see the third cookie set.
-        Assert.assertEquals("\"foo=bar\"", JsHelper.getJsonResultAndClear());
+        Assert.assertEquals("\"foo=bar\"", jsHelper.getJsonResultAndClear());
     }
 
     private void assertSpareTabNotNullAndDestroy() {

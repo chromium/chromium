@@ -6,7 +6,6 @@ package org.chromium.components.messages;
 
 import static android.view.View.VISIBLE;
 
-import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_LOW_END_DEVICE;
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
 import android.app.Activity;
@@ -43,6 +42,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -571,7 +571,7 @@ public class MessageBannerRenderTest {
     @Test
     @SmallTest
     @Feature({"RenderTest", "Messages"})
-    @Restriction({RESTRICTION_TYPE_LOW_END_DEVICE})
+    @DisabledTest(message = "Was restricted to low end devices, crbug.com/489156901")
     public void testBasic_lowEnd() throws Exception {
         Drawable drawable =
                 ApiCompatibilityUtils.getDrawable(
