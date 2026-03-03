@@ -155,6 +155,9 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration configuration = [super appConfigurationForTestCase];
+  if ([self isRunningTest:@selector(testSaveToDriveDisplayedWhenSignedOut)]) {
+    configuration.features_enabled.push_back(kIOSSaveToDriveSignedOut);
+  }
   if ([self isRunningTest:@selector(testCanRetryDownloadToDrive)]) {
     const std::string commandLineSwitch =
         std::string(kTestDriveFileUploaderCommandLineSwitch);
@@ -377,6 +380,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
                                               kWaitForDownloadTimeout];
 }
 
+// TODO(crbug.com/481988302): Remove this test once the "Save to Drive for
+// signed out users" experiment is fully launched.
 // Tests that "DOWNLOAD" button is presented instead of "SAVE..." if signed-out.
 - (void)testSignedOutDisablesSaveToDrive {
   // Load a page with a download button and tap the download button.
@@ -385,6 +390,22 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
   [ChromeEarlGrey tapWebStateElementWithID:@"download"];
   // Check that the "DOWNLOAD" button is presented instead of "SAVE...".
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:DownloadButton()];
+}
+
+// Test that the account picker is displayed when signed out.
+- (void)testSaveToDriveDisplayedWhenSignedOut {
+  // Load a page with a download button and tap the download button.
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+  // Check that the "SAVE..." button is presented instead of the "DOWNLOAD"
+  // button.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:SaveEllipsisButton()];
+  // Tap that the "SAVE..." button.
+  [[EarlGrey selectElementWithMatcher:SaveEllipsisButton()]
+      performAction:grey_tap()];
+  // Wait for the account picker to appear.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:AccountPicker()];
 }
 
 // Tests that "DOWNLOAD" button is presented instead of "SAVE..." in Incognito.

@@ -58,10 +58,12 @@ bool IsSaveToDriveAvailable(bool is_incognito,
     return false;
   }
 
-  // Check user is signed in.
-  if (!identity_manager ||
-      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    return false;
+  if (!base::FeatureList::IsEnabled(kIOSSaveToDriveSignedOut)) {
+    // Check user is signed in.
+    if (!identity_manager ||
+        !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+      return false;
+    }
   }
 
   return true;

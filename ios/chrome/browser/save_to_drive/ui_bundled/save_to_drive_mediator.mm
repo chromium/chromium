@@ -116,8 +116,11 @@ void StorageQuotaCompletionHelper(__weak SaveToDriveMediator* mediator,
                            ? FileDestination::kDrive
                            : FileDestination::kFiles;
 
-    CHECK(_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
-          base::NotFatalUntil::M152);
+    CHECK(
+        base::FeatureList::IsEnabled(kIOSSaveToDriveSignedOut) ||
+            _identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin),
+        base::NotFatalUntil::M152);
+
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
