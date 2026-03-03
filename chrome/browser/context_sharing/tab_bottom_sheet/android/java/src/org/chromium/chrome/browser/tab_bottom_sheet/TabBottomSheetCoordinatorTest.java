@@ -16,7 +16,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.view.View;
 import android.widget.FrameLayout;
 
 import androidx.test.core.app.ApplicationProvider;
@@ -48,26 +47,22 @@ public class TabBottomSheetCoordinatorTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private BottomSheetController mMockBottomSheetController;
+    @Mock private CoBrowseViews mCoBrowseViews;
     @Captor private ArgumentCaptor<TabBottomSheetContent> mBottomSheetContentArgumentCaptor;
     @Captor private ArgumentCaptor<BottomSheetObserver> mBottomSheetObserverArgumentCaptor;
 
     private Context mContext;
     private TabBottomSheetCoordinator mCoordinator;
     private PropertyModel mCoordinatorModel;
-    private View mToolbarView;
-    private View mWebUiView;
-    private View mFuseboxView;
 
     @Before
     public void setUp() {
         mContext = ApplicationProvider.getApplicationContext();
 
-        mCoordinator = new TabBottomSheetCoordinator(mContext, mMockBottomSheetController);
-        mCoordinatorModel = mCoordinator.getModelForTesting();
+        when(mCoBrowseViews.getView()).thenReturn(new FrameLayout(mContext));
 
-        mToolbarView = new FrameLayout(mContext);
-        mWebUiView = new FrameLayout(mContext);
-        mFuseboxView = new FrameLayout(mContext);
+        mCoordinator = new TabBottomSheetCoordinator(mMockBottomSheetController, mCoBrowseViews);
+        mCoordinatorModel = mCoordinator.getModelForTesting();
     }
 
     @After
@@ -85,7 +80,7 @@ public class TabBottomSheetCoordinatorTest {
     private BottomSheetObserver simulateShowSuccessAndGetObserver() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(true);
-        mCoordinator.tryToShowBottomSheet(mToolbarView, mWebUiView, mFuseboxView);
+        mCoordinator.tryToShowBottomSheet();
         verify(mMockBottomSheetController)
                 .addObserver(mBottomSheetObserverArgumentCaptor.capture());
         BottomSheetObserver coordinatorObserver = mBottomSheetObserverArgumentCaptor.getValue();
@@ -108,7 +103,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testShowBottomSheet_Fails_Cleanup() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.tryToShowBottomSheet(mToolbarView, mWebUiView, mFuseboxView);
+        mCoordinator.tryToShowBottomSheet();
         verify(mMockBottomSheetController)
                 .requestShowContent(any(BottomSheetContent.class), eq(true));
         verify(mMockBottomSheetController, never()).addObserver(any(BottomSheetObserver.class));
@@ -131,7 +126,7 @@ public class TabBottomSheetCoordinatorTest {
     public void testDestroy_WhenNotShown_CleansUp() {
         when(mMockBottomSheetController.requestShowContent(any(BottomSheetContent.class), eq(true)))
                 .thenReturn(false);
-        mCoordinator.tryToShowBottomSheet(mToolbarView, mWebUiView, mFuseboxView);
+        mCoordinator.tryToShowBottomSheet();
         mCoordinator.destroy();
 
         verify(mMockBottomSheetController, never()).hideContent(any(), anyBoolean(), anyInt());

@@ -49,6 +49,7 @@ class GlicSidePanelCoordinatorAndroid : public GlicSidePanelCoordinator {
   base::CallbackListSubscription did_activate_subscription_;
   base::CallbackListSubscription will_deactivate_subscription_;
   base::android::ScopedJavaGlobalRef<jobject> java_interface_;
+  base::android::ScopedJavaGlobalRef<jobject> co_browse_views_;
 };
 
 }  // namespace glic

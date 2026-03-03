@@ -4,14 +4,10 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import android.content.Context;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -22,9 +18,9 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 /** Coordinator for the tab bottom sheet. */
 @NullMarked
 public class TabBottomSheetCoordinator {
-    private final Context mContext;
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
+    private final CoBrowseViews mCoBrowseViews;
 
     private @Nullable TabBottomSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
@@ -34,37 +30,24 @@ public class TabBottomSheetCoordinator {
     private boolean mIsSheetCurrentlyManagedByController;
 
     /**
-     * @param context The Android {@link Context}.
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
+     * @param coBrowseViews The views to show in the bottom sheet.
      */
-    TabBottomSheetCoordinator(Context context, BottomSheetController bottomSheetController) {
-        mContext = context;
+    TabBottomSheetCoordinator(
+            BottomSheetController bottomSheetController, CoBrowseViews coBrowseViews) {
         mBottomSheetController = bottomSheetController;
+        mCoBrowseViews = coBrowseViews;
 
         mModel = TabBottomSheetProperties.createDefaultModel();
     }
 
     /** Tries to show the bottom sheet. */
-    boolean tryToShowBottomSheet(
-            @Nullable View toolbarView, View webUiView, @Nullable View fuseboxView) {
+    boolean tryToShowBottomSheet() {
         if (mIsSheetCurrentlyManagedByController) {
             return false;
         }
 
-        // Build the bottom sheet.
-        mContentView = LayoutInflater.from(mContext).inflate(R.layout.tab_bottom_sheet, null);
-        ViewGroup toolbarContainer = mContentView.findViewById(R.id.toolbar_container);
-        ViewGroup webUiContainer = mContentView.findViewById(R.id.web_ui_container);
-        ViewGroup fuseboxContainer = mContentView.findViewById(R.id.fusebox_container);
-
-        // Add the views to the bottom sheet.
-        if (toolbarView != null) {
-            toolbarContainer.addView(toolbarView);
-        }
-        webUiContainer.addView(webUiView);
-        if (fuseboxView != null) {
-            fuseboxContainer.addView(fuseboxView);
-        }
+        mContentView = mCoBrowseViews.getView();
 
         mViewBinder =
                 PropertyModelChangeProcessor.create(
@@ -107,17 +90,10 @@ public class TabBottomSheetCoordinator {
     }
 
     private void cleanupSheetResources() {
-        // If we inflated content and attached external views, remove them from
-        // their containers so those views can be reused later.
-        if (mContentView != null) {
-            ViewGroup toolbarContainer = mContentView.findViewById(R.id.toolbar_container);
-            ViewGroup webUiContainer = mContentView.findViewById(R.id.web_ui_container);
-            ViewGroup fuseboxContainer = mContentView.findViewById(R.id.fusebox_container);
-            if (toolbarContainer != null) toolbarContainer.removeAllViews();
-            if (webUiContainer != null) webUiContainer.removeAllViews();
-            if (fuseboxContainer != null) fuseboxContainer.removeAllViews();
-            mContentView = null;
+        if (mCoBrowseViews != null) {
+            mCoBrowseViews.destroy();
         }
+
         if (mSheetObserver != null && mBottomSheetController != null) {
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;

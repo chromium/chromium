@@ -12,7 +12,9 @@ import org.chromium.ui.base.WindowAndroid;
 /** Utility methods used by the Tab Bottom Sheet components. */
 @NullMarked
 public final class TabBottomSheetUtils {
-    private static final org.chromium.base.UnownedUserDataKey<TabBottomSheetManager> KEY =
+    private static final org.chromium.base.UnownedUserDataKey<TabBottomSheetManager> MANAGER_KEY =
+            new org.chromium.base.UnownedUserDataKey<>();
+    private static final org.chromium.base.UnownedUserDataKey<CoBrowseViewFactory> FACTORY_KEY =
             new org.chromium.base.UnownedUserDataKey<>();
 
     private TabBottomSheetUtils() {}
@@ -28,15 +30,30 @@ public final class TabBottomSheetUtils {
     // Attach TabBottomSheetManager to WindowAndroid.
     // This allows TabBottomSheetManager to be retrieved statically.
     static void attachManagerToWindow(WindowAndroid windowAndroid, TabBottomSheetManager manager) {
-        KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), manager);
+        MANAGER_KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), manager);
     }
 
     // Detach TabBottomSheetManager from WindowAndroid.
     static void detachManagerFromWindow(WindowAndroid windowAndroid) {
-        KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
+        MANAGER_KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
     }
 
     static @Nullable TabBottomSheetManager getManagerFromWindow(WindowAndroid windowAndroid) {
-        return KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+        return MANAGER_KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
+    }
+
+    // Attach CoBrowseViewFactory to WindowAndroid.
+    // This allows CoBrowseViewFactory to be retrieved statically.
+    static void attachFactoryToWindow(WindowAndroid windowAndroid, CoBrowseViewFactory factory) {
+        FACTORY_KEY.attachToHost(windowAndroid.getUnownedUserDataHost(), factory);
+    }
+
+    // Detach CoBrowseViewFactory from WindowAndroid.
+    static void detachFactoryFromWindow(WindowAndroid windowAndroid) {
+        FACTORY_KEY.detachFromHost(windowAndroid.getUnownedUserDataHost());
+    }
+
+    static @Nullable CoBrowseViewFactory getFactoryFromWindow(WindowAndroid windowAndroid) {
+        return FACTORY_KEY.retrieveDataFromHost(windowAndroid.getUnownedUserDataHost());
     }
 }

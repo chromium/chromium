@@ -170,6 +170,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab_bottom_sheet.CoBrowseViewFactory;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetFusebox.TabBottomSheetFuseboxConfig;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetManager;
 import org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetUtils;
@@ -313,6 +314,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private @Nullable LoadingFullscreenCoordinator mLoadingFullscreenCoordinator;
     private @Nullable BookmarkOpener mBookmarkOpener;
     private @Nullable TabBottomSheetManager mTabBottomSheetManager;
+    private @Nullable CoBrowseViewFactory mCoBrowseViewFactory;
     private final @NonNull MonotonicObservableSupplier<BookmarkManagerOpener>
             mBookmarkManagerOpenerSupplier;
     private @NonNull AdvancedProtectionCoordinator mAdvancedProtectionCoordinator;
@@ -821,6 +823,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mTabBottomSheetManager != null) {
             mTabBottomSheetManager.destroy();
             mTabBottomSheetManager = null;
+        }
+
+        if (mCoBrowseViewFactory != null) {
+            mCoBrowseViewFactory.destroy();
+            mCoBrowseViewFactory = null;
         }
 
         if (mCrossDeviceSettingImporter != null) {
@@ -1677,15 +1684,16 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             contentView.findViewById(R.id.control_container),
                             contentView.findViewById(R.id.bottom_container),
                             omniboxActionDelegate);
-            mTabBottomSheetManager =
-                    new TabBottomSheetManager(
+            mCoBrowseViewFactory =
+                    new CoBrowseViewFactory(
                             mActivity,
                             fuseboxConfig,
                             mProfileSupplier.asNonNull(),
                             mWindowAndroid,
                             mActivityLifecycleDispatcher,
-                            mSnackbarManagerSupplier.get(),
-                            getBottomSheetController());
+                            mSnackbarManagerSupplier.get());
+            mTabBottomSheetManager =
+                    new TabBottomSheetManager(mWindowAndroid, getBottomSheetController());
         }
     }
 
