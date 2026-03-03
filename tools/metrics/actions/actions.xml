@@ -30435,6 +30435,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileSettingsCleanupStarted">
+  <owner>cheickcisse@google.com</owner>
+  <owner>gambard@chromium.org</owner>
+  <description>
+    Reported when the settings cleanup started. iOS only.
+  </description>
+</action>
+
 <action name="MobileSettingsClose">
   <owner>edchin@chromium.org</owner>
   <owner>gambard@chromium.org</owner>

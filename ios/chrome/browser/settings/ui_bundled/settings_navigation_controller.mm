@@ -171,7 +171,10 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 @end
 
-@implementation SettingsNavigationController
+@implementation SettingsNavigationController {
+  // Boolean to track if reportDismissalUserAction has been called.
+  BOOL _dismissalUserActionReported;
+}
 
 #pragma mark - SettingsNavigationController methods.
 
@@ -662,7 +665,13 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (void)cleanUpSettings {
   // Notify all controllers of a Settings dismissal.
+  base::RecordAction(base::UserMetricsAction("MobileSettingsCleanupStarted"));
   for (UIViewController* controller in [self viewControllers]) {
+    if (!_dismissalUserActionReported &&
+        [controller conformsToProtocol:@protocol(SettingsControllerProtocol)]) {
+      [controller performSelector:@selector(reportDismissalUserAction)];
+    }
+
     if ([controller respondsToSelector:@selector(settingsWillBeDismissed)]) {
       [controller performSelector:@selector(settingsWillBeDismissed)];
     }
@@ -699,6 +708,7 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
       [controller performSelector:@selector(reportDismissalUserAction)];
     }
   }
+  _dismissalUserActionReported = YES;
 
   [self.settingsNavigationDelegate closeSettings];
 }
