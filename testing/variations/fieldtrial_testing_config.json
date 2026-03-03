@@ -12425,7 +12425,7 @@
             ]
         }
     ],
-    "HappyEyeballsV3": [
+    "HappyEyeballsV2": [
         {
             "platforms": [
                 "android",
@@ -12436,12 +12436,9 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledFirstJob",
-                    "params": {
-                        "tcp_based_attempt_delay_behavior": "first_job"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "HappyEyeballsV3"
+                        "HappyEyeballsV2"
                     ]
                 }
             ]
