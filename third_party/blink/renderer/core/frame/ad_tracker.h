@@ -205,12 +205,12 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   bool WasApiCalledByNonAdScript(v8::Isolate* isolate,
                                  MonkeyPatchableApi api) const;
 
-  // Helper for `IsAdScriptInStack` that checks if a non-ad script at the top
-  // of the stack is a monkey patch called by an ad script.
-  // `ad_script_index` is the index of the ad script in the stack.
-  bool WasApiCalledByAdScript(v8::Isolate* isolate,
-                              MonkeyPatchableApi api,
-                              int ad_script_index) const;
+  // Returns true if `api` is a monkeyaptched function and matches `function` in
+  // the `isolate`'s current context.
+  // TODO(jkarlin): This function really wants a context, not an isolate.
+  bool IsFunctionAMonkeyPatch(v8::Isolate* isolate,
+                              const v8::Local<v8::Function>& function,
+                              MonkeyPatchableApi api) const;
 
   bool IsKnownAdScript(ExecutionContext*, const String& url);
 
