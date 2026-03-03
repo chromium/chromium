@@ -1103,6 +1103,34 @@ INSTANTIATE_TEST_SUITE_P(
     PrerenderBrowserTestFallbackEnabledDisabled,
     ::testing::Bool());
 
+// Test with Prerender2FallbackPrefetchSpecRules disabled.
+//
+// It is for tests that prefetch ahead of prerender makes untestable. List of
+// such tests:
+//
+// - `PrerenderBrowserTestFallbackEnabledDisabled`: If
+//    `kPreneder2FallbackPrefetchSpecRules` is enabled, prefetch ahead of
+//    prerender is triggered and it blocks prerender. Prefetch in a background
+//    tab is not scheduled. So, the prerender is never unblocked. Skip the test
+//    as it is not testable.
+// - `PrerenderInBackground_*`: Ditto.
+class PrerenderBrowserTestFallbackDisabled : public PrerenderBrowserTest {
+ public:
+  PrerenderBrowserTestFallbackDisabled()
+      : PrerenderBrowserTest(/*force_disable_prerender2_fallback=*/false) {
+    // TODO(crbug.com/342089123): Add yet another feature flag to disable
+    // prefetch ahead of prerender for SpeculationRules before removing
+    // `kPrerender2FallbackPrefetchSpecRules`.
+    scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+        {}, {
+                features::kPrerender2FallbackPrefetchSpecRules,
+            });
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
+};
+
 class NoVarySearchPrerenderBrowserTest
     : public PrerenderBrowserTestFallbackEnabledDisabled {
  public:
@@ -9353,43 +9381,43 @@ void PrerenderBrowserTest::TestSequentialPrerenderingVisibilityStateTransition(
   EXPECT_TRUE(prerender2_observer.was_activated());
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyVisible_Hidden) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::VISIBLE,
                                                       Visibility::HIDDEN);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyVisible_Occluded) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::VISIBLE,
                                                       Visibility::OCCLUDED);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyOccluded_Hidden) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::OCCLUDED,
                                                       Visibility::HIDDEN);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyOccluded_Occluded) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::OCCLUDED,
                                                       Visibility::OCCLUDED);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyHidden_Hidden) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::HIDDEN,
                                                       Visibility::HIDDEN);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyHidden_Occluded) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::HIDDEN,
                                                       Visibility::OCCLUDED);
 }
 
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        PrerenderInBackground_InitialyHidden_Visible) {
   TestSequentialPrerenderingVisibilityStateTransition(Visibility::HIDDEN,
                                                       Visibility::VISIBLE);
