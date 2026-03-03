@@ -37,6 +37,7 @@ import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageDispatcherProvider;
+import org.chromium.components.search_engines.SearchEngineChoiceService;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.annotation.Retention;
@@ -68,7 +69,8 @@ public class DefaultBrowserPromoUtils {
         DefaultBrowserPromoEntryPoint.APP_MENU,
         DefaultBrowserPromoEntryPoint.SETTINGS,
         DefaultBrowserPromoEntryPoint.SET_UP_LIST,
-        DefaultBrowserPromoEntryPoint.CHROME_STARTUP
+        DefaultBrowserPromoEntryPoint.CHROME_STARTUP,
+        DefaultBrowserPromoEntryPoint.FRE
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface DefaultBrowserPromoEntryPoint {
@@ -76,6 +78,7 @@ public class DefaultBrowserPromoUtils {
         int SETTINGS = 1;
         int SET_UP_LIST = 2;
         int CHROME_STARTUP = 3;
+        int FRE = 4;
     }
 
     DefaultBrowserPromoUtils(
@@ -115,7 +118,12 @@ public class DefaultBrowserPromoUtils {
             WindowAndroid windowAndroid,
             Tracker tracker,
             @DefaultBrowserPromoEntryPoint int source) {
-        if (!shouldShowRoleManagerPromo(activity, source)) return false;
+        if (source == DefaultBrowserPromoEntryPoint.FRE) {
+            if (!shouldShowRoleManagerPromoForFre(activity)) return false;
+        } else if (!shouldShowRoleManagerPromo(activity, source)) {
+            return false;
+        }
+
         mImpressionCounter.onPromoShown();
         tracker.notifyEvent("role_manager_default_browser_promos_shown");
         DefaultBrowserPromoManager manager =
@@ -198,6 +206,38 @@ public class DefaultBrowserPromoUtils {
         // For passive promos (Startup), we also check session counts and browser state conditions.
         return mImpressionCounter.shouldShowPromo(/* ignoreMaxCount= */ false)
                 && mStateProvider.shouldShowPromo();
+    }
+
+    /**
+     * This is a specialized version of {@link #shouldShowRoleManagerPromo(Context)} that determines
+     * whether the Role Manager Promo should be shown during the First Run Experience.
+     */
+    public boolean shouldShowRoleManagerPromoForFre(Context context) {
+        if (!isFeatureEnabled()) return false;
+
+        // For FRE, roleManager.isRoleHeld(RoleManager.ROLE_BROWSER) actually just returns false
+        // even if Chrome (Canary, Dev, Beta, Stable) is set as default. But we're still calling
+        // this method because it checks whether the role is available.
+        if (!isRoleAvailableButNotHeld(context)) return false;
+
+        // getSessionCount will always be 0 for FRE, and MIN_TRIGGER_SESSION_COUNT is 3. We
+        // therefore skip checking session counts for FRE promo.
+        boolean isCountAndIntervalOk =
+                (mImpressionCounter.getPromoCount() < mImpressionCounter.getMaxPromoCount())
+                        && (mImpressionCounter.getLastPromoInterval()
+                                >= mImpressionCounter.getMinPromoInterval())
+                        && !SearchEngineChoiceService.getInstance()
+                                .isDefaultBrowserPromoSuppressed();
+
+        if (!isCountAndIntervalOk) return false;
+
+        // Only show promo on FRE if Chrome (Canary, Dev, Beta, Stable) is not set as default.
+        int state = mStateProvider.getCurrentDefaultBrowserState();
+        if (state == DefaultBrowserState.CHROME_DEFAULT
+                || state == DefaultBrowserState.OTHER_CHROME_DEFAULT) {
+            return false;
+        }
+        return true;
     }
 
     /** Increment session count for triggering feature in the future. */

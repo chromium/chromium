@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.signin.SigninCheckerProvider;
 import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
+import org.chromium.chrome.browser.ui.default_browser_promo.DefaultBrowserPromoUtils;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
 import org.chromium.chrome.browser.ui.signin.DialogWhenLargeContentLayout;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
@@ -290,9 +291,22 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         mFreProgressStates.add(MobileFreProgress.HISTORY_SYNC_OPT_IN_SHOWN);
 
         if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()) {
-            // TODO(https://crbug.com/483539670): This is just a placeholder to see the primer.
-            // Actual logic will be added in a follow-up CL.
-            mPages.add(new FirstRunPage<>(DefaultBrowserPromoFirstRunFragment.class, () -> true));
+            BooleanSupplier showDefaultBrowserPromo =
+                    () -> {
+                        // Skip CCT.
+                        if (isLaunchedFromCct()) return false;
+
+                        // Restrict promos to FRE triggered via main intents only (exclude FRE
+                        // before CCTs/PWAs/TWAs).
+                        if (!mLaunchedFromChromeIcon) return false;
+
+                        return DefaultBrowserPromoUtils.getInstance()
+                                .shouldShowRoleManagerPromoForFre(this);
+                    };
+
+            mPages.add(
+                    new FirstRunPage<>(
+                            DefaultBrowserPromoFirstRunFragment.class, showDefaultBrowserPromo));
             mFreProgressStates.add(MobileFreProgress.DEFAULT_BROWSER_PROMO_SHOWN);
         }
 
@@ -763,6 +777,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
                         @Override
                         public void onAnimationEnd(Animator animation) {
                             mPager.endFakeDrag();
+                            if (ChromeFeatureList.sDefaultBrowserPromoFre.isEnabled()
+                                    && mPager.getCurrentItem() != position) {
+                                // When the user stays signed out, we jump from index 0 (sign-in
+                                // page) to index 2 (promo page) and skip index 1 (History sync).
+                                // Fake dragging seems to fail in multipage jumps, so we manually
+                                // jump to the target position.
+                                mPager.setCurrentItem(position, false);
+                            }
                             mAnimator = null;
                             // No need to call `mPager.setCurrentItem(position, false)`.
                         }
