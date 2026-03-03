@@ -68,34 +68,6 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h:SessionRestoreInfoBarAction) -->
 
-<enum name="SessionStorageDatabaseOpen">
-  <int value="0" label="OK">Succesfully opened the database.</int>
-  <int value="1" label="Recovered">
-    Failed to open the existing db, deleted it, and created a new empty db.
-  </int>
-  <int value="2"
-      label="(Obsolete) Reopen: Total Fail. Deprecated 2016/11. Replaced by
-             other 'Reopen' errors.">
-    Failed to open the database and also failed to delete and start over.
-  </int>
-  <int value="3" label="Reopen: not found">
-    Reopen attempt failed with (not found) after successful database delete.
-  </int>
-  <int value="4" label="Reopen: not supported">
-    Reopen attempt failed with (not supported) after successful database delete.
-  </int>
-  <int value="5" label="Reopen: corruption">
-    Reopen attempt failed with (corruption) after successful database delete.
-  </int>
-  <int value="6" label="Reopen: invalid argument">
-    Reopen attempt failed with (invalid argument) after successful database
-    delete.
-  </int>
-  <int value="7" label="Reopen: I/O error">
-    Reopen attempt failed with (I/O error) after successful database delete.
-  </int>
-</enum>
-
 <enum name="SessionStorageFormat">
   <int value="0" label="Legacy"/>
   <int value="1" label="Optimized"/>
