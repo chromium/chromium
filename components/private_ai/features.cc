@@ -4,11 +4,13 @@
 
 #include "components/private_ai/features.h"
 
+#include "base/feature_list.h"
+
 namespace private_ai {
 
 BASE_FEATURE(kPrivateAi, base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPrivateAiServerAttestation, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPrivateAiUseTokenAttestation, base::FEATURE_DISABLED_BY_DEFAULT);
 
