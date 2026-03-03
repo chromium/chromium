@@ -166,8 +166,6 @@
 
 - (void)hideQuickDeleteOtherDataPage {
   [self stopOtherDataCoordinator];
-  // TODO(crbug.com/476398061) Move voiceover focus to the appropriate row in
-  // QuickDeleteBrowsingDataViewController.
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate

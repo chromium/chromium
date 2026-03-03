@@ -110,10 +110,6 @@ NSString* AccessibilityIdentifierForItemIdentifier(
 
 @interface QuickDeleteOtherDataViewController () {
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
-}
-@end
-
-@interface QuickDeleteOtherDataViewController () {
   // The title for the "Quick Delete Other Data" page.
   NSString* _otherDataPageTitle;
   // The subtitle for the "Search history" cell.
