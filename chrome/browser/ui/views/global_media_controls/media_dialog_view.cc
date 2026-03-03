@@ -27,7 +27,6 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/global_media_controls/media_dialog_view_observer.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_view.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_helper.h"
 #include "chrome/browser/ui/views/global_media_controls/media_item_ui_legacy_cast_footer_view.h"
 #include "chrome/grit/generated_resources.h"

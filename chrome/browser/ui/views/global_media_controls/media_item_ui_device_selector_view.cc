@@ -9,11 +9,9 @@
 
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_device_selector_delegate.h"
 #include "chrome/browser/ui/global_media_controls/media_item_ui_metrics.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_device_selector_observer.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/global_media_controls/public/views/media_item_ui_view.h"
 #include "components/media_message_center/media_notification_item.h"
@@ -161,9 +159,6 @@ void MediaItemUIDeviceSelectorView::UpdateAvailableAudioDevices(
           : media::AudioDeviceDescription::kDefaultDeviceId);
 
   UpdateVisibility();
-  observers_.Notify(
-      &MediaItemUIDeviceSelectorObserver::OnMediaItemUIDeviceSelectorUpdated,
-      device_entry_ui_map_);
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewDevicesChanged(
         device_entry_views_container_->children().size() > 0);
@@ -329,26 +324,10 @@ void MediaItemUIDeviceSelectorView::OnDevicesUpdated(
   device_entry_views_container_->DeprecatedLayoutImmediately();
 
   UpdateVisibility();
-  observers_.Notify(
-      &MediaItemUIDeviceSelectorObserver::OnMediaItemUIDeviceSelectorUpdated,
-      device_entry_ui_map_);
   if (media_item_ui_) {
     media_item_ui_->OnDeviceSelectorViewDevicesChanged(
         device_entry_views_container_->children().size() > 0);
   }
-}
-
-void MediaItemUIDeviceSelectorView::OnDeviceSelected(int tag) {
-  auto it = device_entry_ui_map_.find(tag);
-  CHECK(it != device_entry_ui_map_.end());
-
-  if (it->second->GetType() == DeviceEntryUIType::kAudio) {
-    delegate_->OnAudioSinkChosen(item_id_, it->second->raw_device_id());
-  }
-}
-
-void MediaItemUIDeviceSelectorView::OnDropdownButtonClicked() {
-  ShowOrHideDeviceList();
 }
 
 bool MediaItemUIDeviceSelectorView::IsDeviceSelectorExpanded() {
@@ -368,11 +347,6 @@ bool MediaItemUIDeviceSelectorView::OnMousePressed(
 gfx::Size MediaItemUIDeviceSelectorView::CalculatePreferredSize(
     const views::SizeBounds& available_size) const {
   return GetLayoutManager()->GetPreferredSize(this, available_size);
-}
-
-void MediaItemUIDeviceSelectorView::AddObserver(
-    MediaItemUIDeviceSelectorObserver* observer) {
-  observers_.AddObserver(observer);
 }
 
 std::string MediaItemUIDeviceSelectorView::GetEntryLabelForTesting(

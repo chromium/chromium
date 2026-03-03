@@ -8,9 +8,7 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
-#include "chrome/browser/ui/views/global_media_controls/media_item_ui_footer_view.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_entry_ui.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/global_media_controls/public/constants.h"
@@ -38,13 +36,11 @@ class MediaItemUIView;
 }  // namespace global_media_controls
 
 class MediaItemUIDeviceSelectorDelegate;
-class MediaItemUIDeviceSelectorObserver;
 
 // A device selector view for Chrome OS only.
 class MediaItemUIDeviceSelectorView
     : public global_media_controls::MediaItemUIDeviceSelector,
       public IconLabelBubbleView::Delegate,
-      public MediaItemUIFooterView::Delegate,
       public global_media_controls::mojom::DeviceListClient {
   METADATA_HEADER(MediaItemUIDeviceSelectorView,
                   global_media_controls::MediaItemUIDeviceSelector)
@@ -88,16 +84,10 @@ class MediaItemUIDeviceSelectorView
       std::vector<global_media_controls::mojom::DevicePtr> devices) override;
   void OnPermissionRejected() override {}
 
-  // MediaItemUIFooterView::Delegate
-  void OnDeviceSelected(int tag) override;
-  void OnDropdownButtonClicked() override;
-
   // views::View
   gfx::Size CalculatePreferredSize(
       const views::SizeBounds& available_size) const override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
-
-  void AddObserver(MediaItemUIDeviceSelectorObserver* observer);
 
   std::string GetEntryLabelForTesting(views::View* entry_view);
   bool GetEntryIsHighlightedForTesting(views::View* entry_view);
@@ -144,8 +134,6 @@ class MediaItemUIDeviceSelectorView
   base::CallbackListSubscription is_device_switching_enabled_subscription_;
 
   raw_ptr<global_media_controls::MediaItemUIView> media_item_ui_ = nullptr;
-
-  base::ObserverList<MediaItemUIDeviceSelectorObserver> observers_;
 
   // Each button has a unique tag, which is used to look up DeviceEntryUI* in
   // |device_entry_ui_map_|.
