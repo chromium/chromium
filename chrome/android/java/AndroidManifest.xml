@@ -528,6 +528,16 @@ by a child template that "extends" this file.
             </intent-filter>
         </receiver>
 
+        <!-- Actor related -->
+        <receiver android:name="org.chromium.chrome.browser.actor.ActorBroadcastReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="org.chromium.chrome.browser.actor.ACTION_PAUSE" />
+                <action android:name="org.chromium.chrome.browser.actor.ACTION_RESUME" />
+                <action android:name="org.chromium.chrome.browser.actor.ACTION_CANCEL" />
+            </intent-filter>
+        </receiver>
+
         <!-- Custom Tabs -->
         <activity android:name="org.chromium.chrome.browser.customtabs.CustomTabActivity"
             android:theme="@style/Theme.Chromium.Activity"

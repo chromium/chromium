@@ -730,6 +730,15 @@
         android:name="com.google.android.gms.cast.framework.media.MediaIntentReceiver"
         android:exported="false">
     </receiver>  # DIFF-ANCHOR: 0a6f8fa5
+    <receiver  # DIFF-ANCHOR: 83f0ffb6
+        android:name="org.chromium.chrome.browser.actor.ActorBroadcastReceiver"
+        android:exported="false">
+      <intent-filter>  # DIFF-ANCHOR: 43c058ef
+        <action android:name="org.chromium.chrome.browser.actor.ACTION_CANCEL"/>
+        <action android:name="org.chromium.chrome.browser.actor.ACTION_PAUSE"/>
+        <action android:name="org.chromium.chrome.browser.actor.ACTION_RESUME"/>
+      </intent-filter>  # DIFF-ANCHOR: 43c058ef
+    </receiver>  # DIFF-ANCHOR: 83f0ffb6
     <receiver  # DIFF-ANCHOR: 68e22783
         android:name="org.chromium.chrome.browser.announcement.AnnouncementNotificationManager$Receiver"
         android:exported="false">
