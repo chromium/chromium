@@ -114,7 +114,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.BrowsingHistoryResult.{LocalOrRemote}.{VisitAge}"
-    units="visits" expires_after="2026-07-01">
+    units="visits" expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <component>1456716</component>
@@ -3086,7 +3086,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.WebHistoryMergeResult.{LocalOrRemote}.{VisitAge}"
-    units="visits" expires_after="2026-07-01">
+    units="visits" expires_after="2026-08-30">
   <owner>treib@chromium.org</owner>
   <owner>src/components/sync/OWNERS</owner>
   <component>1456716</component>

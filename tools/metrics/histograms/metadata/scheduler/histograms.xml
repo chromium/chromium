@@ -46,7 +46,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Scheduling.ContendedLockAcquisitionTime.{LockType}.{ThreadName}"
-    units="microseconds" expires_after="2026-07-01">
+    units="microseconds" expires_after="2026-08-30">
   <owner>anandrv@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>
