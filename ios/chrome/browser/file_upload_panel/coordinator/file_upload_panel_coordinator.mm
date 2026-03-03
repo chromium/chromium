@@ -76,7 +76,6 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
   UIImagePickerController* _cameraPicker;
   UIDocumentPickerViewController* _filePicker;
   PHPickerViewController* _photoPicker;
-  BOOL _isChooseFromDriveAvailable;
 }
 
 @synthesize filePickerAction = _filePickerAction;
@@ -111,7 +110,9 @@ BOOL IsChooseFromDriveAvailable(Browser* browser,
   }
 
   if (_mediator.allowsDirectorySelection ||
-      (!_isChooseFromDriveAvailable && !_mediator.allowsMediaSelection)) {
+      (!IsChooseFromDriveAvailable(self.browser,
+                                   _mediator.allowsDirectorySelection) &&
+       !_mediator.allowsMediaSelection)) {
     base::UmaHistogramEnumeration(
         "IOS.FileUploadPanel.EntryPointVariant",
         FileUploadPanelEntryPointVariant::kFilePicker);
