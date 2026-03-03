@@ -1559,11 +1559,11 @@ scoped_refptr<StaticBitmapImage> VideoFrame::CreateImageFromVideoFrame(
             : nullptr;
     return CreateUnacceleratedImageFromVideoFrame(
         frame, snapshot_provider_bitmap->Info(), draw_surface);
-  } else {
-    return CreateAcceleratedImageFromVideoFrame(
-        frame, static_cast<CanvasNon2DResourceProviderSharedImage*>(
-                   snapshot_provider));
   }
+
+  return CreateAcceleratedImageFromVideoFrame(
+      frame,
+      static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider));
 }
 
 ScriptPromise<ImageBitmap> VideoFrame::CreateImageBitmap(
