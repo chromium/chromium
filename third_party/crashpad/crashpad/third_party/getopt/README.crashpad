@@ -1,6 +1,7 @@
 Name: Gregory Pietsch getopt
 Short Name: getopt
 URL: https://sourceware.org/ml/newlib/2005/msg00758.html
+Update Mechanism: Static.HardFork (https://crbug.com/419167313)
 License: getopt
 License File: LICENSE
 Security Critical: no
