@@ -467,27 +467,27 @@ void WaitForBrowserUrl(const GURL& url, content::WebContents* target) {
 
 // Browser extra part used to be notified early enough to track the
 // `ProfileManager` in `g_browser_process` before any profile creation.
-// Uses `PreProfileInit()` to run after `GlobalBrowserCollection` is created.
 class ProfileManagerInitializationInterceptExtraParts
     : public ChromeBrowserMainExtraParts {
  public:
   explicit ProfileManagerInitializationInterceptExtraParts(
-      base::OnceClosure on_pre_profile_init_callback,
+      base::OnceClosure on_post_early_initialization_callback,
       base::OnceClosure on_post_main_message_loop_run_callback)
-      : on_pre_profile_init_callback_(std::move(on_pre_profile_init_callback)),
+      : on_post_early_initialization_callback_(
+            std::move(on_post_early_initialization_callback)),
         on_post_main_message_loop_run_callback_(
             std::move(on_post_main_message_loop_run_callback)) {}
 
   // ChromeBrowserMainExtraParts:
-  void PreProfileInit() override {
-    std::move(on_pre_profile_init_callback_).Run();
+  void PostEarlyInitialization() override {
+    std::move(on_post_early_initialization_callback_).Run();
   }
   void PostMainMessageLoopRun() override {
     std::move(on_post_main_message_loop_run_callback_).Run();
   }
 
  private:
-  base::OnceClosure on_pre_profile_init_callback_;
+  base::OnceClosure on_post_early_initialization_callback_;
   base::OnceClosure on_post_main_message_loop_run_callback_;
 };
 
@@ -504,7 +504,7 @@ class ProfileManagementCounter : public ProfileManagerObserver,
         static_cast<ChromeBrowserMainParts*>(parts);
     chrome_browser_main_parts->AddParts(
         std::make_unique<ProfileManagerInitializationInterceptExtraParts>(
-            base::BindOnce(&ProfileManagementCounter::OnPreProfileInit,
+            base::BindOnce(&ProfileManagementCounter::OnPostEarlyInitialization,
                            base::Unretained(this)),
             base::BindOnce(&ProfileManagementCounter::OnPostMainMessageLoopRun,
                            base::Unretained(this))));
@@ -539,8 +539,8 @@ class ProfileManagementCounter : public ProfileManagerObserver,
 
  private:
   // Callbacks from `ProfileManagerInitializationInterceptExtraParts` to
-  // intercept ProfileManager initialization/destruction.
-  void OnPreProfileInit() {
+  // intercept ProfileManager initialization/descrution.
+  void OnPostEarlyInitialization() {
     CHECK(g_browser_process);
     ProfileManager* profile_manager = g_browser_process->profile_manager();
     CHECK(profile_manager);

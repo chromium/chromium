@@ -248,8 +248,6 @@ void TestingBrowserProcess::TearDownGlobalFeaturesForTesting() {
 
   testing_profile_manager_.reset();
 
-  profile_manager_.reset();
-
   // ResourceCoordinatorParts owns TabLifecycleUnitSource, which depends on a
   // Global Feature (GlobalBrowserCollection). Thus, we need to make sure
   // ResourceCoordinatorParts is destroyed before GlobalFeatures is completely
