@@ -41,9 +41,7 @@ fn test_conversion<S, E, F>(
     let actual_samples = data_u8.chunks_exact(bytes_per_sample as usize).collect::<Vec<_>>();
     expect_eq!(actual_samples.len(), expected_samples.len());
 
-    for (i, (expected, actual_bytes)) in
-        expected_samples.iter().zip(actual_samples.into_iter()).enumerate()
-    {
+    for (i, (expected, actual_bytes)) in expected_samples.iter().zip(actual_samples).enumerate() {
         let expected_bytes = expected.to_ne_bytes();
         expect_eq!(actual_bytes, expected_bytes.as_ref(), "Mismatch at index {i}");
     }
