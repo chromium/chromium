@@ -94,6 +94,10 @@ suite('ContextualTasksComposeboxTest', () => {
       enableBasicModeZOrder: true,
       composeboxShowContextMenu: true,
       composeboxHintTextLensOverlay: 'Test Lens Hint',
+      composeboxHintTextAskAboutThese: 'Ask about these',
+      composeboxHintTextAskAboutThisTab: 'Ask about this tab',
+      composeboxHintTextAskAboutThisImage: 'Ask about this image',
+      composeboxHintTextAskAboutThisDoc: 'Ask about this doc',
     });
 
     testProxy = new TestContextualTasksBrowserProxy('https://google.com');
@@ -1355,4 +1359,91 @@ suite('ContextualTasksComposeboxTest', () => {
             !!composebox.shadowRoot.querySelector('#carousel'),
             'Carousel should be removed from the DOM');
       });
+
+  test('Multiple files updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token1 = {high: 0n, low: 1n} as any;
+    const token2 = {high: 0n, low: 2n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'image/png', uuid: token1} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting(
+        {type: 'application/pdf', uuid: token2} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about these', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single tab file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'tab', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about this tab', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single image file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'image/png', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single pdf file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'application/pdf', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about this doc', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single unknown file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'unknown/type', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertFalse(innerComposebox.$.input.placeholder.includes('Ask about'));
+  });
+
+  test('Overlay hint text overridden by file hint', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    // Set overlay hint text to true.
+    contextualComposebox.maybeShowOverlayHintText = true;
+
+    // Add an image file.
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'image/png', uuid: token} as ComposeboxFile);
+
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    // File hint should take precedence over overlay hint.
+    assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
+  });
 });

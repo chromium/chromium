@@ -8807,6 +8807,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_COMPOSE_CREATE_IMAGE_PLACEHOLDER" desc="Placeholder text for the composebox when in create image mode.">
         Describe your image
       </message>
+      <message name="IDS_COMPOSE_HINT_TEXT_ASK_ABOUT_THESE"
+        desc="Placeholder text for the composebox when there are multiple files in the carousel.">
+        Ask about these
+      </message>
+      <message name="IDS_COMPOSE_HINT_TEXT_ASK_ABOUT_THIS_IMAGE"
+        desc="Placeholder text for the composebox when there is exactly one image in the carousel.">
+        Ask about this image
+      </message>
+      <message name="IDS_COMPOSE_HINT_TEXT_ASK_ABOUT_THIS_TAB"
+        desc="Placeholder text for the composebox when there is exactly one tab in the carousel.">
+        Ask about this tab
+      </message>
+      <message name="IDS_COMPOSE_HINT_TEXT_ASK_ABOUT_THIS_DOC"
+        desc="Placeholder text for the composebox when there is exactly one document (PDF) in the carousel.">
+        Ask about this doc
+      </message>
       <message name="IDS_NTP_ACTION_CHIP_TAB_HEADING_1" translateable="true" desc="Heading of the tab action chip on the NTP." >
         Ask about previous tab
       </message>

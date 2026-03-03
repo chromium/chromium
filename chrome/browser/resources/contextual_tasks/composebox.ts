@@ -304,7 +304,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   }
 
   protected getInputPlaceholder_() {
-    return this.maybeShowOverlayHintText ?
+    return this.maybeShowOverlayHintText && !this.$.composebox.hasFiles() ?
         loadTimeData.getString('composeboxHintTextLensOverlay') :
         '';
   }

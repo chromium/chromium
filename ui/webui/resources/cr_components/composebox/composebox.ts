@@ -259,9 +259,11 @@ export class ComposeboxElement extends I18nMixinLit
       },
       isFollowupQuery: {type: Boolean},
       shouldShowGhostFiles: {type: Boolean},
+      enableFileHint: {type: Boolean},
     };
   }
 
+  accessor enableFileHint: boolean = false;
   accessor isFollowupQuery: boolean = false;
   accessor inputPlaceholderOverride: string = '';
   accessor suggestionActivityEnabled: boolean = true;
@@ -535,7 +537,9 @@ export class ComposeboxElement extends I18nMixinLit
            this.inputState_.allowedInputTypes.length > 0);
     }
 
-    if (changedPrivateProperties.has('inputPlaceholderOverride')) {
+    if (changedPrivateProperties.has('inputPlaceholderOverride') ||
+        changedPrivateProperties.has('files_') ||
+        changedPrivateProperties.has('enableFileHint')) {
       this.updateInputPlaceholder_();
     }
   }
@@ -686,6 +690,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
 
     return carousel.getThumbnailElementByUuid(this.automaticActiveTab_.uuid);
+  }
+
+  hasFiles(): boolean {
+    return this.files_.size > 0;
   }
 
   protected async initializeState_(
@@ -1305,6 +1313,27 @@ export class ComposeboxElement extends I18nMixinLit
     if (this.inputPlaceholderOverride) {
       this.inputPlaceholder_ = this.inputPlaceholderOverride;
       return;
+    }
+
+    const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
+        this.activeToolMode_ === ComposeboxToolMode.kUnspecified;
+    if (shouldUseFileHint) {
+      if (this.files_.size > 1) {
+        this.inputPlaceholder_ = this.i18n('composeboxHintTextAskAboutThese');
+        return;
+      }
+      const file = this.files_.values().next().value!;
+      if (file.type === 'tab') {
+        this.inputPlaceholder_ = this.i18n('composeboxHintTextAskAboutThisTab');
+        return;
+      } else if (file.type.includes('image')) {
+        this.inputPlaceholder_ =
+            this.i18n('composeboxHintTextAskAboutThisImage');
+        return;
+      } else if (file.type === 'pdf' || file.type === 'application/pdf') {
+        this.inputPlaceholder_ = this.i18n('composeboxHintTextAskAboutThisDoc');
+        return;
+      }
     }
 
     if (this.inputState_) {
