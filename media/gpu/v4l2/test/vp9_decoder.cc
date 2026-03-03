@@ -90,14 +90,11 @@ void FillV4L2VP9SegmentationParams(const Vp9SegmentationParams& vp9_seg_params,
                     static_cast<size_t>(V4L2_VP9_SEG_LVL_MAX),
                 "mismatch in number of segmentation features");
 
-  for (size_t j = 0;
-       j < std::extent<decltype(vp9_seg_params.feature_enabled), 0>::value;
-       j++) {
-    for (size_t i = 0;
-         i < std::extent<decltype(vp9_seg_params.feature_enabled), 1>::value;
-         i++) {
-      if (vp9_seg_params.feature_enabled[j][i])
+  for (size_t j = 0; j < std::size(vp9_seg_params.feature_enabled); j++) {
+    for (size_t i = 0; i < std::size(vp9_seg_params.feature_enabled[j]); i++) {
+      if (vp9_seg_params.feature_enabled[j][i]) {
         v4l2_seg->feature_enabled[j] |= V4L2_VP9_SEGMENT_FEATURE_ENABLED(i);
+      }
     }
   }
 
