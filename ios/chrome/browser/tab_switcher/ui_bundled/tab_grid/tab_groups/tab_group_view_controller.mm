@@ -13,6 +13,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/keyboard/ui_bundled/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/menu/ui_bundled/action_factory.h"
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_color_updater.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_providing.h"
 #import "ios/chrome/browser/share_kit/model/sharing_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
@@ -158,7 +159,7 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   // The button containing the facepile.
   UIButton* _facePileContainer;
   // The face pile view that displays the share button or the face pile.
-  UIView* _facePileView;
+  UIView<FacePileColorUpdater>* _facePileView;
   // Constraints for the container on narrow vs large windows.
   NSArray<NSLayoutConstraint*>* _narrowWidthConstraints;
   NSArray<NSLayoutConstraint*>* _largeWidthConstraints;
@@ -954,6 +955,12 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   }
   facePile.userInteractionEnabled = NO;
   facePile.translatesAutoresizingMaskIntoConstraints = NO;
+  if (IsTabGroupColorOnSurfaceEnabled()) {
+    [_facePileView setShareButtonBackgroundColor:
+                       [_tabGroupColorPalette.commonColor
+                           colorWithAlphaComponent:kButtonAlpha]];
+  }
+
   [facePileContainer addSubview:facePile];
   AddSameConstraints(facePile, facePileContainer);
 }
@@ -1027,6 +1034,10 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   UIButtonConfiguration* closeButtonConfig = _closeButton.configuration;
   closeButtonConfig.background.backgroundColor = buttonColor;
   _closeButton.configuration = closeButtonConfig;
+
+  [_facePileView
+      setShareButtonBackgroundColor:[_tabGroupColorPalette.commonColor
+                                        colorWithAlphaComponent:kButtonAlpha]];
 
   [_bottomToolbar
       updateNewTabButtonBackgroundColor:_tabGroupColorPalette.commonColor];

@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol FacePileColorUpdater;
+
 // Objects implementing this protocol will provide a FacePile view (always the
 // same). FacePiles provided by this object will be up-to-date as long as this
 // object is alive.
@@ -16,7 +18,7 @@
 - (CGFloat)facePileWidth;
 
 // Returns the FacePile associated with this object.
-- (UIView*)facePileView;
+- (UIView<FacePileColorUpdater>*)facePileView;
 
 // Returns YES if the providers are considered equal, NO otherwise.
 - (BOOL)isEqualFacePileProviding:(id<FacePileProviding>)otherProvider;

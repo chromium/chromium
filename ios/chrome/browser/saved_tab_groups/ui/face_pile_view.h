@@ -7,10 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/saved_tab_groups/ui/face_pile_color_updater.h"
 #import "ios/chrome/browser/saved_tab_groups/ui/face_pile_consumer.h"
 
 // A view that displays a "pile" of faces, typically user avatars.
-@interface FacePileView : UIView <FacePileConsumer>
+@interface FacePileView : UIView <FacePileConsumer, FacePileColorUpdater>
 
 // Designated initializer.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

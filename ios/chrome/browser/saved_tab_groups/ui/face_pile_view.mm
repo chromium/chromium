@@ -154,6 +154,15 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
   _avatarSize = avatarSize;
 }
 
+#pragma mark - FacePileColorUpdater
+
+- (void)setShareButtonBackgroundColor:(UIColor*)backgroundColor {
+  UIButtonConfiguration* shareViewContainerConfig =
+      _shareViewContainer.configuration;
+  shareViewContainerConfig.background.backgroundColor = backgroundColor;
+  _shareViewContainer.configuration = shareViewContainerConfig;
+}
+
 #pragma mark - Private
 
 // Updates colors after UITrait collection update.

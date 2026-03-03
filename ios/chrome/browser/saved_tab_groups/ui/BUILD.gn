@@ -4,6 +4,7 @@
 
 source_set("ui") {
   sources = [
+    "face_pile_color_updater.h",
     "face_pile_consumer.h",
     "face_pile_providing.h",
     "face_pile_view.h",
