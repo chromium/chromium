@@ -717,10 +717,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   void SetScrollbarsHiddenIfOverlayInternal(bool);
 
-  bool ProgrammaticScrollHelper(const ScrollOffset&,
-                                mojom::blink::ScrollBehavior,
-                                gfx::Vector2d animation_adjustment,
-                                cc::ScrollSourceType);
+  bool InitiateScrollAnimation(const ScrollOffset&,
+                               mojom::blink::ScrollType,
+                               mojom::blink::ScrollBehavior,
+                               gfx::Vector2d animation_adjustment,
+                               cc::ScrollSourceType);
   void UserScrollHelper(const ScrollOffset&,
                         mojom::blink::ScrollBehavior,
                         cc::ScrollSourceType);

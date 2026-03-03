@@ -459,7 +459,7 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
     }
     if (event->keyCode() == last_scrolling_keycode_) {
       if (scrollend_event_target_ && has_pending_scrollend_on_key_up_) {
-        scrollend_event_target_->OnScrollFinished(true);
+        scrollend_event_target_->OnScrollFinished(/*enqueue_scrollend=*/true);
       }
       scrollend_event_target_.Clear();
       last_scrolling_keycode_ = VKEY_UNKNOWN;
