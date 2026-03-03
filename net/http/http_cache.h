@@ -50,6 +50,8 @@
 #include "net/http/http_transaction_factory.h"
 #include "net/http/no_vary_search_cache.h"
 #include "net/http/no_vary_search_cache_storage.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -262,6 +264,38 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                               const base::flat_set<std::string>& domains,
                               base::Time delete_begin,
                               base::Time delete_end);
+
+  // InvalidationFilter represents a request to logically clear parts of the
+  // cache. Instead of waiting for slow disk deletion, any entry matching
+  // these criteria is treated as a cache miss.
+  struct NET_EXPORT InvalidationFilter {
+    InvalidationFilter();
+    ~InvalidationFilter();
+    InvalidationFilter(const InvalidationFilter&);
+    InvalidationFilter& operator=(const InvalidationFilter&);
+
+    // Checks if the given cache entry matches this filter's criteria
+    // (time bounds and URL).
+    bool Matches(const GURL& url, const disk_cache::Entry* entry) const;
+
+    // The time range of entries to invalidate based on their 'LastUsed' time.
+    base::Time begin_time;
+    base::Time end_time;
+
+    // Filter type (e.g., exclude vs include) and the specific origins/domains.
+    UrlFilterType filter_type;
+    base::flat_set<url::Origin> origins;
+    base::flat_set<std::string> domains;
+  };
+
+  // Adds a filter to the logical invalidation list. Any subsequent access
+  // to an entry matching this filter will result in a cache miss.
+  void AddInvalidationFilter(InvalidationFilter filter);
+
+  // Orchestrator for invalidation checks. This provides a fast-path bailout
+  // when no filters are active, decodes the URL from the cache key exactly once,
+  // and iterates over all active filters to see if any match the given entry.
+  bool IsInvalidated(disk_cache::Entry* entry);
 
   // Causes all transactions created after this point to simulate lock timeout
   // and effectively bypass the cache lock whenever there is lock contention.
@@ -831,6 +865,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
 
   // The set of active entries indexed by cache key.
   ActiveEntriesMap active_entries_;
+
+  // The set of invalidation filters.
+  std::vector<InvalidationFilter> invalidation_filters_;
 
   // The set of doomed entries.
   ActiveEntriesSet doomed_entries_;

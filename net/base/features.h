@@ -794,6 +794,11 @@ NET_EXPORT BASE_DECLARE_FEATURE_PARAM(std::string, kSecureDnsCanaryDomainHost);
 NET_EXPORT BASE_DECLARE_FEATURE(kUseNSURLDataForGURLConversion);
 #endif  // BUILDFLAG(IS_APPLE)
 
+// Enables logical HTTP cache clearing, which adds a filter to the cache
+// to immediately treat entries as invalid, while they are physically deleted
+// in the background.
+NET_EXPORT BASE_DECLARE_FEATURE(kLogicalClearHttpCache);
+
 // If enabled, SPDY sessions will be synchronously drained when the underlying
 // transport socket is detected to be disconnected in GetRemoteEndpoint().
 NET_EXPORT BASE_DECLARE_FEATURE(

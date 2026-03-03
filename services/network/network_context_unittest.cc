@@ -2228,6 +2228,25 @@ TEST_F(NetworkContextTest, MultipleClearHttpCacheCalls) {
   // If all the callbacks were invoked, we should terminate.
 }
 
+TEST_F(NetworkContextTest, LogicalClearHttpCache) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  mojom::NetworkContextParamsPtr context_params =
+      CreateNetworkContextParamsForTesting();
+  context_params->http_cache_enabled = true;
+
+  std::unique_ptr<NetworkContext> network_context =
+      CreateContextWithParams(std::move(context_params));
+
+  base::test::TestFuture<void> future;
+  network_context->ClearHttpCache(base::Time(), base::Time(), nullptr,
+                                  future.GetCallback());
+
+  // The callback should be called immediately.
+  EXPECT_TRUE(future.Wait());
+}
+
 #if BUILDFLAG(ENTERPRISE_CACHE_ENCRYPTION)
 // Verifies that the simple backend is always used when encrypting the cache.
 TEST_F(NetworkContextTest, EncryptedHttpCacheForcesSimpleBackend) {

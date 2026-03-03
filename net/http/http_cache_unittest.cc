@@ -15429,6 +15429,7 @@ TEST_F(HttpCacheEarlyInitTestCheckDiskFalse, CheckDiskDisabled) {
   histogram_tester.ExpectBucketCount("HttpCache.CreateBackendEarly", true, 1);
 }
 
+
 // Tests that encoded body size is preserved across cache reads.
 // When a shared dictionary compressed response is fetched from the network,
 // the encoded (on-the-wire) body size is stored in the cached response info.
@@ -15536,6 +15537,41 @@ TEST_F(HttpCacheTest, EncodedBodySizeNotStoredWithoutSharedDictionary) {
     ASSERT_TRUE(response_info);
     EXPECT_FALSE(response_info->encoded_body_size.has_value());
   }
+}
+
+TEST_F(HttpCacheTest, InvalidationFilter) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(net::features::kLogicalClearHttpCache);
+
+  MockHttpCache cache;
+
+  // 1. Add an entry to the cache.
+  MockTransaction transaction(kSimpleGET_Transaction);
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // 2. Verify it's in the cache.
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_EQ(1, cache.network_layer()->transaction_count());
+
+  // 3. Add an invalidation filter for this origin.
+  HttpCache::InvalidationFilter filter;
+  filter.begin_time = base::Time();
+  filter.end_time = base::Time::Max();
+  filter.filter_type = UrlFilterType::kTrueIfMatches;
+  filter.origins.insert(url::Origin::Create(GURL(transaction.url)));
+  cache.http_cache()->AddInvalidationFilter(std::move(filter));
+
+  // 4. Try to read the entry -> should be a miss (network access).
+  // Note: transaction_count increases more than once due to internal restarts
+  // when an entry is invalidated during the activation phase.
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_GT(cache.network_layer()->transaction_count(), 1);
+  int count_after_miss = cache.network_layer()->transaction_count();
+
+  // 5. Try again. It will still be a miss because our filter is for all time.
+  RunTransactionTest(cache.http_cache(), transaction);
+  EXPECT_GT(cache.network_layer()->transaction_count(), count_after_miss);
 }
 
 }  // namespace net

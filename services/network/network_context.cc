@@ -1377,6 +1377,43 @@ void NetworkContext::ClearHttpCache(base::Time start_time,
                                     base::Time end_time,
                                     mojom::ClearDataFilterPtr filter,
                                     ClearHttpCacheCallback callback) {
+  if (base::FeatureList::IsEnabled(net::features::kLogicalClearHttpCache)) {
+    net::HttpCache* cache =
+        url_request_context_->http_transaction_factory()->GetCache();
+    if (cache) {
+      // Step 1: Add a logical filter to the HttpCache. This is near-instant
+      // and ensures that subsequent requests won't see invalidated data.
+      net::HttpCache::InvalidationFilter invalidation_filter;
+      invalidation_filter.begin_time = start_time;
+      // Cap the end_time to Now() so we don't accidentally invalidate future
+      // cache entries if the caller passes Time::Max().
+      invalidation_filter.end_time = std::min(end_time, base::Time::Now());
+      if (filter) {
+        invalidation_filter.filter_type =
+            ConvertClearDataFilterType(filter->type);
+        invalidation_filter.origins = base::flat_set<url::Origin>(
+            filter->origins.begin(), filter->origins.end());
+        invalidation_filter.domains = base::flat_set<std::string>(
+            filter->domains.begin(), filter->domains.end());
+      } else {
+        invalidation_filter.filter_type = net::UrlFilterType::kFalseIfMatches;
+      }
+      cache->AddInvalidationFilter(std::move(invalidation_filter));
+    }
+
+    // Step 2: Trigger the slow physical cleanup in the background. We use a
+    // no-op callback because the logical invalidation already satisfies
+    // the consistency requirements of the caller.
+    http_cache_data_removers_.push_back(HttpCacheDataRemover::CreateAndStart(
+        url_request_context_, std::move(filter), start_time, end_time,
+        base::BindOnce(&NetworkContext::OnHttpCacheCleared,
+                       base::Unretained(this), base::DoNothing())));
+
+    // Step 3: Respond to the caller immediately.
+    std::move(callback).Run();
+    return;
+  }
+
   // It's safe to use Unretained below as the HttpCacheDataRemover is owned by
   // |this| and guarantees it won't call its callback if deleted.
   http_cache_data_removers_.push_back(HttpCacheDataRemover::CreateAndStart(
