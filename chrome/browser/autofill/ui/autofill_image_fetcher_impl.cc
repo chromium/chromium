@@ -4,12 +4,16 @@
 
 #include "chrome/browser/autofill/ui/autofill_image_fetcher_impl.h"
 
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/resource/resource_scale_factor.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/image/image.h"
@@ -64,7 +68,7 @@ base::WeakPtr<AutofillImageFetcher> AutofillImageFetcherImpl::GetWeakPtr() {
 GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
                                                ImageType image_type) const {
   switch (image_type) {
-    case ImageType::kCreditCardArtImage:
+    case ImageType::kCreditCardArtImage: {
       // TODO(crbug.com/40221039): There is only one gstatic card art image we
       // are using currently, that returns as metadata when it isn't. Remove
       // this logic when the static image is deprecated, and we send rich card
@@ -73,10 +77,21 @@ GURL AutofillImageFetcherImpl::ResolveImageURL(const GURL& image_url,
         return GURL(kCapitalOneLargeCardArtUrl);
       }
 
-      // When kAutofillEnableNewCardArtAndNetworkImages is enabled, we take the
-      // image at height 48 with its ratio width and resize to Size(40, 24)
-      // later
-      return GURL(image_url.spec() + "=h48-pa");
+      // We take the image at height 48*scale and its ratio width, then later
+      // resize it to Size(40, 24).
+      ui::ResourceScaleFactor scale_factor = ui::k100Percent;
+      // Use the scaling that matches primary display.
+      if (display::Screen* screen = display::Screen::Get()) {
+        scale_factor = ui::GetSupportedResourceScaleFactor(
+            screen->GetPrimaryDisplay().device_scale_factor());
+      }
+      // Calculate the height as an integer to avoid floating point formatting
+      // issues in the URL.
+      int height = base::ClampRound(
+          48 * ui::GetScaleForResourceScaleFactor(scale_factor));
+      return GURL(base::StrCat(
+          {image_url.spec(), "=h", base::NumberToString(height), "-pa"}));
+    }
     case ImageType::kPixAccountImage:
       // Pay with Pix is only queried in Chrome on Android.
       NOTREACHED();
@@ -94,6 +109,11 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
     return card_art_image;
   }
 
+  float scale = 1.0f;
+  if (display::Screen* screen = display::Screen::Get()) {
+    scale = screen->GetPrimaryDisplay().device_scale_factor();
+  }
+
   // Create the outer rectangle. The outer rectangle is for the
   // entire image which includes the card art and additional border.
   gfx::RectF outer_rect = gfx::RectF(CardArtImageWidth(), CardArtImageHeight());
@@ -107,17 +127,18 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
       /*height=*/CardArtImageHeight() - (kCardArtBorderStrokeWidth * 2));
   gfx::Canvas canvas =
       gfx::Canvas(gfx::Size(CardArtImageWidth(), CardArtImageHeight()),
-                  /*image_scale=*/1.0f, /*is_opaque=*/false);
+                  /*image_scale=*/scale, /*is_opaque=*/false);
   cc::PaintFlags card_art_paint;
   card_art_paint.setAntiAlias(true);
 
   // Draw card art with rounded corners in the inner rectangle.
   canvas.DrawRoundRect(inner_rect, kCardArtImageRadius, card_art_paint);
-  canvas.DrawImageInt(
-      gfx::ImageSkiaOperations::CreateResizedImage(
-          card_art_image.AsImageSkia(), skia::ImageOperations::RESIZE_BEST,
-          gfx::Size(CardArtImageWidth(), CardArtImageHeight())),
-      outer_rect.x(), outer_rect.y(), card_art_paint);
+  gfx::ImageSkia card_art_image_skia = card_art_image.AsImageSkia();
+  canvas.DrawImageInt(card_art_image_skia, /*src_x=*/0, /*src_y=*/0,
+                      card_art_image_skia.width(), card_art_image_skia.height(),
+                      outer_rect.x(), outer_rect.y(), outer_rect.width(),
+                      outer_rect.height(),
+                      /*filter=*/true, card_art_paint);
 
   // Draw border around card art using outer rectangle.
   card_art_paint.setStrokeWidth(kCardArtBorderStrokeWidth);
@@ -128,7 +149,7 @@ gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
   // Add radius around entire image.
   return gfx::Image(gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
       kCardArtImageRadius,
-      gfx::ImageSkia::CreateFromBitmap(canvas.GetBitmap(), 1.0f)));
+      gfx::ImageSkia::CreateFromBitmap(canvas.GetBitmap(), scale)));
 }
 
 gfx::Image AutofillImageFetcherImpl::ResolveValuableImage(

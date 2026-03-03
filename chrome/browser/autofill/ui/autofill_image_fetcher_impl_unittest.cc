@@ -9,12 +9,65 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/resources/grit/ui_resources.h"
 #include "url/gurl.h"
 
 namespace autofill {
+
+namespace {
+
+class ScopedFakeScreen : public display::Screen {
+ public:
+  ScopedFakeScreen() { display::Screen::SetScreenInstance(this); }
+  ~ScopedFakeScreen() override { display::Screen::SetScreenInstance(nullptr); }
+  display::Display GetPrimaryDisplay() const override { return display_; }
+
+  void SetDeviceScaleFactor(float scale_factor) {
+    display_.set_device_scale_factor(scale_factor);
+    displays_ = {display_};
+  }
+
+  // Unused functions
+  gfx::Point GetCursorScreenPoint() override { return gfx::Point(); }
+  bool IsWindowUnderCursor(gfx::NativeWindow window) override { return false; }
+  gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
+    return gfx::NativeWindow();
+  }
+
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) override {
+    return gfx::NativeWindow();
+  }
+  display::Display GetDisplayNearestWindow(
+      gfx::NativeWindow window) const override {
+    return display_;
+  }
+  display::Display GetDisplayNearestPoint(
+      const gfx::Point& point) const override {
+    return display_;
+  }
+  int GetNumDisplays() const override { return 0; }
+  display::Display GetDisplayMatching(
+      const gfx::Rect& match_rect) const override {
+    return display_;
+  }
+  void AddObserver(display::DisplayObserver* observer) override {}
+  void RemoveObserver(display::DisplayObserver* observer) override {}
+  const std::vector<display::Display>& GetAllDisplays() const override {
+    return displays_;
+  }
+
+ private:
+  display::Display display_;
+  std::vector<display::Display> displays_;
+};
+
+}  // namespace
 
 class AutofillImageFetcherImplTest : public testing::Test {
  public:
@@ -36,8 +89,7 @@ class AutofillImageFetcherImplTest : public testing::Test {
 };
 
 TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
-  // With kAutofillEnableNewCardArtAndNetworkImages enabled, we fetch the image
-  // at height of 48.
+  // We fetch the image at height of 48.
   EXPECT_EQ(GURL("https://www.example.com/fake_image1=h48-pa"),
             autofill_image_fetcher()->ResolveImageURL(
                 GURL("https://www.example.com/fake_image1"),
@@ -49,6 +101,17 @@ TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL) {
   EXPECT_EQ(GURL(kCapitalOneLargeCardArtUrl),
             autofill_image_fetcher()->ResolveImageURL(
                 capital_one_url,
+                AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
+}
+
+TEST_F(AutofillImageFetcherImplTest, ResolveCardArtURL_HighDPI) {
+  ScopedFakeScreen screen;
+  screen.SetDeviceScaleFactor(2.0f);
+
+  // We fetch the image at height of 48 * 2 = 96.
+  EXPECT_EQ(GURL("https://www.example.com/fake_image1=h96-pa"),
+            autofill_image_fetcher()->ResolveImageURL(
+                GURL("https://www.example.com/fake_image1"),
                 AutofillImageFetcherBase::ImageType::kCreditCardArtImage));
 }
 
