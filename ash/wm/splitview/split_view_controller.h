@@ -635,7 +635,7 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   base::ObserverList<
       SplitViewObserver,
       /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       observers_;
 
   // Records the presentation time of resize operation in tablet split view

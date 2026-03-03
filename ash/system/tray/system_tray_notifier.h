@@ -84,7 +84,7 @@ class ASH_EXPORT SystemTrayNotifier {
   base::ObserverList<
       SystemTrayObserver,
       /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       system_tray_observers_;
   base::ObserverList<VirtualKeyboardObserver>::Unchecked
       virtual_keyboard_observers_;

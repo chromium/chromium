@@ -6,13 +6,14 @@
 #define ASH_PUBLIC_CPP_TABLET_MODE_OBSERVER_H_
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
 // Used to observe tablet mode changes inside ash. Exported for tests.
 // Note: If you want to observe the tablet mode change on display, use
 // display::DisplayObserver::OnDisplayTabletStateChanged().
-class ASH_PUBLIC_EXPORT TabletModeObserver {
+class ASH_PUBLIC_EXPORT TabletModeObserver : public base::CheckedObserver {
  public:
   // Called when tablet mode blocks or unblocks events. This usually matches,
   // exiting or entering tablet mode, except when an external mouse is
@@ -31,7 +32,7 @@ class ASH_PUBLIC_EXPORT TabletModeObserver {
   virtual void OnTabletPhysicalStateChanged() {}
 
  protected:
-  virtual ~TabletModeObserver() = default;
+  ~TabletModeObserver() override = default;
 };
 
 }  // namespace ash

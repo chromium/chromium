@@ -6,13 +6,14 @@
 #define ASH_SYSTEM_TRAY_SYSTEM_TRAY_OBSERVER_H_
 
 #include "ash/ash_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
 class TrayBubbleView;
 
 // A class that observes system tray related focus events.
-class ASH_EXPORT SystemTrayObserver {
+class ASH_EXPORT SystemTrayObserver : public base::CheckedObserver {
  public:
   // Called when focus is about to leave system tray.
   virtual void OnFocusLeavingSystemTray(bool reverse) = 0;
@@ -33,7 +34,7 @@ class ASH_EXPORT SystemTrayObserver {
   virtual void OnImeMenuTrayBubbleShown() {}
 
  protected:
-  virtual ~SystemTrayObserver() = default;
+  ~SystemTrayObserver() override = default;
 };
 
 }  // namespace ash

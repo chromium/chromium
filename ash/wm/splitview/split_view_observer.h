@@ -7,10 +7,11 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/splitview/split_view_controller.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
-class ASH_EXPORT SplitViewObserver {
+class ASH_EXPORT SplitViewObserver : public base::CheckedObserver {
  public:
   // Called when split view state changed from |previous_state| to |state|.
   virtual void OnSplitViewStateChanged(
@@ -29,7 +30,7 @@ class ASH_EXPORT SplitViewObserver {
 
  protected:
   SplitViewObserver() = default;
-  virtual ~SplitViewObserver() = default;
+  ~SplitViewObserver() override = default;
 };
 
 }  // namespace ash

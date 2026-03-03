@@ -520,7 +520,7 @@ class ASH_EXPORT TabletModeController
   base::ObserverList<
       TabletModeObserver,
       /*check_empty=*/false,
-      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
       tablet_mode_observers_;
 
   TabletModeBehavior tablet_mode_behavior_;
