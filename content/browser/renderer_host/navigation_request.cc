@@ -11409,7 +11409,7 @@ NavigationRequest::GetMutableRuntimeFeatureStateContext() {
 }
 
 const blink::RuntimeFeatureStateContext&
-NavigationRequest::GetRuntimeFeatureStateContext() {
+NavigationRequest::GetRuntimeFeatureStateContext() const {
   return runtime_feature_state_context_;
 }
 

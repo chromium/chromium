@@ -1257,7 +1257,8 @@ class CONTENT_EXPORT NavigationRequest
   // Note: This method has another
   // version, `GetMutableRuntimeFeatureStateContext()`, accessible via
   // NavigationHandle and will return a mutable reference to the RFSC.
-  const blink::RuntimeFeatureStateContext& GetRuntimeFeatureStateContext();
+  const blink::RuntimeFeatureStateContext& GetRuntimeFeatureStateContext()
+      const;
 
   BrowsingContextGroupSwap browsing_context_group_swap() const {
     return browsing_context_group_swap_;
