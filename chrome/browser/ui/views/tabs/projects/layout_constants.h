@@ -46,12 +46,19 @@ inline constexpr int kTabGroupIconSize = 12;
 // The margins for the Tab groups icon.
 inline constexpr auto kTabGroupIconMargins = gfx::Insets(6);
 
+// Margins for the lists separator.
+inline constexpr gfx::Insets kListsSeparatorMargins = gfx::Insets::VH(12, 20);
+
 // Minimum width of the projects panel.
 inline constexpr int kProjectsPanelMinWidth = 240;
 
 // Background color of the projects panel.
 inline constexpr ui::ColorId kProjectsPanelBackgroundColor =
     ui::kColorSysSurface2;
+
+// Interior margins for the panel.
+inline constexpr gfx::Insets kProjectsPanelRegionInteriorMargins =
+    gfx::Insets::VH(12, 12);
 
 }  // namespace projects_panel
 

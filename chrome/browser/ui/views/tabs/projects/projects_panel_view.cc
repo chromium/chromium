@@ -28,6 +28,7 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/contextual_task.h"
@@ -47,6 +48,7 @@
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 #include "ui/views/view_shadow.h"
 #include "ui/views/widget/widget.h"
@@ -54,10 +56,8 @@
 namespace {
 constexpr int kClipRectRightMarginForShadow = 32;
 constexpr int kProjectPanelRightCornerRadius = 16;
-constexpr gfx::Insets kRegionInteriorMargins = gfx::Insets::VH(12, 12);
 constexpr int kShadowElevation = 2;
-constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(10, 20);
-constexpr gfx::Insets kListsSeparatorMargins = gfx::Insets::VH(12, 20);
+constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(10, 8);
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
@@ -83,7 +83,7 @@ void SetScrollViewProperties(views::ScrollView& scroll_view) {
   scroll_view.SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred));
+                               views::MaximumFlexSizeRule::kUnbounded));
 }
 
 class STGTabsMenuModelWithCallback : public tab_groups::STGTabsMenuModel {
@@ -119,14 +119,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   content_container_ = AddChildView(std::make_unique<views::View>());
   content_container_->SetPaintToLayer();
   content_container_->layer()->SetFillsBoundsOpaquely(false);
-  content_container_->SetLayoutManager(std::make_unique<views::FlexLayout>())
-      ->SetOrientation(views::LayoutOrientation::kVertical)
-      .SetInteriorMargin(kRegionInteriorMargins)
-      .SetCollapseMargins(true)
-      .SetDefault(
-          views::kFlexBehaviorKey,
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                   views::MaximumFlexSizeRule::kPreferred));
+
   content_shadow_ =
       std::make_unique<views::ViewShadow>(content_container_, kShadowElevation);
   content_shadow_->SetRoundedCornerRadius(kProjectPanelRightCornerRadius);
@@ -151,17 +144,21 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
       std::make_unique<ProjectsPanelControlsView>(
           root_action_item_.get(), action_view_controller_.get()));
 
+  auto* tab_groups_container = content_container_->AddChildView(
+      std::make_unique<views::FlexLayoutView>());
+  tab_groups_container->SetOrientation(views::LayoutOrientation::kVertical);
+  tab_groups_container_ = tab_groups_container;
+
   auto* groups_list_title =
-      content_container_->AddChildView(std::make_unique<views::Label>());
+      tab_groups_container_->AddChildView(std::make_unique<views::Label>());
   groups_list_title->SetText(l10n_util::GetStringUTF16(IDS_TAB_GROUPS_TITLE));
   groups_list_title->SetProperty(views::kElementIdentifierKey,
                                  kProjectsPanelTabGroupsListTitleElementId);
   SetListTitleProperties(*groups_list_title);
 
   views::ScrollView* tab_groups_scroll_view =
-      content_container_->AddChildView(std::make_unique<views::ScrollView>(
+      tab_groups_container_->AddChildView(std::make_unique<views::ScrollView>(
           views::ScrollView::ScrollWithLayers::kEnabled));
-
   tab_groups_view_ = tab_groups_scroll_view->SetContents(
       std::make_unique<ProjectsPanelTabGroupsView>(
           root_action_item_.get(), action_view_controller_.get(),
@@ -179,20 +176,25 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     tab_groups_view_->disable_animations_for_testing();  // IN-TEST
   }
 
+  views::Separator* separator = nullptr;
   if (threads_enabled) {
-    auto* separator =
+    separator =
         content_container_->AddChildView(std::make_unique<views::Separator>());
-    separator->SetProperty(views::kMarginsKey, kListsSeparatorMargins);
     separator->SetColorId(kColorProjectsPanelListsSeparator);
 
+    auto* threads_container = content_container_->AddChildView(
+        std::make_unique<views::FlexLayoutView>());
+    threads_container->SetOrientation(views::LayoutOrientation::kVertical);
+    threads_container_ = threads_container;
+
     auto* threads_list_title =
-        content_container_->AddChildView(std::make_unique<views::Label>());
+        threads_container_->AddChildView(std::make_unique<views::Label>());
     threads_list_title->SetText(
         l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
     SetListTitleProperties(*threads_list_title);
 
     views::ScrollView* threads_scroll_view =
-        content_container_->AddChildView(std::make_unique<views::ScrollView>(
+        threads_container_->AddChildView(std::make_unique<views::ScrollView>(
             views::ScrollView::ScrollWithLayers::kEnabled));
     auto threads_view =
         std::make_unique<ProjectsPanelRecentThreadsView>(base::BindRepeating(
@@ -200,6 +202,11 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
     SetScrollViewProperties(*threads_scroll_view);
   }
+
+  content_container_->SetLayoutManager(
+      std::make_unique<ProjectsPanelViewLayout>(controls_view_,
+                                                tab_groups_container_,
+                                                threads_container_, separator));
 
   resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 

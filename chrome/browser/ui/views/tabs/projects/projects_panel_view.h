@@ -130,7 +130,9 @@ class ProjectsPanelView : public views::View,
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<views::View> content_container_ = nullptr;
   raw_ptr<ProjectsPanelControlsView> controls_view_ = nullptr;
+  raw_ptr<views::View> tab_groups_container_ = nullptr;
   raw_ptr<ProjectsPanelTabGroupsView> tab_groups_view_ = nullptr;
+  raw_ptr<views::View> threads_container_ = nullptr;
   raw_ptr<ProjectsPanelRecentThreadsView> threads_view_ = nullptr;
 
   std::unique_ptr<views::ViewShadow> content_shadow_;

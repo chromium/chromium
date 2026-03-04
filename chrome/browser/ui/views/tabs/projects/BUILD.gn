@@ -14,6 +14,7 @@ source_set("projects") {
     "projects_panel_thread_item_view.h",
     "projects_panel_utils.h",
     "projects_panel_view.h",
+    "projects_panel_view_layout.h",
   ]
 
   public_deps = [
@@ -38,6 +39,7 @@ source_set("impl") {
     "projects_panel_thread_item_view.cc",
     "projects_panel_utils.cc",
     "projects_panel_view.cc",
+    "projects_panel_view_layout.cc",
   ]
 
   public_deps = [ ":projects" ]
@@ -75,6 +77,7 @@ source_set("unit_tests") {
     "projects_panel_tab_groups_item_view_unittest.cc",
     "projects_panel_tab_groups_view_unittest.cc",
     "projects_panel_thread_item_view_unittest.cc",
+    "projects_panel_view_layout_unittest.cc",
     "projects_panel_view_unittest.cc",
   ]
   deps = [
