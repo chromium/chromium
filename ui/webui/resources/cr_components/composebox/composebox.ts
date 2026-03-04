@@ -539,7 +539,9 @@ export class ComposeboxElement extends I18nMixinLit
 
     if (changedPrivateProperties.has('inputPlaceholderOverride') ||
         changedPrivateProperties.has('files_') ||
-        changedPrivateProperties.has('enableFileHint')) {
+        changedPrivateProperties.has('enableFileHint') ||
+        changedPrivateProperties.has('inputState_') ||
+        changedPrivateProperties.has('activeToolMode_')) {
       this.updateInputPlaceholder_();
     }
   }
