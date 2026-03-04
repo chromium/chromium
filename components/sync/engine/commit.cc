@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -200,6 +201,9 @@ SyncerError Commit::PostAndProcessResponse(
     ReportFullCommitFailure(syncer_error);
     return syncer_error;
   }
+
+  base::UmaHistogramCounts100("Sync.CommitRequestEntityCount",
+                              message_.commit().entries_size());
 
   if (cycle->context()->debug_info_getter()) {
     // Clear debug info now that we have successfully sent it to the server.

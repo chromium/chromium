@@ -621,6 +621,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Sync.CommitRequestEntityCount" units="entities"
+    expires_after="2026-08-23">
+  <owner>rushans@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <summary>
+    Records the number of entries in a commit request. Recorded only when the
+    commit request was successfully sent and a response was received (i.e. no
+    network or protocol error).
+  </summary>
+</histogram>
+
 <histogram name="Sync.CommitResponseForUnknownEntity" enum="SyncDataTypes"
     expires_after="2026-08-02">
   <owner>treib@chromium.org</owner>
