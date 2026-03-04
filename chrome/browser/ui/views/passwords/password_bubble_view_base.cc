@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
@@ -86,8 +87,8 @@ void PasswordBubbleViewBase::ShowBubble(content::WebContents* web_contents,
   // highlighted button by BubbleDialogDelegate. If not, we set the page action
   // icon as the highlighted button here.
   if (!bubble_anchor_util::IsHighlightable(anchor)) {
-    g_manage_passwords_bubble_->SetHighlightedButton(
-        button_provider->GetPageActionView(kActionShowPasswordsBubbleOrPage));
+    g_manage_passwords_bubble_->SetHighlightedElement(
+        kPasswordsOmniboxKeyIconElementId);
   }
 
   views::BubbleDialogDelegateView::CreateBubble(g_manage_passwords_bubble_);

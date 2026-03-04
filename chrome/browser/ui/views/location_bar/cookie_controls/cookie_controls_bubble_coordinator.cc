@@ -6,6 +6,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_bubble_view_controller.h"
@@ -57,11 +58,7 @@ void CookieControlsBubbleCoordinator::ShowBubble(
                      base::Unretained(this)));
   bubble_view_ = bubble_view.get();
   bubble_view_->View::AddObserver(this);
-
-  auto* icon_view =
-      toolbar_button_provider->GetPageActionView(kActionShowCookieControls);
-  CHECK(icon_view);
-  bubble_view_->SetHighlightedButton(icon_view);
+  bubble_view_->SetHighlightedElement(kCookieControlsIconElementId);
 
   view_controller_ = std::make_unique<CookieControlsBubbleViewController>(
       bubble_view_, controller, web_contents);

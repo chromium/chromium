@@ -549,9 +549,7 @@ void BookmarkBubbleView::ShowBubble(views::View* anchor_view,
       dialog_model_builder.Build(), anchor_view,
       views::BubbleBorder::TOP_RIGHT);
   bookmark_bubble_ = bubble.get();
-  if (highlighted_button) {
-    bubble->SetHighlightedButton(highlighted_button);
-  }
+  bubble->SetHighlightedElement(kBookmarkStarViewElementId);
 
   if (ShouldShowShoppingCollectionFootnote(profile, bookmark_model,
                                            bookmark_node)) {

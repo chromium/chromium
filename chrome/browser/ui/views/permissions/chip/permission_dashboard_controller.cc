@@ -422,8 +422,8 @@ void PermissionDashboardController::ShowBubble() {
                     ->GetContentSettingBubbleModelDelegate(),
                 web_contents),
             web_contents, anchor, views::BubbleBorder::TOP_LEFT);
-    bubble_view_->SetHighlightedButton(
-        permission_dashboard_view_->GetIndicatorChip());
+    bubble_view_->SetHighlightedElement(
+        PermissionChipView::kIndicatorChipElementId);
     views::Widget* bubble_widget =
         views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
     bubble_widget->Show();

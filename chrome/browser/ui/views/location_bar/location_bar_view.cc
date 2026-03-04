@@ -2194,7 +2194,7 @@ bool LocationBarView::ShowPageInfoDialog() {
           .Build();
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
-  bubble->SetHighlightedButton(location_icon_view_);
+  bubble->SetHighlightedElement(kLocationIconElementId);
   bubble->GetWidget()->Show();
   return true;
 }

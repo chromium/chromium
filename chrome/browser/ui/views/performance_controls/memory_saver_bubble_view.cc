@@ -145,11 +145,7 @@ views::BubbleDialogModelHost* MemorySaverBubbleView::ShowBubble(
   auto bubble_unique = std::make_unique<views::BubbleDialogModelHost>(
       std::move(dialog_model), anchor, views::BubbleBorder::TOP_RIGHT);
   auto* bubble = bubble_unique.get();
-  auto* const toolbar_button_provider =
-      BrowserView::GetBrowserViewForBrowser(browser)->toolbar_button_provider();
-  views::Button* highlighted_button =
-      toolbar_button_provider->GetPageActionView(kActionShowMemorySaverChip);
-  bubble->SetHighlightedButton(highlighted_button);
+  bubble->SetHighlightedElement(kMemorySaverChipElementId);
 
   views::Widget* const widget =
       views::BubbleDialogDelegate::CreateBubble(std::move(bubble_unique));

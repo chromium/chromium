@@ -180,7 +180,7 @@ void MerchantTrustChipButtonController::OpenPageInfoSubpage() {
   // and set chip_button_ as highlighted button.
   views::BubbleDialogDelegateView* const bubble =
       PageInfoBubbleView::CreatePageInfoBubble(std::move(specification));
-  bubble->SetHighlightedButton(chip_button_);
+  bubble->SetHighlightedElement(kMerchantTrustChipElementId);
   bubble->GetWidget()->Show();
 }
 
