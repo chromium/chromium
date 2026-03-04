@@ -2046,6 +2046,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.IsSharedProducerPipeValid"
+    enum="Boolean" expires_after="2026-07-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether the shared producer pipe is valid when handling an
+    intercepted network response.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, while committed the navigation with locally stored headers and
+    when the network service delegation mode is enabled. If this is true, the
+    data pipe producer handle provided to the network service is still valid.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.IsValidBodyStreamProvided"
     enum="Boolean" expires_after="2026-07-19">
   <owner>sisidovski@chromium.org</owner>
