@@ -2404,6 +2404,12 @@ ci.thin_tester(
                     "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_unittests.filter",
                 ],
             ),
+            "webgpu_cts_fxc_tests": targets.remove(
+                reason = "WebGPU is only enabled on Qualcomm Windows devices where DXC is available. See crbug.com/475891205",
+            ),
+            "webgpu_cts_fxc_with_validation_tests": targets.remove(
+                reason = "WebGPU is only enabled on Qualcomm Windows devices where DXC is available. See crbug.com/475891205",
+            ),
         },
     ),
     targets_settings = targets.settings(
