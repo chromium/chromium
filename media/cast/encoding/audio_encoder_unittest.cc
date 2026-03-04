@@ -12,10 +12,12 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_span.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
@@ -89,19 +91,17 @@ class TestEncodedAudioFrameReceiver {
 };
 
 struct TestScenario {
-  raw_ptr<const int64_t, AllowPtrArithmetic> durations_in_ms;
-  size_t num_durations;
+  base::raw_span<const int64_t> durations_in_ms;
 
-  TestScenario(const int64_t* d, size_t n)
-      : durations_in_ms(d), num_durations(n) {}
+  explicit TestScenario(base::span<const int64_t> d) : durations_in_ms(d) {}
 
   std::string ToString() const {
     std::ostringstream out;
-    for (size_t i = 0; i < num_durations; ++i) {
+    for (size_t i = 0; i < durations_in_ms.size(); ++i) {
       if (i > 0) {
         out << ", ";
       }
-      out << UNSAFE_TODO(durations_in_ms[i]);
+      out << durations_in_ms[i];
     }
     return out.str();
   }
@@ -112,9 +112,7 @@ struct TestScenario {
 class AudioEncoderTest : public ::testing::TestWithParam<TestScenario>,
                          public WithCastEnvironment {
  public:
-  AudioEncoderTest() {
-    InitializeMediaLibrary();
-  }
+  AudioEncoderTest() { InitializeMediaLibrary(); }
 
   AudioEncoderTest(const AudioEncoderTest&) = delete;
   AudioEncoderTest(AudioEncoderTest&&) = delete;
@@ -129,11 +127,10 @@ class AudioEncoderTest : public ::testing::TestWithParam<TestScenario>,
 
     const base::TimeDelta frame_duration = audio_encoder_->GetFrameDuration();
 
-    for (size_t i = 0; i < scenario.num_durations; ++i) {
-      const bool simulate_missing_data =
-          UNSAFE_TODO(scenario.durations_in_ms[i]) < 0;
-      const base::TimeDelta duration = base::Milliseconds(
-          std::abs(UNSAFE_TODO(scenario.durations_in_ms[i])));
+    for (const int64_t duration_ms : scenario.durations_in_ms) {
+      const bool simulate_missing_data = duration_ms < 0;
+      const base::TimeDelta duration =
+          base::Milliseconds(std::abs(duration_ms));
       receiver_->SetCaptureTimeBounds(NowTicks() - frame_duration,
                                       NowTicks() + duration);
       if (!simulate_missing_data) {
@@ -192,62 +189,59 @@ TEST_P(AudioEncoderTest, EncodeAac) {
 }
 #endif
 
-static const int64_t kOneCall_3Millis[] = {3};
-static const int64_t kOneCall_10Millis[] = {10};
-static const int64_t kOneCall_13Millis[] = {13};
-static const int64_t kOneCall_20Millis[] = {20};
+static const std::vector<int64_t> kOneCall_3Millis = {3};
+static const std::vector<int64_t> kOneCall_10Millis = {10};
+static const std::vector<int64_t> kOneCall_13Millis = {13};
+static const std::vector<int64_t> kOneCall_20Millis = {20};
 
-static const int64_t kTwoCalls_3Millis[] = {3, 3};
-static const int64_t kTwoCalls_10Millis[] = {10, 10};
-static const int64_t kTwoCalls_Mixed1[] = {3, 10};
-static const int64_t kTwoCalls_Mixed2[] = {10, 3};
-static const int64_t kTwoCalls_Mixed3[] = {3, 17};
-static const int64_t kTwoCalls_Mixed4[] = {17, 3};
+static const std::vector<int64_t> kTwoCalls_3Millis = {3, 3};
+static const std::vector<int64_t> kTwoCalls_10Millis = {10, 10};
+static const std::vector<int64_t> kTwoCalls_Mixed1 = {3, 10};
+static const std::vector<int64_t> kTwoCalls_Mixed2 = {10, 3};
+static const std::vector<int64_t> kTwoCalls_Mixed3 = {3, 17};
+static const std::vector<int64_t> kTwoCalls_Mixed4 = {17, 3};
 
-static const int64_t kManyCalls_3Millis[] = {3, 3, 3, 3, 3, 3, 3, 3,
-                                             3, 3, 3, 3, 3, 3, 3};
-static const int64_t kManyCalls_10Millis[] = {10, 10, 10, 10, 10, 10, 10, 10,
-                                              10, 10, 10, 10, 10, 10, 10};
-static const int64_t kManyCalls_Mixed1[] = {3,  10, 3,  10, 3,  10, 3,  10, 3,
-                                            10, 3,  10, 3,  10, 3,  10, 3,  10};
-static const int64_t kManyCalls_Mixed2[] = {10, 3, 10, 3, 10, 3, 10, 3, 10, 3,
-                                            10, 3, 10, 3, 10, 3, 10, 3, 10, 3};
-static const int64_t kManyCalls_Mixed3[] = {3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8,
-                                            9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4};
-static const int64_t kManyCalls_Mixed4[] = {31, 4, 15, 9,  26, 53, 5,  8, 9,
-                                            7,  9, 32, 38, 4,  62, 64, 3};
-static const int64_t kManyCalls_Mixed5[] = {3, 14, 15, 9, 26, 53, 58, 9, 7,
-                                            9, 3,  23, 8, 4,  6,  2,  6, 43};
+static const std::vector<int64_t> kManyCalls_3Millis = {3, 3, 3, 3, 3, 3, 3, 3,
+                                                        3, 3, 3, 3, 3, 3, 3};
+static const std::vector<int64_t> kManyCalls_10Millis = {
+    10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+static const std::vector<int64_t> kManyCalls_Mixed1 = {
+    3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10};
+static const std::vector<int64_t> kManyCalls_Mixed2 = {
+    10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3, 10, 3};
+static const std::vector<int64_t> kManyCalls_Mixed3 = {
+    3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5, 8, 9, 7, 9, 3, 2, 3, 8, 4, 6, 2, 6, 4};
+static const std::vector<int64_t> kManyCalls_Mixed4 = {
+    31, 4, 15, 9, 26, 53, 5, 8, 9, 7, 9, 32, 38, 4, 62, 64, 3};
+static const std::vector<int64_t> kManyCalls_Mixed5 = {
+    3, 14, 15, 9, 26, 53, 58, 9, 7, 9, 3, 23, 8, 4, 6, 2, 6, 43};
+static const std::vector<int64_t> kOneBigUnderrun = {10,    10, 10, 10,
+                                                     -1000, 10, 10, 10};
+static const std::vector<int64_t> kTwoBigUnderruns = {
+    10, 10, 10, 10, -712, 10, 10, 10, -1311, 10, 10, 10};
+static const std::vector<int64_t> kMixedUnderruns = {
+    31, -64, 4, 15, 9, 26, -53, 5, 8, -9, 7, 9, 32, 38, -4, 62, -64, 3};
 
-static const int64_t kOneBigUnderrun[] = {10, 10, 10, 10, -1000, 10, 10, 10};
-static const int64_t kTwoBigUnderruns[] = {10, 10, 10,    10, -712, 10,
-                                           10, 10, -1311, 10, 10,   10};
-static const int64_t kMixedUnderruns[] = {31, -64, 4, 15, 9,  26, -53, 5,   8,
-                                          -9, 7,   9, 32, 38, -4, 62,  -64, 3};
-
-INSTANTIATE_TEST_SUITE_P(
-    AudioEncoderTestScenarios,
-    AudioEncoderTest,
-    ::testing::Values(
-        TestScenario(kOneCall_3Millis, std::size(kOneCall_3Millis)),
-        TestScenario(kOneCall_10Millis, std::size(kOneCall_10Millis)),
-        TestScenario(kOneCall_13Millis, std::size(kOneCall_13Millis)),
-        TestScenario(kOneCall_20Millis, std::size(kOneCall_20Millis)),
-        TestScenario(kTwoCalls_3Millis, std::size(kTwoCalls_3Millis)),
-        TestScenario(kTwoCalls_10Millis, std::size(kTwoCalls_10Millis)),
-        TestScenario(kTwoCalls_Mixed1, std::size(kTwoCalls_Mixed1)),
-        TestScenario(kTwoCalls_Mixed2, std::size(kTwoCalls_Mixed2)),
-        TestScenario(kTwoCalls_Mixed3, std::size(kTwoCalls_Mixed3)),
-        TestScenario(kTwoCalls_Mixed4, std::size(kTwoCalls_Mixed4)),
-        TestScenario(kManyCalls_3Millis, std::size(kManyCalls_3Millis)),
-        TestScenario(kManyCalls_10Millis, std::size(kManyCalls_10Millis)),
-        TestScenario(kManyCalls_Mixed1, std::size(kManyCalls_Mixed1)),
-        TestScenario(kManyCalls_Mixed2, std::size(kManyCalls_Mixed2)),
-        TestScenario(kManyCalls_Mixed3, std::size(kManyCalls_Mixed3)),
-        TestScenario(kManyCalls_Mixed4, std::size(kManyCalls_Mixed4)),
-        TestScenario(kManyCalls_Mixed5, std::size(kManyCalls_Mixed5)),
-        TestScenario(kOneBigUnderrun, std::size(kOneBigUnderrun)),
-        TestScenario(kTwoBigUnderruns, std::size(kTwoBigUnderruns)),
-        TestScenario(kMixedUnderruns, std::size(kMixedUnderruns))));
-
+INSTANTIATE_TEST_SUITE_P(AudioEncoderTestScenarios,
+                         AudioEncoderTest,
+                         ::testing::Values(TestScenario(kOneCall_3Millis),
+                                           TestScenario(kOneCall_10Millis),
+                                           TestScenario(kOneCall_13Millis),
+                                           TestScenario(kOneCall_20Millis),
+                                           TestScenario(kTwoCalls_3Millis),
+                                           TestScenario(kTwoCalls_10Millis),
+                                           TestScenario(kTwoCalls_Mixed1),
+                                           TestScenario(kTwoCalls_Mixed2),
+                                           TestScenario(kTwoCalls_Mixed3),
+                                           TestScenario(kTwoCalls_Mixed4),
+                                           TestScenario(kManyCalls_3Millis),
+                                           TestScenario(kManyCalls_10Millis),
+                                           TestScenario(kManyCalls_Mixed1),
+                                           TestScenario(kManyCalls_Mixed2),
+                                           TestScenario(kManyCalls_Mixed3),
+                                           TestScenario(kManyCalls_Mixed4),
+                                           TestScenario(kManyCalls_Mixed5),
+                                           TestScenario(kOneBigUnderrun),
+                                           TestScenario(kTwoBigUnderruns),
+                                           TestScenario(kMixedUnderruns)));
 }  // namespace media::cast
