@@ -10,6 +10,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/metrics/log_event.h"
 #include "components/autofill/core/browser/proto/autofill_ai_model_cache.pb.h"

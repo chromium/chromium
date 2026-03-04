@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "components/autofill/core/browser/autofill_format_string.h"
+
 namespace autofill {
 
 AutofillAiModelCache::FieldPrediction::FieldPrediction() = default;

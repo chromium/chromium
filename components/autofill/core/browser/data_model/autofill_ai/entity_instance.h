@@ -19,6 +19,7 @@
 #include "base/types/pass_key.h"
 #include "base/types/strong_alias.h"
 #include "base/uuid.h"
+#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
 #include "components/autofill/core/browser/data_model/addresses/contact_info.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/country_info.h"

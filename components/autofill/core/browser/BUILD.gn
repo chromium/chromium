@@ -137,6 +137,8 @@ static_library("browser") {
     "autofill_feedback_data.h",
     "autofill_field.cc",
     "autofill_field.h",
+    "autofill_format_string.cc",
+    "autofill_format_string.h",
     "autofill_server_prediction.cc",
     "autofill_server_prediction.h",
     "autofill_shared_storage_handler.h",

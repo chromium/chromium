@@ -23,6 +23,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/optional_ref.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/crowdsourcing/randomized_encoder.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
 #include "components/autofill/core/browser/data_quality/validation.h"

@@ -17,6 +17,7 @@
 
 #include "base/types/optional_ref.h"
 #include "base/types/pass_key.h"
+#include "components/autofill/core/browser/autofill_format_string.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
@@ -33,8 +34,6 @@ namespace autofill {
 class AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
 class FormAutofillHistory;
 class FormFiller;
-
-enum FormatString_Type : int;
 
 using FieldPrediction =
     AutofillQueryResponse_FormSuggestion_FieldSuggestion_FieldPrediction;
@@ -131,37 +130,6 @@ class Section {
 
 LogBuffer& operator<<(LogBuffer& buffer, const Section& section);
 std::ostream& operator<<(std::ostream& os, const Section& section);
-
-// Describes formatting information for a field. Currently used only for
-// filling Autofill AI data.
-//
-// Currently, the following kinds of format stings are supported:
-// - Affix format strings: data_util::IsValidAffixFormat().
-// - Date format strings: data_util::IsValidDateFormat().
-// - Date format strings: ICU format.
-// - Flight number format strings (data_util::IsValidFlightNumberFormat().
-struct AutofillFormatString final {
-  AutofillFormatString();
-  AutofillFormatString(std::u16string value, FormatString_Type type);
-
-  AutofillFormatString(const AutofillFormatString&);
-  AutofillFormatString& operator=(const AutofillFormatString&);
-  AutofillFormatString(AutofillFormatString&&);
-  AutofillFormatString& operator=(AutofillFormatString&&);
-  ~AutofillFormatString();
-
-  static bool IsValid(std::u16string_view value, FormatString_Type type);
-
-  friend bool operator==(const AutofillFormatString&,
-                         const AutofillFormatString&) = default;
-
-  // The actual format string.
-  std::u16string value;
-
-  // Format strings can have different types: They can specify a date
-  // format, an affix format, etc. See `FormatString_Type` for allowed values.
-  FormatString_Type type{};
-};
 
 // The ordering matters: higher values overrule lower values (e.g., kServer
 // overrules kHeuristics).
