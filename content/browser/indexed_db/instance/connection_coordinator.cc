@@ -8,7 +8,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <tuple>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -59,7 +58,6 @@ enum class RequestState {
   kPendingNoConnections,
   kPendingLocks,
   kPendingTransactionComplete,
-  kError,
   kDone,
 };
 }  // namespace
@@ -121,10 +119,7 @@ class ConnectionCoordinator::ConnectionRequest {
   // removed from the queue.
   virtual void OnForceClose(const std::string& message) && = 0;
 
-  RequestState state() const { return state_; }
-
-  // Relevant if state() is kError.
-  Status status() const { return saved_status_; }
+  const StatusOr<RequestState>& state() const { return state_; }
 
  protected:
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> TakeFactoryClient() {
@@ -147,7 +142,7 @@ class ConnectionCoordinator::ConnectionRequest {
                                      std::move(next_step));
   }
 
-  RequestState state_ = RequestState::kNotStarted;
+  StatusOr<RequestState> state_ = RequestState::kNotStarted;
 
   BucketContextHandle bucket_context_handle_;
   // This is safe because Database owns this object.
@@ -168,8 +163,6 @@ class ConnectionCoordinator::ConnectionRequest {
   mojo::AssociatedRemote<blink::mojom::IDBFactoryClient> factory_client_;
   // Used to ensure `factory_client_->Blocked()` is only called once.
   bool blocked_called_ = false;
-
-  Status saved_status_;
 
   PartitionedLockHolder lock_receiver_;
 
@@ -237,8 +230,8 @@ class ConnectionCoordinator::OpenRequest
 
   void InitDatabase(bool has_connections) {
     base::ElapsedTimer timer;
-    saved_status_ = db_->OpenInternal();
-    if (saved_status_.ok()) {
+    Status open_status = db_->OpenInternal();
+    if (open_status.ok()) {
       if (bucket_context_handle_->IsUsingSqlite()) {
         // The SQLite backing store itself surfaces data loss info only at the
         // database level, but `pending_->data_loss_info` will already contain
@@ -261,7 +254,7 @@ class ConnectionCoordinator::OpenRequest
       }
       TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
                                  message);
-      state_ = RequestState::kError;
+      state_ = base::unexpected(open_status);
       tasks_available_callback_.Run();
       return;
     }
@@ -519,8 +512,7 @@ class ConnectionCoordinator::DeleteRequest
           "Internal error opening backing store for indexedDB.deleteDatabase.";
       TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
                                  base::ASCIIToUTF16(error_message));
-      state_ = RequestState::kError;
-      saved_status_ = exists.error();
+      state_ = base::unexpected(exists.error());
       if (exists.error().IsCorruption()) {
         bucket_context_handle_->HandleBackingStoreCorruption(error_message);
       }
@@ -546,12 +538,12 @@ class ConnectionCoordinator::DeleteRequest
   void InitDatabase(bool has_connections) {
     ScopedTimeAccumulator accumulator(synchronous_duration_);
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
-    saved_status_ = db_->OpenInternal();
-    if (!saved_status_.ok()) {
+    Status open_status = db_->OpenInternal();
+    if (!open_status.ok()) {
       TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
                                  u"Internal error creating database backend "
                                  u"for indexedDB.deleteDatabase.");
-      state_ = RequestState::kError;
+      state_ = base::unexpected(open_status);
       return;
     }
 
@@ -589,7 +581,6 @@ class ConnectionCoordinator::DeleteRequest
 
     base::ScopedClosureRunner scoped_tasks_available(tasks_available_callback_);
     if (old_version.has_value()) {
-      saved_status_ = Status::OK();
       TakeFactoryClient()->DeleteSuccess(old_version.value());
       state_ = RequestState::kDone;
       LogDuration(synchronous_duration_ += timer.Elapsed(),
@@ -598,10 +589,9 @@ class ConnectionCoordinator::DeleteRequest
     } else {
       // TODO(jsbell): Consider including sanitized leveldb status
       // message.
-      saved_status_ = old_version.error();
       TakeFactoryClient()->Error(blink::mojom::IDBException::kUnknownError,
                                  u"Internal error deleting database.");
-      state_ = RequestState::kError;
+      state_ = base::unexpected(old_version.error());
     }
   }
 
@@ -712,10 +702,10 @@ void ConnectionCoordinator::OnUpgradeTransactionFinished(bool committed) {
   request_queue_.front()->UpgradeTransactionFinished(committed);
 }
 
-std::tuple<ConnectionCoordinator::ExecuteTaskResult, Status>
+StatusOr<ConnectionCoordinator::ExecuteTaskResult>
 ConnectionCoordinator::ExecuteTask(bool has_connections) {
   if (request_queue_.empty()) {
-    return {ExecuteTaskResult::kDone, Status()};
+    return ExecuteTaskResult::kDone;
   }
 
   auto& request = request_queue_.front();
@@ -724,37 +714,39 @@ ConnectionCoordinator::ExecuteTask(bool has_connections) {
     DCHECK(request->state() != RequestState::kNotStarted);
   }
 
-  switch (request->state()) {
+  StatusOr<RequestState> state = request->state();
+  if (!state.has_value()) {
+    // Move `request_to_discard` out of `request_queue_` then
+    // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
+    // calls OnConnectionClosedDuringUpgrade and OnNoConnections, which
+    // interact with `request_queue_` assuming the queue no longer holds
+    // `request_to_discard`.
+    std::unique_ptr<ConnectionRequest> request_to_discard =
+        std::move(request_queue_.front());
+    request_queue_.pop();
+    request_to_discard.reset();
+    return base::unexpected(state.error());
+  }
+
+  switch (state.value()) {
     case RequestState::kNotStarted:
       NOTREACHED();
     case RequestState::kPendingNoConnections:
     case RequestState::kPendingLocks:
     case RequestState::kPendingTransactionComplete:
-      return {ExecuteTaskResult::kPendingAsyncWork, Status()};
+      return ExecuteTaskResult::kPendingAsyncWork;
     case RequestState::kDone: {
       // Move `request_to_discard` out of `request_queue_` then
       // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
       // calls OnConnectionClosedDuringUpgrade and OnNoConnections, which
       // interact with `request_queue_` assuming the queue no longer holds
       // `request_to_discard`.
-      auto request_to_discard = std::move(request_queue_.front());
+      std::unique_ptr<ConnectionRequest> request_to_discard =
+          std::move(request_queue_.front());
       request_queue_.pop();
       request_to_discard.reset();
-      return {request_queue_.empty() ? ExecuteTaskResult::kDone
-                                     : ExecuteTaskResult::kMoreTasks,
-              Status::OK()};
-    }
-    case RequestState::kError: {
-      Status status = request->status();
-      // Move `request_to_discard` out of `request_queue_` then
-      // `request_queue_.pop()`. We do this because `request_to_discard`'s dtor
-      // calls OnConnectionClosedDuringUpgrade and OnNoConnections, which
-      // interact with `request_queue_` assuming the queue no longer holds
-      // `request_to_discard`.
-      auto request_to_discard = std::move(request_queue_.front());
-      request_queue_.pop();
-      request_to_discard.reset();
-      return {ExecuteTaskResult::kError, status};
+      return request_queue_.empty() ? ExecuteTaskResult::kDone
+                                    : ExecuteTaskResult::kMoreTasks;
     }
   }
   NOTREACHED();

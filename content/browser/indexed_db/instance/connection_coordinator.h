@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_CONNECTION_COORDINATOR_H_
 
 #include <memory>
-#include <tuple>
 
 #include "base/containers/queue.h"
 #include "base/functional/callback_forward.h"
@@ -63,14 +62,10 @@ class CONTENT_EXPORT ConnectionCoordinator {
     // There are tasks but they are waiting on async work to complete. No more
     // calls to ExecuteTask() are necessary.
     kPendingAsyncWork,
-    // There was an error executing a task - see the status. The offending task
-    // was removed, and the caller can choose to continue executing tasks if
-    // they want.
-    kError,
     // There are no more tasks to run.
     kDone,
   };
-  std::tuple<ExecuteTaskResult, Status> ExecuteTask(bool has_connections);
+  StatusOr<ExecuteTaskResult> ExecuteTask(bool has_connections);
 
   bool HasTasks() const { return !request_queue_.empty(); }
 

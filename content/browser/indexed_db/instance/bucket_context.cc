@@ -973,6 +973,7 @@ void BucketContext::OnDatabaseError(Database* database,
                                     const std::string& message) {
   CHECK(!status.ok());
 
+  LOG(ERROR) << " got status " << status.ToString();
   if (status.IsIOError()) {
     quota_manager_proxy_->OnClientWriteFailed(bucket_info_.storage_key);
   }

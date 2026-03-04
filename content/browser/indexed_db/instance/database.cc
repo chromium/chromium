@@ -307,16 +307,15 @@ void Database::RegisterAndScheduleTransaction(Transaction* transaction) {
 
 Status Database::RunTasks() {
   // First execute any pending tasks in the connection coordinator.
-  ConnectionCoordinator::ExecuteTaskResult task_state;
-  Status status;
-  do {
-    std::tie(task_state, status) =
+  while (true) {
+    StatusOr<ConnectionCoordinator::ExecuteTaskResult> task_state =
         connection_coordinator_.ExecuteTask(!connections_.empty());
-  } while (task_state == ConnectionCoordinator::ExecuteTaskResult::kMoreTasks);
-
-  if (task_state == ConnectionCoordinator::ExecuteTaskResult::kError) {
-    CHECK(!status.ok());
-    return status;
+    if (!task_state.has_value()) {
+      return task_state.error();
+    }
+    if (task_state != ConnectionCoordinator::ExecuteTaskResult::kMoreTasks) {
+      break;
+    }
   }
 
   bool transactions_removed = true;
