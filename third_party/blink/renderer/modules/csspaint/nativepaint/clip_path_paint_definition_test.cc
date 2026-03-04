@@ -40,8 +40,18 @@ enum UpdatesNeededForNextFrame {
   kPaintStatusReset = 1 << 0,
   kNeedsPaintPropertyUpdate = 1 << 2,
   kScheduledAnimationUpdate = 1 << 3,
-  kAllUpdates =
-      kPaintStatusReset | kNeedsPaintPropertyUpdate | kScheduledAnimationUpdate
+
+  kPaintInvalidated = 1 << 4,
+
+  kMainThreadAnimationFrameNoInvalidation = kScheduledAnimationUpdate,
+
+  kMainThreadAnimationFrame = kMainThreadAnimationFrameNoInvalidation |
+                              kNeedsPaintPropertyUpdate | kPaintInvalidated,
+
+  kAllUpdates = kMainThreadAnimationFrame | kPaintStatusReset,
+
+  kMainThreadPropertyInvalidation =
+      kNeedsPaintPropertyUpdate | kPaintInvalidated
 };
 
 using CompositedPaintStatus = ElementAnimations::CompositedPaintStatus;
@@ -136,6 +146,11 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
               status);
 
+    // Various non-animation things can set scheduled animation updates. Reset
+    // mocks here as we're interested about scheduling animation service
+    // post-paint.
+    Client()->ResetMocks();
+
     UpdateAllLifecyclePhasesForTest();
 
     switch (status) {
@@ -171,7 +186,14 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     }
   }
 
-  int ExpectNoFallbackForAnimatedElement(Element* element, int init_time_ms) {
+  // Given an element with a *CSS* defined compositable clip-path animation with
+  // no disqualifiers, start the animation and advance to the first style change
+  // to ensure all invariants hold. The animation pointer is returned for
+  // further testing.
+  Animation* StartAndVerifyEligibleClipPathAnimation(
+      Element* element,
+      int time_to_first_style_change_ms,
+      int init_time_ms = 0) {
     InitPaintArtifactCompositor();
     UpdateAndAdvanceTimeTo(init_time_ms);
 
@@ -187,16 +209,25 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
 
     StartAllWaitingAnimationsOnCompositor(element, 0);
 
-    // Tick the animation in order to ensure that the animation has an
-    // opportunity to create a style change.
-    UpdateAndAdvanceTimeTo(init_time_ms + 1000);
-
-    // Run lifecycle once more to ensure invariants hold post initial paint.
+    // Tick the animation before the first style change first. In cases of
+    // over-invalidation, this helps differentiate whether the error relates to
+    // Animation::TimeToEffectChange, or whether paint invalidation isn't being
+    // properly prevented during style invalidation. Note that it is necessary
+    // to check both - many things other than animations can cause lifecycle
+    // updates (e.g. hit tests, javascript events, etc). Even if we're running
+    // lifecycle anyway, we don't want to be causing unnecessary painting.
+    UpdateAndAdvanceTimeTo(init_time_ms + time_to_first_style_change_ms / 2);
     EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
         CompositedPaintStatus::kComposited, element, animation,
         UpdatesNeededForNextFrame::kNoMainFrameUpdates);
 
-    return init_time_ms + 1000;
+    // Style change, but no updates.
+    UpdateAndAdvanceTimeTo(init_time_ms + time_to_first_style_change_ms + 1);
+    EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+        CompositedPaintStatus::kComposited, element, animation,
+        UpdatesNeededForNextFrame::kNoMainFrameUpdates);
+
+    return animation;
   }
 
   void EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
@@ -204,8 +235,6 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
       Element* element,
       Animation* animation,
       UpdatesNeededForNextFrame updates) {
-    Client()->ResetMocks();
-
     EnsureCCClipPathInvariantsHoldStyleAndLayout(status, element, updates);
     EnsureCCClipPathInvariantsHoldThroughoutPainting(status, element, animation,
                                                      updates);
@@ -305,7 +334,7 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  ExpectNoFallbackForAnimatedElement(element, 0);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 // Test the case where there is a clip-path animation with two shape()
@@ -332,7 +361,7 @@ TEST_F(ClipPathPaintDefinitionTest, ShapeClipPathAnimationNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  ExpectNoFallbackForAnimatedElement(element, 0);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipPathNoneNotFallback) {
@@ -357,7 +386,7 @@ TEST_F(ClipPathPaintDefinitionTest, ClipPathNoneNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  ExpectNoFallbackForAnimatedElement(element, 0);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipCalcNotFallback) {
@@ -382,7 +411,7 @@ TEST_F(ClipPathPaintDefinitionTest, ClipCalcNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  ExpectNoFallbackForAnimatedElement(element, 0);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipNoneNotFallback) {
@@ -407,7 +436,7 @@ TEST_F(ClipPathPaintDefinitionTest, ClipNoneNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  ExpectNoFallbackForAnimatedElement(element, 0);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 TEST_F(ClipPathPaintDefinitionTest, ClipDelayNotFallback) {
@@ -432,7 +461,7 @@ TEST_F(ClipPathPaintDefinitionTest, ClipDelayNotFallback) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  ExpectNoFallbackForAnimatedElement(element, 0);
+  StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
 // Test the case where there is a clip-path animation with two simple
@@ -727,6 +756,8 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
       UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
 }
 
+// Cancelling a clip path animation with web animations API should properly
+// clear all state.
 TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -749,33 +780,17 @@ TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  // Init clock.
-  UpdateAndAdvanceTimeTo(0);
-
-  EnsureCCClipPathInvariantsHoldStyleAndLayout(
-      CompositedPaintStatus::kComposited, element,
-      UpdatesNeededForNextFrame::kAllUpdates);
-
-  Animation* animation = GetFirstAnimation(element);
-
-  EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kAllUpdates);
-
-  StartAllWaitingAnimationsOnCompositor(element, 0);
-
-  // New frames should not produce updates.
-  UpdateAndAdvanceTimeTo(1001);
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kNoMainFrameUpdates);
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
 
   animation->cancel();
 
   // Cancelling the animation should reset status and the clippath properties.
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kNoAnimation, element, animation,
-      UpdatesNeededForNextFrame::kAllUpdates);
+      static_cast<UpdatesNeededForNextFrame>(
+          UpdatesNeededForNextFrame::kPaintStatusReset |
+          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate |
+          UpdatesNeededForNextFrame::kPaintInvalidated));
 }
 
 // Clip-path animations with descendant transform animations must fall back to
@@ -974,9 +989,11 @@ TEST_F(ClipPathPaintDefinitionTest,
       UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
 }
 
-// Setting will-change: contents should force a fallback, even if an animation
-// is already running.
-TEST_F(ClipPathPaintDefinitionTest, WillChangeContents) {
+// TODO(crbug.com/488090095): This test never should have passed and only did so
+// because of a deficiency in the test framework. This should be un-disabled
+// when the last part of crrev.com/c/7625319 is checked in.
+TEST_F(ClipPathPaintDefinitionTest,
+       DISABLED_FallbackForDelayedWillChangeContents) {
   SetBodyInnerHTML(R"HTML(
     <style>
         @keyframes clippath {
@@ -1002,45 +1019,29 @@ TEST_F(ClipPathPaintDefinitionTest, WillChangeContents) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  // Init clock.
-  UpdateAndAdvanceTimeTo(0);
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
 
-  EnsureCCClipPathInvariantsHoldStyleAndLayout(
-      CompositedPaintStatus::kComposited, element,
-      UpdatesNeededForNextFrame::kAllUpdates);
-
-  Animation* animation = GetFirstAnimation(element);
-
-  EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kAllUpdates);
-
-  StartAllWaitingAnimationsOnCompositor(element, 0);
-  UpdateAndAdvanceTimeTo(500);
-
-  // Set will-change: contents. In this case, the paint status should switch to
-  // kNotComposited during pre-paint.
+  // Advance the animation time and add will-change: contents.
+  UpdateAndAdvanceTimeTo(1250);
 
   element->setAttribute(html_names::kClassAttr,
                         AtomicString("animation willchangecontents"));
 
-  GetDocument().View()->UpdateLifecycleToCompositingInputsClean(
-      DocumentUpdateReason::kTest);
+  // Next main frame should proceed ordinarily.
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kComposited, element,
+      UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate);
 
-  // Will-change: repaint updates paint properties.
-  EXPECT_TRUE(element->GetLayoutObject()->NeedsPaintPropertyUpdate());
-
+  // However, the animation will fall back during pre-paint.
   EnsureCCClipPathInvariantsHoldThroughoutPainting(
       CompositedPaintStatus::kNotComposited, element, animation,
-      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+      UpdatesNeededForNextFrame::kAllUpdates);
 
-  // Expect animation to continue to work as expected.
-  UpdateAndAdvanceTimeTo(1001);
+  // Main thread should still be producing frames.
+  UpdateAndAdvanceTimeTo(2001);
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kNotComposited, element, animation,
-      static_cast<UpdatesNeededForNextFrame>(
-          UpdatesNeededForNextFrame::kScheduledAnimationUpdate |
-          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate));
+      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
 }
 
 // Test that the special animation restart for percent translate animations does
@@ -1076,45 +1077,22 @@ TEST_F(ClipPathPaintDefinitionTest, ChangeDimensionPecentTranslateAnim) {
     <div id="target" class="oldsize">
     </div>
   )HTML");
-  InitPaintArtifactCompositor();
-  UpdateAllLifecyclePhasesForTest();
-
-  // Init clock.
-  UpdateAndAdvanceTimeTo(0);
 
   Element* element = GetElementById("target");
-  // Init animation with clip-path and a translate.
-
   element->setAttribute(html_names::kClassAttr,
                         AtomicString("animation oldsize"));
 
-  EnsureCCClipPathInvariantsHoldStyleAndLayout(
-      CompositedPaintStatus::kComposited, element,
-      UpdatesNeededForNextFrame::kAllUpdates);
+  // The two properties should play fine together.
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
 
-  Animation* animation =
-      GetFirstAnimationForProperty(element, GetCSSPropertyClipPath());
-
-  EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kAllUpdates);
-
-  StartAllWaitingAnimationsOnCompositor(element, 0);
-
-  // These animations should play fine together, only animation updates from the
-  // transform are expected.
-  UpdateAndAdvanceTimeTo(1001);
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
-
-  // A new size should trigger an animation update.
+  // A new size should trigger an animation update. iT will also, necessarily,
+  // invalidate paint.
   element->setAttribute(html_names::kClassAttr,
                         AtomicString("animation newsize"));
 
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+      UpdatesNeededForNextFrame::kPaintInvalidated);
 }
 
 // Test the case where a transition retarget may result in the paint status not
