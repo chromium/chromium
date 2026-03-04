@@ -56,22 +56,13 @@ def main():
     with open(os.path.join(THIRD_PARTY_DIR, BUILDLOG_NAME),
               'w',
               encoding='utf-8') as log:
-        # Build the Rust toolchain.
-        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_rust.py')]
-        TeeCmd(build_cmd, log)
-
-        # Build bindgen.
+        # Build the Rust toolchain, bindgen and crubit.
         build_cmd = [
             sys.executable,
-            os.path.join(THIS_DIR, 'build_bindgen.py')
+            os.path.join(THIS_DIR, 'build_rust.py'), '--build-bindgen',
+            '--build-crubit'
         ]
         TeeCmd(build_cmd, log)
-
-        # Build Crubit.
-        build_cmd = [sys.executable, os.path.join(THIS_DIR, 'build_crubit.py')]
-        # TODO: crbug.com/40226863 - Remove `fail_hard=False` once we can depend
-        # on the OSS Crubit build staying green with latest Rust and Clang.
-        TeeCmd(build_cmd, log, fail_hard=False)
 
     # Strip everything in bin/ to reduce the package size.
     print('Stripping binaries to reduce the package size ...')
