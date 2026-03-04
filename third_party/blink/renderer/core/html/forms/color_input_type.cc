@@ -328,5 +328,10 @@ ColorChooserClient* ColorInputType::GetColorChooserClient() {
   return this;
 }
 
+bool ColorInputType::SupportsBaseAppearance(
+    Element::BaseAppearanceValue value) const {
+  return RuntimeEnabledFeatures::AppearanceBaseEnabled() &&
+         value == Element::BaseAppearanceValue::kBase;
+}
 
 }  // namespace blink

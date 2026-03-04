@@ -59,6 +59,8 @@ class ColorInputType final : public InputType,
   ColorChooserClient* GetColorChooserClient() override;
   bool TypeMismatchFor(const String&) const;
 
+  bool SupportsBaseAppearance(Element::BaseAppearanceValue) const override;
+
  private:
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
