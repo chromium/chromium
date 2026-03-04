@@ -42,6 +42,15 @@ class VerticalTabGroupViewTest
     return region_view->root_node_for_testing();
   }
 
+  void ActivateTab(const tabs::TabInterface* tab) {
+    int index = browser()->tab_strip_model()->GetIndexOfTab(tab);
+    CHECK(index != TabStripModel::kNoTab);
+    browser()->tab_strip_model()->ActivateTabAt(
+        index, TabStripUserGestureDetails(
+                   TabStripUserGestureDetails::GestureType::kOther));
+    RunScheduledLayouts();
+  }
+
   tab_groups::TabGroupId CreateActiveTabGroup() {
     AppendTab();
     AppendTab();
@@ -109,7 +118,8 @@ class VerticalTabGroupViewTest
     tab_group_header->OnMouseReleased(mouse_release_event);
   }
 
-  const tabs::TabInterface* GetTabInterfaceForNode(TabCollectionNode* node) {
+  const tabs::TabInterface* GetTabInterfaceForNode(
+      const TabCollectionNode* node) {
     return std::get<const tabs::TabInterface*>(node->GetNodeData());
   }
 };
@@ -231,6 +241,25 @@ IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest,
 
   // Ungroup the tab group and verify that the tab is now visible.
   UngroupTabGroup(group_id);
+  EXPECT_TRUE(base::test::RunUntil([&]() { return tab->GetVisible(); }));
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabGroupViewTest, ActiveTabFromCollapsedGroup) {
+  CreateActiveTabGroup();
+
+  TabCollectionNode* tab_node =
+      unpinned_collection_node()
+          ->GetChildNodeOfType(TabCollectionNode::Type::GROUP)
+          ->children()[0]
+          .get();
+  VerticalTabView* tab = static_cast<VerticalTabView*>(tab_node->view());
+
+  // Collapse the tab group and verify the tab is not visible.
+  ClickTabGroupHeaderToToggleCollapse();
+  EXPECT_TRUE(base::test::RunUntil([&]() { return !tab->GetVisible(); }));
+
+  // Activate the tab within the group and verify that the tab is now visible.
+  ActivateTab(GetTabInterfaceForNode(tab->collection_node()));
   EXPECT_TRUE(base::test::RunUntil([&]() { return tab->GetVisible(); }));
 }
 

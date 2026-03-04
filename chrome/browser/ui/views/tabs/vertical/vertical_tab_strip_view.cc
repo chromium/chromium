@@ -10,14 +10,17 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_controller.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_scroll_bar.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_utils.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
+#include "components/tabs/public/tab_group.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/views/background.h"
@@ -210,10 +213,28 @@ void VerticalTabStripView::OnTabStripModelChanged(
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
   if (collection_node_ && selection.active_tab_changed() && selection.new_tab) {
+    // Expand group if the activated tab is within a collapsed group unless
+    // we are header dragging the collapsed group.
+    if (selection.new_tab->GetGroup().has_value() &&
+        !collection_node_->GetController()->GetDragHandler().IsDragging()) {
+      TabCollectionNode* group_node = collection_node_->GetNodeForHandle(
+          tab_strip_model->group_model()
+              ->GetTabGroup(selection.new_tab->GetGroup().value())
+              ->GetCollectionHandle());
+      CHECK(group_node);
+
+      auto* group_view =
+          views::AsViewClass<VerticalTabGroupView>(group_node->view());
+      if (group_view && group_view->IsCollapsed()) {
+        group_view->ToggleCollapsedState(
+            ToggleTabGroupCollapsedStateOrigin::kMenuAction);
+      }
+    }
+
+    // Scroll to the activated tab if it isn't in the visible viewport.
     TabCollectionNode* activated_node =
         collection_node_->GetNodeForHandle(selection.new_tab->GetHandle());
     CHECK(activated_node);
-
     if (pinned_tabs_container_view_->Contains(activated_node->view())) {
       pinned_tabs_scroll_view_->RegisterNextSuccessfulFramePostLayoutCallback(
           base::BindOnce(
