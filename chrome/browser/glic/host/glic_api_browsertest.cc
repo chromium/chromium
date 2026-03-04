@@ -3902,7 +3902,8 @@ class GlicApiTestWithDragAndDrop : public GlicApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(GlicApiTestWithDragAndDrop, testDragAndDrop) {
+// TODO(crbug.com/488607379): Disabled due to flakiness on multiple builders.
+IN_PROC_BROWSER_TEST_P(GlicApiTestWithDragAndDrop, DISABLED_testDragAndDrop) {
   RunTestSequence(OpenGlic(GlicInstrumentMode::kHostAndContents));
 
   ExecuteJsTest();
