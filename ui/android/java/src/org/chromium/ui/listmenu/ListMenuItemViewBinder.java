@@ -43,6 +43,23 @@ public class ListMenuItemViewBinder {
         boolean keepIconSpacing =
                 model.containsKey(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN)
                         && model.get(ListMenuItemProperties.KEEP_START_ICON_SPACING_WHEN_HIDDEN);
+        boolean hasStartIcon =
+                // Start icon id
+                (PropertyModel.getFromModelOrDefault(
+                                        model,
+                                        ListMenuItemProperties.START_ICON_ID,
+                                        Resources.ID_NULL)
+                                != Resources.ID_NULL)
+                        ||
+                        // Start icon drawable
+                        (PropertyModel.getFromModelOrDefault(
+                                        model, ListMenuItemProperties.START_ICON_DRAWABLE, null)
+                                != null)
+                        ||
+                        // Start icon bitmap
+                        (PropertyModel.getFromModelOrDefault(
+                                        model, ListMenuItemProperties.START_ICON_BITMAP, null)
+                                != null);
         if (propertyKey == ListMenuItemProperties.TITLE_ID) {
             @StringRes int titleId = model.get(ListMenuItemProperties.TITLE_ID);
             if (titleId != 0) {
@@ -76,19 +93,27 @@ public class ListMenuItemViewBinder {
             int id = model.get((ReadableIntPropertyKey) propertyKey);
             Drawable drawable =
                     id == 0 ? null : AppCompatResources.getDrawable(view.getContext(), id);
-            if (propertyKey == ListMenuItemProperties.START_ICON_ID) {
+            if (propertyKey == ListMenuItemProperties.START_ICON_ID
+                    &&
+                    // The START_ICON_ID propertyKey contributes the start icon iff drawable != null
+                    // If we have a start icon (from any source) and drawable != null, we set the
+                    // start icon here.
+                    // If we don't have a start icon (from any source) and drawable == null, clear
+                    // the start icon here.
+                    // In other cases, don't touch the start icon.
+                    (hasStartIcon == (drawable != null))) {
                 setStartIcon(startIcon, endIcon, drawable, keepIconSpacing);
             } else {
                 setEndIcon(startIcon, endIcon, drawable, keepIconSpacing);
             }
         } else if (propertyKey == ListMenuItemProperties.START_ICON_DRAWABLE) {
             Drawable drawable = model.get(ListMenuItemProperties.START_ICON_DRAWABLE);
-            setStartIcon(startIcon, endIcon, drawable, keepIconSpacing);
+            if (hasStartIcon == (drawable != null)) {
+                setStartIcon(startIcon, endIcon, drawable, keepIconSpacing);
+            }
         } else if (propertyKey == ListMenuItemProperties.START_ICON_BITMAP) {
             Bitmap bitmap = model.get(ListMenuItemProperties.START_ICON_BITMAP);
-            if (bitmap == null) {
-                hideStartIcon(startIcon, keepIconSpacing);
-            } else {
+            if (hasStartIcon == (bitmap != null)) {
                 Drawable drawable = new BitmapDrawable(view.getResources(), bitmap);
                 setStartIcon(startIcon, endIcon, drawable, keepIconSpacing);
             }
