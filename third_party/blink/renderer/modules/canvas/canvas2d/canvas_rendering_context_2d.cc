@@ -1325,39 +1325,38 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const SkAlphaType alpha_type = GetAlphaType();
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
+
+  // If using GPU compositing, try to create a SharedImage-backed provider if
+  // either (a) using GPU raster or (b) using CPU raster and want to use
+  // mappable SharedImage for Canvas2D.
   const bool use_gpu_raster = canvas()->ShouldTryToUseGpuRaster() &&
                               canvas()->ShouldAccelerate2dContext();
   const bool is_gpu_compositing_enabled =
       SharedGpuContext::IsGpuCompositingEnabled();
-  if (is_gpu_compositing_enabled) {
-    // Try to create a SharedImage provider if either (a) we are using
-    // GPU raster or (b) we are using CPU raster and want to use mappable
-    // SharedImage.
-    if (use_gpu_raster ||
-        SharedGpuContext::UseMappableSharedImagesForCanvas2D()) {
-      gpu::SharedImageUsageSet shared_image_usage_flags =
-          gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
+  if (is_gpu_compositing_enabled &&
+      (use_gpu_raster ||
+       SharedGpuContext::UseMappableSharedImagesForCanvas2D())) {
+    gpu::SharedImageUsageSet shared_image_usage_flags =
+        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-      // Determine whether this SharedImage can be configured for low-latency
-      // or placement in overlays.
-      bool low_latency_supported =
-          use_gpu_raster && canvas()->LowLatencyEnabled() &&
-          SharedGpuContext::LowLatencyUsageSupportedForCanvas2D();
-      if (low_latency_supported) {
-        shared_image_usage_flags |=
-            gpu::SHARED_IMAGE_USAGE_SCANOUT |
-            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-      } else if (SharedGpuContext::OverlaysSupportedForCanvas2D()) {
-        shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
-      }
-
-      provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
-          canvas()->Size(), format, alpha_type, color_space,
-          SharedGpuContext::ContextProviderWrapper(),
-          use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
-          shared_image_usage_flags, canvas());
+    // Determine whether this SharedImage can be configured for low-latency
+    // or placement in overlays.
+    bool low_latency_supported =
+        use_gpu_raster && canvas()->LowLatencyEnabled() &&
+        SharedGpuContext::LowLatencyUsageSupportedForCanvas2D();
+    if (low_latency_supported) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT |
+                                  gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+    } else if (SharedGpuContext::OverlaysSupportedForCanvas2D()) {
+      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
-  } else {  // SW compositing
+
+    provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
+        canvas()->Size(), format, alpha_type, color_space,
+        SharedGpuContext::ContextProviderWrapper(),
+        use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
+        shared_image_usage_flags, canvas());
+  } else if (!is_gpu_compositing_enabled) {
     // Create a CanvasResourceProvider that uses a SharedImage backed by a
     // shared-memory buffer that can be written by canvas SW raster and read by
     // the SW compositor.
