@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/cobrowse/coordinator/assistant_aim_mediator.h"
 
+#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
+#import "net/base/url_util.h"
 #import "url/gurl.h"
 
 namespace {
@@ -53,6 +55,19 @@ const char kBaseSearchURL[] =
 // session.
 - (void)loadAIMURL {
   web::NavigationManager::WebLoadParams params(GURL{kBaseSearchURL});
+  _webState->GetNavigationManager()->LoadURLWithParams(params);
+}
+
+#pragma mark - AssistantAIMMutator
+
+- (void)assistantAIMViewControllerDidRequestSearchWithText:(NSString*)text {
+  if (!_webState || text.length == 0) {
+    return;
+  }
+
+  GURL url = net::AppendQueryParameter(GURL(kBaseSearchURL), "q",
+                                       base::SysNSStringToUTF8(text));
+  web::NavigationManager::WebLoadParams params{url};
   _webState->GetNavigationManager()->LoadURLWithParams(params);
 }
 

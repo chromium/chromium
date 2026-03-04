@@ -30,6 +30,7 @@
   _mediator =
       [[AssistantAIMMediator alloc] initWithWebState:std::move(webState)];
   _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
 
   id<AssistantContainerCommands> containerHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), AssistantContainerCommands);

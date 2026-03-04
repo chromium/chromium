@@ -1,9 +1,9 @@
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
@@ -13,17 +13,32 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
 
 }  // namespace
 
+@interface AssistantAIMViewController () <UITextFieldDelegate>
+@end
+
 @implementation AssistantAIMViewController {
   UILabel* _titleLabel;
   UIView* _webStateView;
   NSArray<NSLayoutConstraint*>* _webStateViewConstraints;
+  UITextField* _temporaryTextField;
 }
+
+@synthesize mutator = _mutator;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-
   [self setUpHeader];
   [self setUpWebStateView];
+  [self setUpTemporaryTextField];
+}
+
+#pragma mark - UITextFieldDelegate
+
+- (BOOL)textFieldShouldReturn:(UITextField*)textField {
+  [textField resignFirstResponder];
+  [self.mutator
+      assistantAIMViewControllerDidRequestSearchWithText:textField.text];
+  return YES;
 }
 
 #pragma mark - AssistantAIMConsumer
@@ -32,14 +47,12 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
   if (_webStateView == webStateView) {
     return;
   }
-
   [_webStateView removeFromSuperview];
   _webStateView = webStateView;
-
   [self setUpWebStateView];
 }
 
-#pragma mark - Private
+#pragma mark - Private helpers
 
 // Sets up the web state view.
 - (void)setUpWebStateView {
@@ -53,7 +66,7 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
   }
 
   _webStateView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:_webStateView];
+  [self.view insertSubview:_webStateView atIndex:0];
 
   _webStateViewConstraints = @[
     [_webStateView.topAnchor constraintEqualToAnchor:_titleLabel.bottomAnchor
@@ -82,6 +95,12 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
                                           constant:kTitleVerticalMargin],
   ]];
   AddSameCenterXConstraint(_titleLabel, self.view);
+}
+
+- (void)setUpTemporaryTextField {
+  _temporaryTextField = [[UITextField alloc] init];
+  _temporaryTextField.delegate = self;
+  _temporaryTextField.returnKeyType = UIReturnKeySearch;
 }
 
 @end

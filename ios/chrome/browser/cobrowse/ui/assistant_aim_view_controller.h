@@ -9,7 +9,12 @@
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
 
+@protocol AssistantAIMMutator;
+
 @interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>
+
+// The mutator for this view controller.
+@property(nonatomic, weak) id<AssistantAIMMutator> mutator;
 
 @end
 

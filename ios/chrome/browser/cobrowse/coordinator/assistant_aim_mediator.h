@@ -9,6 +9,8 @@
 
 #import <memory>
 
+#import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
+
 @protocol AssistantAIMConsumer;
 
 namespace web {
@@ -16,7 +18,7 @@ class WebState;
 }
 
 // Mediator for the Assistant AIM UI.
-@interface AssistantAIMMediator : NSObject
+@interface AssistantAIMMediator : NSObject <AssistantAIMMutator>
 
 // The consumer for this mediator.
 @property(nonatomic, weak) id<AssistantAIMConsumer> consumer;
