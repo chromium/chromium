@@ -397,6 +397,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationTime"
+    units="ms" expires_after="2026-10-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the time taken to generate the text fragment selector for scroll
+    position restoration when a user sends a tab to themselves. Recorded when
+    the selector generation completes, times out, or fails.
+  </summary>
+</histogram>
+
+<histogram name="Sharing.SendTabToSelf.ScrollPosition.SelectorLength"
+    units="characters" expires_after="2027-03-04">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the length (in characters) of the generated text fragment selector
+    for scroll position restoration when a user sends a tab to themselves.
+    Recorded only for successful generations.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharingHubAndroid.CustomAction"
     enum="ShareCustomAction" expires_after="2026-07-19">
   <owner>wenyufu@chromium.org</owner>

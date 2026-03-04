@@ -48,7 +48,8 @@
 
 namespace send_tab_to_self {
 
-SendTabToSelfBubbleController::PendingRequest::PendingRequest() = default;
+SendTabToSelfBubbleController::PendingRequest::PendingRequest()
+    : start_time(base::TimeTicks::Now()) {}
 
 SendTabToSelfBubbleController::PendingRequest::PendingRequest(
     PendingRequest&&) = default;
@@ -194,8 +195,6 @@ void SendTabToSelfBubbleController::OnDeviceSelected(
       /*is_browser_timeout=*/false));
 
   // Start a timer to fallback if the renderer is too slow.
-  // TODO(crbug.com/482925620): Add histograms for generation time and
-  // timeouts, and consider making this timeout configurable.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(
@@ -243,6 +242,7 @@ void SendTabToSelfBubbleController::SelectorGeneratedForRequest(
     std::optional<shared_highlighting::TextFragment> fragment =
         shared_highlighting::TextFragment::FromEscapedString(selector);
     if (fragment) {
+      RecordScrollPositionSelectorLength(selector.length());
       request.page_context.scroll_position.text_fragment =
           TextFragmentData(*fragment);
     } else {
@@ -258,6 +258,8 @@ void SendTabToSelfBubbleController::SendFinalizedRequest(
     std::optional<ScrollPositionGenerationOutcome> outcome) {
   if (outcome) {
     RecordScrollPositionGenerationOutcome(*outcome);
+    send_tab_to_self::RecordScrollPositionGenerationTime(
+        base::TimeTicks::Now() - request.start_time);
   }
 
   SendTabToSelfModel* model =

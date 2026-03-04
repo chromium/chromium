@@ -186,11 +186,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   // Test that the entry was added with the correct URL.
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             observer.last_added_entry()->GetURL());
-  // The scroll position should be populated from the successful extraction.
+
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
       ScrollPositionGenerationOutcome::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.SelectorLength", 1);
 
+  // The scroll position should be populated from the successful extraction.
   EXPECT_FALSE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
 }
@@ -223,10 +228,14 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   // Test that the entry was added with the correct URL.
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             observer.last_added_entry()->GetURL());
-  // The scroll position should be empty because the page has no content.
+
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
       ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
+
+  // The scroll position should be empty because the page has no content.
   EXPECT_TRUE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
 }
@@ -277,12 +286,16 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             observer.last_added_entry()->GetURL());
 
-  // The scroll position should be populated since the text is now in the
-  // viewport.
   histogram_tester.ExpectUniqueSample(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
       ScrollPositionGenerationOutcome::kSuccess, 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationTime", 1);
+  histogram_tester.ExpectTotalCount(
+      "Sharing.SendTabToSelf.ScrollPosition.SelectorLength", 1);
 
+  // The scroll position should be populated since the text is now in the
+  // viewport.
   EXPECT_FALSE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
   // Verify that the generated selector matches the expected text.

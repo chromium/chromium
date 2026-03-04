@@ -58,10 +58,20 @@ void RecordNotificationThrottled() {
                                 NotificationStatus::kThrottled);
 }
 
+void RecordScrollPositionGenerationTime(base::TimeDelta time) {
+  base::UmaHistogramTimes("Sharing.SendTabToSelf.ScrollPosition.GenerationTime",
+                          time);
+}
+
 void RecordScrollPositionGenerationOutcome(
     ScrollPositionGenerationOutcome outcome) {
   base::UmaHistogramEnumeration(
       "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome", outcome);
+}
+
+void RecordScrollPositionSelectorLength(size_t length) {
+  base::UmaHistogramCounts1000(
+      "Sharing.SendTabToSelf.ScrollPosition.SelectorLength", length);
 }
 
 }  // namespace send_tab_to_self

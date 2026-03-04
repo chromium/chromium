@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "base/token.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
 #include "components/send_tab_to_self/metrics_util.h"
@@ -136,6 +137,7 @@ class SendTabToSelfBubbleController
     std::string target_device_guid;
     GURL url;
     std::string title;
+    base::TimeTicks start_time;
     PageContext page_context;
     content::GlobalRenderFrameHostId main_frame_id;
   };

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_
 
+#include "base/time/time.h"
+
 namespace send_tab_to_self {
 
 enum class ShareEntryPoint {
@@ -53,9 +55,15 @@ enum class ScrollPositionGenerationOutcome {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfScrollPositionGenerationOutcome)
 
+// Records the time taken to generate the scroll position when sending a tab.
+void RecordScrollPositionGenerationTime(base::TimeDelta time);
+
 // Records the outcome of scroll position generation when sending a tab.
 void RecordScrollPositionGenerationOutcome(
     ScrollPositionGenerationOutcome outcome);
+
+// Records the length of the generated scroll position selector.
+void RecordScrollPositionSelectorLength(size_t length);
 
 }  // namespace send_tab_to_self
 
