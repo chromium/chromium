@@ -1403,8 +1403,6 @@ crbug.com/787615 [ Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoo
 
 crbug.com/520611 [ Debug Linux ] fast/filesystem/workers/file-writer-events-shared-worker.html [ Failure Pass ]
 
-crbug.com/1051136 fast/forms/select/listbox-overlay-scrollbar.html [ Failure ]
-
 # These performance-sensitive user-timing tests are flaky in debug on all platforms, and flaky on all configurations of windows.
 # See: crbug.com/567965, crbug.com/518992, and crbug.com/518993
 
