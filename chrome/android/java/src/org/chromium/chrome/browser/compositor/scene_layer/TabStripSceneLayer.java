@@ -212,8 +212,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             TabUiThemeUtil.getCircularButtonKeyboardFocusDrawableRes(),
                             glicButton.getKeyboardFocusRingColor(),
                             glicButton.getTextResourceId(),
-                            layoutHelper.getGlicButtonStartPadding(),
-                            layoutHelper.getGlicIconTextPadding(),
+                            Math.round(layoutHelper.getGlicButtonStartPadding() * mDpToPx),
+                            Math.round(layoutHelper.getGlicIconTextPadding() * mDpToPx),
                             Math.round(layoutHelper.getGlicButtonCornerRadius() * mDpToPx));
         }
 

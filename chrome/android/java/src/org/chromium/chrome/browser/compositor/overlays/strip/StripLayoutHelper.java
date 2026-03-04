@@ -5436,7 +5436,7 @@ public class StripLayoutHelper
         int verticalOffset =
                 (int)
                         -(mContext.getResources().getDimension(R.dimen.tab_strip_height)
-                                + StripLayoutHelperManager.BUTTON_BACKGROUND_HEIGHT_DP);
+                                + StripLayoutHelperManager.GLIC_BUTTON_BACKGROUND_HEIGHT_DP);
         showMenuBelowStripView(mGlicButtonMenu, anchorView, mToolbarContainerView, verticalOffset);
     }
 

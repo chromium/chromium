@@ -185,29 +185,32 @@ public class StripLayoutHelperManager
             };
 
     // Shared button constants (Model selector and Glic).
-    private static final float BUTTON_BACKGROUND_WIDTH_DP = 32.f;
-    static final float BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
-            StripLayoutUtils.shouldApplyMoreDensity() ? BUTTON_BACKGROUND_WIDTH_DP : 48.f;
-    private static final float BUTTON_CLICK_SLOP_DP =
-            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - BUTTON_BACKGROUND_WIDTH_DP) / 2;
-    // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
-    // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
-    private static final float BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
+            StripLayoutUtils.shouldApplyMoreDensity() ? 32.f : 48.f;
 
     // Glic button constants.
+    private static final float GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP = 5.f;
+    private static final float GLIC_BUTTON_BACKGROUND_WIDTH_DP = 28.f;
+    static final float GLIC_BUTTON_BACKGROUND_HEIGHT_DP = 28.f;
+    private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.24f;
+    private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
+    private static final float GLIC_BUTTON_CLICK_SLOP_DP =
+            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
     static final float GLIC_MSB_BUTTON_PADDING_DP = 12.f;
     private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
-    private static final float GLIC_ICON_WIDTH_DP = 24.f;
+    private static final float GLIC_ICON_WIDTH_DP = 16.f;
     private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
     private static final float GLIC_BUTTON_END_PADDING_DP = 10.f;
     private static final float GLIC_BUTTON_CORNER_RADIUS = 12.f;
-    private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.24f;
-    private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
 
     // Model selector button constants.
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
+    private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP = 32.f;
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
+    private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP =
+            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP) / 2;
 
     // Tab strip transition constants.
     @VisibleForTesting
@@ -755,14 +758,17 @@ public class StripLayoutHelperManager
                         context,
                         ButtonType.GLIC,
                         /* parentView= */ null,
-                        BUTTON_BACKGROUND_WIDTH_DP,
-                        BUTTON_BACKGROUND_HEIGHT_DP,
+                        GLIC_BUTTON_BACKGROUND_WIDTH_DP,
+                        GLIC_BUTTON_BACKGROUND_HEIGHT_DP,
                         /* tooltipHandler= */ null,
                         selectorClickHandler,
                         keyboardFocusHandler,
-                        R.drawable.ic_spark_24dp,
-                        BUTTON_CLICK_SLOP_DP);
-        mGlicButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
+                        R.drawable.ic_spark_16dp,
+                        GLIC_BUTTON_CLICK_SLOP_DP);
+
+        // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
+        // folio tab title y-offset = 2 + (38 - 28)/2 - 2 = 5dp
+        mGlicButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
         mGlicButton.setVisible(false);
 
         // TODO(crbug.com/480736011): Add proper colors and styling
@@ -809,15 +815,15 @@ public class StripLayoutHelperManager
                         context,
                         ButtonType.INCOGNITO_SWITCHER,
                         /* parentView= */ null,
-                        BUTTON_BACKGROUND_WIDTH_DP,
-                        BUTTON_BACKGROUND_HEIGHT_DP,
+                        MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP,
+                        MODEL_SELECTOR_BUTTON_BACKGROUND_HEIGHT_DP,
                         (tooltipText) -> {
                             mToolbarControlContainer.setTooltipText(tooltipText);
                         },
                         selectorClickHandler,
                         keyboardFocusHandler,
                         R.drawable.ic_incognito,
-                        BUTTON_CLICK_SLOP_DP);
+                        MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP);
 
         // Button bg size is 32 * 32.
         mModelSelectorButton.setBackgroundResourceId(R.drawable.bg_circle_tab_strip_button);
@@ -873,7 +879,9 @@ public class StripLayoutHelperManager
                 apsBackgroundHoveredIncognitoColor,
                 apsBackgroundPressedIncognitoColor);
 
-        mModelSelectorButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
+        // y-offset for folio = lowered tab container + (tab container size - bg size)/2 -
+        // folio tab title y-offset = 2 + (38 - 32)/2 - 2 = 3dp
+        mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
 
         mModelSelectorButton.setIncognito(false);
         mModelSelectorButton.setVisible(false);
@@ -960,7 +968,7 @@ public class StripLayoutHelperManager
         if (mGlicButton == null) return;
         String glicButtonText = mGlicButton.getText();
 
-        float width = BUTTON_BACKGROUND_WIDTH_DP;
+        float width = GLIC_BUTTON_BACKGROUND_WIDTH_DP;
         if (!TextUtils.isEmpty(glicButtonText)) {
             LayerTitleCache titleCache = mLayerTitleCacheSupplier.get();
             if (titleCache != null) {
@@ -980,7 +988,7 @@ public class StripLayoutHelperManager
     private void updateGlicButtonPosition() {
         if (mGlicButton == null) return;
 
-        mGlicButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
+        mGlicButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
         mGlicButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
 
         boolean isMsbVisible = mModelSelectorButton != null && mModelSelectorButton.isVisible();
@@ -1160,7 +1168,7 @@ public class StripLayoutHelperManager
         }
         updateGlicButtonPosition();
         if (mModelSelectorButton != null) {
-            mModelSelectorButton.setDrawY(BUTTON_BACKGROUND_Y_OFFSET_DP);
+            mModelSelectorButton.setDrawY(MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP);
             mModelSelectorButton.setTouchTargetInsets(null, mTopPadding, null, -mTopPadding);
             if (!LocalizationUtils.isLayoutRtl()) {
                 mModelSelectorButton.setDrawX(
@@ -1440,7 +1448,7 @@ public class StripLayoutHelperManager
     }
 
     private float getModelSelectorButtonWidthWithEndPadding() {
-        return BUTTON_BACKGROUND_WIDTH_DP + mStripEndPadding;
+        return MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP + mStripEndPadding;
     }
 
     /**
