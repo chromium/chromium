@@ -21,6 +21,7 @@
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_dialog_model_host.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -28,9 +29,13 @@
 #include "ui/views/view_class_properties.h"
 
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
+DEFINE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleScrollView);
 
 namespace {
 const int kVerticalMargin = 8;
+// Calculated as a max of 8 rows * 56 px per row. This is also inline with the
+// extensions bubble max height (448) and the downloads bubble max height (450).
+const int kMaxBubbleHeight = 448;
 
 int GetPriorityForTaskState(actor::ActorTask::State task_state,
                             bool requires_processing) {
@@ -62,15 +67,22 @@ views::Widget* ActorTaskListBubble::ShowBubble(
     return nullptr;
   }
 
+  std::unique_ptr<views::ScrollView> scroll_view =
+      std::make_unique<views::ScrollView>(
+          views::ScrollView::ScrollWithLayers::kEnabled);
+  scroll_view->SetContents(std::move(contents_view));
+  scroll_view->ClipHeightTo(0, kMaxBubbleHeight);
+  scroll_view->SetDrawOverflowIndicator(false);
+
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetAccessibleTitle(
               l10n_util::GetStringUTF16(IDS_ACTOR_TASK_LIST_BUBBLE_A11Y_LABEL))
           .AddCustomField(
               std::make_unique<views::BubbleDialogModelHost::CustomView>(
-                  std::move(contents_view),
+                  std::move(scroll_view),
                   views::BubbleDialogModelHost::FieldType::kMenuItem),
-              kActorTaskListBubbleView)
+              kActorTaskListBubbleScrollView)
           .OverrideShowCloseButton(false)
           .Build();
 
@@ -94,6 +106,7 @@ std::unique_ptr<views::View> ActorTaskListBubble::CreateContentsView(
   std::unique_ptr<views::View> contents_view =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
+          .SetProperty(views::kElementIdentifierKey, kActorTaskListBubbleView)
           .Build();
 
   actor::ui::ActorUiStateManagerInterface* actor_ui_state_manager =

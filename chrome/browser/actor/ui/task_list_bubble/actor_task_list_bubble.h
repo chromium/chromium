@@ -16,6 +16,7 @@ class View;
 }  // namespace views
 
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleView);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kActorTaskListBubbleScrollView);
 
 class Profile;
 
