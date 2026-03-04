@@ -6033,7 +6033,8 @@ void GraphImplDml::OnCompilationComplete(
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
     base::expected<ComPtr<IDMLCompiledOperator>, HRESULT> compilation_result) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::OnCompilationComplete");
 
@@ -6182,7 +6183,7 @@ void GraphImplDml::OnCompilationComplete(
   // and not during execution.
   for (auto& [constant_id, constant_tensor] : constant_tensor_operands) {
     TensorImplDml* constant_tensor_impl =
-        static_cast<TensorImplDml*>(constant_tensor);
+        static_cast<TensorImplDml*>(constant_tensor.get());
     // Get the graph input index with the constant id.
     const auto graph_input_index_iterator =
         constant_id_to_input_index_map.find(constant_id);
@@ -6395,7 +6396,8 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
     mojom::GraphInfoPtr& graph_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&
         constant_operands,
-    const base::flat_map<OperandId, WebNNTensorImpl*>& constant_tensor_operands,
+    const base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>&
+        constant_tensor_operands,
     GraphBuilderDml& graph_builder,
     absl::flat_hash_map<OperandId, uint32_t>& constant_id_to_input_index_map,
     GraphBufferBindingInfo& graph_buffer_binding_info) {
@@ -6869,7 +6871,8 @@ void GraphImplDml::CreateAndBuild(
     ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
     WebNNContextImpl::CreateGraphImplCallback callback,
     const bool disable_dml_meta_commands_for_gpu) {
   TRACE_EVENT0("gpu", "dml::GraphImplDml::CreateAndBuild");

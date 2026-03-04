@@ -83,7 +83,8 @@ void ContextImplTflite::CreateGraphImpl(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
     CreateGraphImplCallback callback) {
   if (is_incognito_) {
     // In incognito mode, weights are stored in the Flatbuffer model file
@@ -108,7 +109,8 @@ void ContextImplTflite::DidCreateWeightsFile(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
     CreateGraphImplCallback callback,
     base::File weights_file) {
   if (!weights_file.IsValid()) {

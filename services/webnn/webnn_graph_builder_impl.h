@@ -69,7 +69,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
         WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
         base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
             constant_operands,
-        base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands);
+        base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+            constant_tensor_operands);
     ~ValidateGraphSuccessResult();
 
     ValidateGraphSuccessResult(const ValidateGraphSuccessResult&) = delete;
@@ -89,7 +90,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
 
     // Constant tensors associated with this graph, which will be used during
     // graph construction.
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands;
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands;
   };
 
   // Transfer ownership of this builder's resources to a returned
@@ -107,7 +109,8 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
   void DidTransposePendingPermutations(
       mojom::GraphInfoPtr graph_info,
       WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+      base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+          constant_tensor_operands,
       CreateGraphCallback callback,
       base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
           constant_operands);

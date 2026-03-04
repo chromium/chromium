@@ -78,7 +78,8 @@ void ContextImplCoreml::CreateGraphImpl(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
     CreateGraphImplCallback callback) {
   GraphImplCoreml::CreateAndBuild(
       std::move(receiver), this, std::move(graph_info),

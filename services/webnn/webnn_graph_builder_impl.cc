@@ -2878,7 +2878,8 @@ WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
         constant_operands,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands)
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands)
     : compute_resource_info(std::move(compute_resource_info)),
       constant_operands(std::move(constant_operands)),
       constant_tensor_operands(std::move(constant_tensor_operands)) {}
@@ -2993,7 +2994,8 @@ void WebNNGraphBuilderImpl::IsValidGraphForTesting(
 void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
     mojom::GraphInfoPtr graph_info,
     WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
-    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    base::flat_map<OperandId, scoped_refptr<WebNNTensorImpl>>
+        constant_tensor_operands,
     CreateGraphCallback callback,
     base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
         constant_operands) {
@@ -3077,7 +3079,8 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
   std::vector<std::pair<OperandId, std::unique_ptr<WebNNConstantOperand>>>
       graph_constants;
   graph_constants.reserve(graph_info.constant_operand_ids_to_handles.size());
-  std::vector<std::pair<OperandId, WebNNTensorImpl*>> graph_constant_tensors;
+  std::vector<std::pair<OperandId, scoped_refptr<WebNNTensorImpl>>>
+      graph_constant_tensors;
   graph_constant_tensors.reserve(
       graph_info.id_to_constant_tensor_operand_map.size());
 
@@ -3160,7 +3163,7 @@ WebNNGraphBuilderImpl::ValidateGraphImpl(
             return std::nullopt;
           }
 
-          graph_constant_tensors.emplace_back(operand_id, tensor_impl.get());
+          graph_constant_tensors.emplace_back(operand_id, tensor_impl);
           processed_operands.insert(operand_id);
           break;
         }
