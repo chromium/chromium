@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/tips_notifications/ui/tips_promo_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_action_delegate.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/promo_style/utils.h"
@@ -130,10 +131,11 @@ const CGFloat kAnimationHeightPercent = 0.5;
   BOOL dark =
       self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
   if (self.lightModeColorProvider) {
-    if (dark) {
-      [self updateAnimationWithColorProvider:self.darkModeColorProvider];
-    } else {
-      [self updateAnimationWithColorProvider:self.lightModeColorProvider];
+    for (NSString* key in self.lightModeColorProvider.allKeys) {
+      UIColor* lightColor = self.lightModeColorProvider[key];
+      UIColor* darkColor = self.darkModeColorProvider[key];
+      ConfigureAnimationCustomColor(_animationViewWrapper, key, lightColor,
+                                    darkColor);
     }
   } else {
     [_animationViewWrapper stop];
@@ -145,15 +147,6 @@ const CGFloat kAnimationHeightPercent = 0.5;
     } else {
       [_animationViewWrapper play];
     }
-  }
-}
-
-// Updates the _animationViewWrapper with the colors from `colorProvider`.
-- (void)updateAnimationWithColorProvider:
-    (NSDictionary<NSString*, UIColor*>*)colorProvider {
-  for (NSString* keypath in colorProvider.allKeys) {
-    [_animationViewWrapper setColorValue:colorProvider[keypath]
-                              forKeypath:keypath];
   }
 }
 

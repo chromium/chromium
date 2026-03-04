@@ -20,8 +20,8 @@ NSDictionary<NSString*, UIColor*>* LensColorProvider(
     int omnibox_color,
     int lens_background_color) {
   return @{
-    @"Omnibox.*.*.Color" : UIColorFromRGB(omnibox_color),
-    @"Lens_Icon_Background.*.*.Color" : UIColorFromRGB(lens_background_color),
+    @"Omnibox" : UIColorFromRGB(omnibox_color),
+    @"Lens_Icon_Background" : UIColorFromRGB(lens_background_color),
   };
 }
 

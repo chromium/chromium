@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_view_controller.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/ui/animated_promo/animated_promo_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/button_stack/button_stack_configuration.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -286,19 +287,12 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
     [self updateUIForSizeClass];
     return;
   }
-  if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-    [self updateAnimationWithColorProvider:self.darkModeColorProvider];
-  } else {
-    [self updateAnimationWithColorProvider:self.lightModeColorProvider];
-  }
-}
 
-// Updates the _animationViewWrapper with colors from `colorProvider`.
-- (void)updateAnimationWithColorProvider:
-    (NSDictionary<NSString*, UIColor*>*)colorProvider {
-  for (NSString* keypath in colorProvider.allKeys) {
-    [self.animationViewWrapper setColorValue:colorProvider[keypath]
-                                  forKeypath:keypath];
+  for (NSString* keypath in self.lightModeColorProvider.allKeys) {
+    UIColor* lightColor = self.lightModeColorProvider[keypath];
+    UIColor* darkColor = self.darkModeColorProvider[keypath];
+    ConfigureAnimationCustomColor(self.animationViewWrapper, keypath,
+                                  lightColor, darkColor);
   }
 }
 

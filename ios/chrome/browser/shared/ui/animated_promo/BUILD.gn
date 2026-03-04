@@ -8,6 +8,7 @@ source_set("animated_promo") {
     "animated_promo_view_controller.mm",
   ]
   deps = [
+    ":utils",
     "//base",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/button_stack",
