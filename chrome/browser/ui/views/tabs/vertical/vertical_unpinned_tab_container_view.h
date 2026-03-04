@@ -45,6 +45,8 @@ class VerticalUnpinnedTabContainerView
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;
   bool ShouldSnapToTarget(const views::View& child_view) const override;
+  bool ShouldAnimateOpacityForAddAndRemove(
+      const views::View& child_view) const override;
 
   // VerticalDraggedTabsContainer:
   VerticalDraggedTabsContainer& GetTabDragTarget(

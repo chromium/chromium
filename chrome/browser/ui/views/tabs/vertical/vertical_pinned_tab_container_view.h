@@ -42,6 +42,8 @@ class VerticalPinnedTabContainerView
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;
+  bool ShouldAnimateOpacityForAddAndRemove(
+      const views::View& child_view) const override;
 
   std::optional<BrowserRootView::DropIndex> GetLinkDropIndex(
       const gfx::Point& loc_in_container);

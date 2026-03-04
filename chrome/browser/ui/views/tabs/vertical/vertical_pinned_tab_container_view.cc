@@ -168,6 +168,12 @@ bool VerticalPinnedTabContainerView::IsViewDragging(
   return GetDragHandler().IsViewDragging(child_view);
 }
 
+bool VerticalPinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
+    const views::View& child_view) const {
+  // Only animate opacity for tab views.
+  return views::IsViewClass<VerticalTabView>(&child_view);
+}
+
 std::optional<BrowserRootView::DropIndex>
 VerticalPinnedTabContainerView::GetLinkDropIndex(
     const gfx::Point& loc_in_container) {

@@ -243,6 +243,12 @@ bool VerticalTabGroupView::IsViewDragging(const views::View& child_view) const {
   return GetDragHandler().IsViewDragging(child_view);
 }
 
+bool VerticalTabGroupView::ShouldAnimateOpacityForAddAndRemove(
+    const views::View& child_view) const {
+  // Only animate opacity for tab views.
+  return views::IsViewClass<VerticalTabView>(&child_view);
+}
+
 void VerticalTabGroupView::OnAnimationEnded() {
   // For collapsed tab groups update child visibility only once animations have
   // completed. This allows tabs to remain visible as the group animates closed.

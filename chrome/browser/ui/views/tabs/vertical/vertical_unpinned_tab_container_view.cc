@@ -248,6 +248,12 @@ bool VerticalUnpinnedTabContainerView::IsViewDragging(
   return GetDragHandler().IsViewDragging(child_view);
 }
 
+bool VerticalUnpinnedTabContainerView::ShouldAnimateOpacityForAddAndRemove(
+    const views::View& child_view) const {
+  // Only animate opacity for tab views.
+  return views::IsViewClass<VerticalTabView>(&child_view);
+}
+
 bool VerticalUnpinnedTabContainerView::ShouldSnapToTarget(
     const views::View& child_view) const {
   return views::IsViewClass<VerticalSplitTabView>(&child_view);

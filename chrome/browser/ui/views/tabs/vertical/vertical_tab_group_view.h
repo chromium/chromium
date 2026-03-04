@@ -61,6 +61,8 @@ class VerticalTabGroupView
 
   // TabCollectionAnimatingLayoutManager::Delegate:
   bool IsViewDragging(const views::View& child_view) const override;
+  bool ShouldAnimateOpacityForAddAndRemove(
+      const views::View& child_view) const override;
   void OnAnimationEnded() override;
 
   bool IsCollapsed() const;

@@ -48,6 +48,8 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
    public:
     virtual bool IsViewDragging(const views::View& child_view) const;
     virtual bool ShouldSnapToTarget(const views::View& child_view) const;
+    virtual bool ShouldAnimateOpacityForAddAndRemove(
+        const views::View& child_view) const;
     virtual void OnAnimationEnded();
 
    protected:
@@ -66,6 +68,7 @@ class TabCollectionAnimatingLayoutManager : public views::LayoutManagerBase,
   ~TabCollectionAnimatingLayoutManager() override;
 
   // LayoutManagerBase:
+  bool OnViewAdded(views::View* host, views::View* view) override;
   bool OnViewRemoved(views::View* host, views::View* view) override;
   gfx::Size GetPreferredSize(const views::View* host) const override;
   gfx::Size GetPreferredSize(

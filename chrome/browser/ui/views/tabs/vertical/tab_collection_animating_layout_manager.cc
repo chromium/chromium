@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "ui/base/class_property.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/views/view.h"
@@ -49,6 +50,11 @@ bool TabCollectionAnimatingLayoutManager::Delegate::ShouldSnapToTarget(
   return false;
 }
 
+bool TabCollectionAnimatingLayoutManager::Delegate::
+    ShouldAnimateOpacityForAddAndRemove(const views::View& child_view) const {
+  return false;
+}
+
 void TabCollectionAnimatingLayoutManager::Delegate::OnAnimationEnded() {}
 
 TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
@@ -71,6 +77,21 @@ TabCollectionAnimatingLayoutManager::TabCollectionAnimatingLayoutManager(
 
 TabCollectionAnimatingLayoutManager::~TabCollectionAnimatingLayoutManager() =
     default;
+
+bool TabCollectionAnimatingLayoutManager::OnViewAdded(views::View* host,
+                                                      views::View* view) {
+  // Do not attempt to animate opacity for views reparented from another
+  // collection.
+  if (!view->GetProperty(kPreviousCollectionBounds) &&
+      !delegate_->IsViewDragging(*view) &&
+      delegate_->ShouldAnimateOpacityForAddAndRemove(*view)) {
+    // Added views should animate opacity from invisible to fully opaque.
+    view->SetPaintToLayer();
+    view->layer()->SetFillsBoundsOpaquely(false);
+    view->layer()->SetOpacity(0.0f);
+  }
+  return LayoutManagerBase::OnViewAdded(host, view);
+}
 
 bool TabCollectionAnimatingLayoutManager::OnViewRemoved(views::View* host,
                                                         views::View* view) {
@@ -216,7 +237,8 @@ void TabCollectionAnimatingLayoutManager::SetTargetLayout(
   std::vector<ChildViewLayoutMap::value_type> target_bounds_pairs;
   target_bounds_pairs.reserve(target_layout.child_layouts.size());
   for (const views::ChildLayout& layout : target_layout.child_layouts) {
-    target_bounds_pairs.emplace_back(layout.child_view.get(), layout);
+    views::View* child_view = layout.child_view.get();
+    target_bounds_pairs.emplace_back(child_view, layout);
   }
   target_view_layout_map_ = ChildViewLayoutMap(std::move(target_bounds_pairs));
 
@@ -304,18 +326,29 @@ void TabCollectionAnimatingLayoutManager::AnimateAndDestroyChildView(
   child_view->SetCanProcessEventsWithinSubtree(false);
   child_view->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   child_view->SetProperty(kPendingDeletion, true);
+
+  if (delegate_->ShouldAnimateOpacityForAddAndRemove(*child_view)) {
+    // Removed views should animate opacity from fully opaque to invisible.
+    child_view->SetPaintToLayer();
+    child_view->layer()->SetFillsBoundsOpaquely(false);
+    child_view->layer()->SetOpacity(1.0f);
+  }
+
   InvalidateHost(/*mark_layouts_changed=*/true);
 }
 
 void TabCollectionAnimatingLayoutManager::AnimateAndReparentView(
     std::unique_ptr<views::View> view_to_reparent,
     const gfx::Rect& previous_bounds_in_screen) {
-  auto* child_view = host_view()->AddChildView(std::move(view_to_reparent));
-  if (!delegate_->IsViewDragging(*child_view)) {
-    child_view->SetPaintToLayer();
-    child_view->SetProperty(kPreviousCollectionBounds,
-                            previous_bounds_in_screen);
+  // Ensure `kPreviousCollectionBounds` metadata is set before adding
+  // `view_to_reparent` to ensure view-added lifecycle hooks have the necessary
+  // information to determine whether the view was reparented or newly-added.
+  if (!delegate_->IsViewDragging(*view_to_reparent)) {
+    view_to_reparent->SetPaintToLayer();
+    view_to_reparent->SetProperty(kPreviousCollectionBounds,
+                                  previous_bounds_in_screen);
   }
+  host_view()->AddChildView(std::move(view_to_reparent));
 }
 
 views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
@@ -335,9 +368,13 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       views::ChildLayout interpolated_child = target_it->second;
 
       if (delegate_->IsViewDragging(*child_view)) {
-        // Always use the target bounds for dragging views.
-        // The drag target should handle layout and animations as
-        // needed.
+        // Always use the target bounds for dragging views. The drag target
+        // should handle layout and animations as needed.
+        // In the case a drag starts on a view mid-animation ensure it snaps to
+        // being opaque.
+        if (child_view->layer() && (child_view->layer()->opacity() != 1.0f)) {
+          child_view->layer()->SetOpacity(1.0f);
+        }
       } else if (auto start_it = start_view_layout_map_.find(child_view);
                  start_it != start_view_layout_map_.end()) {
         // Moved child.
@@ -346,6 +383,12 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
             value, start_it->second.bounds, target_it->second.bounds);
         // Snap visibility to target.
         interpolated_child.visible = target_it->second.visible;
+        // In the case layouts are updated mid-animation, ensure any previously
+        // added views that are now treated as moved views are snapped to being
+        // opaque.
+        if (child_view->layer() && (child_view->layer()->opacity() != 1.0f)) {
+          child_view->layer()->SetOpacity(1.0f);
+        }
       } else if (!delegate_->ShouldSnapToTarget(*child_view)) {
         // Added child.
         // Animate-in new Views from empty bounds.
@@ -365,6 +408,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
           }
           interpolated_child.bounds = gfx::Tween::RectValueBetween(
               value, initial_bounds, target_it->second.bounds);
+          if (child_view->layer()) {
+            child_view->layer()->SetOpacity(static_cast<float>(value));
+          }
         }
       } else {
         // This branch results in new children being snapped to target bounds
@@ -399,6 +445,9 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       }
       interpolated_child.bounds = gfx::Tween::RectValueBetween(
           value, start_it->second.bounds, target_bounds);
+      if (child_view->layer()) {
+        child_view->layer()->SetOpacity(static_cast<float>(1.0 - value));
+      }
 
       current_layout_content_height_ = std::max(
           current_layout_content_height_, interpolated_child.bounds.bottom());
@@ -515,9 +564,9 @@ void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadata() {
 
 void TabCollectionAnimatingLayoutManager::ClearViewAnimationMetadataForView(
     views::View* view) {
-  if (view->GetProperty(kPreviousCollectionBounds)) {
+  if (!delegate_->IsViewDragging(*view)) {
     view->DestroyLayer();
-    view->ClearProperty(kPreviousCollectionBounds);
   }
+  view->ClearProperty(kPreviousCollectionBounds);
   view->ClearProperty(kSourceLayoutInfo);
 }
