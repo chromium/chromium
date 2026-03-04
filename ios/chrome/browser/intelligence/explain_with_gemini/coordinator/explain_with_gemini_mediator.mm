@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_response.h"
 #import "ios/chrome/browser/web_selection/model/web_selection_tab_helper.h"
@@ -69,6 +70,28 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
 // Returns the title of button Explain With Gemini.
 - (NSString*)buttonTitle {
   return l10n_util::GetNSString(IDS_IOS_EXPLAIN_GEMINI_EDIT_MENU);
+}
+
+// When shown after Search, the button is prepended with the Gemini icon to match
+// the style of the other items in the list.
+- (UIImage*)imageSymbol {
+  if (ExplainGeminiEditMenuPosition() ==
+      PositionForExplainGeminiEditMenu::kAfterSearch) {
+    return [self askGeminiIcon];
+  } else {
+    return nil;
+  }
+}
+
+// Returns the symbol for the Ask Gemini button.
+- (UIImage*)askGeminiIcon {
+#if BUILDFLAG(IOS_USE_BRANDED_ASSETS)
+  return CustomSymbolWithPointSize(kGeminiBrandedLogoSymbol,
+                                   kSymbolActionPointSize);
+#else
+  return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoSymbol,
+                                    kSymbolActionPointSize);
+#endif
 }
 
 // Fetches the selection in the web page. On success, trigger a "Explain with
@@ -173,7 +196,7 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   NSString* explainWithGeminiMenuId = @"chromeAction.explainGemini";
   NSString* explainWithGeminiMenuTitle = [self buttonTitle];
   return [UIAction actionWithTitle:explainWithGeminiMenuTitle
-                             image:nil
+                             image:[self imageSymbol]
                         identifier:explainWithGeminiMenuId
                            handler:handler];
 }
