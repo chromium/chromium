@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/no_destructor.h"
+#include "build/buildflag.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace regional_capabilities {
@@ -29,6 +30,18 @@ class RegionalCapabilitiesServiceFactory : public ProfileKeyedServiceFactory {
       Profile* profile);
 
   static RegionalCapabilitiesServiceFactory* GetInstance();
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Returns whether the system profile is in a region where we can show a
+  // search engine choice screen. If the profile is not a system profile, this
+  // function crashes. Used for clients associated with system profiles (where
+  // the service is not available, e.g. Profile Picker). Introduced for
+  // controlling the launch of Chrome Desktop FRE Refresh project.
+  //
+  // TODO(crbug.com/486819807):  Remove once the feature is fully launched.
+  static bool IsInSearchEngineChoiceScreenRegionForSystemProfile(
+      Profile* profile);
+#endif  // BUILDFLAG(IS_WINDOWS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
  private:
   friend base::NoDestructor<RegionalCapabilitiesServiceFactory>;

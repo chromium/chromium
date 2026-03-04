@@ -328,6 +328,33 @@ void ApplyPrepopulatedEnginesMigration(
   }
 }
 
+struct GetCountryIdResult {
+  CountryId country_id;
+  bool is_country_from_fallback = false;
+};
+
+// Fetches the device country using `Client::FetchCountryId()`. Upon
+// completion, returns it and also forwards it to `callback`. If the fetched
+// country is invalid, falls back to `Client::GetFallbackCountryId()`.
+GetCountryIdResult GetCountryIdFromClient(
+    RegionalCapabilitiesService::Client& client,
+    RegionalCapabilitiesService::Client::CountryIdCallback callback) {
+  ScopedCountryIdReceiver country_id_receiver;
+
+  client.FetchCountryId(DispatchCountryId(
+      country_id_receiver.GetCaptureCallback(), std::move(callback)));
+
+  const CountryId current_country =
+      country_id_receiver.received_country().value_or(CountryId());
+  if (current_country.IsValid()) {
+    return {current_country, /*is_country_from_fallback=*/false};
+  }
+  // The initialization failed or did not complete synchronously. Use the
+  // fallback value. If the fetch completes later, the persisted country will be
+  // picked up at the next startup.
+  return {client.GetFallbackCountryId(), /*is_country_from_fallback=*/true};
+}
+
 }  // namespace
 
 RegionalCapabilitiesService::RegionalCapabilitiesService(
@@ -385,6 +412,16 @@ bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
   return GetSettingsForProgram(CountryIdToProgram(tested_country_id))
       .choice_screen_eligibility_config.has_value();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// static
+bool RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+    Client& client) {
+  const GetCountryIdResult country_id_result =
+      GetCountryIdFromClient(client, Client::CountryIdCallback());
+  return IsInSearchEngineChoiceScreenRegion(country_id_result.country_id);
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 bool RegionalCapabilitiesService::
     IsChoiceScreenCompatibleWithCurrentLocation() {
@@ -560,36 +597,18 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
     }
   }
 
-  // Fetches the device country using `Client::FetchCountryId()`. Upon
-  // completion, makes it available through `country_id_receiver` and also
-  // forwards it to `completion_callback`.
-  ScopedCountryIdReceiver country_id_receiver;
-  client_->FetchCountryId(DispatchCountryId(
-      // Callback to a weak_ptr, and like `country_id_receiver`, scoped to the
-      // function only.
-      country_id_receiver.GetCaptureCallback(),
-      // Callback scoped to the lifetime of the service.
+  const GetCountryIdResult country_id_result = GetCountryIdFromClient(
+      CHECK_DEREF(client_),
       base::BindOnce(&RegionalCapabilitiesService::TrySetPersistedCountryId,
-                     weak_ptr_factory_.GetWeakPtr())));
+                     weak_ptr_factory_.GetWeakPtr()));
 
-  CountryId current_country =
-      country_id_receiver.received_country().value_or(CountryId());
-  bool is_current_country_from_fallback = false;
-  if (!current_country.IsValid()) {
-    // The initialization failed or did not complete synchronously. Use the
-    // fallback value and don't persist it. If the fetch completes later, the
-    // persisted country will be picked up at the next startup.
-    current_country = client_->GetFallbackCountryId();
-    is_current_country_from_fallback = true;
-  }
-
-  RecordVariationsCountryMatching(client_->GetVariationsLatestCountryId(),
-                                  persisted_country_id, current_country,
-                                  is_current_country_from_fallback);
+  RecordVariationsCountryMatching(
+      client_->GetVariationsLatestCountryId(), persisted_country_id,
+      country_id_result.country_id, country_id_result.is_country_from_fallback);
 
   const std::pair<CountryId, LoadedCountrySource> selected_country_and_source =
-      SelectCountryId(persisted_country_id, current_country,
-                      is_current_country_from_fallback);
+      SelectCountryId(persisted_country_id, country_id_result.country_id,
+                      country_id_result.is_country_from_fallback);
 
   country_id_cache_ = selected_country_and_source.first;
 

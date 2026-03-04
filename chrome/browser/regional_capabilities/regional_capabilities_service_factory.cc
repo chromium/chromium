@@ -26,6 +26,26 @@
 #endif
 
 namespace regional_capabilities {
+namespace {
+
+std::unique_ptr<RegionalCapabilitiesService::Client>
+CreateRegionalCapabilitiesServiceClient() {
+#if BUILDFLAG(IS_ANDROID)
+  return std::make_unique<RegionalCapabilitiesServiceClientAndroid>(
+      g_browser_process->variations_service());
+#elif BUILDFLAG(IS_CHROMEOS)
+  return std::make_unique<RegionalCapabilitiesServiceClientChromeOS>(
+      g_browser_process->variations_service());
+#elif BUILDFLAG(IS_LINUX)
+  return std::make_unique<RegionalCapabilitiesServiceClientLinux>(
+      g_browser_process->variations_service());
+#else
+  return std::make_unique<RegionalCapabilitiesServiceClient>(
+      g_browser_process->variations_service());
+#endif
+}
+
+}  // namespace
 
 // static
 RegionalCapabilitiesService* RegionalCapabilitiesServiceFactory::GetForProfile(
@@ -40,6 +60,19 @@ RegionalCapabilitiesServiceFactory::GetInstance() {
   static base::NoDestructor<RegionalCapabilitiesServiceFactory> instance;
   return instance.get();
 }
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// static
+bool RegionalCapabilitiesServiceFactory::
+    IsInSearchEngineChoiceScreenRegionForSystemProfile(Profile* profile) {
+  CHECK(profile);
+  CHECK(profile->IsSystemProfile());
+  std::unique_ptr<RegionalCapabilitiesService::Client> client =
+      CreateRegionalCapabilitiesServiceClient();
+  return RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(
+      CHECK_DEREF(client));
+}
+#endif  // BUILDFLAG(IS_WINDOWS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 RegionalCapabilitiesServiceFactory::RegionalCapabilitiesServiceFactory()
     : ProfileKeyedServiceFactory(
@@ -64,25 +97,9 @@ std::unique_ptr<KeyedService>
 RegionalCapabilitiesServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
-
-  auto regional_capabilities_service_client =
-#if BUILDFLAG(IS_ANDROID)
-      std::make_unique<RegionalCapabilitiesServiceClientAndroid>(
-          g_browser_process->variations_service());
-#elif BUILDFLAG(IS_CHROMEOS)
-      std::make_unique<RegionalCapabilitiesServiceClientChromeOS>(
-          g_browser_process->variations_service());
-#elif BUILDFLAG(IS_LINUX)
-      std::make_unique<RegionalCapabilitiesServiceClientLinux>(
-          g_browser_process->variations_service());
-#else
-      std::make_unique<RegionalCapabilitiesServiceClient>(
-          g_browser_process->variations_service());
-#endif
-
   return std::make_unique<RegionalCapabilitiesService>(
       CHECK_DEREF(profile->GetPrefs()),
-      std::move(regional_capabilities_service_client));
+      CreateRegionalCapabilitiesServiceClient());
 }
 
 }  // namespace regional_capabilities

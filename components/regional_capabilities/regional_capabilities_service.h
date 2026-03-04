@@ -117,6 +117,17 @@ class RegionalCapabilitiesService : public KeyedService {
   static bool IsInSearchEngineChoiceScreenRegion(
       const country_codes::CountryId& tested_country_id);
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+  // Returns whether the country obtained from the client is associated with
+  // a region in which we can show a search engine choice screen.
+  //
+  // It doesn't take cached data into account. This has been introduced for
+  // clients associated with system profiles (where the service is not
+  // available). Most clients should use `IsInSearchEngineChoiceScreenRegion()`
+  // instead.
+  static bool IsInSearchEngineChoiceScreenRegion(Client& client);
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
   // Returns true when the choice screen eligibility check against country
   // association is not required, or if the current location is compatible with
   // the regional scope.

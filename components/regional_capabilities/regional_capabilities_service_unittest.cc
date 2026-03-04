@@ -1207,5 +1207,35 @@ TEST_F(RegionalCapabilitiesServiceTest,
   }
 }
 
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FetchedCountryInRegion) {
+  AsyncRegionalCapabilitiesServiceClient client;
+  client.SetFetchedCountry(CountryId("FR"));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+}
+
+TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FetchedCountryNotInRegion) {
+  AsyncRegionalCapabilitiesServiceClient client;
+  client.SetFetchedCountry(CountryId("US"));
+  EXPECT_FALSE(
+      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+}
+
+TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FallbackCountryInRegion) {
+  AsyncRegionalCapabilitiesServiceClient client(
+      /*fallback_country_id=*/CountryId("FR"));
+  EXPECT_TRUE(
+      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+}
+
+TEST(ClientIsInSearchEngineChoiceScreenRegionTest, FallbackCountryNotInRegion) {
+  AsyncRegionalCapabilitiesServiceClient client(
+      /*fallback_country_id=*/CountryId("US"));
+  EXPECT_FALSE(
+      RegionalCapabilitiesService::IsInSearchEngineChoiceScreenRegion(client));
+}
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+
 }  // namespace
 }  // namespace regional_capabilities
