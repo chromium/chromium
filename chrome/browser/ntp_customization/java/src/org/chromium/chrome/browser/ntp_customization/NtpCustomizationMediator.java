@@ -379,8 +379,7 @@ public class NtpCustomizationMediator implements TemplateUrlServiceObserver {
     }
 
     /** Returns the source id of the mvt section subtitle. */
-    @StringRes
-    private int getMvtSectionSubtitleId() {
+    private @StringRes int getMvtSectionSubtitleId() {
         return NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn()
                 ? R.string.text_on
                 : R.string.text_off;

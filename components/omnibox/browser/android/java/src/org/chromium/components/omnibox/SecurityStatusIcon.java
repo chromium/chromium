@@ -54,9 +54,10 @@ public class SecurityStatusIcon {
         return 0;
     }
 
-    /** @return The resource ID of the content description for the security icon. */
-    @StringRes
-    public static int getSecurityIconContentDescriptionResourceId(
+    /**
+     * @return The resource ID of the content description for the security icon.
+     */
+    public static @StringRes int getSecurityIconContentDescriptionResourceId(
             @ConnectionSecurityLevel int securityLevel) {
         switch (securityLevel) {
             case ConnectionSecurityLevel.NONE:

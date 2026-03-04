@@ -529,8 +529,8 @@ public class RecentTabsRowAdapter extends BaseExpandableListAdapter {
      * page.
      */
     class RecentlyClosedTabsGroup extends Group {
-        @StringRes static final int ID_OPEN_IN_NEW_TAB = R.string.contextmenu_open_in_new_tab;
-        @StringRes static final int ID_REMOVE_ALL = R.string.remove_all;
+        static final @StringRes int ID_OPEN_IN_NEW_TAB = R.string.contextmenu_open_in_new_tab;
+        static final @StringRes int ID_REMOVE_ALL = R.string.remove_all;
         private @Nullable RecentlyClosedEntry mLongPressedRow;
 
         @Override

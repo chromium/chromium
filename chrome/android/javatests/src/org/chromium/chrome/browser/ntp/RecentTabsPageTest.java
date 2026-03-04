@@ -840,7 +840,7 @@ public class RecentTabsPageTest {
     }
 
     private static void openContextMenuAndInvokeItem(
-            final View view, @StringRes final int stringId) {
+            final View view, final @StringRes int stringId) {
         onView(is(view)).perform(longClick());
         onView(withText(stringId)).check(matches(isDisplayed())).perform(click());
     }

@@ -42,7 +42,7 @@ class TabListEditorToolbar extends SelectableListToolbar<TabListEditorItemSelect
     private TabListEditorActionViewLayout mActionViewLayout;
     private @Nullable View mNextFocusableView;
     private @ColorInt int mBackgroundColor;
-    @StringRes private int mBackButtonAccessibilityString;
+    private @StringRes int mBackButtonAccessibilityString;
 
     public TabListEditorToolbar(Context context, AttributeSet attrs) {
         super(context, attrs);

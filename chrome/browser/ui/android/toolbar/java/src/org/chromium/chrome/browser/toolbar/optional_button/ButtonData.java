@@ -55,8 +55,8 @@ public interface ButtonData {
         private final @Nullable IphCommandBuilder mIphCommandBuilder;
         @AdaptiveToolbarButtonVariant private final int mButtonVariant;
         private final boolean mIsDynamicAction;
-        @StringRes private final int mActionChipLabelResId;
-        @StringRes private final int mTooltipTextResId;
+        private final @StringRes int mActionChipLabelResId;
+        private final @StringRes int mTooltipTextResId;
         private final boolean mHasErrorBadge;
         private final boolean mIsChecked;
 
