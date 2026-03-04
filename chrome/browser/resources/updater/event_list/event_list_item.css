@@ -36,21 +36,17 @@ cr-expand-button {
 }
 
 .event-header {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  justify-content: space-between;
-  flex-grow: 1;
-  color: var(--cr-primary-text-color);
+  /* Using an inline-grid allows the event-summary to shrink such that the
+   * expand button is always visible.*/
+  display: inline-grid;
+  min-width: 0;
 }
 
 .event-summary {
   display: flex;
   gap: 8px;
   align-items: baseline;
-  flex-grow: 1;
   overflow: hidden;
-  min-width: 1000px;
 }
 
 .event-date-column {
