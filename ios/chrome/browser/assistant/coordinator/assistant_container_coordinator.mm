@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent_utils.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -16,6 +17,13 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
+
+namespace {
+
+// The minimal height of the Assistant container.
+constexpr CGFloat kDebugSmallDetentHeight = 60.0;
+
+}  // namespace
 
 @implementation AssistantContainerCoordinator {
   // The view controller for the assistant container.
@@ -36,6 +44,16 @@
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(AssistantContainerCommands)];
+  if (ShouldShowAssistantContainerDebugElements()) {
+    AssistantContainerDetent* smallDetent = AssistantContainerFixedDetent(
+        kDebugSmallDetentHeight, kAssistantContainerMinimizedDetentIdentifier);
+    AssistantContainerDetent* mediumDetent =
+        AssistantContainerMediumDetent(self.baseViewController.view);
+    AssistantContainerDetent* largeDetent =
+        AssistantContainerLargeDetent(self.baseViewController.view);
+
+    _detents = @[ smallDetent, mediumDetent, largeDetent ];
+  }
 }
 
 - (void)stop {
@@ -102,6 +120,9 @@
 
 - (void)setAssistantContainerDetents:
     (NSArray<AssistantContainerDetent*>*)detents {
+  if (ShouldShowAssistantContainerDebugElements()) {
+    return;
+  }
   _detents = detents;
   [_containerViewController setDetents:detents];
 }

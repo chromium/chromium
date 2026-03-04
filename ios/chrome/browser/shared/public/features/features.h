@@ -890,8 +890,16 @@ bool IsCloseOtherTabsEnabled();
 // Feature flag to enable the Assistant Container.
 BASE_DECLARE_FEATURE(kAssistantContainer);
 
+// Variations for the Assistant Container feature.
+extern const char kAssistantContainerParam[];
+extern const char kAssistantContainerParamDebug[];
+
 // Returns true if the Assistant Container is enabled.
 bool IsAssistantContainerEnabled();
+
+// Returns true if debug elements (like detents) should be added to the
+// Assistant Container.
+bool ShouldShowAssistantContainerDebugElements();
 
 // Enables the ComposeboxIpad feature.
 BASE_DECLARE_FEATURE(kComposeboxIpad);

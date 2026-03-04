@@ -1046,8 +1046,20 @@ bool IsCloseOtherTabsEnabled() {
 
 BASE_FEATURE(kAssistantContainer, base::FEATURE_DISABLED_BY_DEFAULT);
 
+const char kAssistantContainerParam[] = "kAssistantContainerParam";
+const char kAssistantContainerParamDebug[] = "kAssistantContainerParamDebug";
+
 bool IsAssistantContainerEnabled() {
   return base::FeatureList::IsEnabled(kAssistantContainer);
+}
+
+bool ShouldShowAssistantContainerDebugElements() {
+  if (!base::FeatureList::IsEnabled(kAssistantContainer)) {
+    return false;
+  }
+  std::string feature_param = base::GetFieldTrialParamValueByFeature(
+      kAssistantContainer, kAssistantContainerParam);
+  return feature_param == kAssistantContainerParamDebug;
 }
 
 BASE_FEATURE(kComposeboxIpad, base::FEATURE_DISABLED_BY_DEFAULT);
