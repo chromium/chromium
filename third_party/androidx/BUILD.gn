@@ -1176,6 +1176,27 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_pdf_pdf_ink_java") {
+    aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_ink/pdf-ink.aar"
+    info_path = "../androidx/committed/libs/androidx_pdf_pdf_ink/androidx_pdf_pdf_ink.info"
+    enable_bytecode_checks = false
+    deps = [
+      ":androidx_core_core_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_fragment_fragment_ktx_java",
+      ":androidx_ink_ink_authoring_java",
+      ":androidx_ink_ink_brush_java",
+      ":androidx_ink_ink_geometry_java",
+      ":androidx_ink_ink_strokes_java",
+      ":androidx_input_input_motionprediction_java",
+      ":androidx_pdf_pdf_viewer_fragment_java",
+      ":androidx_recyclerview_recyclerview_java",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_pdf_pdf_viewer_java") {
     aar_path = "../androidx/cipd/libs/androidx_pdf_pdf_viewer/pdf-viewer.aar"
     info_path = "../androidx/committed/libs/androidx_pdf_pdf_viewer/androidx_pdf_pdf_viewer.info"
@@ -2834,6 +2855,26 @@ if (!limit_android_deps) {
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_graphics_graphics_core_java") {
+    aar_path = "../androidx/cipd/libs/androidx_graphics_graphics_core/graphics-core.aar"
+    info_path = "../androidx/committed/libs/androidx_graphics_graphics_core/androidx_graphics_graphics_core.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_experimental_java",
+      ":androidx_core_core_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
   androidx_android_aar_prebuilt("androidx_graphics_graphics_path_java") {
     aar_path = "../androidx/cipd/libs/androidx_graphics_graphics_path/graphics-path.aar"
     info_path = "../androidx/committed/libs/androidx_graphics_graphics_path/androidx_graphics_graphics_path.info"
@@ -2882,6 +2923,223 @@ if (!limit_android_deps) {
       ":androidx_collection_collection_java",
       ":androidx_core_core_ktx_java",
       "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_authoring_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_ink_ink_authoring_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_authoring_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_authoring_android/ink-authoring-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_authoring_android/androidx_ink_ink_authoring_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_collection_collection_java",
+      ":androidx_core_core_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_fragment_fragment_ktx_java",
+      ":androidx_graphics_graphics_core_java",
+      ":androidx_ink_ink_brush_java",
+      ":androidx_ink_ink_geometry_java",
+      ":androidx_ink_ink_nativeloader_java",
+      ":androidx_ink_ink_rendering_java",
+      ":androidx_ink_ink_strokes_java",
+      ":androidx_input_input_motionprediction_java",
+      ":androidx_test_espresso_espresso_idling_resource_java",
+      "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_coroutines_android_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_brush_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_ink_ink_brush_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_brush_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_brush_android/ink-brush-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_brush_android/androidx_ink_ink_brush_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_collection_collection_java",
+      ":androidx_ink_ink_geometry_java",
+      ":androidx_ink_ink_nativeloader_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_geometry_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_ink_ink_geometry_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_geometry_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_geometry_android/ink-geometry-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_geometry_android/androidx_ink_ink_geometry_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_ink_ink_nativeloader_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_nativeloader_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_ink_ink_nativeloader_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_nativeloader_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_nativeloader_android/ink-nativeloader-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_nativeloader_android/androidx_ink_ink_nativeloader_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_rendering_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_ink_ink_rendering_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_rendering_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_rendering_android/ink-rendering-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_rendering_android/androidx_ink_ink_rendering_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_collection_collection_java",
+      ":androidx_core_core_java",
+      ":androidx_core_core_ktx_java",
+      ":androidx_ink_ink_brush_java",
+      ":androidx_ink_ink_geometry_java",
+      ":androidx_ink_ink_nativeloader_java",
+      ":androidx_ink_ink_strokes_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_java_group("androidx_ink_ink_strokes_java") {
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [ ":androidx_ink_ink_strokes_android_java" ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_ink_ink_strokes_android_java") {
+    aar_path = "../androidx/cipd/libs/androidx_ink_ink_strokes_android/ink-strokes-android.aar"
+    info_path = "../androidx/committed/libs/androidx_ink_ink_strokes_android/androidx_ink_ink_strokes_android.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_ink_ink_brush_java",
+      ":androidx_ink_ink_geometry_java",
+      ":androidx_ink_ink_nativeloader_java",
+      "//third_party/kotlin_stdlib:kotlin_stdlib_java",
+    ]
+  }
+
+  # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
+  androidx_android_aar_prebuilt("androidx_input_input_motionprediction_java") {
+    aar_path = "../androidx/cipd/libs/androidx_input_input_motionprediction/input-motionprediction.aar"
+    info_path = "../androidx/committed/libs/androidx_input_input_motionprediction/androidx_input_input_motionprediction.info"
+    enable_bytecode_checks = false
+
+    # To remove visibility constraint, add this dependency to
+    # //third_party/androidx/build.gradle.template
+    visibility = [
+      ":*",
+      "//third_party/android_deps:*",
+    ]
+    deps = [
+      ":androidx_annotation_annotation_java",
+      ":androidx_core_core_java",
     ]
   }
 
@@ -3720,7 +3978,6 @@ if (!limit_android_deps) {
       ":*",
       "//third_party/android_deps:*",
     ]
-    testonly = true
   }
 
   # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.

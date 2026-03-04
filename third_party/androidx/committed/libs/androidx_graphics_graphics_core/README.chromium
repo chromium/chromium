@@ -1,0 +1,20 @@
+Name: Graphics Core
+Short Name: graphics-core
+URL: https://dl.google.com/dl/android/maven2/androidx/graphics/graphics-core/1.0.4/graphics-core-1.0.4.aar
+Version: 1.0.4
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Leverage graphics facilities across multiple Android platform releases
+
+See also: https://developer.android.com/jetpack/androidx/releases/graphics#1.0.4
+
+
+Local Modifications:
+No modifications.

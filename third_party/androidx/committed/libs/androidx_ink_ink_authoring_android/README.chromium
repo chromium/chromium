@@ -1,0 +1,20 @@
+Name: Ink Authoring
+Short Name: ink-authoring-android
+URL: https://androidx.dev/snapshots/builds/14972159/artifacts/repository/androidx/ink/ink-authoring-android/1.1.0-SNAPSHOT/ink-authoring-android-1.1.0-20260304.061922-1.aar
+Version: 1.1.0-SNAPSHOT
+Update Mechanism: Autoroll
+License: Apache-2.0
+License File: LICENSE
+CPEPrefix: unknown
+Security Critical: yes
+Shipped: yes
+License Android Compatible: yes
+
+Description:
+Author beautiful strokes
+
+See also: https://developer.android.com/jetpack/androidx/releases/ink#1.1.0-SNAPSHOT
+
+
+Local Modifications:
+No modifications.
