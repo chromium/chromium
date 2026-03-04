@@ -2121,8 +2121,6 @@ class MODULES_EXPORT WebGLRenderingContextBase
 
   bool has_been_drawn_to_ = false;
 
-  uint32_t number_of_context_losses_ = 0;
-
   // Tracks if the context has ever called glBeginPixelLocalStorageANGLE. If it
   // has, we need to start using the pixel local storage interrupt mechanism
   // when we take over the client's context.
