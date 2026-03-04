@@ -9,6 +9,7 @@
 
 /// The minimum height of the omnibox.
 extern const CGFloat kOmniboxMinHeight;
+extern const CGFloat kOmniboxIPadMinHeight;
 /// The  margin  for the input plate container with its parent view.
 extern const CGFloat kInputPlateMargin;
 /// The corner radius for the input plate container.

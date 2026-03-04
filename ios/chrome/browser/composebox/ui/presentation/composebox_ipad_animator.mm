@@ -45,7 +45,8 @@ base::TimeDelta kAnimationDuration = base::Seconds(0.3);
     if (self.shouldUseLargeLayout) {
       initialFrame = CGRectMake(
           omniboxFrame.origin.x - kComposeboxOmniboxLayoutGuideHorizontalMargin,
-          omniboxFrame.origin.x, omniboxFrame.size.width,
+          omniboxFrame.origin.y,
+          omniboxFrame.size.width + kInputPlateMargin * 2,
           omniboxFrame.size.height);
     }
 
@@ -65,22 +66,9 @@ base::TimeDelta kAnimationDuration = base::Seconds(0.3);
         }];
 
   } else {
-    LayoutGuideCenter* layoutGuideCenter = self.layoutGuideCenter;
-    UIView* topOmnibox =
-        [layoutGuideCenter referencedViewUnderName:kTopOmniboxGuide];
-    CGRect omniboxFrame = [topOmnibox convertRect:topOmnibox.bounds
-                                           toView:containerView];
-    if (self.shouldUseLargeLayout) {
-      omniboxFrame = CGRectMake(
-          omniboxFrame.origin.x - kComposeboxOmniboxLayoutGuideHorizontalMargin,
-          omniboxFrame.origin.x, omniboxFrame.size.width,
-          omniboxFrame.size.height);
-    }
-
     [UIView animateWithDuration:[self transitionDuration:transitionContext]
         animations:^{
           fromViewController.view.alpha = 0;
-          fromViewController.view.frame = omniboxFrame;
         }
         completion:^(BOOL finished) {
           [fromViewController.view removeFromSuperview];
