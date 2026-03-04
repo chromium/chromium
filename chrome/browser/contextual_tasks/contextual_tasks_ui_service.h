@@ -254,6 +254,10 @@ class ContextualTasksUiService : public KeyedService {
   // Returns whether the provided URL is for the primary account in Chrome.
   virtual bool IsUrlForPrimaryAccount(const GURL& url);
 
+  // Used primarily for debugging - loads a URL in the specified WebContents.
+  virtual void LoadUrlInWebContents(const GURL& url,
+                                    content::WebContents* web_contents);
+
  private:
   void StartAccessTokenFetch();
 
