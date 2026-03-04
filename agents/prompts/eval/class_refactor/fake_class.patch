@@ -10,9 +10,9 @@ index 0573c2db7639..5601a403c482 100644
      "strings/escape.h",
 +    "strings/fake_simple_class.cc",
 +    "strings/fake_simple_class.h",
-     "strings/latin1_string_conversions.cc",
-     "strings/latin1_string_conversions.h",
      "strings/lazy_string_builder.cc",
+     "strings/lazy_string_builder.h",
+     "strings/levenshtein_distance.cc",
 diff --git a/base/strings/fake_simple_class.cc b/base/strings/fake_simple_class.cc
 new file mode 100644
 index 0000000000000..d811801c431d1
