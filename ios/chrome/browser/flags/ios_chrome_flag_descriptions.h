@@ -59,6 +59,12 @@ extern const char kAssistantContainerDescription[];
 extern const char kAutofillAcrossIframesName[];
 extern const char kAutofillAcrossIframesDescription[];
 
+extern const char kAutofillAiCreateEntityDataManagerName[];
+extern const char kAutofillAiCreateEntityDataManagerDescription[];
+
+extern const char kAutofillAiWithDataSchemaName[];
+extern const char kAutofillAiWithDataSchemaDescription[];
+
 extern const char kAutofillBottomSheetNewBlurName[];
 extern const char kAutofillBottomSheetNewBlurDescription[];
 

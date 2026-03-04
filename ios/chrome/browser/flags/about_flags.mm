@@ -2758,6 +2758,16 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"fullscreen-refactoring", flag_descriptions::kFullscreenRefactoringName,
      flag_descriptions::kFullscreenRefactoringDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kFullscreenRefactoring)},
+    {"autofill-ai-create-entity-data-manager",
+     flag_descriptions::kAutofillAiCreateEntityDataManagerName,
+     flag_descriptions::kAutofillAiCreateEntityDataManagerDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillAiCreateEntityDataManager)},
+    {"autofill-ai-with-data-schema",
+     flag_descriptions::kAutofillAiWithDataSchemaName,
+     flag_descriptions::kAutofillAiWithDataSchemaDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWithDataSchema)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

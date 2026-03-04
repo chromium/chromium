@@ -68,6 +68,15 @@ const char kAutofillAcrossIframesDescription[] =
     "When enabled, Autofill will fill and save information on forms that "
     "spread across multiple iframes.";
 
+const char kAutofillAiCreateEntityDataManagerName[] =
+    "Autofill AI Create Entity Data Manager";
+const char kAutofillAiCreateEntityDataManagerDescription[] =
+    "Enables Autofill AI Create Entity Data Manager.";
+
+const char kAutofillAiWithDataSchemaName[] = "Autofill AI With Data Schema";
+const char kAutofillAiWithDataSchemaDescription[] =
+    "Enables Autofill AI With Data Schema.";
+
 const char kAutofillBottomSheetNewBlurName[] =
     "New Blur Method for Autofill Bottom Sheet";
 const char kAutofillBottomSheetNewBlurDescription[] =

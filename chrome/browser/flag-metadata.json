@@ -702,6 +702,16 @@
     "expiry_milestone": 150
   },
   {
+    "name": "autofill-ai-create-entity-data-manager",
+    "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
+    "name": "autofill-ai-with-data-schema",
+    "owners": [ "leozhao@google.com", "tmartino@google.com", "bling-transactions@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "autofill-android-desktop-keyboard-accessory-revamp",
     "owners": [ "piotrkotynia@google.com", "luchenpeng@google.com" ],
     "expiry_milestone": 150
