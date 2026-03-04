@@ -918,6 +918,36 @@ IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
 #endif
 
 IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
+                       DialogNotShownIfPolicyIsSet) {
+  Profile* profile = browser()->profile();
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+
+  // Set the default search provider via policy.
+  TemplateURLData data;
+  data.SetShortName(u"Policy Engine");
+  data.SetKeyword(u"policy");
+  data.SetURL("https://policy.com/url?bar={searchTerms}");
+  data.policy_origin = TemplateURLData::PolicyOrigin::kDefaultSearchProvider;
+
+  TemplateURL* template_url =
+      template_url_service->Add(std::make_unique<TemplateURL>(data));
+  template_url_service->SetUserSelectedDefaultSearchProvider(template_url);
+
+  // Navigate to an eligible URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GURL(chrome::kChromeUINewTabPageURL),
+      WindowOpenDisposition::CURRENT_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  auto* service = static_cast<MockSearchEngineChoiceDialogService*>(
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(profile));
+  EXPECT_FALSE(service->IsShowingDialog(*browser()));
+  CheckNavigationConditionRecorded(
+      SearchEngineChoiceScreenConditions::kControlledByPolicy, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(SearchEngineChoiceDialogBrowserTest,
                        DialogNotShownForSmallHeightBrowserWindows) {
   NavigateParams params(browser(), GURL(chrome::kChromeUINewTabPageURL),
                         ui::PAGE_TRANSITION_FIRST);

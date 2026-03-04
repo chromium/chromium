@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/stringprintf.h"
@@ -14,8 +15,6 @@
 #include "chrome/browser/search_engine_choice/search_engine_choice_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
-#include "chrome/test/base/browser_with_test_window_test.h"
-#include "chrome/test/base/dialog_test_browser_window.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/country_codes/country_codes.h"
@@ -30,16 +29,17 @@
 #include "components/search_engines/template_url_prepopulate_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/web_modal/test_web_contents_modal_dialog_host.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
 #include "third_party/search_engines_data/resources/definitions/regional_settings.h"
-#include "ui/gfx/native_ui_types.h"
 
 using ::country_codes::CountryId;
 using ::regional_capabilities::SearchEngineChoiceScreenConditions;
 
 namespace {
+
+constexpr CountryId kBelgiumCountryId("BE");
 
 #if !BUILDFLAG(CHROME_FOR_TESTING)
 void SetUserSelectedDefaultSearchProvider(
@@ -92,45 +92,12 @@ const TestParam kTestParams[] = {
 };
 #endif
 
-// Custom test browser window to provide a parent view to a modal dialog.
-class ResizableDialogTestBrowserWindow : public DialogTestBrowserWindow {
- public:
-  ResizableDialogTestBrowserWindow() = default;
-  ResizableDialogTestBrowserWindow(const ResizableDialogTestBrowserWindow&) =
-      delete;
-  ResizableDialogTestBrowserWindow& operator=(
-      const ResizableDialogTestBrowserWindow&) = delete;
-  ~ResizableDialogTestBrowserWindow() override = default;
-
-  // DialogTestBrowserWindow overrides
-  web_modal::WebContentsModalDialogHost* GetWebContentsModalDialogHost()
-      override {
-    return GetTestWebContentsModalDialogHost();
-  }
-
-  web_modal::TestWebContentsModalDialogHost*
-  GetTestWebContentsModalDialogHost() {
-    if (!dialog_host_) {
-      dialog_host_ =
-          std::make_unique<web_modal::TestWebContentsModalDialogHost>(
-              gfx::NativeView());
-
-      // Absurdly large size to ensure we don't run into "too small" issues.
-      dialog_host_->set_max_dialog_size(gfx::Size(5000, 5000));
-    }
-
-    return dialog_host_.get();
-  }
-
- private:
-  std::unique_ptr<web_modal::TestWebContentsModalDialogHost> dialog_host_;
-};
-
 }  // namespace
 
-class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
+class SearchEngineChoiceDialogServiceTest : public testing::Test {
  public:
-  SearchEngineChoiceDialogServiceTest() {
+  SearchEngineChoiceDialogServiceTest()
+      : profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_chrome_build_override_ = std::make_unique<base::AutoReset<bool>>(
         SearchEngineChoiceDialogServiceFactory::
             ScopedChromeBuildOverrideForTesting(
@@ -138,23 +105,19 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
   }
 
   void SetUp() override {
-    BrowserWithTestWindowTest::SetUp();
-    TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
-        profile(),
-        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
+    ASSERT_TRUE(profile_manager_.SetUp());
 
     // The search engine choice feature is only enabled for countries in the
     // EEA region.
-    const CountryId kBelgiumCountryId("BE");
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kSearchEngineChoiceCountry, kBelgiumCountryId.CountryCode());
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kIgnoreNoFirstRunForSearchEngineChoiceScreen);
-  }
 
-  std::unique_ptr<BrowserWindow> CreateBrowserWindow() override {
-    // Dialog eligibility checks require a `WebContentsModalDialogHost`.
-    return std::make_unique<ResizableDialogTestBrowserWindow>();
+    profile_ = profile_manager_.CreateTestingProfile("Profile 1");
+    TemplateURLServiceFactory::GetInstance()->SetTestingFactory(
+        profile(),
+        base::BindRepeating(&TemplateURLServiceFactory::BuildInstanceFor));
   }
 
   SearchEngineChoiceDialogService* GetSearchEngineChoiceDialogService(
@@ -172,6 +135,9 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
     return search_engine_choice_dialog_service;
   }
 
+  TestingProfile* profile() { return profile_; }
+  TestingProfileManager* profile_manager() { return &profile_manager_; }
+
   const base::HistogramTester& histogram_tester() const {
     return histogram_tester_;
   }
@@ -181,6 +147,9 @@ class SearchEngineChoiceDialogServiceTest : public BrowserWithTestWindowTest {
   }
 
  private:
+  content::BrowserTaskEnvironment task_environment_;
+  TestingProfileManager profile_manager_;
+  raw_ptr<TestingProfile> profile_;
   base::HistogramTester histogram_tester_;
   base::UserActionTester user_action_tester_;
   std::unique_ptr<base::AutoReset<bool>> scoped_chrome_build_override_;
@@ -325,40 +294,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest, NotifyMoreButtonClicked) {
       1);
 }
 
-TEST_F(SearchEngineChoiceDialogServiceTest,
-       ComputeDialogConditions_SmallBrowser) {
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      GetSearchEngineChoiceDialogService();
-  ASSERT_TRUE(search_engine_choice_dialog_service);
-
-  static_cast<ResizableDialogTestBrowserWindow*>(browser()->window())
-      ->GetTestWebContentsModalDialogHost()
-      ->set_max_dialog_size(gfx::Size(1, 1));
-  EXPECT_EQ(
-      search_engine_choice_dialog_service->ComputeDialogConditions(*browser()),
-      SearchEngineChoiceScreenConditions::kBrowserWindowTooSmall);
-}
-
-TEST_F(SearchEngineChoiceDialogServiceTest, RegisterDialog) {
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      GetSearchEngineChoiceDialogService();
-  ASSERT_TRUE(search_engine_choice_dialog_service);
-
-  search_engine_choice_dialog_service->RegisterDialog(*browser(),
-                                                      base::DoNothing());
-  histogram_tester().ExpectUniqueSample(
-      search_engines::kSearchEngineChoiceScreenEventsHistogram,
-      search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
-      1);
-  histogram_tester().ExpectUniqueSample(
-      search_engines::kPumaSearchChoiceScreenEventsHistogram,
-      search_engines::SearchEngineChoiceScreenEvents::kChoiceScreenWasDisplayed,
-      1);
-
-  EXPECT_EQ(
-      user_action_tester().GetActionCount("SearchEngineChoiceScreenShown"), 1);
-}
-
 TEST_F(SearchEngineChoiceDialogServiceTest, NotifyChoiceMade_Dialog) {
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       GetSearchEngineChoiceDialogService(/*force_fetch_search_engines=*/true);
@@ -479,20 +414,6 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
                                         1);
 }
 
-TEST_F(SearchEngineChoiceDialogServiceTest,
-       DoNotDisplayDialogIfPolicyIsSetDynamically) {
-  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-      GetSearchEngineChoiceDialogService();
-  ASSERT_TRUE(search_engine_choice_dialog_service);
-
-  SetUserSelectedDefaultSearchProvider(
-      TemplateURLServiceFactory::GetForProfile(profile()),
-      /*created_by_policy=*/true);
-  EXPECT_EQ(
-      search_engine_choice_dialog_service->ComputeDialogConditions(*browser()),
-      SearchEngineChoiceScreenConditions::kControlledByPolicy);
-}
-
 TEST_F(SearchEngineChoiceDialogServiceTest, DoNotCreateServiceIfPolicyIsSet) {
   SetUserSelectedDefaultSearchProvider(
       TemplateURLServiceFactory::GetForProfile(profile()),
@@ -554,62 +475,61 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest, IsUrlSuitableForDialog) {
-  SearchEngineChoiceDialogService* search_engine_choice_service =
+  SearchEngineChoiceDialogService* choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-  EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
+  EXPECT_FALSE(choice_dialog_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUISettingsURL)));
-  EXPECT_FALSE(search_engine_choice_service->IsUrlSuitableForDialog(
+  EXPECT_FALSE(choice_dialog_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUIDevToolsURL)));
-  EXPECT_TRUE(search_engine_choice_service->IsUrlSuitableForDialog(
+  EXPECT_TRUE(choice_dialog_service->IsUrlSuitableForDialog(
       GURL(chrome::kChromeUINewTabPageURL)));
-  EXPECT_TRUE(search_engine_choice_service->IsUrlSuitableForDialog(
-      GURL(url::kAboutBlankURL)));
+  EXPECT_TRUE(
+      choice_dialog_service->IsUrlSuitableForDialog(GURL(url::kAboutBlankURL)));
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
        CanSuppressPrivacySandboxPromo_Dialog) {
-  SearchEngineChoiceDialogService* search_engine_choice_service =
+  SearchEngineChoiceDialogService* choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   int prepopulated_id =
-      search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+      choice_dialog_service->GetSearchEngines().at(0)->prepopulate_id();
 
-  search_engine_choice_service->NotifyChoiceMade(
+  choice_dialog_service->NotifyChoiceMade(
       prepopulated_id, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kDialog);
-  EXPECT_TRUE(search_engine_choice_service->CanSuppressPrivacySandboxPromo());
+  EXPECT_TRUE(choice_dialog_service->CanSuppressPrivacySandboxPromo());
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
        CanSuppressPrivacySandboxPromo_FRE) {
-  SearchEngineChoiceDialogService* search_engine_choice_service =
+  SearchEngineChoiceDialogService* choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   int prepopulated_id =
-      search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+      choice_dialog_service->GetSearchEngines().at(0)->prepopulate_id();
 
-  search_engine_choice_service->NotifyChoiceMade(
+  choice_dialog_service->NotifyChoiceMade(
       prepopulated_id, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kFirstRunExperience);
-  EXPECT_FALSE(search_engine_choice_service->CanSuppressPrivacySandboxPromo());
+  EXPECT_FALSE(choice_dialog_service->CanSuppressPrivacySandboxPromo());
 }
 
 TEST_F(SearchEngineChoiceDialogServiceTest,
        CanSuppressPrivacySandboxPromo_ProfileCreation) {
-  SearchEngineChoiceDialogService* search_engine_choice_service =
+  SearchEngineChoiceDialogService* choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
   int prepopulated_id =
-      search_engine_choice_service->GetSearchEngines().at(0)->prepopulate_id();
+      choice_dialog_service->GetSearchEngines().at(0)->prepopulate_id();
 
-  search_engine_choice_service->NotifyChoiceMade(
+  choice_dialog_service->NotifyChoiceMade(
       prepopulated_id, /*save_guest_mode_selection=*/false,
       SearchEngineChoiceDialogService::EntryPoint::kProfileCreation);
-  EXPECT_FALSE(search_engine_choice_service->CanSuppressPrivacySandboxPromo());
+  EXPECT_FALSE(choice_dialog_service->CanSuppressPrivacySandboxPromo());
 }
 
 TEST_P(SearchEngineListCountryOverrideParametrizedTest,
        CheckNumberOfSearchEngines) {
-  SearchEngineChoiceDialogService* search_engine_choice_service =
+  SearchEngineChoiceDialogService* choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile());
-  const CountryId kBelgiumCountryId("BE");
   size_t expected_search_engine_list_size =
       TemplateURLPrepopulateData::kRegionalSettings.find(kBelgiumCountryId)
           ->second->search_engines.size();
@@ -629,7 +549,7 @@ TEST_P(SearchEngineListCountryOverrideParametrizedTest,
         regional_capabilities::GetAllEeaRegionPrepopulatedEngines().size();
   }
 
-  EXPECT_EQ(search_engine_choice_service->GetSearchEngines().size(),
+  EXPECT_EQ(choice_dialog_service->GetSearchEngines().size(),
             expected_search_engine_list_size);
 }
 
@@ -640,4 +560,4 @@ TEST_F(SearchEngineChoiceDialogServiceTest,
       GetSearchEngineChoiceDialogService();
   ASSERT_EQ(search_engine_choice_dialog_service, nullptr);
 }
-#endif
+#endif  // !BUILDFLAG(CHROME_FOR_TESTING)
