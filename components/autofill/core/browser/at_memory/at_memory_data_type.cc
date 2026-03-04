@@ -14,134 +14,83 @@ namespace autofill {
 
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
     annotation_reducer::QueryIntentType query_intent_type) {
+#define INTENT_TO_FIELD_TYPE(intent, field_type)    \
+  case annotation_reducer::QueryIntentType::intent: \
+    return field_type
+#define INTENT_TO_ENTITY_TYPE(intent, entity_type)  \
+  case annotation_reducer::QueryIntentType::intent: \
+    return EntityType(EntityTypeName::entity_type)
+#define INTENT_TO_ATTRIBUTE_TYPE(intent_and_attribute_type)            \
+  case annotation_reducer::QueryIntentType::intent_and_attribute_type: \
+    return AttributeType(AttributeTypeName::intent_and_attribute_type)
+
   switch (query_intent_type) {
-    case annotation_reducer::QueryIntentType::kNameFull:
-      return NAME_FULL;
-    case annotation_reducer::QueryIntentType::kAddressFull:
-      return ADDRESS_HOME_ADDRESS;
-    case annotation_reducer::QueryIntentType::kAddressStreetAddress:
-      return ADDRESS_HOME_STREET_ADDRESS;
-    case annotation_reducer::QueryIntentType::kAddressCity:
-      return ADDRESS_HOME_CITY;
-    case annotation_reducer::QueryIntentType::kAddressState:
-      return ADDRESS_HOME_STATE;
-    case annotation_reducer::QueryIntentType::kAddressZip:
-      return ADDRESS_HOME_ZIP;
-    case annotation_reducer::QueryIntentType::kAddressCountry:
-      return ADDRESS_HOME_COUNTRY;
-    case annotation_reducer::QueryIntentType::kPhone:
-      return PHONE_HOME_WHOLE_NUMBER;
-    case annotation_reducer::QueryIntentType::kEmail:
-      return EMAIL_ADDRESS;
-    case annotation_reducer::QueryIntentType::kIban:
-      return IBAN_VALUE;
-    case annotation_reducer::QueryIntentType::kVehicle:
-      return EntityType(EntityTypeName::kVehicle);
-    case annotation_reducer::QueryIntentType::kVehicleMake:
-      return AttributeType(AttributeTypeName::kVehicleMake);
-    case annotation_reducer::QueryIntentType::kVehicleModel:
-      return AttributeType(AttributeTypeName::kVehicleModel);
-    case annotation_reducer::QueryIntentType::kVehicleYear:
-      return AttributeType(AttributeTypeName::kVehicleYear);
-    case annotation_reducer::QueryIntentType::kVehicleOwner:
-      return AttributeType(AttributeTypeName::kVehicleOwner);
-    case annotation_reducer::QueryIntentType::kVehiclePlateNumber:
-      return AttributeType(AttributeTypeName::kVehiclePlateNumber);
-    case annotation_reducer::QueryIntentType::kVehiclePlateState:
-      return AttributeType(AttributeTypeName::kVehiclePlateState);
-    case annotation_reducer::QueryIntentType::kVehicleVin:
-      return AttributeType(AttributeTypeName::kVehicleVin);
-    case annotation_reducer::QueryIntentType::kPassportFull:
-      return EntityType(EntityTypeName::kPassport);
-    case annotation_reducer::QueryIntentType::kPassportName:
-      return AttributeType(AttributeTypeName::kPassportName);
-    case annotation_reducer::QueryIntentType::kPassportCountry:
-      return AttributeType(AttributeTypeName::kPassportCountry);
-    case annotation_reducer::QueryIntentType::kPassportNumber:
-      return AttributeType(AttributeTypeName::kPassportNumber);
-    case annotation_reducer::QueryIntentType::kPassportIssueDate:
-      return AttributeType(AttributeTypeName::kPassportIssueDate);
-    case annotation_reducer::QueryIntentType::kPassportExpirationDate:
-      return AttributeType(AttributeTypeName::kPassportExpirationDate);
-    case annotation_reducer::QueryIntentType::kFlightReservationFull:
-      return EntityType(EntityTypeName::kFlightReservation);
-    case annotation_reducer::QueryIntentType::kFlightReservationFlightNumber:
-      return AttributeType(AttributeTypeName::kFlightReservationFlightNumber);
-    case annotation_reducer::QueryIntentType::kFlightReservationTicketNumber:
-      return AttributeType(AttributeTypeName::kFlightReservationTicketNumber);
-    case annotation_reducer::QueryIntentType::
-        kFlightReservationConfirmationCode:
-      return AttributeType(
-          AttributeTypeName::kFlightReservationConfirmationCode);
-    case annotation_reducer::QueryIntentType::kFlightReservationPassengerName:
-      return AttributeType(AttributeTypeName::kFlightReservationPassengerName);
-    case annotation_reducer::QueryIntentType::
-        kFlightReservationDepartureAirport:
-      return AttributeType(
-          AttributeTypeName::kFlightReservationDepartureAirport);
-    case annotation_reducer::QueryIntentType::kFlightReservationArrivalAirport:
-      return AttributeType(AttributeTypeName::kFlightReservationArrivalAirport);
-    case annotation_reducer::QueryIntentType::kFlightReservationDepartureDate:
-      return AttributeType(AttributeTypeName::kFlightReservationDepartureDate);
-    case annotation_reducer::QueryIntentType::kNationalIdCardFull:
-      return EntityType(EntityTypeName::kNationalIdCard);
-    case annotation_reducer::QueryIntentType::kNationalIdCardName:
-      return AttributeType(AttributeTypeName::kNationalIdCardName);
-    case annotation_reducer::QueryIntentType::kNationalIdCardCountry:
-      return AttributeType(AttributeTypeName::kNationalIdCardCountry);
-    case annotation_reducer::QueryIntentType::kNationalIdCardNumber:
-      return AttributeType(AttributeTypeName::kNationalIdCardNumber);
-    case annotation_reducer::QueryIntentType::kNationalIdCardIssueDate:
-      return AttributeType(AttributeTypeName::kNationalIdCardIssueDate);
-    case annotation_reducer::QueryIntentType::kNationalIdCardExpirationDate:
-      return AttributeType(AttributeTypeName::kNationalIdCardExpirationDate);
-    case annotation_reducer::QueryIntentType::kRedressNumberFull:
-      return EntityType(EntityTypeName::kRedressNumber);
-    case annotation_reducer::QueryIntentType::kRedressNumberName:
-      return AttributeType(AttributeTypeName::kRedressNumberName);
-    case annotation_reducer::QueryIntentType::kRedressNumberNumber:
-      return AttributeType(AttributeTypeName::kRedressNumberNumber);
-    case annotation_reducer::QueryIntentType::kKnownTravelerNumberFull:
-      return EntityType(EntityTypeName::kKnownTravelerNumber);
-    case annotation_reducer::QueryIntentType::kKnownTravelerNumberName:
-      return AttributeType(AttributeTypeName::kKnownTravelerNumberName);
-    case annotation_reducer::QueryIntentType::kKnownTravelerNumberNumber:
-      return AttributeType(AttributeTypeName::kKnownTravelerNumberNumber);
-    case annotation_reducer::QueryIntentType::
-        kKnownTravelerNumberExpirationDate:
-      return AttributeType(
-          AttributeTypeName::kKnownTravelerNumberExpirationDate);
-    case annotation_reducer::QueryIntentType::kDriversLicenseFull:
-      return EntityType(EntityTypeName::kDriversLicense);
-    case annotation_reducer::QueryIntentType::kDriversLicenseName:
-      return AttributeType(AttributeTypeName::kDriversLicenseName);
-    case annotation_reducer::QueryIntentType::kDriversLicenseState:
-      return AttributeType(AttributeTypeName::kDriversLicenseState);
-    case annotation_reducer::QueryIntentType::kDriversLicenseNumber:
-      return AttributeType(AttributeTypeName::kDriversLicenseNumber);
-    case annotation_reducer::QueryIntentType::kDriversLicenseIssueDate:
-      return AttributeType(AttributeTypeName::kDriversLicenseIssueDate);
-    case annotation_reducer::QueryIntentType::kDriversLicenseExpirationDate:
-      return AttributeType(AttributeTypeName::kDriversLicenseExpirationDate);
-    case annotation_reducer::QueryIntentType::kOrderFull:
-      return EntityType(EntityTypeName::kOrder);
-    case annotation_reducer::QueryIntentType::kOrderId:
-      return AttributeType(AttributeTypeName::kOrderId);
-    case annotation_reducer::QueryIntentType::kOrderAccount:
-      return AttributeType(AttributeTypeName::kOrderAccount);
-    case annotation_reducer::QueryIntentType::kOrderDate:
-      return AttributeType(AttributeTypeName::kOrderDate);
-    case annotation_reducer::QueryIntentType::kOrderMerchantName:
-      return AttributeType(AttributeTypeName::kOrderMerchantName);
-    case annotation_reducer::QueryIntentType::kOrderMerchantDomain:
-      return AttributeType(AttributeTypeName::kOrderMerchantDomain);
-    case annotation_reducer::QueryIntentType::kOrderProductNames:
-      return AttributeType(AttributeTypeName::kOrderProductNames);
-    case annotation_reducer::QueryIntentType::kOrderGrandTotal:
-      return AttributeType(AttributeTypeName::kOrderGrandTotal);
+    INTENT_TO_FIELD_TYPE(kNameFull, NAME_FULL);
+    INTENT_TO_FIELD_TYPE(kAddressFull, ADDRESS_HOME_ADDRESS);
+    INTENT_TO_FIELD_TYPE(kAddressStreetAddress, ADDRESS_HOME_STREET_ADDRESS);
+    INTENT_TO_FIELD_TYPE(kAddressCity, ADDRESS_HOME_CITY);
+    INTENT_TO_FIELD_TYPE(kAddressState, ADDRESS_HOME_STATE);
+    INTENT_TO_FIELD_TYPE(kAddressZip, ADDRESS_HOME_ZIP);
+    INTENT_TO_FIELD_TYPE(kAddressCountry, ADDRESS_HOME_COUNTRY);
+    INTENT_TO_FIELD_TYPE(kPhone, PHONE_HOME_WHOLE_NUMBER);
+    INTENT_TO_FIELD_TYPE(kEmail, EMAIL_ADDRESS);
+    INTENT_TO_FIELD_TYPE(kIban, IBAN_VALUE);
+    INTENT_TO_ENTITY_TYPE(kVehicle, kVehicle);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehicleMake);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehicleModel);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehicleYear);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehicleOwner);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehiclePlateNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehiclePlateState);
+    INTENT_TO_ATTRIBUTE_TYPE(kVehicleVin);
+    INTENT_TO_ENTITY_TYPE(kPassportFull, kPassport);
+    INTENT_TO_ATTRIBUTE_TYPE(kPassportName);
+    INTENT_TO_ATTRIBUTE_TYPE(kPassportCountry);
+    INTENT_TO_ATTRIBUTE_TYPE(kPassportNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kPassportIssueDate);
+    INTENT_TO_ATTRIBUTE_TYPE(kPassportExpirationDate);
+    INTENT_TO_ENTITY_TYPE(kFlightReservationFull, kFlightReservation);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationFlightNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationTicketNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationConfirmationCode);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationPassengerName);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationDepartureAirport);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationArrivalAirport);
+    INTENT_TO_ATTRIBUTE_TYPE(kFlightReservationDepartureDate);
+    INTENT_TO_ENTITY_TYPE(kNationalIdCardFull, kNationalIdCard);
+    INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardName);
+    INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardCountry);
+    INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardIssueDate);
+    INTENT_TO_ATTRIBUTE_TYPE(kNationalIdCardExpirationDate);
+    INTENT_TO_ENTITY_TYPE(kRedressNumberFull, kRedressNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kRedressNumberName);
+    INTENT_TO_ATTRIBUTE_TYPE(kRedressNumberNumber);
+    INTENT_TO_ENTITY_TYPE(kKnownTravelerNumberFull, kKnownTravelerNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kKnownTravelerNumberName);
+    INTENT_TO_ATTRIBUTE_TYPE(kKnownTravelerNumberNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kKnownTravelerNumberExpirationDate);
+    INTENT_TO_ENTITY_TYPE(kDriversLicenseFull, kDriversLicense);
+    INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseName);
+    INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseState);
+    INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseNumber);
+    INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseIssueDate);
+    INTENT_TO_ATTRIBUTE_TYPE(kDriversLicenseExpirationDate);
+    INTENT_TO_ENTITY_TYPE(kOrderFull, kOrder);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderId);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderAccount);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderDate);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantName);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderMerchantDomain);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderProductNames);
+    INTENT_TO_ATTRIBUTE_TYPE(kOrderGrandTotal);
     case annotation_reducer::QueryIntentType::kUnknown:
       return std::nullopt;
   }
+
+#undef INTENT_TO_ATTRIBUTE_TYPE
+#undef INTENT_TO_ENTITY_TYPE
+#undef INTENT_TO_FIELD_TYPE
 }
 
 }  // namespace autofill
