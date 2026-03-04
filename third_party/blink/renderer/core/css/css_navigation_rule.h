@@ -12,6 +12,7 @@
 namespace blink {
 
 class CSSStyleSheet;
+class Document;
 class StyleRuleNavigation;
 
 class CORE_EXPORT CSSNavigationRule final : public CSSConditionRule {
@@ -22,9 +23,16 @@ class CORE_EXPORT CSSNavigationRule final : public CSSConditionRule {
   ~CSSNavigationRule() override;
 
   String cssText() const override;
+  // Prefer ConditionTextInternal for internal use.
+  String conditionText() const override;
+  String ConditionTextInternal() const override;
   void Reattach(StyleRuleBase*) override;
 
   void Trace(Visitor*) const override;
+
+  bool Evaluate(Document* document);
+  void SetConditionText(ExecutionContext* execution_context,
+                        const String& text);
 
  private:
   CSSRule::Type GetType() const override { return kNavigationRule; }

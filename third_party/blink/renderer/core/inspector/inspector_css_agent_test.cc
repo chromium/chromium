@@ -8,6 +8,7 @@
 
 #include "third_party/blink/renderer/core/css/css_function_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
+#include "third_party/blink/renderer/core/css/css_style_rule.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -93,6 +94,45 @@ class InspectorCSSAgentTest : public PageTestBase {
 
   FontAtRules CollectFontAtRules(const char* selector) {
     return CollectFontAtRules(selector, {});
+  }
+
+  CSSStyleRule* GetSingleNestedStyleRule(TreeScope* tree_scope) {
+    CHECK_EQ(tree_scope->StyleSheets().length(), 1);
+    StyleSheet* sheet = tree_scope->StyleSheets().item(0);
+    CHECK(sheet->IsCSSStyleSheet());
+    CSSRuleList* css_rules =
+        DynamicTo<CSSStyleSheet>(sheet)->cssRules(ASSERT_NO_EXCEPTION);
+    CHECK_EQ(css_rules->length(), 1);
+    CSSRule* rule = css_rules->item(0);
+    return DynamicTo<CSSStyleRule>(rule);
+  }
+
+  CSSStyleRule* GetInnermostStyleRule(CSSStyleSheet* sheet) {
+    CSSRuleList* css_rules = sheet->cssRules(ASSERT_NO_EXCEPTION);
+    CHECK_EQ(css_rules->length(), 1u);
+    CSSRule* rule = css_rules->item(0);
+
+    while (rule->cssRules()->length() > 0) {
+      rule = rule->cssRules()->item(0);
+      CHECK_LE(css_rules->length(), 1u);
+    }
+    return DynamicTo<CSSStyleRule>(rule);
+  }
+
+  std::unique_ptr<protocol::CSS::CSSRule> BuildObjectForInnermostRule(
+      const char* selector) {
+    Element* e = GetDocument().querySelector(AtomicString(selector),
+                                             ASSERT_NO_EXCEPTION);
+    CHECK(e);
+    TreeScope* tree_scope = &(e->GetTreeScope());
+    CHECK(tree_scope);
+    CHECK_EQ(tree_scope->StyleSheets().length(), 1u);
+    StyleSheet* sheet = tree_scope->StyleSheets().item(0);
+    CHECK(sheet->IsCSSStyleSheet());
+    CSSStyleRule* rule = GetInnermostStyleRule(DynamicTo<CSSStyleSheet>(sheet));
+    CHECK(rule);
+    return CreateInspectorCSSAgent()->BuildObjectForRule(
+        rule, e, kPseudoIdNone, /*pseudo_argument=*/g_null_atom, tree_scope);
   }
 
   CSSFunctionRule* FindFunctionRule(
@@ -943,6 +983,219 @@ TEST_F(InspectorCSSAgentTest, GetFontFeatureValuesRuleMultipleFeatures) {
             protocol::CSS::CSSAtRule::SubsectionEnum::Annotation);
   EXPECT_EQ(rules->at(2)->getStyle()->getCssProperties()->at(0)->getName(),
             "extra");
+}
+
+TEST_F(InspectorCSSAgentTest, BuildSimpleRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      #e {
+        color: red;
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  EXPECT_FALSE(rule->getNestingSelectors());
+  EXPECT_EQ(rule->getRuleTypes()->size(), 0u);
+  EXPECT_EQ(rule->getMedia()->size(), 0u);
+  EXPECT_EQ(rule->getSupports()->size(), 0u);
+  EXPECT_EQ(rule->getContainerQueries()->size(), 0u);
+  EXPECT_EQ(rule->getScopes()->size(), 0u);
+  EXPECT_EQ(rule->getLayers()->size(), 0u);
+  EXPECT_EQ(rule->getStartingStyles()->size(), 0u);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedStyleRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      div {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div><div id=e></div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "& #e");
+  ASSERT_TRUE(rule->getNestingSelectors());
+  EXPECT_EQ(rule->getNestingSelectors()->size(), 1u);
+  EXPECT_EQ(rule->getNestingSelectors()->at(0), "div");
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::StyleRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedMediaRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @media screen and (min-width: 1px) {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getMedia()->size(), 1u);
+  EXPECT_EQ(rule->getMedia()->at(0)->getText(), "screen and (min-width: 1px)");
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::MediaRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedSupportsRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @supports (display: grid) {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getSupports()->size(), 1u);
+  EXPECT_EQ(rule->getSupports()->at(0)->getText(), "(display: grid)");
+  EXPECT_TRUE(rule->getSupports()->at(0)->getActive());
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::SupportsRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedContainerRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @container (min-width: 1px) {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div style="container-type: inline-size;"><div id=e></div></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getContainerQueries()->size(), 1u);
+  EXPECT_EQ(rule->getContainerQueries()->at(0)->getText(), "(min-width: 1px)");
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::ContainerRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedLayerRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @layer my-layer {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getLayers()->size(), 1u);
+  EXPECT_EQ(rule->getLayers()->at(0)->getText(), "my-layer");
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::LayerRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedScopeRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @scope (.scope) {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div class=scope>
+        <div id=e></div>
+    </div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getScopes()->size(), 1u);
+  EXPECT_EQ(rule->getScopes()->at(0)->getText(), "(.scope)");
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::ScopeRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedStartingStyleRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @starting-style {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getStartingStyles()->size(), 1u);
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::StartingStyleRule);
+}
+
+TEST_F(InspectorCSSAgentTest, BuildNestedNavigationRule) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <style>
+      @navigation not (at: url-pattern("http:*xxx*")) {
+        #e {
+          color: red;
+        }
+      }
+    </style>
+    <div id=e></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  std::unique_ptr<protocol::CSS::CSSRule> rule =
+      BuildObjectForInnermostRule("#e");
+  EXPECT_TRUE(rule);
+  EXPECT_EQ(rule->getSelectorList()->getText(), "#e");
+  ASSERT_EQ(rule->getNavigations()->size(), 1u);
+  EXPECT_EQ(rule->getNavigations()->at(0)->getText(),
+            "not (at: url-pattern(\"http:*xxx*\"))");
+  EXPECT_TRUE(rule->getNavigations()->at(0)->getActive());
+  ASSERT_EQ(rule->getRuleTypes()->size(), 1u);
+  EXPECT_EQ(rule->getRuleTypes()->at(0),
+            protocol::CSS::CSSRuleTypeEnum::NavigationRule);
 }
 
 const CSSPropertyID DirectionAwareConverterTestData[] = {

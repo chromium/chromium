@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Navigation Queries</title>
+    <style>
+      @route --this-page {
+        pathname: "*navigation-queries.html";
+      }
+
+      @route --not-this-page {
+        pathname: "*some-other-page.html";
+      }
+
+      @function --get-color() {
+        --color: red;
+        @navigation (at: --this-page) {
+          --color: blue;
+        }
+        @navigation (at: --not-this-page) {
+          --color: green;
+        }
+        result: var(--color);
+      }
+
+      #test {
+        background-color: black;
+        /* TODO(b/431374376): Actually calling a function with a navigation
+        query is currently not implemented. If that is fixed we can just
+        call --get-color() here. */
+        --actual-color: blue;
+        color: var(--actual-color, --get-color());
+      }
+
+      @navigation (at: --this-page) {
+        #test {
+          background-color: yellow;
+        }
+      }
+
+      @navigation not (at: --this-page) {
+        #test {
+          background-color: gray;
+        }
+      }
+
+      :root {
+        --background-color: red;
+        color: purple;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="test">Test</div>
+  </body>
+</html>

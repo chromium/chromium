@@ -110,6 +110,8 @@ class CSSRuleSourceData final : public GarbageCollected<CSSRuleSourceData> {
 
   bool HasScope() const { return type == StyleRule::kScope; }
 
+  bool HasNavigation() const { return type == StyleRule::kNavigation; }
+
   StyleRule::RuleType type;
 
   // Range of the selector list in the enclosing source.

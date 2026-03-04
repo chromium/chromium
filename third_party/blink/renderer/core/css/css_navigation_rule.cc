@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/css_navigation_rule.h"
 
 #include "third_party/blink/renderer/core/css/conditional_exp_node.h"
+#include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/navigation_query.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 
@@ -36,4 +37,21 @@ void CSSNavigationRule::Trace(Visitor* visitor) const {
   CSSConditionRule::Trace(visitor);
 }
 
+bool CSSNavigationRule::Evaluate(Document* document) {
+  return navigation_rule_->GetNavigationQuery().Evaluate(document);
+}
+
+String CSSNavigationRule::conditionText() const {
+  return ConditionTextInternal();
+}
+
+String CSSNavigationRule::ConditionTextInternal() const {
+  return navigation_rule_->GetNavigationQuery().GetRootExp()->Serialize();
+}
+
+void CSSNavigationRule::SetConditionText(ExecutionContext* execution_context,
+                                         const String& text) {
+  CSSStyleSheet::RuleMutationScope mutation_scope(this);
+  navigation_rule_->SetConditionText(execution_context, text);
+}
 }  // namespace blink

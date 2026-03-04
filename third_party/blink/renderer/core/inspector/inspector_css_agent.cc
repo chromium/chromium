@@ -58,6 +58,7 @@
 #include "third_party/blink/renderer/core/css/css_layer_statement_rule.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_navigation_rule.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_name.h"
@@ -531,6 +532,7 @@ class InspectorCSSAgent::ModifyRuleAction final
     kSetKeyframeKey,
     kSetPropertyName,
     kSetScopeRuleText,
+    kSetNavigationRuleText,
   };
 
   ModifyRuleAction(Type type,
@@ -576,6 +578,9 @@ class InspectorCSSAgent::ModifyRuleAction final
       case kSetScopeRuleText:
         return style_sheet_->SetScopeRuleText(new_range_, old_text_, nullptr,
                                               nullptr, exception_state);
+      case kSetNavigationRuleText:
+        return style_sheet_->SetNavigationRuleText(
+            new_range_, old_text_, nullptr, nullptr, exception_state);
       default:
         NOTREACHED();
     }
@@ -614,6 +619,10 @@ class InspectorCSSAgent::ModifyRuleAction final
         break;
       case kSetScopeRuleText:
         css_rule_ = style_sheet_->SetScopeRuleText(
+            old_range_, new_text_, &new_range_, &old_text_, exception_state);
+        break;
+      case kSetNavigationRuleText:
+        css_rule_ = style_sheet_->SetNavigationRuleText(
             old_range_, new_text_, &new_range_, &old_text_, exception_state);
         break;
       default:
@@ -821,6 +830,11 @@ CSSSupportsRule* InspectorCSSAgent::AsCSSSupportsRule(CSSRule* rule) {
 // static
 CSSScopeRule* InspectorCSSAgent::AsCSSScopeRule(CSSRule* rule) {
   return DynamicTo<CSSScopeRule>(rule);
+}
+
+// static
+CSSNavigationRule* InspectorCSSAgent::AsCSSNavigationRule(CSSRule* rule) {
+  return DynamicTo<CSSNavigationRule>(rule);
 }
 
 InspectorCSSAgent::InspectorCSSAgent(
@@ -3155,6 +3169,36 @@ protocol::Response InspectorCSSAgent::setSupportsText(
   return InspectorDOMAgent::ToResponse(exception_state);
 }
 
+protocol::Response InspectorCSSAgent::setNavigationText(
+    const String& style_sheet_id,
+    std::unique_ptr<protocol::CSS::SourceRange> range,
+    const String& text,
+    std::unique_ptr<protocol::CSS::CSSNavigation>* result) {
+  FrontendOperationScope scope;
+  InspectorStyleSheet* inspector_style_sheet = nullptr;
+  protocol::Response response =
+      AssertInspectorStyleSheetForId(style_sheet_id, inspector_style_sheet);
+  if (!response.IsSuccess())
+    return response;
+  SourceRange text_range;
+  response =
+      JsonRangeToSourceRange(inspector_style_sheet, range.get(), &text_range);
+  if (!response.IsSuccess())
+    return response;
+
+  DummyExceptionStateForTesting exception_state;
+  ModifyRuleAction* action = MakeGarbageCollected<ModifyRuleAction>(
+      ModifyRuleAction::kSetNavigationRuleText, inspector_style_sheet, text_range,
+      text);
+  bool success = dom_agent_->History()->Perform(action, exception_state);
+  if (success) {
+    CSSNavigationRule* rule =
+        InspectorCSSAgent::AsCSSNavigationRule(action->TakeRule());
+    *result = BuildNavigationObject(rule);
+  }
+  return InspectorDOMAgent::ToResponse(exception_state);
+}
+
 protocol::Response InspectorCSSAgent::createStyleSheet(
     const String& frame_id,
     std::optional<bool> force,
@@ -3710,6 +3754,41 @@ void InspectorCSSAgent::CollectStartingStylesFromRule(
   }
 }
 
+std::unique_ptr<protocol::CSS::CSSNavigation>
+InspectorCSSAgent::BuildNavigationObject(CSSNavigationRule* rule) {
+  std::unique_ptr<protocol::CSS::CSSNavigation> navigation_object =
+      protocol::CSS::CSSNavigation::create()
+          .setText(rule->ConditionTextInternal())
+          .build();
+
+  CSSStyleSheet* style_sheet = rule->parentStyleSheet();
+  auto it = css_style_sheet_to_inspector_style_sheet_.find(style_sheet);
+  if (it != css_style_sheet_to_inspector_style_sheet_.end()) {
+    InspectorStyleSheet* inspector_style_sheet = it->value;
+    navigation_object->setStyleSheetId(inspector_style_sheet->Id());
+  }
+
+  InspectorStyleSheet* inspector_style_sheet = BindStyleSheet(style_sheet);
+  navigation_object->setRange(
+      inspector_style_sheet->RuleHeaderSourceRange(rule));
+
+  if (Document* document = style_sheet->OwnerDocument()) {
+    navigation_object->setActive(rule->Evaluate(document));
+  }
+
+  return navigation_object;
+}
+
+void InspectorCSSAgent::CollectNavigationQueriesFromRule(
+    CSSRule* rule,
+    protocol::Array<protocol::CSS::CSSNavigation>* navigation_list,
+    protocol::Array<protocol::CSS::CSSRuleType>* rule_types) {
+  if (auto* navigation_rule = DynamicTo<CSSNavigationRule>(rule)) {
+    navigation_list->emplace_back(BuildNavigationObject(navigation_rule));
+    rule_types->emplace_back(protocol::CSS::CSSRuleTypeEnum::NavigationRule);
+  }
+}
+
 void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
                                          protocol::CSS::CSSRule* result) {
   auto layers_list =
@@ -3726,6 +3805,8 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
       std::make_unique<protocol::Array<protocol::CSS::CSSRuleType>>();
   auto starting_style_list =
       std::make_unique<protocol::Array<protocol::CSS::CSSStartingStyle>>();
+  auto navigation_queries_list =
+      std::make_unique<protocol::Array<protocol::CSS::CSSNavigation>>();
 
   CSSRule* parent_rule = rule;
   auto nesting_selectors = std::make_unique<protocol::Array<String>>();
@@ -3742,6 +3823,8 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
                           rule_types_list.get());
     CollectStartingStylesFromRule(parent_rule, starting_style_list.get(),
                                   rule_types_list.get());
+    CollectNavigationQueriesFromRule(parent_rule, navigation_queries_list.get(),
+                                     rule_types_list.get());
 
     if (parent_rule != rule) {
       if (auto* style_rule = DynamicTo<CSSStyleRule>(parent_rule)) {
@@ -3773,6 +3856,7 @@ void InspectorCSSAgent::FillAncestorData(CSSRule* rule,
   result->setContainerQueries(std::move(container_queries_list));
   result->setRuleTypes(std::move(rule_types_list));
   result->setStartingStyles(std::move(starting_style_list));
+  result->setNavigations(std::move(navigation_queries_list));
   if (nesting_selectors->size() > 0) {
     result->setNestingSelectors(std::move(nesting_selectors));
   }
@@ -3865,6 +3949,14 @@ InspectorCSSAgent::BuildArrayForFunctionNodeChildren(CSSRuleList* rule_list) {
         std::unique_ptr<protocol::CSS::CSSFunctionConditionNode> condition =
             BuildObjectForFunctionConditionNode(supports_rule);
         condition->setSupports(BuildSupportsObject(supports_rule));
+        function_node->setCondition(std::move(condition));
+        break;
+      }
+      case CSSRule::kNavigationRule: {
+        CSSNavigationRule* navigation_rule = To<CSSNavigationRule>(rule);
+        std::unique_ptr<protocol::CSS::CSSFunctionConditionNode> condition =
+            BuildObjectForFunctionConditionNode(navigation_rule);
+        condition->setNavigation(BuildNavigationObject(navigation_rule));
         function_node->setCondition(std::move(condition));
         break;
       }

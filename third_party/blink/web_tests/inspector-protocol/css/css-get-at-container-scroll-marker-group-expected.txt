@@ -22,6 +22,8 @@ Dumping styles for ::scroll-marker-group: [
             ]
             media : [
             ]
+            navigations : [
+            ]
             origin : regular
             originTreeScopeNodeId : 5
             ruleTypes : [

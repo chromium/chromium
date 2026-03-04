@@ -564,6 +564,8 @@ class StyleRuleNavigation : public StyleRuleCondition {
 
   void TraceAfterDispatch(Visitor*) const;
 
+  void SetConditionText(const ExecutionContext*, String);
+
   const NavigationQuery& GetNavigationQuery() const {
     return *navigation_query_;
   }

@@ -185,6 +185,9 @@ experimental domain CSS
       # @starting-style CSS at-rule array.
       # The array enumerates @starting-style at-rules starting with the innermost one, going outwards.
       experimental optional array of CSSStartingStyle startingStyles
+      # @navigation CSS at-rule array.
+      # The array enumerates @navigation at-rules starting with the innermost one, going outwards.
+      experimental optional array of CSSNavigation navigations
 
   # Enum indicating the type of a CSS rule, used to represent the order of a style rule's ancestors.
   # This list only contains rule types that are collected during the ancestor rule collection.
@@ -197,6 +200,7 @@ experimental domain CSS
       ScopeRule
       StyleRule
       StartingStyleRule
+      NavigationRule
 
   # CSS coverage information.
   type RuleUsage extends object
@@ -358,6 +362,19 @@ experimental domain CSS
       string text
       # Whether the supports condition is satisfied.
       boolean active
+      # The associated rule header range in the enclosing stylesheet (if
+      # available).
+      optional SourceRange range
+      # Identifier of the stylesheet containing this object (if exists).
+      optional DOM.StyleSheetId styleSheetId
+
+  # CSS Navigation at-rule descriptor.
+  experimental type CSSNavigation extends object
+    properties
+      # Navigation rule text.
+      string text
+      # Whether the navigation condition is satisfied.
+      optional boolean active
       # The associated rule header range in the enclosing stylesheet (if
       # available).
       optional SourceRange range
@@ -556,6 +573,8 @@ experimental domain CSS
       optional CSSContainerQuery containerQueries
       # @supports CSS at-rule condition. Only one type of condition should be set.
       optional CSSSupports supports
+      # @navigation condition. Only one type of condition should be set.
+      optional CSSNavigation navigation
       # Block body.
       array of CSSFunctionNode children
       # The condition text.
@@ -923,6 +942,16 @@ experimental domain CSS
     returns
       # The resulting CSS Supports rule after modification.
       CSSSupports supports
+
+  # Modifies the expression of a navigation at-rule.
+  experimental command setNavigationText
+    parameters
+      DOM.StyleSheetId styleSheetId
+      SourceRange range
+      string text
+    returns
+      # The resulting CSS Navigation rule after modification.
+      CSSNavigation navigation
 
   # Modifies the expression of a scope at-rule.
   experimental command setScopeText

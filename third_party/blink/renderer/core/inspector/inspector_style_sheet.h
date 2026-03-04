@@ -48,6 +48,7 @@ namespace blink {
 class CSSKeyframeRule;
 class CSSMediaRule;
 class CSSContainerRule;
+class CSSNavigationRule;
 class CSSPositionTryRule;
 class CSSPropertySourceData;
 class CSSPropertyRule;
@@ -193,25 +194,30 @@ class InspectorStyleSheet : public InspectorStyleSheetBase {
                         StyleRuleFontFeature::FeatureType* font_feature_type,
                         ExceptionState&);
   CSSMediaRule* SetMediaRuleText(const SourceRange&,
-                                 const String& selector,
+                                 const String& text,
                                  SourceRange* new_range,
-                                 String* old_selector,
+                                 String* old_text,
                                  ExceptionState&);
   CSSContainerRule* SetContainerRuleText(const SourceRange&,
-                                         const String& selector,
+                                         const String& text,
                                          SourceRange* new_range,
-                                         String* old_selector,
+                                         String* old_text,
                                          ExceptionState&);
   CSSScopeRule* SetScopeRuleText(const SourceRange&,
-                                 const String& selector,
+                                 const String& text,
                                  SourceRange* new_range,
-                                 String* old_selector,
+                                 String* old_text,
                                  ExceptionState&);
   CSSSupportsRule* SetSupportsRuleText(const SourceRange&,
-                                       const String& selector,
+                                       const String& text,
                                        SourceRange* new_range,
-                                       String* old_selector,
+                                       String* old_text,
                                        ExceptionState&);
+  CSSNavigationRule* SetNavigationRuleText(const SourceRange&,
+                                           const String& text,
+                                           SourceRange* new_range,
+                                           String* old_text,
+                                           ExceptionState&);
   CSSStyleRule* AddRule(const String& rule_text,
                         const SourceRange& location,
                         SourceRange* added_range,

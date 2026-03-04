@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/core/css/css_keyframes_rule.h"
 #include "third_party/blink/renderer/core/css/css_layer_block_rule.h"
 #include "third_party/blink/renderer/core/css/css_media_rule.h"
+#include "third_party/blink/renderer/core/css/css_navigation_rule.h"
 #include "third_party/blink/renderer/core/css/css_nested_declarations_rule.h"
 #include "third_party/blink/renderer/core/css/css_position_try_rule.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -470,6 +471,46 @@ bool VerifySupportsText(Document* document, const String& supports_text) {
   return true;
 }
 
+bool VerifyNavigationText(Document* document, const String& navigation_text) {
+  DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
+  auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
+      ParserContextForDocument(document));
+  CSSRuleSourceDataList source_data;
+  String text = StrCat({"@navigation ", navigation_text, " { div { ",
+                        bogus_property_name, ": none; } }"});
+  InspectorCSSParserObserver observer(text, document, &source_data);
+  CSSParser::ParseSheetForInspector(ParserContextForDocument(document),
+                                    style_sheet, text, observer);
+
+  // Exactly one navigation rule should be parsed.
+  unsigned rule_count = source_data.size();
+  if (rule_count != 1 || source_data.at(0)->type != StyleRule::kNavigation) {
+    return false;
+  }
+
+  // Navigation rule should have exactly one style rule child.
+  CSSRuleSourceDataList& child_source_data = source_data.at(0)->child_rules;
+  rule_count = child_source_data.size();
+  if (rule_count != 1 || !child_source_data.at(0)->HasProperties()) {
+    return false;
+  }
+
+  // Exactly one property should be in style rule.
+  Vector<CSSPropertySourceData>& property_data =
+      child_source_data.at(0)->property_data;
+  unsigned property_count = property_data.size();
+  if (property_count != 1) {
+    return false;
+  }
+
+  // Check for the property name.
+  if (property_data.at(0).name != bogus_property_name) {
+    return false;
+  }
+
+  return true;
+}
+
 bool VerifyScopeText(Document* document, const String& scope_text) {
   DEFINE_STATIC_LOCAL(String, bogus_property_name, ("-webkit-boguz-propertee"));
   auto* style_sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -535,6 +576,7 @@ void FlattenSourceData(const CSSRuleSourceDataList& data_list,
       case StyleRule::kLayerBlock:
       case StyleRule::kProperty:
       case StyleRule::kStartingStyle:
+      case StyleRule::kNavigation:
         result->push_back(data);
         FlattenSourceData(data->child_rules, result);
         break;
@@ -595,6 +637,10 @@ CSSRuleList* AsCSSRuleList(CSSRule* rule) {
     return font_feature_values_rule->cssRules();
   }
 
+  if (auto* navigation_rule = DynamicTo<CSSNavigationRule>(rule)) {
+    return navigation_rule->cssRules();
+  }
+
   return nullptr;
 }
 
@@ -629,6 +675,7 @@ void CollectFlatRules(RuleList rule_list, CSSRuleVector* result) {
       case CSSRule::kLayerBlockRule:
       case CSSRule::kPropertyRule:
       case CSSRule::kStartingStyleRule:
+      case CSSRule::kNavigationRule:
         result->push_back(rule);
         CollectFlatRules(AsCSSRuleList(rule), result);
         break;
@@ -1529,6 +1576,47 @@ CSSSupportsRule* InspectorStyleSheet::SetSupportsRuleText(
   return supports_rule;
 }
 
+CSSNavigationRule* InspectorStyleSheet::SetNavigationRuleText(
+    const SourceRange& range,
+    const String& text,
+    SourceRange* new_range,
+    String* old_text,
+    ExceptionState& exception_state) {
+  if (!VerifyNavigationText(page_style_sheet_->OwnerDocument(), text)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kSyntaxError,
+        "Selector or navigation rule text is not valid.");
+    return nullptr;
+  }
+
+  CSSRuleSourceData* source_data = FindRuleByHeaderRange(range);
+  if (!source_data || !source_data->HasNavigation()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "Source range didn't match existing source range");
+    return nullptr;
+  }
+
+  CSSRule* rule = RuleForSourceData(source_data);
+  if (!rule || !rule->parentStyleSheet() ||
+      rule->GetType() != CSSRule::kNavigationRule) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotFoundError,
+        "Navigation source range didn't match existing source range");
+    return nullptr;
+  }
+
+  CSSNavigationRule* navigation_rule =
+      InspectorCSSAgent::AsCSSNavigationRule(rule);
+  navigation_rule->SetConditionText(
+      page_style_sheet_->OwnerDocument()->GetExecutionContext(), text);
+
+  ReplaceText(source_data->rule_header_range, text, new_range, old_text);
+  OnStyleSheetTextChanged();
+
+  return navigation_rule;
+}
+
 CSSScopeRule* InspectorStyleSheet::SetScopeRuleText(
     const SourceRange& range,
     const String& text,
@@ -2177,7 +2265,7 @@ InspectorStyleSheet::BuildObjectForRuleUsage(CSSRule* rule, bool was_used) {
   auto type = rule->GetType();
   if (type == CSSRule::kMediaRule || type == CSSRule::kSupportsRule ||
       type == CSSRule::kScopeRule || type == CSSRule::kContainerRule ||
-      type == CSSRule::kStartingStyleRule) {
+      type == CSSRule::kStartingStyleRule || type == CSSRule::kNavigationRule) {
     whole_rule_range.end = source_data->rule_header_range.end + 1;
   }
 

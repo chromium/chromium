@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_stream.h"
 #include "third_party/blink/renderer/core/css/parser/css_supports_parser.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/parser/navigation_parser.h"
 #include "third_party/blink/renderer/core/css/style_rule_counter_style.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_feature_values.h"
 #include "third_party/blink/renderer/core/css/style_rule_font_palette_values.h"
@@ -1077,6 +1078,19 @@ StyleRuleNavigation::StyleRuleNavigation(
 void StyleRuleNavigation::TraceAfterDispatch(Visitor* v) const {
   v->Trace(navigation_query_);
   StyleRuleCondition::TraceAfterDispatch(v);
+}
+
+void StyleRuleNavigation::SetConditionText(
+    const ExecutionContext* execution_context,
+    String value) {
+  CSSParserTokenStream stream(value);
+  auto* context = MakeGarbageCollected<CSSParserContext>(*execution_context);
+  NavigationQuery* query =
+      NavigationParser::ParseQuery(stream, *context->GetDocument());
+
+  if (query) {
+    navigation_query_ = query;
+  }
 }
 
 StyleRuleStartingStyle::StyleRuleStartingStyle(

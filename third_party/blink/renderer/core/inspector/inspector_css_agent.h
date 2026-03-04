@@ -60,6 +60,7 @@ class CSSConditionRule;
 class CSSContainerRule;
 class CSSFunctionRule;
 class CSSKeyframesRule;
+class CSSNavigationRule;
 class CSSPropertyName;
 class CSSRule;
 class CSSStyleRule;
@@ -117,6 +118,7 @@ class CORE_EXPORT InspectorCSSAgent final
   static CSSMediaRule* AsCSSMediaRule(CSSRule*);
   static CSSContainerRule* AsCSSContainerRule(CSSRule*);
   static CSSSupportsRule* AsCSSSupportsRule(CSSRule*);
+  static CSSNavigationRule* AsCSSNavigationRule(CSSRule*);
   static CSSScopeRule* AsCSSScopeRule(CSSRule*);
 
   static void CollectAllDocumentStyleSheets(Document*,
@@ -289,6 +291,11 @@ class CORE_EXPORT InspectorCSSAgent final
       std::unique_ptr<protocol::CSS::SourceRange>,
       const String& text,
       std::unique_ptr<protocol::CSS::CSSSupports>*) override;
+  protocol::Response setNavigationText(
+      const String& style_sheet_id,
+      std::unique_ptr<protocol::CSS::SourceRange>,
+      const String& text,
+      std::unique_ptr<protocol::CSS::CSSNavigation>*) override;
   protocol::Response createStyleSheet(const String& frame_id,
                                       std::optional<bool> force,
                                       String* style_sheet_id) override;
@@ -516,6 +523,14 @@ class CORE_EXPORT InspectorCSSAgent final
   void CollectScopesFromRule(CSSRule*,
                              protocol::Array<protocol::CSS::CSSScope>*,
                              protocol::Array<protocol::CSS::CSSRuleType>*);
+
+  // Navigation at-rule implementation
+  std::unique_ptr<protocol::CSS::CSSNavigation> BuildNavigationObject(
+      CSSNavigationRule* rule);
+  void CollectNavigationQueriesFromRule(
+      CSSRule*,
+      protocol::Array<protocol::CSS::CSSNavigation>*,
+      protocol::Array<protocol::CSS::CSSRuleType>*);
 
   // Function at-rule implementation
   std::unique_ptr<protocol::CSS::CSSFunctionRule> BuildObjectForFunctionRule(
