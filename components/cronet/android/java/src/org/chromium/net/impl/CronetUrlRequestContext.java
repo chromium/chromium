@@ -186,6 +186,8 @@ public class CronetUrlRequestContext extends CronetEngineBase {
 
     private List<VersionSafeProxyCallback> mProxyCallbacks;
 
+    private final CronetAdaptiveRequestContext mAdaptiveRequestContext;
+
     long getLogId() {
         return mLogId;
     }
@@ -356,6 +358,7 @@ public class CronetUrlRequestContext extends CronetEngineBase {
                 cronetInitializedInfoLogger.onUserThreadDone();
             }
         }
+        mAdaptiveRequestContext = new CronetAdaptiveRequestContext(builder.getContext());
     }
 
     @VisibleForTesting
@@ -533,21 +536,34 @@ public class CronetUrlRequestContext extends CronetEngineBase {
         }
         synchronized (mLock) {
             checkHaveAdapter();
-            return new CronetBidirectionalStream(
-                    this,
-                    url,
-                    priority,
-                    callback,
-                    executor,
-                    httpMethod,
-                    requestHeaders,
-                    delayRequestHeadersUntilFirstFlush,
-                    requestAnnotations,
-                    trafficStatsTagSet,
-                    trafficStatsTag,
-                    trafficStatsUidSet,
-                    trafficStatsUid,
-                    networkHandle);
+            CronetAdaptiveNetworkBidirectionalStream adaptiveStream =
+                    mAdaptiveRequestContext.isAdaptiveNetworkUrl(url)
+                            ? new CronetAdaptiveNetworkBidirectionalStream(
+                                    callback,
+                                    mAdaptiveRequestContext.getOrCreateScheduledExecutor())
+                            : null;
+            CronetBidirectionalStream stream =
+                    new CronetBidirectionalStream(
+                            this,
+                            url,
+                            priority,
+                            adaptiveStream != null ? adaptiveStream.getCallback() : callback,
+                            executor,
+                            httpMethod,
+                            requestHeaders,
+                            delayRequestHeadersUntilFirstFlush,
+                            requestAnnotations,
+                            trafficStatsTagSet,
+                            trafficStatsTag,
+                            trafficStatsUidSet,
+                            trafficStatsUid,
+                            networkHandle);
+            if (adaptiveStream != null) {
+                // TODO(crbug.com/474048542): Compute fallback network and set it here.
+                adaptiveStream.setPrimaryStream(stream);
+                return adaptiveStream;
+            }
+            return stream;
         }
     }
 
