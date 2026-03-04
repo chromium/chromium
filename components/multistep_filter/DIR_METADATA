@@ -1,0 +1,12 @@
+# Metadata information for this directory.
+#
+# For more information on DIR_METADATA files, see:
+#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/unifiedfleet/app/model/configuration/README.md
+#
+# For the list of valid component IDs, see:
+#   https://bugs.chromium.org/p/chromium/admin/components
+
+buganizer_public: {
+  component_id: 1457123
+}
+team_email: "chrome-autofill-team@google.com"
