@@ -1532,8 +1532,7 @@ TEST_P(CanvasRenderingContext2DTest,
        UnacceleratedLowLatencyIsNotSingleBuffered) {
   // Ensure that the context will create a SharedImage provider for the test to
   // be meaningful.
-  SharedGpuContext::SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
-      true);
+  SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(true);
   ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform;
   const_cast<gpu::Capabilities&>(SharedGpuContext::ContextProviderWrapper()
                                      ->ContextProvider()
@@ -1716,9 +1715,8 @@ TEST_P(CanvasRenderingContext2DTest, AutoFlushDelayedByLayer) {
 }
 
 TEST_P(CanvasRenderingContext2DTest,
-       SoftwareCanvasIsCompositedIfNativeMappableBuffersAreSupported) {
-  SharedGpuContext::SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
-      true);
+       SoftwareCanvasIsCompositedIfMappableSharedImageIsUsed) {
+  SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(true);
 
   // Ensure that support for BGRA overlays is present, as otherwise compositing
   // will not occur regardless.
@@ -1738,9 +1736,8 @@ TEST_P(CanvasRenderingContext2DTest,
 }
 
 TEST_P(CanvasRenderingContext2DTest,
-       SoftwareCanvasIsNotCompositedIfNativeMappableBuffersAreNotSupported) {
-  SharedGpuContext::SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
-      false);
+       SoftwareCanvasIsNotCompositedIfMappableSharedImageIsNotUsed) {
+  SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(false);
 
   CreateContext(kNonOpaque);
   EXPECT_TRUE(Context2D()->GetOrCreateResourceProvider());

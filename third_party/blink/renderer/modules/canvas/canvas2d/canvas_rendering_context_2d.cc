@@ -1330,13 +1330,11 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const bool is_gpu_compositing_enabled =
       SharedGpuContext::IsGpuCompositingEnabled();
   if (is_gpu_compositing_enabled) {
-    // We can try to create a SharedImage provider if either (a) we are using
-    // GPU raster or (b) we are using CPU raster and native
-    // mappable buffers are supported, in which case the created SharedImage
-    // could be mapped onto the CPU for software raster writes and then read by
-    // the display compositor.
+    // Try to create a SharedImage provider if either (a) we are using
+    // GPU raster or (b) we are using CPU raster and want to use mappable
+    // SharedImage.
     if (use_gpu_raster ||
-        SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D()) {
+        SharedGpuContext::UseMappableSharedImagesForCanvas2D()) {
       gpu::SharedImageUsageSet shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 

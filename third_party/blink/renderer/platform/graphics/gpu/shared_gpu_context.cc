@@ -32,8 +32,7 @@ namespace {
 
 namespace {
 
-std::optional<bool>
-    g_native_mappable_shared_images_supported_for_canvas_2d_for_testing;
+std::optional<bool> g_use_mappable_shared_images_for_canvas_2d_for_testing;
 std::optional<bool> g_low_latency_usage_supported_for_canvas_2d_for_testing;
 }
 
@@ -323,7 +322,7 @@ void SharedGpuContext::Reset() {
   this_ptr->shared_image_interface_provider_.reset();
   this_ptr->context_provider_wrapper_.reset();
   this_ptr->context_provider_factory_.Reset();
-  g_native_mappable_shared_images_supported_for_canvas_2d_for_testing.reset();
+  g_use_mappable_shared_images_for_canvas_2d_for_testing.reset();
   g_low_latency_usage_supported_for_canvas_2d_for_testing.reset();
 }
 
@@ -362,10 +361,9 @@ bool SharedGpuContext::MaySupportWebGLImageChromium() {
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
-  if (g_native_mappable_shared_images_supported_for_canvas_2d_for_testing) {
-    return g_native_mappable_shared_images_supported_for_canvas_2d_for_testing
-        .value();
+bool SharedGpuContext::UseMappableSharedImagesForCanvas2D() {
+  if (g_use_mappable_shared_images_for_canvas_2d_for_testing) {
+    return g_use_mappable_shared_images_for_canvas_2d_for_testing.value();
   }
 
 #if BUILDFLAG(IS_APPLE)
@@ -380,9 +378,9 @@ bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
 #endif
 }
 
-void SharedGpuContext::
-    SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(bool enable) {
-  g_native_mappable_shared_images_supported_for_canvas_2d_for_testing = enable;
+void SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(
+    bool enable) {
+  g_use_mappable_shared_images_for_canvas_2d_for_testing = enable;
 }
 
 bool SharedGpuContext::OverlaysSupportedForCanvas2D() {

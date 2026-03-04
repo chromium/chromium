@@ -67,14 +67,13 @@ class PLATFORM_EXPORT SharedGpuContext {
   static bool MaySupportWebGLImageChromium() { return true; }
 #endif
 
-  // Whether native mappable SharedImages are supported for Canvas2D.
-  static bool NativeMappableSharedImagesSupportedForCanvas2D();
+  // Whether mappable SharedImages should be used for canvas2d content with CPU
+  // raster.
+  static bool UseMappableSharedImagesForCanvas2D();
 
-  // Forces NativeMappableSharedImagesSupportedForCanvas2D() to return the
-  // passed-in value. Cleared on the next invocation of Reset() of the global
-  // context.
-  static void SetNativeMappableSharedImagesSupportedForCanvas2DForTesting(
-      bool enable);
+  // Forces UseMappableSharedImagesForCanvas2D() to return the passed-in value.
+  // Cleared on the next invocation of Reset() of the global context.
+  static void SetUseMappableSharedImagesForCanvas2DForTesting(bool enable);
 
   // Whether SharedImages used for canvas2D content may be placed into overlays.
   static bool OverlaysSupportedForCanvas2D();
