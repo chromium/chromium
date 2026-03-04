@@ -193,7 +193,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     private int mSelectionGranularity;
     private int mAccessibilityFocusId;
     private int mLastAccessibilityFocusId = View.NO_ID;
-    private int mSelectionNodeId;
     private @Nullable View mAutofillPopupView;
     private @Nullable CaptioningController mCaptioningController;
     private boolean mIsCurrentlyExtendingSelection;
@@ -488,7 +487,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mHistogramRecorder.updateTimeOfNativeInitialization();
         mAccessibilityFocusId = View.NO_ID;
         mLastAccessibilityFocusId = View.NO_ID;
-        mSelectionNodeId = View.NO_ID;
         mIsHovering = false;
         mCurrentRootId = View.NO_ID;
 
@@ -1722,7 +1720,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     private boolean nextAtGranularity(int granularity, boolean extendSelection, int virtualViewId) {
-        if (virtualViewId != mSelectionNodeId) return false;
+        if (virtualViewId != mAccessibilityFocusId) return false;
         setGranularityAndUpdateSelection(granularity);
 
         // This calls finishGranularityMoveNext when it's done.
@@ -1749,7 +1747,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
     private boolean previousAtGranularity(
             int granularity, boolean extendSelection, int virtualViewId) {
-        if (virtualViewId != mSelectionNodeId) return false;
+        if (virtualViewId != mAccessibilityFocusId) return false;
         setGranularityAndUpdateSelection(granularity);
 
         // This calls finishGranularityMovePrevious when it's done.
@@ -1768,7 +1766,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         // Prepare to send a traversal event, and update selection if selection is not extended.
         AccessibilityEvent traverseEvent =
                 buildAccessibilityEvent(
-                        mSelectionNodeId,
+                        mAccessibilityFocusId,
                         AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY);
         if (traverseEvent == null) {
             return;
@@ -1822,7 +1820,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         AccessibilityEvent traverseEvent =
                 buildAccessibilityEvent(
-                        mSelectionNodeId,
+                        mAccessibilityFocusId,
                         AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY);
         if (traverseEvent == null) {
             return;
@@ -1888,11 +1886,15 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     private void setSelection(int selectionFromIndex, int selectionToIndex) {
-        if (WebContentsAccessibilityImplJni.get().isEditableText(mNativeObj, mSelectionNodeId)
-                && WebContentsAccessibilityImplJni.get().isFocused(mNativeObj, mSelectionNodeId)) {
+        if (WebContentsAccessibilityImplJni.get().isEditableText(mNativeObj, mAccessibilityFocusId)
+                && WebContentsAccessibilityImplJni.get()
+                        .isFocused(mNativeObj, mAccessibilityFocusId)) {
             WebContentsAccessibilityImplJni.get()
                     .setSelection(
-                            mNativeObj, mSelectionNodeId, selectionFromIndex, selectionToIndex);
+                            mNativeObj,
+                            mAccessibilityFocusId,
+                            selectionFromIndex,
+                            selectionToIndex);
         }
     }
 
@@ -1931,10 +1933,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         clearNodeInfoCacheForGivenId(newAccessibilityFocusId);
 
         mAccessibilityFocusId = newAccessibilityFocusId;
-        // Used to store the node (edit text field) that has input focus but not a11y focus.
-        // Usually while the user is typing in an edit text field, a11y is on the IME and input
-        // focus is on the edit field. Granularity move needs to know where the input focus is.
-        mSelectionNodeId = mAccessibilityFocusId;
         mSelectionGranularity = NO_GRANULARITY_SELECTED;
         mIsCurrentlyExtendingSelection = false;
         mSelectionStart = -1;
