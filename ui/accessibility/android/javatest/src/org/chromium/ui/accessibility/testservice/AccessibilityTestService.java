@@ -40,13 +40,14 @@ public class AccessibilityTestService extends AccessibilityService {
         return sInstance;
     }
 
-    public static boolean tryWaitForEvent(EventQueryParams params) {
+    public static boolean tryWaitForEvent(
+            int eventType, String className, String text, long timeoutMs) {
         CompletableFuture<Boolean> eventFuture = new CompletableFuture<>();
         AccessibilityServiceListener listener =
                 new AccessibilityServiceListener() {
                     @Override
                     public void onAccessibilityEvent(AccessibilityEvent event) {
-                        if (eventMatches(event, params)) {
+                        if (eventMatches(event, eventType, className, text)) {
                             Log.i(TAG, "  Event MATCHED.");
                             eventFuture.complete(true);
                         }
@@ -57,7 +58,7 @@ public class AccessibilityTestService extends AccessibilityService {
             // Clear any previous listener, as waitForEvent claims exclusive rights.
             clearListenerLocked();
 
-            if (searchAndConsumeEventCacheLocked(params)) {
+            if (searchAndConsumeEventCacheLocked(eventType, className, text)) {
                 Log.i(TAG, "Found event in cache.");
                 return true;
             }
@@ -69,7 +70,7 @@ public class AccessibilityTestService extends AccessibilityService {
 
         // Did not find the event in the cache, so wait on the listener to return.
         try {
-            return eventFuture.get(params.timeoutMs, TimeUnit.MILLISECONDS);
+            return eventFuture.get(timeoutMs, TimeUnit.MILLISECONDS);
         } catch (TimeoutException e) {
             Log.w(TAG, "Timed out waiting for event");
             return false;
@@ -98,13 +99,14 @@ public class AccessibilityTestService extends AccessibilityService {
     }
 
     @GuardedBy("sLock")
-    public static boolean searchAndConsumeEventCacheLocked(EventQueryParams params) {
+    public static boolean searchAndConsumeEventCacheLocked(
+            int eventType, String className, String text) {
         ListIterator<AccessibilityEvent> iterator = sEventCache.listIterator();
         int foundIndex = -1;
         while (iterator.hasNext()) {
             int index = iterator.nextIndex();
             AccessibilityEvent event = iterator.next();
-            if (eventMatches(event, params)) {
+            if (eventMatches(event, eventType, className, text)) {
                 foundIndex = index;
                 break;
             }
@@ -122,70 +124,17 @@ public class AccessibilityTestService extends AccessibilityService {
         sEventCache.clear();
     }
 
-    public static boolean tryPerformActionOnNode(String className, String text, int action) {
-        synchronized (sLock) {
-            AccessibilityTestService instance = sInstance;
-            if (instance == null) {
-                Log.e(TAG, "AccessibilityTestService instance is null");
-                return false;
-            }
-
-            AccessibilityNodeInfo root = instance.getRootInActiveWindow();
-            if (root == null) {
-                Log.e(TAG, "Root node is null");
-                return false;
-            }
-
-            AccessibilityNodeInfo targetNode = findNodeRecursive(root, className, text);
-
-            if (targetNode != null) {
-                Log.i(TAG, "Found node: " + targetNode.toString());
-                return targetNode.performAction(action);
-            }
-
-            Log.e(TAG, "Node not found");
-            return false;
-        }
-    }
-
-    private static AccessibilityNodeInfo findNodeRecursive(
-            AccessibilityNodeInfo node, String className, String text) {
-        if (node == null) return null;
-
-        CharSequence nodeClassName = node.getClassName();
-        CharSequence nodeText = node.getText();
-        Log.i(TAG, "  findNodeRecursive: " + nodeClassName + " - " + nodeText);
-
-        boolean classNameMatches =
-                TextUtils.isEmpty(className) || TextUtils.equals(nodeClassName, className);
-        boolean textMatches = TextUtils.isEmpty(text) || TextUtils.equals(nodeText, text);
-
-        if (classNameMatches && textMatches) {
-            return node;
-        }
-
-        for (int i = 0; i < node.getChildCount(); i++) {
-            AccessibilityNodeInfo child = node.getChild(i);
-            AccessibilityNodeInfo result = findNodeRecursive(child, className, text);
-            if (result != null) {
-                return result;
-            }
-        }
-        return null;
-    }
-
-    static boolean eventMatches(AccessibilityEvent event, EventQueryParams params) {
-        if (event.getEventType() != params.eventType) return false;
+    static boolean eventMatches(
+            AccessibilityEvent event, int eventType, String className, String text) {
+        if (event.getEventType() != eventType) return false;
 
         AccessibilityNodeInfo source = event.getSource();
         CharSequence sourceClassName = source != null ? source.getClassName() : "";
         CharSequence sourceText = source != null ? source.getText() : "";
 
         boolean classNameMatches =
-                TextUtils.isEmpty(params.className)
-                        || TextUtils.equals(sourceClassName, params.className);
-        boolean textMatches =
-                TextUtils.isEmpty(params.text) || TextUtils.equals(sourceText, params.text);
+                TextUtils.isEmpty(className) || TextUtils.equals(sourceClassName, className);
+        boolean textMatches = TextUtils.isEmpty(text) || TextUtils.equals(sourceText, text);
 
         return classNameMatches && textMatches;
     }

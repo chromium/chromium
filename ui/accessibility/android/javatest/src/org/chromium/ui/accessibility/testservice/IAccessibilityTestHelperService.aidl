@@ -4,24 +4,17 @@
 
 package org.chromium.ui.accessibility.testservice;
 
-import org.chromium.ui.accessibility.testservice.EventQueryParams;
-
 interface IAccessibilityTestHelperService {
     /**
-     * Waits for an accessibility event matching the given query parameters.
-     * Returns true if the event is received within the timeout, false otherwise.
+     * Waits for an accessibility event of the given type on a node
+     * with the given class name. Returns true if the event is received
+     * within the timeout, false otherwise.
      *
-     * @param params The event query parameters.
+     * @param eventType The type of event to wait for (e.g.,
+     *     AccessibilityEvent.TYPE_VIEW_FOCUSED).
+     * @param className The expected class name of the event source.  Null or empty string matches any class name.
+     * @param text The expected text of the event source. Null or empty string matches any text.
+     * @param timeoutMs The maximum time to wait in milliseconds.
      */
-    boolean waitForEvent(in EventQueryParams params);
-
-    /**
-     * Finds a node matching the criteria and performs the given action on it.
-     *
-     * @param className The class name to match.
-     * @param text The text to match.
-     * @param action The action to perform (e.g., AccessibilityNodeInfo.ACTION_HOVER_ENTER).
-     * @return true if the action was performed successfully.
-     */
-    boolean performActionOnNode(String className, String text, int action);
+    boolean waitForEvent(int eventType, String className, String text, long timeoutMs);
 }

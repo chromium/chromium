@@ -9,10 +9,7 @@ android_resources("accessibility_test_support_resources") {
 android_aidl("accessibility_test_service_aidl") {
   testonly = true
   import_include = [ "javatest/src" ]
-  sources = [
-    "javatest/src/org/chromium/ui/accessibility/testservice/EventQueryParams.aidl",
-    "javatest/src/org/chromium/ui/accessibility/testservice/IAccessibilityTestHelperService.aidl",
-  ]
+  sources = [ "javatest/src/org/chromium/ui/accessibility/testservice/IAccessibilityTestHelperService.aidl" ]
 }
 
 android_apk("accessibility_test_support_apk") {
