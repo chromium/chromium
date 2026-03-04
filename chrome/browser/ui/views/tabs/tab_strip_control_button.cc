@@ -138,16 +138,19 @@ void TabStripControlButton::SetForegroundFrameActiveColorId(
   foreground_frame_active_color_id_ = new_color_id;
   UpdateColors();
 }
+
 void TabStripControlButton::SetForegroundFrameInactiveColorId(
     ui::ColorId new_color_id) {
   foreground_frame_inactive_color_id_ = new_color_id;
   UpdateColors();
 }
+
 void TabStripControlButton::SetBackgroundFrameActiveColorId(
     ui::ColorId new_color_id) {
   background_frame_active_color_id_ = new_color_id;
   UpdateColors();
 }
+
 void TabStripControlButton::SetBackgroundFrameInactiveColorId(
     ui::ColorId new_color_id) {
   background_frame_inactive_color_id_ = new_color_id;
@@ -177,28 +180,6 @@ void TabStripControlButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   UpdateIcon();
 }
 
-void TabStripControlButton::SetText(std::u16string_view text) {
-  label()->SetText(text);
-  // Required for text to be visible on hover.
-  // TODO(crbug.com/431015299): Fix text on hover and remove.
-  label()->SetPaintToLayer();
-  label()->SetSkipSubpixelRenderingOpacityCheck(true);
-  label()->layer()->SetFillsBoundsOpaquely(false);
-  label()->SetSubpixelRenderingEnabled(false);
-}
-
-ui::ColorId TabStripControlButton::GetBackgroundColor() {
-  return (GetWidget() && GetWidget()->ShouldPaintAsActive())
-             ? background_frame_active_color_id_
-             : background_frame_inactive_color_id_;
-}
-
-ui::ColorId TabStripControlButton::GetForegroundColor() {
-  return (GetWidget() && GetWidget()->ShouldPaintAsActive())
-             ? foreground_frame_active_color_id_
-             : foreground_frame_inactive_color_id_;
-}
-
 void TabStripControlButton::UpdateIcon() {
   if (icon_->is_empty()) {
     return;
@@ -210,58 +191,6 @@ void TabStripControlButton::UpdateIcon() {
   SetImageModel(views::Button::STATE_NORMAL, icon_image_model);
   SetImageModel(views::Button::STATE_HOVERED, icon_image_model);
   SetImageModel(views::Button::STATE_PRESSED, icon_image_model);
-}
-
-void TabStripControlButton::UpdateInkDrop() {
-  const auto* const color_provider = GetColorProvider();
-  if (!color_provider || !IsWidgetAlive()) {
-    return;
-  }
-
-  CreateToolbarInkdropCallbacks(this, inkdrop_hover_color_id_,
-                                inkdrop_ripple_color_id_);
-}
-
-void TabStripControlButton::UpdateColors() {
-  const auto* const color_provider = GetColorProvider();
-  if (!color_provider || !IsWidgetAlive()) {
-    return;
-  }
-
-  SetEnabledTextColors(foreground_frame_active_color_id_);
-  UpdateBackground();
-  UpdateInkDrop();
-  UpdateIcon();
-  SchedulePaint();
-}
-
-void TabStripControlButton::UpdateBackground() {
-  const auto* const color_provider = GetColorProvider();
-  if (!color_provider || !IsWidgetAlive()) {
-    return;
-  }
-
-  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
-  const std::optional<int> bg_id =
-      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
-                               BrowserFrameActiveState::kUseCurrent)
-                         : std::nullopt;
-
-  // Paint the background as transparent for image based themes.
-  if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
-    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  } else {
-    const float right_corner_radius =
-        GetScaledCornerRadius(GetRightCornerRadius(), Edge::kRight);
-    const float left_corner_radius =
-        GetScaledCornerRadius(GetLeftCornerRadius(), Edge::kLeft);
-    SetBackground(views::CreateBackgroundFromPainter(
-        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
-            color_provider->GetColor(GetBackgroundColor()),
-            gfx::RoundedCornersF(left_corner_radius, right_corner_radius,
-                                 right_corner_radius, left_corner_radius),
-            GetInsets())));
-  }
 }
 
 int TabStripControlButton::GetCornerRadius() const {
@@ -283,6 +212,35 @@ float TabStripControlButton::GetScaledCornerRadius(float initial_radius,
   } else {
     return initial_radius;
   }
+}
+
+void TabStripControlButton::SetLeftRightCornerRadii(int left, int right) {
+  left_corner_radius_ = left;
+  right_corner_radius_ = right;
+  UpdateBackground();
+}
+
+void TabStripControlButton::SetFlatEdgeFactor(float factor) {
+  flat_edge_factor_ = factor;
+  UpdateBackground();
+  // The ink drop doesn't automatically pick up on rounded corner changes, so
+  // we need to manually notify it here.
+  // TODO(crbug.com/332937585): Clean up once this is no longer necessary or
+  // there is a better API for updating.
+  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
+}
+
+void TabStripControlButton::AnimateToStateForTesting(
+    views::InkDropState state) {
+  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
+}
+
+gfx::Size TabStripControlButton::CalculatePreferredSize(
+    const views::SizeBounds& available_size) const {
+  gfx::Size size = TabStripControlButton::kButtonSize;
+  const auto insets = GetInsets();
+  size.Enlarge(insets.width(), insets.height());
+  return size;
 }
 
 void TabStripControlButton::AddedToWidget() {
@@ -333,12 +291,39 @@ bool TabStripControlButton::GetHitTestMask(SkPath* mask) const {
   return true;
 }
 
-gfx::Size TabStripControlButton::CalculatePreferredSize(
-    const views::SizeBounds& available_size) const {
-  gfx::Size size = TabStripControlButton::kButtonSize;
-  const auto insets = GetInsets();
-  size.Enlarge(insets.width(), insets.height());
-  return size;
+void TabStripControlButton::SetText(std::u16string_view text) {
+  label()->SetText(text);
+  // Required for text to be visible on hover.
+  // TODO(crbug.com/431015299): Fix text on hover and remove.
+  label()->SetPaintToLayer();
+  label()->SetSkipSubpixelRenderingOpacityCheck(true);
+  label()->layer()->SetFillsBoundsOpaquely(false);
+  label()->SetSubpixelRenderingEnabled(false);
+}
+
+ui::ColorId TabStripControlButton::GetBackgroundColor() {
+  return (GetWidget() && GetWidget()->ShouldPaintAsActive())
+             ? background_frame_active_color_id_
+             : background_frame_inactive_color_id_;
+}
+
+ui::ColorId TabStripControlButton::GetForegroundColor() {
+  return (GetWidget() && GetWidget()->ShouldPaintAsActive())
+             ? foreground_frame_active_color_id_
+             : foreground_frame_inactive_color_id_;
+}
+
+void TabStripControlButton::UpdateColors() {
+  const auto* const color_provider = GetColorProvider();
+  if (!color_provider || !IsWidgetAlive()) {
+    return;
+  }
+
+  SetEnabledTextColors(foreground_frame_active_color_id_);
+  UpdateBackground();
+  UpdateInkDrop();
+  UpdateIcon();
+  SchedulePaint();
 }
 
 void TabStripControlButton::NotifyClick(const ui::Event& event) {
@@ -352,19 +337,43 @@ bool TabStripControlButton::IsFrameCondensed() const {
   return browser_frame_view ? browser_frame_view->IsFrameCondensed() : false;
 }
 
-void TabStripControlButton::SetFlatEdgeFactor(float factor) {
-  flat_edge_factor_ = factor;
-  UpdateBackground();
-  // The ink drop doesn't automatically pick up on rounded corner changes, so
-  // we need to manually notify it here.
-  // TODO(crbug.com/332937585): Clean up once this is no longer necessary or
-  // there is a better API for updating.
-  views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
+void TabStripControlButton::UpdateBackground() {
+  const auto* const color_provider = GetColorProvider();
+  if (!color_provider || !IsWidgetAlive()) {
+    return;
+  }
+
+  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
+  const std::optional<int> bg_id =
+      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
+                               BrowserFrameActiveState::kUseCurrent)
+                         : std::nullopt;
+
+  // Paint the background as transparent for image based themes.
+  if (bg_id.has_value() && paint_transparent_for_custom_image_theme_) {
+    SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  } else {
+    const float right_corner_radius =
+        GetScaledCornerRadius(GetRightCornerRadius(), Edge::kRight);
+    const float left_corner_radius =
+        GetScaledCornerRadius(GetLeftCornerRadius(), Edge::kLeft);
+    SetBackground(views::CreateBackgroundFromPainter(
+        views::Painter::CreateSolidRoundRectPainterWithVariableRadius(
+            color_provider->GetColor(GetBackgroundColor()),
+            gfx::RoundedCornersF(left_corner_radius, right_corner_radius,
+                                 right_corner_radius, left_corner_radius),
+            GetInsets())));
+  }
 }
 
-void TabStripControlButton::AnimateToStateForTesting(
-    views::InkDropState state) {
-  views::InkDrop::Get(this)->GetInkDrop()->AnimateToState(state);
+void TabStripControlButton::UpdateInkDrop() {
+  const auto* const color_provider = GetColorProvider();
+  if (!color_provider || !IsWidgetAlive()) {
+    return;
+  }
+
+  CreateToolbarInkdropCallbacks(this, inkdrop_hover_color_id_,
+                                inkdrop_ripple_color_id_);
 }
 
 bool TabStripControlButton::IsWidgetAlive() const {
@@ -382,12 +391,6 @@ BrowserFrameView* TabStripControlButton::GetBrowserFrameView() const {
   }
 
   return browser_view->browser_widget()->GetFrameView();
-}
-
-void TabStripControlButton::SetLeftRightCornerRadii(int left, int right) {
-  left_corner_radius_ = left;
-  right_corner_radius_ = right;
-  UpdateBackground();
 }
 
 BEGIN_METADATA(TabStripControlButton)
