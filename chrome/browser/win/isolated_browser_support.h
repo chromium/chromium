@@ -5,12 +5,8 @@
 #ifndef CHROME_BROWSER_WIN_ISOLATED_BROWSER_SUPPORT_H_
 #define CHROME_BROWSER_WIN_ISOLATED_BROWSER_SUPPORT_H_
 
-#include <memory>
-#include <optional>
-
 #include "base/process/process.h"
 #include "base/types/expected.h"
-#include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 
 namespace base {
@@ -19,40 +15,11 @@ class CommandLine;
 
 namespace chrome {
 
-// A convenience class to manage the lifetime of the isolated browser process
-// and the job object that manages the process lifetimes.
-class IsolatedBrowser {
- public:
-  // Attempt to launch an isolated browser process with the command line
-  // `command_line`. If successful, an `IsolatedBrowser` is returned, if not
-  // then an HRESULT containing the error launching the process.
-  static base::expected<IsolatedBrowser, HRESULT> Launch(
-      const base::CommandLine& command_line);
-
-  IsolatedBrowser(IsolatedBrowser&& other);
-  IsolatedBrowser& operator=(IsolatedBrowser&& other);
-  IsolatedBrowser(const IsolatedBrowser&) = delete;
-  IsolatedBrowser& operator=(const IsolatedBrowser&) = delete;
-
-  ~IsolatedBrowser();
-
-  // Wait for exit of the isolated browser process, and return its `exit_code`,
-  // if it was possible to obtain it. This should typically be then returned as
-  // the exit code of the calling process.
-  std::optional<int> WaitForExit() const;
-
- private:
-  IsolatedBrowser(base::Process process, base::win::ScopedHandle job);
-
-  // The job object holds all the processes including the original parent
-  // process, ensuring that if the launcher terminates then any isolated browser
-  // also does. This means that the isolated browser can guarantee that its
-  // lifetime always exceeds the lifetime of its parent process.
-  base::win::ScopedHandle job_;
-
-  // Handle to the isolated browser process, returned from the elevated service.
-  base::Process process_;
-};
+// Attempt to launch an isolated browser process with the command line
+// `command_line`. If successful, a `base::Process` is returned, if not then an
+// HRESULT containing the error launching the process.
+base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
+    const base::CommandLine& command_line);
 
 // Returns true if the platform configuration indicates that the browser should
 // launch isolated.

@@ -8,6 +8,8 @@
 
 #include <windows.h>
 
+#include <utility>
+
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
@@ -27,17 +29,7 @@
 
 namespace chrome {
 
-IsolatedBrowser::~IsolatedBrowser() = default;
-
-IsolatedBrowser::IsolatedBrowser(IsolatedBrowser&& other) = default;
-IsolatedBrowser& IsolatedBrowser::operator=(IsolatedBrowser&& other) = default;
-
-IsolatedBrowser::IsolatedBrowser(base::Process process,
-                                 base::win::ScopedHandle job)
-    : job_(std::move(job)), process_(std::move(process)) {}
-
-// static
-base::expected<IsolatedBrowser, HRESULT> IsolatedBrowser::Launch(
+base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
     const base::CommandLine& command_line) {
   base::win::ScopedCOMInitializer com_init;
 
@@ -81,6 +73,12 @@ base::expected<IsolatedBrowser, HRESULT> IsolatedBrowser::Launch(
     return base::unexpected(HRESULT_FROM_WIN32(::GetLastError()));
   }
 
+  // Leak the job handle. This is because closing the Job before the owning
+  // process terminates will terminate all processes in the tree including this
+  // one. The Job object will be closed when this process terminates,
+  // immediately terminating all other processes.
+  std::ignore = job.release();
+
   DWORD last_error = 0;
   ULONG_PTR proc_handle;
   base::win::ScopedBstr log;
@@ -91,17 +89,7 @@ base::expected<IsolatedBrowser, HRESULT> IsolatedBrowser::Launch(
     return base::unexpected(hr);
   }
 
-  return IsolatedBrowser(
-      base::Process(reinterpret_cast<base::ProcessHandle>(proc_handle)),
-      std::move(job));
-}
-
-std::optional<int> IsolatedBrowser::WaitForExit() const {
-  int exit_code = 0;
-  if (process_.WaitForExit(&exit_code)) {
-    return exit_code;
-  }
-  return std::nullopt;
+  return base::Process(reinterpret_cast<base::ProcessHandle>(proc_handle));
 }
 
 bool IsIsolationEnabled(const base::CommandLine& command_line) {
