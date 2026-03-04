@@ -47,7 +47,8 @@ class BaselineAccumulator {
   virtual void Accumulate(const GridItemData& item,
                           const LogicalBoxFragment& fragment,
                           const LayoutUnit block_offset,
-                          LayoutUnit item_stacking_position) = 0;
+                          LayoutUnit item_stacking_position,
+                          bool item_moved_to_earlier_opening) = 0;
 
   virtual std::optional<LayoutUnit> FirstBaseline() const = 0;
   virtual std::optional<LayoutUnit> LastBaseline() const = 0;

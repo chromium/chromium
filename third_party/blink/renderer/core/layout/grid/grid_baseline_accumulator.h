@@ -31,7 +31,8 @@ class GridBaselineAccumulator : public BaselineAccumulator {
   void Accumulate(const GridItemData& grid_item,
                   const LogicalBoxFragment& fragment,
                   const LayoutUnit block_offset,
-                  LayoutUnit item_stacking_position) override {
+                  LayoutUnit item_stacking_position,
+                  bool item_moved_to_earlier_opening) override {
     Accumulate(grid_item, fragment, block_offset);
   }
 

@@ -1073,8 +1073,6 @@ crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/subgrid/row/gri
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/subgrid/track-sizing/grid-lanes-subgrid-flex.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/subgrid/track-sizing/grid-lanes-subgrid-intrinsic-sizing.html [ Failure ]
 crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/subgrid/track-sizing/grid-lanes-subgrid.html [ Failure ]
-# Baseline failures when clamping effect of negative margins on running positions
-crbug.com/1076027 external/wpt/css/css-grid/grid-lanes/tentative/baseline/column-grid-lanes-container-baseline-008.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/641861 [ Mac ] external/wpt/css/css-fonts/font-family-name-025.html [ Failure Timeout ]

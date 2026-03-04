@@ -686,11 +686,9 @@ void GridLanesLayoutAlgorithm::RunGridLanesPlacementPhase(
       // baselines without adding items, since baseline information is needed
       // before items can be properly aligned and placed.
       container_builder_.AddResult(*result, containing_rect.offset, margins);
-      // TODO(yanlingwang): Update negative margin handling if needed once we
-      // resolve on https://github.com/w3c/csswg-drafts/issues/13165.
-      baseline_accumulator->Accumulate(grid_lanes_item, fragment,
-                                       containing_rect.offset.block_offset,
-                                       start_offset_in_stacking_axis);
+      baseline_accumulator->Accumulate(
+          grid_lanes_item, fragment, containing_rect.offset.block_offset,
+          start_offset_in_stacking_axis, item_moved_to_earlier_opening);
     }
   }
 }
