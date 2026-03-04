@@ -106,6 +106,10 @@ class PLATFORM_EXPORT ScrollPredictor {
   // and delta_y for the resampled/predicted event.
   gfx::PointF last_predicted_accumulated_delta_;
 
+  // Caches the scroll direction of the last real touch event to clamp
+  // synthetic jitter and prevent "backward" scrolls.
+  gfx::Vector2dF last_real_delta_;
+
   // Whether current scroll event should be resampled.
   bool should_resample_scroll_events_ = false;
 

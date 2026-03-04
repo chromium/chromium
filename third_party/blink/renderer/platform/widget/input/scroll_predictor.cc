@@ -229,6 +229,7 @@ void ScrollPredictor::Reset() {
   }
   current_event_accumulated_delta_ = gfx::PointF();
   last_predicted_accumulated_delta_ = gfx::PointF();
+  last_real_delta_ = gfx::Vector2dF();
   last_prediction_update_timestamp_ = base::TimeTicks();  // Reset the timestamp
   metrics_handler_.Reset();
 }
@@ -307,21 +308,21 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
   DCHECK(event->GetType() == WebInputEvent::Type::kGestureScrollUpdate);
   WebGestureEvent* gesture_event = static_cast<WebGestureEvent*>(event);
 
+  float original_delta_x = gesture_event->data.scroll_update.delta_x;
+  float original_delta_y = gesture_event->data.scroll_update.delta_y;
+
   TRACE_EVENT_BEGIN(
       "input", "ScrollPredictor::ResampleScrollEvents",
       [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* scroll_data = event->set_scroll_deltas();
         scroll_data->set_trace_id(trace_id);
-        scroll_data->set_original_delta_x(
-            gesture_event->data.scroll_update.delta_x);
-        scroll_data->set_original_delta_y(
-            gesture_event->data.scroll_update.delta_y);
+        scroll_data->set_original_delta_x(original_delta_x);
+        scroll_data->set_original_delta_y(original_delta_y);
       });
   gfx::PointF predicted_accumulated_delta =
       last_predicted_accumulated_delta_ +
-      gfx::Vector2dF(gesture_event->data.scroll_update.delta_x,
-                     gesture_event->data.scroll_update.delta_y);
+      gfx::Vector2dF(original_delta_x, original_delta_y);
 
   base::TimeDelta prediction_delta = frame_time - gesture_event->TimeStamp();
   bool predicted = false;
@@ -333,6 +334,10 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
 
   base::TimeTicks prediction_time =
       gesture_event->TimeStamp() + prediction_delta;
+
+  if (!use_synthetic_predictor) {
+    last_real_delta_ = gfx::Vector2dF(original_delta_x, original_delta_y);
+  }
 
   auto result = predictor->GeneratePrediction(prediction_time, frame_interval);
   if (result) {
@@ -354,14 +359,16 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
   // direction to the original event.
   gfx::Vector2dF new_delta =
       predicted_accumulated_delta - last_predicted_accumulated_delta_;
+
+  const gfx::Vector2dF& reference_delta =
+      !use_synthetic_predictor
+          ? gfx::Vector2dF(original_delta_x, original_delta_y)
+          : last_real_delta_;
+
   gesture_event->data.scroll_update.delta_x =
-      (new_delta.x() * gesture_event->data.scroll_update.delta_x < 0)
-          ? 0
-          : new_delta.x();
+      (new_delta.x() * reference_delta.x() < 0) ? 0 : new_delta.x();
   gesture_event->data.scroll_update.delta_y =
-      (new_delta.y() * gesture_event->data.scroll_update.delta_y < 0)
-          ? 0
-          : new_delta.y();
+      (new_delta.y() * reference_delta.y() < 0) ? 0 : new_delta.y();
   TRACE_EVENT_END("input", [&](perfetto::EventContext ctx) {
     auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
     auto* scroll_data = event->set_scroll_deltas();
