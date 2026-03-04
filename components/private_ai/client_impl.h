@@ -20,8 +20,8 @@
 
 namespace private_ai {
 
-class Connection;
 class ConnectionFactory;
+class ConnectionManager;
 
 // Client for starting the session and sending requests.
 class ClientImpl : public Client {
@@ -58,10 +58,6 @@ class ClientImpl : public Client {
   using OnRequestCompletedCallback = base::OnceCallback<void(
       base::expected<proto::PrivateAiResponse, ErrorCode> result)>;
 
-  // Returns the existing connection or creates a new one if it doesn't
-  // exist.
-  Connection* GetOrCreateConnection();
-
   void SendRequest(proto::FeatureName feature_name,
                    proto::PrivateAiRequest private_ai_request,
                    OnRequestCompletedCallback callback,
@@ -71,13 +67,9 @@ class ClientImpl : public Client {
       OnRequestCompletedCallback cb,
       base::expected<proto::PrivateAiResponse, ErrorCode> private_ai_response);
 
-  void OnConnectionDisconnected(ErrorCode error_code);
-
   std::unique_ptr<PrivateAiLogger> logger_;
 
-  std::unique_ptr<Connection> connection_;
-
-  std::unique_ptr<ConnectionFactory> connection_factory_;
+  std::unique_ptr<ConnectionManager> connection_manager_;
 
   base::WeakPtrFactory<ClientImpl> weak_factory_{this};
 };
