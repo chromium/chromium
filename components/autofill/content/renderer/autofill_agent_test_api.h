@@ -42,6 +42,10 @@ class AutofillAgentTestApi {
     agent_->ShowSuggestionsForContentEditable(element, trigger_source);
   }
 
+  void ContentEditableDidChange(const blink::WebElement& element) {
+    agent_->ContentEditableDidChange(element);
+  }
+
   const FormCache& form_cache() { return agent_->form_cache_; }
 
   PasswordAutofillAgent& password_autofill_agent() {

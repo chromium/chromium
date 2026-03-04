@@ -30,6 +30,7 @@
 #include "components/autofill/content/renderer/form_tracker.h"
 #include "components/autofill/content/renderer/form_tracker_test_api.h"
 #include "components/autofill/content/renderer/test_utils.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/field_data_manager.h"
 #include "components/autofill/core/common/form_data.h"
@@ -2039,6 +2040,158 @@ TEST_F(AutofillAgentAtMemoryTest,
       mojom::FieldActionType::kReplaceAtMemoryTrigger,
       mojom::ActionPersistence::kPreview, field_id, u" extra");
   EXPECT_EQ(input.SuggestedValue().Utf16(), u"hello result extra");
+}
+
+// TODO(crbug.com/479492562): Make a parametrized test with a parameter to test
+// an <input>, <textarea>, or contenteditable.
+class AutofillAgentMemoryContentEditableTriggerTest
+    : public test::AutofillRendererTest {
+ public:
+  void SetUp() override {
+    test::AutofillRendererTest::SetUp();
+    LoadHTML(R"(<div id="ce" contenteditable="true"
+                     style="width:100px; height:100px;"></div>)");
+    WaitForFormsSeen();
+    ExecuteJavaScriptForTests("document.getElementById('ce').focus();");
+  }
+
+  void SimulateTyping(const std::string& text) {
+    for (char c : text) {
+      SimulateUserTypingASCIICharacter(c, /*flush_message_loop=*/true);
+      task_environment_.FastForwardBy(base::Milliseconds(100));
+    }
+    task_environment_.RunUntilIdle();
+  }
+
+  // Sets text via innerText and moves the caret to the end. Manually notifies
+  // the agent because programmatic changes bypass Blink's editing events.
+  void SimulateComplexTyping(const std::string& text) {
+    ExecuteJavaScriptForTests(base::StringPrintf(R"(
+      const el = document.getElementById('ce');
+      el.focus();
+      el.innerText = '%s';
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      range.collapse(false);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    )",
+                                                 text.c_str()));
+    test_api(autofill_agent())
+        .ContentEditableDidChange(GetWebElementById("ce"));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kAutofillAtMemory};
+};
+
+// Tests that @memory popup is triggered if we type just the "@@".
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest, TriggerViaTyping) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(_, _, _,
+                                 AutofillSuggestionTriggerSource::kAtMemory, _))
+      .Times(1);
+
+  SimulateTyping("@@");
+}
+
+// Tests that @memory popup triggers if we type the "@@" one symbol at a
+// time, and is not triggered when the subsequent characters are typed.
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest, TriggerSequence) {
+  testing::MockFunction<void(int)> check_point;
+  {
+    testing::InSequence s;
+
+    // 1. Typing first "@" -> No @memory trigger.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(0);
+    EXPECT_CALL(check_point, Call(1));
+
+    // 2. Typing second "@" -> @memory triggers.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(1);
+    EXPECT_CALL(check_point, Call(2));
+
+    // 3. Typing something else -> No @memory trigger.
+    EXPECT_CALL(autofill_driver(),
+                AskForValuesToFill(
+                    _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+        .Times(0);
+    EXPECT_CALL(check_point, Call(3));
+  }
+
+  // Ignore standard Autofill calls for this test.
+  EXPECT_CALL(
+      autofill_driver(),
+      AskForValuesToFill(
+          _, _, _, testing::Ne(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(testing::AnyNumber());
+
+  SimulateTyping("@");
+  check_point.Call(1);
+  SimulateTyping("@");
+  check_point.Call(2);
+  SimulateTyping("b");
+  check_point.Call(3);
+}
+
+// Tests that @memory popup triggers in the presence of non-trivial symbols.
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest,
+       TriggerWithComplexPrecedingText) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(1);
+  // SimulateUserTypingASCIICharacter doesn't support characters like '#', '(',
+  // ')', ':', so we test them separately with SimulateComplexTyping.
+  SimulateComplexTyping("Memory log #123 (Feb 2026): @@");
+}
+
+// Tests that @memory popup doesn't trigger on a single "@".
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest, NoTriggerOnSingleAt) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(0);
+  SimulateTyping("@");
+}
+
+// Tests that @memory popup doesn't trigger on selection.
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest, NoTriggerOnSelection) {
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(0);
+
+  // Manually set text and select it all.
+  ExecuteJavaScriptForTests(R"(
+    const el = document.getElementById('ce');
+    el.innerText = '@@';
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  )");
+  test_api(autofill_agent()).ContentEditableDidChange(GetWebElementById("ce"));
+}
+
+// Tests that @memory popup triggers each time the new trigger is typed.
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest, MultipleTriggers) {
+  // Verify that it triggers every time @@ is completed.
+  EXPECT_CALL(autofill_driver(),
+              AskForValuesToFill(
+                  _, _, _, Eq(AutofillSuggestionTriggerSource::kAtMemory), _))
+      .Times(2);
+
+  SimulateTyping("@@");
+  SimulateTyping("abc@@");
 }
 
 }  // namespace

@@ -68,6 +68,8 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/platform/web_runtime_features_base.h"
+#include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
@@ -75,6 +77,7 @@
 #include "third_party/blink/public/web/web_form_related_change_type.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
 #include "third_party/blink/public/web/web_input_element.h"
+#include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_range.h"
@@ -339,16 +342,28 @@ AutofillAgent::Config CreateConfig(bool uses_platform_autofill) {
   };
 }
 
+// @memory should be triggered if no text is selected and the cursor is located
+// behind two '@' symbols.
 bool ShouldTriggerAtMemorySearch(const blink::WebFormControlElement& element) {
   if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
     return false;
   }
   const unsigned int sel_start = element.SelectionStart();
   const unsigned int sel_end = element.SelectionEnd();
-  // Suggestions are only triggered when there is no selection and "@@" is
-  // immediately before the cursor.
   return sel_start == sel_end && sel_start >= 2 &&
          element.EditingValue().Substring(sel_start - 2, 2).Equals("@@");
+}
+
+bool ShouldTriggerAtMemorySearchForContentEditable(
+    WebLocalFrame* frame,
+    const blink::WebRange& selection) {
+  if (!base::FeatureList::IsEnabled(features::kAutofillAtMemory)) {
+    return false;
+  }
+  const int sel_start = selection.StartOffset();
+  const int sel_end = selection.EndOffset();
+  return sel_start == sel_end && sel_start >= 2 &&
+         frame->RangeAsText(blink::WebRange(sel_start - 2, 2)).Equals("@@");
 }
 
 }  // namespace
@@ -901,8 +916,22 @@ void AutofillAgent::TextFieldValueChanged(
 
 void AutofillAgent::ContentEditableDidChange(const WebElement& element) {
   DCHECK(form_util::MaybeWasOwnedByFrame(element, unsafe_render_frame()));
-  // TODO(crbug.com/40286232): Add throttling to avoid sending this event for
-  // rapid changes.
+
+  // The field might have changed while the user was hovering on a suggestion,
+  // the preview in that case should be cleared since new suggestions will be
+  // showing up.
+  ClearPreviewedForm();
+
+  if (!unsafe_render_frame()) {
+    return;
+  }
+  WebLocalFrame* frame = unsafe_render_frame()->GetWebFrame();
+  if (ShouldTriggerAtMemorySearchForContentEditable(
+          frame, frame->GetInputMethodController()->GetSelectionOffsets())) {
+    ShowSuggestionsForContentEditable(
+        element, AutofillSuggestionTriggerSource::kAtMemory);
+    return;
+  }
 
   if (std::optional<FormData> form =
           form_util::FindFormForContentEditable(element)) {
