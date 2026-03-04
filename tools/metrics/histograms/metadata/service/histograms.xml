@@ -2046,6 +2046,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.IsValidBodyStreamProvided"
+    enum="Boolean" expires_after="2026-07-19">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether a valid response body handle is provided from URLLoader.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, while committed the navigation with locally stored headers. If
+    this is true, the URLLoader provided a valid response body handle.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.ReceiveResponseToComplete"
     units="ms" expires_after="2026-07-26">
   <owner>sisidovski@chromium.org</owner>

@@ -48,6 +48,8 @@ constexpr char kHistogramReceiveResponseToComplete[] =
     "ServiceWorker.SyntheticResponse.ReceiveResponseToComplete";
 constexpr char kHistogramSyntheticResponseReloadReason[] =
     "ServiceWorker.SyntheticResponse.ReloadReason";
+constexpr char kHistogramSyntheticResponseIsValidBodyStreamProvided[] =
+    "ServiceWorker.SyntheticResponse.IsValidBodyStreamProvided";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -448,6 +450,8 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
   response_received_time_ = base::TimeTicks::Now();
   base::UmaHistogramTimes(kHistogramStartRequestToReceiveResponse,
                           response_received_time_ - request_start_time_);
+  base::UmaHistogramBoolean(
+      kHistogramSyntheticResponseIsValidBodyStreamProvided, body.is_valid());
   switch (status_) {
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
