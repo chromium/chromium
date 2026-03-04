@@ -29,9 +29,6 @@ class CORE_EXPORT OverscrollAreaTracker
 
   const VectorOf<Element>& DOMSortedElements();
 
-  bool NeedsLayoutTreeRebuild() const { return needs_layout_tree_rebuild_; }
-  void ClearNeedsLayoutTreeRebuild() { needs_layout_tree_rebuild_ = false; }
-
   void Trace(Visitor*) const override;
 
  private:
@@ -41,7 +38,6 @@ class CORE_EXPORT OverscrollAreaTracker
 
   VectorOf<Element> overscroll_members_;
   bool needs_dom_sort_ = false;
-  bool needs_layout_tree_rebuild_ = false;
 };
 
 }  // namespace blink

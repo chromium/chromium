@@ -2254,6 +2254,7 @@ class CORE_EXPORT Element : public ContainerNode {
   void RebuildColumnLayoutTrees(WhitespaceAttacher&);
   void RebuildFirstLetterLayoutTree();
   void RebuildTransitionLayoutTree(WhitespaceAttacher&);
+  void RebuildOverscrollAreaLayoutTree(WhitespaceAttacher&);
   void RebuildShadowRootLayoutTree(WhitespaceAttacher&);
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
                                        const Node* node_after_change);

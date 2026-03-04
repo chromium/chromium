@@ -226,6 +226,14 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c1tracker.DOMSortedElements()[0], menu0);
   EXPECT_EQ(c1tracker.DOMSortedElements()[1], menu1);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 0);
+  EXPECT_EQ(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container1->GetLayoutObject());
+  EXPECT_EQ(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container1->GetLayoutObject());
 
   mark_container(container2);
   // container1 and container2 are containers.
@@ -235,6 +243,14 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c1tracker.DOMSortedElements()[0], menu1);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 1);
   EXPECT_EQ(c2tracker.DOMSortedElements()[0], menu0);
+  EXPECT_EQ(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container2->GetLayoutObject());
+  EXPECT_EQ(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container1->GetLayoutObject());
 
   clear_container(container1);
   mark_container(container0);
@@ -245,6 +261,14 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c1tracker.DOMSortedElements().size(), 0);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 1);
   EXPECT_EQ(c2tracker.DOMSortedElements()[0], menu0);
+  EXPECT_EQ(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container2->GetLayoutObject());
+  EXPECT_EQ(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container0->GetLayoutObject());
 
   clear_container(container2);
   // container0 is a container.
@@ -254,6 +278,14 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c0tracker.DOMSortedElements()[1], menu1);
   EXPECT_EQ(c1tracker.DOMSortedElements().size(), 0);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 0);
+  EXPECT_EQ(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container0->GetLayoutObject());
+  EXPECT_EQ(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container0->GetLayoutObject());
 
   clear_container(container0);
   // There are no containers.
@@ -261,6 +293,8 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c0tracker.DOMSortedElements().size(), 0);
   EXPECT_EQ(c1tracker.DOMSortedElements().size(), 0);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 0);
+  EXPECT_EQ(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent), nullptr);
+  EXPECT_EQ(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent), nullptr);
 
   mark_container(container0);
   mark_container(container1);
@@ -272,6 +306,14 @@ TEST_F(OverscrollAreaTrackerTest, ChangingContainer) {
   EXPECT_EQ(c1tracker.DOMSortedElements()[0], menu1);
   EXPECT_EQ(c2tracker.DOMSortedElements().size(), 1);
   EXPECT_EQ(c2tracker.DOMSortedElements()[0], menu0);
+  EXPECT_EQ(menu0->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container2->GetLayoutObject());
+  EXPECT_EQ(menu1->GetPseudoElement(kPseudoIdOverscrollAreaParent)
+                ->GetLayoutObject()
+                ->Parent(),
+            container1->GetLayoutObject());
 }
 
 TEST_F(OverscrollAreaTrackerTest, OverscrollElementsAreDOMSorted) {
@@ -362,6 +404,34 @@ TEST_F(OverscrollAreaTrackerTest, OverscrollElementsAreDOMSorted) {
 
   EXPECT_EQ(tracker.DOMSortedElements().size(), 1);
   EXPECT_EQ(tracker.DOMSortedElements()[0], menu1);
+}
+
+TEST_F(OverscrollAreaTrackerTest, OverscrollAreaRebuildLayoutTree) {
+  SetInnerHTML(R"HTML(
+    <div id="container" overscrollcontainer>
+      <div><div id="menu"></div></div>
+    </div>
+    <button id="button" command="toggle-overscroll" commandfor="menu"></button>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+
+  auto* container = GetDocument().getElementById(AtomicString("container"));
+  auto* button = GetDocument().getElementById(AtomicString("button"));
+  auto* menu = GetDocument().getElementById(AtomicString("menu"));
+
+  button->SetAttributeWithoutValidation(html_names::kCommandAttr, "--foo");
+  UpdateAllLifecyclePhasesForTest();
+  ASSERT_FALSE(menu->GetPseudoElement(kPseudoIdOverscrollAreaParent));
+  button->SetAttributeWithoutValidation(html_names::kCommandAttr,
+                                        "toggle-overscroll");
+  UpdateAllLifecyclePhasesForTest();
+
+  PseudoElement* overscroll_area_parent =
+      menu->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+  ASSERT_TRUE(overscroll_area_parent->GetLayoutObject());
+  ASSERT_EQ(overscroll_area_parent->GetLayoutObject()->Parent(),
+            container->GetLayoutObject());
 }
 
 TEST_F(OverscrollAreaTrackerTest, MultipleIdsReferToFirstElement) {

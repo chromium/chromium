@@ -5884,6 +5884,7 @@ void Element::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
       child_attacher = &whitespace_attacher;
     }
     RebuildTransitionLayoutTree(*child_attacher);
+    RebuildOverscrollAreaLayoutTree(*child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdAfter, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdPickerIcon, *child_attacher);
     RebuildPseudoElementLayoutTree(kPseudoIdInterestHint, *child_attacher);
@@ -5978,6 +5979,22 @@ void Element::RebuildTransitionLayoutTree(
       };
   ViewTransitionUtils::ForEachTransitionPseudo(
       *this, rebuild_pseudo_tree, ViewTransitionUtils::Filter::kDirectChildren);
+}
+
+void Element::RebuildOverscrollAreaLayoutTree(
+    WhitespaceAttacher& whitespace_attacher) {
+  OverscrollAreaTracker* overscroll_area_tracker = GetOverscrollAreaTracker();
+  if (!overscroll_area_tracker) {
+    return;
+  }
+
+  for (Element* overscroll_area :
+       overscroll_area_tracker->DOMSortedElements()) {
+    PseudoElement* pseudo_element =
+        overscroll_area->GetPseudoElement(kPseudoIdOverscrollAreaParent);
+    pseudo_element->RebuildLayoutTree(whitespace_attacher);
+    CHECK(pseudo_element->GetLayoutObject());
+  }
 }
 
 void Element::AttachOverscrollPseudoElements(AttachContext& context) {
