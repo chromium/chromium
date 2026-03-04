@@ -35,6 +35,10 @@
   height: 170px;
 }
 
+:host([is-refreshed-ui_]) .in-dialog-design #header {
+  background: center 18px no-repeat;
+}
+
 #avatarContainer {
   --avatar-border: 2px;
   --avatar-size: 60px;
@@ -48,6 +52,12 @@
 .in-dialog-design #avatarContainer {
   --avatar-size: 76px;
   top: 91px;
+}
+
+:host([is-refreshed-ui_]) .in-dialog-design #avatarContainer {
+  --avatar-size: 88px;
+  border-radius: 50%;
+  top: 24px;
 }
 
 #avatar {
@@ -119,6 +129,10 @@
   text-overflow: ellipsis;
 }
 
+:host([is-refreshed-ui_]) #title {
+  margin: 0 0 24px;
+}
+
 #inputTitle {
   color: var(--color-sys-on-surface-subtle);
   flex-grow: 1;
@@ -127,6 +141,10 @@
   line-height: 16px;
   margin: 0 auto 0 auto;
   width: 148px;
+}
+
+:host([is-refreshed-ui_]) #inputTitle {
+  padding-bottom: 10px;
 }
 
 #nameInput {
@@ -142,6 +160,16 @@
 
 #inputTitle:not([hidden]) + #nameInput {
   margin-top: 0;
+}
+
+#themePickerTitle {
+  color: var(--color-sys-on-surface-subtle);
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 16px;
+  margin: 0 auto 12px auto;
+  padding-top: 8px;
+  width: 148px;
 }
 
 #pickThemeContainer {
@@ -174,6 +202,10 @@ cr-button {
   line-height: 24px;
 }
 
+.in-dialog-design #themePickerTitle {
+  width: 320px;
+}
+
 .in-dialog-design #inputTitle {
   width: 320px;
 }
@@ -189,6 +221,10 @@ cr-button {
 
 .in-dialog-design #doneButton {
   min-width: 119px;
+}
+
+:host([is-refreshed-ui_]) .in-dialog-design #doneButton {
+  min-width: 65px;
 }
 
 .in-dialog-design #skipButton {
@@ -212,11 +248,11 @@ cr-profile-avatar-selector {
 }
 
 #policyIcon {
-    position: absolute;
-    right:5%;
-    height: 15px;
-    width: 15px;
-  }
+  height: 15px;
+  position: absolute;
+  right: 5%;
+  width: 15px;
+}
 
 .select-avatar-header {
   display: flex;
@@ -251,7 +287,7 @@ cr-profile-avatar-selector {
     border: 1px solid var(--google-grey-500);
   }
 
-  .in-dialog-design #header {
+  :host(:not([is-refreshed-ui_])) .in-dialog-design #header {
     background-image:
         url(./images/profile_customization_illustration_dark.svg);
   }

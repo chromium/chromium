@@ -617,6 +617,9 @@
     <message name="IDS_PROFILE_CUSTOMIZATION_DONE_BUTTON_LABEL" desc="Text for the Done button on the profile customization bubble">
       Done
     </message>
+    <message name="IDS_PROFILE_CUSTOMIZATION_THEME_PICKER_LABEL" desc="Title text for the input used to pick a theme for the profile.">
+      Choose a theme for your profile
+    </message>
     <message name="IDS_PROFILE_CUSTOMIZATION_WELCOME" desc="Title of the profile customization bubble">
       Welcome, <ph name="USERNAME">$1<ex>Bob</ex></ph>
     </message>

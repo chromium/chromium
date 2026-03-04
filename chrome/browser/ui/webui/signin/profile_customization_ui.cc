@@ -73,6 +73,8 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       {"profileCustomizationInputErrorMessage",
        IDS_PROFILE_CUSTOMIZATION_INPUT_ERROR_MESSAGE},
       {"profileCustomizationText", IDS_PROFILE_CUSTOMIZATION_TEXT},
+      {"profileCustomizationThemePickerLabel",
+       IDS_PROFILE_CUSTOMIZATION_THEME_PICKER_LABEL},
       {"profileCustomizationTitle", IDS_PROFILE_CUSTOMIZATION_TITLE_V2},
       {"localProfileCreationTitle",
        IDS_PROFILE_CUSTOMIZATION_LOCAL_PROFILE_CREATION_TITLE},
@@ -114,6 +116,9 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           switches::
               kProfileCreationFrictionReductionExperimentPrefillNameRequirement));
+
+  source->AddBoolean("isRefreshedUI", base::FeatureList::IsEnabled(
+                                          switches::kFirstRunDesktopRefresh));
 
   if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it

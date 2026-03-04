@@ -82,7 +82,10 @@ export class ProfileCustomizationAppElement extends
 
       isLocalProfileCreation_: {type: Boolean},
 
-      shouldShowDefaultProfileName_: {type: Boolean},
+      shouldShowInputLabels_: {type: Boolean},
+
+      /** Exposed to CSS as 'is-refreshed-ui_'. */
+      isRefreshedUI_: {type: Boolean, reflect: true},
     };
   }
 
@@ -96,7 +99,11 @@ export class ProfileCustomizationAppElement extends
   private confirmedAvatar_: AvatarIcon|null = null;
   protected accessor isLocalProfileCreation_: boolean =
       loadTimeData.getBoolean('isLocalProfileCreation');
-  protected accessor shouldShowDefaultProfileName_: boolean =
+  protected accessor isRefreshedUI_: boolean =
+      loadTimeData.getBoolean('isRefreshedUI');
+  protected accessor shouldShowInputLabels_: boolean = this.isRefreshedUI_ ||
+      loadTimeData.getBoolean('shouldShowDefaultProfileName');
+  protected shouldPrefillProfileName_: boolean =
       loadTimeData.getBoolean('shouldShowDefaultProfileName');
   private profileCustomizationBrowserProxy_: ProfileCustomizationBrowserProxy =
       ProfileCustomizationBrowserProxyImpl.getInstance();
@@ -105,7 +112,7 @@ export class ProfileCustomizationAppElement extends
     // profileName_ is only set now, because it triggers a validation of the
     // input which crashes if it's done too early.
     // set profileName_ for local profiles in friction reduction experiment.
-    if (!this.isLocalProfileCreation_ || this.shouldShowDefaultProfileName_) {
+    if (!this.isLocalProfileCreation_ || this.shouldPrefillProfileName_) {
       this.profileName_ = loadTimeData.getString('profileName');
     }
     this.addWebUiListener(
@@ -146,7 +153,7 @@ export class ProfileCustomizationAppElement extends
   }
 
   protected getNameInputPlaceHolder_(): string {
-    return this.shouldShowDefaultProfileName_ ?
+    return this.shouldShowInputLabels_ ?
         '' :
         this.i18n('profileCustomizationInputPlaceholder');
   }

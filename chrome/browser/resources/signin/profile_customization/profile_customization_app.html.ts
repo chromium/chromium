@@ -38,7 +38,8 @@ export function getHtml(this: ProfileCustomizationAppElement) {
       <div id="body">
         <div id="title">${this.welcomeTitle_}</div>
       </div>
-        <div id="inputTitle" ?hidden="${!this.shouldShowDefaultProfileName_}">
+        <div id="inputTitle"
+          ?hidden="${!this.shouldShowInputLabels_}">
           $i18n{profileCustomizationInputTitle}
         </div>
         <cr-input id="nameInput" pattern=".*\\S.*" .value="${this.profileName_}"
@@ -57,6 +58,10 @@ export function getHtml(this: ProfileCustomizationAppElement) {
           $i18n{controlledSettingPolicy}
         </cr-tooltip>
 
+      <div id="themePickerTitle"
+          ?hidden="${!this.isRefreshedUI_}">
+        $i18n{profileCustomizationThemePickerLabel}
+      </div>
       <div id="pickThemeContainer">
         <cr-theme-color-picker columns="6"></cr-theme-color-picker>
       </div>
