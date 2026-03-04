@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
@@ -45,7 +46,8 @@ bool TerminateMultiProcessTestChild(const Process& process,
 CommandLine GetMultiProcessTestChildBaseCommandLine() {
   base::ScopedAllowBlockingForTesting allow_blocking;
   CommandLine cmd_line = *CommandLine::ForCurrentProcess();
-  cmd_line.SetProgram(MakeAbsoluteFilePath(cmd_line.GetProgram()));
+  cmd_line.SetProgram(
+      MakeAbsoluteFilePath(base::PathService::CheckedGet(base::FILE_EXE)));
   return cmd_line;
 }
 
