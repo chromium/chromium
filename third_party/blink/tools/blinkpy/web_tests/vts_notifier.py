@@ -43,10 +43,10 @@ Please review this virtual test suite, [**{prefix}**](https://source.chromium.or
 2. Update: If the virtual test suite is still in use, update the expiration date at **{prefix}**. ([Example CL](https://crrev.com/c/5104889))
 
 Note:
+* Expired virtual suites aren't automatically demoted and will continue running in CQ/CI.
 * Test suite owners are automatically added to CC.
 * If you do not own this test suite, please reassign it to the appropriate team or to `Blink>Infra` for triage.
 '''
-WATCHERS = ['ansung@google.com']
 
 
 class VTSNotifier:
@@ -121,8 +121,8 @@ class VTSNotifier:
         bug = BuganizerIssue(title=title,
                              description=description,
                              component_id=component_id,
-                             cc=(vts.owners or []) + WATCHERS,
-                             priority=Priority.P1)
+                             cc=(vts.owners or []),
+                             priority=Priority.P2)
         return bug
 
     def resolve_component_id(self, vts: VirtualTestSuite) -> str:

@@ -17,8 +17,7 @@ from blinkpy.w3c.buganizer import (
 )
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
 from blinkpy.web_tests.port.base import VirtualTestSuite
-from blinkpy.web_tests.vts_notifier import (BLINK_COMPONENT_ID, VTSNotifier,
-                                            WATCHERS)
+from blinkpy.web_tests.vts_notifier import BLINK_COMPONENT_ID, VTSNotifier
 
 
 class VTSNotifierTest(unittest.TestCase):
@@ -104,8 +103,8 @@ class VTSNotifierTest(unittest.TestCase):
         self.assertIn(mock_vts.expires, draft_bug.description)
         self.assertEqual(draft_bug.status, Status.NEW)
         self.assertEqual(draft_bug.component_id, BLINK_COMPONENT_ID)
-        self.assertEqual(draft_bug.cc, WATCHERS)
-        self.assertEqual(draft_bug.priority, Priority.P1)
+        self.assertEqual(draft_bug.cc, [])
+        self.assertEqual(draft_bug.priority, Priority.P2)
         self.assertEqual(draft_bug.severity, Severity.S4)
 
     def test_create_draft_bug_with_owner(self):
@@ -122,8 +121,8 @@ class VTSNotifierTest(unittest.TestCase):
         self.assertIn(mock_vts.expires, draft_bug.description)
         self.assertEqual(draft_bug.status, Status.NEW)
         self.assertEqual(draft_bug.component_id, BLINK_COMPONENT_ID)
-        self.assertEqual(draft_bug.cc, test_owners + WATCHERS)
-        self.assertEqual(draft_bug.priority, Priority.P1)
+        self.assertEqual(draft_bug.cc, test_owners)
+        self.assertEqual(draft_bug.priority, Priority.P2)
         self.assertEqual(draft_bug.severity, Severity.S4)
 
     def test_process_draft_bug_with_no_existing_bug(self):
