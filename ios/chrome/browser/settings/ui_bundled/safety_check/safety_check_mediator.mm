@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/settings/ui_bundled/safety_check/safety_check_mediator.h"
 
 #import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
@@ -12,6 +13,7 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
+#import "base/task/sequenced_task_runner.h"
 #import "base/time/time.h"
 #import "base/version.h"
 #import "components/password_manager/core/browser/features/password_manager_features_util.h"
@@ -382,6 +384,14 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 
   [_enhancedSafeBrowsingPreference stop];
   _enhancedSafeBrowsingPreference = nil;
+
+  _passwordCheckObserver.reset();
+
+  _passwordCheckManager = nullptr;
+  _authService = nullptr;
+  _syncService = nullptr;
+  _userPrefService = nullptr;
+  _localPrefService = nullptr;
 }
 
 - (void)setConsumer:(id<SafetyCheckConsumer>)consumer {
@@ -637,7 +647,7 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   self.currentPasswordCheckState = newState;
 
   std::vector<password_manager::CredentialUIEntry> insecureCredentials =
-      _passwordCheckManager->GetInsecureCredentials();
+      self.passwordCheckManager->GetInsecureCredentials();
   BOOL noInsecurePasswords = insecureCredentials.empty();
 
   switch (self.currentPasswordCheckState) {
@@ -907,45 +917,21 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
     // state after check now is pressed.
     if (self.currentPasswordCheckState == PasswordCheckState::kNoPasswords) {
       // Want to show the loading wheel momentarily.
-      dispatch_after(
-          dispatch_time(DISPATCH_TIME_NOW,
-                        (int64_t)(kPasswordRowMinDelay * NSEC_PER_SEC)),
-          dispatch_get_main_queue(), ^{
-            // Check if the check was cancelled while waiting, we do not want to
-            // push a completed state to the UI if the check was cancelled.
-            if (weakSelf.checksRemaining) {
-              weakSelf.passwordCheckRowState = PasswordCheckRowStateDisabled;
-              [weakSelf reconfigurePasswordCheckItem];
-
-              base::UmaHistogramEnumeration(
-                  kSafetyCheckMetricsPasswords,
-                  safety_check::PasswordsStatus::kNoPasswords);
-            }
-          });
+      base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+          FROM_HERE, base::BindOnce(^{
+            [weakSelf handleDelayedPasswordCheck];
+          }),
+          base::Seconds(kPasswordRowMinDelay));
     } else {
       self.passwordCheckManager->StartPasswordCheck(
           password_manager::LeakDetectionInitiator::kBulkSyncedPasswordsCheck);
     }
     // Want to show the loading wheel momentarily.
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      (int64_t)(kSafeBrowsingRowMinDelay * NSEC_PER_SEC)),
-        dispatch_get_main_queue(), ^{
-          // Check if the check was cancelled while waiting, we do not want to
-          // push a completed state to the UI if the check was cancelled.
-          if (weakSelf.checksRemaining) {
-            [weakSelf checkAndReconfigureSafeBrowsingState];
-          }
-
-          NSString* announcement = weakSelf.updateCheckItem.detailText;
-          announcement = [announcement
-              stringByAppendingString:weakSelf.passwordCheckItem.detailText];
-          announcement = [announcement
-              stringByAppendingString:weakSelf.safeBrowsingCheckItem
-                                          .detailText];
-          UIAccessibilityPostNotification(
-              UIAccessibilityScreenChangedNotification, announcement);
-        });
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf handleDelayedSafeBrowsingCheckWithAnnouncement];
+        }),
+        base::Seconds(kSafeBrowsingRowMinDelay));
   }
 }
 
@@ -1029,17 +1015,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   if (secondsSinceStart < minDelay) {
     // Want to show the loading wheel for minimum time.
     __weak __typeof__(self) weakSelf = self;
-    dispatch_after(
-        dispatch_time(DISPATCH_TIME_NOW,
-                      (int64_t)((minDelay - secondsSinceStart) * NSEC_PER_SEC)),
-        dispatch_get_main_queue(), ^{
-          // Check if the check was cancelled while waiting, we do not want to
-          // push a completed state to the UI if the check was cancelled.
-          if (weakSelf.checksRemaining) {
-            weakSelf.updateCheckRowState = newRowState;
-            [weakSelf reconfigureUpdateCheckItem];
-          }
-        });
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(^{
+          [weakSelf handleDelayedUpdateCheckRowState:newRowState];
+        }),
+        base::Seconds(minDelay - secondsSinceStart));
   } else {
     self.updateCheckRowState = newRowState;
     [self reconfigureUpdateCheckItem];
@@ -1110,10 +1090,11 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
   }
 
   // If after 30 seconds the Omaha server has not responded, assume Omaha error.
-  dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(30 * NSEC_PER_SEC)),
-                 dispatch_get_main_queue(), ^{
-                   [weakSelf verifyUpdateCheckComplete];
-                 });
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+      FROM_HERE, base::BindOnce(^{
+        [weakSelf verifyUpdateCheckComplete];
+      }),
+      base::Seconds(30));
 }
 
 // Performs the Safe Browsing check and triggers the display update/
@@ -1391,6 +1372,10 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
 // TODO(crbug.com/40930653): Remove this method once Settings Safety Check is
 // refactored to use the new Safety Check Manager.
 - (void)updateTimestampOfLastRun {
+  if (!_localPrefService) {
+    return;
+  }
+
   _localPrefService->SetTime(prefs::kIosSettingsSafetyCheckLastRunTime,
                              base::Time::Now());
 }
@@ -1442,6 +1427,44 @@ void ResetSettingsCheckItem(SettingsCheckItem* item) {
         [weakSelf.consumer reconfigureCellsForItems:@[ item ]];
       }
                         completion:nil];
+}
+
+// Handles the delayed update check row state change.
+- (void)handleDelayedUpdateCheckRowState:(UpdateCheckRowStates)state {
+  if (!self.checksRemaining) {
+    return;
+  }
+
+  self.updateCheckRowState = state;
+  [self reconfigureUpdateCheckItem];
+}
+
+// Handles the delayed disabled password check state push.
+- (void)handleDelayedPasswordCheck {
+  if (!self.checksRemaining) {
+    return;
+  }
+
+  self.passwordCheckRowState = PasswordCheckRowStateDisabled;
+  [self reconfigurePasswordCheckItem];
+
+  base::UmaHistogramEnumeration(kSafetyCheckMetricsPasswords,
+                                safety_check::PasswordsStatus::kNoPasswords);
+}
+
+// Handles the delayed safe browsing check and accessibility announcement.
+- (void)handleDelayedSafeBrowsingCheckWithAnnouncement {
+  if (self.checksRemaining) {
+    [self checkAndReconfigureSafeBrowsingState];
+  }
+
+  NSString* announcement = self.updateCheckItem.detailText;
+  announcement =
+      [announcement stringByAppendingString:self.passwordCheckItem.detailText];
+  announcement = [announcement
+      stringByAppendingString:self.safeBrowsingCheckItem.detailText];
+  UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification,
+                                  announcement);
 }
 
 @end
