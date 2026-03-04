@@ -17,6 +17,7 @@ namespace extensions {
 // customization.
 void AddExplicitChoiceRadioButtons(
     ui::DialogModel::Builder& builder,
+    std::u16string dialog_description,
     const SettingsOverriddenDialogController::SettingOption& option1,
     ui::ElementIdentifier id1,
     base::RepeatingClosure callback1,

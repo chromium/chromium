@@ -176,7 +176,7 @@ void BuildExplicitChoiceDialog(
   };
 
   extensions::AddExplicitChoiceRadioButtons(
-      dialog_builder, show_params.previous_setting.value(),
+      dialog_builder, show_params.message, show_params.previous_setting.value(),
       kSettingsOverriddenDialogPreviousSettingButtonId,
       create_selection_callback(DialogResult::kChangeSettingsBack),
       show_params.new_setting.value(),

@@ -40,9 +40,10 @@ class InitialFocusTrapView : public views::View {
   InitialFocusTrapView() {
     SetPreferredSize(gfx::Size(1, 1));
     SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
-    GetViewAccessibility().SetRole(ax::mojom::Role::kGroup);
-    GetViewAccessibility().SetName(u"Focus Trap",
-                                   ax::mojom::NameFrom::kAttribute);
+    // Make this object a Paragraph so it can be used to describe the
+    // options that follow. It would be more ideal if the actual Paragraph
+    // member of the dialog could read its text when the dialog appears.
+    GetViewAccessibility().SetRole(ax::mojom::Role::kParagraph);
   }
   ~InitialFocusTrapView() override = default;
 
@@ -61,6 +62,7 @@ END_METADATA
 
 void AddExplicitChoiceRadioButtons(
     ui::DialogModel::Builder& builder,
+    std::u16string dialog_description,
     const SettingsOverriddenDialogController::SettingOption& option1,
     ui::ElementIdentifier id1,
     base::RepeatingClosure callback1,
@@ -72,22 +74,28 @@ void AddExplicitChoiceRadioButtons(
   auto container =
       views::Builder<views::BoxLayoutView>()
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .AddChildren(
-              views::Builder<views::View>(
-                  std::make_unique<InitialFocusTrapView>()),
-              views::Builder<views::Separator>(),
-              views::Builder<RichRadioButton>(
-                  std::make_unique<RichRadioButton>(
-                      option1.image, option1.text, option1.description,
-                      kExplicitChoiceRadioGroupId, std::move(callback1)))
-                  .SetProperty(views::kElementIdentifierKey, id1),
-              views::Builder<views::Separator>(),
-              views::Builder<RichRadioButton>(
-                  std::make_unique<RichRadioButton>(
-                      option2.image, option2.text, option2.description,
-                      kExplicitChoiceRadioGroupId, std::move(callback2)))
-                  .SetProperty(views::kElementIdentifierKey, id2),
-              views::Builder<views::Separator>())
+          .AddChildren(views::Builder<views::View>(
+                           std::make_unique<InitialFocusTrapView>())
+                           // Have the initially-focused element read the
+                           // dialog description. Ideally, this would not be
+                           // done here, and the paragraph on the dialog itself
+                           // would provide this text.
+                           .SetAccessibleName(dialog_description),
+                       views::Builder<views::Separator>(),
+                       views::Builder<RichRadioButton>(
+                           std::make_unique<RichRadioButton>(
+                               option1.image, option1.text, option1.description,
+                               kExplicitChoiceRadioGroupId, /*pos_in_set=*/1,
+                               /*set_size=*/2, std::move(callback1)))
+                           .SetProperty(views::kElementIdentifierKey, id1),
+                       views::Builder<views::Separator>(),
+                       views::Builder<RichRadioButton>(
+                           std::make_unique<RichRadioButton>(
+                               option2.image, option2.text, option2.description,
+                               kExplicitChoiceRadioGroupId, /*pos_in_set=*/2,
+                               /*set_size=*/2, std::move(callback2)))
+                           .SetProperty(views::kElementIdentifierKey, id2),
+                       views::Builder<views::Separator>())
           .Build();
 
   // This groups the RadioButtons contained within the RichRadioButtons (needed

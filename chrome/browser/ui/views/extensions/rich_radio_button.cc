@@ -27,6 +27,8 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
                                  const std::u16string& title,
                                  const std::u16string& description,
                                  int group_id,
+                                 int pos_in_set,
+                                 int set_size,
                                  base::RepeatingClosure on_selected_callback)
     : views::Button(base::BindRepeating(
           [](RichRadioButton* view) { view->radio_button_->SetChecked(true); },
@@ -34,7 +36,10 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
   SetFocusBehavior(FocusBehavior::NEVER);
   views::Builder<RichRadioButton>(this)
       .SetLayoutManager(std::make_unique<views::FlexLayout>())
-      .SetAccessibleName(title)
+      // Act as a group with no accessible name. The underlying radio button
+      // will present the necessary information.
+      .SetAccessibleRole(ax::mojom::Role::kGroup)
+      .SetAccessibleName(u"", ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
       .CustomConfigure(base::BindOnce([](RichRadioButton* view) {
         static_cast<views::FlexLayout*>(view->GetLayoutManager())
             ->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -68,9 +73,12 @@ RichRadioButton::RichRadioButton(const ui::ImageModel& image,
               .SetProperty(views::kFlexBehaviorKey,
                            views::FlexSpecification().WithAlignment(
                                views::LayoutAlignment::kEnd))
-              .SetAccessibleName(
-                  title, ax::mojom::NameFrom::kAttributeExplicitlyEmpty))
+              .SetAccessibleName(title)
+              .SetAccessibleDescription(description))
       .BuildChildren();
+
+  radio_button_->GetViewAccessibility().SetPosInSet(pos_in_set);
+  radio_button_->GetViewAccessibility().SetSetSize(set_size);
 
   subscription_ = radio_button_->AddCheckedChangedCallback(base::BindRepeating(
       [](views::RadioButton* button, base::RepeatingClosure closure) {
