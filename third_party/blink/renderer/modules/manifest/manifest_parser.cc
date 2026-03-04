@@ -488,6 +488,18 @@ bool ManifestParser::Parse() {
   if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
     manifest_->migrate_from = ParseMigrateFrom(root_object.get());
     manifest_->migrate_to = ParseMigrateTo(root_object.get());
+    if (!manifest_->migrate_from.empty()) {
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestMigrateFrom);
+    }
+    if (manifest_->migrate_to) {
+      UseCounter::Count(execution_context_,
+                        WebFeature::kWebAppManifestMigrateTo);
+    }
+    if (!manifest_->migrate_from.empty() || manifest_->migrate_to) {
+      UseCounter::CountWebDXFeature(execution_context_,
+                                    WebDXFeature::kDRAFT_WebAppMigration);
+    }
   }
 
   manifest_->theme_color = ParseThemeColor(root_object.get());

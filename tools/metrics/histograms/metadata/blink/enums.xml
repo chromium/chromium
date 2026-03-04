@@ -6441,6 +6441,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5804" label="HTMLInstallElement"/>
   <int value="5805" label="HTMLUserMediaElement"/>
   <int value="5806" label="AutofillEvent"/>
+  <int value="5807" label="WebAppManifestMigrateFrom"/>
+  <int value="5808" label="WebAppManifestMigrateTo"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
@@ -8857,6 +8859,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="428" label="DRAFT_LoadingLazyMedia"/>
   <int value="429" label="ManifestLocalization"/>
   <int value="430" label="ContrastColor"/>
+  <int value="431" label="DRAFT_WebAppMigration"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/webdx_feature.mojom:WebDXFeature) -->

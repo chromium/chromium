@@ -5121,6 +5121,8 @@ enum WebFeature {
   kHTMLInstallElement = 5804,
   kHTMLUserMediaElement = 5805,
   kAutofillEvent = 5806,
+  kWebAppManifestMigrateFrom = 5807,
+  kWebAppManifestMigrateTo = 5808,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra
