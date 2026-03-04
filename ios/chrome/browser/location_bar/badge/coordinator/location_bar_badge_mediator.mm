@@ -201,6 +201,8 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
     didStartNavigation:(web::NavigationContext*)navigationContext {
   // Do not modify badge state if the navigation is on the same document.
   if (!navigationContext->IsSameDocument()) {
+    _promoStartTimer = nil;
+    _promoEndTimer = nil;
     [self.consumer hideBadge];
   }
 }
@@ -675,15 +677,15 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
   BOOL eligibleTimeWindow =
       timeSinceLastShown >= base::Hours(kGeminiContextualCueChipSlidingWindow);
 
-  if (IsAskGeminiChipIgnoreCriteria()) {
-    return YES;
-  }
-
   // If the promo timers have already started, do not allow the chip to show to
   // avoid calling `ShouldTriggerHelpUI()` when the chip is in the process of
   // being displayed.
   if ([self arePromoTimersRunning]) {
     return NO;
+  }
+
+  if (IsAskGeminiChipIgnoreCriteria()) {
+    return YES;
   }
 
   return isPageEligible && isConsentEligible && eligibleTimeWindow &&

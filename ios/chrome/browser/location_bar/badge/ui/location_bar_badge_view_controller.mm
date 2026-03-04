@@ -736,7 +736,9 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
 }
 
 - (void)transitionToSmallEntrypoint {
-  [self collapseBadgeContainer];
+  if ([_badgeConfig isContextualPanelEntrypointBadge]) {
+    [self collapseBadgeContainer];
+  }
 }
 
 - (void)transitionToContextualPanelOpenedState:(BOOL)opened {
@@ -831,6 +833,7 @@ const CGFloat kLeadingSeparatorSpace = 5.0;
   [self.view layoutIfNeeded];
 
   [self refreshVoiceOverBoundingBoxIfFocused];
+  _badgeConfig = nil;
 }
 
 - (void)collapseBadgeContainer {
