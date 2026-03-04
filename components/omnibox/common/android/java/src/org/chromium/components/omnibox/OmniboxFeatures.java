@@ -96,11 +96,6 @@ public class OmniboxFeatures {
     /// Holds the information whether logic should focus on preserving memory on this device.
     private static @Nullable Boolean sIsLowMemoryDevice;
 
-    public static final CachedFlag sAnimateSuggestionsListAppearance =
-            newFlag(
-                    OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE,
-                    FeatureState.ENABLED_IN_PROD);
-
     public static final CachedFlag sTouchDownTriggerForPrefetch =
             newFlag(
                     OmniboxFeatureList.OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH,
@@ -375,14 +370,6 @@ public class OmniboxFeatures {
      */
     public static int getMaxPrefetchesPerOmniboxSession() {
         return sTouchDownTriggerMaxPrefetchesPerSession.getValue();
-    }
-
-    /**
-     * Whether the appearance of the omnibox suggestions list should animated in sync with the soft
-     * keyboard.
-     */
-    public static boolean shouldAnimateSuggestionsListAppearance() {
-        return sAnimateSuggestionsListAppearance.isEnabled();
     }
 
     /** Indicate a low memory device for testing purposes. */

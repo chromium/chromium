@@ -959,11 +959,7 @@ public class NewTabPageLayout extends LinearLayout
                                 - mSearchBoxBoundsVerticalInset);
 
         float translationY = mUrlFocusChangePercent * (basePosition - target);
-        if (OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
-            setTranslationYOfFakeboxAndAbove(translationY);
-        } else {
-            setTranslationY(translationY);
-        }
+        setTranslationYOfFakeboxAndAbove(translationY);
     }
 
     /**

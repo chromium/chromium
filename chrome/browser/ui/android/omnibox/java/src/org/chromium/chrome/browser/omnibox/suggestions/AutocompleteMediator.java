@@ -1609,29 +1609,12 @@ class AutocompleteMediator
 
     @VisibleForTesting
     SuggestionsListAnimationDriver initializeAnimationDriver() {
-        SuggestionsListAnimationDriver driver;
-        if (mDelegate.isToolbarPositionCustomizationEnabled()
-                || OmniboxFeatures.shouldAnimateSuggestionsListAppearance()) {
-            driver =
-                    new UnsyncedSuggestionsListAnimationDriver(
-                            mListPropertyModel,
-                            () -> propagateOmniboxSessionStateChange(),
-                            mDelegate::isToolbarBottomAnchored,
-                            mEmbedder::getVerticalTranslationForAnimation,
-                            mContext);
-        } else {
-            driver =
-                    new SuggestionsListAnimationDriver() {
-                        @Override
-                        public void onOmniboxSessionStateChange(boolean active) {}
-
-                        @Override
-                        public boolean isAnimationEnabled() {
-                            return false;
-                        }
-                    };
-        }
-        return driver;
+        return new UnsyncedSuggestionsListAnimationDriver(
+                mListPropertyModel,
+                () -> propagateOmniboxSessionStateChange(),
+                mDelegate::isToolbarBottomAnchored,
+                mEmbedder::getVerticalTranslationForAnimation,
+                mContext);
     }
 
     private void onToolbarPositionChanged(@ControlsPosition Integer newPosition) {

@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.omnibox.suggestions;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
@@ -25,9 +24,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.components.omnibox.OmniboxFeatureList;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Unit tests for {@link UnsyncedSuggestionsListAnimationDriver}. */
@@ -58,17 +54,6 @@ public class UnsyncedSuggestionsListAnimationDriverTest {
     }
 
     @Test
-    @DisableFeatures({OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE})
-    public void testAnimationDisabled() {
-        mIsToolbarBottomAnchored = false;
-        assertFalse(mDriver.isAnimationEnabled());
-
-        mIsToolbarBottomAnchored = true;
-        assertTrue(mDriver.isAnimationEnabled());
-    }
-
-    @Test
-    @EnableFeatures({OmniboxFeatureList.ANIMATE_SUGGESTIONS_LIST_APPEARANCE})
     public void testAnimationFlagEnabled() {
         mIsToolbarBottomAnchored = false;
         assertTrue(mDriver.isAnimationEnabled());

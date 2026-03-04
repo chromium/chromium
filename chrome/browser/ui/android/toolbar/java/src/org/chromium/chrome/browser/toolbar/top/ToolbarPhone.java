@@ -2357,8 +2357,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private boolean animatingSuggestionsListOnNtp() {
-        return OmniboxFeatures.shouldAnimateSuggestionsListAppearance()
-                && getToolbarDataProvider().getNewTabPageDelegate().isLocationBarShown();
+        return getToolbarDataProvider().getNewTabPageDelegate().isLocationBarShown();
     }
 
     /**
