@@ -412,6 +412,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="PAGE_RECAPTURED"/>
   <int value="3" label="SHUTDOWN"/>
   <int value="4" label="NEW_PHISHING_SCORER"/>
+  <int value="5" label="SCORER_CLEARED"/>
 </enum>
 
 <enum name="SBClientPhishingScorerCreationStatus">
@@ -446,6 +447,18 @@ chromium-metrics-reviews@google.com.
 <enum name="SBDeepScanType">
   <int value="0" label="Normal"/>
   <int value="1" label="Save Package"/>
+</enum>
+
+<enum name="SBImageEmbedderEvent">
+  <int value="0" label="Image embedder was requested to start"/>
+  <int value="1" label="Page text was captured"/>
+  <int value="2" label="Page text was not loaded"/>
+  <int value="3" label="URL does not match from browser request"/>
+  <int value="4" label="Image embedding could not finish due to destruction"/>
+  <int value="5" label="Image embedding request begins"/>
+  <int value="6" label="Image embedding completes"/>
+  <int value="7" label="Image embedding callback is empty on completion"/>
+  <int value="8" label="Image embedding request is responded"/>
 </enum>
 
 <enum name="SBPhishingClassifierEvent">

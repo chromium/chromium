@@ -756,8 +756,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.ImageEmbedder.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2026-07-19">
+<histogram name="SBClientPhishing.ImageEmbedder.Event2"
+    enum="SBImageEmbedderEvent" expires_after="2027-03-03">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>

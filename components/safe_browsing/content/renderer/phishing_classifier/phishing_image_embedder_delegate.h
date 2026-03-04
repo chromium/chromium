@@ -20,14 +20,26 @@ class Scorer;
 
 enum class SBPhishingImageEmbedderEvent {
   kPhishingImageEmbeddingRequested = 0,
-  // Phishing image embedding could not start because the url was not specified
+  // Image embedding could not start because the url was not specified
   // to be processed for image embedding
   kPageTextCaptured = 1,
+  // Image embedding did not start because page text has not fully
+  // loaded yet.
   kPageTextNotLoaded = 2,
+  // Image embedding did not start because while page text was loaded,
+  // the request from browser has not arrived yet.
   kUrlShouldNotBeUsedForImageEmbedding = 3,
   // Phishing image embedding could not finish because the class was destructed.
   kDestructedBeforeImageEmbeddingDone = 4,
-  kMaxValue = kDestructedBeforeImageEmbeddingDone,
+  // Image embedding begins.
+  kImageEmbeddingBegins = 5,
+  // Image embedding completes.
+  kImageEmbeddingComplete = 6,
+  // Image embedding callback is empty on completion.
+  kImageEmbeddingCallbackEmptyOnCompletion = 7,
+  // Image embedding request responded.
+  kImageEmbeddingRequestResponded = 8,
+  kMaxValue = kImageEmbeddingRequestResponded,
 };
 
 // This class is used by the RenderView to interact with a
@@ -74,7 +86,8 @@ class PhishingImageEmbedderDelegate
     kPageRecaptured,
     kShutdown,
     kNewPhishingScorer,
-    kMaxValue = kNewPhishingScorer,
+    kScorerCleared,
+    kMaxValue = kScorerCleared,
   };
 
   void PhishingImageEmbedderReceiver(
