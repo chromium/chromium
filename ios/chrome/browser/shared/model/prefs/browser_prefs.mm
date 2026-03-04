@@ -148,17 +148,6 @@
 
 namespace {
 
-// Deprecated 04/2025.
-inline constexpr char kMixedContentAutoupgradeEnabled[] =
-    "ios.mixed_content_autoupgrade_enabled";
-
-// Deprecated 04/2025.
-inline constexpr char kAutologinEnabled[] = "autologin.enabled";
-
-// Deprecated 04/2025.
-inline constexpr char kSuggestionGroupVisibility[] =
-    "omnibox.suggestionGroupVisibility";
-
 // Deprecated 05/2025.
 inline constexpr char kSyncCacheGuid[] = "sync.cache_guid";
 inline constexpr char kSyncBirthday[] = "sync.birthday";
@@ -328,21 +317,6 @@ void MigrateDictionaryPrefFromLocalStatePrefsToProfilePrefs(
     PrefService* profile_pref_service) {
   MigrateDictPref(pref_name, profile_pref_service,
                   GetApplicationContext()->GetLocalState());
-}
-
-void MigrateBooleanFromUserDefaultsToProfilePrefs(
-    NSString* user_defaults_key,
-    std::string_view pref_name,
-    PrefService* profile_pref_service) {
-  auto* pref = profile_pref_service->FindPreference(pref_name);
-  CHECK(pref);
-  NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-  // Only migrate if the pref is not set in the prefs.
-  if (pref->IsDefaultValue()) {
-    profile_pref_service->SetBoolean(pref_name,
-                                     [defaults boolForKey:user_defaults_key]);
-  }
-  [defaults removeObjectForKey:user_defaults_key];
 }
 
 // Helper function migrating the `base::ListValue` preference from LocalState
@@ -724,7 +698,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   // Register HTTPS related settings.
   registry->RegisterBooleanPref(prefs::kHttpsOnlyModeEnabled, false);
-  registry->RegisterBooleanPref(kMixedContentAutoupgradeEnabled, false);
 
   // Register pref used to determine whether the User Policy notification was
   // already shown.
@@ -979,12 +952,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
   // Prefs for the Synced Set Up Feature.
   registry->RegisterIntegerPref(prefs::kSyncedSetUpImpressionCount, 0);
 
-  // Deprecated 04/2025.
-  registry->RegisterBooleanPref(kAutologinEnabled, false);
-
-  // Deprecated 04/2025.
-  registry->RegisterDictionaryPref(kSuggestionGroupVisibility);
-
   // Deprecated 05/2025.
   registry->RegisterStringPref(kSyncCacheGuid, std::string());
   registry->RegisterStringPref(kSyncBirthday, std::string());
@@ -1121,20 +1088,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
   // Added 09/2024.
   browsing_data::prefs::MaybeMigrateToQuickDeletePrefValues(prefs);
-
-  // Added 04/2025.
-  prefs->ClearPref(kMixedContentAutoupgradeEnabled);
-
-  // Added 04/2025.
-  MigrateBooleanFromUserDefaultsToProfilePrefs(
-      @"SyncDisabledAlertShown", policy::policy_prefs::kSyncDisabledAlertShown,
-      prefs);
-
-  // Added 04/2025.
-  prefs->ClearPref(kAutologinEnabled);
-
-  // Added 04/2025.
-  prefs->ClearPref(kSuggestionGroupVisibility);
 
   // Added 05/2025.
   prefs->ClearPref(kSyncCacheGuid);
