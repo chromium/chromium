@@ -635,10 +635,14 @@ template("proto_library") {
       "//third_party/protobuf/src/google/protobuf/descriptor.proto",
       "//third_party/protobuf/src/google/protobuf/cpp_features.proto",
     ]
-    _import_dirs = [ "//third_party/protobuf/src" ]
+
+    # Note: the order of import dirs is kept the same as the order of include
+    # dirs in the target for consistency (specific first, then generic).
+    _import_dirs = []
     if (defined(invoker.import_dirs)) {
       _import_dirs += invoker.import_dirs
     }
+    _import_dirs += [ "//third_party/protobuf/src" ]
     foreach(_path, _import_dirs) {
       args += [ "--import-dir=" + rebase_path(_path, root_build_dir) ]
     }
@@ -698,7 +702,7 @@ template("proto_library") {
     }
 
     if (_generate_cc || _generate_with_plugin) {
-      public_configs = [ "$_this_dir:using_proto" ]
+      public_configs = []
 
       # By default, propagate the config for |include_dirs| to dependent
       # targets, so that public imports can be resolved to corresponding
@@ -713,6 +717,17 @@ template("proto_library") {
           configs += [ ":$_include_dir_config_name" ]
         }
       }
+
+      # Add generic protobuf config *after* specific ones so that specific ones
+      # can override the generic one.
+      #
+      # This is required for instance for well-known protobuf types, like
+      # timestamp.proto, as the non-lite version of its header is included in
+      # protobuf's sources.  Specifying the protobuf's src directory (as include_dir)
+      # before the generated directory, would cause header file mismatch and the
+      # non-lite version would be included instead of the lite one causing
+      # issues when linking binaries.
+      public_configs += [ "$_this_dir:using_proto" ]
 
       # If using built-in cc generator, the resulting headers reference headers
       # within protobuf_lite. Hence, dependencies require those headers too.
