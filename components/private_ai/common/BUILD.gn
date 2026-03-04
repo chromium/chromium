@@ -9,3 +9,14 @@ source_set("common") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "private_ai_logger_unittest.cc" ]
+  deps = [
+    ":common",
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

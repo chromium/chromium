@@ -131,7 +131,6 @@ source_set("unit_tests") {
     "connection_proxy_unittest.cc",
     "connection_timeout_unittest.cc",
     "connection_token_attestation_unittest.cc",
-    "private_ai_logger_unittest.cc",
     "secure_channel_impl_unittest.cc",
     "secure_session_async_impl_unittest.cc",
   ]
@@ -144,6 +143,7 @@ source_set("unit_tests") {
     "//components/private_ai/attestation",
     "//components/private_ai/attestation:unit_tests",
     "//components/private_ai/common",
+    "//components/private_ai/common:unit_tests",
     "//components/private_ai/crypto:unit_tests",
     "//components/private_ai/mojom",
     "//components/private_ai/phosphor",
