@@ -200,7 +200,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAndroidFluidResizeBrowserTest,
   ASSERT_NE(new_size, current_size_px);
   view->screen_state_change_handler_.OnPhysicalBackingSizeChanged(new_size, 0);
 
-  if (view->using_browser_compositor_) {
+  if (view->using_browser_compositor_ && features::IsFluidResizeEnabled()) {
     EXPECT_TRUE(view->visual_properties_update_pending_);
     // Confirmed visual properties update is pending. We now wait for the
     // renderer to submit a frame acknowledging the resize.

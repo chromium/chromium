@@ -16,6 +16,10 @@
 #include "content/public/common/buildflags.h"
 #include "media/base/media_switches.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/device_info.h"
+#endif
+
 namespace features {
 
 // All features in alphabetical order.
@@ -1456,5 +1460,18 @@ bool IsPushSubscriptionChangeEventEnabled() {
          base::FeatureList::IsEnabled(
              features::kPushSubscriptionChangeEventOnResubscribe);
 }
+
+#if BUILDFLAG(IS_ANDROID)
+bool IsFluidResizeEnabled() {
+  // On phones, resizes are almost exclusively discrete transitions, such as
+  // orientation swaps. For these events, the standard immediate synchronization
+  // path is more efficient and results in fewer artifacts.
+  // By contrast, the continuous resize logic is optimized for the "live" window
+  // dragging seen on tablets and desktops.
+  return base::FeatureList::IsEnabled(features::kFluidResize) &&
+         (base::android::device_info::is_tablet() ||
+          base::android::device_info::is_desktop());
+}
+#endif
 
 }  // namespace features

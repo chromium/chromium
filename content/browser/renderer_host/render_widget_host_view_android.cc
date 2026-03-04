@@ -508,8 +508,8 @@ bool RenderWidgetHostViewAndroid::ScreenStateChangeHandler::
           // immediately. For the browser, schedule a vsync-aligned update to
           // process it smoothly.
           sync_needed = true;
-          if (base::FeatureList::IsEnabled(features::kFluidResize) &&
-              rwhva_->using_browser_compositor_) {
+          if (rwhva_->using_browser_compositor_ &&
+              features::IsFluidResizeEnabled()) {
             sync_needed = false;
             if (!rwhva_->visual_properties_update_pending_) {
               rwhva_->visual_properties_update_pending_ = true;
@@ -2069,7 +2069,7 @@ bool RenderWidgetHostViewAndroid::SupportsAnimation() const {
 }
 
 void RenderWidgetHostViewAndroid::SetNeedsAnimate() {
-  if (base::FeatureList::IsEnabled(features::kFluidResize)) {
+  if (features::IsFluidResizeEnabled()) {
     // The synchronous (WebView) compositor does not have a proper browser
     // compositor with which to drive animations.
     CHECK(using_browser_compositor_);
@@ -2453,8 +2453,7 @@ bool RenderWidgetHostViewAndroid::Animate(base::TimeTicks frame_time) {
   if (touch_selection_controller_)
     needs_animate |= touch_selection_controller_->Animate(frame_time);
 
-  if (visual_properties_update_pending_ &&
-      base::FeatureList::IsEnabled(features::kFluidResize)) {
+  if (visual_properties_update_pending_ && features::IsFluidResizeEnabled()) {
     visual_properties_update_pending_ = false;
     // Use a short deadline for fluid resizing. We don't want to block the
     // UI thread, but we want the update to happen quickly.

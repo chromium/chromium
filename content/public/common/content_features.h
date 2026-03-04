@@ -427,6 +427,10 @@ CONTENT_EXPORT bool IsVideoCaptureServiceEnabledForOutOfProcess();
 CONTENT_EXPORT bool IsVideoCaptureServiceEnabledForBrowserProcess();
 CONTENT_EXPORT bool IsPushSubscriptionChangeEventEnabled();
 
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT bool IsFluidResizeEnabled();
+#endif
+
 }  // namespace features
 
 #endif  // CONTENT_PUBLIC_COMMON_CONTENT_FEATURES_H_
