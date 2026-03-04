@@ -31,13 +31,18 @@ canvas {
 
 
 <script>
-promise_test(async () => {
-  assert_throws_js(TypeError,
-    () => canvas1.getContext("2d").drawElementImage(child1, 20, 30),
-    "Can't draw a display: none child.");
-
-  assert_throws_js(TypeError,
-    () => canvas2.getContext("2d").drawElementImage(child2, 20, 30),
-    "Can't draw into a display-none <canvas>.");
-}, "Canvas drawElementImage() should throw when not laid out.");
+onload = () => {
+  promise_test(async (t) => {
+    await new Promise(requestAnimationFrame);
+    await new Promise(setTimeout);
+    assert_throws_dom(
+      "InvalidStateError",
+      () => canvas1.getContext("2d").drawElementImage(child1, 20, 30),
+      "Can't draw a display: none child.");
+    assert_throws_dom(
+      "InvalidStateError",
+      () => canvas2.getContext("2d").drawElementImage(child2, 20, 30),
+      "Can't draw into a display-none <canvas>.");
+  }, "Canvas drawElementImage() should throw when drawn child is not laid out.");
+};
 </script>

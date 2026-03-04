@@ -3,7 +3,7 @@ function resizeToPixelGrid(canvas) {
     new ResizeObserver(entries => {
       canvas.width = entries[0].devicePixelContentBoxSize[0].inlineSize;
       canvas.height = entries[0].devicePixelContentBoxSize[0].blockSize;
-      resolve();
+      setTimeout(resolve);
     }).observe(canvas);
   });
 }

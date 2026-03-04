@@ -27,15 +27,19 @@ body {
 </canvas>
 
 <script>
-function runTest() {
+async function runTest() {
+  await new Promise(requestAnimationFrame);
+  await new Promise(setTimeout);
   const rectangle = canvas.getBoundingClientRect();
   canvas.width = rectangle.width * devicePixelRatio;
   canvas.height = rectangle.height * devicePixelRatio;
+  await new Promise(requestAnimationFrame);
+  await new Promise(setTimeout);
   canvas.getContext("2d").drawElementImage(child, 20 * devicePixelRatio, 30 * devicePixelRatio);
   takeScreenshot();
 }
 
-onload = () => requestAnimationFrame(() => setTimeout(runTest));
+onload = runTest;
 
 </script>
 </html>
