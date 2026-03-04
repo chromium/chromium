@@ -66,6 +66,16 @@ final class AndroidBrowserWindow {
     }
 
     /**
+     * Returns the address of the native {@code AndroidBrowserWindow}.
+     *
+     * <p>This method assumes the native object has been created.
+     */
+    long getNativePtr() {
+        assert mNativeAndroidBrowserWindow != 0 : "Native object has not been created.";
+        return mNativeAndroidBrowserWindow;
+    }
+
+    /**
      * Returns the address of the native {@code AndroidBaseWindow}.
      *
      * @see AndroidBaseWindow#getOrCreateNativePtr()

@@ -370,7 +370,7 @@ final class ChromeAndroidTaskImpl
                                             .mActivityWindowAndroid);
                     internalActivityScopedObjects.addBrowserWindow(browserWindow);
                     long ptr = browserWindow.getOrCreateNativePtr();
-                    incognitoModel.associateWithBrowserWindow(browserWindow.getOrCreateNativePtr());
+                    incognitoModel.associateWithBrowserWindow(ptr);
                     for (var observer : mAndroidBrowserWindowObservers) {
                         observer.onBrowserWindowAdded(ptr);
                     }
@@ -759,10 +759,7 @@ final class ChromeAndroidTaskImpl
             assert browserWindow.getActivityWindowAndroid()
                     == internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid;
         }
-
-        // TODO(crbug.com/486858979): Replace with AndroidBrowserWindow#getNativePtr() which
-        // guarantees to return a non-null ptr and not create a new pointer.
-        long ptr = browserWindow.getOrCreateNativePtr();
+        long ptr = browserWindow.getNativePtr();
 
         if (internalActivityScopedObjects != null) {
             var profile = browserWindow.getProfile();
@@ -1196,10 +1193,10 @@ final class ChromeAndroidTaskImpl
         List<Long> allNativeBrowserWindowPtrs = new ArrayList<>();
         for (var internalActivityScopedObjects : mActivityScopedObjectsDeque) {
 
-            Iterator<Map.Entry<Profile, AndroidBrowserWindow>> window_iterator =
+            Iterator<Map.Entry<Profile, AndroidBrowserWindow>> iterator =
                     internalActivityScopedObjects.mAndroidBrowserWindows.entrySet().iterator();
-            while (window_iterator.hasNext()) {
-                var entry = window_iterator.next();
+            while (iterator.hasNext()) {
+                var entry = iterator.next();
                 allNativeBrowserWindowPtrs.add(entry.getValue().getOrCreateNativePtr());
             }
         }

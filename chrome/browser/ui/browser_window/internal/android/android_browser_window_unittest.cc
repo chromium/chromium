@@ -54,6 +54,12 @@ class AndroidBrowserWindowUnitTest : public testing::Test {
             AttachCurrentThread(), java_test_support_));
   }
 
+  AndroidBrowserWindow* InvokeJavaGetNativePtr() const {
+    return reinterpret_cast<AndroidBrowserWindow*>(
+        Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetNativePtr(
+            AttachCurrentThread(), java_test_support_));
+  }
+
   AndroidBaseWindow* InvokeJavaGetOrCreateNativeBaseWindowPtr() const {
     return reinterpret_cast<AndroidBaseWindow*>(
         Java_AndroidBrowserWindowNativeUnitTestSupport_invokeGetOrCreateNativeBaseWindowPtr(
@@ -120,6 +126,22 @@ TEST_F(AndroidBrowserWindowUnitTest,
   EXPECT_NE(nullptr, ptr1);
   EXPECT_NE(nullptr, ptr2);
   EXPECT_EQ(ptr1, ptr2);
+}
+
+TEST_F(AndroidBrowserWindowUnitTest, JavaGetNativePtrMethodReturnsCreatedPtr) {
+  // Arrange: ensure the native pointer is created first.
+  AndroidBrowserWindow* created_ptr = InvokeJavaGetOrCreateNativePtr();
+
+  // Act: call Java getNativePtr().
+  AndroidBrowserWindow* actual_ptr = InvokeJavaGetNativePtr();
+
+  // Assert: the two pointers should be the same.
+  EXPECT_EQ(created_ptr, actual_ptr);
+}
+
+TEST_F(AndroidBrowserWindowUnitTest,
+       JavaGetNativePtrMethodCrashesIfNoPtrWasCreated) {
+  EXPECT_DEATH(InvokeJavaGetNativePtr(), "");
 }
 
 TEST_F(AndroidBrowserWindowUnitTest,
