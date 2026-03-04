@@ -132,7 +132,12 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
 
   std::unique_ptr<ReadAnythingOmniboxController> omnibox_controller_;
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   const raw_ptr<tabs::TabInterface> tab_;
   raw_ptr<SidePanelRegistry> side_panel_registry_;

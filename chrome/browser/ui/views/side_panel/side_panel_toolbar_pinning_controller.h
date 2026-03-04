@@ -60,7 +60,12 @@ class SidePanelToolbarPinningController
                           PinnedToolbarActionsModel::Observer>
       pinned_model_observation_{this};
 
-  base::ObserverList<Observer> pin_state_change_observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      pin_state_change_observers_;
   raw_ptr<BrowserView> browser_view_ = nullptr;
 };
 

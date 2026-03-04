@@ -244,7 +244,13 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // and vice-versa) as part of the same RM session.
   bool is_presentation_transitioning_ = false;
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
+
   base::ObserverList<ReadAnythingImmersiveActivationObserver>
       immersive_activation_observers_;
 
