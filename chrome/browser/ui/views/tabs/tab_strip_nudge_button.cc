@@ -113,12 +113,36 @@ gfx::Size TabStripNudgeButton::CalculatePreferredSize(
   return gfx::Size(width, height);
 }
 
+void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
+  is_showing_nudge_ = is_showing;
+  if (is_showing) {
+    SetFocusBehavior(FocusBehavior::ALWAYS);
+    SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
+  } else {
+    SetFocusBehavior(FocusBehavior::NEVER);
+    SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
+  }
+}
+
+bool TabStripNudgeButton::GetIsShowingNudge() const {
+  return is_showing_nudge_;
+}
+
+gfx::SlideAnimation* TabStripNudgeButton::GetExpansionAnimationForTesting() {
+  return nullptr;
+}
+
 int TabStripNudgeButton::GetCornerRadius() const {
   return kTabStripNudgeCornerRadius;
 }
 
 int TabStripNudgeButton::GetFlatCornerRadius() const {
   return kTabStripNudgeFlatCornerRadius;
+}
+
+void TabStripNudgeButton::SetCloseButtonFocusBehavior(
+    views::View::FocusBehavior focus_behavior) {
+  close_button_->SetFocusBehavior(focus_behavior);
 }
 
 void TabStripNudgeButton::SetCloseButton(PressedCallback pressed_callback) {
@@ -163,29 +187,6 @@ void TabStripNudgeButton::SetCloseButton(PressedCallback pressed_callback) {
   SetIsShowingNudge(false);
 }
 
-void TabStripNudgeButton::SetIsShowingNudge(bool is_showing) {
-  is_showing_nudge_ = is_showing;
-  if (is_showing) {
-    SetFocusBehavior(FocusBehavior::ALWAYS);
-    SetCloseButtonFocusBehavior(FocusBehavior::ALWAYS);
-  } else {
-    SetFocusBehavior(FocusBehavior::NEVER);
-    SetCloseButtonFocusBehavior(FocusBehavior::NEVER);
-  }
-}
-
-bool TabStripNudgeButton::GetIsShowingNudge() const {
-  return is_showing_nudge_;
-}
-
-void TabStripNudgeButton::SetCloseButtonFocusBehavior(
-    views::View::FocusBehavior focus_behavior) {
-  close_button_->SetFocusBehavior(focus_behavior);
-}
-
-gfx::SlideAnimation* TabStripNudgeButton::GetExpansionAnimationForTesting() {
-  return nullptr;
-}
-
 BEGIN_METADATA(TabStripNudgeButton)
+
 END_METADATA
