@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/test_personal_data_manager.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
@@ -27,6 +28,8 @@
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
 #include "components/sync/test/test_sync_service.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -36,11 +39,35 @@ namespace autofill {
 namespace {
 
 using test::CreateTestFormField;
+using ::testing::Contains;
 using ::testing::NiceMock;
 using ::testing::Pointee;
 using ::testing::Truly;
 
 constexpr char kLocale[] = "en_US";
+
+// Define values for various default address profiles.
+constexpr char kDefaultFullName[] = "Thomas Neo Anderson";
+constexpr char kDefaultFirstName[] = "Thomas";
+constexpr char kDefaultLastName[] = "Anderson";
+constexpr char kDefaultMail[] = "theone@thematrix.org";
+constexpr char kDefaultAddressLine1[] = "21 Laussat St";
+constexpr char kDefaultCity[] = "Los Angeles";
+constexpr char kDefaultState[] = "California";
+constexpr char kDefaultStreetAddress[] = "21 Laussat St\\nApt 123";
+constexpr char kDefaultZip[] = "94102";
+constexpr char kDefaultCountry[] = "US";
+constexpr char kDefaultPhone[] = "+1 650-555-0000";
+constexpr char kDefaultPhoneAreaCode[] = "650";
+constexpr char kDefaultPhonePrefix[] = "555";
+constexpr char kDefaultPhoneSuffix[] = "0000";
+
+constexpr char kSecondPhone[] = "+1 651-666-1111";
+constexpr char kSecondPhoneAreaCode[] = "651";
+constexpr char kSecondPhonePrefix[] = "666";
+constexpr char kSecondPhoneSuffix[] = "1111";
+
+constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 
 // Wraps `ConstructDefaultProfile()`, but overrides ADDRESS_HOME_COUNTRY with
 // `country`.
@@ -166,10 +193,20 @@ class AddressFormDataImporterTest
                                                {ConstructDefaultProfile()});
   }
 
+  void ImportAddressProfileAndVerifyImportOfNoProfile(
+      const FormStructure& form) {
+    ExtractAddressProfilesAndVerifyExpectation(form, {});
+  }
+
   TestAddressDataManager& address_data_manager() {
     return autofill_client()
         .GetPersonalDataManager()
         .test_address_data_manager();
+  }
+  TestPaymentsDataManager& payments_data_manager() {
+    return autofill_client()
+        .GetPersonalDataManager()
+        .test_payments_data_manager();
   }
   base::test::SingleThreadTaskEnvironment& task_environment() {
     return task_environment_;
@@ -733,6 +770,586 @@ TEST_F(AddressFormDataImporterTest, ImportStructuredNameAddressProfile) {
   EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_FIRST), u"Ruiz");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_CONJUNCTION), u"y");
   EXPECT_EQ(results[0]->GetRawInfo(NAME_LAST_SECOND), u"Picasso");
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+TEST_F(AddressFormDataImporterTest, ImportSecondAddressProfiles) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructSecondProfileFormStructure();
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {ConstructSecondProfile()});
+}
+
+TEST_F(AddressFormDataImporterTest, ImportThirdAddressProfiles) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructThirdProfileFormStructure();
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {ConstructThirdProfile()});
+}
+
+// Test that with dependent locality parsing enabled, dependent locality fields
+// are imported.
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_DependentLocality) {
+  // The Mexican address format contains a dependent locality.
+  TypeValuePairs mx_profile =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("MX");
+  mx_profile.emplace_back(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                          "Bosques de las Lomas");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(mx_profile);
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructProfileFromTypeValuePairs(mx_profile)});
+}
+
+// Test that the storage is prevented if the structured address prompt feature
+// is enabled, but address prompts are not allowed.
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_DontAllowPrompt) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  ExtractAddressProfiles(/*extraction_successful=*/true, *form_structure,
+                         /*allow_save_prompts=*/false);
+  VerifyExpectationForExtractedAddressProfiles({});
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfileFromUnifiedSection) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+
+  // Assign the address field another section than the other fields.
+  form_structure->field(4)->set_section(
+      Section::FromAutocomplete({.section = "another_section"}));
+
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_BadEmail) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+
+  // Change the value of the email field.
+  ASSERT_THAT(form_structure->field(2)->Type().GetTypes(),
+              Contains(EMAIL_ADDRESS));
+  form_structure->field(2)->set_value(u"bogus");
+
+  // Verify that there was no import.
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that a 'confirm email' field does not block profile import.
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_TwoEmails) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          {{NAME_FIRST, kDefaultFirstName},
+           {NAME_LAST, kDefaultLastName},
+           {EMAIL_ADDRESS, kDefaultMail},
+           // Add two email fields with the same value.
+           {EMAIL_ADDRESS, kDefaultMail},
+           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+           {ADDRESS_HOME_CITY, kDefaultCity},
+           {ADDRESS_HOME_STATE, kDefaultState},
+           {ADDRESS_HOME_ZIP, kDefaultZip}});
+
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+// Tests two email fields containing different values blocks profile import.
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_TwoDifferentEmails) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          {{NAME_FIRST, kDefaultFirstName},
+           {NAME_LAST, kDefaultLastName},
+           {EMAIL_ADDRESS, kDefaultMail},
+           // Add two email fields with different values.
+           {EMAIL_ADDRESS, "another@mail.com"},
+           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+           {ADDRESS_HOME_CITY, kDefaultCity},
+           {ADDRESS_HOME_STATE, kDefaultState},
+           {ADDRESS_HOME_ZIP, kDefaultZip}});
+
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that multiple phone numbers do not block profile extraction and the
+// first one is saved.
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_MultiplePhoneNumbers) {
+  base::test::ScopedFeatureList enable_import_when_multiple_phones_feature;
+  enable_import_when_multiple_phones_feature.InitAndEnableFeature(
+      features::kAutofillEnableImportWhenMultiplePhoneNumbers);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          {{NAME_FIRST, kDefaultFirstName},
+           {NAME_LAST, kDefaultLastName},
+           {EMAIL_ADDRESS, kDefaultMail},
+           {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+           // Add a second phone field with a different number.
+           {PHONE_HOME_WHOLE_NUMBER, kSecondPhone},
+           {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+           {ADDRESS_HOME_CITY, kDefaultCity},
+           {ADDRESS_HOME_STATE, kDefaultState},
+           {ADDRESS_HOME_ZIP, kDefaultZip}});
+
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+// Tests that multiple phone numbers do not block profile import and the first
+// one is saved.
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_MultiplePhoneNumbersSplitAcrossMultipleFields) {
+  base::test::ScopedFeatureList enable_import_when_multiple_phones_feature;
+  enable_import_when_multiple_phones_feature.InitAndEnableFeature(
+      features::kAutofillEnableImportWhenMultiplePhoneNumbers);
+
+  FormData form_data = ConstructFormDateFromTypeValuePairs(
+      {{NAME_FIRST, kDefaultFirstName},
+       {NAME_LAST, kDefaultLastName},
+       {EMAIL_ADDRESS, kDefaultMail},
+       // Add two phone number fields, split across 3 fields each.
+       // They are all declared as PHONE_HOME_WHOLE_NUMBER, which only affects
+       // the label. Local heuristics will classify them correctly.
+       {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneAreaCode},
+       {PHONE_HOME_WHOLE_NUMBER, kDefaultPhonePrefix},
+       {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneSuffix},
+       {PHONE_HOME_WHOLE_NUMBER, kSecondPhoneAreaCode},
+       {PHONE_HOME_WHOLE_NUMBER, kSecondPhonePrefix},
+       {PHONE_HOME_WHOLE_NUMBER, kSecondPhoneSuffix},
+       {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+       {ADDRESS_HOME_CITY, kDefaultCity},
+       {ADDRESS_HOME_STATE, kDefaultState},
+       {ADDRESS_HOME_ZIP, kDefaultZip},
+       {ADDRESS_HOME_COUNTRY, kDefaultCountry}});
+
+  test_api(form_data).field(3).set_max_length(3);
+  test_api(form_data).field(4).set_max_length(3);
+  test_api(form_data).field(5).set_max_length(4);
+  test_api(form_data).field(6).set_max_length(3);
+  test_api(form_data).field(7).set_max_length(3);
+  test_api(form_data).field(8).set_max_length(4);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form_data);
+
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructProfileFromTypeValuePairs(
+                           {{NAME_FIRST, kDefaultFirstName},
+                            {NAME_LAST, kDefaultLastName},
+                            {EMAIL_ADDRESS, kDefaultMail},
+                            {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+                            {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+                            {ADDRESS_HOME_CITY, kDefaultCity},
+                            {ADDRESS_HOME_STATE, kDefaultState},
+                            {ADDRESS_HOME_ZIP, kDefaultZip},
+                            {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
+}
+
+// Tests that not enough filled fields will result in not importing an address.
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_NotEnoughFilledFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          {{NAME_FIRST, kDefaultFirstName},
+           {NAME_LAST, kDefaultLastName},
+           {CREDIT_CARD_NUMBER, kDefaultCreditCardNumber}});
+
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+  // Also verify that there was no import of a credit card.
+  ASSERT_EQ(0U, payments_data_manager().GetCreditCards().size());
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MinimumAddressUSA) {
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "US"},
+  };
+
+  AutofillProfile profile =
+      ConstructProfileFromTypeValuePairs(type_value_pairs);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MinimumAddressGB) {
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "GB"},
+  };
+
+  AutofillProfile profile =
+      ConstructProfileFromTypeValuePairs(type_value_pairs);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MinimumAddressGI) {
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_COUNTRY, "GI"},
+  };
+
+  AutofillProfile profile =
+      ConstructProfileFromTypeValuePairs(type_value_pairs);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
+}
+
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_PhoneNumberSplitAcrossMultipleFields) {
+  FormData form_data = ConstructFormDateFromTypeValuePairs(
+      {{NAME_FIRST, kDefaultFirstName},
+       {NAME_LAST, kDefaultLastName},
+       {EMAIL_ADDRESS, kDefaultMail},
+       // Add three phone number fields.
+       {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneAreaCode},
+       {PHONE_HOME_WHOLE_NUMBER, kDefaultPhonePrefix},
+       {PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneSuffix},
+       {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+       {ADDRESS_HOME_CITY, kDefaultCity},
+       {ADDRESS_HOME_STATE, kDefaultState},
+       {ADDRESS_HOME_ZIP, kDefaultZip},
+       {ADDRESS_HOME_COUNTRY, kDefaultCountry}});
+
+  // Define the length of the phone number fields to allow the parser to
+  // identify them as area code, prefix and suffix.
+  test_api(form_data).field(3).set_max_length(3);
+  test_api(form_data).field(4).set_max_length(3);
+  test_api(form_data).field(5).set_max_length(4);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form_data);
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructProfileFromTypeValuePairs(
+                           {{NAME_FIRST, kDefaultFirstName},
+                            {NAME_LAST, kDefaultLastName},
+                            {EMAIL_ADDRESS, kDefaultMail},
+                            {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+                            {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+                            {ADDRESS_HOME_CITY, kDefaultCity},
+                            {ADDRESS_HOME_STATE, kDefaultState},
+                            {ADDRESS_HOME_ZIP, kDefaultZip},
+                            {ADDRESS_HOME_COUNTRY, kDefaultCountry}})});
+}
+
+// Test that even from unfocusable fields we extract.
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_UnfocusableFields) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  // Set the Address line field as unfocusable.
+  form_structure->field(4)->set_is_focusable(false);
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MultilineAddress) {
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      // This is a multi-line field.
+      {ADDRESS_HOME_STREET_ADDRESS, kDefaultStreetAddress},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "US"},
+  };
+
+  AutofillProfile profile =
+      ConstructProfileFromTypeValuePairs(type_value_pairs);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {profile});
+}
+
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_TwoValidProfilesDifferentForms) {
+  std::unique_ptr<FormStructure> default_form_structure =
+      ConstructDefaultProfileFormStructure();
+
+  AutofillProfile default_profile = ConstructDefaultProfile();
+  ExtractAddressProfilesAndVerifyExpectation(*default_form_structure,
+                                             {default_profile});
+
+  // Now import a second profile from a different form submission.
+  std::unique_ptr<FormStructure> alternative_form_structure =
+      ConstructSecondProfileFormStructure();
+  AutofillProfile alternative_profile = ConstructSecondProfile();
+
+  // Verify that both profiles have been imported.
+  ExtractAddressProfilesAndVerifyExpectation(
+      *alternative_form_structure, {alternative_profile, default_profile});
+}
+
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_TwoValidProfilesSameForm) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructShippingAndBillingFormStructure();
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructDefaultProfile(), ConstructSecondProfile()});
+}
+
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_OneValidProfileSameForm_PartsHidden) {
+  FormData form_data = ConstructDefaultFormData();
+
+  FormData hidden_second_form = form_data;
+  for (FormFieldData& field : test_api(hidden_second_form).fields()) {
+    // Reset the values and make the field non focusable.
+    field.set_value(u"");
+    field.set_is_focusable(false);
+  }
+
+  // Append the fields of the second form to the first form.
+  test_api(form_data).Append(hidden_second_form.fields());
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form_data);
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MissingInfoInOld) {
+  TypeValuePairs initial_type_value_pairs{
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
+      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+  };
+  AutofillProfile initial_profile =
+      ConstructProfileFromTypeValuePairs(initial_type_value_pairs);
+
+  std::unique_ptr<FormStructure> initial_form_structure =
+      ConstructFormStructureFromTypeValuePairs(initial_type_value_pairs);
+  ExtractAddressProfilesAndVerifyExpectation(*initial_form_structure,
+                                             {initial_profile});
+
+  // Create a superset that includes a new email address.
+  TypeValuePairs superset_type_value_pairs = initial_type_value_pairs;
+  superset_type_value_pairs.emplace_back(EMAIL_ADDRESS, kDefaultMail);
+
+  AutofillProfile superset_profile =
+      ConstructProfileFromTypeValuePairs(superset_type_value_pairs);
+
+  // Verify that the initial profile and the superset profile are not the
+  // same.
+  ASSERT_FALSE(initial_profile.Compare(superset_profile) == 0);
+
+  std::unique_ptr<FormStructure> superset_form_structure =
+      ConstructFormStructureFromTypeValuePairs(superset_type_value_pairs);
+  // Verify that extracting the superset profile will result in an update of
+  // the existing profile rather than creating a new one.
+  ExtractAddressProfilesAndVerifyExpectation(*superset_form_structure,
+                                             {superset_profile});
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_MissingInfoInNew) {
+  TypeValuePairs subset_type_value_pairs({
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
+      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+  });
+  // Create a superset that includes a new email address.
+  TypeValuePairs superset_type_value_pairs = subset_type_value_pairs;
+  superset_type_value_pairs.emplace_back(EMAIL_ADDRESS, kDefaultMail);
+
+  AutofillProfile subset_profile =
+      ConstructProfileFromTypeValuePairs(subset_type_value_pairs);
+  AutofillProfile superset_profile =
+      ConstructProfileFromTypeValuePairs(superset_type_value_pairs);
+
+  // Verify that the subset profile and the superset profile are not the
+  // same.
+  ASSERT_FALSE(subset_profile.Compare(superset_profile) == 0);
+
+  // First import the superset profile.
+  std::unique_ptr<FormStructure> superset_form_structure =
+      ConstructFormStructureFromTypeValuePairs(superset_type_value_pairs);
+  ExtractAddressProfilesAndVerifyExpectation(*superset_form_structure,
+                                             {superset_profile});
+
+  // Than extract the subset profile and verify that the stored profile is still
+  // the superset.
+  std::unique_ptr<FormStructure> subset_form_structure =
+      ConstructFormStructureFromTypeValuePairs(subset_type_value_pairs);
+  ExtractAddressProfiles(/*extraction_successful=*/true,
+                         *superset_form_structure);
+  VerifyExpectationForExtractedAddressProfiles({superset_profile});
+}
+
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_InsufficientAddress) {
+  // This address is missing a state which is required in the US.
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "US"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  // Verify that no profile is imported.
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that an address can be imported from an Indian address form without
+// synthesized field types.
+TEST_F(AddressFormDataImporterTest, ImportAddressProfiles_NoSynthesizedTypes) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillUseINAddressModel};
+  // The address does not contain synthesized types.
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, "INFirst INSecond"},
+      {ADDRESS_HOME_STREET_LOCATION, "12/110, Flat no. 504, Raja Apartments"},
+      {ADDRESS_HOME_LANDMARK, "Opp to Ayyappa Swamy temple"},
+      {ADDRESS_HOME_DEPENDENT_LOCALITY, "Kondapur"},
+      {ADDRESS_HOME_CITY, "Hyderabad"},
+      {ADDRESS_HOME_STATE, "Telangana"},
+      {ADDRESS_HOME_ZIP, "500084"},
+      {ADDRESS_HOME_COUNTRY, "IN"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_STREET_LOCATION),
+      AutofillPredictionSource::kHeuristics);
+  form_structure->field(2)->SetTypeTo(AutofillType(ADDRESS_HOME_LANDMARK),
+                                      AutofillPredictionSource::kHeuristics);
+  form_structure->field(3)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY),
+      AutofillPredictionSource::kHeuristics);
+  // Verify that the profile is imported.
+  AutofillProfile in_profile(AddressCountryCode("IN"));
+  in_profile.SetRawInfoWithVerificationStatus(NAME_FULL, u"INFirst INSecond",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(
+      ADDRESS_HOME_STREET_LOCATION, u"12/110, Flat no. 504, Raja Apartments",
+      VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_LANDMARK,
+                                              u"Opp to Ayyappa Swamy temple",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_DEPENDENT_LOCALITY,
+                                              u"Kondapur",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_CITY, u"Hyderabad",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_STATE, u"Telangana",
+                                              VerificationStatus::kObserved);
+  in_profile.SetRawInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"500084",
+                                              VerificationStatus::kObserved);
+
+  in_profile.FinalizeAfterImport();
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {in_profile});
+}
+
+// Tests that an address cannot be imported from an Indian address form which
+// contains synthesized fields. We don't allow that because the address will
+// likely look incomplete when shown to the user.
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_ContainsSynthesizedTypes) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures({features::kAutofillUseINAddressModel}, {});
+  // The address contains synthesized types which are not supported during
+  // form import.
+  ASSERT_TRUE(i18n_model_definition::IsSynthesizedType(
+      ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK, AddressCountryCode("IN")));
+  TypeValuePairs type_value_pairs = {
+      {NAME_FULL, kDefaultFullName},
+      {ADDRESS_HOME_STREET_LOCATION, "12/110, Flat no. 504, Raja Apartments"},
+      // ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK is a synthesized field
+      // type.
+      {ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+       "Kondapur, Opp to Ayyappa Swamy temple"},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, "IN"},
+  };
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  form_structure->field(1)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_STREET_LOCATION),
+      AutofillPredictionSource::kHeuristics);
+  form_structure->field(2)->SetTypeTo(
+      AutofillType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK),
+      AutofillPredictionSource::kHeuristics);
+  // Verify that no profile is imported.
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that a profile is created for countries with composed names.
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_CompleteComposedCountryName) {
+  FormData form;
+  form.set_url(GURL("https://www.foo.com"));
+  form.set_fields(
+      {CreateTestFormField("First name:", "first_name", "George",
+                           FormControlType::kInputText),
+       CreateTestFormField("Last name:", "last_name", "Washington",
+                           FormControlType::kInputText),
+       CreateTestFormField("Email:", "email", "theprez@gmail.com",
+                           FormControlType::kInputText),
+       CreateTestFormField("Address:", "address1", "No. 43 Bo Aung Gyaw Street",
+                           FormControlType::kInputText),
+       CreateTestFormField("City:", "city", "Yangon",
+                           FormControlType::kInputText),
+       CreateTestFormField("Zip:", "zip", "11181", FormControlType::kInputText),
+       CreateTestFormField("Country:", "country", "Myanmar [Burma]",
+                           FormControlType::kInputText)});
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  ExtractAddressProfiles(/*extraction_successful=*/true, *form_structure);
+
+  AutofillProfile expected(i18n_model_definition::kLegacyHierarchyCountryCode);
+  test::SetProfileInfo(&expected,
+                       test::SetProfileInfoOptionsBuilder()
+                           .with_first_name("George")
+                           .with_last_name("Washington")
+                           .with_email("theprez@gmail.com")
+                           .with_address1("No. 43 Bo Aung Gyaw Street")
+                           .with_city("Yangon")
+                           .with_zipcode("11181")
+                           .with_country("MM")
+                           .Build());
+  EXPECT_THAT(address_data_manager().GetProfiles(),
+              UnorderedElementsCompareEqual(expected));
+}
+
+// TODO(crbug.com/41267680): Create profiles if part of a standalone part of a
+// composed country name is present. Currently this is treated as an invalid
+// country, which is ignored on import.
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_IncompleteComposedCountryName) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry(
+              "Myanmar"));  // Missing the [Burma] part
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
 }
 
 }  // namespace

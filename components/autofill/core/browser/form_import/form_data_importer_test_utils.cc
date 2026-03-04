@@ -42,6 +42,26 @@ constexpr char kDefaultZip[] = "94102";
 constexpr char kDefaultCountry[] = "US";
 constexpr char kDefaultPhone[] = "+1 650-555-0000";
 
+// Define values for a second address profile.
+constexpr char kSecondFirstName[] = "Bruce";
+constexpr char kSecondLastName[] = "Wayne";
+constexpr char kSecondMail[] = "wayne@bruce.org";
+constexpr char kSecondAddressLine1[] = "23 Main St";
+constexpr char kSecondZip[] = "94106";
+constexpr char kSecondCity[] = "Los Angeles";
+constexpr char kSecondState[] = "California";
+constexpr char kSecondPhone[] = "+1 651-666-1111";
+
+// Define values for a third address profile.
+constexpr char kThirdFirstName[] = "Homer";
+constexpr char kThirdLastName[] = "Simpson";
+constexpr char kThirdMail[] = "donut@whatever.net";
+constexpr char kThirdAddressLine1[] = "742 Evergreen Terrace";
+constexpr char kThirdZip[] = "65619";
+constexpr char kThirdCity[] = "Springfield";
+constexpr char kThirdState[] = "Oregon";
+constexpr char kThirdPhone[] = "+1 850-777-2222";
+
 constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
 constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
 constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
@@ -174,8 +194,71 @@ TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
   return pairs;
 }
 
+TypeValuePairs GetSecondProfileTypeValuePairs() {
+  return {
+      {NAME_FIRST, kSecondFirstName},
+      {NAME_LAST, kSecondLastName},
+      {EMAIL_ADDRESS, kSecondMail},
+      {PHONE_HOME_WHOLE_NUMBER, kSecondPhone},
+      {ADDRESS_HOME_LINE1, kSecondAddressLine1},
+      {ADDRESS_HOME_CITY, kSecondCity},
+      {ADDRESS_HOME_STATE, kSecondState},
+      {ADDRESS_HOME_ZIP, kSecondZip},
+      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
+  };
+}
+
+TypeValuePairs GetThirdProfileTypeValuePairs() {
+  return {
+      {NAME_FIRST, kThirdFirstName},
+      {NAME_LAST, kThirdLastName},
+      {EMAIL_ADDRESS, kThirdMail},
+      {PHONE_HOME_WHOLE_NUMBER, kThirdPhone},
+      {ADDRESS_HOME_LINE1, kThirdAddressLine1},
+      {ADDRESS_HOME_CITY, kThirdCity},
+      {ADDRESS_HOME_STATE, kThirdState},
+      {ADDRESS_HOME_ZIP, kThirdZip},
+      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
+  };
+}
+
 AutofillProfile ConstructDefaultProfile() {
   return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
+}
+
+AutofillProfile ConstructSecondProfile() {
+  return ConstructProfileFromTypeValuePairs(GetSecondProfileTypeValuePairs());
+}
+
+AutofillProfile ConstructThirdProfile() {
+  return ConstructProfileFromTypeValuePairs(GetThirdProfileTypeValuePairs());
+}
+
+std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure() {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetDefaultProfileTypeValuePairs());
+}
+
+std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure() {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetSecondProfileTypeValuePairs());
+}
+
+std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure() {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetThirdProfileTypeValuePairs());
+}
+
+std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure() {
+  TypeValuePairs a = GetDefaultProfileTypeValuePairs();
+  TypeValuePairs b = GetSecondProfileTypeValuePairs();
+  a.reserve(a.size() + b.size());
+  std::ranges::move(b, std::back_inserter(a));
+  return ConstructFormStructureFromTypeValuePairs(a);
+}
+
+FormData ConstructDefaultFormData() {
+  return ConstructFormDateFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
 }
 
 }  // namespace autofill

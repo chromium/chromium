@@ -67,8 +67,41 @@ void SetValueForType(TypeValuePairs& pairs,
 TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     const std::string& country);
 
+// Same as `GetDefaultProfileTypeValuePairs()` but with the second profile
+// information.
+TypeValuePairs GetSecondProfileTypeValuePairs();
+
+// Same as `GetDefaultProfileTypeValuePairs()` but with the third profile
+// information.
+TypeValuePairs GetThirdProfileTypeValuePairs();
+
 // Returns the default AutofillProfile used in this test file.
 AutofillProfile ConstructDefaultProfile();
+
+// Returns the second AutofillProfile used in this test file.
+AutofillProfile ConstructSecondProfile();
+
+// Returns the third AutofillProfile used in this test file.
+AutofillProfile ConstructThirdProfile();
+
+// Returns a form with the default profile. The AutofillProfile that is imported
+// from this form should be similar to the profile create by calling
+// `ConstructDefaultProfile()`.
+std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure();
+
+// Same as `ConstructDefaultFormStructure()` but for the second profile.
+std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure();
+
+// Same as `ConstructDefaultFormStructure()` but for the third profile.
+std::unique_ptr<FormStructure> ConstructThirdProfileFormStructure();
+
+// Constructs a FormStructure with two address sections by concatenating
+// the default profile and second profile form structures.
+std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure();
+
+// Constructs a `FormData` instance that carries the information of the default
+// profile.
+FormData ConstructDefaultFormData();
 
 }  // namespace autofill
 
