@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConf
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncConfig.WithAccountSigninMode;
 import org.chromium.chrome.browser.ui.signin.BottomSheetSigninAndHistorySyncCoordinator;
 import org.chromium.chrome.browser.ui.signin.SigninSurveyController;
+import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.history_sync.HistorySyncConfig;
 import org.chromium.chrome.browser.user_education.IphCommandBuilder;
@@ -213,7 +214,12 @@ public class IdentityDiscController
         // `supportsTinting` must be false when showing the user's profile image or its placeholder,
         // to not alter the images colors in those cases.
         boolean shouldSupportTinting = email == null;
-        String contentDescription = getContentDescription(email);
+        assumeNonNull(mProfileDataCache);
+        DisplayableProfileData profileData =
+                email == null ? null : mProfileDataCache.getProfileDataOrDefault(email);
+        String contentDescription =
+                SigninUtils.getContentDescriptionForIdentityDisc(
+                        mContext, profileData, mIdentityError);
         return new ButtonSpec(
                 drawable,
                 buttonSpec.getOnClickListener(),
@@ -437,31 +443,6 @@ public class IdentityDiscController
 
             notifyObservers(true);
         }
-    }
-
-    private String getContentDescription(@Nullable String email) {
-        if (email == null) {
-            return mContext.getString(R.string.accessibility_toolbar_btn_signed_out_identity_disc);
-        }
-
-        assumeNonNull(mProfileDataCache);
-        DisplayableProfileData profileData = mProfileDataCache.getProfileDataOrDefault(email);
-        String userName = profileData.getFullName();
-        if (profileData.hasDisplayableEmailAddress()) {
-            return mContext.getString(
-                    mIdentityError == UserActionableError.NONE
-                            ? R.string.accessibility_toolbar_btn_identity_disc_with_name_and_email
-                            : R.string
-                                    .accessibility_toolbar_btn_identity_disc_error_with_name_and_email,
-                    userName,
-                    email);
-        }
-
-        return mContext.getString(
-                mIdentityError == UserActionableError.NONE
-                        ? R.string.accessibility_toolbar_btn_identity_disc_with_name
-                        : R.string.accessibility_toolbar_btn_identity_disc_error_with_name,
-                userName);
     }
 
     @VisibleForTesting
