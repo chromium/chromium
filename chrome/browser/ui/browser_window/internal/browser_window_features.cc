@@ -464,6 +464,7 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   embedder_browser_window_features_ =
       GetUserDataFactory().CreateInstance<EmbedderBrowserWindowFeatures>(
           *browser, browser);
+  embedder_browser_window_features_->Init(browser);
 }
 
 void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
