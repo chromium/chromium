@@ -247,6 +247,7 @@ source_set("platform_impls") {
     "scoped_portal_request.h",
     "scoped_portal_session.cc",
     "scoped_portal_session.h",
+    "user_systemd_env.cc",
   ]
   deps = [
     ":gvariant",

@@ -58,6 +58,7 @@ int UrlForwarderConfiguratorMain();
 #endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 int XSessionChooserMain();
+int UserSystemdEnvMain();
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
@@ -167,6 +168,8 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   } else if (process_type == kProcessTypeXSessionChooser) {
     main_routine = &XSessionChooserMain;
+  } else if (process_type == kProcessTypeUserSystemdEnv) {
+    main_routine = &UserSystemdEnvMain;
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
 

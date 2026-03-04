@@ -26,12 +26,14 @@ const char kProcessTypeUrlForwarderConfigurator[] =
     "url_forwarder_configurator";
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kProcessTypeXSessionChooser[] = "xsession_chooser";
+const char kProcessTypeUserSystemdEnv[] = "user_systemd_env";
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 const char kEvaluateCapabilitySwitchName[] = "evaluate-type";
 
 #if BUILDFLAG(IS_LINUX)
 const char kEnableWtmpdb[] = "enable-wtmpdb";
+const char kSystemdUserEnvUsernameSwitchName[] = "username";
 #endif
 
 const char kEnableCorpMessaging[] = "enable-corp-messaging";

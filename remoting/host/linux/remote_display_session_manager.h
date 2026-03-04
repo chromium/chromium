@@ -15,7 +15,9 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/thread_annotations.h"
 #include "remoting/host/linux/gdm_remote_display_manager.h"
 #include "remoting/host/linux/login_session_manager.h"
@@ -146,6 +148,12 @@ class RemoteDisplaySessionManager : public GdmRemoteDisplayManager::Observer,
   void OnSessionInfoReady(
       const std::string& display_name,
       base::expected<LoginSessionManager::SessionInfo, Loggable> result);
+
+  void FetchSystemdEnvironmentVariables(const std::string& display_name,
+                                        const std::string& username);
+
+  void OnGetUserSystemdEnvironmentResult(const std::string& display_name,
+                                         const std::string& output);
 
   SEQUENCE_CHECKER(sequence_checker_);
 

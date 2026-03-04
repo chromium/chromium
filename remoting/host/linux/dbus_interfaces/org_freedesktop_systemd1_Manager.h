@@ -26,6 +26,15 @@ struct GetUnit {
       ")"};
 };
 
+// property
+struct Environment {
+  static constexpr char kInterfaceName[] = "org.freedesktop.systemd1.Manager";
+  static constexpr char kPropertyName[] = "Environment";
+  static constexpr gvariant::Type kType{"as"};
+  static constexpr bool kReadable = true;
+  static constexpr bool kWritable = false;
+};
+
 }  // namespace remoting::org_freedesktop_systemd1_Manager
 
 #endif  // REMOTING_HOST_LINUX_DBUS_INTERFACES_ORG_FREEDESKTOP_SYSTEMD1_MANAGER_H_

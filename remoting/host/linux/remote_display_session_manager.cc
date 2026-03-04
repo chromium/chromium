@@ -8,18 +8,25 @@
 #include <unistd.h>
 
 #include <algorithm>
+#include <optional>
 #include <string_view>
 #include <utility>
 
+#include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/path_service.h"
+#include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/loggable.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/linux/gvariant_ref.h"
 #include "remoting/host/linux/login_session_manager.h"
 #include "remoting/host/linux/passwd_utils.h"
@@ -352,18 +359,103 @@ void RemoteDisplaySessionManager::OnSessionInfoReady(
   } else {
     LOG(ERROR) << user_info_expected.error();
   }
-  auto pending_session_reporter_info_it = pending_session_reporter_info_.find(
-      remote_display_info.session_info->session_id);
-  if (pending_session_reporter_info_it !=
-      pending_session_reporter_info_.end()) {
-    mojom::LoginSessionInfoPtr session_reporter_info =
-        std::move(pending_session_reporter_info_it->second);
-    pending_session_reporter_info_.erase(pending_session_reporter_info_it);
-    PopulateSessionEnvironment(display_name, remote_display_info,
-                               std::move(session_reporter_info));
+  if (remote_display_info.session_info->session_class == "user") {
+    FetchSystemdEnvironmentVariables(
+        display_name, remote_display_info.session_info->username);
+  } else {
+    // TODO: crbug.com/488713023 - poll systemd user environment variables for
+    // GNOME 49.
+    auto pending_session_reporter_info_it = pending_session_reporter_info_.find(
+        remote_display_info.session_info->session_id);
+    if (pending_session_reporter_info_it !=
+        pending_session_reporter_info_.end()) {
+      mojom::LoginSessionInfoPtr session_reporter_info =
+          std::move(pending_session_reporter_info_it->second);
+      pending_session_reporter_info_.erase(pending_session_reporter_info_it);
+      PopulateSessionEnvironment(display_name, remote_display_info,
+                                 std::move(session_reporter_info));
+    }
   }
   session_info_queries_blocking_startup_.erase(display_name);
   HandleSessionInfoQueriesBlockingStartup();
+}
+
+void RemoteDisplaySessionManager::FetchSystemdEnvironmentVariables(
+    const std::string& display_name,
+    const std::string& username) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::FilePath exe_path;
+  if (!base::PathService::Get(base::FILE_EXE, &exe_path)) {
+    LOG(ERROR) << "Failed to get the current executable path.";
+    return;
+  }
+  base::CommandLine command_line(exe_path);
+  command_line.AppendSwitchASCII(kProcessTypeSwitchName,
+                                 kProcessTypeUserSystemdEnv);
+  command_line.AppendSwitchASCII(kSystemdUserEnvUsernameSwitchName, username);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(
+          [](const base::CommandLine& command_line) {
+            std::string output;
+            int exit_code;
+            if (!base::GetAppOutputWithExitCode(command_line, &output,
+                                                &exit_code)) {
+              exit_code = -1;  // Launch failure.
+            }
+            if (exit_code != EXIT_SUCCESS) {
+              LOG(ERROR) << "User systemd environment helper process returned "
+                            "exit code: "
+                         << exit_code;
+              return std::string{};
+            }
+            HOST_LOG << "Successfully fetched systemd environment variable.";
+            return output;
+          },
+          command_line),
+      base::BindOnce(
+          &RemoteDisplaySessionManager::OnGetUserSystemdEnvironmentResult,
+          weak_ptr_factory_.GetWeakPtr(), display_name));
+}
+
+void RemoteDisplaySessionManager::OnGetUserSystemdEnvironmentResult(
+    const std::string& display_name,
+    const std::string& output) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (output.empty()) {
+    // Failed to get environment variables. Logged above.
+    return;
+  }
+
+  auto remote_display_it = remote_displays_.find(display_name);
+  if (remote_display_it == remote_displays_.end()) {
+    LOG(WARNING) << "Remote display " << display_name << " not found.";
+    return;
+  }
+  auto& remote_display_info = remote_display_it->second;
+
+  auto result =
+      base::JSONReader::Read(output, base::JSON_ALLOW_TRAILING_COMMAS);
+  if (!result.has_value() || !result->is_dict()) {
+    LOG(ERROR) << "Failed to parse user systemd environment JSON for display "
+               << display_name;
+    return;
+  }
+
+  for (auto [key, value] : result->GetDict()) {
+    if (!value.is_string()) {
+      LOG(WARNING) << "Non-string value in systemd environment for key: "
+                   << key;
+      continue;
+    }
+    remote_display_info.environment_variables[std::move(key)] =
+        std::move(value).TakeString();
+  }
+
+  delegate_->OnRemoteDisplaySessionChanged(display_name, remote_display_info);
 }
 
 }  // namespace remoting
