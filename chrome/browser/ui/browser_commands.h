@@ -263,7 +263,6 @@ void ShowTabSearch(BrowserWindowInterface* bwi);
 void CloseTabSearch(Browser* browser);
 void ToggleContextualTasksSidePanel(BrowserWindowInterface* browser);
 void ToggleVerticalTabs(Browser* browser);
-void ShowTabDeclutter(Browser* browser);
 bool CanCloseFind(Browser* browser);
 void CloseFind(Browser* browser);
 void Zoom(Browser* browser, content::PageZoom zoom);

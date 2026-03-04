@@ -43,8 +43,7 @@ class TabSearchContainerBrowserTest : public InProcessBrowserTest {
  public:
   TabSearchContainerBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kTabOrganization,
-                              features::kTabstripDeclutter},
+        /*enabled_features=*/{features::kTabOrganization},
         /*disabled_features=*/{features::kGlic});
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
   }
@@ -467,85 +466,6 @@ IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
                 ->expansion_animation()
                 ->GetCurrentValue(),
             expanded_value);
-}
-
-// TODO(crbug.com/414839512): Fix flaky test.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ShowsDeclutterChip DISABLED_ShowsDeclutterChip
-#else
-#define MAYBE_ShowsDeclutterChip ShowsDeclutterChip
-#endif
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       MAYBE_ShowsDeclutterChip) {
-  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
-
-  tab_search_container()->ShowTabOrganization(
-      tab_search_container()->tab_declutter_button());
-
-  ASSERT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-}
-
-// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_ShowsAndHidesDeclutterChip DISABLED_ShowsAndHidesDeclutterChip
-#else
-#define MAYBE_ShowsAndHidesDeclutterChip ShowsAndHidesDeclutterChip
-#endif
-IN_PROC_BROWSER_TEST_F(TabSearchContainerBrowserTest,
-                       MAYBE_ShowsAndHidesDeclutterChip) {
-  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
-
-  tab_search_container()->ShowTabOrganization(
-      tab_search_container()->tab_declutter_button());
-
-  ASSERT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-
-  // Finish showing declutter chip.
-  ResetAnimation(1);
-  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
-
-  // Hide the declutter chip.
-  tab_search_container()->HideTabOrganization(
-      tab_search_container()->tab_declutter_button());
-
-  EXPECT_TRUE(ExpansionAnimationIsClosing());
-}
-
-// TODO(crbug.com/413441658): Flaky on Windows 10 builds.
-#if BUILDFLAG(IS_WIN)
-#define MAYBE_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown \
-  DISABLED_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown
-#else
-#define MAYBE_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown \
-  DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown
-#endif
-IN_PROC_BROWSER_TEST_F(
-    TabSearchContainerBrowserTest,
-    MAYBE_DoesNotShowDeclutterChipWhenAutoTabGroupChipIsShown) {
-  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
-
-  // Show the auto-tab group chip.
-  tab_search_container()->ShowTabOrganization(
-      tab_search_container()->auto_tab_group_button());
-
-  ASSERT_TRUE(tab_search_container()
-                  ->animation_session_for_testing()
-                  ->expansion_animation()
-                  ->IsShowing());
-  ResetAnimation(1);
-  tab_search_container()->GetWidget()->LayoutRootViewIfNecessary();
-
-  // Try to show the declutter chip while auto-tab group chip is already shown.
-  tab_search_container()->ShowTabOrganization(
-      tab_search_container()->tab_declutter_button());
-
-  ASSERT_FALSE(tab_search_container()->animation_session_for_testing());
 }
 
 }  // namespace

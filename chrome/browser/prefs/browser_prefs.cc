@@ -999,6 +999,9 @@ inline constexpr char kTabSearchOpened[] = "tab_search.opened";
 // Deprecated 02/2026.
 constexpr char kTabOrganizationFeature[] = "tab_organization.feature";
 
+// Deprecated 03/2026.
+constexpr char kTabDeclutterUsageCount[] = "tab_declutter.usage_count";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1394,6 +1397,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 02/2026.
   registry->RegisterIntegerPref(kTabOrganizationFeature, 0);
+
+  // Deprecated 03/2026.
+  registry->RegisterIntegerPref(kTabDeclutterUsageCount, 0);
 }
 
 }  // namespace
@@ -2692,6 +2698,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
 
   // Added 02/2026.
   profile_prefs->ClearPref(kTabSearchOpened);
+
+  // Added 03/2026.
+  profile_prefs->ClearPref(kTabDeclutterUsageCount);
 
 #if !BUILDFLAG(IS_ANDROID)
   // Added 02/2026.

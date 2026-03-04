@@ -208,37 +208,6 @@ BASE_FEATURE_PARAM(bool,
                    "trigger_demo_mode",
                    false);
 
-BASE_FEATURE(kTabstripDeclutter, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabstripDeclutterEnabled() {
-  return base::FeatureList::IsEnabled(features::kTabstripDeclutter);
-}
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kTabstripDeclutterStaleThresholdDuration,
-                   &kTabstripDeclutter,
-                   "stale_threshold_duration",
-                   base::Days(7));
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kTabstripDeclutterTimerInterval,
-                   &kTabstripDeclutter,
-                   "declutter_timer_interval",
-                   base::Minutes(10));
-
-BASE_FEATURE_PARAM(base::TimeDelta,
-                   kTabstripDeclutterNudgeTimerInterval,
-                   &kTabstripDeclutter,
-                   "nudge_timer_interval",
-                   base::Minutes(6 * 60));
-
-BASE_FEATURE(kTabstripDedupe, base::FEATURE_DISABLED_BY_DEFAULT);
-
-bool IsTabstripDedupeEnabled() {
-  return IsTabstripDeclutterEnabled() &&
-         base::FeatureList::IsEnabled(features::kTabstripDedupe);
-}
-
 BASE_FEATURE(kTabOrganizationAppMenuItem, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabOrganizationModelStrategy, base::FEATURE_DISABLED_BY_DEFAULT);

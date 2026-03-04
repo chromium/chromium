@@ -9,7 +9,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_observer.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation.h"
@@ -26,10 +25,6 @@ class TabSearchButton;
 class TabStrip;
 class ScopedTabStripModalUI;
 
-namespace tabs {
-class TabDeclutterController;
-}  // namespace tabs
-
 enum class LockedExpansionMode {
   kNone = 0,
   kWillShow,
@@ -39,7 +34,6 @@ enum class LockedExpansionMode {
 class TabSearchContainer : public views::View,
                            public views::AnimationDelegateViews,
                            public TabOrganizationObserver,
-                           public TabDeclutterObserver,
                            public views::MouseWatcherListener {
   METADATA_HEADER(TabSearchContainer, views::View)
 
@@ -102,8 +96,6 @@ class TabSearchContainer : public views::View,
     return auto_tab_group_button_;
   }
 
-  TabStripNudgeButton* tab_declutter_button() { return tab_declutter_button_; }
-
   TabSearchButton* tab_search_button() { return tab_search_button_; }
 
   TabOrganizationAnimationSession* animation_session_for_testing() {
@@ -122,9 +114,6 @@ class TabSearchContainer : public views::View,
   void OnAutoTabGroupButtonClicked();
   void OnAutoTabGroupButtonDismissed();
 
-  void OnTabDeclutterButtonClicked();
-  void OnTabDeclutterButtonDismissed();
-
   void OnOrganizeButtonTimeout(TabStripNudgeButton* button);
 
   // views::MouseWatcherListener:
@@ -138,9 +127,6 @@ class TabSearchContainer : public views::View,
   // TabOrganizationObserver
   void OnToggleActionUIState(const Browser* browser, bool should_show) override;
 
-  // TabDeclutterObserver
-  void OnTriggerDeclutterUIVisibility() override;
-
  private:
   void SetLockedExpansionMode(LockedExpansionMode mode,
                               TabStripNudgeButton* button);
@@ -150,8 +136,6 @@ class TabSearchContainer : public views::View,
   void OnAnimationSessionEnded();
 
   std::unique_ptr<TabStripNudgeButton> CreateAutoTabGroupButton(
-      bool tab_search_before_chips);
-  std::unique_ptr<TabStripNudgeButton> CreateTabDeclutterButton(
       bool tab_search_before_chips);
   void SetupButtonProperties(TabStripNudgeButton* button,
                              bool tab_search_before_chips);
@@ -165,7 +149,6 @@ class TabSearchContainer : public views::View,
   raw_ptr<TabStripNudgeButton> locked_expansion_button_ = nullptr;
   raw_ptr<TabStripNudgeButton, DanglingUntriaged> auto_tab_group_button_ =
       nullptr;
-  raw_ptr<TabStripNudgeButton> tab_declutter_button_ = nullptr;
   raw_ptr<TabSearchButton, DanglingUntriaged> tab_search_button_ = nullptr;
   raw_ptr<TabOrganizationService, DanglingUntriaged> tab_organization_service_ =
       nullptr;
@@ -185,9 +168,6 @@ class TabSearchContainer : public views::View,
 
   base::ScopedObservation<TabOrganizationService, TabOrganizationObserver>
       tab_organization_observation_{this};
-
-  base::ScopedObservation<tabs::TabDeclutterController, TabDeclutterObserver>
-      tab_declutter_observation_{this};
 
   // Prevents other features from showing tabstrip-modal UI.
   std::unique_ptr<ScopedTabStripModalUI> scoped_tab_strip_modal_ui_;

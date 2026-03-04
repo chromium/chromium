@@ -143,7 +143,6 @@ class Mv2DisabledDialogController;
 }  // namespace extensions
 
 namespace tabs {
-class TabDeclutterController;
 class VerticalTabStripStateController;
 }  // namespace tabs
 
@@ -322,10 +321,6 @@ class BrowserWindowFeatures {
 
   lens::LensRegionSearchController* lens_region_search_controller() {
     return lens_region_search_controller_.get();
-  }
-
-  tabs::TabDeclutterController* tab_declutter_controller() {
-    return tab_declutter_controller_.get();
   }
 
   tabs::GlicNudgeController* glic_nudge_controller() {
@@ -575,8 +570,6 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<extensions::Mv2DisabledDialogController>
       mv2_disabled_dialog_controller_;
-
-  std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
 
   std::unique_ptr<tabs::VerticalTabStripStateController>
       vertical_tab_strip_state_controller_;

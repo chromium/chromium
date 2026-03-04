@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -55,9 +54,7 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
     ChromeViewsTestBase::SetUp();
 
     TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kTabOrganization},
-        /*disabled_features=*/{features::kTabstripDeclutter});
+    scoped_feature_list_.InitAndEnableFeature(features::kTabOrganization);
 
     tab_strip_model_ = std::make_unique<TabStripModel>(
         &tab_strip_model_delegate_, profile_.get());
@@ -78,9 +75,6 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
         std::make_unique<FakeBaseTabStripControllerWithBWI>(
             browser_window_interface_.get()),
         std::unique_ptr<NiceMock<TabHoverCardController>>());
-
-    tab_declutter_controller_ = std::make_unique<tabs::TabDeclutterController>(
-        browser_window_interface_.get());
 
     locked_expansion_view_ = std::make_unique<views::View>();
     container_before_tab_strip_ = std::make_unique<TabSearchContainer>(
@@ -109,7 +103,6 @@ class TabSearchContainerTest : public ChromeViewsTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
   ui::UnownedUserDataHost user_data_host_;
   std::unique_ptr<TabStripModel> tab_strip_model_;
-  std::unique_ptr<tabs::TabDeclutterController> tab_declutter_controller_;
   TestTabStripModelDelegate tab_strip_model_delegate_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
   std::unique_ptr<TabStrip> tab_strip_;

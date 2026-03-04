@@ -229,24 +229,6 @@ BASE_DECLARE_FEATURE_PARAM(double, kTabOrganizationTriggerSensitivityThreshold);
 // predictably and frequently.
 BASE_DECLARE_FEATURE_PARAM(bool, KTabOrganizationTriggerDemoMode);
 
-BASE_DECLARE_FEATURE(kTabstripDeclutter);
-bool IsTabstripDeclutterEnabled();
-
-// Duration of inactivity after which a tab is considered stale for declutter.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kTabstripDeclutterStaleThresholdDuration);
-
-// Interval between a recomputation of stale tabs for declutter.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta, kTabstripDeclutterTimerInterval);
-
-// Default interval after showing a nudge to prevent another nudge from being
-// shown for declutter.
-BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
-                           kTabstripDeclutterNudgeTimerInterval);
-
-BASE_DECLARE_FEATURE(kTabstripDedupe);
-bool IsTabstripDedupeEnabled();
-
 BASE_DECLARE_FEATURE(kTabOrganizationAppMenuItem);
 
 BASE_DECLARE_FEATURE(kTabOrganizationModelStrategy);

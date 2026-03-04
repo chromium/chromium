@@ -152,7 +152,6 @@
 #define IDC_SHOW_PAYMENT_METHODS        35042
 #define IDC_SHOW_ADDRESSES              35043
 #define IDC_ORGANIZE_TABS               35044
-#define IDC_DECLUTTER_TABS              35045
 #define IDC_SEND_SHARED_TAB_GROUP_FEEDBACK 35046
 #define IDC_SHOW_IDENTITY_DOCS          35047
 #define IDC_SHOW_TRAVEL                 35048

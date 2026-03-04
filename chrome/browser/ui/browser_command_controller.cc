@@ -878,9 +878,6 @@ bool BrowserCommandController::ExecuteCommandWithDisposition(
     case IDC_ORGANIZE_TABS:
       StartTabOrganizationRequest(browser_);
       break;
-    case IDC_DECLUTTER_TABS:
-      ShowTabDeclutter(browser_);
-      break;
     case IDC_SEND_SHARED_TAB_GROUP_FEEDBACK:
       OpenFeedbackDialog(browser_, feedback::kFeedbackSourceDesktopTabGroups,
                          /*description_template=*/std::string(),
@@ -1544,7 +1541,6 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_EXIT, true);
   command_updater_.UpdateCommandEnabled(IDC_NAME_WINDOW, true);
   command_updater_.UpdateCommandEnabled(IDC_ORGANIZE_TABS, true);
-  command_updater_.UpdateCommandEnabled(IDC_DECLUTTER_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_TOGGLE_VERTICAL_TABS, true);
   command_updater_.UpdateCommandEnabled(IDC_VERTICAL_TABS_SEND_FEEDBACK, true);
 #if BUILDFLAG(IS_CHROMEOS)

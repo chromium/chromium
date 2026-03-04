@@ -25,8 +25,6 @@ extern const char kTabOrganizationShowFRE[];
 
 extern const char kTabOrganizationModelStrategy[];
 
-extern const char kTabDeclutterUsageCount[];
-
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
 tab_search::mojom::TabSearchSection GetTabSearchSectionFromInt(

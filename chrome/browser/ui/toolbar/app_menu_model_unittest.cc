@@ -333,20 +333,6 @@ TEST_F(AppMenuModelTest, OrganizeTabsItem) {
   EXPECT_TRUE(toolModel.IsEnabledAt(organize_tabs_index));
 }
 
-TEST_F(AppMenuModelTest, DeclutterTabsItem) {
-  feature_list_.Reset();
-  feature_list_.InitAndEnableFeature(features::kTabstripDeclutter);
-  TabOrganizationUtils::GetInstance()->SetIgnoreOptGuideForTesting(true);
-  TestLogMetricsAppMenuModel model(this, browser());
-  model.Init();
-  ToolsMenuModel toolModel(&model, browser());
-  size_t declutter_tabs_index =
-      toolModel.GetIndexOfCommandId(IDC_DECLUTTER_TABS).value();
-  EXPECT_TRUE(toolModel.IsEnabledAt(declutter_tabs_index));
-  model.ExecuteCommand(IDC_DECLUTTER_TABS, 0);
-  EXPECT_EQ(1, model.log_metrics_count_);
-}
-
 TEST_F(AppMenuModelTest, GlicItem) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures({features::kGlic, features::kGlicRollout}, {});

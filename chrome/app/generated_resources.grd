@@ -10255,43 +10255,6 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Search tabs
       </message>
 
-      <!-- Strings for tab declutter -->
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE" desc="The tooltip for the Tab Declutter button when dedupe is disabled.">
-        Review inactive tabs?
-      </message>
-      <message name="IDS_TAB_DECLUTTER_NO_DEDUPE" desc="The text label of the Tab Declutter button when dedupe is disabled.">
-        Review inactive tabs?
-      </message>
-      <message name="IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE" desc="The accessible name for the Tab Declutter button when dedupe is disabled." is_accessibility_with_no_ui="true">
-        Review inactive tabs
-      </message>
-      <message name="IDS_TOOLTIP_TAB_DECLUTTER" desc="The tooltip for the Tab Declutter button.">
-        Clean up unused tabs?
-      </message>
-      <message name="IDS_TAB_DECLUTTER" desc="The text label of the Tab Declutter button.">
-        Clean up unused tabs?
-      </message>
-      <message name="IDS_ACCNAME_TAB_DECLUTTER" desc="The accessible name for the Tab Declutter button." is_accessibility_with_no_ui="true">
-        Clean up unused tabs
-      </message>
-      <if expr="use_titlecase">
-        <then>
-          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="In Title Case: The text label for the declutter app menu item when dedupe is disabled.">
-            Review Inactive Tabs
-          </message>
-          <message name="IDS_DECLUTTER_MENU" desc="In Title Case: The text label for the declutter app menu item.">
-            Clean Up Unused Tabs
-          </message>
-        </then>
-        <else>
-          <message name="IDS_DECLUTTER_MENU_NO_DEDUPE" desc="The text label for the declutter app menu item when dedupe is disabled.">
-            Review inactive tabs
-          </message>
-          <message name="IDS_DECLUTTER_MENU" desc="The text label for the declutter app menu item.">
-            Clean up unused tabs
-          </message>
-        </else>
-      </if>
       <!-- Strings for tab organization -->
       <message name="IDS_TOOLTIP_TAB_ORGANIZE" desc="The tooltip for the Tab Organization button.">
         Organize tabs?

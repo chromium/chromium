@@ -2069,12 +2069,6 @@ void MaybeRegisterChromeNewBadges(user_education::NewBadgeRegistry& registry) {
                                "Shown in the autofill popup for suggestions to "
                                "create a new plus address.")));
 
-  registry.RegisterFeature(user_education::NewBadgeSpecification(
-      features::kTabstripDeclutter,
-      user_education::Metadata(
-          132, "emshack@chromium.org",
-          "Shown in app menu when Tab Declutter menu item is enabled.")));
-
   // This is a custom UI new badge that uses a small help bubble to annotate the
   // element instead of a badge.
   registry.RegisterFeature(user_education::NewBadgeSpecification(

@@ -720,11 +720,6 @@ void HorizontalTabStripRegionView::UpdateButtonBorders() {
       UpdateBorderInsetsIfNeeded(tab_search_container_->auto_tab_group_button(),
                                  border_insets);
     }
-
-    if (tab_search_container_->tab_declutter_button()) {
-      UpdateBorderInsetsIfNeeded(tab_search_container_->tab_declutter_button(),
-                                 border_insets);
-    }
   }
 }
 

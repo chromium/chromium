@@ -2219,11 +2219,6 @@ void ToggleVerticalTabs(Browser* browser) {
   controller->SetVerticalTabsEnabled(!controller->ShouldDisplayVerticalTabs());
 }
 
-void ShowTabDeclutter(Browser* browser) {
-  browser->window()->CreateTabSearchBubble(
-      tab_search::mojom::TabSearchSection::kOrganize);
-}
-
 bool CanCloseFind(Browser* browser) {
   WebContents* current_tab = browser->tab_strip_model()->GetActiveWebContents();
   if (!current_tab) {

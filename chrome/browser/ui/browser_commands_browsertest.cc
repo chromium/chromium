@@ -51,7 +51,6 @@ class BrowserCommandsTest : public InProcessBrowserTest {
     feature_list_.InitWithFeatures(
         {
             features::kTabOrganization,
-            features::kTabstripDeclutter,
             toast_features::kReadingListToast,
             toast_features::kLinkCopiedToast,
         },
@@ -702,17 +701,6 @@ IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, StartsOrganizationRequest) {
 
   EXPECT_EQ(TabOrganizationRequest::State::NOT_STARTED,
             session->request()->state());
-}
-
-IN_PROC_BROWSER_TEST_F(BrowserCommandsTest, ShowsDeclutter) {
-  TabSearchBubbleHost* tab_search_bubble_host =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->GetTabSearchBubbleHost();
-  EXPECT_FALSE(tab_search_bubble_host->bubble_created_time_for_testing());
-
-  chrome::ExecuteCommand(browser(), IDC_DECLUTTER_TABS);
-
-  EXPECT_TRUE(tab_search_bubble_host->bubble_created_time_for_testing());
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserCommandsTest,

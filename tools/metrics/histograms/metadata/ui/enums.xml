@@ -1146,7 +1146,7 @@ chromium-metrics-reviews@google.com.
   <int value="90" label="Show Lens overlay"/>
   <int value="91" label="Open extension settings (Safety Hub)"/>
   <int value="92" label="Show customize chrome side panel"/>
-  <int value="93" label="Show tab search declutter page"/>
+  <int value="93" label="Show tab search declutter page (Deprecated)"/>
   <int value="94" label="Open glic"/>
   <int value="95" label="Find Extensions"/>
   <int value="96" label="Show signin page"/>

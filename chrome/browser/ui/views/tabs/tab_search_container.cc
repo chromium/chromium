@@ -16,7 +16,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
@@ -239,19 +238,6 @@ TabSearchContainer::TabSearchContainer(bool tab_search_before_chips,
 
   SetupButtonProperties(auto_tab_group_button_, tab_search_before_chips);
 
-  // `tab_declutter_controller` will be null for some profile types and if
-  // feature is not enabled.
-  tabs::TabDeclutterController* tab_declutter_controller =
-      browser_window_interface_->GetFeatures().tab_declutter_controller();
-  if (tab_declutter_controller) {
-    tab_declutter_button_ = AddChildViewAt(
-        CreateTabDeclutterButton(tab_search_before_chips), index);
-
-    SetupButtonProperties(tab_declutter_button_, tab_search_before_chips);
-
-    tab_declutter_observation_.Observe(tab_declutter_controller);
-  }
-
   SetLayoutManager(std::make_unique<views::FlexLayout>());
 }
 
@@ -301,24 +287,6 @@ void TabSearchContainer::OnAutoTabGroupButtonDismissed() {
   ExecuteHideTabOrganization(auto_tab_group_button_);
 }
 
-void TabSearchContainer::OnTabDeclutterButtonClicked() {
-  BrowserView::GetBrowserViewForBrowser(browser_window_interface_)
-      ->CreateTabSearchBubble(tab_search::mojom::TabSearchSection::kOrganize);
-
-  // Force hide the button when pressed, bypassing locked expansion mode.
-  ExecuteHideTabOrganization(tab_declutter_button_);
-}
-
-void TabSearchContainer::OnTabDeclutterButtonDismissed() {
-  tabs::TabDeclutterController* const tab_declutter_controller =
-      browser_window_interface_->GetFeatures().tab_declutter_controller();
-  tab_declutter_controller->OnActionUIDismissed(
-      base::PassKey<TabSearchContainer>());
-
-  // Force hide the button when pressed, bypassing locked expansion mode.
-  ExecuteHideTabOrganization(tab_declutter_button_);
-}
-
 void TabSearchContainer::OnOrganizeButtonTimeout(TabStripNudgeButton* button) {
   // Hide the button if not pressed. Use locked expansion mode to avoid
   // disrupting the user.
@@ -355,17 +323,6 @@ void TabSearchContainer::OnToggleActionUIState(const Browser* browser,
   } else {
     HideTabOrganization(auto_tab_group_button_);
   }
-}
-
-void TabSearchContainer::OnTriggerDeclutterUIVisibility() {
-  tabs::TabDeclutterController* const tab_declutter_controller =
-      browser_window_interface_->GetFeatures().tab_declutter_controller();
-  CHECK(tab_declutter_controller);
-  if (locked_expansion_mode_ != LockedExpansionMode::kNone) {
-    return;
-  }
-
-  ShowTabOrganization(tab_declutter_button_);
 }
 
 void TabSearchContainer::SetLockedExpansionMode(LockedExpansionMode mode,
@@ -465,34 +422,6 @@ TabSearchContainer::CreateAutoTabGroupButton(bool tab_search_before_chips) {
   button->SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_ORGANIZE));
   button->GetViewAccessibility().SetName(
       l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_ORGANIZE));
-  button->SetProperty(views::kCrossAxisAlignmentKey,
-                      views::LayoutAlignment::kCenter);
-  return button;
-}
-
-std::unique_ptr<TabStripNudgeButton>
-TabSearchContainer::CreateTabDeclutterButton(bool tab_search_before_chips) {
-  auto button = std::make_unique<TabStripNudgeButton>(
-      browser_window_interface_,
-      base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonClicked,
-                          base::Unretained(this)),
-      base::BindRepeating(&TabSearchContainer::OnTabDeclutterButtonDismissed,
-                          base::Unretained(this)),
-      features::IsTabstripDedupeEnabled()
-          ? l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER)
-          : l10n_util::GetStringUTF16(IDS_TAB_DECLUTTER_NO_DEDUPE),
-      kTabDeclutterButtonElementId, GetFlatEdge(false, tab_search_before_chips),
-      gfx::VectorIcon::EmptyIcon(), /*show_close_button=*/true);
-
-  button->SetTooltipText(
-      features::IsTabstripDedupeEnabled()
-          ? l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER)
-          : l10n_util::GetStringUTF16(IDS_TOOLTIP_TAB_DECLUTTER_NO_DEDUPE));
-  button->GetViewAccessibility().SetName(
-      features::IsTabstripDedupeEnabled()
-          ? l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER)
-          : l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_DECLUTTER_NO_DEDUPE));
-
   button->SetProperty(views::kCrossAxisAlignmentKey,
                       views::LayoutAlignment::kCenter);
   return button;

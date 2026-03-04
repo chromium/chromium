@@ -73,7 +73,6 @@
 #include "chrome/browser/ui/startup/default_browser_prompt/default_browser_prompt_manager.h"
 #include "chrome/browser/ui/tab_search_feature.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
 #include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
@@ -987,8 +986,8 @@ ToolsMenuModel::~ToolsMenuModel() = default;
 // - Developer tools.
 // - Option to enable profiling.
 void ToolsMenuModel::Build(Browser* browser) {
-  // Tablet mode does not have a Tab Search button, so tab organization and
-  // declutter are unavailable. We should not show tablet mode users these menu
+  // Tablet mode does not have a Tab Search button, so tab organization is
+  // unavailable. We should not show tablet mode users these menu
   // items.
   bool is_tablet_mode = false;
 #if BUILDFLAG(IS_CHROMEOS)
@@ -1012,19 +1011,6 @@ void ToolsMenuModel::Build(Browser* browser) {
         AddItemWithStringIdAndVectorIcon(
             this, IDC_ORGANIZE_TABS, IDS_TAB_ORGANIZE_MENU, kAutoTabGroupsIcon);
       }
-    }
-
-    if (base::FeatureList::IsEnabled(features::kTabstripDeclutter) &&
-        !browser->profile()->IsIncognitoProfile()) {
-      AddItemWithStringIdAndVectorIcon(this, IDC_DECLUTTER_TABS,
-                                       features::IsTabstripDedupeEnabled()
-                                           ? IDS_DECLUTTER_MENU
-                                           : IDS_DECLUTTER_MENU_NO_DEDUPE,
-                                       kTabCloseInactiveIcon);
-      SetIsNewFeatureAt(
-          GetIndexOfCommandId(IDC_DECLUTTER_TABS).value(),
-          BrowserUserEducationInterface::From(browser)->MaybeShowNewBadgeFor(
-              features::kTabstripDeclutter));
     }
   }
 
@@ -1854,14 +1840,6 @@ void AppMenuModel::LogMenuMetrics(int command_id) {
             delta);
       }
       LogMenuAction(MENU_ACTION_SHOW_SAFETY_HUB);
-      break;
-    case IDC_DECLUTTER_TABS:
-      if (!uma_action_recorded_) {
-        base::UmaHistogramMediumTimes("WrenchMenu.TimeToAction.DeclutterTabs",
-                                      delta);
-      }
-
-      LogMenuAction(MENU_ACTION_DECLUTTER_TABS);
       break;
     case IDC_SAFETY_HUB_MANAGE_EXTENSIONS:
       if (!uma_action_recorded_) {

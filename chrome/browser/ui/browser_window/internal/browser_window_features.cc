@@ -71,7 +71,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 #include "chrome/browser/ui/tabs/glic_actor_nudge_controller.h"
 #include "chrome/browser/ui/tabs/glic_nudge_controller.h"
-#include "chrome/browser/ui/tabs/organization/tab_declutter_controller.h"
 #include "chrome/browser/ui/tabs/projects/projects_panel_state_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/most_recent_shared_tab_update_store.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -291,12 +290,6 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
       most_recent_shared_tab_update_store_ =
           std::make_unique<tab_groups::MostRecentSharedTabUpdateStore>(browser);
-    }
-
-    if (features::IsTabstripDeclutterEnabled() &&
-        (profile->IsRegularProfile() || profile->IsGuestSession())) {
-      tab_declutter_controller_ =
-          std::make_unique<tabs::TabDeclutterController>(browser);
     }
 
     if (glic::GlicEnabling::IsProfileEligible(profile)) {
