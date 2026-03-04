@@ -8,6 +8,7 @@
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/android/resource_mapper.h"
+#include "chrome/browser/android/tab_android.h"
 #include "components/infobars/android/infobar_android.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -17,15 +18,14 @@
 // Must come after all headers that specialize FromJniType() / ToJniType().
 #include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
 
+using base::android::AttachCurrentThread;
 using base::android::JavaRef;
+using base::android::ScopedJavaLocalRef;
 
 // InfoBarContainerAndroid ----------------------------------------------------
 
-InfoBarContainerAndroid::InfoBarContainerAndroid(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj)
-    : infobars::InfoBarContainer(NULL),
-      weak_java_infobar_container_(env, obj) {}
+InfoBarContainerAndroid::InfoBarContainerAndroid(TabAndroid* tab)
+    : infobars::InfoBarContainer(nullptr), tab_(tab) {}
 
 InfoBarContainerAndroid::~InfoBarContainerAndroid() {
   RemoveAllInfoBarsForDestruction();
@@ -33,11 +33,10 @@ InfoBarContainerAndroid::~InfoBarContainerAndroid() {
 
 void InfoBarContainerAndroid::SetWebContents(
     JNIEnv* env,
-    const JavaRef<jobject>& web_contents) {
+    content::WebContents* web_contents) {
   infobars::ContentInfoBarManager* infobar_manager =
       web_contents
-          ? infobars::ContentInfoBarManager::FromWebContents(
-                content::WebContents::FromJavaWebContents(web_contents))
+          ? infobars::ContentInfoBarManager::FromWebContents(web_contents)
           : nullptr;
   ChangeInfoBarManager(infobar_manager);
 }
@@ -58,16 +57,15 @@ void InfoBarContainerAndroid::PlatformSpecificAddInfoBar(
   if (android_bar->HasSetJavaInfoBar()) {
     return;
   }
-  JNIEnv* env = base::android::AttachCurrentThread();
+  JNIEnv* env = AttachCurrentThread();
 
-  if (Java_InfoBarContainer_hasInfoBars(
-          env, weak_java_infobar_container_.get(env))) {
+  ScopedJavaLocalRef<jobject> java_container = GetJavaObject(env);
+  if (Java_InfoBarContainer_hasInfoBars(env, java_container)) {
     base::UmaHistogramSparse("InfoBar.Shown.Hidden",
                              android_bar->delegate()->GetIdentifier());
     infobars::InfoBarDelegate::InfoBarIdentifier identifier =
         static_cast<infobars::InfoBarDelegate::InfoBarIdentifier>(
-            Java_InfoBarContainer_getTopInfoBarIdentifier(
-                env, weak_java_infobar_container_.get(env)));
+            Java_InfoBarContainer_getTopInfoBarIdentifier(env, java_container));
     if (identifier != infobars::InfoBarDelegate::InfoBarIdentifier::INVALID) {
       base::UmaHistogramSparse("InfoBar.Shown.Hiding", identifier);
     }
@@ -76,12 +74,10 @@ void InfoBarContainerAndroid::PlatformSpecificAddInfoBar(
                              android_bar->delegate()->GetIdentifier());
   }
 
-  base::android::ScopedJavaLocalRef<jobject> java_infobar =
-      android_bar->CreateRenderInfoBar(
-          env, base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
+  ScopedJavaLocalRef<jobject> java_infobar = android_bar->CreateRenderInfoBar(
+      env, base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
   android_bar->SetJavaInfoBar(java_infobar);
-  Java_InfoBarContainer_addInfoBar(env, weak_java_infobar_container_.get(env),
-                                   java_infobar);
+  Java_InfoBarContainer_addInfoBar(env, java_container, java_infobar);
 }
 
 void InfoBarContainerAndroid::PlatformSpecificReplaceInfoBar(
@@ -98,13 +94,18 @@ void InfoBarContainerAndroid::PlatformSpecificRemoveInfoBar(
   android_infobar->CloseJavaInfoBar();
 }
 
+ScopedJavaLocalRef<jobject> InfoBarContainerAndroid::GetJavaObject(
+    JNIEnv* env) {
+  ScopedJavaLocalRef<jobject> java_container =
+      Java_InfoBarContainer_getFromTab(env, tab_.get());
+  CHECK(java_container);
+  return java_container;
+}
+
 // Native JNI methods ---------------------------------------------------------
 
-static int64_t JNI_InfoBarContainer_Init(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj) {
-  InfoBarContainerAndroid* infobar_container =
-      new InfoBarContainerAndroid(env, obj);
+static int64_t JNI_InfoBarContainer_Init(JNIEnv* env, TabAndroid* tab) {
+  InfoBarContainerAndroid* infobar_container = new InfoBarContainerAndroid(tab);
   return reinterpret_cast<intptr_t>(infobar_container);
 }
 

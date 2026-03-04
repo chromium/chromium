@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import static org.chromium.build.NullUtil.assertNonNull;
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -267,7 +269,7 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
 
         // Chromium's InfoBarContainer may add an InfoBar immediately during this initialization
         // call, so make sure everything in the InfoBarContainer is completely ready beforehand.
-        mNativeInfoBarContainer = InfoBarContainerJni.get().init(this);
+        mNativeInfoBarContainer = InfoBarContainerJni.get().init(tab);
     }
 
     private static @Nullable Activity getActivity(Tab tab) {
@@ -598,11 +600,18 @@ public class InfoBarContainer implements UserData, KeyboardVisibilityListener, I
         return mInfoBarContainerView;
     }
 
+    @CalledByNative
+    private static InfoBarContainer getFromTab(@JniType("TabAndroid*") Tab tab) {
+        return assertNonNull(get(tab));
+    }
+
     @NativeMethods
     interface Natives {
-        long init(InfoBarContainer self);
+        long init(@JniType("TabAndroid*") Tab tab);
 
-        void setWebContents(long nativeInfoBarContainerAndroid, @Nullable WebContents webContents);
+        void setWebContents(
+                long nativeInfoBarContainerAndroid,
+                @Nullable @JniType("content::WebContents*") WebContents webContents);
 
         void destroy(long nativeInfoBarContainerAndroid);
     }

@@ -7,25 +7,24 @@
 
 #include <stddef.h>
 
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/infobars/core/infobar_container.h"
 
+class TabAndroid;
+
+namespace content {
+class WebContents;
+}  // namespace content
+
 class InfoBarContainerAndroid : public infobars::InfoBarContainer {
  public:
-  InfoBarContainerAndroid(JNIEnv* env,
-                          const jni_zero::JavaRef<jobject>& infobar_container);
+  explicit InfoBarContainerAndroid(TabAndroid* tab);
 
   InfoBarContainerAndroid(const InfoBarContainerAndroid&) = delete;
   InfoBarContainerAndroid& operator=(const InfoBarContainerAndroid&) = delete;
 
-  void SetWebContents(JNIEnv* env,
-                      const base::android::JavaRef<jobject>& web_contents);
+  void SetWebContents(JNIEnv* env, content::WebContents* web_contents);
   void Destroy(JNIEnv* env);
-
-  JavaObjectWeakGlobalRef java_container() const {
-    return weak_java_infobar_container_;
-  }
 
  private:
   ~InfoBarContainerAndroid() override;
@@ -37,9 +36,9 @@ class InfoBarContainerAndroid : public infobars::InfoBarContainer {
   void PlatformSpecificReplaceInfoBar(infobars::InfoBar* old_infobar,
                                       infobars::InfoBar* new_infobar) override;
 
-  // We're owned by the java infobar, need to use a weak ref so it can destroy
-  // us.
-  JavaObjectWeakGlobalRef weak_java_infobar_container_;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
+
+  raw_ptr<TabAndroid> tab_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_INFOBARS_INFOBAR_CONTAINER_ANDROID_H_
