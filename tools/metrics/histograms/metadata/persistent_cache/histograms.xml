@@ -54,7 +54,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="PersistentCache.BackendInitialize.{Mode}.{Client}"
     units="microseconds" expires_after="2026-08-09">
-  <owner>olivierli@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Time it took to initialize a backend for the {Client} in {Mode} mode.
@@ -64,13 +64,11 @@ chromium-metrics-reviews@google.com.
     which means measurments are biased against a portion of the population on
     Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
-  <token key="Client" variants="Client"/>
-  <token key="Mode" variants="Mode"/>
 </histogram>
 
 <histogram name="PersistentCache.Find.{Mode}.{Client}" units="microseconds"
     expires_after="2026-07-02">
-  <owner>olivierli@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Time it took to attempt to find an entry for the {Client} in {Mode} mode.
@@ -80,13 +78,11 @@ chromium-metrics-reviews@google.com.
     which means measurments are biased against a portion of the population on
     Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
-  <token key="Client" variants="Client"/>
-  <token key="Mode" variants="Mode"/>
 </histogram>
 
 <histogram name="PersistentCache.Insert.{Client}" units="microseconds"
     expires_after="2026-07-02">
-  <owner>olivierli@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     Time it took to attempt to insert an entry for the {Client}. Recorded for
@@ -96,7 +92,16 @@ chromium-metrics-reviews@google.com.
     which means measurments are biased against a portion of the population on
     Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
   </summary>
-  <token key="Client" variants="Client"/>
+</histogram>
+
+<histogram name="PersistentCache.InsertSize.{Client}" units="bytes"
+    expires_after="2026-12-16">
+  <owner>grt@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Number of bytes in an entry inserted for the {Client}. Recorded for one out
+    of every 100 successfull operations.
+  </summary>
 </histogram>
 
 <histogram name="SandboxedVfs.LockResult.{VfsClient}" enum="PlatformFileError"
@@ -107,12 +112,11 @@ chromium-metrics-reviews@google.com.
     Reports the result of locking a sandboxed SQLite file set's primary database
     file when opened for use by only a single connection for the {VfsClient}.
   </summary>
-  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
 <histogram name="SandboxedVfs.LockStateOnAbandon.{VfsClient}" enum="LockState"
     expires_after="2026-11-04">
-  <owner>olivierli@chromium.org</owner>
+  <owner>grt@chromium.org</owner>
   <owner>catan-team@chromium.org</owner>
   <summary>
     The state of the shared atomic lock at the moment a sandboxed SQLite file
@@ -121,7 +125,6 @@ chromium-metrics-reviews@google.com.
     be a common case and this metric should be monitored as such. Logged each
     time a file is abandoned.
   </summary>
-  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
 <histogram name="SandboxedVfs.{FileType}.{Operation}.{VfsClient}"
@@ -132,13 +135,11 @@ chromium-metrics-reviews@google.com.
     Reports the result of {Operation} a sandboxed SQLite file set's {FileType}
     for the {VfsClient}.
   </summary>
-  <token key="FileType" variants="FileType"/>
   <token key="Operation">
     <variant name="CreateResult" summary="creating or opening"/>
     <variant name="DeleteResult" summary="deleting"/>
     <variant name="SetLengthResult" summary="truncating"/>
   </token>
-  <token key="VfsClient" variants="VfsClient"/>
 </histogram>
 
 </histograms>

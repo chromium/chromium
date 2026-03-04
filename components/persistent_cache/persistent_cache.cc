@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/types/expected.h"
@@ -71,6 +72,11 @@ base::expected<void, TransactionError> PersistentCache::Insert(
   if (timer.has_value()) {
     base::UmaHistogramMicrosecondsTimes(GetHistogramName(client_, "Insert"),
                                         timer->Elapsed());
+
+    if (result.has_value()) {
+      base::UmaHistogramCounts10M(GetHistogramName(client_, "InsertSize"),
+                                  base::saturated_cast<int>(content.size()));
+    }
   }
 
   return result;
