@@ -36,6 +36,7 @@ android_library("java") {
     "//build/android:build_java",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/browser_controls/android:java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -96,6 +97,7 @@ android_resources("java_resources") {
   sources = [
     "java/res/drawable/actor_overlay_background.xml",
     "java/res/layout/actor_control_layout.xml",
+    "java/res/layout/actor_gts_tab_indicator.xml",
     "java/res/layout/actor_overlay.xml",
   ]
   deps = [

@@ -30,6 +30,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.tab.MediaState;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData.PriceDrop;
@@ -245,6 +247,13 @@ class TabGridViewBinder {
         } else if (TabProperties.TAB_CONTEXT_CLICK_LISTENER == propertyKey) {
             setNullableContextClickListener(
                     model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER), view, model);
+        } else if (TabProperties.ACTOR_UI_STATE == propertyKey) {
+            UiTabState state = model.get(TabProperties.ACTOR_UI_STATE);
+            boolean shouldBeVisible =
+                    state != null
+                            && (state.tabIndicator == TabIndicatorStatus.DYNAMIC
+                                    || state.tabIndicator == TabIndicatorStatus.STATIC);
+            ((TabGridView) view).setActorActiveUiVisible(shouldBeVisible);
         }
     }
 

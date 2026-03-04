@@ -1317,6 +1317,7 @@ if (is_android) {
       "//base:base_junit_test_support",
       "//base:holder_java",
       "//chrome/android:chrome_java",
+      "//chrome/browser/actor/android:java",
       "//chrome/browser/settings:search_java",
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group_suggestion:java",

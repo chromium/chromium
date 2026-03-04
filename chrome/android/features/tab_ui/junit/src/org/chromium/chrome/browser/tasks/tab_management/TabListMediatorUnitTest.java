@@ -25,6 +25,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
@@ -107,6 +108,11 @@ import org.chromium.base.test.RobolectricUtil;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.build.BuildConfig;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -227,6 +233,7 @@ import java.util.function.Supplier;
 @DisableFeatures({
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.DATA_SHARING_JOIN_ONLY,
+    ChromeFeatureList.GLIC
 })
 public class TabListMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.LENIENT);
@@ -367,6 +374,9 @@ public class TabListMediatorUnitTest {
     @Mock DataSharingService mDataSharingService;
     @Mock CollaborationService mCollaborationService;
     @Mock ServiceStatus mServiceStatus;
+    @Mock ActorUiTabController mActorUiTabController;
+    @Mock ActorOverlayState mActorOverlayState;
+    @Mock HandoffButtonState mHandoffButtonState;
     @Mock UndoBarExplicitTrigger mUndoBarExplicitTrigger;
 
     @Captor ArgumentCaptor<TabModelObserver> mTabModelObserverCaptor;
@@ -548,6 +558,19 @@ public class TabListMediatorUnitTest {
                         })
                 .when(mTabGroupModelFilter)
                 .setTabGroupTitle(any(), anyString());
+    }
+
+    private void setUpActorState(Tab tab, @TabIndicatorStatus int status) {
+        UiTabState state =
+                new UiTabState(
+                        tab.getId(),
+                        mActorOverlayState,
+                        mHandoffButtonState,
+                        status,
+                        tab.isIncognito());
+
+        when(mActorUiTabController.getUiTabState()).thenReturn(state);
+        tab.getUserDataHost().setUserData(ActorUiTabController.class, mActorUiTabController);
     }
 
     @Test
@@ -5604,6 +5627,110 @@ public class TabListMediatorUnitTest {
 
         mMediator.setTabActionState(TabActionState.SELECTABLE);
         assertNull(mModelList.get(0).model.get(TabProperties.TAB_CONTEXT_CLICK_LISTENER));
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_InitialSet() {
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        PropertyModel model = mModelList.get(0).model;
+        UiTabState state = model.get(TabProperties.ACTOR_UI_STATE);
+        assertNotNull(state);
+        assertEquals(TabIndicatorStatus.DYNAMIC, state.tabIndicator);
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_ObserverUpdatesModel() {
+        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        PropertyModel model = mModelList.get(0).model;
+
+        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
+                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
+        verify(mActorUiTabController).addObserver(observerCaptor.capture());
+
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        UiTabState newState =
+                new UiTabState(TAB1_ID, null, null, TabIndicatorStatus.DYNAMIC, false);
+        observerCaptor.getValue().onUiTabStateChanged(newState);
+        assertEquals(
+                TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_ObserverRemovedOnReset() {
+        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        verify(mActorUiTabController, atLeastOnce()).addObserver(any());
+
+        doReturn(mTabModel).when(mTabGroupModelFilter).getTabModel();
+        when(mTabModel.iterator()).thenAnswer(inv -> List.of(mTab1).iterator());
+
+        mMediator.resetWithListOfTabs(null, null, false);
+        verify(mActorUiTabController, atLeastOnce()).removeObserver(any());
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_NewTabAdded() {
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+
+        Tab newTab = prepareTab(TAB3_ID, TAB3_TITLE, TAB3_URL);
+        setUpActorState(newTab, TabIndicatorStatus.STATIC);
+
+        doReturn(3).when(mTabGroupModelFilter).getIndividualTabAndGroupCount();
+        doReturn(newTab).when(mTabGroupModelFilter).getRepresentativeTabAt(2);
+        doReturn(Arrays.asList(newTab)).when(mTabGroupModelFilter).getRelatedTabList(TAB3_ID);
+
+        mTabModelObserverCaptor
+                .getValue()
+                .didAddTab(
+                        newTab,
+                        TabLaunchType.FROM_CHROME_UI,
+                        TabCreationState.LIVE_IN_FOREGROUND,
+                        false);
+
+        int index = mModelList.indexFromTabId(TAB3_ID);
+        assertNotEquals(TabModel.INVALID_TAB_INDEX, index);
+
+        PropertyModel newModel = mModelList.get(index).model;
+        assertEquals(
+                TabIndicatorStatus.STATIC, newModel.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
+
+        verify(mActorUiTabController).addObserver(any());
+    }
+
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    @Test
+    public void testActorUiState_ObserverUpdatesToNone() {
+        setUpActorState(mTab1, TabIndicatorStatus.DYNAMIC);
+        mMediator.resetWithListOfTabs(List.of(mTab1), null, false);
+        PropertyModel model = mModelList.get(0).model;
+
+        assertNotNull(model.get(TabProperties.ACTOR_UI_STATE));
+        assertEquals(
+                TabIndicatorStatus.DYNAMIC, model.get(TabProperties.ACTOR_UI_STATE).tabIndicator);
+        ArgumentCaptor<ActorUiTabController.Observer> observerCaptor =
+                ArgumentCaptor.forClass(ActorUiTabController.Observer.class);
+        verify(mActorUiTabController).addObserver(observerCaptor.capture());
+
+        setUpActorState(mTab1, TabIndicatorStatus.NONE);
+        UiTabState finishedState =
+                new UiTabState(
+                        TAB1_ID,
+                        mActorOverlayState,
+                        mHandoffButtonState,
+                        TabIndicatorStatus.NONE,
+                        false);
+        observerCaptor.getValue().onUiTabStateChanged(finishedState);
+        assertNull(model.get(TabProperties.ACTOR_UI_STATE));
     }
 
     private void setUpTabGroupCardDescriptionString() {

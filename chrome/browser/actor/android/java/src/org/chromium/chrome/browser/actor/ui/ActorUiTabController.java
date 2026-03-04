@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.actor.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -12,7 +16,9 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.UserData;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabId;
 
 /** Java-side representation of the C++ ActorUiTabControllerAndroid. */
 @JNINamespace("actor::ui")
@@ -22,6 +28,7 @@ public class ActorUiTabController implements UserData {
 
     /** Represents visual state of the tab's actor components. */
     public static class UiTabState {
+        public final @TabId int tabId;
         public final ActorOverlayState actorOverlay;
         public final HandoffButtonState handoffButton;
         public final @TabIndicatorStatus int tabIndicator;
@@ -30,16 +37,20 @@ public class ActorUiTabController implements UserData {
         /**
          * Constructor for UiTabState.
          *
+         * @param tabId The tab Id.
          * @param actorOverlay The overlay configuration.
          * @param handoffButton The handoff button configuration.
          * @param tabIndicator The current {@link TabIndicatorStatus}.
          * @param borderGlowVisible Whether the glow effect is active.
          */
-        UiTabState(
+        @VisibleForTesting
+        public UiTabState(
+                @TabId int tabId,
                 ActorOverlayState actorOverlay,
                 HandoffButtonState handoffButton,
                 @TabIndicatorStatus int tabIndicator,
                 boolean borderGlowVisible) {
+            this.tabId = tabId;
             this.actorOverlay = actorOverlay;
             this.handoffButton = handoffButton;
             this.tabIndicator = tabIndicator;
@@ -60,7 +71,8 @@ public class ActorUiTabController implements UserData {
          * @param borderGlowVisible True if the boundary glow is active.
          * @param mouseDown True if a click is currently being simulated.
          */
-        ActorOverlayState(boolean isActive, boolean borderGlowVisible, boolean mouseDown) {
+        @VisibleForTesting
+        public ActorOverlayState(boolean isActive, boolean borderGlowVisible, boolean mouseDown) {
             this.isActive = isActive;
             this.borderGlowVisible = borderGlowVisible;
             this.mouseDown = mouseDown;
@@ -85,7 +97,8 @@ public class ActorUiTabController implements UserData {
          * @param isActive True if the handoff button should be visible.
          * @param controller The current {@link ControlOwnership} value.
          */
-        HandoffButtonState(boolean isActive, @ControlOwnership int controller) {
+        @VisibleForTesting
+        public HandoffButtonState(boolean isActive, @ControlOwnership int controller) {
             this.isActive = isActive;
             this.controller = controller;
         }
@@ -102,7 +115,9 @@ public class ActorUiTabController implements UserData {
     private @Nullable UiTabState mCurrentState;
 
     /** Returns the controller for a given tab, creating it if necessary. */
-    public static ActorUiTabController from(Tab tab) {
+    public static @Nullable ActorUiTabController from(Tab tab) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.GLIC)) return null;
+
         ActorUiTabController controller = tab.getUserDataHost().getUserData(USER_DATA_KEY);
         if (controller == null) {
             controller = new ActorUiTabController(tab);
@@ -136,7 +151,7 @@ public class ActorUiTabController implements UserData {
     }
 
     /** Returns the most recent UI state snapshot for this tab. */
-    public @Nullable UiTabState getTabUiState() {
+    public @Nullable UiTabState getUiTabState() {
         return mCurrentState;
     }
 
@@ -154,9 +169,10 @@ public class ActorUiTabController implements UserData {
             return false;
         }
 
-        from(tab)
+        assumeNonNull(from(tab))
                 .onUiTabStateChange(
                         new UiTabState(
+                                tab.getId(),
                                 new ActorOverlayState(overlayActive, overlayGlow, overlayClick),
                                 new HandoffButtonState(handoffActive, handoffOwner),
                                 indicator,
@@ -174,7 +190,9 @@ public class ActorUiTabController implements UserData {
 
     @Override
     public void destroy() {
-        mTab.getUserDataHost().removeUserData(USER_DATA_KEY);
+        if (mTab.getUserDataHost().getUserData(ActorUiTabController.class) != null) {
+            mTab.getUserDataHost().removeUserData(ActorUiTabController.class);
+        }
         mObservers.clear();
     }
 

@@ -14,6 +14,7 @@ import android.view.View.AccessibilityDelegate;
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.tab_ui.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabListMediator.ShoppingPersistedTabDataFetcher;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
@@ -206,6 +207,10 @@ public class TabProperties {
     /** The {@link org.chromium.chrome.browser.tab.TabImpl.MediaState} indicator of the tab. */
     public static final WritableIntPropertyKey MEDIA_INDICATOR = new WritableIntPropertyKey();
 
+    /** The {@link ActorUiTabController.UiTabState} indicator of the tab. */
+    public static final WritableObjectPropertyKey<UiTabState> ACTOR_UI_STATE =
+            new WritableObjectPropertyKey<>();
+
     private static final PropertyKey[] COMMON_KEYS_TAB_AND_GROUP_GRID =
             new PropertyKey[] {
                 IS_INCOGNITO,
@@ -233,6 +238,7 @@ public class TabProperties {
                 TAB_GROUP_CARD_COLOR,
                 VISIBILITY,
                 USE_SHRINK_CLOSE_ANIMATION,
+                ACTOR_UI_STATE
             };
 
     // TAB_ACTION_STATE must always be the first property as keys are iterated in order. TAB_ID must

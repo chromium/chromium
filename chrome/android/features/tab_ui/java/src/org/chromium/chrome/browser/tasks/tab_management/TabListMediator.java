@@ -58,6 +58,9 @@ import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
+import org.chromium.chrome.browser.actor.ui.TabIndicatorStatus;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingServiceFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingTabManager;
@@ -371,6 +374,29 @@ class TabListMediator implements TabListNotificationHandler {
     private View.AccessibilityDelegate mAccessibilityDelegate;
     private int mCurrentSpanCount;
     private @Nullable OnLongPressTabItemEventListener mOnLongPressTabItemEventListener;
+
+    private final ActorUiTabController.Observer mActorObserver =
+            new ActorUiTabController.Observer() {
+                @Override
+                public void onUiTabStateChanged(UiTabState state) {
+                    int tabId = state.tabId;
+                    Tab tab = getCurrentTabModelChecked().getTabById(tabId);
+                    if (tab == null) return;
+
+                    PropertyModel model = mModelList.getModelFromTabId(tabId);
+                    List<Tab> groupTabs = getRelatedTabsForId(tabId);
+                    if (model == null && mActionsOnAllRelatedTabs) {
+                        for (Tab sibling : groupTabs) {
+                            model = mModelList.getModelFromTabId(sibling.getId());
+                            if (model != null) break;
+                        }
+                    }
+                    if (model != null) {
+                        model.set(
+                                TabProperties.ACTOR_UI_STATE, getAggregatedActorUiState(groupTabs));
+                    }
+                }
+            };
 
     private final TabActionListener mTabSelectedListener =
             new TabActionListener() {
@@ -914,7 +940,7 @@ class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        movedTab.addObserver(mTabObserver);
+                        addObserversForTab(movedTab);
                         onTabAdded(movedTab, /* onlyShowRelatedTabs= */ true);
                         if (mTabGridDialogHandler != null) {
                             mTabGridDialogHandler.updateDialogContent(
@@ -1114,7 +1140,7 @@ class TabListMediator implements TabListNotificationHandler {
                     public void tabClosureUndone(Tab tab) {
                         assert mShowingTabs;
 
-                        tab.addObserver(mTabObserver);
+                        addObserversForTab(tab);
                         onTabAdded(tab, !mActionsOnAllRelatedTabs);
 
                         if (sTabClosedFromMap.containsKey(tab.getId())) {
@@ -1170,7 +1196,7 @@ class TabListMediator implements TabListNotificationHandler {
                             return;
                         }
 
-                        tab.addObserver(mTabObserver);
+                        addObserversForTab(tab);
 
                         // Check if we need to delay tab addition to model.
                         boolean delayAdd =
@@ -1217,7 +1243,7 @@ class TabListMediator implements TabListNotificationHandler {
                     private void onTabClose(Tab tab) {
                         assert mShowingTabs;
 
-                        tab.removeObserver(mTabObserver);
+                        removeObserversForTab(tab);
 
                         // If the tab closed was part of a tab group and the closure was triggered
                         // from the tab switcher, update the group to reflect the closure instead of
@@ -1250,7 +1276,7 @@ class TabListMediator implements TabListNotificationHandler {
                     public void tabRemoved(Tab tab) {
                         assert mShowingTabs;
 
-                        tab.removeObserver(mTabObserver);
+                        removeObserversForTab(tab);
 
                         int index = mModelList.indexFromTabId(tab.getId());
                         if (index == TabModel.INVALID_TAB_INDEX) return;
@@ -2020,6 +2046,23 @@ class TabListMediator implements TabListNotificationHandler {
         }
     }
 
+    private @Nullable UiTabState getAggregatedActorUiState(List<Tab> tabs) {
+        for (Tab tab : tabs) {
+            if (tab == null || !tab.isInitialized()) continue;
+
+            ActorUiTabController controller = ActorUiTabController.from(tab);
+            if (controller != null) {
+                UiTabState state = controller.getUiTabState();
+                // If at least one tab in the group is being acted on, the indicator will be shown
+                // on the tab group.
+                if (state != null && state.tabIndicator != TabIndicatorStatus.NONE) {
+                    return state;
+                }
+            }
+        }
+        return null;
+    }
+
     private void unbindTabActionStateProperties(PropertyModel model) {
         model.set(TabProperties.IS_SELECTED, false);
         for (WritableObjectPropertyKey propertyKey : TabProperties.TAB_ACTION_STATE_OBJECT_KEYS) {
@@ -2191,7 +2234,12 @@ class TabListMediator implements TabListNotificationHandler {
     private void addTabInfoToModel(Tab tab, int index, boolean isSelected) {
         assert index != TabModel.INVALID_TAB_INDEX;
         boolean isInTabGroup = isTabInTabGroup(tab);
-
+        UiTabState initialState = null;
+        if (mActionsOnAllRelatedTabs && isInTabGroup) {
+            initialState = getAggregatedActorUiState(getRelatedTabsForId(tab.getId()));
+        } else {
+            initialState = getAggregatedActorUiState(List.of(tab));
+        }
         PropertyModel tabInfo =
                 new PropertyModel.Builder(TabProperties.ALL_KEYS_TAB_GRID)
                         .with(TabProperties.TAB_ACTION_STATE, mTabActionState)
@@ -2217,6 +2265,7 @@ class TabListMediator implements TabListNotificationHandler {
                         .with(TabProperties.USE_SHRINK_CLOSE_ANIMATION, false)
                         .with(TabProperties.MEDIA_INDICATOR, getTabGridMediaIndicator(tab))
                         .with(TabProperties.IS_PINNED, tab.getIsPinned())
+                        .with(TabProperties.ACTOR_UI_STATE, initialState)
                         .build();
         if (!mActionsOnAllRelatedTabs || isInTabGroup) {
             tabInfo.set(
@@ -2832,16 +2881,30 @@ class TabListMediator implements TabListNotificationHandler {
         // for the oldFilter which can result in invalid updates.
     }
 
+    private void addObserversForTab(Tab tab) {
+        tab.addObserver(mTabObserver);
+
+        ActorUiTabController controller = ActorUiTabController.from(tab);
+        if (controller != null) controller.addObserver(mActorObserver);
+    }
+
+    private void removeObserversForTab(Tab tab) {
+        tab.removeObserver(mTabObserver);
+
+        ActorUiTabController controller = ActorUiTabController.from(tab);
+        if (controller != null) controller.removeObserver(mActorObserver);
+    }
+
     private void addObservers(TabGroupModelFilter filter, List<Tab> tabs) {
         if (mActionsOnAllRelatedTabs) {
             for (Tab rootTab : tabs) {
                 for (Tab tab : filter.getRelatedTabList(rootTab.getId())) {
-                    tab.addObserver(mTabObserver);
+                    addObserversForTab(tab);
                 }
             }
         } else {
             for (Tab tab : tabs) {
-                tab.addObserver(mTabObserver);
+                addObserversForTab(tab);
             }
         }
 
@@ -2857,7 +2920,7 @@ class TabListMediator implements TabListNotificationHandler {
         // If no observer was added this will no-op. Previously this was only done in
         // destroy(), but that left observers behind on the inactive model.
         for (Tab tab : tabModel) {
-            tab.removeObserver(mTabObserver);
+            removeObserversForTab(tab);
         }
         filter.removeObserver(mTabModelObserver);
         filter.removeTabGroupObserver(mTabGroupObserver);
