@@ -316,6 +316,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",
     "//chrome/browser/k_anonymity_service",
+    "//chrome/browser/language_detection",
     "//chrome/browser/lookalikes",
     "//chrome/browser/media/router",
     "//chrome/browser/media/webrtc",

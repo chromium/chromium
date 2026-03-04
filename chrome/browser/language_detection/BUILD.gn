@@ -1,0 +1,49 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("language_detection") {
+  sources = [ "language_detection_model_service_factory.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/language_detection/core/browser:language_detection_model_service",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "language_detection_model_service_factory.cc" ]
+  deps = [
+    ":language_detection",
+    "//chrome/browser/optimization_guide",
+    "//components/translate/core/common",
+  ]
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "language_detection_model_service_browsertest.cc" ]
+    deps = [
+      ":language_detection",
+      "//base",
+      "//base/test:test_support",
+      "//chrome/browser/optimization_guide",
+      "//chrome/browser/profiles:profile",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/metrics:content",
+      "//components/optimization_guide/core",
+      "//components/optimization_guide/core:test_support",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//components/translate/core/common",
+      "//components/translate/core/language_detection",
+      "//content/public/common",
+      "//content/test:test_support",
+      "//net",
+      "//net:test_support",
+      "//testing/gtest",
+    ]
+  }
+}
