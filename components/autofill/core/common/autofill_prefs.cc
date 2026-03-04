@@ -83,11 +83,8 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
 
   // Non-synced prefs. Used for per-device choices, e.g., signin promo.
-
   registry->RegisterDictionaryPref(kAutofillAiOptInStatus);
   registry->RegisterBooleanPref(kAutofillCreditCardFidoAuthEnabled, false);
-  // Only controlled via policy or extension API.
-  registry->RegisterBooleanPref(kAutofillOtherDatatypesEnabled, true);
 #if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kAutofillCreditCardFidoAuthOfferCheckboxState,
                                 true);

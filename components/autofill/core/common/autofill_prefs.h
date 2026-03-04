@@ -94,11 +94,6 @@ inline constexpr char kAutofillHasSeenIban[] = "autofill.has_seen_iban";
 // was run. This routine will be run once per version.
 inline constexpr char kAutofillLastVersionDeduped[] =
     "autofill.last_version_deduped";
-// Boolean that controls availability of other autofill data types:
-// * Autofilling of travel-related entities of Autofill AI
-// * Autofilling of identity-related entities of Autofill AI
-inline constexpr char kAutofillOtherDatatypesEnabled[] =
-    "autofill.other_datatypes_enabled";
 // Boolean that is true, when users can save their CVCs.
 inline constexpr char kAutofillPaymentCvcStorage[] =
     "autofill.payment_cvc_storage";

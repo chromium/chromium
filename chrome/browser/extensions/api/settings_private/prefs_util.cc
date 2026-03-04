@@ -207,8 +207,6 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
   // Miscellaneous
   (*s_allowlist)[::embedder_support::kAlternateErrorPagesEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[autofill::prefs::kAutofillOtherDatatypesEnabled] =
-      settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillProfileEnabled] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[autofill::prefs::kAutofillCreditCardEnabled] =
