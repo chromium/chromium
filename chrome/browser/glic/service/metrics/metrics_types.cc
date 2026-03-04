@@ -16,6 +16,10 @@ std::string GetDaisyChainSourceString(DaisyChainSource source) {
       return "ActorAddTab";
     case DaisyChainSource::kNewTab:
       return "NewTab";
+    case DaisyChainSource::kWebHandoff:
+      return "WebHandoff";
+    case DaisyChainSource::kAutoOpenPdf:
+      return "AutoOpenPdf";
     default:
       return "Unknown";
   }

@@ -193,6 +193,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Switched Conversation"/>
   <int value="3" label="Recursive Daisy Chain"/>
   <int value="4" label="Side Panel Closed"/>
+  <int value="5" label="Tab Switched"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/glic/service/metrics/glic_instance_helper_metrics.h:DaisyChainFirstAction) -->

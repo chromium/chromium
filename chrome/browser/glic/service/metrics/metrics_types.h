@@ -15,7 +15,9 @@ enum class DaisyChainSource {
   kTabContents = 2,
   kActorAddTab = 3,
   kNewTab = 4,
-  kMaxValue = kNewTab,
+  kWebHandoff = 5,
+  kAutoOpenPdf = 6,
+  kMaxValue = kAutoOpenPdf,
 };
 
 std::string GetDaisyChainSourceString(DaisyChainSource source);
