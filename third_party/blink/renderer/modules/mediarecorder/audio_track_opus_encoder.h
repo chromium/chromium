@@ -69,7 +69,7 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   std::unique_ptr<media::AudioFifo> fifo_;
 
   // Buffer for passing AudioBus data from the converter to the encoder.
-  std::unique_ptr<float[]> buffer_;
+  base::HeapArray<float> buffer_;
 
   raw_ptr<OpusEncoder, DanglingUntriaged> opus_encoder_;
 

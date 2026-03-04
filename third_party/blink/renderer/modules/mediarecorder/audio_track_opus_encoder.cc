@@ -129,8 +129,8 @@ void AudioTrackOpusEncoder::OnSetFormat(
       input_params_.channels(),
       kMaxNumberOfFifoBuffers * input_params_.frames_per_buffer());
 
-  buffer_.reset(new float[converted_params_.channels() *
-                          converted_params_.frames_per_buffer()]);
+  buffer_ = base::HeapArray<float>::Uninit(
+      converted_params_.channels() * converted_params_.frames_per_buffer());
 
   // Initialize OpusEncoder.
   int opus_result;
@@ -194,14 +194,13 @@ void AudioTrackOpusEncoder::EncodeAudio(
     std::unique_ptr<media::AudioBus> audio_bus = media::AudioBus::Create(
         converted_params_.channels(), kOpusPreferredFramesPerBuffer);
     converter_->Convert(audio_bus.get());
-    audio_bus->ToInterleaved<media::Float32SampleTypeTraits>(
-        audio_bus->frames(), buffer_.get());
+    audio_bus->ToInterleaved<media::Float32SampleTypeTraits>(buffer_);
 
     if (packet_buffer_.empty()) {
       packet_buffer_ = base::HeapArray<uint8_t>::Uninit(kOpusMaxDataBytes);
     }
     size_t actual_size;
-    if (DoEncode(opus_encoder_, buffer_.get(), kOpusPreferredFramesPerBuffer,
+    if (DoEncode(opus_encoder_, buffer_.data(), kOpusPreferredFramesPerBuffer,
                  packet_buffer_, &actual_size)) {
       const base::TimeTicks capture_time_of_first_sample =
           capture_time - media::AudioTimestampHelper::FramesToTime(

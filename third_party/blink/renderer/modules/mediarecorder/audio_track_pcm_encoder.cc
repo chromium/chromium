@@ -50,8 +50,7 @@ void AudioTrackPcmEncoder::EncodeAudio(
   auto encoded_data = base::HeapArray<uint8_t>::Uninit(
       input_bus->frames() * input_bus->channels() * sizeof(float));
 
-  input_bus->ToInterleaved<media::Float32SampleTypeTraits>(
-      input_bus->frames(), reinterpret_cast<float*>(encoded_data.data()));
+  input_bus->ToInterleavedBytes<media::Float32SampleTypeTraits>(encoded_data);
 
   const base::TimeTicks capture_time_of_first_sample =
       capture_time - media::AudioTimestampHelper::FramesToTime(
