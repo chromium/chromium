@@ -49,10 +49,9 @@ source_set("unit_tests") {
     "//components/enterprise/client_certificates/core",
     "//components/enterprise/client_certificates/core:test_support",
     "//components/prefs:test_support",
-    "//crypto",
+    "//crypto:test_support",
     "//net:test_support",
     "//testing/gmock",
     "//testing/gtest",
-    "//third_party/boringssl",
   ]
 }

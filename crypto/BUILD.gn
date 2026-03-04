@@ -309,6 +309,8 @@ static_library("test_support") {
       "apple/fake_keychain_v2.mm",
       "apple/scoped_fake_keychain_v2.h",
       "apple/scoped_fake_keychain_v2.mm",
+      "apple/test_helpers.h",
+      "apple/test_helpers.mm",
     ]
     frameworks = [
       "CoreFoundation.framework",

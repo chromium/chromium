@@ -25,7 +25,7 @@
 #import "components/enterprise/client_certificates/core/mock_certificate_provisioning_service.h"
 #import "components/enterprise/client_certificates/core/mock_private_key.h"
 #import "components/enterprise/client_certificates/ios/client_identity_ios.h"
-#import "crypto/evp.h"
+#import "crypto/apple/test_helpers.h"
 #import "net/cert/x509_certificate.h"
 #import "net/cert/x509_util.h"
 #import "net/test/cert_test_util.h"
@@ -33,12 +33,6 @@
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
-#import "third_party/boringssl/src/include/openssl/base.h"
-#import "third_party/boringssl/src/include/openssl/bytestring.h"
-#import "third_party/boringssl/src/include/openssl/ec_key.h"
-#import "third_party/boringssl/src/include/openssl/evp.h"
-#import "third_party/boringssl/src/include/openssl/rsa.h"
-#import "third_party/boringssl/src/include/openssl/ssl.h"
 
 using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
@@ -56,65 +50,12 @@ scoped_refptr<net::X509Certificate> LoadTestCert() {
                                  kTestCertFileName);
 }
 
-base::apple::ScopedCFTypeRef<SecKeyRef> SecKeyFromPKCS8(
-    base::span<const uint8_t> pkcs8) {
-  bssl::UniquePtr<EVP_PKEY> openssl_key =
-      crypto::evp::PrivateKeyFromBytes(pkcs8);
-  if (!openssl_key) {
-    return base::apple::ScopedCFTypeRef<SecKeyRef>();
-  }
-
-  // `SecKeyCreateWithData` expects PKCS#1 for RSA keys, and a concatenated
-  // format for EC keys. See `SecKeyCopyExternalRepresentation` for details.
-  CFStringRef key_type;
-  bssl::ScopedCBB cbb;
-  if (!CBB_init(cbb.get(), 0)) {
-    return base::apple::ScopedCFTypeRef<SecKeyRef>();
-  }
-  if (EVP_PKEY_id(openssl_key.get()) == EVP_PKEY_RSA) {
-    key_type = kSecAttrKeyTypeRSA;
-    if (!RSA_marshal_private_key(cbb.get(),
-                                 EVP_PKEY_get0_RSA(openssl_key.get()))) {
-      return base::apple::ScopedCFTypeRef<SecKeyRef>();
-    }
-  } else if (EVP_PKEY_id(openssl_key.get()) == EVP_PKEY_EC) {
-    key_type = kSecAttrKeyTypeECSECPrimeRandom;
-    const EC_KEY* ec_key = EVP_PKEY_get0_EC_KEY(openssl_key.get());
-    size_t priv_len = EC_KEY_priv2oct(ec_key, nullptr, 0);
-    uint8_t* out;
-    if (priv_len == 0 ||
-        !EC_POINT_point2cbb(cbb.get(), EC_KEY_get0_group(ec_key),
-                            EC_KEY_get0_public_key(ec_key),
-                            POINT_CONVERSION_UNCOMPRESSED, nullptr) ||
-        !CBB_add_space(cbb.get(), &out, priv_len) ||
-        EC_KEY_priv2oct(ec_key, out, priv_len) != priv_len) {
-      return base::apple::ScopedCFTypeRef<SecKeyRef>();
-    }
-  } else {
-    return base::apple::ScopedCFTypeRef<SecKeyRef>();
-  }
-
-  base::apple::ScopedCFTypeRef<CFMutableDictionaryRef> attrs(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0,
-                                &kCFTypeDictionaryKeyCallBacks,
-                                &kCFTypeDictionaryValueCallBacks));
-  CFDictionarySetValue(attrs.get(), kSecAttrKeyClass, kSecAttrKeyClassPrivate);
-  CFDictionarySetValue(attrs.get(), kSecAttrKeyType, key_type);
-
-  base::apple::ScopedCFTypeRef<CFDataRef> data(
-      CFDataCreate(kCFAllocatorDefault, CBB_data(cbb.get()),
-                   base::checked_cast<CFIndex>(CBB_len(cbb.get()))));
-
-  return base::apple::ScopedCFTypeRef<SecKeyRef>(
-      SecKeyCreateWithData(data.get(), attrs.get(), nullptr));
-}
-
 base::apple::ScopedCFTypeRef<SecKeyRef> LoadTestKey() {
   static constexpr char kTestKeyFileName[] = "client_1.pk8";
   base::FilePath pkcs8_path =
       net::GetTestCertsDirectory().AppendASCII(kTestKeyFileName);
   std::optional<std::vector<uint8_t>> pkcs8 = base::ReadFileToBytes(pkcs8_path);
-  return SecKeyFromPKCS8(*pkcs8);
+  return crypto::apple::SecKeyFromPKCS8(*pkcs8);
 }
 
 }  // namespace
