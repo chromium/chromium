@@ -417,8 +417,10 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
         // (e.g. drag-and-drop or split-tabs which explicitly requires no
         // animated transition).
       }
-      current_layout_content_height_ = std::max(
-          current_layout_content_height_, interpolated_child.bounds.bottom());
+      if (!interpolated_child.bounds.IsEmpty()) {
+        current_layout_content_height_ = std::max(
+            current_layout_content_height_, interpolated_child.bounds.bottom());
+      }
       result.child_layouts.push_back(interpolated_child);
       continue;
     }
@@ -449,8 +451,10 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
         child_view->layer()->SetOpacity(static_cast<float>(1.0 - value));
       }
 
-      current_layout_content_height_ = std::max(
-          current_layout_content_height_, interpolated_child.bounds.bottom());
+      if (!interpolated_child.bounds.IsEmpty()) {
+        current_layout_content_height_ = std::max(
+            current_layout_content_height_, interpolated_child.bounds.bottom());
+      }
       result.child_layouts.push_back(interpolated_child);
       continue;
     }
@@ -509,8 +513,10 @@ views::ProposedLayout TabCollectionAnimatingLayoutManager::InterpolateLayout(
       interpolated_child.bounds =
           gfx::Tween::RectValueBetween(value, start_bounds, target_bounds);
 
-      current_layout_content_height_ = std::max(
-          current_layout_content_height_, interpolated_child.bounds.bottom());
+      if (!interpolated_child.bounds.IsEmpty()) {
+        current_layout_content_height_ = std::max(
+            current_layout_content_height_, interpolated_child.bounds.bottom());
+      }
       result.child_layouts.push_back(interpolated_child);
     }
   }
