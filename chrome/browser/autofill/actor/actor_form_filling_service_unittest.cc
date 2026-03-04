@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/test_utils/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
 #include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -196,8 +197,20 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
 
   MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
 
-  // TestContentAutofillDriver:
-  base::flat_set<FieldGlobalId> ApplyFormAction(
+  MOCK_METHOD(
+      base::flat_set<FieldGlobalId>,
+      ApplyFormAction,
+      (mojom::FormActionType action_type,
+       mojom::ActionPersistence action_persistence,
+       base::span<const FormFieldData> fields,
+       const FillId& fill_id,
+       bool supports_refill,
+       const url::Origin& triggered_origin,
+       (const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map),
+       const Section& section_for_clear_form_on_ios),
+      (override));
+
+  base::flat_set<FieldGlobalId> BaseApplyFormAction(
       mojom::FormActionType action_type,
       mojom::ActionPersistence action_persistence,
       base::span<const FormFieldData> fields,
@@ -205,30 +218,11 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
       bool supports_refill,
       const url::Origin& triggered_origin,
       const absl::flat_hash_map<FieldGlobalId, FieldType>& field_type_map,
-      const Section& section_for_clear_form_on_ios) override {
-    base::flat_set<FieldGlobalId> filled_fields =
-        TestContentAutofillDriver::ApplyFormAction(
-            action_type, action_persistence, fields, fill_id, supports_refill,
-            triggered_origin, field_type_map, section_for_clear_form_on_ios);
-    for (const FormFieldData& field : fields) {
-      if (filled_fields.contains(field.global_id())) {
-        last_filled_values_[field.global_id()] = field.value();
-      }
-    }
-    return filled_fields;
+      const Section& section_for_clear_form_on_ios) {
+    return TestContentAutofillDriver::ApplyFormAction(
+        action_type, action_persistence, fields, fill_id, supports_refill,
+        triggered_origin, field_type_map, section_for_clear_form_on_ios);
   }
-
-  // Returns the values that this driver would have sent to the renderer for
-  // filling.
-  const absl::flat_hash_map<FieldGlobalId, std::u16string>& last_filled_values()
-      const {
-    return last_filled_values_;
-  }
-
-  void ClearLastFilledValues() { last_filled_values_.clear(); }
-
- private:
-  absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
 };
 
 // A simple `CreditCardAccessManager` test class that allows intercepting the
@@ -274,6 +268,21 @@ class TestBrowserAutofillManagerWithTestCCAM
     test_api(*this).set_credit_card_access_manager(
         std::make_unique<TestCreditCardAccessManager>(this));
   }
+
+  void FillOrPreviewForm(mojom::ActionPersistence action_persistence,
+                         const FormData& form,
+                         const FieldGlobalId& field_id,
+                         const FillingPayload& filling_payload,
+                         AutofillTriggerSource trigger_source) override {
+    last_trigger_field_id_ = field_id;
+    TestBrowserAutofillManager::FillOrPreviewForm(
+        action_persistence, form, field_id, filling_payload, trigger_source);
+  }
+
+  FieldGlobalId last_trigger_field_id() { return last_trigger_field_id_; }
+
+ private:
+  FieldGlobalId last_trigger_field_id_;
 };
 
 class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
@@ -293,6 +302,28 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
     client().GetPersonalDataManager().address_data_manager().AddProfile(
         GetProfile1());
+
+    ON_CALL(driver(), ApplyFormAction)
+        .WillByDefault([&](mojom::FormActionType action_type,
+                           mojom::ActionPersistence action_persistence,
+                           base::span<const FormFieldData> fields,
+                           const FillId& fill_id, bool supports_refill,
+                           const url::Origin& triggered_origin,
+                           const absl::flat_hash_map<FieldGlobalId, FieldType>&
+                               field_type_map,
+                           const Section& section_for_clear_form_on_ios) {
+          base::flat_set<FieldGlobalId> filled_fields =
+              driver().BaseApplyFormAction(action_type, action_persistence,
+                                           fields, fill_id, supports_refill,
+                                           triggered_origin, field_type_map,
+                                           section_for_clear_form_on_ios);
+          for (const FormFieldData& field : fields) {
+            if (filled_fields.contains(field.global_id())) {
+              last_filled_values_[field.global_id()] = field.value();
+            }
+          }
+          return filled_fields;
+        });
   }
 
   FormData SeeForm(test::FormDescription form_description) {
@@ -300,6 +331,13 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     manager().AddSeenForm(form, test::GetHeuristicTypes(form_description),
                           test::GetServerTypes(form_description));
     return form;
+  }
+
+  // Returns the values that this driver would have sent to the renderer for
+  // filling.
+  const absl::flat_hash_map<FieldGlobalId, std::u16string>& last_filled_values()
+      const {
+    return last_filled_values_;
   }
 
  protected:
@@ -319,7 +357,7 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   RecordingTestContentAutofillDriver& driver() {
     return CHECK_DEREF(autofill_driver_injector_[web_contents()]);
   }
-  TestBrowserAutofillManager& manager() {
+  TestBrowserAutofillManagerWithTestCCAM& manager() {
     return CHECK_DEREF(autofill_manager_injector_[web_contents()]);
   }
   ActorFormFillingService& service() { return service_; }
@@ -341,6 +379,7 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
   TestAutofillManagerInjector<TestBrowserAutofillManagerWithTestCCAM>
       autofill_manager_injector_;
   ActorFormFillingServiceImpl service_;
+  absl::flat_hash_map<FieldGlobalId, std::u16string> last_filled_values_;
 };
 
 // Tests that a `kNoSuggestions` error is returned if we cannot find the form
@@ -406,7 +445,7 @@ TEST_F(ActorFormFillingServiceTest, SimpleAddressForm) {
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
-  EXPECT_THAT(driver().last_filled_values(),
+  EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(GetProfile1(), NAME_FULL))));
 
@@ -460,7 +499,7 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationForm) {
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
   EXPECT_THAT(
-      driver().last_filled_values(),
+      last_filled_values(),
       IsSupersetOf({std::pair(form.fields()[0].global_id(),
                               GetFillValue(GetProfile1(), NAME_FULL)),
                     std::pair(form.fields()[1].global_id(),
@@ -500,7 +539,7 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
 
   // Expect that all fields, including address fields, are filled.
   EXPECT_THAT(
-      driver().last_filled_values(),
+      last_filled_values(),
       IsSupersetOf(
           {std::pair(form.fields()[0].global_id(),
                      GetFillValue(GetProfile1(), NAME_FULL)),
@@ -652,7 +691,7 @@ TEST_F(ActorFormFillingServiceTest, SplitAddressForm) {
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
-  EXPECT_THAT(driver().last_filled_values(),
+  EXPECT_THAT(last_filled_values(),
               IsSupersetOf({std::pair(form_1_trigger_id,
                                       GetFillValue(GetProfile1(), NAME_FIRST)),
                             std::pair(form_2_trigger_id,
@@ -687,7 +726,7 @@ TEST_F(ActorFormFillingServiceTest, SimpleCreditCardForm) {
       fill_future.GetCallback());
   ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
   EXPECT_THAT(fill_future.Get(), HasValue());
-  EXPECT_THAT(driver().last_filled_values(),
+  EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(card, CREDIT_CARD_NAME_FULL))));
 
@@ -866,7 +905,7 @@ TEST_F(ActorFormFillingServiceTest, FillAfterFetchingServerCard) {
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(fill_future.IsReady());
   EXPECT_THAT(fill_future.Get(), HasValue());
-  EXPECT_THAT(driver().last_filled_values(),
+  EXPECT_THAT(last_filled_values(),
               Contains(std::pair(form.fields()[0].global_id(),
                                  GetFillValue(card, CREDIT_CARD_NAME_FULL))));
 }
@@ -912,7 +951,7 @@ TEST_F(ActorFormFillingServiceTest, TimeoutWithFetching) {
   task_environment()->FastForwardBy(base::Seconds(1));
   EXPECT_TRUE(fill_future.IsReady());
   EXPECT_THAT(fill_future.Get(), ErrorIs(ActorFormFillingError::kNoForm));
-  EXPECT_THAT(driver().last_filled_values(), IsEmpty());
+  EXPECT_THAT(last_filled_values(), IsEmpty());
 
   ExpectGetSuggestionsOutcome(kActorFormFillingSuccessForMetrics,
                               histogram_tester);
@@ -990,8 +1029,57 @@ TEST_F(ActorFormFillingServiceTest, TriggerOnSelect) {
       tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
       fill_future.GetCallback());
   EXPECT_THAT(fill_future.Get(), HasValue());
-  EXPECT_THAT(driver().last_filled_values(),
+  EXPECT_THAT(last_filled_values(),
               Contains(Pair(form.fields()[0].global_id(), u"US")));
+}
+
+// Tests that a suggestion is returned when invoking on an address form and
+// that the suggestion can be used for filling.
+TEST_F(ActorFormFillingServiceTest, FillOrPreview) {
+  feature_list_.InitAndEnableFeature(
+      features::kAutofillActorFormFillingSplitOutContactInfo);
+
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = EMAIL_ADDRESS},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {BillingAddressFillRequest({form.fields().front().global_id()})},
+      future.GetCallback());
+
+  ASSERT_THAT(future.Get(),
+              ValueIs(ElementsAre(
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_CONTACT_INFORMATION),
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_BILLING_ADDRESS))));
+
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  // TODO(crbug.com/480936584): Expect actual fields to be previewed/filled
+  // instead of passing `_` when the splitting logic is finalized.
+  EXPECT_CALL(driver(), ApplyFormAction(_, mojom::ActionPersistence::kPreview,
+                                        _, _, _, _, _, _))
+      .Times(1);
+  EXPECT_CALL(driver(), ApplyFormAction(_, mojom::ActionPersistence::kFill, _,
+                                        _, _, _, _, _))
+      .Times(1);
+
+  ASSERT_EQ(manager().last_trigger_field_id(), FieldGlobalId());
+  service().PreviewForm(tab(), /*form_index=*/0,
+                        requests.front().suggestions.front().id);
+
+  // TODO(crbug.com/480936584): Expect actual trigger field IDs for split
+  // sections.
+  EXPECT_EQ(manager().last_trigger_field_id(), form.fields()[0].global_id());
+  service().FillForm(
+      tab(), /*form_index=*/1,
+      ActorFormFillingSelection(requests.back().suggestions.front().id));
+  EXPECT_EQ(manager().last_trigger_field_id(), form.fields()[0].global_id());
 }
 
 // Tests that `kAutofillNotAvailable` is returned if the tab has no web

@@ -439,22 +439,6 @@ GetAutofillManager(const tabs::TabInterface& tab) {
   return base::unexpected(kAutofillNotAvailable);
 }
 
-// Converts the `FillData::Payload` into a payload that can be used by
-// `BrowserAutofillManager`. Note that it does so by taking the addresses of
-// `payload`'s contents, so `payload` must outlive the return value.
-// Returns `std::nullopt` is `payload` contains `std::monostate`.
-std::optional<FillingPayload> GetAutofillFillingPayload(
-    const ActorFormFillingServiceImpl::FillData::Payload& payload
-        LIFETIME_BOUND) {
-  return std::visit(
-      absl::Overload(
-          [](std::monostate) { return std::optional<FillingPayload>(); },
-          [](auto& payload) {
-            return std::optional<FillingPayload>(&payload);
-          }),
-      payload);
-}
-
 }  // namespace
 
 ActorFormFillingServiceImpl::FillData::FillData() = default;
@@ -683,30 +667,10 @@ void ActorFormFillingServiceImpl::FillSuggestions(
     return;
   }
 
-  // Re-determine the forms because in case they changed since the suggestions
-  // were generated.
-  std::vector<std::vector<FormData>> form_datas;
-  form_datas.reserve(chosen_suggestions.size());
   std::vector<FieldGlobalId> all_field_ids;
   for (const ActorFormFillingSelection& selection : chosen_suggestions) {
-    const FillData& fill_data_for_form =
-        fill_data_[selection.selected_suggestion_id];
-    form_datas.emplace_back().reserve(fill_data_for_form.field_ids.size());
-    for (FieldGlobalId field_id : fill_data_for_form.field_ids) {
-      all_field_ids.push_back(field_id);
-      if (const FormStructure* form_structure =
-              autofill_manager.FindCachedFormById(field_id)) {
-        form_datas.back().emplace_back(form_structure->ToFormData());
-      } else {
-        // TODO(crbug.com/455788947): Consider being more lenient and complying
-        // with partial form fills.
-        LOG_AF(log_manager)
-            << LoggingScope::kAutofillActor
-            << "Could not find form structure for field: " << field_id;
-        post_error(FROM_HERE, kNoForm);
-        return;
-      }
-    }
+    base::Extend(all_field_ids,
+                 fill_data_[selection.selected_suggestion_id].field_ids);
   }
 
   // Create a filling observer and keep it around until the maximum timeout is
@@ -719,21 +683,9 @@ void ActorFormFillingServiceImpl::FillSuggestions(
       ActorFillingObserver::GetMaximumTimeout());
 
   // Fill.
-  for (const auto [selection, form_datas_for_suggestion] :
-       base::zip(chosen_suggestions, form_datas)) {
-    const FillData& fill_data_for_form =
-        fill_data_[selection.selected_suggestion_id];
-    for (const auto [field_id, form_data] :
-         base::zip(fill_data_for_form.field_ids, form_datas_for_suggestion)) {
-      std::optional<FillingPayload> filling_payload =
-          GetAutofillFillingPayload(fill_data_for_form.filling_payload);
-      if (!filling_payload) {
-        continue;
-      }
-      autofill_manager.FillOrPreviewForm(mojom::ActionPersistence::kFill,
-                                         form_data, field_id, *filling_payload,
-                                         AutofillTriggerSource::kGlic);
-    }
+  for (const ActorFormFillingSelection& selection : chosen_suggestions) {
+    FillOrPreviewFormImpl(tab, selection.selected_suggestion_id,
+                          mojom::ActionPersistence::kFill);
   }
 }
 
@@ -774,6 +726,8 @@ void ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
     const tabs::TabInterface& tab,
     ActorSuggestionId suggestion_id,
     mojom::ActionPersistence action_persistence) {
+  // TODO(crbug.com/448398227): Consider changing some of these early returns
+  // into CHECKs.
   base::expected<std::reference_wrapper<BrowserAutofillManager>,
                  ActorFormFillingError>
       maybe_manager = GetAutofillManager(tab);
@@ -799,40 +753,32 @@ void ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
     return;
   }
 
-  const FormStructure* const form_structure =
-      autofill_manager.FindCachedFormById(fill_data->field_ids.front());
-  if (!form_structure) {
-    LOG_AF(log_manager)
-        << LoggingScope::kAutofillActor
-        << "Fill/Preview aborted: Could not find a `FormStructure` for the "
-           "first field in the corresponding `FillData`.";
-    return;
+  for (FieldGlobalId trigger_field_id : fill_data->field_ids) {
+    if (const FormStructure* const form_structure =
+            autofill_manager.FindCachedFormById(trigger_field_id)) {
+      std::visit(absl::Overload{
+                     [&](const AutofillProfile& autofill_profile) {
+                       autofill_manager.FillOrPreviewForm(
+                           action_persistence, form_structure->ToFormData(),
+                           trigger_field_id, &autofill_profile,
+                           AutofillTriggerSource::kGlic);
+                     },
+                     [&](const CreditCard& credit_card) {
+                       autofill_manager.FillOrPreviewForm(
+                           action_persistence, form_structure->ToFormData(),
+                           trigger_field_id, &credit_card,
+                           AutofillTriggerSource::kGlic);
+                     },
+                     [&](const std::monostate&) {
+                       LOG_AF(log_manager)
+                           << LoggingScope::kAutofillActor
+                           << "Fill/Preview aborted: Could not fill/preview "
+                              "because the suggestion had empty payload.";
+                       return;
+                     }},
+                 fill_data->filling_payload);
+    }
   }
-
-  std::visit(
-      absl::Overload{
-          [&](const AutofillProfile& autofill_profile) {
-            autofill_manager.FillOrPreviewForm(
-                action_persistence, form_structure->ToFormData(),
-                // TODO(crbug.com/481379523): Select the correct trigger field.
-                fill_data->field_ids.front(), &autofill_profile,
-                AutofillTriggerSource::kGlic);
-          },
-          [&](const CreditCard& credit_card) {
-            autofill_manager.FillOrPreviewForm(
-                action_persistence, form_structure->ToFormData(),
-                // TODO(crbug.com/481379523): Select the correct trigger field.
-                fill_data->field_ids.front(), &credit_card,
-                AutofillTriggerSource::kGlic);
-          },
-          [&](const std::monostate&) {
-            LOG_AF(log_manager)
-                << LoggingScope::kAutofillActor
-                << "Fill/Preview aborted: Could not fill/preview because the "
-                   "suggestion had empty payload.";
-            return;
-          }},
-      fill_data->filling_payload);
 }
 
 }  // namespace autofill
