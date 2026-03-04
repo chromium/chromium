@@ -1588,6 +1588,8 @@ source_set("unit_tests") {
     "form_import/addresses/address_form_data_importer_unittest.cc",
     "form_import/addresses/address_profile_save_manager_unittest.cc",
     "form_import/addresses/autofill_profile_import_process_unittest.cc",
+    "form_import/form_data_importer_test_utils.cc",
+    "form_import/form_data_importer_test_utils.h",
     "form_import/form_data_importer_unittest.cc",
     "form_import/form_data_importer_utils_unittest.cc",
     "form_import/payments/payments_form_data_importer_unittest.cc",

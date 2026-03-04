@@ -1,0 +1,177 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/autofill/core/browser/form_import/form_data_importer_test_utils.h"
+
+#include <algorithm>
+#include <map>
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/notimplemented.h"
+#include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
+#include "components/autofill/core/browser/country_type.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_i18n_api.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_component.h"
+#include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/common/autofill_test_utils.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/form_data_test_api.h"
+#include "components/autofill/core/common/form_field_data.h"
+#include "components/autofill/core/common/language_code.h"
+#include "url/gurl.h"
+
+namespace autofill {
+
+namespace {
+// Define values for the default address profile.
+constexpr char kDefaultFirstName[] = "Thomas";
+constexpr char kDefaultLastName[] = "Anderson";
+constexpr char kDefaultMail[] = "theone@thematrix.org";
+constexpr char kDefaultAddressLine1[] = "21 Laussat St";
+constexpr char kDefaultCity[] = "Los Angeles";
+constexpr char kDefaultState[] = "California";
+constexpr char kDefaultZip[] = "94102";
+constexpr char kDefaultCountry[] = "US";
+constexpr char kDefaultPhone[] = "+1 650-555-0000";
+
+constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
+constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
+constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
+}  // anonymous namespace
+
+using test::CreateTestFormField;
+
+std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
+  static const std::map<FieldType, std::pair<std::string, std::string>>
+      name_type_map = {
+          {NAME_FULL, {"Full Name:", "full_name"}},
+          {NAME_FIRST, {"First Name:", "first_name"}},
+          {NAME_MIDDLE, {"Middle Name", "middle_name"}},
+          {NAME_LAST, {"Last Name:", "last_name"}},
+          {EMAIL_ADDRESS, {"Email:", "email"}},
+          {ADDRESS_HOME_LINE1, {"Address:", "address1"}},
+          {ADDRESS_HOME_STREET_ADDRESS, {"Address:", "address"}},
+          {ADDRESS_HOME_CITY, {"City:", "city"}},
+          {ADDRESS_HOME_ZIP, {"Zip:", "zip"}},
+          {ADDRESS_HOME_STATE, {"State:", "state"}},
+          {ADDRESS_HOME_DEPENDENT_LOCALITY, {"Neighborhood:", "neighborhood"}},
+          {ADDRESS_HOME_COUNTRY, {"Country:", "country"}},
+          {PHONE_HOME_WHOLE_NUMBER, {"Phone:", "phone"}},
+          {CREDIT_CARD_NAME_FULL, {"Name on card:", "name_on_card"}},
+          {CREDIT_CARD_NUMBER, {"Credit Card Number:", "card_number"}},
+          {CREDIT_CARD_EXP_MONTH, {"Exp Month:", "exp_month"}},
+          {CREDIT_CARD_EXP_4_DIGIT_YEAR, {"Exp Year:", "exp_year"}},
+      };
+  auto it = name_type_map.find(type);
+  if (it == name_type_map.end()) {
+    NOTIMPLEMENTED() << " field name and label is missing for "
+                     << FieldTypeToStringView(type);
+    return {std::string(), std::string()};
+  }
+  return it->second;
+}
+
+FormData ConstructFormDateFromTypeValuePairs(TypeValuePairs type_value_pairs,
+                                             std::string url) {
+  FormData form;
+  form.set_url(GURL(url));
+
+  for (const auto& [type, value] : type_value_pairs) {
+    const auto& [name, label] = GetLabelAndNameForType(type);
+    test_api(form).Append(CreateTestFormField(
+        name, label, value,
+        type == ADDRESS_HOME_STREET_ADDRESS ? FormControlType::kTextArea
+                                            : FormControlType::kInputText));
+  }
+
+  return form;
+}
+
+std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
+    const FormData& form,
+    GeoIpCountryCode geo_country) {
+  auto form_structure = std::make_unique<FormStructure>(form);
+  const RegexPredictions regex_predictions = DetermineRegexTypes(
+      geo_country, LanguageCode(""), form_structure->ToFormData(), nullptr,
+      /*ignore_small_forms=*/true);
+  regex_predictions.ApplyTo(form_structure->fields());
+  form_structure->RationalizeAndAssignSections(geo_country, LanguageCode(""),
+                                               nullptr);
+  for (size_t i = 0; i < form_structure->field_count(); ++i) {
+    test_api(*form_structure->field(i)).set_initial_value(u"");
+  }
+  return form_structure;
+}
+
+std::unique_ptr<FormStructure> ConstructFormStructureFromTypeValuePairs(
+    TypeValuePairs type_value_pairs,
+    std::string url) {
+  FormData form = ConstructFormDateFromTypeValuePairs(type_value_pairs, url);
+  return ConstructFormStructureFromFormData(form);
+}
+
+AutofillProfile ConstructProfileFromTypeValuePairs(
+    TypeValuePairs type_value_pairs) {
+  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
+  for (const auto& [type, value] : type_value_pairs) {
+    profile.SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
+                                             VerificationStatus::kObserved);
+  }
+  if (!profile.FinalizeAfterImport()) {
+    NOTREACHED();
+  }
+  return profile;
+}
+
+TypeValuePairs GetDefaultProfileTypeValuePairs() {
+  return {
+      {NAME_FIRST, kDefaultFirstName},
+      {NAME_LAST, kDefaultLastName},
+      {EMAIL_ADDRESS, kDefaultMail},
+      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+      {ADDRESS_HOME_CITY, kDefaultCity},
+      {ADDRESS_HOME_STATE, kDefaultState},
+      {ADDRESS_HOME_ZIP, kDefaultZip},
+      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
+  };
+}
+
+// Sets the value of `type` in `pairs` to `value`. If the `value` is empty, the
+// `type` is removed entirely.
+void SetValueForType(TypeValuePairs& pairs,
+                     FieldType type,
+                     const std::string& value) {
+  auto it = std::ranges::find(pairs, type,
+                              [](const auto& pair) { return pair.first; });
+  CHECK(it != pairs.end());
+  if (value.empty()) {
+    pairs.erase(it);
+  } else {
+    it->second = value;
+  }
+}
+
+TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
+    const std::string& country) {
+  auto pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(pairs, ADDRESS_HOME_COUNTRY, country);
+  if (country == "DE" || country == "Germany") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneGermany);
+  } else if (country == "MX" || country == "Mexico") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
+  } else if (country == "AM" || country == "Armenien") {
+    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneArmenia);
+  }
+  return pairs;
+}
+
+}  // namespace autofill

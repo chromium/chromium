@@ -48,6 +48,7 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_import/addresses/address_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
+#include "components/autofill/core/browser/form_import/form_data_importer_test_utils.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer.h"
 #include "components/autofill/core/browser/form_import/payments/payments_form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_parsing/determine_regex_types.h"
@@ -97,7 +98,6 @@ using ::testing::Eq;
 using ::testing::IsEmpty;
 using ::testing::NiceMock;
 using ::testing::Pair;
-using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
@@ -148,158 +148,8 @@ constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
 
-constexpr char kDefaultPhoneGermany[] = "+49 89 123456";
-constexpr char kDefaultPhoneMexico[] = "+52 55 1234 5678";
-constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
-
 constexpr char kDefaultGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
 constexpr char kSecondGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb293";
-
-// For a given FieldType |type| returns a pair of field name and label
-// that should be parsed into this type by our field type parsers.
-std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
-  static const std::map<FieldType, std::pair<std::string, std::string>>
-      name_type_map = {
-          {NAME_FULL, {"Full Name:", "full_name"}},
-          {NAME_FIRST, {"First Name:", "first_name"}},
-          {NAME_MIDDLE, {"Middle Name", "middle_name"}},
-          {NAME_LAST, {"Last Name:", "last_name"}},
-          {EMAIL_ADDRESS, {"Email:", "email"}},
-          {ADDRESS_HOME_LINE1, {"Address:", "address1"}},
-          {ADDRESS_HOME_STREET_ADDRESS, {"Address:", "address"}},
-          {ADDRESS_HOME_CITY, {"City:", "city"}},
-          {ADDRESS_HOME_ZIP, {"Zip:", "zip"}},
-          {ADDRESS_HOME_STATE, {"State:", "state"}},
-          {ADDRESS_HOME_DEPENDENT_LOCALITY, {"Neighborhood:", "neighborhood"}},
-          {ADDRESS_HOME_COUNTRY, {"Country:", "country"}},
-          {PHONE_HOME_WHOLE_NUMBER, {"Phone:", "phone"}},
-          {CREDIT_CARD_NAME_FULL, {"Name on card:", "name_on_card"}},
-          {CREDIT_CARD_NUMBER, {"Credit Card Number:", "card_number"}},
-          {CREDIT_CARD_EXP_MONTH, {"Exp Month:", "exp_month"}},
-          {CREDIT_CARD_EXP_4_DIGIT_YEAR, {"Exp Year:", "exp_year"}},
-      };
-  auto it = name_type_map.find(type);
-  if (it == name_type_map.end()) {
-    NOTIMPLEMENTED() << " field name and label is missing for "
-                     << FieldTypeToStringView(type);
-    return {std::string(), std::string()};
-  }
-  return it->second;
-}
-
-using TypeValuePairs = std::vector<std::pair<FieldType, std::string>>;
-
-// Constructs a FormData instance for |url| from a vector of type value pairs
-// that defines a sequence of fields and the filled values.
-// The field names and labels for the different types are relieved from
-// |GetLabelAndNameForType(type)|
-FormData ConstructFormDateFromTypeValuePairs(
-    TypeValuePairs type_value_pairs,
-    std::string url = "https://www.foo.com") {
-  FormData form;
-  form.set_url(GURL(url));
-
-  for (const auto& [type, value] : type_value_pairs) {
-    const auto& [name, label] = GetLabelAndNameForType(type);
-    test_api(form).Append(CreateTestFormField(
-        name, label, value,
-        type == ADDRESS_HOME_STREET_ADDRESS ? FormControlType::kTextArea
-                                            : FormControlType::kInputText));
-  }
-
-  return form;
-}
-
-// Fakes that a `form` has been seen (without its field value) and parsed and
-// then values have been entered. Returns the resulting FormStructure.
-std::unique_ptr<FormStructure> ConstructFormStructureFromFormData(
-    const FormData& form,
-    GeoIpCountryCode geo_country = GeoIpCountryCode("")) {
-  auto form_structure = std::make_unique<FormStructure>(form);
-  const RegexPredictions regex_predictions = DetermineRegexTypes(
-      geo_country, LanguageCode(""), form_structure->ToFormData(), nullptr,
-      /*ignore_small_forms=*/true);
-  regex_predictions.ApplyTo(form_structure->fields());
-  form_structure->RationalizeAndAssignSections(geo_country, LanguageCode(""),
-                                               nullptr);
-  for (size_t i = 0; i < form_structure->field_count(); ++i) {
-    test_api(*form_structure->field(i)).set_initial_value(u"");
-  }
-  return form_structure;
-}
-
-// Constructs a FormStructure instance with fields and inserted values given by
-// a vector of type and value pairs.
-std::unique_ptr<FormStructure> ConstructFormStructureFromTypeValuePairs(
-    TypeValuePairs type_value_pairs,
-    std::string url = "https://www.foo.com") {
-  FormData form = ConstructFormDateFromTypeValuePairs(type_value_pairs, url);
-  return ConstructFormStructureFromFormData(form);
-}
-
-// Construct and finalizes an AutofillProfile based on a vector of type and
-// value pairs. The values are set as |VerificationStatus::kObserved| and the
-// profile is finalizes in the end.
-AutofillProfile ConstructProfileFromTypeValuePairs(
-    TypeValuePairs type_value_pairs) {
-  AutofillProfile profile(i18n_model_definition::kLegacyHierarchyCountryCode);
-  for (const auto& [type, value] : type_value_pairs) {
-    profile.SetRawInfoWithVerificationStatus(type, base::UTF8ToUTF16(value),
-                                             VerificationStatus::kObserved);
-  }
-  if (!profile.FinalizeAfterImport()) {
-    NOTREACHED();
-  }
-  return profile;
-}
-
-// Returns a vector of FieldType and value pairs used to construct the
-// default AutofillProfile, or a FormStructure or FormData instance that carries
-// that corresponding information.
-TypeValuePairs GetDefaultProfileTypeValuePairs() {
-  return {
-      {NAME_FIRST, kDefaultFirstName},
-      {NAME_LAST, kDefaultLastName},
-      {EMAIL_ADDRESS, kDefaultMail},
-      {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
-      {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-      {ADDRESS_HOME_CITY, kDefaultCity},
-      {ADDRESS_HOME_STATE, kDefaultState},
-      {ADDRESS_HOME_ZIP, kDefaultZip},
-      {ADDRESS_HOME_COUNTRY, kDefaultCountry},
-  };
-}
-
-// Sets the value of `type` in `pairs` to `value`. If the `value` is empty, the
-// `type` is removed entirely.
-void SetValueForType(TypeValuePairs& pairs,
-                     FieldType type,
-                     const std::string& value) {
-  auto it = std::ranges::find(pairs, type,
-                              [](const auto& pair) { return pair.first; });
-  CHECK(it != pairs.end());
-  if (value.empty()) {
-    pairs.erase(it);
-  } else {
-    it->second = value;
-  }
-}
-
-// Wraps `GetDefaultProfileTypeValuePairs()` but replaces `kDefaultCountry` with
-// `country`. If `country` is empty, ADDRESS_HOME_COUNTRY is removed entirely.
-TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
-    const std::string& country) {
-  auto pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(pairs, ADDRESS_HOME_COUNTRY, country);
-  if (country == "DE" || country == "Germany") {
-    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneGermany);
-  } else if (country == "MX" || country == "Mexico") {
-    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneMexico);
-  } else if (country == "AM" || country == "Armenien") {
-    SetValueForType(pairs, PHONE_HOME_WHOLE_NUMBER, kDefaultPhoneArmenia);
-  }
-  return pairs;
-}
 
 // Same as |GetDefaultProfileTypeValuePairs()|, but split into two parts to test
 // multi-step imports. No part by itself satisfies the import requirements.
@@ -369,14 +219,6 @@ TypeValuePairs GetDefaultCreditCardTypeValuePairs() {
 // Returns the default AutofillProfile used in this test file.
 AutofillProfile ConstructDefaultProfile() {
   return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
-}
-
-// Wraps `ConstructDefaultProfile()`, but overrides ADDRESS_HOME_COUNTRY with
-// `country`.
-AutofillProfile ConstructDefaultProfileWithOverriddenCountry(
-    const std::string& country) {
-  return ConstructProfileFromTypeValuePairs(
-      GetDefaultProfileTypeValuePairsWithOverriddenCountry(country));
 }
 
 // Returns the second AutofillProfile used in this test file.
@@ -601,6 +443,9 @@ class FormDataImporterTest : public testing::Test {
   // Helper methods that simply forward the call to the private member (to avoid
   // having to friend every test that needs to access the private
   // PersonalDataManager::ImportAddressProfile or ExtractCreditCard).
+  // TODO(crbug.com/481379161): This code is currently partially-duplicated in
+  //     AddressFDITest and is only used by to-be-migrated address tests. Once
+  //     all address tests have migrated over, delete this function.
   void ExtractAddressProfiles(bool extraction_successful,
                               const FormStructure& form,
                               bool allow_save_prompts = true) {
@@ -630,6 +475,9 @@ class FormDataImporterTest : public testing::Test {
   // Verifies that the stored profiles in the PersonalDataManager equal
   // `expected_profiles` with respect to `AutofillProfile::Compare`.
   // Note, that order is taken into account.
+  // TODO(crbug.com/481379161): This code is currently partially-duplicated in
+  //     AddressFDITest and is only used by to-be-migrated address tests. Once
+  //     all address tests have migrated over, delete this function.
   void VerifyExpectationForExtractedAddressProfiles(
       const std::vector<AutofillProfile>& expected_profiles) {
     auto print_profiles = [&] {
@@ -695,6 +543,10 @@ class FormDataImporterTest : public testing::Test {
                    extracted_data.extracted_iban.value());
   }
 
+  // TODO(crbug.com/481379161): This code is currently partially-duplicated in
+  //     AddressFDITest and is only used by to-be-migrated address tests (with
+  //     one BrowsingHistory exception). Once all address tests have migrated
+  //     over, inline or delete this function.
   void ExtractAddressProfilesAndVerifyExpectation(
       const FormStructure& form,
       const std::vector<AutofillProfile>& expected_profiles) {
@@ -783,88 +635,6 @@ class FormDataImporterTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
 };
-
-// Tests that the country is not complemented if a country is part of the form.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ComplementCountry_PartOfForm) {
-  AutofillProfile kDefaultGermanProfile =
-      ConstructDefaultProfileWithOverriddenCountry("DE");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry("Germany"));
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {kDefaultGermanProfile});
-}
-
-// Tests that the complemented country prefers the variation country code over
-// the app locale (US). The form's country field is left empty.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ComplementCountry_VariationCountryCode) {
-  AutofillProfile kDefaultGermanProfile =
-      ConstructDefaultProfileWithOverriddenCountry("DE");
-
-  client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
-
-  // Retrieve a default profile with overridden country and overridden phone
-  // number to match kDefaultGermanProfile.
-  TypeValuePairs form_structure_pairs =
-      GetDefaultProfileTypeValuePairsWithOverriddenCountry("DE");
-  // Clear the country to verify that it gets complemented from the variation
-  // config.
-  SetValueForType(form_structure_pairs, ADDRESS_HOME_COUNTRY, "");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(form_structure_pairs);
-
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {kDefaultGermanProfile});
-}
-
-// Tests that without a variation country code, the country is complemented by
-// the app locale. The form's country field is left empty.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ComplementCountry_VariationConfigCountryCode) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry(""));
-  ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructDefaultProfileWithOverriddenCountry("US")});
-}
-
-// Tests that the country is complemented before parsing the phone number. This
-// is important, since the phone number validation relies on the profile's
-// country for nationally formatted numbers.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ComplementCountry_PhoneNumberParsing) {
-  // This is a nationally formatted German phone number, which libphonenumber
-  // doesn't parse under the "US" region.
-  const char* kNationalNumber = "01578 7912345";
-  const char* kHistogramName = "Autofill.ProfileImport.PhoneNumberParsed";
-
-  AutofillProfile expected_profile =
-      ConstructDefaultProfileWithOverriddenCountry("DE");
-
-  // Create an address form with `kNationalNumber` and without a country field.
-  TypeValuePairs type_value_pairs =
-      GetDefaultProfileTypeValuePairsWithOverriddenCountry("");
-  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, kNationalNumber);
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  // The complement country feature prefers the variation country code, so the
-  // imported country will have country = "DE" assigned.
-  client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
-
-  // Country complemention happens before parsing the phone number. Thus, at the
-  // time the number is parsed, we correctly apply the German rules.
-  base::HistogramTester histogram_tester;
-  // The `expected_profile` can successfully parse the number, as the
-  // profile's country is "DE".
-  EXPECT_TRUE(expected_profile.SetInfo(
-      PHONE_HOME_WHOLE_NUMBER, base::UTF8ToUTF16(kNationalNumber), kLocale));
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-  histogram_tester.ExpectUniqueSample(kHistogramName, true, 1);
-}
 
 // This test verifies that a phone number is stored correctly in the following
 // situation: A form contains a telephone number field that is classified as
