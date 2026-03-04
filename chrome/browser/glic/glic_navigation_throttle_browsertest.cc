@@ -57,8 +57,14 @@ std::unique_ptr<KeyedService> CreateMockGlicKeyedService(
 class GlicNavigationThrottleBrowserTest : public InProcessBrowserTest {
  public:
   GlicNavigationThrottleBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicWebContinuity}, {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebContinuity,
+          {{features::kGlicWebContinuityUrl.name,
+            "https://gemini.google.com/glic/continue"},
+           {features::kGlicWebContinuityOriginatingHost.name,
+            "https://gemini.google.com/"}}},
+         {features::kGlic, {}}},
+        {});
 
     create_services_subscription_ =
         BrowserContextDependencyManager::GetInstance()
@@ -86,7 +92,7 @@ class GlicNavigationThrottleBrowserTest : public InProcessBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
-                       InterceptGlicContinueUrlFromGemini) {
+                       InterceptGlicContinueUrlFromGeminiAndOpenGlicUi) {
   MockGlicKeyedService* mock_service = static_cast<MockGlicKeyedService*>(
       GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile(),
                                                    /*create=*/true));
@@ -98,16 +104,61 @@ IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTest,
       .Times(1);
 
   GURL target_url("https://www.google.com/");
-  GURL continue_url(
-      "https://gemini.google.com/glic/"
-      "continue?cid=123&targetUrl=" +
-      target_url.spec());
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=123&targetUrl=" + target_url.spec());
 
   content::TestNavigationObserver observer(
       browser()->tab_strip_model()->GetActiveWebContents());
   content::NavigationController::LoadURLParams params(continue_url);
-  params.initiator_origin =
-      url::Origin::Create(GURL("https://gemini.google.com"));
+  params.initiator_origin = url::Origin::Create(
+      GURL(features::kGlicWebContinuityOriginatingHost.Get()));
+  params.transition_type = ui::PAGE_TRANSITION_LINK;
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .LoadURLWithParams(params);
+  observer.Wait();
+
+  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
+            target_url);
+}
+
+class GlicNavigationThrottleBrowserTestWithNoFeatures
+    : public InProcessBrowserTest {
+ public:
+  GlicNavigationThrottleBrowserTestWithNoFeatures() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kGlicWebContinuity,
+          {{features::kGlicWebContinuityUrl.name,
+            "https://gemini.google.com/glic/continue"},
+           {features::kGlicWebContinuityOriginatingHost.name,
+            "https://gemini.google.com/"}}}},
+        {features::kGlic});
+
+    glic_test_environment_.SetForceSigninAndModelExecutionCapability(false);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    command_line->AppendSwitch(switches::kGlicDev);
+  }
+
+ private:
+  GlicTestEnvironment glic_test_environment_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(GlicNavigationThrottleBrowserTestWithNoFeatures,
+                       InterceptGlicContinueUrlFromGemini) {
+  GURL target_url("https://www.google.com/");
+  GURL continue_url(features::kGlicWebContinuityUrl.Get() +
+                    "?cid=123&targetUrl=" + target_url.spec());
+
+  content::TestNavigationObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  content::NavigationController::LoadURLParams params(continue_url);
+  params.initiator_origin = url::Origin::Create(
+      GURL(features::kGlicWebContinuityOriginatingHost.Get()));
   params.transition_type = ui::PAGE_TRANSITION_LINK;
   browser()
       ->tab_strip_model()
