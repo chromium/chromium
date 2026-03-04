@@ -175,6 +175,7 @@ static_library("test_support") {
     "//components/affiliations/core/browser:test_support",
     "//components/supervised_user/core/browser:device_parental_controls",
     "//components/supervised_user/core/browser:test_support",
+    "//third_party/abseil-cpp:absl",
     "//ui/base/unowned_user_data",
   ]
 
