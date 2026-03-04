@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#include "base/apple/foundation_util.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/debug/debugger.h"
@@ -136,9 +137,19 @@ bool IsSceneStartupEnabled() {
 #endif  // TARGET_OS_SIMULATOR
 
   if (!IsSceneStartupEnabled()) {
-    CGRect bounds = UIScreen.mainScreen.bounds;
-
-    _window = [[UIWindow alloc] initWithFrame:bounds];
+    UIWindowScene* scene = nil;
+    for (UIScene* connectedScene in UIApplication.sharedApplication
+             .connectedScenes) {
+      scene = base::apple::ObjCCast<UIWindowScene>(connectedScene);
+      if (scene) {
+        break;
+      }
+    }
+    if (!scene) {
+      return NO;
+    }
+    _window = [[UIWindow alloc] initWithWindowScene:scene];
+    _window.frame = UIScreen.mainScreen.bounds;
     PopulateUIWindow(_window);
   }
 
