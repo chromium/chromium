@@ -907,7 +907,8 @@ public class StripLayoutHelper
                         }
                     });
             int glicButtonMenuWidth =
-                    mContext.getResources().getDimensionPixelSize(R.dimen.glic_button_menu_width);
+                    mContext.getResources()
+                            .getDimensionPixelSize(R.dimen.tab_strip_glic_menu_max_width);
             mGlicButtonMenu.setWidth(glicButtonMenuWidth);
             mGlicButtonMenu.setModal(true);
         }

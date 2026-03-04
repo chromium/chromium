@@ -24,7 +24,4 @@ found in the LICENSE file.
 
     <!-- Width of keyboard focus ring and tab group color line -->
     <dimen name="tabstrip_strokewidth">2dp</dimen>
-
-    <!-- Tab strip Glic button values -->
-    <dimen name="glic_button_menu_width">144dp</dimen>
 </resources>
