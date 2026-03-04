@@ -5,6 +5,8 @@
 blink_core_sources_overscroll = [
   "overscroll_area_tracker.cc",
   "overscroll_area_tracker.h",
+  "overscroll_event.cc",
+  "overscroll_event.h",
 ]
 
 blink_core_tests_overscroll = [ "overscroll_area_tracker_test.cc" ]

@@ -579,6 +579,8 @@ static_idl_files_in_core = [
   "//third_party/blink/renderer/core/navigation_api/navigation_transition.idl",
   "//third_party/blink/renderer/core/navigation_api/navigation_update_current_entry_options.idl",
   "//third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.idl",
+  "//third_party/blink/renderer/core/overscroll/overscroll_event.idl",
+  "//third_party/blink/renderer/core/overscroll/overscroll_event_init.idl",
   "//third_party/blink/renderer/core/page/color_page_popup_controller.idl",
   "//third_party/blink/renderer/core/page/page_popup_controller.idl",
   "//third_party/blink/renderer/core/permissions_policy/feature_policy.idl",

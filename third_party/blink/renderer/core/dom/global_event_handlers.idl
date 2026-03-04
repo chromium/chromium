@@ -80,6 +80,7 @@ interface mixin GlobalEventHandlers {
   attribute EventHandler onmouseover;
   attribute EventHandler onmouseup;
   attribute EventHandler onmousewheel;
+  [RuntimeEnabled=OverscrollGestures] attribute EventHandler onoverscroll;
   attribute EventHandler onpause;
   attribute EventHandler onplay;
   attribute EventHandler onplaying;
