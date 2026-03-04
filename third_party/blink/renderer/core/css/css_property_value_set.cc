@@ -230,6 +230,21 @@ MutableCSSPropertyValueSet::MutableCSSPropertyValueSet(
 
 static String SerializeShorthand(const CSSPropertyValueSet& property_set,
                                  CSSPropertyID property_id) {
+  if (property_id == CSSPropertyID::kAll) {
+    int all_index = property_set.FindPropertyIndex(property_id);
+    if (all_index == -1) {
+      return g_empty_string;
+    }
+    const CSSPropertyValue& all_property = property_set.PropertyAt(all_index);
+    for (unsigned i = all_index + 1; i < property_set.PropertyCount(); i++) {
+      const CSSPropertyValue& property = property_set.PropertyAt(i);
+      if (property.IsAffectedByAll() &&
+          all_property.Value() != property.Value()) {
+        return g_empty_string;
+      }
+    }
+    return all_property.Value().CssText();
+  }
   StylePropertyShorthand shorthand = shorthandForProperty(property_id);
   if (!shorthand.length()) {
     return String();
@@ -256,6 +271,19 @@ String CSSPropertyValueSet::GetPropertyValue(const T& property) const {
   if (!shorthand_serialization.IsNull()) {
     return shorthand_serialization;
   }
+
+  if constexpr (std::is_same_v<T, CSSPropertyID>) {
+    if (CSSProperty::Get(property).IsAffectedByAll()) {
+      int all_index = FindPropertyIndex(CSSPropertyID::kAll);
+      if (all_index != -1) {
+        int property_index = FindPropertyIndex(property);
+        if (property_index < all_index) {
+          return GetPropertyCSSValue(CSSPropertyID::kAll)->CssText();
+        }
+      }
+    }
+  }
+
   const CSSValue* value = GetPropertyCSSValue(property);
   if (value) {
     return value->CssText();
@@ -527,6 +555,22 @@ MutableCSSPropertyValueSet::FindInsertionPointForID(CSSPropertyID property_id) {
           RemovePropertyAtIndex(to_replace_index, nullptr);
           return nullptr;
         }
+      }
+    }
+  }
+  if (property_id == CSSPropertyID::kAll) {
+    int to_replace_index =
+        static_cast<int>(to_replace - property_vector_.data());
+    RemovePropertyAtIndex(to_replace_index, nullptr);
+    return nullptr;
+  } else if (CSSProperty::Get(property_id).IsAffectedByAll()) {
+    int all_index = FindPropertyIndex(CSSPropertyID::kAll);
+    if (all_index != -1) {
+      int to_replace_index =
+          static_cast<int>(to_replace - property_vector_.data());
+      if (to_replace_index < all_index) {
+        RemovePropertyAtIndex(to_replace_index, nullptr);
+        return nullptr;
       }
     }
   }
