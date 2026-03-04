@@ -153,16 +153,9 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
 }
 #endif
 
-// TODO(crbug.com/378037524): This test was flaky on Windows ASan bots.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
-#define MAYBE_ReleaseFreeDiscardableMemory_Explicitly \
-  DISABLED_ReleaseFreeDiscardableMemory_Explicitly
-#else
-#define MAYBE_ReleaseFreeDiscardableMemory_Explicitly \
-  ReleaseFreeDiscardableMemory_Explicitly
-#endif
+// TODO(crbug.com/362120461): Flaky on many builders.
 IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
-                       MAYBE_ReleaseFreeDiscardableMemory_Explicitly) {
+                       DISABLED_ReleaseFreeDiscardableMemory_Explicitly) {
   const size_t kSize = 1024 * 1024;  // 1MiB.
 
   base::DiscardableMemoryBacking impl = base::GetDiscardableMemoryBacking();
