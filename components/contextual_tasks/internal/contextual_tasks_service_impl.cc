@@ -28,6 +28,7 @@
 #include "components/sync/base/data_type.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
+#include "components/sync/protocol/gemini_thread_specifics.pb.h"
 #include "url/gurl.h"
 
 namespace contextual_tasks {
@@ -619,6 +620,53 @@ void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
 
 void ContextualTasksServiceImpl::OnGeminiThreadDataStoreLoaded() {
   on_data_loaded_barrier_.Run();
+}
+
+void ContextualTasksServiceImpl::OnGeminiThreadAddedOrUpdatedRemotely(
+    const std::vector<sync_pb::GeminiThreadSpecifics>& thread_specifics) {
+  std::map<std::string, const sync_pb::GeminiThreadSpecifics&> thread_map;
+  for (const auto& specifics : thread_specifics) {
+    thread_map.emplace(specifics.conversation_id(), specifics);
+  }
+
+  // Update existing tasks
+  for (auto& task_entry : tasks_) {
+    ContextualTask& task = task_entry.second;
+    if (!task.GetThread() || task.GetThread()->type != ThreadType::kGemini) {
+      continue;
+    }
+
+    auto it = thread_map.find(task.GetThread()->server_id);
+    if (it == thread_map.end()) {
+      continue;
+    }
+
+    // Check if the thread has changed for the task.
+    const sync_pb::GeminiThreadSpecifics& new_thread_entity = it->second;
+    const std::optional<Thread>& old_thread = task.GetThread();
+    if (old_thread->title != new_thread_entity.title()) {
+      task.AddThread(Thread(ThreadType::kGemini,
+                            new_thread_entity.conversation_id(),
+                            new_thread_entity.title()));
+      NotifyTaskUpdated(task, TriggerSource::kRemote);
+    }
+
+    thread_map.erase(it->first);
+  }
+
+  // Create new task for specifics which didn't have an existing task.
+  for (const auto& [thread_id, specifics] : thread_map) {
+    Thread thread(ThreadType::kGemini, specifics.conversation_id(),
+                  specifics.title());
+    ContextualTask new_task =
+        CreateTaskForThread(thread, supports_ephemeral_only_);
+    const auto it =
+        tasks_.emplace(new_task.GetTaskId(), std::move(new_task)).first;
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskAdded,
+                                  weak_ptr_factory_.GetWeakPtr(), it->second,
+                                  TriggerSource::kRemote));
+  }
 }
 
 std::pair<std::map<base::Uuid, ContextualTask>::iterator, bool>

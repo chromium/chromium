@@ -65,6 +65,7 @@ GeminiThreadSyncBridge::ApplyIncrementalSyncChanges(
     syncer::EntityChangeList entity_changes) {
   std::unique_ptr<syncer::DataTypeStore::WriteBatch> batch =
       data_type_store_->CreateWriteBatch();
+  std::vector<sync_pb::GeminiThreadSpecifics> added_or_updated;
   for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
     const sync_pb::EntitySpecifics& entity_specifics = change->data().specifics;
 
@@ -76,6 +77,7 @@ GeminiThreadSyncBridge::ApplyIncrementalSyncChanges(
             entity_specifics.gemini_thread();
         batch->WriteData(change->storage_key(),
                          entity_specifics.gemini_thread().SerializeAsString());
+        added_or_updated.emplace_back(entity_specifics.gemini_thread());
         break;
       }
       case syncer::EntityChange::ACTION_DELETE:
@@ -90,6 +92,9 @@ GeminiThreadSyncBridge::ApplyIncrementalSyncChanges(
       std::move(batch),
       base::BindOnce(&GeminiThreadSyncBridge::OnDataTypeStoreCommit,
                      weak_ptr_factory_.GetWeakPtr()));
+  for (auto& observer : observers_) {
+    observer.OnGeminiThreadAddedOrUpdatedRemotely(added_or_updated);
+  }
   return std::nullopt;
 }
 

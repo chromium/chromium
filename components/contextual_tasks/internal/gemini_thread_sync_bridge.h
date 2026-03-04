@@ -33,6 +33,9 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
 
     // Invoked when the store containing the Gemini Threads is loaded.
     virtual void OnGeminiThreadDataStoreLoaded() = 0;
+    // Invoked when a Gemini Thread is created or updated.
+    virtual void OnGeminiThreadAddedOrUpdatedRemotely(
+        const std::vector<sync_pb::GeminiThreadSpecifics>& specifics) = 0;
   };
   GeminiThreadSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,

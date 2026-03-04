@@ -138,6 +138,8 @@ class ContextualTasksServiceImpl : public ContextualTasksService,
 
   // GeminiThreadSyncBridge::Observer implementation.
   void OnGeminiThreadDataStoreLoaded() override;
+  void OnGeminiThreadAddedOrUpdatedRemotely(
+      const std::vector<sync_pb::GeminiThreadSpecifics>& specifics) override;
 
   void NotifyTaskAdded(const ContextualTask& task, TriggerSource source);
   void NotifyTaskUpdated(const ContextualTask& task, TriggerSource source);
