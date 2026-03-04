@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/containers/lru_cache.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -72,6 +73,8 @@ class DataProtectionUrlLookupService : public KeyedService {
   // cache which maps the full URL specification string to the safe-browsing
   // verdict, and its expiry time.
   base::LRUCache<std::string, Verdict> verdict_cache_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<DataProtectionUrlLookupService> weak_factory_{this};
 };

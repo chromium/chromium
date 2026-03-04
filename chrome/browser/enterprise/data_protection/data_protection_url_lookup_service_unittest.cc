@@ -4,13 +4,11 @@
 
 #include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service.h"
 
-#include "base/test/scoped_feature_list.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
-#include "chrome/test/base/testing_profile.h"
+#include "base/functional/callback_helpers.h"
+#include "base/test/task_environment.h"
 #include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
-#include "content/public/browser/web_contents.h"
-#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
@@ -77,17 +75,12 @@ UrlLookupTestCase kUrlLookupTestCases[] = {{.cache_duration_sec = 90,
                                             .second_do_lookup_delay_sec = 100,
                                             .do_lookup_call_count = 2}};
 
-// The RenderViewHostTestHarness is used to obtain a test WebContents instance
 class DataProtectionUrlLookupServiceTest
-    : public content::RenderViewHostTestHarness,
+    : public testing::Test,
       public testing::WithParamInterface<UrlLookupTestCase> {
  public:
   DataProtectionUrlLookupServiceTest()
-      : content::RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  void SetUp() override { content::RenderViewHostTestHarness::SetUp(); }
-
-  void TearDown() override { content::RenderViewHostTestHarness::TearDown(); }
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   void CreateLookupService() {
     service_ = std::make_unique<DataProtectionUrlLookupService>();
@@ -100,20 +93,13 @@ class DataProtectionUrlLookupServiceTest
     return service_.get();
   }
 
-  // content::RenderViewHostTestHarness:
-  std::unique_ptr<content::BrowserContext> CreateBrowserContext() override {
-    return std::make_unique<TestingProfile>();
-  }
-
- private:
+ protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<DataProtectionUrlLookupService> service_;
 };
 
 TEST_P(DataProtectionUrlLookupServiceTest, VerdictCachePopulated) {
-  base::test::ScopedFeatureList scoped_features;
   UrlLookupTestCase test_case = GetParam();
-
-  SetContents(CreateTestWebContents());
 
   // create the mock lookup
   MockRealTimeUrlLookupService lookup_service;
@@ -126,15 +112,16 @@ TEST_P(DataProtectionUrlLookupServiceTest, VerdictCachePopulated) {
 
   // call DoLookup, passing the fake
   GURL url(kUrl);
+  SessionID session_id = SessionID::FromSerializedValue(1);
   dp_lookup_service->DoLookup(&lookup_service, url, base::DoNothing(),
-                              SessionID::FromSerializedValue(1));
+                              session_id);
 
-  task_environment()->FastForwardBy(
+  task_environment_.FastForwardBy(
       base::Seconds(test_case.second_do_lookup_delay_sec));
 
   // second call to the same url ensure value is fetched from cache
   dp_lookup_service->DoLookup(&lookup_service, url, base::DoNothing(),
-                              SessionID::FromSerializedValue(1));
+                              session_id);
 }
 
 INSTANTIATE_TEST_SUITE_P(,

@@ -14,7 +14,6 @@
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/browser_thread.h"
 
 namespace {
 
@@ -60,7 +59,7 @@ void DataProtectionUrlLookupService::DoLookup(
     const GURL& url,
     LookupCallback callback,
     SessionID session_id) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback);
 
   auto cached_verdict = verdict_cache_.Peek(url.spec());
@@ -95,7 +94,7 @@ void DataProtectionUrlLookupService::OnRealTimeLookupComplete(
     bool is_success,
     bool is_cached,
     std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!is_success) {
     rt_lookup_response.reset();
   } else if (rt_lookup_response) {
