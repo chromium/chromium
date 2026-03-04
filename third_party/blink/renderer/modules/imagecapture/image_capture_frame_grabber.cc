@@ -209,14 +209,13 @@ void ImageCaptureFrameGrabber::OnVideoFrame(
   scoped_refptr<StaticBitmapImage> image;
 
   if (cached_draw_info_) {
-    std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
-    if (!snapshot_provider_) {
-      sw_draw_info = required_provider_info;
+    if (snapshot_provider_) {
+      image = CreateAcceleratedImageFromVideoFrame(
+          frame, snapshot_provider_.get(), &video_renderer_);
+    } else {
+      image = CreateUnacceleratedImageFromVideoFrame(
+          frame, required_provider_info, sw_draw_surface_, &video_renderer_);
     }
-
-    image = CreateImageFromVideoFrame(frame, snapshot_provider_.get(),
-                                      std::move(sw_draw_info), sw_draw_surface_,
-                                      &video_renderer_);
   }
 
   timeout_task_handle_.Cancel();
