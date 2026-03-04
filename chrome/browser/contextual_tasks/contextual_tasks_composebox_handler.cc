@@ -1037,7 +1037,7 @@ void ContextualTasksComposeboxHandler::OnLensThumbnailCreated(
   // Clear any existing visual selection context.
   if (visual_selection_token_) {
     OnFileUploadStatusChanged(
-        *visual_selection_token_, lens::MimeType::kUnknown,
+        *visual_selection_token_, lens::MimeType::kImage,
         contextual_search::FileUploadStatus::kUploadReplaced, std::nullopt);
   }
 
@@ -1076,6 +1076,14 @@ void ContextualTasksComposeboxHandler::OnVisualSelectionAdded(
     // token so that it can be used for the query even if the overlay is closed
     // and reopened.
     visual_selection_overlay_token_ = overlay_token;
+
+    // Since a fake visual selection file is added to the composebox for the
+    // purpose of UI representation, this needs to call the
+    // OnFileUploadStatusChanged() to avoid the visual selection being
+    // considered as pending upload. Assume it is kUploadSuccessful.
+    OnFileUploadStatusChanged(*visual_selection_token_, lens::MimeType::kImage,
+                              contextual_search::FileUploadStatus::kUploadSuccessful,
+                              std::nullopt);
   } else {
     visual_selection_token_ = std::nullopt;
     visual_selection_overlay_token_ = std::nullopt;

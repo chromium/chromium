@@ -140,6 +140,14 @@ class TestContextualTasksComposeboxHandler
               GetLensOverlayToken,
               (),
               (override));
+  MOCK_METHOD(
+      void,
+      OnFileUploadStatusChanged,
+      (const base::UnguessableToken& file_token,
+       lens::MimeType mime_type,
+       contextual_search::FileUploadStatus file_upload_status,
+       const std::optional<contextual_search::FileUploadErrorType>& error_type),
+      (override));
 
  protected:
   contextual_tasks::ContextualTasksService* GetContextualTasksService()
@@ -277,6 +285,20 @@ class ContextualTasksComposeboxHandlerTest
         base::BindRepeating(&ContextualTasksUI::GetInputStateModel,
                             base::Unretained(mock_ui_.get())));
     handler_->SetMockContextualTasksService(mock_contextual_tasks_service_ptr_);
+
+    // Default to calling the real implementation for OnFileUploadStatusChanged.
+    ON_CALL(*handler_, OnFileUploadStatusChanged(testing::_, testing::_,
+                                                 testing::_, testing::_))
+        .WillByDefault([handler = handler_.get()](
+                           const base::UnguessableToken& file_token,
+                           lens::MimeType mime_type,
+                           contextual_search::FileUploadStatus file_upload_status,
+                           const std::optional<
+                               contextual_search::FileUploadErrorType>&
+                               error_type) {
+          handler->ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
+              file_token, mime_type, file_upload_status, error_type);
+        });
 
     auto searchbox_page_remote =
         searchbox_page_receiver_.BindNewPipeAndPassRemote();
@@ -2744,4 +2766,59 @@ TEST_F(ContextualTasksComposeboxHandlerTest, ActiveModelIsPassed) {
   ASSERT_NE(handler_model, nullptr);
   EXPECT_EQ(handler_model->get_state_for_testing().active_model,
             omnibox::ModelMode::MODEL_MODE_GEMINI_PRO);
+}
+
+TEST_F(ContextualTasksComposeboxHandlerTest,
+       OnLensThumbnailCreated_TriggersUploadStatusChanges) {
+  // Setup: mock the overlay token.
+  base::UnguessableToken overlay_token = base::UnguessableToken::Create();
+  EXPECT_CALL(*mock_lens_controller_->mock_router(),
+              overlay_tab_context_file_token())
+      .WillRepeatedly(testing::Return(overlay_token));
+
+  // Mock OnFileUploadStatusChanged to verify calls and forward to real
+  // implementation.
+  // We capture the uploaded tokens to verify them.
+  std::vector<base::UnguessableToken> successful_uploads;
+  std::vector<base::UnguessableToken> replaced_uploads;
+
+  EXPECT_CALL(*handler_,
+              OnFileUploadStatusChanged(testing::_, testing::_, testing::_,
+                                        testing::_))
+      .WillRepeatedly([&](const base::UnguessableToken& file_token,
+                          lens::MimeType mime_type,
+                          contextual_search::FileUploadStatus file_upload_status,
+                          const std::optional<
+                              contextual_search::FileUploadErrorType>&
+                              error_type) {
+        if (file_upload_status ==
+            contextual_search::FileUploadStatus::kUploadSuccessful) {
+          successful_uploads.push_back(file_token);
+        } else if (file_upload_status ==
+                   contextual_search::FileUploadStatus::kUploadReplaced) {
+          replaced_uploads.push_back(file_token);
+        }
+        handler_->ContextualTasksComposeboxHandler::OnFileUploadStatusChanged(
+            file_token, mime_type, file_upload_status, error_type);
+      });
+
+  // 1. First selection.
+  std::string thumbnail_data = "data:image/png;base64,DATA";
+  handler_->OnLensThumbnailCreated(thumbnail_data);
+
+  // Verify: Should have one successful upload and no replacements.
+  ASSERT_EQ(successful_uploads.size(), 1u);
+  ASSERT_EQ(replaced_uploads.size(), 0u);
+  base::UnguessableToken first_token = successful_uploads[0];
+
+  // 2. Second selection (replace).
+  std::string thumbnail_data_2 = "data:image/png;base64,DATA2";
+  handler_->OnLensThumbnailCreated(thumbnail_data_2);
+
+  // Verify: Should have one replacement (the first token) and one new
+  // successful upload.
+  ASSERT_EQ(successful_uploads.size(), 2u);
+  ASSERT_EQ(replaced_uploads.size(), 1u);
+  EXPECT_EQ(replaced_uploads[0], first_token);
+  EXPECT_NE(successful_uploads[1], first_token);
 }
