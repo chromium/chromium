@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.toolbar.extensions;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Rect;
-import android.view.View;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -25,8 +23,7 @@ import org.chromium.ui.listmenu.ListMenuButton;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.AnchoredPopupWindow;
-import org.chromium.ui.widget.RectProvider;
+import org.chromium.ui.widget.ViewRectProvider;
 
 import java.util.List;
 
@@ -44,14 +41,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private final Runnable mOnReady;
     private final ChromeAndroidTask mTask;
     private final Profile mProfile;
-    private final View mRootView;
 
     /**
      * @param context The context to use.
      * @param task The task object.
      * @param currentTabSupplier The supplier for the current tab.
      * @param actionModels The model list to populate with extension actions.
-     * @param rootView The root view of the menu.
      * @param onReady A runnable to run when the menu is ready to be shown.
      */
     public ExtensionsMenuMediator(
@@ -61,14 +56,12 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
             NullableObservableSupplier<Tab> currentTabSupplier,
             ModelList actionModels,
             PropertyModel propertyModel,
-            View rootView,
             Runnable onReady) {
         mActionModels = actionModels;
         mContext = context;
         mCurrentTabSupplier = currentTabSupplier;
         mOnReady = onReady;
         mMenuPropertyModel = propertyModel;
-        mRootView = rootView;
         mTask = task;
         mProfile = profile;
         mMenuBridge = new ExtensionsMenuBridge(mTask, mProfile, /* observer= */ this);
@@ -79,39 +72,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
 
         if (mMenuBridge.isReady()) {
             onReady();
-        }
-    }
-
-    private static class RelativeViewRectProvider extends RectProvider {
-        private final View mAnchorView;
-        private final View mParentView;
-        private final int[] mAnchorLocation = new int[2];
-        private final int[] mParentLocation = new int[2];
-
-        /**
-         * @param anchorView The view to be used as an anchor.
-         * @param parentView The parent view to calculate relative coordinates.
-         */
-        RelativeViewRectProvider(View anchorView, View parentView) {
-            mAnchorView = anchorView;
-            mParentView = parentView;
-        }
-
-        /**
-         * For {@link AnchoredPopupWindow} to correctly place nested popup windows, we have to make
-         * sure to send coordinates relative to the main window of the application, not positions
-         * relative to the parent popup window nor the screen.
-         */
-        @Override
-        public Rect getRect() {
-            mAnchorView.getLocationOnScreen(mAnchorLocation);
-            mParentView.getLocationOnScreen(mParentLocation);
-
-            int x = mAnchorLocation[0] - mParentLocation[0];
-            int y = mAnchorLocation[1] - mParentLocation[1];
-
-            mRect.set(x, y, x + mAnchorView.getWidth(), y + mAnchorView.getHeight());
-            return mRect;
         }
     }
 
@@ -140,9 +100,8 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 mContext,
                 buttonView,
                 contextMenuBridge,
-                new RelativeViewRectProvider(buttonView, mRootView),
-                /* dismissRunnable= */ null,
-                mRootView);
+                new ViewRectProvider(buttonView),
+                /* dismissRunnable= */ null);
     }
 
     /**

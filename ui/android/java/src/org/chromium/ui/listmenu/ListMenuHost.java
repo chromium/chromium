@@ -63,7 +63,6 @@ public class ListMenuHost
     private static ListMenuHost.@Nullable PopupMenuHelper sPopupMenuHelperForTesting;
 
     private final View mView;
-    private @Nullable View mRootView;
     private final boolean mMenuVerticalOverlapAnchor;
     private final boolean mMenuHorizontalOverlapAnchor;
 
@@ -193,17 +192,6 @@ public class ListMenuHost
         mMenuMaxWidth = maxWidth;
     }
 
-    /**
-     * Set the root view for {@link AnchoredPopupWindow} to use. This is necessary when the root
-     * view of {@link mView} does not match the root view of the application, for example when the
-     * {@link mView} is inside another {@link AnchoredPopupWindow}.
-     *
-     * @param rootView The {@link View} to use to get window tokens.
-     */
-    public void setRootView(View rootView) {
-        mRootView = rootView;
-    }
-
     /** Init the popup window with provided attributes, called before {@link #showMenu()} */
     private void initPopupWindow() {
         if (mDelegate == null) throw new IllegalStateException("Delegate was not set.");
@@ -221,7 +209,7 @@ public class ListMenuHost
         AnchoredPopupWindow.Builder builder =
                 new AnchoredPopupWindow.Builder(
                                 mView.getContext(),
-                                mRootView != null ? mRootView : mView,
+                                mView,
                                 new ColorDrawable(Color.TRANSPARENT),
                                 () -> contentView,
                                 mDelegate.getRectProvider(mView))
@@ -290,7 +278,7 @@ public class ListMenuHost
 
         final int lateralPadding = contentView.getPaddingLeft() + contentView.getPaddingRight();
 
-        View rootView = mRootView != null ? mRootView : mView.getRootView();
+        View rootView = mView.getRootView();
 
         AnchoredPopupWindow popupMenu =
                 new AnchoredPopupWindow.Builder(

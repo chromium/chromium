@@ -405,8 +405,7 @@ class ExtensionActionListMediator implements Destroyable {
                 buttonView,
                 bridge,
                 MenuBuilderHelper.getRectProvider(buttonView),
-                this::closeContextMenu,
-                /* rootView= */ null);
+                this::closeContextMenu);
         mActionState = new ActionState.ContextMenuActive(actionId);
     }
 

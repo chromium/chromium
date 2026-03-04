@@ -182,7 +182,6 @@ public class ExtensionsMenuCoordinator implements Destroyable, ExtensionsToolbar
                         mCurrentTabSupplier,
                         mExtensionModels,
                         mPropertyModel,
-                        mExtensionsMenuButton.getRootView(),
                         /* onReady= */ () -> {
                             mExtensionsMenuButton.showMenu();
                         });

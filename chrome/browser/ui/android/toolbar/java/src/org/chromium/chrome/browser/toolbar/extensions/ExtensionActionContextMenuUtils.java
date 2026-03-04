@@ -39,15 +39,13 @@ public final class ExtensionActionContextMenuUtils {
      *     lifecycle.
      * @param rectProvider The {@link RectProvider} to use for positioning the menu.
      * @param dismissRunnable The {@link Runnable} to run after the context menu is dismissed.
-     * @param rootView The root {@link View}, if required by the buttonView.
      */
     public static void showContextMenu(
             Context context,
             ListMenuButton buttonView,
             ExtensionActionContextMenuBridge bridge,
             RectProvider rectProvider,
-            @Nullable Runnable dismissRunnable,
-            @Nullable View rootView) {
+            @Nullable Runnable dismissRunnable) {
         ModelList modelList = bridge.getModelList();
 
         ListMenu.Delegate buttonDelegate =
@@ -106,9 +104,6 @@ public final class ExtensionActionContextMenuUtils {
                     }
                 };
         buttonView.setDelegate(listDelegate, false);
-        if (rootView != null) {
-            buttonView.setRootView(rootView);
-        }
 
         buttonView.addPopupListener(
                 new ListMenuHost.PopupMenuShownListener() {

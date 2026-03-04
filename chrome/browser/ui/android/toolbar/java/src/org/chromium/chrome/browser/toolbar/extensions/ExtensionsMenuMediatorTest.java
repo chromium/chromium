@@ -145,7 +145,6 @@ public class ExtensionsMenuMediatorTest {
                         mCurrentTabSupplier,
                         mActionModels,
                         mMenuPropertyModel,
-                        null,
                         mOnReadyRunnable);
 
         // Capture the bridge instance created inside the constructor
@@ -218,7 +217,6 @@ public class ExtensionsMenuMediatorTest {
                         mCurrentTabSupplier,
                         mActionModels,
                         mMenuPropertyModel,
-                        null,
                         mOnReadyRunnable);
 
         // Verify it should have populated immediately without needing a callback.
