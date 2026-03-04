@@ -7,7 +7,7 @@
 #import "components/pref_registry/pref_registry_syncable.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 
 namespace gemini {

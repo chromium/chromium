@@ -6,7 +6,7 @@
 
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_view_controller.h"
-#import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/overlays/model/public/web_content_area/alert_overlay.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_coordinator+subclassing.h"

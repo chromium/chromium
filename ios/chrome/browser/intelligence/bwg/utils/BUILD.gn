@@ -4,7 +4,6 @@
 
 source_set("constants") {
   sources = [
-    "bwg_constants.h",
     "gemini_constants.h",
     "gemini_constants.mm",
   ]
