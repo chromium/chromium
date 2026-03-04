@@ -6462,6 +6462,11 @@ const FeatureEntry kFeatureEntries[] = {
          kAndroidAppIntegrationMultiDataSourceVariations,
          "AndroidAppIntegrationMultiDataSource")},
 
+    {"android-history-clustering",
+     flag_descriptions::kAndroidHistoryClusteringName,
+     flag_descriptions::kAndroidHistoryClusteringDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidHistoryClustering)},
+
     {"new-tab-page-customization-v2",
      flag_descriptions::kNewTabPageCustomizationV2Name,
      flag_descriptions::kNewTabPageCustomizationV2Description, kOsAndroid,
