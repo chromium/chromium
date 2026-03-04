@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "components/send_tab_to_self/entry_point_display_reason.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/global_routing_id.h"
@@ -121,6 +122,7 @@ class SendTabToSelfBubbleController
 
   void SelectorGeneratedForRequest(
       base::Token request_token,
+      bool is_browser_timeout,
       const std::string& selector,
       shared_highlighting::LinkGenerationError error,
       shared_highlighting::LinkGenerationReadyStatus ready_status);
@@ -138,7 +140,9 @@ class SendTabToSelfBubbleController
     content::GlobalRenderFrameHostId main_frame_id;
   };
 
-  void SendFinalizedRequest(PendingRequest request);
+  void SendFinalizedRequest(
+      PendingRequest request,
+      std::optional<ScrollPositionGenerationOutcome> outcome);
 
   base::TimeDelta GetSelectorGenerationTimeout() const;
 

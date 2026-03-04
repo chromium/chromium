@@ -89,6 +89,21 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
+<!-- LINT.IfChange(SendTabToSelfScrollPositionGenerationOutcome) -->
+
+<enum name="SendTabToSelfScrollPositionGenerationOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Browser timeout"/>
+  <int value="2" label="Main frame changed"/>
+  <int value="3" label="Main frame unavailable"/>
+  <int value="4" label="Empty selector"/>
+  <int value="5" label="Link generation error"/>
+  <int value="6" label="Invalid selector"/>
+  <int value="7" label="Renderer timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(/components/send_tab_to_self/metrics_util.h:ScrollPositionGenerationOutcome) -->
+
 <enum name="ShareCustomAction">
   <int value="0" label="COPY"/>
   <int value="1" label="COPY_IMAGE"/>

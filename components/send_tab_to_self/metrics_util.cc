@@ -58,4 +58,10 @@ void RecordNotificationThrottled() {
                                 NotificationStatus::kThrottled);
 }
 
+void RecordScrollPositionGenerationOutcome(
+    ScrollPositionGenerationOutcome outcome) {
+  base::UmaHistogramEnumeration(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome", outcome);
+}
+
 }  // namespace send_tab_to_self

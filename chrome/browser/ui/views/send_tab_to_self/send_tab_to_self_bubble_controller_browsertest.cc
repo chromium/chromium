@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
@@ -14,6 +15,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/send_tab_to_self/features.h"
+#include "components/send_tab_to_self/metrics_util.h"
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
@@ -177,6 +179,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
+  base::HistogramTester histogram_tester;
   controller->OnDeviceSelected("device_1");
   observer.WaitForEntryAdded();
 
@@ -184,6 +187,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             observer.last_added_entry()->GetURL());
   // The scroll position should be populated from the successful extraction.
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
+      ScrollPositionGenerationOutcome::kSuccess, 1);
+
   EXPECT_FALSE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
 }
@@ -209,6 +216,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
+  base::HistogramTester histogram_tester;
   controller->OnDeviceSelected("device_1");
   observer.WaitForEntryAdded();
 
@@ -216,6 +224,9 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   EXPECT_EQ(web_contents->GetLastCommittedURL(),
             observer.last_added_entry()->GetURL());
   // The scroll position should be empty because the page has no content.
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
+      ScrollPositionGenerationOutcome::kLinkGenerationError, 1);
   EXPECT_TRUE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
 }
@@ -258,6 +269,7 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
   TestSendTabToSelfModelObserver observer(
       sync_service->GetSendTabToSelfModel());
 
+  base::HistogramTester histogram_tester;
   controller->OnDeviceSelected("device_1");
   observer.WaitForEntryAdded();
 
@@ -267,6 +279,10 @@ IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleControllerBrowserTest,
 
   // The scroll position should be populated since the text is now in the
   // viewport.
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome",
+      ScrollPositionGenerationOutcome::kSuccess, 1);
+
   EXPECT_FALSE(
       observer.last_added_entry()->GetPageContext().scroll_position.IsEmpty());
   // Verify that the generated selector matches the expected text.

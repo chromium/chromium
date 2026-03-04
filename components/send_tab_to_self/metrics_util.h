@@ -35,6 +35,28 @@ void RecordNotificationDismissReasonUnknown();
 // Records when a received STTS notification is throttled from being sent.
 void RecordNotificationThrottled();
 
+// Status of scroll position generation when sending a tab.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(ScrollPositionGenerationOutcome)
+enum class ScrollPositionGenerationOutcome {
+  kSuccess = 0,
+  kBrowserTimeout = 1,
+  kMainFrameChanged = 2,
+  kMainFrameUnavailable = 3,
+  kEmptySelector = 4,
+  kLinkGenerationError = 5,
+  kInvalidSelector = 6,
+  kRendererTimeout = 7,
+  kMaxValue = kRendererTimeout,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/sharing/enums.xml:SendTabToSelfScrollPositionGenerationOutcome)
+
+// Records the outcome of scroll position generation when sending a tab.
+void RecordScrollPositionGenerationOutcome(
+    ScrollPositionGenerationOutcome outcome);
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_

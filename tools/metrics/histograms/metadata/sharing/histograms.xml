@@ -385,6 +385,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome"
+    enum="SendTabToSelfScrollPositionGenerationOutcome"
+    expires_after="2026-10-01">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the outcome of attempting to generate a text fragment for scroll
+    position restoration when a user sends a tab to themselves. Recorded when
+    the selector generation completes, times out, or fails.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SharingHubAndroid.CustomAction"
     enum="ShareCustomAction" expires_after="2026-07-19">
   <owner>wenyufu@chromium.org</owner>
