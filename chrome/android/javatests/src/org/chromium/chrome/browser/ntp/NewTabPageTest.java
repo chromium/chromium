@@ -267,6 +267,8 @@ public class NewTabPageTest {
     @MediumTest
     @Feature({"NewTabPage", "FeedNewTabPage", "RenderTest"})
     @DisableFeatures({"FeedHeaderRemoval", "WebFeedKillSwitch"})
+    // Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+    @Restriction({DeviceFormFactor.PHONE_OR_TABLET})
     public void testRender_ArticleSectionHeader() throws Exception {
         // Scroll to the article section header in case it is not visible.
         onView(withId(R.id.feed_stream_recycler_view))

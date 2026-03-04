@@ -116,6 +116,8 @@ import java.util.concurrent.TimeoutException;
  */
 @DoNotBatch(reason = "Complex tests, need to start fresh")
 @RunWith(ChromeJUnit4ClassRunner.class)
+// Restrict to Phones and Tablets because Desktop Android does not show feed in NTP.
+@Restriction({DeviceFormFactor.PHONE_OR_TABLET})
 @CommandLineFlags.Add({
     ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
     "disable-features=IPH_FeedHeaderMenu"

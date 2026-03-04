@@ -54,6 +54,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
@@ -515,6 +516,27 @@ public class NtpCustomizationMediatorUnitTest {
         // Disable NtpCustomBackgroundEnabled by policy.
         when(mNtpCustomizationPolicyManager.isNtpCustomBackgroundEnabled()).thenReturn(false);
         assertEquals(List.of(MVT, NTP_CARDS, FEED), mMediator.buildListContent(mContext));
+    }
+
+    @Test
+    public void testBuildListContent_ExcludesFeedOnAndroidDesktop() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        assertFalse(FeedFeatures.isFeedEnabled(mProfile));
+        assertFalse(mMediator.buildListContent(mContext).contains(FEED));
+    }
+
+    @Test
+    @Features.DisableFeatures({ChromeFeatureList.NTP_SIMPLIFICATION})
+    public void testBuildListContent_IncludesFeedOnAndroidDesktopWhenNtpSimplificationDisabled() {
+        DeviceInfo.setIsDesktopForTesting(true);
+        when(mPrefService.getBoolean(Pref.ENABLE_SNIPPETS_BY_DSE)).thenReturn(true);
+        when(mFeedServiceBridgeJniMock.isEnabled()).thenReturn(true);
+
+        assertTrue(FeedFeatures.isFeedEnabled(mProfile));
+        assertTrue(mMediator.buildListContent(mContext).contains(FEED));
     }
 
     @Test
