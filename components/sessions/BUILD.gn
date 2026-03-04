@@ -248,6 +248,7 @@ bundle_data("unit_tests_bundle_data") {
   sources = [
     "//components/test/data/sessions/Session-v1NoMarker",
     "//components/test/data/sessions/Session-v2NoMarkerEncrypted",
+    "//components/test/data/sessions/Session-v3With2Appends",
     "//components/test/data/sessions/Session-v3WithMarker",
     "//components/test/data/sessions/Session-v4WithMarkerEncrypted",
   ]

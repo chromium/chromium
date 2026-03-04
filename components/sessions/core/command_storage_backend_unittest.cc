@@ -275,6 +275,90 @@ TEST_F(CommandStorageBackendTest, ReadSessionFileV3) {
   AssertCommandEqualsData(TestData({1, "a"}), commands[0].get());
 }
 
+TEST_F(CommandStorageBackendTest, WriteSessionFileV3) {
+  // This test ensures that we don't accidentally change the format of V3 files.
+  // If you intend to change the output file format, then you should create a
+  // new test data file, and update this test to read that new file.
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore);
+  struct TestData data = {1, "a"};
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData(data));
+  backend->AppendCommands(std::move(commands), true, base::DoNothing());
+  const base::FilePath written_path = backend->current_path_for_testing();
+
+  // Ensure that the file is fully written and contains the expected data.
+  base::SequencedTaskRunner* task_runner = backend->owning_task_runner();
+  backend.reset();
+  base::RunLoop run_loop;
+  task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  const base::FilePath expected_data_path =
+      GetTestFilePath("Session-v3WithMarker");
+  base::MemoryMappedFile written_file;
+  ASSERT_TRUE(written_file.Initialize(written_path));
+  base::MemoryMappedFile expected_data_file;
+  ASSERT_TRUE(expected_data_file.Initialize(expected_data_path));
+  ASSERT_EQ(expected_data_file.length(), written_file.length());
+  ASSERT_EQ(expected_data_file.bytes(), written_file.bytes());
+}
+
+TEST_F(CommandStorageBackendTest, ReadSessionFileV3With2Appends) {
+  // V3 files contain markers.
+  // They have been used in production from early 2021 through at least
+  // 2026-02.
+  // This test file was created using 2 calls to backend->AppendCommands,
+  // which results in the Marker being in the middle of the file (between
+  // the "banana" and "coconut" commands).  See also related test
+  // `WriteSessionFileV3With2Appends`.
+  ASSERT_TRUE(
+      copyTestDataToSessionFile("Session-v3With2Appends", "Session_1234"));
+
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore);
+  SessionCommands commands = backend->ReadLastSessionCommands().commands;
+
+  ASSERT_EQ(4u, commands.size());
+  AssertCommandEqualsData(TestData({1, "apple"}), commands[0].get());
+  AssertCommandEqualsData(TestData({2, "banana"}), commands[1].get());
+  AssertCommandEqualsData(TestData({3, "coconut"}), commands[2].get());
+  AssertCommandEqualsData(TestData({4, "durian"}), commands[3].get());
+}
+
+TEST_F(CommandStorageBackendTest, WriteSessionFileV3With2Appends) {
+  // This test ensures that we don't accidentally change the format of V3 files.
+  // If you intend to change the output file format, then you should create a
+  // new test data file, and update this test to read that new file.
+  scoped_refptr<CommandStorageBackend> backend =
+      CreateBackend(SessionType::kSessionRestore);
+  SessionCommands first_commands;
+  first_commands.push_back(CreateCommandFromData(TestData({1, "apple"})));
+  first_commands.push_back(CreateCommandFromData(TestData({2, "banana"})));
+  backend->AppendCommands(std::move(first_commands), true, base::DoNothing());
+  // Since truncate=true, a marker is written after the "banana" command.
+  SessionCommands second_commands;
+  second_commands.push_back(CreateCommandFromData(TestData({3, "coconut"})));
+  second_commands.push_back(CreateCommandFromData(TestData({4, "durian"})));
+  backend->AppendCommands(std::move(second_commands), false, base::DoNothing());
+  // Since truncate=false, no marker is written after the "durian" command.
+  const base::FilePath written_path = backend->current_path_for_testing();
+
+  // Ensure that the file is fully written and contains the expected data.
+  base::SequencedTaskRunner* task_runner = backend->owning_task_runner();
+  backend.reset();
+  base::RunLoop run_loop;
+  task_runner->PostTask(FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  const base::FilePath expected_data_path =
+      GetTestFilePath("Session-v3With2Appends");
+  base::MemoryMappedFile written_file;
+  ASSERT_TRUE(written_file.Initialize(written_path));
+  base::MemoryMappedFile expected_data_file;
+  ASSERT_TRUE(expected_data_file.Initialize(expected_data_path));
+  ASSERT_EQ(expected_data_file.length(), written_file.length());
+  ASSERT_EQ(expected_data_file.bytes(), written_file.bytes());
+}
+
 TEST_F(CommandStorageBackendTest, ReadSessionFileV4) {
   // V4 files contain markers and are encrypted.
   // They have never been used in production, but could have been written from
@@ -304,6 +388,36 @@ class CommandStorageBackendParamTest
                                                     clock);
   }
 };
+
+TEST_P(CommandStorageBackendParamTest, SimpleWrite) {
+  SessionType session_type = GetParam().session_type;
+  base::SimpleTestClock test_clock;
+  test_clock.SetNow(base::Time::FromDeltaSinceWindowsEpoch(
+      base::Microseconds(13234316721694577)));
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend(&test_clock);
+  auto data = std::to_array<TestData>({
+      {1, "a"},
+      {2, "bc"},
+      {3, "def"},
+  });
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData(data[0]));
+  commands.push_back(CreateCommandFromData(data[1]));
+  commands.push_back(CreateCommandFromData(data[2]));
+  bool write_error = false;
+
+  backend->AppendCommands(
+      std::move(commands), true,
+      base::BindLambdaForTesting([&write_error]() { write_error = true; }));
+
+  EXPECT_FALSE(write_error);
+  const base::FilePath path = backend->current_path_for_testing();
+  EXPECT_TRUE(base::PathExists(path));
+  base::FilePath expected_path =
+      FilePathFromTime(session_type, init_path(), 13234316721694577);
+  EXPECT_EQ(expected_path, path);
+  EXPECT_GT(base::GetFileSize(path), 0);
+}
 
 TEST_P(CommandStorageBackendParamTest, SimpleReadWrite) {
   scoped_refptr<CommandStorageBackend> backend = CreateBackend();
@@ -406,6 +520,41 @@ TEST_P(CommandStorageBackendParamTest, MarkerOnly) {
   backend = CreateBackend();
   commands = backend->ReadLastSessionCommands().commands;
   ASSERT_TRUE(commands.empty());
+}
+
+TEST_P(CommandStorageBackendParamTest, AppendCommandsTwice) {
+  scoped_refptr<CommandStorageBackend> backend = CreateBackend();
+  auto data = std::to_array<TestData>({
+      {1, "a"},
+      {2, "bc"},
+      {3, "def"},
+  });
+
+  // Write the first command.
+  SessionCommands commands;
+  commands.push_back(CreateCommandFromData(data[0]));
+  bool write_error = false;
+  backend->AppendCommands(
+      std::move(commands), /*truncate=*/true,
+      base::BindLambdaForTesting([&write_error]() { write_error = true; }));
+  EXPECT_FALSE(write_error);
+
+  // Append the next two commands to the same file.
+  commands.clear();
+  commands.push_back(CreateCommandFromData(data[1]));
+  commands.push_back(CreateCommandFromData(data[2]));
+  backend->AppendCommands(
+      std::move(commands), /*truncate=*/false,
+      base::BindLambdaForTesting([&write_error]() { write_error = true; }));
+  EXPECT_FALSE(write_error);
+
+  // Read it back in and verify all 3 commands are present.
+  backend->MoveCurrentSessionToLastSession();
+  commands = backend->ReadLastSessionCommands().commands;
+  ASSERT_EQ(3U, commands.size());
+  AssertCommandEqualsData(data[0], commands[0].get());
+  AssertCommandEqualsData(data[1], commands[1].get());
+  AssertCommandEqualsData(data[2], commands[2].get());
 }
 
 // Writes a command, appends another command with reset to true, then reads
