@@ -37,6 +37,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST) ConnectionAllowlist {
   std::vector<std::string> allowlist;
   std::optional<std::string> reporting_endpoint;
   std::vector<mojom::ConnectionAllowlistIssue> issues;
+  bool redirection_allowed = false;
+  bool webrtc_allowed = false;
 };
 
 COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)

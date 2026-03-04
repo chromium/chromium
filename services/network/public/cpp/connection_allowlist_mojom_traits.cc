@@ -16,6 +16,10 @@ bool StructTraits<network::mojom::ConnectionAllowlistDataView,
       !data.ReadIssues(&out->issues)) {
     return false;
   }
+
+  out->redirection_allowed = data.redirection_allowed();
+  out->webrtc_allowed = data.webrtc_allowed();
+
   return true;
 }
 

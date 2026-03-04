@@ -32,6 +32,8 @@ struct ConnectionAllowlist {
   array<string> allowlist;
   string? reporting_endpoint;
   array<ConnectionAllowlistIssue> issues;
+  bool redirection_allowed;
+  bool webrtc_allowed;
 };
 
 // The set of allowlists associated with a given response.

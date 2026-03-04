@@ -31,6 +31,15 @@ struct COMPONENT_EXPORT(NETWORK_CPP_CONNECTION_ALLOWLIST)
     return allowlist.issues;
   }
 
+  static bool redirection_allowed(
+      const network::ConnectionAllowlist& allowlist) {
+    return allowlist.redirection_allowed;
+  }
+
+  static bool webrtc_allowed(const network::ConnectionAllowlist& allowlist) {
+    return allowlist.webrtc_allowed;
+  }
+
   static bool Read(network::mojom::ConnectionAllowlistDataView data,
                    network::ConnectionAllowlist* out);
 };
