@@ -340,11 +340,10 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
   }
   int gesture_end_index = -1;
 
-  //  If we are in a scroll (there was a GestureScrollBegin, and the
-  //  corresponding touch move was not consumed), and there are no gestures,
-  //  send an empty gesture scroll update.
+  //  If we are in a scroll (at least one GestureScrollUpdate was sent), and
+  //  there are no gestures, send an empty gesture scroll update.
   if (base::FeatureList::IsEnabled(features::kSendEmptyGestureScrollUpdate) &&
-      (needs_scroll_ending_event_ && !scroll_begin_consumed_) &&
+      first_gsu_sent_ &&
       packet.gesture_source() == GestureEventDataPacket::TOUCH_MOVE &&
       packet.gesture_count() == 0) {
     TRACE_EVENT("input", "EmptyGestureScrollUpdate");
@@ -446,6 +445,7 @@ void TouchDispositionGestureFilter::SendGesture(
       ending_event_primary_tool_type_ = event.primary_tool_type;
       needs_show_press_event_ = true;
       needs_tap_ending_event_ = true;
+      first_gsu_sent_ = false;
       break;
     case EventType::kGestureShowPress:
       if (!needs_show_press_event_)
@@ -482,6 +482,13 @@ void TouchDispositionGestureFilter::SendGesture(
         // the ack for the first touch move is received.
         scroll_update_compensator_->SetReferenceTimestamp(
             base::TimeTicks::Now());
+      }
+      break;
+    case EventType::kGestureScrollUpdate:
+      if (needs_scroll_ending_event_) {
+        if (!first_gsu_sent_) {
+          first_gsu_sent_ = true;
+        }
       }
       break;
     case EventType::kGestureScrollEnd:

@@ -147,6 +147,7 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   bool needs_scroll_ending_event_;
 
   bool scroll_begin_consumed_{false};
+  bool first_gsu_sent_{false};
 
   // Utility class for keeping generating gesture scroll updates that compensate
   // for delays due to slow touchstart/touchmove handlers.

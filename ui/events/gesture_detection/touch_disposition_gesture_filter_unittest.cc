@@ -1194,11 +1194,36 @@ TEST_F(TouchDispositionGestureFilterTest, SendEmptyGestureScrollUpdate) {
   EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollBegin),
                             GetAndResetSentGestures()));
 
-  // A touch move with no gestures should trigger a synthetic scroll update.
+  // Send a GestureScrollUpdate to start a scroll.
+  GestureEventDataPacket packet1;
+  packet1.Push(CreateGesture(EventType::kGestureScrollUpdate, 2, 3, 0));
+  SendTouchGestures(MoveTouchPoint(), packet1);
+  SendTouchNotConsumedAckForLastTouch();
+
+  // A touch move with no gestures should trigger a synthetic scroll update, for
+  // a total of 2 scroll updates.
   SendPacket(MoveTouchPoint(), NoGestures());
   SendTouchNotConsumedAckForLastTouch();
-  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate),
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate,
+                                     EventType::kGestureScrollUpdate),
                             GetAndResetSentGestures()));
+}
+
+TEST_F(TouchDispositionGestureFilterTest,
+       SendEmptyGestureScrollUpdateNoScroll) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSendEmptyGestureScrollUpdate);
+  // Send a GestureScrollBegin but no GestureScrollUpdates.
+  SendPacket(PressTouchPoint(), Gestures(EventType::kGestureScrollBegin));
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollBegin),
+                            GetAndResetSentGestures()));
+
+  // A touch move with no gestures should not trigger a synthetic scroll update
+  // if there was no scroll in progress.
+  SendPacket(MoveTouchPoint(), NoGestures());
+  SendTouchNotConsumedAckForLastTouch();
+  EXPECT_FALSE(GesturesSent());
 }
 
 TEST_F(TouchDispositionGestureFilterTest, PreviousScrollPrevented) {
