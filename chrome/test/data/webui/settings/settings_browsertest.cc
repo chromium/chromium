@@ -1224,39 +1224,7 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, PrivacyGuidePromoVisibility) {
   RunTest("settings/privacy_guide_promo_visibility_test.js", "mocha.run()");
 }
 
-using SettingsClearBrowsingDataTest = SettingsBrowserTest;
-
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
-                       ClearBrowsingDataAllPlatforms) {
-  RunTest("settings/clear_browsing_data_test.js",
-          "runMochaSuite('ClearBrowsingDataAllPlatforms')");
-}
-
-#if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
-                       ClearBrowsingDataDesktop) {
-  RunTest("settings/clear_browsing_data_test.js",
-          "runMochaSuite('ClearBrowsingDataDesktop')");
-}
-#endif
-
-IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataTest,
-                       ClearBrowsingDataForSupervisedUsers) {
-  RunTest("settings/clear_browsing_data_test.js",
-          "runMochaSuite('ClearBrowsingDataForSupervisedUsers')");
-}
-
-class SettingsClearBrowsingDataV2Test : public SettingsBrowserTest {
- protected:
-  SettingsClearBrowsingDataV2Test() {
-    scoped_feature_list_.InitWithFeatures(
-        {browsing_data::features::kDbdRevampDesktop},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SettingsClearBrowsingDataV2Test = SettingsBrowserTest;
 
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsClearBrowsingDataV2Test,
@@ -1546,7 +1514,6 @@ class SettingsPrivacyPageTest : public SettingsBrowserTest {
 #if BUILDFLAG(IS_CHROMEOS)
             blink::features::kWebPrinting,
 #endif
-            browsing_data::features::kDbdRevampDesktop,
             safe_browsing::kBundledSecuritySettings,
         },
         {});
@@ -1588,12 +1555,6 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
                        DISABLED_HappinessTrackingSurveys) {
   RunTest("settings/privacy_page_test.js",
           "runMochaSuite('HappinessTrackingSurveys')");
-}
-
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTest,
-                       DeleteBrowsingDataRevampDisabled) {
-  RunTest("settings/privacy_page_test.js",
-          "runMochaSuite('DeleteBrowsingDataRevampDisabled')");
 }
 
 class SettingsNotificationsPageTest : public SettingsBrowserTest {};

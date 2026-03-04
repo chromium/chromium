@@ -65,11 +65,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
       showClearBrowsingDataDialog_: Boolean,
       showPrivacyGuideDialog_: Boolean,
 
-      enableDeleteBrowsingDataRevamp_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('enableDeleteBrowsingDataRevamp'),
-      },
-
       isPrivacySandboxRestricted_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isPrivacySandboxRestricted'),
@@ -97,7 +92,6 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   declare private showClearBrowsingDataDialog_: boolean;
   declare private showPrivacyGuideDialog_: boolean;
-  declare private enableDeleteBrowsingDataRevamp_: boolean;
   declare private isPrivacySandboxRestricted_: boolean;
   declare private isPrivacySandboxRestrictedNoticeEnabled_: boolean;
   declare private dbdDeletionConfirmationToastLabel_: string;

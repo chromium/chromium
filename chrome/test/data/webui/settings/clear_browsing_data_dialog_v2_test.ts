@@ -760,8 +760,6 @@ suite('DeleteBrowsingDataDialog', function() {
     assertEquals(
         loadTimeData.getString('manageSearchGeminiPasswordsSubLabel'),
         dialog.$.manageOtherGoogleDataRow.subLabel);
-
-
   });
 
   test('NavigationToAndFromOtherGoogleData', async function() {

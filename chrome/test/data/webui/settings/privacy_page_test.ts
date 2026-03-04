@@ -527,38 +527,3 @@ suite('HappinessTrackingSurveys', function() {
     assertEquals(TrustSafetyInteraction.USED_PRIVACY_CARD, interaction);
   });
 });
-
-// TODO(crbug.com/397187800): Remove once kDbdRevampDesktop is launched.
-suite('DeleteBrowsingDataRevampDisabled', () => {
-  let page: SettingsPrivacyPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    loadTimeData.overrideValues({
-      enableDeleteBrowsingDataRevamp: false,
-    });
-    resetRouterForTesting();
-
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-privacy-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    return flushTasks();
-  });
-
-  test('showClearBrowsingDataDialog', function() {
-    assertFalse(!!page.shadowRoot!.querySelector(
-        'settings-clear-browsing-data-dialog'));
-    page.$.clearBrowsingData.click();
-    flush();
-
-    const dialog =
-        page.shadowRoot!.querySelector('settings-clear-browsing-data-dialog');
-    assertTrue(!!dialog);
-  });
-});

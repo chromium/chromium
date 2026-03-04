@@ -633,11 +633,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("showAiPageAiFeatureSection",
                           show_ai_features_section);
 
-  // Delete Browsing Data
-  html_source->AddBoolean(
-      "enableDeleteBrowsingDataRevamp",
-      base::FeatureList::IsEnabled(browsing_data::features::kDbdRevampDesktop));
-
   html_source->AddBoolean(
       "enableSupportForHomeAndWork",
       base::FeatureList::IsEnabled(
