@@ -13,6 +13,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,6 +42,11 @@ public class WebContentsImplTest {
         MockitoAnnotations.initMocks(this);
         WebContentsImplJni.setInstanceForTesting(mWebContentsJniMock);
         mWebContentsImpl = WebContentsImpl.create(mNativeWebContentsAndroid, mNavigationController);
+    }
+
+    @After
+    public void tearDown() {
+        mWebContentsImpl.destroy();
     }
 
     @Test
