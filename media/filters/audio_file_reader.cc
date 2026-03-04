@@ -61,6 +61,10 @@ bool AudioFileReader::OpenDecoder() {
     return false;
   }
 
+  if (!config.IsValidConfig()) {
+    return false;
+  }
+
   // Verify the channel layout is supported by Chrome.  Acts as a sanity check
   // against invalid files.  See http://crbug.com/171962
   if (ChannelLayoutToChromeChannelLayout(codec_context_->ch_layout) ==
