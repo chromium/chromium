@@ -66,7 +66,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
     private final Activity mActivity;
     private final BrowserControlsVisibilityDelegate mAppBrowserControlsVisibilityDelegate;
     private final Supplier<@Nullable ShareDelegate> mShareDelegateSupplier;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final Supplier<@Nullable EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
     private final BottomSheetController mBottomSheetController;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
@@ -100,7 +100,7 @@ public class TabbedModeTabDelegateFactory implements TabDelegateFactory {
             Activity activity,
             BrowserControlsVisibilityDelegate appBrowserControlsVisibilityDelegate,
             Supplier<@Nullable ShareDelegate> shareDelegateSupplier,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
             BottomSheetController sheetController,
             ChromeActivityNativeDelegate chromeActivityNativeDelegate,

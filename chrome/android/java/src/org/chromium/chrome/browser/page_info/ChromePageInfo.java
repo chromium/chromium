@@ -35,7 +35,8 @@ public class ChromePageInfo {
     private final @Nullable String mPublisher;
     private final @OpenedFromSource int mSource;
     private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
-    private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable Supplier<@Nullable EphemeralTabCoordinator>
+            mEphemeralTabCoordinatorSupplier;
     private final @Nullable TabCreator mTabCreator;
 
     /**
@@ -51,7 +52,7 @@ public class ChromePageInfo {
             @Nullable String publisher,
             @OpenedFromSource int source,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
-            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             @Nullable TabCreator tabCreator) {
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
         mPublisher = publisher;

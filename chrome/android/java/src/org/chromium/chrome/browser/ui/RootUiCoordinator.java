@@ -2286,7 +2286,7 @@ public class RootUiCoordinator
     /**
      * @return Supplies the {@link EphemeralTabCoordinator}
      */
-    public Supplier<EphemeralTabCoordinator> getEphemeralTabCoordinatorSupplier() {
+    public Supplier<@Nullable EphemeralTabCoordinator> getEphemeralTabCoordinatorSupplier() {
         return mEphemeralTabCoordinatorSupplier;
     }
 

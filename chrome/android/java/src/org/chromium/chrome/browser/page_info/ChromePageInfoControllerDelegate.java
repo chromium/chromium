@@ -86,7 +86,8 @@ import java.util.function.Supplier;
 public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate {
     private final WebContents mWebContents;
     private final Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
-    private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable Supplier<@Nullable EphemeralTabCoordinator>
+            mEphemeralTabCoordinatorSupplier;
     private final Context mContext;
     private final Profile mProfile;
     private final @Nullable Supplier<StoreInfoActionHandler> mStoreInfoActionHandlerSupplier;
@@ -105,7 +106,7 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
             OfflinePageLoadUrlDelegate offlinePageLoadUrlDelegate,
             @Nullable Supplier<StoreInfoActionHandler> storeInfoActionHandlerSupplier,
-            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             ChromePageInfoHighlight pageInfoHighlight,
             @Nullable TabCreator tabCreator,
             @Nullable String packageName) {

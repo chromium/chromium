@@ -48,7 +48,8 @@ public class PageInfoAboutThisSiteController {
     private static final String TAG = "PageInfo";
 
     private final PageInfoMainController mMainController;
-    private final @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final @Nullable Supplier<@Nullable EphemeralTabCoordinator>
+            mEphemeralTabCoordinatorSupplier;
     private final PageInfoRowView mRowView;
     private final PageInfoControllerDelegate mDelegate;
     private final WebContents mWebContents;
@@ -63,7 +64,7 @@ public class PageInfoAboutThisSiteController {
 
     public PageInfoAboutThisSiteController(
             PageInfoMainController mainController,
-            @Nullable Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            @Nullable Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             PageInfoRowView rowView,
             PageInfoControllerDelegate delegate,
             WebContents webContents,

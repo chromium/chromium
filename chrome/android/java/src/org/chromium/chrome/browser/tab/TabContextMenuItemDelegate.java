@@ -77,7 +77,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
     private final @ActivityType int mActivityType;
     private final TabImpl mTab;
     private final TabModelSelector mTabModelSelector;
-    private final Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+    private final Supplier<@Nullable EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     private final Runnable mContextMenuCopyLinkObserver;
     private final Supplier<SnackbarManager> mSnackbarManagerSupplier;
     private final Supplier<BottomSheetController> mBottomSheetControllerSupplier;
@@ -89,7 +89,7 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
             @ActivityType int activityType,
             Tab tab,
             TabModelSelector tabModelSelector,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             Runnable contextMenuCopyLinkObserver,
             Supplier<SnackbarManager> snackbarManagerSupplier,
             Supplier<BottomSheetController> bottomSheetControllerSupplier,
@@ -432,21 +432,19 @@ public class TabContextMenuItemDelegate implements ContextMenuItemDelegate {
      * @param title The title text to show on top control.
      */
     public void onOpenInEphemeralTab(GURL url, String title) {
-        if (mEphemeralTabCoordinatorSupplier == null
-                || mEphemeralTabCoordinatorSupplier.get() == null) {
+        EphemeralTabCoordinator ephemeralTabCoordinator = mEphemeralTabCoordinatorSupplier.get();
+        if (ephemeralTabCoordinator == null) {
             return;
         }
-        mEphemeralTabCoordinatorSupplier
-                .get()
-                .requestOpenSheet(
-                        url,
-                        /* fullPageUrl= */ null,
-                        title,
-                        mTab.getProfile(),
-                        /* canPromoteToNewTab= */ mActivityType == ActivityType.TABBED
-                                || mActivityType == ActivityType.CUSTOM_TAB,
-                        /* shouldHaveContextMenu= */ ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.ENABLE_CONTEXT_MENU_FOR_PREVIEW_TAB));
+        ephemeralTabCoordinator.requestOpenSheet(
+                url,
+                /* fullPageUrl= */ null,
+                title,
+                mTab.getProfile(),
+                /* canPromoteToNewTab= */ mActivityType == ActivityType.TABBED
+                        || mActivityType == ActivityType.CUSTOM_TAB,
+                /* shouldHaveContextMenu= */ ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.ENABLE_CONTEXT_MENU_FOR_PREVIEW_TAB));
     }
 
     /**

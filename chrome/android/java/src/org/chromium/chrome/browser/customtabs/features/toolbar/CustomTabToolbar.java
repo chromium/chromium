@@ -815,7 +815,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
             LocationBarModel locationBarModel,
             ActionMode.Callback actionModeCallback,
             Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-            Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+            Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
             BrowserStateBrowserControlsVisibilityDelegate controlsVisibilityDelegate,
             TabCreator tabCreator) {
         mLocationBarModel = locationBarModel;
@@ -1648,7 +1648,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         private static final int TOTAL_POST_BRANDING_KEYS = 2;
 
         private LocationBarDataProvider mLocationBarDataProvider;
-        private @Nullable Supplier<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
+        private Supplier<@Nullable EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
         private Supplier<@Nullable ModalDialogManager> mModalDialogManagerSupplier;
         private UrlBarCoordinator mUrlCoordinator;
         private @Nullable TabCreator mTabCreator;
@@ -2091,7 +2091,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
         public void init(
                 LocationBarDataProvider locationBarDataProvider,
                 Supplier<@Nullable ModalDialogManager> modalDialogManagerSupplier,
-                Supplier<EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
+                Supplier<@Nullable EphemeralTabCoordinator> ephemeralTabCoordinatorSupplier,
                 TabCreator tabCreator,
                 ActionMode.Callback actionModeCallback) {
             mLocationBarDataProvider = locationBarDataProvider;
