@@ -232,21 +232,6 @@ TabHoverCardController::TabHoverCardController(
 
 TabHoverCardController::~TabHoverCardController() = default;
 
-// static
-bool TabHoverCardController::AreHoverCardImagesEnabled() {
-  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages)) {
-    PrefService* pref_service = g_browser_process->local_state();
-    return pref_service->GetBoolean(prefs::kHoverCardImagesEnabled);
-  }
-  return false;
-}
-
-// static
-bool TabHoverCardController::UseAnimations() {
-  return !disable_animations_for_testing_ &&
-         gfx::Animation::ShouldRenderRichAnimation();
-}
-
 bool TabHoverCardController::IsHoverCardVisible() const {
   return hover_card_ && GetCardWidget() && !GetCardWidget()->IsClosed();
 }
@@ -319,174 +304,19 @@ void TabHoverCardController::PreventImmediateReshow() {
   last_mouse_exit_timestamp_ = base::TimeTicks();
 }
 
-void TabHoverCardController::UpdateOrShowCard(
-    HoverCardAnchorTarget* anchor_target,
-    TabSlotController::HoverCardUpdateType update_type) {
-  // Close is asynchronous, so make sure that if we're closing we clear out all
-  // of our data *now* rather than waiting for the deletion message.
-  if (hover_card_ && GetCardWidget()->IsClosed()) {
-    OnViewIsDeleting(hover_card_);
+// static
+bool TabHoverCardController::AreHoverCardImagesEnabled() {
+  if (base::FeatureList::IsEnabled(features::kTabHoverCardImages)) {
+    PrefService* pref_service = g_browser_process->local_state();
+    return pref_service->GetBoolean(prefs::kHoverCardImagesEnabled);
   }
-
-  // If a hover card is being updated because of a data change, the hover card
-  // had better already be showing for the affected tab.
-  if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
-    if (!IsHoverCardShowingForTab(anchor_target)) {
-      return;
-    }
-
-    UpdateCardContent(anchor_target);
-
-    // When a tab has been discarded, the thumbnail is moved to a new
-    // ThumbnailTabHelper so it must be observed again.
-    if (anchor_target->data().is_tab_discarded) {
-      MaybeStartThumbnailObservation(anchor_target,
-                                     /* is_initial_show */ false);
-    }
-
-    slide_animator_->UpdateTargetBounds();
-    return;
-  }
-
-  // Cancel any pending fades.
-  if (hover_card_ && fade_animator_->IsFadingOut()) {
-    fade_animator_->CancelFadeOut();
-  }
-
-  if (hover_card_) {
-    // If the card was visible we need to update the card now, before any slide
-    // or snap occurs.
-    UpdateCardContent(anchor_target);
-    MaybeStartThumbnailObservation(anchor_target, /* is_initial_show */ false);
-
-    auto arrow_position = anchor_target->GetAnchorPosition();
-    if (hover_card_->arrow() != arrow_position) {
-      hover_card_->SetArrowWithoutResizing(arrow_position);
-    }
-
-    // If widget is already visible and anchored to the correct tab we should
-    // not try to reset the anchor view or reshow.
-    if (!UseAnimations() ||
-        (hover_card_->GetAnchorView() == anchor_target->GetAnchorView() &&
-         !slide_animator_->is_animating())) {
-      slide_animator_->SnapToAnchorView(anchor_target->GetAnchorView());
-    } else {
-      slide_animator_->AnimateToAnchorView(anchor_target->GetAnchorView());
-    }
-    return;
-  }
-
-  // Maybe make hover card visible. Disabling animations for testing also
-  // eliminates the show timer, lest the tests have to be significantly more
-  // complex and time-consuming.
-  const bool is_initial = !ShouldShowImmediately(anchor_target);
-  if (is_initial) {
-    ResetCardsSeenCount();
-  }
-  if (is_initial && !disable_animations_for_testing_) {
-    // Use the largest tab in the tab strip when determining the delay so that
-    // the delay is consistent for all tabs within the tab strip.
-    int largest_tab = anchor_target->GetAnchorView()->width();
-    for (int i = 0; i < browser_window_interface_->GetTabStripModel()->count();
-         i++) {
-      largest_tab =
-          std::max(largest_tab, tab_strip_->GetTabAnchorViewAt(i)->width());
-    }
-    delayed_show_timer_.Start(
-        FROM_HERE, GetShowDelay(largest_tab),
-        base::BindOnce(&TabHoverCardController::ShowHoverCard,
-                       weak_ptr_factory_.GetWeakPtr(), true, anchor_target));
-  } else {
-    // Just in case, cancel the timer. This shouldn't cancel a delayed capture
-    // since delayed capture only happens when the hover card already exists,
-    // and this code is only invoked if there is no hover card yet.
-    delayed_show_timer_.Stop();
-    DCHECK_EQ(target_tab_, anchor_target);
-    ShowHoverCard(is_initial, anchor_target);
-  }
+  return false;
 }
 
-void TabHoverCardController::ShowHoverCard(
-    bool is_initial,
-    const HoverCardAnchorTarget* intended_target) {
-  // Make sure the hover card isn't accidentally shown if it's already visible
-  // or if the anchor is gone or changed.
-  if (hover_card_ || target_tab_ != intended_target || !TargetTabIsValid()) {
-    return;
-  }
-
-  // Note: `target_tab_` can be nullified via reentreant callbacks invoked
-  // throughout the HoverCard creation process. The doc mentioned at
-  // crbug.com/40865488#comment23 discusses proper fixes for this. Until then,
-  // early-return after vulnerable calls here if `target_tab_` has become null.
-  // See also: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
-  CreateHoverCard(target_tab_);
-  if (!TargetTabIsValid()) {
-    HideHoverCard();
-    return;
-  }
-
-  UpdateCardContent(target_tab_);
-  if (!TargetTabIsValid()) {
-    HideHoverCard();
-    return;
-  }
-
-  slide_animator_->UpdateTargetBounds();
-  MaybeStartThumbnailObservation(target_tab_, is_initial);
-  GetCardWidget()->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
-
-  if (!is_initial || !UseAnimations()) {
-    OnCardFullyVisible();
-    GetCardWidget()->Show();
-    return;
-  }
-
-  fade_animator_->FadeIn();
-}
-
-void TabHoverCardController::HideHoverCard() {
-  if (!hover_card_ || GetCardWidget()->IsClosed()) {
-    return;
-  }
-
-  // Required for test metrics.
-  hover_card_last_seen_on_tab_ = nullptr;
-
-  if (thumbnail_observer_) {
-    thumbnail_observer_->Observe(nullptr);
-    thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
-  }
-
-  // Cancel any pending fade-in.
-  if (fade_animator_->IsFadingIn()) {
-    fade_animator_->CancelFadeIn();
-  }
-
-  // This needs to be called whether we're doing a fade or a pop out.
-  slide_animator_->StopAnimation();
-  if (!UseAnimations()) {
-    CloseCardWidget();
-    return;
-  }
-  if (fade_animator_->IsFadingOut()) {
-    return;
-  }
-
-  fade_animator_->FadeOut();
-}
-
-void TabHoverCardController::OnCardClosing() {
-  tab_resource_usage_collector_observation_.Reset();
-  delayed_show_timer_.Stop();
-  hover_card_observation_.Reset();
-  event_sniffer_.reset();
-  slide_progressed_subscription_ = base::CallbackListSubscription();
-  slide_complete_subscription_ = base::CallbackListSubscription();
-  fade_complete_subscription_ = base::CallbackListSubscription();
-  slide_animator_.reset();
-  fade_animator_.reset();
-  hover_card_ = nullptr;
+// static
+bool TabHoverCardController::UseAnimations() {
+  return !disable_animations_for_testing_ &&
+         gfx::Animation::ShouldRenderRichAnimation();
 }
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
@@ -690,6 +520,163 @@ void TabHoverCardController::StartThumbnailObservation(
   thumbnail_observer_->Observe(thumbnail);
 }
 
+void TabHoverCardController::UpdateOrShowCard(
+    HoverCardAnchorTarget* anchor_target,
+    TabSlotController::HoverCardUpdateType update_type) {
+  // Close is asynchronous, so make sure that if we're closing we clear out all
+  // of our data *now* rather than waiting for the deletion message.
+  if (hover_card_ && GetCardWidget()->IsClosed()) {
+    OnViewIsDeleting(hover_card_);
+  }
+
+  // If a hover card is being updated because of a data change, the hover card
+  // had better already be showing for the affected tab.
+  if (update_type == TabSlotController::HoverCardUpdateType::kTabDataChanged) {
+    if (!IsHoverCardShowingForTab(anchor_target)) {
+      return;
+    }
+
+    UpdateCardContent(anchor_target);
+
+    // When a tab has been discarded, the thumbnail is moved to a new
+    // ThumbnailTabHelper so it must be observed again.
+    if (anchor_target->data().is_tab_discarded) {
+      MaybeStartThumbnailObservation(anchor_target,
+                                     /* is_initial_show */ false);
+    }
+
+    slide_animator_->UpdateTargetBounds();
+    return;
+  }
+
+  // Cancel any pending fades.
+  if (hover_card_ && fade_animator_->IsFadingOut()) {
+    fade_animator_->CancelFadeOut();
+  }
+
+  if (hover_card_) {
+    // If the card was visible we need to update the card now, before any slide
+    // or snap occurs.
+    UpdateCardContent(anchor_target);
+    MaybeStartThumbnailObservation(anchor_target, /* is_initial_show */ false);
+
+    auto arrow_position = anchor_target->GetAnchorPosition();
+    if (hover_card_->arrow() != arrow_position) {
+      hover_card_->SetArrowWithoutResizing(arrow_position);
+    }
+
+    // If widget is already visible and anchored to the correct tab we should
+    // not try to reset the anchor view or reshow.
+    if (!UseAnimations() ||
+        (hover_card_->GetAnchorView() == anchor_target->GetAnchorView() &&
+         !slide_animator_->is_animating())) {
+      slide_animator_->SnapToAnchorView(anchor_target->GetAnchorView());
+    } else {
+      slide_animator_->AnimateToAnchorView(anchor_target->GetAnchorView());
+    }
+    return;
+  }
+
+  // Maybe make hover card visible. Disabling animations for testing also
+  // eliminates the show timer, lest the tests have to be significantly more
+  // complex and time-consuming.
+  const bool is_initial = !ShouldShowImmediately(anchor_target);
+  if (is_initial) {
+    ResetCardsSeenCount();
+  }
+  if (is_initial && !disable_animations_for_testing_) {
+    // Use the largest tab in the tab strip when determining the delay so that
+    // the delay is consistent for all tabs within the tab strip.
+    int largest_tab = anchor_target->GetAnchorView()->width();
+    for (int i = 0; i < browser_window_interface_->GetTabStripModel()->count();
+         i++) {
+      largest_tab =
+          std::max(largest_tab, tab_strip_->GetTabAnchorViewAt(i)->width());
+    }
+    delayed_show_timer_.Start(
+        FROM_HERE, GetShowDelay(largest_tab),
+        base::BindOnce(&TabHoverCardController::ShowHoverCard,
+                       weak_ptr_factory_.GetWeakPtr(), true, anchor_target));
+  } else {
+    // Just in case, cancel the timer. This shouldn't cancel a delayed capture
+    // since delayed capture only happens when the hover card already exists,
+    // and this code is only invoked if there is no hover card yet.
+    delayed_show_timer_.Stop();
+    DCHECK_EQ(target_tab_, anchor_target);
+    ShowHoverCard(is_initial, anchor_target);
+  }
+}
+
+void TabHoverCardController::ShowHoverCard(
+    bool is_initial,
+    const HoverCardAnchorTarget* intended_target) {
+  // Make sure the hover card isn't accidentally shown if it's already visible
+  // or if the anchor is gone or changed.
+  if (hover_card_ || target_tab_ != intended_target || !TargetTabIsValid()) {
+    return;
+  }
+
+  // Note: `target_tab_` can be nullified via reentreant callbacks invoked
+  // throughout the HoverCard creation process. The doc mentioned at
+  // crbug.com/40865488#comment23 discusses proper fixes for this. Until then,
+  // early-return after vulnerable calls here if `target_tab_` has become null.
+  // See also: crbug.com/1295601, crbug.com/1322117, crbug.com/1348956
+  CreateHoverCard(target_tab_);
+  if (!TargetTabIsValid()) {
+    HideHoverCard();
+    return;
+  }
+
+  UpdateCardContent(target_tab_);
+  if (!TargetTabIsValid()) {
+    HideHoverCard();
+    return;
+  }
+
+  slide_animator_->UpdateTargetBounds();
+  MaybeStartThumbnailObservation(target_tab_, is_initial);
+  GetCardWidget()->SetZOrderSublevel(ChromeWidgetSublevel::kSublevelHoverable);
+
+  if (!is_initial || !UseAnimations()) {
+    OnCardFullyVisible();
+    GetCardWidget()->Show();
+    return;
+  }
+
+  fade_animator_->FadeIn();
+}
+
+void TabHoverCardController::HideHoverCard() {
+  if (!hover_card_ || GetCardWidget()->IsClosed()) {
+    return;
+  }
+
+  // Required for test metrics.
+  hover_card_last_seen_on_tab_ = nullptr;
+
+  if (thumbnail_observer_) {
+    thumbnail_observer_->Observe(nullptr);
+    thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
+  }
+
+  // Cancel any pending fade-in.
+  if (fade_animator_->IsFadingIn()) {
+    fade_animator_->CancelFadeIn();
+  }
+
+  // This needs to be called whether we're doing a fade or a pop out.
+  slide_animator_->StopAnimation();
+  if (!UseAnimations()) {
+    CloseCardWidget();
+    return;
+  }
+  if (fade_animator_->IsFadingOut()) {
+    return;
+  }
+
+  fade_animator_->FadeOut();
+}
+
 bool TabHoverCardController::ShouldShowImmediately(
     const HoverCardAnchorTarget* anchor_target) const {
   // If less than `kShowWithoutDelayTimeBuffer` time has passed since the hover
@@ -831,4 +818,17 @@ views::Widget* TabHoverCardController::GetCardWidget() const {
 
 void TabHoverCardController::CloseCardWidget() {
   GetCardWidget()->Close();
+}
+
+void TabHoverCardController::OnCardClosing() {
+  tab_resource_usage_collector_observation_.Reset();
+  delayed_show_timer_.Stop();
+  hover_card_observation_.Reset();
+  event_sniffer_.reset();
+  slide_progressed_subscription_ = base::CallbackListSubscription();
+  slide_complete_subscription_ = base::CallbackListSubscription();
+  fade_complete_subscription_ = base::CallbackListSubscription();
+  slide_animator_.reset();
+  fade_animator_.reset();
+  hover_card_ = nullptr;
 }
