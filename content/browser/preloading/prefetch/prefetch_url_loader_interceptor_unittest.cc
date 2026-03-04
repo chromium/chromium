@@ -220,10 +220,6 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
             web_contents()->GetPrimaryMainFrame()->GetFrameTreeNodeId()));
   }
 
-  RenderFrameHostImpl* main_rfhi() {
-    return static_cast<RenderFrameHostImpl*>(main_rfh());
-  }
-
   void CreateInterceptor(
       std::optional<blink::DocumentToken> initiator_document_token) {
     interceptor_ = std::make_unique<PrefetchURLLoaderInterceptor>(
@@ -351,10 +347,6 @@ class PrefetchURLLoaderInterceptorTestBase : public PrefetchingMetricsTestBase {
 
   ScopedMockContentBrowserClient* test_content_browser_client() {
     return test_content_browser_client_.get();
-  }
-
-  blink::DocumentToken MainDocumentToken() {
-    return static_cast<RenderFrameHostImpl*>(main_rfh())->GetDocumentToken();
   }
 
   base::WeakPtr<PrefetchContainer> CreateSpeculationRulesPrefetchContainer(

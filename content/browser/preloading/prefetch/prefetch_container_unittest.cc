@@ -62,10 +62,6 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
     PrefetchingMetricsTestBase::TearDown();
   }
 
-  RenderFrameHostImpl* main_rfhi() {
-    return static_cast<RenderFrameHostImpl*>(main_rfh());
-  }
-
   struct SpeculationRulesPrefetchContainerOptions {
     blink::mojom::SpeculationEagerness eagerness;
     SpeculationRulesTags speculation_rules_tags;

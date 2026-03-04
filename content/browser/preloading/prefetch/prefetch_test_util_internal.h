@@ -228,6 +228,9 @@ class PrefetchingMetricsTestBase : public RenderViewHostTestHarness {
   PrefetchingMetricsTestBase();
   ~PrefetchingMetricsTestBase() override;
 
+  RenderFrameHostImpl* main_rfhi();
+  blink::DocumentToken MainDocumentToken();
+
   const int kTotalTimeDuration = 4321;
   const int kConnectTimeDuration = 123;
 

@@ -578,6 +578,14 @@ void PrefetchingMetricsTestBase::TearDown() {
   RenderViewHostTestHarness::TearDown();
 }
 
+RenderFrameHostImpl* PrefetchingMetricsTestBase::main_rfhi() {
+  return static_cast<RenderFrameHostImpl*>(main_rfh());
+}
+
+blink::DocumentToken PrefetchingMetricsTestBase::MainDocumentToken() {
+  return main_rfhi()->GetDocumentToken();
+}
+
 void PrefetchingMetricsTestBase::ExpectPrefetchNoNetErrorOrResponseReceived(
     const base::HistogramTester& histogram_tester,
     bool is_eligible,

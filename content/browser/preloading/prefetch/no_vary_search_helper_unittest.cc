@@ -125,18 +125,7 @@ class NoVarySearchHelperTester final {
   std::map<PrefetchKey, base::WeakPtr<PrefetchContainer>> prefetches_by_key_;
 };
 
-class NoVarySearchHelperTest : public RenderViewHostTestHarness {
- public:
-  NoVarySearchHelperTest()
-      : RenderViewHostTestHarness(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-
-  void SetUp() override { RenderViewHostTestHarness::SetUp(); }
-
-  RenderFrameHostImpl* main_rfhi() {
-    return static_cast<RenderFrameHostImpl*>(main_rfh());
-  }
-};
+class NoVarySearchHelperTest : public PrefetchingMetricsTestBase {};
 
 TEST_F(NoVarySearchHelperTest, AddAndMatchUrlNonEmptyVaryParams) {
   network::mojom::URLResponseHeadPtr head = CreateHead();
