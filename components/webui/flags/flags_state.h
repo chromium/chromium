@@ -287,7 +287,9 @@ class FlagsState {
   const base::raw_span<const FeatureEntry> feature_entries_;
 
   bool needs_restart_;
-  std::map<std::string, std::string> flags_switches_;
+  // Switches that were set by flags state. Used to remove them from the command
+  // line when resetting it.
+  std::set<std::string, std::less<>> modified_flag_switches_;
 
   // Map from switch name to a set of string, that keeps track which strings
   // were appended to existing (list value) switches.

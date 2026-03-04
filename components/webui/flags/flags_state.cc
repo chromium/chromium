@@ -515,8 +515,8 @@ void FlagsState::SetStringFlag(const std::string& internal_name,
 
 void FlagsState::RemoveFlagsSwitches(
     base::CommandLine::SwitchMap* switch_list) {
-  for (const auto& entry : flags_switches_) {
-    switch_list->erase(entry.first);
+  for (const auto& entry : modified_flag_switches_) {
+    switch_list->erase(entry);
   }
 
   // If feature entries were added to --enable-features= or --disable-features=
@@ -571,7 +571,7 @@ void FlagsState::ResetAllFlags(FlagsStorage* flags_storage) {
 
 void FlagsState::Reset() {
   needs_restart_ = false;
-  flags_switches_.clear();
+  modified_flag_switches_.clear();
   appended_switches_.clear();
 }
 
@@ -823,7 +823,7 @@ void FlagsState::AddSwitchesToCommandLine(
   std::map<std::string, bool> feature_switches;
   if (sentinels == kAddSentinels) {
     command_line->AppendSwitch(switches::kFlagSwitchesBegin);
-    flags_switches_[switches::kFlagSwitchesBegin] = std::string();
+    modified_flag_switches_.insert(switches::kFlagSwitchesBegin);
   }
 
   std::vector<std::string> variation_ids;
@@ -856,7 +856,7 @@ void FlagsState::AddSwitchesToCommandLine(
                                       feature_state, command_line);
       } else {
         command_line->AppendSwitchASCII(entry.switch_name, entry.switch_value);
-        flags_switches_[entry.switch_name] = entry.switch_value;
+        modified_flag_switches_.insert(entry.switch_name);
       }
     }
     // If an entry doesn't match either of the above, then it is likely the
@@ -875,7 +875,7 @@ void FlagsState::AddSwitchesToCommandLine(
 
   if (sentinels == kAddSentinels) {
     command_line->AppendSwitch(switches::kFlagSwitchesEnd);
-    flags_switches_[switches::kFlagSwitchesEnd] = std::string();
+    modified_flag_switches_.insert(switches::kFlagSwitchesEnd);
   }
 }
 
