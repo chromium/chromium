@@ -412,6 +412,16 @@ public class SettingsSearchCoordinator
                             public void onPanelClosed(View panel) {
                                 if (mUseMultiColumn) return;
 
+                                // The detail panel can be force-closed immediately after we enter
+                                // the search state + open the detail pane. Because
+                                // SlidingPaneLayout uses smooth animations, a rapid-fire tap on
+                                // the header can re-trigger the selection logic before the first
+                                // transition finishes, effectively "stuttering" the pane back to
+                                // a closed state. We cancel the operation, and revert the state
+                                // back to FS_SETTINGS. See https://crbug.com/482946558.
+                                if (mFragmentState == FS_SEARCH) {
+                                    exitSearchState(/* clearFragment= */ false);
+                                }
                                 showUiInSingleColumn(searchBox, /* show= */ true);
                             }
                         });
