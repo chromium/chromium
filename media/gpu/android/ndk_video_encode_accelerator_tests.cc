@@ -768,12 +768,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
   ValidateStream(stream);
 }
 
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_ResizeOnEncode DISABLED_ResizeOnEncode
-#else
-#define MAYBE_ResizeOnEncode ResizeOnEncode
-#endif
-TEST_P(NdkVideoEncoderAcceleratorTest, MAYBE_ResizeOnEncode) {
+TEST_P(NdkVideoEncoderAcceleratorTest, ResizeOnEncode) {
   auto config = GetDefaultConfig();
   config.input_visible_size = gfx::Size(720, 576);
   const std::vector<gfx::Size> frame_sizes = {
