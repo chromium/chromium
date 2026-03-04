@@ -1,0 +1,17 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++IA2_ROLE_HEADING name='Personal Information'
+++++++ROLE_SYSTEM_PUSHBUTTON name='Personal Information' EXPANDED FOCUSABLE
+++++IA2_ROLE_LANDMARK name='Personal Information'
+++++++ROLE_SYSTEM_GROUPING
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++IA2_ROLE_LABEL
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Name '
+++++++++++++ROLE_SYSTEM_STATICTEXT name=': '
+++++++++++ROLE_SYSTEM_TEXT name='Name :' FOCUSABLE IA2_STATE_REQUIRED
+++++++++IA2_ROLE_PARAGRAPH
+++++++++++IA2_ROLE_LABEL
+++++++++++++ROLE_SYSTEM_STATICTEXT name='Phone: '
+++++++++++ROLE_SYSTEM_TEXT name='Phone:' FOCUSABLE
+++++IA2_ROLE_HEADING name='Billing Address'
+++++++ROLE_SYSTEM_PUSHBUTTON name='Billing Address' COLLAPSED FOCUSABLE

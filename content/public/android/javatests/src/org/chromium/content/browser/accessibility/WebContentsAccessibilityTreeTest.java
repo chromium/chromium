@@ -259,6 +259,12 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    public void test_ariaAccordion() {
+        performAriaTest("aria-accordion.html");
+    }
+
+    @Test
+    @SmallTest
     public void test_ariaAlertdialog() {
         performAriaTest("aria-alertdialog.html");
     }

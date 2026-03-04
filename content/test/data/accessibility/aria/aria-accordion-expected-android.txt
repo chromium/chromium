@@ -1,0 +1,14 @@
+android.webkit.WebView focusable focused
+++android.view.View
+++++android.view.View role_description='heading 3' heading name='Personal Information'
+++++++android.widget.Button clickable expanded focusable heading interesting name='Personal Information' expanded_state=3
+++++android.view.View role_description='region' name='Personal Information'
+++++++android.view.View
+++++++++android.view.View
+++++++++++android.view.View interesting name='Name : '
+++++++++++android.widget.EditText clickable editable_text focusable required interesting hint='Name :' input_type=1
+++++++++android.view.View
+++++++++++android.view.View interesting name='Phone: '
+++++++++++android.widget.EditText clickable editable_text focusable interesting hint='Phone:' input_type=1
+++++android.view.View role_description='heading 3' heading name='Billing Address'
+++++++android.widget.Button clickable collapsed focusable heading interesting name='Billing Address' expanded_state=1

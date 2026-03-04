@@ -1,0 +1,92 @@
+<!DOCTYPE HTML>
+<html>
+    <body>
+        <!-- HTML snippet from https://www.w3.org/WAI/ARIA/apg/patterns/accordion/examples/accordion/ -->
+        <!-- For readability, a few options are removed from the original snippet. -->
+        <div id="accordionGroup" class="accordion">
+        <h3>
+            <button type="button"
+                    aria-expanded="true"
+                    class="accordion-trigger"
+                    aria-controls="sect1"
+                    id="accordion1id">
+            <span class="accordion-title">
+                Personal Information
+                <span class="accordion-icon"></span>
+            </span>
+            </button>
+        </h3>
+        <div id="sect1"
+            role="region"
+            aria-labelledby="accordion1id"
+            class="accordion-panel">
+            <div>
+            <fieldset>
+                <p>
+                <label for="cufc1">
+                    Name
+                    <span aria-hidden="true">
+                    *
+                    </span>
+                    :
+                </label>
+                <input type="text"
+                        value=""
+                        name="Name"
+                        id="cufc1"
+                        class="required"
+                        aria-required="true">
+                </p>
+                <p>
+                <label for="cufc3">
+                    Phone:
+                </label>
+                <input type="text"
+                        value=""
+                        name="Phone"
+                        id="cufc3">
+                </p>
+            </fieldset>
+            </div>
+        </div>
+        <h3>
+            <button type="button"
+                    aria-expanded="false"
+                    class="accordion-trigger"
+                    aria-controls="sect2"
+                    id="accordion2id">
+            <span class="accordion-title">
+                Billing Address
+                <span class="accordion-icon"></span>
+            </span>
+            </button>
+        </h3>
+        <div id="sect2"
+            role="region"
+            aria-labelledby="accordion2id"
+            class="accordion-panel"
+            hidden="">
+            <div>
+            <fieldset>
+                <p>
+                <label for="b-add1">
+                    Address 1:
+                </label>
+                <input type="text"
+                        name="b-add1"
+                        id="b-add1">
+                </p>
+                <p>
+                <label for="b-add2">
+                    Address 2:
+                </label>
+                <input type="text"
+                        name="b-add2"
+                        id="b-add2">
+                </p>
+            </fieldset>
+            </div>
+        </div>
+        </div>
+    </body>
+</html>

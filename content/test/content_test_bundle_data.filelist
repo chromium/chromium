@@ -394,6 +394,12 @@ data/accessibility/aria/annotation-roles-expected-mac.txt
 data/accessibility/aria/annotation-roles-expected-uia-win.txt
 data/accessibility/aria/annotation-roles-expected-win.txt
 data/accessibility/aria/annotation-roles.html
+data/accessibility/aria/aria-accordion-expected-android-external.txt
+data/accessibility/aria/aria-accordion-expected-android.txt
+data/accessibility/aria/aria-accordion-expected-blink.txt
+data/accessibility/aria/aria-accordion-expected-mac.txt
+data/accessibility/aria/aria-accordion-expected-win.txt
+data/accessibility/aria/aria-accordion.html
 data/accessibility/aria/aria-actions-expected-auralinux.txt
 data/accessibility/aria/aria-actions-expected-blink.txt
 data/accessibility/aria/aria-actions-expected-uia-win.txt

@@ -1,0 +1,37 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++heading name='Personal Information'
+++++++++++button name='Personal Information' controlsIds=region
+++++++++++++staticText name='Personal Information'
+++++++++++++++inlineTextBox name='Personal Information'
+++++++++region name='Personal Information'
+++++++++++genericContainer ignored
+++++++++++++group
+++++++++++++++paragraph
+++++++++++++++++labelText
+++++++++++++++++++staticText name='Name '
+++++++++++++++++++++inlineTextBox name='Name '
+++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++staticText ignored invisible
+++++++++++++++++++staticText name=': '
+++++++++++++++++++++inlineTextBox name=': '
+++++++++++++++++textField required name='Name :'
+++++++++++++++++++genericContainer
+++++++++++++++paragraph
+++++++++++++++++labelText
+++++++++++++++++++staticText name='Phone: '
+++++++++++++++++++++inlineTextBox name='Phone: '
+++++++++++++++++textField name='Phone:'
+++++++++++++++++++genericContainer
+++++++++heading name='Billing Address'
+++++++++++button collapsed name='Billing Address'
+++++++++++++staticText name='Billing Address'
+++++++++++++++inlineTextBox name='Billing Address'
+++++++++labelText ignored invisible
+++++++++++staticText ignored invisible
+++++++++genericContainer ignored invisible
+++++++++labelText ignored invisible
+++++++++++staticText ignored invisible
+++++++++genericContainer ignored invisible

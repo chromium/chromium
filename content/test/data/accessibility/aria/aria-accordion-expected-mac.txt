@@ -1,0 +1,17 @@
+AXWebArea
+++AXGroup
+++++AXHeading AXTitle='Personal Information' AXValue=3
+++++++AXButton AXTitle='Personal Information'
+++++AXGroup AXSubrole=AXLandmarkRegion AXTitle='Personal Information'
+++++++AXGroup AXSubrole=AXApplicationGroup
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Name '
+++++++++++++AXStaticText AXValue=': '
+++++++++++AXTextField AXTitle='Name :'
+++++++++AXGroup
+++++++++++AXGroup
+++++++++++++AXStaticText AXValue='Phone: '
+++++++++++AXTextField AXTitle='Phone:'
+++++AXHeading AXTitle='Billing Address' AXValue=3
+++++++AXButton AXTitle='Billing Address'
