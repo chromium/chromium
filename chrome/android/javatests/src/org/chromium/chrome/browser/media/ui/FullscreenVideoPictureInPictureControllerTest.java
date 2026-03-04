@@ -23,11 +23,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -56,7 +53,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
     DeviceRestriction.RESTRICTION_TYPE_NON_AUTO // PiP not supported on AAOS.
 })
 @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/481444525
-@EnableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
 public class FullscreenVideoPictureInPictureControllerTest {
     // TODO(peconn): Add a test for exit on Tab Reparenting.
     private static final String TEST_PATH = "/chrome/test/data/media/bigbuck-player.html";
@@ -107,25 +103,6 @@ public class FullscreenVideoPictureInPictureControllerTest {
                 () -> InstrumentationRegistry.getInstrumentation().callActivityOnStop(mActivity));
         CriteriaHelper.pollUiThread(
                 AsyncInitializationActivity::wasMoveTaskToBackInterceptedForTesting);
-    }
-
-    /** Tests that PiP is not entered when the feature is disabled. */
-    @Test
-    @MediumTest
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
-    public void testNoPipWhenDisabled() throws Throwable {
-        enterFullscreen();
-
-        ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        InstrumentationRegistry.getInstrumentation()
-                                .callActivityOnUserLeaving(mActivity));
-
-        // Wait a bit to ensure it doesn't enter PiP.
-        // If it was going to enter PiP, it would have happened already or shortly after
-        // callActivityOnUserLeaving.
-        Thread.sleep(1000);
-        Assert.assertFalse(ThreadUtils.runOnUiThreadBlocking(mActivity::isInPictureInPictureMode));
     }
 
     /** Tests that PiP is left when we navigate the main page. */

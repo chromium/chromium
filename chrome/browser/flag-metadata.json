@@ -5009,19 +5009,8 @@
     "expiry_milestone": 155
   },
   {
-    "name": "fullscreen-video-picture-in-picture",
-    "owners": [
-      "philyan@chromium.org",
-      "media-dev@chromium.org"
-    ],
-    "expiry_milestone": 160
-  },
-  {
     "name": "fullscreen-viewport-adjustment-experiment",
-    "owners": [
-      "thegreenfrog@chromium.org",
-      "bling-flags@google.com"
-    ],
+    "owners": [ "thegreenfrog@chromium.org", "bling-flags@google.com" ],
     // Needed for manual testing of fallback flow on iOS.
     "expiry_milestone": -1
   },

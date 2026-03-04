@@ -24,8 +24,6 @@ import android.util.Pair;
 import android.view.ViewGroup;
 import android.window.OnBackInvokedDispatcher;
 
-import androidx.annotation.Nullable;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Assert;
@@ -148,12 +146,8 @@ public class ChromeActivityUnitTest {
         }
 
         @Override
-        protected @Nullable FullscreenVideoPictureInPictureController
+        protected FullscreenVideoPictureInPictureController
                 ensureFullscreenVideoPictureInPictureController() {
-            if (!ChromeFeatureList.isEnabled(
-                    ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)) {
-                return null;
-            }
             return mFullscreenVideoPictureInPictureController;
         }
 
@@ -213,7 +207,6 @@ public class ChromeActivityUnitTest {
 
     @Test
     @Config(sdk = 31)
-    @EnableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
     public void testPictureInPictureStashing() {
         // Verify that ChromeActivity reports `isStashed` correctly to the controller.
         TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
@@ -227,19 +220,6 @@ public class ChromeActivityUnitTest {
         when(mPictureInPictureUiState.isStashed()).thenReturn(true);
         chromeActivity.onPictureInPictureUiStateChanged(mPictureInPictureUiState);
         Mockito.verify(mFullscreenVideoPictureInPictureController).onStashReported(true);
-    }
-
-    @Test
-    @Config(sdk = 31)
-    @DisableFeatures(ChromeFeatureList.FULLSCREEN_VIDEO_PICTURE_IN_PICTURE)
-    public void testPictureInPictureStashing_Disabled() {
-        // Verify that ChromeActivity does not report `isStashed` when the feature is disabled.
-        TestChromeActivity chromeActivity = Mockito.spy(new TestChromeActivity());
-
-        when(mPictureInPictureUiState.isStashed()).thenReturn(true);
-        chromeActivity.onPictureInPictureUiStateChanged(mPictureInPictureUiState);
-        Mockito.verify(mFullscreenVideoPictureInPictureController, Mockito.never())
-                .onStashReported(Mockito.anyBoolean());
     }
 
     @Test
