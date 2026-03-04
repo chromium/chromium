@@ -1236,17 +1236,12 @@ const FeatureEntry::FeatureVariation kZeroStateSuggestionsVariations[] = {
 const FeatureEntry::FeatureParam kGeminiCopresenceResponseReadyIntervalParam[] =
     {{kGeminiCopresenceResponseReadyInterval, "7.0"}};
 const FeatureEntry::FeatureParam
-    kGeminiCopresenceZeroStateWithChatHistoryParam[] = {
-        {kGeminiCopresenceZeroStateWithChatHistory, "true"}};
-const FeatureEntry::FeatureParam
     kGeminiCopresenceWithFullscreenDisablerParam[] = {
         {kGeminiCopresenceWithFullscreenDisabler, "true"}};
 
 const FeatureEntry::FeatureVariation kGeminiCopresenceVariations[] = {
     {"Response Ready Interval", kGeminiCopresenceResponseReadyIntervalParam,
      nullptr},
-    {"Zero State with Chat History",
-     kGeminiCopresenceZeroStateWithChatHistoryParam, nullptr},
     {"With Fullscreen Disabler", kGeminiCopresenceWithFullscreenDisablerParam,
      nullptr},
 };
@@ -2739,6 +2734,9 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
      flag_descriptions::kAutofillAiWithDataSchemaName,
      flag_descriptions::kAutofillAiWithDataSchemaDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillAiWithDataSchema)},
+    {"gemini-chat-persistence", flag_descriptions::kGeminiChatPersistenceName,
+     flag_descriptions::kGeminiChatPersistenceDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiChatPersistence)},
     {"ios-tab-reminders", flag_descriptions::kIOSTabRemindersName,
      flag_descriptions::kIOSTabRemindersDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kIOSTabReminders)},

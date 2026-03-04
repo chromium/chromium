@@ -5074,6 +5074,14 @@
     "expiry_milestone": 155
   },
   {
+    "name": "gemini-chat-persistence",
+    "owners": [
+      "joemerramos@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-copresence",
     "owners": [
       "adamta@chromium.org",

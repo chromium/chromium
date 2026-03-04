@@ -765,8 +765,7 @@ void GeminiBrowserAgent::OnActiveWebStateChanged(web::WebState* old_active,
     [new_active->GetWebViewProxy().scrollViewProxy
         addObserver:scroll_observer_];
 
-    if (!IsGeminiCopresenceZeroStateWithChatHistoryEnabled() ||
-        !is_floaty_invoked_) {
+    if (!IsGeminiChatPersistenceEnabled() || !is_floaty_invoked_) {
       return;
     }
 
@@ -971,8 +970,10 @@ void GeminiBrowserAgent::PresentFloatyWithState(
   config.responseReadyInterval = GetGeminiCopresenceResponseReadyInterval();
   config.responseViewDynamicSizeEnabled =
       IsGeminiResponseViewDynamicResizingEnabled();
+  // TODO(crbug.com/489117306): Remove this property after refactor.
   config.geminiCopresenceZeroStateWithChatHistoryEnabled =
-      IsGeminiCopresenceZeroStateWithChatHistoryEnabled();
+      IsGeminiChatPersistenceEnabled();
+  config.geminiChatPersistenceEnabled = IsGeminiChatPersistenceEnabled();
 
   // Set the location permission state.
   // TODO(crbug.com/426207968): Populate with actual value.

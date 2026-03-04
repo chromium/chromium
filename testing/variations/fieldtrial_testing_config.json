@@ -11060,8 +11060,7 @@
                     "name": "Enabled",
                     "params": {
                         "GeminiCopresenceResponseReadyInterval": "7.0",
-                        "GeminiCopresenceWithFullscreenDisabler": "true",
-                        "GeminiCopresenceZeroStateWithChatHistory": "true"
+                        "GeminiCopresenceWithFullscreenDisabler": "true"
                     },
                     "enable_features": [
                         "GeminiCopresence",

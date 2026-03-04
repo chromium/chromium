@@ -402,6 +402,9 @@ extern const char kGeminiActorDescription[];
 extern const char kGeminiBackendMigrationName[];
 extern const char kGeminiBackendMigrationDescription[];
 
+extern const char kGeminiChatPersistenceName[];
+extern const char kGeminiChatPersistenceDescription[];
+
 extern const char kGeminiCopresenceName[];
 extern const char kGeminiCopresenceDescription[];
 

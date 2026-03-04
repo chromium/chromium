@@ -287,9 +287,9 @@ bool IsGeminiCopresenceEnabled();
 extern const char kGeminiCopresenceResponseReadyInterval[];
 double GetGeminiCopresenceResponseReadyInterval();
 
-// Returns true if the zero state with chat history is enabled.
-bool IsGeminiCopresenceZeroStateWithChatHistoryEnabled();
-extern const char kGeminiCopresenceZeroStateWithChatHistory[];
+// Returns true if the Gemini chat persistence is enabled.
+bool IsGeminiChatPersistenceEnabled();
+BASE_DECLARE_FEATURE(kGeminiChatPersistence);
 
 // Returns true if the fullscreen disabler is enabled with Gemini Copresence.
 bool IsGeminiCopresenceWithFullscreenDisablerEnabled();

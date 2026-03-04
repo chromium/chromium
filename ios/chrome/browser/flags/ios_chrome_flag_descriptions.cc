@@ -656,6 +656,10 @@ const char kGeminiBackendMigrationName[] = "Gemini Backend Migration";
 const char kGeminiBackendMigrationDescription[] =
     "Enables the backend migration for Gemini.";
 
+const char kGeminiChatPersistenceName[] = "Gemini Chat Persistence";
+const char kGeminiChatPersistenceDescription[] =
+    "Enables improvements to Gemini Chat persistence.";
+
 const char kGeminiCopresenceName[] = "Gemini Copresence";
 const char kGeminiCopresenceDescription[] =
     "Enables the Gemini Copresence feature, which provides a persistent Gemini "

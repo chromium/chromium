@@ -453,16 +453,10 @@ double GetGeminiCopresenceResponseReadyInterval() {
       kGeminiCopresenceResponseReadyIntervalDefault);
 }
 
-const char kGeminiCopresenceZeroStateWithChatHistory[] =
-    "GeminiCopresenceZeroStateWithChatHistory";
+BASE_FEATURE(kGeminiChatPersistence, base::FEATURE_DISABLED_BY_DEFAULT);
 
-bool IsGeminiCopresenceZeroStateWithChatHistoryEnabled() {
-  if (!IsGeminiCopresenceEnabled()) {
-    return false;
-  }
-
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kGeminiCopresence, kGeminiCopresenceZeroStateWithChatHistory, false);
+bool IsGeminiChatPersistenceEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiChatPersistence);
 }
 
 const char kGeminiCopresenceWithFullscreenDisabler[] =
