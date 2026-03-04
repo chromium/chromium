@@ -14,7 +14,8 @@ interface IAccessibilityTestHelperService {
      *     AccessibilityEvent.TYPE_VIEW_FOCUSED).
      * @param className The expected class name of the event source.  Null or empty string matches any class name.
      * @param text The expected text of the event source. Null or empty string matches any text.
+     * @param contentChangeTypes The bit mask of content change types to wait for (e.g., AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT). 0 matches any content change type.
      * @param timeoutMs The maximum time to wait in milliseconds.
      */
-    boolean waitForEvent(int eventType, String className, String text, long timeoutMs);
+    boolean waitForEvent(int eventType, String className, String text, int contentChangeTypes, long timeoutMs);
 }

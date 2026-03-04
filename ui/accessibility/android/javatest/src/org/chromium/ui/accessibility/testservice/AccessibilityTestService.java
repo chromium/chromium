@@ -41,13 +41,13 @@ public class AccessibilityTestService extends AccessibilityService {
     }
 
     public static boolean tryWaitForEvent(
-            int eventType, String className, String text, long timeoutMs) {
+            int eventType, String className, String text, int contentChangeTypes, long timeoutMs) {
         CompletableFuture<Boolean> eventFuture = new CompletableFuture<>();
         AccessibilityServiceListener listener =
                 new AccessibilityServiceListener() {
                     @Override
                     public void onAccessibilityEvent(AccessibilityEvent event) {
-                        if (eventMatches(event, eventType, className, text)) {
+                        if (eventMatches(event, eventType, className, text, contentChangeTypes)) {
                             Log.i(TAG, "  Event MATCHED.");
                             eventFuture.complete(true);
                         }
@@ -58,7 +58,7 @@ public class AccessibilityTestService extends AccessibilityService {
             // Clear any previous listener, as waitForEvent claims exclusive rights.
             clearListenerLocked();
 
-            if (searchAndConsumeEventCacheLocked(eventType, className, text)) {
+            if (searchAndConsumeEventCacheLocked(eventType, className, text, contentChangeTypes)) {
                 Log.i(TAG, "Found event in cache.");
                 return true;
             }
@@ -100,13 +100,13 @@ public class AccessibilityTestService extends AccessibilityService {
 
     @GuardedBy("sLock")
     public static boolean searchAndConsumeEventCacheLocked(
-            int eventType, String className, String text) {
+            int eventType, String className, String text, int contentChangeTypes) {
         ListIterator<AccessibilityEvent> iterator = sEventCache.listIterator();
         int foundIndex = -1;
         while (iterator.hasNext()) {
             int index = iterator.nextIndex();
             AccessibilityEvent event = iterator.next();
-            if (eventMatches(event, eventType, className, text)) {
+            if (eventMatches(event, eventType, className, text, contentChangeTypes)) {
                 foundIndex = index;
                 break;
             }
@@ -125,8 +125,17 @@ public class AccessibilityTestService extends AccessibilityService {
     }
 
     static boolean eventMatches(
-            AccessibilityEvent event, int eventType, String className, String text) {
+            AccessibilityEvent event,
+            int eventType,
+            String className,
+            String text,
+            int contentChangeTypes) {
         if (event.getEventType() != eventType) return false;
+
+        if (contentChangeTypes != 0
+                && (event.getContentChangeTypes() & contentChangeTypes) != contentChangeTypes) {
+            return false;
+        }
 
         AccessibilityNodeInfo source = event.getSource();
         CharSequence sourceClassName = source != null ? source.getClassName() : "";

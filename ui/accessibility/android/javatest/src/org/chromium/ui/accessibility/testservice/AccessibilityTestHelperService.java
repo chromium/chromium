@@ -17,7 +17,11 @@ public class AccessibilityTestHelperService extends Service {
             new IAccessibilityTestHelperService.Stub() {
                 @Override
                 public boolean waitForEvent(
-                        int eventType, String className, String text, long timeoutMs) {
+                        int eventType,
+                        String className,
+                        String text,
+                        int contentChangeTypes,
+                        long timeoutMs) {
                     Log.i(
                             TAG,
                             "waitForEvent called with type: "
@@ -25,9 +29,11 @@ public class AccessibilityTestHelperService extends Service {
                                     + ", class: "
                                     + className
                                     + ", text: "
-                                    + text);
+                                    + text
+                                    + ", contentChangeTypes: "
+                                    + contentChangeTypes);
                     return AccessibilityTestService.tryWaitForEvent(
-                            eventType, className, text, timeoutMs);
+                            eventType, className, text, contentChangeTypes, timeoutMs);
                 }
             };
 
