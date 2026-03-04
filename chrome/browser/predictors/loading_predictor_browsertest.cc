@@ -65,6 +65,7 @@
 #include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/preconnect_test_util.h"
 #include "content/public/test/prerender_test_util.h"
@@ -3275,6 +3276,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameLoadingPredictorBrowserTest,
       dns_prefetch_url.GetHost(), network_anonymization_key));
 }
 
+// TODO(crbug.com/489349560): Allow `LoadingPredictorBrowserTest` to specify the
+// type of EmbeddedTestServer, instead of the subclass to construct its own.
 class ConnectionAllowlistLoadingPredictorBrowserTest
     : public LoadingPredictorBrowserTest {
  public:
@@ -3283,17 +3286,39 @@ class ConnectionAllowlistLoadingPredictorBrowserTest
         network::features::kConnectionAllowlists);
   }
 
-  void SetUp() override {
-    ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
-    embedded_test_server()->RegisterRequestHandler(
+  // Note: `LoadingPredictorBrowserTest::SetUpOnMainThread()` sets up the
+  // ConnectionTracker on `embedded_test_server()`. If the tests need to
+  // use ConnectionTracker, it should construct a separate one on
+  // `embedded_https_test_server()`, instead of using `connection_tracker()`.
+  void SetUpOnMainThread() override {
+    LoadingPredictorBrowserTest::SetUpOnMainThread();
+
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
+    embedded_https_test_server().SetSSLConfig(
+        net::EmbeddedTestServer::CERT_TEST_NAMES);
+    embedded_https_test_server().AddDefaultHandlers();
+    embedded_https_test_server().RegisterRequestHandler(
         base::BindRepeating(&ConnectionAllowlistLoadingPredictorBrowserTest::
                                 HandleMainFrameRequest));
-    embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+    embedded_https_test_server().RegisterRequestHandler(base::BindRepeating(
         &ConnectionAllowlistLoadingPredictorBrowserTest::
             HandleMainFrameRequestWithDNSPrefetchLinkHeader));
-    ASSERT_TRUE(preconnecting_test_server_.InitializeAndListen());
+    ASSERT_TRUE(embedded_https_test_server().Start());
+  }
 
-    InProcessBrowserTest::SetUp();
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    LoadingPredictorBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    LoadingPredictorBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    LoadingPredictorBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   static std::unique_ptr<net::test_server::HttpResponse> HandleMainFrameRequest(
@@ -3306,7 +3331,7 @@ class ConnectionAllowlistLoadingPredictorBrowserTest
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     http_response->AddCustomHeader("Connection-Allowlist",
-                                   "(\"http://a.test\" \"http://b.test\")");
+                                   "(\"https://a.test\" \"https://b.test\")");
     return http_response;
   }
 
@@ -3321,14 +3346,17 @@ class ConnectionAllowlistLoadingPredictorBrowserTest
         std::make_unique<net::test_server::BasicHttpResponse>();
     http_response->set_code(net::HTTP_OK);
     http_response->AddCustomHeader("Connection-Allowlist",
-                                   "(\"http://a.test\" \"http://b.test\")");
-    http_response->AddCustomHeader("Link", "<http://b.test>; rel=dns-prefetch");
-    http_response->AddCustomHeader("Link", "<http://c.test>; rel=dns-prefetch");
+                                   "(\"https://a.test\" \"https://b.test\")");
+    http_response->AddCustomHeader("Link",
+                                   "<https://b.test>; rel=dns-prefetch");
+    http_response->AddCustomHeader("Link",
+                                   "<https://c.test>; rel=dns-prefetch");
     return http_response;
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  content::ContentMockCertVerifier mock_cert_verifier_;
 };
 
 // Verify that DNS prefetch fails when requests to the host are prevented by the
@@ -3342,10 +3370,10 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
                        ConnectionAllowlistDnsPrefetchFails) {
   // Navigate the main frame to a page with a connection allowlist.
   const GURL main_url =
-      embedded_test_server()->GetURL("a.test", "/connection-allowlist");
+      embedded_https_test_server().GetURL("a.test", "/connection-allowlist");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
-  GURL dns_prefetch_url("http://c.test");
+  GURL dns_prefetch_url("https://c.test");
 
   content::RenderFrameHost* main_frame_rfh = browser()
                                                  ->tab_strip_model()
@@ -3381,11 +3409,11 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
                        ConnectionAllowlistDnsPrefetchSucceeds) {
   // Navigate the main frame to a page with a connection allowlist.
   const GURL main_url =
-      embedded_test_server()->GetURL("a.test", "/connection-allowlist");
+      embedded_https_test_server().GetURL("a.test", "/connection-allowlist");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
   // This URL is allowed by the Connection-Allowlist header.
-  GURL dns_prefetch_url("http://b.test");
+  GURL dns_prefetch_url("https://b.test");
 
   content::RenderFrameHost* main_frame_rfh = browser()
                                                  ->tab_strip_model()
@@ -3419,7 +3447,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
                        ConnectionAllowlistLinkHeaderDnsPrefetch) {
   // Navigate the main frame to a page with a Connection Allowlist and "Link
   // rel=dns-prefetch" headers.
-  const GURL main_url = embedded_test_server()->GetURL(
+  const GURL main_url = embedded_https_test_server().GetURL(
       "a.test", "/connection-allowlist-dns-prefetch");
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), main_url));
 
@@ -3430,7 +3458,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
           net::SchemefulSite(main_url));
 
   // Host lookup for the allowed host should complete successfully.
-  GURL allowed_prefetch_url("http://b.test");
+  GURL allowed_prefetch_url("https://b.test");
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       allowed_prefetch_url.GetHost(), network_anonymization_key);
   EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
@@ -3440,7 +3468,7 @@ IN_PROC_BROWSER_TEST_F(ConnectionAllowlistLoadingPredictorBrowserTest,
 
   // Host lookup for the disallowed host should fail, because it is not in the
   // allowlist.
-  GURL denied_prefetch_url("http://c.test");
+  GURL denied_prefetch_url("https://c.test");
   preconnect_manager_observer()->WaitUntilHostLookedUp(
       denied_prefetch_url.GetHost(), network_anonymization_key);
   EXPECT_TRUE(preconnect_manager_observer()->HasHostBeenLookedUp(
