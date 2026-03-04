@@ -504,6 +504,12 @@ void ContentVerifyJob::DispatchFailureCallback(FailureReason reason) {
 }
 
 void ContentVerifyJob::ReportJobFinished(FailureReason reason) {
+  base::UmaHistogramEnumeration(
+      "Extensions.ContentVerification.VerifyJobResult", reason,
+      FAILURE_REASON_MAX);
+
+  // TODO(devlin): Remove the version-specific variants in M150, once we have
+  // sufficient data from the version-agnostic variant above.
   auto record_job_finished = [this, &reason](const char* mv2_histogram,
                                              const char* mv3_histogram) {
     if (mv2_histogram && manifest_version_ == 2) {

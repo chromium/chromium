@@ -816,8 +816,20 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.ContentVerification.VerifyJobResult"
+    enum="ContentVerifyJobResult" expires_after="2027-03-01">
+  <owner>rdevlin.cronin@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Reports the result of a given content verification job succeeded for any
+    extension (independent of manifest version). Emitted when the job is
+    complete. A content verification job is started for a given extension
+    resource request.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV2"
-    enum="ContentVerifyJobResult" expires_after="2026-03-22">
+    enum="ContentVerifyJobResult" expires_after="2026-07-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -828,7 +840,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ContentVerification.VerifyJobResultMV3"
-    enum="ContentVerifyJobResult" expires_after="2026-03-22">
+    enum="ContentVerifyJobResult" expires_after="2026-07-01">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
