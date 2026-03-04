@@ -2008,6 +2008,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.HasSearchPrefetchCache"
+    enum="Boolean" expires_after="2026-07-05">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records whether the search prefetch cache is found.
+
+    This is recorded when the synthetic response is considered being handled,
+    but before actually starting it.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.SyntheticResponse.IsHeaderConsistent"
     enum="Boolean" expires_after="2026-07-19">
   <owner>sisidovski@chromium.org</owner>

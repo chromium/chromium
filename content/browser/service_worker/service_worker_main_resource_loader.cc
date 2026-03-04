@@ -95,11 +95,17 @@ void MaybeSetHeaderReceivedTiming(net::LoadTimingInfo& timing) {
 
 constexpr char kHistogramSyntheticResponseEligibility[] =
     "ServiceWorker.SyntheticResponse.Eligibility";
+constexpr char kHistogramHasSearchPrefetchCache[] =
+    "ServiceWorker.SyntheticResponse.HasSearchPrefetchCache";
 
 void RecordSyntheticResponseEligibility(
     SyntheticResponseEligibility eligibility) {
   base::UmaHistogramEnumeration(kHistogramSyntheticResponseEligibility,
                                 eligibility);
+}
+
+void RecordHasSearchPrefetchCache(bool has_cache) {
+  base::UmaHistogramBoolean(kHistogramHasSearchPrefetchCache, has_cache);
 }
 
 void MaybeSetFetchHandlerBypassOptionForsyntheticResponse(
@@ -1055,8 +1061,13 @@ bool ServiceWorkerMainResourceLoader::MaybeStartSyntheticNetworkRequest(
   // stack, the cache would be empty when the network stack tries to claim it.
   // Instead, we take ownership of the callback and execute it directly during
   // Fallback().
+  //
+  // This is a temporary workaround to fix the Search Prefetch case. After the
+  // Search Prefetch migration to DSEv2, we will remove this as the unified
+  // prefetch cache used by DSEv2 supports responses from service workers.
   std::optional<ContentBrowserClient::URLLoaderRequestHandler> handler =
       service_worker_client_->TakeInterceptingPreloadHandler(resource_request_);
+  RecordHasSearchPrefetchCache(handler.has_value());
   if (handler.has_value()) {
     RecordSyntheticResponseEligibility(
         SyntheticResponseEligibility::kNotEligibleByIntercepted);
