@@ -2151,6 +2151,11 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                         "enabled", base::FeatureList::IsEnabled(
                                        ::features::kDevToolsGeminiRebranding)));
 
+  response_dict.Set("devToolsWebMCPSupport",
+                    base::DictValue().Set(
+                        "enabled", base::FeatureList::IsEnabled(
+                                       ::features::kDevToolsWebMCPSupport)));
+
   return response_dict;
 }
 

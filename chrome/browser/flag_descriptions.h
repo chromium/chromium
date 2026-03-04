@@ -1648,6 +1648,11 @@ inline constexpr char kDevToolsProtocolMonitorDescription[] =
     "Enables the protocol monitor panel, which displays the Chrome DevTools "
     "Protocol (CDP) traffic between DevTools and the browser.";
 
+inline constexpr char kDevToolsWebMCPSupportName[] =
+    "WebMCP support in DevTools";
+inline constexpr char kDevToolsWebMCPSupportDescription[] =
+    "Enables WebMCP support in DevTools.";
+
 inline constexpr char kDesktopPWAsBorderlessName[] = "Desktop PWA Borderless";
 inline constexpr char kDesktopPWAsBorderlessDescription[] =
     "Enable web app manifests to declare borderless mode as a display "

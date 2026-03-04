@@ -2265,6 +2265,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "devtools-webmcp-support",
+    "owners": [ "pfaffe@chromium.org" ],
+    "expiry_milestone": 155
+  },
+  {
     "name": "direct-sockets-in-service-workers",
     "owners": [ "//content/browser/direct_sockets/OWNERS" ],
     "expiry_milestone": 150

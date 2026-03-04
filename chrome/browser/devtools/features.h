@@ -135,6 +135,8 @@ BASE_DECLARE_FEATURE(kDevToolsGeminiRebranding);
 
 BASE_DECLARE_FEATURE(kDevToolsAiOriginTrialsApis);
 
+BASE_DECLARE_FEATURE(kDevToolsWebMCPSupport);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_DEVTOOLS_FEATURES_H_

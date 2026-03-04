@@ -13539,6 +13539,7 @@ from previous Chrome versions.
   <int value="-301228557" label="PageInfoDiscoverability:disabled"/>
   <int value="-301120116" label="PasswordSuggestionBottomSheetV2:disabled"/>
   <int value="-300817167" label="CrosSwitcher:enabled"/>
+  <int value="-300709763" label="DevToolsWebMCPSupport:disabled"/>
   <int value="-300018686" label="disable-cloud-import"/>
   <int value="-299841473" label="top-document-isolation:enabled"/>
   <int value="-299332162" label="PageActionsMigration:enabled"/>
@@ -19622,6 +19623,7 @@ from previous Chrome versions.
   <int value="1758688616" label="OmniboxModernizeVisualUpdate:disabled"/>
   <int value="1759193892" label="SafetyCheckExtensions:disabled"/>
   <int value="1759323272" label="DefaultCalculatorWebApp:disabled"/>
+  <int value="1759976458" label="DevToolsWebMCPSupport:enabled"/>
   <int value="1760547768" label="BackGestureRefactorActivityAndroid:disabled"/>
   <int value="1760946944" label="MacViewsAutofillPopup:disabled"/>
   <int value="1761015761"
