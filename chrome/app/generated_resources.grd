@@ -8850,6 +8850,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_ACTION_CHIP_DEEP_SEARCH_BODY" translateable="true" desc="Body text in the deep search action chip describing the use of the chip.">
         Dive deep into something new
       </message>
+      <message name="IDS_NTP_ACTION_CHIP_CANVAS_HEADING" translateable="true" desc="Heading of the canvas action chip on the NTP.">
+        Canvas
+      </message>
+      <message name="IDS_NTP_ACTION_CHIP_CANVAS_BODY" translateable="true" desc="Body text in the canvas action chip describing the use of the chip.">
+        Write, plan, code, and more
+      </message>
       <message name="IDS_COMPOSE_REMOVE_TOOL_CHIP_A11Y_LABEL" desc="A11y text for removing a tool in the composebox.">
         Remove <ph name="TOOL_NAME">$1<ex>Deep Search</ex></ph>
       </message>
