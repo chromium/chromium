@@ -5472,7 +5472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Process.ActivePrewarm" enum="Boolean"
-    expires_after="2026-04-05">
+    expires_after="2027-04-05">
   <owner>justincohen@google.com</owner>
   <owner>olivierrobin@google.com</owner>
   <summary>
