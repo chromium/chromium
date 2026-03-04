@@ -2962,10 +2962,24 @@ RenderFrameSubmissionObserver::~RenderFrameSubmissionObserver() {
   }
 }
 
+void RenderFrameSubmissionObserver::SetWaitForNextFrame() {
+  wait_for_render_frame_count_ = (render_frame_count_ + 1);
+  LOG(ERROR) << "SetWaitForNextFrame";
+}
+
 void RenderFrameSubmissionObserver::WaitForAnyFrameSubmission() {
-  break_on_any_frame_ = true;
+  CHECK(!wait_for_render_frame_count_.has_value());
+  wait_for_render_frame_count_ = render_frame_count_;
   Wait();
-  break_on_any_frame_ = false;
+  wait_for_render_frame_count_.reset();
+}
+
+void RenderFrameSubmissionObserver::WaitForNextFrameSubmission() {
+  CHECK(wait_for_render_frame_count_.has_value());
+  while (render_frame_count_ < wait_for_render_frame_count_.value()) {
+    Wait();
+  }
+  wait_for_render_frame_count_.reset();
 }
 
 void RenderFrameSubmissionObserver::WaitForMetadataChange() {
@@ -3056,7 +3070,7 @@ void RenderFrameSubmissionObserver::OnRenderFrameMetadataChangedAfterActivation(
 
 void RenderFrameSubmissionObserver::OnRenderFrameSubmission() {
   render_frame_count_++;
-  if (break_on_any_frame_) {
+  if (wait_for_render_frame_count_.has_value()) {
     Quit();
   }
 }

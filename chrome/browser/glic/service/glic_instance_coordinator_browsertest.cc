@@ -108,12 +108,13 @@ void SimulateLinkClick(tabs::TabInterface* tab, bool ctrl_key, bool shift_key) {
 
   content::RenderFrameSubmissionObserver frame_observer(contents);
 
+  frame_observer.SetWaitForNextFrame();
   EXPECT_TRUE(content::ExecJs(contents, script));
 
   // Wait for the next frame to ensure the element is visible to the compositor.
   // Without this wait, the click might happen too early and not trigger the
   // navigation.
-  frame_observer.WaitForAnyFrameSubmission();
+  frame_observer.WaitForNextFrameSubmission();
 
   int modifiers = 0;
   if (ctrl_key) {
