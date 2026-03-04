@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/layout/transform_utils.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/sticky_position_scrolling_constraints.h"
+#include "third_party/blink/renderer/core/paint/border_shape_utils.h"
 #include "third_party/blink/renderer/core/paint/box_fragment_painter.h"
 #include "third_party/blink/renderer/core/paint/box_reflection_utils.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
@@ -1359,6 +1360,13 @@ PaintLayer* PaintLayer::HitTestLayer(
     return nullptr;
   }
 
+  if (layout_object.StyleRef().HasBorderShape() &&
+      layout_object.ShouldClipOverflowAlongBothAxis() &&
+      HitTestClippedOutByBorderShape(transform_container,
+                                     recursion_data.location)) {
+    return nullptr;
+  }
+
   HitTestingTransformState* local_transform_state = nullptr;
   STACK_UNINITIALIZED std::optional<HitTestingTransformState> storage;
 
@@ -2004,6 +2012,39 @@ bool PaintLayer::HitTestClippedOutByClipPath(
 
   const HitTestLocation location_in_layer(hit_test_location, -origin);
   return !ClipPathClipper::HitTest(GetLayoutObject(), location_in_layer);
+}
+
+bool PaintLayer::HitTestClippedOutByBorderShape(
+    const PaintLayer& transform_container,
+    const HitTestLocation& hit_test_location) const {
+  DCHECK(GetLayoutObject().StyleRef().HasBorderShape());
+  DCHECK(GetLayoutObject().ShouldClipOverflowAlongBothAxis());
+
+  const LayoutBox* layout_box = GetLayoutBox();
+  if (!layout_box) {
+    return false;
+  }
+
+  PhysicalOffset origin = GetLayoutObject().LocalToAncestorPoint(
+      PhysicalOffset(), &transform_container.GetLayoutObject());
+  const HitTestLocation location_in_layer(hit_test_location, -origin);
+
+  // Use the border-box rect as the reference, expanding by the
+  // overflow-clip-margin if applicable so that children that overflow into
+  // the margin area remain hittable.
+  PhysicalRect border_rect = layout_box->PhysicalBorderBoxRect();
+  if (layout_box->ShouldApplyOverflowClipMargin()) {
+    border_rect.Expand(layout_box->BorderOutsetsForClipping());
+  }
+  std::optional<BorderShapeReferenceRects> border_shape_rects =
+      ComputeBorderShapeReferenceRects(border_rect, layout_box->StyleRef(),
+                                       *layout_box);
+  if (!border_shape_rects) {
+    return false;
+  }
+  const Path outer_path = BorderShapePainter::OuterPath(
+      layout_box->StyleRef(), border_shape_rects->outer);
+  return !location_in_layer.Intersects(outer_path);
 }
 
 // Checks if `hit_test_location` is clipped out by any ancestor `border-radius`

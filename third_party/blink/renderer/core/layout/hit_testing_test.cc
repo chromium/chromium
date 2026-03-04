@@ -237,6 +237,142 @@ TEST_F(HitTestingTest, OcclusionHitTestWithClipPath) {
   EXPECT_EQ(result.InnerNode(), occluder);
 }
 
+// Verify occlusion early-out for border-shape stroke mode. Per the spec,
+// a single <basic-shape> uses stroke mode; the default geometry box is the
+// half-border-box, and border widths affect the stroke.  We make the shape a
+// simple circle so the outer path is a circle.  The test simply checks that
+// the occlusion result matches a full hit test at three offsets.
+TEST_F(HitTestingTest, OcclusionHitTestWithBorderShapeStrokeMode) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      width: 100px;
+      height: 100px;
+    }
+    #occluder {
+      border: 10px solid blue;
+      border-shape: circle(50%);
+    }
+    </style>
+
+    <div id=target></div>
+    <div id=occluder></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+
+  auto normalHitTest = [&](const Element* el) {
+    HitTestLocation location(VisualRectInDocument(*el->GetLayoutObject()));
+    uint32_t hit_type =
+        HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+        HitTestRequest::kIgnoreClipping |
+        HitTestRequest::kIgnoreZeroOpacityObjects |
+        HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
+        HitTestRequest::kPenetratingList | HitTestRequest::kAvoidCache;
+    return el->GetDocument()
+        .GetFrame()
+        ->GetEventHandler()
+        .HitTestResultAtLocation(location, hit_type, el->GetLayoutObject(),
+                                 true, std::nullopt);
+  };
+
+  // no overlap
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "100px");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    HitTestResult occlusion = HitTestForOcclusion(*target);
+    HitTestResult normal = normalHitTest(target);
+    EXPECT_EQ(occlusion.InnerNode(), normal.InnerNode());
+  }
+
+  // bounding-box overlap but circle misses
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "90px");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    HitTestResult occlusion = HitTestForOcclusion(*target);
+    HitTestResult normal = normalHitTest(target);
+    EXPECT_EQ(occlusion.InnerNode(), normal.InnerNode());
+  }
+
+  // circle intersects
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "70px");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    HitTestResult occlusion = HitTestForOcclusion(*target);
+    HitTestResult normal = normalHitTest(target);
+    EXPECT_EQ(occlusion.InnerNode(), normal.InnerNode());
+  }
+}
+
+// Verify occlusion early-out for border-shape fill mode (two shapes).  Only the
+// outer path is used for hit-testing, so behaviour should still match the
+// normal hit test.  We choose two concentric polygons from the spec example.
+TEST_F(HitTestingTest, OcclusionHitTestWithBorderShapeFillMode) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div {
+      width: 100px;
+      height: 100px;
+    }
+    #occluder {
+      border: 10px solid crimson;
+      border-shape:
+        polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)
+        polygon(50% 10%, 90% 50%, 50% 90%, 10% 50%);
+    }
+    </style>
+
+    <div id=target></div>
+    <div id=occluder></div>
+  )HTML");
+
+  Element* target = GetElementById("target");
+  Element* occluder = GetElementById("occluder");
+
+  auto normalHitTest = [&](const Element* el) {
+    HitTestLocation location(VisualRectInDocument(*el->GetLayoutObject()));
+    uint32_t hit_type =
+        HitTestRequest::kIgnorePointerEventsNone | HitTestRequest::kReadOnly |
+        HitTestRequest::kIgnoreClipping |
+        HitTestRequest::kIgnoreZeroOpacityObjects |
+        HitTestRequest::kHitTestVisualOverflow | HitTestRequest::kListBased |
+        HitTestRequest::kPenetratingList | HitTestRequest::kAvoidCache;
+    return el->GetDocument()
+        .GetFrame()
+        ->GetEventHandler()
+        .HitTestResultAtLocation(location, hit_type, el->GetLayoutObject(),
+                                 true, std::nullopt);
+  };
+
+  // no overlap
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "100px");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    HitTestResult occlusion = HitTestForOcclusion(*target);
+    HitTestResult normal = normalHitTest(target);
+    EXPECT_EQ(occlusion.InnerNode(), normal.InnerNode());
+  }
+
+  // bounding-box overlap but outer polygon misses
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "90px");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    HitTestResult occlusion = HitTestForOcclusion(*target);
+    HitTestResult normal = normalHitTest(target);
+    EXPECT_EQ(occlusion.InnerNode(), normal.InnerNode());
+  }
+
+  // outer polygon intersects
+  occluder->SetInlineStyleProperty(CSSPropertyID::kMarginLeft, "70px");
+  UpdateAllLifecyclePhasesForTest();
+  {
+    HitTestResult occlusion = HitTestForOcclusion(*target);
+    HitTestResult normal = normalHitTest(target);
+    EXPECT_EQ(occlusion.InnerNode(), normal.InnerNode());
+  }
+}
+
 TEST_F(HitTestingTest, ScrolledInline) {
   SetBodyInnerHTML(R"HTML(
     <style>

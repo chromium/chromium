@@ -654,6 +654,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
       ShouldRespectOverflowClipType);
   bool HitTestClippedOutByClipPath(const PaintLayer& root_layer,
                                    const HitTestLocation&) const;
+  bool HitTestClippedOutByBorderShape(const PaintLayer& transform_container,
+                                      const HitTestLocation&) const;
   bool HitTestClippedOutByBorderRadius(
       const PaintLayer& transform_container,
       const PaintLayerFragment* container_fragment,
