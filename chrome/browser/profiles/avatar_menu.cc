@@ -13,12 +13,14 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu_observer.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_list_desktop.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/dialogs/browser_dialogs.h"
@@ -38,6 +40,26 @@
 using content::BrowserThread;
 
 namespace {
+
+bool HasProfileEverDisplayedBrowserWindow(Profile* profile) {
+  // Return true for testing profile so that the unit test can pass.
+  if (profile->AsTestingProfile()) {
+    return true;
+  }
+
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (!profile_manager) {
+    return false;
+  }
+
+  auto keep_alives = profile_manager->GetKeepAlivesByPath(profile->GetPath());
+  // Check if the profile is in `kWaitingForFirstBrowserWindow` state.
+  // TODO(crbug.com/489549613): create a method from `ProfileManager` to return
+  // this information instead of directly looking into the keepalives map.
+  auto it =
+      keep_alives.find(ProfileKeepAliveOrigin::kWaitingForFirstBrowserWindow);
+  return it == keep_alives.end() || it->second == 0;
+}
 
 bool CanOpenBrowserForProfile(const AvatarMenu::Item& profile_item) {
   if (profile_item.signin_required) {
@@ -165,9 +187,19 @@ std::optional<size_t> AvatarMenu::GetActiveProfileIndex() const {
     return std::nullopt;
   }
 
-  Profile* active_profile = browser_
-                                ? browser_->GetProfile()
-                                : ProfileManager::GetLastUsedProfileIfLoaded();
+  Profile* active_profile = nullptr;
+  if (browser_) {
+    active_profile = browser_->GetProfile();
+  } else {
+    active_profile = ProfileManager::GetLastUsedProfileIfLoaded();
+    // Only fall back to the last used profile if it has actually been active
+    // in a browser window. This prevents background-loaded profiles (like
+    // those for InitialWebUI) from appearing as "active" prematurely.
+    if (active_profile &&
+        !HasProfileEverDisplayedBrowserWindow(active_profile)) {
+      active_profile = nullptr;
+    }
+  }
 
   if (!active_profile) {
     return std::nullopt;
