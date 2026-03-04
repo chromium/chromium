@@ -93,10 +93,27 @@ int64_t TestServiceWorkerContextObserver::WaitForWorkerStarted() {
   return *running_version_id_;
 }
 
+int64_t TestServiceWorkerContextObserver::WaitForWorkerStopping() {
+  if (!running_version_id_) {
+    return blink::mojom::kInvalidServiceWorkerVersionId;
+  }
+  if (stopping_version_id_) {
+    return *stopping_version_id_;
+  }
+
+  SCOPED_TRACE("Waiting for worker to be stopping");
+  base::RunLoop run_loop;
+  stopping_quit_closure_ = run_loop.QuitClosure();
+  run_loop.Run();
+
+  return *stopping_version_id_;
+}
+
 int64_t TestServiceWorkerContextObserver::WaitForWorkerStopped() {
   if (!running_version_id_) {
     return blink::mojom::kInvalidServiceWorkerVersionId;
-  } else if (stopped_version_id_) {
+  }
+  if (stopped_version_id_) {
     return *stopped_version_id_;
   }
 
@@ -165,6 +182,16 @@ void TestServiceWorkerContextObserver::OnVersionStartedRunning(
   running_version_id_ = version_id;
   if (started_quit_closure_) {
     std::move(started_quit_closure_).Run();
+  }
+}
+
+void TestServiceWorkerContextObserver::OnStoppingSync(int64_t version_id,
+                                                      const GURL& scope) {
+  if (running_version_id_ && running_version_id_ == version_id) {
+    stopping_version_id_ = version_id;
+    if (stopping_quit_closure_) {
+      std::move(stopping_quit_closure_).Run();
+    }
   }
 }
 

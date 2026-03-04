@@ -42,7 +42,11 @@ class ServiceWorkerState
   enum class RendererState {
     // Worker thread has not started or has been stopped/terminated.
     kNotActive,
-    // Worker thread has started and it's running.
+    // Worker thread has been initialized, but has not executed all its
+    // JavaScript and registered all its listeners.
+    kInitialized,
+    // Worker thread has started, has executed all its JavaScript, registered
+    // all listeners, and it's running.
     kActive,
   };
 
@@ -63,7 +67,11 @@ class ServiceWorkerState
     virtual void OnWorkerStartFail(const SequencedContextId& context_id,
                                    base::Time start_time,
                                    content::StatusCodeResponse status) {}
-    // Called when an extension service worker is stopping or has stopped.
+    // Called when a service worker associated with this context is stopping or
+    // has stopped.
+    // TODO(crbug.com/485056792): observers should be aware that there's
+    // currently no guarantee that the `version_id` matches the one this class
+    // is currently tracking.
     virtual void OnWorkerStop(int64_t version_id, const GURL& scope) {}
   };
 
@@ -85,6 +93,12 @@ class ServiceWorkerState
   // if the service worker hasn't started yet. If this method is called while
   // the service worker is in the process of starting, it's a no-op.
   void StartWorker(const SequencedContextId& context_id);
+
+  // Called once an extension service worker context was initialized, but has
+  // not necessarily started executing its JavaScript.
+  void RendererDidInitializeServiceWorkerContext(
+      const SequencedContextId& context_id,
+      const WorkerId& worker_id);
 
   // Called when a service worker renderer process is running, has executed its
   // global JavaScript scope, and all its global event listeners have been
@@ -111,7 +125,8 @@ class ServiceWorkerState
                               base::Time start_time,
                               int64_t version_id,
                               int process_id,
-                              int thread_id);
+                              int thread_id,
+                              const blink::ServiceWorkerToken& token);
   // Called when the worker was requested to start, but failed.
   void DidStartWorkerFail(const SequencedContextId& context_id,
                           base::Time start_time,

@@ -74,6 +74,7 @@ class ServiceWorkerHost :
   // mojom::ServiceWorkerHost:
   void DidInitializeServiceWorkerContext(
       const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_token,
       int64_t service_worker_version_id,
       int worker_thread_id,
       const blink::ServiceWorkerToken& service_worker_token,
@@ -84,13 +85,15 @@ class ServiceWorkerHost :
       const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
-      int worker_thread_id) override;
+      int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token) override;
   void DidStopServiceWorkerContext(
       const ExtensionId& extension_id,
       const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
-      int worker_thread_id) override;
+      int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token) override;
   void RequestWorker(mojom::RequestParamsPtr params,
                      RequestWorkerCallback callback) override;
   void WorkerResponseAck(const base::Uuid& request_uuid) override;

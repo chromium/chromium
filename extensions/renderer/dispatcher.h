@@ -165,14 +165,16 @@ class Dispatcher : public content::RenderThreadObserver,
   void DidStartServiceWorkerContextOnWorkerThread(
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
-      const GURL& script_url);
+      const GURL& script_url,
+      const blink::ServiceWorkerToken& service_worker_token);
 
   // Runs on a different thread and should not use any member variables.
   void WillDestroyServiceWorkerContextOnWorkerThread(
       v8::Local<v8::Context> v8_context,
       int64_t service_worker_version_id,
       const GURL& service_worker_scope,
-      const GURL& script_url);
+      const GURL& script_url,
+      const blink::ServiceWorkerToken& service_worker_token);
 
   // This method is not allowed to run JavaScript code in the frame.
   void DidCreateDocumentElement(blink::WebLocalFrame* frame);

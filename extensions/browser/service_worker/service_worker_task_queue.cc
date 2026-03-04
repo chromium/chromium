@@ -125,6 +125,7 @@ bool ServiceWorkerTaskQueue::IsStartWorkerFailureUnexpected(
 void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
     content::ChildProcessId render_process_id,
     const ExtensionId& extension_id,
+    const base::UnguessableToken& activation_token,
     int64_t service_worker_version_id,
     int thread_id,
     const blink::ServiceWorkerToken& service_worker_token) {
@@ -152,6 +153,16 @@ void ServiceWorkerTaskQueue::RendererDidInitializeServiceWorkerContext(
   RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
       ->ActivateExtensionInProcess(*extension, process_host);
 
+  // Update the renderer state of the associated ServiceWorkerState.
+  auto [worker_state, context_id] =
+      GetWorkerStateForActivation(extension_id, activation_token);
+  CHECK(worker_state);
+  const WorkerId worker_id = {extension_id, render_process_id,
+                              service_worker_version_id, thread_id,
+                              service_worker_token};
+  worker_state->RendererDidInitializeServiceWorkerContext(context_id,
+                                                          worker_id);
+
   if (g_test_observer) {
     g_test_observer->RendererDidInitializeServiceWorkerContext(extension_id);
   }
@@ -163,14 +174,16 @@ void ServiceWorkerTaskQueue::RendererDidStartServiceWorkerContext(
     const base::UnguessableToken& activation_token,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
-    int thread_id) {
+    int thread_id,
+    const blink::ServiceWorkerToken& service_worker_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   auto [worker_state, context_id] =
       GetWorkerStateForActivation(extension_id, activation_token);
   if (worker_state) {
     const WorkerId worker_id = {extension_id, render_process_id,
-                                service_worker_version_id, thread_id};
+                                service_worker_version_id, thread_id,
+                                service_worker_token};
     worker_state->RendererDidStartServiceWorkerContext(context_id, worker_id);
   }
 }
@@ -193,10 +206,12 @@ void ServiceWorkerTaskQueue::RendererDidStopServiceWorkerContext(
     const base::UnguessableToken& activation_token,
     const GURL& service_worker_scope,
     int64_t service_worker_version_id,
-    int thread_id) {
+    int thread_id,
+    const blink::ServiceWorkerToken& service_worker_token) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   const WorkerId worker_id = {extension_id, render_process_id,
-                              service_worker_version_id, thread_id};
+                              service_worker_version_id, thread_id,
+                              service_worker_token};
   auto [worker_state, context_id] =
       GetWorkerStateForActivation(extension_id, activation_token);
   if (worker_state) {
@@ -509,8 +524,6 @@ void ServiceWorkerTaskQueue::OnWorkerStartFail(
 
 void ServiceWorkerTaskQueue::OnWorkerStop(int64_t version_id,
                                           const GURL& scope) {
-  // TODO(crbug.com/40936639): Confirming this is true in order to allow for
-  // synchronous notification of this status change.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   // Stop tracking the worker for extension API purposes.
@@ -1220,6 +1233,12 @@ bool ServiceWorkerTaskQueue::IsWorkerRegistered(
   const SequencedContextId context_id = {
       extension_id, browser_context_->UniqueId(), *activation_token};
   return worker_registered_.contains(context_id);
+}
+
+void ServiceWorkerTaskQueue::AddPendingTaskForContextForTesting(
+    PendingTask&& pending_task,
+    const SequencedContextId& context_id) {
+  AddPendingTaskForContext(std::move(pending_task), context_id);
 }
 
 size_t ServiceWorkerTaskQueue::GetNumPendingTasksForTest(

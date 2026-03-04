@@ -11,6 +11,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
@@ -97,7 +99,8 @@ class ServiceWorkerHostInterceptorForWorkerStop
       const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
-      int worker_thread_id) override {
+      int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token) override {
     // Do not call the real `ServiceWorkerHost::DidStopServiceWorkerContext()`
     // method to simulate that a stop notification was never sent from the
     // renderer worker thread.
@@ -119,7 +122,35 @@ class ServiceWorkerHostNoStartNotification : public ServiceWorkerHost {
       const base::UnguessableToken& activation_token,
       const GURL& service_worker_scope,
       int64_t service_worker_version_id,
-      int worker_thread_id) override {}
+      int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token) override {}
+};
+
+// Alternative implementation of ServiceWorkerHost that simulates that both the
+// initialization and starting notification were never sent from the renderer
+// worker thread.
+class ServiceWorkerHostNoInitializeAndStartNotification
+    : public ServiceWorkerHost {
+ public:
+  using ServiceWorkerHost::ServiceWorkerHost;
+
+  // mojom::ServiceWorkerHost:
+  void DidInitializeServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_token,
+      int64_t service_worker_version_id,
+      int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token,
+      mojo::PendingAssociatedRemote<mojom::EventDispatcher> event_dispatcher)
+      override {}
+
+  void DidStartServiceWorkerContext(
+      const ExtensionId& extension_id,
+      const base::UnguessableToken& activation_token,
+      const GURL& service_worker_scope,
+      int64_t service_worker_version_id,
+      int worker_thread_id,
+      const blink::ServiceWorkerToken& service_worker_token) override {}
 };
 
 class ServiceWorkerTrackingBrowserTest : public ExtensionBrowserTest {
@@ -481,7 +512,8 @@ IN_PROC_BROWSER_TEST_F(
       previous_service_worker_id->extension_id, activation_token.value(),
       /*service_worker_scope=*/extension()->url(),
       previous_service_worker_id->version_id,
-      previous_service_worker_id->thread_id);
+      previous_service_worker_id->thread_id,
+      *previous_service_worker_id->start_token);
 
   // Confirm after the renderer stop notification we still no longer have the
   // previous `WorkerId`.
@@ -562,7 +594,8 @@ IN_PROC_BROWSER_TEST_P(
       stopped_service_worker_id->extension_id, activation_token.value(),
       /*service_worker_scope=*/extension()->url(),
       stopped_service_worker_id->version_id,
-      stopped_service_worker_id->thread_id);
+      stopped_service_worker_id->thread_id,
+      *stopped_service_worker_id->start_token);
 
   // Confirm the worker state still exists and state remains the same.
   EXPECT_EQ(worker_state->browser_state(),
@@ -933,11 +966,11 @@ IN_PROC_BROWSER_TEST_P(
       extension_service_worker_id->version_id));
 
   // Stop the sub-scope service worker.
-  TestServiceWorkerTaskQueueObserver untracked_observer;
   GURL sub_scope(extension()->url().spec() + "subscope/");
-  content::StopServiceWorkerForScope(sw_context, sub_scope, base::DoNothing());
-  // Wait until the code responsible for untracking workers is called.
-  untracked_observer.WaitForUntrackServiceWorkerState(sub_scope);
+  base::test::TestFuture<void> future;
+  content::StopServiceWorkerForScope(sw_context, sub_scope,
+                                     future.GetCallback());
+  EXPECT_TRUE(future.Wait());
 
   // Verify that the main extension service worker is still tracked as running
   // by the task queue.
@@ -1016,6 +1049,227 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerNotFullyRunBrowserTest,
   EXPECT_TRUE(prefs->ReadPrefAsBoolean(
       extension->id(), kPrefHasStartedServiceWorker, &has_started));
   EXPECT_TRUE(has_started);
+}
+
+// Test that if a browser stop notification is received after the "renderer
+// initialized" notification but before the "renderer start" notification, it
+// correctly resets the worker's browser and renderer active state to inactive.
+// If the renderer start notification then arrives late (and stale), it's
+// ignored.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
+                       StopArrivesBetweenInitializeAndStart) {
+  // Prevent the renderer start notification from being fired automatically.
+  auto sw_host_factory_callback = base::BindRepeating(
+      [](content::RenderProcessHost* render_process_host,
+         mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver)
+          -> std::unique_ptr<ServiceWorkerHost> {
+        return std::make_unique<ServiceWorkerHostNoStartNotification>(
+            render_process_host, std::move(receiver));
+      });
+  base::AutoReset<ServiceWorkerHost::FactoryCallback*> sw_host_factory =
+      ServiceWorkerHost::SetFactoryForTesting(&sw_host_factory_callback);
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  TestServiceWorkerTaskQueueObserver task_queue_observer;
+
+  // Load the extension.
+  auto test_dir = std::make_unique<TestExtensionDir>();
+  test_dir->WriteManifest(R"({
+      "name": "Test Extension",
+      "manifest_version": 3,
+      "version": "0.1",
+      "background": {
+        "service_worker" : "background.js"
+      }
+  })");
+  test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  const Extension* extension = LoadExtension(
+      test_dir->UnpackedPath(),
+      {.wait_for_renderers = false, .wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  extension_ = extension;
+
+  // Wait for `RendererDidInitializeServiceWorkerContext`.
+  task_queue_observer.WaitForWorkerContextInitialized(extension->id());
+
+  // The service worker renderer state should be in `kInitialized` state.
+  ServiceWorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kInitialized);
+
+  // Stop the worker.
+  WorkerId worker_id = *worker_state->worker_id();
+  int64_t version_id = worker_id.version_id;
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   version_id));
+
+  // Confirm state is reset to not active.
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kNotActive);
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kNotActive);
+
+  // Simulate a delayed `RendererDidStartServiceWorkerContext` IPC.
+  // It should be dropped, because the worker is already stopped
+  // (and `IsLiveServiceWorkerWithToken` returns false).
+  SequencedContextId context_id{
+      extension->id(), profile()->UniqueId(),
+      *task_queue->GetCurrentActivationToken(extension->id())};
+  worker_state->RendererDidStartServiceWorkerContext(context_id, worker_id);
+
+  // Confirm state remains not active.
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kNotActive);
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kNotActive);
+}
+
+// Test that if a stop notification arrives before the asynchronous initialize
+// IPC, the initialization IPC is gracefully ignored.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
+                       StopArrivesBeforeInitialize) {
+  // Prevent both renderer initialize and start notifications from firing.
+  auto sw_host_factory_callback = base::BindRepeating(
+      [](content::RenderProcessHost* render_process_host,
+         mojo::PendingAssociatedReceiver<mojom::ServiceWorkerHost> receiver)
+          -> std::unique_ptr<ServiceWorkerHost> {
+        return std::make_unique<
+            ServiceWorkerHostNoInitializeAndStartNotification>(
+            render_process_host, std::move(receiver));
+      });
+  base::AutoReset<ServiceWorkerHost::FactoryCallback*> sw_host_factory =
+      ServiceWorkerHost::SetFactoryForTesting(&sw_host_factory_callback);
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  service_worker_test_utils::TestServiceWorkerContextObserver sw_observer(
+      profile());
+
+  // Load the extension.
+  auto test_dir = std::make_unique<TestExtensionDir>();
+  test_dir->WriteManifest(R"({
+      "name": "Test Extension",
+      "manifest_version": 3,
+      "version": "0.1",
+      "background": {
+        "service_worker" : "background.js"
+      }
+  })");
+  test_dir->WriteFile(FILE_PATH_LITERAL("background.js"), "");
+  const Extension* extension = LoadExtension(
+      test_dir->UnpackedPath(),
+      {.wait_for_renderers = false, .wait_for_registration_stored = true});
+  ASSERT_TRUE(extension);
+  extension_ = extension;
+
+  // Wait for the worker to start (via `OnVersionStartedRunning`).
+  int64_t version_id = sw_observer.WaitForWorkerStarted();
+
+  // The worker has started in the browser but renderer IPCs have not arrived.
+  ServiceWorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  EXPECT_TRUE(worker_state->worker_id());
+  EXPECT_EQ(worker_state->worker_id()->version_id, version_id);
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kActive);
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kNotActive);
+
+  // Stop the worker.
+  WorkerId worker_id = *worker_state->worker_id();
+  browsertest_util::StopServiceWorkerForExtensionGlobalScope(profile(),
+                                                             extension->id());
+  ASSERT_TRUE(content::CheckServiceWorkerIsStopped(GetServiceWorkerContext(),
+                                                   version_id));
+
+  // Confirm state is reset to not active.
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kNotActive);
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kNotActive);
+
+  // Simulate a delayed `RendererDidInitializeServiceWorkerContext` IPC.
+  // It should be dropped, because the worker is already stopped
+  // (and `IsLiveServiceWorkerWithToken` returns false).
+  SequencedContextId context_id{
+      extension->id(), profile()->UniqueId(),
+      *task_queue->GetCurrentActivationToken(extension->id())};
+  worker_state->RendererDidInitializeServiceWorkerContext(context_id,
+                                                          worker_id);
+
+  // Confirm state remains not active.
+  EXPECT_EQ(worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kNotActive);
+  EXPECT_EQ(worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kNotActive);
+}
+
+// Test that if the content layer restarts a stopping service worker (because it
+// receives a start request while it's stopping), everything works fine.
+// See `ServiceWorkerVersion::OnStoppedInternal` for context.
+IN_PROC_BROWSER_TEST_F(ServiceWorkerTrackingBrowserTest,
+                       ContentLayerRestartsStoppingWorker) {
+  ASSERT_NO_FATAL_FAILURE(LoadServiceWorkerExtension());
+
+  ServiceWorkerState* worker_state = GetWorkerState();
+  ASSERT_TRUE(worker_state);
+  ASSERT_TRUE(worker_state->worker_id());
+  WorkerId worker_id = *worker_state->worker_id();
+  const ExtensionId extension_id = extension()->id();
+  const GURL extension_url = extension()->url();
+
+  ServiceWorkerTaskQueue* task_queue = ServiceWorkerTaskQueue::Get(profile());
+  SequencedContextId context_id{
+      extension_id, profile()->UniqueId(),
+      *task_queue->GetCurrentActivationToken(extension_id)};
+
+  // Stop the worker asynchronously. We don't wait for it to complete.
+  content::ServiceWorkerContext* sw_context = GetServiceWorkerContext();
+  base::test::TestFuture<void> stop_future;
+  service_worker_test_utils::TestServiceWorkerContextObserver sw_observer(
+      profile(), extension_id);
+  sw_observer.SetRunningId(worker_id.version_id);
+  content::StopServiceWorkerForScope(sw_context, extension_url,
+                                     stop_future.GetCallback());
+
+  // Wait for the worker to begin stopping, which means `OnStoppingSync` was
+  // called, and the state was reset.
+  sw_observer.WaitForWorkerStopping();
+  EXPECT_FALSE(worker_state->IsReady());
+
+  // Immediately (while the worker is in the process of stopping) send a new
+  // start request. This will queue the start request on the stopping worker
+  // in the content layer (adding it to `start_callbacks_`), causing
+  // `ServiceWorkerVersion::OnStoppedInternal` to restart it.
+  TestServiceWorkerTaskQueueObserver task_queue_observer;
+  worker_state->StartWorker(context_id);
+  EXPECT_TRUE(worker_state->IsStarting());
+
+  // Wait for the stop to complete in the content layer.
+  EXPECT_TRUE(stop_future.Wait());
+
+  // Wait for the new start to complete and the extension layer to track it.
+  task_queue_observer.WaitForWorkerContextInitialized(extension_id);
+  task_queue_observer.WaitForWorkerStarted(extension_id);
+
+  // Verify everything is working fine and the state is active again.
+  ServiceWorkerState* new_worker_state = GetWorkerState();
+  ASSERT_TRUE(new_worker_state);
+  EXPECT_TRUE(new_worker_state->worker_id());
+  EXPECT_EQ(new_worker_state->browser_state(),
+            ServiceWorkerState::BrowserState::kActive);
+  EXPECT_EQ(new_worker_state->renderer_state(),
+            ServiceWorkerState::RendererState::kActive);
+  EXPECT_FALSE(new_worker_state->IsStarting());
+  EXPECT_TRUE(new_worker_state->IsReady());
+
+  // The `version_id` of the new service worker instance will be the same,
+  // but its `ServiceWorkerToken` will have changed.
+  WorkerId new_worker_id = *new_worker_state->worker_id();
+  EXPECT_EQ(new_worker_id.version_id, worker_id.version_id);
+  EXPECT_NE(new_worker_id.start_token, worker_id.start_token);
 }
 
 }  // namespace

@@ -227,11 +227,12 @@ IN_PROC_BROWSER_TEST_P(ServiceWorkerProcessBrowserTest,
   int worker_process_id;
   wrapper()->ServiceWorkerContextWrapper::StartWorkerForScope(
       scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
-      base::BindLambdaForTesting(
-          [&](int64_t version_id, int process_id, int thread_id) {
-            worker_process_id = process_id;
-            loop.Quit();
-          }),
+      base::BindLambdaForTesting([&](int64_t version_id, int process_id,
+                                     int thread_id,
+                                     const blink::ServiceWorkerToken& token) {
+        worker_process_id = process_id;
+        loop.Quit();
+      }),
       base::BindLambdaForTesting([&loop](StatusCodeResponse status) {
         ASSERT_FALSE(true) << "start worker failed";
         loop.Quit();

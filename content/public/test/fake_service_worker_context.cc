@@ -112,6 +112,12 @@ bool FakeServiceWorkerContext::IsLiveRunningServiceWorker(
   NOTREACHED();
 }
 
+bool FakeServiceWorkerContext::IsLiveServiceWorkerWithToken(
+    int64_t service_worker_version_id,
+    const blink::ServiceWorkerToken& token) {
+  NOTREACHED();
+}
+
 service_manager::InterfaceProvider&
 FakeServiceWorkerContext::GetRemoteInterfaces(
     int64_t service_worker_version_id) {

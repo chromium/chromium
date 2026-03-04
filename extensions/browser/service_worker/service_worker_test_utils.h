@@ -68,6 +68,10 @@ class TestServiceWorkerContextObserver
   // captures the running service worker version ID. Returns the version ID.
   int64_t WaitForWorkerStarted();
 
+  // Wait for OnStoppingSync event is triggered, so that the observer
+  // captures the stopping service worker version ID. Returns the version ID.
+  int64_t WaitForWorkerStopping();
+
   // Wait for OnVersionStoppedRunning event is triggered, so that the observer
   // captures the stopped service worker version ID. Returns the version ID.
   int64_t WaitForWorkerStopped();
@@ -100,6 +104,7 @@ class TestServiceWorkerContextObserver
   // ServiceWorkerContextObserverSynchronous:
   void OnStartWorkerMessageSentSync(int64_t version_id,
                                     const GURL& scope) override;
+  void OnStoppingSync(int64_t version_id, const GURL& scope) override;
 
   using RegistrationsMap = std::map<GURL, int>;
 
@@ -111,6 +116,7 @@ class TestServiceWorkerContextObserver
   base::OnceClosure start_message_sent_quit_closure_;
   base::OnceClosure started_quit_closure_;
   base::OnceClosure stored_quit_closure_;
+  base::OnceClosure stopping_quit_closure_;
   base::OnceClosure stopped_quit_closure_;
 
   const std::optional<GURL> extension_scope_;
@@ -119,6 +125,7 @@ class TestServiceWorkerContextObserver
   std::optional<int64_t> activated_version_id_;
   std::optional<int64_t> start_message_sent_version_id_;
   std::optional<int64_t> running_version_id_;
+  std::optional<int64_t> stopping_version_id_;
   std::optional<int64_t> stopped_version_id_;
 
   raw_ptr<content::ServiceWorkerContext> context_ = nullptr;

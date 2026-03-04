@@ -22,6 +22,7 @@ interface ServiceWorkerHost {
   // but possibly didn't start executing its top-level JavaScript.
   DidInitializeServiceWorkerContext(
       ExtensionId extension_id,
+      mojo_base.mojom.UnguessableToken activation_token,
       int64 service_worker_version_id,
       int32 worker_thread_id,
       blink.mojom.ServiceWorkerToken service_worker_token,
@@ -52,7 +53,8 @@ interface ServiceWorkerHost {
       mojo_base.mojom.UnguessableToken activation_token,
       url.mojom.Url service_worker_scope,
       int64 service_worker_version_id,
-      int32 worker_thread_id);
+      int32 worker_thread_id,
+      blink.mojom.ServiceWorkerToken service_worker_token);
 
   // Tells the browser that an extension service worker context has been
   // destroyed.
@@ -61,7 +63,8 @@ interface ServiceWorkerHost {
       mojo_base.mojom.UnguessableToken activation_token,
       url.mojom.Url service_worker_scope,
       int64 service_worker_version_id,
-      int32 worker_thread_id);
+      int32 worker_thread_id,
+      blink.mojom.ServiceWorkerToken service_worker_token);
 
   // A service worker thread sends this message when an extension service worker
   // starts an API request. We use [UnlimitedSize] here because `params` may be

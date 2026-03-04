@@ -141,8 +141,8 @@ void DidStartWorker(
   }
   EmbeddedWorkerInstance* instance = version->embedded_worker();
   std::move(info_callback)
-      .Run(version->version_id(), instance->process_id(),
-           instance->thread_id());
+      .Run(version->version_id(), instance->process_id(), instance->thread_id(),
+           version->worker_host()->token());
 }
 
 void FoundRegistrationForStartWorker(
@@ -1070,6 +1070,15 @@ bool ServiceWorkerContextWrapper::IsLiveRunningServiceWorker(
   return (version) ? version->running_status() ==
                          blink::EmbeddedWorkerStatus::kRunning
                    : false;
+}
+
+bool ServiceWorkerContextWrapper::IsLiveServiceWorkerWithToken(
+    int64_t service_worker_version_id,
+    const blink::ServiceWorkerToken& token) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  auto* version = GetLiveServiceWorker(service_worker_version_id);
+  return version && version->worker_host() &&
+         version->worker_host()->token() == token;
 }
 
 service_manager::InterfaceProvider&
