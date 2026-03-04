@@ -56,7 +56,7 @@ class MEDIA_EXPORT AAC {
   // signalled in the mimetype. (ie mp4a.40.5 in the codecs parameter).
   // Returns the channel_layout value that should used in an
   // AudioDecoderConfig.
-  ChannelLayoutConfig GetChannelLayout(bool sbr_in_mimetype) const;
+  ChannelLayout GetChannelLayout(bool sbr_in_mimetype) const;
 
   // Converts a raw AAC frame into an AAC frame with an ADTS header. Allocates
   // new memory and copies the data from `buffer`, with the appropriate ADTS

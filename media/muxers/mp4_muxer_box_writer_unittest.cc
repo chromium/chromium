@@ -786,8 +786,8 @@ TEST_F(Mp4MuxerBoxWriterTest, Mp4AacAudioSampleEntry) {
   int aac_frequency = aac.GetOutputSamplesPerSecond(false);
   EXPECT_EQ(kSampleFrequency, base::checked_cast<size_t>(aac_frequency));
 
-  ChannelLayoutConfig channel_layout_config = aac.GetChannelLayout(false);
-  EXPECT_EQ(ChannelLayoutConfig::Stereo(), channel_layout_config);
+  ChannelLayout channel_layout = aac.GetChannelLayout(false);
+  EXPECT_EQ(media::CHANNEL_LAYOUT_STEREO, channel_layout);
 
   size_t adts_header_size;
   auto buffer = aac.CreateAdtsFromEsds({}, &adts_header_size);

@@ -489,7 +489,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
       }
 
       AudioCodec codec = AudioCodec::kUnknown;
-      ChannelLayoutConfig channel_layout_config;
+      ChannelLayout channel_layout = CHANNEL_LAYOUT_NONE;
       int sample_per_second = 0;
       int codec_delay_in_frames = 0;
       base::TimeDelta seek_preroll;
@@ -502,8 +502,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
 
       if (audio_format == FOURCC_OPUS) {
         codec = AudioCodec::kOpus;
-        channel_layout_config =
-            ChannelLayoutConfig::Guess(entry.dops.channel_count);
+        channel_layout = GuessChannelLayout(entry.dops.channel_count);
         sample_per_second = entry.dops.sample_rate;
         codec_delay_in_frames = entry.dops.codec_delay_in_frames;
         seek_preroll = entry.dops.seek_preroll;
@@ -519,7 +518,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         }
 
         codec = AudioCodec::kFLAC;
-        channel_layout_config = ChannelLayoutConfig::Guess(entry.channelcount);
+        channel_layout = GuessChannelLayout(entry.channelcount);
         sample_per_second = entry.samplerate;
         extra_data = entry.dfla.stream_info;
 #if BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
@@ -544,15 +543,14 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
         // AudioDecoderConfig.
         // TODO (crbug.com/1513779): Parse the bitstream to set the correct
         // values here.
-        channel_layout_config = ChannelLayoutConfig::Stereo();
+        channel_layout = CHANNEL_LAYOUT_STEREO;
         sample_per_second = 48000;
 #endif  // BUILDFLAG(ENABLE_PLATFORM_IAMF_AUDIO)
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
       } else if (audio_format == FOURCC_MHM1 || audio_format == FOURCC_MHA1) {
         codec = AudioCodec::kMpegHAudio;
-        channel_layout_config =
-            ChannelLayoutConfig::FromLayout<CHANNEL_LAYOUT_BITSTREAM>();
+        channel_layout = CHANNEL_LAYOUT_BITSTREAM;
         sample_per_second = entry.samplerate;
         extra_data = entry.dfla.stream_info;
 #endif
@@ -601,32 +599,28 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           const AAC& aac = entry.esds.aac;
           codec = AudioCodec::kAAC;
           profile = aac.GetProfile();
-          channel_layout_config = aac.GetChannelLayout(has_sbr_);
+          channel_layout = aac.GetChannelLayout(has_sbr_);
           sample_per_second = aac.GetOutputSamplesPerSecond(has_sbr_);
           extra_data = aac.codec_specific_data();
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
         } else if (audio_type == kAC3) {
           codec = AudioCodec::kAC3;
-          channel_layout_config = entry.ac3.dac3.GetChannelLayout();
+          channel_layout = entry.ac3.dac3.GetChannelLayout();
           // Add an exception to allow using AudioSampleEntry's ChannelCount
           // temporarily when AC3SpecificBox('dac3') information is
           // not available.
-          if (channel_layout_config.channel_layout() ==
-              CHANNEL_LAYOUT_UNSUPPORTED) {
-            channel_layout_config =
-                ChannelLayoutConfig::Guess(entry.channelcount);
+          if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+            channel_layout = GuessChannelLayout(entry.channelcount);
           }
           sample_per_second = entry.samplerate;
         } else if (audio_type == kEAC3) {
           codec = AudioCodec::kEAC3;
-          channel_layout_config = entry.eac3.dec3.GetChannelLayout();
+          channel_layout = entry.eac3.dec3.GetChannelLayout();
           // Add an exception to allow using AudioSampleEntry's ChannelCount
           // temporarily when EC3SpecificBox('dec3') information is
           // not available.
-          if (channel_layout_config.channel_layout() ==
-              CHANNEL_LAYOUT_UNSUPPORTED) {
-            channel_layout_config =
-                ChannelLayoutConfig::Guess(entry.channelcount);
+          if (channel_layout == CHANNEL_LAYOUT_UNSUPPORTED) {
+            channel_layout = GuessChannelLayout(entry.channelcount);
           }
           sample_per_second = entry.samplerate;
 #endif
@@ -636,28 +630,24 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           // channel_layout and sample rate will be ignored on decoding.
           // Refer to E.4.1 AC4SampleEntry Box in
           //    ETSI TS 103 190 - 2 V1 .2.1(2018 - 02)
-          channel_layout_config =
-              ChannelLayoutConfig::Guess(entry.channelcount);
+          channel_layout = GuessChannelLayout(entry.channelcount);
           sample_per_second = entry.samplerate;
           extra_data = entry.ac4.dac4.StreamInfo();
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC4_AUDIO)
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
         } else if (audio_type == kDTS) {
           codec = AudioCodec::kDTS;
-          channel_layout_config =
-              ChannelLayoutConfig::Guess(entry.channelcount);
+          channel_layout = GuessChannelLayout(entry.channelcount);
           sample_per_second = entry.samplerate;
         } else if (audio_type == kDTSX) {
           // HDMI versions pre HDMI 2.0 can only transmit 8 raw PCM channels.
           // In the case of a 5_1_4 stream we downmix to 5_1.
           codec = AudioCodec::kDTSXP2;
-          channel_layout_config =
-              ChannelLayoutConfig::Guess(entry.channelcount);
+          channel_layout = GuessChannelLayout(entry.channelcount);
           sample_per_second = entry.samplerate;
         } else if (audio_type == kDTSE) {
           codec = AudioCodec::kDTSE;
-          channel_layout_config =
-              ChannelLayoutConfig::Guess(entry.channelcount);
+          channel_layout = GuessChannelLayout(entry.channelcount);
           sample_per_second = entry.samplerate;
 #endif
         } else {
@@ -698,7 +688,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           return false;
       }
 
-      audio_config.Initialize(codec, sample_format, channel_layout_config,
+      audio_config.Initialize(codec, sample_format, channel_layout,
                               sample_per_second, extra_data, scheme,
                               seek_preroll, codec_delay_in_frames);
 
