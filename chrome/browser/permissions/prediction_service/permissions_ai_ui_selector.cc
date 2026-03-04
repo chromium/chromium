@@ -84,6 +84,10 @@ constexpr size_t kRequestedPermissionMinimumHistoricalActions = 4;
 // with too short text.
 constexpr size_t kPageContentMinLength = 10;
 
+// After this amount of time we will give up waiting for the readback. Our
+// global timeout will not allow for further delays here, anyways.
+const base::TimeDelta kSnapshotReadbackTimeout = base::Seconds(1);
+
 std::optional<
     permissions::PermissionPrediction_Likelihood_DiscretizedLikelihood>
 ParsePredictionServiceMockLikelihood(const std::string& value) {
@@ -778,7 +782,9 @@ void PermissionsAiUiSelector::TakeSnapshot(
     FinishRequest(Decision::UseNormalUiAndShowNoWarning());
   } else {
     host_view->CopyFromSurface(
-        gfx::Rect(), gfx::Size(), base::TimeDelta(),
+        /*src_rect=*/gfx::Rect(), /*output_size=*/gfx::Size(),
+        /*timeout=*/kSnapshotReadbackTimeout,
+        /*callback=*/
         base::BindOnce([](const content::CopyFromSurfaceResult& result) {
           // TODO(crbug.com/466199824): Update callsite to handle error
           // case.
