@@ -499,6 +499,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRanker,
     &segmentation_platform::features::kSegmentationPlatformAndroidHomeModuleRankerV2,
     &segmentation_platform::features::kSegmentationPlatformEphemeralCardRanker,
+    &send_tab_to_self::kSendTabToSelfPropagateScrollPosition,
     &sensitive_content::features::kSensitiveContent,
     &sensitive_content::features::kSensitiveContentWhileSwitchingTabs,
     &site_isolation::features::kSiteIsolationEnableMemoryThresholdAndroid,

@@ -15,6 +15,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetCoordinator;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerBottomSheetStrings;
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerDelegate;
@@ -28,10 +29,12 @@ import org.chromium.components.sync.SyncService;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.List;
+import java.util.function.Supplier;
 
 /** Coordinator for displaying the send tab to self feature. */
 @NullMarked
 public class SendTabToSelfCoordinator {
+
     /**
      * Waits for Sync to download the list of target devices after sign-in. Aborts if the
      * user dismisses the sign-in bottom sheet ("account picker") before success.
@@ -146,6 +149,7 @@ public class SendTabToSelfCoordinator {
     private final BottomSheetController mController;
     private final Profile mProfile;
     private final DeviceLockActivityLauncher mDeviceLockActivityLauncher;
+    private final Supplier<@Nullable Tab> mTabProvider;
 
     public SendTabToSelfCoordinator(
             Context context,
@@ -155,7 +159,8 @@ public class SendTabToSelfCoordinator {
             @Nullable PageContext pageContext,
             BottomSheetController controller,
             Profile profile,
-            DeviceLockActivityLauncher deviceLockActivityLauncher) {
+            DeviceLockActivityLauncher deviceLockActivityLauncher,
+            Supplier<@Nullable Tab> tabProvider) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mUrl = url;
@@ -164,6 +169,7 @@ public class SendTabToSelfCoordinator {
         mController = controller;
         mProfile = profile;
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
+        mTabProvider = tabProvider;
     }
 
     public void show() {
@@ -189,7 +195,8 @@ public class SendTabToSelfCoordinator {
                                 mPageContext,
                                 mController,
                                 targetDevices,
-                                mProfile),
+                                mProfile,
+                                mTabProvider),
                         true);
                 return;
             case EntryPointDisplayReason.OFFER_SIGN_IN:

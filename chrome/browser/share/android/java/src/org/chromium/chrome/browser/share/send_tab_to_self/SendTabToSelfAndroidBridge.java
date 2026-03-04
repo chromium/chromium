@@ -49,6 +49,19 @@ public class SendTabToSelfAndroidBridge {
     }
 
     /**
+     * Updates the given PageContext with the scroll position.
+     *
+     * @param pageContext The PageContext to update.
+     * @param selector The scroll-to-text selector.
+     * @return The updated PageContext.
+     */
+    public static @Nullable PageContext addScrollPositionToPageContext(
+            @Nullable PageContext pageContext, String selector) {
+        return SendTabToSelfAndroidBridgeJni.get()
+                .addScrollPositionToPageContext(pageContext, selector);
+    }
+
+    /**
      * Extracts PageContext from the given WebContents.
      *
      * @param webContents WebContents to extract PageContext from.
@@ -110,6 +123,10 @@ public class SendTabToSelfAndroidBridge {
                 String title,
                 String targetDeviceSyncCacheGuid,
                 @JniType("PageContext") @Nullable PageContext pageContext);
+
+        @JniType("PageContext")
+        @Nullable PageContext addScrollPositionToPageContext(
+                @JniType("PageContext") @Nullable PageContext pageContext, String selector);
 
         @JniType("PageContext")
         @Nullable PageContext createPageContext(@Nullable WebContents webContents);

@@ -441,7 +441,8 @@ public abstract class ChromeProvidedSharingOptionsProviderBase {
                                             pageContext,
                                             mBottomSheetController,
                                             mProfile,
-                                            mDeviceLockActivityLauncher);
+                                            mDeviceLockActivityLauncher,
+                                            mTabProvider);
                             sttsCoordinator.show();
                         })
                 .build();

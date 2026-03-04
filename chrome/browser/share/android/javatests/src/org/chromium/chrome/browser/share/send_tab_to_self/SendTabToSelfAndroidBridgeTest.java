@@ -64,6 +64,15 @@ public class SendTabToSelfAndroidBridgeTest {
 
     @Test
     @SmallTest
+    public void testAddScrollPositionToPageContext() {
+        String selector = "selector";
+        PageContext context = new PageContext(new byte[0]);
+        SendTabToSelfAndroidBridge.addScrollPositionToPageContext(context, selector);
+        verify(mNativeMock).addScrollPositionToPageContext(eq(context), eq(selector));
+    }
+
+    @Test
+    @SmallTest
     public void testCreatePageContext() {
         SendTabToSelfAndroidBridge.createPageContext(mWebContents);
         verify(mNativeMock).createPageContext(eq(mWebContents));

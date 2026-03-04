@@ -214,10 +214,34 @@ public class LinkToTextHelper {
     }
 
     /**
+     * Fetch the generated selector for the text in the viewport's center for the main frame.
+     *
+     * @param webContents The webContents to get the main frame from.
+     * @param callback The {@link Callback} to handle the generated selector.
+     */
+    public static void requestSelectorForViewportCenter(
+            WebContents webContents, Callback<String> callback) {
+        RenderFrameHost mainFrame = webContents.getMainFrame();
+        TextFragmentReceiver producer =
+                mainFrame.getInterfaceToRendererFrame(TextFragmentReceiver.MANAGER);
+
+        if (producer == null) {
+            callback.onResult("");
+            return;
+        }
+
+        producer.requestSelectorForViewportCenter(
+                (String selector, int error, int readyStatus) -> {
+                    callback.onResult(selector);
+                    producer.close();
+                });
+    }
+
+    /**
      * Fetch the generated selector that uniquely identify the highlighted text selected text.
      *
      * @param producer The {@link TextFragmentReceiver} to make the renderer call for the current
-     *         frame.
+     *     frame.
      * @param callback The {@link Callback} to handle the generated selector.
      */
     public static void requestSelector(

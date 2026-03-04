@@ -121,7 +121,8 @@ public class SendTabToSelfCoordinatorTest {
                                     /* pageContext= */ null,
                                     BottomSheetControllerProvider.from(windowAndroid),
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    mDeviceLockActivityLauncher);
+                                    mDeviceLockActivityLauncher,
+                                    activity::getActivityTab);
                     coordinator.show();
                 });
     }

@@ -21,6 +21,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/send_tab_to_self/target_device_info.h"
+#include "components/shared_highlighting/core/common/text_fragment.h"
 #include "components/sync/protocol/send_tab_to_self_specifics.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -124,6 +125,30 @@ static bool JNI_SendTabToSelfAndroidBridge_AddEntry(
   return model->IsReady() &&
          model->AddEntry(GURL(url), title, target_device_sync_cache_guid,
                          page_context);
+}
+
+static PageContext
+JNI_SendTabToSelfAndroidBridge_AddScrollPositionToPageContext(
+    JNIEnv* env,
+    PageContext page_context,
+    const JavaRef<jstring>& j_selector) {
+  if (j_selector.is_null()) {
+    return page_context;
+  }
+
+  std::string selector = ConvertJavaStringToUTF8(env, j_selector);
+  if (selector.empty()) {
+    return page_context;
+  }
+
+  std::optional<shared_highlighting::TextFragment> fragment =
+      shared_highlighting::TextFragment::FromEscapedString(selector);
+  if (!fragment) {
+    return page_context;
+  }
+
+  page_context.scroll_position.text_fragment = TextFragmentData(*fragment);
+  return page_context;
 }
 
 static PageContext JNI_SendTabToSelfAndroidBridge_CreatePageContext(

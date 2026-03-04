@@ -100,7 +100,8 @@ public class SendTabToSelfBottomSheetRenderTest {
                                             /* pageContext= */ null,
                                             mBottomSheetController,
                                             devices,
-                                            mProfile);
+                                            mProfile,
+                                            () -> null);
                             sActivity.setContentView(sheetContent.getContentView());
                             return sheetContent.getContentView();
                         });
@@ -131,7 +132,8 @@ public class SendTabToSelfBottomSheetRenderTest {
                                     /* pageContext= */ null,
                                     mBottomSheetController,
                                     devices,
-                                    mProfile);
+                                    mProfile,
+                                    () -> null);
                     sActivity.setContentView(sheetContent.getContentView());
                 });
         onView(withText(account.getEmail())).check(doesNotExist());
