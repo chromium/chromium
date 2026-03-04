@@ -30,6 +30,4 @@
 ] interface FocusEvent : UIEvent {
     constructor(DOMString type, optional FocusEventInit eventInitDict = {});
     readonly attribute EventTarget? relatedTarget;
-    [RuntimeEnabled=EventPseudoTargetProperty, Exposed=Window]
-    readonly attribute CSSPseudoElement? pseudoTarget;
 };

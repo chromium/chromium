@@ -3056,7 +3056,6 @@ interface Float16Array : TypedArray
     method constructor
 interface FocusEvent : UIEvent
     attribute @@toStringTag
-    getter pseudoTarget
     getter relatedTarget
     method constructor
 interface FontData
@@ -5892,7 +5891,6 @@ interface KeyboardEvent : UIEvent
     getter keyCode
     getter location
     getter metaKey
-    getter pseudoTarget
     getter repeat
     getter shiftKey
     method constructor
@@ -6725,7 +6723,6 @@ interface MouseEvent : UIEvent
     getter offsetY
     getter pageX
     getter pageY
-    getter pseudoTarget
     getter relatedTarget
     getter screenX
     getter screenY
@@ -10553,7 +10550,6 @@ interface TouchEvent : UIEvent
     getter changedTouches
     getter ctrlKey
     getter metaKey
-    getter pseudoTarget
     getter shiftKey
     getter targetTouches
     getter touches
@@ -10674,6 +10670,7 @@ interface TrustedTypePolicyFactory
 interface UIEvent : Event
     attribute @@toStringTag
     getter detail
+    getter pseudoTarget
     getter sourceCapabilities
     getter view
     getter which

@@ -78,7 +78,6 @@ class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
   TouchList* targetTouches() const { return target_touches_.Get(); }
   TouchList* changedTouches() const { return changed_touches_.Get(); }
 
-  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
 
   void SetTouches(TouchList* touches) { touches_ = touches; }
   void SetTargetTouches(TouchList* target_touches) {

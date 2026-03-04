@@ -82,6 +82,8 @@ class CORE_EXPORT UIEvent : public Event {
     return source_capabilities_.Get();
   }
 
+  CSSPseudoElement* pseudoTarget() const { return Event::pseudoTarget(); }
+
   const AtomicString& InterfaceName() const override;
   bool IsUIEvent() const final;
 

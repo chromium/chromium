@@ -35,4 +35,7 @@
                                optional long detail = 0);
 
     readonly attribute unsigned long which;
+
+    [RuntimeEnabled=EventPseudoTargetProperty, Exposed=Window]
+    readonly attribute CSSPseudoElement? pseudoTarget;
 };
