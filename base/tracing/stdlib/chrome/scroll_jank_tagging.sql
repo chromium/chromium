@@ -227,6 +227,16 @@ RETURNS TableOrSubquery AS
     17
   )
   UNION ALL
+  SELECT
+    *
+  FROM _chrome_scroll_jank_tag_long_stage!(
+    $janky_scroll_frames,
+    buffer_available_to_ready_dur,
+    'long_buffer_available_to_ready',
+    -- We use lower threshold, as transferring a new frame should be fast.
+    6
+  )
+  UNION ALL
   --
   -- Start of non-stage tags.
   --

@@ -295,6 +295,18 @@ CREATE PERFETTO TABLE chrome_scroll_frame_info_v4 (
   -- Difference between `viz_swap_buffers_to_latch_dur` for this frame and the
   -- previous frame in the same scroll. NULL if either frame is non-damaging.
   viz_swap_buffers_to_latch_delta_dur DURATION,
+  -- Timestamp of `EventLatency`'s `BufferAvailableToBufferReady` step. NULL if
+  -- this frame is non-damaging.
+  buffer_available_timestamp TIMESTAMP,
+  -- Duration of `EventLatency`'s `BufferAvailableToBufferReady` step. NULL if
+  -- this frame is non-damaging.
+  buffer_available_to_ready_dur DURATION,
+  -- Difference between `buffer_available_to_ready_dur` for this frame and the
+  -- previous frame in the same scroll. NULL if either frame is non-damaging.
+  buffer_available_to_ready_delta_dur DURATION,
+  -- Timestamp for `EventLatency`'s `BufferReadyToLatch` step. NULL if this
+  -- frame is non-damaging.
+  buffer_ready_timestamp TIMESTAMP,
   -- Timestamp for `EventLatency`'s `LatchToSwapEnd` step. NULL if this frame is
   -- non-damaging.
   latch_timestamp TIMESTAMP,
@@ -389,6 +401,10 @@ SELECT
   _if_damaging_frame!(info.viz_swap_buffers_end_ts) AS viz_swap_buffers_end_ts,
   _if_damaging_frame!(info.viz_swap_buffers_to_latch_dur) AS viz_swap_buffers_to_latch_dur,
   _if_damaging_frame!(_stage_dur_delta_v4!(info.viz_swap_buffers_to_latch_dur)) AS viz_swap_buffers_to_latch_delta_dur,
+  _if_damaging_frame!(info.buffer_available_timestamp) AS buffer_available_timestamp,
+  _if_damaging_frame!(info.buffer_available_to_ready_dur) AS buffer_available_to_ready_dur,
+  _if_damaging_frame!(_stage_dur_delta_v4!(info.buffer_available_to_ready_dur)) AS buffer_available_to_ready_delta_dur,
+  _if_damaging_frame!(info.buffer_ready_timestamp) AS buffer_ready_timestamp,
   _if_damaging_frame!(info.latch_timestamp) AS latch_timestamp,
   _if_damaging_frame!(info.viz_latch_to_presentation_dur) AS viz_latch_to_presentation_dur,
   _if_damaging_frame!(_stage_dur_delta_v4!(info.viz_latch_to_presentation_dur)) AS viz_latch_to_presentation_delta_dur,
