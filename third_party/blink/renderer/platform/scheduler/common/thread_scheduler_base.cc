@@ -6,6 +6,7 @@
 
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/common/auto_advancing_virtual_time_domain.h"
+#include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 
 namespace blink {
 namespace scheduler {
@@ -201,13 +202,25 @@ void ThreadSchedulerBase::ApplyVirtualTimePolicy() {
 }
 
 void ThreadSchedulerBase::OnBeginNestedRunLoop() {
-  if (IsVirtualTimeEnabled())
+  if (IsVirtualTimeEnabled()) {
     ApplyVirtualTimePolicy();
+  }
+  if (isolate()) {
+    if (auto* tracker = TaskAttributionTracker::From(isolate())) {
+      tracker->OnBeginNestedRunLoop();
+    }
+  }
 }
 
 void ThreadSchedulerBase::OnExitNestedRunLoop() {
-  if (IsVirtualTimeEnabled())
+  if (IsVirtualTimeEnabled()) {
     ApplyVirtualTimePolicy();
+  }
+  if (isolate()) {
+    if (auto* tracker = TaskAttributionTracker::From(isolate())) {
+      tracker->OnExitNestedRunLoop();
+    }
+  }
 }
 
 }  // namespace scheduler

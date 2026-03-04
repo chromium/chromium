@@ -31,6 +31,9 @@ namespace blink::scheduler {
 
 namespace {
 
+BASE_FEATURE(kTaskAttributionClearStateOnNestedEventLoop,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType ToProtoEnum(
     TaskAttributionTracker::TaskScopeType type) {
   using ProtoType = perfetto::protos::pbzero::BlinkTaskScope::TaskScopeType;
@@ -287,6 +290,32 @@ void TaskAttributionTrackerImpl::BeginMicrotaskTrace() {
 
 void TaskAttributionTrackerImpl::EndMicrotaskTrace() {
   EndBlinkTaskStateTrace();
+}
+
+void TaskAttributionTrackerImpl::OnBeginNestedRunLoop() {
+  if (!base::FeatureList::IsEnabled(
+          kTaskAttributionClearStateOnNestedEventLoop)) {
+    return;
+  }
+  auto* state = TaskAttributionTaskState::GetCurrent(isolate_);
+  nested_event_loop_task_state_.emplace_back(state);
+  if (state) {
+    TaskAttributionTaskState::SetCurrent(isolate_, nullptr);
+  }
+}
+
+void TaskAttributionTrackerImpl::OnExitNestedRunLoop() {
+  if (!base::FeatureList::IsEnabled(
+          kTaskAttributionClearStateOnNestedEventLoop)) {
+    return;
+  }
+  CHECK_GT(nested_event_loop_task_state_.size(), 0u);
+  TaskAttributionTaskState* state = nested_event_loop_task_state_.back().Get();
+  nested_event_loop_task_state_.pop_back();
+  DCHECK(!TaskAttributionTaskState::GetCurrent(isolate_));
+  if (state) {
+    TaskAttributionTaskState::SetCurrent(isolate_, state);
+  }
 }
 
 }  // namespace blink::scheduler

@@ -200,6 +200,12 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Clears all tracked task state associated with same-document navigations.
   virtual void ResetSameDocumentNavigationTasks() = 0;
 
+  // Called by the scheduler at the start and end of a nested run loop. The
+  // current task state is cleared when entering a nested event loop and
+  // restored when exiting.
+  virtual void OnBeginNestedRunLoop() = 0;
+  virtual void OnExitNestedRunLoop() = 0;
+
  protected:
   virtual void OnTaskScopeDestroyed(const TaskScope&) = 0;
 

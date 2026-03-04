@@ -46,4 +46,5 @@ blink_core_tests_scheduler = [
   "idle_deadline_test.cc",
   "scripted_idle_task_controller_test.cc",
   "task_attribution_task_state_test.cc",
+  "task_attribution_tracker_impl_test.cc",
 ]
