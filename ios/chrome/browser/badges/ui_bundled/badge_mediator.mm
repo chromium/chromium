@@ -411,6 +411,10 @@ LocationBarBadgeType LocationBarBadgeTypeFromBadgeType(BadgeType badgeType) {
 - (NSArray<NSNumber*>*)badgeTypesForOverflowMenu {
   NSMutableArray<NSNumber*>* badgeTypes = [NSMutableArray array];
   for (id<BadgeItem> badgeItem in self.badges) {
+    // Skip Reader mode badge.
+    if (badgeItem.badgeType == BadgeType::kBadgeTypeReaderMode) {
+      continue;
+    }
     [badgeTypes addObject:@(badgeItem.badgeType)];
   }
   return badgeTypes;
