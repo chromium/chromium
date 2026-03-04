@@ -136,7 +136,7 @@ DeviceData GetBestMatchDeviceData(
     scored_remote_devices.insert({score, guid});
     if (base::FeatureList::IsEnabled(
             sync_preferences::features::kCrossDevicePrefTrackerExtraLogs)) {
-      VLOG(1) << "found device with change count "
+      VLOG(1) << "XplatSyncedSetup, found device with change count "
               << data.observed_change_count;
     }
   }
