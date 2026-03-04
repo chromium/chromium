@@ -363,7 +363,9 @@ void VerticalTabView::OnMouseReleased(const ui::MouseEvent& event) {
   auto* controller = collection_node_->GetController();
   base::WeakPtr<VerticalTabView> self = weak_ptr_factory_.GetWeakPtr();
   if (event.IsOnlyMiddleMouseButton()) {
-    controller->CloseTab(GetTabInterface());
+    if (HitTestPoint(event.location())) {
+      controller->CloseTab(GetTabInterface());
+    }
   } else if (event.IsOnlyLeftMouseButton() &&
              !(event.IsShiftDown() || shift_pressed_on_mouse_down_) &&
              !IsSelectionModifierDown(event)) {
