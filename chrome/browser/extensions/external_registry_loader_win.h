@@ -32,7 +32,7 @@ class ExternalRegistryLoader : public ExternalLoader {
 
   void LoadOnBlockingThread();
   void CompleteLoadAndStartWatchingRegistry(base::DictValue prefs);
-  void UpatePrefsOnBlockingThread();
+  void UpdatePrefsOnBlockingThread();
   void OnRegistryKeyChanged(base::win::RegKey* key);
 
   scoped_refptr<base::SequencedTaskRunner> GetOrCreateTaskRunner();

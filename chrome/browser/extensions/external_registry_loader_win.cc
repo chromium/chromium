@@ -259,7 +259,7 @@ void ExternalRegistryLoader::OnRegistryKeyChanged(base::win::RegKey* key) {
 
   GetOrCreateTaskRunner()->PostTask(
       FROM_HERE,
-      base::BindOnce(&ExternalRegistryLoader::UpatePrefsOnBlockingThread,
+      base::BindOnce(&ExternalRegistryLoader::UpdatePrefsOnBlockingThread,
                      this));
 }
 
@@ -277,7 +277,7 @@ ExternalRegistryLoader::GetOrCreateTaskRunner() {
   return task_runner_;
 }
 
-void ExternalRegistryLoader::UpatePrefsOnBlockingThread() {
+void ExternalRegistryLoader::UpdatePrefsOnBlockingThread() {
   DCHECK(task_runner_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   base::TimeTicks start_time = base::TimeTicks::Now();
