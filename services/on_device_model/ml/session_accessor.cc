@@ -37,11 +37,7 @@ class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
  public:
   Canceler(const ChromeML& chrome_ml,
            scoped_refptr<base::SequencedTaskRunner> task_runner)
-      : chrome_ml_(chrome_ml), task_runner_(task_runner) {
-    task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&SessionAccessor::Canceler::CreateInternal,
-                                  base::RetainedRef(this)));
-  }
+      : chrome_ml_(chrome_ml), task_runner_(task_runner) {}
 
   void Cancel() {
     task_runner_->PostTask(
@@ -49,22 +45,43 @@ class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
                                   base::RetainedRef(this)));
   }
 
-  ChromeMLCancel get() const { return cancel_; }
+  ChromeMLCancel get() {
+    if (cancel_ == 0) {
+      CreateInternal();
+    }
+    return cancel_;
+  }
 
  private:
   friend class base::RefCountedThreadSafe<Canceler>;
 
   DISABLE_CFI_DLSYM
-  virtual ~Canceler() { chrome_ml_->api().DestroyCancel(cancel_); }
+  virtual ~Canceler() {
+    // Ensure that `ChromeMLCancel` is destroyed on the `task_runner_`.
+    task_runner_->PostTask(FROM_HERE,
+                           base::BindOnce(
+                               [](const raw_ref<const ChromeML> chrome_ml,
+                                  ChromeMLCancel cancel = 0) {
+                                 if (cancel == 0) {
+                                   return;
+                                 }
+
+                                 chrome_ml->api().DestroyCancel(cancel);
+                               },
+                               // Safe because `chrome_ml_` will never be
+                               // destroyed, and `cancel_` should only be
+                               // destroyed in this callback.
+                               chrome_ml_, cancel_));
+  }
 
   DISABLE_CFI_DLSYM
   void CreateInternal() { cancel_ = chrome_ml_->api().CreateCancel(); }
 
   DISABLE_CFI_DLSYM
-  void CancelInternal() { chrome_ml_->api().CancelExecuteModel(cancel_); }
+  void CancelInternal() { chrome_ml_->api().CancelExecuteModel(get()); }
 
   const raw_ref<const ChromeML> chrome_ml_;
-  ChromeMLCancel cancel_;
+  ChromeMLCancel cancel_ = 0;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 };
 
