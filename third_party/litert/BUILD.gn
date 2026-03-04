@@ -132,6 +132,7 @@ source_set("litert_headers") {
     "src/litert/cc/options/litert_runtime_options.h",
     "src/litert/compiler/plugin/algo.h",
     "src/litert/compiler/plugin/compiler_plugin.h",
+    "src/litert/compiler/plugin/litert_compiler_options.h",
     "src/litert/core/buffer_error_reporter.h",
     "src/litert/core/build_stamp.h",
     "src/litert/core/dispatch_op_schema.h",
@@ -277,6 +278,7 @@ source_set("litert_compiler") {
   sources = [
     "src/litert/compiler/plugin/algo.cc",
     "src/litert/compiler/plugin/compiler_plugin.cc",
+    "src/litert/compiler/plugin/litert_compiler_options.cc",
   ]
   deps = [
     ":litert_headers",
