@@ -8,10 +8,12 @@ import static org.chromium.chrome.browser.magic_stack.HomeModulesUtils.getSettin
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.DeviceInfo;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -86,7 +88,10 @@ public class HomeModulesConfigManager {
      * @param moduleType {@link ModuleType} needed to be notified to the listeners.
      */
     public boolean getPrefModuleTypeEnabled(@ModuleType int moduleType) {
-        return mSharedPreferencesManager.readBoolean(getSettingsPreferenceKey(moduleType), true);
+        boolean defaultEnabled =
+                !ChromeFeatureList.sNtpSimplification.isEnabled() || !DeviceInfo.isDesktop();
+        return mSharedPreferencesManager.readBoolean(
+                getSettingsPreferenceKey(moduleType), defaultEnabled);
     }
 
     /**
