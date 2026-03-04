@@ -6,11 +6,14 @@ source_set("data_models") {
   sources = [
     "entity.cc",
     "entity.h",
+    "entity_converter.cc",
+    "entity_converter.h",
     "entity_types.h",
   ]
 
   public = [
     "entity.h",
+    "entity_converter.h",
     "entity_types.h",
   ]
 
@@ -18,6 +21,7 @@ source_set("data_models") {
 
   deps = [
     "//base",
+    "//components/sync/protocol",
     "//third_party/abseil-cpp:absl",
   ]
 }

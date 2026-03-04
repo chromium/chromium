@@ -31,7 +31,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "data_models/entity_unittest.cc",
+    "data_models/entity_converter_unittest.cc",
     "direct_server_entity_provider_unittest.cc",
     "storage/accessibility_annotation_sync_bridge_unittest.cc",
     "storage/accessibility_annotator_database_unittest.cc",
@@ -46,6 +46,7 @@ source_set("unit_tests") {
     "//components/accessibility_annotator/core/storage",
     "//components/sync:test_support",
     "//components/sync/model",
+    "//components/sync/protocol",
     "//sql",
     "//sql:test_support",
     "//testing/gmock",

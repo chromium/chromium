@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_DATA_MODELS_ENTITY_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_DATA_MODELS_ENTITY_H_
 
+#include <optional>
 #include <string>
 #include <variant>
 #include <vector>
@@ -14,6 +15,14 @@
 #include "url/gurl.h"
 
 namespace accessibility_annotator {
+
+struct Date {
+  friend bool operator==(const Date&, const Date&) = default;
+
+  int day = 0;
+  int month = 0;
+  int year = 0;
+};
 
 struct Flight {
   Flight();
@@ -56,7 +65,7 @@ struct Order {
 
   std::string id;
   std::string account;
-  base::Time order_date;
+  std::optional<Date> order_date;
   std::string merchant_name;
   GURL merchant_domain;
   std::vector<ItemDescription> products;
@@ -76,7 +85,7 @@ struct Shipment {
   std::string delivery_address;
   std::string carrier_name;
   GURL carrier_domain;
-  base::Time estimated_delivery_date;
+  std::optional<Date> estimated_delivery_date;
 };
 
 struct DriverLicense {
@@ -89,8 +98,8 @@ struct DriverLicense {
 
   std::string name;
   std::string number;
-  base::Time expiration_date;
-  base::Time issue_date;
+  std::optional<Date> expiration_date;
+  std::optional<Date> issue_date;
   std::string state;
 };
 
@@ -104,8 +113,8 @@ struct Passport {
 
   std::string name;
   std::string number;
-  base::Time expiration_date;
-  base::Time issue_date;
+  std::optional<Date> expiration_date;
+  std::optional<Date> issue_date;
   std::string issuing_country;
 };
 
@@ -119,8 +128,8 @@ struct NationalId {
 
   std::string name;
   std::string number;
-  base::Time expiration_date;
-  base::Time issue_date;
+  std::optional<Date> expiration_date;
+  std::optional<Date> issue_date;
   std::string issuing_country;
 };
 
@@ -134,7 +143,7 @@ struct Vehicle {
 
   std::string make;
   std::string model;
-  int year = 0;
+  std::string year;
   std::string owner;
   std::string plate_number;
   std::string plate_state;
