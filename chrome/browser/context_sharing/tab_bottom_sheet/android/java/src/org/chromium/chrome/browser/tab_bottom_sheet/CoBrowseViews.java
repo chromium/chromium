@@ -47,10 +47,18 @@ public class CoBrowseViews {
     }
 
     public void destroy() {
+        ViewGroup toolbarContainer = mView.findViewById(R.id.toolbar_container);
+        ViewGroup webUiContainer = mView.findViewById(R.id.web_ui_container);
+        ViewGroup fuseboxContainer = mView.findViewById(R.id.fusebox_container);
+        if (mToolbar != null) {
+            toolbarContainer.removeAllViews();
+        }
         if (mWebUi != null) {
+            webUiContainer.removeAllViews();
             mWebUi.destroy();
         }
         if (mFusebox != null) {
+            fuseboxContainer.removeAllViews();
             mFusebox.destroy();
         }
     }
