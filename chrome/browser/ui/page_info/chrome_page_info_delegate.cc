@@ -256,7 +256,36 @@ bool ChromePageInfoDelegate::IsIsolatedWebApp() {
   const webapps::AppId* app_id =
       web_app::WebAppTabHelper::GetAppId(web_contents_);
   return app_id && provider->registrar_unsafe().AppMatches(
-                       *app_id, web_app::WebAppFilter::IsIsolatedApp());
+                       *app_id, web_app::WebAppFilter::IsIsolatedApp() |
+                                    web_app::WebAppFilter::IsIsolatedSubApp());
+}
+
+bool ChromePageInfoDelegate::IsSubApp() {
+  CHECK(web_contents_);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebContents(web_contents_);
+  if (!provider) {
+    return false;
+  }
+
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents_);
+  return app_id && provider->registrar_unsafe().AppMatches(
+                       *app_id, web_app::WebAppFilter::IsIsolatedSubApp());
+}
+
+bool ChromePageInfoDelegate::HasSubApps() {
+  CHECK(web_contents_);
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebContents(web_contents_);
+  if (!provider) {
+    return false;
+  }
+
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents_);
+  return app_id &&
+         !provider->registrar_unsafe().GetAllSubAppIds(*app_id).empty();
 }
 
 void ChromePageInfoDelegate::ShowSiteSettings(const GURL& site_url) {

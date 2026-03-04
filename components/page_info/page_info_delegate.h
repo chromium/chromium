@@ -83,6 +83,8 @@ class PageInfoDelegate {
   CreateCookieControlsController() = 0;
 
   virtual bool IsIsolatedWebApp() = 0;
+  virtual bool IsSubApp() = 0;
+  virtual bool HasSubApps() = 0;
   virtual void ShowSiteSettings(const GURL& site_url) = 0;
   virtual void ShowCookiesSettings() = 0;
   virtual void ShowAllSitesSettingsFilteredByRwsOwner(

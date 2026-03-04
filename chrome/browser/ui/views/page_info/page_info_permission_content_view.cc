@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_scroll_panel.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
+#include "chrome/browser/ui/views/sub_apps_permission_explanation.h"
 #include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/page_info/page_info.h"
 #include "components/permissions/permission_util.h"
@@ -171,6 +172,27 @@ PageInfoPermissionContentView::PageInfoPermissionContentView(
           DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
 
   MaybeAddMediaPreview(web_contents, *separator);
+
+  if (web_contents_.MaybeValid()) {
+    if (std::optional<std::u16string> explanation =
+            GetSubAppsPermissionExplanation(web_contents_.get())) {
+      auto* custom_label = AddChildView(std::make_unique<views::Label>(
+          *explanation, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_BODY_4));
+      custom_label->SetMultiLine(true);
+      custom_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      custom_label->SetProperty(views::kCrossAxisAlignmentKey,
+                                views::LayoutAlignment::kStretch);
+      custom_label->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(ChromeLayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          0));
+      custom_label->SetMaximumWidth(
+          ChromeLayoutProvider::Get()->GetDistanceMetric(
+              views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
+    }
+  }
 
   // TODO(crbug.com/40775890): Consider to use permission specific text.
   auto* subpage_manage_button = AddChildView(std::make_unique<RichHoverButton>(

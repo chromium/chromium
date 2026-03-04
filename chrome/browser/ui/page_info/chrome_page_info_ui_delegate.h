@@ -92,6 +92,8 @@ class ChromePageInfoUiDelegate : public PageInfoUiDelegate {
   void RecordMerchantTrustButtonShown();
   void RecordMerchantTrustSidePanelOpened();
 
+  content::WebContents* GetWebContents() const { return web_contents_; }
+
  private:
   Profile* GetProfile() const;
 

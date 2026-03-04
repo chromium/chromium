@@ -28,8 +28,10 @@
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
 #include "chrome/browser/ui/views/page_info/permission_toggle_row_view.h"
 #include "chrome/browser/ui/views/page_info/star_rating_view.h"
+#include "chrome/browser/ui/views/sub_apps_permission_explanation.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/common/url_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/page_info/core/about_this_site_service.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/page_info_ui_delegate.h"
@@ -249,6 +251,9 @@ void PageInfoMainView::SetPermissionInfo(
     UpdateResetButton(permission_info_list);
     return;
   }
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+
   const int separator_padding = GetSeparatorPadding();
   permissions_view_->AddChildView(
       PageInfoViewFactory::CreateSeparator(GetSeparatorPadding()));
@@ -265,6 +270,31 @@ void PageInfoMainView::SetPermissionInfo(
   content_view->SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
   content_view->SetProperty(views::kElementIdentifierKey,
                             kPermissionsElementId);
+
+  const int controls_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_CONTROL_VERTICAL);
+  const int side_button_padding =
+      layout_provider
+          ->GetInsetsMetric(ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)
+          .left();
+
+  if (std::optional<std::u16string> explanation =
+          GetSubAppsPermissionExplanation(ui_delegate_->GetWebContents())) {
+    auto* label = content_view->AddChildView(std::make_unique<views::Label>(
+        *explanation, views::style::CONTEXT_DIALOG_BODY_TEXT,
+        views::style::STYLE_BODY_4));
+    label->SetMultiLine(true);
+    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+    label->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets::TLBR(controls_spacing, side_button_padding,
+                          controls_spacing, side_button_padding));
+    label->SetProperty(views::kCrossAxisAlignmentKey,
+                       views::LayoutAlignment::kStretch);
+    label->SetMaximumWidth(layout_provider->GetDistanceMetric(
+                               views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+                           side_button_padding * 2);
+  }
 
   // If there is a permission that supports one time grants, offset all other
   // permissions to align toggles.
@@ -298,8 +328,6 @@ void PageInfoMainView::SetPermissionInfo(
         content_view->AddChildView(std::move(object_view)));
   }
 
-  const int controls_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      views::DISTANCE_RELATED_CONTROL_VERTICAL);
   reset_button_ = content_view->AddChildView(
       std::make_unique<views::MdTextButton>(base::BindRepeating(
           [=](PageInfoMainView* view) {
@@ -317,16 +345,12 @@ void PageInfoMainView::SetPermissionInfo(
           base::Unretained(this))));
   reset_button_->SetProperty(views::kCrossAxisAlignmentKey,
                              views::LayoutAlignment::kStart);
-  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   // Offset the reset button by left button padding, icon size and distance
   // between icon and label to match text in the row above.
-  const int side_offset =
-      layout_provider
-          ->GetInsetsMetric(ChromeInsetsMetric::INSETS_PAGE_INFO_HOVER_BUTTON)
-          .left() +
-      GetLayoutConstant(LayoutConstant::kPageInfoIconSize) +
-      layout_provider->GetDistanceMetric(
-          views::DISTANCE_RELATED_LABEL_HORIZONTAL);
+  const int side_offset = side_button_padding +
+                          GetLayoutConstant(LayoutConstant::kPageInfoIconSize) +
+                          layout_provider->GetDistanceMetric(
+                              views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   reset_button_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(controls_spacing, side_offset, controls_spacing, 0));

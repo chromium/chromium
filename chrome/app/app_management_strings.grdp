@@ -150,4 +150,12 @@
    <message name="IDS_APP_MANAGEMENT_APP_CONTENT_DIALOG_SUBTITLE" desc="Sub-label for App content dialog in the app settings page.">
     This app contains web content from
   </message>
+
+  <!-- Sub-Apps API -->
+  <message name="IDS_APP_MANAGEMENT_IS_SUB_APP_PERMISSION_EXPLANATION" desc="Explanation text that appears above permissions on various dialogs and in app info. Any changes the user makes to this app's permissions also apply to the parent app and its other sub apps.">
+    Permissions you allow for <ph name="APP_NAME">$1<ex>Calculator App</ex></ph> will also be allowed for <ph name="PARENT_APP_NAME">$2<ex>Parent app</ex></ph> and its installed apps.
+  </message>
+  <message name="IDS_APP_MANAGEMENT_HAS_SUB_APPS_PERMISSION_EXPLANATION" desc="Explanation text that appears underneath the Permission header on an app's settings page. Any changes the user makes to the app's parent app's permissions also apply to this app. The 'Manage' link takes the user to the parent app's settings page where they can change the permissions.">
+    Permissions you allow for <ph name="APP_NAME">$1<ex>Parent app</ex></ph> will also be allowed for its installed apps.
+  </message>
 </grit-part>

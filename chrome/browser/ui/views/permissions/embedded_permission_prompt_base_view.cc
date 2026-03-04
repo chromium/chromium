@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/sub_apps_permission_explanation.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_util.h"
 #include "components/vector_icons/vector_icons.h"
@@ -291,6 +292,25 @@ void EmbeddedPermissionPromptBaseView::Init() {
   int index = 0;
   for (auto& request : requests_configuration) {
     AddRequestLine(request, index++);
+  }
+
+  if (delegate_ && delegate_->GetPermissionPromptDelegate()) {
+    if (std::optional<std::u16string> explanation =
+            GetSubAppsPermissionExplanation(
+                delegate_->GetPermissionPromptDelegate()
+                    ->GetAssociatedWebContents())) {
+      auto custom_label = std::make_unique<views::Label>(
+          *explanation, views::style::CONTEXT_DIALOG_BODY_TEXT,
+          views::style::STYLE_BODY_4);
+      custom_label->SetMultiLine(true);
+      custom_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+      custom_label->SetProperty(
+          views::kMarginsKey,
+          gfx::Insets::VH(views::LayoutProvider::Get()->GetDistanceMetric(
+                              views::DISTANCE_RELATED_CONTROL_VERTICAL),
+                          0));
+      AddChildView(std::move(custom_label));
+    }
   }
 
   SetButtons(static_cast<int>(ui::mojom::DialogButton::kNone));
