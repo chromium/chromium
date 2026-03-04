@@ -23,6 +23,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/content/browser/test_content_autofill_driver.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/foundations/test_browser_autofill_manager.h"
 #include "components/autofill/core/browser/integrators/actor/actor_form_filling_types.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -196,6 +197,7 @@ class RecordingTestContentAutofillDriver : public TestContentAutofillDriver {
   ~RecordingTestContentAutofillDriver() override = default;
 
   MOCK_METHOD(void, RendererShouldClearPreviewedForm, (), (override));
+  MOCK_METHOD(void, ScrollFieldIntoView, (FieldGlobalId), (override));
 
   MOCK_METHOD(
       base::flat_set<FieldGlobalId>,
@@ -1126,6 +1128,52 @@ TEST(ActorFormFillingServiceWithoutAutofillTest, NoAutofillClient) {
 TEST_F(ActorFormFillingServiceTest, ClearFormPreview) {
   EXPECT_CALL(driver(), RendererShouldClearPreviewedForm()).Times(1);
   service().ClearFormPreview(tab(), /*form_index=*/0);
+}
+
+// Tests that requesting to scroll into a form correctly routes the call to
+// `AutofillDriver` and with the correct `FieldGlobalId`.
+TEST_F(ActorFormFillingServiceTest, ScrollToForm) {
+  payments_data_manager().AddCreditCard(test::GetMaskedServerCard());
+
+  FormData address_form =
+      SeeForm({.fields = {{.server_type = NAME_FULL},
+                          {.server_type = ADDRESS_HOME_LINE1},
+                          {.server_type = ADDRESS_HOME_CITY}}});
+  FormData credit_card_form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(),
+      {AddressFillRequest({address_form.fields()[0].global_id()}),
+       CreditCardFillRequest({credit_card_form.fields()[0].global_id()})},
+      future.GetCallback());
+
+  ASSERT_THAT(future.Get(),
+              ValueIs(ElementsAre(
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_ADDRESS),
+                  IsActorFormFillingRequest(
+                      ActorFormFillingRequest::RequestedData::
+                          FormFillingRequest_RequestedData_CREDIT_CARD))));
+
+  {
+    testing::InSequence seq;
+
+    EXPECT_CALL(driver(),
+                ScrollFieldIntoView(address_form.fields()[0].global_id()))
+        .Times(1);
+
+    EXPECT_CALL(driver(),
+                ScrollFieldIntoView(credit_card_form.fields()[1].global_id()))
+        .Times(1);
+  }
+
+  service().ScrollToForm(tab(), /*form_index=*/0);
+  service().ScrollToForm(tab(), /*form_index=*/1);
 }
 
 }  // namespace

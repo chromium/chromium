@@ -101,6 +101,11 @@ struct ActorSuggestionWithFillData {
   ActorFormFillingServiceImpl::FillData filling_payload;
 };
 
+struct ActorSuggestions {
+  FieldGlobalId trigger_field_id;
+  std::vector<ActorSuggestionWithFillData> suggestions_with_fill_data;
+};
+
 // Attempts to generate an `ActorSuggestion` and the data needed for filling
 // a suggestion. Returns `std::nullopt` if the suggestion does not contain an
 // address payload.
@@ -204,7 +209,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
 //
 // TODO(crbug.com/455788947): Improve suggestion generation.
 // TODO(crbug.com/455788947): Check that address Autofill is not turned off.
-[[nodiscard]] std::vector<ActorSuggestionWithFillData> GetAddressSuggestions(
+[[nodiscard]] ActorSuggestions GetAddressSuggestions(
     base::span<const FieldGlobalId> fields,
     const AutofillManager& autofill_manager,
     LogManager* log_manager,
@@ -260,7 +265,7 @@ std::optional<ActorSuggestionWithFillData> GetActorCreditCardSuggestion(
   generator.FetchSuggestionData(form, *autofill_field, form_structure,
                                 autofill_field, autofill_manager.client(),
                                 generate_suggestions);
-  return result;
+  return {autofill_field->global_id(), result};
 }
 
 // Returns the first credit card number field in the same section as
@@ -303,7 +308,7 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
 //   exist.
 //
 // TODO(crbug.com/455788947): Improve suggestion generation.
-[[nodiscard]] std::vector<ActorSuggestionWithFillData> GetCreditCardSuggestions(
+[[nodiscard]] ActorSuggestions GetCreditCardSuggestions(
     base::span<const FieldGlobalId> fields,
     const AutofillManager& autofill_manager,
     LogManager* log_manager) {
@@ -401,7 +406,7 @@ std::optional<FieldGlobalId> GetSafeCreditCardNumberField(
                                 form_structure, autofill_field_for_labels,
                                 autofill_manager.client(),
                                 generate_suggestions);
-  return result;
+  return {autofill_field_for_labels->global_id(), result};
 }
 
 // Retrieves the `AutofillManager` of the `tab`'s primary main frame.
@@ -499,6 +504,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
     return;
   }
 
+  suggestion_trigger_field_id_.clear();
   std::vector<ActorFormFillingRequest> requests;
   requests.reserve(fill_requests.size());
   for (const auto& [requested_data, trigger_fields] : fill_requests) {
@@ -573,7 +579,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
         tab.GetContents()->GetPrimaryMainFrame()->GetLastCommittedOrigin();
 
     for (const SubRequest& sub_request : sub_requests) {
-      std::vector<ActorSuggestionWithFillData> suggestion_data;
+      ActorSuggestions suggestion_data;
       switch (sub_request.requested_data) {
         case FormFillingRequest_RequestedData_ADDRESS:
         case FormFillingRequest_RequestedData_SHIPPING_ADDRESS:
@@ -598,7 +604,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 
       // For now, we require that every form is fillable.
       // TODO(crbug.com/455788947): Consider weakening this condition.
-      if (suggestion_data.empty()) {
+      if (suggestion_data.suggestions_with_fill_data.empty()) {
         LOG_AF(log_manager)
             << LoggingScope::kAutofillActor << "No suggestions were generated.";
         std::move(callback_with_metrics).Run(base::unexpected(kNoSuggestions));
@@ -608,8 +614,12 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       requests.emplace_back();
       requests.back().requested_data = sub_request.requested_data;
       requests.back().request_origin = origin;
-      requests.back().suggestions.reserve(suggestion_data.size());
-      for (ActorSuggestionWithFillData& entry : suggestion_data) {
+      requests.back().suggestions.reserve(
+          suggestion_data.suggestions_with_fill_data.size());
+      suggestion_trigger_field_id_.emplace_back(
+          suggestion_data.trigger_field_id);
+      for (ActorSuggestionWithFillData& entry :
+           suggestion_data.suggestions_with_fill_data) {
         entry.suggestion.id =
             ActorSuggestionId(suggestion_id_generator_.GenerateNextId());
         fill_data_[entry.suggestion.id] = std::move(entry.filling_payload);
@@ -691,8 +701,27 @@ void ActorFormFillingServiceImpl::FillSuggestions(
 
 void ActorFormFillingServiceImpl::ScrollToForm(const tabs::TabInterface& tab,
                                                int form_index) {
-  // TODO(crbug.com/481379667): Implement scrolling to a form.
-  NOTIMPLEMENTED();
+  base::expected<std::reference_wrapper<BrowserAutofillManager>,
+                 ActorFormFillingError>
+      maybe_manager = GetAutofillManager(tab);
+  if (!maybe_manager.has_value()) {
+    return;
+  }
+  AutofillManager& autofill_manager = maybe_manager.value();
+
+  // TODO(crbug.com/448398227): Consider making `form_index` a `size_t`
+  // everywhere instead of `int`.
+  if (static_cast<size_t>(form_index) >= suggestion_trigger_field_id_.size() ||
+      !suggestion_trigger_field_id_[form_index]) {
+    LogManager* const log_manager =
+        autofill_manager.client().GetCurrentLogManager();
+    LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                        << "Fill/Preview aborted: `form_index` does not "
+                           "correspond to any trigger field";
+    return;
+  }
+  autofill_manager.driver().ScrollFieldIntoView(
+      suggestion_trigger_field_id_[form_index]);
 }
 
 void ActorFormFillingServiceImpl::PreviewForm(const tabs::TabInterface& tab,
