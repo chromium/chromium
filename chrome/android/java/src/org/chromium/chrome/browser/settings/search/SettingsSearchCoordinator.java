@@ -1003,6 +1003,9 @@ public class SettingsSearchCoordinator
                     lp.gravity = Gravity.END;
                     query.setLayoutParams(lp);
                 }
+                var lp = (Toolbar.LayoutParams) searchBox.getLayoutParams();
+                lp.gravity = Gravity.END;
+                searchBox.setLayoutParams(lp);
             }
         } else {
             // Search bar goes beneath the toolbar (app_bar_layout) in single-column layout.
