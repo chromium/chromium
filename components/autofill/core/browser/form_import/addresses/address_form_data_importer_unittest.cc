@@ -19,8 +19,10 @@
 #include "components/autofill/core/browser/form_import/form_data_importer_test_api.h"
 #include "components/autofill/core/browser/form_import/form_data_importer_test_utils.h"
 #include "components/autofill/core/browser/form_structure.h"
+#include "components/autofill/core/browser/form_structure_test_api.h"
 #include "components/autofill/core/browser/foundations/test_autofill_client.h"
 #include "components/autofill/core/browser/foundations/with_test_autofill_client_driver_manager.h"
+#include "components/autofill/core/browser/integrators/plus_addresses/mock_autofill_plus_address_delegate.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
 #include "components/autofill/core/browser/metrics/profile_import_metrics.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
@@ -33,6 +35,7 @@
 namespace autofill {
 namespace {
 
+using ::testing::NiceMock;
 using ::testing::Pointee;
 using ::testing::Truly;
 
@@ -154,6 +157,12 @@ class AddressFormDataImporterTest
     ExtractAddressProfiles(
         /*extraction_successful=*/!expected_profiles.empty(), form);
     VerifyExpectationForExtractedAddressProfiles(expected_profiles);
+  }
+
+  void ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(
+      const FormStructure& form) {
+    ExtractAddressProfilesAndVerifyExpectation(form,
+                                               {ConstructDefaultProfile()});
   }
 
   TestAddressDataManager& address_data_manager() {
@@ -283,6 +292,137 @@ TEST_F(AddressFormDataImporterTest,
   histogram_tester.ExpectUniqueSample(
       "Autofill.ProfileImport.PlaceholderValueRemoved.ByFieldType",
       ADDRESS_HOME_CITY, 1);
+}
+
+// This test verifies that a phone number is stored correctly in the following
+// situation: A form contains a telephone number field that is classified as
+// a PHONE_HOME_CITY_AND_NUMBER field (either due to heuristics or due to
+// crowdsourcing). If a user enters an international phone number (e.g. +374 10
+// 123456), this must be parsed as such, not as a local number in the assumed
+// country. Otherwise, the stored value is incorrect. Before a fix, the
+// number quoted above would be stored as "(010) 123456" for a DE address
+// profile and not stored at all for a US address profile.
+TEST_F(AddressFormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
+  // This is an Armenian phone number
+  const char* kInternationalNumber = "+374 10 123456";
+
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  // Despite the US default profile, we expect the international number.
+  ASSERT_TRUE(expected_profile.SetInfo(PHONE_HOME_WHOLE_NUMBER,
+                                       base::UTF8ToUTF16(kInternationalNumber),
+                                       kLocale));
+
+  // Create an address form with `kInternationalNumber`.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER,
+                  kInternationalNumber);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // Replace PHONE_HOME_WHOLE_NUMBER by PHONE_HOME_CITY_AND_NUMBER in field
+  // classifications.
+  std::vector<FieldType> types;
+  for (const auto& field : form_structure->fields()) {
+    if (field->heuristic_type() == PHONE_HOME_WHOLE_NUMBER) {
+      types.push_back(PHONE_HOME_CITY_AND_NUMBER);
+    } else {
+      types.push_back(field->heuristic_type());
+    }
+  }
+  test_api(*form_structure.get()).SetFieldTypes(types, types);
+
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+  ASSERT_EQ(address_data_manager().GetProfiles().size(), 1u);
+  EXPECT_EQ(base::UTF8ToUTF16(kInternationalNumber),
+            address_data_manager().GetProfiles()[0]->GetRawInfo(
+                PHONE_HOME_WHOLE_NUMBER));
+}
+
+// Tests that invalid countries in submitted forms are ignored, and that the
+// complement country logic overwrites it. In this case, expect the country to
+// default to the locale's country "US".
+TEST_F(AddressFormDataImporterTest, InvalidCountry) {
+  // Due to the extra 'A', the country of this `form_structure` is invalid.
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(
+          GetDefaultProfileTypeValuePairsWithOverriddenCountry("USAA"));
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+// Tests that invalid phone numbers are removed and importing continues.
+TEST_F(AddressFormDataImporterTest, InvalidPhoneNumber) {
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, "invalid");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  auto profile_without_number = ConstructDefaultProfile();
+  profile_without_number.ClearFields({PHONE_HOME_WHOLE_NUMBER});
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {profile_without_number});
+}
+
+// Tests that active plus addresses are not part of the values captured during
+// form submissions.
+TEST_F(AddressFormDataImporterTest, ActivePlusAddressesExcluded) {
+  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
+
+  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
+  // `autofill_client()` to use it.
+  auto plus_address_delegate =
+      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+  ON_CALL(*plus_address_delegate, IsPlusAddress)
+      .WillByDefault([&kDummyPlusAddress](const std::string& address) {
+        return address == kDummyPlusAddress;
+      });
+  autofill_client().set_plus_address_delegate(std::move(plus_address_delegate));
+
+  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
+  // excluded from imports.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kDummyPlusAddress);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // Create a default profile, but remove the email address, since extraction
+  // should skip the known plus address.
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.ClearFields({EMAIL_ADDRESS});
+
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+}
+
+// Tests that strings matching the plus address format are not part of the
+// values captured during form submissions.
+TEST_F(AddressFormDataImporterTest, MatchedPlusAddressesExcluded) {
+  const std::string kMatchedPlusAddress = "plus+plus@grelay.com";
+
+  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
+  // `autofill_client()` to use it.
+  auto plus_address_delegate =
+      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
+  ON_CALL(*plus_address_delegate, IsPlusAddress)
+      .WillByDefault([](const std::string& address) {
+        return address.ends_with("@grelay.com");
+      });
+  autofill_client().set_plus_address_delegate(std::move(plus_address_delegate));
+
+  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
+  // excluded from imports.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kMatchedPlusAddress);
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+
+  // Create a default profile, but remove the email address, since extraction
+  // should skip the known plus address.
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.ClearFields({EMAIL_ADDRESS});
+
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
 }
 
 }  // namespace

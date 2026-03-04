@@ -67,6 +67,9 @@ void SetValueForType(TypeValuePairs& pairs,
 TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     const std::string& country);
 
+// Returns the default AutofillProfile used in this test file.
+AutofillProfile ConstructDefaultProfile();
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_IMPORT_FORM_DATA_IMPORTER_TEST_UTILS_H_

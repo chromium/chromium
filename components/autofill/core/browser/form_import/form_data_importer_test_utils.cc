@@ -174,4 +174,8 @@ TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
   return pairs;
 }
 
+AutofillProfile ConstructDefaultProfile() {
+  return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
+}
+
 }  // namespace autofill

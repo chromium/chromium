@@ -96,7 +96,6 @@ using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::IsEmpty;
-using ::testing::NiceMock;
 using ::testing::Pair;
 using ::testing::Return;
 using ::testing::Truly;
@@ -214,11 +213,6 @@ TypeValuePairs GetDefaultCreditCardTypeValuePairs() {
       {CREDIT_CARD_EXP_MONTH, kDefaultCreditCardExpMonth},
       {CREDIT_CARD_EXP_4_DIGIT_YEAR, kDefaultCreditCardExpYear},
   };
-}
-
-// Returns the default AutofillProfile used in this test file.
-AutofillProfile ConstructDefaultProfile() {
-  return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
 }
 
 // Returns the second AutofillProfile used in this test file.
@@ -555,6 +549,9 @@ class FormDataImporterTest : public testing::Test {
     VerifyExpectationForExtractedAddressProfiles(expected_profiles);
   }
 
+  // TODO(crbug.com/481379161): This code is currently partially-duplicated in
+  //     AddressFDITest and is only used by to-be-migrated address tests. Once
+  //     all address tests have migrated over, delete this function.
   void ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(
       const FormStructure& form) {
     ExtractAddressProfilesAndVerifyExpectation(form,
@@ -635,142 +632,6 @@ class FormDataImporterTest : public testing::Test {
   syncer::TestSyncService sync_service_;
   TestAutofillClient autofill_client_;
 };
-
-// This test verifies that a phone number is stored correctly in the following
-// situation: A form contains a telephone number field that is classified as
-// a PHONE_HOME_CITY_AND_NUMBER field (either due to heuristics or due to
-// crowdsourcing). If a user enters an international phone number (e.g. +374 10
-// 123456), this must be parsed as such, not as a local number in the assumed
-// country. Otherwise, the stored value is incorrect. Before a fix, the
-// number quoted above would be stored as "(010) 123456" for a DE address
-// profile and not stored at all for a US address profile.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
-  // This is an Armenian phone number
-  const char* kInternationalNumber = "+374 10 123456";
-
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  // Despite the US default profile, we expect the international number.
-  ASSERT_TRUE(expected_profile.SetInfo(PHONE_HOME_WHOLE_NUMBER,
-                                       base::UTF8ToUTF16(kInternationalNumber),
-                                       kLocale));
-
-  // Create an address form with `kInternationalNumber`.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER,
-                  kInternationalNumber);
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  // Replace PHONE_HOME_WHOLE_NUMBER by PHONE_HOME_CITY_AND_NUMBER in field
-  // classifications.
-  std::vector<FieldType> types;
-  for (const auto& field : form_structure->fields()) {
-    if (field->heuristic_type() == PHONE_HOME_WHOLE_NUMBER) {
-      types.push_back(PHONE_HOME_CITY_AND_NUMBER);
-    } else {
-      types.push_back(field->heuristic_type());
-    }
-  }
-  test_api(*form_structure.get()).SetFieldTypes(types, types);
-
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-  ASSERT_EQ(address_data_manager().GetProfiles().size(), 1u);
-  EXPECT_EQ(base::UTF8ToUTF16(kInternationalNumber),
-            address_data_manager().GetProfiles()[0]->GetRawInfo(
-                PHONE_HOME_WHOLE_NUMBER));
-}
-
-// Tests that invalid countries in submitted forms are ignored, and that the
-// complement country logic overwrites it. In this case, expect the country to
-// default to the locale's country "US".
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, InvalidCountry) {
-  // Due to the extra 'A', the country of this `form_structure` is invalid.
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(
-          GetDefaultProfileTypeValuePairsWithOverriddenCountry("USAA"));
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
-}
-
-// Tests that invalid phone numbers are removed and importing continues.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, InvalidPhoneNumber) {
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, PHONE_HOME_WHOLE_NUMBER, "invalid");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  auto profile_without_number = ConstructDefaultProfile();
-  profile_without_number.ClearFields({PHONE_HOME_WHOLE_NUMBER});
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {profile_without_number});
-}
-
-// Tests that active plus addresses are not part of the values captured during
-// form submissions.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ActivePlusAddressesExcluded) {
-  const std::string kDummyPlusAddress = "plus+plus@plus.plus";
-
-  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
-  // `client()` to use it.
-  auto plus_address_delegate =
-      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
-  ON_CALL(*plus_address_delegate, IsPlusAddress)
-      .WillByDefault([&kDummyPlusAddress](const std::string& address) {
-        return address == kDummyPlusAddress;
-      });
-  client().set_plus_address_delegate(std::move(plus_address_delegate));
-
-  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
-  // excluded from imports.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kDummyPlusAddress);
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  // Create a default profile, but remove the email address, since extraction
-  // should skip the known plus address.
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  expected_profile.ClearFields({EMAIL_ADDRESS});
-
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-}
-
-// Tests that strings matching the plus address format are not part of the
-// values captured during form submissions.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MatchedPlusAddressesExcluded) {
-  const std::string kMatchedPlusAddress = "plus+plus@grelay.com";
-
-  // Save `kDummyPlusAddress` into the `plus_address_service`, and configure the
-  // `client()` to use it.
-  auto plus_address_delegate =
-      std::make_unique<NiceMock<MockAutofillPlusAddressDelegate>>();
-  ON_CALL(*plus_address_delegate, IsPlusAddress)
-      .WillByDefault([](const std::string& address) {
-        return address.ends_with("@grelay.com");
-      });
-  client().set_plus_address_delegate(std::move(plus_address_delegate));
-
-  // Next, make a form with the `kDummyPlusAddress` filled in, which should be
-  // excluded from imports.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, kMatchedPlusAddress);
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-
-  // Create a default profile, but remove the email address, since extraction
-  // should skip the known plus address.
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  expected_profile.ClearFields({EMAIL_ADDRESS});
-
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-}
 
 // ImportAddressProfiles tests.
 // TODO(crbug.com/481379161): Move this to AddressFDITest.
