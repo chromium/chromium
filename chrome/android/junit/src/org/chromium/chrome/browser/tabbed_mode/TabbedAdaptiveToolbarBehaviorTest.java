@@ -15,6 +15,8 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 
 import java.util.List;
@@ -30,6 +32,16 @@ public class TabbedAdaptiveToolbarBehaviorTest {
         mBehavior =
                 new TabbedAdaptiveToolbarBehavior(
                         activity, null, null, null, null, null, null, null, null, null, null, null);
+    }
+
+    @Test
+    @Config(qualifiers = "w390dp-h820dp")
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testResultFilterWithGlicEnabled() {
+        assertTopResult(
+                /* segmentationResults= */ List.of(
+                        AdaptiveToolbarButtonVariant.SHARE, AdaptiveToolbarButtonVariant.GLIC),
+                /* expectedTopResult= */ AdaptiveToolbarButtonVariant.GLIC);
     }
 
     @Test

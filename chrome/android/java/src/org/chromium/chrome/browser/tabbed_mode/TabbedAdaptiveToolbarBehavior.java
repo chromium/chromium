@@ -137,6 +137,10 @@ public class TabbedAdaptiveToolbarBehavior implements AdaptiveToolbarBehavior {
 
     @Override
     public int resultFilter(List<Integer> segmentationResults) {
+        if (AdaptiveToolbarFeatures.isGlicActionEnabled()
+                && segmentationResults.contains(AdaptiveToolbarButtonVariant.GLIC)) {
+            return AdaptiveToolbarButtonVariant.GLIC;
+        }
         return AdaptiveToolbarBehavior.defaultResultFilter(mContext, segmentationResults);
     }
 

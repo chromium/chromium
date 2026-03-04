@@ -200,6 +200,7 @@ public class AdaptiveToolbarStatePredictor {
             case AdaptiveToolbarButtonVariant.READ_ALOUD:
             case AdaptiveToolbarButtonVariant.PAGE_SUMMARY:
             case AdaptiveToolbarButtonVariant.OPEN_IN_BROWSER:
+            case AdaptiveToolbarButtonVariant.GLIC:
                 return true;
             case AdaptiveToolbarButtonVariant.UNKNOWN:
             case AdaptiveToolbarButtonVariant.NONE:

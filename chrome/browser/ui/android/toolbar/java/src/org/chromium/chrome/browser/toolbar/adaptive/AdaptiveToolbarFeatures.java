@@ -74,6 +74,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.SHARE:
             case AdaptiveToolbarButtonVariant.VOICE:
             case AdaptiveToolbarButtonVariant.AUTO:
+            case AdaptiveToolbarButtonVariant.GLIC:
                 return false;
             case AdaptiveToolbarButtonVariant.PRICE_TRACKING:
             case AdaptiveToolbarButtonVariant.READER_MODE:
@@ -116,6 +117,8 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
             case AdaptiveToolbarButtonVariant.TEST_BUTTON:
                 return true;
+            case AdaptiveToolbarButtonVariant.GLIC:
+                return false;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return false;
@@ -137,6 +140,8 @@ public class AdaptiveToolbarFeatures {
                 return DEFAULT_PRICE_TRACKING_ACTION_CHIP_DELAY_MS;
             case AdaptiveToolbarButtonVariant.READER_MODE:
                 return DEFAULT_READER_MODE_ACTION_CHIP_DELAY_MS;
+            case AdaptiveToolbarButtonVariant.GLIC:
+                return DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
                 return DEFAULT_CONTEXTUAL_PAGE_ACTION_CHIP_DELAY_MS;
@@ -159,6 +164,7 @@ public class AdaptiveToolbarFeatures {
             case AdaptiveToolbarButtonVariant.PRICE_INSIGHTS:
             case AdaptiveToolbarButtonVariant.TAB_GROUPING:
             case AdaptiveToolbarButtonVariant.DISCOUNTS:
+            case AdaptiveToolbarButtonVariant.GLIC:
                 return false;
             default:
                 assert false : "Unknown button variant " + buttonVariant;
@@ -205,6 +211,9 @@ public class AdaptiveToolbarFeatures {
      * @param context {@link Context} object.
      */
     public static @AdaptiveToolbarButtonVariant int getDefaultButtonVariant(Context context) {
+        if (isGlicActionEnabled()) {
+            return AdaptiveToolbarButtonVariant.GLIC;
+        }
         if (sDefaultSegmentForTesting != null) {
             return switch (sDefaultSegmentForTesting) {
                 case NEW_TAB -> AdaptiveToolbarButtonVariant.NEW_TAB;

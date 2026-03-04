@@ -180,6 +180,53 @@ public class AdaptiveToolbarStatePredictorTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testGlicEnabled() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.UNKNOWN,
+                        List.of(AdaptiveToolbarButtonVariant.VOICE));
+
+        // Glic should be included in results.
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(
+                                List.of(
+                                        AdaptiveToolbarButtonVariant.VOICE,
+                                        AdaptiveToolbarButtonVariant.GLIC)),
+                        AdaptiveToolbarButtonVariant.AUTO,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.GLIC)
+    public void testGlicEnabled_ManualOverride() {
+        AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
+
+        AdaptiveToolbarStatePredictor statePredictor =
+                buildStatePredictor(
+                        true,
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        List.of(AdaptiveToolbarButtonVariant.VOICE));
+
+        // Manual override should be respected even if Glic is enabled.
+        UiState expected =
+                new UiState(
+                        true,
+                        new ArrayList<Integer>(List.of(AdaptiveToolbarButtonVariant.SHARE)),
+                        AdaptiveToolbarButtonVariant.SHARE,
+                        AdaptiveToolbarButtonVariant.VOICE);
+        statePredictor.recomputeUiState(verifyResultCallback(expected));
+    }
+
+    @Test
+    @SmallTest
     public void testWithoutShowUiOnlyAfterReady() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
 
