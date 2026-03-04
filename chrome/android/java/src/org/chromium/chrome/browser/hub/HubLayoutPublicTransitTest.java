@@ -10,17 +10,21 @@ import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_
 
 import androidx.test.filters.LargeTest;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
@@ -50,6 +54,14 @@ public class HubLayoutPublicTransitTest {
     @Rule
     public AutoResetCtaTransitTestRule mCtaTestRule =
             ChromeTransitTestRules.autoResetCtaActivityRule();
+
+    @Before
+    public void setUp() {
+        SetupListManager setupListManager = Mockito.mock(SetupListManager.class);
+        Mockito.when(setupListManager.isSetupListActive()).thenReturn(false);
+        SetupListManager.setInstanceForTesting(setupListManager);
+        EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
+    }
 
     @Test
     @LargeTest

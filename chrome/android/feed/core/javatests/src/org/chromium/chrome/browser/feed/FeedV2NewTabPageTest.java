@@ -50,6 +50,7 @@ import org.junit.Test;
 import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -67,6 +68,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.educational_tip.EducationalTipModuleUtils;
 import org.chromium.chrome.browser.feed.v2.FeedV2TestHelper;
 import org.chromium.chrome.browser.feed.v2.TestFeedServer;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -76,6 +78,7 @@ import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NtpSmoothTransitionDelegate;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
+import org.chromium.chrome.browser.setup_list.SetupListManager;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TilesLinearLayout;
 import org.chromium.chrome.browser.tab.Tab;
@@ -118,7 +121,6 @@ import java.util.concurrent.TimeoutException;
     "disable-features=IPH_FeedHeaderMenu"
 })
 public class FeedV2NewTabPageTest {
-    private static final int ARTICLE_SECTION_HEADER_POSITION = 1;
     private static final int SIGNIN_PROMO_POSITION = 2;
     private static final int MIN_ITEMS_AFTER_LOAD = 10;
 
@@ -156,10 +158,10 @@ public class FeedV2NewTabPageTest {
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Mock private ExternalAuthUtils mExternalAuthUtils;
+    @Mock private SetupListManager mSetupListManager;
 
     private Tab mTab;
     private NewTabPage mNtp;
-    private FakeMostVisitedSites mMostVisitedSites;
     private EmbeddedTestServer mTestServer;
     private List<SiteSuggestion> mSiteSuggestions;
     private TestFeedServer mFeedServer;
@@ -167,6 +169,9 @@ public class FeedV2NewTabPageTest {
     @Before
     public void setUp() throws Exception {
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
+        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(false);
+        SetupListManager.setInstanceForTesting(mSetupListManager);
+        EducationalTipModuleUtils.setEducationalTipActiveForTesting(false);
         // Pretend Google Play services are available as it is required for the sign-in
         when(mExternalAuthUtils.isGooglePlayServicesMissing(any())).thenReturn(false);
         when(mExternalAuthUtils.canUseGooglePlayServices()).thenReturn(true);
@@ -187,9 +192,9 @@ public class FeedV2NewTabPageTest {
                         ApplicationProvider.getApplicationContext());
 
         mSiteSuggestions = NewTabPageTestUtils.createFakeSiteSuggestions(mTestServer);
-        mMostVisitedSites = new FakeMostVisitedSites();
-        mMostVisitedSites.setTileSuggestions(mSiteSuggestions);
-        mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
+        FakeMostVisitedSites mostVisitedSites = new FakeMostVisitedSites();
+        mostVisitedSites.setTileSuggestions(mSiteSuggestions);
+        mSuggestionsDeps.getFactory().mostVisitedSites = mostVisitedSites;
         GestureNavigationUtils.setMinRequiredPhysicalRamMbForTesting(0);
     }
 
@@ -372,6 +377,21 @@ public class FeedV2NewTabPageTest {
                     .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
             onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
         }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"FeedNewTabPage"})
+    @DisableFeatures(SigninFeatures.ENABLE_SEAMLESS_SIGNIN)
+    public void testSignInPromo_HiddenWhenSetupListActive() {
+        Mockito.when(mSetupListManager.isSetupListActive()).thenReturn(true);
+
+        openNewTabPage();
+
+        onView(withId(R.id.feed_stream_recycler_view))
+                .perform(RecyclerViewActions.scrollToPosition(SIGNIN_PROMO_POSITION));
+
+        onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
     }
 
     @Test
