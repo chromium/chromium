@@ -483,6 +483,32 @@ HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
+// Emulation.UpdateScreen is not yet supported on macOS and Windows.
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenBounds,
+                            "shared/update-screen-bounds.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenWorkArea,
+                            "shared/update-screen-work-area.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenDevicePixelRatio,
+                            "shared/update-screen-device-pixel-ratio.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenRotationPortrait,
+                            "shared/update-screen-rotation-portrait.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenRotationLandscape,
+                            "shared/update-screen-rotation-landscape.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenColorDepth,
+                            "shared/update-screen-color-depth.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenLabel, "shared/update-screen-label.js")
+
+HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenIsInternal,
+                            "shared/update-screen-is-internal.js")
+#endif
+
 // Emulation.SetPrimaryScreen is not yet supported on Windows.
 #if !BUILDFLAG(IS_WIN)
 HEADLESS_MODE_PROTOCOL_TEST(SetPrimaryScreen, "shared/set-primary-screen.js")

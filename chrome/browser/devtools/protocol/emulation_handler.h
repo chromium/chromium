@@ -40,6 +40,20 @@ class EmulationHandler : public protocol::Emulation::Backend,
       std::optional<bool> is_internal,
       std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info)
       override;
+  protocol::Response UpdateScreen(
+      const protocol::String& screen_id,
+      std::optional<int> left,
+      std::optional<int> top,
+      std::optional<int> width,
+      std::optional<int> height,
+      std::unique_ptr<protocol::Emulation::WorkAreaInsets> work_area_insets,
+      std::optional<double> device_pixel_ratio,
+      std::optional<int> rotation,
+      std::optional<int> color_depth,
+      std::optional<protocol::String> label,
+      std::optional<bool> is_internal,
+      std::unique_ptr<protocol::Emulation::ScreenInfo>* out_screen_info)
+      override;
   protocol::Response RemoveScreen(const protocol::String& screen_id) override;
   protocol::Response SetPrimaryScreen(
       const protocol::String& screen_id) override;

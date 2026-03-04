@@ -10,7 +10,6 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/headless/display_util/headless_display_util.h"
@@ -162,8 +161,7 @@ int64_t HeadlessScreen::AddDisplay(const Display& display) {
 }
 
 void HeadlessScreen::UpdateDisplay(const Display& display) {
-  // TODO(crbug.com/397350115): Implement.
-  NOTIMPLEMENTED();
+  display_list_.UpdateDisplay(display);
 }
 
 void HeadlessScreen::RemoveDisplay(int64_t display_id) {
