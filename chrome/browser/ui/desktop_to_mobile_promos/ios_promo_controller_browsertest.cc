@@ -7,6 +7,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_pref_names.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
@@ -23,6 +24,7 @@
 #include "components/desktop_to_mobile_promos/promos_types.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/sync/test/test_sync_service.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
@@ -166,6 +168,57 @@ IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
   device_info_tracker()->Add(
       CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
                        syncer::DeviceInfo::FormFactor::kPhone, false));
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(0);
+
+  // Trigger the promo.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is not shown when the promo is in the cooldown
+// period.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_BlockedByCooldown) {
+  // Add a device with receiving enabled.
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, true));
+
+  // Set the last impression timestamp to now.
+  browser()->profile()->GetPrefs()->SetTime(
+      promos_prefs::kDesktopToiOSPasswordPromoLastImpressionTimestamp,
+      base::Time::Now());
+
+  views::Widget* widget =
+      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
+  views::test::WidgetTest::SimulateNativeActivate(widget);
+  views::test::WaitForWidgetActive(widget, true);
+
+  EXPECT_CALL(*mock_user_education_interface(), MaybeShowFeaturePromo(_))
+      .Times(0);
+
+  // Trigger the promo.
+  promo_service()->NotifyPromoShouldBeShown(PromoType::kPassword);
+}
+
+// Verifies that the promo is not shown when the user has seen too many
+// impressions.
+IN_PROC_BROWSER_TEST_F(IOSPromoControllerBrowserTest,
+                       ShowPromo_BlockedByImpressionLimit) {
+  // Add a device with receiving enabled.
+  device_info_tracker()->Add(
+      CreateDeviceInfo("guid1", syncer::DeviceInfo::OsType::kIOS,
+                       syncer::DeviceInfo::FormFactor::kPhone, true));
+
+  // Set the impression count to the maximum.
+  browser()->profile()->GetPrefs()->SetInteger(
+      promos_prefs::kDesktopToiOSPasswordPromoImpressionsCounter, 10);
 
   views::Widget* widget =
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();

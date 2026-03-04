@@ -6,6 +6,7 @@
 
 #include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/desktop_to_mobile_promos/promos_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -121,6 +122,13 @@ void IOSPromoController::OnPromoTriggered(PromoType promo_type) {
 bool IOSPromoController::IsUserEligibleForPromo(PromoType promo_type) {
   // Don't show the promo if the user has a recent active Android device.
   if (ios_promos_utils::IsUserActiveOnAndroid(browser_->profile())) {
+    return false;
+  }
+
+  // Verify that the user has not exceeded impression limits for
+  // desktop-to-mobile promos.
+  if (!promos_utils::IsIOSDesktopPromoAllowedByGlobalImpressions(
+          browser_->profile())) {
     return false;
   }
 

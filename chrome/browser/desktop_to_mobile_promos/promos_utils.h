@@ -83,6 +83,11 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
     int impression_count,
     DesktopIOSPromoAction action);
 
+// Checks if the user is eligible for the promo based on the total number of
+// impressions, the cooldown period, and the opt-out status across all promo
+// types.
+bool IsIOSDesktopPromoAllowedByGlobalImpressions(Profile* profile);
+
 // ShouldShowIOSDesktopPromo checks if the user should be shown the iOS desktop
 // promo (all criteria are met) depending on the given promo type, and returns
 // true if so.

@@ -435,6 +435,12 @@ void RecordIOSDesktopPromoUserInteractionHistogram(
   }
 }
 
+bool IsIOSDesktopPromoAllowedByGlobalImpressions(Profile* profile) {
+  return VerifyMostRecentPromoTimestamp(profile) &&
+         VerifyIOSDesktopPromoTotalImpressions(profile) &&
+         VerifyIOSDesktopPromoTotalOptOuts(profile);
+}
+
 bool ShouldShowIOSDesktopPromo(Profile* profile,
                                const syncer::SyncService* sync_service,
                                PromoType promo_type) {
@@ -450,10 +456,9 @@ bool ShouldShowIOSDesktopPromo(Profile* profile,
          profile->GetPrefs()->GetInteger(
              promo_prefs.promo_impressions_counter_pref_name) <
              kiOSDesktopPromoMaxImpressionCount &&
-         VerifyMostRecentPromoTimestamp(profile) &&
-         VerifyIOSDesktopPromoTotalImpressions(profile) &&
-         VerifyIOSDesktopPromoTotalOptOuts(profile) &&
-         !profile->GetPrefs()->GetBoolean(promo_prefs.promo_opt_out_pref_name);
+         !profile->GetPrefs()->GetBoolean(
+             promo_prefs.promo_opt_out_pref_name) &&
+         IsIOSDesktopPromoAllowedByGlobalImpressions(profile);
 }
 
 bool UserNotClassifiedAsMobileDeviceSwitcher(
