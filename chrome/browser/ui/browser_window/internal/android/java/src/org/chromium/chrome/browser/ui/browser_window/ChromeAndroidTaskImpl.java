@@ -148,6 +148,7 @@ final class ChromeAndroidTaskImpl
          * different Profile.
          */
         final Map<Profile, AndroidBrowserWindow> mAndroidBrowserWindows = new ArrayMap<>();
+        @Nullable IncognitoTabModelObserver mIncognitoTabModelObserver;
 
         InternalActivityScopedObjects(
                 ActivityScopedObjects activityScopedObjects, AndroidBrowserWindow browserWindow) {
@@ -181,6 +182,30 @@ final class ChromeAndroidTaskImpl
                     : "Within one Activity, a Profile can only be associated with one"
                             + " AndroidBrowserWindow";
             mAndroidBrowserWindows.put(profile, browserWindow);
+        }
+
+        void addIncognitoTabModelObserver(ChromeAndroidTaskImpl chromeAndroidTaskImpl) {
+            assert mIncognitoTabModelObserver == null
+                    : "mIncognitoTabModelObserver is already initialized.";
+
+            var incognitoModel =
+                    (IncognitoTabModel)
+                            mActivityScopedObjects.mTabModelSelector.getModel(
+                                    /* incognito= */ true);
+            mIncognitoTabModelObserver =
+                    new IncognitoTabModelObserverImpl(chromeAndroidTaskImpl, this);
+            incognitoModel.addIncognitoObserver(mIncognitoTabModelObserver);
+        }
+
+        void removeIncognitoTabModelObserver() {
+            if (mIncognitoTabModelObserver != null) {
+                var incognitoModel =
+                        (IncognitoTabModel)
+                                mActivityScopedObjects.mTabModelSelector.getModel(
+                                        /* incognito= */ true);
+                incognitoModel.removeIncognitoObserver(mIncognitoTabModelObserver);
+                mIncognitoTabModelObserver = null;
+            }
         }
     }
 
@@ -339,43 +364,45 @@ final class ChromeAndroidTaskImpl
 
     private final Callback<TabModel> mOnTabModelSelectedCallback = this::onTabModelSelected;
 
-    // TODO(crbug.com/486858979): Attach this listener to all Activities.
-    // See the comments in cl/7560711 for more details.
-    private final IncognitoTabModelObserver mIncognitoTabModelObserver =
-            new IncognitoTabModelObserver() {
-                @Override
-                public void onIncognitoModelCreated() {
-                    var internalActivityScopedObjects = mActivityScopedObjectsDeque.peekFirst();
-                    assert internalActivityScopedObjects != null
-                            : "InternalActivityScopedObjects should not be null since the"
-                                    + " mIncognitoTabModelObserver is registered.";
-                    var incognitoModel =
-                            internalActivityScopedObjects.mActivityScopedObjects.mTabModelSelector
-                                    .getModel(/* incognito= */ true);
+    private static final class IncognitoTabModelObserverImpl implements IncognitoTabModelObserver {
+        private final ChromeAndroidTaskImpl mChromeAndroidTaskImpl;
+        private final InternalActivityScopedObjects mInternalActivityScopedObjects;
 
-                    var incognitoProfile = incognitoModel.getProfile();
-                    assert incognitoProfile != null : "Incognito profile should not be null.";
-                    assert internalActivityScopedObjects.mAndroidBrowserWindows.get(
-                                            incognitoProfile)
-                                    == null
-                            : "Incognito TabModel created, but its Activity already has the"
-                                    + " incognito Profile";
+        IncognitoTabModelObserverImpl(
+                ChromeAndroidTaskImpl chromeAndroidTaskImpl,
+                InternalActivityScopedObjects internalActivityScopedObjects) {
+            mChromeAndroidTaskImpl = chromeAndroidTaskImpl;
+            mInternalActivityScopedObjects = internalActivityScopedObjects;
+        }
 
-                    var browserWindow =
-                            new AndroidBrowserWindow(
-                                    ChromeAndroidTaskImpl.this,
-                                    incognitoProfile,
-                                    internalActivityScopedObjects
-                                            .mActivityScopedObjects
-                                            .mActivityWindowAndroid);
-                    internalActivityScopedObjects.addBrowserWindow(browserWindow);
-                    long ptr = browserWindow.getOrCreateNativePtr();
-                    incognitoModel.associateWithBrowserWindow(ptr);
-                    for (var observer : mAndroidBrowserWindowObservers) {
-                        observer.onBrowserWindowAdded(ptr);
-                    }
-                }
-            };
+        @Override
+        public void onIncognitoModelCreated() {
+            var incognitoModel =
+                    mInternalActivityScopedObjects.mActivityScopedObjects.mTabModelSelector
+                            .getModel(/* incognito= */ true);
+
+            var incognitoProfile = incognitoModel.getProfile();
+            assert incognitoProfile != null : "Incognito profile should not be null.";
+            assert mInternalActivityScopedObjects.mAndroidBrowserWindows.get(incognitoProfile)
+                            == null
+                    : "Incognito TabModel created, but its Activity already has the"
+                            + " incognito Profile";
+
+            var browserWindow =
+                    new AndroidBrowserWindow(
+                            mChromeAndroidTaskImpl,
+                            incognitoProfile,
+                            mInternalActivityScopedObjects
+                                    .mActivityScopedObjects
+                                    .mActivityWindowAndroid);
+            mInternalActivityScopedObjects.addBrowserWindow(browserWindow);
+            long ptr = browserWindow.getOrCreateNativePtr();
+            incognitoModel.associateWithBrowserWindow(ptr);
+            for (var observer : mChromeAndroidTaskImpl.mAndroidBrowserWindowObservers) {
+                observer.onBrowserWindowAdded(ptr);
+            }
+        }
+    }
 
     private @Nullable Integer mId;
     private long mLastActivatedTimeMillis;
@@ -1316,6 +1343,10 @@ final class ChromeAndroidTaskImpl
                     new InternalActivityScopedObjects(activityScopedObjects, newBrowserWindow);
             mActivityScopedObjectsDeque.addFirst(internalActivityScopedObjects);
 
+            if (activityScopedObjects.mSupportedProfileType == SupportedProfileType.MIXED) {
+                internalActivityScopedObjects.addIncognitoTabModelObserver(this);
+            }
+
             // Notify observers of new window creation.
             long ptr = newBrowserWindow.getOrCreateNativePtr();
             for (var observer : mAndroidBrowserWindowObservers) {
@@ -1372,11 +1403,6 @@ final class ChromeAndroidTaskImpl
         }
 
         TabModelSelector tabModelSelector = topActivityScopedObjects.mTabModelSelector;
-        if (topActivityScopedObjects.mSupportedProfileType == SupportedProfileType.MIXED) {
-            var incognitoModel =
-                    (IncognitoTabModel) tabModelSelector.getModel(/* incognito= */ true);
-            incognitoModel.addIncognitoObserver(mIncognitoTabModelObserver);
-        }
 
         tabModelSelector
                 .getCurrentTabModelSupplier()
@@ -1416,11 +1442,6 @@ final class ChromeAndroidTaskImpl
 
         var tabModelSelector = topActivityScopedObjects.mTabModelSelector;
         if (tabModelSelector != null) {
-            if (topActivityScopedObjects.mSupportedProfileType == SupportedProfileType.MIXED) {
-                var incognitoTabModel =
-                        (IncognitoTabModel) tabModelSelector.getModel(/* incognito= */ true);
-                incognitoTabModel.removeIncognitoObserver(mIncognitoTabModelObserver);
-            }
             tabModelSelector
                     .getCurrentTabModelSupplier()
                     .removeObserver(mOnTabModelSelectedCallback);
@@ -1516,6 +1537,8 @@ final class ChromeAndroidTaskImpl
 
         // Remove from Deque.
         mActivityScopedObjectsDeque.remove(activityScopedObjectsToRemove);
+        // Handle observers.
+        activityScopedObjectsToRemove.removeIncognitoTabModelObserver();
         // Remove task features.
         removeAllFeaturesForActivityInternal(activityWindowAndroid);
         // Destroy associated windows.
@@ -1545,6 +1568,7 @@ final class ChromeAndroidTaskImpl
 
         while (!mActivityScopedObjectsDeque.isEmpty()) {
             var internalActivityScopedObjects = mActivityScopedObjectsDeque.pollFirst();
+            internalActivityScopedObjects.removeIncognitoTabModelObserver();
             removeAllFeaturesForActivityInternal(
                     internalActivityScopedObjects.mActivityScopedObjects.mActivityWindowAndroid);
             var windows =

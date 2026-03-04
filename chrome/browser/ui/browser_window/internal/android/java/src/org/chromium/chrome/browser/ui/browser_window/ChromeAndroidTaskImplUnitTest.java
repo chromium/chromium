@@ -701,6 +701,7 @@ public class ChromeAndroidTaskImplUnitTest {
 
     @Test
     public void removeActivityScopedObjects_mixedProfile_destroysBothRegularAndIncognitoWindows() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
         // Arrange: Create Task with Mixed Profile support.
         var chromeAndroidTaskWithMockDeps =
                 ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
@@ -804,6 +805,37 @@ public class ChromeAndroidTaskImplUnitTest {
         verify(observer, times(1)).onBrowserWindowRemoved(nativePtr);
         verify(chromeAndroidTaskWithMockDeps.mMockAndroidBrowserWindowNatives, times(1))
                 .destroy(nativePtr);
+    }
+
+    @Test
+    public void removeActivityScopedObjects_mixedProfile_removesIncognitoObserver() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
+        // Arrange: Create Task with Mixed Profile support.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* mockNatives= */ true,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
+        var tabModelSelector = activityScopedObjects.mTabModelSelector;
+        var incognitoModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+
+        // Capture the observer that was registered during initialization.
+        ArgumentCaptor<IncognitoTabModelObserver> captor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoModel).addIncognitoObserver(captor.capture());
+        IncognitoTabModelObserver registeredObserver = captor.getValue();
+        assertNotNull(registeredObserver);
+
+        // Act: Remove the ActivityScopedObjects.
+        chromeAndroidTask.removeActivityScopedObjects(activityScopedObjects.mActivityWindowAndroid);
+
+        // Assert: The exact observer that was added should be removed.
+        verify(incognitoModel, times(1)).removeIncognitoObserver(registeredObserver);
     }
 
     @Test
@@ -1120,6 +1152,37 @@ public class ChromeAndroidTaskImplUnitTest {
         testFeature.mOnTaskRemovedHelper.waitForCallback(
                 /* currentCallCount= */ 0, /* numberOfCallsToWaitFor= */ 1);
         assertTrue(chromeAndroidTask.getAllFeaturesForTesting().isEmpty());
+    }
+
+    @Test
+    public void destroy_mixedProfile_removesIncognitoObserver() {
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
+        // Arrange: Create Task with Mixed Profile support.
+        var chromeAndroidTaskWithMockDeps =
+                ChromeAndroidTaskUnitTestSupport.createChromeAndroidTaskWithMockDeps(
+                        /* taskId= */ 1,
+                        /* mockNatives= */ true,
+                        /* isPendingTask= */ false,
+                        /* isDesktopMode= */ true,
+                        SupportedProfileType.MIXED);
+        var chromeAndroidTask =
+                (ChromeAndroidTaskImpl) chromeAndroidTaskWithMockDeps.mChromeAndroidTask;
+        var activityScopedObjects = chromeAndroidTaskWithMockDeps.mActivityScopedObjects;
+        var tabModelSelector = activityScopedObjects.mTabModelSelector;
+        var incognitoModel = (IncognitoTabModel) tabModelSelector.getModel(true);
+
+        // Capture the observer that was registered during initialization.
+        ArgumentCaptor<IncognitoTabModelObserver> captor =
+                ArgumentCaptor.forClass(IncognitoTabModelObserver.class);
+        verify(incognitoModel).addIncognitoObserver(captor.capture());
+        IncognitoTabModelObserver registeredObserver = captor.getValue();
+        assertNotNull(registeredObserver);
+
+        // Act: Destroy the entire task.
+        chromeAndroidTask.destroy();
+
+        // Assert: The observer should be removed during the teardown of ActivityScopedObjects.
+        verify(incognitoModel, times(1)).removeIncognitoObserver(registeredObserver);
     }
 
     @Test
@@ -3227,9 +3290,7 @@ public class ChromeAndroidTaskImplUnitTest {
         // TODO(crbug.com/479566813): Until clients are ported to properly destroy themselves on
         // profile
         // destruction, this test needs to be disabled.
-        if (BuildConfig.IS_DESKTOP_ANDROID) {
-            return;
-        }
+        assumeFalse(BuildConfig.IS_DESKTOP_ANDROID);
 
         // Arrange
         var chromeAndroidTaskWithMockDeps =
