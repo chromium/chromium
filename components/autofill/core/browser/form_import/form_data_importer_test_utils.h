@@ -67,6 +67,11 @@ void SetValueForType(TypeValuePairs& pairs,
 TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
     const std::string& country);
 
+// Same as `GetDefaultProfileTypeValuePairs()`, but split into two parts to test
+// multi-step imports. No part by itself satisfies the import requirements.
+// `part` specifies the requested half and can be either 1 or 2.
+TypeValuePairs GetSplitDefaultProfileTypeValuePairs(int part);
+
 // Same as `GetDefaultProfileTypeValuePairs()` but with the second profile
 // information.
 TypeValuePairs GetSecondProfileTypeValuePairs();
@@ -74,6 +79,9 @@ TypeValuePairs GetSecondProfileTypeValuePairs();
 // Same as `GetDefaultProfileTypeValuePairs()` but with the third profile
 // information.
 TypeValuePairs GetThirdProfileTypeValuePairs();
+
+// Same as `GetDefaultProfileTypeValuePairs()`, but for credit cards.
+TypeValuePairs GetDefaultCreditCardTypeValuePairs();
 
 // Returns the default AutofillProfile used in this test file.
 AutofillProfile ConstructDefaultProfile();
@@ -89,6 +97,18 @@ AutofillProfile ConstructThirdProfile();
 // `ConstructDefaultProfile()`.
 std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure();
 
+// Constructs a form structure containing only an email field, set to
+// `kDefaultMail`. This is useful for testing multi-step complements.
+std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure();
+
+// Same as `ConstructDefaultFormStructure()` but split into two parts to test
+// multi-step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
+std::unique_ptr<FormStructure> ConstructSplitDefaultProfileFormStructure(
+    int part);
+
+// Same as `ConstructDefaultFormStructure()` but for credit cards.
+std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure();
+
 // Same as `ConstructDefaultFormStructure()` but for the second profile.
 std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure();
 
@@ -102,6 +122,10 @@ std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure();
 // Constructs a `FormData` instance that carries the information of the default
 // profile.
 FormData ConstructDefaultFormData();
+
+// Same as `ConstructDefaultFormData()` but split into two parts to test multi-
+// step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
+FormData ConstructSplitDefaultFormData(int part);
 
 }  // namespace autofill
 

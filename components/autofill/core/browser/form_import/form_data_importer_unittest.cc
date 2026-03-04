@@ -93,95 +93,16 @@ using test::CreateTestFormField;
 using test::CreateTestIbanFormData;
 using ::testing::_;
 using ::testing::Contains;
-using ::testing::ElementsAre;
-using ::testing::Eq;
-using ::testing::IsEmpty;
-using ::testing::Pair;
 using ::testing::Return;
 using ::testing::Truly;
 using ::testing::UnorderedElementsAre;
 
 constexpr char kLocale[] = "en_US";
 
-// Define values for the default address profile.
-constexpr char kDefaultFirstName[] = "Thomas";
-constexpr char kDefaultLastName[] = "Anderson";
-constexpr char kDefaultMail[] = "theone@thematrix.org";
-constexpr char kDefaultAddressLine1[] = "21 Laussat St";
-constexpr char kDefaultZip[] = "94102";
-constexpr char kDefaultCity[] = "Los Angeles";
-constexpr char kDefaultState[] = "California";
-constexpr char kDefaultCountry[] = "US";
-constexpr char kDefaultPhone[] = "+1 650-555-0000";
-
 constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
 constexpr char kDefaultCreditCardExpMonth[] = "01";
 constexpr char kDefaultCreditCardExpYear[] = "2999";
-
-constexpr char kDefaultGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
-constexpr char kSecondGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb293";
-
-// Same as |GetDefaultProfileTypeValuePairs()|, but split into two parts to test
-// multi-step imports. No part by itself satisfies the import requirements.
-// |part| specifies the requested half and can be either 1 or 2.
-TypeValuePairs GetSplitDefaultProfileTypeValuePairs(int part) {
-  DCHECK(part == 1 || part == 2);
-  if (part == 1) {
-    return {
-        {NAME_FIRST, kDefaultFirstName},
-        {NAME_LAST, kDefaultLastName},
-        {EMAIL_ADDRESS, kDefaultMail},
-        {ADDRESS_HOME_CITY, kDefaultCity},
-        {ADDRESS_HOME_STATE, kDefaultState},
-        {ADDRESS_HOME_COUNTRY, kDefaultCountry},
-    };
-  } else {
-    return {
-        {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
-        {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
-        {ADDRESS_HOME_ZIP, kDefaultZip},
-    };
-  }
-}
-
-// Same as `GetDefaultProfileTypeValuePairs()`, but for credit cards.
-TypeValuePairs GetDefaultCreditCardTypeValuePairs() {
-  return {
-      {CREDIT_CARD_NAME_FULL, kDefaultCreditCardName},
-      {CREDIT_CARD_NUMBER, kDefaultCreditCardNumber},
-      {CREDIT_CARD_EXP_MONTH, kDefaultCreditCardExpMonth},
-      {CREDIT_CARD_EXP_4_DIGIT_YEAR, kDefaultCreditCardExpYear},
-  };
-}
-
-// Constructs a form structure containing only an email field, set to
-// `kDefaultMail`. This is useful for testing multi-step complements.
-std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
-  // The autocomplete attribute is set manually, because for small forms (number
-  // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
-  FormData form =
-      ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
-  const char* autocomplete = "email";
-  test_api(form).field(0).set_autocomplete_attribute(autocomplete);
-  test_api(form).field(0).set_parsed_autocomplete(
-      ParseAutocompleteAttribute(autocomplete));
-  return ConstructFormStructureFromFormData(form);
-}
-
-// Same as `ConstructDefaultFormStructure()` but split into two parts to test
-// multi-step imports (see `GetSplitDefaultProfileTypeValuePairs()`).
-std::unique_ptr<FormStructure> ConstructSplitDefaultProfileFormStructure(
-    int part) {
-  return ConstructFormStructureFromTypeValuePairs(
-      GetSplitDefaultProfileTypeValuePairs(part));
-}
-
-// Same as `ConstructDefaultFormStructure()` but for credit cards.
-std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
-  return ConstructFormStructureFromTypeValuePairs(
-      GetDefaultCreditCardTypeValuePairs());
-}
 
 // Constructs a FormStructure with one address section and one payment section.
 std::unique_ptr<FormStructure> ConstructAddressAndCreditCardForm() {
@@ -200,13 +121,6 @@ FormData ConstructDefaultFormDataWithTwoAddresses() {
   a.reserve(a.size() + b.size());
   std::ranges::move(b, std::back_inserter(a));
   return ConstructFormDateFromTypeValuePairs(a);
-}
-
-// Same as |ConstructDefaultFormData()| but split into two parts to test multi-
-// step imports (see |GetSplitDefaultProfileTypeValuePairs()|).
-FormData ConstructSplitDefaultFormData(int part) {
-  return ConstructFormDateFromTypeValuePairs(
-      GetSplitDefaultProfileTypeValuePairs(part));
 }
 
 // Matches an AddressProfile or CreditCard pointer according to Compare().
@@ -2140,150 +2054,6 @@ TEST_F(FormDataImporterTest,
       AutofillMetrics::MASKED_SERVER_CARD_EXPIRATION_DATE_DID_NOT_MATCH, 1);
 }
 
-// Tests that metrics are correctly recorded when removing setting-inaccessible
-// fields.
-// Note that this function doesn't test the removal functionality itself. This
-// is done in the AutofillProfile unit tests.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
-  // State is setting-inaccessible in Bermuda. Expect that when importing a
-  // Bermudan profile with a state, the state information is removed.
-  TypeValuePairs type_value_pairs =
-      GetDefaultProfileTypeValuePairsWithOverriddenCountry("BM");
-  ASSERT_EQ(type_value_pairs[6].first, ADDRESS_HOME_STATE);
-
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  SetValueForType(type_value_pairs, ADDRESS_HOME_STATE, "");
-  base::HistogramTester histogram_tester;
-  ExtractAddressProfilesAndVerifyExpectation(
-      *form_structure, {ConstructProfileFromTypeValuePairs(type_value_pairs)});
-
-  // State was removed. Expect the metrics to behave accordingly.
-  const std::string metric =
-      "Autofill.ProfileImport.InaccessibleFieldsRemoved.";
-  histogram_tester.ExpectUniqueSample(metric + "Total", true, 1);
-  histogram_tester.ExpectUniqueSample(
-      metric + "ByFieldType",
-      autofill_metrics::SettingsVisibleFieldTypeForMetrics::kState, 1);
-}
-
-// Tests a 2-page multi-step extraction.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MultiStepImport) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructSplitDefaultProfileFormStructure(/*part=*/1);
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
-
-  form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
-}
-
-// Tests that when multi-step complements are enabled, complete profiles those
-// import was accepted are added as a multi-step candidate. This enables
-// complementing the profile with additional information on further pages.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MultiStepImport_Complement) {
-  // Extract the default profile without an email address.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  // Using `ExtractAddressProfileAndVerifyExtractionOfDefaultProfile()` doesn't
-  // suffice, as the multi-step complement candidate is only added in the
-  // "ProcessAddressCandidates" step.
-  ExtractFormDataAndProcessAddressCandidates(*form_structure);
-  VerifyExpectationForExtractedAddressProfiles(
-      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
-
-  // Import the email address in a separate form. Without multi-step updates,
-  // this information cannot be associated to a profile. The resulting profile
-  // is the default one.
-  form_structure = ConstructDefaultEmailFormStructure();
-  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
-}
-
-// Tests that when an imported profile is modified through external means (e.g.
-// via the settings), the multi-step complement candidate is updated accordingly
-// and the correct profile update occurs.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
-  // Extract the default profile without an email address.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  ExtractFormDataAndProcessAddressCandidates(*form_structure);
-  VerifyExpectationForExtractedAddressProfiles(
-      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
-
-  // Update the profile's ZIP through external means.
-  AutofillProfile profile = *address_data_manager().GetProfiles()[0];
-  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"12345", kLocale,
-                                        VerificationStatus::kObserved);
-  address_data_manager().UpdateProfile(profile);
-
-  // Expect that the updated profile is complemented with an email address.
-  form_structure = ConstructDefaultEmailFormStructure();
-  AutofillProfile expected_profile = ConstructDefaultProfile();
-  expected_profile.SetInfoWithVerificationStatus(
-      ADDRESS_HOME_ZIP, u"12345", kLocale, VerificationStatus::kObserved);
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
-                                             {expected_profile});
-}
-
-// Tests that when an imported profile is deleted through external means (e.g.
-// via the settings), the multi-step complement candidate is removed and no
-// further updates related to it are offered.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
-  // Extract the default profile without an email address.
-  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
-  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
-  ExtractFormDataAndProcessAddressCandidates(*form_structure);
-  VerifyExpectationForExtractedAddressProfiles(
-      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
-
-  // Remove the profile through external means.
-  address_data_manager().RemoveProfile(
-      address_data_manager().GetProfiles()[0]->guid());
-
-  // Expect that the removed profile cannot be updated with an email address.
-  form_structure = ConstructDefaultEmailFormStructure();
-  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
-}
-
-// Tests that multi-step candidate profiles from different origins are not
-// merged.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MultiStepImport_DifferentOrigin) {
-  FormData form = ConstructSplitDefaultFormData(/*part=*/1);
-  form.set_url(GURL("https://www.foo.com"));
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromFormData(form);
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
-
-  form = ConstructSplitDefaultFormData(/*part=*/2);
-  form.set_url(GURL("https://wwww.bar.com"));
-  form_structure = ConstructFormStructureFromFormData(form);
-  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
-}
-
-// Tests that multi-step candidates profiles are invalidated after some TTL.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, MultiStepImport_TTL) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructSplitDefaultProfileFormStructure(/*part=*/1);
-  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
-
-  task_environment().FastForwardBy(kMultiStepImportTTL + base::Minutes(1));
-
-  form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
-  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
-}
-
 // Tests that multi-step candidates profiles are cleared if the browsing history
 // is deleted.
 TEST_F(FormDataImporterTest, MultiStepImport_DeleteOnBrowsingHistoryCleared) {
@@ -2812,74 +2582,6 @@ TEST_F(FormDataImporterTest, AutofillPromptStatusMetric_AddressAndCreditCard) {
       AutofillMetrics::AutofillPromptStatus::kAddressAndCreditCardShown, 1);
 }
 
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultProfileFormStructure();
-  int counter = 0;
-  for (auto& field : *form_structure) {
-    field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
-                                                        : kSecondGuid);
-    ++counter;
-  }
-  base::flat_set<std::string> guids =
-      test_api(form_data_importer().GetAddressFormDataImporter())
-          .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
-  EXPECT_THAT(guids, UnorderedElementsAre(kDefaultGuid, kSecondGuid));
-}
-
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest,
-       ExtractGUIDsOfProfilesWithoutManualEdits_FieldWasEdited) {
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructDefaultProfileFormStructure();
-  int counter = 0;
-  for (auto& field : *form_structure) {
-    field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
-                                                        : kSecondGuid);
-    ++counter;
-  }
-  form_structure->field(0)->AddFieldModifier(FieldModifier::kUser);
-  base::flat_set<std::string> guids =
-      test_api(form_data_importer().GetAddressFormDataImporter())
-          .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
-  EXPECT_THAT(guids, IsEmpty());
-}
-
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest,
-       ImportAddressProfiles_PrefilledStateAndCountry_Imported) {
-  base::test::ScopedFeatureList feature_list{
-    features::kAutofillEnableImportOfUnchangedValuesForCountryAndState};
-
-  // Create a form with a prefilled state and country.
-  FormData form = ConstructFormDateFromTypeValuePairs({
-      {NAME_FULL, "Pablo Diego Ruiz y Picasso"},
-      {EMAIL_ADDRESS, "theprez@gmail.com"},
-      {ADDRESS_HOME_LINE1, "21 Laussat St"},
-      {ADDRESS_HOME_CITY, "San Francisco"},
-      {ADDRESS_HOME_STATE, "California"},
-      {ADDRESS_HOME_ZIP, "94102"},
-      {ADDRESS_HOME_COUNTRY, "United States"},
-  });
-
-  std::unique_ptr<FormStructure> form_structure =
-      ConstructFormStructureFromFormData(form);
-
-  // ConstructFormStructureFromFormData resets initial_value to an empty string.
-  // Set the fields back to simulate a prefilled field.
-  test_api(*form_structure->field(4)).set_initial_value(u"California");
-  test_api(*form_structure->field(6)).set_initial_value(u"United States");
-
-  ExtractAddressProfiles(/*extraction_successful=*/true, *form_structure);
-
-  const std::vector<const AutofillProfile*>& results =
-      address_data_manager().GetProfiles();
-  ASSERT_EQ(1U, results.size());
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STATE), u"California");
-  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
-}
-
 class SkipSaveCardInFormDataImporterTest
     : public FormDataImporterTest,
       public testing::WithParamInterface<bool> {
@@ -3198,92 +2900,6 @@ TEST_F(FormDataImporterTest_ExtractCreditCardFromForm,
       r.card.GetInfo(FieldType::CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR, kLocale),
       u"01/2021");
   EXPECT_FALSE(r.has_duplicate_credit_card_field_type);
-}
-
-// Tests that duplicate fields with identical field values are valid. They would
-// thus not abandon the import of the address.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, DuplicateFieldsWithIdenticalValuesAreValid) {
-  AutofillField field;
-  field.SetTypeTo(AutofillType(NAME_FIRST),
-                  AutofillPredictionSource::kHeuristics);
-  field.set_value(u"First");
-  AutofillField field2;
-  field2.SetTypeTo(AutofillType(NAME_FIRST),
-                   AutofillPredictionSource::kHeuristics);
-  field2.set_value(u"First");
-  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
-                   .HasInvalidFieldTypes(
-                       std::to_array<const AutofillField*>({&field, &field2})));
-}
-
-// Tests that duplicate fields with different field values are invalid. They
-// would thus abandon the import of the address.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, DuplicateFieldsWithDifferentValuesAreInvalid) {
-  AutofillField field;
-  field.SetTypeTo(AutofillType(NAME_FIRST),
-                  AutofillPredictionSource::kHeuristics);
-  field.set_value(u"First");
-  AutofillField field2;
-  field2.SetTypeTo(AutofillType(NAME_FIRST),
-                   AutofillPredictionSource::kHeuristics);
-  field2.set_value(u"Other value");
-  EXPECT_TRUE(test_api(form_data_importer().GetAddressFormDataImporter())
-                  .HasInvalidFieldTypes(
-                      std::to_array<const AutofillField*>({&field, &field2})));
-}
-
-// Tests that duplicate fields with identical field values are valid for the
-// case where a <select> field follows an <input> field and the input field's
-// value is the selected option's value. They would thus not abandon the import
-// of the address.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, InputFollowedBySelectWithIdenticalValuesAreValid) {
-  AutofillField field;
-  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
-                  AutofillPredictionSource::kHeuristics);
-  field.set_value(u"US");
-  AutofillField field2(
-      test::CreateTestSelectField("Country", "country", "US", "country",
-                                  {"DE", "US"}, {"Germany", "United States"}));
-  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
-                   AutofillPredictionSource::kHeuristics);
-  const std::array<const autofill::AutofillField*, 2> section_fields =
-      std::to_array<const AutofillField*>({&field, &field2});
-
-  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
-                   .HasInvalidFieldTypes(section_fields));
-  EXPECT_THAT(
-      test_api(form_data_importer().GetAddressFormDataImporter())
-          .GetObservedFieldValues(section_fields),
-      ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
-}
-
-// Tests that duplicate fields with identical field values are valid for the
-// case where a <select> field is followed by an <input> field and the input
-// field's value is the selected option's value. They would thus not abandon the
-// import of the address.
-// TODO(crbug.com/481379161): Move this to AddressFDITest.
-TEST_F(FormDataImporterTest, SelectFollowedByInputWithIdenticalValuesAreValid) {
-  AutofillField field(
-      test::CreateTestSelectField("Country", "country", "US", "country",
-                                  {"DE", "US"}, {"Germany", "United States"}));
-  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
-                  AutofillPredictionSource::kHeuristics);
-  AutofillField field2;
-  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
-                   AutofillPredictionSource::kHeuristics);
-  field2.set_value(u"US");
-  const std::array<const autofill::AutofillField*, 2> section_fields =
-      std::to_array<const AutofillField*>({&field, &field2});
-
-  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
-                   .HasInvalidFieldTypes(section_fields));
-  EXPECT_THAT(
-      test_api(form_data_importer().GetAddressFormDataImporter())
-          .GetObservedFieldValues(section_fields),
-      ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
 }
 
 }  // namespace

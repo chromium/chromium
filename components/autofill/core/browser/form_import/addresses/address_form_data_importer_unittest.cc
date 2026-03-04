@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_field_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager_test_api.h"
 #include "components/autofill/core/browser/data_manager/addresses/test_address_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/test_payments_data_manager.h"
@@ -40,9 +41,14 @@ namespace {
 
 using test::CreateTestFormField;
 using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::Eq;
+using ::testing::IsEmpty;
 using ::testing::NiceMock;
+using ::testing::Pair;
 using ::testing::Pointee;
 using ::testing::Truly;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kLocale[] = "en_US";
 
@@ -68,6 +74,9 @@ constexpr char kSecondPhonePrefix[] = "666";
 constexpr char kSecondPhoneSuffix[] = "1111";
 
 constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
+
+constexpr char kDefaultGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb292";
+constexpr char kSecondGuid[] = "a21f010a-eac1-41fc-aee9-c06bbedfb293";
 
 // Wraps `ConstructDefaultProfile()`, but overrides ADDRESS_HOME_COUNTRY with
 // `country`.
@@ -179,6 +188,33 @@ class AddressFormDataImporterTest
         << print_profiles();
   }
 
+  // Convenience wrapper that calls
+  // `FormDataImporter::ExtractFormData()` and subsequently
+  // processes the candidates for address profile import. Returns the result of
+  // `FormDataImporter::ExtractFormData()`.
+  FormDataImporterTestApi::ExtractedFormData
+  ExtractFormDataAndProcessAddressCandidates(
+      const FormStructure& form,
+      bool profile_autofill_enabled,
+      bool payment_methods_autofill_enabled) {
+    FormDataImporterTestApi::ExtractedFormData extracted_data =
+        test_api(form_data_importer())
+            .ExtractFormData(form, profile_autofill_enabled,
+                             payment_methods_autofill_enabled);
+    test_api(form_data_importer().GetAddressFormDataImporter())
+        .ProcessExtractedAddressProfiles(
+            extracted_data.extracted_address_profiles,
+            /*allow_prompt=*/true, ukm_source_id());
+    return extracted_data;
+  }
+
+  // Convenience wrapper around `ExtractFormDataAndProcessAddressCandidates()`.
+  void ExtractFormDataAndProcessAddressCandidates(const FormStructure& form) {
+    std::ignore = ExtractFormDataAndProcessAddressCandidates(
+        form, /*profile_autofill_enabled=*/true,
+        /*payment_methods_autofill_enabled=*/true);
+  }
+
   void ExtractAddressProfilesAndVerifyExpectation(
       const FormStructure& form,
       const std::vector<AutofillProfile>& expected_profiles) {
@@ -202,6 +238,9 @@ class AddressFormDataImporterTest
     return autofill_client()
         .GetPersonalDataManager()
         .test_address_data_manager();
+  }
+  FormDataImporter& form_data_importer() {
+    return *autofill_client().GetFormDataImporter();
   }
   TestPaymentsDataManager& payments_data_manager() {
     return autofill_client()
@@ -1350,6 +1389,294 @@ TEST_F(AddressFormDataImporterTest,
           GetDefaultProfileTypeValuePairsWithOverriddenCountry(
               "Myanmar"));  // Missing the [Burma] part
   ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+// Tests that metrics are correctly recorded when removing setting-inaccessible
+// fields.
+// Note that this function doesn't test the removal functionality itself. This
+// is done in the AutofillProfile unit tests.
+TEST_F(AddressFormDataImporterTest, RemoveInaccessibleProfileValuesMetrics) {
+  // State is setting-inaccessible in Bermuda. Expect that when importing a
+  // Bermudan profile with a state, the state information is removed.
+  TypeValuePairs type_value_pairs =
+      GetDefaultProfileTypeValuePairsWithOverriddenCountry("BM");
+  ASSERT_EQ(type_value_pairs[6].first, ADDRESS_HOME_STATE);
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  SetValueForType(type_value_pairs, ADDRESS_HOME_STATE, "");
+  base::HistogramTester histogram_tester;
+  ExtractAddressProfilesAndVerifyExpectation(
+      *form_structure, {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // State was removed. Expect the metrics to behave accordingly.
+  const std::string metric =
+      "Autofill.ProfileImport.InaccessibleFieldsRemoved.";
+  histogram_tester.ExpectUniqueSample(metric + "Total", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      metric + "ByFieldType",
+      autofill_metrics::SettingsVisibleFieldTypeForMetrics::kState, 1);
+}
+
+// Tests a 2-page multi-step extraction.
+TEST_F(AddressFormDataImporterTest, MultiStepImport) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructSplitDefaultProfileFormStructure(/*part=*/1);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
+
+  form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+// Tests that when multi-step complements are enabled, complete profiles those
+// import was accepted are added as a multi-step candidate. This enables
+// complementing the profile with additional information on further pages.
+TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement) {
+  // Extract the default profile without an email address.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  // Using `ExtractAddressProfileAndVerifyExtractionOfDefaultProfile()` doesn't
+  // suffice, as the multi-step complement candidate is only added in the
+  // "ProcessAddressCandidates" step.
+  ExtractFormDataAndProcessAddressCandidates(*form_structure);
+  VerifyExpectationForExtractedAddressProfiles(
+      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // Import the email address in a separate form. Without multi-step updates,
+  // this information cannot be associated to a profile. The resulting profile
+  // is the default one.
+  form_structure = ConstructDefaultEmailFormStructure();
+  ExtractAddressProfileAndVerifyExtractionOfDefaultProfile(*form_structure);
+}
+
+// Tests that when an imported profile is modified through external means (e.g.
+// via the settings), the multi-step complement candidate is updated accordingly
+// and the correct profile update occurs.
+TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement_ExternalUpdate) {
+  // Extract the default profile without an email address.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ExtractFormDataAndProcessAddressCandidates(*form_structure);
+  VerifyExpectationForExtractedAddressProfiles(
+      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // Update the profile's ZIP through external means.
+  AutofillProfile profile = *address_data_manager().GetProfiles()[0];
+  profile.SetInfoWithVerificationStatus(ADDRESS_HOME_ZIP, u"12345", kLocale,
+                                        VerificationStatus::kObserved);
+  address_data_manager().UpdateProfile(profile);
+
+  // Expect that the updated profile is complemented with an email address.
+  form_structure = ConstructDefaultEmailFormStructure();
+  AutofillProfile expected_profile = ConstructDefaultProfile();
+  expected_profile.SetInfoWithVerificationStatus(
+      ADDRESS_HOME_ZIP, u"12345", kLocale, VerificationStatus::kObserved);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure,
+                                             {expected_profile});
+}
+
+// Tests that when an imported profile is deleted through external means (e.g.
+// via the settings), the multi-step complement candidate is removed and no
+// further updates related to it are offered.
+TEST_F(AddressFormDataImporterTest, MultiStepImport_Complement_ExternalRemove) {
+  // Extract the default profile without an email address.
+  TypeValuePairs type_value_pairs = GetDefaultProfileTypeValuePairs();
+  SetValueForType(type_value_pairs, EMAIL_ADDRESS, "");
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromTypeValuePairs(type_value_pairs);
+  ExtractFormDataAndProcessAddressCandidates(*form_structure);
+  VerifyExpectationForExtractedAddressProfiles(
+      {ConstructProfileFromTypeValuePairs(type_value_pairs)});
+
+  // Remove the profile through external means.
+  address_data_manager().RemoveProfile(
+      address_data_manager().GetProfiles()[0]->guid());
+
+  // Expect that the removed profile cannot be updated with an email address.
+  form_structure = ConstructDefaultEmailFormStructure();
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that multi-step candidate profiles from different origins are not
+// merged.
+TEST_F(AddressFormDataImporterTest, MultiStepImport_DifferentOrigin) {
+  FormData form = ConstructSplitDefaultFormData(/*part=*/1);
+  form.set_url(GURL("https://www.foo.com"));
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
+
+  form = ConstructSplitDefaultFormData(/*part=*/2);
+  form.set_url(GURL("https://wwww.bar.com"));
+  form_structure = ConstructFormStructureFromFormData(form);
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+// Tests that multi-step candidates profiles are invalidated after some TTL.
+TEST_F(AddressFormDataImporterTest, MultiStepImport_TTL) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructSplitDefaultProfileFormStructure(/*part=*/1);
+  ExtractAddressProfilesAndVerifyExpectation(*form_structure, {});
+
+  task_environment().FastForwardBy(kMultiStepImportTTL + base::Minutes(1));
+
+  form_structure = ConstructSplitDefaultProfileFormStructure(/*part=*/2);
+  ImportAddressProfileAndVerifyImportOfNoProfile(*form_structure);
+}
+
+TEST_F(AddressFormDataImporterTest, ExtractGUIDsOfProfilesWithoutManualEdits) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  int counter = 0;
+  for (auto& field : *form_structure) {
+    field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
+                                                        : kSecondGuid);
+    ++counter;
+  }
+  base::flat_set<std::string> guids =
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
+  EXPECT_THAT(guids, UnorderedElementsAre(kDefaultGuid, kSecondGuid));
+}
+
+TEST_F(AddressFormDataImporterTest,
+       ExtractGUIDsOfProfilesWithoutManualEdits_FieldWasEdited) {
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructDefaultProfileFormStructure();
+  int counter = 0;
+  for (auto& field : *form_structure) {
+    field->set_autofill_source_profile_guid(counter % 2 ? kDefaultGuid
+                                                        : kSecondGuid);
+    ++counter;
+  }
+  form_structure->field(0)->AddFieldModifier(FieldModifier::kUser);
+  base::flat_set<std::string> guids =
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .ExtractGUIDsOfProfilesWithoutManualEdits(*form_structure);
+  EXPECT_THAT(guids, IsEmpty());
+}
+
+TEST_F(AddressFormDataImporterTest,
+       ImportAddressProfiles_PrefilledStateAndCountry_Imported) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillEnableImportOfUnchangedValuesForCountryAndState};
+
+  // Create a form with a prefilled state and country.
+  FormData form = ConstructFormDateFromTypeValuePairs({
+      {NAME_FULL, "Pablo Diego Ruiz y Picasso"},
+      {EMAIL_ADDRESS, "theprez@gmail.com"},
+      {ADDRESS_HOME_LINE1, "21 Laussat St"},
+      {ADDRESS_HOME_CITY, "San Francisco"},
+      {ADDRESS_HOME_STATE, "California"},
+      {ADDRESS_HOME_ZIP, "94102"},
+      {ADDRESS_HOME_COUNTRY, "United States"},
+  });
+
+  std::unique_ptr<FormStructure> form_structure =
+      ConstructFormStructureFromFormData(form);
+
+  // ConstructFormStructureFromFormData resets initial_value to an empty string.
+  // Set the fields back to simulate a prefilled field.
+  test_api(*form_structure->field(4)).set_initial_value(u"California");
+  test_api(*form_structure->field(6)).set_initial_value(u"United States");
+
+  ExtractAddressProfiles(/*extraction_successful=*/true, *form_structure);
+
+  const std::vector<const AutofillProfile*>& results =
+      address_data_manager().GetProfiles();
+  ASSERT_EQ(1U, results.size());
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_STATE), u"California");
+  EXPECT_EQ(results[0]->GetRawInfo(ADDRESS_HOME_COUNTRY), u"US");
+}
+
+// Tests that duplicate fields with identical field values are valid. They would
+// thus not abandon the import of the address.
+TEST_F(AddressFormDataImporterTest,
+       DuplicateFieldsWithIdenticalValuesAreValid) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kHeuristics);
+  field.set_value(u"First");
+  AutofillField field2;
+  field2.SetTypeTo(AutofillType(NAME_FIRST),
+                   AutofillPredictionSource::kHeuristics);
+  field2.set_value(u"First");
+  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
+                   .HasInvalidFieldTypes(
+                       std::to_array<const AutofillField*>({&field, &field2})));
+}
+
+// Tests that duplicate fields with different field values are invalid. They
+// would thus abandon the import of the address.
+TEST_F(AddressFormDataImporterTest,
+       DuplicateFieldsWithDifferentValuesAreInvalid) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(NAME_FIRST),
+                  AutofillPredictionSource::kHeuristics);
+  field.set_value(u"First");
+  AutofillField field2;
+  field2.SetTypeTo(AutofillType(NAME_FIRST),
+                   AutofillPredictionSource::kHeuristics);
+  field2.set_value(u"Other value");
+  EXPECT_TRUE(test_api(form_data_importer().GetAddressFormDataImporter())
+                  .HasInvalidFieldTypes(
+                      std::to_array<const AutofillField*>({&field, &field2})));
+}
+
+// Tests that duplicate fields with identical field values are valid for the
+// case where a <select> field follows an <input> field and the input field's
+// value is the selected option's value. They would thus not abandon the import
+// of the address.
+TEST_F(AddressFormDataImporterTest,
+       InputFollowedBySelectWithIdenticalValuesAreValid) {
+  AutofillField field;
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                  AutofillPredictionSource::kHeuristics);
+  field.set_value(u"US");
+  AutofillField field2(
+      test::CreateTestSelectField("Country", "country", "US", "country",
+                                  {"DE", "US"}, {"Germany", "United States"}));
+  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                   AutofillPredictionSource::kHeuristics);
+  const std::array<const autofill::AutofillField*, 2> section_fields =
+      std::to_array<const AutofillField*>({&field, &field2});
+
+  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
+                   .HasInvalidFieldTypes(section_fields));
+  EXPECT_THAT(
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .GetObservedFieldValues(section_fields),
+      ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
+}
+
+// Tests that duplicate fields with identical field values are valid for the
+// case where a <select> field is followed by an <input> field and the input
+// field's value is the selected option's value. They would thus not abandon the
+// import of the address.
+TEST_F(AddressFormDataImporterTest,
+       SelectFollowedByInputWithIdenticalValuesAreValid) {
+  AutofillField field(
+      test::CreateTestSelectField("Country", "country", "US", "country",
+                                  {"DE", "US"}, {"Germany", "United States"}));
+  field.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                  AutofillPredictionSource::kHeuristics);
+  AutofillField field2;
+  field2.SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+                   AutofillPredictionSource::kHeuristics);
+  field2.set_value(u"US");
+  const std::array<const autofill::AutofillField*, 2> section_fields =
+      std::to_array<const AutofillField*>({&field, &field2});
+
+  EXPECT_FALSE(test_api(form_data_importer().GetAddressFormDataImporter())
+                   .HasInvalidFieldTypes(section_fields));
+  EXPECT_THAT(
+      test_api(form_data_importer().GetAddressFormDataImporter())
+          .GetObservedFieldValues(section_fields),
+      ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
 }
 
 }  // namespace

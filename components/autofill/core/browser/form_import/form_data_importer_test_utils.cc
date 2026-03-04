@@ -69,6 +69,11 @@ constexpr char kDefaultPhoneArmenia[] = "+374 10 123456";
 
 using test::CreateTestFormField;
 
+constexpr char kDefaultCreditCardName[] = "Biggie Smalls";
+constexpr char kDefaultCreditCardNumber[] = "4111 1111 1111 1111";
+constexpr char kDefaultCreditCardExpMonth[] = "01";
+constexpr char kDefaultCreditCardExpYear[] = "2999";
+
 std::pair<std::string, std::string> GetLabelAndNameForType(FieldType type) {
   static const std::map<FieldType, std::pair<std::string, std::string>>
       name_type_map = {
@@ -194,6 +199,26 @@ TypeValuePairs GetDefaultProfileTypeValuePairsWithOverriddenCountry(
   return pairs;
 }
 
+TypeValuePairs GetSplitDefaultProfileTypeValuePairs(int part) {
+  DCHECK(part == 1 || part == 2);
+  if (part == 1) {
+    return {
+        {NAME_FIRST, kDefaultFirstName},
+        {NAME_LAST, kDefaultLastName},
+        {EMAIL_ADDRESS, kDefaultMail},
+        {ADDRESS_HOME_CITY, kDefaultCity},
+        {ADDRESS_HOME_STATE, kDefaultState},
+        {ADDRESS_HOME_COUNTRY, kDefaultCountry},
+    };
+  } else {
+    return {
+        {PHONE_HOME_WHOLE_NUMBER, kDefaultPhone},
+        {ADDRESS_HOME_LINE1, kDefaultAddressLine1},
+        {ADDRESS_HOME_ZIP, kDefaultZip},
+    };
+  }
+}
+
 TypeValuePairs GetSecondProfileTypeValuePairs() {
   return {
       {NAME_FIRST, kSecondFirstName},
@@ -222,6 +247,15 @@ TypeValuePairs GetThirdProfileTypeValuePairs() {
   };
 }
 
+TypeValuePairs GetDefaultCreditCardTypeValuePairs() {
+  return {
+      {CREDIT_CARD_NAME_FULL, kDefaultCreditCardName},
+      {CREDIT_CARD_NUMBER, kDefaultCreditCardNumber},
+      {CREDIT_CARD_EXP_MONTH, kDefaultCreditCardExpMonth},
+      {CREDIT_CARD_EXP_4_DIGIT_YEAR, kDefaultCreditCardExpYear},
+  };
+}
+
 AutofillProfile ConstructDefaultProfile() {
   return ConstructProfileFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
 }
@@ -237,6 +271,29 @@ AutofillProfile ConstructThirdProfile() {
 std::unique_ptr<FormStructure> ConstructDefaultProfileFormStructure() {
   return ConstructFormStructureFromTypeValuePairs(
       GetDefaultProfileTypeValuePairs());
+}
+
+std::unique_ptr<FormStructure> ConstructDefaultEmailFormStructure() {
+  // The autocomplete attribute is set manually, because for small forms (number
+  // of fields < kMinRequiredFieldsForHeuristics), no heuristics are used.
+  FormData form =
+      ConstructFormDateFromTypeValuePairs({{EMAIL_ADDRESS, kDefaultMail}});
+  const char* autocomplete = "email";
+  test_api(form).field(0).set_autocomplete_attribute(autocomplete);
+  test_api(form).field(0).set_parsed_autocomplete(
+      ParseAutocompleteAttribute(autocomplete));
+  return ConstructFormStructureFromFormData(form);
+}
+
+std::unique_ptr<FormStructure> ConstructSplitDefaultProfileFormStructure(
+    int part) {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetSplitDefaultProfileTypeValuePairs(part));
+}
+
+std::unique_ptr<FormStructure> ConstructDefaultCreditCardFormStructure() {
+  return ConstructFormStructureFromTypeValuePairs(
+      GetDefaultCreditCardTypeValuePairs());
 }
 
 std::unique_ptr<FormStructure> ConstructSecondProfileFormStructure() {
@@ -259,6 +316,11 @@ std::unique_ptr<FormStructure> ConstructShippingAndBillingFormStructure() {
 
 FormData ConstructDefaultFormData() {
   return ConstructFormDateFromTypeValuePairs(GetDefaultProfileTypeValuePairs());
+}
+
+FormData ConstructSplitDefaultFormData(int part) {
+  return ConstructFormDateFromTypeValuePairs(
+      GetSplitDefaultProfileTypeValuePairs(part));
 }
 
 }  // namespace autofill
