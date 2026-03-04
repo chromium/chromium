@@ -51,7 +51,7 @@ class SelectionOverlayController
       mojo::PendingRemote<selection::SelectionOverlayPage> page);
 
   void Show();
-  void Hide();
+  void Close();
 
   std::optional<std::vector<uint8_t>>& GetEncodedData() { return encoded_; }
 

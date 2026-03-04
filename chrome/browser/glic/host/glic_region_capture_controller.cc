@@ -82,7 +82,7 @@ void GlicRegionCaptureController::ResetMembers() {
   if (base::FeatureList::IsEnabled(features::kGlicRegionSelectionNew) &&
       tab_handle_.Get()) {
     if (auto* web_contents = tab_handle_.Get()->GetContents()) {
-      SelectionOverlayController::FromTabWebContents(web_contents)->Hide();
+      SelectionOverlayController::FromTabWebContents(web_contents)->Close();
     }
   }
 

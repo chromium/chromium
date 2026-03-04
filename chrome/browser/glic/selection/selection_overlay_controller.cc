@@ -129,8 +129,8 @@ void SelectionOverlayController::Show() {
   ShowModalUI();
 }
 
-void SelectionOverlayController::Hide() {
-  HideOverlay();
+void SelectionOverlayController::Close() {
+  CloseUI();
 }
 
 void SelectionOverlayController::RequestSyncClose(
