@@ -44,6 +44,7 @@ source_set("user_activity_browser_agent") {
     "//components/search_engines",
     "//ios/chrome/app",
     "//ios/chrome/app:mode",
+    "//ios/chrome/app:unexpected_mode_toast_util",
     "//ios/chrome/app/application_delegate:startup_information",
     "//ios/chrome/app/application_delegate:tab_opening",
     "//ios/chrome/app/profile",

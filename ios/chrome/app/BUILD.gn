@@ -84,6 +84,8 @@ source_set("tasks_handling_header") {
     "task_scheduling_outcome.h",
   ]
 
+  deps = [ ":app" ]
+
   frameworks = [ "Foundation.framework" ]
 }
 
@@ -111,8 +113,8 @@ source_set("tasks_handling") {
     "//ios/chrome/browser/policy/model:policy_util",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin/model:system_identity_manager",
     "//ios/chrome/common/app_group",
@@ -121,6 +123,28 @@ source_set("tasks_handling") {
   ]
 
   frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unexpected_mode_toast_util") {
+  sources = [
+    "unexpected_mode_toast_util.h",
+    "unexpected_mode_toast_util.mm",
+  ]
+
+  deps = [
+    ":app",
+    "//base",
+    "//ios/chrome/app/application_delegate:tab_opening",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/url:constants",
+    "//ios/chrome/browser/shared/public/commands",
+    "//ios/chrome/browser/shared/public/snackbar",
+    "//ios/chrome/browser/url_loading/model",
+    "//ui/base",
+    "//url",
+  ]
 }
 
 source_set("app_trampoline") {
