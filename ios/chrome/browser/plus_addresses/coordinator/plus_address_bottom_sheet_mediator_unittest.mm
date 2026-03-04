@@ -66,6 +66,11 @@ class PlusAddressBottomSheetMediatorTest : public PlatformTest {
   PlusAddressBottomSheetMediator* mediator() { return mediator_; }
   FakeUrlLoadingBrowserAgent* url_loader() { return url_loader_.get(); }
 
+  void TearDown() override {
+    [mediator_ disconnect];
+    PlatformTest::TearDown();
+  }
+
   id consumer_;
 
  private:

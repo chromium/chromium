@@ -68,6 +68,9 @@ class UrlLoadingBrowserAgent;
 // Reserves a plus address.
 - (void)reservePlusAddress;
 
+// Disconnects the mediator.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_COORDINATOR_PLUS_ADDRESS_BOTTOM_SHEET_MEDIATOR_H_

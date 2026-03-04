@@ -281,6 +281,7 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
   }
 
   _viewController = nil;
+  [_mediator disconnect];
   _mediator = nil;
 }
 
