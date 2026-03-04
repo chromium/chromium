@@ -54,3 +54,43 @@ android_library("javatests") {
 generate_jni("jni_headers") {
   sources = [ "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java" ]
 }
+
+source_set("gesturenav") {
+  sources = [ "tab_on_back_gesture_handler.h" ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/android:tabs_public",
+    "//ui/events",
+  ]
+}
+
+source_set("impl") {
+  sources = [
+    "gesture_navigation_utils.cc",
+    "tab_on_back_gesture_handler.cc",
+  ]
+  deps = [
+    ":gesturenav",
+    ":jni_headers",
+    "//chrome/android:jni_headers",
+    "//content/public/browser",
+    "//content/public/common",
+    "//third_party/blink/public/common",
+    "//ui/android",
+    "//ui/gfx/geometry",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "screenshot_capture_test_helper.cc" ]
+  deps = [
+    "//chrome/android:test_support_jni_headers",
+    "//content/test:test_support",
+    "//ui/gfx",
+  ]
+
+  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
+  # enable the diagnostic by removing this line.
+  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
+}
