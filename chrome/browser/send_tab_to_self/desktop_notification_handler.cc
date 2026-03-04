@@ -108,6 +108,9 @@ void DesktopNotificationHandler::OnClick(
             ->GetSendTabToSelfModel()
             ->GetEntryByGUID(notification_id);
 
+    send_tab_to_self::RecordHasScrollPositionOnOpened(
+        entry && !entry->GetPageContext().scroll_position.IsEmpty());
+
     NavigateParams params(profile, origin, ui::PAGE_TRANSITION_LINK);
     params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
     params.window_action = NavigateParams::WindowAction::kShowWindow;

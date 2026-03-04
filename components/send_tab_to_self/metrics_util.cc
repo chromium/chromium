@@ -74,4 +74,10 @@ void RecordScrollPositionSelectorLength(size_t length) {
       "Sharing.SendTabToSelf.ScrollPosition.SelectorLength", length);
 }
 
+void RecordHasScrollPositionOnOpened(bool has_scroll_position) {
+  base::UmaHistogramBoolean(
+      "Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition",
+      has_scroll_position);
+}
+
 }  // namespace send_tab_to_self

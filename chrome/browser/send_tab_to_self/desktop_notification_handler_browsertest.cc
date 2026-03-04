@@ -180,8 +180,7 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest,
   DesktopNotificationHandler handler(profile());
   EXPECT_CALL(*display_service_mock_,
               DisplayMockImpl(NotificationHandler::Type::SEND_TAB_TO_SELF,
-                              EqualNotification(notification), nullptr))
-      .WillOnce(::testing::Return());
+                              EqualNotification(notification), nullptr));
 
   handler.DisplayNewEntries(entries);
 }
@@ -190,8 +189,7 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, DismissEntries) {
   DesktopNotificationHandler handler(profile());
   EXPECT_CALL(*display_service_mock_,
               Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
-                    kDesktopNotificationGuid))
-      .WillOnce(::testing::Return());
+                    kDesktopNotificationGuid));
 
   std::vector<std::string> guids;
   guids.push_back(kDesktopNotificationGuid);
@@ -201,14 +199,12 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, DismissEntries) {
 IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, CloseHandler) {
   DesktopNotificationHandler handler(profile());
 
-  EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId))
-      .WillOnce(::testing::Return());
+  EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId));
 
   handler.OnClose(profile(), GURL(kDesktopNotificationOrigin),
                   kDesktopNotificationId, /*by_user=*/false, base::DoNothing());
 
-  EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId))
-      .WillOnce(::testing::Return());
+  EXPECT_CALL(*model_mock_, DismissEntry(kDesktopNotificationId));
 
   handler.OnClose(profile(), GURL(kDesktopNotificationOrigin),
                   kDesktopNotificationId, /*by_user=*/true, base::DoNothing());
@@ -221,14 +217,66 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest, ClickHandler) {
       .WillRepeatedly(::testing::Return(nullptr));
   EXPECT_CALL(*display_service_mock_,
               Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
-                    kDesktopNotificationId))
-      .WillOnce(::testing::Return());
-  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId))
-      .WillOnce(::testing::Return());
+                    kDesktopNotificationId));
+  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId));
+
+  base::HistogramTester histogram_tester;
 
   handler.OnClick(profile(), GURL(kDesktopNotificationOrigin),
                   kDesktopNotificationId, /*action_index=*/1,
                   /*reply=*/std::nullopt, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition", false, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerBrowserTest,
+                       ClickHandler_WithScrollPosition) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL(
+      "/scroll/scrollable_page_with_content.html");
+
+  DesktopNotificationHandler handler(profile());
+
+  PageContext page_context;
+  page_context.scroll_position.text_fragment =
+      TextFragmentData("Some text", "", "", "");
+
+  SendTabToSelfEntry entry(
+      kDesktopNotificationId, test_url, kDesktopNotificationTitle,
+      base::Time::Now(), kDesktopNotificationDeviceInfo,
+      kDesktopNotificationTargetDeviceSyncCacheGuid, page_context);
+
+  EXPECT_CALL(*model_mock_, GetEntryByGUID(kDesktopNotificationId))
+      .WillRepeatedly(::testing::Return(&entry));
+  EXPECT_CALL(*display_service_mock_,
+              Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
+                    kDesktopNotificationId));
+  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId));
+
+  base::HistogramTester histogram_tester;
+
+  content::TestNavigationObserver navigation_observer{test_url};
+  navigation_observer.StartWatchingNewWebContents();
+
+  handler.OnClick(profile(), test_url, kDesktopNotificationId,
+                  /*action_index=*/std::nullopt,
+                  /*reply=*/std::nullopt, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition", true, 1);
+
+  navigation_observer.Wait();
+  EXPECT_EQ(navigation_observer.last_navigation_url(), test_url);
+
+  // Scroll should not happen because the feature is disabled.
+  double scroll_y =
+      content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                      "new Promise(r => { "
+                      "  setTimeout(() => r(window.scrollY), 200); "
+                      "})")
+          .ExtractDouble();
+  EXPECT_EQ(scroll_y, 0.0);
 }
 
 class DesktopNotificationHandlerScrollPositionBrowserTest
@@ -263,9 +311,10 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerScrollPositionBrowserTest,
       .WillRepeatedly(::testing::Return(&entry));
   EXPECT_CALL(*display_service_mock_,
               Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
-                    kDesktopNotificationId))
-      .Times(1);
-  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId)).Times(1);
+                    kDesktopNotificationId));
+  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId));
+
+  base::HistogramTester histogram_tester;
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
@@ -273,6 +322,9 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerScrollPositionBrowserTest,
   handler.OnClick(profile(), test_url, kDesktopNotificationId,
                   /*action_index=*/std::nullopt,
                   /*reply=*/std::nullopt, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition", true, 1);
 
   navigation_observer.Wait();
   EXPECT_EQ(navigation_observer.last_navigation_url(), test_url);
@@ -318,10 +370,10 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerScrollPositionBrowserTest,
       .WillRepeatedly(::testing::Return(&entry));
   EXPECT_CALL(*display_service_mock_,
               Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
-                    kDesktopNotificationId))
-      .WillOnce(::testing::Return());
-  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId))
-      .WillOnce(::testing::Return());
+                    kDesktopNotificationId));
+  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId));
+
+  base::HistogramTester histogram_tester;
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
@@ -329,6 +381,9 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerScrollPositionBrowserTest,
   handler.OnClick(profile(), test_url, kDesktopNotificationId,
                   /*action_index=*/std::nullopt,
                   /*reply=*/std::nullopt, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition", true, 1);
 
   navigation_observer.Wait();
   EXPECT_EQ(navigation_observer.last_navigation_url(), test_url);
@@ -364,10 +419,10 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerScrollPositionBrowserTest,
       .WillRepeatedly(::testing::Return(&entry));
   EXPECT_CALL(*display_service_mock_,
               Close(NotificationHandler::Type::SEND_TAB_TO_SELF,
-                    kDesktopNotificationId))
-      .WillOnce(::testing::Return());
-  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId))
-      .WillOnce(::testing::Return());
+                    kDesktopNotificationId));
+  EXPECT_CALL(*model_mock_, MarkEntryOpened(kDesktopNotificationId));
+
+  base::HistogramTester histogram_tester;
 
   content::TestNavigationObserver navigation_observer{test_url};
   navigation_observer.StartWatchingNewWebContents();
@@ -375,6 +430,9 @@ IN_PROC_BROWSER_TEST_F(DesktopNotificationHandlerScrollPositionBrowserTest,
   handler.OnClick(profile(), test_url, kDesktopNotificationId,
                   /*action_index=*/std::nullopt,
                   /*reply=*/std::nullopt, base::DoNothing());
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition", false, 1);
 
   navigation_observer.Wait();
   EXPECT_EQ(navigation_observer.last_navigation_url(), test_url);

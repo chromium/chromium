@@ -375,6 +375,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.NotificationClicked.HasScrollPosition"
+    enum="Boolean" expires_after="2027-03-04">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records whether an opened Send Tab To Self notification contained a valid
+    scroll position (text fragment). Recorded when the user clicks the
+    notification on the receiving device.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SendTabToSelf.NotificationStatus"
     enum="SendTabToSelfNotificationStatus" expires_after="2026-07-05">
   <owner>jeffreycohen@chromium.org</owner>
