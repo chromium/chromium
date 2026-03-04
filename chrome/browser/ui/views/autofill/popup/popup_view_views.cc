@@ -1345,6 +1345,15 @@ bool PopupViewViews::DoUpdateBoundsAndRedrawPopup(bool prefer_prev_arrow_side) {
     return false;
   }
 
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillPopupCheckHtmlFormPopupOverlap)) {
+    if (BoundsOverlapWithHtmlFormPopup(popup_bounds,
+                                       controller_->GetWebContents())) {
+      controller_->Hide(SuggestionHidingReason::kOverlappingWithAnotherPrompt);
+      return false;
+    }
+  }
+
   // The pip surface is given the most preference while rendering. So, the
   // autofill popup should not be shown when the picture in picture window
   // hides the autofill form behind it.

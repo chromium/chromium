@@ -7,9 +7,12 @@
 #include <algorithm>
 #include <optional>
 
+#include "base/containers/to_vector.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
+#include "chrome/browser/ui/views/chrome_widget_sublevel.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
@@ -18,6 +21,7 @@
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
 #include "components/autofill/core/browser/ui/popup_open_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/constants.h"
 #include "ui/display/screen.h"
@@ -116,6 +120,38 @@ bool BoundsOverlapWithView(const gfx::Rect& screen_bounds,
 }
 
 }  // namespace
+
+namespace internal {
+bool BoundsOverlapWithHtmlFormPopup(
+    const gfx::Rect& popup_bounds,
+    const std::vector<PopupWidgetProperties>& widget_properties) {
+  return std::ranges::any_of(
+      widget_properties, [&popup_bounds](const auto& view) {
+        return view.is_showing && view.is_html_form_popup &&
+               view.bounds.Intersects(popup_bounds);
+      });
+}
+}  // namespace internal
+
+bool BoundsOverlapWithHtmlFormPopup(const gfx::Rect& popup_bounds,
+                                    content::WebContents* web_contents) {
+  // Currently HTML Form Popup overlap problem occurs only on Windows. On other
+  // platforms the Autofill popup correctly shows up above the HTML Form Popup.
+  // But the fix is enabled on other platforms as well, just in case.
+
+  // GetPopupWidgets() only returns popups associated with the current tab.
+  std::vector<internal::PopupWidgetProperties> widget_properties =
+      base::ToVector(web_contents->GetPopupWidgets(),
+                     [](content::RenderWidgetHostView* view) {
+                       return internal::PopupWidgetProperties({
+                           .is_showing = view->IsShowing(),
+                           .is_html_form_popup = view->IsHTMLFormPopup(),
+                           .bounds = view->GetViewBounds(),
+                       });
+                     });
+  return internal::BoundsOverlapWithHtmlFormPopup(popup_bounds,
+                                                  widget_properties);
+}
 
 void CalculatePopupYAndHeight(int popup_preferred_height,
                               const gfx::Rect& visible_content_area_bounds,

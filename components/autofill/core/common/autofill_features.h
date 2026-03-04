@@ -293,6 +293,8 @@ BASE_DECLARE_FEATURE(kAutofillPolicyControlledFeatureAutofill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPolicyControlledFeatureManualText);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillPopupCheckHtmlFormPopupOverlap);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupDontAcceptNonVisibleEnoughSuggestion);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPopupZOrderSecuritySurface);

@@ -55,6 +55,29 @@ bool CanShowDropdownHere(int item_height,
 bool BoundsOverlapWithAnyOpenPrompt(const gfx::Rect& screen_bounds,
                                     content::WebContents* web_contents);
 
+// Returns whether any HTML-based form popup (like a color picker) from the same
+// `web_contents` overlaps `popup_bounds`.
+bool BoundsOverlapWithHtmlFormPopup(const gfx::Rect& popup_bounds,
+                                    content::WebContents* web_contents);
+
+namespace internal {
+// To test the overlap logic without requiring a full browser environment,
+// this struct extracts the minimum state needed from RenderWidgetHostView,
+// allowing to unit test cleanly.
+struct PopupWidgetProperties {
+  bool is_showing;
+  bool is_html_form_popup;
+  gfx::Rect bounds;
+};
+
+// The core logic for `BoundsOverlapWithHtmlFormPopup()`, exposed in the
+// internal namespace strictly for unit testing. Production code should use the
+// WebContents* version above.
+bool BoundsOverlapWithHtmlFormPopup(
+    const gfx::Rect& popup_bounds,
+    const std::vector<PopupWidgetProperties>& popup_widgets);
+}  // namespace internal
+
 // Returns the total vertical space on `visible_content_area_bounds` on a
 // specific `side` of the `element_bounds`.
 int GetAvailableVerticalSpaceOnSideOfElement(
