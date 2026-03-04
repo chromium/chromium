@@ -295,7 +295,7 @@ TEST_F(AndroidWebViewStateSerializerTest,
   pickle.WriteBool(has_post_data);
   pickle.WriteString(original_request_url.spec());
   pickle.WriteString(base_url_for_data_url.spec());
-  pickle.WriteData(nullptr, 0);  // data_url_as_string
+  pickle.WriteData(std::string_view());  // data_url_as_string
   pickle.WriteBool(is_overriding_user_agent);
   pickle.WriteInt64(timestamp);
   pickle.WriteInt(http_status_code);

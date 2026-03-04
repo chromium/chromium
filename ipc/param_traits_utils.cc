@@ -11,6 +11,7 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -64,12 +65,7 @@ template <typename CharType>
 void WriteCharVector(base::Pickle* m, const std::vector<CharType>& p) {
   static_assert(sizeof(CharType) == 1);
   static_assert(std::is_integral_v<CharType>);
-  if (p.empty()) {
-    m->WriteData(nullptr, 0);
-  } else {
-    const char* data = reinterpret_cast<const char*>(p.data());
-    m->WriteData(data, p.size());
-  }
+  m->WriteData(base::as_byte_span(p));
 }
 
 template <typename CharType>
@@ -141,8 +137,7 @@ void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle) {
       break;
     }
     case base::Value::Type::BINARY: {
-      pickle->WriteData(reinterpret_cast<const char*>(value.GetBlob().data()),
-                        value.GetBlob().size());
+      pickle->WriteData(value.GetBlob());
       break;
     }
     case base::Value::Type::DICT: {

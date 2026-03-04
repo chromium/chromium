@@ -403,12 +403,12 @@ base::ReadOnlySharedMemoryRegion UserScriptLoader::Serialize(
     for (const std::unique_ptr<UserScript::Content>& js_file :
          script->js_scripts()) {
       std::string_view contents = js_file->GetContent();
-      pickle.WriteData(contents.data(), contents.length());
+      pickle.WriteData(contents);
     }
     for (const std::unique_ptr<UserScript::Content>& css_file :
          script->css_scripts()) {
       std::string_view contents = css_file->GetContent();
-      pickle.WriteData(contents.data(), contents.length());
+      pickle.WriteData(contents);
     }
   }
 

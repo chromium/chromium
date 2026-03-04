@@ -263,7 +263,7 @@ void WriteNavigationEntryToPickle(uint32_t state_version,
     }
     // Even when |entry.GetDataForDataURL()| is null we still need to write a
     // zero-length entry to ensure the fields all line up when read back in.
-    pickle->WriteData(view.data(), view.size());
+    pickle->WriteData(view);
   }
 
   pickle->WriteBool(static_cast<int>(entry.GetIsOverridingUserAgent()));
