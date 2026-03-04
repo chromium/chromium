@@ -21,6 +21,7 @@ public class TabBottomSheetCoordinator {
     private final BottomSheetController mBottomSheetController;
     private final PropertyModel mModel;
     private final CoBrowseViews mCoBrowseViews;
+    private final TabBottomSheetMediator mMediator;
 
     private @Nullable TabBottomSheetContent mSheetContent;
     private @Nullable BottomSheetObserver mSheetObserver;
@@ -31,14 +32,19 @@ public class TabBottomSheetCoordinator {
 
     /**
      * @param bottomSheetController The {@link BottomSheetController} used to show the bottom sheet.
-     * @param coBrowseViews The views to show in the bottom sheet.
+     * @param coBrowseViews The views to be displayed within the bottom sheet. These should be
+     *     obtained via {@link CoBrowseViewFactory}. Note that these views have a single-use
+     *     lifecycle; they are destroyed when the bottom sheet is closed and cannot be reused for
+     *     subsequent showings.
      */
     TabBottomSheetCoordinator(
             BottomSheetController bottomSheetController, CoBrowseViews coBrowseViews) {
         mBottomSheetController = bottomSheetController;
         mCoBrowseViews = coBrowseViews;
 
-        mModel = TabBottomSheetProperties.createDefaultModel();
+        mModel = TabBottomSheetProperties.createDefaultModel(coBrowseViews);
+
+        mMediator = new TabBottomSheetMediator(mModel, coBrowseViews);
     }
 
     /** Tries to show the bottom sheet. */
@@ -93,7 +99,6 @@ public class TabBottomSheetCoordinator {
         if (mCoBrowseViews != null) {
             mCoBrowseViews.destroy();
         }
-
         if (mSheetObserver != null && mBottomSheetController != null) {
             mBottomSheetController.removeObserver(mSheetObserver);
             mSheetObserver = null;
@@ -114,7 +119,7 @@ public class TabBottomSheetCoordinator {
         return new EmptyBottomSheetObserver() {
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-                mModel.set(TabBottomSheetProperties.FUSEBOX_OFFSET, offsetPx);
+                mMediator.onSheetOffsetChanged(offsetPx);
             }
         };
     }

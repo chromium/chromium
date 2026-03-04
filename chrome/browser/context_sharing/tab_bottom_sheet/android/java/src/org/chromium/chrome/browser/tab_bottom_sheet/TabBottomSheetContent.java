@@ -69,7 +69,8 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getPeekHeight() {
-        return (int) (mContentView.getHeight() * 0.1);
+        // TODO (crbug.com/489070365) Update min height based on java toolbar or webUi header.
+        return Math.round(mContentView.getHeight() * 0.1f);
     }
 
     @Override

@@ -33,6 +33,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetFusebox.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetFuseboxDataProvider.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetManager.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediator.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetNativeInterface.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetProperties.java",
     "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetSimpleToolbar.java",
@@ -80,7 +81,10 @@ android_library("java") {
 }
 
 robolectric_library("junit") {
-  sources = [ "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinatorTest.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetCoordinatorTest.java",
+    "java/src/org/chromium/chrome/browser/tab_bottom_sheet/TabBottomSheetMediatorTest.java",
+  ]
   deps = [
     ":java",
     "//base:base_java",

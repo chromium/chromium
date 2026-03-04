@@ -4,16 +4,17 @@
 
 package org.chromium.chrome.browser.tab_bottom_sheet;
 
-import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.FUSEBOX_OFFSET;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.THIN_WEB_VIEW_HEIGHT;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.THIN_WEB_VIEW_INSET_BOTTOM;
+import static org.chromium.chrome.browser.tab_bottom_sheet.TabBottomSheetProperties.WEB_UI_CONTAINER_HEIGHT;
 
 import android.view.View;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.chrome.browser.context_sharing.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
-/** ViewBinder for the Auto Delete Decision Promo. Connects PropertyModel listeners to the View. */
+/** ViewBinder for the Tab Bottom Sheet. */
 @NullMarked
 public class TabBottomSheetViewBinder {
     /**
@@ -24,10 +25,19 @@ public class TabBottomSheetViewBinder {
      * @param propertyKey The {@link PropertyKey} that changed.
      */
     public static void bind(PropertyModel model, View view, PropertyKey propertyKey) {
-        if (FUSEBOX_OFFSET == propertyKey) {
-            View fuseboxContainer = view.findViewById(R.id.fusebox_container);
-            float offset = -(view.getHeight() - model.get(FUSEBOX_OFFSET));
-            fuseboxContainer.setTranslationY(offset);
+        if (THIN_WEB_VIEW_HEIGHT == propertyKey) {
+            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
+            coBrowseViews.setThinWebViewHeight(model.get(THIN_WEB_VIEW_HEIGHT));
+        } else if (WEB_UI_CONTAINER_HEIGHT == propertyKey) {
+            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
+            coBrowseViews.setWebUiContainerHeight(model.get(WEB_UI_CONTAINER_HEIGHT));
+        } else if (THIN_WEB_VIEW_INSET_BOTTOM == propertyKey) {
+            CoBrowseViews coBrowseViews = model.get(TabBottomSheetProperties.BOTTOM_SHEET_VIEWS);
+            coBrowseViews.setThinWebViewInsets(
+                    /* top= */ 0,
+                    /* left= */ 0,
+                    model.get(THIN_WEB_VIEW_INSET_BOTTOM),
+                    /* right= */ 0);
         }
     }
 }
