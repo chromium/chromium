@@ -1517,13 +1517,14 @@ void WebContentsAccessibilityAndroid::
       env, obj, info, unique_id, parent_id,
       GetCanonicalJNIString(env, node->GetClassName()),
       GetCanonicalJNIString(env, node->GetRoleString()),
-      GetCanonicalJNIString(env, node->GetRoleDescription()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetHint()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetTooltipText()),
+      GetCanonicalJNIString(env, node->GetAndroidRoleDescription()),
+      base::android::ConvertUTF16ToJavaString(env, node->GetAndroidHint()),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              node->GetAndroidTooltipText()),
       base::android::ConvertUTF16ToJavaString(env, node->GetTargetUrl()),
       node->CanOpenPopup(), node->IsMultiLine(), node->AndroidInputType(),
       node->AndroidLiveRegionType(),
-      GetCanonicalJNIString(env, node->GetContentInvalidErrorMessage()),
+      GetCanonicalJNIString(env, node->GetAndroidContentInvalidErrorMessage()),
       node->ClickableScore(), GetCanonicalJNIString(env, node->GetCSSDisplay()),
       base::android::ConvertUTF16ToJavaString(env, node->GetBrailleLabel()),
       GetCanonicalJNIString(env, node->GetBrailleRoleDescription()),
@@ -1592,12 +1593,14 @@ void WebContentsAccessibilityAndroid::
   Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoText(
       env, obj, info, base::android::ConvertUTF16ToJavaString(env, text),
       is_link,
-      base::android::ConvertUTF16ToJavaString(env, node->GetStateDescription()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              node->GetContentDescription()),
       base::android::ConvertUTF16ToJavaString(
-          env, node->GetSupplementalDescription()),
+          env, node->GetAndroidStateDescription()),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              node->GetAndroidContainerTitle()),
+      base::android::ConvertUTF16ToJavaString(
+          env, node->GetAndroidContentDescription()),
+      base::android::ConvertUTF16ToJavaString(
+          env, node->GetAndroidSupplementalDescription()),
       java_suggestions, java_links, java_text_sizes, java_text_styles,
       java_text_positions, java_fg_colors, java_bg_colors, java_font_families,
       java_locales);
@@ -1664,12 +1667,14 @@ void WebContentsAccessibilityAndroid::
       GetCanonicalJNIString(env, node->GetInheritedString16Attribute(
                                      ax::mojom::StringAttribute::kLanguage)),
       java_suggestion_starts, java_suggestion_ends, java_suggestion_text,
-      base::android::ConvertUTF16ToJavaString(env, node->GetStateDescription()),
-      base::android::ConvertUTF16ToJavaString(env, node->GetContainerTitle()),
-      base::android::ConvertUTF16ToJavaString(env,
-                                              node->GetContentDescription()),
       base::android::ConvertUTF16ToJavaString(
-          env, node->GetSupplementalDescription()));
+          env, node->GetAndroidStateDescription()),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              node->GetAndroidContainerTitle()),
+      base::android::ConvertUTF16ToJavaString(
+          env, node->GetAndroidContentDescription()),
+      base::android::ConvertUTF16ToJavaString(
+          env, node->GetAndroidSupplementalDescription()));
   recorder.StopTimer(TextFormattingMetric::kSetAniTextDuration);
   recorder.StopTimer(TextFormattingMetric::kTotalDuration);
 
@@ -1772,7 +1777,8 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoPaneTitle(
   if (node->ShouldUsePaneTitle()) {
     Java_AccessibilityNodeInfoBuilder_setAccessibilityNodeInfoPaneTitle(
         env, obj, info,
-        base::android::ConvertUTF16ToJavaString(env, node->GetPaneTitle()));
+        base::android::ConvertUTF16ToJavaString(env,
+                                                node->GetAndroidPaneTitle()));
   }
 }
 

@@ -439,7 +439,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
             manager->GetBrowserAccessibilityRoot()->PlatformGetChild(
                 child_index));
 
-    EXPECT_EQ(u"Unlabeled image", child->GetRoleDescription());
+    EXPECT_EQ(u"Unlabeled image", child->GetAndroidRoleDescription());
   }
 }
 
@@ -492,7 +492,7 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageRoleDescription_Empty) {
             manager->GetBrowserAccessibilityRoot()->PlatformGetChild(
                 child_index));
 
-    EXPECT_EQ(std::u16string(), child->GetRoleDescription());
+    EXPECT_EQ(std::u16string(), child->GetAndroidRoleDescription());
   }
 }
 
@@ -535,19 +535,19 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Eligible) {
   EXPECT_EQ(
       u"This image isn't labeled. Double tap on the more options "
       u"button at the top of the browser to get image descriptions.",
-      image_ltr->GetContentDescription());
-  EXPECT_EQ(std::u16string(), image_ltr->GetSupplementalDescription());
+      image_ltr->GetAndroidContentDescription());
+  EXPECT_EQ(std::u16string(), image_ltr->GetAndroidSupplementalDescription());
   EXPECT_EQ(std::u16string(), image_ltr->GetTextContentUTF16());
 
   BrowserAccessibilityAndroid* image_rtl =
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetBrowserAccessibilityRoot()->PlatformGetChild(1));
 
-  EXPECT_EQ(u"image_name", image_rtl->GetContentDescription());
+  EXPECT_EQ(u"image_name", image_rtl->GetAndroidContentDescription());
   EXPECT_EQ(
       u"This image isn't labeled. Double tap on the more options "
       u"button at the top of the browser to get image descriptions.",
-      image_rtl->GetSupplementalDescription());
+      image_rtl->GetAndroidSupplementalDescription());
   EXPECT_EQ(std::u16string(), image_rtl->GetTextContentUTF16());
 }
 
@@ -603,12 +603,14 @@ TEST_F(BrowserAccessibilityAndroidTest,
       static_cast<BrowserAccessibilityAndroid*>(
           manager->GetBrowserAccessibilityRoot()->PlatformGetChild(3));
 
-  EXPECT_EQ(u"Getting description...", image_pending->GetContentDescription());
-  EXPECT_EQ(u"No description available.", image_empty->GetContentDescription());
-  EXPECT_EQ(u"Appears to contain adult content. No description available.",
-            image_adult->GetContentDescription());
+  EXPECT_EQ(u"Getting description...",
+            image_pending->GetAndroidContentDescription());
   EXPECT_EQ(u"No description available.",
-            image_failed->GetContentDescription());
+            image_empty->GetAndroidContentDescription());
+  EXPECT_EQ(u"Appears to contain adult content. No description available.",
+            image_adult->GetAndroidContentDescription());
+  EXPECT_EQ(u"No description available.",
+            image_failed->GetAndroidContentDescription());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
@@ -665,9 +667,10 @@ TEST_F(BrowserAccessibilityAndroidTest, TestImageInnerText_Ineligible) {
 
   EXPECT_EQ(std::u16string(), image_none->GetTextContentUTF16());
 
-  EXPECT_EQ(u"image_name", image_scheme->GetContentDescription());
+  EXPECT_EQ(u"image_name", image_scheme->GetAndroidContentDescription());
   EXPECT_EQ(std::u16string(), image_scheme->GetTextContentUTF16());
-  EXPECT_EQ(std::u16string(), image_scheme->GetSupplementalDescription());
+  EXPECT_EQ(std::u16string(),
+            image_scheme->GetAndroidSupplementalDescription());
 
   EXPECT_EQ(std::u16string(), image_ineligible->GetTextContentUTF16());
   EXPECT_EQ(std::u16string(), image_silent->GetTextContentUTF16());
@@ -716,18 +719,21 @@ TEST_F(BrowserAccessibilityAndroidTest,
   // holds visible text, and supplementalDescription holds secondary
   // information. When there is no alt text, the annotation should be promoted
   // to contentDescription as it is the primary label for the node.
-  EXPECT_EQ(u"test_annotation", image_succeeded->GetContentDescription());
+  EXPECT_EQ(u"test_annotation",
+            image_succeeded->GetAndroidContentDescription());
   EXPECT_EQ(std::u16string(), image_succeeded->GetTextContentUTF16());
-  EXPECT_EQ(std::u16string(), image_succeeded->GetSupplementalDescription());
+  EXPECT_EQ(std::u16string(),
+            image_succeeded->GetAndroidSupplementalDescription());
 
   // When alt text is present, it should be mapped to contentDescription, and
   // the annotation should be mapped to supplementalDescription. Mapping to two
   // separate fields (instead of concatenating the two into one field) allows
   // accessibility services to distinguish between the author intent and
   // generated description.
-  EXPECT_EQ(u"image_name", image_succeeded_with_name->GetContentDescription());
+  EXPECT_EQ(u"image_name",
+            image_succeeded_with_name->GetAndroidContentDescription());
   EXPECT_EQ(u"test_annotation",
-            image_succeeded_with_name->GetSupplementalDescription());
+            image_succeeded_with_name->GetAndroidSupplementalDescription());
   EXPECT_EQ(std::u16string(), image_succeeded_with_name->GetTextContentUTF16());
 }
 
@@ -1532,7 +1538,7 @@ TEST_F(BrowserAccessibilityAndroidTest, ExplicitlyEmptyName) {
       static_cast<BrowserAccessibilityAndroid*>(manager->GetFromID(1));
   ASSERT_NE(nullptr, parent_node);
 
-  EXPECT_EQ(u"", parent_node->GetContentDescription());
+  EXPECT_EQ(u"", parent_node->GetAndroidContentDescription());
 }
 
 TEST_F(BrowserAccessibilityAndroidTest,
@@ -1564,7 +1570,7 @@ TEST_F(BrowserAccessibilityAndroidTest,
   BrowserAccessibilityAndroid* node = static_cast<BrowserAccessibilityAndroid*>(
       manager->GetBrowserAccessibilityRoot()->PlatformGetChild(0));
 
-  EXPECT_EQ(u"Label Text", node->GetSupplementalDescription());
+  EXPECT_EQ(u"Label Text", node->GetAndroidSupplementalDescription());
   EXPECT_TRUE(node->GetTextContentUTF16().empty());
 }
 

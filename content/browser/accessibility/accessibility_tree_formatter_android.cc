@@ -196,15 +196,16 @@ void AccessibilityTreeFormatterAndroid::AddProperties(
   dict->Set("table_header", android_node->IsTableHeader());
 
   // String attributes.
-  dict->Set("name", android_node->GetTextContentUTF16());
-  dict->Set("hint", android_node->GetHint());
-  dict->Set("tooltip_text", android_node->GetTooltipText());
-  dict->Set("role_description", android_node->GetRoleDescription());
-  dict->Set("state_description", android_node->GetStateDescription());
-  dict->Set("container_title", android_node->GetContainerTitle());
-  dict->Set("content_description", android_node->GetContentDescription());
+  dict->Set("name", android_node->GetAndroidText());
+  dict->Set("hint", android_node->GetAndroidHint());
+  dict->Set("tooltip_text", android_node->GetAndroidTooltipText());
+  dict->Set("role_description", android_node->GetAndroidRoleDescription());
+  dict->Set("state_description", android_node->GetAndroidStateDescription());
+  dict->Set("container_title", android_node->GetAndroidContainerTitle());
+  dict->Set("content_description",
+            android_node->GetAndroidContentDescription());
   dict->Set("supplemental_description",
-            android_node->GetSupplementalDescription());
+            android_node->GetAndroidSupplementalDescription());
 
   // Int attributes.
   dict->Set("item_index", android_node->GetItemIndex());

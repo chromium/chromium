@@ -131,6 +131,46 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   std::u16string GetValueForControl() const override;
   int GetTextContentLengthUTF16() const override;
 
+  // --- Android Property Mappings ---
+  // These methods map directly to properties in the Android
+  // AccessibilityNodeInfo API. They represent the different "slots" where text
+  // content can be placed.
+
+  // Returns the text content that should be placed in the Android "text"
+  // property. This is often the "deep" text content from the node and its
+  // subtree.
+  std::u16string GetAndroidText() const;
+
+  // Returns the text content for the Android "contentDescription" property.
+  std::u16string GetAndroidContentDescription() const;
+
+  // Returns the text content for the Android "hintText" property.
+  std::u16string GetAndroidHint() const;
+
+  // Returns the text content for the Android "stateDescription" property.
+  std::u16string GetAndroidStateDescription() const;
+
+  // Returns the text content for the Android "containerTitle" property.
+  std::u16string GetAndroidContainerTitle() const;
+
+  // Returns the text content for the Android "supplementalDescription"
+  // property.
+  std::u16string GetAndroidSupplementalDescription() const;
+
+  // Returns the text content for the Android "paneTitle" property.
+  std::u16string GetAndroidPaneTitle() const;
+
+  // Returns the text content for the Android "tooltipText" property.
+  std::u16string GetAndroidTooltipText() const;
+
+  // Returns the localized role description (e.g. "heading level 1").
+  std::u16string GetAndroidRoleDescription() const;
+
+  // Returns the error message for invalid content.
+  std::u16string GetAndroidContentInvalidErrorMessage() const;
+
+  // --- End of Android Property Mappings ---
+
   typedef base::RepeatingCallback<bool(const std::u16string& partial)>
       EarlyExitPredicate;
   // Gets the text content of this node, up to at least `min_length` if given.
@@ -141,42 +181,20 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   static EarlyExitPredicate NonEmptyPredicate();
   static EarlyExitPredicate LengthAtLeast(size_t length);
 
-  // This method maps to the Android API's "hint" attribute. For nodes that have
-  // chosen to expose their value in the name ("text") attribute, the hint must
-  // contain the text that would otherwise have been present. The hint includes
-  // the placeholder and describedby values for all nodes regardless of where
-  // the value is placed. These pieces of content are concatenated for Android.
-  std::u16string GetHint() const;
-
-  // This method maps to the Android API "TooltipText" attribute.
-  std::u16string GetTooltipText() const;
-
   std::string GetRoleString() const;
 
-  std::u16string GetPaneTitle() const;
+  std::u16string GetComboboxExpandedText() const;
+  std::u16string GetComboboxExpandedTextFallback() const;
 
-  std::u16string GetContentInvalidErrorMessage() const;
-
-  std::u16string GetStateDescription() const;
-  std::u16string GetContainerTitle() const;
-  std::u16string GetContentDescription() const;
-  std::u16string GetSupplementalDescription() const;
   std::u16string GetMultiselectableStateDescription() const;
   std::u16string GetToggleStateDescription() const;
   std::u16string GetCheckboxStateDescription() const;
   std::u16string GetAriaCurrentStateDescription() const;
   std::u16string GetRadioButtonStateDescription() const;
 
-  std::u16string GetComboboxExpandedText() const;
-  std::u16string GetComboboxExpandedTextFallback() const;
-
-  std::u16string GetRoleDescription() const;
-
   std::string GetCSSDisplay() const;
 
-  // Various methods for text styling that are added to the Android
-  // accessibility tree as Spannables, we also include the subscript and
-  // superscript from the methods above.
+  // --- Styling Methods ---
   float GetTextSize() const;
   int GetTextStyle() const;
   int GetTextPosition() const;
@@ -189,6 +207,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   int GetSelectedItemCount() const;
   int GetSelectionMode() const;
 
+  // --- Scrolling Methods ---
   bool CanScrollForward() const;
   bool CanScrollBackward() const;
   bool CanScrollUp() const;
@@ -322,12 +341,14 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   bool HasOnlyTextAndImageChildren() const;
   bool HasListMarkerChild() const;
 
-  // This method determines if a node should expose its value as a name, which
-  // is placed in the Android API's "text" attribute. For controls that can take
-  // on a value (e.g. a date time, or combobox), we wish to expose the value
-  // that the user has chosen. When the value is exposed as the name, then the
-  // accessible name is added to the Android API's "hint" attribute instead.
-  bool ShouldExposeValueAsName(const std::u16string& value) const;
+  // Central dispatcher that returns the accessible name if it is mapped to the
+  // given target, otherwise returns an empty string.
+  std::u16string GetAccessibleNameForTarget(AndroidNameTo target) const;
+
+  // This method determines if a node should promote its value to the "text"
+  // property. When the value is promoted, the accessible name is demoted to
+  // the "hint" property instead.
+  bool ShouldPromoteValueToTextProperty(const std::u16string& value) const;
 
   int CountChildrenWithRole(ax::mojom::Role role) const;
 
@@ -341,10 +362,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // Returns tree if any child has kSelect action verb.
   bool HasSelectActionVerbChildren() const;
 
-  // Helper function that accumulates the text content for the node.
-  void AccumulateSubstringTextContentUTF16(std::u16string* accumulated_text,
-                                           std::optional<size_t> min_length,
-                                           AXStyleData* style_data) const;
+  // Helper function that accumulates the text content for the node by
+  // recursively appending text from its subtree.
+  void AppendSubtreeTextRecursive(std::u16string* accumulated_text,
+                                  std::optional<size_t> min_length,
+                                  AXStyleData* style_data) const;
 
   // This method determines if a node should expose its editable value.
   bool ShouldExposeEditableValue() const;

@@ -924,11 +924,11 @@ std::u16string BrowserAccessibilityAndroid::GetSubstringTextContentUTF16(
     std::optional<size_t> min_length,
     AXStyleData* style_data) const {
   std::u16string text;
-  AccumulateSubstringTextContentUTF16(&text, min_length, style_data);
+  AppendSubtreeTextRecursive(&text, min_length, style_data);
   return text;
 }
 
-void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
+void BrowserAccessibilityAndroid::AppendSubtreeTextRecursive(
     std::u16string* accumulated_text,
     std::optional<size_t> min_length,
     AXStyleData* style_data) const {
@@ -950,7 +950,7 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
   // First, always return the `value` attribute if this is an input field.
   std::u16string value = GetValueForControl();
   const bool is_non_atomic_text_field = IsNonAtomicTextField();
-  if (ShouldExposeValueAsName(value) && !is_non_atomic_text_field) {
+  if (ShouldPromoteValueToTextProperty(value) && !is_non_atomic_text_field) {
     text = std::move(value);
     return;
   }
@@ -1001,7 +1001,7 @@ void BrowserAccessibilityAndroid::AccumulateSubstringTextContentUTF16(
        (IsFocusable() && HasOnlyTextAndImageChildren()))) {
     for (auto it = InternalChildrenBegin(); it != InternalChildrenEnd(); ++it) {
       static_cast<BrowserAccessibilityAndroid*>(it.get())
-          ->AccumulateSubstringTextContentUTF16(&text, min_length, style_data);
+          ->AppendSubtreeTextRecursive(&text, min_length, style_data);
       if (min_length && text.size() >= *min_length) {
         break;
       }
@@ -1058,7 +1058,19 @@ std::u16string BrowserAccessibilityAndroid::GetValueForControl() const {
   return value;
 }
 
-std::u16string BrowserAccessibilityAndroid::GetHint() const {
+std::u16string BrowserAccessibilityAndroid::GetAccessibleNameForTarget(
+    AndroidNameTo target) const {
+  if (ComputeAndroidNameTo() == target) {
+    return GetNameAsString16();
+  }
+  return u"";
+}
+
+std::u16string BrowserAccessibilityAndroid::GetAndroidText() const {
+  return GetTextContentUTF16();
+}
+
+std::u16string BrowserAccessibilityAndroid::GetAndroidHint() const {
   std::vector<std::u16string> strings;
 
   // TODO(accessibility): Remove this path once we roll out supplemental
@@ -1067,7 +1079,7 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
           features::kAccessibilityPopulateSupplementalDescriptionApi)) {
     // If we're returning the value as the main text, the name needs to be
     // part of the hint.
-    if (ShouldExposeValueAsName(GetValueForControl()) &&
+    if (ShouldPromoteValueToTextProperty(GetValueForControl()) &&
         ComputeAndroidNameTo() == AndroidNameTo::kText) {
       if (std::u16string name = GetNameAsString16(); !name.empty()) {
         strings.push_back(name);
@@ -1087,18 +1099,18 @@ std::u16string BrowserAccessibilityAndroid::GetHint() const {
       GetString16Attribute(ax::mojom::StringAttribute::kDescription);
   // If the description is the same as tooltip text and is already mapped to
   // Android tooltip text API, do not map it to Android hint.
-  if (!description.empty() && description != GetTooltipText()) {
+  if (!description.empty() && description != GetAndroidTooltipText()) {
     strings.push_back(description);
   }
 
   return base::JoinString(strings, u" ");
 }
 
-std::u16string BrowserAccessibilityAndroid::GetTooltipText() const {
+std::u16string BrowserAccessibilityAndroid::GetAndroidTooltipText() const {
   return GetString16Attribute(ax::mojom::StringAttribute::kTooltip);
 }
 
-std::u16string BrowserAccessibilityAndroid::GetPaneTitle() const {
+std::u16string BrowserAccessibilityAndroid::GetAndroidPaneTitle() const {
   if (ui::IsComboBox(GetRole()) && IsExpanded()) {
     return GetComboboxExpandedText();
   } else {
@@ -1106,7 +1118,7 @@ std::u16string BrowserAccessibilityAndroid::GetPaneTitle() const {
   }
 }
 
-std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
+std::u16string BrowserAccessibilityAndroid::GetAndroidStateDescription() const {
   std::vector<std::u16string> state_descs;
 
   // For multiselectable state, generate a state description. We do not set a
@@ -1142,14 +1154,12 @@ std::u16string BrowserAccessibilityAndroid::GetStateDescription() const {
   return base::JoinString(state_descs, u" ");
 }
 
-std::u16string BrowserAccessibilityAndroid::GetContainerTitle() const {
-  if (ComputeAndroidNameTo() == AndroidNameTo::kContainerTitle) {
-    return GetNameAsString16();
-  }
-  return u"";
+std::u16string BrowserAccessibilityAndroid::GetAndroidContainerTitle() const {
+  return GetAccessibleNameForTarget(AndroidNameTo::kContainerTitle);
 }
 
-std::u16string BrowserAccessibilityAndroid::GetContentDescription() const {
+std::u16string BrowserAccessibilityAndroid::GetAndroidContentDescription()
+    const {
   if (ComputeAndroidNameTo() != AndroidNameTo::kContentDescription) {
     return u"";
   }
@@ -1164,7 +1174,8 @@ std::u16string BrowserAccessibilityAndroid::GetContentDescription() const {
   return GetImageAnnotationText();
 }
 
-std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
+std::u16string BrowserAccessibilityAndroid::GetAndroidSupplementalDescription()
+    const {
   if (ComputeAndroidNameTo() == AndroidNameTo::kSupplementalDescription) {
     return GetNameAsString16();
   }
@@ -1174,14 +1185,15 @@ std::u16string BrowserAccessibilityAndroid::GetSupplementalDescription() const {
   // for `text`) should be demoted to `supplementalDescription`.
   if (base::FeatureList::IsEnabled(
           features::kAccessibilityPopulateSupplementalDescriptionApi) &&
-      ShouldExposeValueAsName(GetValueForControl()) &&
+      ShouldPromoteValueToTextProperty(GetValueForControl()) &&
       ComputeAndroidNameTo() == AndroidNameTo::kText) {
     return GetNameAsString16();
   }
 
   // We only return the annotation here if the node has a name.
   // If GetNameAsString16() is empty, the annotation was already used
-  // as the name in GetContentDescription(), so we don't want it here as well.
+  // as the name in GetAndroidContentDescription(), so we don't want it here as
+  // well.
   if (!GetNameAsString16().empty()) {
     return GetImageAnnotationText();
   }
@@ -1402,7 +1414,7 @@ int BrowserAccessibilityAndroid::GetChecked() const {
   }
 }
 
-std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
+std::u16string BrowserAccessibilityAndroid::GetAndroidRoleDescription() const {
   // If an element has an aria-roledescription set, use that value by default.
   if (HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription)) {
     return GetString16Attribute(ax::mojom::StringAttribute::kRoleDescription);
@@ -1442,7 +1454,7 @@ std::u16string BrowserAccessibilityAndroid::GetRoleDescription() const {
     BrowserAccessibilityAndroid* parent =
         static_cast<BrowserAccessibilityAndroid*>(PlatformGetParent());
     if (parent && parent->GetHeadingLinkOrLinkHeading() != nullptr) {
-      return parent->GetRoleDescription();
+      return parent->GetAndroidRoleDescription();
     }
   }
 
@@ -2467,7 +2479,7 @@ bool BrowserAccessibilityAndroid::HasListMarkerChild() const {
   return false;
 }
 
-bool BrowserAccessibilityAndroid::ShouldExposeValueAsName(
+bool BrowserAccessibilityAndroid::ShouldPromoteValueToTextProperty(
     const std::u16string& value) const {
   switch (GetRole()) {
     case ax::mojom::Role::kDate:
@@ -2539,8 +2551,8 @@ int BrowserAccessibilityAndroid::CountChildrenWithRole(
   return count;
 }
 
-std::u16string BrowserAccessibilityAndroid::GetContentInvalidErrorMessage()
-    const {
+std::u16string
+BrowserAccessibilityAndroid::GetAndroidContentInvalidErrorMessage() const {
   if (!IsContentInvalid()) {
     return std::u16string();
   }
