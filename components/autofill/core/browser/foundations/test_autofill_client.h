@@ -391,8 +391,8 @@ class TestAutofillClientTemplate : public T {
     return autofill_profile_enabled_;
   }
 
-  bool IsWalletStorageEnabled() const override {
-    return wallet_storage_enabled_;
+  bool IsWalletPublicPassStorageEnabled() const override {
+    return wallet_public_pass_storage_enabled_;
   }
 
   bool IsAutocompleteEnabled() const override { return true; }
@@ -499,8 +499,8 @@ class TestAutofillClientTemplate : public T {
     }
   }
 
-  void SetWalletStorageEnabled(bool wallet_storage_enabled) {
-    wallet_storage_enabled_ = wallet_storage_enabled;
+  void SetWalletPublicPassStorageEnabled(bool enabled) {
+    wallet_public_pass_storage_enabled_ = enabled;
   }
 
   // Sets up prefs and identity state to simulate an opted-in AutofillAI user.
@@ -726,7 +726,7 @@ class TestAutofillClientTemplate : public T {
 #endif
 
   bool autofill_profile_enabled_ = true;
-  bool wallet_storage_enabled_ = true;
+  bool wallet_public_pass_storage_enabled_ = true;
 
   // NULL by default.
   std::unique_ptr<test::AutofillTestingPrefService> prefs_;

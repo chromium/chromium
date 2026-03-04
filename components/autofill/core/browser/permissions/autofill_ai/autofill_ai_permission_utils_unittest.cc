@@ -587,10 +587,10 @@ TEST_P(AutofillAiMayPerformActionTest, kWalletSupportedCountries) {
       !kForbiddenActions.contains(GetParam()));
 }
 
-// Tests that if the Wallet data sharing setting is turned off, the Wallet
-// data sharing promotion can be shown.
-TEST_P(AutofillAiMayPerformActionTest, WalletDataSharingOff) {
-  client().SetWalletStorageEnabled(false);
+// Tests that if the Wallet public pass data sharing setting is turned off, the
+// Wallet data sharing promotion can be shown.
+TEST_P(AutofillAiMayPerformActionTest, WalletPublicPassDataSharingOff) {
+  client().SetWalletPublicPassStorageEnabled(false);
 
   constexpr auto kForbiddenActions = DenseSet({AutofillAiAction::kIphForOptIn});
   EXPECT_EQ(
@@ -598,10 +598,12 @@ TEST_P(AutofillAiMayPerformActionTest, WalletDataSharingOff) {
       !kForbiddenActions.contains(GetParam()));
 }
 
-// Tests that if the Wallet data sharing setting is turned off and the country
-// is not supported by Wallet, the data sharing promotion is not allowed.
-TEST_P(AutofillAiMayPerformActionTest, WalletDataSharingOffUnsupportedCountry) {
-  client().SetWalletStorageEnabled(false);
+// Tests that if the Wallet public pass data sharing setting is turned off and
+// the country is not supported by Wallet, the data sharing promotion is not
+// allowed.
+TEST_P(AutofillAiMayPerformActionTest,
+       WalletPublicPassDataSharingOffUnsupportedCountry) {
+  client().SetWalletPublicPassStorageEnabled(false);
   client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
 
   constexpr auto kForbiddenActions =
@@ -763,21 +765,21 @@ class AutofillAiMayPerformImportToWalletTest
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_TrueForVehicleWhenSyncingWallet) {
-  client().SetWalletStorageEnabled(true);
+  client().SetWalletPublicPassStorageEnabled(true);
   EXPECT_TRUE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseForVehicleWhenWalletPrefDisabled) {
-  client().SetWalletStorageEnabled(false);
+  client().SetWalletPublicPassStorageEnabled(false);
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
 }
 
 TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_FalseForPrivatePassesIfFeatureIsOff) {
-  client().SetWalletStorageEnabled(true);
+  client().SetWalletPublicPassStorageEnabled(true);
   for (const EntityType entity_type : GetPrivatePasses()) {
     EXPECT_FALSE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kImportToWallet, entity_type))
@@ -789,7 +791,19 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
        ImportToWallet_TrueForPrivatePassIfFeatureIsOn) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillAiWalletPrivatePasses};
-  client().SetWalletStorageEnabled(true);
+  client().SetWalletPublicPassStorageEnabled(true);
+  for (const EntityType entity_type : GetPrivatePasses()) {
+    EXPECT_TRUE(MayPerformAutofillAiAction(
+        client(), AutofillAiAction::kImportToWallet, entity_type))
+        << entity_type;
+  }
+}
+
+TEST_F(AutofillAiMayPerformImportToWalletTest,
+       ImportToWallet_TrueForPrivatePassIfPublicPassStorageIsDisabled) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiWalletPrivatePasses};
+  client().SetWalletPublicPassStorageEnabled(false);
   for (const EntityType entity_type : GetPrivatePasses()) {
     EXPECT_TRUE(MayPerformAutofillAiAction(
         client(), AutofillAiAction::kImportToWallet, entity_type))
@@ -802,7 +816,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(
       features::kAutofillAiWalletVehicleRegistration);
-  client().SetWalletStorageEnabled(true);
+  client().SetWalletPublicPassStorageEnabled(true);
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
 }
@@ -813,7 +827,7 @@ TEST_F(AutofillAiMayPerformImportToWalletTest,
       features::kAutofillAiWalletPrivatePasses};
   client().GetSyncService()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kPayments, false);
-  client().SetWalletStorageEnabled(true);
+  client().SetWalletPublicPassStorageEnabled(true);
   EXPECT_FALSE(MayPerformAutofillAiAction(
       client(), AutofillAiAction::kImportToWallet, EntityType(kVehicle)));
   EXPECT_FALSE(MayPerformAutofillAiAction(

@@ -451,8 +451,8 @@ bool ChromeAutofillClientIOS::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(GetPrefs());
 }
 
-bool ChromeAutofillClientIOS::IsWalletStorageEnabled() const {
-  return autofill::IsWalletStorageEnabled(profile_);
+bool ChromeAutofillClientIOS::IsWalletPublicPassStorageEnabled() const {
+  return autofill::IsWalletPublicPassStorageEnabled(profile_);
 }
 
 bool ChromeAutofillClientIOS::IsAutocompleteEnabled() const {

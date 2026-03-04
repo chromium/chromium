@@ -230,7 +230,7 @@ bool AndroidAutofillClient::IsAutofillProfileEnabled() const {
   NOTREACHED();
 }
 
-bool AndroidAutofillClient::IsWalletStorageEnabled() const {
+bool AndroidAutofillClient::IsWalletPublicPassStorageEnabled() const {
   return false;
 }
 

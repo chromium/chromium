@@ -17,8 +17,8 @@ namespace autofill {
 // If the variations service is not available, an empty string is returned.
 const std::string GetCountryCodeFromVariations();
 
-// Returns whether the wallet storage is enabled for the profile.
-bool IsWalletStorageEnabled(ProfileIOS* profile);
+// Returns whether the wallet public pass storage is enabled for the profile.
+bool IsWalletPublicPassStorageEnabled(ProfileIOS* profile);
 
 // Returns YES if the Autofill AI action can be performed for the given profile.
 bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action);

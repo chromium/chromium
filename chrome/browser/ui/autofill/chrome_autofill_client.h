@@ -204,7 +204,7 @@ class ChromeAutofillClient : public ContentAutofillClient {
   bool IsAutofillEnabled() const final;
   bool IsAutofillProfileEnabled() const final;
   bool IsAutocompleteEnabled() const final;
-  bool IsWalletStorageEnabled() const final;
+  bool IsWalletPublicPassStorageEnabled() const final;
   bool IsPasswordManagerEnabled() const final;
   bool IsContextSecure() const final;
   LogManager* GetCurrentLogManager() final;

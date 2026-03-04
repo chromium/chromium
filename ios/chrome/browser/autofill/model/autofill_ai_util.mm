@@ -29,7 +29,7 @@ const std::string GetCountryCodeFromVariations() {
              : std::string();
 }
 
-bool IsWalletStorageEnabled(ProfileIOS* profile) {
+bool IsWalletPublicPassStorageEnabled(ProfileIOS* profile) {
   AccountSettingService* setting_service =
       IOSAccountSettingServiceFactory::GetForProfile(profile);
   return setting_service &&
@@ -66,7 +66,7 @@ bool CanPerformAutofillAiAction(ProfileIOS* profile, AutofillAiAction action) {
       profile->GetPrefs(), entity_data_manager,
       IdentityManagerFactory::GetForProfile(profile->GetOriginalProfile()),
       SyncServiceFactory::GetForProfile(profile),
-      IsWalletStorageEnabled(profile), profile->IsOffTheRecord(),
+      IsWalletPublicPassStorageEnabled(profile), profile->IsOffTheRecord(),
       GeoIpCountryCode(GetCountryCodeFromVariations()), action);
 }
 
@@ -122,7 +122,7 @@ void SetEnhancedAutofillEnabled(ProfileIOS* profile, bool enabled) {
       IOSAutofillEntityDataManagerFactory::GetForProfile(original_profile),
       IdentityManagerFactory::GetForProfile(original_profile),
       SyncServiceFactory::GetForProfile(original_profile),
-      IsWalletStorageEnabled(original_profile),
+      IsWalletPublicPassStorageEnabled(original_profile),
       original_profile->IsOffTheRecord(),
       GeoIpCountryCode(GetCountryCodeFromVariations()),
       enabled ? autofill::AutofillAiOptInStatus::kOptedIn

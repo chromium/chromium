@@ -28,8 +28,9 @@ class AccountSettingService : public KeyedService,
       std::unique_ptr<AccountSettingSyncBridge> bridge);
   ~AccountSettingService() override;
 
-  // Getter to check whether the user agreed to share data from Wallet to other
-  // Google services, including Chrome, in their Google account settings.
+  // Getter to check whether the user agreed to share public pass data from
+  // Wallet to other Google services, including Chrome, in their Google account
+  // settings.
   bool IsWalletPrivacyContextualSurfacingEnabled() const;
 
   // Returns a controller delegate for the `sync_bridge_` owned by this service.

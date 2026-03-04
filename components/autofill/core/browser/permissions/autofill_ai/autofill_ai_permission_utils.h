@@ -118,7 +118,7 @@ bool MayPerformAutofillAiAction(
     const EntityDataManager* edm,
     const signin::IdentityManager* identity_manager,
     const syncer::SyncService* sync_service,
-    bool is_wallet_storage_enabled,
+    bool is_wallet_public_pass_storage_enabled,
     bool is_off_the_record,
     const GeoIpCountryCode& country_code,
     AutofillAiAction action,
@@ -159,7 +159,7 @@ bool SetAutofillAiOptInStatus(
     const EntityDataManager* edm,
     const signin::IdentityManager* identity_manager,
     const syncer::SyncService* sync_service,
-    bool is_wallet_storage_enabled,
+    bool is_wallet_public_pass_storage_enabled,
     bool is_off_the_record,
     const GeoIpCountryCode& country_code,
     AutofillAiOptInStatus opt_in_status);

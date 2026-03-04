@@ -1083,7 +1083,7 @@ bool ChromeAutofillClient::IsAutocompleteEnabled() const {
   return prefs::IsAutocompleteEnabled(GetPrefs());
 }
 
-bool ChromeAutofillClient::IsWalletStorageEnabled() const {
+bool ChromeAutofillClient::IsWalletPublicPassStorageEnabled() const {
   AccountSettingService* setting_service =
       AccountSettingServiceFactory::GetForBrowserContext(GetProfile());
   return setting_service &&

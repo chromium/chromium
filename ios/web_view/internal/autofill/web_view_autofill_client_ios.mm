@@ -257,7 +257,7 @@ bool WebViewAutofillClientIOS::IsAutofillProfileEnabled() const {
   return prefs::IsAutofillProfileEnabled(GetPrefs());
 }
 
-bool WebViewAutofillClientIOS::IsWalletStorageEnabled() const {
+bool WebViewAutofillClientIOS::IsWalletPublicPassStorageEnabled() const {
   return false;
 }
 
