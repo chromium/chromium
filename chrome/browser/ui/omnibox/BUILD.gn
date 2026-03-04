@@ -115,6 +115,7 @@ source_set("impl") {
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/favicon",
       "//chrome/browser/history",
+      "//chrome/browser/history_embeddings",
       "//chrome/browser/omnibox",
       "//chrome/browser/predictors",
       "//chrome/browser/preloading",

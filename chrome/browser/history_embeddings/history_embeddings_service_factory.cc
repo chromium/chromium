@@ -19,8 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
-#include "chrome/browser/profiles/profile_manager.h"
-#include "components/history/core/browser/history_service.h"
+#include "chrome/browser/profiles/profile_manager.h"  // nogncheck
 #include "components/history_embeddings/content/history_embeddings_service.h"
 #include "components/history_embeddings/core/history_embeddings_features.h"
 #include "components/history_embeddings/core/ml_answerer.h"

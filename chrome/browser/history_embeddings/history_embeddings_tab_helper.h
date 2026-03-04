@@ -11,7 +11,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/time/time.h"
-#include "chrome/browser/history/history_tab_helper.h"
 #include "components/history/core/browser/history_types.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -20,9 +19,11 @@
 namespace history {
 class HistoryService;
 }
+
 namespace history_embeddings {
 class HistoryEmbeddingsService;
 }
+
 namespace passage_embeddings {
 class PassageEmbedderModelObserver;
 }
@@ -51,9 +52,13 @@ class HistoryEmbeddingsTabHelper
                      const GURL& validated_url) override;
   void WebContentsDestroyed() override;
 
+  void SetHistoryTabHelperSubscription(
+      base::CallbackListSubscription subscription);
+
+  base::WeakPtr<HistoryEmbeddingsTabHelper> GetWeakPtr();
+
  protected:
-  HistoryEmbeddingsTabHelper(content::WebContents* web_contents,
-                             HistoryTabHelper* history_tab_helper);
+  explicit HistoryEmbeddingsTabHelper(content::WebContents* web_contents);
 
  private:
   friend class content::WebContentsUserData<HistoryEmbeddingsTabHelper>;

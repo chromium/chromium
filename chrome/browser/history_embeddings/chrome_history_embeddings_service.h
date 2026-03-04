@@ -6,13 +6,26 @@
 #define CHROME_BROWSER_HISTORY_EMBEDDINGS_CHROME_HISTORY_EMBEDDINGS_SERVICE_H_
 
 #include "base/memory/raw_ptr.h"
-#include "base/no_destructor.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/history_embeddings/content/history_embeddings_service.h"
-#include "components/passage_embeddings/core/passage_embeddings_types.h"
-#include "content/public/browser/browser_context.h"
 
 class Profile;
+
+namespace history {
+class HistoryService;
+}
+
+namespace optimization_guide {
+class OptimizationGuideDecider;
+}
+
+namespace page_content_annotations {
+class PageContentAnnotationsService;
+}
+
+namespace passage_embeddings {
+class Embedder;
+class EmbedderMetadataProvider;
+}  // namespace passage_embeddings
 
 namespace history_embeddings {
 

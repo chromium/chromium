@@ -9,7 +9,12 @@
 
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
-#include "content/public/browser/browser_context.h"
+
+class Profile;
+
+namespace content {
+class BrowserContext;
+}
 
 namespace history_embeddings {
 class Answerer;

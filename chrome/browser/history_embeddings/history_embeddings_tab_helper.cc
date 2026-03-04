@@ -24,18 +24,9 @@
 #include "content/public/browser/web_contents.h"
 
 HistoryEmbeddingsTabHelper::HistoryEmbeddingsTabHelper(
-    content::WebContents* web_contents,
-    HistoryTabHelper* history_tab_helper)
+    content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents) {
-  if (history_tab_helper) {
-    history_tab_helper_subscription_ =
-        history_tab_helper->RegisterOnUpdatedHistoryForNavigationCallback(
-            base::BindRepeating(
-                &HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation,
-                weak_ptr_factory_.GetWeakPtr()));
-  }
-}
+      content::WebContentsUserData<HistoryEmbeddingsTabHelper>(*web_contents) {}
 
 HistoryEmbeddingsTabHelper::~HistoryEmbeddingsTabHelper() = default;
 
@@ -100,6 +91,16 @@ void HistoryEmbeddingsTabHelper::DidFinishLoad(
 void HistoryEmbeddingsTabHelper::WebContentsDestroyed() {
   GetHistoryEmbeddingsService()->UpdateVisitMetadata(web_contents(),
                                                      std::nullopt);
+}
+
+void HistoryEmbeddingsTabHelper::SetHistoryTabHelperSubscription(
+    base::CallbackListSubscription subscription) {
+  history_tab_helper_subscription_ = std::move(subscription);
+}
+
+base::WeakPtr<HistoryEmbeddingsTabHelper>
+HistoryEmbeddingsTabHelper::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
 }
 
 void HistoryEmbeddingsTabHelper::UpdateEmbeddingsServiceWithHistoryData(

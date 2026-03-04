@@ -108,6 +108,7 @@ source_set("impl") {
       "//chrome/browser/extensions",
       "//chrome/browser/extensions/api/omnibox",
       "//chrome/browser/glic",
+      "//chrome/browser/history_embeddings",
       "//chrome/browser/page_info",
       "//chrome/browser/search_engines",
       "//chrome/browser/sharing_hub",

@@ -449,8 +449,16 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
     HistoryClustersTabHelper::CreateForWebContents(web_contents,
                                                    history_tab_helper);
     if (HistoryEmbeddingsServiceFactory::GetForProfile(profile)) {
-      HistoryEmbeddingsTabHelper::CreateForWebContents(web_contents,
-                                                       history_tab_helper);
+      HistoryEmbeddingsTabHelper::CreateForWebContents(web_contents);
+      auto* history_embeddings_tab_helper =
+          HistoryEmbeddingsTabHelper::FromWebContents(web_contents);
+      if (history_tab_helper && history_embeddings_tab_helper) {
+        history_embeddings_tab_helper->SetHistoryTabHelperSubscription(
+            history_tab_helper->RegisterOnUpdatedHistoryForNavigationCallback(
+                base::BindRepeating(
+                    &HistoryEmbeddingsTabHelper::OnUpdatedHistoryForNavigation,
+                    history_embeddings_tab_helper->GetWeakPtr())));
+      }
     }
   }
   HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
