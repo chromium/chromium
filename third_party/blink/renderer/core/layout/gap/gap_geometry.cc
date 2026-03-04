@@ -243,19 +243,23 @@ void GapGeometry::GenerateMainIntersectionListForFlex(
                                          bool is_above_main_gap) {
     CHECK(!intersections.empty());
 
-    // The cross gap size depends on which side of the main gap the
-    // intersection comes from. "Above" corresponds to the flex line at
-    // `gap_index`, while "below" corresponds to the next line.
-    const LayoutUnit cross_gap_size = is_above_main_gap
-                                          ? cross_gap_size_above.value()
-                                          : cross_gap_size_below.value();
-
-    // Two consecutive intersections produce overlapping decorations when their
-    // distance is less than `cross_gap_size`.
-    const bool overlaps_with_intersection =
-        intersections.size() > 1 &&
-        (intersection_offset - intersections.back().GetOffset() <
-         cross_gap_size);
+    // Two consecutive intersections form overlap windows when their cross gaps
+    // overlap. Because intersections are placed in the middle of a cross gap,
+    // we'll have to go to the end edge of the previous intersection and the
+    // start edge of the current intersection to accurately determine their
+    // overlap status.
+    bool overlaps_with_intersection = false;
+    if (intersections.size() > 1) {
+      const LayoutUnit current_cross_gap_size =
+          is_above_main_gap ? cross_gap_size_above.value()
+                            : cross_gap_size_below.value();
+      const LayoutUnit prev_cross_gap_size =
+          intersections.back().IsAboveMainGap() ? cross_gap_size_above.value()
+                                                : cross_gap_size_below.value();
+      overlaps_with_intersection =
+          (intersection_offset - intersections.back().GetOffset() <
+           (prev_cross_gap_size + current_cross_gap_size) / 2);
+    }
 
     if (overlaps_with_intersection) {
       if (intersections.back().IsOverlapWindowOpen()) {
