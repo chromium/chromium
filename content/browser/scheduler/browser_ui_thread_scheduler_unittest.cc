@@ -85,16 +85,11 @@ TEST_F(BrowserUIThreadSchedulerLoopQuarantineTest,
     !PA_CONFIG(THREAD_CACHE_SUPPORTED)
   GTEST_SKIP() << "This test requires PA-E and ThreadCache.";
 #else
-  std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
-      BrowserUIThreadScheduler::CreateForTesting();
-  browser_ui_thread_scheduler->GetHandle()->OnStartupComplete();
-
-  // Pick up a queue.
-  auto task_queue =
-      browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
-          BrowserUIThreadScheduler::QueueType::kUserBlocking);
-
   // Prepare PA root for testing.
+  // IMPORTANT: The root (and thus the SchedulerLoopQuarantineBranch) must be
+  // declared first in this test before the BrowserUIThreadScheduler so that
+  // when it gets destroyed in reverse order the branch is still a valid
+  // pointer.
   partition_alloc::PartitionOptions opts;
   opts.scheduler_loop_quarantine_thread_local_config.enable_quarantine = true;
   opts.scheduler_loop_quarantine_thread_local_config.branch_capacity_in_bytes =
@@ -110,6 +105,15 @@ TEST_F(BrowserUIThreadSchedulerLoopQuarantineTest,
   partition_alloc::internal::
       ScopedSchedulerLoopQuarantineBranchAccessorForTesting branch_accessor(
           &root);
+
+  std::unique_ptr<BrowserUIThreadScheduler> browser_ui_thread_scheduler =
+      BrowserUIThreadScheduler::CreateForTesting();
+  browser_ui_thread_scheduler->GetHandle()->OnStartupComplete();
+
+  // Pick up a queue.
+  auto task_queue =
+      browser_ui_thread_scheduler->GetHandle()->GetBrowserTaskRunner(
+          BrowserUIThreadScheduler::QueueType::kUserBlocking);
 
   void* ptr = root.Alloc(16);
 

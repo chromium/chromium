@@ -107,5 +107,13 @@ void ScopedSchedulerLoopQuarantineBranchAccessorForTesting::Purge() {
     std::get<1>(branch_)->Purge();
   }
 }
+
+int ScopedSchedulerLoopQuarantineBranchAccessorForTesting::PausedCount() {
+  if (branch_.index() == 0) {
+    return std::get<0>(branch_)->PausedCountForTesting();
+  } else {
+    return std::get<1>(branch_)->PausedCountForTesting();
+  }
+}
 }  // namespace internal
 }  // namespace partition_alloc
