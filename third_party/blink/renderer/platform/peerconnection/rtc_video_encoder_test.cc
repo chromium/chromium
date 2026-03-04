@@ -1307,11 +1307,11 @@ TEST_F(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   ASSERT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->InitEncode(&codec, kVideoEncoderSettings));
 
-#if !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
+  auto frame = media::VideoFrame::CreateEOSFrame();
+#else
   auto frame = media::VideoFrame::CreateBlackFrame(
       gfx::Size(kInputFrameWidth, kInputFrameHeight));
-#else
-  auto frame = media::VideoFrame::CreateEOSFrame();
 #endif
   frame->set_timestamp(base::Milliseconds(1));
   webrtc::scoped_refptr<webrtc::VideoFrameBuffer> frame_adapter(

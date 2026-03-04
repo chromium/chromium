@@ -769,7 +769,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
 
   void SetSimulcastToSvcConverter(std::optional<webrtc::SimulcastToSvcConverter>
                                       simulcast_to_svc_converter);
-  void UpdateSharedImageSupport(bool supports_shared_images);
+  void UpdateEncoderInfo(media::VideoEncoderInfo encoder_info);
 
  private:
   enum {
@@ -978,7 +978,7 @@ class RTCVideoEncoder::Impl : public media::VideoEncodeAccelerator::Client {
   // The content type, as reported to WebRTC (screenshare vs realtime video).
   const webrtc::VideoContentType video_content_type_;
 
-  bool vea_supports_shared_images_ = false;
+  media::VideoEncoderInfo encoder_info_;
 
   // This has the same information as |encoder_info_.preferred_pixel_formats|
   // but can be used on |sequence_checker_| without acquiring the lock.
@@ -1177,10 +1177,10 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
     return;
   }
 
-// On Windows it is possible that RtcVideoEncoder is configured to only accept
-// native inputs, but the incoming frame is not backed by GpuMemoryBuffer and
-// is not a black frame.
-#if BUILDFLAG(IS_WIN)
+// On Windows and Android it is possible that RtcVideoEncoder is configured to
+// only accept native inputs, but the incoming frame is not backed by
+// GpuMemoryBuffer and is not a black frame.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   {
     // Check if the incoming frame is backed by owned or unowned memory type.
     // This could happen when: 1. Zero-copy capture feature is turned on but
@@ -1197,7 +1197,8 @@ void RTCVideoEncoder::Impl::Enqueue(FrameChunk frame_chunk) {
       frame = static_cast<WebRtcVideoFrameAdapterInterface*>(frame_buffer.get())
                   ->getMediaVideoFrame();
       if (frame->storage_type() == media::VideoFrame::STORAGE_UNOWNED_MEMORY ||
-          frame->storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY) {
+          frame->storage_type() == media::VideoFrame::STORAGE_OWNED_MEMORY ||
+          frame->storage_type() == media::VideoFrame::STORAGE_SHMEM) {
         if (use_native_input_) {
           use_native_input_ = false;
         }
@@ -1282,9 +1283,9 @@ void RTCVideoEncoder::Impl::SetSimulcastToSvcConverter(
   simulcast_to_svc_converter_ = std::move(simulcast_to_svc_converter);
 }
 
-void RTCVideoEncoder::Impl::UpdateSharedImageSupport(
-    bool vea_supports_shared_image) {
-  vea_supports_shared_images_ = vea_supports_shared_image;
+void RTCVideoEncoder::Impl::UpdateEncoderInfo(
+    media::VideoEncoderInfo encoder_info) {
+  encoder_info_ = std::move(encoder_info);
 }
 
 void RTCVideoEncoder::Impl::UseOutputBitstreamBuffer(
@@ -2347,9 +2348,10 @@ void RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput(
 
     // A SI-backed video frame can be sent to the VEA encoder directly if VEA
     // reports it as supported, we just need to verify the sync token.
-    bool shared_image_encoding = vea_supports_shared_images_ &&
-                                 !frame->HasMappableSharedImage() &&
-                                 frame->HasSharedImage();
+    bool shared_image_encoding =
+        !frame->HasMappableSharedImage() && frame->HasSharedImage() &&
+        encoder_info_.DoesSupportGpuSharedImages(frame->shared_image()->usage(),
+                                                 frame->format());
     if (shared_image_encoding) {
       TRACE_EVENT0("webrtc",
                    "RTCVideoEncoder::Impl::EncodeOneFrameWithNativeInput::"
@@ -3028,11 +3030,7 @@ void RTCVideoEncoder::UpdateEncoderInfo(
     }
   }
 
-  if (vea_supports_shared_images_ !=
-      media_enc_info.supports_gpu_shared_images) {
-    vea_supports_shared_images_ = media_enc_info.supports_gpu_shared_images;
-    impl_->UpdateSharedImageSupport(vea_supports_shared_images_);
-  }
+  impl_->UpdateEncoderInfo(media_enc_info);
   encoder_info_.requested_resolution_alignment =
       media_enc_info.requested_resolution_alignment;
   encoder_info_.apply_alignment_to_all_simulcast_layers =
