@@ -73,6 +73,8 @@ class CORE_EXPORT CaretDisplayItemClient final
   // Invalidate paint if a cc property tree update is not available.
   void SetNeedsNonCompositedPaintInvalidation();
 
+  bool IsInCanvasSubtree() const { return is_in_canvas_subtree_; }
+
   bool ShouldPaintCaret(const LayoutBlock& block) const {
     return &block == layout_block_;
   }
@@ -127,6 +129,7 @@ class CORE_EXPORT CaretDisplayItemClient final
 
   bool is_active_ = false;
   bool needs_paint_invalidation_ = false;
+  bool is_in_canvas_subtree_ = false;
 };
 
 }  // namespace blink

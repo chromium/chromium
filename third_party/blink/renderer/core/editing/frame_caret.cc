@@ -97,7 +97,10 @@ EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
       (CompositorElementIdFromUniqueObjectId(
           NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect)));
   state.compositor_element_id = element_id;
-  state.direct_compositing_reasons = CompositingReason::kActiveOpacityAnimation;
+  if (!display_item_client_->IsInCanvasSubtree()) {
+    state.direct_compositing_reasons =
+        CompositingReason::kActiveOpacityAnimation;
+  }
   return state;
 }
 
@@ -255,14 +258,15 @@ void FrameCaret::SetVisibleIfActive(bool visible) {
   if (!frame_->View())
     return;
 
-  auto change_type = effect_->Update(
+  effect_->Update(
       *effect_->Parent(),
       CaretEffectNodeState(visible, effect_->LocalTransformSpace()));
-  DCHECK_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, change_type);
   if (auto* compositor = frame_->View()->GetPaintArtifactCompositor()) {
-    if (compositor->DirectlyUpdateCompositedOpacityValue(*effect_)) {
-      effect_->CompositorSimpleValuesUpdated();
-      return;
+    if (!display_item_client_->IsInCanvasSubtree()) {
+      if (compositor->DirectlyUpdateCompositedOpacityValue(*effect_)) {
+        effect_->CompositorSimpleValuesUpdated();
+        return;
+      }
     }
     display_item_client_->SetNeedsNonCompositedPaintInvalidation();
   }

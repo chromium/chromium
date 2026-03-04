@@ -18,6 +18,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/web/web_script_source.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
@@ -26,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg_names.h"
@@ -4052,6 +4055,93 @@ TEST_P(CompositingSimTest, CanvasDrawElementLayersWithScrolling) {
   EXPECT_FALSE(target_layer->main_thread_scroll_hit_test_region().IsEmpty());
   EXPECT_EQ(gfx::Rect(gfx::Rect(0, 0, 100, 100)),
             target_layer->main_thread_scroll_hit_test_region().bounds());
+}
+
+TEST_P(CompositingSimTest, CanvasDrawElementLayersWithCaret) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        background: lightblue;
+      }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="target">
+        <input id="input">
+      </div>
+    </canvas>
+    <input id="other_input">
+  )HTML");
+  Compositor().BeginFrame();
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  GetElementById("input")->Focus();
+
+  Compositor().BeginFrame();
+
+  // Direct children of canvas get a layer.
+  EXPECT_TRUE(CcLayerByDOMElementId("target"));
+
+  // Composited content under canvas, other than direct children, is disabled.
+  EXPECT_FALSE(CcLayerByDOMElementId("input"));
+
+  GetElementById("other_input")->Focus();
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(CcLayerByDOMElementId("input"));
+  EXPECT_TRUE(CcLayerByDOMElementId("other_input"));
+
+  GetElementById("input")->Focus();
+  Compositor().BeginFrame();
+
+  EXPECT_FALSE(CcLayerByDOMElementId("input"));
+  EXPECT_FALSE(CcLayerByDOMElementId("other_input"));
+}
+
+TEST_P(CompositingSimTest, CanvasDrawElementLayersWithAnonymousCaret) {
+  ScopedCanvasDrawElementForTest forced_canvas_draw_element_feature(true);
+
+  InitializeWithHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        background: lightblue;
+      }
+    </style>
+    <canvas id="canvas" width="200" height="200" layoutsubtree>
+      <div id="target" contenteditable="true">
+        Text
+        <div>Block</div>
+      </div>
+    </canvas>
+  )HTML");
+
+  Compositor().BeginFrame();
+  GetDocument().GetPage()->GetFocusController().SetActive(true);
+  GetDocument().GetPage()->GetFocusController().SetFocused(true);
+
+  auto* target = GetElementById("target");
+  target->Focus();
+
+  // Place caret in the text node, which will be in an anonymous block
+  GetDocument().GetFrame()->Selection().SetSelection(
+      SelectionInDOMTree::Builder()
+          .Collapse(Position(target->firstChild(), 0))
+          .Build(),
+      SetSelectionOptions());
+
+  Compositor().BeginFrame();
+
+  const auto& caret_effect =
+      GetDocument().GetFrame()->Selection().CaretEffectNode();
+  EXPECT_FALSE(caret_effect.HasDirectCompositingReasons());
 }
 
 }  // namespace blink

@@ -202,6 +202,7 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (!new_layout_block) {
     color_ = Color();
     local_rect_ = PhysicalRect();
+    is_in_canvas_subtree_ = false;
     return;
   }
 
@@ -224,6 +225,28 @@ void CaretDisplayItemClient::UpdateStyleAndLayoutIfNeeded(
   if (new_color != color_) {
     needs_paint_invalidation_ = true;
     color_ = new_color;
+  }
+
+  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled()) {
+    bool was_in_canvas_subtree = is_in_canvas_subtree_;
+
+    is_in_canvas_subtree_ = false;
+    if (Node* anchor_node = caret_position.AnchorNode()) {
+      Element* element = DynamicTo<Element>(anchor_node);
+      if (!element) {
+        element = anchor_node->parentElement();
+      }
+      if (element) {
+        is_in_canvas_subtree_ = element->IsInCanvasSubtree();
+      }
+    }
+    if (was_in_canvas_subtree != is_in_canvas_subtree_) {
+      needs_paint_invalidation_ = true;
+      if (layout_block_) {
+        // The caret property tree space may have changed.
+        layout_block_->GetFrameView()->SetPaintArtifactCompositorNeedsUpdate();
+      }
+    }
   }
 
   // TODO(https://crbug.com/353713061):
@@ -313,9 +336,7 @@ void CaretDisplayItemClient::SetNeedsNonCompositedPaintInvalidation() {
   }
   // Elements under canvas can only be rendered with `drawElementImage` and do
   // not support compositing.
-  if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() &&
-      IsA<Element>(layout_block_->GetNode()) &&
-      To<Element>(layout_block_->GetNode())->IsInCanvasSubtree()) {
+  if (is_in_canvas_subtree_) {
     needs_paint_invalidation_ = true;
   }
 }
