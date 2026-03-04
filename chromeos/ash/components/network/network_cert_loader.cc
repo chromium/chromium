@@ -17,6 +17,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/ash/components/network/certificate_helper.h"
 #include "chromeos/ash/components/network/policy_certificate_provider.h"
@@ -144,9 +145,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
   CertCache(const CertCache&) = delete;
   CertCache& operator=(const CertCache&) = delete;
 
-  ~CertCache() override {
-    net::CertDatabase::GetInstance()->RemoveObserver(this);
-  }
+  ~CertCache() override = default;
 
   void MarkWillBeInitialized(bool will_be_initialized) {
     DCHECK(state_ == State::kNotInitialized ||
@@ -171,7 +170,7 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
     // TODO(tbarzic): Once singleton NSSCertDatabase is removed, investigate if
     // it would be OK to observe |nss_database_| directly; or change
     // NSSCertDatabase to send notification on all relevant changes.
-    net::CertDatabase::GetInstance()->AddObserver(this);
+    cert_database_observation_.Observe(net::CertDatabase::GetInstance());
 
     LoadCertificates(/*initial_load=*/true);
   }
@@ -300,6 +299,9 @@ class NetworkCertLoader::CertCache : public net::CertDatabase::Observer {
 
   // Client Certificates loaded from the database.
   NetworkCertList client_certs_;
+
+  base::ScopedObservation<net::CertDatabase, net::CertDatabase::Observer>
+      cert_database_observation_{this};
 
   THREAD_CHECKER(thread_checker_);
 

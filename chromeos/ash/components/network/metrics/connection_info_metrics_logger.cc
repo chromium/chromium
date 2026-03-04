@@ -44,17 +44,13 @@ bool ConnectionInfoMetricsLogger::ConnectionInfo::operator==(
 
 ConnectionInfoMetricsLogger::ConnectionInfoMetricsLogger() = default;
 
-ConnectionInfoMetricsLogger::~ConnectionInfoMetricsLogger() {
-  if (network_connection_handler_)
-    network_connection_handler_->RemoveObserver(this);
-}
+ConnectionInfoMetricsLogger::~ConnectionInfoMetricsLogger() = default;
 
 void ConnectionInfoMetricsLogger::Init(
     NetworkStateHandler* network_state_handler,
     NetworkConnectionHandler* network_connection_handler) {
   if (network_connection_handler) {
-    network_connection_handler_ = network_connection_handler;
-    network_connection_handler_->AddObserver(this);
+    network_connection_handler_observer_.Observe(network_connection_handler);
   }
 
   if (network_state_handler) {
