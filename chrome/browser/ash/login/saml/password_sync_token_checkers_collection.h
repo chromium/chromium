@@ -9,10 +9,13 @@
 #include <string>
 #include <unordered_map>
 
+#include "base/memory/raw_ref.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_login_checker.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "net/base/backoff_entry.h"
+
+class PrefService;
 
 namespace ash {
 
@@ -25,7 +28,8 @@ class PasswordSyncTokenCheckersCollection
   // returned invalid data.
   static const net::BackoffEntry::Policy kFetchTokenRetryBackoffPolicy;
 
-  PasswordSyncTokenCheckersCollection();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit PasswordSyncTokenCheckersCollection(PrefService* local_state);
   ~PasswordSyncTokenCheckersCollection() override;
 
   PasswordSyncTokenCheckersCollection(
@@ -43,6 +47,8 @@ class PasswordSyncTokenCheckersCollection
  private:
   friend class ExistingUserControllerForcedOnlineAuthTest;
   friend class PasswordSyncTokenLoginCheckerTest;
+
+  const raw_ref<PrefService> local_state_;
 
   std::unordered_map<std::string,
                      std::unique_ptr<PasswordSyncTokenLoginChecker>>

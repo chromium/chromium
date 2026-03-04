@@ -544,7 +544,8 @@ void UserSelectionScreen::Init(const user_manager::UserList& users) {
     scoped_observation_.Observe(online_signin_notifier_.get());
     online_signin_notifier_->CheckForPolicyEnforcedOnlineSignin();
     sync_token_checkers_ =
-        std::make_unique<PasswordSyncTokenCheckersCollection>();
+        std::make_unique<PasswordSyncTokenCheckersCollection>(
+            &local_state_.get());
     sync_token_checkers_->StartPasswordSyncCheckers(users, this);
   } else {
     sync_token_checkers_.reset();
