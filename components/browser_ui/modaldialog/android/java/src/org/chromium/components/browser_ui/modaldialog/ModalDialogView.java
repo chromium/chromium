@@ -741,17 +741,23 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         boolean customButtonBarVisible =
                 mCustomButtonBarViewContainer.getVisibility() == View.VISIBLE;
         boolean buttonGroupVisible = mButtonGroup.getVisibility() == View.VISIBLE;
+        boolean customViewVisible = mCustomViewContainer.getVisibility() == View.VISIBLE;
+        boolean checkboxVisible = mCheckboxView.getVisibility() == View.VISIBLE;
 
+        // The footer, button bars, and custom views are responsible for their own bottom padding.
+        boolean bottomPaddingExists =
+                buttonBarVisible
+                        || customButtonBarVisible
+                        || buttonGroupVisible
+                        || footerMessageVisible
+                        || (customViewVisible && !checkboxVisible);
+        // The title, paragraph views, and checkbox views are not. So if the lowest view in the
+        // dialog is one of these, add additional padding to the bottom of the dialog.
         int bottomSpacerHeight =
                 getContext()
                         .getResources()
                         .getDimensionPixelSize(R.dimen.modal_dialog_bottom_spacer_height);
-        boolean spacerVisible =
-                !buttonBarVisible
-                        && !customButtonBarVisible
-                        && !buttonGroupVisible
-                        && !footerMessageVisible
-                        && getPaddingBottom() < bottomSpacerHeight;
+        boolean spacerVisible = !bottomPaddingExists && getPaddingBottom() < bottomSpacerHeight;
         mDialogBottomSpacer.setVisibility(spacerVisible ? View.VISIBLE : View.GONE);
     }
 
@@ -759,6 +765,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         if (mCheckboxView == null) return;
         boolean checkboxVisible = !TextUtils.isEmpty(mCheckboxView.getText());
         mCheckboxView.setVisibility(checkboxVisible ? View.VISIBLE : View.GONE);
+        updateContentVisibility();
     }
 
     private void updateButtonVisibility() {
