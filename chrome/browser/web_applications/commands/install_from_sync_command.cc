@@ -22,6 +22,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -172,7 +173,8 @@ void InstallFromSyncCommand::StartWithLock(
   url_loader_ = lock_->web_contents_manager().CreateUrlLoader();
   data_retriever_ = lock_->web_contents_manager().CreateDataRetriever();
 
-  if (ShouldInstallFallbackNoManifestFetching()) {
+  if (ShouldInstallFallbackNoManifestFetching() ||
+      params_.migrated_from_manifest_id) {
     InstallFallback(
         webapps::InstallResultCode::kFallbackInstallUsingTrustedIcons);
     return;
@@ -336,6 +338,7 @@ void InstallFromSyncCommand::OnMigrationSourceInfoGathered(
                                migration_source_info->ToDebugValue());
   }
   migration_source_info_ = std::move(migration_source_info);
+
   FinalizeInstall(mode);
 }
 
@@ -362,6 +365,19 @@ void InstallFromSyncCommand::FinalizeInstall(FinalizeMode mode) {
     }
 
     current_info->user_display_mode = migration_source_info_->user_display_mode;
+  }
+
+  // Trigger a silent background update for anything that might have changed
+  // from what we synced.
+  // For now, this is only for migrated apps, but we should consider expanding
+  // this to all apps eventually.
+  if (params_.migrated_from_manifest_id &&
+      finalize_options.install_state ==
+          proto::InstallState::INSTALLED_WITH_OS_INTEGRATION) {
+    WebAppProvider::GetForWebApps(profile_)->scheduler().FetchManifestAndUpdate(
+        params_.start_url, params_.manifest_id,
+        /*previous_time_for_silent_icon_update=*/std::nullopt,
+        /*force_trusted_silent_update=*/false, base::DoNothing());
   }
 
   install_job_ = std::make_unique<FinalizeInstallJob>(
