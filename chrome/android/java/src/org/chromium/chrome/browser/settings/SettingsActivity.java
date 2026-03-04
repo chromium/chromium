@@ -361,7 +361,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroidSupplier.set(
-                ActivityWindowAndroid.create(
+                new ActivityWindowAndroid(
                         this,
                         /* listenToActivityState= */ true,
                         mIntentRequestTracker,

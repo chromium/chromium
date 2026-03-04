@@ -5,6 +5,7 @@
 package org.chromium.ui.base;
 
 import android.app.Activity;
+import android.content.Context;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
@@ -34,23 +35,24 @@ public class ActivityWindowAndroid extends WindowAndroid
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
      *
-     * @param activity The activity associated with the WindowAndroid.
+     * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
-     * @param insetObserver Observes window insets to track keyboard and layout changes.
      * @param trackOcclusion Whether to track occlusion of the window.
      */
-    public static ActivityWindowAndroid create(
-            Activity activity,
+    public ActivityWindowAndroid(
+            Context context,
             boolean listenToActivityState,
             IntentRequestTracker intentRequestTracker,
             @Nullable InsetObserver insetObserver,
             boolean trackOcclusion) {
-        return new ActivityWindowAndroid(
-                activity,
+        this(
+                context,
                 listenToActivityState,
-                new ActivityAndroidPermissionDelegate(new WeakReference<>(activity)),
-                new ActivityKeyboardVisibilityDelegate(new WeakReference<>(activity)),
+                new ActivityAndroidPermissionDelegate(
+                        new WeakReference<>(ContextUtils.activityFromContext(context))),
+                new ActivityKeyboardVisibilityDelegate(
+                        new WeakReference<>(ContextUtils.activityFromContext(context))),
                 /* activityTopResumedSupported= */ false,
                 intentRequestTracker,
                 insetObserver,
@@ -60,18 +62,43 @@ public class ActivityWindowAndroid extends WindowAndroid
     /**
      * Creates an Activity-specific WindowAndroid with associated intent functionality.
      *
-     * @param activity The activity associated with the WindowAndroid.
+     * @param context Context wrapping an activity associated with the WindowAndroid.
      * @param listenToActivityState Whether to listen to activity state changes.
-     * @param activityAndroidPermissionDelegate Delegates which handles android permissions.
-     * @param activityKeyboardVisibilityDelegate Delegate to handle keyboard visibility.
-     * @param activityTopResumedSupported If true, allows the activity to report top resumed state
-     *     changes.
+     * @param keyboardVisibilityDelegate Delegate which handles keyboard visibility.
      * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
-     * @param insetObserver Observes window insets to track keyboard and layout changes.
      * @param trackOcclusion Whether to track occlusion of the window.
      */
     public ActivityWindowAndroid(
-            Activity activity,
+            Context context,
+            boolean listenToActivityState,
+            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            boolean activityTopResumedSupported,
+            IntentRequestTracker intentRequestTracker,
+            InsetObserver insetObserver,
+            boolean trackOcclusion) {
+        this(
+                context,
+                listenToActivityState,
+                new ActivityAndroidPermissionDelegate(
+                        new WeakReference<>(ContextUtils.activityFromContext(context))),
+                keyboardVisibilityDelegate,
+                activityTopResumedSupported,
+                intentRequestTracker,
+                insetObserver,
+                trackOcclusion);
+    }
+
+    /**
+     * Creates an Activity-specific WindowAndroid with associated intent functionality.
+     *
+     * @param context Context wrapping an activity associated with the WindowAndroid.
+     * @param listenToActivityState Whether to listen to activity state changes.
+     * @param activityAndroidPermissionDelegate Delegates which handles android permissions.
+     * @param intentRequestTracker The {@link IntentRequestTracker} of the current activity.
+     * @param trackOcclusion Whether to track occlusion of the window.
+     */
+    private ActivityWindowAndroid(
+            Context context,
             boolean listenToActivityState,
             ActivityAndroidPermissionDelegate activityAndroidPermissionDelegate,
             ActivityKeyboardVisibilityDelegate activityKeyboardVisibilityDelegate,
@@ -80,11 +107,15 @@ public class ActivityWindowAndroid extends WindowAndroid
             @Nullable InsetObserver insetObserver,
             boolean trackOcclusion) {
         super(
-                activity,
+                context,
                 activityTopResumedSupported,
                 intentRequestTracker,
                 insetObserver,
                 trackOcclusion);
+        Activity activity = ContextUtils.activityFromContext(context);
+        if (activity == null) {
+            throw new IllegalArgumentException("Context is not and does not wrap an Activity");
+        }
         mListenToActivityState = listenToActivityState;
         if (listenToActivityState) {
             ApplicationStatus.registerStateListenerForActivity(this, activity);

@@ -75,7 +75,7 @@ public class ShareHelperUnitTest {
     public void setup() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mWindow =
-                ActivityWindowAndroid.create(
+                new ActivityWindowAndroid(
                         mActivity,
                         /* listenToActivityState= */ false,
                         IntentRequestTracker.createFromActivity(mActivity),

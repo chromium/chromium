@@ -66,9 +66,9 @@ public class SurveyClientBridgeUnitTest {
         doReturn(mDelegateSurveyClient).when(mFactory).createClient(any(), any(), any(), any());
 
         mWindow =
-                ActivityWindowAndroid.create(
+                new ActivityWindowAndroid(
                         mActivity,
-                        /* listenToActivityState= */ false,
+                        false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         /* insetObserver= */ null,
                         /* trackOcclusion= */ true);
