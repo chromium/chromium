@@ -2879,7 +2879,6 @@ crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/
 crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/column-auto-repeat-auto-008.html [ Failure ]
 crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/intrinsic-auto-repeat/row-auto-repeat-auto-008.html [ Failure ]
 crbug.com/488080543 external/wpt/css/css-grid/grid-lanes/tentative/track-sizing/auto-repeat/row-auto-repeat-006.html [ Failure ]
-crbug.com/488072422 external/wpt/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted-invalidation.html [ Pass Timeout ]
 crbug.com/488072423 external/wpt/navigation-api/navigate-event/signal-abort-replaceState-crash.html [ Crash ]
 crbug.com/488080569 external/wpt/webdriver/tests/classic/get_element_shadow_root/get.py [ Failure ]
 crbug.com/485394851 external/wpt/navigation-api/navigate-event/traverseTo-detach.html [ Crash ]
