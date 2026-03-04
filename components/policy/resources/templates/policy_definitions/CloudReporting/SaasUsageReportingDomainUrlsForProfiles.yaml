@@ -26,8 +26,8 @@ features:
   per_profile: true
   user_only: true
   cloud_only: true
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:147-
 owners:
 - janzarzycki@google.com
 - igorruvinov@chromium.org

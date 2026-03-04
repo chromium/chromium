@@ -23,8 +23,8 @@ features:
   dynamic_refresh: true
   per_profile: false
   cloud_only: true
-future_on:
-- chrome.*
+supported_on:
+- chrome.*:147-
 owners:
 - janzarzycki@google.com
 - igorruvinov@chromium.org
