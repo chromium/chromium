@@ -194,6 +194,11 @@ class HistogramTester {
   //               testing::ContainerEq(expected_counts));
   CountsMap GetTotalCountsForPrefix(std::string_view prefix) const;
 
+  // Returns the total count recorded for all histograms whose names start with
+  // `prefix` since the HistogramTester was created. This is similar to
+  // `GetTotalCountsForPrefix`, but returns the sum of counts instead of a map.
+  HistogramBase::Count32 GetTotalCountForPrefix(std::string_view prefix) const;
+
   // Returns the HistogramSamples recorded since the creation of the
   // HistogramTester.
   std::unique_ptr<HistogramSamples> GetHistogramSamplesSinceCreation(

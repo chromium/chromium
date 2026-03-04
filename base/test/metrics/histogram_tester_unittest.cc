@@ -241,6 +241,15 @@ TEST(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   EXPECT_EQ(1u, tester.GetTotalCountsForPrefix("Test1.").size());
 }
 
+TEST(HistogramTesterTest, TestGetTotalCountForPrefix) {
+  HistogramTester tester;
+  UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);
+  UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test4", 2, 5);
+
+  EXPECT_EQ(tester.GetTotalCountForPrefix("Test2."), 0);
+  EXPECT_EQ(tester.GetTotalCountForPrefix("Test1."), 2);
+}
+
 TEST(HistogramTesterTest, TestGetAllChangedHistograms) {
   // Emit multiple values, some before tester creation.
   UMA_HISTOGRAM_COUNTS_100(kHistogram6, true);
