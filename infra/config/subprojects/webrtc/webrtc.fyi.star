@@ -185,7 +185,6 @@ builder(
             "capture_unittests",
             "content_browsertests",
             "content_unittests",
-            "remoting_unittests",
         ],
     ),
 )

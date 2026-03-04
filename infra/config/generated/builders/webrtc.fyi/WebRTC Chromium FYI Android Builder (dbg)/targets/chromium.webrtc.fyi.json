@@ -3,8 +3,7 @@
     "additional_compile_targets": [
       "capture_unittests",
       "content_browsertests",
-      "content_unittests",
-      "remoting_unittests"
+      "content_unittests"
     ]
   }
 }
