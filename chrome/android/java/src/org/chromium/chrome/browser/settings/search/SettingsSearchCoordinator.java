@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.accessibility.AccessibilityNodeInfo;
 import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
@@ -1086,6 +1087,17 @@ public class SettingsSearchCoordinator
                                     RESULT_BACKSTACK, FragmentManager.POP_BACK_STACK_INCLUSIVE);
                             mFragmentState = FS_SEARCH;
                         }
+                    }
+                });
+        queryEdit.setAccessibilityDelegate(
+                new View.AccessibilityDelegate() {
+                    @Override
+                    public void onInitializeAccessibilityNodeInfo(
+                            View host, AccessibilityNodeInfo info) {
+                        super.onInitializeAccessibilityNodeInfo(host, info);
+                        String orgText = info.getText() == null ? "" : info.getText().toString();
+                        info.setText(
+                                mActivity.getString(R.string.search_in_settings_hint, orgText));
                     }
                 });
     }
