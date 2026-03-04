@@ -474,12 +474,6 @@ static_library("browser") {
     "first_party_sets/first_party_sets_policy_service_factory.h",
     "font_family_cache.cc",
     "font_family_cache.h",
-    "geolocation/geolocation_permission_context_delegate.cc",
-    "geolocation/geolocation_permission_context_delegate.h",
-    "geolocation/geolocation_permission_context_extensions.cc",
-    "geolocation/geolocation_permission_context_extensions.h",
-    "geolocation/geolocation_permission_context_slim_web_view.cc",
-    "geolocation/geolocation_permission_context_slim_web_view.h",
     "global_features.cc",
     "history/chrome_history_backend_client.cc",
     "history/chrome_history_backend_client.h",
@@ -1755,6 +1749,8 @@ static_library("browser") {
     "//chrome/browser/file_system_access:impl",
     "//chrome/browser/first_party_sets",
     "//chrome/browser/gcm",
+    "//chrome/browser/geolocation",
+    "//chrome/browser/geolocation:impl",
     "//chrome/browser/glic",
     "//chrome/browser/glic:impl",
     "//chrome/browser/glic/actor",
@@ -2986,8 +2982,6 @@ static_library("browser") {
       "first_run/android/first_run_prefs.cc",
       "first_run/android/first_run_prefs.h",
       "first_run/android/first_run_utils.cc",
-      "geolocation/geolocation_permission_context_delegate_android.cc",
-      "geolocation/geolocation_permission_context_delegate_android.h",
       "gesturenav/android/gesture_navigation_utils.cc",
       "gesturenav/android/tab_on_back_gesture_handler.cc",
       "gesturenav/android/tab_on_back_gesture_handler.h",
@@ -3508,6 +3502,12 @@ static_library("browser") {
       "//chrome/browser/ui/android/tab_model:impl",
     ]
 
+    deps += [
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/webapps/installable/installed_webapp_bridge.h gets modularized.
+      "//chrome/browser/geolocation:impl",
+    ]
+
     # Any circular includes must depend on the target
     # "browser_public_dependencies".
     allow_circular_includes_from += [
@@ -3517,6 +3517,10 @@ static_library("browser") {
 
       "//chrome/browser/partnerbookmarks:android_impl",
       "//chrome/browser/bookmarks/android:impl",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/webapps/installable/installed_webapp_bridge.h gets modularized.
+      "//chrome/browser/geolocation:impl",
 
       # TODO(crbug.com/353332589): Remove this circular dependency when
       # c/b/net/qwac_web_contents_observer.h gets modularized.
