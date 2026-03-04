@@ -27,7 +27,9 @@
 #elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
+#include "base/features.h"
 #include "base/logging.h"
+#include "base/test/scoped_feature_list.h"
 #elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
@@ -596,5 +598,89 @@ TEST_F(PlatformSharedMemoryRegionTest, UnsafeRegionConvertToUnsafeDeathTest) {
   ASSERT_TRUE(region.IsValid());
   EXPECT_DEATH_IF_SUPPORTED(region.ConvertToUnsafe(), kErrorRegex);
 }
+
+#if BUILDFLAG(IS_WIN)
+namespace {
+
+int g_fake_create_file_mapping_call_count = 0;
+
+// Fake CreateFileMapping() implementation for testing.
+// It simulates ERROR_COMMITMENT_LIMIT failures for the first 5 calls,
+// then delegates to the real API.
+HANDLE WINAPI FakeCreateFileMapping(HANDLE file,
+                                    SECURITY_ATTRIBUTES* sa,
+                                    DWORD protect,
+                                    DWORD max_size_high,
+                                    DWORD max_size_low,
+                                    LPCWSTR name) {
+  g_fake_create_file_mapping_call_count++;
+
+  // Fail the first 5 times to trigger the retry logic.
+  if (g_fake_create_file_mapping_call_count <= 5) {
+    ::SetLastError(ERROR_COMMITMENT_LIMIT);
+    return nullptr;
+  }
+
+  // On the 6th try, call the real API to return a valid handle.
+  return ::CreateFileMapping(file, sa, protect, max_size_high, max_size_low,
+                             name);
+}
+
+}  // namespace
+
+// Tests that the retry logic operates correctly when CreateFileMapping() fails
+// with ERROR_COMMITMENT_LIMIT.
+TEST_F(PlatformSharedMemoryRegionTest, CreateRetryOnCommitLimit) {
+  // Enable the retry feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kRetryCreateFileMappingOnCommitLimit);
+
+  // Install the hook.
+  g_fake_create_file_mapping_call_count = 0;
+  PlatformSharedMemoryRegion::SetCreateFileMappingCallbackForTesting(
+      &FakeCreateFileMapping);
+
+  // Create a region.
+  // This will fail 5 times inside the loop, wait, and succeed on the 6th try.
+  PlatformSharedMemoryRegion region =
+      PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+
+  // Verify that the retry loop ran exactly as expected (5 failures + 1
+  // success).
+  EXPECT_EQ(g_fake_create_file_mapping_call_count, 6);
+  EXPECT_TRUE(region.IsValid());
+
+  // Cleanup: Remove the hook to avoid affecting other tests.
+  PlatformSharedMemoryRegion::SetCreateFileMappingCallbackForTesting(nullptr);
+}
+
+// Tests that the retry logic does not run if the feature is disabled.
+TEST_F(PlatformSharedMemoryRegionTest, NoRetryWhenFeatureDisabled) {
+  // Disable the retry feature.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(
+      features::kRetryCreateFileMappingOnCommitLimit);
+
+  // Install the hook.
+  g_fake_create_file_mapping_call_count = 0;
+  PlatformSharedMemoryRegion::SetCreateFileMappingCallbackForTesting(
+      &FakeCreateFileMapping);
+
+  // Create a region.
+  // The hook fails immediately with ERROR_COMMITMENT_LIMIT.
+  // Since the feature is disabled, it should return an invalid region
+  // immediately without retrying.
+  PlatformSharedMemoryRegion region =
+      PlatformSharedMemoryRegion::CreateWritable(kRegionSize);
+
+  // Verify that only 1 call was made (the failure).
+  EXPECT_EQ(g_fake_create_file_mapping_call_count, 1);
+  EXPECT_FALSE(region.IsValid());
+
+  // Cleanup: Remove the hook to avoid affecting other tests.
+  PlatformSharedMemoryRegion::SetCreateFileMappingCallbackForTesting(nullptr);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace base::subtle

@@ -187,6 +187,11 @@ BASE_FEATURE(kUseTerminationStatusMemoryExhaustion, FEATURE_ENABLED_BY_DEFAULT);
 // When enabled, use ABOVE_NORMAL_PRIORITY_CLASS for Priority::kUserBlocking on
 // Windows.
 BASE_FEATURE(kUserBlockingAboveNormalPriority, FEATURE_DISABLED_BY_DEFAULT);
+
+// When enabled, retries CreateFileMapping on a commit limit failure (OOM).
+// If retrying fails, the function returns failure as usual and reports the
+// last error code.
+BASE_FEATURE(kRetryCreateFileMappingOnCommitLimit, FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN)
 
 bool IsReducePPMsEnabled() {
