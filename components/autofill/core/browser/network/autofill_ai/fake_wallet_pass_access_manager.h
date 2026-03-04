@@ -47,10 +47,11 @@ class FakeWalletPassAccessManager : public WalletPassAccessManager {
   std::optional<EntityInstance> RunGetUnmaskedCallback(
       EntityInstance::EntityId entity_id);
 
-  // Cache to store the unmasked state of upserted entities. This allows us to
-  // unmask Chrome-upserted passes to their upserted unmasked value.
+  // Cache to store the unmasked entities created via
+  // `FakeWalletPassAccessManager`. This also allows us to unmask
+  // Chrome-upserted passes to their upserted unmasked value.
   absl::flat_hash_map<EntityInstance::EntityId, EntityInstance>
-      upserted_unmasked_entities_;
+      fake_entities_cache_;
 
   const raw_ref<EntityDataManager> data_manager_;
   base::WeakPtrFactory<FakeWalletPassAccessManager> weak_ptr_factory_{this};

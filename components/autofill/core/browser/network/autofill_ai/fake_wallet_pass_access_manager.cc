@@ -21,7 +21,14 @@ FakeWalletPassAccessManager::FakeWalletPassAccessManager(
     EntityDataManager* data_manager)
     : data_manager_(CHECK_DEREF(data_manager)) {}
 
-FakeWalletPassAccessManager::~FakeWalletPassAccessManager() = default;
+FakeWalletPassAccessManager::~FakeWalletPassAccessManager() {
+  // Clean up the entities so they don't persist in the database after the
+  // session. Since they are not stored in Wallet, they would otherwise not
+  // be unmaskable anymore.
+  for (const auto& [entity_id, entity] : fake_entities_cache_) {
+    data_manager_->RemoveEntityInstance(entity_id);
+  }
+}
 
 void FakeWalletPassAccessManager::SaveWalletEntityInstance(
     const EntityInstance& entity,
@@ -86,7 +93,7 @@ std::optional<EntityInstance> FakeWalletPassAccessManager::RunUpsertCallback(
     return std::nullopt;
   }
 
-  upserted_unmasked_entities_.insert_or_assign(entity.guid(), entity);
+  fake_entities_cache_.insert_or_assign(entity.guid(), entity);
 
   EntityInstance masked_entity = entity;
   for (const AttributeInstance& attr : entity.attributes()) {
@@ -121,8 +128,8 @@ FakeWalletPassAccessManager::RunGetUnmaskedCallback(
     return std::nullopt;
   }
 
-  auto it = upserted_unmasked_entities_.find(entity_id);
-  if (it != upserted_unmasked_entities_.end()) {
+  auto it = fake_entities_cache_.find(entity_id);
+  if (it != fake_entities_cache_.end()) {
     return it->second;
   }
 
