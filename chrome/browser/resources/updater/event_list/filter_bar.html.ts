@@ -15,16 +15,18 @@ export function getHtml(this: FilterBarElement) {
   <cr-icon icon="updater:filter"></cr-icon>
   ${this.filterOrder.map(item => html`
     <div class="chip-wrapper">
-      <cr-chip class="chip" ?disabled="${this.isEditingViaInput(item)}"
-          ?selected="${!this.isEditingViaInput(item)}" role="button"
-          aria-haspopup="dialog" data-filter-category="${item}"
-          @click="${this.onChipClick}" @keydown="${this.onChipKeydown}">
+      <button class="chip" ?disabled="${this.isEditingViaInput(item)}"
+          data-filter-category="${item}" @click="${this.onChipClick}"
+          aria-haspopup="dialog">
+        <div class="hover-layer"></div>
         ${this.getFilterLabel(item)}
-        <cr-icon-button iron-icon="cr:close" data-filter-category="${item}"
-            @click="${this.onRemoveFilterClick}"
-            aria-label="$i18n{removeFilter}">
-        </cr-icon-button>
-      </cr-chip>
+        <cr-ripple></cr-ripple>
+      </button>
+      <cr-icon-button iron-icon="cr:close" data-filter-category="${item}"
+          ?disabled="${this.isEditingViaInput(item)}"
+          @click="${this.onRemoveFilterClick}"
+          aria-label="$i18n{removeFilter}">
+      </cr-icon-button>
     </div>
   `)}
 
@@ -46,14 +48,14 @@ export function getHtml(this: FilterBarElement) {
       <type-dialog .anchorElement="${this.getDialogAnchor()}"
           @type-selection-changed="${this.onTypeSelectionChanged}"
           @close="${this.onFilterDialogClose}">
-      </filter-dialog-type>
+      </type-dialog>
     ` : ''}
     ${this.filterMenuState === FilterCategory.APP ? html`
       <app-dialog .anchorElement="${this.getDialogAnchor()}"
           .initialSelections="${this.filterSettings.apps}"
           @filter-change="${this.onAppFilterChange}"
           @close="${this.onFilterDialogClose}">
-      </filter-dialog-app>
+      </app-dialog>
     ` : ''}
     ${this.filterMenuState === FilterCategory.EVENT ? html`
       <event-dialog .anchorElement="${this.getDialogAnchor()}"
@@ -61,7 +63,7 @@ export function getHtml(this: FilterBarElement) {
               this.filterSettings.eventTypes}"
           @filter-change="${this.onEventTypeFilterChange}"
           @close="${this.onFilterDialogClose}">
-      </filter-dialog-event>
+      </event-dialog>
     ` : ''}
     ${this.filterMenuState === FilterCategory.OUTCOME ? html`
       <outcome-dialog .anchorElement="${this.getDialogAnchor()}"
@@ -69,14 +71,14 @@ export function getHtml(this: FilterBarElement) {
               this.filterSettings.updateOutcomes}"
           @filter-change="${this.onUpdateOutcomeFilterChange}"
           @close="${this.onFilterDialogClose}">
-      </filter-dialog-outcome>
+      </outcome-dialog>
     ` : ''}
     ${this.filterMenuState === FilterCategory.SCOPE ? html`
       <scope-dialog .anchorElement="${this.getDialogAnchor()}"
           .initialSelections="${this.filterSettings.scopes}"
           @filter-change="${this.onScopeFilterChange}"
           @close="${this.onFilterDialogClose}">
-      </filter-dialog-scope>
+      </scope-dialog>
     ` : ''}
     ${this.filterMenuState === FilterCategory.DATE ? html`
       <date-dialog .anchorElement="${this.getDialogAnchor()}"
@@ -84,7 +86,7 @@ export function getHtml(this: FilterBarElement) {
           .initialEndDate="${this.filterSettings.endDate}"
           @filter-change="${this.onDateFilterChange}"
           @close="${this.onFilterDialogClose}">
-      </filter-dialog-date>
+      </date-dialog>
     ` : ''}
   ` : ''}
 </div>

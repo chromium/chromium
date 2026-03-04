@@ -143,8 +143,8 @@ suite('FilterBarElement', () => {
     assertTrue(capturedEvent!.bubbles);
     assertTrue(capturedEvent!.composed);
 
-    const chip = filterBar.shadowRoot.querySelector('.chip')!;
-    const removeButton = chip.querySelector<HTMLElement>('cr-icon-button')!;
+    const removeButton = filterBar.shadowRoot.querySelector<HTMLElement>(
+        '.chip-wrapper cr-icon-button')!;
     removeButton.click();
     await microtasksFinished();
     assertEquals(0, filterBar.filterSettings.apps.size);
@@ -274,8 +274,8 @@ suite('FilterBarElement', () => {
       endDate: null,
     };
     await microtasksFinished();
-    const chip = filterBar.shadowRoot.querySelector('.chip')!;
-    const removeButton = chip.querySelector<HTMLElement>('cr-icon-button')!;
+    const removeButton = filterBar.shadowRoot.querySelector<HTMLElement>(
+        '.chip-wrapper cr-icon-button')!;
     removeButton.click();
     await microtasksFinished();
     assertEquals(null, filterBar.filterSettings.startDate);

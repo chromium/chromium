@@ -11,6 +11,7 @@ import './filter_dialog/date_dialog.js';
 import './filter_dialog/type_dialog.js';
 import '//resources/cr_elements/cr_chip/cr_chip.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import '//resources/cr_elements/cr_ripple/cr_ripple.js';
 import '//resources/cr_elements/icons.html.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_checkbox/cr_checkbox.js';
@@ -154,7 +155,7 @@ export class FilterBarElement extends CrLitElement {
 
 
   protected async onRemoveFilterClick(e: Event) {
-    const category = getFilterCategoryForTarget(e.target as HTMLElement);
+    const category = getFilterCategoryForTarget(e.currentTarget as HTMLElement);
     this.updateFilterOrder(category, false);
     switch (category) {
       case FilterCategory.APP:
@@ -180,20 +181,8 @@ export class FilterBarElement extends CrLitElement {
   }
 
   protected onChipClick(e: MouseEvent) {
-    // Prevent opening the menu if the close button was clicked
-    const target = e.target as HTMLElement;
-    if (target.tagName !== 'CR-ICON-BUTTON') {
-      this.editFilter(getFilterCategoryForTarget(target));
-    }
+    this.editFilter(getFilterCategoryForTarget(e.target as HTMLElement));
   }
-
-  protected onChipKeydown(e: KeyboardEvent) {
-    const target = e.target as HTMLElement;
-    if ((e.key === 'Enter' || e.key === ' ') && target.tagName !== 'BUTTON') {
-      this.editFilter(getFilterCategoryForTarget(target));
-    }
-  }
-
 
   protected getFilterLabel(category: FilterCategory): string {
     switch (category) {
