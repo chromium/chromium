@@ -398,15 +398,9 @@ bool PictureLayerImpl::AppendQuadForTile(
 
   if (!has_draw_quad) {
     // Checkerboard due to missing raster.
-    SkColor4f color = safe_opaque_background_color();
-    if (ShowDebugBorders(DebugBorderType::LAYER)) {
-      // Fill the whole tile with the missing tile color.
-      color = DebugColors::DefaultCheckerboardColor();
-    }
-    auto* quad =
-        render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
-    quad->SetNew(shared_quad_state, offset_geometry_rect,
-                 offset_visible_geometry_rect, color, false);
+    auto* quad = AppendCheckerboardQuad(render_pass, shared_quad_state,
+                                        offset_geometry_rect,
+                                        offset_visible_geometry_rect);
     ValidateQuadResources(quad);
 
     // Report data on any missing images that might be the largest

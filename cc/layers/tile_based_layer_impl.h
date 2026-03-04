@@ -103,6 +103,13 @@ class CC_EXPORT TileBasedLayerImpl : public LayerImpl {
       const gfx::Rect& offset_visible_geometry_rect,
       SkColor4f color);
 
+  // Appends a solid-color quad for checkerboarding. Returns the appended quad.
+  viz::SolidColorDrawQuad* AppendCheckerboardQuad(
+      viz::CompositorRenderPass* render_pass,
+      viz::SharedQuadState* shared_quad_state,
+      const gfx::Rect& offset_geometry_rect,
+      const gfx::Rect& offset_visible_geometry_rect);
+
  private:
   // Invoked when the draw mode is DRAW_MODE_RESOURCELESS_SOFTWARE.
   virtual void AppendQuadsForResourcelessSoftwareDraw(
@@ -438,6 +445,23 @@ viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendSolidColorQuad(
   quad->SetNew(shared_quad_state, offset_geometry_rect,
                offset_visible_geometry_rect, color,
                !layer_tree_impl()->settings().enable_edge_anti_aliasing);
+  return quad;
+}
+
+template <typename Tiling>
+viz::SolidColorDrawQuad* TileBasedLayerImpl<Tiling>::AppendCheckerboardQuad(
+    viz::CompositorRenderPass* render_pass,
+    viz::SharedQuadState* shared_quad_state,
+    const gfx::Rect& offset_geometry_rect,
+    const gfx::Rect& offset_visible_geometry_rect) {
+  SkColor4f color = safe_opaque_background_color();
+  if (ShowDebugBorders(DebugBorderType::LAYER)) {
+    // Fill the whole tile with the missing tile color.
+    color = DebugColors::DefaultCheckerboardColor();
+  }
+  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::SolidColorDrawQuad>();
+  quad->SetNew(shared_quad_state, offset_geometry_rect,
+               offset_visible_geometry_rect, color, false);
   return quad;
 }
 
