@@ -430,17 +430,23 @@ public class SettingsSearchCoordinator
         // Prevent TalkBack from navigating to background fragments.
         fm.addOnBackStackChangedListener(
                 () -> {
+                    // Search fragments (EmptyFragment, SearchResultsPreferenceFragment) are added
+                    // to (as opposed to replaces) the existing Fragment, which makes the existing
+                    // one still technically "active" and "visible" in the view hierarchy, which is
+                    // why TalkBack navigates through it. In such case, disable navigation on the
+                    // existing fragments. MainSettings in multi-column mode is always enabled.
                     List<Fragment> fragments = fm.getFragments();
-                    if (fragments.isEmpty()) return;
-
-                    // The last fragment in the list is usually the one on top.
-                    // Top fragment: make it accessible;
-                    // Background fragments: hide them and their children.
-                    for (int i = 0; i < fragments.size(); i++) {
+                    Fragment top = fragments.get(fragments.size() - 1);
+                    boolean showingSearchFragment =
+                            top.getClass() == EmptyFragment.class
+                                    || top.getClass() == SearchResultsPreferenceFragment.class;
+                    for (int i = 0; i <= fragments.size() - 2; i++) {
                         Fragment f = fragments.get(i);
-                        if (f != null && f.getView() != null) {
-                            enableTalkbackNavigation(f.getView(), i == fragments.size() - 1);
-                        }
+                        if (f == null || f.getView() == null) continue;
+                        boolean enable =
+                                !showingSearchFragment
+                                        || (mUseMultiColumn && f.getClass() == MainSettings.class);
+                        enableTalkbackNavigation(f.getView(), enable);
                     }
                 });
     }
