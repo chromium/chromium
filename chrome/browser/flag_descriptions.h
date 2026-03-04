@@ -471,6 +471,11 @@ inline constexpr char
         "payments, so that merchants that are not on the allowlist can also be "
         "tested for the supported features.";
 
+inline constexpr char kDisableU18FeedbackDesktopName[] =
+    "Disable U18 Feedback Desktop";
+inline constexpr char kDisableU18FeedbackDesktopDescription[] =
+    "Disables the feedback for U18 users on desktop platforms.";
+
 inline constexpr char kDropInputEventsWhilePaintHoldingName[] =
     "Drop input events while paint-holding is active";
 inline constexpr char kDropInputEventsWhilePaintHoldingDescription[] =

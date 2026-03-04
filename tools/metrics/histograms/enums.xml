@@ -13891,6 +13891,7 @@ from previous Chrome versions.
   <int value="-180481252" label="CompositorThreadedScrollbarScrolling:enabled"/>
   <int value="-180292536" label="PerformanceInterventionDemoMode:enabled"/>
   <int value="-180278057" label="RustyBmpFeature:enabled"/>
+  <int value="-180139957" label="DisableU18FeedbackDesktop:disabled"/>
   <int value="-180056644" label="HomeButtonWithText:disabled"/>
   <int value="-179580377" label="CrossOriginOpenerPolicy:enabled"/>
   <int value="-179541740" label="bookmarks-tree-view:disabled"/>
@@ -15392,6 +15393,7 @@ from previous Chrome versions.
       label="enable-experimental-accessibility-language-detection"/>
   <int value="324194873"
       label="AdaptiveSuggestionsVisibleGroupEligibilityUpdate:disabled"/>
+  <int value="324521206" label="DisableU18FeedbackDesktop:forced"/>
   <int value="324522065" label="app-menu-icon"/>
   <int value="324631366" label="enable-drive-search-in-app-launcher"/>
   <int value="325489620" label="WebAppEnableManifestId:disabled"/>
@@ -15596,6 +15598,7 @@ from previous Chrome versions.
   <int value="385969127" label="disable-win32k-lockdown"/>
   <int value="386138870" label="DesktopPWAsOmniboxInstall:enabled"/>
   <int value="386328035" label="CalendarJelly:enabled"/>
+  <int value="386910266" label="DisableU18FeedbackDesktop:enabled"/>
   <int value="386946105" label="NtpMiddleSlotPromoDismissal:disabled"/>
   <int value="387043934" label="CrosMallSwa:enabled"/>
   <int value="387178525" label="VideoFullscreenOrientationLock:enabled"/>

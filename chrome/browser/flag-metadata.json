@@ -2400,6 +2400,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "disable-u18-feedback-desktop",
+    "owners": [ "chrome-signin-team@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "disable-u18-feedback-ios",
     "owners": [ "jlebel@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 152

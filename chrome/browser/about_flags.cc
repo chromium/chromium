@@ -4536,6 +4536,12 @@ const FeatureEntry::FeatureVariation kProfilePickerTextVariations[] = {
     {"V4: Sharing a computer?", kProfilePickerTextVariation4, nullptr},
     {"V5: Keep everything in Chrome", kProfilePickerTextVariation5, nullptr},
 };
+
+const FeatureEntry::FeatureParam kDisableU18FeedbackDesktopForced[] = {
+    {"state", "forced"}};
+const FeatureEntry::FeatureVariation kDisableU18FeedbackDesktopVariations[] = {
+    {"Forced", kDisableU18FeedbackDesktopForced, nullptr},
+};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -12464,6 +12470,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kHandleMdmErrorsForDasherAccountsName,
      flag_descriptions::kHandleMdmErrorsForDasherAccountsDescription, kOsAll,
      FEATURE_VALUE_TYPE(switches::kHandleMdmErrorsForDasherAccounts)},
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+    {"disable-u18-feedback-desktop",
+     flag_descriptions::kDisableU18FeedbackDesktopName,
+     flag_descriptions::kDisableU18FeedbackDesktopDescription,
+     kOsWin | kOsMac | kOsLinux,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kDisableU18FeedbackDesktop,
+                                    kDisableU18FeedbackDesktopVariations,
+                                    "DisableU18FeedbackDesktop")},
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     {"profile-creation-decline-signin-cta-experiment",
