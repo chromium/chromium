@@ -100,11 +100,6 @@ void ChangeProfileForceSignoutContinuation(SceneState* scene_state,
     Browser* browser =
         scene_state.browserProviderInterface.currentBrowserProvider.browser;
     CHECK(browser);
-    // TODO(crbug.com/364574533):Dismiss in-progress signin here and show the
-    // prompt in the callback of its completion. This requires a new
-    // SceneCommands handler method to call
-    // SceneController::interruptSigninCoordinatorAnimated or directly show the
-    // force sign out prompt.
     id<PolicyChangeCommands> policy_change_handler = HandlerForProtocol(
         browser->GetCommandDispatcher(), PolicyChangeCommands);
     [policy_change_handler showForceSignedOutPrompt];

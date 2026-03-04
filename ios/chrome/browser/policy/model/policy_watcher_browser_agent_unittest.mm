@@ -382,9 +382,6 @@ TEST_F(PolicyWatcherBrowserAgentTest, CommandSentWhenUIIsDismissed) {
   run_loop.Run();
 
   EXPECT_OCMOCK_VERIFY(mockHandler);
-
-  // TODO(crbug.com/364574533): Reset the expectation for the SignInUIDismissed
-  // call.
 }
 
 // Tests that the handler is called and the alert shown as expected.
