@@ -38,7 +38,7 @@ std::optional<bool> g_low_latency_usage_supported_for_canvas_2d_for_testing;
 }
 
 #if BUILDFLAG(IS_APPLE)
-bool Canvas2DSharedImagesBackedByIOSurface() {
+bool IsDelegatedCompositingEnabled() {
   static const bool backed_by_io_surface =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableGpuMemoryBufferCompositorResources);
@@ -369,8 +369,12 @@ bool SharedGpuContext::NativeMappableSharedImagesSupportedForCanvas2D() {
   }
 
 #if BUILDFLAG(IS_APPLE)
-  // Native mappable SIs are supported if canvas2D SIs are backed by IOSurfaces.
-  return Canvas2DSharedImagesBackedByIOSurface();
+  // Native mappable SharedImage is always available on Apple platforms. If
+  // delegated compositing is enabled, we exploit this fact to use mappable
+  // SharedImages as the backing for 2D canvases. Note that we know that in
+  // this case they will have SCANOUT usage added as well (see the method
+  // below).
+  return IsDelegatedCompositingEnabled();
 #else
   return false;
 #endif
@@ -383,9 +387,12 @@ void SharedGpuContext::
 
 bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
 #if BUILDFLAG(IS_APPLE)
-  // If canvas2D SIs will be backed by IOSurfaces, we want them to go into
-  // overlays to exploit delegated compositing.
-  return Canvas2DSharedImagesBackedByIOSurface();
+  // Delegated compositing on Apple platforms is all-or-nothing as there is no
+  // API for partial delegation. Hence, if delegated compositing is enabled, we
+  // want 2D canvases to end up in overlays.
+  // We could consider extending this to other platforms that use delegated
+  // compositing (e.g., Windows).
+  return IsDelegatedCompositingEnabled();
 #else
   return false;
 #endif
@@ -422,7 +429,7 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
   // low-latency usage on Mac (currently setting the desynchronized attribute
   // on a canvas is a no-op on Mac). If/once that bug is resolved, determine
   // whether this method can then return true on Apple if
-  // Canvas2DSharedImagesBackedByIOSurface() holds.
+  // IsDelegatedCompositingEnabled() holds.
   return base::FeatureList::IsEnabled(
       features::kLowLatencyCanvas2dImageChromium);
 }
