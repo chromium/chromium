@@ -334,12 +334,11 @@ EntityInstance::EntityInstance(
     std::string frecency_override)
     : type_(type),
       attributes_(std::move(attributes)),
-      guid_(std::move(guid)),
       nickname_(std::move(nickname)),
-      entity_metadata_{.guid = guid_,
-                       .date_modified = date_modified,
-                       .use_count = use_count,
-                       .use_date = use_date},
+      metadata_{.guid = std::move(guid),
+                .date_modified = date_modified,
+                .use_count = use_count,
+                .use_date = use_date},
       record_type_(record_type),
       are_attributes_read_only_(are_attributes_read_only),
       frecency_override_(std::move(frecency_override)) {
@@ -429,8 +428,8 @@ EntityInstance::EntityMergeability::operator=(
 EntityInstance::EntityMergeability::~EntityMergeability() = default;
 
 void EntityInstance::RecordEntityUsed(base::Time date) {
-  entity_metadata_.use_date = date;
-  ++entity_metadata_.use_count;
+  metadata_.use_date = date;
+  ++metadata_.use_count;
 }
 
 EntityInstance::EntityMergeability EntityInstance::GetEntityMergeability(
@@ -647,7 +646,7 @@ bool EntityInstance::IsUnmaskedServerEntity() const {
 
 EntityInstance EntityInstance::CopyWithNewEntityId(EntityId id) const {
   EntityInstance new_instance = *this;
-  new_instance.guid_ = std::move(id);
+  new_instance.metadata_.guid = std::move(id);
   return new_instance;
 }
 
