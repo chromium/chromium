@@ -32,6 +32,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_UP_SAMPLER_H_
 
 #include <memory>
+
+#include "base/containers/span.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/direct_convolver.h"
 #include "third_party/blink/renderer/platform/audio/simple_fft_convolver.h"
@@ -50,10 +52,8 @@ class PLATFORM_EXPORT UpSampler final {
   UpSampler(const UpSampler&) = delete;
   UpSampler& operator=(const UpSampler&) = delete;
 
-  // The destination buffer |destP| is of size sourceFramesToProcess * 2.
-  void Process(const float* source_p,
-               float* dest_p,
-               uint32_t source_frames_to_process);
+  // The destination buffer `dest` is of size source.size() * 2.
+  void Process(base::span<const float> source, base::span<float> dest);
 
   void Reset();
 

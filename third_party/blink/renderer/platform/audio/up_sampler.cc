@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
@@ -95,9 +94,9 @@ UpSampler::UpSampler(unsigned input_block_size)
   }
 }
 
-void UpSampler::Process(const float* source_p,
-                        float* dest_p,
-                        uint32_t source_frames_to_process) {
+void UpSampler::Process(base::span<const float> source,
+                        base::span<float> dest) {
+  const size_t source_frames_to_process = source.size();
   const size_t convolution_kernel_size =
       direct_convolver_ ? direct_convolver_->ConvolutionKernelSize()
                         : simple_fft_convolver_->ConvolutionKernelSize();
@@ -108,37 +107,41 @@ void UpSampler::Process(const float* source_p,
 
   size_t half_size = convolution_kernel_size / 2;
 
+  DCHECK_EQ(dest.size(), source_frames_to_process * 2);
   DCHECK_EQ(input_buffer_.size(), source_frames_to_process * 2);
   DCHECK_LE(half_size, source_frames_to_process);
 
+  base::span<float> input_buffer_span = input_buffer_.as_span();
+  base::span<float> second_half =
+      input_buffer_span.subspan(source_frames_to_process);
+
   // Copy source samples to 2nd half of input buffer.
-  float* input_p = UNSAFE_TODO(input_buffer_.Data() + source_frames_to_process);
-  UNSAFE_TODO(
-      memcpy(input_p, source_p, sizeof(float) * source_frames_to_process));
+  second_half.copy_from(source);
 
   // Copy even sample-frames 0,2,4,6... (delayed by the linear phase delay)
-  // directly into destP.
-  for (unsigned i = 0; i < source_frames_to_process; ++i) {
-    UNSAFE_TODO(dest_p[i * 2]) = *(UNSAFE_TODO((input_p - half_size) + i));
+  // directly into dest.
+  base::span<const float> delayed_input = input_buffer_span.subspan(
+      source_frames_to_process - half_size, source_frames_to_process);
+  for (size_t i = 0; i < source_frames_to_process; ++i) {
+    dest[i * 2] = delayed_input[i];
   }
 
   // Compute odd sample-frames 1,3,5,7...
-  float* odd_samples_p = temp_buffer_.Data();
+  base::span<float> odd_samples = temp_buffer_.as_span();
   if (direct_convolver_) {
-    direct_convolver_->Process(source_p, odd_samples_p,
+    direct_convolver_->Process(source.data(), odd_samples.data(),
                                source_frames_to_process);
   } else {
-    simple_fft_convolver_->Process(source_p, odd_samples_p,
+    simple_fft_convolver_->Process(source.data(), odd_samples.data(),
                                    source_frames_to_process);
   }
 
   for (unsigned i = 0; i < source_frames_to_process; ++i) {
-    UNSAFE_TODO(dest_p[i * 2 + 1]) = UNSAFE_TODO(odd_samples_p[i]);
+    dest[i * 2 + 1] = odd_samples[i];
   }
 
   // Copy 2nd half of input buffer to 1st half.
-  UNSAFE_TODO(memcpy(input_buffer_.Data(), input_p,
-                     sizeof(float) * source_frames_to_process));
+  input_buffer_span.first(source_frames_to_process).copy_from(second_half);
 }
 
 void UpSampler::Reset() {

@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/modules/webaudio/wave_shaper_handler.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
@@ -270,36 +272,41 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
               break;
 
             case V8OverSampleType::Enum::k2X: {
-              float* temp_p = kernels_[i]->temp_buffer_->Data();
-              kernels_[i]->up_sampler_->Process(source_bus->Channel(i)->Data(),
-                                                temp_p, frames_to_process);
+              auto temp_span = kernels_[i]->temp_buffer_->as_span().first(
+                  frames_to_process * 2);
+              kernels_[i]->up_sampler_->Process(
+                  source_bus->Channel(i)->Span().first(frames_to_process),
+                  temp_span);
 
               // Process at 2x up-sampled rate.
-              WaveShaperCurveValues(temp_p, temp_p, frames_to_process * 2,
-                                    curve_data, curve_length);
+              WaveShaperCurveValues(temp_span.data(), temp_span.data(),
+                                    frames_to_process * 2, curve_data,
+                                    curve_length);
 
               kernels_[i]->down_sampler_->Process(
-                  temp_p, destination_bus->Channel(i)->MutableData(),
+                  temp_span.data(), destination_bus->Channel(i)->MutableData(),
                   frames_to_process * 2);
             } break;
 
             case V8OverSampleType::Enum::k4X: {
-              float* temp_p = kernels_[i]->temp_buffer_->Data();
-              float* temp_p2 = kernels_[i]->temp_buffer2_->Data();
-
-              kernels_[i]->up_sampler_->Process(source_bus->Channel(i)->Data(),
-                                                temp_p, frames_to_process);
-              kernels_[i]->up_sampler2_->Process(temp_p, temp_p2,
-                                                 frames_to_process * 2);
+              auto temp_span = kernels_[i]->temp_buffer_->as_span().first(
+                  frames_to_process * 2);
+              auto temp_span2 = kernels_[i]->temp_buffer2_->as_span().first(
+                  frames_to_process * 4);
+              kernels_[i]->up_sampler_->Process(
+                  source_bus->Channel(i)->Span().first(frames_to_process),
+                  temp_span);
+              kernels_[i]->up_sampler2_->Process(temp_span, temp_span2);
 
               // Process at 4x up-sampled rate.
-              WaveShaperCurveValues(temp_p2, temp_p2, frames_to_process * 4,
-                                    curve_data, curve_length);
+              WaveShaperCurveValues(temp_span2.data(), temp_span2.data(),
+                                    frames_to_process * 4, curve_data,
+                                    curve_length);
 
-              kernels_[i]->down_sampler2_->Process(temp_p2, temp_p,
-                                                   frames_to_process * 4);
+              kernels_[i]->down_sampler2_->Process(
+                  temp_span2.data(), temp_span.data(), frames_to_process * 4);
               kernels_[i]->down_sampler_->Process(
-                  temp_p, destination_bus->Channel(i)->MutableData(),
+                  temp_span.data(), destination_bus->Channel(i)->MutableData(),
                   frames_to_process * 2);
             } break;
           }
