@@ -700,16 +700,6 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicSettings, std::move(info)));
 }
 
-TEST_F(BrowserCommandHandlerTest, PrewarmGlicFreCommand) {
-  // The PrewarmGlicFre command prewarms the Glic FRE.
-  EXPECT_TRUE(CanExecuteCommand(Command::kPrewarmGlicFre));
-  ClickInfoPtr info = ClickInfo::New();
-  info->middle_button = true;
-  info->meta_key = true;
-  EXPECT_CALL(*command_handler_, PrewarmGlicFre());
-  EXPECT_TRUE(ExecuteCommand(Command::kPrewarmGlicFre, std::move(info)));
-}
-
 TEST_F(BrowserCommandHandlerTest, OpenSplitViewCommand) {
   EXPECT_TRUE(CanExecuteCommand(Command::kOpenSplitView));
   ClickInfoPtr info = ClickInfo::New();

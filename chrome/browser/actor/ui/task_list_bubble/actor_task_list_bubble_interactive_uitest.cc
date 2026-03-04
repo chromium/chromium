@@ -39,7 +39,6 @@ class ActorTaskListBubbleInteractiveUiTest
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlicRollout, {}},
-            {features::kGlicFreWarming, {}},
             {features::kGlicActor,
              {{features::kGlicActorPolicyControlExemption.name, "true"}}},
             {features::kGlicActorUi,

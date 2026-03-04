@@ -136,9 +136,8 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
  public:
   GlicIphControllerTestClassic()
       : GlicIphControllerTestBase({feature_engagement::kIPHGlicPromoFeature}) {
-    // enables FRE warming to test that successful IPH will warm the FRE.
     scoped_feature_list_.InitWithFeatures(
-        {features::kGlicFreWarming},
+        /*enabled_features=*/{},
         /*disabled_features=*/{feature_engagement::kIPHGlicTryItFeature,
                                features::kGlicTrustFirstOnboarding,
                                features::kGlicMultiInstance});
@@ -149,12 +148,9 @@ class GlicIphControllerTestClassic : public GlicIphControllerTestBase {
 // Test that settings changes are reflected in the show state of the controller
 // delegate.
 IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic, ShowPromo) {
-  RunTestSequence(ExpectWarmedFre(false),
-                  ObserveState(kFreWebUiState, std::ref(GetFreController())),
+  RunTestSequence(ObserveState(kFreWebUiState, std::ref(GetFreController())),
                   WaitForGlicIph({feature_engagement::kIPHGlicPromoFeature}),
-                  WaitForState(kFreWebUiState, mojom::FreWebUiState::kReady),
-                  ExpectWarmedFre(true), PressDefaultPromoButton(),
-                  StopObservingState(kFreWebUiState));
+                  PressDefaultPromoButton());
 }
 
 // Confirms that the promo is not shown if the user's profile has a signed-in
@@ -171,9 +167,7 @@ IN_PROC_BROWSER_TEST_F(GlicIphControllerTestClassic,
       ShowPromoForTest(),
       // Checks that the showing of the IPH was not actually requested to the
       // user education system.
-      CheckPromoRequested(feature_engagement::kIPHGlicPromoFeature, false),
-      // Checks that the FRE was not pre-warmed.
-      ExpectWarmedFre(false));
+      CheckPromoRequested(feature_engagement::kIPHGlicPromoFeature, false));
 }
 
 class GlicIphControllerTestTryIt : public GlicIphControllerTestBase {

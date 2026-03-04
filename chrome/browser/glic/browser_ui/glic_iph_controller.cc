@@ -86,10 +86,6 @@ void GlicIphController::OnShowPromoResult(
   if (result.is_blocked_this_instance()) {
     show_timer_.Stop();
   }
-
-  if (result == user_education::FeaturePromoResult::Success() && !show_cta_) {
-    glic_service_->TryPreloadFre(glic::GlicPrewarmingFreSource::kIph);
-  }
 }
 
 }  // namespace glic

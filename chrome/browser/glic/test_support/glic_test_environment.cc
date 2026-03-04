@@ -202,8 +202,8 @@ std::vector<base::test::FeatureRef> GetDefaultEnabledGlicTestFeatures() {
   };
 }
 std::vector<base::test::FeatureRef> GetDefaultDisabledGlicTestFeatures() {
-  return {features::kGlicWarming, features::kGlicFreWarming,
-          features::kGlicCountryFiltering, features::kGlicLocaleFiltering};
+  return {features::kGlicWarming, features::kGlicCountryFiltering,
+          features::kGlicLocaleFiltering};
 }
 
 GlicTestEnvironment::GlicTestEnvironment(

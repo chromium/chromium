@@ -73,16 +73,6 @@ class GlicWebContentsWarmingPool;
 
 enum class GlicPrewarmingChecksResult;
 
-// LINT.IfChange(GlicPrewarmingFreSource)
-enum class GlicPrewarmingFreSource {
-  kWhatsNew = 0,
-  kNudge = 1,
-  kIph = 2,
-  kTest = 3,
-  kBrowserCommand = 4,
-  kMaxValue = kBrowserCommand,
-};
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicPrewarmingFreSource)
 
 #if !BUILDFLAG(IS_ANDROID)  // Single instance only
 class GlicActorTaskManager;
@@ -341,7 +331,6 @@ class GlicKeyedService : public KeyedService,
 
   virtual void TryPreload();
   void TryPreloadAfterDelay();
-  virtual void TryPreloadFre(GlicPrewarmingFreSource source);
   void Reload(content::RenderFrameHost* render_frame_host);
   // Close the active embedder for an instance associated with this render frame
   // host.
@@ -449,8 +438,6 @@ class GlicKeyedService : public KeyedService,
                         std::optional<std::string> conversation_id);
 
   void FinishPreload(GlicPrewarmingChecksResult reason);
-  void FinishPreloadFre(GlicPrewarmingFreSource source,
-                        GlicPrewarmingChecksResult result);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

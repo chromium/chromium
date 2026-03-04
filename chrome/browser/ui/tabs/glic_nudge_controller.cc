@@ -93,10 +93,6 @@ void GlicNudgeController::OnNudgeActivity(GlicNudgeActivity activity) {
   }
   switch (activity) {
     case GlicNudgeActivity::kNudgeShown: {
-      auto* profile = browser_window_interface_->GetProfile();
-      auto* glic_service =
-          glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
-      glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kNudge);
       nudge_activity_callback_.Run(GlicNudgeActivity::kNudgeShown);
       scoped_call_to_action_lock_ =
           CallToActionLock::From(browser_window_interface_)->AcquireLock();

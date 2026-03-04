@@ -118,13 +118,6 @@ void WhatsNewHandler::RecordModuleImpression(
   if (interaction_data) {
     interaction_data->add_module_shown(module_name, position);
   }
-
-  if (module_name == "GlicIntro") {
-    if (auto* glic_service =
-            glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile_)) {
-      glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kWhatsNew);
-    }
-  }
 }
 
 void WhatsNewHandler::RecordExploreMoreToggled(bool expanded) {

@@ -71,7 +71,6 @@ class SkillsInteractiveUiTest
                               glic::mojom::features::kGlicMultiTab,
                               features::kGlicMultitabUnderlines},
         /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming,
                                features::kGlicTrustFirstOnboarding});
     // Ensure that we open the FRE.
     glic_test_environment().SetFreStatusForNewProfiles(std::nullopt);

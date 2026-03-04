@@ -238,26 +238,6 @@ void GlicProfileManager::ShouldPreloadForProfile(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
 
-void GlicProfileManager::ShouldPreloadFreForProfile(
-    Profile* profile,
-    ShouldPreloadCallback callback) {
-  if (!base::FeatureList::IsEnabled(features::kGlicFreWarming)) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       GlicPrewarmingChecksResult::kWarmingDisabled));
-    return;
-  }
-  if (GlicEnabling::IsEnabledAndConsentForProfile(profile)) {
-    // We only want to preload the FRE if it has not been completed.
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(callback),
-                       GlicPrewarmingChecksResult::kUserAlreadyWentTroughFre));
-    return;
-  }
-  CanPreloadForProfile(profile, std::move(callback));
-}
 
 GlicKeyedService* GlicProfileManager::GetLastActiveGlic() const {
   return last_active_glic_.get();

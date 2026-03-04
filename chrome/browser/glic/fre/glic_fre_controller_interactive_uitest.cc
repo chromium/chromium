@@ -167,7 +167,6 @@ class GlicFreControllerUiTest : public GlicFreControllerUiTestBase {
         /*enabled_features=*/{},
         /*disabled_features=*/{
             features::kGlicWarming,
-            features::kGlicFreWarming,
             features::kGlicTrustFirstOnboarding,
             features::kGlicUnifiedFreScreen,
         });
@@ -423,8 +422,7 @@ class GlicFreControllerUiUnifiedTest : public GlicFreControllerUiTest {
   void InitializeFeatures() override {
     features_.InitWithFeatures(
         /*enabled_features=*/{features::kGlicUnifiedFreScreen},
-        /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming});
+        /*disabled_features=*/{features::kGlicWarming});
   }
 };
 
@@ -453,7 +451,6 @@ class GlicFreControllerUiHttpErrorTest : public GlicFreControllerUiTestBase {
     features_.InitWithFeatures(
         /*enabled_features=*/{},
         /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming,
                                features::kGlicTrustFirstOnboarding,
                                features::kGlicUnifiedFreScreen});
 
@@ -520,7 +517,6 @@ class GlicFreControllerUiTimeoutTest : public GlicFreControllerUiTestBase {
     features_.InitWithFeaturesAndParameters(
         enabled_features,
         /*disabled_features=*/{features::kGlicWarming,
-                               features::kGlicFreWarming,
                                features::kGlicTrustFirstOnboarding,
                                features::kGlicUnifiedFreScreen});
 
@@ -570,9 +566,9 @@ class GlicFreControllerRedirectTest : public GlicFreControllerUiTestBase,
 
     features_.InitWithFeaturesAndParameters(
         enabled_features,
-        /*disabled_features=*/{
-            features::kGlicTrustFirstOnboarding, features::kGlicWarming,
-            features::kGlicFreWarming, features::kGlicUnifiedFreScreen});
+        /*disabled_features=*/{features::kGlicTrustFirstOnboarding,
+                               features::kGlicWarming,
+                               features::kGlicUnifiedFreScreen});
     GlicFreControllerUiTestBase::SetUp();
   }
 

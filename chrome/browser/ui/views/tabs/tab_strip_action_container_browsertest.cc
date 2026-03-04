@@ -89,7 +89,6 @@ class TabStripActionContainerBrowserTest : public InProcessBrowserTest {
     feature_list_.InitWithFeaturesAndParameters(
         {
             {features::kGlicRollout, {}},
-            {features::kGlicFreWarming, {}},
             {features::kGlicActorUi,
              { {features::kGlicActorUiTaskIconName, "true"} }},
             {contextual_cueing::kContextualCueing, {}},

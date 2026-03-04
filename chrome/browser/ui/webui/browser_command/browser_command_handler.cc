@@ -253,7 +253,7 @@ void BrowserCommandHandler::ExecuteCommandWithDisposition(
       OpenGlicSettings();
       break;
     case Command::kPrewarmGlicFre:
-      PrewarmGlicFre();
+      // No-op: Glic FRE pre-warming is removed.
       break;
     case Command::kOpenSplitView:
       OpenSplitView();
@@ -398,13 +398,6 @@ void BrowserCommandHandler::OpenGlicSettings() {
 #endif
     NavigateToURL(net::AppendOrReplaceQueryParameter(GURL(url), "p", ks_param),
                   WindowOpenDisposition::SINGLETON_TAB);
-  }
-}
-
-void BrowserCommandHandler::PrewarmGlicFre() {
-  glic::GlicKeyedService* glic_service = glic::GlicKeyedService::Get(profile_);
-  if (glic_service) {
-    glic_service->TryPreloadFre(glic::GlicPrewarmingFreSource::kBrowserCommand);
   }
 }
 

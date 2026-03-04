@@ -815,14 +815,6 @@ void GlicKeyedService::TryPreloadAfterDelay() {
   }
 }
 
-void GlicKeyedService::TryPreloadFre(GlicPrewarmingFreSource source) {
-  GlicProfileManager* glic_profile_manager = GlicProfileManager::GetInstance();
-  CHECK(glic_profile_manager);
-
-  glic_profile_manager->ShouldPreloadFreForProfile(
-      profile_, base::BindOnce(&GlicKeyedService::FinishPreloadFre,
-                               GetWeakPtr(), source));
-}
 
 void GlicKeyedService::Reload(content::RenderFrameHost* render_frame_host) {
   if (fre_controller_->IsShowingDialog()) {
@@ -879,23 +871,6 @@ void GlicKeyedService::FinishPreload(GlicPrewarmingChecksResult result) {
   }
 }
 
-void GlicKeyedService::FinishPreloadFre(GlicPrewarmingFreSource source,
-                                        GlicPrewarmingChecksResult result) {
-  if (result != GlicPrewarmingChecksResult::kSuccess) {
-    // If FRE preloading was rejected, log error metrics and return.
-    base::UmaHistogramEnumeration(
-        "Glic.PrewarmingFre.ShouldNotPreloadFreForSource", source);
-    if (result == GlicPrewarmingChecksResult::kWarmingDisabled) {
-      base::UmaHistogramEnumeration(
-          "Glic.PrewarmingFre.DisabledShouldNotPreloadFreForSource", source);
-    }
-    return;
-  }
-
-  base::UmaHistogramEnumeration("Glic.PrewarmingFre.ShouldPreloadFreForSource",
-                                source);
-  fre_controller().TryPreload();
-}
 
 bool GlicKeyedService::IsProcessHostForGlic(
     content::RenderProcessHost* process_host) {
