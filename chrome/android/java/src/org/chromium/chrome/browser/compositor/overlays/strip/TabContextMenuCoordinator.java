@@ -707,6 +707,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             .withClickListener(clickListener)
                             .withIsIncognito(false)
                             .withStartIconDrawable(getCircleDrawable(colorId, false))
+                            .withShouldTintIcon(false)
                             .build());
         }
         return result;
@@ -740,6 +741,7 @@ public class TabContextMenuCoordinator extends TabStripReorderingHelper<AnchorIn
                             .withStartIconDrawable(
                                     getCircleDrawable(
                                             mTabGroupModelFilter.getTabGroupColor(groupId), true))
+                            .withShouldTintIcon(false)
                             .build());
         }
         return result;

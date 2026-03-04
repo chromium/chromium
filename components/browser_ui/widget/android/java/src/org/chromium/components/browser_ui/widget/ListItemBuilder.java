@@ -41,6 +41,7 @@ public class ListItemBuilder {
     private @Nullable String mContentDescription;
     private boolean mIsTextEllipsizedAtEnd;
     private boolean mIsIncognito;
+    private boolean mShouldTintIcon;
     private @ColorRes int mIconTintColorStateList;
     private @Nullable List<ListItem> mSubmenuItems;
     private @StyleRes int mTextAppearanceStyle;
@@ -56,6 +57,7 @@ public class ListItemBuilder {
         mTextAppearanceStyle = Resources.ID_NULL;
 
         mEnabled = true;
+        mShouldTintIcon = true;
     }
 
     /**
@@ -96,6 +98,14 @@ public class ListItemBuilder {
      */
     public ListItemBuilder withStartIconDrawable(@Nullable Drawable startIconDrawable) {
         mStartIconDrawable = startIconDrawable;
+        return this;
+    }
+
+    /**
+     * @param shouldTintIcon Whether the icon should be tinted. By default, icons are tinted.
+     */
+    public ListItemBuilder withShouldTintIcon(boolean shouldTintIcon) {
+        mShouldTintIcon = shouldTintIcon;
         return this;
     }
 
@@ -162,7 +172,7 @@ public class ListItemBuilder {
 
     /**
      * @param iconTintColorStateList The tint color for the icon. By default, this is set to {@link
-     *     Resources#ID_NULL}.
+     *     Resources#ID_NULL}, which results in "default tinting" being applied.
      */
     public ListItemBuilder withIconTintColorStateList(@ColorRes int iconTintColorStateList) {
         mIconTintColorStateList = iconTintColorStateList;
@@ -194,12 +204,6 @@ public class ListItemBuilder {
                                 ? new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
                                 : new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS))
                         .with(
-                                ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                                mIconTintColorStateList != Resources.ID_NULL
-                                        ? mIconTintColorStateList
-                                        : BrowserUiListMenuUtils
-                                                .getDefaultIconTintColorStateListId())
-                        .with(
                                 ListMenuItemProperties.TEXT_APPEARANCE_ID,
                                 mTextAppearanceStyle != Resources.ID_NULL
                                         ? mTextAppearanceStyle
@@ -217,16 +221,24 @@ public class ListItemBuilder {
             builder.with(ListMenuItemProperties.MENU_ITEM_ID, mMenuId)
                     .with(ListMenuItemProperties.START_ICON_ID, mStartIconRes)
                     .with(ListMenuItemProperties.END_ICON_ID, mEndIconRes);
-
-            if (mStartIconDrawable != null) {
-                builder.with(ListMenuItemProperties.START_ICON_DRAWABLE, mStartIconDrawable);
-            }
         } else {
             builder.with(ListMenuSubmenuItemProperties.SUBMENU_ITEMS, mSubmenuItems);
         }
 
+        if (mShouldTintIcon) {
+            builder.with(
+                    ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                    mIconTintColorStateList != Resources.ID_NULL
+                            ? mIconTintColorStateList
+                            : BrowserUiListMenuUtils.getDefaultIconTintColorStateListId());
+        }
+
         if (mStartIconBitmap != null) {
             builder.with(ListMenuItemProperties.START_ICON_BITMAP, mStartIconBitmap);
+        }
+
+        if (mStartIconDrawable != null) {
+            builder.with(ListMenuItemProperties.START_ICON_DRAWABLE, mStartIconDrawable);
         }
 
         if (mClickListener != null) {
@@ -243,16 +255,18 @@ public class ListItemBuilder {
 
         if (mIsIncognito) {
             builder.with(
-                            ListMenuItemProperties.TEXT_APPEARANCE_ID,
-                            mTextAppearanceStyle != Resources.ID_NULL
-                                    ? mTextAppearanceStyle
-                                    : R.style
-                                            .TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light)
-                    .with(
-                            ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
-                            mIconTintColorStateList != Resources.ID_NULL
-                                    ? mIconTintColorStateList
-                                    : R.color.default_icon_color_light_tint_list);
+                    ListMenuItemProperties.TEXT_APPEARANCE_ID,
+                    mTextAppearanceStyle != Resources.ID_NULL
+                            ? mTextAppearanceStyle
+                            : R.style
+                                    .TextAppearance_DensityAdaptive_TextLarge_Primary_Baseline_Light);
+            if (mShouldTintIcon) {
+                builder.with(
+                        ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID,
+                        mIconTintColorStateList != Resources.ID_NULL
+                                ? mIconTintColorStateList
+                                : R.color.default_icon_color_light_tint_list);
+            }
         }
 
         return hasSubmenu

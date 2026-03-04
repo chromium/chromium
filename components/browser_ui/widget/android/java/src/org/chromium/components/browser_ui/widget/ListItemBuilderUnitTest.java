@@ -230,4 +230,27 @@ public class ListItemBuilderUnitTest {
                 R.color.default_icon_color_light_tint_list,
                 model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
     }
+
+    @Test
+    public void testBuild_noTint() {
+        ListItem listItem = new ListItemBuilder().withShouldTintIcon(false).build();
+        PropertyModel model = listItem.model;
+
+        assertEquals(
+                "Icon tint should be 0 when tinting is disabled",
+                0,
+                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+    }
+
+    @Test
+    public void testBuild_noTint_incognito() {
+        ListItem listItem =
+                new ListItemBuilder().withIsIncognito(true).withShouldTintIcon(false).build();
+        PropertyModel model = listItem.model;
+
+        assertEquals(
+                "Icon tint should be 0 when tinting is disabled in incognito",
+                0,
+                model.get(ListMenuItemProperties.ICON_TINT_COLOR_STATE_LIST_ID));
+    }
 }
