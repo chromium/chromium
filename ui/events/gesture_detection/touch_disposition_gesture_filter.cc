@@ -6,10 +6,14 @@
 
 #include <stddef.h>
 
+#include <optional>
 #include <utility>
 
+#include "base/auto_reset.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/notreached.h"
+#include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/gesture_event_details.h"
@@ -23,13 +27,12 @@ static_assert(std::to_underlying(EventType::kGestureTypeEnd) -
                   32,
               "gesture type count too large");
 
-GestureEventData CreateGesture(EventType type,
+GestureEventData CreateGesture(GestureEventDetails details,
                                int motion_event_id,
                                MotionEvent::ToolType primary_tool_type,
                                const GestureEventDataPacket& packet) {
   // As the event is purely synthetic, we needn't be strict with event flags.
   int flags = EF_NONE;
-  GestureEventDetails details(type);
   details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
   return GestureEventData(details,
                           motion_event_id,
@@ -43,6 +46,14 @@ GestureEventData CreateGesture(EventType type,
                           gfx::RectF(packet.touch_location(), gfx::SizeF()),
                           flags,
                           packet.unique_touch_event_id());
+}
+
+GestureEventData CreateGesture(EventType type,
+                               int motion_event_id,
+                               MotionEvent::ToolType primary_tool_type,
+                               const GestureEventDataPacket& packet) {
+  return CreateGesture(GestureEventDetails(type), motion_event_id,
+                       primary_tool_type, packet);
 }
 
 enum RequiredTouches {
@@ -145,6 +156,11 @@ bool DoAddInputTimestampsToGesture(const GestureEventData& gesture_data) {
          gesture_data.type() == EventType::kGestureScrollBegin;
 }
 
+base::TimeTicks* GetReferenceTimestampOverride() {
+  static base::TimeTicks s_reference_timestamp_override;
+  return &s_reference_timestamp_override;
+}
+
 }  // namespace
 
 // TouchDispositionGestureFilter
@@ -159,6 +175,12 @@ TouchDispositionGestureFilter::TouchDispositionGestureFilter(
       needs_fling_ending_event_(false),
       needs_scroll_ending_event_(false) {
   DCHECK(client_);
+  if (base::FeatureList::IsEnabled(
+          features::kCompensateGestureScrollUpdateLatency)) {
+    scroll_update_compensator_.emplace(
+        base::Milliseconds(features::kCompensationExpectedLatencyMs.Get()),
+        base::Milliseconds(features::kCompensationAcceptableLatencyMs.Get()));
+  }
 }
 
 TouchDispositionGestureFilter::~TouchDispositionGestureFilter() {
@@ -362,6 +384,19 @@ void TouchDispositionGestureFilter::FilterAndSendPacket(
       DCHECK_EQ(1U, packet.gesture_count());
       return;
     }
+    if (gesture.type() == EventType::kGestureScrollUpdate &&
+        scroll_update_compensator_) {
+      GestureEventData compensated_gesture =
+          scroll_update_compensator_->GetCompensatedGestureScrollUpdate(
+              packet, gesture);
+
+      // Don't send empty gesture scroll updates to reduce IPCs.
+      if (compensated_gesture.details.scroll_x() != 0.f ||
+          compensated_gesture.details.scroll_y() != 0.f) {
+        SendGesture(compensated_gesture, packet);
+      }
+      continue;
+    }
     // Occasionally scroll or tap cancel events are synthesized when a touch
     // sequence has been canceled or terminated, we want to make sure that
     // EventType::kGestureEnd always happens after them.
@@ -442,6 +477,12 @@ void TouchDispositionGestureFilter::SendGesture(
       ending_event_primary_tool_type_ = event.primary_tool_type;
       needs_scroll_ending_event_ = true;
       scroll_begin_consumed_ = state_.current_touch_consumed();
+      if (scroll_update_compensator_.has_value()) {
+        // The reference timestamp here since it is a good approximation of when
+        // the ack for the first touch move is received.
+        scroll_update_compensator_->SetReferenceTimestamp(
+            base::TimeTicks::Now());
+      }
       break;
     case EventType::kGestureScrollEnd:
       needs_scroll_ending_event_ = false;
@@ -555,6 +596,57 @@ bool TouchDispositionGestureFilter::GestureHandlingState::
     HasFilteredGestureType(EventType gesture_type) const {
   return any_gesture_of_type_dropped_.has_bit(
       GetGestureTypeIndex(gesture_type));
+}
+
+TouchDispositionGestureFilter::ScrollUpdateCompensator::ScrollUpdateCompensator(
+    base::TimeDelta expected_latency,
+    base::TimeDelta acceptable_latency)
+    : expected_latency_(expected_latency),
+      acceptable_latency_(acceptable_latency) {
+  CHECK_GE(acceptable_latency_, expected_latency_);
+}
+
+// static
+TouchDispositionGestureFilter::AckTimestampOverride
+TouchDispositionGestureFilter::OverrideReferenceTimestampForTesting(  // IN-TEST
+    base::TimeTicks reference_timestamp) {
+  return base::AutoReset<base::TimeTicks>(GetReferenceTimestampOverride(),
+                                          reference_timestamp);
+}
+
+void TouchDispositionGestureFilter::ScrollUpdateCompensator::
+    SetReferenceTimestamp(base::TimeTicks reference_timestamp) {
+  const auto* timestamp_override = GetReferenceTimestampOverride();
+  if (timestamp_override->is_null()) {
+    reference_timestamp_ = reference_timestamp;
+  } else {
+    CHECK_IS_TEST();
+    reference_timestamp_ = *timestamp_override;
+  }
+}
+
+GestureEventData TouchDispositionGestureFilter::ScrollUpdateCompensator::
+    GetCompensatedGestureScrollUpdate(const GestureEventDataPacket& packet,
+                                      const GestureEventData& gesture) {
+  CHECK_EQ(gesture.type(), EventType::kGestureScrollUpdate);
+  CHECK(!reference_timestamp_.is_null());
+
+  // Packets created more than `acceptable_latency_` before the
+  // `reference_timestamp_` are zeroed out. Packets created after or within
+  // `expected_latency_` of `reference_timestamp_` are sent unmodified. For
+  // other packets, the compensation factor is a linear interpolation of the
+  // packet's timestamp.
+  base::TimeDelta delay = reference_timestamp_ - packet.timestamp();
+  float compensation =
+      std::clamp<float>(1.f - (delay - expected_latency_) /
+                                  (acceptable_latency_ - expected_latency_),
+                        0.f, 1.f);
+
+  return CreateGesture(
+      GestureEventDetails(EventType::kGestureScrollUpdate,
+                          gesture.details.scroll_x() * compensation,
+                          gesture.details.scroll_y() * compensation),
+      packet.unique_touch_event_id(), packet.tool_type(), packet);
 }
 
 }  // namespace content

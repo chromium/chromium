@@ -9,8 +9,10 @@
 
 #include <optional>
 
+#include "base/auto_reset.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
+#include "base/time/time.h"
 #include "ui/events/gesture_detection/gesture_detection_export.h"
 #include "ui/events/gesture_detection/gesture_event_data_packet.h"
 #include "ui/events/types/event_type.h"
@@ -74,6 +76,13 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
 
   void ResetGestureHandlingState();
 
+ protected:
+  friend class GestureScrollUpdatesCompensatedTest;
+
+  using AckTimestampOverride = base::AutoReset<base::TimeTicks>;
+  static AckTimestampOverride OverrideReferenceTimestampForTesting(
+      base::TimeTicks reference_timestamp);
+
  private:
   // A single GestureSequence corresponds to all gestures created
   // between the first finger down and the last finger up, including gestures
@@ -119,6 +128,8 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
       const std::optional<EventLatencyMetadata>& event_latency_metadata);
   GestureSequence& Head();
   GestureSequence& Tail();
+  float GestureScrollUpdateCompensationFactor(
+      const GestureEventDataPacket& packet) const;
 
   raw_ptr<TouchDispositionGestureFilterClient> client_;
   base::queue<GestureSequence> sequences_;
@@ -136,6 +147,31 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   bool needs_scroll_ending_event_;
 
   bool scroll_begin_consumed_{false};
+
+  // Utility class for keeping generating gesture scroll updates that compensate
+  // for delays due to slow touchstart/touchmove handlers.
+  class ScrollUpdateCompensator {
+   public:
+    explicit ScrollUpdateCompensator(base::TimeDelta expected_latency,
+                                     base::TimeDelta acceptable_latency);
+    ~ScrollUpdateCompensator() = default;
+
+    ScrollUpdateCompensator(const ScrollUpdateCompensator&) = default;
+    ScrollUpdateCompensator(ScrollUpdateCompensator&&) = default;
+
+    GestureEventData GetCompensatedGestureScrollUpdate(
+        const GestureEventDataPacket& packet,
+        const GestureEventData& gesture);
+
+    void SetReferenceTimestamp(base::TimeTicks reference_timestamp);
+
+   private:
+    const base::TimeDelta expected_latency_;
+    const base::TimeDelta acceptable_latency_;
+    base::TimeTicks reference_timestamp_;
+  };
+
+  std::optional<ScrollUpdateCompensator> scroll_update_compensator_;
 };
 
 }  // namespace ui

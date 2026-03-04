@@ -442,4 +442,18 @@ BASE_FEATURE(kUseClipboardStrictVirtualFileCheck,
 BASE_FEATURE(kAsyncVirtualFileExtraction, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kVirtualFileChunkedRead, base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE(kCompensateGestureScrollUpdateLatency,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(int,
+                   kCompensationExpectedLatencyMs,
+                   &kCompensateGestureScrollUpdateLatency,
+                   "expected_latency_ms",
+                   25);
+BASE_FEATURE_PARAM(int,
+                   kCompensationAcceptableLatencyMs,
+                   &kCompensateGestureScrollUpdateLatency,
+                   "acceptable_latency_ms",
+                   50);
+
 }  // namespace features

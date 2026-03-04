@@ -6,13 +6,19 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <sys/types.h>
 
+#include <cstdint>
+#include <initializer_list>
 #include <memory>
 #include <utility>
 
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/gesture_detection/gesture_event_data.h"
+#include "ui/events/gesture_event_details.h"
 #include "ui/events/test/motion_event_test_utils.h"
 #include "ui/events/types/event_type.h"
 
@@ -179,17 +185,25 @@ class TouchDispositionGestureFilterTest
     pending_gesture_packet_.Push(CreateGesture(type, x, y, diameter));
   }
 
-  const MockMotionEvent& PressTouchPoint(float x, float y) {
+  const MockMotionEvent& PressTouchPoint(
+      float x,
+      float y,
+      base::TimeTicks event_time = base::TimeTicks::Now()) {
     touch_event_.PressPoint(x, y);
     touch_event_.SetRawOffset(raw_offset_.x(), raw_offset_.y());
+    touch_event_.set_event_time(event_time);
     return touch_event_;
   }
 
-  const MockMotionEvent& PressTouchPoint() { return PressTouchPoint(0, 0); }
+  const MockMotionEvent& PressTouchPoint(
+      base::TimeTicks event_time = base::TimeTicks::Now()) {
+    return PressTouchPoint(0, 0, event_time);
+  }
 
-  const MockMotionEvent& MoveTouchPoint() {
+  const MockMotionEvent& MoveTouchPoint(
+      base::TimeTicks event_time = base::TimeTicks::Now()) {
     touch_event_.MovePoint(0, 0, 0);
-    touch_event_.set_event_time(base::TimeTicks::Now());
+    touch_event_.set_event_time(event_time);
     return touch_event_;
   }
 
@@ -1397,6 +1411,99 @@ TEST_F(TouchDispositionGestureFilterTest, GestureBeginEndWhenTouchNotConsumed) {
       GesturesMatch(Gestures(EventType::kGestureShowPress,
                              EventType::kGestureTap, EventType::kGestureEnd),
                     GetAndResetSentGestures()));
+}
+
+class GestureScrollUpdatesCompensatedTest
+    : public TouchDispositionGestureFilterTest {
+ protected:
+  void SetUp() override {
+    scoped_feature_list.InitAndEnableFeature(
+        features::kCompensateGestureScrollUpdateLatency);
+    TouchDispositionGestureFilterTest::SetUp();
+  }
+
+  GestureEventDataPacket CreatePacket(
+      std::initializer_list<GestureEventData> gestures) {
+    GestureEventDataPacket packet;
+    for (auto gesture : gestures) {
+      packet.Push(gesture);
+    }
+    return packet;
+  }
+
+  GestureEventData CreateGestureScrollUpdate(float x, float y) {
+    GestureEventData gesture = CreateGesture(EventType::kGestureScrollUpdate);
+    gesture.details =
+        GestureEventDetails(EventType::kGestureScrollUpdate, x, y);
+    gesture.details.set_device_type(GestureDeviceType::DEVICE_TOUCHSCREEN);
+    return gesture;
+  }
+
+  auto SetAckTimestamp(base::TimeTicks ack) {
+    return TouchDispositionGestureFilter::OverrideReferenceTimestampForTesting(
+        ack);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+TEST_F(GestureScrollUpdatesCompensatedTest, GestureScrollUpdatesCompensated) {
+  const base::TimeDelta acceptable_latency =
+      base::Milliseconds(features::kCompensationAcceptableLatencyMs.Get());
+  const base::TimeDelta expected_latency =
+      base::Milliseconds(features::kCompensationExpectedLatencyMs.Get());
+
+  base::TimeTicks ack = base::TimeTicks::Now();
+  auto timestamp_override = SetAckTimestamp(ack);
+
+  const std::array<uint32_t, 4> touch_event_id = {
+      SendPacket(PressTouchPoint(), Gestures(EventType::kGestureBegin)),
+      // The first touch move is created more than the acceptable latency from
+      // when it is acknowledged.
+      SendTouchGestures(
+          MoveTouchPoint(ack - 1.1f * acceptable_latency),
+          CreatePacket({CreateGesture(EventType::kGestureScrollBegin),
+                        CreateGestureScrollUpdate(20.f, 20.f)})),
+      // The second touch move is created less than acceptable latency but more
+      // than expected latency from when the first touch move is acknowledged.
+      SendTouchGestures(
+          MoveTouchPoint(ack - (expected_latency + acceptable_latency) / 2),
+          CreatePacket({CreateGestureScrollUpdate(20.f, 20.f)})),
+      // The third touch move is created less than expected latency from when
+      // the first touch move is acknowledged.
+      SendTouchGestures(MoveTouchPoint(ack - expected_latency / 2),
+                        CreatePacket({CreateGestureScrollUpdate(20.f, 20.f)}))};
+
+  SendTouchNotConsumedAck(touch_event_id[0]);
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureBegin),
+                            GetAndResetSentGestures()));
+
+  // At acceptable latency or more of delay from acknowledging the first touch
+  // move, the gesture scroll update should be zeroed out and therefore not
+  // sent.
+  SendTouchNotConsumedAck(touch_event_id[1]);
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollBegin),
+                            GetAndResetSentGestures()));
+
+  // Delay of acceptable latency to expected latency from acknowledging the
+  // first touch move, the gesture scroll update should be scaled by a factor
+  // between zero and one.
+  SendTouchNotConsumedAck(touch_event_id[2]);
+  EXPECT_LT(last_sent_gesture().details.scroll_x(), 20.f);
+  EXPECT_LT(last_sent_gesture().details.scroll_y(), 20.f);
+  EXPECT_GT(last_sent_gesture().details.scroll_x(), 0.f);
+  EXPECT_GT(last_sent_gesture().details.scroll_y(), 0.f);
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate),
+                            GetAndResetSentGestures()));
+
+  // Delay of less than expected latency from acknowledging the first touch
+  // move, the gesture scroll update should be be unmodified.
+  SendTouchNotConsumedAck(touch_event_id[3]);
+  EXPECT_EQ(last_sent_gesture().details.scroll_x(), 20.f);
+  EXPECT_EQ(last_sent_gesture().details.scroll_y(), 20.f);
+  EXPECT_TRUE(GesturesMatch(Gestures(EventType::kGestureScrollUpdate),
+                            GetAndResetSentGestures()));
 }
 
 }  // namespace ui
