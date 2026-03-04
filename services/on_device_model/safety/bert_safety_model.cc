@@ -4,6 +4,8 @@
 
 #include "services/on_device_model/safety/bert_safety_model.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/translate/core/language_detection/language_detection_model.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "services/on_device_model/public/mojom/on_device_model_service.mojom.h"
@@ -97,6 +99,7 @@ mojom::SafetyInfoPtr BertSafetyModel::ClassifyTextSafety(
     return nullptr;
   }
 
+  base::ElapsedTimer timer;
   auto status_or_result =
       static_cast<tflite::task::text::nlclassifier::NLClassifier*>(
           loaded_bert_model_.get())
@@ -104,6 +107,9 @@ mojom::SafetyInfoPtr BertSafetyModel::ClassifyTextSafety(
   if (absl::IsCancelled(status_or_result.status()) || !status_or_result.ok()) {
     return nullptr;
   }
+  base::UmaHistogramTimes(
+      "OptimizationGuide.GeneralizedSafetyChecker.ExecutionTime",
+      timer.Elapsed());
 
   auto safety_info = mojom::SafetyInfo::New();
   safety_info->class_scores.reserve(status_or_result->size());

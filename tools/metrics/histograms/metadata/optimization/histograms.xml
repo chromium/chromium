@@ -731,6 +731,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="OptimizationGuide.GeneralizedSafetyChecker.ExecutionTime"
+    units="ms" expires_after="2026-09-03">
+  <owner>zekunjiang@google.com</owner>
+  <owner>robertogden@chromium.org</owner>
+  <summary>
+    The duration of successful executions of the generalized safety model.
+    Recorded once for each text safety inference request.
+  </summary>
+</histogram>
+
 <histogram name="OptimizationGuide.HintCache.HintType.Loaded"
     enum="HintCacheStoreEntryType" expires_after="M145">
   <owner>rajendrant@chromium.org</owner>
