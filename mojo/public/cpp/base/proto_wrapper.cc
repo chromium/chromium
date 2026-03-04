@@ -61,4 +61,13 @@ bool ProtoWrapper::DeserializeToMessage(
   }
 }
 
+ProtoWrapper ProtoWrapper::Clone() const {
+  ProtoWrapper result;
+  result.proto_name_ = proto_name_;
+  if (is_valid()) {
+    result.bytes_ = bytes_->Clone();
+  }
+  return result;
+}
+
 }  // namespace mojo_base

@@ -66,6 +66,10 @@ class COMPONENT_EXPORT(MOJO_BASE_PROTOBUF_SUPPORT) ProtoWrapper {
     return std::nullopt;
   }
 
+  // Returns a new ProtoWrapper containing a copy of this ProtoWrapper's
+  // contents.
+  ProtoWrapper Clone() const;
+
   // Access this to store the bytes somewhere else, or pass to another IPC
   // system. The bytes may be mapped from a hostile process so while the size
   // cannot change, the contents might. If you want to unpack the contained
