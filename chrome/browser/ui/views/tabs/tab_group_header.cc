@@ -193,6 +193,10 @@ void TabGroupHeader::Init(const tab_groups::TabGroupId& group) {
   UpdateTooltipText();
 }
 
+void TabGroupHeader::OnAttentionStateChanged() {
+  VisualsChanged();
+}
+
 bool TabGroupHeader::OnKeyPressed(const ui::KeyEvent& event) {
   if ((event.key_code() == ui::VKEY_SPACE ||
        event.key_code() == ui::VKEY_RETURN) &&
@@ -282,11 +286,6 @@ void TabGroupHeader::OnMouseEntered(const ui::MouseEvent& event) {
       nullptr, TabSlotController::HoverCardUpdateType::kHover);
 }
 
-void TabGroupHeader::OnThemeChanged() {
-  TabSlotView::OnThemeChanged();
-  VisualsChanged();
-}
-
 void TabGroupHeader::OnGestureEvent(ui::GestureEvent* event) {
   tab_slot_controller_->UpdateHoverCard(
       nullptr, TabSlotController::HoverCardUpdateType::kEvent);
@@ -319,41 +318,9 @@ void TabGroupHeader::OnFocus() {
       nullptr, TabSlotController::HoverCardUpdateType::kFocus);
 }
 
-void TabGroupHeader::OnGroupContentsChanged() {
-  UpdateAccessibleName();
-  UpdateTooltipText();
-}
-
-void TabGroupHeader::UpdateTooltipText() {
-  if (!group().has_value()) {
-    return;
-  }
-
-  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
-  if (!tab_group || tab_group->IsEmpty() || tab_group->ListTabs().is_empty()) {
-    return;
-  }
-
-  if (!title_->GetText().empty()) {
-    SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, std::u16string(title_->GetText()),
-        tab_slot_controller_->GetGroupContentString(group().value())));
-  } else {
-    SetTooltipText(l10n_util::GetStringFUTF16(
-        IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
-        tab_slot_controller_->GetGroupContentString(group().value())));
-  }
-}
-
-gfx::Rect TabGroupHeader::GetAnchorBoundsInScreen() const {
-  // Skip the insetting in TabSlotView::GetAnchorBoundsInScreen(). In this
-  // context insetting makes the anchored bubble partially cut into the tab
-  // outline.
-  // TODO(crbug.com/40803556): See if the layout of TabGroupHeader can be
-  // unified with tabs so that bounds do not need to be calculated differently
-  // between tabs and headers. As of writing this, hover cards to not cut into
-  // the tab outline but without this change TabGroupEditorBubbleView does.
-  return View::GetAnchorBoundsInScreen();
+void TabGroupHeader::OnThemeChanged() {
+  TabSlotView::OnThemeChanged();
+  VisualsChanged();
 }
 
 TabSlotView::ViewType TabGroupHeader::GetTabSlotViewType() const {
@@ -369,6 +336,22 @@ TabSizeInfo TabGroupHeader::GetTabSizeInfo() const {
   size_info.min_inactive_width = width;
   size_info.standard_width = width;
   return size_info;
+}
+
+gfx::Rect TabGroupHeader::GetAnchorBoundsInScreen() const {
+  // Skip the insetting in TabSlotView::GetAnchorBoundsInScreen(). In this
+  // context insetting makes the anchored bubble partially cut into the tab
+  // outline.
+  // TODO(crbug.com/40803556): See if the layout of TabGroupHeader can be
+  // unified with tabs so that bounds do not need to be calculated differently
+  // between tabs and headers. As of writing this, hover cards to not cut into
+  // the tab outline but without this change TabGroupEditorBubbleView does.
+  return View::GetAnchorBoundsInScreen();
+}
+
+void TabGroupHeader::OnGroupContentsChanged() {
+  UpdateAccessibleName();
+  UpdateTooltipText();
 }
 
 void TabGroupHeader::ShowContextMenuForViewImpl(
@@ -429,26 +412,6 @@ bool TabGroupHeader::DoesIntersectRect(const views::View* target,
   return contents_rect.Intersects(rect);
 }
 
-int TabGroupHeader::GetDesiredWidth() const {
-  const int overlap_margin = group_style_->GetTabGroupViewOverlap() * 2;
-  return overlap_margin + title_chip_->width();
-}
-
-void TabGroupHeader::SetCollapsedState() {
-  const bool collapsed_state =
-      tab_slot_controller_->IsGroupCollapsed(group().value());
-  if (is_collapsed_ != collapsed_state) {
-    is_collapsed_ = collapsed_state;
-
-    const ui::ElementIdentifier element_id =
-        GetProperty(views::kElementIdentifierKey);
-    if (element_id) {
-      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
-                                                                     this);
-    }
-  }
-}
-
 void TabGroupHeader::VisualsChanged() {
   // TODO(crbug.com/372296676): Make TabGroupHeader observe the group for
   // changes to cut down on the number of times we recalculate the view.
@@ -478,54 +441,30 @@ void TabGroupHeader::VisualsChanged() {
   UpdateAccessibleName();
 }
 
-void TabGroupHeader::UpdateAccessibleName() {
-  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
-  if (tab_group && tab_group->ListTabs().length() == 0) {
-    return;
-  }
-
-  std::u16string title(tab_slot_controller_->GetGroupTitle(group().value()));
-  std::u16string contents =
-      tab_slot_controller_->GetGroupContentString(group().value());
-  std::u16string group_status = std::u16string();
-
-// Windows screen reader properly announces the state set above in `node_data`
-// and will read out the state change when the header's collapsed state is
-// toggled. The state is added into the title for other platforms and the title
-// will be reread with the updated state when the header's collapsed state is
-// toggled.
-#if !BUILDFLAG(IS_WIN)
-  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
-  group_status = is_collapsed
-                     ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
-                     : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
-#endif
-
-  std::u16string shared_state = u"";
-
-  if (SupportsDataSharing() && should_show_header_icon_) {
-    shared_state = l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED);
-    if (ShouldShowAttentionIndicator()) {
-      group_status += u", " + l10n_util::GetStringUTF16(
-                                  DATA_SHARING_GROUP_LABEL_NEW_ACTIVITY);
-    }
-  }
-
-  std::u16string final_name;
-  if (title.empty()) {
-    final_name =
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
-                                   shared_state, contents, group_status);
-  } else {
-    final_name =
-        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
-                                   shared_state, title, contents, group_status);
-  }
-  GetViewAccessibility().SetName(final_name);
-}
-
 int TabGroupHeader::GetCollapsedHeaderWidth() const {
   return GetTabSizeInfo().standard_width;
+}
+
+bool TabGroupHeader::ShouldShowAttentionIndicator() const {
+  // Attention should only be shown if the group is collapsed.
+  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+  if (!tab_group || tab_group->IsEmpty()) {
+    return false;
+  }
+
+  return is_collapsed_ && tab_group->GetTabGroupFeatures()
+                              ->attention_indicator()
+                              ->GetHasAttention();
+}
+
+std::u16string_view TabGroupHeader::GetTitleTextForTesting() const {
+  CHECK(title_);
+  return title_->GetText();
+}
+
+int TabGroupHeader::GetDesiredWidth() const {
+  const int overlap_margin = group_style_->GetTabGroupViewOverlap() * 2;
+  return overlap_margin + title_chip_->width();
 }
 
 bool TabGroupHeader::ShouldShowHeaderIcon() const {
@@ -558,11 +497,18 @@ bool TabGroupHeader::ShouldShowHeaderIcon() const {
   return true;
 }
 
-void TabGroupHeader::UpdateIsCollapsed() {
-  if (is_collapsed_) {
-    GetViewAccessibility().SetIsCollapsed();
-  } else {
-    GetViewAccessibility().SetIsExpanded();
+void TabGroupHeader::SetCollapsedState() {
+  const bool collapsed_state =
+      tab_slot_controller_->IsGroupCollapsed(group().value());
+  if (is_collapsed_ != collapsed_state) {
+    is_collapsed_ = collapsed_state;
+
+    const ui::ElementIdentifier element_id =
+        GetProperty(views::kElementIdentifierKey);
+    if (element_id) {
+      views::ElementTrackerViews::GetInstance()->NotifyViewActivated(element_id,
+                                                                     this);
+    }
   }
 }
 
@@ -602,9 +548,12 @@ void TabGroupHeader::UpdateAttentionIndicatorView() {
   }
 }
 
-std::u16string_view TabGroupHeader::GetTitleTextForTesting() const {
-  CHECK(title_);
-  return title_->GetText();
+void TabGroupHeader::UpdateIsCollapsed() {
+  if (is_collapsed_) {
+    GetViewAccessibility().SetIsCollapsed();
+  } else {
+    GetViewAccessibility().SetIsExpanded();
+  }
 }
 
 void TabGroupHeader::CreateHeaderWithoutTitle() {
@@ -733,25 +682,76 @@ void TabGroupHeader::CreateHeaderWithTitle() {
   }
 }
 
-void TabGroupHeader::OnAttentionStateChanged() {
-  VisualsChanged();
-}
-
-bool TabGroupHeader::ShouldShowAttentionIndicator() const {
-  // Attention should only be shown if the group is collapsed.
-  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
-  if (!tab_group || tab_group->IsEmpty()) {
-    return false;
+void TabGroupHeader::UpdateTooltipText() {
+  if (!group().has_value()) {
+    return;
   }
 
-  return is_collapsed_ && tab_group->GetTabGroupFeatures()
-                              ->attention_indicator()
-                              ->GetHasAttention();
+  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+  if (!tab_group || tab_group->IsEmpty() || tab_group->ListTabs().is_empty()) {
+    return;
+  }
+
+  if (!title_->GetText().empty()) {
+    SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_NAMED_GROUP_TOOLTIP, std::u16string(title_->GetText()),
+        tab_slot_controller_->GetGroupContentString(group().value())));
+  } else {
+    SetTooltipText(l10n_util::GetStringFUTF16(
+        IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP,
+        tab_slot_controller_->GetGroupContentString(group().value())));
+  }
 }
+
+void TabGroupHeader::UpdateAccessibleName() {
+  TabGroup* tab_group = tab_slot_controller_->GetTabGroup(group().value());
+  if (tab_group && tab_group->ListTabs().length() == 0) {
+    return;
+  }
+
+  std::u16string title(tab_slot_controller_->GetGroupTitle(group().value()));
+  std::u16string contents =
+      tab_slot_controller_->GetGroupContentString(group().value());
+  std::u16string group_status = std::u16string();
+
+// Windows screen reader properly announces the state set above in `node_data`
+// and will read out the state change when the header's collapsed state is
+// toggled. The state is added into the title for other platforms and the title
+// will be reread with the updated state when the header's collapsed state is
+// toggled.
+#if !BUILDFLAG(IS_WIN)
+  bool is_collapsed = tab_slot_controller_->IsGroupCollapsed(group().value());
+  group_status = is_collapsed
+                     ? l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_COLLAPSED)
+                     : l10n_util::GetStringUTF16(IDS_GROUP_AX_LABEL_EXPANDED);
+#endif
+
+  std::u16string shared_state = u"";
+
+  if (SupportsDataSharing() && should_show_header_icon_) {
+    shared_state = l10n_util::GetStringUTF16(IDS_SAVED_GROUP_AX_LABEL_SHARED);
+    if (ShouldShowAttentionIndicator()) {
+      group_status += u", " + l10n_util::GetStringUTF16(
+                                  DATA_SHARING_GROUP_LABEL_NEW_ACTIVITY);
+    }
+  }
+
+  std::u16string final_name;
+  if (title.empty()) {
+    final_name =
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_UNNAMED_GROUP_FORMAT,
+                                   shared_state, contents, group_status);
+  } else {
+    final_name =
+        l10n_util::GetStringFUTF16(IDS_GROUP_AX_LABEL_NAMED_GROUP_FORMAT,
+                                   shared_state, title, contents, group_status);
+  }
+  GetViewAccessibility().SetName(final_name);
+}
+
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
+                                      kAttentionIndicatorViewElementId);
 
 BEGIN_METADATA(TabGroupHeader)
 ADD_READONLY_PROPERTY_METADATA(int, DesiredWidth)
 END_METADATA
-
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(TabGroupHeader,
-                                      kAttentionIndicatorViewElementId);
