@@ -333,6 +333,14 @@ void TabContainerImpl::OnGroupEditorOpened(
   }
 }
 
+void TabContainerImpl::OnGroupMoved(const tab_groups::TabGroupId& group) {
+  DCHECK(group_views_[group]);
+
+  layout_helper_->UpdateGroupHeaderIndex(group);
+
+  OrderTabSlotView(group_views_[group]->header());
+}
+
 void TabContainerImpl::OnGroupContentsChanged(
     const tab_groups::TabGroupId& group) {
   // If a tab was removed, the underline bounds might be stale.
@@ -364,14 +372,6 @@ void TabContainerImpl::OnGroupVisualsChanged(
   if (active_index.has_value()) {
     GetTabAtModelIndex(active_index.value())->SchedulePaint();
   }
-}
-
-void TabContainerImpl::OnGroupMoved(const tab_groups::TabGroupId& group) {
-  DCHECK(group_views_[group]);
-
-  layout_helper_->UpdateGroupHeaderIndex(group);
-
-  OrderTabSlotView(group_views_[group]->header());
 }
 
 void TabContainerImpl::ToggleTabGroup(
@@ -622,6 +622,22 @@ void TabContainerImpl::OnTabSlotAnimationProgressed(TabSlotView* view) {
   }
 }
 
+void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
+  DCHECK(tab->closing());
+  OnTabRemoved(tab);
+
+  // The ZOrder cache holds pointers to the tab view, however on deletion the
+  // views in the cache will have to be recalculated and reordered. Marking the
+  // cache dirty does not evict the tab view pointer, and so a dangling pointer
+  // would be created if the cache were not also cleared. This is why the cache
+  // must also be evicted.
+  MarkZOrderCacheDirty();
+  z_ordered_children_cache_.clear();
+
+  // Delete `tab`.
+  tab->parent()->RemoveChildViewT(tab);
+}
+
 void TabContainerImpl::InvalidateIdealBounds() {
   // Invalidation of ideal bounds is handled dynamically by the parent
   // container or other mechanisms.
@@ -833,10 +849,6 @@ void TabContainerImpl::PaintChildren(const views::PaintInfo& paint_info) {
   }
 }
 
-void TabContainerImpl::UpdateZOrderCacheForTesting() {
-  UpdateZOrderCacheIfDirty();
-}
-
 gfx::Size TabContainerImpl::GetMinimumSize() const {
   // During animations, our minimum width tightly hugs the current bounds of our
   // children.
@@ -1011,10 +1023,6 @@ std::optional<BrowserRootView::DropIndex> TabContainerImpl::GetDropIndex(
                                     .group_inclusion = kDontIncludeInGroup};
 }
 
-views::View* TabContainerImpl::GetViewForDrop() {
-  return this;
-}
-
 BrowserRootView::DropTarget* TabContainerImpl::GetDropTarget(
     gfx::Point loc_in_local_coords) {
   if (IsDrawn()) {
@@ -1026,6 +1034,10 @@ BrowserRootView::DropTarget* TabContainerImpl::GetDropTarget(
   }
 
   return nullptr;
+}
+
+views::View* TabContainerImpl::GetViewForDrop() {
+  return this;
 }
 
 void TabContainerImpl::HandleDragUpdate(
@@ -1086,6 +1098,10 @@ void TabContainerImpl::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   }
 
   PreferredSizeChanged();
+}
+
+void TabContainerImpl::UpdateZOrderCacheForTesting() {
+  UpdateZOrderCacheIfDirty();
 }
 
 views::ViewModelT<Tab>* TabContainerImpl::GetTabsViewModel() {
@@ -1309,22 +1325,6 @@ void TabContainerImpl::CloseTabInViewModel(int index) {
 void TabContainerImpl::OnTabRemoved(Tab* tab) {
   // Remove `tab` from `layout_helper_` so we don't try to lay it out later.
   layout_helper_->RemoveTab(tab);
-}
-
-void TabContainerImpl::OnTabCloseAnimationCompleted(Tab* tab) {
-  DCHECK(tab->closing());
-  OnTabRemoved(tab);
-
-  // The ZOrder cache holds pointers to the tab view, however on deletion the
-  // views in the cache will have to be recalculated and reordered. Marking the
-  // cache dirty does not evict the tab view pointer, and so a dangling pointer
-  // would be created if the cache were not also cleared. This is why the cache
-  // must also be evicted.
-  MarkZOrderCacheDirty();
-  z_ordered_children_cache_.clear();
-
-  // Delete `tab`.
-  tab->parent()->RemoveChildViewT(tab);
 }
 
 void TabContainerImpl::UpdateClosingModeOnRemovedTab(int model_index,
