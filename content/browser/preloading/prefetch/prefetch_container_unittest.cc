@@ -310,12 +310,15 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer) {
             PrefetchType(PreloadingTriggerType::kSpeculationRule,
                          /*use_prefetch_proxy=*/true,
                          blink::mojom::SpeculationEagerness::kImmediate));
-  EXPECT_TRUE(
-      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
-
   EXPECT_EQ(prefetch_container->key(),
             PrefetchKey(document_token, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
+
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  // `IsIsolatedNetworkContextRequiredForCurrentPrefetch()` should be called
+  // after passing eligibility check, which adds a redirect hop.
+  EXPECT_TRUE(
+      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 }
 
 TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
@@ -328,14 +331,15 @@ TEST_P(PrefetchContainerTest, CreatePrefetchContainer_Embedder) {
   EXPECT_EQ(prefetch_container->request().prefetch_type(),
             PrefetchType(PreloadingTriggerType::kEmbedder,
                          /*use_prefetch_proxy=*/false));
-  EXPECT_FALSE(
-      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
-
   EXPECT_EQ(prefetch_container->key(),
             PrefetchKey(std::nullopt, GURL("https://test.com")));
   EXPECT_FALSE(prefetch_container->GetNonRedirectHead());
   // Embedder-initiated prefetch shouldn't include any tag.
   EXPECT_FALSE(prefetch_container->request().speculation_rules_tags());
+
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  EXPECT_FALSE(
+      prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 }
 
 TEST_P(PrefetchContainerTest, PrefetchStatus) {
