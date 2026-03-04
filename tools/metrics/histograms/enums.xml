@@ -19009,6 +19009,7 @@ from previous Chrome versions.
   <int value="1543448038" label="LaunchedTabSearchToolbarButton:disabled"/>
   <int value="1543776185"
       label="SegmentationPlatformAndroidHomeModuleRanker:disabled"/>
+  <int value="1544089245" label="MobileNTPPromoOnDesktop:disabled"/>
   <int value="1544413751" label="PasswordStrengthIndicator:enabled"/>
   <int value="1544561349" label="PdfUseSkiaRenderer:disabled"/>
   <int value="1544887706" label="IPH_ExtensionsRequestAccessButton:enabled"/>
@@ -19735,6 +19736,7 @@ from previous Chrome versions.
       label="AllowDefaultWebAppMigrationForChromeOsManagedUsers:disabled"/>
   <int value="1789944387" label="ShowFeaturedEnterpriseSiteSearchIPH:disabled"/>
   <int value="1790111294" label="CustomizeChromeColorExtraction:enabled"/>
+  <int value="1790129269" label="MobileNTPPromoOnDesktop:enabled"/>
   <int value="1790384966" label="StylusRichGestures:enabled"/>
   <int value="1791693211" label="sparky-feature-key:disabled"/>
   <int value="1792252889" label="kNtpTabGroupsModuleZeroState:enabled"/>

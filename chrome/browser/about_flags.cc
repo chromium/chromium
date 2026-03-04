@@ -4318,6 +4318,19 @@ constexpr char kWebiumFeatures[] =
     "Webium,AttachUnownedInnerWebContents,ExtensionsMenuAccessControl";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopGeneral[] = {
+    {kMobileNTPPromoOnDesktopVariationParam, "0"}};
+const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopPasswords[] = {
+    {kMobileNTPPromoOnDesktopVariationParam, "1"}};
+const FeatureEntry::FeatureParam kMobileNTPPromoOnDesktopAll[] = {
+    {kMobileNTPPromoOnDesktopVariationParam, "2"}};
+
+const FeatureEntry::FeatureVariation kMobileNTPPromoOnDesktopVariations[] = {
+    {"General", kMobileNTPPromoOnDesktopGeneral, nullptr},
+    {"Passwords", kMobileNTPPromoOnDesktopPasswords, nullptr},
+    {"All", kMobileNTPPromoOnDesktopAll, nullptr},
+};
+
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopForcePromoTypeQRCode[] = {
     {kMobilePromoOnDesktopForcePromoTypeParam, "0"}};
 const FeatureEntry::FeatureParam kMobilePromoOnDesktopForcePromoTypeReminder[] =
@@ -13044,6 +13057,12 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomizationThemeSync)},
 #endif
+    {"mobile-ntp-promo-on-desktop",
+     flag_descriptions::kMobileNTPPromoOnDesktopName,
+     flag_descriptions::kMobileNTPPromoOnDesktopDescription, kOsDesktop,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kMobileNTPPromoOnDesktop,
+                                    kMobileNTPPromoOnDesktopVariations,
+                                    "MobileNTPPromoOnDesktop")},
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

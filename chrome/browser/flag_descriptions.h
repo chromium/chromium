@@ -2816,6 +2816,11 @@ inline constexpr char kMobilePromoOnDesktopForcePromoTypeDescription[] =
     "Force the iOS promo to be a specific type (QRCode or Reminder) for "
     "testing purposes.";
 
+inline constexpr char kMobileNTPPromoOnDesktopName[] =
+    "Mobile NTP Promo on Desktop";
+inline constexpr char kMobileNTPPromoOnDesktopDescription[] =
+    "Enables the Mobile NTP Promo on Desktop.";
+
 inline constexpr char kMobilePromoOnDesktopWithReminderName[] =
     "Mobile Promo On Desktop - Reminder";
 inline constexpr char kMobilePromoOnDesktopWithReminderDescription[] =
