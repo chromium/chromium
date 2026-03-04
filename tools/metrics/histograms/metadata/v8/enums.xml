@@ -200,10 +200,21 @@ chromium-metrics-reviews@google.com.
 
 <enum name="V8SandboxMode">
   <int value="0" label="kSecure">
-    Using a default, securely-configured sandbox
+    The sandbox is configured securely with a full reservation and an
+    inaccessible Smi address range.
   </int>
   <int value="1" label="kInsecure">
-    Using a fallback, insecurely-configured sandbox
+    The sandbox is configured insecurely without a known reason.
+  </int>
+  <int value="2" label="kInsecurePartialReservationSmiInaccessible">
+    The sandbox is partially reserved, but the Smi address range is
+    inaccessible.
+  </int>
+  <int value="3" label="kInsecureFullReservationSmiAccessible">
+    The sandbox is fully reserved, but the Smi address range is accessible.
+  </int>
+  <int value="4" label="kInsecurePartialReservationSmiAccessible">
+    The sandbox is partially reserved and the Smi address range is accessible.
   </int>
 </enum>
 
