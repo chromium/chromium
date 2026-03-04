@@ -2338,18 +2338,28 @@ constexpr auto kSOCKS5OkResponseData =
 const std::string_view kSOCKS5OkResponse(kSOCKS5OkResponseData.begin(),
                                          kSOCKS5OkResponseData.end());
 
+base::ByteSize CountReadByteSize(base::span<const MockRead> reads) {
+  base::ByteSize total;
+  for (const MockRead& read : reads) {
+    total += base::ByteSize(read.data.length());
+  }
+  return total;
+}
+
 int64_t CountReadBytes(base::span<const MockRead> reads) {
-  int64_t total = 0;
-  for (const MockRead& read : reads)
-    total += static_cast<int>(read.data.length());
+  return CountReadByteSize(reads).InBytes();
+}
+
+base::ByteSize CountWriteByteSize(base::span<const MockWrite> writes) {
+  base::ByteSize total;
+  for (const MockWrite& write : writes) {
+    total += base::ByteSize(write.data.length());
+  }
   return total;
 }
 
 int64_t CountWriteBytes(base::span<const MockWrite> writes) {
-  int64_t total = 0;
-  for (const MockWrite& write : writes)
-    total += static_cast<int>(write.data.length());
-  return total;
+  return CountWriteByteSize(writes).InBytes();
 }
 
 #if BUILDFLAG(IS_ANDROID)

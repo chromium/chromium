@@ -12,6 +12,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/byte_size.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -104,9 +105,9 @@ class NET_EXPORT_PRIVATE HttpStreamParser final {
   const GURL& url() { return url_; }
   const std::string& method() { return method_; }
 
-  int64_t received_bytes() const { return received_bytes_; }
+  base::ByteSize received_bytes() const { return received_bytes_; }
 
-  int64_t sent_bytes() const { return sent_bytes_; }
+  base::ByteSize sent_bytes() const { return sent_bytes_; }
 
   base::TimeTicks first_response_start_time() const {
     return first_response_start_time_;
@@ -243,10 +244,10 @@ class NET_EXPORT_PRIVATE HttpStreamParser final {
 
   // The amount of received data.  If connection is reused then intermediate
   // value may be bigger than final.
-  int64_t received_bytes_ = 0;
+  base::ByteSize received_bytes_;
 
   // The amount of sent data.
-  int64_t sent_bytes_ = 0;
+  base::ByteSize sent_bytes_;
 
   // The parsed response headers.  Owned by the caller of SendRequest.   This
   // cannot be safely accessed after reading the final set of headers, as the

@@ -17,6 +17,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/byte_size.h"
 #include "base/check_op.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -1546,10 +1547,12 @@ extern const std::string_view kSOCKS5OkRequest;
 
 extern const std::string_view kSOCKS5OkResponse;
 
-// Helper function to get the total data size of the MockReads in |reads|.
+// Helper functions to get the total data size of the MockReads in |reads|.
+base::ByteSize CountReadByteSize(base::span<const MockRead> reads);
 int64_t CountReadBytes(base::span<const MockRead> reads);
 
-// Helper function to get the total data size of the MockWrites in |writes|.
+// Helper functions to get the total data size of the MockWrites in |writes|.
+base::ByteSize CountWriteByteSize(base::span<const MockWrite> writes);
 int64_t CountWriteBytes(base::span<const MockWrite> writes);
 
 #if BUILDFLAG(IS_ANDROID)
