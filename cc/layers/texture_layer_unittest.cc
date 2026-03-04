@@ -90,11 +90,10 @@ gpu::SyncToken GenSyncToken() {
 }
 
 viz::TransferableResource MakeFakeResource(
-    const viz::TransferableResource::MetadataOverride& override = {}) {
+    const gfx::ColorSpace& color_space = gfx::ColorSpace::CreateSRGB()) {
   return viz::TransferableResource::Make(
-      gpu::ClientSharedImage::CreateForTesting(),
-      viz::TransferableResource::ResourceSource::kTest, GenSyncToken(),
-      override);
+      gpu::ClientSharedImage::CreateForTesting(color_space),
+      viz::TransferableResource::ResourceSource::kTest, GenSyncToken());
 }
 
 viz::TransferableResource MakeFakeSoftwareResource() {
@@ -397,8 +396,7 @@ TEST_F(TextureLayerWithResourceTest, AffectedByHdr) {
   EXPECT_CALL(*layer_tree_host_, SetNeedsCommit()).Times(AtLeast(1));
 
   // sRGB is unaffected by HDR parameters.
-  test_resource1_.resource =
-      MakeFakeResource({.color_space = gfx::ColorSpace::CreateSRGB()});
+  test_resource1_.resource = MakeFakeResource(gfx::ColorSpace::CreateSRGB());
   test_resource1_.creation_sync_token = test_resource1_.resource.sync_token();
   test_layer->SetTransferableResource(test_resource1_.resource,
                                       test_resource1_.release_callback);
@@ -408,8 +406,7 @@ TEST_F(TextureLayerWithResourceTest, AffectedByHdr) {
   test_resource1_.ExpectRelease();
 
   // HDR10 is affected by HDR parameters.
-  test_resource2_.resource =
-      MakeFakeResource({.color_space = gfx::ColorSpace::CreateHDR10()});
+  test_resource2_.resource = MakeFakeResource(gfx::ColorSpace::CreateHDR10());
   test_resource2_.creation_sync_token = test_resource2_.resource.sync_token();
   test_layer->SetTransferableResource(test_resource2_.resource,
                                       test_resource2_.release_callback);

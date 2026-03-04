@@ -290,6 +290,8 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT ClientSharedImage
       viz::SharedImageFormat format,
       uint32_t texture_target);
   static scoped_refptr<ClientSharedImage> CreateForTesting(
+      const gfx::ColorSpace& color_space);
+  static scoped_refptr<ClientSharedImage> CreateForTesting(
       SharedImageUsageSet usage);
   static scoped_refptr<ClientSharedImage> CreateForTesting(
       const SharedImageMetadata& metadata);
