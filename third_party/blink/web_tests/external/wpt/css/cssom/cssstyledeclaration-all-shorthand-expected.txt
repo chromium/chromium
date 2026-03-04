@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] getPropertyValue('all') returns empty string when single property overriden
+  assert_equals: expected "" but got "revert"
+[FAIL] setProperty('all') sets all property values
+  assert_equals: expected "revert" but got ""
+Harness: the test ran to completion.
+
