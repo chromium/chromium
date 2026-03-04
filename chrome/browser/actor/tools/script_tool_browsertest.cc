@@ -36,6 +36,21 @@ class ActorToolsTestScriptTool : public ActorToolsTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
   }
 
+  actor::mojom::ScriptToolResponsePtr RunScriptTool(
+      std::unique_ptr<ToolRequest> action) {
+    ActResultFuture result;
+    actor_task().Act(ToRequestList(action), result.GetCallback());
+    ExpectOkResult(result);
+
+    const auto& action_results = result.Get<2>();
+    EXPECT_EQ(action_results.size(), 1u);
+    EXPECT_TRUE(action_results.at(0).result);
+    actor::mojom::ScriptToolResponsePtr response =
+        std::move(action_results.at(0).result->script_tool_response);
+    EXPECT_TRUE(response);
+    return response;
+  }
+
  private:
   base::test::ScopedFeatureList features_;
 };
@@ -49,33 +64,17 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Basic) {
         { "text": "This is an example sentence." }
       )JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectOkResult(result);
-
-  const auto& action_results = result.Get<2>();
-  ASSERT_EQ(action_results.size(), 1u);
-  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
-            "This is an example sentence.");
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->name, "echo");
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
-            input_arguments);
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->tool->name,
-            "echo");
-  EXPECT_EQ(
-      action_results.at(0).result->script_tool_response->tool->description,
-      "echo input");
-  EXPECT_EQ(action_results.at(0)
-                .result->script_tool_response->tool->annotations->read_only,
-            true);
+  auto response = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "This is an example sentence.");
+  EXPECT_EQ(response->input_arguments, input_arguments);
+  EXPECT_EQ(response->tool->name, "echo");
+  EXPECT_EQ(response->tool->description, "echo input");
+  EXPECT_EQ(response->tool->annotations->read_only, true);
 
   const std::string expected_input_schema =
       R"JSON({"type":"object","properties":{"text":{"description":)JSON"
       R"JSON("Value to echo","type":"string"}},"required":["text"]})JSON";
-  EXPECT_EQ(
-      action_results.at(0).result->script_tool_response->tool->input_schema,
-      expected_input_schema);
+  EXPECT_EQ(response->tool->input_schema, expected_input_schema);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
@@ -103,20 +102,11 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
         { "text": "Hello World" }
       )JSON";
   auto echo_action = MakeScriptToolRequest(*main_frame(), "echo", echo_input);
-  ActResultFuture echo_result;
-  actor_task().Act(ToRequestList(echo_action), echo_result.GetCallback());
-  ExpectOkResult(echo_result);
+  auto echo_action_response = RunScriptTool(std::move(echo_action));
 
-  const auto& echo_action_results = echo_result.Get<2>();
-  ASSERT_EQ(echo_action_results.size(), 1u);
-  ASSERT_TRUE(echo_action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(echo_action_results.at(0).result->script_tool_response->result,
-            "Hello World");
-  EXPECT_EQ(echo_action_results.at(0).result->script_tool_response->name,
-            "echo");
-  EXPECT_EQ(
-      echo_action_results.at(0).result->script_tool_response->input_arguments,
-      echo_input);
+  EXPECT_EQ(echo_action_response->tool->name, "echo");
+  EXPECT_EQ(echo_action_response->input_arguments, echo_input);
+  EXPECT_EQ(echo_action_response->result, "Hello World");
 
   const std::string reverse_input =
       R"JSON(
@@ -124,20 +114,10 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
       )JSON";
   auto reverse_action =
       MakeScriptToolRequest(*main_frame(), "reverse", reverse_input);
-  ActResultFuture reverse_result;
-  actor_task().Act(ToRequestList(reverse_action), reverse_result.GetCallback());
-  ExpectOkResult(reverse_result);
-
-  const auto& reverse_action_results = reverse_result.Get<2>();
-  ASSERT_EQ(reverse_action_results.size(), 1u);
-  ASSERT_TRUE(reverse_action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(reverse_action_results.at(0).result->script_tool_response->result,
-            "321cba");
-  EXPECT_EQ(reverse_action_results.at(0).result->script_tool_response->name,
-            "reverse");
-  EXPECT_EQ(reverse_action_results.at(0)
-                .result->script_tool_response->input_arguments,
-            reverse_input);
+  auto reverse_action_response = RunScriptTool(std::move(reverse_action));
+  EXPECT_EQ(reverse_action_response->tool->name, "reverse");
+  EXPECT_EQ(reverse_action_response->input_arguments, reverse_input);
+  EXPECT_EQ(reverse_action_response->result, "321cba");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
@@ -181,17 +161,9 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
       )JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
                                       declarative_input);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectOkResult(result);
-
-  const auto& action_results = result.Get<2>();
-  ASSERT_EQ(action_results.size(), 1u);
-  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->name,
-            "declarative_tool");
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
-            declarative_input);
+  auto response = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->tool->name, "declarative_tool");
+  EXPECT_EQ(response->input_arguments, declarative_input);
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
@@ -204,16 +176,8 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, NavigateAfterResponse) {
       { "text": "This is an example sentence." }
     )JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "echo", input_arguments);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-
-  ExpectOkResult(result);
-
-  const auto& action_results = result.Get<2>();
-  ASSERT_EQ(action_results.size(), 1u);
-  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->result,
-            "This is an example sentence.");
+  auto response = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->result, "This is an example sentence.");
 }
 
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
@@ -229,30 +193,15 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeToolCrossDocument) {
       )JSON";
   auto action = MakeScriptToolRequest(*main_frame(), "declarative_tool",
                                       declarative_input);
-  ActResultFuture result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  ExpectOkResult(result);
 
-  const auto& action_results = result.Get<2>();
-  ASSERT_EQ(action_results.size(), 1u);
-  ASSERT_TRUE(action_results.at(0).result->script_tool_response);
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->name,
-            "declarative_tool");
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->input_arguments,
-            declarative_input);
-  EXPECT_EQ(action_results.at(0).result->script_tool_response->tool->name,
-            "declarative_tool");
-  EXPECT_EQ(
-      action_results.at(0).result->script_tool_response->tool->description,
-      "A declarative WebMCP tool");
-  EXPECT_FALSE(
-      action_results.at(0).result->script_tool_response->tool->annotations);
-  EXPECT_EQ(
-      action_results.at(0).result->script_tool_response->tool->input_schema,
-      "{}");
+  auto response = RunScriptTool(std::move(action));
+  EXPECT_EQ(response->input_arguments, declarative_input);
+  EXPECT_EQ(response->tool->name, "declarative_tool");
+  EXPECT_EQ(response->tool->description, "A declarative WebMCP tool");
+  EXPECT_FALSE(response->tool->annotations);
+  EXPECT_EQ(response->tool->input_schema, "{}");
 
-  base::Value actual_json = base::test::ParseJson(
-      *action_results.at(0).result->script_tool_response->result);
+  base::Value actual_json = base::test::ParseJson(*response->result);
   base::Value expected_json = base::test::ParseJson(R"JSON(
   [
     {

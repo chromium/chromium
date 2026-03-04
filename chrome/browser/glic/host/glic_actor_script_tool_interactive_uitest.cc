@@ -44,7 +44,7 @@ class GlicActorWithScriptToolsTest : public GlicActorUiTest {
       const auto& result = last_execution_result()->script_tool_results().at(0);
       EXPECT_EQ(result.index_of_script_tool_action(), 0);
       EXPECT_EQ(result.result(), expected_result);
-      EXPECT_EQ(result.tool_name(), name);
+      EXPECT_EQ(result.tool().name(), name);
       EXPECT_EQ(result.input_arguments(), input_arguments);
 
       ASSERT_EQ(last_execution_result()->tabs().size(), 1);

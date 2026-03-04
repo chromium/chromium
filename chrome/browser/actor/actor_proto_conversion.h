@@ -116,7 +116,7 @@ void CopyScriptToolResults(
       auto* script_tool_result = proto.add_script_tool_results();
       script_tool_result->set_index_of_script_tool_action(i);
       script_tool_result->set_result(*response->result);
-      script_tool_result->set_tool_name(response->name);
+      script_tool_result->set_tool_name(response->tool->name);
       script_tool_result->set_input_arguments(response->input_arguments);
       auto* tool = script_tool_result->mutable_tool();
       tool->set_name(response->tool->name);

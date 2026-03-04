@@ -54,7 +54,6 @@ mojom::ActionResultPtr OnToolExecuted(
 
   auto result = MakeOkResult();
   auto script_tool_response = mojom::ScriptToolResponse::New();
-  script_tool_response->name = name;
   script_tool_response->input_arguments = input_arguments;
   script_tool_response->tool = blink::mojom::ScriptTool::New();
   script_tool_response->tool->name = name;
