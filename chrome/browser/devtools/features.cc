@@ -208,7 +208,7 @@ BASE_FEATURE(kDevToolsAcceptDebuggingConnections,
 BASE_FEATURE(kDevToolsShowPolicyDialog, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent,
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Whether Console Insights Teasers are enabled.
 BASE_FEATURE(kDevToolsConsoleInsightsTeasers,
