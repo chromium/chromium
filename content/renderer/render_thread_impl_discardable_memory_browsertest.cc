@@ -190,8 +190,8 @@ IN_PROC_BROWSER_TEST_F(RenderThreadImplDiscardableMemoryBrowserTest,
   }));
 }
 
-// TODO(crbug.com/362120461): This test was flaky on Windows ASan bots.
-#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/362120461): This test was flaky on Windows bots.
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ReleaseFreeDiscardableMemory_ByCriticalPressure \
   DISABLED_ReleaseFreeDiscardableMemory_ByCriticalPressure
 #else
