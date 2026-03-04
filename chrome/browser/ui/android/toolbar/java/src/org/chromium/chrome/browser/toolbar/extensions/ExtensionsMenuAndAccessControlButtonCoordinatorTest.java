@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuBridgeJni;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsMenuTypes;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
-import org.chromium.chrome.browser.ui.extensions.FakeExtensionActionsBridgeRule;
 import org.chromium.chrome.browser.ui.extensions.RequestAccessButtonParams;
 import org.chromium.ui.listmenu.ListMenuButton;
 
@@ -45,9 +44,6 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
     private static final long BROWSER_WINDOW_POINTER = 1000L;
 
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule
-    public final FakeExtensionActionsBridgeRule mBridgeRule = new FakeExtensionActionsBridgeRule();
 
     @Mock private ListMenuButton mExtensionsMenuButton;
     @Mock private ThemeColorProvider mThemeColorProvider;
@@ -90,7 +86,6 @@ public class ExtensionsMenuAndAccessControlButtonCoordinatorTest {
         when(mTask.getOrCreateNativeBrowserWindowPtr(mProfile)).thenReturn(BROWSER_WINDOW_POINTER);
         when(mExtensionsToolbarBridge.getExtensionsMenuButtonState(any()))
                 .thenReturn(ExtensionsToolbarBridge.ExtensionsMenuButtonState.DEFAULT);
-        mBridgeRule.getFakeBridge().getOrCreateTaskModel(mTask, mProfile).setInitialized(true);
 
         mCoordinator =
                 new ExtensionsMenuAndAccessControlButtonCoordinator(

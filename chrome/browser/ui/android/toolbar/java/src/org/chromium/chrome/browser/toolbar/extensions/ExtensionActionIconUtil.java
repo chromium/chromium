@@ -10,7 +10,6 @@ import android.graphics.Bitmap;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.toolbar.R;
-import org.chromium.chrome.browser.ui.extensions.ExtensionActionsBridge;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroid;
@@ -46,30 +45,6 @@ public class ExtensionActionIconUtil {
             this.widthDp = DisplayUtil.pxToDp(display, widthPx);
             this.heightDp = DisplayUtil.pxToDp(display, heightPx);
         }
-    }
-
-    /**
-     * Retrieves the icon for a given extension action with {@link ExtensionActionsBridge}.
-     * TODO(crbug.com/473396591): Remove this method once {@link ExtensionActionsBridge} is
-     * deprecated.
-     *
-     * @param context The context to use for accessing resources.
-     * @param extensionActionsBridge The JNI bridge to the extension actions.
-     * @param actionId The ID of the extension action to get the icon for.
-     * @param tabId The ID of the tab to get the icon for.
-     * @param webContents The webContents of the tab.
-     * @return The icon for the extension action.
-     */
-    @Nullable
-    public static Bitmap getActionIcon(
-            Context context,
-            ExtensionActionsBridge extensionActionsBridge,
-            String actionId,
-            int tabId,
-            @Nullable WebContents webContents) {
-        ExtensionIconSpec spec = new ExtensionIconSpec(context);
-        return extensionActionsBridge.getActionIcon(
-                actionId, tabId, webContents, spec.widthDp, spec.heightDp, spec.scaleFactor);
     }
 
     /**
