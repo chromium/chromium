@@ -124,7 +124,7 @@ class WTF_EXPORT String {
   StringImpl* Impl() const { return impl_.get(); }
   scoped_refptr<StringImpl> ReleaseImpl() { return std::move(impl_); }
 
-  unsigned length() const {
+  size_type length() const {
     if (!impl_)
       return 0;
     return impl_->length();
@@ -198,7 +198,7 @@ class WTF_EXPORT String {
 
   // Returns a code unit at the specified index.
   // This operator returns 0 if the specified index is out of range.
-  UChar operator[](wtf_size_t index) const {
+  UChar operator[](size_type index) const {
     if (!impl_ || index >= impl_->length())
       return 0;
     return (*impl_)[index];
@@ -227,21 +227,21 @@ class WTF_EXPORT String {
                                                        unsigned decimal_places);
 
   // Find characters.
-  wtf_size_t find(UChar c, wtf_size_t start = 0) const {
-    return impl_ ? impl_->Find(c, start) : kNotFound;
+  size_type find(UChar c, size_type start = 0) const {
+    return impl_ ? impl_->Find(c, start) : npos;
   }
-  wtf_size_t find(LChar c, wtf_size_t start = 0) const {
-    return impl_ ? impl_->Find(c, start) : kNotFound;
+  size_type find(LChar c, size_type start = 0) const {
+    return impl_ ? impl_->Find(c, start) : npos;
   }
-  wtf_size_t find(char c, wtf_size_t start = 0) const {
+  size_type find(char c, size_type start = 0) const {
     return find(static_cast<LChar>(c), start);
   }
-  wtf_size_t Find(CharacterMatchFunctionPtr match_function,
-                  wtf_size_t start = 0) const {
-    return impl_ ? impl_->Find(match_function, start) : kNotFound;
+  size_type Find(CharacterMatchFunctionPtr match_function,
+                 size_type start = 0) const {
+    return impl_ ? impl_->Find(match_function, start) : npos;
   }
-  wtf_size_t Find(base::RepeatingCallback<bool(UChar)> match_callback,
-                  wtf_size_t index = 0) const;
+  size_type Find(base::RepeatingCallback<bool(UChar)> match_callback,
+                 size_type index = 0) const;
 
   // Find substrings.
   size_type find(const StringView& value, size_type start = 0) const;
@@ -249,20 +249,20 @@ class WTF_EXPORT String {
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
   // platform features.  See crbug.com/40476285.
-  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
-                                        unsigned start = 0) const {
-    return impl_ ? impl_->DeprecatedFindIgnoringCase(value, start) : kNotFound;
+  size_type DeprecatedFindIgnoringCase(const StringView& value,
+                                       size_type start = 0) const {
+    return impl_ ? impl_->DeprecatedFindIgnoringCase(value, start) : npos;
   }
 
   // ASCII case insensitive string matching.
-  wtf_size_t FindIgnoringAsciiCase(const StringView& value,
-                                   unsigned start = 0) const {
-    return impl_ ? impl_->FindIgnoringAsciiCase(value, start) : kNotFound;
+  size_type FindIgnoringAsciiCase(const StringView& value,
+                                  size_type start = 0) const {
+    return impl_ ? impl_->FindIgnoringAsciiCase(value, start) : npos;
   }
 
-  bool contains(UChar c) const { return find(c) != kNotFound; }
-  bool contains(LChar c) const { return find(c) != kNotFound; }
-  bool contains(char c) const { return find(c) != kNotFound; }
+  bool contains(UChar c) const { return find(c) != npos; }
+  bool contains(LChar c) const { return find(c) != npos; }
+  bool contains(char c) const { return find(c) != npos; }
   bool contains(const StringView& value) const { return find(value) != npos; }
 
   // Find the last instance of a single character.
@@ -288,7 +288,7 @@ class WTF_EXPORT String {
   // Returns the Unicode code point starting at the specified offset of this
   // string. If the offset points an unpaired surrogate, this function returns
   // 0.
-  UChar32 CharacterStartingAt(unsigned) const;
+  UChar32 CharacterStartingAt(size_type) const;
 
   bool starts_with(const StringView& prefix) const {
     return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
@@ -347,8 +347,8 @@ class WTF_EXPORT String {
       impl_ = impl_->Replace(pattern, replacement);
     return *this;
   }
-  String& replace(unsigned index,
-                  unsigned length_to_replace,
+  String& replace(size_type index,
+                  size_type length_to_replace,
                   const StringView& replacement) {
     if (impl_)
       impl_ = impl_->Replace(index, length_to_replace, replacement);
@@ -362,8 +362,8 @@ class WTF_EXPORT String {
 
   void Ensure16Bit();
 
-  void Truncate(unsigned length);
-  void Remove(unsigned start, unsigned length = 1);
+  void Truncate(size_type length);
+  void Remove(size_type start, size_type length = 1);
 
   // Returns a substring.
   //
@@ -373,7 +373,7 @@ class WTF_EXPORT String {
   //
   // This method exists for historical reasons. For compatibility with
   // `std::string::substr`, consider using the `substr()` method.
-  [[nodiscard]] String Substring(unsigned pos, unsigned len = UINT_MAX) const;
+  [[nodiscard]] String Substring(size_type pos, size_type len = npos) const;
   // Returns a substring.
   //
   // If `pos` is greater than the string length, unlike `std::string::substr`,
@@ -384,8 +384,8 @@ class WTF_EXPORT String {
   // This copies the content of the substring. If you don't need to copy the
   // content, use `StringView(string, pos, len)` instead.
   [[nodiscard]] String substr(size_type pos, size_type len = npos) const;
-  [[nodiscard]] String Left(unsigned len) const { return Substring(0, len); }
-  [[nodiscard]] String Right(unsigned len) const {
+  [[nodiscard]] String Left(size_type len) const { return Substring(0, len); }
+  [[nodiscard]] String Right(size_type len) const {
     return Substring(length() - len, len);
   }
 
@@ -407,7 +407,7 @@ class WTF_EXPORT String {
   // Returns the length of the string after stripping white spaces.
   // This is equivalent (minus the allocation overhead) of doing:
   // `string.StripWhiteSpace().length()`
-  [[nodiscard]] unsigned LengthWithStrippedWhiteSpace() const;
+  [[nodiscard]] size_type LengthWithStrippedWhiteSpace() const;
   [[nodiscard]] String StripWhiteSpace() const;
   [[nodiscard]] String StripWhiteSpace(IsWhiteSpaceFunctionPtr) const;
   [[nodiscard]] String SimplifyWhiteSpace(
@@ -435,11 +435,11 @@ class WTF_EXPORT String {
   // Returns an uninitialized string. The characters needs to be written
   // into the buffer returned in `data` before the returned string is used.
   // Failure to do this will have unpredictable results.
-  [[nodiscard]] static String CreateUninitialized(unsigned length,
+  [[nodiscard]] static String CreateUninitialized(size_type length,
                                                   base::span<UChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
-  [[nodiscard]] static String CreateUninitialized(unsigned length,
+  [[nodiscard]] static String CreateUninitialized(size_type length,
                                                   base::span<LChar>& data) {
     return StringImpl::CreateUninitialized(length, data);
   }
@@ -468,13 +468,13 @@ class WTF_EXPORT String {
   Vector<String> SplitSkippingEmpty(UChar separator) const;
 
   // Copy characters out of the string. See StringImpl.h for detailed docs.
-  size_t CopyTo(base::span<UChar> buffer, wtf_size_t start) const {
+  size_t CopyTo(base::span<UChar> buffer, size_type start) const {
     return impl_ ? impl_->CopyTo(buffer, start) : 0;
   }
   template <typename BufferType>
   void AppendTo(BufferType&,
-                unsigned start = 0,
-                unsigned length = UINT_MAX) const;
+                size_type start = 0,
+                size_type length = npos) const;
 
 #ifdef __OBJC__
   String(NSString*);
@@ -605,8 +605,8 @@ inline bool String::IsAllSpecialCharacters() const {
 
 template <typename BufferType>
 void String::AppendTo(BufferType& result,
-                      unsigned position,
-                      unsigned length) const {
+                      size_type position,
+                      size_type length) const {
   if (!impl_)
     return;
   impl_->AppendTo(result, position, length);
@@ -642,11 +642,11 @@ class WTF_EXPORT NewlineThenWhitespaceStringsTable {
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const String&);
 
 inline StringView::StringView(const String& string LIFETIME_BOUND,
-                              unsigned offset,
-                              unsigned length)
+                              size_type offset,
+                              size_type length)
     : StringView(string.Impl(), offset, length) {}
 inline StringView::StringView(const String& string LIFETIME_BOUND,
-                              unsigned offset)
+                              size_type offset)
     : StringView(string.Impl(), offset) {}
 inline StringView::StringView(const String& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}

@@ -112,8 +112,9 @@ int CodeUnitCompareIgnoringASCIICase(const String& a, const char* b) {
                                           reinterpret_cast<const LChar*>(b));
 }
 
-wtf_size_t String::Find(base::RepeatingCallback<bool(UChar)> match_callback,
-                        wtf_size_t index) const {
+String::size_type String::Find(
+    base::RepeatingCallback<bool(UChar)> match_callback,
+    size_type index) const {
   return impl_ ? impl_->Find(match_callback, index) : kNotFound;
 }
 
@@ -129,7 +130,7 @@ String::size_type String::rfind(const StringView& value,
   return impl_ ? impl_->ReverseFind(value, start) : npos;
 }
 
-UChar32 String::CharacterStartingAt(unsigned i) const {
+UChar32 String::CharacterStartingAt(size_type i) const {
   if (!impl_ || i >= impl_->length())
     return 0;
   return impl_->CharacterStartingAt(i);
@@ -155,17 +156,17 @@ void String::Ensure16Bit() {
   }
 }
 
-void String::Truncate(unsigned length) {
+void String::Truncate(size_type length) {
   if (impl_)
     impl_ = impl_->Truncate(length);
 }
 
-void String::Remove(unsigned start, unsigned length_to_remove) {
+void String::Remove(size_type start, size_type length_to_remove) {
   if (impl_)
     impl_ = impl_->Remove(start, length_to_remove);
 }
 
-String String::Substring(unsigned pos, unsigned len) const {
+String String::Substring(size_type pos, size_type len) const {
   if (!impl_)
     return String();
   return impl_->Substring(pos, len);
@@ -194,7 +195,7 @@ String String::UpperASCII() const {
   return impl_->UpperASCII();
 }
 
-unsigned String::LengthWithStrippedWhiteSpace() const {
+String::size_type String::LengthWithStrippedWhiteSpace() const {
   if (!impl_) {
     return 0;
   }
@@ -341,7 +342,7 @@ Vector<String> String::SplitSkippingEmpty(UChar separator) const {
 std::string String::Ascii() const {
   // Printable ASCII characters 32..127 and the null character are
   // preserved, characters outside of this range are converted to '?'.
-  unsigned length = this->length();
+  size_type length = this->length();
   if (!length)
     return std::string();
 
@@ -358,7 +359,7 @@ std::string String::Ascii() const {
 std::string String::Latin1() const {
   // Basic Latin1 (ISO) encoding - Unicode characters 0..255 are
   // preserved, characters outside of this range are converted to '?'.
-  unsigned length = this->length();
+  size_type length = this->length();
   if (!length)
     return std::string();
 
@@ -380,7 +381,7 @@ String String::Make8BitFrom16BitSource(base::span<const UChar> source) {
     return g_empty_string;
   }
 
-  const wtf_size_t length = base::checked_cast<wtf_size_t>(source.size());
+  const size_type length = base::checked_cast<size_type>(source.size());
   base::span<LChar> destination;
   String result = String::CreateUninitialized(length, destination);
 
@@ -403,7 +404,7 @@ String String::Make16BitFrom8BitSource(base::span<const LChar> source) {
 
 String String::FromUTF8(base::span<const uint8_t> bytes) {
   const uint8_t* string_start = bytes.data();
-  wtf_size_t length = base::checked_cast<wtf_size_t>(bytes.size());
+  size_type length = base::checked_cast<size_type>(bytes.size());
 
   if (!string_start)
     return String();

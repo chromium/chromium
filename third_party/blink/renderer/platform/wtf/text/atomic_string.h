@@ -95,24 +95,24 @@ class WTF_EXPORT AtomicString {
   StringImpl* Impl() const { return string_.Impl(); }
 
   bool Is8Bit() const { return string_.Is8Bit(); }
-  wtf_size_t length() const { return string_.length(); }
+  size_type length() const { return string_.length(); }
   base::span<const LChar> Span8() const { return string_.Span8(); }
   base::span<const UChar> Span16() const { return string_.Span16(); }
 
-  UChar operator[](wtf_size_t i) const { return string_[i]; }
+  UChar operator[](size_type i) const { return string_[i]; }
 
   // Find characters.
-  wtf_size_t find(UChar c, wtf_size_t start = 0) const {
+  size_type find(UChar c, size_type start = 0) const {
     return string_.find(c, start);
   }
-  wtf_size_t find(LChar c, wtf_size_t start = 0) const {
+  size_type find(LChar c, size_type start = 0) const {
     return string_.find(c, start);
   }
-  wtf_size_t find(char c, wtf_size_t start = 0) const {
+  size_type find(char c, size_type start = 0) const {
     return find(static_cast<LChar>(c), start);
   }
-  wtf_size_t Find(CharacterMatchFunctionPtr match_function,
-                  wtf_size_t start = 0) const {
+  size_type Find(CharacterMatchFunctionPtr match_function,
+                 size_type start = 0) const {
     return string_.Find(match_function, start);
   }
 
@@ -126,21 +126,21 @@ class WTF_EXPORT AtomicString {
   // Unicode aware case insensitive string matching. Non-ASCII characters might
   // match to ASCII characters. This function is rarely used to implement web
   // platform features.  See crbug.com/40476285.
-  wtf_size_t DeprecatedFindIgnoringCase(const StringView& value,
-                                        wtf_size_t start = 0) const {
+  size_type DeprecatedFindIgnoringCase(const StringView& value,
+                                       size_type start = 0) const {
     return string_.DeprecatedFindIgnoringCase(value, start);
   }
 
   // ASCII case insensitive string matching.
-  wtf_size_t FindIgnoringAsciiCase(const StringView& value,
-                                   wtf_size_t start = 0) const {
+  size_type FindIgnoringAsciiCase(const StringView& value,
+                                  size_type start = 0) const {
     return string_.FindIgnoringAsciiCase(value, start);
   }
 
   // Returns `true` if this string contains the specified `c`.
-  bool contains(UChar c) const { return find(c) != kNotFound; }
-  bool contains(LChar c) const { return find(c) != kNotFound; }
-  bool contains(char c) const { return find(c) != kNotFound; }
+  bool contains(UChar c) const { return find(c) != npos; }
+  bool contains(LChar c) const { return find(c) != npos; }
+  bool contains(char c) const { return find(c) != npos; }
   // Returns `true` if this string contains the specified `value`.
   // If `value` is empty, this returns `true`.
   bool contains(const StringView& value) const;
@@ -300,11 +300,11 @@ WTF_EXPORT extern const AtomicString& g_https_atom;
 WTF_EXPORT std::ostream& operator<<(std::ostream&, const AtomicString&);
 
 inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
-                              unsigned offset,
-                              unsigned length)
+                              size_type offset,
+                              size_type length)
     : StringView(string.Impl(), offset, length) {}
 inline StringView::StringView(const AtomicString& string LIFETIME_BOUND,
-                              unsigned offset)
+                              size_type offset)
     : StringView(string.Impl(), offset) {}
 inline StringView::StringView(const AtomicString& string LIFETIME_BOUND)
     : StringView(string.Impl()) {}

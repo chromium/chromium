@@ -110,14 +110,14 @@ class WTF_EXPORT StringView {
   StringView() { Clear(); }
 
   // From a StringView:
-  StringView(const StringView&, unsigned offset, unsigned length);
-  StringView(const StringView& view, unsigned offset)
+  StringView(const StringView&, size_type offset, size_type length);
+  StringView(const StringView& view, size_type offset)
       : StringView(view, offset, view.length_ - offset) {}
 
   // From a StringImpl:
   StringView(const StringImpl*);
-  StringView(const StringImpl*, unsigned offset);
-  StringView(const StringImpl*, unsigned offset, unsigned length);
+  StringView(const StringImpl*, size_type offset);
+  StringView(const StringImpl*, size_type offset, size_type length);
 
   // From a non-null StringImpl.
   StringView(const StringImpl& impl)
@@ -130,22 +130,23 @@ class WTF_EXPORT StringView {
       : impl_(&impl),
         bytes_(impl.RawByteSpan().data()),
         length_(impl.length()) {}
-  StringView(StringImpl&, unsigned offset);
-  StringView(StringImpl&, unsigned offset, unsigned length);
+  StringView(StringImpl&, size_type offset);
+  StringView(StringImpl&, size_type offset, size_type length);
 
   // From a String, implemented in wtf_string.h
   inline StringView(const String& string LIFETIME_BOUND,
-                    unsigned offset,
-                    unsigned length);
-  inline StringView(const String& string LIFETIME_BOUND, unsigned offset);
+                    size_type offset,
+                    size_type length);
+  inline StringView(const String& string LIFETIME_BOUND, size_type offset);
   // NOLINTNEXTLINE(google-explicit-constructor)
   inline StringView(const String& string LIFETIME_BOUND);
 
   // From an AtomicString, implemented in atomic_string.h
   inline StringView(const AtomicString& string LIFETIME_BOUND,
-                    unsigned offset,
-                    unsigned length);
-  inline StringView(const AtomicString& string LIFETIME_BOUND, unsigned offset);
+                    size_type offset,
+                    size_type length);
+  inline StringView(const AtomicString& string LIFETIME_BOUND,
+                    size_type offset);
   // NOLINTNEXTLINE(google-explicit-constructor)
   inline StringView(const AtomicString& string LIFETIME_BOUND);
 
@@ -153,26 +154,27 @@ class WTF_EXPORT StringView {
   explicit StringView(base::span<const LChar> chars)
       : impl_(StringImpl::empty_),
         bytes_(chars.data()),
-        length_(base::checked_cast<wtf_size_t>(chars.size())) {}
+        length_(base::checked_cast<size_type>(chars.size())) {}
   // NOLINTNEXTLINE(google-explicit-constructor)
   StringView(const char* chars)
       : impl_(StringImpl::empty_),
         bytes_(chars),
-        length_(chars ? base::checked_cast<unsigned>(strlen(chars)) : 0) {}
+        length_(chars ? base::checked_cast<size_type>(strlen(chars)) : 0) {}
 
   // From a wide literal string or UChar buffer.
   explicit StringView(base::span<const UChar> chars)
       : impl_(StringImpl::empty16_bit_),
         bytes_(chars.data()),
-        length_(base::checked_cast<wtf_size_t>(chars.size())) {}
+        length_(base::checked_cast<size_type>(chars.size())) {}
+  // NOLINTNEXTLINE(google-explicit-constructor)
   StringView(const UChar* chars);
 
-  // StringView(const T*, unsigned) are deleted explicitly because `const T*` is
-  // converted to a StringView implicitly and StringView(const StringView&,
-  // unsigned offset) would be used unexpectedly.
-  StringView(const LChar*, unsigned) = delete;
-  StringView(const char*, unsigned) = delete;
-  StringView(const UChar*, unsigned) = delete;
+  // StringView(const T*, size_type) are deleted explicitly because `const T*`
+  // is converted to a StringView implicitly and StringView(const StringView&,
+  // size_type offset) would be used unexpectedly.
+  StringView(const LChar*, size_type) = delete;
+  StringView(const char*, size_type) = delete;
+  StringView(const UChar*, size_type) = delete;
 
 #if DCHECK_IS_ON()
   ~StringView();
@@ -181,7 +183,7 @@ class WTF_EXPORT StringView {
   bool IsNull() const { return !bytes_; }
   bool empty() const { return !length_; }
 
-  unsigned length() const { return length_; }
+  size_type length() const { return length_; }
 
   bool Is8Bit() const {
     DCHECK(impl_);
@@ -198,14 +200,15 @@ class WTF_EXPORT StringView {
   // Returns true if the string is empty or contains only Latin-1 characters.
   bool ContainsOnlyLatin1OrEmpty() const;
 
-  bool SubstringContainsOnlyWhitespaceOrEmpty(unsigned from, unsigned to) const;
+  bool SubstringContainsOnlyWhitespaceOrEmpty(size_type from,
+                                              size_type to) const;
 
   void Clear();
 
   // Returns a code unit at the specified index.
   // This operator performs an out-of-bounds access if the specified
   // index is out of range.
-  UChar operator[](unsigned i) const {
+  UChar operator[](size_type i) const {
     SECURITY_DCHECK(i < length());
     // SAFETY: safe when i < length().
     UNSAFE_BUFFERS({
@@ -238,15 +241,15 @@ class WTF_EXPORT StringView {
   // string. If the offset points an unpaired surrogate, this function returns
   // the surrogate code unit as is. If you'd like to check such surroagtes,
   // use U_IS_SURROGATE() defined in unicode/utf.h.
-  UChar32 CodepointAt(unsigned i) const;
+  UChar32 CodepointAt(size_type i) const;
 
   // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
   // Returns i+1 otherwise.
-  unsigned NextCodePointOffset(unsigned i) const;
+  size_type NextCodePointOffset(size_type i) const;
 
   // Does `CodepointAt()`, and the specified `i` is updated by
   // `NextCodePointOffset()`.
-  UChar32 CodePointAtAndNext(unsigned& i) const;
+  UChar32 CodePointAtAndNext(size_type& i) const;
 
   const void* Bytes() const { return bytes_; }
 
@@ -289,16 +292,16 @@ class WTF_EXPORT StringView {
   [[nodiscard]] String EncodeForDebugging() const;
 
   // Find a character. Returns the index of the match, or `kNotFound`.
-  wtf_size_t find(UChar ch, wtf_size_t start = 0) const;
+  size_type find(UChar ch, size_type start = 0) const;
   // Find characters. Returns the index of the match, or `kNotFound`.
-  wtf_size_t Find(CharacterMatchFunctionPtr match_function,
-                  wtf_size_t start = 0) const;
+  size_type Find(CharacterMatchFunctionPtr match_function,
+                 size_type start = 0) const;
   // Find a substring. Returns the index of the match, or `kNotFound`.
-  wtf_size_t find(const StringView& value, wtf_size_t start = 0) const;
+  size_type find(const StringView& value, size_type start = 0) const;
 
   // Find the last occurrence of a character. Returns the index of the match, or
   // `kNotFound`.
-  wtf_size_t rfind(UChar ch, wtf_size_t start = kNotFound) const;
+  size_type rfind(UChar ch, size_type start = npos) const;
   // Searches for the last occurrence of a substring within this string.
   //
   // This method performs a backward search starting from the 'start' index.
@@ -339,7 +342,7 @@ class WTF_EXPORT StringView {
   // If you'd like to iterate code units, just use [] and length().
   //
   // * Iterate code units
-  //    for (unsigned i = 0; i < view.length(); ++i) {
+  //    for (string_size_t i = 0; i < view.length(); ++i) {
   //      UChar code_unit = view[i];
   //      ...
   // * Iterate code points
@@ -359,17 +362,17 @@ class WTF_EXPORT StringView {
   // `length()`. It's compatible with both std::string_view::substr() and
   // blink::String::Substring(). This behavior does not match to
   // `StringView(*this, offset, len)`.
-  StringView substr(wtf_size_t offset, wtf_size_t len = kNotFound) const;
+  StringView substr(size_type offset, size_type len = npos) const;
 
   // Removes the first `len` characters from this view by advancing the start
   // address and reducing the `length()`.
   // If `len` is greater than `length()`, this function crashes.
-  void remove_prefix(wtf_size_t len);
+  void remove_prefix(size_type len);
 
   // Removes the last `len` characters from this view by reducing the
   // `length()`.
   // If `len` is greater than `length()`, this function crashes.
-  void remove_suffix(wtf_size_t len);
+  void remove_suffix(size_type len);
 
   // Returns a substring removing leading and trailing white spaces.
   // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such
@@ -393,7 +396,7 @@ class WTF_EXPORT StringView {
   Vector<StringView> SplitSkippingEmpty(UChar separator) const;
 
  private:
-  void Set(const StringImpl&, unsigned offset, unsigned length);
+  void Set(const StringImpl&, size_type offset, size_type length);
 
 // We use the StringImpl to mark for 8bit or 16bit, even for strings where
 // we were constructed from a char pointer. So m_impl->bytes() might have
@@ -404,12 +407,12 @@ class WTF_EXPORT StringView {
   StringImpl* impl_;
 #endif
   const void* bytes_;
-  unsigned length_;
+  size_type length_;
 };
 
 inline StringView::StringView(const StringView& view,
-                              unsigned offset,
-                              unsigned length)
+                              size_type offset,
+                              size_type length)
     : impl_(view.impl_), length_(length) {
   SECURITY_DCHECK(offset <= view.length());
   SECURITY_DCHECK(length <= view.length() - offset);
@@ -433,23 +436,23 @@ inline StringView::StringView(const StringImpl* impl) {
   bytes_ = impl->RawByteSpan().data();
 }
 
-inline StringView::StringView(const StringImpl* impl, unsigned offset) {
+inline StringView::StringView(const StringImpl* impl, size_type offset) {
   impl ? Set(*impl, offset, impl->length() - offset) : Clear();
 }
 
 inline StringView::StringView(const StringImpl* impl,
-                              unsigned offset,
-                              unsigned length) {
+                              size_type offset,
+                              size_type length) {
   impl ? Set(*impl, offset, length) : Clear();
 }
 
-inline StringView::StringView(StringImpl& impl, unsigned offset) {
+inline StringView::StringView(StringImpl& impl, size_type offset) {
   Set(impl, offset, impl.length() - offset);
 }
 
 inline StringView::StringView(StringImpl& impl,
-                              unsigned offset,
-                              unsigned length) {
+                              size_type offset,
+                              size_type length) {
   Set(impl, offset, length);
 }
 
@@ -460,8 +463,8 @@ inline void StringView::Clear() {
 }
 
 inline void StringView::Set(const StringImpl& impl,
-                            unsigned offset,
-                            unsigned length) {
+                            size_type offset,
+                            size_type length) {
   SECURITY_DCHECK(offset <= impl.length());
   SECURITY_DCHECK(length <= impl.length() - offset);
   length_ = length;
@@ -513,8 +516,9 @@ inline bool operator==(const StringView& a, const StringView& b) {
   return EqualStringView(a, b);
 }
 
-inline wtf_size_t StringView::Find(CharacterMatchFunctionPtr match_function,
-                                   wtf_size_t start) const {
+inline StringView::size_type StringView::Find(
+    CharacterMatchFunctionPtr match_function,
+    size_type start) const {
   return Is8Bit() ? blink::Find(Span8(), match_function, start)
                   : blink::Find(Span16(), match_function, start);
 }

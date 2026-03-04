@@ -34,7 +34,7 @@
 namespace blink::internal {
 
 // A pair of the start offset and the length.
-using CharacterRange = std::pair<wtf_size_t, wtf_size_t>;
+using CharacterRange = std::pair<string_size_t, string_size_t>;
 
 template <typename CharType, class Predicate>
 inline CharacterRange StrippedMatchedCharactersRange(base::span<CharType> chars,
@@ -61,32 +61,31 @@ inline CharacterRange StrippedMatchedCharactersRange(base::span<CharType> chars,
   while (end && predicate(chars[end])) {
     --end;
   }
-  return {static_cast<wtf_size_t>(start),
-          static_cast<wtf_size_t>(end + 1 - start)};
+  return {static_cast<string_size_t>(start),
+          static_cast<string_size_t>(end + 1 - start)};
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-inline wtf_size_t FindInternal(base::span<const SearchCharacterType> search,
-                               base::span<const MatchCharacterType> match,
-                               wtf_size_t index) {
+inline string_size_t FindInternal(base::span<const SearchCharacterType> search,
+                                  base::span<const MatchCharacterType> match,
+                                  string_size_t index) {
   // Optimization: keep a running hash of the strings,
   // only call equal() if the hashes match.
 
-  wtf_size_t match_length = base::checked_cast<wtf_size_t>(match.size());
+  auto match_length = base::checked_cast<string_size_t>(match.size());
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta =
-      base::checked_cast<wtf_size_t>(search.size() - match.size());
+  auto delta = base::checked_cast<string_size_t>(search.size() - match.size());
 
-  wtf_size_t search_hash = 0;
-  wtf_size_t match_hash = 0;
+  string_size_t search_hash = 0;
+  string_size_t match_hash = 0;
 
   for (size_t i = 0; i < match_length; ++i) {
     search_hash += search[i];
     match_hash += match[i];
   }
 
-  wtf_size_t i = 0;
+  string_size_t i = 0;
   // Keep looping until we match.
   //
   // We don't use base::span methods for better performance.
@@ -108,9 +107,9 @@ inline wtf_size_t FindInternal(base::span<const SearchCharacterType> search,
 
 // Optimized for the most common case where `search` and `match` are LChar.
 template <>
-ALWAYS_INLINE wtf_size_t FindInternal(base::span<const LChar> search,
-                                      base::span<const LChar> match,
-                                      wtf_size_t index) {
+ALWAYS_INLINE string_size_t FindInternal(base::span<const LChar> search,
+                                         base::span<const LChar> match,
+                                         string_size_t index) {
   CHECK_LT(1u, match.size());
 
   base::span<const LChar> current = search;
@@ -128,7 +127,7 @@ ALWAYS_INLINE wtf_size_t FindInternal(base::span<const LChar> search,
       return kNotFound;
     }
 
-    current = current.subspan(static_cast<wtf_size_t>(p - current.data()));
+    current = current.subspan(static_cast<size_t>(p - current.data()));
     CHECK_LE(match.size(), current.size());
 
     // SAFETY: Safe because we're reading match.size() chars from current and
@@ -146,10 +145,10 @@ ALWAYS_INLINE wtf_size_t FindInternal(base::span<const LChar> search,
   return kNotFound;
 }
 
-inline wtf_size_t Find(const StringView& string,
-                       const StringView& match,
-                       wtf_size_t index) {
-  const wtf_size_t match_length = match.length();
+inline string_size_t Find(const StringView& string,
+                          const StringView& match,
+                          string_size_t index) {
+  const string_size_t match_length = match.length();
 
   // Optimization: fast case for strings of length 1.
   if (match_length == 1) {
@@ -161,7 +160,7 @@ inline wtf_size_t Find(const StringView& string,
   if (index > string.length()) {
     return kNotFound;
   }
-  const wtf_size_t search_length = string.length() - index;
+  const string_size_t search_length = string.length() - index;
   if (match_length > search_length) {
     return kNotFound;
   }
@@ -184,21 +183,21 @@ inline wtf_size_t Find(const StringView& string,
 }
 
 template <typename SearchCharacterType, typename MatchCharacterType>
-ALWAYS_INLINE wtf_size_t ReverseFind(
-    base::span<const SearchCharacterType> search,
-    base::span<const MatchCharacterType> match,
-    wtf_size_t index) {
+ALWAYS_INLINE string_size_t
+ReverseFind(base::span<const SearchCharacterType> search,
+            base::span<const MatchCharacterType> match,
+            string_size_t index) {
   // Optimization: keep a running hash of the strings,
   // only call equal if the hashes match.
 
-  wtf_size_t match_length = base::checked_cast<wtf_size_t>(match.size());
+  auto match_length = base::checked_cast<string_size_t>(match.size());
   // delta is the number of additional times to test; delta == 0 means test only
   // once.
-  wtf_size_t delta = std::min(
-      index, base::checked_cast<wtf_size_t>(search.size() - match_length));
+  auto delta = std::min(
+      index, base::checked_cast<string_size_t>(search.size() - match_length));
 
-  wtf_size_t search_hash = 0;
-  wtf_size_t match_hash = 0;
+  string_size_t search_hash = 0;
+  string_size_t match_hash = 0;
   for (wtf_size_t i = 0; i < match_length; ++i) {
     search_hash += search[delta + i];
     match_hash += match[i];

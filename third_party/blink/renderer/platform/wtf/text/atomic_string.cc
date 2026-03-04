@@ -63,11 +63,11 @@ String AtomicString::AddSlowCase(StringImpl* string) {
 }
 
 bool AtomicString::contains(const StringView& value) const {
-  return string_.find(value) != kNotFound;
+  return string_.find(value) != npos;
 }
 
 bool AtomicString::ContainsIgnoringAsciiCase(const StringView& value) const {
-  return string_.FindIgnoringAsciiCase(value) != kNotFound;
+  return string_.FindIgnoringAsciiCase(value) != npos;
 }
 
 AtomicString AtomicString::FromUTF8(base::span<const uint8_t> bytes) {
