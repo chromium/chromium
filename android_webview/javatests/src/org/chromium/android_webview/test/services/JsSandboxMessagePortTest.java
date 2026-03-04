@@ -14,6 +14,7 @@ import androidx.javascriptengine.JavaScriptSandbox;
 import androidx.javascriptengine.Message;
 import androidx.javascriptengine.MessagePort;
 import androidx.javascriptengine.MessagePortClient;
+import androidx.javascriptengine.TerminationInfo;
 import androidx.test.filters.LargeTest;
 
 import com.google.common.util.concurrent.ListenableFuture;
@@ -30,9 +31,11 @@ import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisabledTest;
 
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
@@ -539,5 +542,237 @@ public class JsSandboxMessagePortTest {
     public void testSetOnMessageHandler_plainObject_nullifiesHandlerAndDropsMessages()
             throws Throwable {
         assertInvalidOnMessageHandlerConvertsToNullAndDropsMessages("{}");
+    }
+
+    private void assertPostingMessagesToIsolateExceedsMemoryLimit(
+            Message message, int count, boolean busyIsolate) throws Throwable {
+        MessagePort messagePort =
+                mJsIsolate.provideMessagePort(
+                        PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
+        String code =
+                String.format(
+                        """
+                        (async () => {
+                            const port = await android.getNamedPort('%s');
+                            port.onmessage = (event)=>{};
+                        })()
+                        """,
+                        PORT_NAME);
+        mJsIsolate.evaluateJavaScriptAsync(code).get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+        if (busyIsolate) {
+            // Ensure the isolate thread cannot process any messages.
+            mJsIsolate.evaluateJavaScriptAsync("while(true);");
+        }
+
+        for (int i = 0; i < count; i++) {
+            messagePort.postMessage(message);
+        }
+
+        final CountDownLatch sandboxCrashedLatch = new CountDownLatch(1);
+        mJsIsolate.addOnTerminatedCallback(
+                MoreExecutors.directExecutor(),
+                info -> {
+                    if (info.getStatus() != TerminationInfo.STATUS_MEMORY_LIMIT_EXCEEDED) {
+                        Assert.fail(
+                                "Expected: STATUS_MEMORY_LIMIT_EXCEEDED but was: "
+                                        + info.getStatusString());
+                    }
+                    sandboxCrashedLatch.countDown();
+                });
+        Assert.assertTrue(sandboxCrashedLatch.await(TIMEOUT_SECONDS, TimeUnit.SECONDS));
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_emptyStrings_sandboxDead() throws Throwable {
+        // Memory accounting should ensure very small messages (e.g. 0 bytes) count as at least a
+        // whole page in size. Note that a page size of 4096 isn't an API guarantee. It could be
+        // more, but isn't currently likely to be less. If it's less than 4096, this test may fail!
+        final int messageCount = MAX_HEAP_SIZE / 4096 + 1;
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createString(""), messageCount, true);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_emptyArrayBuffers_sandboxDead() throws Throwable {
+        // Memory accounting should ensure very small messages (e.g. 0 bytes) count as at least a
+        // whole page in size. Note that a page size of 4096 isn't an API guarantee. It could be
+        // more, but isn't currently likely to be less. If it's less than 4096, this test may fail!
+        final int messageCount = MAX_HEAP_SIZE / 4096 + 1;
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createArrayBuffer(new byte[0]), messageCount, true);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_smallStrings_sandboxDead() throws Throwable {
+        // Size in UTF-16 bytes
+        final int messageSize = 8192;
+        final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createString("a".repeat(messageSize / 2)), messageCount, true);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_smallArrayBuffers_sandboxDead() throws Throwable {
+        final int messageSize = 8192;
+        final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createArrayBuffer(new byte[messageSize]), messageCount, true);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_largeStrings_sandboxDead() throws Throwable {
+        // Size in UTF-16 bytes
+        final int messageSize = 1048576;
+        final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createString("a".repeat(messageSize / 2)), messageCount, true);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_largeArrayBuffers_sandboxDead() throws Throwable {
+        final int messageSize = 1048576;
+        final int messageCount = MAX_HEAP_SIZE / messageSize + 1;
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createArrayBuffer(new byte[messageSize]), messageCount, true);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_singleOversizedString_sandboxDead() throws Throwable {
+        // For single oversized messages there is no need to busy-loop the isolate.
+        // So, ensure handling still works without active evaluations, in contrast to other tests.
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createString("a".repeat(MAX_HEAP_SIZE + 1)), 1, false);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testExceedMemoryLimit_singleOversizedArrayBuffer_sandboxDead() throws Throwable {
+        // For single oversized messages there is no need to busy-loop the isolate.
+        // So, ensure handling still works without active evaluations, in contrast to other tests.
+        assertPostingMessagesToIsolateExceedsMemoryLimit(
+                Message.createArrayBuffer(new byte[MAX_HEAP_SIZE + 1]), 1, false);
+    }
+
+    private void assertMessageMemoryRecycled(Message message, int messageCount, int batchSize)
+            throws Throwable {
+        MessagePort messagePort =
+                mJsIsolate.provideMessagePort(
+                        PORT_NAME, MoreExecutors.directExecutor(), EXPECT_NO_INCOMING_MESSAGES);
+        String code =
+                String.format(
+                        """
+                        let remainingMessages = 0;
+                        let waiting = null;
+                        function setRemainingMessages(count) {
+                            if (remainingMessages !== 0) {
+                                throw 'remainingMessages is not zero';
+                            }
+                            remainingMessages = count;
+                        }
+                        function waitForMessages() {
+                            if (waiting !== null) {
+                                throw 'already waiting';
+                            }
+                            return new Promise((resolve, reject) => {waiting = resolve;});
+                        }
+                        function countMessage(ignored_event) {
+                            remainingMessages--;
+                            if (remainingMessages === 0) {
+                                waiting('DONE');
+                                waiting = null;
+                            } else if (remainingMessages < 0) {
+                                // This will probably never get surfaced if it happens.
+                                throw 'counted unexpected message';
+                            }
+                        }
+                        (async () => {
+                            const port = await android.getNamedPort('%s');
+                            port.onmessage = countMessage;
+                        })()
+                        """,
+                        PORT_NAME);
+        mJsIsolate.evaluateJavaScriptAsync(code).get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+
+        // Batch multiple messages at a time. Checkpoint using waitForMessages to ensure the GC gets
+        // a chance to run. This may post a few extra messages than messageCount says to, but that's
+        // fine for these tests.
+        for (int messageNum = 0; messageNum < messageCount; messageNum += batchSize) {
+            mJsIsolate
+                    .evaluateJavaScriptAsync("setRemainingMessages(" + batchSize + ")")
+                    .get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            ListenableFuture<String> resultFuture =
+                    mJsIsolate.evaluateJavaScriptAsync("waitForMessages()");
+            for (int i = 0; i < batchSize; i++) {
+                messagePort.postMessage(message);
+            }
+            String result = resultFuture.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            Assert.assertEquals("DONE", result);
+        }
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testProcessedMessages_emptyStrings_memoryRecycled() throws Throwable {
+        final int messageCount = 2 * MAX_HEAP_SIZE / 4096 + 1;
+        final int batchSize = 1048576 / 4096;
+        assertMessageMemoryRecycled(Message.createString(""), messageCount, batchSize);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testProcessedMessages_emptyArrayBuffers_memoryRecycled() throws Throwable {
+        final int messageCount = 2 * MAX_HEAP_SIZE / 4096 + 1;
+        final int batchSize = 1048576 / 4096;
+        assertMessageMemoryRecycled(
+                Message.createArrayBuffer(new byte[0]), messageCount, batchSize);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testProcessedMessages_smallStrings_memoryRecycled() throws Throwable {
+        // Size in UTF-16 bytes
+        final int messageSize = 8192;
+        final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
+        final int batchSize = 1048576 / messageSize;
+        assertMessageMemoryRecycled(
+                Message.createString("a".repeat(messageSize / 2)), messageCount, batchSize);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testProcessedMessages_smallArrayBuffers_memoryRecycled() throws Throwable {
+        final int messageSize = 8192;
+        final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
+        final int batchSize = 1048576 / messageSize;
+        assertMessageMemoryRecycled(
+                Message.createArrayBuffer(new byte[messageSize]), messageCount, batchSize);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testProcessedMessages_largeStrings_memoryRecycled() throws Throwable {
+        // Size in UTF-16 bytes
+        final int messageSize = 1048576;
+        final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
+        final int batchSize = 1048576 / messageSize;
+        assertMessageMemoryRecycled(
+                Message.createString("a".repeat(messageSize / 2)), messageCount, batchSize);
+    }
+
+    @Test
+    @DisabledTest(message = "Requires too much CPU and memory to run on CI")
+    public void testProcessedMessages_largeArrayBuffers_memoryRecycled() throws Throwable {
+        final int messageSize = 1048576;
+        final int messageCount = 2 * MAX_HEAP_SIZE / messageSize;
+        final int batchSize = 1048576 / messageSize;
+        assertMessageMemoryRecycled(
+                Message.createArrayBuffer(new byte[messageSize]), messageCount, batchSize);
     }
 }
