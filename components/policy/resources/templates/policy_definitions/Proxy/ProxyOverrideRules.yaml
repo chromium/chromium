@@ -1,52 +1,64 @@
 caption: Proxy override rules
 desc: |-
-  Setting this policy configures rules that select what proxy the browser uses depending on the destination's URL and other conditions. This policy will take precedence over proxy settings set from the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy, the <ph name="PROXY_SETTINGS_EXTENSION_API">chrome.proxy</ph> extension API or manual user settings if any is set.
+  Configures rules that select which proxy the browser uses based on the destination URL and specific network conditions.
 
-  Leaving the policy unset has no effect on other proxy policies or user settings.
+  This policy takes precedence over the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy, the <ph name="PROXY_SETTINGS_EXTENSION_API">chrome.proxy</ph> extension API, and manual user settings. If no rules in this policy match, the browser falls back to the settings defined in <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph>.
 
-  When the browser needs to decide what proxy to use, entries of the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> policy are evaluated in sequence until an entry satisfies all the following points:
-    * At least one of the URL patterns in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
-    * None of the URL patterns in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS">ExcludeDestinationMatchers</ph> is matched.
-    * If <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> is specified and is a non-empty list, all conditions represented by its entries are satisfied.
-  The value in <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> will be used as a proxy for such a match. If no match is found, proxy settings will fall back to what is set in the <ph name="PROXY_SETTINGS_POLICY_NAME">ProxySettings</ph> policy.
+  The browser evaluates entries in the <ph name="PROXY_OVERRIDE_RULES_POLICY_NAME">ProxyOverrideRules</ph> list in sequence. A rule is applied only if all of the following criteria are met:
 
-  The URL patterns supported by <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> and <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS">ExcludeDestinationMatchers</ph> are documented at https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+    * Match: At least one URL pattern in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
 
-  The <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> field entries correspond to string values of PAC files such as:
+    * Exclude: No URL patterns in <ph name="PROXY_OVERRIDE_RULES_EXCLUDE_DESTINATION_MATCHERS">ExcludeDestinationMatchers</ph> are matched.
+
+    * Conditions: If <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> is specified, all listed conditions must be satisfied. If unset, this requirement is ignored.
+
+  URL patterns for matchers are documented at https://chromium.googlesource.com/chromium/src/+/HEAD/net/docs/proxy.md#proxy-config-url-patterns.
+
+  The <ph name="PROXY_OVERRIDE_RULES_PROXY_LIST">ProxyList</ph> field defines a failover list. The first reachable entry is used; invalid entries are ignored. You can use PAC-style strings or URL-like specifiers:
+
+  PAC-style strings:
+
     * DIRECT
+
     * PROXY host:port
+
     * HTTPS host:port
+
     * SOCKS4 host:port
+
     * SOCKS5 host:port
-  Alternatively, URL-like proxy specifiers can be used directly to specify the proxy, for example:
+
+  URL-like specifiers:
+
     * http://host:port
+
     * https://host:port
+
     * socks4://host:port
+
     * socks5://host:port
-  The first reachable entry in the list will be used as a proxy. Invalid entries in the list are ignored.
 
-  The <ph name="PROXY_OVERRIDE_RULES_CONDITIONS">Conditions</ph> field contains a list of conditions that must all be met for its override rule to be used to decide the proxy to use. If it is left unset, the entry will be used as long as at least one host in <ph name="PROXY_OVERRIDE_RULES_DESTINATION_MATCHERS">DestinationMatchers</ph> is matched.
+  The <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE">DnsProbe</ph> condition checks if a <ph name="PROXY_OVERRIDE_RULES_HOST">Host</ph> resolves to an IP address.
 
-  The <ph name="PROXY_OVERRIDE_RULES_DNS_PROBE">DnsProbe</ph> condition checks if the provided DNS <ph name="PROXY_OVERRIDE_RULES_HOST">Host</ph> is able to resolve to an IP address. It must contain a host (e.g. example.com), and optionally a scheme or a port (e.g. https://example.com, example.com:123, https://example.com:123). If a secure scheme is used (e.g. https), DNS lookup may also request the HTTPS record (see RFC 9460 for more details). If the value of <ph name="PROXY_OVERRIDE_RULES_RESULT">Result</ph> is "<ph name="PROXY_OVERRIDE_RULES_RESOLVED">resolved</ph>" then the condition is considered as met. If the value is instead set to <ph name="PROXY_OVERRIDE_RULES_NOT_FOUND">not_found</ph>, then the condition is considered met if the resolution failed.
+  * Supports hostnames (e.g., example.com) or URI-style strings (e.g., https://example.com:123). Using a secure scheme (https) may trigger an HTTPS record request (see RFC 9460).
+
+  * Set to "<ph name="PROXY_OVERRIDE_RULES_RESOLVED">resolved</ph>" to meet the condition upon successful resolution, or "<ph name="PROXY_OVERRIDE_RULES_NOT_FOUND">not_found</ph>" to meet the condition if resolution fails.
+
+  The application of this policy on managed devices is influenced by the <ph name="ENABLE_PROXY_OVERRIDE_RULES_FOR_ALL_USERS_POLICY_NAME">EnableProxyOverrideRulesForAllUsers</ph> machine-level policy on the platforms where it is supported. By default, it prevents the usage of override rules configured by unaffiliated users.
 
 example_value:
 - DestinationMatchers:
   - 'https://some.app.com'
-  - 'https://other.app.org'
-  ProxyList:
-  - 'HTTPS proxy.app:443'
-  - 'DIRECT'
-  Conditions:
-  - DnsProbe:
-      Host: 'corp.ads'
-      Result: "resolved"
-- DestinationMatchers:
   - 'https://google.com'
   ExcludeDestinationMatchers:
   - 'https://mail.google.com'
   ProxyList:
   - 'HTTPS proxy.app:443'
   - 'DIRECT'
+  Conditions:
+  - DnsProbe:
+      Host: 'corp.ads'
+      Result: 'resolved'
 features:
   cloud_only: true
   dynamic_refresh: true

@@ -7,5 +7,3 @@ Proxy:
   - ProxyPacUrl
   - ProxyBypassList
   - ProxySettings
-  - ProxyOverrideRules
-  - EnableProxyOverrideRulesForAllUsers
