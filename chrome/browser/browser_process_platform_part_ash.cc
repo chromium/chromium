@@ -310,7 +310,8 @@ void BrowserProcessPlatformPart::InitializePrimaryProfileServices(
 
   DCHECK(!in_session_password_change_manager_);
   in_session_password_change_manager_ =
-      ash::InSessionPasswordChangeManager::CreateIfEnabled(primary_profile);
+      ash::InSessionPasswordChangeManager::CreateIfEnabled(
+          g_browser_process->local_state(), primary_profile);
 
   primary_profile_shutdown_subscription_ =
       PrimaryProfileServicesShutdownNotifierFactory::GetInstance()

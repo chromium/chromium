@@ -12,6 +12,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_change_manager.h"
 #include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -164,20 +165,21 @@ class PasswordChangeSuccessDetectionTest
     profile->GetPrefs()->SetBoolean(prefs::kSamlInSessionPasswordChangeEnabled,
                                     true);
 
-    password_change_manager_ =
-        std::make_unique<InSessionPasswordChangeManager>(profile);
+    password_change_manager_ = std::make_unique<InSessionPasswordChangeManager>(
+        g_browser_process->local_state(), profile);
     InSessionPasswordChangeManager::SetForTesting(
         password_change_manager_.get());
+  }
+
+  void TearDownOnMainThread() override {
+    InSessionPasswordChangeManager::ResetForTesting();
+    password_change_manager_.reset();
+    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   void WaitForPasswordChangeDetected() {
     PasswordChangeWaiter password_change_waiter;
     password_change_waiter.WaitForPasswordChange();
-  }
-
-  void TearDownOnMainThread() override {
-    InSessionPasswordChangeManager::ResetForTesting();
-    MixinBasedInProcessBrowserTest::TearDownOnMainThread();
   }
 
   net::EmbeddedTestServer embedded_test_server_{

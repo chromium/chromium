@@ -10,6 +10,7 @@
 
 #include "ash/public/cpp/session/session_activation_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chromeos/ash/components/login/auth/password_update_flow.h"
 
+class PrefService;
 class Profile;
 
 namespace user_manager {
@@ -95,7 +97,9 @@ class InSessionPasswordChangeManager
   };
 
   // Returns null if in-session password change is disabled.
+  // `local_state` must be non-null and must outlive the returned object.
   static std::unique_ptr<InSessionPasswordChangeManager> CreateIfEnabled(
+      PrefService* local_state,
       Profile* primary_profile);
 
   // Returns true if the InSessionPasswordChangeManager is both enabled and
@@ -106,7 +110,9 @@ class InSessionPasswordChangeManager
   // then returns it.
   static InSessionPasswordChangeManager* Get();
 
-  explicit InSessionPasswordChangeManager(Profile* primary_profile);
+  // `local_state` must be non-null and must outlive `this`.
+  InSessionPasswordChangeManager(PrefService* local_state,
+                                 Profile* primary_profile);
 
   InSessionPasswordChangeManager(const InSessionPasswordChangeManager&) =
       delete;
@@ -187,6 +193,7 @@ class InSessionPasswordChangeManager
                                AuthenticationError error);
   void OnPasswordUpdateSuccess(std::unique_ptr<UserContext> user_context);
 
+  const raw_ref<PrefService> local_state_;
   raw_ptr<Profile, DanglingUntriaged> primary_profile_;
   raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
   base::ObserverList<Observer> observer_list_;

@@ -68,7 +68,8 @@ class InSessionPasswordChangeManagerTest : public testing::Test {
 
     display_service_tester_ =
         std::make_unique<NotificationDisplayServiceTester>(profile_);
-    manager_ = std::make_unique<InSessionPasswordChangeManager>(profile_);
+    manager_ = std::make_unique<InSessionPasswordChangeManager>(
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_);
 
     // urgent_warning_days_ = -1: This means we only ever show a standard
     // notification, instead of an urgent one, because it is simpler to test.

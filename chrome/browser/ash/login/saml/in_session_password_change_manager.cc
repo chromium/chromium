@@ -11,6 +11,7 @@
 
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -167,11 +168,13 @@ void RecheckPasswordExpiryTask::CancelPendingRecheck() {
 
 // static
 std::unique_ptr<InSessionPasswordChangeManager>
-InSessionPasswordChangeManager::CreateIfEnabled(Profile* primary_profile) {
+InSessionPasswordChangeManager::CreateIfEnabled(PrefService* local_state,
+                                                Profile* primary_profile) {
   if (primary_profile->GetPrefs()->GetBoolean(
           prefs::kSamlInSessionPasswordChangeEnabled)) {
     std::unique_ptr<InSessionPasswordChangeManager> manager =
-        std::make_unique<InSessionPasswordChangeManager>(primary_profile);
+        std::make_unique<InSessionPasswordChangeManager>(local_state,
+                                                         primary_profile);
     manager->MaybeShowExpiryNotification();
     RecordEvent(InSessionPasswordChangeEvent::kManagerCreated);
     return manager;
@@ -195,8 +198,10 @@ InSessionPasswordChangeManager* InSessionPasswordChangeManager::Get() {
 }
 
 InSessionPasswordChangeManager::InSessionPasswordChangeManager(
+    PrefService* local_state,
     Profile* primary_profile)
-    : primary_profile_(primary_profile),
+    : local_state_(CHECK_DEREF(local_state)),
+      primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
       urgent_warning_days_(kUrgentWarningDays) {
   DCHECK(primary_user_);
@@ -443,7 +448,7 @@ void InSessionPasswordChangeManager::OnLockStateChanged(bool locked) {
 void InSessionPasswordChangeManager::OnTokenCreated(
     const std::string& sync_token) {
   // Set token value in local state.
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
 }
 
