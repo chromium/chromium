@@ -133,9 +133,6 @@ extern const char kAutofillPaymentsSheetV2Description[];
 extern const char kAutofillPruneSuggestionsName[];
 extern const char kAutofillPruneSuggestionsDescription[];
 
-extern const char kAutofillShowManualFillForVirtualCardsName[];
-extern const char kAutofillShowManualFillForVirtualCardsDescription[];
-
 extern const char kAutofillThrottleDocumentFormScanName[];
 extern const char kAutofillThrottleDocumentFormScanDescription[];
 

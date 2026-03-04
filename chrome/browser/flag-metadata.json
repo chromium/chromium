@@ -981,11 +981,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-show-manual-fill-for-virtual-cards",
-    "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com"],
-    "expiry_milestone": 135
-  },
-  {
     "name": "autofill-sync-ewallet-accounts",
     "owners": ["junhuihe@chromium.org", "chrome-payments-eng@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 151

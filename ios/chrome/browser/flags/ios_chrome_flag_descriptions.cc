@@ -209,12 +209,6 @@ const char kAutofillPruneSuggestionsName[] = "Autofill Prune Suggestions";
 const char kAutofillPruneSuggestionsDescription[] =
     "Further limits the number of suggestions in the Autofill dropdown.";
 
-const char kAutofillShowManualFillForVirtualCardsName[] =
-    "Show Manual Fill for Virtual Cards";
-const char kAutofillShowManualFillForVirtualCardsDescription[] =
-    "When enabled, Autfoill will show the manual fill view directly on form "
-    "focusing events for virtual cards.";
-
 const char kAutofillThrottleDocumentFormScanName[] =
     "Throttle Autofill Document Form Scans";
 const char kAutofillThrottleDocumentFormScanDescription[] =
