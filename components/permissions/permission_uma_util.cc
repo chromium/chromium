@@ -191,8 +191,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "LoopbackNetwork";
 
     case RequestTypeForUma::UNKNOWN:
-    case RequestTypeForUma::PERMISSION_FLASH:
-    case RequestTypeForUma::PERMISSION_FILE_HANDLING:
     case RequestTypeForUma::NUM:
       NOTREACHED();
   }

@@ -22966,12 +22966,17 @@ Called by update_net_error_codes.py.-->
   <int value="9" label="PERMISSION_BUBBLE_PERMISSION_NOTIFICATIONS"/>
   <int value="10"
       label="PERMISSION_BUBBLE_PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
-  <int value="11" label="PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING__REMOVED"/>
-  <int value="12" label="PERMISSION_BUBBLE_PERMISSION_FLASH__REMOVED"/>
+  <int value="11"
+      label="(Obsolete) PERMISSION_BUBBLE_PERMISSION_PUSH_MESSAGING"/>
+  <int value="12" label="(Obsolete) PERMISSION_BUBBLE_PERMISSION_FLASH"/>
   <int value="13" label="PERMISSION_MEDIASTREAM_MIC"/>
   <int value="14" label="PERMISSION_MEDIASTREAM_CAMERA"/>
-  <int value="16" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
-  <int value="17" label="PERMISSION_SECURITY_KEY_ATTESTATION__REMOVED_IN_M117"/>
+  <int value="15"
+      label="(Obsolete) PERMISSION_ACCESSIBILITY_EVENTS. Removed in M131."/>
+  <int value="16"
+      label="(Obsolete) PERMISSION_CLIPBOARD_READ. Removed in M81."/>
+  <int value="17"
+      label="(Obsolete) PERMISSION_SECURITY_KEY_ATTESTATION. Removed in M117."/>
   <int value="18" label="PERMISSION_PAYMENT_HANDLER"/>
   <int value="19" label="PERMISSION_NFC"/>
   <int value="20" label="PERMISSION_CLIPBOARD_READ_WRITE"/>
@@ -22982,7 +22987,9 @@ Called by update_net_error_codes.py.-->
   <int value="25" label="PERMISSION_WINDOW_MANAGEMENT"/>
   <int value="26" label="PERMISSION_LOCAL_FONTS"/>
   <int value="27" label="PERMISSION_IDLE_DETECTION"/>
-  <int value="29" label="PERMISSION_U2F_API_REQUEST__REMOVED_IN_M117"/>
+  <int value="28" label="(Obsolete) PERMISSION_FILE_HANDLING. Removed in M98."/>
+  <int value="29"
+      label="(Obsolete) PERMISSION_U2F_API_REQUEST. Removed in M117."/>
   <int value="30" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="31" label="PERMISSION_MIDI"/>
   <int value="32" label="PERMISSION_FILE_SYSTEM_ACCESS"/>
@@ -23007,7 +23014,7 @@ Called by update_net_error_codes.py.-->
 <enum name="PermissionType">
   <int value="0" label="PERMISSION_UNKNOWN"/>
   <int value="1" label="PERMISSION_MIDI_SYSEX"/>
-  <int value="2" label="PERMISSION_PUSH_MESSAGING__REMOVED"/>
+  <int value="2" label="(Obsolete) PERMISSION_PUSH_MESSAGING"/>
   <int value="3" label="PERMISSION_NOTIFICATIONS"/>
   <int value="4" label="PERMISSION_GEOLOCATION"/>
   <int value="5" label="PERMISSION_PROTECTED_MEDIA_IDENTIFIER"/>
@@ -23016,10 +23023,13 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="PERMISSION_AUDIO_CAPTURE"/>
   <int value="9" label="PERMISSION_VIDEO_CAPTURE"/>
   <int value="10" label="PERMISSION_BACKGROUND_SYNC"/>
-  <int value="11" label="PERMISSION_FLASH__REMOVED"/>
+  <int value="11" label="(Obsolete) PERMISSION_FLASH"/>
   <int value="12" label="PERMISSION_SENSORS"/>
-  <int value="14" label="PERMISSION_CLIPBOARD_READ__REMOVED_IN_M81"/>
-  <int value="15" label="PERMISSION_CLIPBOARD_WRITE__REMOVED_IN_M81"/>
+  <int value="13" label="(Obsolete) PERMISSION_ACCESSIBILITY_EVENTS"/>
+  <int value="14"
+      label="(Obsolete) PERMISSION_CLIPBOARD_READ. Removed in M81."/>
+  <int value="15"
+      label="(Obsolete) PERMISSION_CLIPBOARD_WRITE. Removed in M81."/>
   <int value="16" label="PERMISSION_PAYMENT_HANDLER"/>
   <int value="17" label="PERMISSION_BACKGROUND_FETCH"/>
   <int value="18" label="PERMISSION_IDLE_DETECTION"/>
@@ -23036,7 +23046,7 @@ Called by update_net_error_codes.py.-->
   <int value="29" label="PERMISSION_WINDOW_MANAGEMENT"/>
   <int value="30" label="PERMISSION_LOCAL_FONTS"/>
   <int value="31" label="PERMISSION_DISPLAY_CAPTURE"/>
-  <int value="32" label="PERMISSION_FILE_HANDLING__REMOVED_IN_M98"/>
+  <int value="32" label="(Obsolete) PERMISSION_FILE_HANDLING. Removed in M98."/>
   <int value="33" label="PERMISSION_TOP_LEVEL_STORAGE_ACCESS"/>
   <int value="34" label="PERMISSION_CAPTURED_SURFACE_CONTROL"/>
   <int value="35" label="PERMISSION_SMART_CARD"/>
