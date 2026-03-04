@@ -30,7 +30,10 @@ source_set("browser_tests") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "prerender_manager_unittest.cc" ]
+  sources = [
+    "prerender_manager_unittest.cc",
+    "search_prewarm_progress_service_unittest.cc",
+  ]
 
   deps = [
     "//chrome/browser/preloading",

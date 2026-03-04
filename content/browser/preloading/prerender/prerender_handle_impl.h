@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/preloading.h"
 #include "content/public/browser/prerender_handle.h"
 
@@ -17,8 +18,9 @@ namespace content {
 
 class PrerenderHostRegistry;
 
-class PrerenderHandleImpl final : public PrerenderHandle,
-                                  public PrerenderHost::Observer {
+class CONTENT_EXPORT PrerenderHandleImpl final
+    : public PrerenderHandle,
+      public PrerenderHost::Observer {
  public:
   PrerenderHandleImpl(
       base::WeakPtr<PrerenderHostRegistry> prerender_host_registry,
@@ -38,11 +40,15 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   void AddActivationCallback(base::OnceClosure activation_callback) override;
   void AddErrorCallback(base::OnceClosure error_callback) override;
   bool IsValid() const override;
+  bool IsWaitingForResponseHeaders() const override;
+  void AddOnResponseHeadersReceivedCallback(
+      base::OnceClosure callback) override;
 
   // PrerenderHost::Observer:
   void OnActivated() override;
   void OnFailed(PrerenderFinalStatus status) override;
   void OnHostDestroyed(PrerenderFinalStatus status) override;
+  void OnHeadersReceived(NavigationHandle& navigation_handle) override;
 
   PrerenderHostId prerender_host_id_for_testing() const {
     return prerender_host_id_;
@@ -57,11 +63,12 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   const GURL prerendering_url_;
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
-  enum class State { kValid, kActivated, kCanceled };
-  State state_ = State::kValid;
+  enum class State { kLoading, kReady, kActivated, kCanceled };
+  State state_ = State::kLoading;
 
   std::vector<base::OnceClosure> activation_callbacks_;
   std::vector<base::OnceClosure> error_callbacks_;
+  std::vector<base::OnceClosure> on_headers_received_callbacks_;
 
   base::ScopedObservation<PrerenderHost, PrerenderHandleImpl> obs_{this};
 

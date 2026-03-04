@@ -2805,6 +2805,7 @@ test("content_unittests") {
     "../browser/preloading/preloading_config_unittest.cc",
     "../browser/preloading/preloading_data_impl_unittest.cc",
     "../browser/preloading/preloading_decider_unittest.cc",
+    "../browser/preloading/prerender/prerender_handle_impl_unittest.cc",
     "../browser/preloading/prerender/prerender_host_registry_unittest.cc",
     "../browser/preloading/prerender/prerender_host_unittest.cc",
     "../browser/preloading/prerender/prerender_metrics_unittest.cc",

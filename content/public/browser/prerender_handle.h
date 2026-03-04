@@ -49,6 +49,15 @@ class PrerenderHandle {
 
   // Returns true when prerendering has not been activated or canceled yet.
   virtual bool IsValid() const = 0;
+
+  // Returns true if the prerender is still waiting for its response headers.
+  virtual bool IsWaitingForResponseHeaders() const = 0;
+
+  // Adds a callback to be called when the response headers are received.
+  // The caller should call this only when IsWaitingForResponseHeaders() returns
+  // true.
+  virtual void AddOnResponseHeadersReceivedCallback(
+      base::OnceClosure callback) = 0;
 };
 
 }  // namespace content
