@@ -994,6 +994,7 @@ void GlicInstanceMetrics::RecordSkillsWebClientEvent(
     // --- Dialog Metrics ---
     case kClickedAddFromMenu:
     case kClickedSaveAsSkillHoverChip:
+    case kClickedEditSkillHoverChip:
     case kClickedAddOn1pSkill:
     case kClickedEditFromMenu:
       // TODO(crbug.com/483411707): Add routing for dialog metrics.
