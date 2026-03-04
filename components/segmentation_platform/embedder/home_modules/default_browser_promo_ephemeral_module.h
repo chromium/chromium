@@ -9,6 +9,9 @@
 
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
 
+class PrefRegistrySimple;
+class PrefService;
+
 namespace segmentation_platform::home_modules {
 
 // Signal key for this card.
@@ -20,21 +23,24 @@ extern const char kIsDefaultBrowserSignalKey[];
 // user has Chrome as their default browser.
 class DefaultBrowserPromoEphemeralModule : public CardSelectionInfo {
  public:
-  explicit DefaultBrowserPromoEphemeralModule();
+  DefaultBrowserPromoEphemeralModule();
   ~DefaultBrowserPromoEphemeralModule() override = default;
+
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
   // Returns `true` if the given label corresponds to a
   // `DefaultBrowserPromoEphemeralModule` variation.
   static bool IsModuleLabel(std::string_view label);
 
   // Returns `true` if the `DefaultBrowserPromoEphemeralModule` should be
-  // enabled.
-  static bool IsEnabled(int impression_count);
+  // enabled, considering the given `profile_prefs`.
+  static bool IsEnabled(PrefService* profile_prefs);
 
-  // CardSelectionInfo
+  // `CardSelectionInfo` overrides.
   std::map<SignalKey, FeatureQuery> GetInputs() override;
   ShowResult ComputeCardResult(
       const CardSelectionSignals& signals) const override;
+  void OnShow(PrefService* profile_prefs, PrefService* local_state) override;
 };
 
 }  // namespace segmentation_platform::home_modules

@@ -6,6 +6,8 @@
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/public/features.h"
@@ -13,6 +15,12 @@
 namespace segmentation_platform::home_modules {
 
 constexpr char kIsDefaultBrowserSignalKey[] = "is_default_browser_chrome_ios";
+
+namespace {
+
+// Impression counter for the Default Browser promo ephemeral module.
+const char kDefaultBrowserPromoEphemeralModuleImpressionCounterPref[] =
+    "ephemeral_pref_counter.default_browser_promo_ephemeral_module_counter";
 
 // Defines the signals that must all evaluate to false for
 // `DefaultBrowserPromoEphemeralModule` to be shown.
@@ -22,8 +30,17 @@ constexpr auto kDisqualifyingSignals =
         kIsDefaultBrowserSignalKey,
     });
 
+}  // namespace
+
 DefaultBrowserPromoEphemeralModule::DefaultBrowserPromoEphemeralModule()
     : CardSelectionInfo(kDefaultBrowserPromoEphemeralModule) {}
+
+// static
+void DefaultBrowserPromoEphemeralModule::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(
+      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref, 0);
+}
 
 std::map<SignalKey, FeatureQuery>
 DefaultBrowserPromoEphemeralModule::GetInputs() {
@@ -72,11 +89,21 @@ DefaultBrowserPromoEphemeralModule::ComputeCardResult(
   return result;
 }
 
+void DefaultBrowserPromoEphemeralModule::OnShow(PrefService* profile_prefs,
+                                                PrefService* local_state) {
+  int freshness_impression_count = profile_prefs->GetInteger(
+      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
+
+  profile_prefs->SetInteger(
+      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref,
+      freshness_impression_count + 1);
+}
+
 bool DefaultBrowserPromoEphemeralModule::IsModuleLabel(std::string_view label) {
   return label == kDefaultBrowserPromoEphemeralModule;
 }
 
-bool DefaultBrowserPromoEphemeralModule::IsEnabled(int impression_count) {
+bool DefaultBrowserPromoEphemeralModule::IsEnabled(PrefService* profile_prefs) {
   if (!base::FeatureList::IsEnabled(features::kDefaultBrowserMagicStackIos)) {
     return false;
   }
@@ -89,6 +116,9 @@ bool DefaultBrowserPromoEphemeralModule::IsEnabled(int impression_count) {
       IsModuleLabel(forced_result.value().result_label.value())) {
     return forced_result.value().position == EphemeralHomeModuleRank::kTop;
   }
+
+  int impression_count = profile_prefs->GetInteger(
+      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
 
   return impression_count <
          features::kMaxDefaultBrowserMagicStackIosImpressions.Get();

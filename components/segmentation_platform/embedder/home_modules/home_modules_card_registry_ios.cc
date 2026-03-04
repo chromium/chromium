@@ -36,10 +36,6 @@ namespace segmentation_platform::home_modules {
 
 namespace {
 
-// Impression counter for the Default Browser promo ephemeral module.
-const char kDefaultBrowserPromoEphemeralModuleImpressionCounterPref[] =
-    "ephemeral_pref_counter.default_browser_promo_ephemeral_module_counter";
-
 // Creates a card corresponding to the given ephemeral `tip` module and adds
 // it to the `cards` list if the module is enabled.
 void AddCardForTip(TipIdentifier tip,
@@ -103,9 +99,6 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
         std::make_unique<PriceTrackingNotificationPromo>());
   }
 
-  int default_browser_promo_count = profile_prefs_->GetInteger(
-      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
-
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -153,8 +146,7 @@ HomeModulesCardRegistryIOS::HomeModulesCardRegistryIOS(
         std::make_unique<AppBundlePromoEphemeralModule>());
   }
 
-  if (DefaultBrowserPromoEphemeralModule::IsEnabled(
-          default_browser_promo_count)) {
+  if (DefaultBrowserPromoEphemeralModule::IsEnabled(profile_prefs_)) {
     all_cards_by_priority_.push_back(
         std::make_unique<DefaultBrowserPromoEphemeralModule>());
   }
@@ -183,8 +175,7 @@ void HomeModulesCardRegistryIOS::RegisterProfilePrefs(
   SavePasswordsEphemeralModule::RegisterProfilePrefs(registry);
   LensEphemeralModule::RegisterProfilePrefs(registry);
   SendTabNotificationPromo::RegisterProfilePrefs(registry);
-  registry->RegisterIntegerPref(
-      kDefaultBrowserPromoEphemeralModuleImpressionCounterPref, 0);
+  DefaultBrowserPromoEphemeralModule::RegisterProfilePrefs(registry);
 }
 
 // static
@@ -198,8 +189,6 @@ bool HomeModulesCardRegistryIOS::IsEphemeralTipsModuleLabel(
 }
 
 void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
-  // For unmigrated cards, `OnShow()` is empty, so this is a no-op.
-  // Execution continues to the legacy blocks below.
   for (const auto& card : get_all_cards_by_priority()) {
     const auto& labels = card->OutputLabels();
     if (strcmp(card->card_name(), card_name) == 0 ||
@@ -207,16 +196,6 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
       card->OnShow(profile_prefs_, local_state_prefs_);
       break;
     }
-  }
-
-  // TODO(crbug.com/489042527): Remove the legacy if/else block below when
-  // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kDefaultBrowserPromoEphemeralModule) == 0) {
-    int impression_count = profile_prefs_->GetInteger(
-        kDefaultBrowserPromoEphemeralModuleImpressionCounterPref);
-    profile_prefs_->SetInteger(
-        kDefaultBrowserPromoEphemeralModuleImpressionCounterPref,
-        impression_count + 1);
   }
 }
 
