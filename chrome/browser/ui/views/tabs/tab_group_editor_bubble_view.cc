@@ -340,6 +340,166 @@ TabGroupEditorBubbleView::TabGroupEditorBubbleView(
   browser_->tab_strip_model()->AddObserver(this);
 }
 
+TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
+
+// TabStripModelObserver:
+void TabGroupEditorBubbleView::OnTabGroupChanged(const TabGroupChange& change) {
+  if (change.group != group_ ||
+      change.type != TabGroupChange::kVisualsChanged ||
+      !change.GetVisualsChange()->new_visuals) {
+    return;
+  }
+
+  const tab_groups::TabGroupVisualData* new_visuals =
+      change.GetVisualsChange()->new_visuals;
+
+  const std::optional<int> selected_color =
+      color_selector_->GetSelectedElement();
+
+  const bool color_changed =
+      !selected_color.has_value() ||
+      static_cast<int>(colors_.size()) <= selected_color.value() ||
+      colors_[selected_color.value()].first != new_visuals->color();
+
+  if (color_changed) {
+    const std::optional<size_t> index = GetIndexOf(color_selector_);
+    CHECK(index.has_value());
+    RemoveChildViewT<ColorPickerView>(color_selector_);
+    color_selector_ = AddChildViewAt(BuildColorPicker(), index.value());
+  }
+
+  const bool text_changed = title_field_->GetText() != new_visuals->title();
+
+  if (text_changed) {
+    title_field_->SetText(new_visuals->title());
+  }
+}
+
+void TabGroupEditorBubbleView::UpdateGroup() {
+  const std::optional<int> selected_element =
+      color_selector_->GetSelectedElement();
+  TabGroup* const tab_group =
+      browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
+
+  const tab_groups::TabGroupVisualData* current_visual_data =
+      tab_group->visual_data();
+  const tab_groups::TabGroupColorId updated_color =
+      selected_element.has_value() ? colors_[selected_element.value()].first
+                                   : current_visual_data->color();
+
+  if (current_visual_data->color() != updated_color) {
+    base::RecordAction(
+        base::UserMetricsAction("TabGroups_TabGroupBubble_ColorChanged"));
+  }
+
+  // If the old close button is being displayed, then update it's text.
+  views::LabelButton* const close_or_delete_button =
+      views::AsViewClass<views::LabelButton>(
+          GetViewByID(TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP));
+  if (close_or_delete_button) {
+    close_or_delete_button->SetText(GetTextForCloseButton());
+  }
+
+  tab_groups::TabGroupVisualData new_data(
+      std::u16string(title_field_->GetText()), updated_color,
+      current_visual_data->is_collapsed());
+  browser_->tab_strip_model()->ChangeTabGroupVisuals(group_, new_data,
+                                                     tab_group->IsCustomized());
+}
+
+std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (!tab_group_service) {
+    return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
+  }
+
+  // The UI updates now just name this "Close group" instead of "Delete Group"
+  // Since delete group is separate if the group is saved.
+  return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
+}
+
+bool TabGroupEditorBubbleView::CanSaveGroups() const {
+  return browser_->profile()->IsRegularProfile() &&
+         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+             browser_->profile());
+}
+
+bool TabGroupEditorBubbleView::CanShareGroups() const {
+  return tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
+         CanSaveGroups();
+}
+
+bool TabGroupEditorBubbleView::IsAllowedToCreateSharedGroup() const {
+  auto* collaboration_service =
+      collaboration::CollaborationServiceFactory::GetForProfile(
+          browser_->profile());
+  return collaboration_service->GetServiceStatus().IsAllowedToCreate();
+}
+
+bool TabGroupEditorBubbleView::IsGroupSaved() const {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (!tab_group_service) {
+    return false;
+  }
+
+  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
+      tab_group_service->GetGroup(group_);
+  if (!maybe_saved_group.has_value()) {
+    return false;
+  }
+
+  return !maybe_saved_group.value().is_shared_tab_group();
+}
+
+bool TabGroupEditorBubbleView::IsGroupShared() const {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
+
+  if (!tab_group_service) {
+    return false;
+  }
+
+  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
+      tab_group_service->GetGroup(group_);
+  if (!maybe_saved_group.has_value()) {
+    return false;
+  }
+
+  return maybe_saved_group.value().is_shared_tab_group();
+}
+
+bool TabGroupEditorBubbleView::ShouldShowSavedFooter() const {
+  PrefService* pref_service = browser_->profile()->GetPrefs();
+  return (CanSaveGroups() && pref_service &&
+          saved_tab_group_prefs::GetLearnMoreFooterShownCount(pref_service) <
+              kFooterDisplayLimit);
+}
+
+bool TabGroupEditorBubbleView::OwnsGroup() const {
+  tab_groups::TabGroupSyncService* tab_group_service =
+      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
+          browser_->profile());
+  if (!tab_group_service) {
+    return true;
+  }
+
+  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
+      tab_group_service->GetGroup(group_);
+  if (!maybe_saved_group.has_value()) {
+    return true;
+  }
+
+  return tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(
+      browser_->profile(), maybe_saved_group->saved_guid());
+}
+
 void TabGroupEditorBubbleView::RebuildMenuContents() {
   simple_menu_items_.clear();
   std::unique_ptr<TitleField> title_field;
@@ -479,40 +639,6 @@ std::unique_ptr<ColorPickerView> TabGroupEditorBubbleView::BuildColorPicker() {
   return color_selector;
 }
 
-std::unique_ptr<TabGroupEditorBubbleView::TitleField>
-TabGroupEditorBubbleView::BuildTitleField(const std::u16string& title) {
-  std::unique_ptr<TitleField> title_field =
-      std::make_unique<TitleField>(stop_context_menu_propagation_);
-  title_field->SetText(title);
-  title_field->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
-      IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME));
-  title_field->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
-  title_field->set_controller(&title_field_controller_);
-  title_field->SetProperty(views::kElementIdentifierKey,
-                           kTabGroupEditorBubbleId);
-
-  const gfx::Insets control_insets = GetControlInsets();
-  const int vertical_spacing = control_insets.top();
-  const int horizontal_spacing = control_insets.left();
-
-  title_field->SetProperty(
-      views::kMarginsKey,
-      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
-
-  return title_field;
-}
-
-std::u16string TabGroupEditorBubbleView::GetGroupTitle() {
-  return browser_->tab_strip_model()->SupportsTabGroups()
-             ? browser_->tab_strip_model()
-                   ->group_model()
-                   ->GetTabGroup(group_)
-                   ->visual_data()
-                   ->title()
-             : std::u16string();
-}
-
 std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildNewTabInGroupButton() {
   std::unique_ptr<views::LabelButton> menu_item = CreateMenuItem(
@@ -630,33 +756,6 @@ TabGroupEditorBubbleView::BuildMoveGroupToNewWindowButton() {
 }
 
 std::unique_ptr<views::LabelButton>
-TabGroupEditorBubbleView::BuildShareGroupButton() {
-  auto menu_item = CreateMenuItem(
-      TAB_GROUP_HEADER_CXMENU_SHARE,
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP),
-      base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
-                          base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon));
-  menu_item->SetProperty(views::kElementIdentifierKey,
-                         kTabGroupEditorBubbleShareGroupButtonId);
-  return menu_item;
-}
-
-std::unique_ptr<views::LabelButton>
-TabGroupEditorBubbleView::BuildRecentActivityButton() {
-  auto menu_item = CreateMenuItem(
-      TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY,
-      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY),
-      base::BindRepeating(&TabGroupEditorBubbleView::RecentActivityPressed,
-                          base::Unretained(this)),
-      ui::ImageModel::FromVectorIcon(kHistoryIcon, ui::kColorMenuIcon,
-                                     kDefaultIconSize));
-  menu_item->SetProperty(views::kElementIdentifierKey,
-                         kTabGroupEditorBubbleRecentActivityButtonId);
-  return menu_item;
-}
-
-std::unique_ptr<views::LabelButton>
 TabGroupEditorBubbleView::BuildFocusGroupButton() {
   auto menu_item = CreateMenuItem(
       TAB_GROUP_HEADER_CXMENU_FOCUS_GROUP,
@@ -686,179 +785,47 @@ TabGroupEditorBubbleView::BuildUnfocusGroupButton() {
   return menu_item;
 }
 
-TabGroupEditorBubbleView::~TabGroupEditorBubbleView() = default;
-
-tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
-  colors_.clear();
-  const tab_groups::ColorLabelMap& color_map =
-      tab_groups::GetTabGroupColorLabelMap();
-
-  // TODO(tluk) remove the reliance on the ordering of the color pairs in the
-  // vector and use the ColorLabelMap structure instead.
-  std::ranges::copy(color_map, std::back_inserter(colors_));
-
-  // Keep track of the current group's color, to be returned as the initial
-  // selected value.
-  auto* const group_model = browser_->tab_strip_model()->group_model();
-  return group_model->GetTabGroup(group_)->visual_data()->color();
-}
-
-// TabStripModelObserver:
-void TabGroupEditorBubbleView::OnTabGroupChanged(const TabGroupChange& change) {
-  if (change.group != group_ ||
-      change.type != TabGroupChange::kVisualsChanged ||
-      !change.GetVisualsChange()->new_visuals) {
-    return;
-  }
-
-  const tab_groups::TabGroupVisualData* new_visuals =
-      change.GetVisualsChange()->new_visuals;
-
-  const std::optional<int> selected_color =
-      color_selector_->GetSelectedElement();
-
-  const bool color_changed =
-      !selected_color.has_value() ||
-      static_cast<int>(colors_.size()) <= selected_color.value() ||
-      colors_[selected_color.value()].first != new_visuals->color();
-
-  if (color_changed) {
-    const std::optional<size_t> index = GetIndexOf(color_selector_);
-    CHECK(index.has_value());
-    RemoveChildViewT<ColorPickerView>(color_selector_);
-    color_selector_ = AddChildViewAt(BuildColorPicker(), index.value());
-  }
-
-  const bool text_changed = title_field_->GetText() != new_visuals->title();
-
-  if (text_changed) {
-    title_field_->SetText(new_visuals->title());
-  }
-}
-
-void TabGroupEditorBubbleView::UpdateGroup() {
-  const std::optional<int> selected_element =
-      color_selector_->GetSelectedElement();
-  TabGroup* const tab_group =
-      browser_->tab_strip_model()->group_model()->GetTabGroup(group_);
-
-  const tab_groups::TabGroupVisualData* current_visual_data =
-      tab_group->visual_data();
-  const tab_groups::TabGroupColorId updated_color =
-      selected_element.has_value() ? colors_[selected_element.value()].first
-                                   : current_visual_data->color();
-
-  if (current_visual_data->color() != updated_color) {
-    base::RecordAction(
-        base::UserMetricsAction("TabGroups_TabGroupBubble_ColorChanged"));
-  }
-
-  // If the old close button is being displayed, then update it's text.
-  views::LabelButton* const close_or_delete_button =
-      views::AsViewClass<views::LabelButton>(
-          GetViewByID(TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP));
-  if (close_or_delete_button) {
-    close_or_delete_button->SetText(GetTextForCloseButton());
-  }
-
-  tab_groups::TabGroupVisualData new_data(
-      std::u16string(title_field_->GetText()), updated_color,
-      current_visual_data->is_collapsed());
-  browser_->tab_strip_model()->ChangeTabGroupVisuals(group_, new_data,
-                                                     tab_group->IsCustomized());
-}
-
-std::u16string TabGroupEditorBubbleView::GetTextForCloseButton() const {
+std::unique_ptr<ManageSharingRow>
+TabGroupEditorBubbleView::BuildManageSharingButton() {
   tab_groups::TabGroupSyncService* tab_group_service =
       tab_groups::TabGroupSyncServiceFactory::GetForProfile(
           browser_->profile());
 
-  if (!tab_group_service) {
-    return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_DELETE_GROUP);
-  }
-
-  // The UI updates now just name this "Close group" instead of "Delete Group"
-  // Since delete group is separate if the group is saved.
-  return l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_CLOSE_GROUP);
-}
-
-bool TabGroupEditorBubbleView::CanSaveGroups() const {
-  return browser_->profile()->IsRegularProfile() &&
-         tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-             browser_->profile());
-}
-
-bool TabGroupEditorBubbleView::CanShareGroups() const {
-  return tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups() &&
-         CanSaveGroups();
-}
-
-bool TabGroupEditorBubbleView::IsAllowedToCreateSharedGroup() const {
-  auto* collaboration_service =
-      collaboration::CollaborationServiceFactory::GetForProfile(
-          browser_->profile());
-  return collaboration_service->GetServiceStatus().IsAllowedToCreate();
-}
-
-bool TabGroupEditorBubbleView::OwnsGroup() const {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
-  if (!tab_group_service) {
-    return true;
-  }
-
-  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
+  std::optional<tab_groups::SavedTabGroup> saved_group =
       tab_group_service->GetGroup(group_);
-  if (!maybe_saved_group.has_value()) {
-    return true;
-  }
-
-  return tab_groups::SavedTabGroupUtils::IsOwnerOfSharedTabGroup(
-      browser_->profile(), maybe_saved_group->saved_guid());
+  CHECK(saved_group.has_value());
+  CHECK(saved_group->collaboration_id().has_value());
+  return std::make_unique<ManageSharingRow>(
+      browser_->profile(), saved_group->collaboration_id().value(),
+      base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
+                          base::Unretained(this)));
 }
 
-bool TabGroupEditorBubbleView::IsGroupSaved() const {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
-
-  if (!tab_group_service) {
-    return false;
-  }
-
-  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
-      tab_group_service->GetGroup(group_);
-  if (!maybe_saved_group.has_value()) {
-    return false;
-  }
-
-  return !maybe_saved_group.value().is_shared_tab_group();
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildShareGroupButton() {
+  auto menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_SHARE,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_SHARE_GROUP),
+      base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(kTabGroupSharingIcon));
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleShareGroupButtonId);
+  return menu_item;
 }
 
-bool TabGroupEditorBubbleView::IsGroupShared() const {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
-
-  if (!tab_group_service) {
-    return false;
-  }
-
-  const std::optional<tab_groups::SavedTabGroup> maybe_saved_group =
-      tab_group_service->GetGroup(group_);
-  if (!maybe_saved_group.has_value()) {
-    return false;
-  }
-
-  return maybe_saved_group.value().is_shared_tab_group();
-}
-
-bool TabGroupEditorBubbleView::ShouldShowSavedFooter() const {
-  PrefService* pref_service = browser_->profile()->GetPrefs();
-  return (CanSaveGroups() && pref_service &&
-          saved_tab_group_prefs::GetLearnMoreFooterShownCount(pref_service) <
-              kFooterDisplayLimit);
+std::unique_ptr<views::LabelButton>
+TabGroupEditorBubbleView::BuildRecentActivityButton() {
+  auto menu_item = CreateMenuItem(
+      TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY,
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_CXMENU_RECENT_ACTIVITY),
+      base::BindRepeating(&TabGroupEditorBubbleView::RecentActivityPressed,
+                          base::Unretained(this)),
+      ui::ImageModel::FromVectorIcon(kHistoryIcon, ui::kColorMenuIcon,
+                                     kDefaultIconSize));
+  menu_item->SetProperty(views::kElementIdentifierKey,
+                         kTabGroupEditorBubbleRecentActivityButtonId);
+  return menu_item;
 }
 
 void TabGroupEditorBubbleView::NewTabInGroupPressed() {
@@ -914,38 +881,6 @@ void TabGroupEditorBubbleView::ShareOrManagePressed() {
         shared_tab_group_metrics::SharedTabGroupManageTypeDesktop::
             kManageGroup);
   }
-}
-
-void TabGroupEditorBubbleView::RecentActivityPressed() {
-  views::View* tab_group_header =
-      BrowserView::GetBrowserViewForBrowser(browser_)
-          ->tab_strip_view()
-          ->GetTabGroupAnchorView(group_);
-
-  auto* bubble_coordinator = RecentActivityBubbleCoordinator::From(browser_);
-  CHECK(bubble_coordinator);
-
-  bubble_coordinator->Show(tab_group_header,
-                           browser_->tab_strip_model()->GetActiveWebContents(),
-                           tab_groups::SavedTabGroupUtils::GetRecentActivity(
-                               browser_->profile(), group_),
-                           browser_->profile());
-}
-
-// static
-void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
-                                       tab_groups::TabGroupId group) {
-  TabStripModel* const model = browser->tab_strip_model();
-  const gfx::Range tab_range =
-      model->group_model()->GetTabGroup(group)->ListTabs();
-
-  std::vector<int> tabs;
-  tabs.reserve(tab_range.length());
-  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
-    tabs.push_back(i);
-  }
-
-  model->RemoveFromGroup(tabs);
 }
 
 void TabGroupEditorBubbleView::CloseGroupPressed() {
@@ -1051,19 +986,6 @@ void TabGroupEditorBubbleView::LeaveGroupPressed() {
   GetWidget()->Close();
 }
 
-void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {
-  TabStripModel* const model = browser_->tab_strip_model();
-  const int num_tabs_in_group =
-      model->group_model()->GetTabGroup(group_)->tab_count();
-  if (model->count() == num_tabs_in_group) {
-    // If the group about to be closed has all of the tabs in the browser, add a
-    // new tab outside the group to prevent the browser from closing.
-    model->delegate()->AddTabAt(GURL(), -1, true);
-  }
-
-  model->CloseAllTabsInGroup(group_);
-}
-
 void TabGroupEditorBubbleView::MoveGroupToNewWindowPressed() {
   browser_->tab_strip_model()->delegate()->MoveGroupToNewWindow(group_);
   GetWidget()->Close();
@@ -1081,6 +1003,22 @@ void TabGroupEditorBubbleView::UnfocusGroupPressed() {
   GetWidget()->Close();
 }
 
+void TabGroupEditorBubbleView::RecentActivityPressed() {
+  views::View* tab_group_header =
+      BrowserView::GetBrowserViewForBrowser(browser_)
+          ->tab_strip_view()
+          ->GetTabGroupAnchorView(group_);
+
+  auto* bubble_coordinator = RecentActivityBubbleCoordinator::From(browser_);
+  CHECK(bubble_coordinator);
+
+  bubble_coordinator->Show(tab_group_header,
+                           browser_->tab_strip_model()->GetActiveWebContents(),
+                           tab_groups::SavedTabGroupUtils::GetRecentActivity(
+                               browser_->profile(), group_),
+                           browser_->profile());
+}
+
 bool TabGroupEditorBubbleView::CanMoveGroupToNewWindow() {
   return browser_->tab_strip_model()->count() != browser_->tab_strip_model()
                                                      ->group_model()
@@ -1088,20 +1026,17 @@ bool TabGroupEditorBubbleView::CanMoveGroupToNewWindow() {
                                                      ->tab_count();
 }
 
-std::unique_ptr<ManageSharingRow>
-TabGroupEditorBubbleView::BuildManageSharingButton() {
-  tab_groups::TabGroupSyncService* tab_group_service =
-      tab_groups::TabGroupSyncServiceFactory::GetForProfile(
-          browser_->profile());
+void TabGroupEditorBubbleView::DeleteGroupFromTabstrip() {
+  TabStripModel* const model = browser_->tab_strip_model();
+  const int num_tabs_in_group =
+      model->group_model()->GetTabGroup(group_)->tab_count();
+  if (model->count() == num_tabs_in_group) {
+    // If the group about to be closed has all of the tabs in the browser, add a
+    // new tab outside the group to prevent the browser from closing.
+    model->delegate()->AddTabAt(GURL(), -1, true);
+  }
 
-  std::optional<tab_groups::SavedTabGroup> saved_group =
-      tab_group_service->GetGroup(group_);
-  CHECK(saved_group.has_value());
-  CHECK(saved_group->collaboration_id().has_value());
-  return std::make_unique<ManageSharingRow>(
-      browser_->profile(), saved_group->collaboration_id().value(),
-      base::BindRepeating(&TabGroupEditorBubbleView::ShareOrManagePressed,
-                          base::Unretained(this)));
+  model->CloseAllTabsInGroup(group_);
 }
 
 void TabGroupEditorBubbleView::OnBubbleClose() {
@@ -1120,6 +1055,37 @@ void TabGroupEditorBubbleView::OnBubbleClose() {
                                   tab_count);
     }
   }
+}
+
+tab_groups::TabGroupColorId TabGroupEditorBubbleView::InitColorSet() {
+  colors_.clear();
+  const tab_groups::ColorLabelMap& color_map =
+      tab_groups::GetTabGroupColorLabelMap();
+
+  // TODO(tluk) remove the reliance on the ordering of the color pairs in the
+  // vector and use the ColorLabelMap structure instead.
+  std::ranges::copy(color_map, std::back_inserter(colors_));
+
+  // Keep track of the current group's color, to be returned as the initial
+  // selected value.
+  auto* const group_model = browser_->tab_strip_model()->group_model();
+  return group_model->GetTabGroup(group_)->visual_data()->color();
+}
+
+// static
+void TabGroupEditorBubbleView::Ungroup(const Browser* browser,
+                                       tab_groups::TabGroupId group) {
+  TabStripModel* const model = browser->tab_strip_model();
+  const gfx::Range tab_range =
+      model->group_model()->GetTabGroup(group)->ListTabs();
+
+  std::vector<int> tabs;
+  tabs.reserve(tab_range.length());
+  for (auto i = tab_range.start(); i < tab_range.end(); ++i) {
+    tabs.push_back(i);
+  }
+
+  model->RemoveFromGroup(tabs);
 }
 
 BEGIN_METADATA(TabGroupEditorBubbleView)
@@ -1169,6 +1135,40 @@ void TabGroupEditorBubbleView::TitleField::ShowContextMenu(
     return;
   }
   views::Textfield::ShowContextMenu(p, source_type);
+}
+
+std::unique_ptr<TabGroupEditorBubbleView::TitleField>
+TabGroupEditorBubbleView::BuildTitleField(const std::u16string& title) {
+  std::unique_ptr<TitleField> title_field =
+      std::make_unique<TitleField>(stop_context_menu_propagation_);
+  title_field->SetText(title);
+  title_field->GetViewAccessibility().SetName(l10n_util::GetStringUTF16(
+      IDS_TAB_GROUP_HEADER_CXMENU_TAB_GROUP_TITLE_ACCESSIBLE_NAME));
+  title_field->SetPlaceholderText(
+      l10n_util::GetStringUTF16(IDS_TAB_GROUP_HEADER_BUBBLE_TITLE_PLACEHOLDER));
+  title_field->set_controller(&title_field_controller_);
+  title_field->SetProperty(views::kElementIdentifierKey,
+                           kTabGroupEditorBubbleId);
+
+  const gfx::Insets control_insets = GetControlInsets();
+  const int vertical_spacing = control_insets.top();
+  const int horizontal_spacing = control_insets.left();
+
+  title_field->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets::VH(vertical_spacing, horizontal_spacing));
+
+  return title_field;
+}
+
+std::u16string TabGroupEditorBubbleView::GetGroupTitle() {
+  return browser_->tab_strip_model()->SupportsTabGroups()
+             ? browser_->tab_strip_model()
+                   ->group_model()
+                   ->GetTabGroup(group_)
+                   ->visual_data()
+                   ->title()
+             : std::u16string();
 }
 
 BEGIN_METADATA(TabGroupEditorBubbleView, TitleField)
