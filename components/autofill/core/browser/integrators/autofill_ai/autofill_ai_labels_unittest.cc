@@ -45,6 +45,10 @@ class AutofillAiLabelsTest : public testing::Test {
           return base::JoinString(label, kSeparator);
         });
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      features::kAutofillAiWalletPrivatePasses};
 };
 
 // Tests that just enough labels are shown to disambiguate suggestions, meaning
@@ -197,10 +201,8 @@ TEST_F(AutofillAiLabelsTest, ObfuscateSensitiveTypes) {
       /*only_disambiguating_types=*/false, /*obfuscate_sensitive_types=*/true);
 
   ASSERT_EQ(labels.size(), 2u);
-  EXPECT_EQ(labels[0],
-            base::StrCat({kDots, kDots, kDots, kDots, kDots, kDots, u"7890"}));
-  EXPECT_EQ(labels[1],
-            base::StrCat({kDots, kDots, kDots, kDots, kDots, kDots, u"4321"}));
+  EXPECT_EQ(labels[0], base::StrCat({kDots, kDots, kDots, kDots, u"7890"}));
+  EXPECT_EQ(labels[1], base::StrCat({kDots, kDots, kDots, kDots, u"4321"}));
 }
 
 }  // namespace

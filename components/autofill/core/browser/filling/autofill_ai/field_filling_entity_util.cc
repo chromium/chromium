@@ -280,8 +280,6 @@ std::u16string GetFillValueForEntity(
       action_persistence != mojom::ActionPersistence::kFill &&
       !field.IsSelectElement() && attribute->type().is_obfuscated();
 
-  // TODO(crbug.com/394011769): Investigate whether the obfuscation should
-  // should include some of the attribute's value, e.g. the last x characters.
   return should_obfuscate ? GetObfuscatedValue(fill_value) : fill_value;
 }
 

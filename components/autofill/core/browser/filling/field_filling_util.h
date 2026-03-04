@@ -55,6 +55,9 @@ std::optional<std::u16string> GetNumericSelectControlValue(
 // Returns an obfuscated version of `value`.
 // `visible_suffix_length` defines how many of the last n characters should
 // not be obfuscated.
+// TODO(crbug.com/394011769): Remove visible_suffix_length once
+// kAutofillAiWalletPrivatePasses is rolled out and replace it with an
+// 'obfuscate_all' bool.
 std::u16string GetObfuscatedValue(const std::u16string& value,
                                   size_t visible_suffix_length = 0);
 

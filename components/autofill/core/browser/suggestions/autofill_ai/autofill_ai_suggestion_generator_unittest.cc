@@ -198,6 +198,7 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
   static std::vector<base::test::FeatureRef> GetDefaultEnabledFeatures() {
     return {features::kAutofillAiWithDataSchema,
             features::kAutofillAiServerModel,
+            features::kAutofillAiWalletPrivatePasses,
             features::kAutofillAiWalletFlightReservation};
   }
 

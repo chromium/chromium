@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/test_utils/autofill_test_utils.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace autofill {
@@ -86,12 +87,16 @@ TEST_F(FieldFillingUtilTest, GetSelectControlByContents) {
   EXPECT_EQ(u"2", match_value);
 }
 
-TEST(GetObfuscatedValue, ObfuscateValue) {
+// TODO(crbug.com/394011769): Remove once `kAutofillAiWalletPrivatePasses` is
+// launched.
+TEST(GetObfuscatedValue, ObfuscateValueLegacy) {
   std::u16string expected = base::StrCat({kDots, kDots});
   EXPECT_EQ(GetObfuscatedValue(u"12"), expected);
 }
 
-TEST(GetObfuscatedValue, ObfuscateValueWithPartial) {
+// TODO(crbug.com/394011769): Remove once `kAutofillAiWalletPrivatePasses` is
+// launched.
+TEST(GetObfuscatedValue, ObfuscateValueWithPartialLegacy) {
   // Test partial obfuscation (keep last 2 characters).
   EXPECT_EQ(GetObfuscatedValue(u"12345", 2),
             base::StrCat({kDots, kDots, kDots, u"45"}));
@@ -106,6 +111,42 @@ TEST(GetObfuscatedValue, ObfuscateValueWithPartial) {
 
   // Test keeping all characters.
   EXPECT_EQ(GetObfuscatedValue(u"12345", 5), u"12345");
+}
+
+TEST(GetObfuscatedValue, ObfuscateValue) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiWalletPrivatePasses);
+
+  // 4 dots + up to 4 chars (visible_suffix_length = 4)
+  EXPECT_EQ(GetObfuscatedValue(u"123456789", 4),
+            base::StrCat({kDots, kDots, kDots, kDots, u"6789"}));
+
+  // Shorter than 4 chars.
+  EXPECT_EQ(GetObfuscatedValue(u"12", 4),
+            base::StrCat({kDots, kDots, kDots, kDots, u"12"}));
+
+  // Empty string.
+  EXPECT_EQ(GetObfuscatedValue(u"", 4),
+            base::StrCat({kDots, kDots, kDots, kDots}));
+}
+
+TEST(GetObfuscatedValue, ObfuscateAll) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiWalletPrivatePasses);
+
+  // Matches length of UI string (4 dots + 4 visible = 8 dots).
+  // visible_suffix_length = 0 means obfuscate all.
+  EXPECT_EQ(
+      GetObfuscatedValue(u"123456789", 0),
+      base::StrCat({kDots, kDots, kDots, kDots, kDots, kDots, kDots, kDots}));
+
+  // Short strings (4 dots + 2 visible = 6 dots).
+  EXPECT_EQ(GetObfuscatedValue(u"12", 0),
+            base::StrCat({kDots, kDots, kDots, kDots, kDots, kDots}));
+
+  // Empty string.
+  EXPECT_EQ(GetObfuscatedValue(u"", 0),
+            base::StrCat({kDots, kDots, kDots, kDots}));
 }
 
 }  // namespace

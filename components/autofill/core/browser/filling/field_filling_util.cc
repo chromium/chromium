@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/i18n/rtl.h"
 #include "base/i18n/string_search.h"
@@ -20,6 +21,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/geo/state_names.h"
 #include "components/autofill/core/browser/proto/states.pb.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_l10n_util.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -214,25 +216,54 @@ std::u16string GetObfuscatedValue(const std::u16string& value,
   //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
   //  - \u2060 - WORD-JOINER (makes obfuscated string indivisible).
   static constexpr char16_t kDot[] = u"\u2022\u2060\u2006\u2060";
-  // This is only an approximation of the number of the actual unicode
-  // characters - if we want to match the length exactly, we would need to use
-  // `base::CountUnicodeCharacters`.
-  visible_suffix_length = std::min(visible_suffix_length, value.size());
-  size_t obfuscation_length = value.size() - visible_suffix_length;
+
+  if (!base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)) {
+    // This is only an approximation of the number of the actual unicode
+    // characters - if we want to match the length exactly, we would need to use
+    // `base::CountUnicodeCharacters`.
+    visible_suffix_length = std::min(visible_suffix_length, value.size());
+    size_t obfuscation_length = value.size() - visible_suffix_length;
+
+    std::u16string result;
+    result.reserve(sizeof(kDot) * obfuscation_length + visible_suffix_length);
+
+    for (size_t i = 0; i < obfuscation_length; ++i) {
+      result.append(kDot);
+    }
+    if (visible_suffix_length > 0) {
+      result.append(value.substr(value.size() - visible_suffix_length));
+    }
+
+    // `WrapStringWithLTRFormatting` guarantees that the following passport
+    // number 123456789 won't be rendered as 789** in RTL languaguages. It
+    // forces the browser to use LTR convention.
+    if (base::i18n::IsRTL()) {
+      base::i18n::WrapStringWithLTRFormatting(&result);
+    }
+    return result;
+  }
+
+  bool obfuscate_all = visible_suffix_length == 0;
+
+  size_t target_length = 4 + std::min<size_t>(value.size(), 4);
+  size_t actual_visible_suffix =
+      obfuscate_all ? 0 : std::min<size_t>(value.size(), 4);
+  size_t num_dots = target_length - actual_visible_suffix;
 
   std::u16string result;
-  result.reserve(sizeof(kDot) * obfuscation_length + visible_suffix_length);
+  result.reserve(sizeof(kDot) * num_dots + actual_visible_suffix);
 
-  for (size_t i = 0; i < obfuscation_length; ++i) {
+  for (size_t i = 0; i < num_dots; ++i) {
     result.append(kDot);
   }
+
   if (visible_suffix_length > 0) {
-    result.append(value.substr(value.size() - visible_suffix_length));
+    result.append(value.substr(value.size() - actual_visible_suffix));
   }
 
-  // `WrapStringWithLTRFormatting` guarantees that the following passport number
-  // 123456789 won't be rendered as 789** in RTL languaguages. It forces the
-  // browser to use LTR convention.
+  // `WrapStringWithLTRFormatting` guarantees that the following passport
+  // number 123456789 won't be rendered as 789** in RTL languaguages. It
+  // forces the browser to use LTR convention.
   if (base::i18n::IsRTL()) {
     base::i18n::WrapStringWithLTRFormatting(&result);
   }
