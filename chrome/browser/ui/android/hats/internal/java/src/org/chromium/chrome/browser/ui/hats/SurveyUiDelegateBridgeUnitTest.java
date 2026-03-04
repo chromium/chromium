@@ -32,7 +32,7 @@ import org.chromium.components.messages.ManagedMessageDispatcher;
 import org.chromium.components.messages.MessageWrapper;
 import org.chromium.components.messages.MessagesFactory;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 
@@ -64,7 +64,7 @@ public class SurveyUiDelegateBridgeUnitTest {
                 ActivityWindowAndroid.create(
                         mActivity,
                         /* listenToActivityState= */ false,
-                        IntentRequestTrackerImpl.createFromActivity(mActivity),
+                        IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
                         /* trackOcclusion= */ true);
         MessagesFactory.attachMessageDispatcher(mWindow, mMockMessageDispatcher);

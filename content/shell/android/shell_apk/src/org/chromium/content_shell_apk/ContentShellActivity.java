@@ -26,7 +26,6 @@ import org.chromium.content_shell.Shell;
 import org.chromium.content_shell.ShellManager;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
 
 /** Activity for managing the Content Shell. */
 public class ContentShellActivity extends Activity {
@@ -65,7 +64,7 @@ public class ContentShellActivity extends Activity {
         setContentView(R.layout.content_shell_activity);
         mShellManager = findViewById(R.id.shell_container);
         final boolean listenToActivityState = true;
-        mIntentRequestTracker = IntentRequestTrackerImpl.createFromActivity(this);
+        mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid =
                 ActivityWindowAndroid.create(
                         this,

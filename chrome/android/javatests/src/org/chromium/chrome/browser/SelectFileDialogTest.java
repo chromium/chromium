@@ -40,7 +40,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.SelectFileDialog;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
@@ -83,7 +83,7 @@ public class SelectFileDialogTest {
                     new ActivityAndroidPermissionDelegate(new WeakReference<>(activity)),
                     new ActivityKeyboardVisibilityDelegate(new WeakReference<>(activity)),
                     /* activityTopResumedSupported= */ false,
-                    IntentRequestTrackerImpl.createFromActivity(activity),
+                    IntentRequestTracker.createFromActivity(activity),
                     insetObserver,
                     /* trackOcclusion= */ true);
         }

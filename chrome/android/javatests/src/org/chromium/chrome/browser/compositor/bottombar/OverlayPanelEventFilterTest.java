@@ -39,7 +39,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -279,7 +279,7 @@ public class OverlayPanelEventFilterTest {
                             ActivityWindowAndroid.create(
                                     mActivity,
                                     /* listenToActivityState= */ true,
-                                    IntentRequestTrackerImpl.createFromActivity(mActivity),
+                                    IntentRequestTracker.createFromActivity(mActivity),
                                     mInsetObserver,
                                     /* trackOcclusion= */ true);
 
