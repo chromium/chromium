@@ -3558,14 +3558,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-lazy-load-image-for-invisible-pages",
-    "owners": [
-      "lingqi@chromium.org",
-      "//content/browser/preloading/prerender/OWNERS"
-    ],
-    "expiry_milestone": 143
-  },
-  {
     "name": "enable-lens-in-omnibox-copied-image",
     "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
     "expiry_milestone": 125

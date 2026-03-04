@@ -1946,11 +1946,6 @@ inline constexpr char kEnableDevtoolsDeepLinkViaExtensibilityApiDescription[] =
     "Extends console.timestamp to support adding deep-links into the DevTools "
     "Performance Panel, which (when clicked) call into a DevTools extension";
 
-inline constexpr char kEnableLazyLoadImageForInvisiblePageName[] =
-    "Enable lazy load image for invisible page";
-inline constexpr char kEnableLazyLoadImageForInvisiblePageDescription[] =
-    "Respect the loading = lazy attribute for images even on invisible pages.";
-
 inline constexpr char kEnableNtpBrowserPromosName[] =
     "Enable new tab page browser feature suggestions";
 inline constexpr char kEnableNtpBrowserPromosDescription[] =

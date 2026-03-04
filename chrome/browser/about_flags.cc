@@ -927,18 +927,6 @@ const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
      switches::kDisableGpuRasterization, ""},
 };
 
-const FeatureEntry::FeatureParam kEnableLazyLoadImageForAllInvisiblePage[] = {
-    {"enabled_page_type", "all_invisible_page"}};
-const FeatureEntry::FeatureParam kEnableLazyLoadImageForPrerenderPage[] = {
-    {"enabled_page_type", "prerender_page"}};
-
-const FeatureEntry::FeatureVariation
-    kSearchSuggsetionPrerenderTypeVariations[] = {
-        {"for all invisible page", kEnableLazyLoadImageForAllInvisiblePage,
-         nullptr},
-        {"for prerendering page", kEnableLazyLoadImageForPrerenderPage,
-         nullptr}};
-
 const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flags_ui::kGenericExperimentChoiceAutomatic, switches::kTopChromeTouchUi,
@@ -4961,13 +4949,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          features::kOverlayScrollbarFlashOnlyOnceVisibleOnViewport)},
 #endif  // USE_AURA
-    {"enable-lazy-load-image-for-invisible-pages",
-     flag_descriptions::kEnableLazyLoadImageForInvisiblePageName,
-     flag_descriptions::kEnableLazyLoadImageForInvisiblePageDescription, kOsAll,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         blink::features::kEnableLazyLoadImageForInvisiblePage,
-         kSearchSuggsetionPrerenderTypeVariations,
-         "EnableLazyLoadImageForInvisiblePage")},
 #if BUILDFLAG(ENABLE_JXL_DECODER)
     {"enable-jxl-image-format", flag_descriptions::kJxlImageFormatName,
      flag_descriptions::kJxlImageFormatDescription, kOsAll,
