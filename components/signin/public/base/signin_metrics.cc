@@ -140,6 +140,7 @@ std::optional<AccessPoint> AccessPointFromInt(int value) {
     case AccessPoint::kIosChromeWebView:
     case AccessPoint::kAshUserSessionManager:
     case AccessPoint::kAshChromeSessionManager:
+    case AccessPoint::kAvatarPillExpandPromo:
       return access_point;
   }
 
@@ -716,6 +717,9 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
       base::RecordAction(base::UserMetricsAction(
           "Signin_Signin_FromCredentialExchangeImport"));
       break;
+    case AccessPoint::kAvatarPillExpandPromo:
+      base::RecordAction(
+          base::UserMetricsAction("Signin_Signin_FromAvatarPillExpandPromo"));
   }
 }
 
@@ -886,6 +890,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::kIosChromeWebView:
     case AccessPoint::kAshUserSessionManager:
     case AccessPoint::kAshChromeSessionManager:
+    case AccessPoint::kAvatarPillExpandPromo:
       NOTREACHED() << "Signin_Impression_From* user actions are not recorded "
                       "for access point "
                    << static_cast<int>(access_point);

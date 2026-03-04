@@ -325,10 +325,13 @@ enum class AccessPoint : int {
   kIosChromeWebView = 94,
   kAshUserSessionManager = 95,
   kAshChromeSessionManager = 96,
+  // Avatar pill button expands to show a sign in promo. Access point is
+  // propagated to the Profile Menu sign in button.
+  kAvatarPillExpandPromo = 97,
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in
   // tools/metrics/histograms/metadata/signin/enums.xml.
-  kMaxValue = kAshChromeSessionManager,  // This must be last.
+  kMaxValue = kAvatarPillExpandPromo,  // This must be last.
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/signin/enums.xml)
 

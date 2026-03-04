@@ -971,6 +971,7 @@ chromium-metrics-reviews@google.com.
   <int value="94" label="Chrome WebView (iOS only)"/>
   <int value="95" label="Ash user session manager (ChromeOS only)"/>
   <int value="96" label="Ash Chrome session manager (ChromeOS only)"/>
+  <int value="97" label="AvatarPill expanding on startup"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

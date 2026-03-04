@@ -236,6 +236,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "AshChromeSessionManager";
       case AccessPoint::kAshUserSessionManager:
         return "AshUserSessionManager";
+      case AccessPoint::kAvatarPillExpandPromo:
+        return "AvatarPillExpandPromo";
     }
   }
 };
