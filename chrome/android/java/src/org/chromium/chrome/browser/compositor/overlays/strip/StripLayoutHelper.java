@@ -39,14 +39,11 @@ import android.util.TypedValue;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListPopupWindow;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.Callback;
@@ -532,7 +529,7 @@ public class StripLayoutHelper
 
     // Layout Constants
     private final float mNewTabButtonWidth;
-    private @Nullable ListPopupWindow mGlicButtonMenu;
+    private @Nullable GlicButtonContextMenuCoordinator mGlicButtonContextMenuCoordinator;
 
     // All views are overlapped by TAB_OVERLAP_WIDTH_DP. Group titles do not need to be overlapped
     // by this much, so we offset the drawX.
@@ -890,27 +887,7 @@ public class StripLayoutHelper
 
         // Create Glic unpin menu
         if (mGlicButton != null) {
-            mGlicButtonMenu = new ListPopupWindow(mContext);
-            mGlicButtonMenu.setBackgroundDrawable(
-                    AppCompatResources.getDrawable(
-                            mContext, R.drawable.tablet_tab_strip_context_menu));
-            mGlicButtonMenu.setAdapter(
-                    new ArrayAdapter<>(
-                            mContext,
-                            R.layout.one_line_list_item,
-                            new String[] {mContext.getString(R.string.menu_unpin_glic_button)}));
-            mGlicButtonMenu.setOnItemClickListener(
-                    (parent, view, position, id) -> {
-                        if (mGlicButtonMenu != null) {
-                            mGlicButtonMenu.dismiss();
-                            // TODO(crbug.com/480741391): Unpin Glic button
-                        }
-                    });
-            int glicButtonMenuWidth =
-                    mContext.getResources()
-                            .getDimensionPixelSize(R.dimen.tab_strip_glic_menu_max_width);
-            mGlicButtonMenu.setWidth(glicButtonMenuWidth);
-            mGlicButtonMenu.setModal(true);
+            mGlicButtonContextMenuCoordinator = new GlicButtonContextMenuCoordinator(mContext);
         }
 
         mIsFirstLayoutPass = true;
@@ -959,8 +936,9 @@ public class StripLayoutHelper
             mModel.removeObserver(mTabModelObserver);
             mModel = null;
         }
-        if (mGlicButtonMenu != null) {
-            mGlicButtonMenu = null;
+        if (mGlicButtonContextMenuCoordinator != null) {
+            mGlicButtonContextMenuCoordinator.dismiss();
+            mGlicButtonContextMenuCoordinator = null;
         }
     }
 
@@ -1281,7 +1259,7 @@ public class StripLayoutHelper
         if (mStripViews.length > 0) mUpdateHost.requestUpdate();
 
         // Dismiss tab menu, similar to how the app menu is dismissed on orientation change
-        if (mGlicButtonMenu != null) mGlicButtonMenu.dismiss();
+        if (mGlicButtonContextMenuCoordinator != null) mGlicButtonContextMenuCoordinator.dismiss();
 
         // Dismiss iph on orientation change, as its position might become incorrect.
         dismissTabStripSyncIph();
@@ -2383,7 +2361,8 @@ public class StripLayoutHelper
                         && mTabContextMenuCoordinator.isMenuShowing())
                 || (mTabStripContextMenuCoordinator != null
                         && mTabStripContextMenuCoordinator.isMenuShowing())
-                || (mGlicButtonMenu != null && mGlicButtonMenu.isShowing());
+                || (mGlicButtonContextMenuCoordinator != null
+                        && mGlicButtonContextMenuCoordinator.isShowing());
     }
 
     @VisibleForTesting
@@ -2391,7 +2370,7 @@ public class StripLayoutHelper
         if (mTabGroupContextMenuCoordinator != null) mTabGroupContextMenuCoordinator.dismiss();
         if (mTabContextMenuCoordinator != null) mTabContextMenuCoordinator.dismiss();
         if (mTabStripContextMenuCoordinator != null) mTabStripContextMenuCoordinator.dismiss();
-        if (mGlicButtonMenu != null) mGlicButtonMenu.dismiss();
+        if (mGlicButtonContextMenuCoordinator != null) mGlicButtonContextMenuCoordinator.dismiss();
     }
 
     /**
@@ -5414,55 +5393,17 @@ public class StripLayoutHelper
     }
 
     /**
-     * Displays the unpin menu below the Glic button.
+     * Shows the unpin menu below the Glic button.
      *
      * @param anchorView The Glic button the menu will be anchored to
      */
     private void showGlicButtonMenu(StripLayoutView anchorView) {
-        if (mGlicButtonMenu == null) return;
-        // We anchor to the toolbar container view
-        // We shift up by the combined height of the tab strip and the Glic button to align the menu
-        // with the bottom of the tab strip.
-        int verticalOffset =
-                (int)
-                        -(mContext.getResources().getDimension(R.dimen.tab_strip_height)
-                                + StripLayoutHelperManager.GLIC_BUTTON_BACKGROUND_HEIGHT_DP);
-        showMenuBelowStripView(mGlicButtonMenu, anchorView, mToolbarContainerView, verticalOffset);
-    }
-
-    /**
-     * Helper method to show a menu anchored to a specific StripLayoutView.
-     *
-     * @param menu The ListPopupWindow to show.
-     * @param anchorStripView The virtual view to align the menu with horizontally.
-     * @param anchorView The actual Android View to anchor the popup to.
-     * @param verticalOffset The vertical offset to apply to the menu relative to the anchor.
-     */
-    private void showMenuBelowStripView(
-            ListPopupWindow menu,
-            StripLayoutView anchorStripView,
-            View anchorView,
-            int verticalOffset) {
-        menu.setAnchorView(anchorView);
-        menu.setVerticalOffset(verticalOffset);
-
-        // Set the horizontal offset to align the menu with the right side of the strip view
-        float density = mContext.getResources().getDisplayMetrics().density;
-        int horizontalOffset =
-                Math.round((anchorStripView.getDrawX() + anchorStripView.getWidth()) * density)
-                        - menu.getWidth();
-
-        // Cap the horizontal offset so that the menu doesn't get drawn off screen.
-        menu.setHorizontalOffset(Math.max(horizontalOffset, 0));
-
-        menu.show();
-
-        // Set clipToOutline to true to contain the mouse hover effect inside the popup's outline.
-        // Also set the background of the list view to tablet_tab_strip_context_menu to make its
-        // shape the same as the popup.
-        assumeNonNull(menu.getListView());
-        menu.getListView().setBackgroundResource(R.drawable.tablet_tab_strip_context_menu);
-        menu.getListView().setClipToOutline(true);
+        if (mGlicButtonContextMenuCoordinator == null) return;
+        RectProvider anchorRectProvider = new RectProvider();
+        anchorView.getAnchorRect(anchorRectProvider.getRect());
+        getAdjustedAnchorRect(anchorRectProvider);
+        var activity = assertNonNull(mWindowAndroid.getActivity().get());
+        mGlicButtonContextMenuCoordinator.showMenu(anchorRectProvider, activity);
     }
 
     /**
@@ -5564,14 +5505,8 @@ public class StripLayoutHelper
 
     /** Returns true if the Glic button menu is showing */
     public boolean isGlicButtonMenuShowingForTesting() {
-        return mGlicButtonMenu != null && mGlicButtonMenu.isShowing();
-    }
-
-    /**
-     * @param menuItemId The id of the menu item to click
-     */
-    public void clickGlicButtonMenuItemForTesting(int menuItemId) {
-        if (mGlicButtonMenu != null) mGlicButtonMenu.performItemClick(menuItemId);
+        return mGlicButtonContextMenuCoordinator != null
+                && mGlicButtonContextMenuCoordinator.isShowing();
     }
 
     /** Returns The width of the tab strip. */

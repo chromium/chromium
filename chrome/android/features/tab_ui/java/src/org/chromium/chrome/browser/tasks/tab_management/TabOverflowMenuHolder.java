@@ -15,7 +15,6 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.database.DataSetObserver;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,8 +31,8 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.FlyoutPopupSpecCalculator;
@@ -90,7 +89,7 @@ public class TabOverflowMenuHolder<T> {
         mContext.registerComponentCallbacks(mComponentCallbacks);
 
         mContentView = LayoutInflater.from(mContext).inflate(menuLayout, null);
-        clipContentViewOutline();
+        ListMenuUtils.clipContentViewOutline(mContentView, R.attr.popupBgCornerRadius);
 
         TouchTrackingListView touchTrackingListView =
                 mContentView.findViewById(R.id.tab_group_action_menu_list);
@@ -201,15 +200,5 @@ public class TabOverflowMenuHolder<T> {
         // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
         // with a stack trace showing the stack during LifetimeAssert.create().
         LifetimeAssert.destroy(mLifetimeAssert);
-    }
-
-    private void clipContentViewOutline() {
-        GradientDrawable outlineDrawable = new GradientDrawable();
-        outlineDrawable.setShape(GradientDrawable.RECTANGLE);
-        outlineDrawable.setCornerRadius(
-                AttrUtils.getDimensionPixelSize(
-                        mContentView.getContext(), R.attr.popupBgCornerRadius));
-        mContentView.setBackground(outlineDrawable);
-        mContentView.setClipToOutline(true);
     }
 }

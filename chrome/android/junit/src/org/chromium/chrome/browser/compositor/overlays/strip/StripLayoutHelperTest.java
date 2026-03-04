@@ -5369,37 +5369,6 @@ public class StripLayoutHelperTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.GLIC)
-    public void testGlicButtonMenu() {
-        // Initialize.
-        mToolbarContainerView = new View(mActivity);
-        initializeTest(/* tabIndex= */ 0);
-
-        // Mock Glic button.
-        when(mGlicBtn.isVisible()).thenReturn(true);
-        when(mGlicBtn.click(anyFloat(), anyFloat(), anyInt())).thenReturn(true);
-        when(mGlicBtn.getType()).thenReturn(ButtonType.GLIC);
-
-        // Long press on Glic button.
-        mStripLayoutHelper.onLongPress(150f, 0f);
-
-        // Verify the Glic button menu is showing.
-        assertTrue(
-                "Glic button menu should be showing",
-                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
-
-        // Click "Unpin".
-        mStripLayoutHelper.clickGlicButtonMenuItemForTesting(0);
-
-        // Verify the Glic button menu is dismissed.
-        assertFalse(
-                "Glic button menu should be dismissed after clicking an item.",
-                mStripLayoutHelper.isGlicButtonMenuShowingForTesting());
-
-        // TODO(crbug.com/480741391): Test actual unpinning functionality
-    }
-
-    @Test
     public void testUpdateTabGroupCollapsed_Collapse() {
         // Initialize with 4 tabs. Group first three tabs.
         initializeTest(false, false, 3, 4);

@@ -12,7 +12,6 @@ import static org.chromium.ui.listmenu.ListMenuUtils.createAdapter;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -33,8 +32,8 @@ import org.chromium.components.browser_ui.widget.list_view.TouchTrackingListView
 import org.chromium.ui.listmenu.BasicListMenu;
 import org.chromium.ui.listmenu.ListMenu.Delegate;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
+import org.chromium.ui.listmenu.ListMenuUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.util.AttrUtils;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
@@ -79,7 +78,7 @@ public class TabStripContextMenuCoordinator {
         View contentView =
                 LayoutInflater.from(mContext)
                         .inflate(R.layout.tab_switcher_action_menu_layout, null);
-        clipContentViewOutline(contentView);
+        ListMenuUtils.clipContentViewOutline(contentView, R.attr.popupBgCornerRadius);
 
         // TODO (crbug.com/436283175): Update the name of this resource for generic use.
         TouchTrackingListView touchTrackingListView =
@@ -197,16 +196,6 @@ public class TabStripContextMenuCoordinator {
                 }
             }
         }
-    }
-
-    private void clipContentViewOutline(View contentView) {
-        GradientDrawable outlineDrawable = new GradientDrawable();
-        outlineDrawable.setShape(GradientDrawable.RECTANGLE);
-        outlineDrawable.setCornerRadius(
-                AttrUtils.getDimensionPixelSize(
-                        contentView.getContext(), R.attr.popupBgCornerRadius));
-        contentView.setBackground(outlineDrawable);
-        contentView.setClipToOutline(true);
     }
 
     @VisibleForTesting

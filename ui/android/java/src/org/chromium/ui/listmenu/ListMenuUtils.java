@@ -16,8 +16,11 @@ import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITE
 
 import android.content.Context;
 import android.graphics.Rect;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.widget.ListView;
+
+import androidx.annotation.AttrRes;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -33,6 +36,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
+import org.chromium.ui.util.AttrUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -142,6 +146,22 @@ public class ListMenuUtils {
         int top = viewCoordinates[1] - rootViewRect.top;
 
         return new Rect(left, top, left + view.getWidth(), top + view.getHeight());
+    }
+
+    /**
+     * Clips the content view to a rounded outline defined by a theme attribute.
+     *
+     * @param contentView The view to be clipped.
+     * @param cornerRadiusAttr The attribute ID (e.g., R.attr.popupBgCornerRadius) defining the
+     *     radius.
+     */
+    public static void clipContentViewOutline(View contentView, @AttrRes int cornerRadiusAttr) {
+        GradientDrawable outlineDrawable = new GradientDrawable();
+        outlineDrawable.setShape(GradientDrawable.RECTANGLE);
+        outlineDrawable.setCornerRadius(
+                AttrUtils.getDimensionPixelSize(contentView.getContext(), cornerRadiusAttr));
+        contentView.setBackground(outlineDrawable);
+        contentView.setClipToOutline(true);
     }
 
     /**
