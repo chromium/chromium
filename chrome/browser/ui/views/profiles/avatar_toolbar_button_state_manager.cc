@@ -97,6 +97,9 @@ std::optional<base::TimeDelta> g_show_signin_pending_text_delay_for_testing;
 
 constexpr base::TimeDelta kPromoDuration = base::Seconds(20);
 std::optional<base::TimeDelta> g_promo_duration_for_testing;
+
+constexpr base::TimeDelta kSignedOutPromoTriggerDelay = base::Seconds(30);
+std::optional<base::TimeDelta> g_signed_out_promo_trigger_delay_for_testing;
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 constexpr base::TimeDelta kOnSigninDuration = base::Seconds(20);
@@ -847,6 +850,40 @@ class PromoStateProviderCoordinator
     return *coordinator;
   }
 
+  // `Init()` will only have an effect on the first call - subsequent browser
+  // opening will just be a no-op.
+  void Init() {
+    if (initialzed_) {
+      return;
+    }
+    initialzed_ = true;
+
+    identity_manager_observation_.Observe(identity_manager_);
+    if (syncer::SyncService* sync_service =
+            SyncServiceFactory::GetForProfile(&profile_.get())) {
+      sync_service_observation_.Observe(sync_service);
+    }
+
+    if (identity_manager_->AreRefreshTokensLoaded()) {
+      OnRefreshTokensLoaded();
+    }
+  }
+
+  void MaybeStartSignedOutTriggerTimer() {
+    CHECK(base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill));
+    CHECK(identity_manager_->AreRefreshTokensLoaded());
+
+    // Start a delayed timer to trigger the promo for signed out profiles.
+    if (!IsSignedIn() && !signed_out_trigger_delay_timer_.IsRunning()) {
+      signed_out_trigger_delay_timer_.Start(
+          FROM_HERE,
+          g_signed_out_promo_trigger_delay_for_testing.value_or(
+              kSignedOutPromoTriggerDelay),
+          base::BindOnce(&PromoStateProviderCoordinator::Trigger,
+                         base::Unretained(this)));
+    }
+  }
+
   std::optional<signin::ProfileMenuAvatarButtonPromoInfo::Type> promo_type()
       const {
     return promo_type_;
@@ -870,6 +907,17 @@ class PromoStateProviderCoordinator
   void ClearForTesting() { Collapse(); }
 
   void ForceShowingPromoForTesting() { Trigger(); }
+
+  // Returns whether the delay timer was running or not.
+  bool GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
+    CHECK(base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill));
+    bool is_running = signed_out_trigger_delay_timer_.IsRunning();
+    if (is_running) {
+      signed_out_trigger_delay_timer_.FireNow();
+      signed_out_trigger_delay_timer_.Stop();
+    }
+    return is_running;
+  }
 
   // AvatarToolbarButtonStateManager::Observer:
   void OnButtonStateChanged(std::optional<ButtonState> old_state,
@@ -935,6 +983,10 @@ class PromoStateProviderCoordinator
           // Setting or clearing any consent level should remove any promo that
           // is showing.
           Collapse();
+
+          if (signed_out_trigger_delay_timer_.IsRunning()) {
+            signed_out_trigger_delay_timer_.Stop();
+          }
           break;
         case signin::PrimaryAccountChangeEvent::Type::kNone:
           break;
@@ -954,6 +1006,12 @@ class PromoStateProviderCoordinator
     }
   }
 
+  void OnRefreshTokensLoaded() override {
+    if (base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill)) {
+      MaybeStartSignedOutTriggerTimer();
+    }
+  }
+
   void OnIdentityManagerShutdown(
       signin::IdentityManager* identity_manager) override {
     identity_manager_ = nullptr;
@@ -967,9 +1025,9 @@ class PromoStateProviderCoordinator
       return;
     }
 
-    if (waiting_sync_service_active_on_trigger_) {
+    if (waiting_sync_active_for_promo_computation_) {
       CHECK(!promo_type_.has_value());
-      TriggerWithSyncServiceTransportStateActive();
+      StartComputePromoType();
       return;
     }
 
@@ -991,13 +1049,7 @@ class PromoStateProviderCoordinator
   explicit PromoStateProviderCoordinator(Profile& profile)
       : profile_(profile),
         identity_manager_(IdentityManagerFactory::GetForProfile(&profile)),
-        promo_manager_(identity_manager_, profile.GetPrefs()) {
-    identity_manager_observation_.Observe(identity_manager_);
-    if (syncer::SyncService* sync_service =
-            SyncServiceFactory::GetForProfile(&profile)) {
-      sync_service_observation_.Observe(sync_service);
-    }
-  }
+        promo_manager_(identity_manager_, profile.GetPrefs()) {}
 
   void Trigger() {
     if (promo_type_.has_value()) {
@@ -1010,25 +1062,32 @@ class PromoStateProviderCoordinator
       return;
     }
 
+    // Signed out profiles do not depend on the SyncService state.
+    if (!IsSignedIn()) {
+      StartComputePromoType();
+      return;
+    }
+
     // TODO(crbug.com/448615704): Refactor this condition to be part of
     // `BatchUploadService` return value directly; e.g. returning std::nullopt
     // instead of 0 (no local data) when the `syncer::SyncService` transport
     // state is not active.
     if (sync_service->GetTransportState() !=
         syncer::SyncService::TransportState::ACTIVE) {
-      waiting_sync_service_active_on_trigger_ = true;
+      waiting_sync_active_for_promo_computation_ = true;
       return;
     }
 
-    TriggerWithSyncServiceTransportStateActive();
+    StartComputePromoType();
   }
 
-  void TriggerWithSyncServiceTransportStateActive() {
-    CHECK_EQ(
-        SyncServiceFactory::GetForProfile(&profile_.get())->GetTransportState(),
-        syncer::SyncService::TransportState::ACTIVE);
-
-    waiting_sync_service_active_on_trigger_ = false;
+  void StartComputePromoType() {
+    if (IsSignedIn()) {
+      CHECK_EQ(SyncServiceFactory::GetForProfile(&profile_.get())
+                   ->GetTransportState(),
+               syncer::SyncService::TransportState::ACTIVE);
+      waiting_sync_active_for_promo_computation_ = false;
+    }
 
     signin::ComputeProfileMenuAvatarButtonPromoInfo(
         profile_.get(),
@@ -1111,6 +1170,14 @@ class PromoStateProviderCoordinator
     }
   }
 
+  bool IsSignedIn() const {
+    return identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin);
+  }
+
+  const raw_ref<Profile> profile_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
+  signin::AvatarButtonPromoManager promo_manager_;
+
   // Type of the promo currently showing - std::nullopt if no promo.
   std::optional<signin::ProfileMenuAvatarButtonPromoInfo::Type> promo_type_;
   bool has_been_shown_since_startup_ = false;
@@ -1119,15 +1186,12 @@ class PromoStateProviderCoordinator
   // Timer to measure the time between the promo being shown and used (clicked).
   std::optional<base::ElapsedTimer> before_promo_used_elapsed_timer_;
 
-  const raw_ref<Profile> profile_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
-
-  signin::AvatarButtonPromoManager promo_manager_;
+  bool initialzed_ = false;
+  base::OneShotTimer signed_out_trigger_delay_timer_;
+  bool waiting_sync_active_for_promo_computation_ = false;
 
   // Callbacks to be triggered when `promo_type_` changes.
   base::RepeatingCallbackList<void()> promo_type_changed_callbacks_;
-
-  bool waiting_sync_service_active_on_trigger_ = false;
 
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
@@ -1177,6 +1241,8 @@ class PromoStateProvider : public StateProvider {
   }
 
   void Init() override {
+    coordinator_->Init();
+
     promo_type_changed_callback_subscription_ =
         coordinator_->AddPromoTypeChangedCallback(base::BindRepeating(
             &PromoStateProvider::RequestUpdate, base::Unretained(this)));
@@ -1196,8 +1262,8 @@ class PromoStateProvider : public StateProvider {
 
   void ClearForTesting() override { coordinator_->ClearForTesting(); }
 
-  void ForceShowingPromoForTesting() {
-    coordinator_->ForceShowingPromoForTesting();
+  PromoStateProviderCoordinator& GetCoordinatorForTesting() {
+    return *coordinator_;
   }
 
  private:
@@ -2250,6 +2316,11 @@ AvatarToolbarButtonStateManager::CreateScopedInfiniteDelayOverrideForTesting(
     case AvatarDelayType::kPromo:
       return base::AutoReset<std::optional<base::TimeDelta>>(
           &g_promo_duration_for_testing, kInfiniteTimeForTesting);
+    case AvatarDelayType::kSignedOutPromo:
+      return base::AutoReset<std::optional<base::TimeDelta>>(
+          &g_signed_out_promo_trigger_delay_for_testing,
+          kInfiniteTimeForTesting);
+
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   }
 }
@@ -2265,7 +2336,16 @@ AvatarToolbarButtonStateManager::
 void AvatarToolbarButtonStateManager::ForceShowingPromoForTesting() {
   PromoStateProvider* promo_state_provider =
       static_cast<PromoStateProvider*>(states_[ButtonState::kPromo].get());
-  promo_state_provider->ForceShowingPromoForTesting();
+  promo_state_provider->GetCoordinatorForTesting()
+      .ForceShowingPromoForTesting();
+}
+
+bool AvatarToolbarButtonStateManager::
+    GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
+  PromoStateProvider* promo_state_provider =
+      static_cast<PromoStateProvider*>(states_[ButtonState::kPromo].get());
+  return promo_state_provider->GetCoordinatorForTesting()
+      .GetStateAndFireSignedOutTriggerDelayTimerForTesting();
 }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 

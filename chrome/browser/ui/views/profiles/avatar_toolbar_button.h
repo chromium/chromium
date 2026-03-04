@@ -39,6 +39,8 @@ enum class AvatarDelayType {
   kSigninPendingText,
   // Delay for the promo that are shown by expanding the button.
   kPromo,
+  // Delay for the Promo trigger for signed out profiles.
+  kSignedOutPromo,
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 };
 
@@ -165,6 +167,10 @@ class AvatarToolbarButton : public ToolbarButton,
   // necessary to bypass resetting the profile - e.g. when attempting to reach
   // the limit counts.
   void ForceShowingPromoForTesting();
+
+  // Returns whether the delay timer was running or not.
+  // Stops the timer if it is running.
+  bool GetStateAndFireSignedOutTriggerDelayTimerForTesting();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:

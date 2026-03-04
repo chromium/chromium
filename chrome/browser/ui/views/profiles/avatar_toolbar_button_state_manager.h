@@ -218,6 +218,10 @@ class AvatarToolbarButtonStateManager
   // WARNING: Check `AvatarToolbarButton::ForceShowingPromoForTesting()` before
   // using.
   void ForceShowingPromoForTesting();
+
+  // Returns whether the delay timer was running or not.
+  // Stops the timer if it is running.
+  bool GetStateAndFireSignedOutTriggerDelayTimerForTesting();
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
  private:

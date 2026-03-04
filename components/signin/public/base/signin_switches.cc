@@ -504,6 +504,10 @@ const base::FeatureParam<int> kContextualSigninPromoDismissedThreshold(
 BASE_FEATURE(kSignInPromoMaterialNextUI, base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+BASE_FEATURE(kSigninPromoOnAvatarPill, base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 BASE_FEATURE(kSigninWindows10DepreciationStateForTesting,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSigninWindows10DepreciationStateBypassForTesting,

@@ -850,6 +850,12 @@ void AvatarToolbarButton::ForceShowingPromoForTesting() {
   CHECK(state_manager_);
   state_manager_->ForceShowingPromoForTesting();
 }
+
+bool AvatarToolbarButton::
+    GetStateAndFireSignedOutTriggerDelayTimerForTesting() {
+  CHECK(state_manager_);
+  return state_manager_->GetStateAndFireSignedOutTriggerDelayTimerForTesting();
+}
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 BEGIN_METADATA(AvatarToolbarButton)
