@@ -6,13 +6,13 @@
 #define CHROME_BROWSER_UI_VIEWS_GLIC_GLIC_ACTOR_TASK_ICON_H_
 
 #include <concepts>
+#include <optional>
 #include <string>
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/glic/glic_base_shim.h"
 #include "chrome/browser/ui/views/glic/glic_button.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/view_class_properties.h"
 
@@ -189,7 +189,7 @@ class GlicActorTaskIcon : public GlicBaseShim<T> {
     if constexpr (std::is_same_v<T, ToolbarButton>) {
       // SetText is private in ToolbarButton and prefers to use SetHighlight.
       std::u16string highlight_text(text);
-      this->SetHighlight(highlight_text, kTextOnHighlight);
+      this->SetHighlight(highlight_text, std::nullopt);
     } else {
       T::SetText(text);
     }

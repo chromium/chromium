@@ -69,7 +69,10 @@ class FlexLayout;
 
 namespace glic {
 class ToolbarGlicButton;
+class ToolbarGlicActorTaskIcon;
 }  // namespace glic
+
+class GlicAndActorButtonsContainer;
 
 // The Browser Window's toolbar.
 class ToolbarView : public views::AccessiblePaneView,
@@ -297,6 +300,12 @@ class ToolbarView : public views::AccessiblePaneView,
   void ExecuteHideToolbarNudge(glic::ToolbarGlicButton* button);
   void UpdateGlicButtonVisibility();
 
+  std::unique_ptr<glic::ToolbarGlicActorTaskIcon> CreateGlicActorTaskIcon();
+  void OnGlicActorTaskIconClicked();
+  std::unique_ptr<GlicAndActorButtonsContainer>
+  CreateGlicActorButtonContainer();
+  void UpdateGlicActorButtonContainerBorders();
+
   gfx::SlideAnimation size_animation_{this};
 
   // Controls. Most of these can be null, e.g. in popup windows. Only
@@ -326,7 +335,9 @@ class ToolbarView : public views::AccessiblePaneView,
   raw_ptr<views::View> new_tab_button_ = nullptr;
   raw_ptr<PinnedActionToolbarButton> tab_search_button_ = nullptr;
 
+  raw_ptr<GlicAndActorButtonsContainer> glic_actor_button_container_ = nullptr;
   raw_ptr<glic::ToolbarGlicButton> glic_button_ = nullptr;
+  raw_ptr<glic::ToolbarGlicActorTaskIcon> glic_actor_task_icon_ = nullptr;
 
   const raw_ptr<Browser> browser_;
   const raw_ptr<BrowserView> browser_view_;

@@ -53,7 +53,6 @@ class TabStripNudgeButton;
 class ToolbarButton;
 
 namespace views {
-class LabelButton;
 class MenuModelAdapter;
 class MenuRunner;
 }  // namespace views
