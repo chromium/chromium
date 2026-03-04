@@ -319,8 +319,7 @@ mojom::GraphicsTabletPtr BuildMojomGraphicsTablet(
     mojom::GraphicsTabletButtonConfig graphics_tablet_button_config) {
   mojom::GraphicsTabletPtr mojom_graphics_tablet = mojom::GraphicsTablet::New();
   auto* metadata = GetGraphicsTabletMetadata(graphics_tablet);
-  std::string name = features::IsWelcomeExperienceEnabled() && metadata &&
-                             metadata->name.has_value()
+  std::string name = metadata && metadata->name.has_value()
                          ? metadata->name.value()
                          : graphics_tablet.name;
   mojom_graphics_tablet->name = name;
@@ -736,12 +735,10 @@ void InputDeviceSettingsControllerImpl::Init() {
   input_method::InputMethodManager::Get()->AddObserver(this);
   Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(this);
 
-  if (features::IsWelcomeExperienceEnabled()) {
-    message_center::MessageCenter::Get()->AddObserver(this);
-    device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
-        &InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady,
-        weak_ptr_factory_.GetWeakPtr()));
-  }
+  message_center::MessageCenter::Get()->AddObserver(this);
+  device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
+      &InputDeviceSettingsControllerImpl::InitializeOnBluetoothReady,
+      weak_ptr_factory_.GetWeakPtr()));
 
   InitializePolicyHandler();
   // Initialize the duplicate id finder first then the notifiers to make sure
@@ -751,16 +748,13 @@ void InputDeviceSettingsControllerImpl::Init() {
     duplicate_id_finder_ = std::make_unique<InputDeviceDuplicateIdFinder>();
   }
 
-  if (base::FeatureList::IsEnabled(features::kWelcomeExperience) ||
-      base::FeatureList::IsEnabled(features::kPeripheralNotification)) {
+  if (base::FeatureList::IsEnabled(features::kPeripheralNotification)) {
     notification_controller_ =
         std::make_unique<InputDeviceSettingsNotificationController>(
             message_center::MessageCenter::Get());
   }
 
-  if (features::IsWelcomeExperienceEnabled()) {
     metadata_manager_ = std::make_unique<InputDeviceSettingsMetadataManager>();
-  }
 
   keyboard_notifier_ = std::make_unique<
       InputDeviceNotifier<mojom::KeyboardPtr, ui::KeyboardDevice>>(
@@ -889,9 +883,7 @@ InputDeviceSettingsControllerImpl::~InputDeviceSettingsControllerImpl() {
   Shell::Get()->session_controller()->RemoveObserver(this);
   Shell::Get()->login_screen_controller()->data_dispatcher()->RemoveObserver(
       this);
-  if (features::IsWelcomeExperienceEnabled()) {
-    message_center::MessageCenter::Get()->RemoveObserver(this);
-  }
+  message_center::MessageCenter::Get()->RemoveObserver(this);
 
   CHECK(input_method::InputMethodManager::Get());
   input_method::InputMethodManager::Get()->RemoveObserver(this);
@@ -1031,13 +1023,6 @@ void InputDeviceSettingsControllerImpl::OnActiveUserPrefServiceChanged(
   if (!features::IsPeripheralNotificationEnabled()) {
     pref_service->ClearPref(prefs::kPeripheralNotificationMiceSeen);
     pref_service->ClearPref(prefs::kPeripheralNotificationGraphicsTabletsSeen);
-  }
-
-  if (!features::IsWelcomeExperienceEnabled()) {
-    pref_service->ClearPref(prefs::kWelcomeExperienceNotificationSeen);
-    if (local_state_) {
-      local_state_->ClearPref(prefs::kDeviceImagesDictPref);
-    }
   }
 
   // If the flag is disabled, clear the new touchpad and keyboard settings from
@@ -1981,8 +1966,7 @@ void InputDeviceSettingsControllerImpl::DispatchGraphicsTabletSettingsChanged(
 
 std::string GetMouseName(const ui::InputDevice& mouse) {
   const auto* mouse_metadata = GetMouseMetadata(mouse);
-  if (!features::IsWelcomeExperienceEnabled() || !mouse_metadata ||
-      !mouse_metadata->name.has_value()) {
+  if (!mouse_metadata || !mouse_metadata->name.has_value()) {
     return mouse.name;
   }
   return mouse_metadata->name.value();
@@ -2601,7 +2585,6 @@ void InputDeviceSettingsControllerImpl::DispatchCustomizablePenButtonPressed(
 void InputDeviceSettingsControllerImpl::DispatchKeyboardBatteryInfoChanged(
     DeviceId id) {
   CHECK(keyboards_.contains(id));
-  CHECK(features::IsWelcomeExperienceEnabled());
   const auto& keyboard = *keyboards_.at(id);
   for (auto& observer : observers_) {
     observer.OnKeyboardBatteryInfoChanged(keyboard);
@@ -2611,7 +2594,6 @@ void InputDeviceSettingsControllerImpl::DispatchKeyboardBatteryInfoChanged(
 void InputDeviceSettingsControllerImpl::
     DispatchGraphicsTabletBatteryInfoChanged(DeviceId id) {
   CHECK(graphics_tablets_.contains(id));
-  CHECK(features::IsWelcomeExperienceEnabled());
   const auto& graphics_tablet = *graphics_tablets_.at(id);
   for (auto& observer : observers_) {
     observer.OnGraphicsTabletBatteryInfoChanged(graphics_tablet);
@@ -2621,7 +2603,6 @@ void InputDeviceSettingsControllerImpl::
 void InputDeviceSettingsControllerImpl::DispatchMouseBatteryInfoChanged(
     DeviceId id) {
   CHECK(mice_.contains(id));
-  CHECK(features::IsWelcomeExperienceEnabled());
   const auto& mouse = *mice_.at(id);
   for (auto& observer : observers_) {
     observer.OnMouseBatteryInfoChanged(mouse);
@@ -2631,7 +2612,6 @@ void InputDeviceSettingsControllerImpl::DispatchMouseBatteryInfoChanged(
 void InputDeviceSettingsControllerImpl::DispatchTouchpadBatteryInfoChanged(
     DeviceId id) {
   CHECK(touchpads_.contains(id));
-  CHECK(features::IsWelcomeExperienceEnabled());
   const auto& touchpad = *touchpads_.at(id);
   for (auto& observer : observers_) {
     observer.OnTouchpadBatteryInfoChanged(touchpad);
@@ -2955,14 +2935,12 @@ void InputDeviceSettingsControllerImpl::InputMethodChanged(
 }
 
 bool InputDeviceSettingsControllerImpl::ShouldFetchDeviceImage() {
-  return features::IsWelcomeExperienceEnabled() && active_account_id_ &&
-         active_pref_service_;
+  return active_account_id_ && active_pref_service_;
 }
 
 void InputDeviceSettingsControllerImpl::GetDeviceImage(
     const std::string& device_key,
     DeviceId id) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   CHECK(active_account_id_.has_value());
   metadata_manager_->GetDeviceImage(
       device_key, active_account_id_.value(),
@@ -3006,7 +2984,6 @@ void InputDeviceSettingsControllerImpl::DeviceBatteryChanged(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* device,
     device::BluetoothDevice::BatteryType type) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   RefreshBatteryInfoForConnectedDevices();
 }
 
@@ -3034,7 +3011,6 @@ bool InputDeviceSettingsControllerImpl::IsOobe() const {
 
 void InputDeviceSettingsControllerImpl::DispatchMouseCompanionAppInfoChanged(
     const mojom::Mouse& mouse) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   for (auto& observer : observers_) {
     observer.OnMouseCompanionAppInfoChanged(mouse);
   }
@@ -3042,7 +3018,6 @@ void InputDeviceSettingsControllerImpl::DispatchMouseCompanionAppInfoChanged(
 
 void InputDeviceSettingsControllerImpl::DispatchKeyboardCompanionAppInfoChanged(
     const mojom::Keyboard& keyboard) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   for (auto& observer : observers_) {
     observer.OnKeyboardCompanionAppInfoChanged(keyboard);
   }
@@ -3050,7 +3025,6 @@ void InputDeviceSettingsControllerImpl::DispatchKeyboardCompanionAppInfoChanged(
 
 void InputDeviceSettingsControllerImpl::DispatchTouchpadCompanionAppInfoChanged(
     const mojom::Touchpad& touchpad) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   for (auto& observer : observers_) {
     observer.OnTouchpadCompanionAppInfoChanged(touchpad);
   }
@@ -3076,7 +3050,6 @@ void InputDeviceSettingsControllerImpl::
 void InputDeviceSettingsControllerImpl::
     DispatchGraphicsTabletCompanionAppInfoChanged(
         const mojom::GraphicsTablet& graphics_tablet) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   for (auto& observer : observers_) {
     observer.OnGraphicsTabletCompanionAppInfoChanged(graphics_tablet);
   }
