@@ -10,7 +10,6 @@
 #import "components/enterprise/idle/idle_pref_names.h"
 #import "components/enterprise/idle/metrics.h"
 #import "components/policy/core/common/policy_pref_names.h"
-#import "components/prefs/pref_service.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/app/profile/profile_init_stage.h"
@@ -27,7 +26,6 @@
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
-#import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
@@ -200,10 +198,6 @@
   _idleServiceObserverBridge.reset();
 }
 
-- (PrefService*)prefService {
-  return _mainBrowser->GetProfile()->GetPrefs();
-}
-
 // Returns whether the scene and app states allow for the idle timeout snackbar
 // to show if idle actions have run.
 - (BOOL)isUIAvailableToShowSnackbar {
@@ -245,27 +239,7 @@
   std::optional<int> messageId =
       enterprise_idle::GetIdleTimeoutActionsSnackbarMessageId(
           _idleService->GetLastActionSet());
-
-  // TODO(crbug.com/409821312): Change this back to CHECK when the cause for the
-  // crash is found. The crash is possibly related to BrowserSignin=2 also being
-  // set, but it is not reproducible yet.
-  if (!messageId) {
-    signin::IdentityManager* identityManager =
-        IdentityManagerFactory::GetForProfile(_mainBrowser->GetProfile());
-    DUMP_WILL_BE_CHECK(messageId)
-        << "The last IdleTimeout action set was empty. IdleTimeoutActions: "
-        << _mainBrowser->GetProfile()
-               ->GetPrefs()
-               ->GetList(enterprise_idle::prefs::kIdleTimeoutActions)
-               .DebugString()
-        << ", BrowserSignin:"
-        << GetApplicationContext()->GetLocalState()->GetInteger(
-               prefs::kBrowserSigninPolicy)
-        << "Signin status: "
-        << identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin);
-    _idleService->OnIdleTimeoutSnackbarPresented();
-    return;
-  }
+  CHECK(messageId) << "There is no snackbar message for the set of actions";
 
   NSString* messageText = l10n_util::GetNSString(*messageId);
 
