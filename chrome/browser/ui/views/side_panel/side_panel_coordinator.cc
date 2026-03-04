@@ -269,7 +269,7 @@ void SidePanelCoordinator::PopulateSidePanel(
     const UniqueKey& unique_key,
     std::optional<SidePanelOpenTrigger> open_trigger,
     SidePanelEntry* entry,
-    std::optional<std::unique_ptr<views::View>> content_view) {
+    std::optional<SidePanelNativeView> content_view) {
   SidePanel* side_panel = GetSidePanelFor(entry->type());
   CHECK(side_panel);
 

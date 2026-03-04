@@ -88,7 +88,7 @@ class SidePanelCoordinator final : public SidePanelUIBase,
       const UniqueKey& unique_key,
       std::optional<SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
-      std::optional<std::unique_ptr<views::View>> content_view) override;
+      std::optional<SidePanelNativeView> content_view) override;
   void MaybeShowEntryOnTabStripModelChanged(
       SidePanelRegistry* old_contextual_registry,
       SidePanelRegistry* new_contextual_registry) override;

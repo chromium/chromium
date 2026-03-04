@@ -17,11 +17,11 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "extensions/common/extension_id.h"
 #include "ui/base/class_property.h"
 #include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
-#include "ui/views/view.h"
 
 class SidePanelEntryScope;
 class SidePanelEntryObserver;
@@ -46,8 +46,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // The default and minimum acceptable side panel content width.
   static constexpr int kSidePanelDefaultContentWidth = 360;
   using CreateContentCallback =
-      base::RepeatingCallback<std::unique_ptr<views::View>(
-          SidePanelEntryScope&)>;
+      base::RepeatingCallback<SidePanelNativeView(SidePanelEntryScope&)>;
   using Id = SidePanelEntryId;
   using Key = SidePanelEntryKey;
 
@@ -81,12 +80,10 @@ class SidePanelEntry final : public ui::PropertyHandler {
 
   // Creates the content to be shown inside the side panel when this entry is
   // shown.
-  std::unique_ptr<views::View> GetContent();
-  void CacheView(std::unique_ptr<views::View> view);
+  SidePanelNativeView GetContent();
+  void CacheView(SidePanelNativeView view);
   void ClearCachedView();
-  views::View* CachedView() {
-    return content_view_ ? content_view_.get() : nullptr;
-  }
+  SidePanelNativeView& CachedView() { return content_view_; }
 
   // Called when the entry has been shown/hidden in the side panel.
   void OnEntryShown();
@@ -169,7 +166,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
  private:
   const PanelType type_;
   const Key key_;
-  std::unique_ptr<views::View> content_view_;
+  SidePanelNativeView content_view_;
 
   // Whether a button will be shown ephemerally in the toolbar when the entry is
   // showing in the side panel. Note, even if this is false the button would

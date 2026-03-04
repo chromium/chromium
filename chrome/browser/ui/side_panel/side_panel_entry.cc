@@ -54,7 +54,7 @@ SidePanelEntry::SidePanelEntry(
 
 SidePanelEntry::~SidePanelEntry() = default;
 
-std::unique_ptr<views::View> SidePanelEntry::GetContent() {
+SidePanelNativeView SidePanelEntry::GetContent() {
   CHECK(scope_);
   if (content_view_) {
     return std::move(content_view_);
@@ -63,7 +63,7 @@ std::unique_ptr<views::View> SidePanelEntry::GetContent() {
   return create_content_callback_.Run(*scope_);
 }
 
-void SidePanelEntry::CacheView(std::unique_ptr<views::View> view) {
+void SidePanelEntry::CacheView(SidePanelNativeView view) {
   content_view_ = std::move(view);
 }
 

@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/side_panel/side_panel_entry_id.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry_key.h"
 #include "chrome/browser/ui/side_panel/side_panel_enums.h"
+#include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 #include "chrome/browser/ui/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/side_panel/side_panel_ui.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -20,10 +21,6 @@
 class Browser;
 class SidePanelEntry;
 class SidePanelEntryWaiter;
-
-namespace views {
-class View;
-}
 
 // Base class for Side Panel UIs that contains the common logic for managing
 // side panel entries and state.
@@ -119,7 +116,7 @@ class SidePanelUIBase : public SidePanelUI {
       const UniqueKey& unique_key,
       std::optional<SidePanelOpenTrigger> open_trigger,
       SidePanelEntry* entry,
-      std::optional<std::unique_ptr<views::View>> content_view) = 0;
+      std::optional<SidePanelNativeView> content_view) = 0;
 
   // Shows an entry in the following fallback order: new contextual registry's
   // active entry > active global entry > none (close the side panel).

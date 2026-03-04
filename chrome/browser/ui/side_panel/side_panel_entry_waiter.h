@@ -11,14 +11,15 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/side_panel/side_panel_entry.h"
+#include "chrome/browser/ui/side_panel/side_panel_native_view.h"
 
 // This class uses the SidePanelContentProxy to wait for the SidePanelEntry's
 // content view to be ready to be shown.
 class SidePanelEntryWaiter {
  public:
-  using PopulateSidePanelCallback = base::OnceCallback<void(
-      SidePanelEntry* entry,
-      std::optional<std::unique_ptr<views::View>> content_view)>;
+  using PopulateSidePanelCallback =
+      base::OnceCallback<void(SidePanelEntry* entry,
+                              std::optional<SidePanelNativeView> content_view)>;
 
   SidePanelEntryWaiter();
   ~SidePanelEntryWaiter();
