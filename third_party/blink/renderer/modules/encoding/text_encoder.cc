@@ -59,7 +59,7 @@ TextEncoder::TextEncoder(const TextEncoding& encoding)
 TextEncoder::~TextEncoder() = default;
 
 String TextEncoder::encoding() const {
-  String name = encoding_.GetName().GetString().DeprecatedLower();
+  String name = encoding_.GetName().GetString().LowerASCII();
   DCHECK_EQ(name, "utf-8");
   return name;
 }
