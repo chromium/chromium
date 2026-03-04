@@ -28,6 +28,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -299,12 +300,8 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
 
       for (unsigned channel = 0;
           channel < backing_input_buffer->numberOfChannels(); ++channel) {
-        const float* source = static_cast<float*>(
-            backing_input_buffer->getChannelData(channel)->buffer()->Data());
-        float* destination = static_cast<float*>(
-            external_input_buffer_->getChannelData(channel)->buffer()->Data());
-        UNSAFE_TODO(memcpy(destination, source,
-                           backing_input_buffer->length() * sizeof(float)));
+        external_input_buffer_->getChannelData(channel)->AsSpan().copy_from(
+            backing_input_buffer->getChannelData(channel)->AsSpan());
       }
     }
   }
@@ -339,12 +336,8 @@ void ScriptProcessorNode::DispatchEvent(double playback_time,
 
       for (unsigned channel = 0;
           channel < backing_output_buffer->numberOfChannels(); ++channel) {
-        const float* source = static_cast<float*>(
-            external_output_buffer_->getChannelData(channel)->buffer()->Data());
-        float* destination = static_cast<float*>(
-            backing_output_buffer->getChannelData(channel)->buffer()->Data());
-        UNSAFE_TODO(memcpy(destination, source,
-                           backing_output_buffer->length() * sizeof(float)));
+        backing_output_buffer->getChannelData(channel)->AsSpan().copy_from(
+            external_output_buffer_->getChannelData(channel)->AsSpan());
       }
     }
   }
