@@ -171,15 +171,15 @@ int AAC::GetOutputSamplesPerSecond(bool sbr_in_mimetype) const {
   return std::min(2 * frequency_, 48000u);
 }
 
-ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
+ChannelLayoutConfig AAC::GetChannelLayout(bool sbr_in_mimetype) const {
   // Check for implicit signalling of HE-AAC and indicate stereo output
   // if the mono channel configuration is signalled.
   // See ISO 14496-3:2009 Section 1.6.5.3 for details about this special casing.
   if (sbr_in_mimetype && channel_config_ == 1) {
-    return CHANNEL_LAYOUT_STEREO;
+    return ChannelLayoutConfig::Stereo();
   }
 
-  return channel_layout_;
+  return ChannelLayoutConfig::FromLayout(channel_layout_);
 }
 
 base::HeapArray<uint8_t> AAC::CreateAdtsFromEsds(
