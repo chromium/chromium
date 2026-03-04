@@ -9,7 +9,6 @@
 #import "base/test/scoped_mock_clock_override.h"
 #import "base/time/time.h"
 #import "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/features.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_activation_level.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_controller.h"

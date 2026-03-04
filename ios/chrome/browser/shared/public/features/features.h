@@ -960,6 +960,17 @@ BASE_DECLARE_FEATURE(kRecordRecentActiveDays);
 // Returns true if kRecordRecentActiveDays is enabled.
 bool IsRecordRecentActiveDaysEnabled();
 
+// Feature for the Soft Lock.
+BASE_DECLARE_FEATURE(kIOSSoftLock);
+// Parameter for the kIOSSoftLock feature. The time delay needed
+// for Soft Lock to trigger.
+extern const char kIOSSoftLockBackgroundThresholdParam[];
+extern const base::FeatureParam<base::TimeDelta>
+    kIOSSoftLockBackgroundThreshold;
+
+// Whether the Soft Lock feature is enabled.
+bool IsIOSSoftLockEnabled();
+
 // Enables the AimCobrowse feature.
 BASE_DECLARE_FEATURE(kAimCobrowse);
 

@@ -151,7 +151,6 @@ source_set("ui_bundled") {
     "//ios/chrome/browser/google_one/coordinator",
     "//ios/chrome/browser/history/ui_bundled:coordinator",
     "//ios/chrome/browser/home_customization/coordinator",
-    "//ios/chrome/browser/incognito_reauth/ui_bundled:features",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_commands",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_scene_agent",
     "//ios/chrome/browser/incognito_reauth/ui_bundled:incognito_reauth_util",

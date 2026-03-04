@@ -1151,6 +1151,18 @@ bool IsRecordRecentActiveDaysEnabled() {
   return base::FeatureList::IsEnabled(kRecordRecentActiveDays);
 }
 
+BASE_FEATURE(kIOSSoftLock, base::FEATURE_ENABLED_BY_DEFAULT);
+
+bool IsIOSSoftLockEnabled() {
+  return base::FeatureList::IsEnabled(kIOSSoftLock);
+}
+
+const char kIOSSoftLockBackgroundThresholdParam[] =
+    "soft-lock-background-threshold-minutes";
+
+const base::FeatureParam<base::TimeDelta> kIOSSoftLockBackgroundThreshold{
+    &kIOSSoftLock, kIOSSoftLockBackgroundThresholdParam, base::Minutes(10)};
+
 BASE_FEATURE(kAimCobrowse, base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsAimCobrowseEnabled() {

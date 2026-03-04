@@ -4,14 +4,6 @@
 
 import("//ios/build/chrome_build.gni")
 
-source_set("features") {
-  sources = [
-    "features.h",
-    "features.mm",
-  ]
-  public_deps = [ "//base" ]
-}
-
 source_set("incognito_reauth_commands") {
   sources = [ "incognito_reauth_commands.h" ]
   frameworks = [ "UIKit.framework" ]
@@ -42,9 +34,9 @@ source_set("ui") {
     "incognito_reauth_view_label.mm",
   ]
   deps = [
-    ":features",
     ":incognito_reauth_util",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/common/ui/colors",
@@ -62,7 +54,6 @@ source_set("incognito_reauth_scene_agent") {
     "incognito_reauth_scene_agent.mm",
   ]
   deps = [
-    ":features",
     ":incognito_reauth_commands",
     ":incognito_reauth_util",
     ":ui",
@@ -92,7 +83,6 @@ source_set("unit_tests") {
     "incognito_reauth_scene_agent_unittest.mm",
   ]
   deps = [
-    ":features",
     ":incognito_reauth_scene_agent",
     ":incognito_reauth_util",
     ":ui",
