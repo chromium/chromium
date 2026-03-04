@@ -80,18 +80,15 @@ template <typename string_type>
 [[deprecated]]
 void STLStringResizeUninitializedAmortized(string_type* s, size_t new_size) {
   if (new_size > s->size()) {
-    size_t enlarged_new_size = new_size;
-    if (enlarged_new_size > s->capacity()) {
+    if (new_size > s->capacity()) {
       // Make sure to always grow by at least a factor of 2x. Change min_growth
       // if you want to experiment with other growth strategies.
       const auto min_growth = s->capacity();
       if (ABSL_PREDICT_FALSE(s->capacity() > s->max_size() - min_growth)) {
-        enlarged_new_size = s->max_size();
-      } else if (enlarged_new_size < s->capacity() + min_growth) {
-        enlarged_new_size = s->capacity() + min_growth;
+        s->reserve(s->max_size());
+      } else if (new_size < s->capacity() + min_growth) {
+        s->reserve(s->capacity() + min_growth);
       }
-    } else {
-      enlarged_new_size = s->capacity();
     }
     // This calls absl::strings_internal::StringResizeAndOverwriteImpl() because
     // the public API absl::StringResizeAndOverwrite() verifies that the
@@ -99,13 +96,12 @@ void STLStringResizeUninitializedAmortized(string_type* s, size_t new_size) {
     // absl::strings_internal::StringResizeAndOverwriteImpl(). Instead it should
     // be implemented correctly with absl::StringResizeAndOverwrite().
     absl::strings_internal::StringResizeAndOverwriteImpl(
-        *s, enlarged_new_size,
-        [new_size](typename string_type::value_type*, size_t) {
+        *s, new_size, [](typename string_type::value_type*, size_t buf_size) {
           // TODO: b/446221957 - It is undefined behavior if any character in
           // the range [0, return_value) is uninitialized, but we rely on this
           // here to implement the old STLStringResizeUninitializedAmortized()
           // API.
-          return new_size;
+          return buf_size;
         });
   } else {
     s->erase(new_size);

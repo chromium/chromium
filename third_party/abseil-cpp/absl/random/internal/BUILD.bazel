@@ -29,6 +29,7 @@ load(
 
 default_package_visibility = [
     "//absl/random:__pkg__",
+    "//absl:friends",
 ]
 
 package(

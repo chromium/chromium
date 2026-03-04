@@ -225,6 +225,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
+        "//absl:friends",
     ],
     deps = ["//absl/types:compare"],
 )
@@ -441,7 +442,7 @@ cc_library(
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
-        "//visibility:private",
+        "//absl:friends",
     ],
     deps = [
         ":common",
@@ -776,6 +777,9 @@ cc_test(
     copts = ABSL_TEST_COPTS,
     linkstatic = 1,
     tags = NOTEST_TAGS_MOBILE + [
+        "no_test_chromiumos_arm",
+        "no_test_chromiumos_armv7",
+        "no_test_chromiumos_x86_64",
         "no_test_loonix",
         # TODO(b/237097643): investigate race and remove
         "noarm_gemu",
@@ -939,6 +943,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -956,6 +961,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -972,6 +978,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -988,6 +995,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -1006,6 +1014,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -1021,6 +1030,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -1036,6 +1046,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -1052,6 +1063,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [
@@ -1229,6 +1241,7 @@ cc_library(
     copts = ABSL_TEST_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
+        "//absl:friends",
         "//absl/container:__pkg__",
     ],
     deps = [

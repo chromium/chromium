@@ -96,6 +96,7 @@ namespace {
 using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Ge;
+using ::testing::HasSubstr;
 using ::testing::Lt;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
@@ -2734,16 +2735,11 @@ TEST(TableDeathTest, InvalidIteratorAssertsSoo) {
 
 // Invalid iterator use can trigger use-after-free in asan/hwasan,
 // use-of-uninitialized-value in msan, or invalidated iterator assertions.
-constexpr const char* kInvalidIteratorDeathMessage =
-    "use-after-free|use-of-uninitialized-value|invalidated "
-    "iterator|Invalid iterator|invalid iterator";
-
-// MSVC doesn't support | in regex.
-#if defined(_MSC_VER)
-constexpr bool kMsvc = true;
-#else
-constexpr bool kMsvc = false;
-#endif
+testing::Matcher<const std::string&> InvalidIteratorMatcher() {
+  return AnyOf(HasSubstr("invalidated iterator"), HasSubstr("Invalid iterator"),
+               HasSubstr("invalid iterator"), HasSubstr("use-after-free"),
+               HasSubstr("use-of-uninitialized-value"));
+}
 
 TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperator) {
   if (!IsAssertEnabled() && !SwisstableGenerationsEnabled())
@@ -2785,7 +2781,6 @@ TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperator) {
 TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperatorRehash) {
   if (!IsAssertEnabled() && !SwisstableGenerationsEnabled())
     GTEST_SKIP() << "Assertions not enabled.";
-  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regex.";
 #ifdef ABSL_HAVE_THREAD_SANITIZER
   GTEST_SKIP() << "ThreadSanitizer test runs fail on use-after-free even in "
                   "EXPECT_DEATH.";
@@ -2798,11 +2793,7 @@ TYPED_TEST(SooTest, IteratorInvalidAssertsEqualityOperatorRehash) {
   // Trigger a rehash in t.
   for (int i = 0; i < 10; ++i) t.insert(i);
 
-  const char* const kRehashedDeathMessage =
-      SwisstableGenerationsEnabled()
-          ? kInvalidIteratorDeathMessage
-          : "Invalid iterator comparison.*might have rehashed.*config=asan";
-  EXPECT_DEATH_IF_SUPPORTED(void(iter == t.begin()), kRehashedDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(void(iter == t.begin()), InvalidIteratorMatcher());
 }
 
 #if defined(ABSL_INTERNAL_HASHTABLEZ_SAMPLE)
@@ -3148,7 +3139,6 @@ TYPED_TEST(AlignOneTest, AlignOne) {
 
 TEST(Iterator, InvalidUseCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
-  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
 
   NonSooIntTable t;
   // Start with 1 element so that `it` is never an end iterator.
@@ -3156,15 +3146,13 @@ TEST(Iterator, InvalidUseCrashesWithSanitizers) {
   for (int i = 0; i < 10; ++i) {
     auto it = t.begin();
     t.insert(i);
-    EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
-    EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()),
-                              kInvalidIteratorDeathMessage);
+    EXPECT_DEATH_IF_SUPPORTED(*it, InvalidIteratorMatcher());
+    EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()), InvalidIteratorMatcher());
   }
 }
 
 TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
-  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
 
   IntTable t;
   t.reserve(10);
@@ -3185,9 +3173,8 @@ TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
   // The first insert after reserved growth is 0 is guaranteed to rehash when
   // generations are enabled.
   t.insert(10);
-  EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
-  EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()),
-                            kInvalidIteratorDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(*it, InvalidIteratorMatcher());
+  EXPECT_DEATH_IF_SUPPORTED(void(it == t.begin()), InvalidIteratorMatcher());
 #ifdef ABSL_HAVE_ADDRESS_SANITIZER
   EXPECT_DEATH_IF_SUPPORTED(std::cout << *ptr, "heap-use-after-free");
 #endif
@@ -3195,7 +3182,6 @@ TEST(Iterator, InvalidUseWithReserveCrashesWithSanitizers) {
 
 TEST(Iterator, InvalidUseWithMoveCrashesWithSanitizers) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
-  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
 
   NonSooIntTable t1, t2;
   t1.insert(1);
@@ -3205,9 +3191,8 @@ TEST(Iterator, InvalidUseWithMoveCrashesWithSanitizers) {
   (void)ptr;
 
   t2 = std::move(t1);
-  EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
-  EXPECT_DEATH_IF_SUPPORTED(void(it == t2.begin()),
-                            kInvalidIteratorDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(*it, InvalidIteratorMatcher());
+  EXPECT_DEATH_IF_SUPPORTED(void(it == t2.begin()), InvalidIteratorMatcher());
 #ifdef ABSL_HAVE_ADDRESS_SANITIZER
   EXPECT_DEATH_IF_SUPPORTED(std::cout << **ptr, "heap-use-after-free");
 #endif
@@ -3462,7 +3447,6 @@ TEST(Table, EraseBeginEndResetsReservedGrowth) {
 
 TEST(Table, GenerationInfoResetsOnClear) {
   if (!SwisstableGenerationsEnabled()) GTEST_SKIP() << "Generations disabled.";
-  if (kMsvc) GTEST_SKIP() << "MSVC doesn't support | in regexp.";
 
   NonSooIntTable t;
   for (int i = 0; i < 1000; ++i) t.insert(i);
@@ -3473,7 +3457,7 @@ TEST(Table, GenerationInfoResetsOnClear) {
   t.insert(0);
   auto it = t.begin();
   t.insert(1);
-  EXPECT_DEATH_IF_SUPPORTED(*it, kInvalidIteratorDeathMessage);
+  EXPECT_DEATH_IF_SUPPORTED(*it, InvalidIteratorMatcher());
 }
 
 TEST(Table, InvalidReferenceUseCrashesWithSanitizers) {
@@ -3883,7 +3867,6 @@ TEST(Table, ReentrantCallsFail) {
 #endif
 }
 
-// TODO(b/328794765): this check is very useful to run with ASAN in opt mode.
 TEST(Table, DestroyedCallsFail) {
 #ifdef NDEBUG
   ASSERT_EQ(SwisstableAssertAccessToDestroyedTable(),
@@ -3905,13 +3888,10 @@ TEST(Table, DestroyedCallsFail) {
   IntTable* t_ptr = &*t;
   EXPECT_TRUE(t_ptr->contains(1));
   t.reset();
-  std::string expected_death_message =
-#if defined(ABSL_HAVE_MEMORY_SANITIZER)
-      "use-of-uninitialized-value";
-#else
-      "destroyed hash table";
-#endif  // ABSL_HAVE_MEMORY_SANITIZER
-  EXPECT_DEATH_IF_SUPPORTED(t_ptr->contains(1), expected_death_message);
+  EXPECT_DEATH_IF_SUPPORTED(
+      t_ptr->contains(1),
+      AnyOf(HasSubstr("destroyed hash table"), HasSubstr("use-after-free"),
+            HasSubstr("use-of-uninitialized-value")));
 
 #endif  // ABSL_HAVE_THREAD_SANITIZER
 }
@@ -3922,6 +3902,10 @@ TEST(Table, DestroyedCallsFailDuringDestruction) {
   }
 #if !defined(__clang__) && defined(__GNUC__)
   GTEST_SKIP() << "Flaky on GCC.";
+#endif
+#if defined(ABSL_HAVE_ADDRESS_SANITIZER) && defined(NDEBUG)
+  // TODO(b/487002780): see if we can re-enable this test in opt-ASan mode.
+  GTEST_SKIP() << "Fails to die in opt ASAN.";
 #endif
   // When EXPECT_DEATH_IF_SUPPORTED is not executed, the code after it is not
   // executed as well.
@@ -3943,13 +3927,9 @@ TEST(Table, DestroyedCallsFailDuringDestruction) {
     do_lookup = true;
     t.reset();
   };
-  std::string expected_death_message =
-#ifdef NDEBUG
-      "destroyed hash table";
-#else
-      "Reentrant container access";
-#endif
-  EXPECT_DEATH_IF_SUPPORTED(destroy_with_lookup(), expected_death_message);
+  EXPECT_DEATH_IF_SUPPORTED(destroy_with_lookup(),
+                            AnyOf(HasSubstr("destroyed hash table"),
+                                  HasSubstr("Reentrant container access")));
 }
 
 TEST(Table, MovedFromCallsFail) {

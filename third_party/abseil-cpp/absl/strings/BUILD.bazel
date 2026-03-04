@@ -217,6 +217,7 @@ cc_test(
         "internal/escaping_test_common.h",
     ],
     copts = ABSL_TEST_COPTS,
+    tags = ["no_test_chromiumos_x86_64"],
     visibility = ["//visibility:private"],
     deps = [
         ":cord",
@@ -1557,6 +1558,7 @@ cc_library(
     linkopts = ABSL_DEFAULT_LINKOPTS,
     visibility = [
         "//absl:__subpackages__",
+        "//absl:friends",
     ],
     deps = [
         ":str_format",
