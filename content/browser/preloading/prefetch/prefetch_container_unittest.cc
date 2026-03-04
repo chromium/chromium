@@ -246,7 +246,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
       {"1"}, {"2"});
 
-  prefetch_container->MakeInitialResourceRequest();
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
   auto* request = prefetch_container->GetResourceRequest();
   // Don't ever add the header.
   EXPECT_FALSE(
@@ -268,7 +269,8 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
   variations::VariationsIdsProvider::GetInstance()->ForceVariationIdsForTesting(
       {"1"}, {"2"});
 
-  prefetch_container->MakeInitialResourceRequest();
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
   auto* request = prefetch_container->GetResourceRequest();
   // Don't ever add the header.
   EXPECT_FALSE(
@@ -406,8 +408,8 @@ TEST_P(PrefetchContainerTest, CookieListener) {
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
 
-  prefetch_container->MakeInitialResourceRequest();
-  prefetch_container->RegisterCookieListenerForTesting();
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   // Add redirect hops, and register its own cookie listener for each hop.
   AddRedirectHop(prefetch_container.get(), kTestUrl2);
@@ -531,8 +533,8 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   const GURL kRedirectUrl2 = GURL("https://redirect2.com");
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
-  prefetch_container->MakeInitialResourceRequest();
-  prefetch_container->RegisterCookieListenerForTesting();
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   AddRedirectHop(prefetch_container.get(), kRedirectUrl1);
   prefetch_container->RegisterCookieListenerForTesting();
@@ -835,12 +837,8 @@ TEST_P(PrefetchContainerTest, EligibilityCheck) {
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
       kTestUrl1,
       {.prefetch_document_manager = prefetch_document_manager->GetWeakPtr()});
-
-  prefetch_container->MakeInitialResourceRequest();
-
-  // Mark initial prefetch as eligible
-  prefetch_container->OnEligibilityCheckComplete(
-      PreloadingEligibility::kEligible);
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
                 .prefetch_eligible_count,
@@ -871,12 +869,8 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
       kTestUrl1,
       {.prefetch_document_manager = prefetch_document_manager->GetWeakPtr()});
-
-  prefetch_container->MakeInitialResourceRequest();
-
-  // Mark initial prefetch as eligible
-  prefetch_container->OnEligibilityCheckComplete(
-      PreloadingEligibility::kEligible);
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   EXPECT_EQ(prefetch_document_manager->GetReferringPageMetrics()
                 .prefetch_eligible_count,
@@ -1243,7 +1237,6 @@ TEST_P(PrefetchContainerTest, RecordRedirectChainSize) {
 
   auto prefetch_container =
       CreateSpeculationRulesPrefetchContainer(GURL("https://test.com"));
-  prefetch_container->MakeInitialResourceRequest();
   prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoaderWithRedirectForTest(
       prefetch_container.get(), GURL("https://test.com"),
@@ -1257,7 +1250,8 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
       web_contents(), GURL("https://test.com/referrer"));
   auto prefetch_container_same_origin = CreateSpeculationRulesPrefetchContainer(
       GURL("https://test.com/prefetch"));
-  prefetch_container_same_origin->MakeInitialResourceRequest();
+  prefetch_container_same_origin->SimulatePrefetchEligibleForTest();
+  prefetch_container_same_origin->SimulatePrefetchStartedForTest();
   EXPECT_FALSE(prefetch_container_same_origin
                    ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
@@ -1266,7 +1260,8 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
   auto prefetch_container_cross_origin =
       CreateSpeculationRulesPrefetchContainer(
           GURL("https://test.com/prefetch"));
-  prefetch_container_cross_origin->MakeInitialResourceRequest();
+  prefetch_container_cross_origin->SimulatePrefetchEligibleForTest();
+  prefetch_container_cross_origin->SimulatePrefetchStartedForTest();
   EXPECT_TRUE(prefetch_container_cross_origin
                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 }
@@ -1274,21 +1269,24 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired) {
 TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequired_Embedder) {
   auto prefetch_container_default = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"), std::nullopt);
-  prefetch_container_default->MakeInitialResourceRequest();
+  prefetch_container_default->SimulatePrefetchEligibleForTest();
+  prefetch_container_default->SimulatePrefetchStartedForTest();
   EXPECT_FALSE(prefetch_container_default
                    ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   auto prefetch_container_same_origin = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"),
       url::Origin::Create(GURL("https://test.com/referrer")));
-  prefetch_container_same_origin->MakeInitialResourceRequest();
+  prefetch_container_same_origin->SimulatePrefetchEligibleForTest();
+  prefetch_container_same_origin->SimulatePrefetchStartedForTest();
   EXPECT_FALSE(prefetch_container_same_origin
                    ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
   auto prefetch_container_cross_origin = CreateEmbedderPrefetchContainer(
       GURL("https://test.com/prefetch"),
       url::Origin::Create(GURL("https://other.com/referrer")));
-  prefetch_container_cross_origin->MakeInitialResourceRequest();
+  prefetch_container_cross_origin->SimulatePrefetchEligibleForTest();
+  prefetch_container_cross_origin->SimulatePrefetchStartedForTest();
   EXPECT_TRUE(prefetch_container_cross_origin
                   ->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 }
@@ -1299,8 +1297,8 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequiredWithRedirect) {
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(
       GURL("https://test.com/prefetch"));
-
-  prefetch_container->MakeInitialResourceRequest();
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   EXPECT_FALSE(
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
@@ -1341,8 +1339,6 @@ TEST_P(PrefetchContainerTest, MultipleStreamingURLLoaders) {
   base::HistogramTester histogram_tester;
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
-
-  prefetch_container->MakeInitialResourceRequest();
 
   EXPECT_FALSE(prefetch_container->GetStreamingURLLoader());
 
@@ -1434,9 +1430,6 @@ TEST_P(PrefetchContainerTest, CancelAndClearStreamingLoader) {
   base::HistogramTester histogram_tester;
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
-
-  prefetch_container->MakeInitialResourceRequest();
-
   prefetch_container->SimulatePrefetchEligibleForTest();
   auto pending_request =
       MakeManuallyServableStreamingURLLoaderForTest(prefetch_container.get());

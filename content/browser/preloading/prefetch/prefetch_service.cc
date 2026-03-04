@@ -1433,17 +1433,6 @@ bool PrefetchService::StartSinglePrefetch(
       &PrefetchService::OnPrefetchTimeout, weak_method_factory_.GetWeakPtr(),
       prefetch_container.GetWeakPtr()));
 
-  if (!prefetch_container.IsDecoy()) {
-    // The status is updated to be successful or failed when it finishes.
-    prefetch_container.SetPrefetchStatus(
-        PrefetchStatus::kPrefetchNotFinishedInTime);
-  }
-
-  prefetch_container.MakeInitialResourceRequest();
-
-  prefetch_container.NotifyPrefetchRequestWillBeSent(
-      /*redirect_head=*/nullptr);
-
   SendPrefetchRequest(prefetch_container);
 
   PrefetchDocumentManager* prefetch_document_manager = nullptr;

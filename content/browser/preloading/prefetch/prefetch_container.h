@@ -289,16 +289,18 @@ class CONTENT_EXPORT PrefetchContainer {
 
   base::WeakPtr<PrefetchResponseReader> GetResponseReaderForCurrentPrefetch();
 
-  // Creates the initial resource request based on `PrefetchRequest`.
-  // `UpdateResourceRequest()`, which will be called on redirect, may update
-  // this resource request later on.
+  // `OnPrefetchStarted()` creates the initial resource request based on
+  // `PrefetchRequest`. `UpdateResourceRequest()`, which will be called on
+  // redirect, may update this resource request later on.
+  // TODO(crbug.com/483079815): Remove and inline
+  // `MakeInitialResourceRequest()`.
   void MakeInitialResourceRequest();
   const network::ResourceRequest* GetResourceRequest() const {
     return resource_request_.get();
   }
 
   // Returns the devtools request id that should be set to resource request
-  // during `MakeInitialResourceRequest()`.
+  // during `OnPrefetchStarted()`.
   // Note that this is also called via
   // `SetPrefetchStatusWithoutUpdatingTriggeringOutcome()`, where resource
   // request might not yet created.

@@ -1317,8 +1317,7 @@ void PrefetchContainer::SimulatePrefetchStartedForTest() {
   if (request().attempt()) {
     request().attempt()->SetHoldbackStatus(PreloadingHoldbackStatus::kAllowed);
   }
-  SetLoadState(LoadState::kStarted);
-  SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
+  OnPrefetchStarted();
 }
 
 void PrefetchContainer::SimulatePrefetchCompletedForTest() {
@@ -1379,6 +1378,16 @@ void PrefetchContainer::OnPrefetchStarted() {
 
   SetLoadState(PrefetchContainer::LoadState::kStarted);
   prefetch_container_metrics_.time_prefetch_started = base::TimeTicks::Now();
+
+  MakeInitialResourceRequest();
+
+  if (!IsDecoy()) {
+    // The status is updated to be successful or failed when it finishes.
+    SetPrefetchStatus(PrefetchStatus::kPrefetchNotFinishedInTime);
+  }
+
+  NotifyPrefetchRequestWillBeSent(
+      /*redirect_head=*/nullptr);
 }
 
 GURL PrefetchContainer::GetCurrentURL() const {
