@@ -6,6 +6,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include <string>
+
 #include "base/apple/foundation_util.h"
 #include "base/apple/osstatus_logging.h"
 #include "base/command_line.h"
@@ -90,9 +92,20 @@ void OpenExternal(const GURL& url) {
   DCHECK([NSThread isMainThread]);
   NSURL* ns_url = net::NSURLWithGURL(url);
 
-  if (!ns_url || ![[NSWorkspace sharedWorkspace] openURL:ns_url]) {
+  if (!ns_url) {
     LOG(WARNING) << "NSWorkspace failed to open URL " << url;
+    return;
   }
+
+  std::string url_string = url.possibly_invalid_spec();
+  [[NSWorkspace sharedWorkspace]
+                openURL:ns_url
+          configuration:[NSWorkspaceOpenConfiguration configuration]
+      completionHandler:^(NSRunningApplication* app, NSError* error) {
+        if (error) {
+          LOG(WARNING) << "NSWorkspace failed to open URL " << url_string;
+        }
+      }];
 }
 
 gfx::NativeWindow GetTopLevel(gfx::NativeView view) {
