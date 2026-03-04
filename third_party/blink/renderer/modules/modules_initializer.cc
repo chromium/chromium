@@ -361,7 +361,9 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
       source, media_player_client, context_impl, &encrypted_media,
       encrypted_media.ContentDecryptionModule(), sink_id,
       frame_widget->GetLayerTreeSettings(),
-      base::ThreadPool::CreateTaskRunner(base::TaskTraits{}));
+      base::ThreadPool::CreateTaskRunner(base::TaskTraits{
+          base::InheritThreadType(),
+          base::MaxThreadType(base::ThreadType::kPresentation)}));
 }
 
 RemotePlaybackClient* ModulesInitializer::CreateRemotePlaybackClient(
