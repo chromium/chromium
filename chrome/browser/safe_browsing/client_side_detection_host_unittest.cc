@@ -784,6 +784,83 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
       false, 1);
 }
 
+TEST_F(ClientSideDetectionHostTest, UserReportSkipsAllowlist) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  GURL url("http://allowlisted.com/");
+
+  // Set the URL as allowlisted.
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, true);
+
+  // Common expectations for any classification.
+  EXPECT_CALL(*csd_service_, IsLocalResource(_)).WillRepeatedly(Return(false));
+  EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+      .WillRepeatedly(Return(true));
+
+  // For the initial navigation (TRIGGER_MODELS), it should check the allowlist
+  // and match.
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
+      .WillOnce(Return(AsyncMatch::MATCH));
+
+  NavigateAndCommit(url);
+  base::RunLoop().RunUntilIdle();
+
+  // Verification: Phishing detection should NOT have started for
+  // TRIGGER_MODELS.
+  EXPECT_FALSE(fake_phishing_detector_.phishing_detection_started());
+
+  // Now trigger USER_REPORT. It should skip allowlist and start classification.
+  // CheckCsdAllowlistUrl should NOT be called again.
+  csd_host_->ReportUnsafeSite(std::nullopt, std::nullopt, std::nullopt);
+
+  base::RunLoop().RunUntilIdle();
+
+  fake_phishing_detector_.CheckMessage(&url);
+}
+
+TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  GURL url("http://example.com/");
+
+  // Set that we are at the phishing report limit.
+  EXPECT_CALL(*csd_service_, AtPhishingReportLimit())
+      .WillRepeatedly(Return(true));
+
+  // Common expectations.
+  EXPECT_CALL(*csd_service_, IsLocalResource(_)).WillRepeatedly(Return(false));
+  EXPECT_CALL(*csd_service_, IsPrivateIPAddress(_))
+      .WillRepeatedly(Return(false));
+  EXPECT_CALL(*database_manager_.get(), CanCheckUrl(_))
+      .WillRepeatedly(Return(true));
+  EXPECT_CALL(*database_manager_.get(), CheckCsdAllowlistUrl(url, _))
+      .WillRepeatedly(Return(AsyncMatch::NO_MATCH));
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, false);
+
+  NavigateAndCommit(url);
+  base::RunLoop().RunUntilIdle();
+
+  // Verification: Phishing detection should NOT have started for
+  // TRIGGER_MODELS.
+  EXPECT_FALSE(fake_phishing_detector_.phishing_detection_started());
+
+  // Now trigger USER_REPORT. It should skip report limit and start
+  // classification.
+  csd_host_->ReportUnsafeSite(std::nullopt, std::nullopt, std::nullopt);
+
+  base::RunLoop().RunUntilIdle();
+
+  fake_phishing_detector_.CheckMessage(&url);
+}
+
 TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();

@@ -538,10 +538,13 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     }
 
     // If we get a suspcious verdict from RTLookupResponse, we should get a
-    // second opinion on CSD side, so we skip the allowlist. We also check the
-    // command line flag if the allowlist should be skipped.
+    // second opinion on CSD side, so we skip the allowlist. If we get an
+    // explicit request to send a report from the user, we skip the allowlist.
+    // We also check the command line flag if the allowlist should be skipped.
     if (phishing_detection_request_type_ ==
             safe_browsing::ClientSideDetectionType::FORCE_REQUEST ||
+        phishing_detection_request_type_ ==
+            safe_browsing::ClientSideDetectionType::USER_REPORT ||
         ShouldSkipCSDAllowlist()) {
       OnAllowlistCheckDone(url, phishing_reason,
                            /*match_allowlist=*/false);
@@ -667,8 +670,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     }
 
     // We want to limit the number of requests, but if we're dumping features
-    // for debugging, allow us to exceed the report limit.
+    // for debugging or processing an explicit request for a report from a user,
+    // allow us to exceed the report limit.
     if (!HasDebugFeatureDirectory() && csd_service_ &&
+        phishing_detection_request_type_ !=
+            ClientSideDetectionType::USER_REPORT &&
         csd_service_->AtPhishingReportLimit()) {
       base::UmaHistogramExactLinear("SBClientPhishing.RequestTypeAtReportLimit",
                                     phishing_detection_request_type_,
