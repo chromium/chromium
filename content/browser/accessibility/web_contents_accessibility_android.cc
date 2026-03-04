@@ -1299,6 +1299,41 @@ int32_t WebContentsAccessibilityAndroid::GetRootId(JNIEnv* env) {
   return ui::kAXAndroidInvalidViewId;
 }
 
+size_t WebContentsAccessibilityAndroid::GetAccessibilityTreeSizeForTesting(
+    JNIEnv* env) {
+  BrowserAccessibilityManagerAndroid* root_manager =
+      GetRootBrowserAccessibilityManager();
+  if (!root_manager) {
+    return 0;
+  }
+
+  size_t count = 0;
+  std::vector<ui::BrowserAccessibilityManager*> managers_to_process;
+  managers_to_process.push_back(root_manager);
+
+  while (!managers_to_process.empty()) {
+    ui::BrowserAccessibilityManager* manager = managers_to_process.back();
+    managers_to_process.pop_back();
+
+    if (!manager->ax_tree()) {
+      continue;
+    }
+
+    count += manager->ax_tree()->size();
+
+    for (const ui::AXTreeID& child_tree_id :
+         manager->ax_tree()->GetAllChildTreeIds()) {
+      ui::BrowserAccessibilityManager* child_manager =
+          ui::BrowserAccessibilityManager::FromID(child_tree_id);
+      if (child_manager) {
+        managers_to_process.push_back(child_manager);
+      }
+    }
+  }
+
+  return count;
+}
+
 bool WebContentsAccessibilityAndroid::IsNodeValid(JNIEnv* env,
                                                   int32_t unique_id) {
   return GetAXFromUniqueID(unique_id) != nullptr;

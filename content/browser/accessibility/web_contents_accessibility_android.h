@@ -153,6 +153,7 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
 
   // Tree methods.
   int32_t GetRootId(JNIEnv* env);
+  size_t GetAccessibilityTreeSizeForTesting(JNIEnv* env);
   bool IsNodeValid(JNIEnv* env, int32_t id);
 
   void HitTest(JNIEnv* env, int32_t x, int32_t y);

@@ -3767,6 +3767,43 @@ public class WebContentsAccessibilityTest {
         histogramWatcher.assertExpected();
     }
 
+    @Test
+    @SmallTest
+    public void testAccessibilityTreeSizeWithIframe() throws Throwable {
+        // Iframe content with 12 additional nodes
+        final String iframeContent =
+                "<html><body><h1>Iframe content</h1>"
+                        + "<p>Node 1</p><p>Node 2</p><p>Node 3</p>"
+                        + "<p>Node 4</p><p>Node 5</p><p>Node 6</p>"
+                        + "<p>Node 7</p><p>Node 8</p><p>Node 9</p>"
+                        + "<p>Node 10</p><p>Node 11</p>"
+                        + "</body></html>";
+        // Main page content with an iframe
+        final String html =
+                "<html><body><p>Main content</p>"
+                        + "<iframe src='data:text/html,"
+                        + iframeContent
+                        + "'></iframe>"
+                        + "</body></html>";
+
+        setupTestWithHTML(html);
+
+        // Wait for a node in the main frame to ensure it's loaded.
+        waitForNodeMatching(sTextMatcher, "Main content");
+
+        // Wait for nodes in the iframe to ensure it's loaded.
+        waitForNodeMatching(sTextMatcher, "Iframe content");
+        waitForNodeMatching(sTextMatcher, "Node 11");
+
+        // Get the total size of the accessibility tree.
+        long treeSize =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> mActivityTestRule.mWcax.getAccessibilityTreeSizeForTesting());
+        // 28 nodes in the iframe + 5 node in the main frame = 33 nodes.
+        Assert.assertTrue(
+                "Tree size should be greater than 15, but was " + treeSize, treeSize == 33L);
+    }
+
     private void assertActionsContainNoScrolls(AccessibilityNodeInfoCompat nodeInfo) {
         Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_FORWARD));
         Assert.assertFalse(nodeInfo.getActionList().contains(ACTION_SCROLL_BACKWARD));

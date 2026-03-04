@@ -594,6 +594,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         return WebContentsAccessibilityImplJni.get().getRootId(mNativeObj);
     }
 
+    public long getAccessibilityTreeSizeForTesting() {
+        if (!isNativeInitialized()) return 0;
+        assert isRootManagerConnected()
+                : "Accessibility root manager should be connected when the native object is"
+                        + " initialized.";
+        return WebContentsAccessibilityImplJni.get().getAccessibilityTreeSizeForTesting(mNativeObj);
+    }
+
     public int getMaxContentChangedEventsToFireForTesting() {
         return WebContentsAccessibilityImplJni.get()
                 .getMaxContentChangedEventsToFireForTesting(mNativeObj);
@@ -2597,6 +2605,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 long nativeWebContentsAccessibilityAndroid);
 
         int getRootId(long nativeWebContentsAccessibilityAndroid);
+
+        long getAccessibilityTreeSizeForTesting(long nativeWebContentsAccessibilityAndroid);
 
         boolean isNodeValid(long nativeWebContentsAccessibilityAndroid, int id);
 
