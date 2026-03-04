@@ -1197,7 +1197,9 @@ ExtensionFunction::ResponseValue WindowsCreateFunction::OnBrowserWindowCreated(
     } else {
       new_window->GetWindow()->ShowInactive();
     }
-#endif
+#else
+    new_window->GetWindow()->ShowInactive();
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
 // Despite creating the window with initial_show_state() ==
