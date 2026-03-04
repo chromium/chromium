@@ -284,6 +284,7 @@ constexpr CGFloat kTableViewHorizontalPadding = 6.0f;
   cell.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
   [cell setBestFeaturesItem:itemIdentifier];
   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  cell.selectionStyle = UITableViewCellSelectionStyleNone;
 
   return cell;
 }

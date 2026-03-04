@@ -95,6 +95,9 @@
   base::UmaHistogramCounts10000("IOS.WelcomeBack.FeaturesClickedCount",
                                 _featureClickedCount);
 
+  [_detailScreenCoordinator stop];
+  _detailScreenCoordinator = nil;
+
   // Dismiss the presented view controller.
   if (_navigationController.presentingViewController &&
       !_navigationController.isBeingDismissed) {

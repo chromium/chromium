@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/first_run/public/features.h"
 #import "ios/chrome/browser/first_run/public/first_run_screen_delegate.h"
 #import "ios/chrome/browser/instructions_bottom_sheet/ui/instructions_bottom_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 
 @interface BestFeaturesScreenDetailCoordinator () <
@@ -53,12 +54,25 @@
       initWithFeatureHighlightItem:_bestFeaturesItem];
   _viewController.actionHandler = self;
   _baseNavigationController.navigationBarHidden = NO;
-  [_baseNavigationController pushViewController:_viewController animated:YES];
+  UIBarButtonItem* backButton = [[UIBarButtonItem alloc]
+      initWithImage:DefaultSymbolWithPointSize(kChevronBackwardSymbol,
+                                               kSymbolActionPointSize)
+              style:UIBarButtonItemStylePlain
+             target:self
+             action:@selector(dismiss)];
+  _viewController.navigationItem.leftBarButtonItem = backButton;
+  [_baseNavigationController pushViewController:_viewController animated:NO];
 }
 
 - (void)stop {
-  _viewController = nil;
+  [_halfSheetCoordinator stop];
   _halfSheetCoordinator = nil;
+
+  if (_baseNavigationController.topViewController == _viewController) {
+    [_baseNavigationController popViewControllerAnimated:NO];
+  }
+
+  _viewController = nil;
   self.delegate = nil;
 
   [super stop];
@@ -86,6 +100,12 @@
       first_run::kFirstRunStageHistogram,
       first_run::kBestFeaturesExperienceCompletionThroughDetailScreen);
   [self.delegate screenWillFinishPresenting];
+}
+
+#pragma mark - Private
+
+- (void)dismiss {
+  [_baseNavigationController popViewControllerAnimated:NO];
 }
 
 @end
