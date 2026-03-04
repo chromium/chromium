@@ -89,7 +89,13 @@ class ASH_EXPORT AuthTextfield : public SystemTextfield,
   void HideText();
 
   const AuthType auth_type_;
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   std::unique_ptr<AuthTextfieldTimer> timer_logic_;
 };

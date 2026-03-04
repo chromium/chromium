@@ -78,7 +78,13 @@ class COMPONENT_EXPORT(UI_WM) CaptureController
            raw_ptr<aura::client::CaptureDelegate, CtnExperimental>>
       delegates_;
 
-  base::ObserverList<aura::client::CaptureClientObserver>::Unchecked observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      aura::client::CaptureClientObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observers_;
 };
 
 // ScopedCaptureClient is responsible for creating a CaptureClient for a

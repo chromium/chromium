@@ -103,7 +103,13 @@ class COMPONENT_EXPORT(UI_BASE_IME) InputMethodBase : public InputMethod {
 
   raw_ptr<TextInputClient, DanglingUntriaged> text_input_client_ = nullptr;
 
-  base::ObserverList<InputMethodObserver>::Unchecked observer_list_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      InputMethodObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>::Unchecked
+      observer_list_;
 
   // Screen bounds of a on-screen keyboard.
   gfx::Rect keyboard_bounds_;
