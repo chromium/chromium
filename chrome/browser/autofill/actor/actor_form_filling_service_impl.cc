@@ -746,8 +746,7 @@ void ActorFormFillingServiceImpl::ScrollToForm(const tabs::TabInterface& tab,
 void ActorFormFillingServiceImpl::PreviewForm(const tabs::TabInterface& tab,
                                               int form_index,
                                               ActorSuggestionId suggestion_id) {
-  // TODO(crbug.com/481379523): Implement previewing a form.
-  NOTIMPLEMENTED();
+  FillOrPreviewFormImpl(tab, suggestion_id, mojom::ActionPersistence::kPreview);
 }
 
 void ActorFormFillingServiceImpl::ClearFormPreview(
@@ -767,8 +766,73 @@ void ActorFormFillingServiceImpl::FillForm(
     const tabs::TabInterface& tab,
     int form_index,
     ActorFormFillingSelection selection) {
-  // TODO(crbug.com/482010699): Implement filling a single form.
-  NOTIMPLEMENTED();
+  FillOrPreviewFormImpl(tab, selection.selected_suggestion_id,
+                        mojom::ActionPersistence::kFill);
+}
+
+void ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
+    const tabs::TabInterface& tab,
+    ActorSuggestionId suggestion_id,
+    mojom::ActionPersistence action_persistence) {
+  base::expected<std::reference_wrapper<BrowserAutofillManager>,
+                 ActorFormFillingError>
+      maybe_manager = GetAutofillManager(tab);
+  if (!maybe_manager.has_value()) {
+    return;
+  }
+  BrowserAutofillManager& autofill_manager = maybe_manager.value();
+  LogManager* const log_manager =
+      autofill_manager.client().GetCurrentLogManager();
+
+  const FillData* fill_data = base::FindOrNull(fill_data_, suggestion_id);
+  if (!fill_data) {
+    LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                        << "Fill/Preview aborted: Could not find the "
+                           "`FillData` with the given `ActorSuggestionId`.";
+    return;
+  }
+
+  if (fill_data->field_ids.empty()) {
+    LOG_AF(log_manager) << LoggingScope::kAutofillActor
+                        << "Fill/Preview aborted: The corresponding `FillData` "
+                           "had no associated fields.";
+    return;
+  }
+
+  const FormStructure* const form_structure =
+      autofill_manager.FindCachedFormById(fill_data->field_ids.front());
+  if (!form_structure) {
+    LOG_AF(log_manager)
+        << LoggingScope::kAutofillActor
+        << "Fill/Preview aborted: Could not find a `FormStructure` for the "
+           "first field in the corresponding `FillData`.";
+    return;
+  }
+
+  std::visit(
+      absl::Overload{
+          [&](const AutofillProfile& autofill_profile) {
+            autofill_manager.FillOrPreviewForm(
+                action_persistence, form_structure->ToFormData(),
+                // TODO(crbug.com/481379523): Select the correct trigger field.
+                fill_data->field_ids.front(), &autofill_profile,
+                AutofillTriggerSource::kGlic);
+          },
+          [&](const CreditCard& credit_card) {
+            autofill_manager.FillOrPreviewForm(
+                action_persistence, form_structure->ToFormData(),
+                // TODO(crbug.com/481379523): Select the correct trigger field.
+                fill_data->field_ids.front(), &credit_card,
+                AutofillTriggerSource::kGlic);
+          },
+          [&](const std::monostate&) {
+            LOG_AF(log_manager)
+                << LoggingScope::kAutofillActor
+                << "Fill/Preview aborted: Could not fill/preview because the "
+                   "suggestion had empty payload.";
+            return;
+          }},
+      fill_data->filling_payload);
 }
 
 }  // namespace autofill

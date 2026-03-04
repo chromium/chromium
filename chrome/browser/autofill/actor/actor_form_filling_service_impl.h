@@ -81,6 +81,10 @@ class ActorFormFillingServiceImpl : public ActorFormFillingService {
   };
 
  private:
+  // Forwards a fill/preview signal to `AutofillManager`.
+  void FillOrPreviewFormImpl(const tabs::TabInterface& tab,
+                             ActorSuggestionId suggestion_id,
+                             mojom::ActionPersistence action_persistence);
   // A running counter used to generate `ActorSuggestionId`s.
   ActorSuggestionId::Generator suggestion_id_generator_;
 
