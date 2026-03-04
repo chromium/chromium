@@ -56,7 +56,6 @@ MockSharingService::MockSharingService()
                                               /*sync_preference=*/nullptr,
                                               /*handler_registry=*/nullptr),
           /*sync_service=*/nullptr,
-          /*favicon_service=*/nullptr,
           /*send_tab_model=*/nullptr,
           /*task_runner=*/nullptr) {}
 

@@ -15,7 +15,6 @@
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #import "components/keyed_service/core/service_access_type.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #import "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #import "components/sharing_message/sharing_constants.h"
@@ -30,7 +29,6 @@
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "components/sync_device_info/device_info_tracker.h"
 #import "components/sync_device_info/local_device_info_provider.h"
-#import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -85,18 +83,12 @@ IOSSharingServiceFactory::IOSSharingServiceFactory()
   DependsOn(IOSSharingMessageBridgeFactory::GetInstance());
   DependsOn(IOSChromeGCMProfileServiceFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
-  DependsOn(ios::FaviconServiceFactory::GetInstance());
 }
 
 IOSSharingServiceFactory::~IOSSharingServiceFactory() {}
 
 std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    return nullptr;
-  }
-
 
   syncer::SyncService* sync_service =
       SyncServiceFactory::GetForProfile(profile);
@@ -152,10 +144,6 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
 
-  favicon::FaviconService* favicon_service =
-      ios::FaviconServiceFactory::GetForProfile(
-          profile, ServiceAccessType::IMPLICIT_ACCESS);
-
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
@@ -164,5 +152,5 @@ std::unique_ptr<KeyedService> IOSSharingServiceFactory::BuildServiceInstanceFor(
       std::move(sync_prefs), std::move(sharing_device_registration),
       std::move(sharing_message_sender), std::move(device_source),
       std::move(handler_registry), std::move(fcm_handler), sync_service,
-      favicon_service, send_tab_model, std::move(task_runner));
+      send_tab_model, std::move(task_runner));
 }

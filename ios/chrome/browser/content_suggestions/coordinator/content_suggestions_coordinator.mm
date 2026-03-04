@@ -461,8 +461,6 @@ using segmentation_platform::TipIdentifier;
   _safetyCheckMediator.presentationAudience = self;
   [moduleMediators addObject:_safetyCheckMediator];
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
     FaviconLoader* faviconLoader =
         IOSChromeFaviconLoaderFactory::GetForProfile(profile);
 
@@ -471,7 +469,6 @@ using segmentation_platform::TipIdentifier;
                                                 prefService:prefs];
     _sendTabPromoMediator.notificationsDelegate = self;
     [moduleMediators addObject:_sendTabPromoMediator];
-  }
 
   BOOL areTipsCardsEnabled =
       prefs->GetBoolean(ntp_tiles::prefs::kTipsHomeModuleEnabled);

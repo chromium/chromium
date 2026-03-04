@@ -135,10 +135,7 @@ syncer::DataTypeController::TypeVector CreateControllers(
   builder.SetSessionSyncService(
       SessionSyncServiceFactory::GetForProfile(profile));
   builder.SetSharingMessageBridge(
-      base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)
-          ? IOSSharingMessageBridgeFactory::GetForProfile(profile)
-          : nullptr);
+      IOSSharingMessageBridgeFactory::GetForProfile(profile));
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   builder.SetFamilyLinkSettingsService(
       supervised_user::FamilyLinkSettingsServiceFactory::GetForProfile(
@@ -331,10 +328,7 @@ SyncServiceFactory::SyncServiceFactory()
   DependsOn(IOSChromePasswordSenderServiceFactory::GetInstance());
   DependsOn(IOSChromeProfilePasswordStoreFactory::GetInstance());
   DependsOn(IOSPasskeyModelFactory::GetInstance());
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    DependsOn(IOSSharingMessageBridgeFactory::GetInstance());
-  }
+  DependsOn(IOSSharingMessageBridgeFactory::GetInstance());
   DependsOn(IOSTrustedVaultServiceFactory::GetInstance());
   DependsOn(IOSUserEventServiceFactory::GetInstance());
   DependsOn(PlusAddressSettingServiceFactory::GetInstance());

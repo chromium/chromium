@@ -45,9 +45,7 @@ TabBasedIPHBrowserAgent::TabBasedIPHBrowserAgent(Browser* browser)
       engagement_tracker_(feature_engagement::TrackerFactory::GetForProfile(
           browser->GetProfile())) {
   browser->AddObserver(this);
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
-      bookmark_model_) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled() && bookmark_model_) {
     bookmark_model_observation_.Observe(bookmark_model_.get());
     reading_list_model_observation_.Observe(reading_list_model_.get());
   }
@@ -99,13 +97,11 @@ void TabBasedIPHBrowserAgent::NotifySwitchToAdjacentTabFromTabGrid() {
 #pragma mark - bookmarks::BaseBookmarkModelObserver
 
 void TabBasedIPHBrowserAgent::BookmarkModelChanged() {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 }
 
 void TabBasedIPHBrowserAgent::BookmarkModelBeingDeleted() {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   StopObservingBookmarkModel();
 }
@@ -114,8 +110,7 @@ void TabBasedIPHBrowserAgent::BookmarkNodeAdded(
     const bookmarks::BookmarkNode* parent,
     size_t index,
     bool added_by_user) {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   if (added_by_user) {
     // The bookmark was manually added by the user and not via syncing or
@@ -133,8 +128,7 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
   browser_view_visibility_changed_subscription_ = {};
   browser->RemoveObserver(this);
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
     StopObservingBookmarkModel();
     StopObservingReadingListModel();
   }
@@ -149,16 +143,14 @@ void TabBasedIPHBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 void TabBasedIPHBrowserAgent::ReadingListModelLoaded(
     const ReadingListModel* model) {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   reading_list_model_loaded_ = true;
 }
 
 void TabBasedIPHBrowserAgent::ReadingListModelBeingShutdown(
     const ReadingListModel* model) {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
   CHECK(reading_list_model_loaded_);
 
   // The model passed is `const`, which makes it impossible to call
@@ -175,8 +167,7 @@ void TabBasedIPHBrowserAgent::ReadingListDidAddEntry(
     const ReadingListModel* model,
     const GURL& url,
     reading_list::EntrySource source) {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
   CHECK(reading_list_model_loaded_);
 
   if (source == reading_list::EntrySource::ADDED_VIA_CURRENT_APP) {
@@ -290,16 +281,14 @@ void TabBasedIPHBrowserAgent::WebStateDestroyed(web::WebState* web_state) {
 #pragma mark - Private
 
 void TabBasedIPHBrowserAgent::StopObservingBookmarkModel() {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   bookmark_model_ = nullptr;
   bookmark_model_observation_.Reset();
 }
 
 void TabBasedIPHBrowserAgent::StopObservingReadingListModel() {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   if (reading_list_model_) {
     reading_list_model_->RemoveObserver(this);

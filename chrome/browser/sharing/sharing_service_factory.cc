@@ -11,7 +11,6 @@
 #include "base/task/task_traits.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/gmail_otp_backend_factory.h"
-#include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/gcm/gcm_profile_service_factory.h"
 #include "chrome/browser/gcm/instance_id/instance_id_profile_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
@@ -104,7 +103,6 @@ SharingServiceFactory::SharingServiceFactory()
   DependsOn(SyncServiceFactory::GetInstance());
   DependsOn(SharingMessageBridgeFactory::GetInstance());
   DependsOn(SendTabToSelfSyncServiceFactory::GetInstance());
-  DependsOn(FaviconServiceFactory::GetInstance());
   DependsOn(GmailOtpBackendFactory::GetInstance());
 }
 
@@ -158,14 +156,11 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   SharingFCMSender* fcm_sender_ptr = fcm_sender.get();
   sharing_message_sender->RegisterSendDelegate(
       SharingMessageSender::DelegateType::kFCM, std::move(fcm_sender));
-  if (base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
     sharing_message_sender->RegisterSendDelegate(
         SharingMessageSender::DelegateType::kIOSPush,
         std::make_unique<sharing_message::SharingIOSPushSender>(
             message_bridge, device_info_tracker, local_device_info_provider,
             sync_service));
-  }
 
   auto device_source = std::make_unique<SharingDeviceSourceSync>(
       sync_service, local_device_info_provider, device_info_tracker);
@@ -180,10 +175,6 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
   auto fcm_handler = std::make_unique<SharingFCMHandler>(
       gcm_driver, device_info_tracker, fcm_sender_ptr, handler_registry.get());
 
-  favicon::FaviconService* favicon_service =
-      FaviconServiceFactory::GetForProfile(profile,
-                                           ServiceAccessType::IMPLICIT_ACCESS);
-
   send_tab_to_self::SendTabToSelfModel* send_tab_model =
       SendTabToSelfSyncServiceFactory::GetForProfile(profile)
           ->GetSendTabToSelfModel();
@@ -192,7 +183,7 @@ SharingServiceFactory::BuildServiceInstanceForBrowserContext(
       std::move(sync_prefs), std::move(sharing_device_registration),
       std::move(sharing_message_sender), std::move(device_source),
       std::move(handler_registry), std::move(fcm_handler), sync_service,
-      favicon_service, send_tab_model, task_runner);
+      send_tab_model, task_runner);
 }
 
 bool SharingServiceFactory::ServiceIsNULLWhileTesting() const {

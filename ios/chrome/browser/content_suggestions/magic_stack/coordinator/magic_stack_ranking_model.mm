@@ -547,8 +547,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
       segmentation_platform::processing::ProcessedValue::FromFloat(
           _shoppingService->IsShoppingListEligible()));
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
     inputContext->metadata_args.emplace(
         segmentation_platform::kSendTabInfobarReceivedInLastSession,
         segmentation_platform::processing::ProcessedValue::FromFloat(
@@ -556,7 +554,6 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
                  ->GetString(send_tab_to_self::prefs::
                                  kIOSSendTabToSelfLastReceivedTabURLPref)
                  .empty()));
-  }
 
   if (_tipsManager) {
     // Profile signals
@@ -712,12 +709,9 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         break;
       }
     } else if (label == segmentation_platform::kSendTabNotificationPromo) {
-      if (send_tab_to_self::
-              IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
         _ephemeralCardToShow = ContentSuggestionsModuleType::kSendTabPromo;
         card = _sendTabPromoMediator.sendTabPromoConfigToShow;
         break;
-      }
     } else if (label == segmentation_platform::kAppBundlePromoEphemeralModule) {
       if (segmentation_platform::features::
               IsAppBundlePromoEphemeralCardEnabled() &&
@@ -956,9 +950,7 @@ using segmentation_platform::home_modules::SavePasswordsEphemeralModule;
         }
         break;
       case ContentSuggestionsModuleType::kSendTabPromo:
-        if (send_tab_to_self::
-                IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() &&
-            _sendTabPromoMediator &&
+        if (_sendTabPromoMediator &&
             _sendTabPromoMediator.sendTabPromoConfigToShow) {
           [magicStackOrder
               addObject:_sendTabPromoMediator.sendTabPromoConfigToShow];

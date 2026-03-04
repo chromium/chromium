@@ -110,11 +110,6 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsEphemeralModuleCards) {
 // when the send-tab-to-self feature with Magic Stack param is enabled and the
 // Tips (Magic Stack) is also enabled.
 TEST_F(HomeModulesCardRegistryTest, TestSendTabEphemeralModuleCard) {
-  feature_list_.InitWithFeaturesAndParameters(
-      {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
-        {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
-          "true"}}}},
-      {});
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 

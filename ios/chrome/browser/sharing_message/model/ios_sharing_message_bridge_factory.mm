@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/sharing_message/model/ios_sharing_message_bridge_factory.h"
 
 #import "base/feature_list.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/sharing_message/sharing_message_bridge_impl.h"
 #import "components/sync/base/report_unrecoverable_error.h"
 #import "components/sync/model/client_tag_based_data_type_processor.h"
@@ -40,10 +39,6 @@ IOSSharingMessageBridgeFactory::~IOSSharingMessageBridgeFactory() = default;
 std::unique_ptr<KeyedService>
 IOSSharingMessageBridgeFactory::BuildServiceInstanceFor(
     ProfileIOS* profile) const {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    return nullptr;
-  }
 
   auto change_processor =
       std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(

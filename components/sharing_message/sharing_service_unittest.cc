@@ -14,11 +14,9 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/protobuf_matchers.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
-#include "components/favicon/core/test/mock_favicon_service.h"
 #include "components/gcm_driver/crypto/gcm_encryption_provider.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/send_tab_to_self/features.h"
@@ -222,7 +220,7 @@ class SharingServiceTest : public testing::Test {
           base::WrapUnique(device_source_.get()),
           base::WrapUnique(handler_registry_.get()),
           base::WrapUnique(fcm_handler_.get()), &test_sync_service_,
-          &favicon_service_, &send_tab_to_self_model_,
+          &send_tab_to_self_model_,
           base::SingleThreadTaskRunner::GetCurrentDefault());
     }
     task_environment_.RunUntilIdle();
@@ -232,10 +230,8 @@ class SharingServiceTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  base::test::ScopedFeatureList scoped_features_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service;
   syncer::TestSyncService test_sync_service_;
-  testing::NiceMock<favicon::MockFaviconService> favicon_service_;
   send_tab_to_self::TestSendTabToSelfModel send_tab_to_self_model_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
 
@@ -335,15 +331,11 @@ TEST_F(SharingServiceTest, SendMessageToDeviceSuccess) {
 }
 
 TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
-  scoped_features_.InitAndEnableFeatureWithParameters(
-      send_tab_to_self::kSendTabToSelfIOSPushNotifications,
-      {{send_tab_to_self::kSendTabIOSPushNotificationsURLImageParam, "true"}});
 
   const std::string title = "title";
   const std::string device_name = "device name";
   const std::string host = "www.example.com";
   const std::string destination_url = "https://www.example.com/";
-  const std::string icon_url = "https://www.example.com/favicon.ico";
   const std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 
   EXPECT_CALL(*device_source_, GetDeviceByGuid(guid))
@@ -355,17 +347,6 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
                                        /*pulse_interval=*/base::TimeDelta(),
                                        syncer::DeviceInfo::FormFactor::kUnknown,
                                        /*last_updated_timestamp=*/base::Time());
-      });
-
-  ON_CALL(favicon_service_, GetLargestRawFaviconForPageURL)
-      .WillByDefault([icon_url](auto, auto, auto,
-                                favicon_base::FaviconRawBitmapCallback callback,
-                                auto) {
-        favicon_base::FaviconRawBitmapResult result;
-        result.icon_url = GURL(icon_url);
-        std::move(callback).Run(result);
-        base::CancelableTaskTracker::TaskId kTaskId = 1;
-        return kTaskId;
       });
 
   // Create the expected proto.
@@ -384,8 +365,6 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
   push_notification_entry->set_placeholder_body(l10n_util::GetStringUTF8(
       IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_BODY));
   push_notification_entry->set_entry_unique_guid(guid);
-  auto* icon = push_notification_entry->add_icon();
-  icon->set_url(icon_url);
 
   EXPECT_CALL(*sharing_message_sender_,
               SendUnencryptedMessageToDevice(testing::_,
@@ -399,34 +378,7 @@ TEST_F(SharingServiceTest, SendTabEntryAddedLocally) {
   GetSharingService()->EntryAddedLocally(&entry);
 }
 
-TEST_F(SharingServiceTest, SendTabEntryAddedLocally_FeatureDisabled) {
-  scoped_features_.InitAndDisableFeature(
-      send_tab_to_self::kSendTabToSelfIOSPushNotifications);
-
-  std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
-  EXPECT_CALL(*device_source_, GetDeviceByGuid(guid)).Times(0);
-
-  ON_CALL(favicon_service_, GetLargestRawFaviconForPageURL)
-      .WillByDefault([](auto, auto, auto,
-                        favicon_base::FaviconRawBitmapCallback callback, auto) {
-        std::move(callback).Run(favicon_base::FaviconRawBitmapResult());
-        base::CancelableTaskTracker::TaskId kTaskId = 1;
-        return kTaskId;
-      });
-
-  EXPECT_CALL(*sharing_message_sender_, SendUnencryptedMessageToDevice)
-      .Times(0);
-
-  send_tab_to_self::SendTabToSelfEntry entry =
-      send_tab_to_self::SendTabToSelfEntry(
-          "guid", GURL("https://www.example.com"), "title", base::Time(),
-          "device name", guid, send_tab_to_self::PageContext());
-  GetSharingService()->EntryAddedLocally(&entry);
-}
-
 TEST_F(SharingServiceTest, SendTabEntryAddedLocally_NonIOSDevice) {
-  scoped_features_.InitAndEnableFeature(
-      send_tab_to_self::kSendTabToSelfIOSPushNotifications);
 
   std::string guid = base::Uuid::GenerateRandomV4().AsLowercaseString();
 

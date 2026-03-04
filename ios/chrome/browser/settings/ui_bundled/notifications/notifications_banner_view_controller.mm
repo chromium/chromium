@@ -9,7 +9,6 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
-#import "components/send_tab_to_self/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_item_identifier.h"
 #import "ios/chrome/browser/settings/ui_bundled/notifications/notifications_view_controller_delegate.h"
@@ -244,12 +243,9 @@ bool TooNarrowForBanner(UIView* view) {
         @(NotificationsItemIdentifier::ItemIdentifierContent)
       ]];
     }
-    if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
       [_snapshot appendItemsWithIdentifiers:@[
         @(NotificationsItemIdentifier::ItemIdentifierSendTab)
       ]];
-    }
     [_snapshot appendItemsWithIdentifiers:@[
       @(NotificationsItemIdentifier::ItemIdentifierTips),
       @(NotificationsItemIdentifier::ItemIdentifierPriceTracking),

@@ -24,50 +24,18 @@ namespace send_tab_to_self {
 BASE_FEATURE(kSendTabToSelfEnableNotificationTimeOut,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kSendTabToSelfIOSPushNotifications,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSendTabToSelfPropagateFormFields,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSendTabToSelfPropagateScrollPosition,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kSendTabIOSPushNotificationsURLImageParam[] =
-    "variant_with_URL_image";
-
-bool IsSendTabIOSPushNotificationsEnabledWithURLImage() {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kSendTabToSelfIOSPushNotifications,
-        kSendTabIOSPushNotificationsURLImageParam, false);
-  }
-  return false;
-}
-
 #if BUILDFLAG(IS_IOS)
-const char kSendTabIOSPushNotificationsWithMagicStackCardParam[] =
-    "variant_with_magic_stack_card";
 
-bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kSendTabToSelfIOSPushNotifications,
-        kSendTabIOSPushNotificationsWithMagicStackCardParam, true);
-  }
-  return false;
-}
+BASE_FEATURE(kIOSTabReminders, base::FEATURE_DISABLED_BY_DEFAULT);
 
-const char kSendTabIOSPushNotificationsWithTabRemindersParam[] =
-    "variant_with_tab_reminders";
-
-bool IsSendTabIOSPushNotificationsEnabledWithTabReminders() {
-  if (base::FeatureList::IsEnabled(kSendTabToSelfIOSPushNotifications)) {
-    return base::GetFieldTrialParamByFeatureAsBool(
-        kSendTabToSelfIOSPushNotifications,
-        kSendTabIOSPushNotificationsWithTabRemindersParam, false);
-  }
-  return false;
+bool AreIOSTabRemindersEnabled() {
+  return base::FeatureList::IsEnabled(kIOSTabReminders);
 }
 
 const char kReminderNotificationsDefaultTimeOffset[] =
@@ -76,8 +44,7 @@ const char kReminderNotificationsDefaultTimeOffset[] =
 const base::TimeDelta GetReminderNotificationsDefaultTimeOffset() {
   // Default to 24 hours.
   return base::GetFieldTrialParamByFeatureAsTimeDelta(
-      kSendTabToSelfIOSPushNotifications,
-      kReminderNotificationsDefaultTimeOffset,
+      kIOSTabReminders, kReminderNotificationsDefaultTimeOffset,
       kReminderNotificationsDefaultOffset);
 }
 #endif  // BUILDFLAG(IS_IOS)

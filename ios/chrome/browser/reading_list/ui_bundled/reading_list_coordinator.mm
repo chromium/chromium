@@ -336,8 +336,7 @@
 
 - (void)readingListListViewController:(UIViewController*)viewController
           showSetTabReminderUIForItem:(id<ReadingListListItem>)item {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
   CHECK_EQ(self.tableViewController, viewController);
 
   scoped_refptr<const ReadingListEntry> entry =

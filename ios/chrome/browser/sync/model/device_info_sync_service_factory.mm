@@ -15,7 +15,6 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/default_clock.h"
 #import "components/desktop_to_mobile_promos/features.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/signin/public/base/device_id_helper.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync/invalidations/sync_invalidations_service.h"
@@ -73,9 +72,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
     bool send_tab_notifications_enabled = push_notification_settings::
         GetMobileNotificationPermissionStatusForClient(
             PushNotificationClientId::kSendTab, gaia_id);
-    if (base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfIOSPushNotifications) &&
-        send_tab_notifications_enabled) {
+    if (send_tab_notifications_enabled) {
       return sync_pb::
           SyncEnums_SendTabReceivingType_SEND_TAB_RECEIVING_TYPE_CHROME_AND_PUSH_NOTIFICATION;
     }
@@ -86,9 +83,7 @@ class DeviceInfoSyncClient : public syncer::DeviceInfoSyncClient {
   // syncer::DeviceInfoSyncClient:
   std::optional<syncer::DeviceInfo::SharingInfo> GetLocalSharingInfo()
       const override {
-    if (!identity_manager_ ||
-        !base::FeatureList::IsEnabled(
-            send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+    if (!identity_manager_) {
       return std::nullopt;
     }
     GaiaId gaia_id =

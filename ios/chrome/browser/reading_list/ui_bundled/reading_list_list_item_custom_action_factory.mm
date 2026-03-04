@@ -119,8 +119,7 @@
     [customActions addObject:openOfflineAction];
   }
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
     ReadingListCustomAction* remindAction = [[ReadingListCustomAction alloc]
         initWithName:l10n_util::GetNSString(
                          IDS_IOS_REMINDER_NOTIFICATIONS_SWIPE_ACTION_REMIND)

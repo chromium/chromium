@@ -20,10 +20,6 @@ namespace send_tab_to_self {
 // user interacts with it either by dismissing or openning it.
 BASE_DECLARE_FEATURE(kSendTabToSelfEnableNotificationTimeOut);
 
-// If this feature is enabled, allow the user to receive Send Tab to Self
-// notifications as a push notification to their target iOS device.
-BASE_DECLARE_FEATURE(kSendTabToSelfIOSPushNotifications);
-
 // If this feature is enabled, form fields will be extracted from the outgoing
 // tab and propagated to the target device.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateFormFields);
@@ -32,30 +28,13 @@ BASE_DECLARE_FEATURE(kSendTabToSelfPropagateFormFields);
 // propagated to the target device using a text fragment selector.
 BASE_DECLARE_FEATURE(kSendTabToSelfPropagateScrollPosition);
 
-// Param for whether or not to include the URL image in the push notification
-// for the kSendTabToSelfIOSPushNotifications feature.
-extern const char kSendTabIOSPushNotificationsURLImageParam[];
-
-// Convenience method for determining when SendTabIOSPushNotifications is
-// enabled with a URL image in the notification.
-bool IsSendTabIOSPushNotificationsEnabledWithURLImage();
-
 #if BUILDFLAG(IS_IOS)
-// Param for the iOS Magic Stack Card variant for the
-// kSendTabToSelfIOSPushNotifications feature.
-extern const char kSendTabIOSPushNotificationsWithMagicStackCardParam[];
+// If this feature is enabled, users can schedule tab reminder iOS push
+// notifications.
+BASE_DECLARE_FEATURE(kIOSTabReminders);
 
-// Convenience method for determining when SendTabIOSPushNotifications is
-// enabled with Magic Stack Card.
-bool IsSendTabIOSPushNotificationsEnabledWithMagicStackCard();
-
-// Param for the iOS Tab Reminders variant for the
-// `kSendTabToSelfIOSPushNotifications` feature.
-extern const char kSendTabIOSPushNotificationsWithTabRemindersParam[];
-
-// Convenience method for determining when `kSendTabToSelfIOSPushNotifications`
-// is enabled with Tab Reminders.
-bool IsSendTabIOSPushNotificationsEnabledWithTabReminders();
+// Convenience method for determining when `kIOSTabReminders` is enabled.
+bool AreIOSTabRemindersEnabled();
 
 // Parameter representing the default time offset initially presented in the
 // 'Set a Reminder' UI half-sheet. Users can select a different offset manually.

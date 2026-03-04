@@ -585,8 +585,7 @@ void SendTabToSelfBridge::NotifyRemoteSendTabToSelfEntryAdded(
   }
 
 #if BUILDFLAG(IS_IOS)
-  if (IsSendTabIOSPushNotificationsEnabledWithMagicStackCard() &&
-      !new_local_entries.empty()) {
+  if (!new_local_entries.empty()) {
     pref_service_->SetString(prefs::kIOSSendTabToSelfLastReceivedTabURLPref,
                              new_local_entries.back()->GetURL().spec());
   }

@@ -28,14 +28,6 @@
 #include "components/sync/service/sync_service_observer.h"
 #include "net/base/backoff_entry.h"
 
-namespace favicon {
-class FaviconService;
-}  // namespace favicon
-
-namespace favicon_base {
-struct FaviconRawBitmapResult;
-}  // namespace favicon_base
-
 namespace send_tab_to_self {
 class SendTabToSelfEntry;
 class SendTabToSelfModel;
@@ -81,7 +73,6 @@ class SharingService : public KeyedService,
       std::unique_ptr<SharingHandlerRegistry> handler_registry,
       std::unique_ptr<SharingFCMHandler> fcm_handler,
       syncer::SyncService* sync_service,
-      favicon::FaviconService* favicon_service,
       send_tab_to_self::SendTabToSelfModel* send_tab_model,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
   SharingService(const SharingService&) = delete;
@@ -192,8 +183,7 @@ class SharingService : public KeyedService,
   // Sends a push notification to users after they send a tab to one of their
   // iOS devices.
   void SendNotificationForSendTabToSelfPush(
-      const send_tab_to_self::SendTabToSelfEntry& entry,
-      const favicon_base::FaviconRawBitmapResult& result);
+      const send_tab_to_self::SendTabToSelfEntry& entry);
 
   std::unique_ptr<SharingSyncPreference> sync_prefs_;
   std::unique_ptr<SharingDeviceRegistration> sharing_device_registration_;
@@ -203,7 +193,6 @@ class SharingService : public KeyedService,
   std::unique_ptr<SharingFCMHandler> fcm_handler_;
 
   raw_ptr<syncer::SyncService> sync_service_;
-  const raw_ptr<favicon::FaviconService> favicon_service_;
 
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 

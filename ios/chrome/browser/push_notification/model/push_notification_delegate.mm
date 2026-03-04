@@ -16,7 +16,6 @@
 #import "base/timer/timer.h"
 #import "base/values.h"
 #import "components/prefs/pref_service.h"
-#import "components/send_tab_to_self/features.h"
 #import "components/sync_device_info/device_info_sync_service.h"
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -728,10 +727,7 @@ void ProcessIncomingNotification(
                             !error);
   if (!error) {
     if (ProfileIOS* profile = weakProfile.get()) {
-      if (base::FeatureList::IsEnabled(
-              send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
         [self setUpAndEnableSendTabNotificationsWithProfile:profile];
-      }
     }
   }
 }

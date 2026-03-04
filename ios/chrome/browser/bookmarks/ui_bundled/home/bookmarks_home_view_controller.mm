@@ -2978,9 +2978,7 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
     [actions addObject:deleteAction];
   }
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders() &&
-      bookmarkNode->is_url()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled() && bookmarkNode->is_url()) {
     UIContextualAction* remindAction =
         [self createRemindActionForIndexPath:indexPath];
     [actions addObject:remindAction];

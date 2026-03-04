@@ -4,7 +4,6 @@
 
 #include "components/segmentation_platform/embedder/home_modules/send_tab_notification_promo.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
@@ -27,7 +26,6 @@ class SendTabNotificationPromoTest : public testing::Test {
   void TearDown() override { Test::TearDown(); }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   TestingPrefServiceSimple pref_service_;
 };
 
@@ -53,11 +51,6 @@ TEST_F(SendTabNotificationPromoTest, TestComputeCardResult) {
 // Note: `kMaxSendTabNotificationCardImpressions` is 1.
 TEST_F(SendTabNotificationPromoTest,
        IsEnabledReturnsFalseWhenImpressionLimitReached) {
-  feature_list_.InitWithFeaturesAndParameters(
-      {{send_tab_to_self::kSendTabToSelfIOSPushNotifications,
-        {{send_tab_to_self::kSendTabIOSPushNotificationsWithMagicStackCardParam,
-          "true"}}}},
-      {});
 
   auto card = std::make_unique<SendTabNotificationPromo>();
 

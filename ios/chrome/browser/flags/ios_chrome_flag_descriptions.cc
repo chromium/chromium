@@ -870,6 +870,10 @@ const char kIOSSyncedSetUpDescription[] =
     "Enables the Synced Set Up experience, allowing the user to locally apply "
     "settings from their synced devices.";
 
+const char kIOSTabRemindersName[] = "Tab Reminders";
+const char kIOSTabRemindersDescription[] =
+    "Enables the Tab Reminder notifications feature on iOS.";
+
 const char kIOSTipsNotificationsStringAlternativesName[] =
     "Tips notifications alternative string experiment";
 const char kIOSTipsNotificationsStringAlternativesDescription[] =
@@ -1465,12 +1469,6 @@ const char kSendTabToSelfEnhancedHandoffName[] =
 const char kSendTabToSelfEnhancedHandoffDescription[] =
     "Enables an enhanced version of Send Tab To Self that propagates more "
     "information, such as form fields.";
-
-const char kSendTabToSelfIOSPushNotificationsName[] =
-    "Send tab to self iOS push notifications";
-const char kSendTabToSelfIOSPushNotificationsDescription[] =
-    "Feature to allow users to send tabs to their iOS device through a system "
-    "push notitification.";
 
 const char kShareInOmniboxLongPressName[] = "Share in Omnibox Long Press";
 const char kShareInOmniboxLongPressDescription[] =

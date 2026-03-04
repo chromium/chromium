@@ -12,8 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/favicon/core/favicon_service.h"
-#include "components/favicon_base/favicon_types.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "components/send_tab_to_self/send_tab_to_self_model.h"
@@ -34,10 +32,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-namespace {
-constexpr int kMinimumFaviconSize = 32;
-}  // namespace
-
 SharingService::SharingService(
     std::unique_ptr<SharingSyncPreference> sync_prefs,
     std::unique_ptr<SharingDeviceRegistration> sharing_device_registration,
@@ -46,7 +40,6 @@ SharingService::SharingService(
     std::unique_ptr<SharingHandlerRegistry> handler_registry,
     std::unique_ptr<SharingFCMHandler> fcm_handler,
     syncer::SyncService* sync_service,
-    favicon::FaviconService* favicon_service,
     send_tab_to_self::SendTabToSelfModel* send_tab_model,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : sync_prefs_(std::move(sync_prefs)),
@@ -56,7 +49,6 @@ SharingService::SharingService(
       handler_registry_(std::move(handler_registry)),
       fcm_handler_(std::move(fcm_handler)),
       sync_service_(sync_service),
-      favicon_service_(favicon_service),
       task_runner_(std::move(task_runner)),
       backoff_entry_(&kRetryBackoffPolicy),
       state_(State::DISABLED) {
@@ -78,9 +70,7 @@ SharingService::SharingService(
   }
 
   // `send_tab_model_` can be null in tests.
-  if (send_tab_model &&
-      base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
+  if (send_tab_model) {
     send_tab_to_self_scoped_observation_.Observe(send_tab_model);
   }
 }
@@ -177,10 +167,6 @@ SharingMessageHandler* SharingService::GetSharingHandlerForTesting(
 
 void SharingService::EntryAddedLocally(
     const send_tab_to_self::SendTabToSelfEntry* entry) {
-  if (!base::FeatureList::IsEnabled(
-          send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-    return;
-  }
 
   std::optional<SharingTargetDeviceInfo> target_device_info =
       GetDeviceByGuid(entry->GetTargetDeviceSyncCacheGuid());
@@ -192,26 +178,8 @@ void SharingService::EntryAddedLocally(
   if (target_device_info.value().platform() != SharingDevicePlatform::kIOS) {
     return;
   }
-
-  if (send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithURLImage()) {
-    auto large_icon_types = std::vector<favicon_base::IconTypeSet>(
-        {{favicon_base::IconType::kWebManifestIcon},
-         {favicon_base::IconType::kFavicon},
-         {favicon_base::IconType::kTouchIcon},
-         {favicon_base::IconType::kTouchPrecomposedIcon}});
-
-    // Retrieve favicon to issue notification.
-    favicon_service_->GetLargestRawFaviconForPageURL(
-        entry->GetURL(), large_icon_types, kMinimumFaviconSize,
-        base::BindOnce(&SharingService::SendNotificationForSendTabToSelfPush,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       send_tab_to_self::SendTabToSelfEntry(*entry)),
-        &task_tracker_);
-  } else {
-    SendNotificationForSendTabToSelfPush(
-        send_tab_to_self::SendTabToSelfEntry(*entry),
-        favicon_base::FaviconRawBitmapResult{});
-  }
+  SendNotificationForSendTabToSelfPush(
+      send_tab_to_self::SendTabToSelfEntry(*entry));
 }
 
 void SharingService::ResetConnectionToSyncService() {
@@ -333,8 +301,7 @@ void SharingService::OnDeviceUnregistered(
 }
 
 void SharingService::SendNotificationForSendTabToSelfPush(
-    const send_tab_to_self::SendTabToSelfEntry& entry,
-    const favicon_base::FaviconRawBitmapResult& result) {
+    const send_tab_to_self::SendTabToSelfEntry& entry) {
   std::optional<SharingTargetDeviceInfo> target_device_info =
       GetDeviceByGuid(entry.GetTargetDeviceSyncCacheGuid());
 
@@ -357,9 +324,6 @@ void SharingService::SendNotificationForSendTabToSelfPush(
   push_notification_entry->set_placeholder_body(l10n_util::GetStringUTF8(
       IDS_SEND_TAB_PUSH_NOTIFICATION_PLACEHOLDER_BODY));
   push_notification_entry->set_entry_unique_guid(entry.GetGUID());
-
-  auto* icon = push_notification_entry->add_icon();
-  icon->set_url(result.icon_url.spec());
 
   SendUnencryptedMessageToDevice(target_device_info.value(),
                                  std::move(sharing_message),

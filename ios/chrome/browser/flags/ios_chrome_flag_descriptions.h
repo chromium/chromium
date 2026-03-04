@@ -540,6 +540,9 @@ extern const char kIOSSoftLockDescription[];
 extern const char kIOSSyncedSetUpName[];
 extern const char kIOSSyncedSetUpDescription[];
 
+extern const char kIOSTabRemindersName[];
+extern const char kIOSTabRemindersDescription[];
+
 extern const char kIOSTipsNotificationsStringAlternativesName[];
 extern const char kIOSTipsNotificationsStringAlternativesDescription[];
 
@@ -891,9 +894,6 @@ extern const char
 
 extern const char kSendTabToSelfEnhancedHandoffName[];
 extern const char kSendTabToSelfEnhancedHandoffDescription[];
-
-extern const char kSendTabToSelfIOSPushNotificationsName[];
-extern const char kSendTabToSelfIOSPushNotificationsDescription[];
 
 extern const char kShareInOmniboxLongPressName[];
 extern const char kShareInOmniboxLongPressDescription[];

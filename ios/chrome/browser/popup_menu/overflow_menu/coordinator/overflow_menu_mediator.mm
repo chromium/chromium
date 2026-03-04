@@ -714,8 +714,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.readerModeAction = [self toggleReaderModeAction];
   }
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
     self.setTabReminderAction = [self newSetTabReminderAction];
   }
 
@@ -996,8 +995,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Notifies the FET that the user tapped the "Set a Reminder" action.
 - (void)notifySetTabReminderActionTapped {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   if (self.engagementTracker) {
     self.engagementTracker->NotifyEvent(
@@ -2159,8 +2157,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (ActionRanking)basePageActions {
   ActionRanking actions;
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
     actions.push_back(overflow_menu::ActionType::SetTabReminder);
   }
 
@@ -2245,8 +2242,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     case overflow_menu::ActionType::AIPrototype:
       return self.AIPrototypeAction;
     case overflow_menu::ActionType::SetTabReminder:
-      return send_tab_to_self::
-                     IsSendTabIOSPushNotificationsEnabledWithTabReminders()
+      return send_tab_to_self::AreIOSTabRemindersEnabled()
                  ? self.setTabReminderAction
                  : nil;
     case overflow_menu::ActionType::ReaderMode:
@@ -2615,8 +2611,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
 // Opens the "Set a reminder" screen for the user's current tab.
 - (void)showSetTabReminderUI {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   [self dismissMenu];
   [self.reminderNotificationsHandler

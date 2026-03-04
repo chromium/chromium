@@ -89,12 +89,6 @@ void SendTabNotificationPromo::OnShow(PrefService* profile_prefs,
 
 // static
 bool SendTabNotificationPromo::IsEnabled(PrefService* profile_prefs) {
-#if BUILDFLAG(IS_IOS)
-  if (!send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithMagicStackCard()) {
-    return false;
-  }
-#endif  // BUILDFLAG(IS_IOS)
 
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();

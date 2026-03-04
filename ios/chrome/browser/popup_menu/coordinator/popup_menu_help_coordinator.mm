@@ -399,8 +399,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 }
 
 - (void)displayPopupMenuTabRemindersIPH {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   BubbleViewControllerPresenter* bubblePresenter =
       [self newReminderNotificationsOverflowMenuBubblePresenter];
@@ -416,8 +415,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // notifications IPH in the overflow menu.
 - (BubbleViewControllerPresenter*)
     newReminderNotificationsOverflowMenuBubblePresenter {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   NSString* text = l10n_util::GetNSString(
       IDS_IOS_REMINDER_NOTIFICATIONS_TOOLS_MENU_BUBBLE_IPH);
@@ -444,8 +442,7 @@ base::TimeDelta kPromoDisplayDelayForTests = base::Seconds(1);
 // `IPHDismissalReasonType`: The reason why the IPH was dismissed.
 - (void)reminderNotificationsOverflowMenuIPHDidDismissWithReasonType:
     (IPHDismissalReasonType)reason {
-  CHECK(
-      send_tab_to_self::IsSendTabIOSPushNotificationsEnabledWithTabReminders());
+  CHECK(send_tab_to_self::AreIOSTabRemindersEnabled());
 
   if (reason == IPHDismissalReasonType::kTappedAnchorView ||
       reason == IPHDismissalReasonType::kTappedIPH) {

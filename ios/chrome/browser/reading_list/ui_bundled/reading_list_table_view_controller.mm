@@ -327,8 +327,7 @@ BOOL IsAllSelected(NSUInteger selected_unread_count,
 
   [actions addObject:deleteAction];
 
-  if (send_tab_to_self::
-          IsSendTabIOSPushNotificationsEnabledWithTabReminders()) {
+  if (send_tab_to_self::AreIOSTabRemindersEnabled()) {
     UIContextualAction* remindAction =
         [self createRemindActionForIndexPath:indexPath];
 
