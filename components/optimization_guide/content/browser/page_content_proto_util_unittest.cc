@@ -1188,12 +1188,13 @@ TEST_F(PageContentProtoUtilTest, ConvertFormControlData) {
   EXPECT_EQ(form_control_data_proto.placeholder(), "placeholder");
   EXPECT_TRUE(form_control_data_proto.is_checked());
   EXPECT_FALSE(form_control_data_proto.is_required());
-  // Read-only is mapped to disabled until the proto gains a dedicated field.
+  // Read-only is mapped to disabled until deprecation.
   EXPECT_TRUE(page_content.proto.root_node()
                   .children_nodes(0)
                   .content_attributes()
                   .interaction_info()
                   .is_disabled());
+  EXPECT_TRUE(form_control_data_proto.is_readonly());
   ASSERT_EQ(form_control_data_proto.select_options_size(), 1);
   EXPECT_EQ(form_control_data_proto.select_options(0).value(), "option value");
   EXPECT_EQ(form_control_data_proto.select_options(0).text(), "option text");

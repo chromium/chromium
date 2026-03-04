@@ -585,6 +585,7 @@ void ConvertFormControlData(
       ConvertFormControlType(mojom_form_control_data.form_control_type));
   proto_form_control_data->set_is_checked(mojom_form_control_data.is_checked);
   proto_form_control_data->set_is_required(mojom_form_control_data.is_required);
+  proto_form_control_data->set_is_readonly(mojom_form_control_data.is_readonly);
   if (mojom_form_control_data.field_name) {
     proto_form_control_data->set_field_name(
         *mojom_form_control_data.field_name);
@@ -703,7 +704,9 @@ base::expected<void, std::string> ConvertAttributes(
       mojom_attributes.form_control_data->is_readonly) {
     // Temporarily map readonly to disabled. This is a lossy workaround that
     // preserves "do not edit" intent for consumers that only read proto data.
-    // TODO(crbug.com/481361478): Add readonly field to FormControlData proto.
+    //
+    // TODO(linnan): Remove when consumers are migrated to
+    // FormControlData.is_readonly.
     proto_attributes->mutable_interaction_info()->set_is_disabled(true);
   }
 
