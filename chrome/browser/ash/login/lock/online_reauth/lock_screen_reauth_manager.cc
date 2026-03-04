@@ -13,6 +13,7 @@
 #include "ash/public/cpp/reauth_reason.h"
 #include "ash/shell.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/check_is_test.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -27,7 +28,6 @@
 #include "chrome/browser/ash/login/reauth_stats.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/webui/ash/lock_screen_reauth/lock_screen_reauth_dialogs.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/login/auth/auth_session_authenticator.h"
@@ -65,7 +65,8 @@ void RunAuthConfigExitIfNotNull(
 
 LockScreenReauthManager::LockScreenReauthManager(PrefService* local_state,
                                                  Profile* primary_profile)
-    : primary_profile_(primary_profile),
+    : local_state_(CHECK_DEREF(local_state)),
+      primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)),
       clock_(base::DefaultClock::GetInstance()),
       in_session_password_sync_manager_(
@@ -225,7 +226,7 @@ void LockScreenReauthManager::ForceOnlineReauth() {
 void LockScreenReauthManager::ResetOnlineReauth() {
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), false);
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   base::Time current_time = clock_->Now();
   known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), current_time);
   // Also adding this information to prefs, because ephemeral users cannot
@@ -268,7 +269,7 @@ void LockScreenReauthManager::OnCookiesTransferred() {
         base::MakeRefCounted<AuthSessionAuthenticator>(
             this, std::make_unique<ChromeSafeModeDelegate>(),
             /*user_recorder=*/base::DoNothing(),
-            /* new_user_can_be_owner=*/false, g_browser_process->local_state());
+            /* new_user_can_be_owner=*/false, &local_state_.get());
   }
   // Perform a fast ("verify-only") check of the current password. This is an
   // optimization: if the password wasn't actually changed the check will

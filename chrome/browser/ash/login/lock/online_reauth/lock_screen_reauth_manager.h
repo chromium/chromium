@@ -123,6 +123,7 @@ class LockScreenReauthManager : public KeyedService,
   // lock screen to UMA.
   void SendLockscreenReauthReason();
 
+  const raw_ref<PrefService> local_state_;
   const raw_ptr<Profile> primary_profile_;
   const raw_ptr<const user_manager::User, DanglingUntriaged> primary_user_;
   UserContext user_context_;
