@@ -506,7 +506,13 @@ class ASH_EXPORT AppListControllerImpl
   // The last time the app list was shown.
   std::optional<base::TimeTicks> last_show_timestamp_;
 
-  base::ObserverList<AppListControllerObserver> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      AppListControllerObserver,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   // Sub-controller to handle app item badges. Must be constructed after
   // `model_provider_`.

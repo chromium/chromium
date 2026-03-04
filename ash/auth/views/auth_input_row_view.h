@@ -169,7 +169,13 @@ class ASH_EXPORT AuthInputRowView : public views::View,
   base::ScopedObservation<ImeController, ImeController::Observer>
       input_methods_observer_{this};
 
-  base::ObserverList<Observer> observers_;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      /*reentrancy=*/
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers_;
 
   base::WeakPtrFactory<AuthInputRowView> weak_ptr_factory_{this};
 };
