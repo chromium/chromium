@@ -43,10 +43,11 @@ void PrefetchContainerObserver::OnDeterminedHead(
     // https://chromium-review.googlesource.com/c/chromium/src/+/6615559/comment/3f439d19_8c9cf99a
     //
     // TODO(crbug.com/400761083): Use the callback.
-    if (prefetch_container.GetNonRedirectResponseReader() &&
-        prefetch_container.GetNonRedirectResponseReader()->load_state() ==
-            PrefetchResponseReader::LoadState::kResponseReceived) {
-      on_prefetch_head_received_.Run(*prefetch_container.GetNonRedirectHead());
+    if (prefetch_container.GetLoadState() ==
+        PrefetchContainer::LoadState::kDeterminedHead) {
+      const auto* head = prefetch_container.GetNonRedirectHead();
+      CHECK(head);
+      on_prefetch_head_received_.Run(*head);
     }
   }
 }
