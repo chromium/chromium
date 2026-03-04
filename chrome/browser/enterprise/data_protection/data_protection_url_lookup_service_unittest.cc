@@ -15,7 +15,6 @@
 namespace {
 
 constexpr char kUrl[] = "someurl.com";
-constexpr char kIdentifier[] = "someuser@example.com";
 
 safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
     int cache_duration_sec) {
@@ -127,15 +126,15 @@ TEST_P(DataProtectionUrlLookupServiceTest, VerdictCachePopulated) {
 
   // call DoLookup, passing the fake
   GURL url(kUrl);
-  dp_lookup_service->DoLookup(&lookup_service, url, kIdentifier,
-                              base::DoNothing(), web_contents());
+  dp_lookup_service->DoLookup(&lookup_service, url, base::DoNothing(),
+                              SessionID::FromSerializedValue(1));
 
   task_environment()->FastForwardBy(
       base::Seconds(test_case.second_do_lookup_delay_sec));
 
   // second call to the same url ensure value is fetched from cache
-  dp_lookup_service->DoLookup(&lookup_service, url, kIdentifier,
-                              base::DoNothing(), web_contents());
+  dp_lookup_service->DoLookup(&lookup_service, url, base::DoNothing(),
+                              SessionID::FromSerializedValue(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(,

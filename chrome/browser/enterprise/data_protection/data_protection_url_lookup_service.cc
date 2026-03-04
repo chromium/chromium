@@ -13,7 +13,6 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -59,11 +58,9 @@ DataProtectionUrlLookupService::~DataProtectionUrlLookupService() = default;
 void DataProtectionUrlLookupService::DoLookup(
     safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
     const GURL& url,
-    const std::string& identifier,
     LookupCallback callback,
-    content::WebContents* web_contents) {
+    SessionID session_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(web_contents);
   DCHECK(callback);
 
   auto cached_verdict = verdict_cache_.Peek(url.spec());
@@ -86,10 +83,8 @@ void DataProtectionUrlLookupService::DoLookup(
   lookup_service->StartMaybeCachedLookup(
       url,
       base::BindOnce(&DataProtectionUrlLookupService::OnRealTimeLookupComplete,
-                     weak_factory_.GetWeakPtr(), std::move(callback), url,
-                     identifier),
-      base::SequencedTaskRunner::GetCurrentDefault(),
-      sessions::SessionTabHelper::IdForTab(web_contents),
+                     weak_factory_.GetWeakPtr(), std::move(callback), url),
+      base::SequencedTaskRunner::GetCurrentDefault(), session_id,
       /*referring_app_info=*/std::nullopt, /*use_cache=*/
       false);
 }
@@ -97,7 +92,6 @@ void DataProtectionUrlLookupService::DoLookup(
 void DataProtectionUrlLookupService::OnRealTimeLookupComplete(
     LookupCallback callback,
     const GURL& url,
-    const std::string& identifier,
     bool is_success,
     bool is_cached,
     std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response) {

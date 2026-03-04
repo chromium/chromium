@@ -12,10 +12,10 @@
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/sessions/core/session_id.h"
 
 namespace content {
 class BrowserContext;
-class WebContents;
 }  // namespace content
 
 namespace enterprise_data_protection {
@@ -35,9 +35,8 @@ class DataProtectionUrlLookupService : public KeyedService {
 
   void DoLookup(safe_browsing::RealTimeUrlLookupServiceBase* lookup_service,
                 const GURL& url,
-                const std::string& identifier,
                 LookupCallback callback,
-                content::WebContents* web_contents);
+                SessionID session_id);
 
   enum class URLVerdictCacheEvent {
     // Verdict obtained from cache.
@@ -62,7 +61,6 @@ class DataProtectionUrlLookupService : public KeyedService {
   void OnRealTimeLookupComplete(
       LookupCallback callback,
       const GURL& url,
-      const std::string& identifier,
       bool is_success,
       bool is_cached,
       std::unique_ptr<safe_browsing::RTLookupResponse> rt_lookup_response);
