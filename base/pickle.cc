@@ -384,7 +384,7 @@ void Pickle::WriteString(std::string_view value) {
 
 void Pickle::WriteString16(std::u16string_view value) {
   WriteInt(checked_cast<int>(value.size()));
-  WriteBytes(value.data(), value.size() * sizeof(char16_t));
+  WriteBytes(as_byte_span(value));
 }
 
 void Pickle::WriteData(const char* data, size_t length) {
@@ -398,11 +398,6 @@ void Pickle::WriteData(std::string_view data) {
 void Pickle::WriteData(base::span<const uint8_t> data) {
   WriteInt(checked_cast<int>(data.size()));
   WriteBytes(data);
-}
-
-void Pickle::WriteBytes(const void* data, size_t length) {
-  WriteBytesCommon(
-      UNSAFE_TODO(span(static_cast<const uint8_t*>(data), length)));
 }
 
 void Pickle::WriteBytes(span<const uint8_t> data) {

@@ -81,8 +81,7 @@ base::Pickle WriteSerializedNavigationsAsPickle(
         std::numeric_limits<sessions::SessionCommand::size_type>::max() - 1024;
     navigation.WriteToPickle(max_state_size, &tab_navigation_pickle);
     pickle.WriteInt(tab_navigation_pickle.size());
-    pickle.WriteBytes(tab_navigation_pickle.data(),
-                      tab_navigation_pickle.size());
+    pickle.WriteBytes(tab_navigation_pickle.AsBytes());
   }
   return pickle;
 }

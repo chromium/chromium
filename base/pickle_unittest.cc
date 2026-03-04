@@ -604,7 +604,7 @@ TEST(PickleTest, ZeroLength) {
 TEST(PickleTest, ReadBytes) {
   Pickle pickle;
   int data = 0x7abcd;
-  pickle.WriteBytes(&data, sizeof(data));
+  pickle.WriteBytes(byte_span_from_ref(data));
 
   PickleIterator iter(pickle);
   const char* outdata_char = nullptr;

@@ -296,7 +296,7 @@ bool ReadValue(const base::Pickle* pickle,
 // -----------------------------------------------------------------------------
 
 void ParamTraits<signed char>::Write(base::Pickle* m, const param_type& p) {
-  m->WriteBytes(&p, sizeof(param_type));
+  m->WriteBytes(base::byte_span_from_ref(p));
 }
 
 bool ParamTraits<signed char>::Read(const base::Pickle* m,
@@ -311,7 +311,7 @@ bool ParamTraits<signed char>::Read(const base::Pickle* m,
 }
 
 void ParamTraits<unsigned char>::Write(base::Pickle* m, const param_type& p) {
-  m->WriteBytes(&p, sizeof(param_type));
+  m->WriteBytes(base::byte_span_from_ref(p));
 }
 
 bool ParamTraits<unsigned char>::Read(const base::Pickle* m,
@@ -326,7 +326,7 @@ bool ParamTraits<unsigned char>::Read(const base::Pickle* m,
 }
 
 void ParamTraits<unsigned short>::Write(base::Pickle* m, const param_type& p) {
-  m->WriteBytes(&p, sizeof(param_type));
+  m->WriteBytes(base::byte_span_from_ref(p));
 }
 
 bool ParamTraits<unsigned short>::Read(const base::Pickle* m,
@@ -341,7 +341,7 @@ bool ParamTraits<unsigned short>::Read(const base::Pickle* m,
 }
 
 void ParamTraits<double>::Write(base::Pickle* m, const param_type& p) {
-  m->WriteBytes(reinterpret_cast<const char*>(&p), sizeof(param_type));
+  m->WriteBytes(base::byte_span_from_ref(base::allow_nonunique_obj, p));
 }
 
 bool ParamTraits<double>::Read(const base::Pickle* m,

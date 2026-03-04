@@ -283,8 +283,6 @@ class BASE_EXPORT Pickle {
   // "Bytes" is a blob with no length. The caller must specify the length both
   // when reading and writing. It is normally used to serialize PoD types of a
   // known size. See also WriteData.
-  // TODO(https://crbug.com/40284755): Migrate callers to the span version.
-  void WriteBytes(const void* data, size_t length);
   void WriteBytes(span<const uint8_t> data);
 
   // WriteAttachment appends |attachment| to the pickle. It returns

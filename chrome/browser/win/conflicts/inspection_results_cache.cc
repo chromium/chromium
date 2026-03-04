@@ -128,7 +128,7 @@ base::Pickle SerializeInspectionResultsCache(
   // Append the md5 digest of the data to detect serializations errors.
   std::array<uint8_t, crypto::obsolete::Md5::kSize> md5_digest =
       Md5ForWinInspectionResultsCache(pickle.payload_bytes());
-  pickle.WriteBytes(&md5_digest, crypto::obsolete::Md5::kSize);
+  pickle.WriteBytes(md5_digest);
   return pickle;
 }
 
