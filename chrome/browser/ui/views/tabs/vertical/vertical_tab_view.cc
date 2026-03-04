@@ -910,7 +910,7 @@ void VerticalTabView::UpdateBorder() {
       SetBorder(views::CreateRoundedRectBorder(
           GetLayoutConstant(LayoutConstant::kVerticalTabPinnedBorderThickness),
           GetLayoutConstant(LayoutConstant::kVerticalTabCornerRadius),
-          IsFrameActive() ? kColorTabDividerFrameActive
+          IsFrameActive() ? kColorVerticalTabPinnedOutline
                           : kColorTabDividerFrameInactive));
     }
   } else if (GetBorder()) {

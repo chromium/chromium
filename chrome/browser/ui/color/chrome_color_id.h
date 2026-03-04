@@ -1020,6 +1020,7 @@
   E_CPONLY(kColorToolbarTopSeparatorFrameInactive) \
   /* Vertical tabstrip colors. */ \
   E_CPONLY(kColorVerticalTabStripShadow) \
+  E_CPONLY(kColorVerticalTabPinnedOutline) \
   /* WebAuthn colors. */ \
   E_CPONLY(kColorWebAuthnHoverButtonForeground) \
   E_CPONLY(kColorWebAuthnHoverButtonForegroundDisabled) \
