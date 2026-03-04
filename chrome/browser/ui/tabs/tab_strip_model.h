@@ -1404,7 +1404,7 @@ class TabStripModel {
 
   // For each split that has tabs in `indices`, remove any of them that contain
   // tabs not in `indices`.
-  void RemovePartialSplits(const std::vector<int>& indices);
+  void MaybeRemoveSplitsForUpdate(const std::vector<int>& indices);
 
   void NotifyForegroundTabsWillEnterBackground();
 

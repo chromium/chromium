@@ -1983,7 +1983,7 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
 
   // Extensions API may call this function on indices that contain only part of
   // a split. In that case, unsplit said split tabs.
-  RemovePartialSplits(indices);
+  MaybeRemoveSplitsForUpdate(indices);
 
   // The odds of |new_group| colliding with an existing group are astronomically
   // low. If there is a collision, a DCHECK will fail in |AddToNewGroupImpl()|,
@@ -2018,7 +2018,7 @@ void TabStripModel::AddToExistingGroup(const std::vector<int> indices,
 
   // Extensions API may call this function on indices that contain only part of
   // a split. In that case, unsplit said split tabs.
-  RemovePartialSplits(indices);
+  MaybeRemoveSplitsForUpdate(indices);
 
   AddToExistingGroupImpl(indices, group, add_to_end);
 }
@@ -2049,7 +2049,7 @@ void TabStripModel::RemoveFromGroup(const std::vector<int>& indices) {
 
   // Tab groups sync may call this function on indices that contain only part of
   // a split. In that case, unsplit those split tabs.
-  RemovePartialSplits(indices);
+  MaybeRemoveSplitsForUpdate(indices);
 
   std::map<tab_groups::TabGroupId, std::vector<int>> indices_per_tab_group;
 
@@ -5543,7 +5543,8 @@ void TabStripModel::MaybeRemoveSplitsForMove(
   }
 }
 
-void TabStripModel::RemovePartialSplits(const std::vector<int>& indices) {
+void TabStripModel::MaybeRemoveSplitsForUpdate(
+    const std::vector<int>& indices) {
   std::map<split_tabs::SplitTabId, size_t> num_tabs_per_split;
 
   for (int index : indices) {
