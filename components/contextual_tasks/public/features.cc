@@ -245,17 +245,17 @@ const base::FeatureParam<std::string> kContextualTasksDisplayUrlScheme(
 const base::FeatureParam<std::string> kContextualTasksDisplayUrlHost(
     &kContextualTasks,
     "ContextualTasksDisplayUrlHost",
-    "googlesearch");
+    "google.com");
 
 const base::FeatureParam<std::string> kContextualTasksDisplayUrlPath(
     &kContextualTasks,
     "ContextualTasksDisplayUrlPath",
-    "/");
+    "/search");
 
 const base::FeatureParam<bool> kContextualTasksShowExpandedSecurityChip(
     &kContextualTasks,
     "ContextualTasksShowExpandedSecurityChip",
-    false);
+    true);
 
 const base::FeatureParam<bool>
     kContextualTasksForceBasicModeIfOpeningThreadHistory(
