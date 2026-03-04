@@ -214,6 +214,7 @@ rust_static_library("crabbyavif") {
     "//third_party/libyuv",
     "//third_party/rust/libc/v0_2:lib",
   ]
+  no_clippy = true  # TODO(https://crbug.com/472355480)
 }
 
 source_set("header_files") {
