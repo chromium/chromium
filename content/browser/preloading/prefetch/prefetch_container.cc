@@ -923,10 +923,6 @@ void PrefetchContainer::AddXClientDataHeader(
   }
 }
 
-void PrefetchContainer::RegisterCookieListenerForTesting() {
-  GetCurrentSingleRedirectHopToPrefetch().RegisterCookieListener();
-}
-
 void PrefetchContainer::PauseAllCookieListeners() {
   // TODO(crbug.com/377440445): Consider whether we actually need to
   // pause/resume all single prefetch's cookie listener during each single

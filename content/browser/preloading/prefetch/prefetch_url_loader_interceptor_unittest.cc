@@ -863,7 +863,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
       kTestUrl, PrefetchType(PreloadingTriggerType::kSpeculationRule,
                              /*use_prefetch_proxy=*/true,
                              blink::mojom::SpeculationEagerness::kImmediate));
-  prefetch_container->RegisterCookieListenerForTesting();
 
   prefetch_container->SimulatePrefetchEligibleForTest();
   MakeServableStreamingURLLoaderForTest(
@@ -1350,7 +1349,6 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   EXPECT_FALSE(was_intercepted(kRedirectUrl).has_value());
 
   // Update cookies for redirect URL. This should make the prefech unusable.
-  prefetch_container->RegisterCookieListenerForTesting();
   ASSERT_TRUE(SetCookie(kRedirectUrl, "test-cookie"));
 
   MaybeCreateLoaderAndWait(kRedirectUrl);

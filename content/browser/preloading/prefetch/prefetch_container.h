@@ -370,7 +370,6 @@ class CONTENT_EXPORT PrefetchContainer {
 
   // Allows for |PrefetchCookieListener|s to be registered for
   // `GetCurrentSingleRedirectHopToPrefetch()`.
-  void RegisterCookieListenerForTesting();
   void PauseAllCookieListeners();
   void ResumeAllCookieListeners();
 

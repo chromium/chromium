@@ -448,7 +448,9 @@ TEST_P(PrefetchContainerTest, CookieCopy) {
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
 
-  prefetch_container->RegisterCookieListenerForTesting();
+  // This registers a cookie listener.
+  prefetch_container->SimulatePrefetchEligibleForTest();
+  prefetch_container->SimulatePrefetchStartedForTest();
 
   auto serving_handle = prefetch_container->CreateServingHandle();
 
