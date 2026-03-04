@@ -123,6 +123,17 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
 
 }  // namespace
 
+UTType* UTTypeInvalid() {
+  static UTType* invalidType;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    invalidType = [UTType typeWithTag:@"invalid"
+                             tagClass:@"invalid"
+                     conformingToType:nil];
+  });
+  return invalidType;
+}
+
 @interface FileUploadPanelMediator () <ChooseFileControllerObserving>
 @end
 
@@ -196,8 +207,11 @@ std::optional<base::FilePath> WriteImageToTemporaryLocationForTab(
   if (!_acceptedDocumentTypes) {
     if (self.allowsDirectorySelection) {
       // If the input allows directory selection, then folders should be the
-      // only accepted document type.
-      _acceptedDocumentTypes = @[ UTTypeFolder ];
+      // only accepted document type. However since this app declaratively
+      // supports viewing PDFs, another "invalid" type is provided so that no
+      // other items beside folders will be considered accepted by
+      // UIDocumentPickerViewController.
+      _acceptedDocumentTypes = @[ UTTypeFolder, UTTypeInvalid() ];
     } else if (self.acceptedMediaTypes.count == 0) {
       // If the list of accepted media types is empty, then any document type
       // can be selected.

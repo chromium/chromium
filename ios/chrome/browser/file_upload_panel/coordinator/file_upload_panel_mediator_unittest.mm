@@ -417,8 +417,8 @@ TEST_F(FileUploadPanelMediatorTest, DoesNotAllowMultipleSelection) {
   }
 }
 
-// Tests that `acceptedDocumentTypes` returns only folders when directory
-// selection is allowed.
+// Tests that `acceptedDocumentTypes` returns only `UTTypeFolder` and
+// `UTTypeInvalid()` when directory selection is allowed.
 TEST_F(FileUploadPanelMediatorTest, AcceptedDocumentTypesForDirectory) {
   if (@available(iOS 18.4, *)) {
     ChooseFileEvent event = ChooseFileEvent::Builder()
@@ -429,7 +429,7 @@ TEST_F(FileUploadPanelMediatorTest, AcceptedDocumentTypesForDirectory) {
     FileUploadPanelMediator* mediator = [[FileUploadPanelMediator alloc]
         initWithChooseFileController:controller_.get()];
     mediator.fileUploadPanelHandler = handler_;
-    NSArray<UTType*>* expectedTypes = @[ UTTypeFolder ];
+    NSArray<UTType*>* expectedTypes = @[ UTTypeFolder, UTTypeInvalid() ];
     EXPECT_NSEQ(expectedTypes, mediator.acceptedDocumentTypes);
     EXPECT_FALSE(mediator.allowsMultipleSelection);
     EXPECT_TRUE(mediator.allowsDirectorySelection);
@@ -487,7 +487,6 @@ TEST_F(FileUploadPanelMediatorTest, AllowsDirectorySelection) {
     mediator.fileUploadPanelHandler = handler_;
     EXPECT_TRUE(mediator.allowsDirectorySelection);
     EXPECT_FALSE(mediator.allowsMultipleSelection);
-    EXPECT_NSEQ(@[ UTTypeFolder ], mediator.acceptedDocumentTypes);
   }
 }
 

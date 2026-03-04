@@ -15,6 +15,9 @@ class ChooseFileController;
 struct ChooseFileEvent;
 @protocol FileUploadPanelCommands;
 
+// Returns an "invalid" UTType which cannot match other types.
+UTType* UTTypeInvalid();
+
 // Mediator for the file upload panel UI.
 API_AVAILABLE(ios(18.4))
 @interface FileUploadPanelMediator : NSObject
