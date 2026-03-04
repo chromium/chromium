@@ -4528,6 +4528,7 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
      nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+// LINT.IfChange(ContextualTasksArms)
 const FeatureEntry::FeatureParam kArm1FullBundleWithExpandoButton[] = {
     {"ContextualTasksExpandButtonOptions", "side-panel-expand-button"}};
 const FeatureEntry::FeatureParam
@@ -4570,6 +4571,7 @@ const FeatureEntry::FeatureVariation kContextualTasksVariations[] = {
      "button",
      kArm7FullBundleNoAutoAddedContextInSidePanelWithCloseToExpandButton,
      nullptr}};
+// LINT.ThenChange(chrome/browser/contextual_tasks/contextual_tasks_side_panel_coordinator.cc)
 
 const FeatureEntry::FeatureParam kTaskScopedSidePanel[] = {
     {"ContextualTasksTaskScopedSidePanel", "true"}};

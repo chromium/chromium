@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/contextual_tasks/active_task_context_provider.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -14,16 +16,22 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/hats/hats_service_factory.h"
+#include "chrome/browser/ui/hats/mock_hats_service.h"
+#include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/tabs/tab_list_bridge.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
+#include "chrome/common/chrome_features.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/contextual_tasks/public/contextual_tasks_service.h"
 #include "components/contextual_tasks/public/features.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
@@ -206,6 +214,9 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
     ContextualTask expected_task(base::Uuid::GenerateRandomV4());
     ON_CALL(*mock_controller_, CreateTask())
         .WillByDefault(Return(expected_task));
+
+    HatsServiceFactory::GetInstance()->SetTestingFactory(
+        profile_.get(), base::BindRepeating(&BuildMockHatsService));
   }
 
   void TearDown() override {
@@ -249,6 +260,7 @@ class ContextualTasksSidePanelCoordinatorTest : public testing::Test {
   NiceMock<MockSidePanelUI> mock_side_panel_ui_;
   NiceMock<MockActiveTaskContextProvider> mock_active_task_context_provider_;
   raw_ptr<MockContextualTasksService> mock_controller_ = nullptr;
+  base::test::ScopedFeatureList feature_list_;
 
   std::unique_ptr<ContextualTasksSidePanelCoordinator> coordinator_;
 };
@@ -305,6 +317,82 @@ TEST_F(ContextualTasksSidePanelCoordinatorTest, CloseSidePanelWhenNotEligible) {
               Close(SidePanelEntry::PanelType::kToolbar, _, _));
   TriggerOnEligibilityChange(false);
   EXPECT_EQ(0u, coordinator_->GetNumberOfActiveTasks());
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowSidePanelLaunchesSurveyArm1) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kContextualTasks,
+      {{"ContextualTasksExpandButtonOptions", "side-panel-expand-button"}});
+  base::test::ScopedFeatureList survey_feature_list;
+  survey_feature_list.InitAndEnableFeature(
+      features::kHappinessTrackingSurveysForDesktopNextPanel);
+  profile_->GetPrefs()->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
+                                   1);
+
+  auto* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetForProfile(profile_.get(), true));
+
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerNextPanel, 90000, testing::_,
+                  testing::Contains(testing::Pair("Experiment ID", "Arm 1"))))
+      .Times(1);
+
+  coordinator_->Show(
+      false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowSidePanelLaunchesSurveyArm2) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kContextualTasks,
+      {{"ContextualTasksExpandButtonOptions", "side-panel-expand-button"},
+       {"ContextualTasksOpenSidePanelOnLinkClicked", "false"}});
+  base::test::ScopedFeatureList survey_feature_list;
+  survey_feature_list.InitAndEnableFeature(
+      features::kHappinessTrackingSurveysForDesktopNextPanel);
+  profile_->GetPrefs()->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
+                                   1);
+
+  auto* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetForProfile(profile_.get(), true));
+
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerNextPanel, 90000, testing::_,
+                  testing::Contains(testing::Pair("Experiment ID", "Arm 2"))))
+      .Times(1);
+
+  coordinator_->Show(
+      false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
+}
+
+TEST_F(ContextualTasksSidePanelCoordinatorTest,
+       ShowSidePanelLaunchesSurveyArm5) {
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kContextualTasks,
+      {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}});
+  base::test::ScopedFeatureList survey_feature_list;
+  survey_feature_list.InitAndEnableFeature(
+      features::kHappinessTrackingSurveysForDesktopNextPanel);
+  profile_->GetPrefs()->SetInteger(prefs::kContextualTasksNextPanelOpenCount,
+                                   1);
+
+  auto* mock_hats_service = static_cast<MockHatsService*>(
+      HatsServiceFactory::GetForProfile(profile_.get(), true));
+
+  EXPECT_CALL(*mock_hats_service,
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerNextPanel, 90000, testing::_,
+                  testing::Contains(testing::Pair("Experiment ID", "Arm 5"))))
+      .Times(1);
+
+  coordinator_->Show(
+      false,
+      omnibox::ChromeAimEntryPoint::DESKTOP_CHROME_COBROWSE_TOOLBAR_BUTTON);
 }
 
 }  // namespace contextual_tasks
