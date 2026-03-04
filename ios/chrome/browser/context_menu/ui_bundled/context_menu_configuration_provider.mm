@@ -846,36 +846,35 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   [imageSavingElements addObject:saveImage];
 
+  if (!saveToPhotosAvailable) {
+    return imageSavingElements;
+  }
+
   // Save Image to Photos.
-  if (saveToPhotosAvailable) {
-    base::RecordAction(base::UserMetricsAction(
-        "MobileWebContextMenuImageWithSaveToPhotosImpression"));
-    UIAction* saveImageToPhotosAction = [actionFactory
-        actionToSaveToPhotosWithImageURL:imageURL
-                                referrer:referrer
-                                webState:webState
-                                   block:^{
-                                     base::UmaHistogramEnumeration(
-                                         kSaveToPhotosContextMenuActionsHistogram,
-                                         SaveToPhotosContextMenuActions::
-                                             kAvailableDidSaveImageToGooglePhotos);
-                                   }];
-    [imageSavingElements addObject:saveImageToPhotosAction];
-  }
+  base::RecordAction(base::UserMetricsAction(
+      "MobileWebContextMenuImageWithSaveToPhotosImpression"));
+  UIAction* saveImageToPhotosAction = [actionFactory
+      actionToSaveToPhotosWithImageURL:imageURL
+                              referrer:referrer
+                              webState:webState
+                                 block:^{
+                                   base::UmaHistogramEnumeration(
+                                       kSaveToPhotosContextMenuActionsHistogram,
+                                       SaveToPhotosContextMenuActions::
+                                           kAvailableDidSaveImageToGooglePhotos);
+                                 }];
+  [imageSavingElements addObject:saveImageToPhotosAction];
 
-  if (saveToPhotosAvailable) {
-    UIImage* image = DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,
-                                                kSymbolActionPointSize);
-    UIMenu* saveImageInMenu = [UIMenu
-        menuWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN)
-                image:image
-           identifier:nil
-              options:UIMenuOptionsSingleSelection
-             children:imageSavingElements];
-    return @[ saveImageInMenu ];
-  }
-
-  return imageSavingElements;
+  // Save Image Menu.
+  UIImage* image = DefaultSymbolWithPointSize(kPhotoBadgeArrowDownSymbol,
+                                              kSymbolActionPointSize);
+  UIMenu* saveImageInMenu = [UIMenu
+      menuWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_SAVE_IMAGE_IN)
+              image:image
+         identifier:nil
+            options:UIMenuOptionsSingleSelection
+           children:imageSavingElements];
+  return @[ saveImageInMenu ];
 }
 
 // Returns the context menu elements for image searching.
