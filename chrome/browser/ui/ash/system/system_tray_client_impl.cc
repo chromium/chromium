@@ -844,7 +844,6 @@ void SystemTrayClientImpl::ShowMouseSettings() {
 }
 
 void SystemTrayClientImpl::ShowKeyboardSettings() {
-  DCHECK(ash::features::IsWelcomeExperienceEnabled());
   base::RecordAction(base::UserMetricsAction("ShowKeyboardSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPerDeviceKeyboardSubpagePath);
@@ -857,7 +856,6 @@ void SystemTrayClientImpl::ShowTouchpadSettings() {
 }
 
 void SystemTrayClientImpl::ShowPointingStickSettings() {
-  DCHECK(ash::features::IsWelcomeExperienceEnabled());
   base::RecordAction(base::UserMetricsAction("ShowPointingStickSettingsPage"));
   ShowSettingsSubPageForActiveUser(
       chromeos::settings::mojom::kPerDevicePointingStickSubpagePath);

@@ -528,13 +528,11 @@ void ChromeBrowserMainExtraPartsAsh::PostProfileInit(Profile* profile,
             g_browser_process->GetFeatures()->application_locale_storage());
   }
 
-  if (ash::features::IsWelcomeExperienceEnabled()) {
-    peripherals_app_delegate_ =
-        std::make_unique<ash::PeripheralsAppDelegateImpl>();
-    ash::Shell::Get()
-        ->input_device_settings_controller()
-        ->SetPeripheralsAppDelegate(peripherals_app_delegate_.get());
-  }
+  peripherals_app_delegate_ =
+      std::make_unique<ash::PeripheralsAppDelegateImpl>();
+  ash::Shell::Get()
+      ->input_device_settings_controller()
+      ->SetPeripheralsAppDelegate(peripherals_app_delegate_.get());
 
   // Initialize TabScrubber after the Ash Shell has been initialized.
   ash::TabScrubber::GetInstance();
