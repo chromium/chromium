@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -262,6 +263,40 @@ void FrameWidgetInputHandlerImpl::PasteAndMatchStyle() {
       base::BindOnce(&FrameWidgetInputHandlerImpl::ExecuteCommandOnMainThread,
                      widget_, main_thread_frame_widget_input_handler_,
                      "PasteAndMatchStyle", UpdateState::kIsPasting));
+}
+
+void FrameWidgetInputHandlerImpl::PasteFromImageBytes(
+    mojo_base::BigBuffer image_bytes,
+    const String& media_format,
+    PasteFromImageBytesCallback callback) {
+  // If the mojom channel is registered with compositor thread, we have to run
+  // the callback on compositor thread. Otherwise run it on main thread. Mojom
+  // requires the callback runs on the same thread.
+  if (ThreadedCompositingEnabled()) {
+    callback = base::BindOnce(
+        [](scoped_refptr<base::SingleThreadTaskRunner> callback_task_runner,
+           PasteFromImageBytesCallback callback, bool success) {
+          callback_task_runner->PostTask(
+              FROM_HERE, base::BindOnce(std::move(callback), success));
+        },
+        base::SingleThreadTaskRunner::GetCurrentDefault(), std::move(callback));
+  }
+
+  RunOnMainThread(base::BindOnce(
+      [](base::WeakPtr<WidgetBase> widget,
+         base::WeakPtr<mojom::blink::FrameWidgetInputHandler> handler,
+         mojo_base::BigBuffer image_bytes, const String& media_format,
+         PasteFromImageBytesCallback callback) {
+        if (handler) {
+          HandlingState handling_state(widget, UpdateState::kIsPasting);
+          handler->PasteFromImageBytes(std::move(image_bytes), media_format,
+                                       std::move(callback));
+        } else {
+          std::move(callback).Run(false);
+        }
+      },
+      widget_, main_thread_frame_widget_input_handler_, std::move(image_bytes),
+      media_format, std::move(callback)));
 }
 
 void FrameWidgetInputHandlerImpl::Replace(const String& word) {

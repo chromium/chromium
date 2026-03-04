@@ -15,6 +15,8 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -27,6 +29,7 @@
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_features.h"
+#include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/mojom/input/ime_host.mojom.h"
 #include "third_party/blink/public/mojom/input/stylus_writing_gesture.mojom.h"
@@ -408,16 +411,33 @@ void ImeAdapterAndroid::FinishComposingText(JNIEnv* env) {
   rwhi->ImeFinishComposingText(true);
 }
 
-bool ImeAdapterAndroid::InsertMediaFromURL(
+bool ImeAdapterAndroid::InsertMediaFromBytes(
     JNIEnv* env,
-    const base::android::JavaRef<jstring>& url) {
+    const base::android::JavaRef<jbyteArray>& bytes,
+    const base::android::JavaRef<jstring>& extension) {
   auto* input_handler = GetFocusedFrameWidgetInputHandler();
   if (!input_handler) {
     return false;
   }
 
-  input_handler->ExecuteEditCommand("PasteFromImageURL",
-                                    ConvertJavaStringToUTF16(env, url));
+  if (bytes.is_null()) {
+    return false;
+  }
+
+  size_t size = base::android::SafeGetArrayLength(env, bytes);
+
+  if (size == 0) {
+    return false;
+  }
+
+  mojo_base::BigBuffer big_buffer(size);
+  base::android::JavaByteArrayToByteSpan(env, bytes, big_buffer);
+
+  input_handler->PasteFromImageBytes(
+      std::move(big_buffer),
+      base::android::ConvertJavaStringToUTF8(env, extension),
+      base::BindOnce(&ImeAdapterAndroid::OnPasteFromImageBytesCompleted,
+                     weak_factory_.GetWeakPtr()));
   return true;
 }
 
@@ -692,6 +712,14 @@ void ImeAdapterAndroid::ClearAllAutocorrectUnderlineSpans(JNIEnv* env) {
   input_handler->ClearImeTextSpansByType(0,
                                          std::numeric_limits<uint32_t>::max(),
                                          ui::ImeTextSpan::Type::kAutocorrect);
+}
+
+void ImeAdapterAndroid::OnPasteFromImageBytesCompleted(bool success) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> obj = java_ime_adapter_.get(env);
+  if (!obj.is_null()) {
+    Java_ImeAdapterImpl_onCommitContentResult(env, obj, success);
+  }
 }
 
 }  // namespace content

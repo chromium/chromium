@@ -247,26 +247,54 @@ public class ImeAdapterImplUnitTest {
 
     @Test
     public void testCommitContentSuccessfully() {
-        when(mImeAdapterImplJni.insertMediaFromURL(anyLong(), any())).thenReturn(true);
+        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(true);
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
-        adapter.commitContent(/* dataUrl= */ "atestingdataurl");
+        adapter.commitContent(/* bytes= */ new byte[] {1, 2, 3}, /* extension= */ "png");
 
-        verify(mImeAdapterImplJni).insertMediaFromURL(anyLong(), eq("atestingdataurl"));
+        verify(mImeAdapterImplJni)
+                .insertMediaFromBytes(anyLong(), eq(new byte[] {1, 2, 3}), eq("png"));
         Assert.assertNull(ShadowToast.getLatestToast());
     }
 
     @Test
     public void testCommitContent_FailureShowsToast() {
-        when(mImeAdapterImplJni.insertMediaFromURL(anyLong(), any())).thenReturn(false);
+        when(mImeAdapterImplJni.insertMediaFromBytes(anyLong(), any(), any())).thenReturn(false);
 
         ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
         adapter.onConnectedToRenderProcess();
 
         ShadowToast.reset();
-        Assert.assertFalse(adapter.commitContent("atestingdataurl"));
+        Assert.assertFalse(adapter.commitContent(new byte[] {1, 2, 3}, "png"));
+
+        Assert.assertNotNull(ShadowToast.getLatestToast());
+        TextView textView = (TextView) ShadowToast.getLatestToast().getView();
+        Assert.assertEquals(
+                ApplicationProvider.getApplicationContext()
+                        .getString(R.string.rich_content_commit_failure_message),
+                textView.getText().toString());
+    }
+
+    @Test
+    public void testOnCommitContentResult_SuccessNoToast() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        ShadowToast.reset();
+        adapter.onCommitContentResult(true);
+
+        Assert.assertNull(ShadowToast.getLatestToast());
+    }
+
+    @Test
+    public void testOnCommitContentResult_FailureShowsToast() {
+        ImeAdapterImpl adapter = new ImeAdapterImpl(mWebContentsImpl);
+        adapter.onConnectedToRenderProcess();
+
+        ShadowToast.reset();
+        adapter.onCommitContentResult(false);
 
         Assert.assertNotNull(ShadowToast.getLatestToast());
         TextView textView = (TextView) ShadowToast.getLatestToast().getView();

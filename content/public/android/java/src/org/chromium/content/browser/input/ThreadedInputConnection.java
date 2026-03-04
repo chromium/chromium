@@ -26,12 +26,14 @@ import android.view.inputmethod.InputConnection;
 import android.view.inputmethod.InputContentInfo;
 import android.view.inputmethod.SurroundingText;
 import android.view.inputmethod.TextAttribute;
+import android.webkit.MimeTypeMap;
 
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -43,6 +45,7 @@ import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.net.MimeTypeFilter;
 
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
@@ -921,25 +924,28 @@ class ThreadedInputConnection extends BaseInputConnection implements ChromiumBas
             return false;
         }
 
+        String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(mimeType);
+        if (extension == null) {
+            return false;
+        }
+
         PostTask.postTask(
                 TaskTraits.USER_BLOCKING_MAY_BLOCK,
                 () -> {
                     inputContentInfo.requestPermission();
-                    try {
-                        String dataUrl =
-                                ImeUtils.getDataUrlFromContentUri(
-                                        ContextUtils.getApplicationContext()
-                                                .getContentResolver()
-                                                .openInputStream(inputContentInfo.getContentUri()),
-                                        mimeType);
+                    try (InputStream inputStream =
+                            ContextUtils.getApplicationContext()
+                                    .getContentResolver()
+                                    .openInputStream(inputContentInfo.getContentUri())) {
+                        if (inputStream == null) {
+                            throw new Error("Failed to open input stream.");
+                        }
+                        byte[] bytes = FileUtils.readStream(inputStream);
 
                         PostTask.postTask(
                                 TaskTraits.UI_DEFAULT,
-                                new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mImeAdapter.commitContent(dataUrl);
-                                    }
+                                () -> {
+                                    mImeAdapter.commitContent(bytes, extension);
                                 });
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to commit rich content.", e);

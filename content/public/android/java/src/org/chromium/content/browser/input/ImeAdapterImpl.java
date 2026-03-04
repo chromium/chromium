@@ -1577,18 +1577,9 @@ public class ImeAdapterImpl
                 immediateRequest, monitorRequest, getContainerView());
     }
 
-    /**
-     * Sends rich content into the current focused text field
-     *
-     * @param inputContentInfo information about the rich content to be inserted
-     * @return whether the insertion is successful.
-     */
-    boolean commitContent(String dataUrl) {
-        onImeEvent();
-        if (isValid()
-                && ImeAdapterImplJni.get().insertMediaFromURL(mNativeImeAdapterAndroid, dataUrl)) {
-            return true;
-        } else {
+    @CalledByNative
+    void onCommitContentResult(boolean success) {
+        if (!success) {
             try {
                 // If the rich content commit fails, display the failure message.
                 Toast.makeText(
@@ -1602,6 +1593,25 @@ public class ImeAdapterImpl
                         "Failed to display message toast to notify the rich content commit"
                                 + " failure.");
             }
+        }
+    }
+
+    /**
+     * Sends rich content into the current focused text field
+     *
+     * @param bytes binary data of therich content to be inserted
+     * @param extension the file extension of the rich content to be inserted
+     * @return whether the insertion is successful.
+     */
+    boolean commitContent(byte[] bytes, String extension) {
+        onImeEvent();
+        if (isValid()
+                && ImeAdapterImplJni.get()
+                        .insertMediaFromBytes(mNativeImeAdapterAndroid, bytes, extension)) {
+            return true;
+
+        } else {
+            onCommitContentResult(false);
             return false;
         }
     }
@@ -2020,7 +2030,7 @@ public class ImeAdapterImpl
                 String text,
                 int newCursorPosition);
 
-        boolean insertMediaFromURL(long nativeImeAdapterAndroid, String url);
+        boolean insertMediaFromBytes(long nativeImeAdapterAndroid, byte[] bytes, String extension);
 
         void finishComposingText(long nativeImeAdapterAndroid);
 

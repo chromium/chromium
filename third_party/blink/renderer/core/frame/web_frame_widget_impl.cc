@@ -70,11 +70,13 @@
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_focus_options.h"
 #include "third_party/blink/renderer/core/accessibility/histogram_macros.h"
+#include "third_party/blink/renderer/core/clipboard/data_transfer_access_policy.h"
 #include "third_party/blink/renderer/core/content_capture/content_capture_manager.h"
 #include "third_party/blink/renderer/core/core_initializer.h"
 #include "third_party/blink/renderer/core/css/media_value_change.h"
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/event_dispatch_result.h"
 #include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/scroll_marker_group_pseudo_element.h"
@@ -86,6 +88,8 @@
 #include "third_party/blink/renderer/core/editing/ime/stylus_writing_gesture.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
+#include "third_party/blink/renderer/core/editing/visible_selection.h"
+#include "third_party/blink/renderer/core/events/clipboard_event.h"
 #include "third_party/blink/renderer/core/events/current_input_event.h"
 #include "third_party/blink/renderer/core/events/pointer_event_factory.h"
 #include "third_party/blink/renderer/core/events/web_input_event_conversion.h"
@@ -4426,6 +4430,51 @@ void WebFrameWidgetImpl::PasteAndMatchStyle() {
   if (!focused_frame)
     return;
   focused_frame->ExecuteCommand(WebString::FromLatin1("PasteAndMatchStyle"));
+}
+
+void WebFrameWidgetImpl::PasteFromImageBytes(
+    mojo_base::BigBuffer image_bytes,
+    const String& media_format,
+    PasteFromImageBytesCallback callback) {
+  if (image_bytes.size() == 0) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  LocalFrame* local_frame = FocusedLocalFrameInWidget();
+  if (!local_frame) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  Element* const target = FindEventTargetFrom(
+      *local_frame,
+      local_frame->Selection().ComputeVisibleSelectionInDOMTree());
+
+  if (!target) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  DataObject* data_object = DataObject::Create();
+
+  data_object->AddFileSharedBuffer(SharedBuffer::Create(image_bytes),
+                                   /*is_accessible_from_start_frame=*/true,
+                                   KURL(), media_format,
+                                   /*content_disposition=*/AtomicString());
+
+  DataTransfer* const data_transfer =
+      DataTransfer::Create(DataTransfer::kCopyAndPaste,
+                           DataTransferAccessPolicy::kReadable, data_object);
+
+  Event* const evt =
+      ClipboardEvent::Create(event_type_names::kPaste, data_transfer);
+
+  // If the default event handling is prevented, it indicates the paste event
+  // was handled by the app. Notify the caller of the success status.
+  std::move(callback).Run(evt->defaultPrevented());
+
+  // TODO(crbug.com/453540697) - Add Paste as Fragment support
 }
 
 void WebFrameWidgetImpl::Delete() {

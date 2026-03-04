@@ -918,6 +918,9 @@ class CORE_EXPORT WebFrameWidgetImpl
   void CenterSelection() override;
   void Paste() override;
   void PasteAndMatchStyle() override;
+  void PasteFromImageBytes(mojo_base::BigBuffer image_bytes,
+                           const String& media_format,
+                           PasteFromImageBytesCallback callback) override;
   void Delete() override;
   void SelectAll() override;
   void CollapseSelection() override;
