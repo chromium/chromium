@@ -14,6 +14,7 @@
 #include "chrome/browser/contextual_cueing/contextual_cueing_service.h"
 #include "chrome/browser/contextual_cueing/contextual_cueing_service_factory.h"
 #include "chrome/browser/contextual_cueing/zero_state_suggestions_page_data.h"
+#include "chrome/browser/glic/public/features.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,6 +30,7 @@
 #include "components/optimization_guide/core/hints/optimization_metadata.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features_controller.h"
 #include "components/optimization_guide/proto/contextual_cueing_metadata.pb.h"
+#include "components/pdf/common/constants.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -419,13 +421,20 @@ void ContextualCueingHelper::OnCueingDecision(
           decision_result->auto_send_params.has_value() &&
           decision_result->auto_send_params->auto_send_eligible &&
           !prompt_suggestion.empty();
-      glic_service->ToggleUI(
-          browser_window_interface,
-          /*prevent_close=*/true,
-          glic::mojom::InvocationSource::kAutoOpenedByContextualCue,
-          prompt_suggestion.empty() ? std::nullopt
-                                    : std::make_optional(prompt_suggestion),
-          auto_send_prompt);
+
+      glic::mojom::InvocationSource invocation_source =
+          glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
+      if (web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
+          base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
+        invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
+      }
+
+      glic_service->ToggleUI(browser_window_interface,
+                             /*prevent_close=*/true, invocation_source,
+                             prompt_suggestion.empty()
+                                 ? std::nullopt
+                                 : std::make_optional(prompt_suggestion),
+                             auto_send_prompt);
       return;
     }
     // Fall through to nudge if side panel open fails.
