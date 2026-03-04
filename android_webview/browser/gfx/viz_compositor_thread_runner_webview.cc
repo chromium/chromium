@@ -13,7 +13,6 @@
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
@@ -36,8 +35,6 @@ void RunAndSignal(base::OnceClosure viz_task, base::WaitableEvent* done) {
   done->Signal();
 }
 
-BASE_FEATURE(kWebViewVizUseThreadPool, base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace
 
 // static
@@ -49,16 +46,9 @@ VizCompositorThreadRunnerWebView::GetInstance() {
 
 VizCompositorThreadRunnerWebView::VizCompositorThreadRunnerWebView()
     : viz_thread_("VizWebView") {
-  if (base::FeatureList::IsEnabled(kWebViewVizUseThreadPool)) {
-    // TODO(crbug.com/341151462): See if this task runner can use the
-    // kDisplayCritical thread type.
-    viz_task_runner_ =
-        base::ThreadPool::CreateSingleThreadTaskRunner({base::MayBlock()});
-  } else {
-    base::Thread::Options options(base::ThreadType::kPresentation);
-    CHECK(viz_thread_.StartWithOptions(std::move(options)));
-    viz_task_runner_ = viz_thread_.task_runner();
-  }
+  base::Thread::Options options(base::ThreadType::kPresentation);
+  CHECK(viz_thread_.StartWithOptions(std::move(options)));
+  viz_task_runner_ = viz_thread_.task_runner();
   TaskQueueWebView::GetInstance()->InitializeVizThread(viz_task_runner_);
 
   DETACH_FROM_THREAD(viz_thread_checker_);
