@@ -22011,50 +22011,10 @@
             ],
             "experiments": [
                 {
-                    "name": "PreflightForDSE",
-                    "params": {
-                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
-                    },
+                    "name": "Enabled",
                     "enable_features": [
-                        "AvoidUnnecessaryBeforeUnloadCheckSync",
                         "PrewarmServiceWorkerRegistrationForDSE",
-                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
-                        "ServiceWorkerMergeFindRegistrationForClientUrl"
-                    ],
-                    "disable_features": [
                         "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
-                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
-                    ]
-                },
-                {
-                    "name": "BackgroundUpdateForScopeCache",
-                    "params": {
-                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
-                    },
-                    "enable_features": [
-                        "AvoidUnnecessaryBeforeUnloadCheckSync",
-                        "PrewarmServiceWorkerRegistrationForDSE",
-                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
-                        "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache",
-                        "ServiceWorkerMergeFindRegistrationForClientUrl"
-                    ],
-                    "disable_features": [
-                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl"
-                    ]
-                },
-                {
-                    "name": "BackgroundUpdateForRegistration",
-                    "params": {
-                        "AvoidUnnecessaryBeforeUnloadCheckSyncMode": "WithSendBeforeUnload"
-                    },
-                    "enable_features": [
-                        "AvoidUnnecessaryBeforeUnloadCheckSync",
-                        "PrewarmServiceWorkerRegistrationForDSE",
-                        "ReduceCallingServiceWorkerRegisteredStorageKeysOnStartup",
-                        "ServiceWorkerBackgroundUpdateForFindRegistrationForClientUrl",
-                        "ServiceWorkerBackgroundUpdateForRegisteredStorageKeys",
                         "ServiceWorkerBackgroundUpdateForServiceWorkerScopeCache"
                     ],
                     "disable_features": [
