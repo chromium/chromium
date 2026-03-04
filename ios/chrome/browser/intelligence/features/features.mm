@@ -600,3 +600,21 @@ BASE_FEATURE(kGeminiFloatyAllPages, base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsGeminiFloatyAllPagesEnabled() {
   return base::FeatureList::IsEnabled(kGeminiFloatyAllPages);
 }
+
+BASE_FEATURE(kGeminiMapsRichUI, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiMapsRichUIEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiMapsRichUI);
+}
+
+BASE_FEATURE(kGeminiUnaryMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiUnaryMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiUnaryMigration);
+}
+
+BASE_FEATURE(kGeminiBinaryMigration, base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsGeminiBinaryMigrationEnabled() {
+  return base::FeatureList::IsEnabled(kGeminiBinaryMigration);
+}

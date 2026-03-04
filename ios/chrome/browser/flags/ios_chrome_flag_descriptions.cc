@@ -650,6 +650,10 @@ const char kGeminiBackendMigrationName[] = "Gemini Backend Migration";
 const char kGeminiBackendMigrationDescription[] =
     "Enables the backend migration for Gemini.";
 
+const char kGeminiBinaryMigrationName[] = "Gemini Binary Migration";
+const char kGeminiBinaryMigrationDescription[] =
+    "Enables the binary network migration for Gemini.";
+
 const char kGeminiChatPersistenceName[] = "Gemini Chat Persistence";
 const char kGeminiChatPersistenceDescription[] =
     "Enables improvements to Gemini Chat persistence.";
@@ -686,6 +690,10 @@ const char kGeminiLoadingStateRedesignName[] = "GeminiLoadingStateRedesign";
 const char kGeminiLoadingStateRedesignDescription[] =
     "Enables the redesigned UI for the floaty's loading state.";
 
+const char kGeminiMapsRichUIName[] = "Gemini Maps Rich UI";
+const char kGeminiMapsRichUIDescription[] =
+    "Enables the rich Maps UI in Gemini.";
+
 const char kGeminiNavigationPromoName[] = "GeminiNavigationPromo";
 const char kGeminiNavigationPromoDescription[] =
     "Enables the automatic promo for Gemini on navigation.";
@@ -706,6 +714,10 @@ const char kGeminiResponseViewDynamicResizingDescription[] =
 const char kGeminiRichAPCExtractionName[] = "Gemini Rich APC Extraction";
 const char kGeminiRichAPCExtractionDescription[] =
     "Enables rich APC extraction for Gemini.";
+
+const char kGeminiUnaryMigrationName[] = "Gemini Unary Migration";
+const char kGeminiUnaryMigrationDescription[] =
+    "Enables the unary network migration for Gemini.";
 
 const char kGeminiUpdatedEligibilityName[] = "Gemini Updated Eligibility";
 const char kGeminiUpdatedEligibilityDescription[] =

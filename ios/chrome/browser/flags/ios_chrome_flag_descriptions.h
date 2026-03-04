@@ -399,6 +399,9 @@ extern const char kGeminiActorDescription[];
 extern const char kGeminiBackendMigrationName[];
 extern const char kGeminiBackendMigrationDescription[];
 
+extern const char kGeminiBinaryMigrationName[];
+extern const char kGeminiBinaryMigrationDescription[];
+
 extern const char kGeminiChatPersistenceName[];
 extern const char kGeminiChatPersistenceDescription[];
 
@@ -426,6 +429,9 @@ extern const char kGeminiLiveDescription[];
 extern const char kGeminiLoadingStateRedesignName[];
 extern const char kGeminiLoadingStateRedesignDescription[];
 
+extern const char kGeminiMapsRichUIName[];
+extern const char kGeminiMapsRichUIDescription[];
+
 extern const char kGeminiNavigationPromoName[];
 extern const char kGeminiNavigationPromoDescription[];
 
@@ -440,6 +446,9 @@ extern const char kGeminiResponseViewDynamicResizingDescription[];
 
 extern const char kGeminiRichAPCExtractionName[];
 extern const char kGeminiRichAPCExtractionDescription[];
+
+extern const char kGeminiUnaryMigrationName[];
+extern const char kGeminiUnaryMigrationDescription[];
 
 extern const char kGeminiUpdatedEligibilityName[];
 extern const char kGeminiUpdatedEligibilityDescription[];

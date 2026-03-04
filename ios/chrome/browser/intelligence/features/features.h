@@ -355,4 +355,22 @@ bool IsGeminiRichAPCExtractionEnabled();
 BASE_DECLARE_FEATURE(kGeminiFloatyAllPages);
 bool IsGeminiFloatyAllPagesEnabled();
 
+// Enables the GeminiMapsRichUI feature.
+BASE_DECLARE_FEATURE(kGeminiMapsRichUI);
+
+// Returns true if the GeminiMapsRichUI feature is enabled.
+bool IsGeminiMapsRichUIEnabled();
+
+// Enables the GeminiUnaryMigration feature.
+BASE_DECLARE_FEATURE(kGeminiUnaryMigration);
+
+// Returns true if the GeminiUnaryMigration feature is enabled.
+bool IsGeminiUnaryMigrationEnabled();
+
+// Enables the GeminiBinaryMigration feature.
+BASE_DECLARE_FEATURE(kGeminiBinaryMigration);
+
+// Returns true if the GeminiBinaryMigration feature is enabled.
+bool IsGeminiBinaryMigrationEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_

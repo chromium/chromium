@@ -5069,6 +5069,11 @@
     "expiry_milestone": 155
   },
   {
+    "name": "gemini-binary-migration",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-chat-persistence",
     "owners": [
       "joemerramos@google.com",
@@ -5131,6 +5136,11 @@
     "expiry_milestone": 148
   },
   {
+    "name": "gemini-maps-rich-ui",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "gemini-navigation-promo",
     "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
     "expiry_milestone": 148
@@ -5165,6 +5175,11 @@
       "bling-alchemy-eng@google.com"
     ],
     "expiry_milestone": 155
+  },
+  {
+    "name": "gemini-unary-migration",
+    "owners": [ "adamta@google.com", "bling-alchemy-eng@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "gemini-updated-eligibility",

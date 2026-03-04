@@ -2734,6 +2734,15 @@ constexpr auto kFeatureEntries = std::to_array<flags_ui::FeatureEntry>({
     {"ios-tab-reminders", flag_descriptions::kIOSTabRemindersName,
      flag_descriptions::kIOSTabRemindersDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(send_tab_to_self::kIOSTabReminders)},
+    {"gemini-maps-rich-ui", flag_descriptions::kGeminiMapsRichUIName,
+     flag_descriptions::kGeminiMapsRichUIDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiMapsRichUI)},
+    {"gemini-unary-migration", flag_descriptions::kGeminiUnaryMigrationName,
+     flag_descriptions::kGeminiUnaryMigrationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiUnaryMigration)},
+    {"gemini-binary-migration", flag_descriptions::kGeminiBinaryMigrationName,
+     flag_descriptions::kGeminiBinaryMigrationDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kGeminiBinaryMigration)},
 });
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
