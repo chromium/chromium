@@ -253,26 +253,6 @@ bool ShadowIsFullyObscured(const ShadowData& shadow) {
          shadow.Spread() == 0;
 }
 
-// Creates a path expanded by a stroke thickness using path union.
-// This combines fill and stroke into a single path to avoid double-painting
-// artifacts with semi-transparent colors.
-Path ExpandPathWithStroke(const Path& path, float stroke_thickness) {
-  if (stroke_thickness <= 0) {
-    return path;
-  }
-  StrokeData stroke_data;
-  stroke_data.SetThickness(stroke_thickness);
-  Path stroke_path = path.StrokePath(stroke_data, AffineTransform());
-  SkOpBuilder builder;
-  builder.add(path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-  builder.add(stroke_path.GetSkPath(), SkPathOp::kUnion_SkPathOp);
-  SkPath result;
-  if (builder.resolve(&result)) {
-    return Path(result);
-  }
-  return path;
-}
-
 template <ShadowStyle shadow_style>
 std::optional<Color> ResolveShadowColor(const ShadowData& shadow,
                                         const ComputedStyle& style,
@@ -396,14 +376,14 @@ void BoxPainterBase::PaintNormalBoxShadow(
             PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect);
         const Path adjusted_outer_path =
             BorderShapePainter::OuterPath(style, adjusted_physical_ref);
-        const Path shadow_path =
-            ExpandPathWithStroke(adjusted_outer_path, blur_radius * 2);
+        const Path shadow_path = BorderShapePainter::ExpandPathWithStroke(
+            adjusted_outer_path, blur_radius * 2);
         context.SetFillColor(Color::kBlack);
         context.FillPath(shadow_path, auto_dark_mode);
       } else {
         const Path border_shape_outer_path =
             BorderShapePainter::OuterPath(style, outer_reference_rect);
-        const Path shadow_path = ExpandPathWithStroke(
+        const Path shadow_path = BorderShapePainter::ExpandPathWithStroke(
             border_shape_outer_path, (spread + blur_radius) * 2);
         context.SetFillColor(Color::kBlack);
         context.FillPath(shadow_path, auto_dark_mode);
@@ -519,8 +499,8 @@ void BoxPainterBase::PaintInsetBoxShadowForBorderShape(
           PhysicalRect::FastAndLossyFromRectF(adjusted_ref_rect);
       const Path adjusted_inner_path =
           BorderShapePainter::InnerPath(style, adjusted_physical_ref);
-      const Path shadow_path =
-          ExpandPathWithStroke(adjusted_inner_path, blur_radius * 2);
+      const Path shadow_path = BorderShapePainter::ExpandPathWithStroke(
+          adjusted_inner_path, blur_radius * 2);
       context.SetFillColor(Color::kBlack);
       context.FillPath(shadow_path, auto_dark_mode);
     } else {

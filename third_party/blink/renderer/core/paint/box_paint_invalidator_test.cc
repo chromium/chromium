@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_and_raster_invalidation_test.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
@@ -467,7 +468,62 @@ TEST_P(BoxPaintInvalidatorTest, GapDecorationMulticolColumnRuleInvalidation) {
   ASSERT_TRUE(multicol);
   multicol->setAttribute(html_names::kStyleAttr,
                          AtomicString("column-rule: 4px solid red"));
+
   UpdateAllLifecyclePhasesForTest();
+}
+
+TEST_P(BoxPaintInvalidatorTest, BorderShapeBoxShadowChange) {
+  ScopedPaintUnderInvalidationCheckingForTest under_invalidation_checking(true);
+  ScopedCSSBorderShapeForTest scoped_border_shape(true);
+  // Test that changing box-shadow on an element with border-shape does not
+  // cause under-invalidation (crbug.com/483350719). Without the fix in
+  // BorderShapePainter::VisualOutsets(), the ink overflow rect for
+  // border-shape + box-shadow was too small. For border-shape, the shadow is
+  // painted via ExpandPathWithStroke(outer_path, (spread + blur) * 2), so the
+  // full shadow extent from the outer path is (spread + blur + sigma_3).
+  // BoxDecorationOutsets() uses only (spread + sigma_3), missing the blur term.
+  // When the shadow grows, new shadow pixels outside the too-small ink overflow
+  // rect are not invalidated, causing stale pixels (under-invalidation).
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      #target {
+        width: 100px;
+        height: 100px;
+        border-shape: circle(50px at 50% 50%);
+        box-shadow: 0 0 10px 10px black;
+      }
+    </style>
+    <div id="target"></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  // Verify the ink overflow rect accounts for the full shadow extent:
+  // spread=10, blur=10, sigma_3=ceil(3*5)=15 -> outset = 35px each side.
+  // Without the fix, BoxDecorationOutsets uses only (spread + sigma_3) = 25px.
+  EXPECT_EQ(GetLayoutBoxByElementId("target")
+                ->GetPhysicalFragment(0)
+                ->InkOverflowRect(),
+            PhysicalRect(-35, -35, 170, 170));
+  EXPECT_EQ(GetLayoutBoxByElementId("target")->SelfVisualOverflowRect(),
+            PhysicalRect(-35, -35, 170, 170));
+
+  // Changing box-shadow while border-shape is active should not cause
+  // under-invalidation (crbug.com/483350719).
+  auto* target = GetDocument().getElementById(AtomicString("target"));
+  ASSERT_TRUE(target);
+  target->setAttribute(html_names::kStyleAttr,
+                       AtomicString("box-shadow: 0 0 20px 20px black;"));
+  UpdateAllLifecyclePhasesForTest();
+
+  // The shadow has grown: spread=20, blur=20, sigma_3=ceil(3*10)=30
+  // (blur as sigma is 20*0.5=10), giving outset = 70px each side.
+  // Verify the overflow rects update accordingly as well.
+  EXPECT_EQ(GetLayoutBoxByElementId("target")
+                ->GetPhysicalFragment(0)
+                ->InkOverflowRect(),
+            PhysicalRect(-70, -70, 240, 240));
+  EXPECT_EQ(GetLayoutBoxByElementId("target")->SelfVisualOverflowRect(),
+            PhysicalRect(-70, -70, 240, 240));
 }
 
 }  // namespace blink

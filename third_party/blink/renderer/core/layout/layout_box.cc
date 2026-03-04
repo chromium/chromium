@@ -744,6 +744,15 @@ void LayoutBox::StyleDidChange(StyleDifference diff,
       }
     }
 
+    // When box-shadow changes while border-shape is active, force a paint
+    // property update to ensure the InnerBorderShapeClip overflow hierarchy is
+    // re-evaluated consistently with the visual overflow recomputation.
+    if (!base::ValuesEquivalent(old_style->BoxShadow(),
+                                new_style.BoxShadow()) &&
+        (new_style.HasBorderShape() || old_style->HasBorderShape())) {
+      SetNeedsPaintPropertyUpdate();
+    }
+
     if (old_style->OverscrollBehaviorX() != new_style.OverscrollBehaviorX() ||
         old_style->OverscrollBehaviorY() != new_style.OverscrollBehaviorY()) {
       SetNeedsPaintPropertyUpdate();
@@ -3291,12 +3300,10 @@ PhysicalBoxStrut LayoutBox::ComputeVisualEffectOverflowOutsets() {
         border_shape_rects ? border_shape_rects->outer : border_rect;
     const PhysicalRect inner_reference_rect =
         border_shape_rects ? border_shape_rects->inner : border_rect;
-    if (std::optional<PhysicalBoxStrut> border_shape_outsets =
-            BorderShapePainter::VisualOutsets(style, border_rect,
-                                              outer_reference_rect,
-                                              inner_reference_rect)) {
-      outsets.Unite(*border_shape_outsets);
-    }
+    // VisualOutsets() returns the complete border-shape overflow: both the
+    // border path's visual extent and the precise box-shadow extent.
+    outsets.Unite(BorderShapePainter::VisualOutsets(
+        style, border_rect, outer_reference_rect, inner_reference_rect));
   }
 
   if (style.HasOutline()) {

@@ -1086,11 +1086,15 @@ PhysicalRect PhysicalBoxFragment::ComputeSelfInkOverflow() const {
         border_shape_rects ? border_shape_rects->outer : rect;
     const PhysicalRect inner_reference_rect =
         border_shape_rects ? border_shape_rects->inner : rect;
-    if (std::optional<PhysicalBoxStrut> border_shape_outsets =
-            BorderShapePainter::VisualOutsets(style, rect, outer_reference_rect,
-                                              inner_reference_rect)) {
-      ink_overflow.Expand(*border_shape_outsets);
-    }
+    // VisualOutsets() returns the complete border-shape overflow: both the
+    // border path's visual extent and the precise box-shadow extent. Use
+    // Unite (not Expand) starting from |rect| so outsets are measured from
+    // the border box, not the already-expanded ink_overflow, which prevents
+    // double-accumulation with BoxDecorationOutsets().
+    PhysicalRect border_shape_visual_rect = rect;
+    border_shape_visual_rect.Expand(BorderShapePainter::VisualOutsets(
+        style, rect, outer_reference_rect, inner_reference_rect));
+    ink_overflow.Unite(border_shape_visual_rect);
   }
 
   if (style.HasOutline() && IsOutlineOwner()) {
