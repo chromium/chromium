@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Ensure NodeList works correctly with Array functions</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<div id="container">
+    <div id="div1"></div>
+    <div id="div2"></div><br>
+    <div id="div3"></div><br>
+    <div id="div4"></div><br>
+    <div id="div5"></div><br>
+    <form id="form">
+        <input id="rad1" type="radio" name="radio" value="a">
+        <input id="rad2" type="radio" name="radio" value="b">
+        <input id="rad3" type="radio" name="radio" value="c">
+        <input id="rad4" type="radio" name="radio" value="d">
+    </form>
+</div>
+<div id="container2">
+</div>
+<div id="container3">
+</div>
+<script>
+"use strict";
+
+function cloneNodesAndUpdateIDs(nodes, idSuffix) {
+    let clonedNodes = Array.from(
+        nodes,
+        (n) => {
+            n = n.cloneNode();
+            n.id += idSuffix;
+            return n;
+        });
+    return clonedNodes;
+}
+
+
+test(function() {
+    let nodeList = container.childNodes;
+
+    // Trigger fast path in Array.from() for NodeList (don't pass mapFn).
+    let ar = Array.from(nodeList);
+    assert_equals(ar.length, 17);
+
+    let ids = Array.from(ar, (n) => n.id);
+    assert_equals(ids.length, 17);
+
+    // Remove items that correspond to nodes without id.
+    ids = ids.filter((n) => n != undefined && n != "");
+    assert_array_equals(ids, ["div1", "div2", "div3", "div4", "div5", "form"], "elements should be the expected values");
+}, "Array.from(nodeList) for live NodeList");
+
+
+test(function() {
+    let nodeList = container.querySelectorAll("div");
+
+    // Trigger fast path in Array.from() for NodeList (don't pass mapFn).
+    let ar = Array.from(nodeList);
+    assert_equals(ar.length, 5);
+
+    let ids = Array.from(ar, (n) => n.id);
+    assert_array_equals(ids, ["div1", "div2", "div3", "div4", "div5"], "elements should be the expected values");
+}, "Array.from(nodeList) for static NodeList");
+
+
+test(function() {
+    let nodeList = container.querySelectorAll("div,form");
+    assert_equals(nodeList.length, 6);
+
+    let clonedNodes = cloneNodesAndUpdateIDs(nodeList, "_");
+    assert_equals(nodeList.length, 6);
+    assert_equals(clonedNodes.length, 6);
+
+    let nodeList2 = container2.childNodes;
+    container2.replaceChildren();
+    assert_equals(nodeList2.length, 0);
+
+    // Populate container2 with cloned nodes.
+    container2.replaceChildren(...clonedNodes);
+    assert_equals(nodeList2.length, 6);
+
+    // Move child nodes from container2 to container3 using live NodeList.
+    container3.replaceChildren(...nodeList2);
+    assert_equals(container3.childNodes.length, 6);
+    // The live NodeList is empty now.
+    assert_equals(nodeList2.length, 0);
+
+    // Cleanup temp containers.
+    assert_equals(nodeList2.length, 0);
+    container2.replaceChildren();
+    container3.replaceChildren();
+}, "Node.replaceChildren(...nodeList) for live NodeList");
+
+
+test(function() {
+    let nodeList = container.querySelectorAll("div,form");
+    assert_equals(nodeList.length, 6);
+
+    let clonedNodes = cloneNodesAndUpdateIDs(nodeList, "_");
+    assert_equals(nodeList.length, 6);
+    assert_equals(clonedNodes.length, 6);
+
+    // Populate container2 with cloned nodes.
+    container2.replaceChildren(...clonedNodes);
+
+    // Move child nodes from container2 to container3 using static NodeList.
+    let nodeList2 = container2.querySelectorAll("div,form");
+    assert_equals(nodeList2.length, 6);
+    container3.replaceChildren(...nodeList2);
+    let nodeList3 = container3.childNodes;
+    assert_equals(nodeList3.length, 6);
+
+    // Cleanup temp containers.
+    container2.replaceChildren();
+    container3.replaceChildren();
+}, "Node.replaceChildren(...nodeList) for static NodeList");
+
+
+test(function() {
+    let clonedNodes = cloneNodesAndUpdateIDs(container.querySelectorAll("div"), "_");
+    container2.replaceChildren(...clonedNodes);
+    let nodeList = container2.childNodes;
+
+    assert_equals(nodeList.length, 5);
+
+    assert_equals(Array.prototype.indexOf.call(nodeList, "foo"), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, null), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, undefined), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad1), -1);
+
+    assert_equals(Array.prototype.indexOf.call(nodeList, div1_), 0);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div2_), 1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div3_), 2);
+
+    assert_equals(Array.prototype.indexOf.call(nodeList, div1_, 1), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div2_, 2), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div3_, 3), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div4_, 2), 3);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div5_, -2), 4);
+
+    // Add "length" property to override accessor in the prototype.
+    assert_equals(Object.getOwnPropertyDescriptor(nodeList, "length"), undefined);
+
+    Object.defineProperty(nodeList, "length", {value: 13, configurable: true, writable: true});
+    assert_equals(nodeList.length, 13);
+
+    // Make it search beyond the actual NodeList size. There are no elements
+    // in the prototype chain so far.
+    assert_equals(Array.prototype.indexOf.call(nodeList, div4_), 3);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div5_), 4);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad1), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), -1);
+
+    // Now add some elements to the prototype chain.
+    let p2 = nodeList.__proto__.__proto__;
+    p2[8] = rad2;
+    p2[11] = rad3;
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad1), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), 8);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad3), 11);
+
+    nodeList.length = 10;
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), 8);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad3), -1);
+
+    // Clean up prototype chain modifications.
+    delete p2[8];
+    delete p2[11];
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad3), -1);
+
+    // Clean up live NodeList modifications.
+    delete nodeList.length;
+    assert_equals(nodeList.length, 5);
+}, "Array.prototype.indexOf.call(nodeList, ..) for live NodeList");
+
+
+test(function() {
+    let nodeList = container.querySelectorAll("div");
+
+    assert_equals(nodeList.length, 5);
+
+    assert_equals(Array.prototype.indexOf.call(nodeList, "foo"), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, null), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, undefined), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad1), -1);
+
+    assert_equals(Array.prototype.indexOf.call(nodeList, div1), 0);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div2), 1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div3), 2);
+
+    assert_equals(Array.prototype.indexOf.call(nodeList, div1, 1), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div2, 2), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div3, 3), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div4, 2), 3);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div5, -2), 4);
+
+    // Add "length" property to override accessor in the prototype.
+    assert_equals(Object.getOwnPropertyDescriptor(nodeList, "length"), undefined);
+
+    Object.defineProperty(nodeList, "length", {value: 13, configurable: true, writable: true});
+    assert_equals(nodeList.length, 13);
+
+    // Make it search beyond the actual NodeList size. There are no elements
+    // in the prototype chain so far.
+    assert_equals(Array.prototype.indexOf.call(nodeList, div4), 3);
+    assert_equals(Array.prototype.indexOf.call(nodeList, div5), 4);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad1), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), -1);
+
+    // Now add some elements to the prototype chain.
+    let p2 = nodeList.__proto__.__proto__;
+    p2[8] = rad2;
+    p2[11] = rad3;
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad1), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), 8);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad3), 11);
+
+    nodeList.length = 10;
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), 8);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad3), -1);
+
+    // Clean up prototype chain modifications.
+    delete p2[8];
+    delete p2[11];
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad2), -1);
+    assert_equals(Array.prototype.indexOf.call(nodeList, rad3), -1);
+}, "Array.prototype.indexOf.call(nodeList, ..) for static NodeList");
+</script>
