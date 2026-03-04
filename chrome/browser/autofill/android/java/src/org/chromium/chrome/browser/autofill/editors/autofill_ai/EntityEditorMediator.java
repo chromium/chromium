@@ -171,7 +171,9 @@ class EntityEditorMediator {
                     mAttributeFields.put(attributeType, countryItem.model);
                     break;
                 case DataType.DATE:
-                    editorFields.add(getDateDropdown(mEntityInstance, attributeType));
+                    EditorItem dateItem = getDateDropdown(mEntityInstance, attributeType);
+                    editorFields.add(dateItem);
+                    mAttributeFields.put(attributeType, dateItem.model);
                     break;
                 default:
                     assert false

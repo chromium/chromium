@@ -424,7 +424,15 @@ public class EntityEditorModuleTest {
         setDropdownValue(issueDate.getYearPickerForTest(), "2026");
         mContainerView.findViewById(R.id.editor_dialog_done_button).performClick();
         // The date is completely valid, the editor should be closed now.
-        verify(mDelegate).onDone(any());
+        verify(mDelegate).onDone(mEntityInstanceCaptor.capture());
+
+        EntityInstance updatedEntityInstance = mEntityInstanceCaptor.getValue();
+        AttributeInstance passportIssueDate =
+                updatedEntityInstance.getAttribute(PASSPORT_ISSUE_DATE_TYPE);
+        assertTrue(passportIssueDate.getAttributeValue() instanceof AttributeInstance.DateValue);
+        assertEquals(
+                LocalDate.of(2026, 6, 20),
+                ((AttributeInstance.DateValue) passportIssueDate.getAttributeValue()).getDate());
     }
 
     private void showEditorDialog(EntityInstance entityInstance) {
