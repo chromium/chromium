@@ -311,6 +311,7 @@ component("views") {
     "widget/tooltip_manager.h",
     "widget/unique_widget_ptr.h",
     "widget/widget.h",
+    "widget/widget_activation_delegate.h",
     "widget/widget_delegate.h",
     "widget/widget_deletion_observer.h",
     "widget/widget_enumerator.h",
@@ -535,6 +536,7 @@ component("views") {
     "widget/tooltip_manager.cc",
     "widget/unique_widget_ptr.cc",
     "widget/widget.cc",
+    "widget/widget_activation_delegate.cc",
     "widget/widget_aura_utils.cc",
     "widget/widget_delegate.cc",
     "widget/widget_deletion_observer.cc",
@@ -1210,6 +1212,13 @@ source_set("test_support") {
     deps += [ "//ui/ozone" ]
   }
 
+  if (enable_desktop_aura || is_mac) {
+    sources += [
+      "test/mock_activation_controller.cc",
+      "test/mock_activation_controller.h",
+    ]
+  }
+
   if (use_ozone && enable_desktop_aura) {
     sources += [
       "test/test_desktop_screen_ozone.cc",
@@ -1491,6 +1500,10 @@ test("views_unittests") {
       "//components/remote_cocoa/app_shim",
       "//ui/accelerated_widget_mac",
     ]
+  }
+
+  if (is_mac || enable_desktop_aura) {
+    sources += [ "widget/widget_activation_delegate_unittest.cc" ]
   }
 
   if (is_fuchsia) {

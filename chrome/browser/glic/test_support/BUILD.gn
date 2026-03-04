@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
+import("//ui/views/features.gni")
 
 source_set("test_support") {
   testonly = true
@@ -41,6 +42,9 @@ source_set("test_support") {
     "//chrome/browser/ui:ui_features",
     "//components/signin/public/identity_manager:test_support",
   ]
+  if (enable_desktop_aura || is_mac) {
+    deps += [ "//ui/views:test_support" ]
+  }
   if (!is_android) {
     deps += [
       "//chrome/browser/actor",

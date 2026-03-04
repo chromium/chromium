@@ -31,6 +31,7 @@ namespace prefs {
 enum class FreStatus;
 }  // namespace prefs
 
+// [Deprecated] Use views::test::MockActivationController instead.
 // Provides deterministic browser activation behavior.
 // Useful in browser tests where focus is not reliable.
 class BrowserActivator : public BrowserCollectionObserver {
@@ -56,6 +57,7 @@ class BrowserActivator : public BrowserCollectionObserver {
   // Sets the active browser. Switches to `Mode::kManual`.
   void SetActive(BrowserWindowInterface* browser);
 
+#if BUILDFLAG(IS_ANDROID)
   // BrowserCollectionObserver impl.
   void OnBrowserCreated(BrowserWindowInterface* browser) override;
   void OnBrowserClosed(BrowserWindowInterface* browser) override;
@@ -67,10 +69,7 @@ class BrowserActivator : public BrowserCollectionObserver {
   raw_ptr<BrowserWindowInterface> active_browser_;
   base::ScopedObservation<BrowserCollection, BrowserCollectionObserver>
       observation_{this};
-
-#if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
-  std::unique_ptr<views::Widget::PaintAsActiveLock> active_lock_;
-#endif
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
