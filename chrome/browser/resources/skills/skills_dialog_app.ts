@@ -33,6 +33,8 @@ import {getHtml} from './skills_dialog_app.html.js';
 import {SkillsDialogBrowserProxy} from './skills_dialog_browser_proxy.js';
 
 const DEFAULT_EMOJI: string = '⚡';
+export const MAX_NAME_CHAR_COUNT =
+    loadTimeData.getInteger('MAX_NAME_CHAR_COUNT');
 export const MAX_PROMPT_CHAR_COUNT =
     loadTimeData.getInteger('MAX_PROMPT_CHAR_COUNT');
 const REFINE_SKILL_TIMEOUT_MS = 5000;
@@ -77,6 +79,7 @@ export interface SkillsDialogAppElement {
     instructionsText: HTMLTextAreaElement,
     nameLoaderContainer: HTMLElement,
     nameText: CrInputElement,
+    nameErrorMessage: HTMLElement,
     errorMessage: HTMLElement,
     saveButton: CrButtonElement,
     saveErrorContainer: HTMLElement,
@@ -109,6 +112,7 @@ export class SkillsDialogAppElement extends CrLitElement {
       isRefineLoading_: {type: Boolean},
       isAutoGenerationLoading_: {type: Boolean},
       hasSaveError_: {type: Boolean},
+      hasNameCharLimitError_: {type: Boolean},
     };
   }
 
@@ -136,6 +140,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   protected accessor isRefineLoading_: boolean = false;
   protected accessor isAutoGenerationLoading_: boolean = false;
   protected accessor hasSaveError_: boolean = false;
+  protected accessor hasNameCharLimitError_: boolean = false;
 
   private originalPrompt_: string = '';
   private refinedPrompt_: string = '';
@@ -217,6 +222,8 @@ export class SkillsDialogAppElement extends CrLitElement {
       this.promptError_ = this.skill_.prompt.length >= MAX_PROMPT_CHAR_COUNT ?
           PromptError.CHAR_LIMIT :
           PromptError.NONE;
+      this.hasNameCharLimitError_ =
+          this.skill_.name.length >= MAX_NAME_CHAR_COUNT;
 
       // Only check overflow if the textarea is currently in the DOM
       if (!this.isRefineLoading_) {
@@ -412,6 +419,7 @@ export class SkillsDialogAppElement extends CrLitElement {
     const skill = {
       ...this.skill_,
       icon: this.skill_.icon || DEFAULT_EMOJI,
+      name: this.skill_.name.substring(0, MAX_NAME_CHAR_COUNT),
       prompt: this.skill_.prompt.substring(0, MAX_PROMPT_CHAR_COUNT),
 
       // If remixing first party skill, set parent and clear ID.

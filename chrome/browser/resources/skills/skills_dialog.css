@@ -261,9 +261,6 @@ textarea::placeholder {
   line-height: 16px;
   color: var(--color-sys-error);
   font-weight: 400;
-}
-
-#errorMessage {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -271,7 +268,7 @@ textarea::placeholder {
   padding-left: 10px;
 }
 
-#errorMessage a {
+.error-message a {
   color: inherit;
   text-decoration: underline;
   cursor: pointer;

@@ -5,7 +5,7 @@
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {SkillsDialogAppElement} from './skills_dialog_app.js';
-import {MAX_PROMPT_CHAR_COUNT, PromptError} from './skills_dialog_app.js';
+import {MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, PromptError} from './skills_dialog_app.js';
 
 export function getHtml(this: SkillsDialogAppElement) {
   // clang-format off
@@ -37,7 +37,9 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
                 placeholder="$i18n{namePlaceholder}"
                 .value="${this.skill_.name}"
                 @value-changed="${this.onNameValueChanged_}"
-                aria-labelledby="nameLabel">
+                aria-labelledby="nameLabel"
+                maxlength="${MAX_NAME_CHAR_COUNT}"
+                ?invalid="${this.hasNameCharLimitError_}">
               <div class="emoji-prefix-container" slot="inline-prefix">
                 <cr-icon id="emojiZeroStateIcon" icon="skills:add-reaction"
                     ?hidden="${this.skill_.icon}" aria-hidden="true">
@@ -49,6 +51,10 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
                   aria-label="$i18n{chooseIcon}">
               </div>
             </cr-input>
+            <div id="nameErrorMessage" class="error-message"
+                ?hidden="${!this.hasNameCharLimitError_}">
+              $i18n{nameCharLimitError}
+            </div>
             `}
         </div>
         <div id="instructionsWrapper">

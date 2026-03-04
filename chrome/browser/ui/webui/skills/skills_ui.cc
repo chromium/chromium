@@ -25,6 +25,7 @@
 
 namespace skills {
 
+constexpr int kMaxNameCharCount = 100;
 constexpr int kMaxPromptCharCount = 20000;
 
 SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
@@ -35,6 +36,7 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   source->AddResourcePath("dialog", IDR_SKILLS_SKILLS_DIALOG_HTML);
   bool isGlicEnabled = glic::GlicEnabling::IsEnabledForProfile(profile);
   source->AddBoolean("isGlicEnabled", isGlicEnabled);
+  source->AddInteger("MAX_NAME_CHAR_COUNT", kMaxNameCharCount);
   source->AddInteger("MAX_PROMPT_CHAR_COUNT", kMaxPromptCharCount);
   static constexpr webui::LocalizedString kStrings[] = {
       {"cancel", IDS_CANCEL},
@@ -81,6 +83,10 @@ SkillsUI::SkillsUI(content::WebUI* web_ui) : ui::MojoWebUIController(web_ui) {
   };
 
   source->AddLocalizedStrings(kStrings);
+  source->AddString(
+      "nameCharLimitError",
+      l10n_util::GetStringFUTF16(IDS_SKILLS_DIALOG_CHAR_LIMIT_ERROR,
+                                 base::FormatNumber(kMaxNameCharCount)));
   source->AddString(
       "charLimitError",
       l10n_util::GetStringFUTF16(IDS_SKILLS_DIALOG_CHAR_LIMIT_ERROR,

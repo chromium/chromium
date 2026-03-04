@@ -10,7 +10,7 @@ import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
 import type {Skill} from 'chrome://skills/skill.mojom-webui.js';
 import {SkillSource} from 'chrome://skills/skill.mojom-webui.js';
 import {DialogHandlerRemote} from 'chrome://skills/skills.mojom-webui.js';
-import {MAX_PROMPT_CHAR_COUNT, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
+import {MAX_NAME_CHAR_COUNT, MAX_PROMPT_CHAR_COUNT, WindowProxyImpl} from 'chrome://skills/skills_dialog_app.js';
 import type {SkillsDialogAppElement, WindowProxy} from 'chrome://skills/skills_dialog_app.js';
 import {SkillsDialogBrowserProxy} from 'chrome://skills/skills_dialog_browser_proxy.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -47,6 +47,7 @@ suite('SkillsDialogAppPage', function() {
   setup(async function() {
     loadTimeData.overrideValues({
       MAX_PROMPT_CHAR_COUNT: 20000,
+      MAX_NAME_CHAR_COUNT: 100,
     });
     dialogHandler = TestMock.fromClass(DialogHandlerRemote);
     SkillsDialogBrowserProxy.setInstance(
@@ -914,5 +915,21 @@ suite('SkillsDialogAppPage', function() {
     await updateInstructions('a');
     assertTrue(charLimitErrorMessage.hidden);
     assertFalse(skillsDialogApp.$.textareaWrapper.hasAttribute('error'));
+  });
+
+  test('NameCharLimitErrorDisplaysCorrectly', async function() {
+    // 1. At or over limit: red border and custom error message appear.
+    const longName = 'a'.repeat(MAX_NAME_CHAR_COUNT);
+    await updateName(longName);
+
+    const nameErrorMessage = skillsDialogApp.$.nameErrorMessage;
+    assertTrue(!!nameErrorMessage);
+    assertFalse(nameErrorMessage.hidden);
+    assertTrue(skillsDialogApp.$.nameText.hasAttribute('invalid'));
+
+    // 2. Under limit again: returns to normal.
+    await updateName('Valid Name');
+    assertTrue(nameErrorMessage.hidden);
+    assertFalse(skillsDialogApp.$.nameText.hasAttribute('invalid'));
   });
 });

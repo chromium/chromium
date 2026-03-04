@@ -26,7 +26,7 @@ namespace {
 constexpr float kCornerRadius = 12.0f;
 constexpr int kWebViewWidth = 448;
 constexpr int kWebViewMinHeight = 442;
-constexpr int kWebViewMaxHeight = 516;  // Extra space needed for errors and
+constexpr int kWebViewMaxHeight = 540;  // Extra space needed for errors and
                                         // multi-line user account info.
 gfx::Size kWebViewMinSize = gfx::Size(kWebViewWidth, kWebViewMinHeight);
 gfx::Size kWebViewMaxSize = gfx::Size(kWebViewWidth, kWebViewMaxHeight);
