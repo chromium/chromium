@@ -590,38 +590,44 @@ void ClipboardAndroid::Clear(ClipboardBuffer buffer) {
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-std::vector<std::u16string> ClipboardAndroid::GetStandardFormats(
+void ClipboardAndroid::GetStandardFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    GetStandardFormatsCallback callback) const {
   std::vector<std::u16string> types;
   // would be nice to ask the ClipboardMap to enumerate the types it supports,
   // rather than hardcode the list here.
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        data_dst)) {
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypePlainText16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeHtml16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeSvg16);
   }
   // We can read images from either the Android clipboard or the local map.
-  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer, data_dst) ||
-      IsFormatAvailable(ClipboardFormatType::PngType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::BitmapType(), buffer,
+                        base::OptionalToPtr(data_dst)) ||
+      IsFormatAvailable(ClipboardFormatType::PngType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeImageUri16);
     types.push_back(kMimeTypePng16);
   }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        data_dst)) {
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeUriList16);
   }
   // these formats aren't supported by the ClipboardMap currently, but might
   // be one day?
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeRtf16);
   }
-  return types;
+  std::move(callback).Run(std::move(types));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -632,19 +638,24 @@ void ClipboardAndroid::ReadAvailableTypes(
     ReadAvailableTypesCallback callback) const {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  std::vector<std::u16string> types =
-      GetStandardFormats(buffer, base::OptionalToPtr(data_dst));
 
-  // Add custom types from the system clipboard to enable pasting of custom
-  // types.
-  std::vector<std::u16string> custom_types = GetClipboardMap().GetCustomTypes();
-  for (const auto& type : custom_types) {
-    if (std::find(types.begin(), types.end(), type) == types.end()) {
-      types.push_back(type);
-    }
-  }
+  auto combine_types_callback = base::BindOnce(
+      [](ReadAvailableTypesCallback callback,
+         std::vector<std::u16string> types) {
+        // Add custom types from the system clipboard to enable pasting of custom
+        // types.
+        std::vector<std::u16string> custom_types =
+            GetClipboardMap().GetCustomTypes();
+        for (const auto& type : custom_types) {
+          if (std::find(types.begin(), types.end(), type) == types.end()) {
+            types.push_back(type);
+          }
+        }
+        std::move(callback).Run(std::move(types));
+      },
+      std::move(callback));
 
-  std::move(callback).Run(std::move(types));
+  GetStandardFormats(buffer, data_dst, std::move(combine_types_callback));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

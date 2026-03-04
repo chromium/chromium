@@ -85,28 +85,32 @@ const ClipboardSequenceNumberToken& ClipboardIOS::GetSequenceNumber(
 
 // |data_dst| is not used. It's only passed to be consistent with other
 // platforms.
-std::vector<std::u16string> ClipboardIOS::GetStandardFormats(
+void ClipboardIOS::GetStandardFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
+    const std::optional<DataTransferEndpoint>& data_dst,
+    GetStandardFormatsCallback callback) const {
   std::vector<std::u16string> types;
   if (IsFormatAvailable(ClipboardFormatType::PlainTextType(), buffer,
-                        data_dst)) {
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypePlainText16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::HtmlType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeHtml16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::SvgType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeSvg16);
   }
-  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer, data_dst)) {
+  if (IsFormatAvailable(ClipboardFormatType::RtfType(), buffer,
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeRtf16);
   }
   if (IsFormatAvailable(ClipboardFormatType::FilenamesType(), buffer,
-                        data_dst)) {
+                        base::OptionalToPtr(data_dst))) {
     types.push_back(kMimeTypeUriList16);
   }
-  return types;
+  std::move(callback).Run(std::move(types));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other
@@ -136,15 +140,20 @@ void ClipboardIOS::ReadAvailableTypes(
     const std::optional<DataTransferEndpoint>& data_dst,
     ReadAvailableTypesCallback callback) const {
   DCHECK(CalledOnValidThread());
-  std::vector<std::u16string> types =
-      GetStandardFormats(buffer, base::OptionalToPtr(data_dst));
-
-  NSData* data = GetDataWithTypeFromPasteboard(
-      GetPasteboard(), (NSString*)kUTTypeChromiumDataTransferCustomData);
-  if (data) {
-    ReadCustomDataTypes(base::apple::NSDataToSpan(data), &types);
-  }
-  std::move(callback).Run(std::move(types));
+  GetStandardFormats(
+      buffer, data_dst,
+      base::BindOnce(
+          [](ReadAvailableTypesCallback callback,
+             std::vector<std::u16string> types) {
+            NSData* data = GetDataWithTypeFromPasteboard(
+                GetPasteboard(),
+                (NSString*)kUTTypeChromiumDataTransferCustomData);
+            if (data) {
+              ReadCustomDataTypes(base::apple::NSDataToSpan(data), &types);
+            }
+            std::move(callback).Run(std::move(types));
+          },
+          std::move(callback)));
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

@@ -72,6 +72,8 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
       base::OnceCallback<void(std::map<std::string, std::string>)>;
   using ReadAvailableStandardAndCustomFormatNamesCallback =
       base::OnceCallback<void(std::vector<std::u16string>)>;
+  using GetStandardFormatsCallback =
+      base::OnceCallback<void(std::vector<std::u16string>)>;
   using GetSourceCallback =
       base::OnceCallback<void(std::optional<DataTransferEndpoint>)>;
 
@@ -170,9 +172,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // text/uri-list.
   // TODO(snianu): Create a more generalized function for standard formats that
   // can be shared by all platforms.
-  virtual std::vector<std::u16string> GetStandardFormats(
+  virtual void GetStandardFormats(
       ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const = 0;
+      const std::optional<DataTransferEndpoint>& data_dst,
+      GetStandardFormatsCallback callback) const = 0;
 
   // Tests whether the clipboard contains a certain format.
   virtual bool IsFormatAvailable(

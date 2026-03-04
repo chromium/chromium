@@ -239,24 +239,32 @@ void Clipboard::ReadAvailableStandardAndCustomFormatNames(
   // follows:
   // 1. Pickled formats, in order of definition in the ClipboardItem.
   // 2. Sanitized standard formats, ordered as determined by the browser.
-  std::vector<std::u16string> standard_formats =
-      GetStandardFormats(buffer, base::OptionalToPtr(data_dst));
-  ExtractCustomPlatformNames(
+  GetStandardFormats(
       buffer, data_dst,
       base::BindOnce(
-          [](std::vector<std::u16string> standard_formats,
+          [](const Clipboard* clipboard, ClipboardBuffer buffer,
+             const std::optional<DataTransferEndpoint> data_dst,
              ReadAvailableStandardAndCustomFormatNamesCallback callback,
-             std::map<std::string, std::string> custom_format_names) {
-            std::vector<std::u16string> format_names;
-            for (const auto& items : custom_format_names) {
-              format_names.push_back(base::ASCIIToUTF16(items.first));
-            }
-            for (const auto& item : standard_formats) {
-              format_names.push_back(item);
-            }
-            std::move(callback).Run(std::move(format_names));
+             std::vector<std::u16string> standard_formats) {
+            clipboard->ExtractCustomPlatformNames(
+                buffer, data_dst,
+                base::BindOnce(
+                    [](std::vector<std::u16string> standard_formats,
+                       ReadAvailableStandardAndCustomFormatNamesCallback
+                           callback,
+                       std::map<std::string, std::string> custom_format_names) {
+                      std::vector<std::u16string> format_names;
+                      for (const auto& items : custom_format_names) {
+                        format_names.push_back(base::ASCIIToUTF16(items.first));
+                      }
+                      for (const auto& item : standard_formats) {
+                        format_names.push_back(item);
+                      }
+                      std::move(callback).Run(std::move(format_names));
+                    },
+                    std::move(standard_formats), std::move(callback)));
           },
-          std::move(standard_formats), std::move(callback)));
+          base::Unretained(this), buffer, data_dst, std::move(callback)));
 }
 
 Clipboard::Clipboard() = default;

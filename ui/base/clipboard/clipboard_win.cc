@@ -384,10 +384,18 @@ void ClipboardWin::Clear(ClipboardBuffer buffer) {
   }
 }
 
-std::vector<std::u16string> ClipboardWin::GetStandardFormats(
+void ClipboardWin::GetStandardFormats(
     ClipboardBuffer buffer,
-    const DataTransferEndpoint* data_dst) const {
-  return GetStandardFormatsInternal(buffer, base::OptionalFromPtr(data_dst));
+    const std::optional<DataTransferEndpoint>& data_dst,
+    GetStandardFormatsCallback callback) const {
+  ReadAsync(base::BindOnce(
+                [](ClipboardBuffer buffer,
+                   const std::optional<DataTransferEndpoint>& data_dst,
+                   HWND owner_window) {
+                  return GetStandardFormatsInternal(buffer, data_dst);
+                },
+                buffer, data_dst),
+            std::move(callback));
 }
 
 // static

@@ -64,9 +64,9 @@ class ClipboardAndroid : public Clipboard {
                  GetSourceCallback callback) const override;
   const ClipboardSequenceNumberToken& GetSequenceNumber(
       ClipboardBuffer buffer) const override;
-  std::vector<std::u16string> GetStandardFormats(
-      ClipboardBuffer buffer,
-      const DataTransferEndpoint* data_dst) const override;
+  void GetStandardFormats(ClipboardBuffer buffer,
+                          const std::optional<DataTransferEndpoint>& data_dst,
+                          GetStandardFormatsCallback callback) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
