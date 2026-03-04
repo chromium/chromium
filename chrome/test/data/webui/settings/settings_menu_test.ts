@@ -11,6 +11,7 @@ import {AutofillSettingsReferrer, resetRouterForTesting, loadTimeData, MetricsBr
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
 
 import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
 
@@ -48,8 +49,13 @@ suite('SettingsMenu', function() {
     assertEquals(
         urlParams.toString(),
         Router.getInstance().getQueryParameters().toString());
+
+    const selector = settingsMenu.$.menu;
+    const whenIronSelect = eventToPromise('iron-select', selector);
     settingsMenu.$.people.click();
-    await settingsMenu.$.menu.updateComplete;
+    const event = await whenIronSelect;
+
+    assertEquals(settingsMenu.$.people, event.detail.item);
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
 
@@ -60,29 +66,29 @@ suite('SettingsMenu', function() {
     assertEquals('/reset', selector.selected.toString());
   });
 
-  test('navigateToAnotherSection', function() {
+  test('navigateToAnotherSection', async function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
     assertEquals('/reset', selector.selected.toString());
 
+    const whenIronSelect = eventToPromise('iron-select', selector);
     Router.getInstance().navigateTo(routes.PEOPLE);
-    flush();
+    const event = await whenIronSelect;
 
     assertTrue(!!selector.selected);
+    assertEquals(settingsMenu.$.people, event.detail.item);
     assertEquals('/people', selector.selected.toString());
   });
 
-  test('navigateToBasic', function() {
+  test('navigateToBasic', async function() {
     Router.getInstance().navigateTo(routes.RESET);
     const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
     assertEquals('/reset', selector.selected.toString());
 
     Router.getInstance().navigateTo(routes.BASIC);
-    flush();
-
-    // BASIC has no sub page selected.
+    await microtasksFinished();
     assertFalse(!!selector.selected);
   });
 
@@ -90,7 +96,7 @@ suite('SettingsMenu', function() {
     loadTimeData.overrideValues({showAiPage: false});
     resetRouterForTesting();
     createSettingsMenu();
-    await flushTasks();
+    await microtasksFinished();
 
     const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/ai\']');
     assertTrue(!!entry);
@@ -101,16 +107,19 @@ suite('SettingsMenu', function() {
     loadTimeData.overrideValues({showAiPage: true});
     resetRouterForTesting();
     createSettingsMenu();
+    const selector = settingsMenu.$.menu;
+
+    const whenIronSelect = eventToPromise('iron-select', selector);
     Router.getInstance().navigateTo(routes.AI);
-    await flushTasks();
+    const event = await whenIronSelect;
 
     const entry = settingsMenu.shadowRoot!.querySelector('a[href=\'/ai\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
-    const selector = settingsMenu.$.menu;
-    assertTrue(!!selector.selected);
-    assertEquals('/ai', selector.selected.toString());
+    assertTrue(!!event.detail.item);
+    assertEquals('/ai', selector.selected?.toString());
+    assertEquals('/ai', event.detail.item.getAttribute('href'));
   });
 
   test('pageVisibility', function() {
@@ -162,20 +171,22 @@ suite('SettingsMenu', function() {
     });
     resetRouterForTesting();
     createSettingsMenu();
-    await flushTasks();
+    await microtasksFinished();
 
     const entry =
         settingsMenu.shadowRoot!.querySelector<HTMLElement>('a[href=\'/ai\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
-    // Ensure UMA is logged.
+    const selector = settingsMenu.$.menu;
+    const whenIronSelect = eventToPromise('iron-select', selector);
     entry.click();
+    // Ensure UMA is logged.
     assertEquals(
         'SettingsMenu_AiPageEntryPointClicked',
         await metricsBrowserProxy.whenCalled('recordAction'));
+    await whenIronSelect;
 
-    await microtasksFinished();
     assertEquals(routes.AI, Router.getInstance().getCurrentRoute());
   });
 
@@ -190,6 +201,8 @@ suite('SettingsMenu', function() {
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
+    const selector = settingsMenu.$.menu;
+    const whenIronSelect = eventToPromise('iron-select', selector);
     entry.click();
     const [histogramName, referrer] =
         await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
@@ -198,7 +211,7 @@ suite('SettingsMenu', function() {
         histogramName);
     assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
 
-    await microtasksFinished();
+    await whenIronSelect;
     assertEquals(routes.AUTOFILL, Router.getInstance().getCurrentRoute());
   });
 
@@ -206,22 +219,22 @@ suite('SettingsMenu', function() {
     loadTimeData.overrideValues({enableYourSavedInfoSettingsPage: true});
     resetRouterForTesting();
     createSettingsMenu();
-    await flushTasks();
+    await microtasksFinished();
 
+    const selector = settingsMenu.$.menu;
+    const whenIronSelect = eventToPromise('iron-select', selector);
     const entry = settingsMenu.shadowRoot!.querySelector<HTMLElement>(
         'a[href=\'/autofill\']');
     assertTrue(!!entry);
     assertTrue(isVisible(entry));
 
     entry.click();
-    await microtasksFinished();
+    await whenIronSelect;
     const [histogramName, referrer] =
         await metricsBrowserProxy.whenCalled('recordAutofillSettingsReferrer');
     assertEquals(
         'Autofill.YourSavedInfoSettingsPage.VisitReferrer', histogramName);
     assertEquals(AutofillSettingsReferrer.SETTINGS_MENU, referrer);
-
-    const selector = settingsMenu.$.menu;
     assertTrue(!!selector.selected);
     assertEquals('/autofill', selector.selected.toString());
     assertEquals(
