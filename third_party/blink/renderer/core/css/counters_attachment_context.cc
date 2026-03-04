@@ -126,8 +126,7 @@ bool CountersAttachmentContext::ElementGeneratesListItemCounter(
          IsA<HTMLDirectoryElement>(element);
 }
 
-// TODO(crbug.com/40682542): Update the link once the spec is landed.
-// Algorithm: https://github.com/w3c/csswg-drafts/issues/6797
+// Algorithm: https://drafts.csswg.org/css-lists/#instantiating-counters
 int CountersAttachmentContext::CalculateInitialValueForReversed(
     const Node& node,
     const AtomicString& counter_name,

@@ -384,8 +384,7 @@ int ListItemOrdinal::InitialCounterForReversedOrderedList(
       continue;
     }
 
-    // TODO(crbug.com/40682542): Update the link once the spec is landed.
-    // https://github.com/w3c/csswg-drafts/issues/6797
+    // https://drafts.csswg.org/css-lists/#instantiating-counters
     //
     // 1. Let |increment_negated| to el’s counter-increment integer value for
     // this counter, multiplied by -1.
