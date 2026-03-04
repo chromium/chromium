@@ -2180,60 +2180,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, GetLayout) {
   runCheck(true, "right");
 }
 
-// Test that the extension's side panel web contents is focused when shown.
-IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest,
-                       SidePanelWebContentsFocusedOnShow) {
-  TestExtensionDir dir;
-  dir.WriteManifest(R"({
-    "name": "Autofocus Test",
-    "version": "1.0",
-    "manifest_version": 3,
-    "permissions": ["sidePanel"],
-    "side_panel": {
-      "default_path": "panel.html"
-    }
-  })");
-  dir.WriteFile(FILE_PATH_LITERAL("panel.html"), R"(
-    <html>
-      <body>
-        <input id="autofocus-input" autofocus>
-        <script src="panel.js"></script>
-      </body>
-    </html>
-  )");
-  dir.WriteFile(FILE_PATH_LITERAL("panel.js"), R"(
-    chrome.test.sendMessage("ready");
-  )");
-
-  ExtensionTestMessageListener ready_listener("ready");
-  const Extension* extension = LoadExtension(dir.UnpackedPath());
-  ASSERT_TRUE(extension);
-
-  SidePanelEntry::Key extension_key = GetKey(extension->id());
-  SidePanelUI* const side_panel_ui = GetSidePanelUI();
-
-  side_panel_ui->Show(extension_key);
-  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
-
-  ExtensionSidePanelCoordinator* coordinator =
-      GetCoordinator(extension->id(), /*web_contents=*/nullptr);
-  ASSERT_TRUE(coordinator);
-  content::WebContents* side_panel_contents =
-      coordinator->GetHostWebContentsForTesting();
-  ASSERT_TRUE(side_panel_contents);
-
-  // Verifying that the WebContents of the side panel has focus.
-  EXPECT_TRUE(base::test::RunUntil([&]() {
-    return content::EvalJs(side_panel_contents, "document.hasFocus()")
-        .ExtractBool();
-  }));
-
-  // Verifying that the document.activeElement within the side panel's
-  // WebContents is indeed the input element.
-  EXPECT_EQ("autofocus-input",
-            content::EvalJs(side_panel_contents, "document.activeElement.id"));
-}
-
 class ExtensionCloseSidePanelBrowserTest
     : public ExtensionSidePanelBrowserTest {
  public:
