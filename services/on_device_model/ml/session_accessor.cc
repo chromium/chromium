@@ -56,22 +56,23 @@ class SessionAccessor::Canceler : public base::RefCountedThreadSafe<Canceler> {
   friend class base::RefCountedThreadSafe<Canceler>;
 
   DISABLE_CFI_DLSYM
+  static void DestroyChromeMLCancel(const raw_ref<const ChromeML> chrome_ml,
+                                    ChromeMLCancel cancel = 0) {
+    if (cancel == 0) {
+      return;
+    }
+
+    chrome_ml->api().DestroyCancel(cancel);
+  }
+
   virtual ~Canceler() {
     // Ensure that `ChromeMLCancel` is destroyed on the `task_runner_`.
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(
-                               [](const raw_ref<const ChromeML> chrome_ml,
-                                  ChromeMLCancel cancel = 0) {
-                                 if (cancel == 0) {
-                                   return;
-                                 }
-
-                                 chrome_ml->api().DestroyCancel(cancel);
-                               },
-                               // Safe because `chrome_ml_` will never be
-                               // destroyed, and `cancel_` should only be
-                               // destroyed in this callback.
-                               chrome_ml_, cancel_));
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&DestroyChromeMLCancel,
+                                  // Safe because `chrome_ml_` will never be
+                                  // destroyed, and `cancel_` should only be
+                                  // destroyed in this callback.
+                                  chrome_ml_, cancel_));
   }
 
   DISABLE_CFI_DLSYM
