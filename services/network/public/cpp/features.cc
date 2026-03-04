@@ -630,6 +630,9 @@ BASE_FEATURE(kNetworkServicePerPriorityTaskQueues,
 BASE_FEATURE(kUseUnexportableKeyServiceInBrowserProcess,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBypassRequestForbiddenHeadersCheck,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kServiceWorkerSyntheticResponseHeaderCheck,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

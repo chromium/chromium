@@ -381,16 +381,33 @@ IN_PROC_BROWSER_TEST_F(ExtensionFetchTest, ExtensionResourceShouldNotBeOpaque) {
 }
 
 class ExtensionFetchHeadersTest : public ExtensionApiTest,
-                                  public base::test::WithFeatureOverride {
+                                  public testing::WithParamInterface<bool> {
  public:
-  ExtensionFetchHeadersTest()
-      : WithFeatureOverride(
-            blink::features::kBypassRequestForbiddenHeadersCheck) {}
+  ExtensionFetchHeadersTest() = default;
 
   ExtensionFetchHeadersTest(const ExtensionFetchHeadersTest&) = delete;
   ExtensionFetchHeadersTest& operator=(const ExtensionFetchHeadersTest&) =
       delete;
   ~ExtensionFetchHeadersTest() override = default;
+
+  void SetUp() override {
+    std::vector<base::test::FeatureRef> enabled_features;
+    std::vector<base::test::FeatureRef> disabled_features;
+
+    if (GetParam()) {
+      enabled_features.push_back(
+          network::features::kBypassRequestForbiddenHeadersCheck);
+      enabled_features.push_back(
+          blink::features::kBypassRequestForbiddenHeadersCheck);
+    } else {
+      disabled_features.push_back(
+          network::features::kBypassRequestForbiddenHeadersCheck);
+      disabled_features.push_back(
+          blink::features::kBypassRequestForbiddenHeadersCheck);
+    }
+    feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    ExtensionApiTest::SetUp();
+  }
 
  protected:
   void SetUpOnMainThread() override {
@@ -482,8 +499,6 @@ class ExtensionFetchHeadersTest : public ExtensionApiTest,
     const auto headers_for_request = url_request_search->second.headers;
     auto header = headers_for_request.find(header_name);
     if (header == headers_for_request.end()) {
-      ADD_FAILURE() << "header_name: " << header_name
-                    << " wasn't set on the request during the test";
       return "";
     }
     return header->second;
@@ -503,20 +518,22 @@ class ExtensionFetchHeadersTest : public ExtensionApiTest,
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/418811955): The SetFetchHeaders* tests are confirming that the
-// renderer can set forbidden headers, but they don't confirm that the browser
-// will actually send the forbidden headers outbound on the wire. Let's create
-// test cases for that when the browser side component is completed.
-
 // Tests the behavior of a privileged (background) context when it
 // attempts to set forbidden and non-forbidden headers on fetch() requests to a
 // URL for which the extension has host_permissions.
 IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
                        SetFetchHeadersFromExtensionBackground) {
-  SetCustomArg("run_background_tests");
-  // Run fetch() header setting tests from the (privileged) background context.
-  ASSERT_TRUE(
-      RunExtensionTest("fetch/fetch_headers/set_headers_test_extension"));
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "fetch/fetch_headers/set_headers_test_extension"));
+  ASSERT_TRUE(extension);
+
+  // Explicitly tell the background script to run the fetch() header setting
+  // tests. We do this explicitly so the background script doesn't automatically
+  // run the tests during the other C++ test cases (popup/content/user script).
+  ResultCatcher catcher;
+  extensions::BackgroundScriptExecutor::ExecuteScriptAsync(
+      profile(), extension->id(), "runBackgroundTests();");
+  ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
 
   // Confirm that headers that are not forbidden are allowed to be set on a
   // fetch() request by an extension background script.
@@ -524,13 +541,46 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
       embedded_test_server()->GetURL("/fetch_allowed.html"),
       /*header_name=*/"Content-Type",
       /*expected_header_value=*/"text/testing"));
-  // Confirm that headers that are forbidden are not allowed to be set on a
-  // fetch() request by an extension background script (they're overridden).
+  // Confirm if headers that are forbidden are allowed (based on feature state)
+  // to be set on a fetch() request by an extension background script (they're
+  // overridden).
   EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
-      embedded_test_server()->GetURL("/fetch_forbidden.html"),
-      /*header_name=*/"Accept-Encoding",
+      embedded_test_server()->GetURL("/fetch_forbidden.html?test=fetchAndSet"),
+      /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakeencoding, fakeencoding2" : "gzip, deflate, br, zstd"));
+      GetParam() ? "fakescheme://fakehostname" : ""));
+
+  // Confirm if headers that are forbidden are allowed (based on feature state)
+  // on a POST request. This verifies the network service does not
+  // unconditionally clobber the explicitly set Origin header when it normally
+  // calculates the Origin for POST.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=fetchPostAndSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      GetParam() ? "fakescheme://fakehostname"
+                 : extension->origin().Serialize()));
+
+  // Confirm if headers that are forbidden are allowed using Headers.set().
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      GetParam() ? "fakescheme://fakehostname" : ""));
+
+  // Confirm if headers that are forbidden are not allowed to be
+  // Headers.delete()-ed. Even if the feature is enabled, the deletion is
+  // ignored because the feature only allows bypassing the restriction for
+  // setting/appending the header, not deleting it. Therefore, the header that
+  // was set in the previous step will remain on the request.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiRemove"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      GetParam() ? "fakescheme://fakehostname" : ""));
 }
 
 // Tests the behavior of a privileged (extension resource) context when it
@@ -560,13 +610,47 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
       embedded_test_server()->GetURL("/fetch_allowed.html"),
       /*header_name=*/"Content-Type",
       /*expected_header_value=*/"text/testing"));
-  // Confirm that headers that are forbidden are not allowed to be set on a
-  // fetch() request by an extension resource (popup) (they're overridden).
+  // Confirm if headers that are forbidden are allowed (based on feature state)
+  // to be set on a fetch() request by an extension resource (popup) (they're
+  // overridden).
   EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
-      embedded_test_server()->GetURL("/fetch_forbidden.html"),
-      /*header_name=*/"Accept-Encoding",
+      embedded_test_server()->GetURL("/fetch_forbidden.html?test=fetchAndSet"),
+      /*header_name=*/"Origin",
       /*expected_header_value=*/
-      GetParam() ? "fakeencoding, fakeencoding2" : "gzip, deflate, br, zstd"));
+      GetParam() ? "fakescheme://fakehostname" : ""));
+
+  // Confirm if headers that are forbidden are allowed on a POST request (based
+  // on feature state). This verifies the network service does not
+  // unconditionally clobber the explicitly set Origin header when it normally
+  // calculates the Origin for POST.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=fetchPostAndSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      GetParam() ? "fakescheme://fakehostname"
+                 : extension->origin().Serialize()));
+
+  // Confirm if headers that are forbidden are allowed (based on feature state)
+  // using Headers.set().
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      GetParam() ? "fakescheme://fakehostname" : ""));
+
+  // Confirm if headers that are forbidden are not allowed to be
+  // Headers.delete()-ed. Even if the feature is enabled, the deletion is
+  // ignored because the feature only allows bypassing the restriction for
+  // setting/appending the header, not deleting it. Therefore, the header that
+  // was set in the previous step will remain on the request.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiRemove"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      GetParam() ? "fakescheme://fakehostname" : ""));
 }
 
 // Tests the behavior of an unprivileged (content script) context when it
@@ -600,16 +684,107 @@ IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
       /*header_name=*/"Content-Type",
       /*expected_header_value=*/"text/testing"));
   // Confirm that headers that are forbidden are not allowed to be set on a
-  // fetch() request by a content script since it's not a privileged extension
-  // context (they're overridden).
+  // fetch() request by a content script, regardless of the feature state.
+  // Content scripts do not inherit extension privileges for forbidden headers.
   EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
-      embedded_test_server()->GetURL("/fetch_forbidden.html"),
-      /*header_name=*/"Accept-Encoding",
-      /*expected_header_value=*/"gzip, deflate, br, zstd"));
+      embedded_test_server()->GetURL("/fetch_forbidden.html?test=fetchAndSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/""));
+
+  // The explicitly set Origin header is stripped, so the POST request will have
+  // the default request initiator origin (which is the page's origin, not the
+  // extension's).
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=fetchPostAndSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      url::Origin::Create(embedded_test_server()->GetURL("/")).Serialize()));
+
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/""));
+
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiRemove"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/""));
 }
 
-// Toggle `blink::features::kBypassRequestForbiddenHeadersCheck`.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(ExtensionFetchHeadersTest);
+// Tests the behavior of a user script context when it attempts to set forbidden
+// and non-forbidden headers on fetch() requests to a URL for which the
+// extension has host_permissions.
+IN_PROC_BROWSER_TEST_P(ExtensionFetchHeadersTest,
+                       SetFetchHeadersFromExtensionUserScript) {
+  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+      "fetch/fetch_headers/set_headers_test_extension"));
+  ASSERT_TRUE(extension);
+
+  // Allow the userScripts API to be available for this test.
+  extensions::user_scripts_test_util::SetUserScriptsAPIAllowed(
+      profile(), extension->id(), true);
+
+  // Tell the background script to register the user script.
+  ExtensionTestMessageListener user_script_registered_listener(
+      "user_script_registered");
+  extensions::BackgroundScriptExecutor::ExecuteScriptAsync(
+      profile(), extension->id(), "registerUserScript();");
+  ASSERT_TRUE(user_script_registered_listener.WaitUntilSatisfied());
+
+  // Navigating to URL causes the user script to run the fetch() header setting
+  // requests.
+  {
+    SCOPED_TRACE("waiting for page to load and user script to finish running");
+    ExtensionTestMessageListener user_script_ran_listener(
+        "user_script_fetches_completed");
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser(),
+        embedded_test_server()->GetURL("/fetch_from_user_script.html")));
+    ASSERT_TRUE(user_script_ran_listener.WaitUntilSatisfied());
+  }
+
+  // Confirm that headers that are not forbidden are allowed to be set on a
+  // fetch() request by a user script.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch_allowed.html"),
+      /*header_name=*/"Content-Type",
+      /*expected_header_value=*/"text/testing"));
+  // Confirm that headers that are forbidden are not allowed to be set on a
+  // fetch() request by a user script, regardless of the feature state. User
+  // scripts do not inherit extension privileges for forbidden headers.
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL("/fetch_forbidden.html?test=fetchAndSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/""));
+
+  // The explicitly set Origin header is stripped, so the POST request will have
+  // the default request initiator origin (which is the page's origin, not the
+  // extension's).
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=fetchPostAndSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/
+      url::Origin::Create(embedded_test_server()->GetURL("/")).Serialize()));
+
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiSet"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/""));
+
+  EXPECT_TRUE(WaitForRequestAndCheckHeaderValue(
+      embedded_test_server()->GetURL(
+          "/fetch_forbidden.html?test=headersApiRemove"),
+      /*header_name=*/"Origin",
+      /*expected_header_value=*/""));
+}
+
+// Toggle `(network|blink)::features::kBypassRequestForbiddenHeadersCheck`.
+INSTANTIATE_TEST_SUITE_P(All, ExtensionFetchHeadersTest, testing::Bool());
 
 }  // namespace
 

@@ -7,8 +7,29 @@
 #include "base/strings/string_util.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/cors/origin_access_list.h"
+#include "services/network/public/cpp/features.h"
 
 namespace network::cors {
+
+bool ShouldAllowUnsafeHeaders(
+    const OriginAccessList& origin_access_list,
+    const std::optional<url::Origin>& request_initiator,
+    const GURL& url) {
+  if (!base::FeatureList::IsEnabled(
+          features::kBypassRequestForbiddenHeadersCheck)) {
+    return false;
+  }
+  // Check the initiator origin. This covers standard extension contexts like
+  // background service workers or popup pages, where `request_initiator` is
+  // the extension's origin (e.g., `chrome-extension://<id>`).
+  if (origin_access_list.CheckAccessState(
+          request_initiator.value_or(url::Origin()), url) ==
+      OriginAccessList::AccessState::kAllowed) {
+    return true;
+  }
+  return false;
+}
 
 std::vector<std::string> CorsUnsafeNotForbiddenRequestHeaderNames(
     const net::HttpRequestHeaders::HeaderVector& headers,

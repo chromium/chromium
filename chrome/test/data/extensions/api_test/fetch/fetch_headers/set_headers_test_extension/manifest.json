@@ -4,13 +4,14 @@
   "manifest_version": 3,
   "description": "",
   "host_permissions": ["http://127.0.0.1/*"],
+  "permissions": ["userScripts"],
   "background": {
     "service_worker": "background.js",
      "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["http://127.0.0.1/*"],
+      "matches": ["http://127.0.0.1/fetch_from_content_script.html"],
       "js": ["content_script.js"]
     }
   ],

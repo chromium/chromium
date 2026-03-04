@@ -907,12 +907,23 @@ void CorsURLLoader::StartRequest() {
   };
 
   if (should_include_origin_header()) {
-    if (tainted_) {
-      request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
-                                 url::Origin().Serialize());
-    } else {
-      request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
-                                 request_.request_initiator->Serialize());
+    // If the Origin header is given, check if the initiator has a permission to
+    // override unsafe headers for the target URL. This Allowlist is given from
+    // a trustworthy process per factory, and safe to trust as a secondary
+    // security check here in the network service.
+    const bool has_custom_origin_header_with_bypass =
+        request_.headers.HasHeader(net::HttpRequestHeaders::kOrigin) &&
+        cors::ShouldAllowUnsafeHeaders(
+            *origin_access_list_, request_.request_initiator, request_.url);
+
+    if (!has_custom_origin_header_with_bypass) {
+      if (tainted_) {
+        request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
+                                   url::Origin().Serialize());
+      } else {
+        request_.headers.SetHeader(net::HttpRequestHeaders::kOrigin,
+                                   request_.request_initiator->Serialize());
+      }
     }
   }
 

@@ -4,9 +4,15 @@
 
 import {getCommonFetchHeaderTests} from '/_test_resources/api_test/fetch/fetch_headers/fetch_common_tests.js';
 
-chrome.test.getConfig(function(config) {
-  var runBackgroundTests = config.customArg == 'run_background_tests';
-  if (runBackgroundTests) {
-    chrome.test.runTests(getCommonFetchHeaderTests());
-  }
-});
+globalThis.runBackgroundTests = function() {
+  chrome.test.runTests(getCommonFetchHeaderTests());
+};
+
+globalThis.registerUserScript = async function() {
+  await chrome.userScripts.register([{
+    id: 'test_script',
+    matches: ['http://127.0.0.1/fetch_from_user_script.html'],
+    js: [{file: 'user_script.js'}]
+  }]);
+  chrome.test.sendMessage('user_script_registered');
+};

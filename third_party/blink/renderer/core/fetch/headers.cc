@@ -102,9 +102,13 @@ void Headers::append(ScriptState* script_state,
     UseCounter::Count(execution_context,
                       WebFeature::kFetchSetCookieInRequestGuardedHeaders);
   }
-  // "4. Otherwise, if guard is |request| and |name| is a forbidden header
-  //     name, return."
-  if (guard_ == kRequestGuard && !bypass_request_forbidden_header_check_ &&
+  // "4. Otherwise, if guard is |request| and |name| is a forbidden header name,
+  //     return."
+  // Note: The user agent may choose to skip this step and allow the header in
+  // certain contexts with `is_bypassed_origin`.
+  bool is_bypassed_origin = bypass_request_forbidden_header_check_ &&
+                            EqualIgnoringAsciiCase(name, "origin");
+  if (guard_ == kRequestGuard && !is_bypassed_origin &&
       cors::IsForbiddenRequestHeader(name, value)) {
     return;
   }
@@ -261,8 +265,14 @@ void Headers::set(ScriptState* script_state,
   }
   // "4. Otherwise, if guard is |request| and (|name|, |value|) is a forbidden
   //     request header, return."
-  if (guard_ == kRequestGuard && cors::IsForbiddenRequestHeader(name, value))
+  // Note: The user agent may choose to skip this step and allow the header in
+  // certain contexts with `is_bypassed_origin`.
+  bool is_bypassed_origin = bypass_request_forbidden_header_check_ &&
+                            EqualIgnoringAsciiCase(name, "origin");
+  if (guard_ == kRequestGuard && !is_bypassed_origin &&
+      cors::IsForbiddenRequestHeader(name, value)) {
     return;
+  }
   // "5. Otherwise, if guard is |request-no-CORS| and |name|/|value| is not a
   //     no-CORS-safelisted header, return."
   if (guard_ == kRequestNoCorsGuard &&
