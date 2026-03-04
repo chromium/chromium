@@ -7,11 +7,13 @@ package org.chromium.chrome.browser.app.tabmodel;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Context;
 
 import androidx.test.filters.MediumTest;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +32,6 @@ import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.io.File;
-import java.util.concurrent.ExecutionException;
 
 /** Integration tests for {@link ActiveTabCache}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -48,23 +49,18 @@ public class ActiveTabCacheTest {
         mActiveTabCache = new ActiveTabCache("0");
     }
 
-    private File getActiveTabFile(boolean incognito) {
-        String fileName = incognito ? "0_incognito" : "0_regular";
-        return new File(
-                ContextUtils.getApplicationContext().getDir("active_tabs", Context.MODE_PRIVATE),
-                fileName);
+    @After
+    public void tearDown() {
+        ThreadUtils.runOnUiThreadBlocking(ActiveTabCache::clearGlobalState);
     }
 
     @Test
     @MediumTest
-    public void testSaveAndRestore() throws ExecutionException {
+    public void testSaveAndRestore() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActiveTabCache.saveActiveTab(tab, 0, null);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, 0, null));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -81,14 +77,12 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
-    public void testSaveAndRestoreIncognito() throws ExecutionException {
+    public void testSaveAndRestoreIncognito() {
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
 
         ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActiveTabCache.saveActiveTab(tab, 0, mCipherFactory);
-                });
+                () -> mActiveTabCache.saveActiveTab(tab, 0, mCipherFactory));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -106,17 +100,13 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
-    public void testReplaceActiveTab() throws ExecutionException {
+    public void testReplaceActiveTab() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActiveTabCache.saveActiveTab(tab, 0, null);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, 0, null));
 
-        CriteriaHelper.pollInstrumentationThread(
-                () -> getActiveTabFile(false).exists(), "Active tab file should exist");
+        waitForActiveTabFileCreation(/* incognito= */ false);
 
         // Verify first save
         ThreadUtils.runOnUiThreadBlocking(
@@ -134,10 +124,7 @@ public class ActiveTabCacheTest {
         Tab newTab = page.getTab();
 
         // Save again with new state and different index
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActiveTabCache.saveActiveTab(newTab, 1, null);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(newTab, 1, null));
 
         // Verify second save replaced the first
         ThreadUtils.runOnUiThreadBlocking(
@@ -151,23 +138,104 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
-    public void testClearActiveTab() throws ExecutionException {
+    public void testClearActiveTab() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActiveTabCache.saveActiveTab(tab, 0, null);
-                });
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, 0, null));
 
-        CriteriaHelper.pollInstrumentationThread(
-                () -> getActiveTabFile(false).exists(), "Active tab file should exist");
+        waitForActiveTabFileCreation(/* incognito= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActiveTabCache.clearActiveTab(false);
                     CachedActiveTab cachedTab = mActiveTabCache.restoreActiveTab(false, null);
-                    assertNull("Cached tab should be null after clear", cachedTab);
+                    assertNull(cachedTab);
                 });
+    }
+
+    @Test(expected = RuntimeException.class)
+    @MediumTest
+    public void testSaveIncognito_NullCipherFactory_ThrowsException() {
+        WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
+        Tab tab = page.getTab();
+        assertTrue(tab.isOffTheRecord());
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, 0, null));
+    }
+
+    @Test(expected = RuntimeException.class)
+    @MediumTest
+    public void testRestoreIncognito_NullCipherFactory_ThrowsException() {
+        WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
+        Tab tab = page.getTab();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActiveTabCache.saveActiveTab(tab, 0, mCipherFactory));
+
+        waitForActiveTabFileCreation(/* incognito= */ true);
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.restoreActiveTab(true, null));
+    }
+
+    @Test
+    @MediumTest
+    public void testSaveAndRestoreRegular_WithCipherFactory() {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        Tab tab = page.getTab();
+
+        // Pass a cipher factory even though it's regular tab. It will not be used.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> mActiveTabCache.saveActiveTab(tab, 0, mCipherFactory));
+
+        waitForActiveTabFileCreation(/* incognito= */ false);
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Restoration should work because it is a regular tab.
+                    CachedActiveTab cachedTab = mActiveTabCache.restoreActiveTab(false, null);
+                    assertNotNull(cachedTab);
+                    assertEquals(tab.getUrl().getSpec(), cachedTab.tabState.url.getSpec());
+                });
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Restoration should still work even with a cipher factory.
+                    CachedActiveTab cachedTab =
+                            mActiveTabCache.restoreActiveTab(false, mCipherFactory);
+                    assertNotNull(cachedTab);
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testFlatBufferUsage() {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        Tab tab = page.getTab();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, 0, null));
+        waitForActiveTabFileCreation(/* incognito= */ false);
+    }
+
+    @Test
+    @MediumTest
+    public void testCleanupWindow() {
+        WebPageStation page = mActivityTestRule.startOnBlankPage();
+        Tab tab = page.getTab();
+
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, 0, null));
+        waitForActiveTabFileCreation(/* incognito= */ false);
+    }
+
+    private File getActiveTabFile(boolean incognito) {
+        String fileName = incognito ? "flatbufferv1_0_incognito" : "flatbufferv1_0_regular";
+        return new File(
+                ContextUtils.getApplicationContext().getDir("active_tabs", Context.MODE_PRIVATE),
+                fileName);
+    }
+
+    private void waitForActiveTabFileCreation(boolean incognito) {
+        CriteriaHelper.pollInstrumentationThread(
+                () -> getActiveTabFile(incognito).exists(), "Active tab file should exist");
     }
 }
