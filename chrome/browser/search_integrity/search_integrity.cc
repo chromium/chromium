@@ -32,7 +32,8 @@ namespace {
 // A list of common words to ignore when comparing search engine names from the
 // prepopulated engines list file.
 static constexpr auto kStopList = base::MakeFixedFlatSet<std::u16string_view>(
-    {u"search", u"engine", u"web", u"internet", u"net", u"plus", u"next"});
+    {u"search", u"engine", u"web", u"internet", u"net", u"plus", u"next",
+     u"the", u"and"});
 
 // Returns true if candidate_name and default_name share at least one common
 // word.
@@ -40,29 +41,33 @@ bool IsNameMatch(std::u16string_view candidate_name,
                  std::u16string_view default_name) {
   constexpr size_t kMinWordLength = 3;
 
-  for (const auto& name_one_piece : base::SplitStringPiece(
-           candidate_name, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
-           base::SPLIT_WANT_NONEMPTY)) {
-    if (name_one_piece.length() < kMinWordLength) {
-      continue;
-    }
-    const std::u16string lower_name_one = base::i18n::ToLower(name_one_piece);
-
-    if (kStopList.contains(lower_name_one)) {
-      continue;
-    }
-
-    for (const auto& name_two_piece : base::SplitStringPiece(
-             default_name, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
-             base::SPLIT_WANT_NONEMPTY)) {
-      if (name_two_piece.length() < kMinWordLength) {
-        continue;
+  auto get_words = [](std::u16string_view text) {
+    std::vector<std::u16string> words;
+    for (auto piece : base::SplitStringPiece(text, base::kWhitespaceUTF16,
+                                             base::TRIM_WHITESPACE,
+                                             base::SPLIT_WANT_NONEMPTY)) {
+      if (piece.length() >= kMinWordLength) {
+        words.push_back(base::i18n::ToLower(piece));
       }
-      if (lower_name_one == base::i18n::ToLower(name_two_piece)) {
+    }
+    return words;
+  };
+
+  const auto candidate_words = get_words(candidate_name);
+  const auto default_words = get_words(default_name);
+
+  for (const auto& word : candidate_words) {
+    if (kStopList.contains(word)) {
+      continue;
+    }
+
+    for (const auto& def_word : default_words) {
+      if (word == def_word) {
         return true;
       }
     }
   }
+
   return false;
 }
 
