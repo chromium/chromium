@@ -637,12 +637,6 @@ TEST_F(PhishingClassifierDelegateTest, NoStartPhishingDetection) {
   LoadHTMLWithUrlOverride("123", redir_url.spec().c_str());
   Mock::VerifyAndClearExpectations(classifier_);
 
-  // Although the redirecting URL HTML has already loaded, browser requested
-  // from the original URL, but it shouldn't trigger anything, if with new
-  // observers.
-  if (!base::FeatureList::IsEnabled(kClientSideDetectionNewObservers)) {
-    EXPECT_CALL(*classifier_, BeginClassification(_));
-  }
   OnStartPhishingDetection(url4);
   page_text = MakeRefPtrString(u"123");
   {

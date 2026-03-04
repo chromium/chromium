@@ -167,9 +167,10 @@ void PhishingClassifierDelegate::StartPhishingDetection(
 void PhishingClassifierDelegate::DidCommitProvisionalLoad(
     ui::PageTransition transition) {
   blink::WebLocalFrame* frame = render_frame()->GetWebFrame();
-  // A new page is starting to load, so cancel classificaiton.
+  // A new page is starting to load, so cancel classificaiton, and reset URL.
   CancelPendingClassification(CancelClassificationReason::kNavigateAway);
   renderer_layout_finished_ = false;
+  last_finished_load_url_ = GURL();
   if (!frame->Parent())
     last_main_frame_transition_ = transition;
 }
@@ -188,15 +189,29 @@ void PhishingClassifierDelegate::PageCaptured(
       return;
     }
 
-    // Note: Currently, if the url hasn't changed, we won't restart
-    // classification in this case.  We may want to adjust this.
+    RecordEvent(
+        SBPhishingClassifierEvent::kPhishingClassifierPageFinishedLoading);
 
     last_finished_load_url_ =
         render_frame()->GetWebFrame()->GetDocument().Url();
 
+    // Browser side has not made a request yet, so no need to try to start the
+    // classification. If browser side makes the request for the same URL, it
+    // will start the classification then.
+    if (!is_phishing_detection_running_) {
+      return;
+    }
+
     GURL stripped_last_load_url(StripRef(last_finished_load_url_));
-    // Check if toplevel URL has changed.
-    if (stripped_last_load_url == StripRef(last_url_sent_to_classifier_)) {
+    // If we're classifying at the moment and there's a new finished load on the
+    // page, do not attempt to start a new classification. We will only restart
+    // classification by cancelling an ongoing when there's a new browser side
+    // request.
+    if (is_classifying_ &&
+        stripped_last_load_url == StripRef(last_url_sent_to_classifier_)) {
+      RecordEvent(
+          SBPhishingClassifierEvent::
+              kPhishingClassifierPageFinishedLoadingAgainDuringClassification);
       return;
     }
 
@@ -217,14 +232,17 @@ void PhishingClassifierDelegate::PageCaptured(
         render_frame()->GetWebFrame()->GetDocument().Url();
 
     // Browser side has not made a request yet, so no need to try to start the
-    // classification.
+    // classification. If browser side makes the request for the same URL, it
+    // will start the classification then.
     if (!is_phishing_detection_running_) {
       return;
     }
 
     GURL stripped_last_load_url(StripRef(last_finished_load_url_));
     // If we're classifying at the moment and there's a new finished load on the
-    // page, do not attempt to start a new classification.
+    // page, do not attempt to start a new classification. We will only restart
+    // classification by cancelling an ongoing when there's a new browser side
+    // request.
     if (is_classifying_ &&
         stripped_last_load_url == StripRef(last_url_sent_to_classifier_)) {
       RecordEvent(
