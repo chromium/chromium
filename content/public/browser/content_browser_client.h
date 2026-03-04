@@ -2258,14 +2258,15 @@ class CONTENT_EXPORT ContentBrowserClient {
       mojo::PendingRemote<network::mojom::URLLoaderClient> client)>;
 
   // Allows the embedder to return a callback that is capable of loading a
-  // service worker navigation preload request. Similar to
+  // service worker initiated navigational preload request (e.g., navigation
+  // preload or synthetic response). Similar to
   // |WillCreateURLLoaderRequestInterceptors()|, but only allows for synchronous
   // decisions of whether to handle the preload request with no fallback. As a
   // result of being synchronous, the embedder can decide which, if there are
   // multiple, URLLoader handlers is appropriate. If the embedder returns a null
   // callback, the default behavior will be used to fetch the request.
   virtual URLLoaderRequestHandler
-  CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+  CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
       FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& resource_request);
 

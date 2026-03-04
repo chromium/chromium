@@ -726,7 +726,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       scoped_refptr<base::SequencedTaskRunner> navigation_response_task_runner)
       override;
   content::ContentBrowserClient::URLLoaderRequestHandler
-  CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+  CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
       content::FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& resource_request) override;
   bool WillInterceptWebSocket(content::RenderFrameHost* frame) override;

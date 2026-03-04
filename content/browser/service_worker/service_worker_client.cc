@@ -1248,13 +1248,11 @@ ServiceWorkerClient::TakeInterceptingPreloadHandler(
     return std::nullopt;
   }
 
-  if (ContentBrowserClient::URLLoaderRequestHandler
-          embedder_url_loader_handler =
-              GetContentClient()
-                  ->browser()
-                  ->CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-                      ongoing_navigation_frame_tree_node_id_,
-                      resource_request)) {
+  if (ContentBrowserClient::URLLoaderRequestHandler embedder_url_loader_handler =
+          GetContentClient()
+              ->browser()
+              ->CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
+                  ongoing_navigation_frame_tree_node_id_, resource_request)) {
     return std::move(embedder_url_loader_handler);
   }
 
@@ -1278,10 +1276,11 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
     // We skip `WillCreateURLLoaderFactory` below, because it is already
     // included in `network_url_loader_factory_for_prefetch_` (see
     // `PrefetchNetworkContext::CreateNewURLLoaderFactory()`).
-    // We also skip `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`,
+    // We also skip
+    // `CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest`,
     // because this is a prefetch request and don't have to consult with search
     // prefetch cache via
-    // `CreateURLLoaderHandlerForServiceWorkerNavigationPreload`.
+    // `CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest`.
     return network_url_loader_factory_for_prefetch_;
   }
 
@@ -1292,13 +1291,12 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       // may wish to support asynchronous decisions using
       // |URLLoaderRequestInterceptor| in the same fashion that they are used
       // for navigation requests.
-      if (ContentBrowserClient::URLLoaderRequestHandler
-              embedder_url_loader_handler =
-                  GetContentClient()
-                      ->browser()
-                      ->CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-                          ongoing_navigation_frame_tree_node_id_,
-                          resource_request)) {
+      if (ContentBrowserClient::URLLoaderRequestHandler embedder_url_loader_handler =
+              GetContentClient()
+                  ->browser()
+                  ->CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
+                      ongoing_navigation_frame_tree_node_id_,
+                      resource_request)) {
         return base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
             std::move(embedder_url_loader_handler));
       }

@@ -6534,7 +6534,7 @@ ChromeContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
 
 content::ContentBrowserClient::URLLoaderRequestHandler
 ChromeContentBrowserClient::
-    CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+    CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
         content::FrameTreeNodeId frame_tree_node_id,
         const network::ResourceRequest& resource_request) {
   SearchPrefetchURLLoader::RequestHandler prefetch_handler =

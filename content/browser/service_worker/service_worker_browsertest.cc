@@ -8248,7 +8248,7 @@ class MockContentBrowserClientWithInterceptor
   void set_intercept(bool intercept) { intercept_ = intercept; }
 
   URLLoaderRequestHandler
-  CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
+  CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
       FrameTreeNodeId frame_tree_node_id,
       const network::ResourceRequest& resource_request) override {
     if (intercept_) {

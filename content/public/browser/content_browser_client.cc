@@ -1200,10 +1200,10 @@ ContentBrowserClient::WillCreateURLLoaderRequestInterceptors(
   return std::vector<std::unique_ptr<URLLoaderRequestInterceptor>>();
 }
 
-ContentBrowserClient::URLLoaderRequestHandler
-ContentBrowserClient::CreateURLLoaderHandlerForServiceWorkerNavigationPreload(
-    FrameTreeNodeId frame_tree_node_id,
-    const network::ResourceRequest& resource_request) {
+ContentBrowserClient::URLLoaderRequestHandler ContentBrowserClient::
+    CreateURLLoaderHandlerForServiceWorkerInitiatedNavigationRequest(
+        FrameTreeNodeId frame_tree_node_id,
+        const network::ResourceRequest& resource_request) {
   return ContentBrowserClient::URLLoaderRequestHandler();
 }
 
