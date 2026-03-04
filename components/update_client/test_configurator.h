@@ -124,6 +124,7 @@ class TestConfigurator : public Configurator {
       std::optional<bool> is_machine_externally_managed);
   void SetIsNetworkConnectionMetered(bool is_network_connection_metered);
   void SetUpdaterStateProvider(UpdaterStateProvider update_state_provider);
+  void SetProdId(const std::string& prod_id);
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -155,6 +156,7 @@ class TestConfigurator : public Configurator {
   bool is_network_connection_metered_;
   base::ScopedTempDir crx_cache_root_temp_dir_;
   scoped_refptr<CrxCache> crx_cache_;
+  std::string prod_id_ = "fake_prodid";
 };
 
 }  // namespace update_client

@@ -11,6 +11,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/version_info/channel.h"
 #include "components/activity_reporter/activity_reporter.h"
 #include "components/activity_reporter/activity_reporter_for_testing.h"
@@ -61,6 +62,8 @@ class MockUpdateClient : public update_client::UpdateClient {
   MOCK_METHOD2(SendRegistrationPing,
                void(const update_client::CrxComponent& crx_component,
                     update_client::Callback callback));
+  MOCK_METHOD2(CleanupStaleDownloads,
+               void(base::Time older_than, base::OnceClosure callback));
 
  private:
   ~MockUpdateClient() override = default;

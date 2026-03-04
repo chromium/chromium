@@ -15,6 +15,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "components/crx_file/crx_verifier.h"
 #include "components/update_client/update_client_errors.h"
@@ -485,6 +486,11 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
   // case, the updates will run to completion. Calling this function has no
   // effect if updates are not currently executed or queued up.
   virtual void Stop() = 0;
+
+  // Perform a best-effort cleanup up of temporary download directories older
+  // than the given time.
+  virtual void CleanupStaleDownloads(base::Time older_than,
+                                     base::OnceClosure callback) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<UpdateClient>;

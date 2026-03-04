@@ -28,11 +28,14 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/types/expected.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/build_config.h"
@@ -63,6 +66,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+
+#include "base/win/windows_types.h"
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace update_client {
 namespace {
@@ -6341,6 +6350,98 @@ TEST_F(UpdateClientTest, UnsupportedOperationType) {
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[1].id);
   EXPECT_EQ(ComponentState::kUpdateError, items[2].state);
   EXPECT_EQ("jebgalgnebhfojomionfpkfelancnnkf", items[2].id);
+}
+
+class UpdateClientCleanupTest : public UpdateClientTest {
+ protected:
+  base::FilePath temp_dir_;
+
+  void SetUp() override {
+#if BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(base::GetSecureTempDirectory(&temp_dir_));
+#else   // BUILDFLAG(IS_WIN)
+    ASSERT_TRUE(base::GetTempDir(&temp_dir_));
+#endif  // BUILDFLAG(IS_WIN)
+
+    config()->SetProdId(
+        base::Uuid::GenerateRandomV4().AsLowercaseString().substr(0, 8));
+  }
+
+  base::FilePath CreateFakeDownloadDir(const std::string& prod_id,
+                                       const std::string& suffix,
+                                       base::TimeDelta age) {
+    // Pattern matching `UpdateClient::CreateDownloadDir`.
+    const base::FilePath path = temp_dir_.Append(
+        base::StrCat({UTF8ToStringType(prod_id),
+                      FILE_PATH_LITERAL("_chrome_url_fetcher_")}) +
+        UTF8ToStringType(suffix));
+    EXPECT_TRUE(base::CreateDirectory(path));
+
+    if (age.is_zero()) {
+      return path;
+    }
+
+#if BUILDFLAG(IS_WIN)
+    // Manually set the directory's creation/access time to simulate age.
+    FILETIME creation_filetime =
+        (base::Time::NowFromSystemTime() + age).ToFileTime();
+    base::File download_dir(path, base::File::FLAG_OPEN |
+                                      base::File::FLAG_WIN_BACKUP_SEMANTICS |
+                                      base::File::FLAG_WRITE_ATTRIBUTES);
+    EXPECT_TRUE(download_dir.IsValid());
+    EXPECT_TRUE(::SetFileTime(download_dir.GetPlatformFile(),
+                              &creation_filetime, NULL, NULL));
+    download_dir.Close();
+#endif  // BUILDFLAG(IS_WIN)
+
+    return path;
+  }
+};
+
+TEST_F(UpdateClientCleanupTest, CleansStaleDirectoriesOnConstruction) {
+  constexpr base::TimeDelta kStaleTime = base::Seconds(0);
+  constexpr base::TimeDelta kFreshTime = base::Minutes(10);
+
+  const base::FilePath stale_dir =
+      CreateFakeDownloadDir(config()->GetProdId(), "stale", kStaleTime);
+  const base::FilePath fresh_dir =
+      CreateFakeDownloadDir(config()->GetProdId(), "fresh", kFreshTime);
+
+  // Create a stale directory for a different prod_id. It should not be deleted.
+  const base::FilePath other_prod_dir = CreateFakeDownloadDir(
+      base::StrCat({"other_prod", config()->GetProdId()}), "stale", kStaleTime);
+
+  // Instantiate `UpdateClient` and call `CleanupStaleDownloads`, which should
+  // trigger the asynchronous cleanup.
+  base::MakeRefCounted<UpdateClientImpl>(
+      config(), base::MakeRefCounted<MockPingManagerImpl>(config()),
+      MockUpdateCheckerFactory<
+          MockUpdateCheckerImpl<UpdateCheckerOptionsUnsupportedOperationType>>()
+          .GetFactory())
+      ->CleanupStaleDownloads(base::Time::Now(), base::DoNothing());
+
+  // Wait to allow the cleanup task to execute.
+  base::ThreadPoolInstance::Get()->FlushForTesting();
+
+  EXPECT_FALSE(base::PathExists(stale_dir))
+      << stale_dir << " should be deleted.";
+
+#if BUILDFLAG(IS_WIN)
+  EXPECT_TRUE(base::PathExists(fresh_dir))
+      << fresh_dir << " should be preserved.";
+#else   // BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(base::PathExists(fresh_dir))
+      << fresh_dir << " should be deleted.";
+#endif  // BUILDFLAG(IS_WIN)
+
+  EXPECT_TRUE(base::PathExists(other_prod_dir))
+      << other_prod_dir << " should be preserved.";
+
+#if BUILDFLAG(IS_WIN)
+  ASSERT_TRUE(RetryFileOperation(&base::DeletePathRecursively, fresh_dir));
+#endif  // BUILDFLAG(IS_WIN)
+
+  ASSERT_TRUE(RetryFileOperation(&base::DeletePathRecursively, other_prod_dir));
 }
 
 TEST_F(UpdateClientTest,

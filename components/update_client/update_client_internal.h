@@ -16,6 +16,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "components/update_client/crx_downloader.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client.h"
@@ -62,6 +63,8 @@ class UpdateClientImpl : public UpdateClient {
   void SendPing(const CrxComponent& crx_component,
                 PingParams ping_params,
                 Callback callback) override;
+  void CleanupStaleDownloads(base::Time older_than,
+                             base::OnceClosure callback) override;
 
  private:
   ~UpdateClientImpl() override;

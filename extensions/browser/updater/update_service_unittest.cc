@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -23,6 +24,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/crx_file/id_util.h"
 #include "components/update_client/crx_update_item.h"
@@ -138,6 +140,9 @@ class FakeUpdateClient : public update_client::UpdateClient {
     uninstall_pings_.emplace_back(crx_component.app_id, crx_component.version,
                                   ping_params.extra_code1);
   }
+
+  void CleanupStaleDownloads(base::Time older_than,
+                             base::OnceClosure callback) override {}
 
   void set_delay_update(base::RepeatingClosure on_update) {
     delay_update_ = on_update;

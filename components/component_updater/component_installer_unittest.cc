@@ -30,6 +30,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "build/branding_buildflags.h"
@@ -113,6 +114,8 @@ class MockUpdateClient : public UpdateClient {
                      bool(const std::string& id, CrxUpdateItem* update_item));
   MOCK_CONST_METHOD1(IsUpdating, bool(const std::string& id));
   MOCK_METHOD0(Stop, void());
+  MOCK_METHOD2(CleanupStaleDownloads,
+               void(base::Time older_than, base::OnceClosure callback));
 
  private:
   ~MockUpdateClient() override = default;

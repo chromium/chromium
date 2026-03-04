@@ -15,6 +15,7 @@
 #include "base/containers/to_vector.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -22,6 +23,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "components/component_updater/component_updater_service_internal.h"
@@ -99,6 +101,8 @@ class MockUpdateClient : public UpdateClient {
                     Callback callback));
   MOCK_METHOD2(SendRegistrationPing,
                void(const CrxComponent& crx_component, Callback callback));
+  MOCK_METHOD2(CleanupStaleDownloads,
+               void(base::Time older_than, base::OnceClosure callback));
 
  private:
   ~MockUpdateClient() override = default;

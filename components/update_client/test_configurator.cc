@@ -117,7 +117,7 @@ std::vector<GURL> TestConfigurator::PingUrl() const {
 
 std::string TestConfigurator::GetProdId() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return "fake_prodid";
+  return prod_id_;
 }
 
 base::Version TestConfigurator::GetBrowserVersion() const {
@@ -288,6 +288,11 @@ void TestConfigurator::SetUpdaterStateProvider(
     UpdaterStateProvider update_state_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   updater_state_provider_ = update_state_provider;
+}
+
+void TestConfigurator::SetProdId(const std::string& prod_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  prod_id_ = prod_id;
 }
 
 }  // namespace update_client

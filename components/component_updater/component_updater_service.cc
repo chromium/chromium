@@ -118,6 +118,9 @@ CrxUpdateService::CrxUpdateService(scoped_refptr<Configurator> config,
       scheduler_(std::move(scheduler)),
       update_client_(update_client),
       brand_(brand) {
+  update_client->CleanupStaleDownloads(
+      base::Time::Now(),
+      base::BindOnce([] { VLOG(2) << "CleanupStaleDownloads done"; }));
   AddObserver(this);
 }
 

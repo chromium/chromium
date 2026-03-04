@@ -12,6 +12,8 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -19,7 +21,10 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/strings/strcat.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/update_client/configurator.h"
@@ -30,6 +35,7 @@
 #include "components/update_client/protocol_parser.h"
 #include "components/update_client/task_check_for_update.h"
 #include "components/update_client/task_send_ping.h"
+#include "components/update_client/task_traits.h"
 #include "components/update_client/task_update.h"
 #include "components/update_client/update_checker.h"
 #include "components/update_client/update_client_errors.h"
@@ -251,6 +257,44 @@ void UpdateClientImpl::Stop() {
   for (auto& task : tasks_) {
     task->Cancel();
   }
+}
+
+void UpdateClientImpl::CleanupStaleDownloads(base::Time older_than,
+                                             base::OnceClosure callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!task_queue_.empty() || !tasks_.empty()) {
+    VLOG(2) << __func__ << ": skipping cleanup, tasks_: " << tasks_.size()
+            << ", task_queue_: " << task_queue_.size();
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+
+  // Clean up stale downloads in the temp directory.
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(
+          [](const base::FilePath::StringType& prod_id, base::Time older_than) {
+            base::FilePath temp_dir;
+#if BUILDFLAG(IS_WIN)
+            if (!base::GetSecureTempDirectory(&temp_dir)) {
+              return;
+            }
+#else   // BUILDFLAG(IS_WIN)
+            if (!base::GetTempDir(&temp_dir)) {
+              return;
+            }
+#endif  // BUILDFLAG(IS_WIN)
+
+            CleanupDirectoriesOlderThan(
+                temp_dir,
+                base::StrCat(
+                    {prod_id, FILE_PATH_LITERAL("_chrome_url_fetcher_*")}),
+                base::Time::Now() - older_than);
+          },
+          update_client::UTF8ToStringType(config_->GetProdId()), older_than),
+      std::move(callback));
 }
 
 void UpdateClientImpl::SendPing(const CrxComponent& crx_component,
