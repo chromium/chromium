@@ -62,7 +62,7 @@ public class PageZoomBarCoordinator {
      *
      * @param webContents WebContents that this zoom UI will control.
      */
-    public void show(WebContents webContents) {
+    public void show(@Nullable WebContents webContents) {
         PageZoomUma.logAppMenuSliderOpenedHistogram();
 
         // If inflating for the first time or showing from hidden, start animation

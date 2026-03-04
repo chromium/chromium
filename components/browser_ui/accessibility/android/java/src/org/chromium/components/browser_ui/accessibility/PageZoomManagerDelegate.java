@@ -5,6 +5,7 @@
 package org.chromium.components.browser_ui.accessibility;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -15,7 +16,7 @@ public interface PageZoomManagerDelegate {
     /**
      * @return the WebContents that should be used for the zoom manager.
      */
-    WebContents getWebContents();
+    @Nullable WebContents getWebContents();
 
     /**
      * @return the BrowserContextHandle that should be used for the zoom manager.

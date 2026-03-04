@@ -648,7 +648,7 @@ public class RootUiCoordinator
                 new PageZoomManager(
                         new PageZoomManagerDelegate() {
                             @Override
-                            public WebContents getWebContents() {
+                            public @Nullable WebContents getWebContents() {
                                 if (mActivityTabProvider.get() == null) {
                                     return null;
                                 }
@@ -1381,8 +1381,13 @@ public class RootUiCoordinator
                             return;
                         }
 
+                        WebContents webContents = tab.getWebContents();
+                        if (webContents == null) {
+                            return;
+                        }
+
                         WebContentsAccessibility wcax =
-                                WebContentsAccessibility.fromWebContents(tab.getWebContents());
+                                WebContentsAccessibility.fromWebContents(webContents);
                         if (wcax != null) {
                             wcax.setOccludingRect(rect, viewId);
                         }
@@ -1400,8 +1405,13 @@ public class RootUiCoordinator
                             return;
                         }
 
+                        WebContents webContents = tab.getWebContents();
+                        if (webContents == null) {
+                            return;
+                        }
+
                         WebContentsAccessibility wcax =
-                                WebContentsAccessibility.fromWebContents(tab.getWebContents());
+                                WebContentsAccessibility.fromWebContents(webContents);
                         if (wcax != null) {
                             wcax.setOccludingRect(null, viewId);
                         }
@@ -1530,14 +1540,16 @@ public class RootUiCoordinator
 
         if (shareDelegate == null || tab == null) return;
 
+        WebContents webContents = tab.getWebContents();
+        assert webContents != null;
         if (shareDirectly) {
             RecordUserAction.record("MobileMenuDirectShare");
-            new UkmRecorder(tab.getWebContents(), "MobileMenu.DirectShare")
+            new UkmRecorder(webContents, "MobileMenu.DirectShare")
                     .addBooleanMetric("HasOccurred")
                     .record();
         } else {
             RecordUserAction.record("MobileMenuShare");
-            new UkmRecorder(tab.getWebContents(), "MobileMenu.Share")
+            new UkmRecorder(webContents, "MobileMenu.Share")
                     .addBooleanMetric("HasOccurred")
                     .record();
         }
@@ -1566,7 +1578,9 @@ public class RootUiCoordinator
 
             if (fromMenu) {
                 RecordUserAction.record("MobileMenuFindInPage");
-                new UkmRecorder(tab.getWebContents(), "MobileMenu.FindInPage")
+                WebContents webContents = tab.getWebContents();
+                assert webContents != null;
+                new UkmRecorder(webContents, "MobileMenu.FindInPage")
                         .addBooleanMetric("HasOccurred")
                         .record();
             } else {
@@ -1580,11 +1594,11 @@ public class RootUiCoordinator
             DemoPaintPreview.showForTab(mActivityTabProvider.get());
             return true;
         } else if (id == R.id.get_image_descriptions_id) {
+            WebContents webContents = mActivityTabProvider.get().getWebContents();
+            assert webContents != null;
             ImageDescriptionsController.getInstance()
                     .onImageDescriptionsMenuItemSelected(
-                            mActivity,
-                            mModalDialogManagerSupplier.get(),
-                            mActivityTabProvider.get().getWebContents());
+                            mActivity, mModalDialogManagerSupplier.get(), webContents);
             return true;
         } else if (id == R.id.page_zoom_id) {
             Tab tab = mActivityTabProvider.get();

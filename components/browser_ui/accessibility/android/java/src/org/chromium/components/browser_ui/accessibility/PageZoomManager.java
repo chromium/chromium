@@ -95,7 +95,9 @@ public class PageZoomManager {
      */
     @VisibleForTesting
     public void setZoomLevel(double newZoomLevel) {
-        HostZoomMap.setZoomLevel(mDelegate.getWebContents(), newZoomLevel);
+        WebContents webContents = mDelegate.getWebContents();
+        assert webContents != null;
+        HostZoomMap.setZoomLevel(webContents, newZoomLevel);
     }
 
     /**
