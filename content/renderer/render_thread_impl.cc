@@ -1457,12 +1457,11 @@ RenderThreadImpl::GetMediaSequencedTaskRunner() {
   DCHECK(main_thread_runner()->BelongsToCurrentThread());
   if (base::FeatureList::IsEnabled(kUseThreadPoolForMediaTaskRunner)) {
     if (!media_task_runner_) {
-      // TODO(crbug.com/470337728): ensure the sequenced task runner is executed
-      // in the right priority when blink::features::kWebRtcUseMediaThreadTypes
-      // is enabled.
-      media_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
-          base::TaskTraits{base::TaskPriority::USER_VISIBLE,
-                           base::WithBaseSyncPrimitives(), base::MayBlock()});
+      media_task_runner_ =
+          base::ThreadPool::CreateSequencedTaskRunner(base::TaskTraits{
+              base::WithBaseSyncPrimitives(), base::MayBlock(),
+              base::InheritThreadType(),
+              base::MaxThreadType(base::ThreadType::kPresentation)});
     }
     return media_task_runner_;
   }
