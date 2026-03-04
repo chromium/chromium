@@ -5327,6 +5327,24 @@ TEST_P(TabStripModelTest, PinTabInGroupUngroups) {
   tabstrip()->CloseAllTabs();
 }
 
+TEST_P(TabStripModelTest, TogglePinnedTabInSplitUnsplits) {
+  ASSERT_NO_FATAL_FAILURE(
+      PrepareTabstripForSelectionTest(tabstrip(), 5, 2, {0}));
+  tabstrip()->ActivateTabAt(0);
+  tabstrip()->AddToNewSplit({1}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  tabstrip()->ActivateTabAt(2);
+  tabstrip()->AddToNewSplit({3}, split_tabs::SplitTabVisualData(),
+                            split_tabs::SplitTabCreatedSource::kToolbarButton);
+  EXPECT_EQ("0ps 1ps 2s 3s 4", GetTabStripStateString(tabstrip()));
+
+  EXPECT_EQ(1, tabstrip()->SetTabPinned(0, false));
+  EXPECT_EQ("1p 0 2s 3s 4", GetTabStripStateString(tabstrip()));
+
+  EXPECT_EQ(1, tabstrip()->SetTabPinned(2, true));
+  EXPECT_EQ("1p 2p 0 3 4", GetTabStripStateString(tabstrip()));
+}
+
 TEST_P(TabStripModelTest, RemoveTabFromGroupNoopForUngroupedTab) {
   tabstrip()->AppendWebContents(CreateWebContents(), true);
 
