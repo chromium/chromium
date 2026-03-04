@@ -59,8 +59,7 @@ For complex types:
 You **MUST** register the test in the `fuzztests` list (in alphabetical order)
 of the **executable** `test` target.
 
-**Case A: File is in a `test()` target:** Add
-`//third_party/fuzztest:fuzztest_gtest_main` to `deps`.
+**Case A: File is in a `test()` target**
 
 ```gn
 test("my_component_unittests") {
@@ -71,10 +70,10 @@ test("my_component_unittests") {
     "MyComponentFuzzTest.MyPropertyFunction",
   ]
 
-  deps = [
-    # ... existing deps ...
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
+  # No dependency changes are needed here. The build system
+  # automatically adds FuzzTest dependencies for targets
+  # with a `fuzztests` list.
+
 }
 ```
 
