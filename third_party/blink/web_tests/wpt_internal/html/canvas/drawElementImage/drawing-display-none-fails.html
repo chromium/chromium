@@ -19,10 +19,11 @@
     await new Promise(requestAnimationFrame);
     await new Promise(setTimeout);
     const context_2d = canvas_2d.getContext('2d');
-    assert_throws_dom(
-      "InvalidStateError",
+    assert_throws_js(
+      TypeError,
       () => context_2d.drawElementImage(canvas_2d_div, 0, 0),
-      'drawElementImage cannot draw display:none elements.');
+      'drawElementImage cannot draw display:none elements.'
+    );
   }, 'drawElementImage with display:none element');
 
   promise_test(async function() {
@@ -37,11 +38,12 @@
     const internalformat = context_gl.RGBA;
     const format = context_gl.RGBA;
     const type = context_gl.UNSIGNED_BYTE;
-    assert_throws_dom(
-      "InvalidStateError",
+    assert_throws_js(
+      TypeError,
         () => context_gl.texElementImage2D(
             context_gl.TEXTURE_2D, level, internalformat, format, type,
             canvas_3d_div),
-      'texElementImage2D cannot draw display:none elements.');
+      'texElementImage2D cannot draw display:none elements.'
+    );
   }, 'texElementImage2D with display:none element');
 </script>

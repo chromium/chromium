@@ -8,23 +8,21 @@
   <div id="element" style="width: 10px; height: 10px;"></div>
 </canvas>
 <script>
-  promise_test(() => {
+  test(() => {
     let draw_transform = new DOMMatrix();
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix();
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform for identity draw transform should be an identity matrix');
 
-  promise_test(() => {
+  test(() => {
     let draw_transform = new DOMMatrix().translateSelf(17, -9);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix().translateSelf(17, -9);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform should account for translation in the input transform');
 
-  promise_test((t) => {
+  test((t) => {
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
@@ -33,10 +31,9 @@
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix().scaleSelf(2, 0.5);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform should account for scale in the input transform');
 
-  promise_test((t) => {
+  test((t) => {
     t.add_cleanup(() => {
       element.style.transform = '';
     });
@@ -45,10 +42,9 @@
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix();
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform should not include transform on the element');
 
-  promise_test((t) => {
+  test((t) => {
     t.add_cleanup(() => {
       canvas.getContext('2d').reset();
     });
@@ -57,26 +53,20 @@
     let element_transform = canvas.getElementTransform(element, ctm);
     let expected = new DOMMatrix().translateSelf(7, 11);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform should not automatically include the current transform matrix, but should pass it through');
 
-  promise_test(async (t) => {
-    t.add_cleanup(async () => {
+  test((t) => {
+    t.add_cleanup(() => {
       canvas.style.zoom = '';
-      await new Promise(requestAnimationFrame);
-      await new Promise(setTimeout);
     });
     canvas.style.zoom = '1.5';
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
     let draw_transform = new DOMMatrix().translateSelf(7, 11);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix().translateSelf(7, 11);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform should not be affected by zoom on the canvas');
 
-  promise_test((t) => {
+  test((t) => {
     t.add_cleanup(() => {
       element.style.transformOrigin = '';
     });
@@ -88,20 +78,15 @@
       .rotateSelf(45)
       .translateSelf(5, 5);
     assert_array_approx_equals(element_transform.toFloat64Array(), expected.toFloat64Array(), 0.001);
-    return Promise.resolve();
   }, 'Element transform should account for transform-origin');
 
-  promise_test(async (t) => {
-    t.add_cleanup(async () => {
+  test((t) => {
+    t.add_cleanup(() => {
       canvas.width = 100;
       canvas.height = 100;
-      await new Promise(requestAnimationFrame);
-      await new Promise(setTimeout);
     });
     canvas.width = 200;
     canvas.height = 50;
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
     let draw_transform = new DOMMatrix().translateSelf(7, 11);
     let element_transform = canvas.getElementTransform(element, draw_transform);
     let expected = new DOMMatrix()
@@ -109,21 +94,16 @@
       .translateSelf(7, 11)
       .scaleSelf(2, 0.5);
     assert_array_equals(element_transform.toFloat64Array(), expected.toFloat64Array());
-    return Promise.resolve();
   }, 'Element transform should account for canvas pixel scale');
 
-  promise_test(async(t) => {
-    t.add_cleanup(async() => {
-      await new Promise(requestAnimationFrame);
-      await new Promise(setTimeout);
+  test((t) => {
+    t.add_cleanup(() => {
       canvas.width = 100;
       canvas.height = 100;
       element.style.transformOrigin = '0 0';
     });
     canvas.width = 200;
     canvas.height = 50;
-    await new Promise(requestAnimationFrame);
-    await new Promise(setTimeout);
     let draw_transform = new DOMMatrix()
       .translateSelf(42, 17)
       .rotateSelf(45);
@@ -137,7 +117,6 @@
       .scaleSelf(2, 0.5)
       .translateSelf(5, 5);
     assert_array_approx_equals(element_transform.toFloat64Array(), expected.toFloat64Array(), 0.001);
-    return Promise.resolve();
   }, 'Element transform should account for canvas pixel scale, transform-origin, and a complex draw transform');
 </script>
 </html>

@@ -42,8 +42,6 @@ promise_test(async () => {
     "Can't draw canvas children if layoutsubtree is not specified.");
 
   canvas.toggleAttribute("layoutsubtree"); // Add attribute.
-  await new Promise(requestAnimationFrame);
-  await new Promise(setTimeout);
   // Should not throw an exception.
   canvas.getContext("2d").drawElementImage(child, 20, 30);
 

@@ -338,10 +338,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void ResetLayer();
 
-  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor() {
-    return grid_scale_factor_snapshot_;
-  }
-  void TakeGridScaleFactorSnapshot();
+  gfx::Vector2dF PhysicalPixelToCanvasGridScaleFactor();
 
   // If `element` is drawn into the canvas's coordinate system with
   // `draw_transform`, this returns the transform that can be applied to
@@ -422,9 +419,6 @@ class CORE_EXPORT HTMLCanvasElement final
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;
   bool style_is_visible_ = false;
-  // Snapshot of the scale factor from physical pixels to the canvas grid,
-  // recorded during the most recent paint update.
-  gfx::Vector2dF grid_scale_factor_snapshot_{1.f, 1.f};
 
   // Used for OffscreenCanvas that controls this HTML canvas element
   // and for low latency mode.

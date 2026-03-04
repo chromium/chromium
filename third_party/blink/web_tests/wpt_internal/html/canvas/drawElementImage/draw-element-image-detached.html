@@ -24,9 +24,9 @@
     let ctx = canvas.getContext('2d');
     ctx.fillStyle = 'rgb(3, 4, 5)';
     ctx.fillRect(0, 0, 200, 200);
-    assert_throws_dom(
-      "InvalidStateError",
+    assert_throws_js(TypeError,
       () => ctx.drawElementImage(child, 20, 30),
       "Can't draw into a detached canvas.");
+
   }, 'canvas drawElementImage throws for a detached canvas due to lack of layout');
 </script>
