@@ -51,10 +51,6 @@
 namespace gpu {
 namespace {
 
-// Allows CompoundImageBacking to allocate backings during runtime if a
-// compatible backing to serve clients requested usage is not already present.
-BASE_FEATURE(kUseDynamicBackingAllocations, base::FEATURE_DISABLED_BY_DEFAULT);
-
 constexpr AccessStreamSet kMemoryStreamSet = {SharedImageAccessStream::kMemory};
 
 // Unique GUIDs for child backings.
@@ -1636,7 +1632,7 @@ SharedImageBacking* CompoundImageBacking::GetOrAllocateBacking(
   // If no backing is found, we will try to create a new one. This feature is
   // disabled by default currently until SharedImageCopyManager is fully ready
   // to support all the existing gpu-gpu copy usages.
-  if (base::FeatureList::IsEnabled(kUseDynamicBackingAllocations) &&
+  if (base::FeatureList::IsEnabled(features::kUseDynamicBackingAllocations) &&
       shared_image_factory_) {
     SharedImageUsageSet usage = GetUsageFromAccessStream(stream);
     auto* gpu_backing_factory = shared_image_factory_->GetFactoryByUsage(
