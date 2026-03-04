@@ -433,6 +433,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
         }
       }
     })");
+    case ModelBasedCapabilityKey::kContentAnnotation:
+      // TODO(crbug.com/486232932): Add network traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
   }
 }
 
@@ -461,6 +464,7 @@ bool IsAccessTokenRequiredForFeature(ModelBasedCapabilityKey feature) {
     case ModelBasedCapabilityKey::kAmountExtraction:
     case ModelBasedCapabilityKey::kIosSmartTabGrouping:
     case ModelBasedCapabilityKey::kSkills:
+    case ModelBasedCapabilityKey::kContentAnnotation:
       return true;
     case ModelBasedCapabilityKey::kFormsClassifications:
       return !base::FeatureList::IsEnabled(

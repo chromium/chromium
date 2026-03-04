@@ -105,8 +105,8 @@ class ContentAnnotatorService
   // annotation eligibility.
   void MaybeAnnotate(CacheIterator it);
 
-  // Generates annotations based on the provided `prompt`.
-  void GenerateAnnotations(std::string prompt);
+  // Generates annotations based on the provided `page_context`.
+  void GenerateAnnotations(optimization_guide::proto::PageContext page_context);
 
   // Handles the result of the model execution from `GenerateAnnotations`.
   void HandleModelExecutionResult(

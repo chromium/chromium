@@ -11,6 +11,7 @@ import "components/optimization_guide/proto/features/amount_extraction.proto";
 import "components/optimization_guide/proto/features/bling_prototyping.proto";
 import "components/optimization_guide/proto/features/classify_api.proto";
 import "components/optimization_guide/proto/features/compose.proto";
+import "components/optimization_guide/proto/features/content_annotation.proto";
 import "components/optimization_guide/proto/features/contextual_tasks_context.proto";
 import "components/optimization_guide/proto/features/default.proto";
 import "components/optimization_guide/proto/features/enhanced_calendar.proto";
@@ -114,6 +115,8 @@ message LogAiDataRequest {
     ClassifyApiLoggingData classify_api = 35;
 
     FindsLoggingData finds = 36;
+
+    ContentAnnotationLoggingData content_annotation = 37;
 
     DefaultLoggingData default = 1000;
   }

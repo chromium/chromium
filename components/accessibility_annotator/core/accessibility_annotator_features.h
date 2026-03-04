@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/time/time.h"
 
 namespace accessibility_annotator {
 
@@ -23,6 +24,9 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<double> kContentAnnotatorSensitivityThreshold;
 extern const base::FeatureParam<std::string>
     kContentAnnotatorSupportedLanguages;
+extern const base::FeatureParam<base::TimeDelta>
+    kContentAnnotatorAnnotationTimeout;
+extern const base::FeatureParam<bool> kContentAnnotatorEnableFullAnnotation;
 
 }  // namespace accessibility_annotator
 

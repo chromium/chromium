@@ -5,6 +5,7 @@
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 
@@ -12,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/types/optional_util.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier.h"
 #include "components/accessibility_annotator/content/content_annotator/content_classifier_types.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -19,6 +21,7 @@
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
 #include "components/optimization_guide/core/model_execution/remote_model_executor.h"
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
+#include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
 #include "components/passage_embeddings/content/page_embeddings_service.h"
@@ -200,19 +203,26 @@ void ContentAnnotatorService::MaybeAnnotate(CacheIterator it) {
       PassesSafetyChecks(result);
   base::UmaHistogramBoolean("AccessibilityAnnotator.FullAnnotationReached",
                             reached_annotation);
+  if (reached_annotation && kContentAnnotatorEnableFullAnnotation.Get()) {
+    optimization_guide::proto::PageContext page_context;
+    page_context.set_url(complete_data.url.spec());
+    page_context.set_title(complete_data.page_title.value());
+    *page_context.mutable_annotated_page_content() =
+        complete_data.annotated_page_content->data;
+    GenerateAnnotations(std::move(page_context));
+  }
   // TODO(crbug.com/485675335): Process classification result with gateway flag
   // to full annotation.
 }
+void ContentAnnotatorService::GenerateAnnotations(
+    optimization_guide::proto::PageContext page_context) {
+  optimization_guide::proto::ContentAnnotationRequest request;
+  *request.mutable_page_context() = std::move(page_context);
 
-// TODO(crbug.com/482383206): Update to handle APC ingestion.
-void ContentAnnotatorService::GenerateAnnotations(std::string prompt) {
-  optimization_guide::proto::StringValue request;
-  request.set_value(std::move(prompt));
-
-  // TODO(crbug.com/482383206): Use prod feature key once available.
   optimization_guide_remote_model_executor_->ExecuteModel(
-      optimization_guide::ModelBasedCapabilityKey::kTest, request,
-      optimization_guide::ModelExecutionOptions(),
+      optimization_guide::ModelBasedCapabilityKey::kContentAnnotation,
+      std::move(request),
+      {.execution_timeout = kContentAnnotatorAnnotationTimeout.Get()},
       base::BindOnce(&ContentAnnotatorService::HandleModelExecutionResult,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -220,14 +230,17 @@ void ContentAnnotatorService::GenerateAnnotations(std::string prompt) {
 void ContentAnnotatorService::HandleModelExecutionResult(
     optimization_guide::OptimizationGuideModelExecutionResult result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
-  if (result.response.has_value()) {
-    std::optional<optimization_guide::proto::StringValue> string_value =
-        optimization_guide::ParsedAnyMetadata<
-            optimization_guide::proto::StringValue>(result.response.value());
-    if (string_value) {
-      // TODO(crbug.com/482383206): Handle model execution response.
-      DVLOG(1) << "Model execution result: " << string_value->value();
-    }
+  const std::optional<std::string> extracted_data =
+      base::OptionalFromExpected(result.response)
+          .transform([](const optimization_guide::proto::Any& any) {
+            auto metadata = optimization_guide::ParsedAnyMetadata<
+                optimization_guide::proto::ContentAnnotationResponse>(any);
+            return metadata->extracted_data();
+          });
+
+  if (extracted_data.has_value() && !extracted_data->empty()) {
+    // TODO(crbug.com/482383206): Handle model execution response.
+    DVLOG(1) << "Successfully extracted data: " << *extracted_data;
   }
 }
 

@@ -6,6 +6,8 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted.h"
+#include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
@@ -16,7 +18,10 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
+#include "components/optimization_guide/proto/features/content_annotation.pb.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
@@ -32,6 +37,7 @@
 
 namespace accessibility_annotator {
 
+using ::testing::_;
 using ::testing::Field;
 using ::testing::Optional;
 using ::testing::Return;
@@ -142,6 +148,42 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
+  // Helper to trigger all necessary inputs for MaybeAnnotate.
+  void TriggerClassification(const GURL& url, base::Time base_time) {
+    // 1. Send PageContentAnnotated
+    service_->OnPageContentAnnotated(
+        page_content_annotations::HistoryVisit(base_time, url),
+        page_content_annotations::PageContentAnnotationsResult::
+            CreateContentVisibilityScoreResult(0.5f));
+
+    // 2. Send LanguageDetermined
+    translate::LanguageDetectionDetails details;
+    details.url = url;
+    details.adopted_language = "en";
+    service_->OnLanguageDetermined(details);
+
+    // 3. Send PageContentExtracted
+    scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
+        annotated_page_content = base::MakeRefCounted<
+            page_content_annotations::RefCountedAnnotatedPageContent>();
+    annotated_page_content->data.mutable_main_frame_data()->set_title(
+        "Test Title");
+    std::unique_ptr<content::WebContents> web_contents =
+        CreateTestWebContents();
+    content::NavigationSimulator::NavigateAndCommitFromBrowser(
+        web_contents.get(), url);
+    service_->OnPageContentExtracted(web_contents->GetPrimaryPage(),
+                                     annotated_page_content);
+
+    // 4. Send PageEmbeddingsAvailable
+    EXPECT_CALL(*mock_page_embeddings_service_,
+                GetEmbeddings(web_contents.get()))
+        .WillOnce(Return(std::vector<passage_embeddings::PassageEmbedding>{
+            {{"Test Title", passage_embeddings::PassageType::kTitle},
+             passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
+    service_->OnPageEmbeddingsAvailable(web_contents.get());
+  }
+
   ContentAnnotatorFeatureList feature_list_;
   history::HistoryService history_service_;
   optimization_guide::TestOptimizationGuideModelProvider
@@ -163,43 +205,11 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_ClassificationTriggered) {
   GURL url("https://example.com/");
   base::Time base_time = base::Time::Now();
 
-  // 1. Send PageContentAnnotated
-  auto result = page_content_annotations::PageContentAnnotationsResult::
-      CreateContentVisibilityScoreResult(0.5f);
-  service_->OnPageContentAnnotated(
-      page_content_annotations::HistoryVisit(base_time, url), result);
-
-  // 2. Send LanguageDetermined
-  translate::LanguageDetectionDetails details;
-  details.url = url;
-  details.adopted_language = "en";
-  service_->OnLanguageDetermined(details);
-
-  // 3. Send PageContentExtracted
-  scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
-      annotated_page_content = base::MakeRefCounted<
-          page_content_annotations::RefCountedAnnotatedPageContent>();
-  annotated_page_content->data.mutable_main_frame_data()->set_title(
-      "Test Title");
-
-  std::unique_ptr<content::WebContents> web_contents = CreateTestWebContents();
-  content::NavigationSimulator::NavigateAndCommitFromBrowser(web_contents.get(),
-                                                             url);
-
-  service_->OnPageContentExtracted(web_contents->GetPrimaryPage(),
-                                   annotated_page_content);
-
-  // 4. Send PageEmbeddingsAvailable
-  EXPECT_CALL(*mock_page_embeddings_service_, GetEmbeddings(web_contents.get()))
-      .WillOnce(Return(std::vector<passage_embeddings::PassageEmbedding>{
-          {{"Test Title", passage_embeddings::PassageType::kTitle},
-           passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
-
   // Expect Classify to be called when the final piece of data arrives.
   EXPECT_CALL(*mock_classifier_, Classify(testing::_))
       .WillOnce(Return(ContentClassificationResult()));
 
-  service_->OnPageEmbeddingsAvailable(web_contents.get());
+  TriggerClassification(url, base_time);
 }
 
 TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
@@ -299,34 +309,7 @@ TEST_F(ContentAnnotatorServiceTest,
       [&](ContentClassificationResult mock_result) {
         EXPECT_CALL(*mock_classifier_, Classify(testing::_))
             .WillOnce(Return(mock_result));
-
-        service_->OnPageContentAnnotated(
-            page_content_annotations::HistoryVisit(base_time, url),
-            page_content_annotations::PageContentAnnotationsResult::
-                CreateContentVisibilityScoreResult(0.5f));
-
-        translate::LanguageDetectionDetails details;
-        details.url = url;
-        details.adopted_language = "en";
-        service_->OnLanguageDetermined(details);
-
-        scoped_refptr<page_content_annotations::RefCountedAnnotatedPageContent>
-            apc = base::MakeRefCounted<
-                page_content_annotations::RefCountedAnnotatedPageContent>();
-        apc->data.mutable_main_frame_data()->set_title("Title");
-        std::unique_ptr<content::WebContents> web_contents =
-            CreateTestWebContents();
-        content::NavigationSimulator::NavigateAndCommitFromBrowser(
-            web_contents.get(), url);
-
-        service_->OnPageContentExtracted(web_contents->GetPrimaryPage(), apc);
-
-        EXPECT_CALL(*mock_page_embeddings_service_,
-                    GetEmbeddings(web_contents.get()))
-            .WillOnce(Return(std::vector<passage_embeddings::PassageEmbedding>{
-                {{"Title", passage_embeddings::PassageType::kTitle},
-                 passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
-        service_->OnPageEmbeddingsAvailable(web_contents.get());
+        TriggerClassification(url, base_time);
       };
 
   {
@@ -429,6 +412,148 @@ TEST_F(ContentAnnotatorServiceTest,
       1);
   histogram_tester.ExpectTotalCount(
       "AccessibilityAnnotator.ContentAnnotator.DependentInformationMissing", 5);
+}
+
+TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_FullAnnotationTriggered) {
+  // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContentAnnotator,
+      {{"content_annotator_enable_full_annotation", "true"}});
+
+  GURL url("https://example.com/full");
+  base::Time base_time = base::Time::Now();
+
+  // 2. Mock Classify to return a result that satisfies the `reached_annotation`
+  // condition.
+  ContentClassificationResult classifier_result;
+  classifier_result.title_keyword_result =
+      ContentClassificationResult::Result();
+  classifier_result.title_keyword_result->category = "test category";
+  classifier_result.is_sensitive = false;
+  classifier_result.is_in_target_language = true;
+
+  EXPECT_CALL(*mock_classifier_, Classify(_))
+      .WillOnce(Return(classifier_result));
+
+  // 3. Capture the callback passed to ExecuteModel.
+  base::OnceCallback<void(
+      optimization_guide::OptimizationGuideModelExecutionResult,
+      std::unique_ptr<optimization_guide::ModelQualityLogEntry>)>
+      captured_callback;
+
+  EXPECT_CALL(
+      *mock_remote_model_executor_,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContentAnnotation,
+          /*request_metadata=*/_,
+          /*options=*/_,
+          /*callback=*/_))
+      .Times(1)
+      .WillOnce([&captured_callback, url](
+                    auto feature,
+                    const google::protobuf::MessageLite& request_metadata,
+                    const auto& options, auto callback) {
+        captured_callback = std::move(callback);
+
+        const auto* request = static_cast<
+            const optimization_guide::proto::ContentAnnotationRequest*>(
+            &request_metadata);
+        EXPECT_EQ(request->page_context().url(), url.spec());
+        EXPECT_EQ(request->page_context().title(), "Test Title");
+        EXPECT_TRUE(request->page_context().has_annotated_page_content());
+        EXPECT_EQ(request->page_context()
+                      .annotated_page_content()
+                      .main_frame_data()
+                      .title(),
+                  "Test Title");
+      });
+
+  TriggerClassification(url, base_time);
+
+  // 4. Simulate the model execution by running the captured callback.
+  ASSERT_TRUE(captured_callback);
+  optimization_guide::proto::ContentAnnotationResponse mock_response_proto;
+  mock_response_proto.set_extracted_data("some extracted data");
+
+  optimization_guide::proto::Any any_proto;
+  any_proto.set_type_url(base::StrCat(
+      {"type.googleapis.com/", mock_response_proto.GetTypeName()}));
+  any_proto.set_value(mock_response_proto.SerializeAsString());
+
+  optimization_guide::OptimizationGuideModelExecutionResult mock_result(
+      base::ok(any_proto), /*execution_info=*/nullptr);
+
+  ASSERT_NO_FATAL_FAILURE(std::move(captured_callback)
+                              .Run(std::move(mock_result),
+                                   /*log_entry=*/nullptr));
+}
+
+TEST_F(ContentAnnotatorServiceTest,
+       TestMaybeAnnotate_FullAnnotationNotTriggeredOnFailure) {
+  // 1. Enable kContentAnnotatorEnableFullAnnotation flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContentAnnotator,
+      {{"content_annotator_enable_full_annotation", "true"}});
+
+  GURL url("https://example.com");
+  base::Time base_time = base::Time::Now();
+
+  // 2. Mock Classify to return a result that does not trigger full annotation.
+  ContentClassificationResult classifier_result;
+  classifier_result.is_sensitive = false;
+  classifier_result.is_in_target_language = true;
+
+  EXPECT_CALL(*mock_classifier_, Classify(_))
+      .WillOnce(Return(classifier_result));
+
+  // 3. Expect ExecuteModel to NOT be called on the mock_remote_model_executor_.
+  EXPECT_CALL(
+      *mock_remote_model_executor_,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContentAnnotation,
+          /*request_metadata=*/_,
+          /*options=*/_,
+          /*callback=*/_))
+      .Times(0);
+
+  TriggerClassification(url, base_time);
+}
+
+TEST_F(ContentAnnotatorServiceTest,
+       TestMaybeAnnotate_FullAnnotationNotTriggeredWhenFlagDisabled) {
+  // 1. Disable kContentAnnotatorEnableFullAnnotation flag.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      kContentAnnotator,
+      {{"content_annotator_enable_full_annotation", "false"}});
+
+  GURL url("https://example.com");
+  base::Time base_time = base::Time::Now();
+
+  // 2. Mock Classify to return a result that would trigger full annotation.
+  ContentClassificationResult classifier_result;
+  classifier_result.title_keyword_result =
+      ContentClassificationResult::Result();
+  classifier_result.title_keyword_result->category = "test category";
+  classifier_result.is_sensitive = false;
+  classifier_result.is_in_target_language = true;
+
+  EXPECT_CALL(*mock_classifier_, Classify(_))
+      .WillOnce(Return(classifier_result));
+
+  // 3. Expect ExecuteModel to NOT be called on the mock_remote_model_executor_.
+  EXPECT_CALL(
+      *mock_remote_model_executor_,
+      ExecuteModel(
+          optimization_guide::ModelBasedCapabilityKey::kContentAnnotation,
+          /*request_metadata=*/_,
+          /*options=*/_,
+          /*callback=*/_))
+      .Times(0);
+
+  TriggerClassification(url, base_time);
 }
 
 }  // namespace accessibility_annotator
