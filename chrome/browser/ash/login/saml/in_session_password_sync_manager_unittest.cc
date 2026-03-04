@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/login/saml/mock_lock_handler.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -71,7 +70,7 @@ InSessionPasswordSyncManagerTest::InSessionPasswordSyncManagerTest()
   UserDataAuthClient::InitializeFake();
 
   known_user_ = std::make_unique<user_manager::KnownUser>(
-      g_browser_process->local_state());
+      TestingBrowserProcess::GetGlobal()->local_state());
 }
 
 InSessionPasswordSyncManagerTest::~InSessionPasswordSyncManagerTest() {
@@ -98,7 +97,8 @@ void InSessionPasswordSyncManagerTest::TearDown() {
 }
 
 void InSessionPasswordSyncManagerTest::CreateInSessionSyncManager() {
-  manager_ = std::make_unique<InSessionPasswordSyncManager>(primary_profile_);
+  manager_ = std::make_unique<InSessionPasswordSyncManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(), primary_profile_);
 }
 
 bool InSessionPasswordSyncManagerTest::IsTokenFetcherCreated() {

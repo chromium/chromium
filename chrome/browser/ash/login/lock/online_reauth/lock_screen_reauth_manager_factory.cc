@@ -6,6 +6,7 @@
 
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -41,13 +42,17 @@ LockScreenReauthManagerFactory::~LockScreenReauthManagerFactory() = default;
 std::unique_ptr<KeyedService>
 LockScreenReauthManagerFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
+  // NOTE: Allow g_browser_process here as this class is created lazily in
+  // base::NoDestructor.
+  PrefService* local_state = g_browser_process->local_state();
+
   Profile* profile = static_cast<Profile*>(context);
 
   // LockScreenReauthManager should be created for the primary user only.
   if (!ProfileHelper::IsPrimaryProfile(profile)) {
     return nullptr;
   }
-  return std::make_unique<LockScreenReauthManager>(profile);
+  return std::make_unique<LockScreenReauthManager>(local_state, profile);
 }
 
 }  // namespace ash

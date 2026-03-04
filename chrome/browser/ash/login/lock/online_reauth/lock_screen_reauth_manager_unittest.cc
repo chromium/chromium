@@ -147,7 +147,8 @@ void LockScreenReauthManagerTest::TearDown() {
 
 void LockScreenReauthManagerTest::CreateLockScreenReauthManager() {
   DestroyLockScreenReauthManager();
-  manager_ = std::make_unique<LockScreenReauthManager>(primary_profile_);
+  manager_ = std::make_unique<LockScreenReauthManager>(
+      TestingBrowserProcess::GetGlobal()->local_state(), primary_profile_);
   manager_->SetClockForTesting(test_environment_.GetMockClock());
   manager_->SetGetAuthfactorsConfigurationCallbackForTesting(
       auth_configuration_exit_future.GetRepeatingCallback());

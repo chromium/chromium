@@ -13,15 +13,16 @@
 #include "chrome/browser/ash/login/lock/online_reauth/lock_screen_reauth_manager_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/browser_process.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user.h"
 
 namespace ash {
 
 InSessionPasswordSyncManager::InSessionPasswordSyncManager(
+    PrefService* local_state,
     Profile* primary_profile)
-    : primary_profile_(primary_profile),
+    : local_state_(CHECK_DEREF(local_state)),
+      primary_profile_(primary_profile),
       primary_user_(ProfileHelper::Get()->GetUserByProfile(primary_profile)) {
   DCHECK(primary_user_);
 }
@@ -38,7 +39,7 @@ void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
   password_sync_token_fetcher_.reset();
 
   // Set token value in local state.
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state_.get());
   known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
   ResetReauthRequiredBySamlTokenDismatch();
 }
@@ -53,7 +54,7 @@ void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
   password_sync_token_fetcher_.reset();
   if (!token.empty()) {
     // Set token fetched from the endpoint in local state.
-    user_manager::KnownUser known_user(g_browser_process->local_state());
+    user_manager::KnownUser known_user(&local_state_.get());
     known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
     ResetReauthRequiredBySamlTokenDismatch();
   } else {
