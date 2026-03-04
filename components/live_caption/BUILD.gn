@@ -74,6 +74,8 @@ if (!is_android && !is_ios) {
 
   static_library("live_translate") {
     sources = [
+      "features.cc",
+      "features.h",
       "google_api_translation_dispatcher.cc",
       "google_api_translation_dispatcher.h",
       "greedy_text_stabilizer.cc",
