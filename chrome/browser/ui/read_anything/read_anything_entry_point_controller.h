@@ -22,6 +22,7 @@ class ReadAnythingEntryPointController {
   ~ReadAnythingEntryPointController();
 
   // Toggles Reading Mode on or off.
+  // This and other methods below can handle null `bwi`.
   static void InvokePageAction(BrowserWindowInterface* bwi,
                                const actions::ActionInvocationContext& context);
 

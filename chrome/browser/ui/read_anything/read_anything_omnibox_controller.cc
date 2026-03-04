@@ -208,10 +208,8 @@ void ReadAnythingOmniboxController::UpdateIgnored(bool is_showing) {
           : base::TimeTicks::Now() - candidate_check_triggered_time_ms_;
   if (is_showing && time_on_previous_page.InMilliseconds() >
                         kTimeOnPreviousPageBeforeIgnored) {
-    if (auto* browser_window_interface = tab_->GetBrowserWindowInterface()) {
-      read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
-          browser_window_interface);
-    }
+    read_anything::ReadAnythingEntryPointController::OnPageActionIgnored(
+        tab_->GetBrowserWindowInterface());
   }
 }
 

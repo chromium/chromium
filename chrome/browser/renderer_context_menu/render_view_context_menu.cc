@@ -4228,12 +4228,8 @@ void RenderViewContextMenu::ExecOpenCompose() {
 #endif
 
 void RenderViewContextMenu::ExecOpenInReadAnything() {
-  Browser* browser = GetBrowser();
-  if (!browser) {
-    return;
-  }
   read_anything::ReadAnythingEntryPointController::ShowUI(
-      browser, ReadAnythingOpenTrigger::kReadAnythingContextMenu);
+      GetBrowser(), ReadAnythingOpenTrigger::kReadAnythingContextMenu);
 }
 
 void RenderViewContextMenu::ExecInspectElement() {

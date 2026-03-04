@@ -32,13 +32,14 @@
 #include "ui/accessibility/accessibility_features.h"
 
 #if BUILDFLAG(ENABLE_PDF)
+#include "base/strings/string_util.h"
 #include "components/pdf/browser/pdf_document_helper.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 namespace {
 
-static const int kMaxChipIgnoredCount = 5;
-const char* const kDenyList[] = {
+constexpr int kMaxChipIgnoredCount = 5;
+constexpr const char* kDenyList[] = {
     "mail.google.com",
     "whatsapp.com",
     "chatgpt.com",
@@ -76,8 +77,8 @@ size_t g_min_pdf_text_length_for_omnibox = 1100;
 constexpr float kMaxNonAlphaFraction = 0.33;
 
 bool IsMostlyAlphaChars(const std::u16string& text) {
-  long non_alpha_chars =
-      std::count_if(text.begin(), text.end(), [](char16_t c) {
+  size_t non_alpha_chars =
+      std::ranges::count_if(text, [](char16_t c) {
         // Check specifically for certain non-alphabetic characters rather than
         // for alphabetic characters. IsAsciiAlpha is only true for certain
         // scripts, so this avoids excluding other languages.
@@ -95,7 +96,7 @@ void OnPdfTextReceived(base::OnceCallback<void(bool)> result_callback,
   // alphabetic characters. In this case, it is likely going to distill well in
   // Reading mode.
   std::move(result_callback)
-      .Run((text.length() > g_min_pdf_text_length_for_omnibox) &&
+      .Run((text.size() > g_min_pdf_text_length_for_omnibox) &&
            IsMostlyAlphaChars(text));
 }
 #endif
@@ -163,7 +164,7 @@ void ReadAnythingEntryPointController::ShowUI(
     }
   } else {
     SidePanelOpenTrigger side_panel_open_trigger =
-        read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
+        ReadAnythingToSidePanelOpenTrigger(open_trigger);
 
     bwi->GetFeatures().side_panel_ui()->Show(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
@@ -192,7 +193,7 @@ void ReadAnythingEntryPointController::ToggleUI(
     }
   } else {
     SidePanelOpenTrigger side_panel_open_trigger =
-        read_anything::ReadAnythingToSidePanelOpenTrigger(open_trigger);
+        ReadAnythingToSidePanelOpenTrigger(open_trigger);
 
     bwi->GetFeatures().side_panel_ui()->Toggle(
         SidePanelEntryKey(SidePanelEntryId::kReadAnything),
@@ -203,17 +204,16 @@ void ReadAnythingEntryPointController::ToggleUI(
 // static
 bool ReadAnythingEntryPointController::IsUIShowing(
     BrowserWindowInterface* bwi) {
-  if (features::IsImmersiveReadAnythingEnabled()) {
-    auto* controller =
-        ReadAnythingController::From(bwi->GetActiveTabInterface());
-    CHECK(controller);
-    auto state = controller->GetPresentationState();
-    return state ==
-               ReadAnythingController::PresentationState::kInImmersiveOverlay ||
-           state == ReadAnythingController::PresentationState::kInSidePanel;
-  } else {
+  if (!features::IsImmersiveReadAnythingEnabled() || !bwi) {
     return IsReadAnythingEntryShowing(bwi);
   }
+
+  auto* controller = ReadAnythingController::From(bwi->GetActiveTabInterface());
+  CHECK(controller);
+  auto state = controller->GetPresentationState();
+  return state ==
+             ReadAnythingController::PresentationState::kInImmersiveOverlay ||
+         state == ReadAnythingController::PresentationState::kInSidePanel;
 }
 
 // static
@@ -330,7 +330,7 @@ void ReadAnythingEntryPointController::CheckIfShouldSuggestReadingMode(
 void ReadAnythingEntryPointController::OnPageActionIgnored(
     BrowserWindowInterface* bwi) {
   if (!base::FeatureList::IsEnabled(features::kPageActionsMigration) ||
-      !features::IsReadAnythingOmniboxChipEnabled()) {
+      !features::IsReadAnythingOmniboxChipEnabled() || !bwi) {
     return;
   }
 

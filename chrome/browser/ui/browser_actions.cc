@@ -293,9 +293,6 @@ void BrowserActions::InitializeBrowserActions() {
         base::BindRepeating(
             [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                actions::ActionInvocationContext context) {
-              if (!bwi) {
-                return;
-              }
               read_anything::ReadAnythingEntryPointController::InvokePageAction(
                   bwi, context);
             },
