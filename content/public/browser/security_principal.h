@@ -5,6 +5,8 @@
 #ifndef CONTENT_PUBLIC_BROWSER_SECURITY_PRINCIPAL_H_
 #define CONTENT_PUBLIC_BROWSER_SECURITY_PRINCIPAL_H_
 
+#include "content/common/content_export.h"
+
 namespace content {
 
 class StoragePartitionConfig;
