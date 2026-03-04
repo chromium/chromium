@@ -437,6 +437,12 @@ const base::FeatureParam<size_t>
         &kGlicActorIncrementalTyping, "glic-actor-long-text-paste-threshold",
         200};
 
+// Whether to wait for an editable element before starts typing.
+const base::FeatureParam<bool>
+    kGlicActorIncrementalTypingWaitForEditableElement{
+        &kGlicActorIncrementalTyping,
+        "glic-actor-incremental-typing-wait-for-editable-element", true};
+
 // If the TypeTool is invoked with followed_by_enter, the enter key is
 // dispatched with this delay.
 const base::FeatureParam<base::TimeDelta> kGlicActorTypeToolEnterDelay{

@@ -245,8 +245,7 @@ blink::WebNode GetNodeFromId(const content::RenderFrame& local_root_frame,
 
 bool IsNodeFocused(const content::RenderFrame& frame,
                    const blink::WebNode& node) {
-  blink::WebDocument document = frame.GetWebFrame()->GetDocument();
-  blink::WebElement currently_focused = document.FocusedElement();
+  blink::WebElement currently_focused = FindFocusedElement(frame);
   blink::WebElement element = node.To<blink::WebElement>();
   return element == currently_focused;
 }
@@ -309,6 +308,11 @@ std::string NodeToDebugString(const blink::WebNode& node) {
     return "document";
   }
   return "";
+}
+
+blink::WebElement FindFocusedElement(const content::RenderFrame& frame) {
+  blink::WebDocument document = frame.GetWebFrame()->GetDocument();
+  return document.FocusedElement();
 }
 
 }  // namespace actor

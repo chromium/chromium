@@ -17,6 +17,7 @@
 #include "chrome/common/actor/actor_logging.h"
 #include "chrome/common/actor/journal_details_builder.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/renderer/actor/tool_utils.h"
 #include "chrome/renderer/actor/type_tool.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
@@ -32,6 +33,7 @@
 namespace actor {
 
 using ::blink::WebCoalescedInputEvent;
+using ::blink::WebElement;
 using ::blink::WebInputEvent;
 using ::blink::WebInputEventResult;
 using ::blink::WebKeyboardEvent;
@@ -72,11 +74,16 @@ KeyDispatcher::KeyDispatcher(std::vector<KeyParams> key_sequence,
       on_complete_(std::move(on_complete)),
       task_id_(task_id),
       journal_(journal) {
+  base::TimeDelta input_delay = features::kGlicActorKeyUpDuration.Get();
+  WebElement focused_element = FindFocusedElement(*type_tool_->frame());
+
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&KeyDispatcher::ContinueIncrementalTyping,
-                     weak_ptr_factory_.GetWeakPtr()),
-      features::kGlicActorKeyUpDuration.Get());
+      base::BindOnce(&KeyDispatcher::PrepareIncrementalTyping,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now(),
+                     input_delay,
+                     focused_element && focused_element.IsEditable()),
+      input_delay);
 }
 
 KeyDispatcher::~KeyDispatcher() = default;
@@ -101,6 +108,45 @@ void KeyDispatcher::Cancel() {
   is_key_down_ = false;
 
   Finish(MakeResult(mojom::ActionResultCode::kToolTimeout));
+}
+
+void KeyDispatcher::PrepareIncrementalTyping(base::TimeTicks start_time,
+                                             base::TimeDelta last_input_delay,
+                                             bool started_in_editing_context) {
+  // If the target node was originally non editable, send the key events
+  // immediately as we don't know whether the key event will be handled
+  // anyways.
+  if (!started_in_editing_context ||
+      !features::kGlicActorIncrementalTypingWaitForEditableElement.Get()) {
+    ContinueIncrementalTyping();
+    return;
+  }
+
+  // If the target node is still editable, send the key events.
+  WebElement focused_element = FindFocusedElement(*type_tool_->frame());
+  if (focused_element && focused_element.IsEditable()) {
+    ContinueIncrementalTyping();
+    return;
+  }
+
+  // The element or focus may have changed, wait for page to stabilize. Use
+  // exponential backoff delay. If the next attempt will be scheduled after time
+  // out, finish with an error.
+  base::TimeDelta input_delay = 2 * last_input_delay;
+  if (base::TimeTicks::Now() + input_delay - start_time >
+      features::kGlicActorPageStabilityTimeout.Get()) {
+    Finish(MakeResult(mojom::ActionResultCode::kObservedTargetElementChanged,
+                      /*requires_page_stabilization=*/false,
+                      "No editable element found before incremental typing"));
+    return;
+  }
+
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&KeyDispatcher::PrepareIncrementalTyping,
+                     weak_ptr_factory_.GetWeakPtr(), start_time, input_delay,
+                     started_in_editing_context),
+      input_delay);
 }
 
 void KeyDispatcher::ContinueIncrementalTyping() {

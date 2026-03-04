@@ -90,6 +90,9 @@ std::string ToDebugString(const mojom::ToolTargetPtr& target);
 // Converts Node to a debug string of tag name, id and class.
 std::string NodeToDebugString(const blink::WebNode& node);
 
+// Finds the focused element from a render frame.
+blink::WebElement FindFocusedElement(const content::RenderFrame& frame);
+
 }  // namespace actor
 
 #endif  // CHROME_RENDERER_ACTOR_TOOL_UTILS_H_
