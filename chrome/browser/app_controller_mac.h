@@ -131,9 +131,6 @@ class ColorProvider;
 // Returns the last active ColorProvider.
 - (const ui::ColorProvider&)lastActiveColorProvider;
 
-// This is called when the system wide light or dark mode changes.
-- (void)nativeThemeDidChange;
-
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:
 //   * In menuNeedsUpdate:, which is called prior to showing the NSMenu.
