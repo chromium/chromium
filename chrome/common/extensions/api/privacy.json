@@ -58,11 +58,6 @@
             "value": ["autofillCreditCardEnabled", {"type":"boolean"}],
             "description": "If enabled, Chrome offers to automatically fill in credit card forms. This preference's value is a boolean, defaulting to <code>true</code>."
           },
-          "autofillOtherDatatypesEnabled": {
-            "$ref": "types.ChromeSetting",
-            "value": ["autofillOtherDatatypesEnabled", {"type":"boolean"}],
-            "description": "If enabled, Chrome offers to automatically fill in the other data types. This includes travel and identity docs. This preference's value is a boolean, defaulting to <code>true</code>."
-          },
           "passwordSavingEnabled": {
             "$ref": "types.ChromeSetting",
             "value": ["passwordSavingEnabled", {"type":"boolean"}],
