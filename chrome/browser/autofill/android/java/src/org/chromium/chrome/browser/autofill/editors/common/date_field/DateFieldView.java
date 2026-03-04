@@ -248,6 +248,8 @@ public class DateFieldView extends LinearLayout implements FieldView {
     private void onDropdownItemSelected(String unused) {
         // Always validate the date to update the `DATE_VALID` property.
         updateDateValid();
+        // Reset the `ERROR_MESSAGE` after user interaction.
+        mPropertyModel.set(ERROR_MESSAGE, null);
         if (isEmptyDateSelected()) {
             assert mPropertyModel.get(DATE_VALID) : "An empty date is valid";
             // First case: the user has completely reset the date field. Propagate an empty value to
