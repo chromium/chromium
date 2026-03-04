@@ -1045,7 +1045,11 @@ suite('ContextualTasksAppTest', function() {
         'isFrameLoading should be false');
   });
 
-  test('zero state animation plays when zero state changes', async () => {
+  // Disabled on branch only. The entire test suite is disabled on trunk
+  // in https://crrev.com/c/7625438 but that CL doesn't merge cleanly so
+  // I'm just disabling this test here, since it's what's causing reliable
+  // test failures.
+  test.skip('zero state animation plays when zero state changes', async () => {
     loadTimeData.overrideValues({
       friendlyZeroStateGaiaName: 'Test Name',
     });

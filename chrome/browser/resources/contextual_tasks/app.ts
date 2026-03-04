@@ -349,10 +349,6 @@ export class ContextualTasksAppElement extends CrLitElement {
           this.forcedComposeboxBounds_ = null;
         }
 
-        if (this.isZeroState_) {
-          this.playZeroStateAnimations_();
-        }
-
       }),
       callbackRouter.onLensOverlayStateChanged.addListener(
           (isOverlayShowing: boolean, maybeShowOverlayHintText: boolean) => {
@@ -561,6 +557,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     this.isFrameLoading = true;
     const wasAiPage = this.isAiPage_;
     const {isAiPage} = await this.browserProxy_.handler.isAiPage(ev.url);
+    const {isZeroState} = await this.browserProxy_.handler.isZeroState(ev.url);
 
     // If the frame is no longer loading after waiting for isAiPage,
     // then exit early to prevent racind.
@@ -569,6 +566,11 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.onLoadStartFinishedCallbackForTesting_();
       }
       return;
+    }
+
+    if (isAiPage && isZeroState) {
+      this.isZeroState_ = true;
+      this.playZeroStateAnimations_();
     }
 
     if (!isAiPage) {
