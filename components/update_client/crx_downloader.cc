@@ -111,7 +111,6 @@ void CrxDownloader::OnDownloadComplete(
   // often the case in tests.)
   progress_callback_.Reset();
 
-  metrics::RecordCRXDownloadComplete(result.error);
   if (result.error) {
     main_task_runner()->PostTask(
         FROM_HERE, base::BindOnce(&CrxDownloader::HandleDownloadError, this,

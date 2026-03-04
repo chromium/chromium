@@ -12,20 +12,6 @@
 
 namespace update_client::metrics {
 
-void RecordCRXDownloadComplete(bool had_error) {
-  base::UmaHistogramBoolean(
-      "UpdateClient.CrxDownloader.DownloadCompleteSuccess", !had_error);
-}
-
-void RecordUpdateCheckResult(UpdateCheckResult result) {
-  base::UmaHistogramEnumeration("UpdateClient.Component.UpdateCheckResult",
-                                result);
-}
-
-void RecordComponentUpdated() {
-  base::UmaHistogramBoolean("UpdateClient.Component.Updated", true);
-}
-
 void RecordCRXDownloadTime(base::TimeDelta time, const std::string& app_id) {
   base::UmaHistogramLongTimes(
       base::StrCat({"UpdateClient.DownloadTime2.", app_id}), time);

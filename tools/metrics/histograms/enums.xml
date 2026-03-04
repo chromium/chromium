@@ -26724,13 +26724,6 @@ Called by update_net_error_codes.py.-->
   <int value="8" label="Bad CRX data callback"/>
 </enum>
 
-<enum name="UpdateClientUpdateCheckResult">
-  <int value="0" label="Error"/>
-  <int value="1" label="Canceled"/>
-  <int value="2" label="Has Update"/>
-  <int value="3" label="No Update"/>
-</enum>
-
 <enum name="UpdateEngineAttemptResult">
   <int value="0" label="Update Succeeded"/>
   <int value="1" label="Internal Error"/>

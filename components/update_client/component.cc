@@ -359,13 +359,11 @@ void Component::StateChecking::DoHandle() {
   CHECK(component.crx_component());
 
   if (component.error_code_) {
-    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kError);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     return;
   }
 
   if (component.update_context_->is_cancelled) {
-    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kCanceled);
     TransitionState(std::make_unique<StateUpdateError>(&component));
     component.error_category_ = ErrorCategory::kService;
     component.error_code_ = static_cast<int>(ServiceError::CANCELLED);
@@ -373,18 +371,15 @@ void Component::StateChecking::DoHandle() {
   }
 
   if (component.pipeline_.has_value()) {
-    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kHasUpdate);
     TransitionState(std::make_unique<StateCanUpdate>(&component));
     return;
   }
 
   if (component.pipeline_.error().category == ErrorCategory::kNone) {
-    metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kNoUpdate);
     TransitionState(std::make_unique<StateUpToDate>(&component));
     return;
   }
 
-  metrics::RecordUpdateCheckResult(metrics::UpdateCheckResult::kError);
   TransitionState(std::make_unique<StateUpdateError>(&component));
 }
 
@@ -554,7 +549,6 @@ void Component::StateUpdated::DoHandle() {
   component.AppendEvent(component.MakeEventUpdateComplete());
 
   component.NotifyObservers();
-  metrics::RecordComponentUpdated();
   EndState();
 }
 
