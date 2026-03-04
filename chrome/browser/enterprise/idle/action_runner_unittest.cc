@@ -373,7 +373,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearBrowsingHistory) {
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_HISTORY,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearDownloadHistory) {
@@ -392,7 +393,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearDownloadHistory) {
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_DOWNLOADS,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearCookies) {
@@ -413,7 +415,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearCookies) {
   EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
             remover()->GetLastUsedOriginTypeMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearCache) {
@@ -432,7 +435,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearCache) {
   EXPECT_EQ(BrowsingDataRemover::DATA_TYPE_CACHE,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearPasswordSignin) {
@@ -451,7 +455,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearPasswordSignin) {
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_PASSWORDS,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearAutofill) {
@@ -470,7 +475,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearAutofill) {
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearSiteSettings) {
@@ -489,7 +495,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearSiteSettings) {
   EXPECT_EQ(chrome_browsing_data_remover::DATA_TYPE_CONTENT_SETTINGS,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, ClearHostedAppData) {
@@ -510,7 +517,8 @@ TEST_F(IdleActionRunnerClearDataTest, ClearHostedAppData) {
   EXPECT_EQ(BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
             remover()->GetLastUsedOriginTypeMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, MultipleTypes) {
@@ -533,7 +541,8 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypes) {
                 chrome_browsing_data_remover::DATA_TYPE_FORM_DATA,
             remover()->GetLastUsedRemovalMaskForTesting());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", true,
+      1);
 }
 
 TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
@@ -562,7 +571,8 @@ TEST_F(IdleActionRunnerClearDataTest, MultipleTypesAndFailure) {
   actions.top()->Run(profile(), cb.Get());
   run_loop.Run();
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ClearBrowsingData", false, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ClearBrowsingData", false,
+      1);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

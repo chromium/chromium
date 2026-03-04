@@ -313,11 +313,12 @@ IN_PROC_BROWSER_TEST_F(IdleServiceTest, Basic) {
           base::Bucket(metrics::IdleTimeoutDialogEvent::kDialogExpired, 1)));
   // Check that the success of idle timeout actions is recorded.
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.ShowProfilePicker", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.ShowProfilePicker", true,
+      1);
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.CloseBrowsers", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.CloseBrowsers", true, 1);
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.AllActions", true, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.AllActions", true, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(IdleServiceTest, DidNotClose) {

@@ -157,7 +157,7 @@ TEST_F(IdleActionRunnerTest, OtherActionsDontRunOnFailure) {
   runner.SetActionFactoryForTesting(std::move(action_factory));
   runner.Run(actions_completed_callback.Get());
   histogram_tester->ExpectUniqueSample(
-      "Enterprise.IdleTimeoutPolicies.Success.AllActions", false, 1);
+      "Enterprise.IdleTimeoutPolicies.ActionSuccess.AllActions", false, 1);
 }
 
 // Tests that it does nothing when the "IdleTimeoutActions" pref is empty.

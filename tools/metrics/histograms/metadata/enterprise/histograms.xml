@@ -2601,57 +2601,10 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
-    units="ms" expires_after="2026-07-01">
+<histogram name="Enterprise.IdleTimeoutPolicies.ActionSuccess.{ActionType}"
+    enum="BooleanSuccess" expires_after="2027-03-01">
   <owner>esalma@google.com</owner>
   <owner>nicolaso@chromium.org</owner>
-  <summary>The time taken to run {ActionType} on idle timeout.</summary>
-  <token key="ActionType">
-    <variant name="AllActions" summary="All Actions"/>
-    <variant name="ClearBrowsingData" summary="Clear Browsing Data Action(s)"/>
-    <variant name="SignOut" summary="Signout Action"/>
-  </token>
-</histogram>
-
-<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutCase"
-    enum="IdleTimeoutCase" expires_after="2026-07-01">
-  <owner>esalma@google.com</owner>
-  <owner>nicolaso@chromium.org</owner>
-  <summary>
-    On mobile: whether idle timeout happened while the app was already
-    foregrounded or backgrounded. The metric is recorded when idle timeout is
-    detected while the app is foreground and when idle timeout is detected on
-    reforeground or start-up.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"
-    enum="IdleTimeoutDialogEvent" expires_after="2026-07-01">
-  <owner>esalma@google.com</owner>
-  <owner>nicolaso@chromium.org</owner>
-  <summary>
-    Tracks events related to the timeout dialog shown to the user for 30 seconds
-    before idle timeout actions run. The user either responds by clicking the
-    button in the dialog indicating activity or the dialog expires and actions
-    run.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutLaunchScreenEvent"
-    enum="IdleTimeoutLaunchScreenEvent" expires_after="2026-07-01">
-  <owner>esalma@google.com</owner>
-  <owner>nicolaso@chromium.org</owner>
-  <summary>
-    Tracks events related to the launch screen shown on mobile when idle timeout
-    actions run on app foreground. The launch screen can be dismissed after
-    actions complete or after it has reached its expiry deadline.
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.IdleTimeoutPolicies.Success.{ActionType}"
-    enum="BooleanSuccess" expires_after="2026-07-01">
-  <owner>esalma@google.com</owner>
-  <owner>nicolaso@chromium.Origin</owner>
   <summary>
     Whether the {ActionType} ran successfully or not. The metric is recorded as
     true if the action runs successfully and false if the action fails.
@@ -2665,6 +2618,53 @@ chromium-metrics-reviews@google.com.
     <variant name="ShowProfilePicker" summary="Show Profile Picker Action"/>
     <variant name="SignOut" summary="Signout Action"/>
   </token>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.ActionTime.{ActionType}"
+    units="ms" expires_after="2027-03-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>The time taken to run {ActionType} on idle timeout.</summary>
+  <token key="ActionType">
+    <variant name="AllActions" summary="All Actions"/>
+    <variant name="ClearBrowsingData" summary="Clear Browsing Data Action(s)"/>
+    <variant name="SignOut" summary="Signout Action"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutCase"
+    enum="IdleTimeoutCase" expires_after="2027-03-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>
+    On mobile: whether idle timeout happened while the app was already
+    foregrounded or backgrounded. The metric is recorded when idle timeout is
+    detected while the app is foreground and when idle timeout is detected on
+    reforeground or start-up.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutDialogEvent"
+    enum="IdleTimeoutDialogEvent" expires_after="2027-03-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>
+    Tracks events related to the timeout dialog shown to the user for 30 seconds
+    before idle timeout actions run. The user either responds by clicking the
+    button in the dialog indicating activity or the dialog expires and actions
+    run.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.IdleTimeoutPolicies.IdleTimeoutLaunchScreenEvent"
+    enum="IdleTimeoutLaunchScreenEvent" expires_after="2027-03-01">
+  <owner>esalma@google.com</owner>
+  <owner>nicolaso@chromium.org</owner>
+  <summary>
+    Tracks events related to the launch screen shown on mobile when idle timeout
+    actions run on app foreground. The launch screen can be dismissed after
+    actions complete or after it has reached its expiry deadline.
+  </summary>
 </histogram>
 
 <histogram

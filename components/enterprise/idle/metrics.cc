@@ -25,7 +25,7 @@ void RecordIdleTimeoutCase(IdleTimeoutCase timeout_case) {
 
 void RecordActionsSuccess(IdleTimeoutActionType type, bool success) {
   base::UmaHistogramBoolean(
-      base::StringPrintf(kUMAIdleTimeoutActionSuccesStatus,
+      base::StringPrintf(kUMAIdleTimeoutActionSuccessStatus,
                          GetActionNameFromActionType(type).c_str()),
       success);
 }
