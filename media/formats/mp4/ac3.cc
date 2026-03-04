@@ -72,8 +72,8 @@ uint32_t AC3::GetChannelCount() const {
   return channel_count_;
 }
 
-ChannelLayout AC3::GetChannelLayout() const {
-  return channel_layout_;
+ChannelLayoutConfig AC3::GetChannelLayout() const {
+  return ChannelLayoutConfig::FromLayout(channel_layout_);
 }
 
 }  // namespace mp4
