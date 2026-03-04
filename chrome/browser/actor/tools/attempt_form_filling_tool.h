@@ -47,7 +47,7 @@ class AttemptFormFillingTool : public Tool,
                               ToolCallback callback) const override;
 
   // AutofillSelectionDialogEventHandler implementation.
-  void OnFormPresented(
+  bool OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr params)
       override;
   void OnFormPreviewChanged(

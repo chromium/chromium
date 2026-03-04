@@ -27,6 +27,8 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
   // disambiguated in the UI.
   //
   // See also RequestedData in actions_data.proto.
+  // Values are persisted in UMA logs, values should not be reused/renumbered.
+  // LINT.IfChange(ActorFormFillingRequestedData)
   enum class RequestedData {
     // The requested data is not specified.
     kUnknown = 0,
@@ -54,7 +56,10 @@ class AttemptFormFillingToolRequest : public TabToolRequest {
     // email, phone number, but not postal address information (street, city,
     // etc.)
     kContactInformation = 7,
+
+    kMaxValue = kContactInformation,
   };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:ActorFormFillingRequestedData)
 
   struct FormFillingRequest {
     FormFillingRequest();

@@ -83,9 +83,14 @@ autofill::ActorFormFillingSelection MakeActorFormFillingSelection(
 
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
-    std::vector<PageTarget> trigger_fields) {
+    std::vector<PageTarget> trigger_fields,
+    AttemptFormFillingToolRequest::RequestedData requested_data =
+        AttemptFormFillingToolRequest::RequestedData::kAddress) {
   std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests;
-  requests.emplace_back().trigger_fields = std::move(trigger_fields);
+  AttemptFormFillingToolRequest::FormFillingRequest request;
+  request.requested_data = requested_data;
+  request.trigger_fields = std::move(trigger_fields);
+  requests.emplace_back(std::move(request));
   return std::make_unique<AttemptFormFillingToolRequest>(tab.GetHandle(),
                                                          std::move(requests));
 }
@@ -282,6 +287,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, GetSuggestionsAndFill) {
 
 // Test that dialog events are forwarded to the form filling service.
 IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
+  base::HistogramTester histogram_tester;
   const GURL url = embedded_https_test_server().GetURL(
       "example.com", "/autofill/autofill_test_form.html");
   ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
@@ -308,7 +314,8 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
       });
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
-      *active_tab(), {PageTarget(*address_home_line1)});
+      *active_tab(), {PageTarget(*address_home_line1)},
+      AttemptFormFillingToolRequest::RequestedData::kHomeAddress);
   actor_task().Act(ToRequestList(action), result.GetCallback());
 
   base::WeakPtr<AutofillSelectionDialogEventHandler> captured_handler =
@@ -316,11 +323,16 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   ASSERT_TRUE(captured_handler);
 
   // Expect that OnFormPresented calls ScrollToForm
-  EXPECT_CALL(mock_form_filling_service(),
-              ScrollToForm(Ref(*active_tab()), 10));
-  captured_handler->OnFormPresented(
+  EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 0));
+  EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
-          /*form_filling_request_index=*/10));
+          /*form_filling_request_index=*/0)));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.AutofillSuggestionPresented.Type",
+      AttemptFormFillingToolRequest::RequestedData::kHomeAddress, 1);
+  EXPECT_FALSE(captured_handler->OnFormPresented(
+      webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
+          /*form_filling_request_index=*/1)));
 
   // Expect that OnFormPreviewChanged (with response) calls PreviewForm
   EXPECT_CALL(mock_form_filling_service(),

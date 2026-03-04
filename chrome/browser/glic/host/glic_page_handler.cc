@@ -2379,8 +2379,13 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       int32_t task_id,
       actor::webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
           params) override {
-    if (autofill_selection_event_handler_) {
-      autofill_selection_event_handler_->OnFormPresented(std::move(params));
+    if (!autofill_selection_event_handler_) {
+      return;
+    }
+    if (!autofill_selection_event_handler_->OnFormPresented(
+            std::move(params))) {
+      receiver_.ReportBadMessage(
+          "Tried calling OnFormPresented with incorrect params.");
     }
   }
 

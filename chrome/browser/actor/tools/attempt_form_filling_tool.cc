@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/tools/attempt_form_filling_tool_metrics.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/page_target_util.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
@@ -330,14 +331,26 @@ void AttemptFormFillingTool::OnSuggestionsSelected(
       }).Then(std::move(invoke_callback)));
 }
 
-void AttemptFormFillingTool::OnFormPresented(
+bool AttemptFormFillingTool::OnFormPresented(
     webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr params) {
   tabs::TabInterface* tab = GetTargetTab().Get();
   if (!tab) {
-    return;
+    return true;
   }
-  tool_delegate().GetActorFormFillingService().ScrollToForm(
-      *tab, params->form_filling_request_index);
+  if (params->form_filling_request_index < 0) {
+    return false;
+  }
+  size_t request_index =
+      static_cast<size_t>(params->form_filling_request_index);
+  if (request_index >= tool_fill_requests_.size()) {
+    return false;
+  }
+
+  RecordOnSuggestionPresentedMetrics(
+      request_index, tool_fill_requests_[request_index].requested_data);
+  tool_delegate().GetActorFormFillingService().ScrollToForm(*tab,
+                                                            request_index);
+  return true;
 }
 
 void AttemptFormFillingTool::OnFormPreviewChanged(

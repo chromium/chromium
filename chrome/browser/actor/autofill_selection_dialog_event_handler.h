@@ -16,7 +16,8 @@ class AutofillSelectionDialogEventHandler {
   virtual ~AutofillSelectionDialogEventHandler() = default;
 
   // Called when a form is presented in the Glic UI.
-  virtual void OnFormPresented(
+  // Returns false when `params` are invalid.
+  virtual bool OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParamsPtr
           params) = 0;
 

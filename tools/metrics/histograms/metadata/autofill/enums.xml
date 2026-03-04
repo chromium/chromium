@@ -38,6 +38,21 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/integrators/glic/actor_form_filling_types.h:ActorFormFillingError) -->
 
+<!-- LINT.IfChange(ActorFormFillingRequestedData) -->
+
+<enum name="ActorFormFillingRequestedData">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Address"/>
+  <int value="2" label="ShippingAddress"/>
+  <int value="3" label="BillingAddress"/>
+  <int value="4" label="HomeAddress"/>
+  <int value="5" label="WorkAddress"/>
+  <int value="6" label="CreditCard"/>
+  <int value="7" label="ContactInformation"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_request.h:ActorFormFillingRequestedData) -->
+
 <enum name="AndroidAutofillAvailabilityStatus">
   <summary>
     Describes whether Android Autofill was available. If not, it splits the
