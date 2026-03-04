@@ -17,6 +17,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/browser/pdf/pdf_extension_test_util.h"
+#include "chrome/browser/pdf/pdf_viewer_stream_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
@@ -2174,6 +2175,29 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
       histogram, ReadAnythingDistillationScheme::kExtension, 1);
 
   histogram_tester.ExpectTotalCount(histogram, 6);
+}
+
+IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
+                       OnActiveAXTreeIDChanged_ResetsWaitingForPdfFrame) {
+  handler_ = CreateHandler();
+  content::WebContents* contents = GetReadAnythingWebContents();
+  page_.receiver_.FlushForTesting();
+
+  // Manually attach a PdfViewerStreamManager to the contents. This simulates
+  // the scenario where we identify the page as a PDF but the PDF frame has not
+  // loaded yet, setting is_waiting_for_pdf_frame_ to true.
+  pdf::PdfViewerStreamManager::Create(contents);
+  handler_->OnActiveAXTreeIDChanged();
+
+  // Remove PdfViewerStreamManager so  subsequent navigations are treated as
+  // normal pages.
+  contents->RemoveUserData(pdf::PdfViewerStreamManager::UserDataKey());
+
+  // Verify that navigating to a normal page correctly resets the PDF waiting
+  // state. If the state isn't reset, we would return early and be stuck in a
+  // waiting state.
+  EXPECT_CALL(page_, OnActiveAXTreeIDChanged(_, _, /*is_pdf=*/false)).Times(1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 }
 
 // In order to test that Readability isn't used in automated tests,
