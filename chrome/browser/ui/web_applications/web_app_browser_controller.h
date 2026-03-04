@@ -186,7 +186,8 @@ class WebAppBrowserController : public AppBrowserController,
       base::TimeTicks start_time,
       std::optional<WebAppIdentityUpdate> identity_update) const;
   void OnUpdateDialogResult(WebAppIdentityUpdateResult result) const;
-  void OnMigrationDialogResult(bool is_forced_migration,
+  void OnMigrationDialogResult(base::TimeTicks start_time,
+                               const WebAppIdentityUpdate& identity_update,
                                WebAppIdentityUpdateResult result) const;
 
 #if BUILDFLAG(IS_CHROMEOS)

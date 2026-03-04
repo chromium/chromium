@@ -870,8 +870,8 @@ void WebAppBrowserController::OnMetadataObtainedTriggerMigrationDialog(
   web_app::ShowWebAppReviewUpdateDialog(
       app_id(), *identity_update, browser(), start_time,
       base::BindOnce(&WebAppBrowserController::OnMigrationDialogResult,
-                     weak_ptr_factory_.GetWeakPtr(),
-                     identity_update->is_forced_migration));
+                     weak_ptr_factory_.GetWeakPtr(), start_time,
+                     *identity_update));
 }
 
 void WebAppBrowserController::OnUpdateDialogResult(
@@ -918,7 +918,8 @@ void WebAppBrowserController::OnUpdateDialogResult(
 }
 
 void WebAppBrowserController::OnMigrationDialogResult(
-    bool is_forced_migration,
+    base::TimeTicks start_time,
+    const WebAppIdentityUpdate& identity_update,
     WebAppIdentityUpdateResult result) const {
   CHECK(!browser()->profile()->IsOffTheRecord());
   auto* web_app_provider = WebAppProvider::GetForWebApps(browser()->profile());
@@ -942,8 +943,8 @@ void WebAppBrowserController::OnMigrationDialogResult(
             webapps::ManifestId(pending_migration_info->manifest_id()));
 
         const MigrationBehavior migration_behavior =
-            is_forced_migration ? MigrationBehavior::kForce
-                                : MigrationBehavior::kSuggest;
+            identity_update.is_forced_migration ? MigrationBehavior::kForce
+                                                : MigrationBehavior::kSuggest;
 
         web_app_provider->scheduler().ApplyManifestMigration(
             app_id(), destination_app_id, migration_behavior,
@@ -954,16 +955,19 @@ void WebAppBrowserController::OnMigrationDialogResult(
     }
     case WebAppIdentityUpdateResult::kUninstallApp: {
       UninstallCompleteCallback complete_callback =
-          is_forced_migration
+          identity_update.is_forced_migration
               ? base::BindOnce(
-                    [](base::WeakPtr<BrowserWindowInterface> browser,
+                    [](base::WeakPtr<WebAppBrowserController> controller,
+                       base::TimeTicks start_time,
+                       const WebAppIdentityUpdate& identity_update,
                        webapps::UninstallResultCode code) {
-                      if (browser &&
+                      if (controller &&
                           code == webapps::UninstallResultCode::kCancelled) {
-                        chrome::CloseWindow(browser.get());
+                        controller->OnMetadataObtainedTriggerMigrationDialog(
+                            start_time, identity_update);
                       }
                     },
-                    browser()->GetWeakPtr())
+                    weak_ptr_factory_.GetWeakPtr(), start_time, identity_update)
               : base::DoNothing();
       web_app_provider->ui_manager().PresentUserUninstallDialog(
           app_id(), webapps::WebappUninstallSource::kAppMenu,
