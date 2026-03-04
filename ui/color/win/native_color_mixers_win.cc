@@ -218,6 +218,7 @@ void AddNativeUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonBackgroundProminentFocused] = {kColorNativeHighlight};
   mixer[kColorHelpIconActive] = {kColorNativeHighlight};
   mixer[kColorItemSelectionBackground] = {kColorNativeHighlight};
+  mixer[kColorMenuButtonBackgroundSelected] = {kColorNativeHighlight};
   mixer[kColorMenuSelectionBackground] = {kColorNativeHighlight};
   mixer[kColorSubtleAccent] = {kColorNativeHighlight};
   mixer[kColorTableBackgroundSelectedFocused] = {kColorNativeHighlight};
