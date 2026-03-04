@@ -184,13 +184,6 @@ class ContextualSearchboxHandler
     OnInputStateChanged(state);
   }
 
-  base::ScopedObservation<contextual_search::ContextualSearchContextController,
-                          contextual_search::ContextualSearchContextController::
-                              FileUploadStatusObserver>&
-  context_controller_observation_for_testing() {
-    return context_controller_observation_;
-  }
-
  protected:
   // SearchboxHandler:
   omnibox::InputState GetInputState() const override;
@@ -281,10 +274,8 @@ class ContextualSearchboxHandler
 
   // The context controller this searchbox is listening to for file upload
   // status updates.
-  base::ScopedObservation<contextual_search::ContextualSearchContextController,
-                          contextual_search::ContextualSearchContextController::
-                              FileUploadStatusObserver>
-      context_controller_observation_{this};
+  base::WeakPtr<contextual_search::ContextualSearchContextController>
+      context_controller_;
 
   std::optional<lens::ContextualInputData> context_input_data_;
 
