@@ -3541,7 +3541,6 @@ if (!is_android) {
       "../browser/iframe_browsertest.cc",
       "../browser/image_fetcher/image_fetcher_impl_browsertest.cc",
       "../browser/infobars/infobars_browsertest.cc",
-      "../browser/interest_group/interest_group_permissions_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",
       "../browser/lifetime/browser_close_manager_browsertest.cc",
