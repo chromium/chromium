@@ -152,7 +152,7 @@ MULTIPROCESS_TEST_MAIN(RunIsolatedChromeInChild) {
   // Safe switch. The directory used here doesn't matter since it's not going to
   // be used, but allow the test to verify that switch values are passed through
   // correctly.
-  cmd.AppendSwitchPath(::switches::kUserDataDir,
+  cmd.AppendSwitchPath(::switches::kProfileDirectory,
                        base::PathService::CheckedGet(base::DIR_EXE));
   cmd.AppendArg(event_name);
   cmd.AppendArg("-invalid-switch");

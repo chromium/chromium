@@ -96,6 +96,24 @@ bool IsIsolationEnabled(const base::CommandLine& command_line) {
   if (!install_static::IsSystemInstall()) {
     return false;
   }
+
+  // Set of switches that will never result in an attempt to launch an isolated
+  // browser.
+  const char* const kNoIsolationSwitches[] = {
+      // Custom user data dir always runs uninsolated as it's not possible to
+      // determine the isolation state of any cryptographic data.
+      ::switches::kUserDataDir,
+      // If this browser is running isolated, never attempt to launch isolated
+      // again.
+      ::switches::kIsolated,
+  };
+
+  for (const auto* no_isolation_switch : kNoIsolationSwitches) {
+    if (command_line.HasSwitch(no_isolation_switch)) {
+      return false;
+    }
+  }
+
   // TODO(crbug.com/433545123): Replace with a persistent backed config.
   return command_line.HasSwitch(::switches::kLaunchIsolated);
 }

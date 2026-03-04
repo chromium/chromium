@@ -65,6 +65,7 @@ source_set("lib") {
     "//chrome/installer/util:constants",
     "//chrome/windows_services/service_program:common",
     "//components/crx_file",
+    "//content/public/common:static_switches",
     "//third_party/zlib/google:zip",
   ]
 

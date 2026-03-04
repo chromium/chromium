@@ -45,8 +45,9 @@ int RunTest() {
   }
 
   // A safe switch is allowed.
-  const auto udd = cmd_line->GetSwitchValuePath(::switches::kUserDataDir);
-  if (udd.empty() || !base::PathExists(udd)) {
+  const auto profile =
+      cmd_line->GetSwitchValuePath(::switches::kProfileDirectory);
+  if (profile.empty() || !base::PathExists(profile)) {
     return -4;
   }
 

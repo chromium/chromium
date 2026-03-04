@@ -38,6 +38,7 @@
 #include "chrome/installer/util/util_constants.h"
 #include "chrome/windows_services/service_program/get_calling_process.h"
 #include "chrome/windows_services/service_program/scoped_client_impersonation.h"
+#include "content/public/common/content_switches.h"
 #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -322,7 +323,46 @@ HRESULT Elevator::RunIsolatedChrome(DWORD flags,
 
   const char* const kAllowedSwitches[] = {
       // Allow selection of profile.
-      ::switches::kProfileDirectory, ::switches::kUserDataDir};
+      ::switches::kProfileDirectory,
+      // Restarting browser.
+      ::switches::kRestart,
+      // Guest and incognito.
+      ::switches::kGuest,
+      ::switches::kIncognito,
+      // Restore last session.
+      ::switches::kRestoreLastSession,
+      // Window control.
+      ::switches::kOpenInNewWindow,
+      // For rendez-vous metrics.
+      ::switches::kSourceShortcut,
+      ::switches::kSourceAppId,
+      // Switches for launching apps and PWAs.
+      ::switches::kAppId,
+      ::switches::kApp,
+      ::switches::kPwaLauncherVersion,
+      ::switches::kAppRunOnOsLoginMode,
+      // Jumplist action.
+      ::switches::kWinJumplistAction,
+      // Do not de-elevate.
+      ::switches::kDoNotDeElevateOnLaunch,
+      // For notifications from the action center.
+      ::switches::kNotificationLaunchId,
+      ::switches::kNotificationInlineReply,
+      // Launch methods.
+      ::switches::kFromBrowserSwitcher,
+      ::switches::kFromInstaller,
+      // Icon related.
+      ::switches::kShowIcons,
+      ::switches::kHideIcons,
+      // Startup related.
+      ::switches::kStartupForegroundLaunch,
+      // Uninstall related.
+      ::switches::kUninstall,
+      ::switches::kUninstallAppId,
+      // Logging.
+      ::switches::kLoggingLevel,
+      ::switches::kLogFile,
+  };
 
   trusted_command_line->CopySwitchesFrom(untrusted_command_line,
                                          kAllowedSwitches);
