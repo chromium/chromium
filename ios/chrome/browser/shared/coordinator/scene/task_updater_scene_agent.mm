@@ -17,7 +17,9 @@
                                      UIBlockerManagerObserver>
 @end
 
-@implementation TaskUpdaterSceneAgent
+@implementation TaskUpdaterSceneAgent {
+  BOOL _didUpdateToUIReady;
+}
 
 #pragma mark - ObservingSceneAgent
 
@@ -75,6 +77,7 @@
 }
 
 - (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [self updateToStageNone];
   [self.sceneState.profileState removeObserver:self];
   [self.sceneState removeObserver:self];
   [self.sceneState.profileState removeUIBlockerManagerObserver:self];
@@ -89,6 +92,20 @@
 
 #pragma mark - Private
 
+// Resets the scene from TaskExecutionUIReady to TaskExecutionProfileLoaded
+// if the profile is still loaded.
+- (void)resetExecutionStage {
+  _didUpdateToUIReady = NO;
+  [self updateToProfileLoaded];
+}
+
+// Updates the scene to TaskExecutionStageNone.
+- (void)updateToStageNone {
+  [self.sceneState.profileState.appState.taskOrchestrator
+      updateToStage:TaskExecutionStage::TaskExecutionStageNone
+           forScene:self.sceneState.sceneSessionID];
+}
+
 // Updates the scene to TaskExecutionProfileLoaded.
 - (void)updateToProfileLoaded {
   [self.sceneState.profileState.appState.taskOrchestrator
@@ -99,11 +116,17 @@
 // Updates the scene to TaskExecutionUIReady if conditions are met.
 - (void)maybeUpdateToUIReady {
   if (![self canUpdateToUIReady]) {
+    // Reset the execution stage if ui is not ready anymore.
+    if (_didUpdateToUIReady) {
+      [self resetExecutionStage];
+    }
     return;
   }
+
   [self.sceneState.profileState.appState.taskOrchestrator
       updateToStage:TaskExecutionStage::TaskExecutionUIReady
            forScene:self.sceneState.sceneSessionID];
+  _didUpdateToUIReady = YES;
 }
 
 // YES if UI is ready to handle tasks.

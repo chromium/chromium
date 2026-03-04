@@ -52,21 +52,14 @@
 
 // Fake TaskOrchestrator to record calls.
 @interface FakeTaskOrchestrator : TaskOrchestrator
-@property(nonatomic, strong) NSMutableArray<NSNumber*>* stages;
+@property(nonatomic, assign) TaskExecutionStage stage;
 @end
 
 @implementation FakeTaskOrchestrator
 
-- (instancetype)init {
-  if ((self = [super init])) {
-    _stages = [NSMutableArray array];
-  }
-  return self;
-}
-
 - (void)updateToStage:(TaskExecutionStage)stage
              forScene:(std::string_view)sceneSessionID {
-  [_stages addObject:@(static_cast<int>(stage))];
+  self.stage = stage;
 }
 
 @end
@@ -136,9 +129,8 @@ class TaskUpdaterSceneAgentTest : public PlatformTest {
 TEST_F(TaskUpdaterSceneAgentTest, TestProfileLoaded) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kProfileLoaded);
 
-  EXPECT_TRUE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionProfileLoaded))]);
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionProfileLoaded);
 }
 
 // Tests that TaskExecutionUIReady is sent when UI is ready.
@@ -147,17 +139,15 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIReady) {
   SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
 
   // UI not enabled yet.
-  EXPECT_FALSE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_NE(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
 
   // Enable UI and ForegroundActive.
   scene_state_.UIEnabled = YES;
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
-  EXPECT_TRUE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
 }
 
 // Tests that TaskExecutionUIReady is NOT sent if there is a UI blocker.
@@ -173,16 +163,14 @@ TEST_F(TaskUpdaterSceneAgentTest, TestUIBlocker) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   // Should NOT be ready.
-  EXPECT_FALSE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_NE(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
 
   // Remove UI blocker.
   [profile_state_ decrementBlockingUICounterForTarget:blocker_target];
 
-  EXPECT_TRUE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
 }
 
 // Tests that TaskExecutionUIReady is NOT sent if presenting modal overlay.
@@ -196,16 +184,14 @@ TEST_F(TaskUpdaterSceneAgentTest, TestModalOverlay) {
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
   // Should NOT be ready.
-  EXPECT_FALSE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_NE(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
 
   // Hide modal overlay.
   scene_state_.presentingModalOverlay = NO;
 
-  EXPECT_TRUE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
 }
 
 // Tests that TaskExecutionUIReady is NOT sent if signin is forced by policy
@@ -235,14 +221,54 @@ TEST_F(TaskUpdaterSceneAgentTest, TestSigninForcedByPolicy_InProgress) {
     scene_state_.activationLevel = SceneActivationLevelForegroundActive;
 
     // Should NOT be ready because signinInProgress is YES.
-    EXPECT_FALSE([fake_task_orchestrator_.stages
-        containsObject:@(static_cast<int>(
-                           TaskExecutionStage::TaskExecutionUIReady))]);
+    EXPECT_NE(fake_task_orchestrator_.stage,
+              TaskExecutionStage::TaskExecutionUIReady);
   }
 
   // signin_in_progress destroyed, signinDidEnd: called.
   // Should be ready now.
-  EXPECT_TRUE([fake_task_orchestrator_.stages
-      containsObject:@(static_cast<int>(
-                         TaskExecutionStage::TaskExecutionUIReady))]);
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+}
+
+// Tests that TaskExecutionProfileLoaded is sent when UI is no longer ready.
+TEST_F(TaskUpdaterSceneAgentTest, TestUIReadyResetToProfileLoaded) {
+  // Set Profile stage to Final.
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+
+  // Enable UI and ForegroundActive.
+  scene_state_.UIEnabled = YES;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Should be UIReady.
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+
+  // Simulate a background.
+  scene_state_.activationLevel = SceneActivationLevelBackground;
+
+  // Should be reset to profile loaded.
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionProfileLoaded);
+}
+
+// Tests that TaskExecutionStageNone is sent when UI is no longer ready.
+TEST_F(TaskUpdaterSceneAgentTest, TestUIReadyResetToStageNone) {
+  // Set Profile stage to Final.
+  SetProfileStateInitStage(profile_state_, ProfileInitStage::kFinal);
+
+  // Enable UI and ForegroundActive.
+  scene_state_.UIEnabled = YES;
+  scene_state_.activationLevel = SceneActivationLevelForegroundActive;
+
+  // Should be UIReady.
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionUIReady);
+
+  // Simulate a scene disconnected.
+  scene_state_.UIEnabled = NO;
+
+  // Should be reset to None.
+  EXPECT_EQ(fake_task_orchestrator_.stage,
+            TaskExecutionStage::TaskExecutionStageNone);
 }

@@ -61,10 +61,10 @@ struct SceneInfo {
 
 - (void)updateToStage:(TaskExecutionStage)stage
              forScene:(std::string_view)sceneSessionID {
-  TaskExecutionStage& currentStage =
+  TaskExecutionStage previousStage =
       _tasksPerScene[sceneSessionID].current_stage;
-  if (currentStage < stage) {
-    _tasksPerScene[sceneSessionID].current_stage = stage;
+  _tasksPerScene[sceneSessionID].current_stage = stage;
+  if (previousStage < stage) {
     [self executeTasksForScene:sceneSessionID];
   }
 }
