@@ -75,9 +75,7 @@ ExtensionActionRunner::ExtensionActionRunner(content::WebContents* web_contents)
       ExtensionRegistry::Get(browser_context_));
 }
 
-ExtensionActionRunner::~ExtensionActionRunner() {
-  LogUMA();
-}
+ExtensionActionRunner::~ExtensionActionRunner() = default;
 
 // static
 ExtensionActionRunner* ExtensionActionRunner::GetForWebContents(
@@ -288,8 +286,6 @@ void ExtensionActionRunner::RequestScriptInjection(
     NotifyChange(extension);
   }
 
-  was_used_on_page_ = true;
-
   for (TestObserver& observer : test_observers_) {
     observer.OnBlockedActionAdded();
   }
@@ -380,19 +376,6 @@ void ExtensionActionRunner::NotifyChange(const Extension* extension) {
   }
 }
 
-void ExtensionActionRunner::LogUMA() const {
-  // We only log the permitted extensions metric if the feature was used at all
-  // on the page, because otherwise the data will be boring.
-  if (was_used_on_page_) {
-    UMA_HISTOGRAM_COUNTS_100(
-        "Extensions.ActiveScriptController.PermittedExtensions",
-        permitted_extensions_.size());
-    UMA_HISTOGRAM_COUNTS_100(
-        "Extensions.ActiveScriptController.DeniedExtensions",
-        pending_scripts_.size());
-  }
-}
-
 void ExtensionActionRunner::ShowReloadPageBubble(
     const std::vector<const Extension*>& extensions) {
   reload_page_dialog_controller_ = std::make_unique<ReloadPageDialogController>(
@@ -432,7 +415,6 @@ void ExtensionActionRunner::DidFinishNavigation(
     return;
   }
 
-  LogUMA();
   num_page_requests_ = 0;
   permitted_extensions_.clear();
   // Runs all pending callbacks before clearing them.
@@ -441,7 +423,6 @@ void ExtensionActionRunner::DidFinishNavigation(
   }
   pending_scripts_.clear();
   web_request_blocked_.clear();
-  was_used_on_page_ = false;
 
   // Note: This needs to be called *after* the maps have been updated, so that
   // when the UI updates, this object returns the proper result for "wants to

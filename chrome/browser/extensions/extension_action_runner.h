@@ -180,9 +180,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // wants permission to run, or that it has been run).
   void NotifyChange(const Extension* extension);
 
-  // Log metrics.
-  void LogUMA() const;
-
   // content::WebContentsObserver implementation.
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -206,10 +203,6 @@ class ExtensionActionRunner : public content::WebContentsObserver,
 
   // The associated browser context.
   raw_ptr<content::BrowserContext> browser_context_;
-
-  // Whether or not the feature was used for any extensions. This may not be the
-  // case if the user never enabled the scripts-require-action flag.
-  bool was_used_on_page_ = false;
 
   // The map of extension_id:pending_request of all pending script requests.
   PendingScriptMap pending_scripts_;

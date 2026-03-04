@@ -322,26 +322,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.ActiveScriptController.DeniedExtensions"
-    units="Extension Count" expires_after="2025-12-21">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of extensions on a page that wanted to execute a script, required
-    explicit user consent, and were denied permission.
-  </summary>
-</histogram>
-
-<histogram name="Extensions.ActiveScriptController.PermittedExtensions"
-    units="Extension Count" expires_after="2026-07-19">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    The number of extensions on a page that wanted to execute a script, required
-    explicit user consent, and were granted permission.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.AlarmManager.AlarmsMaxNameLength"
     enum="ExtensionAlarmsNameLength" expires_after="2026-08-23">
   <owner>rdevlin.cronin@chromium.org</owner>
