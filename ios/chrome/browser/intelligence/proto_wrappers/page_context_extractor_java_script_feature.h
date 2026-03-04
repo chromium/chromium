@@ -24,8 +24,7 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
 
   // Extracts the page context from the `frame` content. Calls `callback` when
   // done with the page context represented by a base::Value object or `null` if
-  // the `timeout` is reached when waiting on the results from the JS call. Set
-  // `include_anchors` to true to also include the context for the anchor tags.
+  // the `timeout` is reached when waiting on the results from the JS call.
   // Supply a unique `nonce` token to prevent double extracting the content from
   // frames during a given round of page context extraction (see
   // PageContextWrapper for more details).
@@ -44,7 +43,6 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
   // resources/page_context_extractor.ts for more details.
   void ExtractPageContext(
       web::WebFrame* frame,
-      bool include_anchors,
       bool include_cross_origin_frame_content,
       bool use_rich_extraction,
       bool use_rich_extraction_with_actionable,

@@ -63,7 +63,6 @@ PageContextExtractorJavaScriptFeature::GetReplacements() {
 
 void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     web::WebFrame* frame,
-    bool include_anchors,
     bool include_cross_origin_frame_content,
     bool use_rich_extraction,
     bool use_rich_extraction_with_actionable,
@@ -73,7 +72,6 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
   // TODO(crbug.com/464503759): Use one single config to pass all the
   // parameters.
   base::ListValue parameters;
-  parameters.Append(include_anchors);
   parameters.Append(nonce);
   parameters.Append(include_cross_origin_frame_content);
   parameters.Append(use_rich_extraction);

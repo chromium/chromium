@@ -110,7 +110,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/true,
+      /*include_cross_origin_frame_content=*/true,
       /*use_rich_extraction=*/false,
       /*use_rich_extraction_with_actionable=*/false, "nonce",
       base::Milliseconds(100),
@@ -146,7 +146,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_rich_extraction=*/false,
       /*use_rich_extraction_with_actionable=*/false, "nonce",
       base::Milliseconds(100),
@@ -194,7 +194,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/true, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_rich_extraction=*/false,
       /*use_rich_extraction_with_actionable=*/false, "nonce",
       base::Milliseconds(100),
@@ -239,7 +239,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_rich_extraction=*/false,
       /*use_rich_extraction_with_actionable=*/false, "nonce",
       base::Milliseconds(100),
@@ -272,7 +272,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_rich_extraction=*/true,
       /*use_rich_extraction_with_actionable=*/false, "nonce", base::Seconds(1),
       base::BindOnce(
@@ -334,7 +334,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_rich_extraction=*/true,
       /*use_rich_extraction_with_actionable=*/true, "nonce", base::Seconds(1),
       base::BindOnce(
@@ -378,7 +378,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::RunLoop run_loop;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_apc_v2=*/true, /*use_rich_extraction_with_actionable=*/false,
       "nonce", base::Seconds(1),
       base::BindOnce(
@@ -432,7 +432,7 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   base::test::TestFuture<base::Value> future;
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
-      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*include_cross_origin_frame_content=*/false,
       /*use_rich_extraction=*/true,
       /*use_rich_extraction_with_actionable=*/false, "nonce", base::Seconds(1),
       base::BindOnce(
