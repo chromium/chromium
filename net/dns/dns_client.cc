@@ -132,7 +132,10 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
                 has_loopback_nameserver, has_local_non_loopback_nameserver));
         bool has_local_nameserver =
             has_loopback_nameserver || has_local_non_loopback_nameserver;
-        if (!has_local_nameserver && fallback_doh_nameservers_provided &&
+        if ((!has_local_nameserver ||
+             base::FeatureList::IsEnabled(
+                 features::kDohFallbackAllowedWithLocalNameservers)) &&
+            fallback_doh_nameservers_provided &&
             base::FeatureList::IsEnabled(
                 net::features::kAddAutomaticWithDohFallbackMode)) {
           config->doh_config =
