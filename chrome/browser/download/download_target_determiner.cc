@@ -599,13 +599,19 @@ DownloadTargetDeterminer::DoRequestConfirmation() {
       // file name first.
       std::wstring sanitized_name = ui::RemoveEnvVarFromFileName<wchar_t>(
           virtual_path_.BaseName().value(), L"%");
-      // remove leading "." to avoid resorting to potential extension
-      // bug: 41486690
-      while (!sanitized_name.empty() && sanitized_name.back() == L'.') {
-          sanitized_name.pop_back();
+      // Remove trailing "." and whitespace to avoid resorting to potential
+      // extensions.
+      // See crbug.com/41486690 and crbug.com/486079015 for more context.
+      while (!sanitized_name.empty()) {
+        size_t length = sanitized_name.length();
+        while (!sanitized_name.empty() && sanitized_name.back() == L'.') {
+            sanitized_name.pop_back();
+        }
+        // trim trailing whitespace (space, tab, NBSP) to prevent stale extensions
+        base::TrimWhitespace(sanitized_name, base::TrimPositions::TRIM_TRAILING, &sanitized_name);
+        if (length == sanitized_name.length())
+          break;
       }
-      // trim trailing whitespace (space, tab, NBSP) to prevent stale extensions
-      base::TrimWhitespace(sanitized_name, base::TrimPositions::TRIM_TRAILING, &sanitized_name);
       if (sanitized_name.empty()) {
         sanitized_name = base::UTF8ToWide(
             l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));

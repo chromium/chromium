@@ -2712,6 +2712,15 @@ TEST_F(DownloadTargetDeterminerTest, TestSanitizeEnvVariable) {
 
        FILE_PATH_LITERAL("download"), DownloadItem::TARGET_DISPOSITION_PROMPT,
 
+       EXPECT_CRDOWNLOAD},
+      {// 6: Multiple env vars need to be filtered out.
+       SAVE_AS, download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+       DownloadFileType::NOT_DANGEROUS, "http://example.com/foo.lnk .%% .%%",
+       "application/octet-stream", FILE_PATH_LITERAL(""),
+
+       FILE_PATH_LITERAL("foo.download"),
+       DownloadItem::TARGET_DISPOSITION_PROMPT,
+
        EXPECT_CRDOWNLOAD}};
 
   RunTestCasesWithActiveItem(kSaveEnvPathTestCases);
