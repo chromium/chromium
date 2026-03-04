@@ -33,8 +33,10 @@ BufferContent::BufferContent(size_t size)
     : buffer_(base::AlignedAlloc(AddPaddingIfNecessary(size),
                                  ::tflite::kDefaultTensorAlignment)),
       size_(size) {
-  // `base::AlignedAlloc` does not return initialized memory.
-  std::ranges::fill(AsSpan(), 0);
+  // `base::AlignedAlloc()` does not return initialized memory.
+  // SAFETY: Use `memset()` because the instrumented version of
+  // `std::ranges::fill()` is too slow.
+  UNSAFE_BUFFERS(memset(buffer_.get(), 0, size_));
 }
 
 BufferContent::~BufferContent() = default;
