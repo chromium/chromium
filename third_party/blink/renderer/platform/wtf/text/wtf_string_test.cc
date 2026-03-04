@@ -266,7 +266,7 @@ TEST(StringTest, Substr) {
   EXPECT_EQ("abc", str8.substr(0, 3));
   EXPECT_EQ("abc", str8.substr(0, 4));
   EXPECT_EQ("b", str8.substr(1, 1));
-  EXPECT_DEATH(static_cast<void>(str8.substr(4)), "");
+  EXPECT_DEATH_IF_SUPPORTED(static_cast<void>(str8.substr(4)), "");
 
   String str16(u"abc");
   EXPECT_EQ("abc", str16.substr(0));
@@ -279,7 +279,7 @@ TEST(StringTest, Substr) {
   EXPECT_EQ(u"abc", str8.substr(0, 3));
   EXPECT_EQ(u"abc", str8.substr(0, 4));
   EXPECT_EQ(u"b", str16.substr(1, 1));
-  EXPECT_DEATH(static_cast<void>(str16.substr(4)), "");
+  EXPECT_DEATH_IF_SUPPORTED(static_cast<void>(str16.substr(4)), "");
 }
 
 TEST(WTF, SimplifyWhiteSpace) {
