@@ -20,7 +20,7 @@
 #include "base/task/task_runner.h"
 #include "base/types/to_address.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ash/printing/local_printer_impl.h"
+#include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/extensions/api/printing/print_job_submitter.h"
@@ -90,7 +90,7 @@ PrintingAPIHandler::PrintingAPIHandler(content::BrowserContext* browser_context)
                          std::make_unique<printing::PrintJobController>(),
                          chromeos::CupsWrapper::Create(),
                          printing::GetLocalPrinterInterface(),
-                         ash::LocalPrinterImpl::Get()) {
+                         ash::LocalPrinter::Get()) {
   CHECK(cros_local_printer_);
   cros_local_printer_->AddPrintJobObserver(
       receiver_.BindNewPipeAndPassRemoteWithVersion(),

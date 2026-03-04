@@ -12,7 +12,7 @@
 #include "base/containers/map_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/ash/printing/local_printer_impl.h"
+#include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/chromeos/printing/cups_wrapper.h"
 #include "chrome/browser/printing/pdf_blob_data_flattener.h"
 #include "chrome/browser/printing/print_job_controller.h"
@@ -235,7 +235,7 @@ void WebPrintingServiceChromeOS::FetchAttributes(
   }
 
   const std::string& printer_id = *printers_.current_context();
-  ash::LocalPrinterImpl::Get()->GetCapability(
+  ash::LocalPrinter::Get()->GetCapability(
       // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       printer_id,
@@ -257,7 +257,7 @@ void WebPrintingServiceChromeOS::Print(
 
   const std::string& printer_id = *printers_.current_context();
   attributes->set_device_name(base::UTF8ToUTF16(printer_id));
-  ash::LocalPrinterImpl::Get()->GetCapability(
+  ash::LocalPrinter::Get()->GetCapability(
       // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       printer_id,
@@ -275,7 +275,7 @@ void WebPrintingServiceChromeOS::OnPermissionDecidedForGetPrinters(
         blink::mojom::GetPrintersError::kUserPermissionDenied));
     return;
   }
-  ash::LocalPrinterImpl::Get()->GetPrinters(
+  ash::LocalPrinter::Get()->GetPrinters(
       // TODO(crbug.com/354842935): Replace by ash::AnnotatedAccountId.
       user_manager::UserManager::Get()->GetPrimaryUser()->GetAccountId(),
       base::BindOnce(&WebPrintingServiceChromeOS::OnPrintersRetrieved,

@@ -27,7 +27,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/ash/printing/local_printer_impl.h"
+#include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/print_preview/local_printer_handler_chromeos.h"

@@ -22,7 +22,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
-#include "chrome/browser/ash/printing/local_printer_impl.h"
+#include "chrome/browser/ash/printing/local_printer.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_utils.h"
 #include "chrome/common/printing/printer_capabilities.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
@@ -226,7 +226,7 @@ LocalPrinterHandlerChromeos::Create(
   handler->cros_local_printer_ =
       crosapi::CrosapiManager::Get()->crosapi_ash()->local_printer_ash();
 #if BUILDFLAG(USE_CUPS)
-  handler->local_printer_ = ash::LocalPrinterImpl::Get();
+  handler->local_printer_ = ash::LocalPrinter::Get();
 #endif
   return handler;
 }
