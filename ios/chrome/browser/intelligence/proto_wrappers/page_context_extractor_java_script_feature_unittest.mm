@@ -111,7 +111,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/true,
-      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false,
+      /*use_rich_extraction_with_actionable=*/false, "nonce",
+      base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -145,7 +147,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest, ExtractPageContext) {
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false,
+      /*use_rich_extraction_with_actionable=*/false, "nonce",
+      base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -191,7 +195,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/true, /*include_cross_origin_frame_content=*/false,
-      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false,
+      /*use_rich_extraction_with_actionable=*/false, "nonce",
+      base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -234,7 +240,9 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      /*use_rich_extraction=*/false, "nonce", base::Milliseconds(100),
+      /*use_rich_extraction=*/false,
+      /*use_rich_extraction_with_actionable=*/false, "nonce",
+      base::Milliseconds(100),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -265,7 +273,8 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      /*use_rich_extraction=*/true, "nonce", base::Seconds(1),
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false, "nonce", base::Seconds(1),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -314,6 +323,43 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   EXPECT_EQ(*title, "TreeWalker Test");
 }
 
+TEST_F(PageContextExtractorJavaScriptFeatureTest,
+       ExtractPageContext_RichExtractionWithActionable) {
+  const std::string html =
+      "<html><body><button>Click me</button></body></html>";
+  web::test::LoadHtml(base::SysUTF8ToNSString(html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  base::Value result_value;
+  base::RunLoop run_loop;
+  feature()->ExtractPageContext(
+      web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
+      /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/true, "nonce", base::Seconds(1),
+      base::BindOnce(
+          [](base::RunLoop* r, base::Value* result_value,
+             const base::Value* value) {
+            *result_value = value->Clone();
+            r->Quit();
+          },
+          &run_loop, &result_value));
+  run_loop.Run();
+
+  const base::DictValue& dict = result_value.GetDict();
+  const base::DictValue* root_node = dict.FindDict("rootNode");
+  ASSERT_TRUE(root_node);
+  const base::ListValue* children = root_node->FindList("childrenNodes");
+  ASSERT_TRUE(children);
+  ASSERT_GE(children->size(), 1u);
+
+  const base::DictValue& button_node = (*children)[0].GetDict();
+  const base::DictValue* interaction_info =
+      button_node.FindDictByDottedPath("contentAttributes.nodeInteractionInfo");
+  ASSERT_TRUE(interaction_info);
+  EXPECT_TRUE(interaction_info->FindList("clickabilityReasons"));
+}
+
 // Test the extraction of the text size.
 TEST_F(PageContextExtractorJavaScriptFeatureTest,
        ExtractPageContext_RichExtraction_Text_Size) {
@@ -333,7 +379,8 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      /*use_apc_v2=*/true, "nonce", base::Seconds(1),
+      /*use_apc_v2=*/true, /*use_rich_extraction_with_actionable=*/false,
+      "nonce", base::Seconds(1),
       base::BindOnce(
           [](base::RunLoop* r, base::Value* result_value,
              const base::Value* value) {
@@ -386,7 +433,8 @@ TEST_F(PageContextExtractorJavaScriptFeatureTest,
   feature()->ExtractPageContext(
       web_state()->GetPageWorldWebFramesManager()->GetMainWebFrame(),
       /*include_anchors=*/false, /*include_cross_origin_frame_content=*/false,
-      /*use_apc_v2=*/true, "nonce", base::Seconds(1),
+      /*use_rich_extraction=*/true,
+      /*use_rich_extraction_with_actionable=*/false, "nonce", base::Seconds(1),
       base::BindOnce(
           [](base::OnceCallback<void(base::Value)> callback,
              const base::Value* value) {

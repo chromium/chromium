@@ -614,7 +614,8 @@ result.links = linksArray;
       extractor_feature->ExtractPageContext(
           mainFrame, includeAnchors,
           _config->graft_cross_origin_frame_content(),
-          _config->use_rich_extraction(), nonce, js_timeout,
+          _config->use_rich_extraction(),
+          _config->use_rich_extraction_with_actionable(), nonce, js_timeout,
           base::BindOnce(
               callback, weakSelf, annotatedPageContentBarrier,
               /*isMainFrame=*/YES, mainFrame->GetSecurityOrigin(),
@@ -637,7 +638,8 @@ result.links = linksArray;
 
       extractor_feature->ExtractPageContext(
           webFrame, includeAnchors, _config->graft_cross_origin_frame_content(),
-          _config->use_rich_extraction(), nonce, js_timeout,
+          _config->use_rich_extraction(),
+          _config->use_rich_extraction_with_actionable(), nonce, js_timeout,
           base::BindOnce(
               callback, weakSelf, annotatedPageContentBarrier,
               /*isMainFrame=*/NO, webFrame->GetSecurityOrigin(),

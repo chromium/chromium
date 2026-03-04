@@ -75,6 +75,18 @@ constexpr char kRedactionDecisionKey[] = "redactionDecision";
 constexpr char kFormDataKey[] = "formData";
 constexpr char kFormNameKey[] = "formName";
 constexpr char kFormActionUrlKey[] = "actionUrl";
+constexpr char kNodeInteractionInfoKey[] = "nodeInteractionInfo";
+constexpr char kScrollerInfoKey[] = "scrollerInfo";
+constexpr char kScrollingBoundsKey[] = "scrollingBounds";
+constexpr char kVisibleAreaKey[] = "visibleArea";
+constexpr char kUserScrollableHorizontalKey[] = "userScrollableHorizontal";
+constexpr char kUserScrollableVerticalKey[] = "userScrollableVertical";
+constexpr char kXKey[] = "x";
+constexpr char kYKey[] = "y";
+constexpr char kIsFocusableKey[] = "isFocusable";
+constexpr char kClickabilityReasonsKey[] = "clickabilityReasons";
+constexpr char kInteractionDisabledReasonsKey[] = "interactionDisabledReasons";
+constexpr char kIsDisabledInteractionKey[] = "isDisabled";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -399,6 +411,84 @@ void PopulateFormInfo(
   }
 }
 
+// Populates the `destination_node` with the `node_interaction_data` content.
+void PopulateNodeInteractionInfo(
+    const base::DictValue& node_interaction_data,
+    optimization_guide::proto::ContentNode* destination_node) {
+  auto* info_proto = destination_node->mutable_content_attributes()
+                         ->mutable_interaction_info();
+
+  // Scroller Info.
+  if (const base::DictValue* scroller_info =
+          node_interaction_data.FindDict(kScrollerInfoKey)) {
+    auto* scroller_proto = info_proto->mutable_scroller_info();
+    if (const base::DictValue* bounds =
+            scroller_info->FindDict(kScrollingBoundsKey)) {
+      if (std::optional<int> width = ReadJsNumber(*bounds, kWidthKey)) {
+        scroller_proto->mutable_scrolling_bounds()->set_width(*width);
+      }
+      if (std::optional<int> height = ReadJsNumber(*bounds, kHeightKey)) {
+        scroller_proto->mutable_scrolling_bounds()->set_height(*height);
+      }
+    }
+    if (const base::DictValue* visible_area =
+            scroller_info->FindDict(kVisibleAreaKey)) {
+      auto* rect = scroller_proto->mutable_visible_area();
+      if (std::optional<int> x = ReadJsNumber(*visible_area, kXKey)) {
+        rect->set_x(*x);
+      }
+      if (std::optional<int> y = ReadJsNumber(*visible_area, kYKey)) {
+        rect->set_y(*y);
+      }
+      if (std::optional<int> width = ReadJsNumber(*visible_area, kWidthKey)) {
+        rect->set_width(*width);
+      }
+      if (std::optional<int> height = ReadJsNumber(*visible_area, kHeightKey)) {
+        rect->set_height(*height);
+      }
+    }
+    scroller_proto->set_user_scrollable_horizontal(
+        scroller_info->FindBool(kUserScrollableHorizontalKey).value_or(false));
+    scroller_proto->set_user_scrollable_vertical(
+        scroller_info->FindBool(kUserScrollableVerticalKey).value_or(false));
+  }
+
+  // Focusable.
+  info_proto->set_is_focusable(
+      node_interaction_data.FindBool(kIsFocusableKey).value_or(false));
+
+  // Clickability Reasons.
+  if (const base::ListValue* reasons =
+          node_interaction_data.FindList(kClickabilityReasonsKey)) {
+    for (const auto& reason : *reasons) {
+      if (std::optional<int> r = ReadJsNumber(reason)) {
+        if (optimization_guide::proto::ClickabilityReason_IsValid(*r)) {
+          info_proto->add_clickability_reasons(
+              static_cast<optimization_guide::proto::ClickabilityReason>(*r));
+        }
+      }
+    }
+  }
+
+  // Disabled.
+  info_proto->set_is_disabled(
+      node_interaction_data.FindBool(kIsDisabledInteractionKey)
+          .value_or(false));
+
+  // Disabled Reasons.
+  if (const base::ListValue* disabled_reasons =
+          node_interaction_data.FindList(kInteractionDisabledReasonsKey)) {
+    for (const auto& reason : *disabled_reasons) {
+      if (std::optional<int> r = ReadJsNumber(reason)) {
+        if (optimization_guide::proto::InteractionDisabledReason_IsValid(*r)) {
+          info_proto->add_interaction_disabled_reasons(
+              static_cast<optimization_guide::proto::InteractionDisabledReason>(
+                  *r));
+        }
+      }
+    }
+  }
+}
 }  // namespace
 
 void PopulateAPCNodeFromContentTree(
@@ -533,6 +623,13 @@ void PopulateAPCNodeFromContentTree(
     }
     default:
       break;
+  }
+
+  // Handle Interaction Info.
+  const base::DictValue* interaction_info =
+      content_attributes->FindDict(kNodeInteractionInfoKey);
+  if (interaction_info) {
+    PopulateNodeInteractionInfo(*interaction_info, destination_node);
   }
 
   // Handle Annotated Role.

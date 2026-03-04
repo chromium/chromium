@@ -47,6 +47,7 @@ class PageContextExtractorJavaScriptFeature : public web::JavaScriptFeature {
       bool include_anchors,
       bool include_cross_origin_frame_content,
       bool use_rich_extraction,
+      bool use_rich_extraction_with_actionable,
       const std::string& nonce,
       base::TimeDelta timeout,
       base::OnceCallback<void(const base::Value*)> callback);

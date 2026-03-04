@@ -22,6 +22,7 @@ TEST_F(PageContextWrapperConfigTest, BuilderDefaults_FlagsDisabled) {
   EXPECT_FALSE(config.use_refactored_extractor());
   EXPECT_FALSE(config.graft_cross_origin_frame_content());
   EXPECT_FALSE(config.use_rich_extraction());
+  EXPECT_FALSE(config.use_rich_extraction_with_actionable());
 }
 
 // Tests that when the refactored extractor flag is enabled, it's reflected in
@@ -37,6 +38,7 @@ TEST_F(PageContextWrapperConfigTest,
   EXPECT_TRUE(config.use_refactored_extractor());
   EXPECT_FALSE(config.graft_cross_origin_frame_content());
   EXPECT_FALSE(config.use_rich_extraction());
+  EXPECT_FALSE(config.use_rich_extraction_with_actionable());
 }
 
 // Tests that the builder's setter methods correctly override defaults.
@@ -46,13 +48,38 @@ TEST_F(PageContextWrapperConfigTest, BuilderSetters) {
   scoped_feature_list.InitWithFeatures(
       {}, {kPageContextExtractorRefactored, kGeminiRichAPCExtraction});
 
-  PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
-                                        .SetUseRefactoredExtractor(true)
-                                        .SetGraftCrossOriginFrameContent(true)
-                                        .SetUseRichExtraction(true)
-                                        .Build();
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRefactoredExtractor(true)
+          .SetGraftCrossOriginFrameContent(true)
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
 
   EXPECT_TRUE(config.use_refactored_extractor());
   EXPECT_TRUE(config.graft_cross_origin_frame_content());
   EXPECT_TRUE(config.use_rich_extraction());
+  EXPECT_TRUE(config.use_rich_extraction_with_actionable());
+}
+
+// Tests the different ways to enable cross origin frame content grafting.
+TEST_F(PageContextWrapperConfigTest, GraftCrossOriginFrameContent) {
+  {
+    PageContextWrapperConfig config = PageContextWrapperConfigBuilder()
+                                          .SetGraftCrossOriginFrameContent(true)
+                                          .Build();
+    EXPECT_TRUE(config.graft_cross_origin_frame_content());
+  }
+  {
+    PageContextWrapperConfig config =
+        PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+    EXPECT_TRUE(config.graft_cross_origin_frame_content());
+  }
+  {
+    PageContextWrapperConfig config =
+        PageContextWrapperConfigBuilder()
+            .SetUseRichExtractionWithActionable(true)
+            .Build();
+    EXPECT_TRUE(config.graft_cross_origin_frame_content());
+  }
 }

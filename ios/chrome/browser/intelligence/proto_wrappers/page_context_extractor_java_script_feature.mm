@@ -66,6 +66,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
     bool include_anchors,
     bool include_cross_origin_frame_content,
     bool use_rich_extraction,
+    bool use_rich_extraction_with_actionable,
     const std::string& nonce,
     base::TimeDelta timeout,
     base::OnceCallback<void(const base::Value*)> callback) {
@@ -76,6 +77,7 @@ void PageContextExtractorJavaScriptFeature::ExtractPageContext(
   parameters.Append(nonce);
   parameters.Append(include_cross_origin_frame_content);
   parameters.Append(use_rich_extraction);
+  parameters.Append(use_rich_extraction_with_actionable);
   CallJavaScriptFunction(frame, "pageContextExtractor.extractPageContext",
                          parameters, std::move(callback), timeout);
 }

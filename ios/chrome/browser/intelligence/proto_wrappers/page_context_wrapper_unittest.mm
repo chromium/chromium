@@ -34,7 +34,6 @@
 #import "components/autofill/ios/common/features.h"
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/remote_frame_registration_java_script_feature.h"
-#import "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_extractor_java_script_feature.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
@@ -1975,6 +1974,17 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   EXPECT_TRUE(div.content_attributes().has_common_ancestor_dom_node_id());
   EXPECT_EQ(div.content_attributes().common_ancestor_dom_node_id(), 2);
 
+  // Verify Scroller Info.
+  ASSERT_TRUE(div.content_attributes().has_interaction_info());
+  const auto& div_interaction = div.content_attributes().interaction_info();
+  EXPECT_TRUE(div_interaction.has_scroller_info());
+  // Content height ~20+50+24+200 > 100.
+  EXPECT_GT(div_interaction.scroller_info().scrolling_bounds().height(), 100);
+  EXPECT_TRUE(div_interaction.scroller_info().user_scrollable_vertical());
+  // Width is 100, content div is 200 wide.
+  EXPECT_GT(div_interaction.scroller_info().scrolling_bounds().width(), 100);
+  EXPECT_TRUE(div_interaction.scroller_info().user_scrollable_horizontal());
+
   ASSERT_EQ(div.children_nodes_size(), 3);
 
   // 1.1 Paragraph
@@ -2029,6 +2039,10 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction) {
   }
   EXPECT_TRUE(has_no_opener);
   EXPECT_TRUE(has_no_referrer);
+
+  // Verify that there is no interaction info extracted since not in actionable
+  // mode and there is no scroller info.
+  ASSERT_FALSE(a.content_attributes().has_interaction_info());
 
   ASSERT_EQ(a.children_nodes_size(), 1);
   const auto& a_text = a.children_nodes(0);
@@ -3934,6 +3948,343 @@ TEST_P(PageContextWrapperTest, EnforcesOneTimeUse_Populate) {
   [wrapper populatePageContextFieldsAsync];
 
   EXPECT_CHECK_DEATH([wrapper populatePageContextFieldsAsync]);
+}
+
+// Tests extraction of various clickability reasons (e.g., standard controls,
+// ARIA roles, event handlers, tabindex, and pseudo-classes) as well as
+// focusability attributes.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_NodeInteraction_Clickable) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Clickable Test",
+      RawHtml("<button id='btn'>Button</button>"
+              "<div role='button' id='aria_btn'>Aria Button</div>"
+              "<input type='text' id='input_text'>"
+              "<div style='cursor: pointer;' id='cursor_ptr'>Pointer</div>"
+              "<div onclick='void(0)' id='onclick'>On Click</div>"
+              "<div tabindex='0' id='tabindex'>Tab Index</div>"
+              "<div contenteditable='true' id='editable'>Editable</div>"
+              "<input type='text' autocomplete='name' id='autocomplete'>"
+              "<div tabindex='-1' id='tabindex_minus_1'>Tab Index -1</div>"
+              "<div onmousedown='void(0)' id='onmousedown'>Mouse Down</div>"
+              "<div onmouseover='void(0)' id='onmouseover'>Mouse Over</div>"
+              "<div onkeydown='void(0)' id='onkeydown'>Key Down</div>"
+              "<div aria-haspopup='true' id='aria_haspopup'>Has Popup</div>"
+              "<div aria-expanded='true' id='aria_expanded_true'>Expanded "
+              "True</div>"
+              "<div aria-expanded='false' id='aria_expanded_false'>Expanded "
+              "False</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+  const auto& root = page_context->annotated_page_content().root_node();
+
+  ASSERT_EQ(15, root.children_nodes_size());
+
+  // 1. Button (CLICKABILITY_REASON_CLICKABLE_CONTROL).
+  const auto& btn = root.children_nodes(0);
+  EXPECT_TRUE(btn.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      btn.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
+
+  // 2. Aria Button (CLICKABILITY_REASON_ARIA_ROLE).
+  const auto& aria = root.children_nodes(1);
+  EXPECT_TRUE(aria.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      aria.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_ROLE));
+
+  // 3. Input Text (CLICKABILITY_REASON_CLICKABLE_CONTROL).
+  const auto& input = root.children_nodes(2);
+  EXPECT_TRUE(input.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      input.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICKABLE_CONTROL));
+
+  // 4. Pointer Cursor (CLICKABILITY_REASON_CURSOR_POINTER)
+  const auto& ptr = root.children_nodes(3);
+  EXPECT_TRUE(ptr.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      ptr.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_CURSOR_POINTER));
+
+  // 5. OnClick (CLICKABILITY_REASON_CLICK_HANDLER).
+  const auto& click = root.children_nodes(4);
+  EXPECT_TRUE(click.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      click.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_CLICK_HANDLER));
+
+  // 6. TabIndex (CLICKABILITY_REASON_TAB_INDEX, Focusable).
+  const auto& tab = root.children_nodes(5);
+  EXPECT_TRUE(tab.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      tab.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX));
+  EXPECT_TRUE(tab.content_attributes().interaction_info().is_focusable());
+
+  // 7. ContentEditable (CLICKABILITY_REASON_EDITABLE).
+  const auto& editable = root.children_nodes(6);
+  EXPECT_TRUE(editable.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      editable.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_EDITABLE));
+
+  // 8. Autocomplete (CLICKABILITY_REASON_AUTOCOMPLETE).
+  const auto& autocomplete = root.children_nodes(7);
+  EXPECT_TRUE(autocomplete.content_attributes().has_interaction_info());
+  EXPECT_THAT(autocomplete.content_attributes()
+                  .interaction_info()
+                  .clickability_reasons(),
+              testing::Contains(
+                  optimization_guide::proto::CLICKABILITY_REASON_AUTOCOMPLETE));
+
+  // 9. TabIndex -1 (CLICKABILITY_REASON_TAB_INDEX, Focusable).
+  const auto& tab_minus_1 = root.children_nodes(8);
+  EXPECT_TRUE(tab_minus_1.content_attributes().has_interaction_info());
+  EXPECT_THAT(tab_minus_1.content_attributes()
+                  .interaction_info()
+                  .clickability_reasons(),
+              testing::Contains(
+                  optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX));
+  EXPECT_TRUE(
+      tab_minus_1.content_attributes().interaction_info().is_focusable());
+
+  // 10. Mouse Down (CLICKABILITY_REASON_MOUSE_CLICK).
+  const auto& mouse_down = root.children_nodes(9);
+  EXPECT_TRUE(mouse_down.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      mouse_down.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_CLICK));
+
+  // 11. Mouse Over (CLICKABILITY_REASON_MOUSE_HOVER).
+  const auto& mouse_over = root.children_nodes(10);
+  EXPECT_TRUE(mouse_over.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      mouse_over.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_MOUSE_HOVER));
+
+  // 12. Key Down (CLICKABILITY_REASON_KEY_EVENTS).
+  const auto& key_down = root.children_nodes(11);
+  EXPECT_TRUE(key_down.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      key_down.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_KEY_EVENTS));
+
+  // 13. Aria Has Popup (CLICKABILITY_REASON_ARIA_HAS_POPUP).
+  const auto& has_popup = root.children_nodes(12);
+  EXPECT_TRUE(has_popup.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      has_popup.content_attributes().interaction_info().clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_HAS_POPUP));
+
+  // 14. Aria Expanded True (CLICKABILITY_REASON_ARIA_EXPANDED_TRUE).
+  const auto& expanded_true = root.children_nodes(13);
+  EXPECT_TRUE(expanded_true.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      expanded_true.content_attributes()
+          .interaction_info()
+          .clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_TRUE));
+
+  // 15. Aria Expanded False (CLICKABILITY_REASON_ARIA_EXPANDED_FALSE).
+  const auto& expanded_false = root.children_nodes(14);
+  EXPECT_TRUE(expanded_false.content_attributes().has_interaction_info());
+  EXPECT_THAT(
+      expanded_false.content_attributes()
+          .interaction_info()
+          .clickability_reasons(),
+      testing::Contains(
+          optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_FALSE));
+}
+
+// Tests extraction and mapping of elements that are functionally or visually
+// disabled, ensuring appropriate disabled reasons are captured.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_NodeInteraction_Disabled) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Disabled Test",
+      RawHtml("<button disabled id='disabled_btn'>Disabled</button>"
+              "<div aria-disabled='true' id='aria_disabled'>Aria Disabled</div>"
+              "<div style='cursor: not-allowed;' id='cursor_disabled'>Cursor "
+              "Disabled</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder()
+          .SetUseRichExtraction(true)
+          .SetUseRichExtractionWithActionable(true)
+          .Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+  const auto& root = page_context->annotated_page_content().root_node();
+
+  // 1. Button (Disabled attribute) -> is_disabled = true, reason = DISABLED.
+  const auto& btn = root.children_nodes(0);
+  ASSERT_TRUE(btn.content_attributes().has_interaction_info());
+  EXPECT_TRUE(btn.content_attributes().interaction_info().is_disabled());
+  EXPECT_THAT(
+      btn.content_attributes()
+          .interaction_info()
+          .interaction_disabled_reasons(),
+      testing::Contains(
+          optimization_guide::proto::INTERACTION_DISABLED_REASON_DISABLED));
+
+  // 2. Aria Button (aria-disabled='true') -> is_disabled = true, reason =
+  // ARIA_DISABLED.
+  const auto& aria = root.children_nodes(1);
+  ASSERT_TRUE(aria.content_attributes().has_interaction_info());
+  EXPECT_TRUE(aria.content_attributes().interaction_info().is_disabled());
+  EXPECT_THAT(aria.content_attributes()
+                  .interaction_info()
+                  .interaction_disabled_reasons(),
+              testing::Contains(optimization_guide::proto::
+                                    INTERACTION_DISABLED_REASON_ARIA_DISABLED));
+
+  // 3. Cursor Disabled (cursor: not-allowed) -> is_disabled = false (visual
+  // only), reason = CURSOR_NOT_ALLOWED.
+  const auto& cursor = root.children_nodes(2);
+  ASSERT_TRUE(cursor.content_attributes().has_interaction_info());
+  EXPECT_FALSE(cursor.content_attributes().interaction_info().is_disabled());
+  EXPECT_THAT(
+      cursor.content_attributes()
+          .interaction_info()
+          .interaction_disabled_reasons(),
+      testing::Contains(optimization_guide::proto::
+                            INTERACTION_DISABLED_REASON_CURSOR_NOT_ALLOWED));
+}
+
+// Tests extraction of scroller bounds and visibility mapping, including
+// explicit checks for independent horizontal/vertical scrolling capabilities
+// and ensuring non-scrolling overflow elements are cleanly ignored.
+TEST_P(PageContextWrapperTest,
+       PopulatePageContext_ApcV2_NodeInteraction_Scroller) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  auto page_structure = HtmlPage(
+      "Scroller Test",
+      RawHtml("<div style='width: 50px; height: 50px; overflow: auto;' "
+              "id='scroller'>"
+              "  <div style='width: 100px; height: 100px;'>Content</div>"
+              "</div>"
+              "<div style='width: 50px; height: 50px; overflow-x: scroll; "
+              "overflow-y: hidden;' id='horizontal_scroller'>"
+              "  <div style='width: 100px; height: 50px;'>Content</div>"
+              "</div>"
+              "<div style='width: 50px; height: 50px; overflow: hidden;' "
+              "id='hidden'>"
+              "  <div style='width: 100px; height: 100px;'>Content</div>"
+              "</div>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  PageContextWrapperConfig config =
+      PageContextWrapperConfigBuilder().SetUseRichExtraction(true).Build();
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), config, ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+  ASSERT_TRUE(page_context);
+  const auto& root = page_context->annotated_page_content().root_node();
+
+  // 1. Scroller Div (50x50 view, 100x100 content).
+  const auto& scroller = root.children_nodes(0);
+  ASSERT_TRUE(scroller.content_attributes().has_interaction_info());
+  EXPECT_TRUE(
+      scroller.content_attributes().interaction_info().has_scroller_info());
+
+  const auto& info =
+      scroller.content_attributes().interaction_info().scroller_info();
+  EXPECT_GT(info.scrolling_bounds().width(), 50);
+  EXPECT_GT(info.scrolling_bounds().height(), 50);
+  EXPECT_TRUE(info.user_scrollable_horizontal());
+  EXPECT_TRUE(info.user_scrollable_vertical());
+  EXPECT_EQ(info.visible_area().x(), 0);
+  EXPECT_EQ(info.visible_area().y(), 0);
+  EXPECT_GT(info.visible_area().width(), 0);
+  EXPECT_GT(info.visible_area().height(), 0);
+
+  // 2. Horizontal Scroller (50x50 view, 100x50 content).
+  const auto& horizontal_scroller = root.children_nodes(1);
+  ASSERT_TRUE(horizontal_scroller.content_attributes().has_interaction_info());
+  EXPECT_TRUE(horizontal_scroller.content_attributes()
+                  .interaction_info()
+                  .has_scroller_info());
+
+  const auto& horizontal_info = horizontal_scroller.content_attributes()
+                                    .interaction_info()
+                                    .scroller_info();
+  EXPECT_GT(horizontal_info.scrolling_bounds().width(), 50);
+  // No vertical scrolling -> height might just be 50.
+  EXPECT_GE(horizontal_info.scrolling_bounds().height(), 50);
+  EXPECT_TRUE(horizontal_info.user_scrollable_horizontal());
+  EXPECT_FALSE(horizontal_info.user_scrollable_vertical());
+
+  // 3. Hidden Scroller (Overflow hidden, not a scroller).
+  // Even though it has overflow: hidden, it is not scrollable, therefore it
+  // doesn't have scroller_info. It doesn't even have interaction_info in this
+  // test because it is just a generic container.
+  // We check that the node is there but has no interaction info.
+  const auto& hidden = root.children_nodes(2);
+  EXPECT_FALSE(hidden.content_attributes().has_interaction_info());
 }
 
 // Tests that the page context extracts text color with APCv2.
