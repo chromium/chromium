@@ -1870,6 +1870,8 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.init();
         }
+
+        mCompositorViewHolderSupplier.get().setSideUiStateProvider(mSideUiCoordinator);
     }
 
     private void destroySideUi() {
@@ -1877,6 +1879,10 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         //
         // Each SideUiContainer implementation that's registered with SideUiCoordinator should be
         // destroyed before SideUiCoordinator.
+
+        // The CompositorViewHolder itself is a SideUiObserver and queries its reference of the
+        // SideUiCoordinator. It's expected to be null by this point.
+        assert mCompositorViewHolderSupplier.get() == null;
 
         if (mSidePanelContainerCoordinator != null) {
             mSidePanelContainerCoordinator.destroy();

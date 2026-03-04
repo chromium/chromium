@@ -39,6 +39,8 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         mEndAnchorContainer = (ViewGroup) endAnchorContainerStub.inflate();
     }
 
+    // SideUiCoordinator Implementation
+
     @Override
     public void registerSideUiContainer(SideUiContainer sideUiContainer) {
         assert mSideUiContainer == null : "Registering a SideUiContainer when already set.";
@@ -49,20 +51,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     public void unregisterSideUiContainer(SideUiContainer sideUiContainer) {
         assert mSideUiContainer == sideUiContainer : "Unregistering unknown SideUiContainer.";
         mSideUiContainer = null;
-    }
-
-    @Override
-    public void addObserver(SideUiObserver observer) {
-        if (mSideUiObservers.addObserver(observer)) {
-            observer.onSideUiSpecsChanged(getCurrentSideUiSpecs());
-        }
-    }
-
-    @Override
-    public void removeObserver(SideUiObserver observer) {
-        if (mSideUiObservers.removeObserver(observer)) {
-            observer.onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
-        }
     }
 
     @Override
@@ -103,6 +91,33 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
     @Override
     public void destroy() {
         if (mSideUiContainer != null) unregisterSideUiContainer(mSideUiContainer);
+    }
+
+    // SideUiStateProvider Implementation
+
+    @Override
+    public void addObserver(SideUiObserver observer) {
+        if (mSideUiObservers.addObserver(observer)) {
+            observer.onSideUiSpecsChanged(getCurrentSideUiSpecs());
+        }
+    }
+
+    @Override
+    public void removeObserver(SideUiObserver observer) {
+        if (mSideUiObservers.removeObserver(observer)) {
+            observer.onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
+        }
+    }
+
+    @Override
+    public SideUiSpecs getCurrentSideUiSpecs() {
+        //  Infers based on measuring the two parent containers. Should not be used in
+        //  #requestUpdateContainer as that notifies Observers of the updated SideUiSpecs before any
+        //  UI changes are actually made.
+        mStartAnchorContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        mEndAnchorContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
+        return new SideUiSpecs(
+                mStartAnchorContainer.getMeasuredWidth(), mEndAnchorContainer.getMeasuredWidth());
     }
 
     /**
@@ -186,20 +201,6 @@ final class SideUiCoordinatorImpl implements SideUiCoordinator {
         for (SideUiObserver observer : mSideUiObservers) {
             observer.onSideUiSpecsChanged(newSideUiSpecs);
         }
-    }
-
-    /**
-     * Returns the current {@link SideUiSpecs}. Infers based on measuring the two parent containers.
-     * Should not be used in {@link #requestUpdateContainer} as that notifies Observers of the
-     * updated {@link SideUiSpecs} before any UI changes are actually made.
-     *
-     * @return The current {@link SideUiSpecs}.
-     */
-    private SideUiSpecs getCurrentSideUiSpecs() {
-        mStartAnchorContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        mEndAnchorContainer.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);
-        return new SideUiSpecs(
-                mStartAnchorContainer.getMeasuredWidth(), mEndAnchorContainer.getMeasuredWidth());
     }
 
     // Test Support
