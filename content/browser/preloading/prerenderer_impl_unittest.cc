@@ -9,6 +9,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/variations/scoped_variations_ids_provider.h"
+#include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_features.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -26,10 +28,34 @@ namespace {
 
 class PrerendererTest : public RenderViewHostTestHarness {
  public:
-  PrerendererTest() = default;
+  PrerendererTest()
+      : scoped_variations_ids_provider_(
+            variations::test::ScopedVariationsIdsProvider(
+                variations::VariationsIdsProvider::Mode::kUseSignedInState)) {}
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+
+    scoped_feature_list_prerender2_fallback_.InitWithFeaturesAndParameters(
+        {
+            {
+                features::kPrerender2FallbackPrefetchSpecRules,
+                {
+                    {
+                        features::
+                            kPrerender2FallbackPrefetchUseBlockUntilHeadTimetout
+                                .name,
+                        "false",
+                    },
+                    {
+                        features::kPrerender2FallbackPrefetchSchedulerPolicy
+                            .name,
+                        "NotUse",
+                    },
+                },
+            },
+        },
+        {});
 
     browser_context_ = std::make_unique<TestBrowserContext>();
     web_contents_ = TestWebContents::Create(
@@ -85,10 +111,15 @@ class PrerendererTest : public RenderViewHostTestHarness {
 
  private:
   test::ScopedPrerenderFeatureList prerender_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_prerender2_fallback_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<TestWebContents> web_contents_;
   std::unique_ptr<test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
+  // Prevent `DCHECK(g_instance)` failure in
+  // `VariationsIdsProvider::GetInstance()` via
+  // `PrefetchContainer::MakeInitialResourceRequest()`.
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_;
 };
 
 // Tests that Prerenderer starts prerendering when it receives prerender
@@ -317,9 +348,9 @@ TEST_F(PrerendererTest, MaybePrerenderAndShouldWaitForPrerenderResult) {
   EXPECT_FALSE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
   // MaybePrerender the candidate and check if ShouldWaitForPrerenderResult
   // returns true.
-  EXPECT_TRUE(prerenderer.MaybePrerender(candidate,
-                                         preloading_predictor::kUnspecified,
-                                         PreloadingConfidence{100}));
+  EXPECT_TRUE(prerenderer.MaybePrerender(
+      candidate, content_preloading_predictor::kSpeculationRules,
+      PreloadingConfidence{100}));
   EXPECT_TRUE(prerenderer.ShouldWaitForPrerenderResult(kPrerenderingUrl));
   EXPECT_TRUE(registry->FindHostByUrlForTesting(kPrerenderingUrl));
 }
