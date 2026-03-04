@@ -658,8 +658,10 @@ const int kStartCollapseTransitionTimeInSeconds = 5;
 // Checks if the page is eligible for Gemini, a user has consented, and checks
 // if two hours has passed since the last chip display.
 - (BOOL)shouldShowGeminiContextualBadge {
-  BOOL isPageEligible =
-      _geminiService->IsBwgAvailableForWebState(_activeWebState);
+  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_activeWebState);
+  BOOL isPageEligible = tabHelper &&
+                        tabHelper->IsGeminiAvailableForWebState() &&
+                        _geminiService->IsProfileEligibleForGemini();
   // TODO(crbug.com/465766925): Remove when feature is enabled by default.
   BOOL isConsentEligible = IsAskGeminiChipAllowNonconsentedUsersEnabled() ||
                            _prefService->GetBoolean(prefs::kIOSBwgConsent);

@@ -220,7 +220,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
              webStateList:self.browser->GetWebStateList()
        baseViewController:self.baseViewController
                entryPoint:_entryPoint
-               BWGService:BwgServiceFactory::GetForProfile(self.profile)
+            geminiService:BwgServiceFactory::GetForProfile(self.profile)
        geminiBrowserAgent:GeminiBrowserAgent::FromBrowser(self.browser)
                   tracker:_tracker];
   _mediator.sceneHandler =

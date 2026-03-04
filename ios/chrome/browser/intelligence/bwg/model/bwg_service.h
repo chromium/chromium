@@ -19,9 +19,6 @@ class IdentityManager;
 class OptimizationGuideService;
 class PrefService;
 class ProfileIOS;
-namespace web {
-class WebState;
-}
 
 // A browser-context keyed service for BWG.
 class BwgService : public KeyedService,
@@ -37,9 +34,6 @@ class BwgService : public KeyedService,
 
   // Returns whether the current profile is eligible for Gemini.
   bool IsProfileEligibleForGemini();
-
-  // Whether BWG is available for a given web state.
-  bool IsBwgAvailableForWebState(web::WebState* web_state);
 
   // signin::IdentityManager::Observer:
   void OnPrimaryAccountChanged(

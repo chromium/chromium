@@ -29,7 +29,7 @@ enum class EntryPoint;
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          entryPoint:(gemini::EntryPoint)entryPoint
-                         BWGService:(BwgService*)BWGService
+                      geminiService:(BwgService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker;
 

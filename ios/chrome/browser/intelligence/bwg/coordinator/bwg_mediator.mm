@@ -46,11 +46,11 @@
   // Pref service to check if user flows were previously triggered.
   raw_ptr<PrefService> _prefService;
 
-  // The profile-scoped BWG service.
-  raw_ptr<BwgService> _BWGService;
-
   // The browser-scoped BWG browser agent.
   raw_ptr<GeminiBrowserAgent> _geminiBrowserAgent;
+
+  // The profile-scoped Gemini service.
+  raw_ptr<BwgService> _geminiService;
 
   // Start time for the preparation of the presentation of BWG overlay.
   base::TimeTicks _BWGOverlayPreparationStartTime;
@@ -69,7 +69,7 @@
                        webStateList:(WebStateList*)webStateList
                  baseViewController:(UIViewController*)baseViewController
                          entryPoint:(gemini::EntryPoint)entryPoint
-                         BWGService:(BwgService*)BWGService
+                      geminiService:(BwgService*)geminiService
                  geminiBrowserAgent:(GeminiBrowserAgent*)geminiBrowserAgent
                             tracker:(feature_engagement::Tracker*)tracker {
   self = [super init];
@@ -77,7 +77,7 @@
     _prefService = prefService;
     _webStateList = webStateList;
     _baseViewController = baseViewController;
-    _BWGService = BWGService;
+    _geminiService = geminiService;
     _geminiBrowserAgent = geminiBrowserAgent;
     _tracker = tracker;
     _entryPoint = entryPoint;
@@ -184,13 +184,11 @@
 // Opens the BWG overlay in a pending state, since full page context is not yet
 // ready.
 - (void)openPendingBWGOverlay {
-
   web::WebState* activeWebState = _webStateList->GetActiveWebState();
 
   // The active web state may no longer be eligible for Gemini by the time this
   // is called. If this is the case, the overlay should not be presented.
-  if (!activeWebState ||
-      !_BWGService->IsBwgAvailableForWebState(activeWebState)) {
+  if (!activeWebState || ![self isGeminiEligible]) {
     return;
   }
 
@@ -215,10 +213,13 @@
 - (void)updateBWGOverlayForWebState:(web::WebState*)webState
          pageContextWrapperResponse:
              (PageContextWrapperCallbackResponse)response {
+  if (!webState) {
+    return;
+  }
 
   // The original web state may no longer be eligible for Gemini by the time
   // this is called. If this is the case, the overlay should not update.
-  if (!webState || !_BWGService->IsBwgAvailableForWebState(webState)) {
+  if (![self isGeminiEligible]) {
     return;
   }
 
@@ -270,6 +271,12 @@
       base::BindOnce(^(NSArray<NSString*>* suggestions){
           // No-op.
       }));
+}
+
+- (BOOL)isGeminiEligible {
+  BwgTabHelper* tabHelper = [self activeWebStateBWGTabHelper];
+  return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
+         _geminiService && _geminiService->IsProfileEligibleForGemini();
 }
 
 @end

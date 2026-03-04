@@ -77,8 +77,8 @@ class BwgTabHelper : public web::WebStateObserver,
   // Removes the associated WebState's session from storage.
   void DeleteBwgSessionInStorage();
 
-  // Whether BWG is available for the current web state.
-  bool IsBwgAvailableForWebState();
+  // Whether Gemini is available for the current web state.
+  bool IsGeminiAvailableForWebState();
 
   // Prepares the WebState for the BWG FRE (first run experience) backgrounding.
   // Takes a fullscreen screenshot and sets the session to active.

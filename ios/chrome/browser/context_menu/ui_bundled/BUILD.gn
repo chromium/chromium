@@ -24,6 +24,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/bwg/metrics",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/intelligence/bwg/utils:constants",
     "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/lens/ui_bundled:lens_availability",

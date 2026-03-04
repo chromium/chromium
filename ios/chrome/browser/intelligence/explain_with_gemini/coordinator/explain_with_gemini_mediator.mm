@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -57,8 +58,10 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
   ProfileIOS* profile =
       ProfileIOS::FromBrowserState(webState->GetBrowserState());
   raw_ptr<BwgService> geminiService = BwgServiceFactory::GetForProfile(profile);
+  BwgTabHelper* geminiTabHelper = BwgTabHelper::FromWebState(webState);
   const BOOL geminiAvailable =
-      geminiService && geminiService->IsBwgAvailableForWebState(webState);
+      geminiService && geminiService->IsProfileEligibleForGemini() &&
+      geminiTabHelper && geminiTabHelper->IsGeminiAvailableForWebState();
   if (!geminiAvailable) {
     return NO;
   }

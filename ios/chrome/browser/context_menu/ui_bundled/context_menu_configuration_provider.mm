@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens/ui_bundled/lens_availability.h"
@@ -563,10 +564,13 @@ NSString* const kAlertAccessibilityIdentifier = @"AlertAccessibilityIdentifier";
 
   // Launch the Gemini experience with an image attached.
   UIMenuElement* geminiElement = nil;
-  raw_ptr<BwgService> BWGService =
+  BwgService* geminiService =
       BwgServiceFactory::GetForProfile(self.browser->GetProfile());
-  BOOL canShowGeminiElement = IsGeminiImageRemixToolEnabled() && BWGService &&
-                              BWGService->IsBwgAvailableForWebState(webState);
+  BwgTabHelper* geminiTabHelper = BwgTabHelper::FromWebState(webState);
+  BOOL canShowGeminiElement =
+      IsGeminiImageRemixToolEnabled() && geminiTabHelper &&
+      geminiTabHelper->IsGeminiAvailableForWebState() && geminiService &&
+      geminiService->IsProfileEligibleForGemini();
   BOOL geminiAboveSearch = IsGeminiImageRemixToolShowAboveSearchImageEnabled();
   BOOL geminiBelowSearch = IsGeminiImageRemixToolShowBelowSearchImageEnabled();
 

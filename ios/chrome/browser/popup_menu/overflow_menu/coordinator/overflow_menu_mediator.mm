@@ -41,6 +41,7 @@
 #import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/intents/model/intents_donation_helper.h"
@@ -1872,15 +1873,16 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   if (!IsPageActionMenuEnabled()) {
     return NO;
   }
-  if (_webState) {
-    ProfileIOS* profile =
-        ProfileIOS::FromBrowserState(_webState->GetBrowserState());
-    BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
-    if (BWGService) {
-      return BWGService->IsBwgAvailableForWebState(_webState);
-    }
+  if (!_webState) {
+    return NO;
   }
-  return NO;
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(_webState->GetBrowserState());
+  BwgService* geminiService = BwgServiceFactory::GetForProfile(profile);
+  BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(_webState);
+  return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
+         geminiService && geminiService->IsProfileEligibleForGemini();
 }
 
 #pragma mark - CRWWebStateObserver

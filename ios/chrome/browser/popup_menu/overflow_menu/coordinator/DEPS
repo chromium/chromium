@@ -15,6 +15,7 @@ include_rules = [
   "+ios/chrome/browser/find_in_page/model/find_tab_helper.h",
   "+ios/chrome/browser/intelligence/bwg/model/bwg_service.h",
   "+ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h",
+  "+ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h",
   "+ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h",
   "+ios/chrome/browser/intelligence/features/features.h",
   "+ios/chrome/browser/intents/model/intents_donation_helper.h",

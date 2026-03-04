@@ -71,7 +71,10 @@ const CGFloat kFeatureRowIconSize = 20;
   raw_ptr<TemplateURLService> _templateURLService;
 
   // The service for the Gemini floaty.
-  raw_ptr<BwgService> _BWGService;
+  raw_ptr<BwgService> _geminiService;
+
+  // The tab helper for the Gemini floaty.
+  raw_ptr<BwgTabHelper> _geminiTabHelper;
 
   // The tab helper for Reader mode.
   raw_ptr<ReaderModeTabHelper> _readerModeTabHelper;
@@ -84,7 +87,8 @@ const CGFloat kFeatureRowIconSize = 20;
            authenticationService:(AuthenticationService*)authenticationService
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
-                      BWGService:(BwgService*)BWGService
+                   geminiService:(BwgService*)geminiService
+                 geminiTabHelper:(BwgTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
           hostContentSettingsMap:
               (HostContentSettingsMap*)hostContentSettingsMap {
@@ -94,7 +98,8 @@ const CGFloat kFeatureRowIconSize = 20;
     _authenticationService = authenticationService;
     _profilePrefs = profilePrefs;
     _templateURLService = templateURLService;
-    _BWGService = BWGService;
+    _geminiService = geminiService;
+    _geminiTabHelper = geminiTabHelper;
     _readerModeTabHelper = readerModeTabHelper;
     _hostContentSettingsMap = hostContentSettingsMap;
     _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
@@ -139,11 +144,12 @@ const CGFloat kFeatureRowIconSize = 20;
 }
 
 - (BOOL)isGeminiAvailable {
-  if (!_BWGService) {
+  if (!_geminiService || !_geminiTabHelper) {
     return NO;
   }
 
-  return _BWGService->IsBwgAvailableForWebState(_webState);
+  return _geminiTabHelper->IsGeminiAvailableForWebState() &&
+         _geminiService->IsProfileEligibleForGemini();
 }
 
 - (BOOL)isReaderModeAvailable {

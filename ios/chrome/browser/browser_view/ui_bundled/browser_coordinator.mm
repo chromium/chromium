@@ -3408,8 +3408,11 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)showBWGPromoIfPageIsEligible {
-  BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
-  if (BWGService->IsBwgAvailableForWebState(self.activeWebState)) {
+  BwgService* geminiService = BwgServiceFactory::GetForProfile(self.profile);
+  BwgTabHelper* geminiTabHelper =
+      BwgTabHelper::FromWebState(self.activeWebState);
+  if (geminiTabHelper && geminiTabHelper->IsGeminiAvailableForWebState() &&
+      geminiService && geminiService->IsProfileEligibleForGemini()) {
     [self startGeminiFlowWithStartupState:
               [[GeminiStartupState alloc]
                   initWithEntryPoint:gemini::EntryPoint::Promo]];
@@ -3460,28 +3463,30 @@ const char kChromeAppStoreUrl[] =
 - (void)updateFloatyVisibilityIfEligibleAnimated:(BOOL)animated
                                       fromSource:
                                           (gemini::FloatyUpdateSource)source {
+  if (!self.activeWebState) {
+    return;
+  }
+
   GeminiBrowserAgent* geminiBrowserAgent =
       GeminiBrowserAgent::FromBrowser(self.browser);
   BwgService* geminiService = BwgServiceFactory::GetForProfile(self.profile);
-  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent || !geminiService ||
-      !self.activeWebState) {
+  BwgTabHelper* geminiTabHelper =
+      BwgTabHelper::FromWebState(self.activeWebState);
+  if (!IsGeminiCopresenceEnabled() || !geminiBrowserAgent || !geminiTabHelper ||
+      !geminiService) {
     return;
   }
 
   // Don't show the floaty if the page is ineligible or the active WebState
   // isn't visible.
   // TODO(crbug.com/476145805): Move WebState related checks to tab helper.
-  bool eligibleSite =
-      geminiService->IsBwgAvailableForWebState(self.activeWebState);
+  bool eligibleSite = geminiTabHelper->IsGeminiAvailableForWebState() &&
+                      geminiService->IsProfileEligibleForGemini();
   bool isWebStateVisible = self.activeWebState->IsVisible();
   if (!eligibleSite || !isWebStateVisible) {
     // Reset presented sources before hiding the floaty due to an ineligible
     // site.
-    BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(self.activeWebState);
-    if (tabHelper) {
-      tabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
-    }
-
+    geminiTabHelper->UpdatePresentedSource(source, /*is_presented=*/false);
     geminiBrowserAgent->HideFloatyIfInvoked(
         animated, gemini::FloatyUpdateSource::IneligibleSite);
     return;

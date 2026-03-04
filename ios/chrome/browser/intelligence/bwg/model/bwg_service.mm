@@ -8,14 +8,12 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/task/sequenced_task_runner.h"
 #import "components/prefs/pref_service.h"
-#import "components/search_engines/util.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "google_apis/gaia/google_service_auth_error.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_prefs.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
-#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -91,21 +89,6 @@ bool BwgService::IsProfileEligibleForGemini() {
   RecordGeminiEligibility(is_eligible);
 
   return is_eligible;
-}
-
-bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
-  if (!web_state || !IsProfileEligibleForGemini()) {
-    return false;
-  }
-
-  if (IsGeminiCopresenceEnabled()) {
-    const GURL& url = web_state->GetVisibleURL();
-    if (IsAimURL(url)) {
-      return false;
-    }
-  }
-
-  return CanExtractPageContextForWebState(web_state);
 }
 
 #pragma mark - signin::IdentityManager::Observer

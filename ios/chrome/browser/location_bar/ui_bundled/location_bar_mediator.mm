@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
 #import "ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_consumer.h"
@@ -234,13 +235,11 @@ const CGFloat kIconPointSize = 16.0;
     return NO;
   }
 
-  if (_webStateList) {
-    web::WebState* webState = _webStateList->GetActiveWebState();
-    if (webState) {
-      ProfileIOS* profile =
-          ProfileIOS::FromBrowserState(webState->GetBrowserState());
-      return IsLensOverlayAllowedByPolicy(profile->GetPrefs());
-    }
+  web::WebState* webState = [self activeWebState];
+  if (webState) {
+    ProfileIOS* profile =
+        ProfileIOS::FromBrowserState(webState->GetBrowserState());
+    return IsLensOverlayAllowedByPolicy(profile->GetPrefs());
   }
   return NO;
 }
@@ -250,22 +249,26 @@ const CGFloat kIconPointSize = 16.0;
   if (!IsPageActionMenuEnabled()) {
     return NO;
   }
-  if (_webStateList) {
-    web::WebState* webState = _webStateList->GetActiveWebState();
-    if (webState) {
-      ProfileIOS* profile =
-          ProfileIOS::FromBrowserState(webState->GetBrowserState());
-      BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
-      if (BWGService) {
-        if (IsDirectBWGEntryPoint()) {
-          return BWGService->IsBwgAvailableForWebState(webState);
-        }
 
-        return BWGService->IsProfileEligibleForGemini();
-      }
-    }
+  web::WebState* webState = [self activeWebState];
+  if (!webState) {
+    return NO;
   }
-  return NO;
+
+  ProfileIOS* profile =
+      ProfileIOS::FromBrowserState(webState->GetBrowserState());
+  BwgService* geminiService = BwgServiceFactory::GetForProfile(profile);
+  if (!geminiService) {
+    return NO;
+  }
+
+  if (IsDirectBWGEntryPoint()) {
+    BwgTabHelper* tabHelper = BwgTabHelper::FromWebState(webState);
+    return tabHelper && tabHelper->IsGeminiAvailableForWebState() &&
+           geminiService->IsProfileEligibleForGemini();
+  }
+
+  return geminiService->IsProfileEligibleForGemini();
 }
 
 /// Updates the placeholder.
@@ -284,10 +287,10 @@ const CGFloat kIconPointSize = 16.0;
   if ([self isAIHubAvailable]) {
     // If this is the user's first time being eligible for the AI Hub, notify
     // the FET.
-    if (!_webStateList || !_webStateList->GetActiveWebState()) {
+    web::WebState* webState = [self activeWebState];
+    if (!webState) {
       return;
     }
-    web::WebState* webState = _webStateList->GetActiveWebState();
     ProfileIOS* profile =
         ProfileIOS::FromBrowserState(webState->GetBrowserState());
     PrefService* prefs = profile->GetPrefs();
@@ -321,11 +324,9 @@ const CGFloat kIconPointSize = 16.0;
     return NO;
   }
   GURL visibleURL = GURL();
-  if (_webStateList) {
-    web::WebState* webState = _webStateList->GetActiveWebState();
-    if (webState) {
-      visibleURL = webState->GetVisibleURL();
-    }
+  web::WebState* webState = [self activeWebState];
+  if (webState) {
+    visibleURL = webState->GetVisibleURL();
   }
 
   if (google_util::IsGoogleSearchUrl(visibleURL) ||
@@ -338,14 +339,20 @@ const CGFloat kIconPointSize = 16.0;
 
 - (BOOL)isCurrentPageNTP {
   GURL visibleURL = GURL();
-  if (_webStateList) {
-    web::WebState* webState = _webStateList->GetActiveWebState();
-    if (webState) {
-      visibleURL = webState->GetVisibleURL();
-    }
+  web::WebState* webState = [self activeWebState];
+  if (webState) {
+    visibleURL = webState->GetVisibleURL();
   }
 
   return IsURLNewTabPage(visibleURL);
+}
+
+- (web::WebState*)activeWebState {
+  if (!_webStateList) {
+    return nil;
+  }
+
+  return _webStateList->GetActiveWebState();
 }
 
 @end

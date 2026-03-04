@@ -12,6 +12,7 @@
 
 class AuthenticationService;
 class BwgService;
+class BwgTabHelper;
 class PrefService;
 class ReaderModeTabHelper;
 class TemplateURLService;
@@ -32,7 +33,8 @@ class WebState;
            authenticationService:(AuthenticationService*)authenticationService
               profilePrefService:(PrefService*)profilePrefs
               templateURLService:(TemplateURLService*)templateURLService
-                      BWGService:(BwgService*)BWGService
+                   geminiService:(BwgService*)geminiService
+                 geminiTabHelper:(BwgTabHelper*)geminiTabHelper
              readerModeTabHelper:(ReaderModeTabHelper*)readerModeTabHelper
           hostContentSettingsMap:(HostContentSettingsMap*)hostContentSettingsMap
     NS_DESIGNATED_INITIALIZER;
