@@ -4,11 +4,14 @@
 
 #include "components/segmentation_platform/internal/selection/segment_result_provider.h"
 
+#include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/task/bind_post_task.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/internal/database/mock_signal_database.h"
 #include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
@@ -31,6 +34,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::ByMove;
+using ::testing::Invoke;
 using ::testing::Return;
 
 const SegmentId kTestSegment =
@@ -537,6 +541,78 @@ TEST_F(SegmentResultProviderTest, MultipleRequests) {
       kTestSegment2, /*ignore_db_scores=*/false,
       SegmentResultProvider::ResultState::kServerModelDatabaseScoreUsed,
       kDatabaseRank);
+}
+
+class SegmentResultProviderThreadingTest : public testing::Test {
+ public:
+  SegmentResultProviderThreadingTest() = default;
+  ~SegmentResultProviderThreadingTest() override = default;
+
+ protected:
+  base::test::TaskEnvironment task_environment_;
+};
+
+// This is a regression test for https://crbug.com/343756437 that verifies that
+// moving the request state into a posted task ensures its destruction happens
+// on the correct thread, avoiding crashes with RefCounted objects like
+// InputContext.
+TEST_F(SegmentResultProviderThreadingTest, CrossThreadDestructionFixed) {
+  // Create an InputContext. It's RefCounted and not thread-safe.
+  scoped_refptr<InputContext> input_context =
+      base::MakeRefCounted<InputContext>();
+
+  auto options = std::make_unique<SegmentResultProvider::GetResultOptions>();
+  options->input_context = input_context;
+
+  base::RunLoop run_loop;
+  options->callback = base::BindPostTaskToCurrentDefault(base::BindOnce(
+      [](base::OnceClosure quit,
+         std::unique_ptr<SegmentResultProvider::SegmentResult> result) {
+        std::move(quit).Run();
+      },
+      run_loop.QuitClosure()));
+
+  // Simulate RequestState which is internal to segment_result_provider.cc
+  struct RequestState {
+    std::unique_ptr<SegmentResultProvider::GetResultOptions> options;
+  };
+  auto request_state = std::make_unique<RequestState>();
+  request_state->options = std::move(options);
+
+  base::Thread background_thread("BackgroundThread");
+  background_thread.Start();
+
+  auto main_task_runner = base::SequencedTaskRunner::GetCurrentDefault();
+
+  background_thread.task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<RequestState> request_state,
+             scoped_refptr<base::SequencedTaskRunner> main_task_runner) {
+            // This simulates the FIXED version of PostResultCallback:
+            auto callback = std::move(request_state->options->callback);
+            auto result =
+                std::make_unique<SegmentResultProvider::SegmentResult>(
+                    SegmentResultProvider::ResultState::kUnknown);
+
+            // Move request_state into the task posted to the main thread.
+            main_task_runner->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](std::unique_ptr<RequestState> request_state,
+                       SegmentResultProvider::SegmentResultCallback callback,
+                       std::unique_ptr<SegmentResultProvider::SegmentResult>
+                           result) {
+                      std::move(callback).Run(std::move(result));
+                      // request_state is destroyed here on the main thread.
+                    },
+                    std::move(request_state), std::move(callback),
+                    std::move(result)));
+          },
+          std::move(request_state), main_task_runner));
+
+  run_loop.Run();
+  background_thread.Stop();
 }
 
 }  // namespace segmentation_platform

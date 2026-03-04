@@ -386,9 +386,16 @@ void SegmentResultProviderImpl::OnModelExecuted(
 void SegmentResultProviderImpl::PostResultCallback(
     std::unique_ptr<RequestState> request_state,
     std::unique_ptr<SegmentResult> result) {
+  auto callback = std::move(request_state->options->callback);
   task_runner_->PostTask(
-      FROM_HERE, base::BindOnce(std::move(request_state->options->callback),
-                                std::move(result)));
+      FROM_HERE,
+      base::BindOnce(
+          [](std::unique_ptr<RequestState> request_state,
+             SegmentResultCallback callback,
+             std::unique_ptr<SegmentResult> result) {
+            std::move(callback).Run(std::move(result));
+          },
+          std::move(request_state), std::move(callback), std::move(result)));
 }
 
 void SegmentResultProviderImpl::OnSavedSegmentResult(
