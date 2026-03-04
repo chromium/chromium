@@ -26,6 +26,9 @@ class BrowserControlsAdapterImpl : public BrowserControlsAdapter {
   // BrowserControlsAdapter:
   void Reload(bool bypass_cache, WindowOpenDisposition disposition) override;
   void Stop() override;
+  void Back(WindowOpenDisposition disposition) override;
+  void Forward(WindowOpenDisposition disposition) override;
+  void BackButtonHovered() override;
   void CreateNewSplitTab() override;
   webui_toolbar::TabSplitStatus ComputeSplitTabStatus() override;
   bool IsButtonPinned(toolbar_ui_api::mojom::ToolbarButtonType type) override;

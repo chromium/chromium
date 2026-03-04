@@ -291,6 +291,10 @@ class ToolbarView : public views::AccessiblePaneView,
   void OnVerticalTabStripModeChanged(
       tabs::VerticalTabStripStateController* controller);
 
+  void SetForwardButtonVisibility(bool visible);
+
+  gfx::Size GetBackForwardButtonSize(bool minimum_size = false) const;
+
   std::unique_ptr<glic::ToolbarGlicButton> CreateGlicButton();
   void OnGlicButtonClicked();
   void OnGlicButtonDismissed();

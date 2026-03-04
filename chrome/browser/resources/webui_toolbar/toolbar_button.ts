@@ -4,6 +4,17 @@
 
 import {MenuSourceType} from '//resources/mojo/ui/base/mojom/menu_source_type.mojom-webui.js';
 
+import {ClickDispositionFlag} from './browser_proxy.js';
+
+export const BUTTON_LEFT = 0;
+export const BUTTON_MIDDLE = 1;
+export const BUTTON_RIGHT = 2;
+
+export interface GetClickDispositionFlagsOptions {
+  ignoreCtrlKey?: boolean;
+  ignoreShiftKey?: boolean;
+}
+
 export function getContextMenuPosition(element: HTMLElement) {
   const bounds = element.getBoundingClientRect();
   const isRtl = document.dir === 'rtl';
@@ -46,4 +57,26 @@ export function getContextMenuSourceType(e: Event): MenuSourceType {
     return MenuSourceType.kKeyboard;
   }
   return MenuSourceType.kMouse;
+}
+
+export function getClickDispositionFlags(
+    e: MouseEvent,
+    options: GetClickDispositionFlagsOptions = {}): ClickDispositionFlag[] {
+  const flags: ClickDispositionFlag[] = [];
+  if (e.button === BUTTON_MIDDLE) {
+    flags.push(ClickDispositionFlag.kMiddleMouseButton);
+  }
+  if (e.altKey) {
+    flags.push(ClickDispositionFlag.kAltKeyDown);
+  }
+  if (e.ctrlKey && !options.ignoreCtrlKey) {
+    flags.push(ClickDispositionFlag.kControlKeyDown);
+  }
+  if (e.metaKey) {
+    flags.push(ClickDispositionFlag.kMetaKeyDown);
+  }
+  if (e.shiftKey && !options.ignoreShiftKey) {
+    flags.push(ClickDispositionFlag.kShiftKeyDown);
+  }
+  return flags;
 }

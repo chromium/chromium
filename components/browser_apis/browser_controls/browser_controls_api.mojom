@@ -24,4 +24,13 @@ interface BrowserControlsService {
 
   // Enters split view mode for the active tab. Only called when not in split.
   SplitActiveTab();
+
+  // Navigates back.
+  Back(array<ClickDispositionFlag> flags);
+
+  // Navigates forward.
+  Forward(array<ClickDispositionFlag> flags);
+
+  // Notifies that the back button was hovered.
+  BackButtonHovered();
 };

@@ -20,6 +20,9 @@ class BrowserControlsAdapter {
 
   virtual void Reload(bool bypass_cache, WindowOpenDisposition disposition) = 0;
   virtual void Stop() = 0;
+  virtual void Back(WindowOpenDisposition disposition) = 0;
+  virtual void Forward(WindowOpenDisposition disposition) = 0;
+  virtual void BackButtonHovered() = 0;
   virtual void CreateNewSplitTab() = 0;
   // These should probably be pulled to their own adapter.
   virtual webui_toolbar::TabSplitStatus ComputeSplitTabStatus() = 0;

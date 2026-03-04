@@ -48,6 +48,7 @@ class ToyBrowser {
   bool IsButtonPinned(toolbar_ui_api::mojom::ToolbarButtonType type) const;
 
   bool is_split_tab() const { return is_split_tab_; }
+  bool is_back_button_hovered() const { return back_button_hovered_; }
 
  private:
   friend class ToyBrowserControlsAdapter;
@@ -56,6 +57,7 @@ class ToyBrowser {
   // True when split tab is created. This state currently sticks, with no way
   // to unset it.
   bool is_split_tab_ = false;
+  bool back_button_hovered_ = false;
 };
 
 }  // namespace testing

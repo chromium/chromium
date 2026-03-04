@@ -11,4 +11,6 @@ enum ClickDispositionFlag {
   kMiddleMouseButton = 1,
   kAltKeyDown = 2,
   kMetaKeyDown = 3,
+  kShiftKeyDown = 4,
+  kControlKeyDown = 5,
 };
