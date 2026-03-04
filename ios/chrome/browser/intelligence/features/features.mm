@@ -370,7 +370,7 @@ bool IsPageContextExtractorRefactoredEnabled() {
   return base::FeatureList::IsEnabled(kPageContextExtractorRefactored);
 }
 
-BASE_FEATURE(kGeminiRefactoredFRE, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kGeminiRefactoredFRE, base::FEATURE_ENABLED_BY_DEFAULT);
 
 bool IsGeminiRefactoredFREEnabled() {
   return base::FeatureList::IsEnabled(kGeminiRefactoredFRE);
