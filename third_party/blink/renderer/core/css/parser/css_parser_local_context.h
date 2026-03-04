@@ -89,13 +89,6 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): Used to create a local context to parse input
-  // arguments against syntax for CSSPaintValue. Figure out if we actually need
-  // the property context for property dependent random() values there.
-  static CSSParserLocalContext CreateWithoutPropertyForPaintValue() {
-    return CSSParserLocalContext();
-  }
-
   // For standard CSS properties, need to pass CSSPropertyName with unresolved
   // property id.
   // `custom_function` parameter is used for values defined in CSS @function

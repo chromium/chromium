@@ -213,8 +213,12 @@ bool CSSPaintValue::ParseInputArguments(const Document& document) {
     DCHECK_EQ(SecureContextMode::kSecureContext,
               document.GetExecutionContext()->GetSecureContextMode());
     DCHECK(!argument_variable_data_[i]->NeedsVariableResolution());
+    //  TODO(crbug.com/475807587): We use CSSParserLocalContext without a
+    //  property because parsed_value is converted to a CSSStyleValue, which
+    //  does not yet support the random() function. Revisit when CSSOM is
+    //  updated.
     CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForPaintValue();
+        CSSParserLocalContext::CreateWithoutPropertyForCSSOM();
     const CSSValue* parsed_value = argument_variable_data_[i]->ParseForSyntax(
         input_argument_types[i], SecureContextMode::kSecureContext,
         local_context);
