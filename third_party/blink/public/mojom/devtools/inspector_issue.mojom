@@ -334,6 +334,7 @@ enum GenericIssueErrorType {
   kAutofillAndManualTextPolicyControlledFeaturesInfo,
   kAutofillPolicyControlledFeatureInfo,
   kManualTextPolicyControlledFeatureInfo,
+  kFormModelContextParameterMissingTitleAndDescription,
 };
 
 struct GenericIssueDetails {

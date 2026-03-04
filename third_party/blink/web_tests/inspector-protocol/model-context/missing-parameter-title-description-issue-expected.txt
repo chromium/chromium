@@ -1,0 +1,6 @@
+Verify that an issue is reported for missing parameter title/description
+Node name: INPUT
+Node attribute data: id text1 name text1 type text
+Issue code: GenericIssue
+Issue type: FormModelContextParameterMissingTitleAndDescription
+

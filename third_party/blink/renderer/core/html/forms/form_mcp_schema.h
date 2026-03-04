@@ -164,6 +164,9 @@ class CORE_EXPORT FormMCPSchema {
   void ProcessForm(HTMLFormElement&);
   ControlVector& EnsureControlVector(const String& name);
 
+  // AuditsIssues.
+  void ReportParameterIssueIfNeeded(const String& name, const JSONObject&);
+
   bool IsText(ListedElement&) const;
   bool IsDate(ListedElement&) const;
   bool IsDatetimeLocal(ListedElement&) const;
@@ -201,6 +204,7 @@ class CORE_EXPORT FormMCPSchema {
   // we want to produce the JSON object entries in that same order.
   HeapVector<String> ordered_names_;
   HTMLFormControlElement* submit_button_ = nullptr;
+  HTMLFormElement* form_ = nullptr;
 };
 
 }  // namespace blink

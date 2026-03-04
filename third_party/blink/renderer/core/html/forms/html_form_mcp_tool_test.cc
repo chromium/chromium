@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -13,6 +14,9 @@
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/inspector_issue_storage.h"
+#include "third_party/blink/renderer/core/inspector/protocol/audits.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/script_tools/script_tool_types.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -2918,6 +2922,68 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Invalid) {
 
   // A relative path is not allowed
   EXPECT_FALSE(FillFormControls(*form_element, json_string));
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_MissingTitleAndDescription) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input id="text1" name="text1" type="text">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  // Triggers the check.
+  ComputeInputSchema(*form_element);
+
+  EXPECT_EQ(1u, storage.size());
+  protocol::Audits::InspectorIssue* issue = storage.at(0);
+  EXPECT_EQ(protocol::Audits::InspectorIssueCodeEnum::GenericIssue,
+            issue->getCode());
+  EXPECT_TRUE(issue->getDetails()->hasGenericIssueDetails());
+  EXPECT_EQ(protocol::Audits::GenericIssueErrorTypeEnum::
+                FormModelContextParameterMissingTitleAndDescription,
+            issue->getDetails()->getGenericIssueDetails()->getErrorType());
+  EXPECT_TRUE(
+      issue->getDetails()->getGenericIssueDetails()->hasViolatingNodeId());
+  HTMLInputElement* text1 = GetInputElement("text1");
+  ASSERT_TRUE(text1);
+  EXPECT_EQ(
+      static_cast<int>(DOMNodeIds::IdForNode(text1)),
+      issue->getDetails()->getGenericIssueDetails()->getViolatingNodeId(0));
+}
+
+TEST_F(HTMLFormMcpToolTest, GenericIssue_NotMissingTitleAndDescription) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id="form" toolname="mytool" tooldescription="perform task">
+      <input name="text1" type="text" toolparamtitle="TITLE">
+      <input name="text2" type="text" toolparamdescription="DESC">
+      <label for="text3">Label</label>
+      <input id="text3" name="text3" type="text">
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+  InspectorIssueStorage& storage =
+      GetDocument().GetPage()->GetInspectorIssueStorage();
+  storage.Clear();
+  EXPECT_EQ(0u, storage.size());
+
+  ComputeInputSchema(*form_element);
+
+  EXPECT_EQ(0u, storage.size());
 }
 
 }  // namespace blink

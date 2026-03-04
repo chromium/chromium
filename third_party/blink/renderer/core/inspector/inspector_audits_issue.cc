@@ -174,6 +174,10 @@ AuditsIssue::GenericIssueErrorTypeToProtocol(
         kManualTextPolicyControlledFeatureInfo:
       return protocol::Audits::GenericIssueErrorTypeEnum::
           ManualTextPolicyControlledFeatureInfo;
+    case mojom::blink::GenericIssueErrorType::
+        kFormModelContextParameterMissingTitleAndDescription:
+      return protocol::Audits::GenericIssueErrorTypeEnum::
+          FormModelContextParameterMissingTitleAndDescription;
   }
 }
 
