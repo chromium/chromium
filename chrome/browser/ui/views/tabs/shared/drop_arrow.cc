@@ -88,6 +88,7 @@ void DropArrow::UpdateBounds() {
     direction_ = direction;
     arrow_view_->SetImage(ui::ImageModel::FromResourceId(
         GetDropArrowImageResourceId(*direction_)));
+    arrow_view_->SchedulePaint();
   }
 
   arrow_widget_->SetBounds(drop_bounds);
