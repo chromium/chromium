@@ -59,9 +59,18 @@ suite('Toolbar Settings Menu', () => {
     menuButton = moreButton;
 
     settingsMenu = toolbar.$.settingsMenu;
-    menuButton.click();
 
+    // cr-action-menu listens for window resizes to auto-close. In headless
+    // test environments, the constrained viewport and deferred layout
+    // calculations when opening a <dialog> often trigger phantom resize events,
+    // causing the menu to close immediately and flake the test.
+    const preventResizeClose = (e: Event) => e.stopImmediatePropagation();
+    window.addEventListener('resize', preventResizeClose, true);
+
+    menuButton.click();
     await microtasksFinished();
+
+    window.removeEventListener('resize', preventResizeClose, true);
   });
 
   teardown(async () => {
