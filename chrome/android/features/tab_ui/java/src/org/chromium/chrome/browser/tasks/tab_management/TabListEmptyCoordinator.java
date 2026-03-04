@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMessag
 import android.content.Context;
 import android.content.res.Resources;
 import android.view.View;
+import android.view.View.OnLayoutChangeListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -43,6 +44,14 @@ class TabListEmptyCoordinator {
     private final TabListModel mModel;
     private final ListObserver<Void> mListObserver;
     private final Callback<Runnable> mRunOnItemAnimatorFinished;
+    private final OnLayoutChangeListener mLayoutChangeListener =
+            (v, left, top, right, bottom, oldLeft, oldTop, oldRight, oldBottom) -> {
+                boolean heightChanged = (bottom - top) != (oldBottom - oldTop);
+                boolean widthChanged = (right - left) != (oldRight - oldLeft);
+                if (heightChanged || widthChanged) {
+                    fixMargins();
+                }
+            };
 
     private @Nullable ViewGroup mEmptyView;
     private TextView mEmptyStateHeading;
@@ -83,23 +92,13 @@ class TabListEmptyCoordinator {
             @DrawableRes int imageResId,
             @StringRes int emptyHeadingStringResId,
             @StringRes int emptySubheadingStringResId) {
-        if (mEmptyView != null) {
-            return;
-        }
+        if (mEmptyView != null) return;
+
         // Initialize empty state resource.
         mEmptyView =
                 (ViewGroup)
                         android.view.LayoutInflater.from(mContext)
                                 .inflate(R.layout.empty_state_view, null);
-
-        // Padding for search box.
-        int searchBoxPadding =
-                mContext.getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
-        mEmptyView.setPadding(
-                mEmptyView.getPaddingLeft(),
-                searchBoxPadding,
-                mEmptyView.getPaddingRight(),
-                mEmptyView.getPaddingBottom());
 
         mEmptyStateHeading = mEmptyView.findViewById(R.id.empty_state_text_title);
         mEmptyStateSubheading = mEmptyView.findViewById(R.id.empty_state_text_description);
@@ -108,6 +107,8 @@ class TabListEmptyCoordinator {
         // Set empty state properties.
         setEmptyStateImageRes(imageResId);
         setEmptyStateViewText(emptyHeadingStringResId, emptySubheadingStringResId);
+
+        mRootView.addOnLayoutChangeListener(mLayoutChangeListener);
 
         mIllustrationAnimationManager = tryGetAnimationManager(imageResId);
         transformIllustrationIfPresent();
@@ -166,16 +167,19 @@ class TabListEmptyCoordinator {
     private void fixMargins() {
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) assumeNonNull(mEmptyView).getLayoutParams();
+
         Resources resources = mContext.getResources();
         @Px int rowMargin = resources.getDimensionPixelSize(R.dimen.default_list_row_padding);
+        params.topMargin = rowMargin;
 
         if (isOnlyArchivedMsg(mModel)) {
             View msgCard = mRecyclerView.getChildAt(0);
 
-            // Account for the height of the message card.
-            params.topMargin = msgCard.getHeight() + rowMargin;
+            // Empty view should only begin after message card.
+            params.topMargin += msgCard.getMeasuredHeight() + msgCard.getTop();
         } else {
-            params.topMargin = 0;
+            // Account for hub UI elements, such as the search box.
+            params.topMargin += mRecyclerView.getTop();
         }
         mEmptyView.setLayoutParams(params);
     }
@@ -219,6 +223,7 @@ class TabListEmptyCoordinator {
     }
 
     public void destroyEmptyView() {
+        mRootView.removeOnLayoutChangeListener(mLayoutChangeListener);
         if (mEmptyView != null && mEmptyView.getParent() != null) {
             mRootView.removeView(mEmptyView);
         }
