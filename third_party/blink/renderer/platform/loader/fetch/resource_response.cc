@@ -431,12 +431,12 @@ std::optional<base::Time> ResourceResponse::LastModified() const {
 
 bool ResourceResponse::IsAttachment() const {
   static const char kAttachmentString[] = "attachment";
-  String value = http_header_fields_.Get(http_names::kContentDisposition);
-  wtf_size_t loc = value.find(';');
-  if (loc != kNotFound)
-    value = value.Left(loc);
-  value = value.StripWhiteSpace();
-  return EqualIgnoringAsciiCase(value, kAttachmentString);
+  const AtomicString& header_value =
+      http_header_fields_.Get(http_names::kContentDisposition);
+  const StringView attachment_value = StringView(header_value)
+                                          .substr(0, header_value.find(';'))
+                                          .StripWhiteSpace();
+  return EqualIgnoringAsciiCase(attachment_value, kAttachmentString);
 }
 
 AtomicString ResourceResponse::HttpContentType() const {
