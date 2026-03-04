@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 
 import org.chromium.base.Callback;
-import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.NullUnmarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.desktop_windowing.DesktopWindowStateManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
@@ -19,7 +19,8 @@ import org.chromium.ui.base.WindowAndroid;
 import java.util.function.Supplier;
 
 /** A factory for producing a {@link BottomSheetController}. */
-@NullMarked
+// @Nullable annotations inside generic types are not supported. See https://crbug.com/433562519.
+@NullUnmarked
 public class BottomSheetControllerFactory {
     /**
      * @param scrimManagerSupplier Suppliers the {@ScrimManager}, used show scrims behind the sheet.
@@ -32,7 +33,7 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createBottomSheetController(
-            final Supplier<ScrimManager> scrimManagerSupplier,
+            final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
@@ -61,7 +62,7 @@ public class BottomSheetControllerFactory {
      * @return A new instance of the {@link BottomSheetController}.
      */
     public static ManagedBottomSheetController createFullWidthBottomSheetController(
-            final Supplier<ScrimManager> scrimManagerSupplier,
+            final Supplier</* @Nullable */ ScrimManager> scrimManagerSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,

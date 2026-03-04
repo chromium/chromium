@@ -71,7 +71,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
     private final ActivityTabProvider mTabProvider;
 
     /** A supplier of a snackbar manager for the bottom sheet. */
-    private final Supplier<SnackbarManager> mSnackbarManager;
+    private final MonotonicObservableSupplier<SnackbarManager> mSnackbarManager;
 
     /** The manager for overlay panels to attach listeners to. */
     private final Supplier<OverlayPanelManager> mOverlayPanelManager;
@@ -96,7 +96,7 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
             ActivityTabProvider tabProvider,
             BrowserControlsVisibilityManager controlsVisibilityManager,
             ExpandedSheetHelper expandedSheetHelper,
-            Supplier<SnackbarManager> snackbarManagerSupplier,
+            MonotonicObservableSupplier<SnackbarManager> snackbarManagerSupplier,
             MonotonicObservableSupplier<Boolean> omniboxFocusStateSupplier,
             Supplier<OverlayPanelManager> overlayManager,
             OneshotSupplier<LayoutStateProvider> layoutStateProviderSupplier) {
@@ -270,8 +270,9 @@ class BottomSheetManager extends EmptyBottomSheetObserver implements DestroyObse
 
     @Override
     public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
-        if (mSnackbarManager.get() != null) {
-            mSnackbarManager.get().dismissAllSnackbars();
+        SnackbarManager snackbarManager = mSnackbarManager.get();
+        if (snackbarManager != null) {
+            snackbarManager.dismissAllSnackbars();
         }
     }
 

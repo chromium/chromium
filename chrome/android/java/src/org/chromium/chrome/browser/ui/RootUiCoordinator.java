@@ -323,9 +323,9 @@ public class RootUiCoordinator
 
     private @Nullable BottomSheetManager mBottomSheetManager;
     private @Nullable ManagedBottomSheetController mBottomSheetController;
-    private @Nullable SnackbarManager mBottomSheetSnackbarManager;
+    private final SettableMonotonicObservableSupplier<SnackbarManager>
+            mBottomSheetSnackbarManagerSupplier = ObservableSuppliers.createMonotonic();
 
-    private @Nullable ScrimManager mScrimManager;
     private final ToolbarActionModeCallback mActionModeControllerCallback;
     private final SettableNonNullObservableSupplier<Boolean> mOmniboxFocusStateSupplier =
             ObservableSuppliers.createNonNull(false);
@@ -389,7 +389,7 @@ public class RootUiCoordinator
     protected final @Nullable TopControlsLockCoordinator mTopControlsLockCoordinator;
     protected final NonNullObservableSupplier<Integer> mOverviewColorSupplier;
     private @Nullable ContextualSearchObserver mReadAloudContextualSearchObserver;
-    private @Nullable PageZoomBarCoordinator mPageZoomBarCoordinator;
+    private PageZoomBarCoordinator mPageZoomBarCoordinator;
     private @Nullable ReaderModeBottomSheetManager mReaderModeBottomSheetManager;
     private @Nullable AppMenuObserver mAppMenuObserver;
     private @Nullable LinkHoverStatusBarCoordinator mLinkHoverStatusBarCoordinator;
@@ -889,8 +889,9 @@ public class RootUiCoordinator
             mBottomSheetController.destroy();
         }
 
-        if (mScrimManager != null) {
-            mScrimManager.destroy();
+        ScrimManager scrimManager = mScrimManagerSupplier.get();
+        if (scrimManager != null) {
+            scrimManager.destroy();
         }
 
         if (mCaptureController != null) {
@@ -1017,8 +1018,7 @@ public class RootUiCoordinator
 
     @Override
     public void onInflationComplete() {
-        mScrimManager = buildScrimWidget();
-        mScrimManagerSupplier.set(mScrimManager);
+        mScrimManagerSupplier.set(buildScrimWidget());
         initFindToolbarManager();
         initializeToolbar();
     }
@@ -1254,7 +1254,7 @@ public class RootUiCoordinator
                         mActivity,
                         profile,
                         this,
-                        mScrimManager,
+                        getScrimManager(),
                         mActivityTabProvider,
                         mFullscreenManager,
                         mBrowserControlsManager,
@@ -1760,7 +1760,7 @@ public class RootUiCoordinator
                     mActivityResultTracker,
                     mDeviceLockActivityLauncherSupplier.get(),
                     trackerSupplier,
-                    this::getScrimManager,
+                    mScrimManagerSupplier.asNonNull(),
                     mReaderModeIphControllerSupplier);
 
             var omniboxActionDelegate =
@@ -1831,7 +1831,7 @@ public class RootUiCoordinator
                             mShareDelegateSupplier,
                             mAdaptiveToolbarUiCoordinator.getButtonDataProviders(),
                             mActivityTabProvider,
-                            mScrimManager,
+                            getScrimManager(),
                             mActionModeControllerCallback,
                             mFindToolbarManager,
                             mProfileSupplier,
@@ -2119,13 +2119,13 @@ public class RootUiCoordinator
         // this.
         Callback<View> sheetInitializedCallback =
                 (view) -> {
-                    mBottomSheetSnackbarManager =
+                    mBottomSheetSnackbarManagerSupplier.set(
                             new SnackbarManager(
                                     mActivity,
                                     view.findViewById(R.id.bottom_sheet_snackbar_container),
                                     mWindowAndroid,
                                     mEdgeToEdgeControllerSupplier,
-                                    mModalDialogManagerSupplier.get());
+                                    mModalDialogManagerSupplier.get()));
                 };
 
         Supplier<@Nullable OverlayPanelManager> panelManagerSupplier =
@@ -2142,7 +2142,7 @@ public class RootUiCoordinator
         // suppliers.
         mBottomSheetController =
                 BottomSheetControllerFactory.createBottomSheetController(
-                        () -> mScrimManager,
+                        mScrimManagerSupplier,
                         sheetInitializedCallback,
                         mActivity.getWindow(),
                         mWindowAndroid.getKeyboardDelegate(),
@@ -2169,7 +2169,7 @@ public class RootUiCoordinator
                         mActivityTabProvider,
                         mBrowserControlsManager,
                         mExpandedBottomSheetHelper,
-                        this::getBottomSheetSnackbarManager,
+                        mBottomSheetSnackbarManagerSupplier,
                         mOmniboxFocusStateSupplier,
                         panelManagerSupplier,
                         mLayoutStateProviderOneShotSupplier);
@@ -2320,12 +2320,14 @@ public class RootUiCoordinator
 
     /** Returns the {@link ScrimManager} to control scrims over the activity. */
     public ScrimManager getScrimManager() {
-        return mScrimManager;
+        return mScrimManagerSupplier.asNonNull().get();
     }
 
-    /** @return The {@link SnackbarManager} for the {@link BottomSheetController}. */
+    /**
+     * @return The {@link SnackbarManager} for the {@link BottomSheetController}.
+     */
     public SnackbarManager getBottomSheetSnackbarManager() {
-        return mBottomSheetSnackbarManager;
+        return mBottomSheetSnackbarManagerSupplier.asNonNull().get();
     }
 
     /**
@@ -2413,7 +2415,7 @@ public class RootUiCoordinator
     }
 
     /** Returns the supplier of {@link ReadAloudController}. */
-    public Supplier<ReadAloudController> getReadAloudControllerSupplier() {
+    public MonotonicObservableSupplier<ReadAloudController> getReadAloudControllerSupplier() {
         return mReadAloudControllerSupplier;
     }
 

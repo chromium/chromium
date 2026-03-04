@@ -177,7 +177,7 @@ public interface BottomSheetController {
      * bottom sheet's interaction with the scrim if the default behavior is not desired -- fading in
      * behind the sheet as the sheet is expanded.
      */
-    ScrimManager getScrimManager();
+    @Nullable ScrimManager getScrimManager();
 
     /**
      * This method provides a property model that can be used to show the scrim behind the bottom

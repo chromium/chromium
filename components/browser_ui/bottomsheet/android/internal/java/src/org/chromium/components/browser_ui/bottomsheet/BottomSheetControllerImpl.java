@@ -57,7 +57,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     private final List<BottomSheetObserver> mPendingSheetObservers;
 
     /** A means of accessing the ScrimManager. */
-    private final Supplier<ScrimManager> mScrimManagerSupplier;
+    private final Supplier<@Nullable ScrimManager> mScrimManagerSupplier;
 
     /**
      * A set of tokens for features suppressing the bottom sheet. If this holder has tokens, the
@@ -136,7 +136,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
      * @param desktopWindowStateManager The {@link DesktopWindowStateManager} for the app header.
      */
     public BottomSheetControllerImpl(
-            final Supplier<ScrimManager> scrimManagerSupplier,
+            final Supplier<@Nullable ScrimManager> scrimManagerSupplier,
             Callback<View> initializedCallback,
             Window window,
             KeyboardVisibilityDelegate keyboardDelegate,
@@ -261,7 +261,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                     public void onSheetOpened(@StateChangeReason int reason) {
                         // The scrim may start visible, meaning we won't get an update. Manually
                         // trigger an update to account for this possibility.
-                        scrimVisibilityChanged(mScrimManagerSupplier.get().isShowingScrim());
+                        ScrimManager scrimManager = mScrimManagerSupplier.get();
+                        assumeNonNull(scrimManager);
+                        scrimVisibilityChanged(scrimManager.isShowingScrim());
                         if (mBottomSheet.getCurrentSheetContent() != null
                                 && mBottomSheet
                                         .getCurrentSheetContent()
@@ -270,7 +272,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                             return;
                         }
 
-                        mScrimManagerSupplier.get().showScrim(scrimProperties);
+                        scrimManager.showScrim(scrimProperties);
                         mScrimShown = true;
                         updateBackPressStateChangedSupplier();
                     }
@@ -280,9 +282,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                         // Hide the scrim if the current content doesn't have a custom scrim
                         // lifecycle.
                         if (mScrimShown) {
-                            mScrimManagerSupplier
-                                    .get()
-                                    .hideScrim(scrimProperties, /* animate= */ true);
+                            ScrimManager scrimManager = mScrimManagerSupplier.get();
+                            assumeNonNull(scrimManager);
+                            scrimManager.hideScrim(scrimProperties, /* animate= */ true);
                             mScrimShown = false;
                         }
 
@@ -333,7 +335,9 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
                     }
                 });
 
-        mScrimManagerSupplier.get().addObserver(this);
+        ScrimManager scrimManager = mScrimManagerSupplier.get();
+        assumeNonNull(scrimManager);
+        scrimManager.addObserver(this);
         // Add any of the pending observers that were added prior to the sheet being created.
         for (int i = 0; i < mPendingSheetObservers.size(); i++) {
             mBottomSheet.addObserver(mPendingSheetObservers.get(i));
@@ -359,7 +363,7 @@ class BottomSheetControllerImpl implements ManagedBottomSheetController, ScrimCo
     }
 
     @Override
-    public ScrimManager getScrimManager() {
+    public @Nullable ScrimManager getScrimManager() {
         return mScrimManagerSupplier.get();
     }
 

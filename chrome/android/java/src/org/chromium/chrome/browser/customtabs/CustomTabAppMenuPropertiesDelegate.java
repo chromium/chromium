@@ -16,6 +16,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -95,7 +96,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             boolean isIncognitoBranded,
             boolean isOffTheRecord,
             boolean isStartIconMenu,
-            Supplier<ReadAloudController> readAloudControllerSupplier,
+            MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             Supplier<ContextualPageActionController> contextualPageActionControllerSupplier,
             boolean hasClientPackage,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {

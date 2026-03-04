@@ -64,7 +64,6 @@ import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
-import java.util.function.Supplier;
 
 /** Unit tests for {@link CustomTabAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -89,8 +88,8 @@ public class CustomTabAppMenuPropertiesDelegateUnitTest {
     private final ActivityTabProvider mActivityTabProvider = new ActivityTabProvider();
     private final SettableMonotonicObservableSupplier<BookmarkModel> mBookmarkModelSupplier =
             ObservableSuppliers.createMonotonic();
-    private final Supplier<ReadAloudController> mReadAloudControllerSupplier =
-            ObservableSuppliers.alwaysNull();
+    private final SettableMonotonicObservableSupplier<ReadAloudController>
+            mReadAloudControllerSupplier = ObservableSuppliers.createMonotonic();
 
     @Before
     public void setUp() {

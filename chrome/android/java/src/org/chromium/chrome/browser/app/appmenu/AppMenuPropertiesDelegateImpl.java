@@ -97,7 +97,6 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.List;
-import java.util.function.Supplier;
 
 /**
  * Base implementation of {@link AppMenuPropertiesDelegate} that handles hiding and showing menu
@@ -114,7 +113,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
     protected final TabModelSelector mTabModelSelector;
     protected final ToolbarManager mToolbarManager;
     protected final View mDecorView;
-    protected final Supplier<ReadAloudController> mReadAloudControllerSupplier;
+    protected final MonotonicObservableSupplier<ReadAloudController> mReadAloudControllerSupplier;
 
     private CallbackController mCallbackController = new CallbackController();
     private final NullableObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
@@ -193,7 +192,7 @@ public abstract class AppMenuPropertiesDelegateImpl implements AppMenuProperties
             View decorView,
             @Nullable OneshotSupplier<LayoutStateProvider> layoutStateProvidersSupplier,
             NullableObservableSupplier<BookmarkModel> bookmarkModelSupplier,
-            Supplier<ReadAloudController> readAloudControllerSupplier,
+            MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         mContext = context;
         mIsTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);

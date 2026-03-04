@@ -1289,7 +1289,8 @@ public class NewTabPage
                 && (mOmniboxStub != null && mOmniboxStub.isUrlBarFocused());
     }
 
-    public void listenToFeed(Supplier<ReadAloudController> readAloudControllerSupplier) {
+    public void listenToFeed(
+            MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier) {
         ReadAloudController readAloudController = readAloudControllerSupplier.get();
         if (readAloudController == null) return;
 

@@ -3118,7 +3118,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
     }
 
     public ReadAloudController getReadAloudControllerForTesting() {
-        return mRootUiCoordinator.getReadAloudControllerSupplier().get();
+        return mRootUiCoordinator.getReadAloudControllerSupplier().asNonNull().get();
     }
 
     // NightModeStateProvider.Observer implementation.

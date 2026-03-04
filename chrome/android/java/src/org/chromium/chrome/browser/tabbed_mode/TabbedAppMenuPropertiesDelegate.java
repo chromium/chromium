@@ -23,6 +23,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 
 import org.chromium.base.CallbackController;
 import org.chromium.base.DeviceInfo;
+import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.annotations.Contract;
@@ -99,7 +100,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiFunction;
-import java.util.function.Supplier;
 
 /** An {@link AppMenuPropertiesDelegateImpl} for ChromeTabbedActivity. */
 @NullMarked
@@ -157,7 +157,7 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
             ModalDialogManager modalDialogManager,
             SnackbarManager snackbarManager,
             OneshotSupplier<IncognitoReauthController> incognitoReauthControllerOneshotSupplier,
-            Supplier<ReadAloudController> readAloudControllerSupplier,
+            MonotonicObservableSupplier<ReadAloudController> readAloudControllerSupplier,
             PageZoomManager pageZoomManager,
             @Nullable OpenInAppMenuItemProvider openInAppMenuItemProvider) {
         super(
