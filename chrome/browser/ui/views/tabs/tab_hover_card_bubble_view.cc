@@ -477,37 +477,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
 
 TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
-void TabHoverCardBubbleView::AddedToWidget() {
-  set_adjust_if_offscreen(true);
-  GetBubbleFrameView()->SetPreferredArrowAdjustment(
-      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
-  GetBubbleFrameView()->set_hit_test_transparent(true);
-
-  GetBubbleFrameView()->SetRoundedCorners(gfx::RoundedCornersF(corner_radius_));
-
-  // Placeholder image should be used when there is no image data for the
-  // given tab. Otherwise don't flash the placeholder while we wait for the
-  // existing thumbnail to be decompressed.
-  //
-  // Note that this code has to go after CreateBubble() above, since setting up
-  // the placeholder image and background color require a ColorProvider, which
-  // is only available once this View has been added to its widget.
-
-  HoverCardAnchorTarget* anchor_target =
-      HoverCardAnchorTarget::FromAnchorView(GetAnchorView());
-  bool valid_thumbnail = anchor_target && anchor_target->data().thumbnail &&
-                         anchor_target->data().thumbnail->has_data() &&
-                         anchor_target->IsActive();
-  if (thumbnail_view_ && !valid_thumbnail) {
-    thumbnail_view_->SetPlaceholderImage();
-  }
-
-  // Start in the fully "faded-in" position so that whatever text we initially
-  // display is visible. For TBD reasons, this needs to be done after the
-  // CreateBubble() call, or the crossfades have an incorrect background color.
-  SetTextFade(1.0);
-}
-
 CollaborationMessagingRowData
 TabHoverCardBubbleView::GetCollaborationMessagingData(
     const TabRendererData& tab_data) {
@@ -709,6 +678,37 @@ std::optional<double> TabHoverCardBubbleView::GetPreviewImageCrossfadeStart() {
   return start_percent >= 0.0
              ? std::make_optional(std::clamp(start_percent, 0.0, 1.0))
              : std::nullopt;
+}
+
+void TabHoverCardBubbleView::AddedToWidget() {
+  set_adjust_if_offscreen(true);
+  GetBubbleFrameView()->SetPreferredArrowAdjustment(
+      views::BubbleFrameView::PreferredArrowAdjustment::kOffset);
+  GetBubbleFrameView()->set_hit_test_transparent(true);
+
+  GetBubbleFrameView()->SetRoundedCorners(gfx::RoundedCornersF(corner_radius_));
+
+  // Placeholder image should be used when there is no image data for the
+  // given tab. Otherwise don't flash the placeholder while we wait for the
+  // existing thumbnail to be decompressed.
+  //
+  // Note that this code has to go after CreateBubble() above, since setting up
+  // the placeholder image and background color require a ColorProvider, which
+  // is only available once this View has been added to its widget.
+
+  HoverCardAnchorTarget* anchor_target =
+      HoverCardAnchorTarget::FromAnchorView(GetAnchorView());
+  bool valid_thumbnail = anchor_target && anchor_target->data().thumbnail &&
+                         anchor_target->data().thumbnail->has_data() &&
+                         anchor_target->IsActive();
+  if (thumbnail_view_ && !valid_thumbnail) {
+    thumbnail_view_->SetPlaceholderImage();
+  }
+
+  // Start in the fully "faded-in" position so that whatever text we initially
+  // display is visible. For TBD reasons, this needs to be done after the
+  // CreateBubble() call, or the crossfades have an incorrect background color.
+  SetTextFade(1.0);
 }
 
 gfx::Size TabHoverCardBubbleView::CalculatePreferredSize(
