@@ -1166,6 +1166,24 @@ void TabStrip::SetAvailableWidthCallback(
   tab_container_->SetAvailableWidthCallback(available_width_callback);
 }
 
+void TabStrip::NewTabButtonPressed(const ui::Event& event) {
+  new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
+
+  base::RecordAction(base::UserMetricsAction("NewTab_Button"));
+  GetBrowser()->profile()->SetUserData(
+      NewTabGroupingUserData::kNewTabGroupingUserDataKey,
+      std::make_unique<NewTabGroupingUserData>(
+          GetBrowser()->tab_strip_model()->GetActiveTabGroupId()));
+  if (event.IsMouseEvent()) {
+    // Prevent the hover card from popping back in immediately. This forces a
+    // normal fade-in.
+    if (hover_card_controller_) {
+      hover_card_controller_->PreventImmediateReshow();
+    }
+  }
+  controller_->CreateNewTab(NewTabTypes::kNewTabButton);
+}
+
 // static
 int TabStrip::GetSizeNeededForViews(const std::vector<TabSlotView*>& views) {
   int width = 0;
@@ -1331,23 +1349,6 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
 void TabStrip::OnTabWillBeRemoved(content::WebContents* contents,
                                   int model_index) {
   drag_context_->OnTabWillBeRemoved(contents);
-}
-
-void TabStrip::MaybeUpdateGroupOnTabChanged(int model_index) {
-  Tab* tab = tab_at(model_index);
-  if (tab->group().has_value()) {
-    if (ListTabsInGroup(tab->group().value()).length() > 0) {
-      // Since tab group naming can be based on the name of the first tab in the
-      // group, update the tab group name if this tab is the first in the group.
-      std::optional<int> tab_model_index = GetModelIndexOf(tab);
-      std::optional<int> group_first_tab =
-          GetFirstTabInGroup(tab->group().value());
-      if (tab_model_index.has_value() && group_first_tab.has_value() &&
-          tab_model_index.value() == group_first_tab.value()) {
-        OnGroupContentsChanged(tab->group().value());
-      }
-    }
-  }
 }
 
 void TabStrip::SetTabData(int model_index, TabRendererData data) {
@@ -1537,31 +1538,6 @@ void TabStrip::SetSelection(const ui::ListSelectionModel& new_selection) {
            no_longer_selected, newly_selected)) {
     tab_at(tab_index)->SelectedStateChanged();
   }
-}
-
-void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
-  if (active && selected_tabs_.active().has_value()) {
-    // When the browser window is activated, set the accessible selection and
-    // fire a selection event on the currently active tab, to help enable
-    // per-tab modes in assistive technologies.
-    tab_at(selected_tabs_.active().value())
-        ->GetViewAccessibility()
-        .SetIsSelected(true);
-
-    // When the browser window is activated, fire a selection event on the
-    // currently active tab, to help enable per-tab modes in assistive
-    // technologies.
-    // We need to make sure we fire the event manually here, because even
-    // though we set the tab to selected above, there are cases where the
-    // event will not be fired since the selected state was already set
-    // on the tab. Nevertheless, JAWS needs the event to be fired regardless,
-    // as per https://crbug.com/41450089.
-    tab_at(selected_tabs_.active().value())
-        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
-                                             true);
-  }
-
-  UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
 }
 
 TabGroup* TabStrip::GetTabGroup(const tab_groups::TabGroupId& id) const {
@@ -2216,6 +2192,26 @@ void TabStrip::DisableTabStripEditingForTesting() {
 ///////////////////////////////////////////////////////////////////////////////
 // TabStrip, private:
 
+// TabStrip::TabContextMenuController:
+// ----------------------------------------------------------
+
+TabStrip::TabContextMenuController::TabContextMenuController(TabStrip* parent)
+    : parent_(parent) {}
+
+void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
+    views::View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  // We are only intended to be installed as a context-menu handler for tabs, so
+  // this cast should be safe.
+  Tab* const tab = views::AsViewClass<Tab>(source);
+  CHECK(tab) << "The source must be a Tab class.";
+  if (tab->closing()) {
+    return;
+  }
+  parent_->ShowContextMenuForTab(tab, point, source_type);
+}
+
 void TabStrip::Init() {
   SetID(VIEW_ID_TAB_STRIP);
   // So we only get enter/exit messages when the mouse enters/exits the whole
@@ -2227,22 +2223,21 @@ std::map<tab_groups::TabGroupId, TabGroupHeader*> TabStrip::GetGroupHeaders() {
   return tab_container_->GetGroupHeaders();
 }
 
-void TabStrip::NewTabButtonPressed(const ui::Event& event) {
-  new_tab_button_pressed_start_time_ = base::TimeTicks::Now();
-
-  base::RecordAction(base::UserMetricsAction("NewTab_Button"));
-  GetBrowser()->profile()->SetUserData(
-      NewTabGroupingUserData::kNewTabGroupingUserDataKey,
-      std::make_unique<NewTabGroupingUserData>(
-          GetBrowser()->tab_strip_model()->GetActiveTabGroupId()));
-  if (event.IsMouseEvent()) {
-    // Prevent the hover card from popping back in immediately. This forces a
-    // normal fade-in.
-    if (hover_card_controller_) {
-      hover_card_controller_->PreventImmediateReshow();
+void TabStrip::MaybeUpdateGroupOnTabChanged(int model_index) {
+  Tab* tab = tab_at(model_index);
+  if (tab->group().has_value()) {
+    if (ListTabsInGroup(tab->group().value()).length() > 0) {
+      // Since tab group naming can be based on the name of the first tab in the
+      // group, update the tab group name if this tab is the first in the group.
+      std::optional<int> tab_model_index = GetModelIndexOf(tab);
+      std::optional<int> group_first_tab =
+          GetFirstTabInGroup(tab->group().value());
+      if (tab_model_index.has_value() && group_first_tab.has_value() &&
+          tab_model_index.value() == group_first_tab.value()) {
+        OnGroupContentsChanged(tab->group().value());
+      }
     }
   }
-  controller_->CreateNewTab(NewTabTypes::kNewTabButton);
 }
 
 bool TabStrip::ShouldHighlightCloseButtonAfterRemove() {
@@ -2424,26 +2419,6 @@ void TabStrip::ShiftGroupRelative(const tab_groups::TabGroupId& group,
   controller_->MoveGroup(group, target_index);
 }
 
-// TabStrip:TabContextMenuController:
-// ----------------------------------------------------------
-
-TabStrip::TabContextMenuController::TabContextMenuController(TabStrip* parent)
-    : parent_(parent) {}
-
-void TabStrip::TabContextMenuController::ShowContextMenuForViewImpl(
-    views::View* source,
-    const gfx::Point& point,
-    ui::mojom::MenuSourceType source_type) {
-  // We are only intended to be installed as a context-menu handler for tabs, so
-  // this cast should be safe.
-  Tab* const tab = views::AsViewClass<Tab>(source);
-  CHECK(tab) << "The source must be a Tab class.";
-  if (tab->closing()) {
-    return;
-  }
-  parent_->ShowContextMenuForTab(tab, point, source_type);
-}
-
 void TabStrip::OnMouseEntered(const ui::MouseEvent& event) {
   mouse_entered_tabstrip_time_ = base::TimeTicks::Now();
   has_reported_time_mouse_entered_to_switch_ = false;
@@ -2481,6 +2456,31 @@ void TabStrip::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
   event->SetHandled();
+}
+
+void TabStrip::OnWidgetActivationChanged(views::Widget* widget, bool active) {
+  if (active && selected_tabs_.active().has_value()) {
+    // When the browser window is activated, set the accessible selection and
+    // fire a selection event on the currently active tab, to help enable
+    // per-tab modes in assistive technologies.
+    tab_at(selected_tabs_.active().value())
+        ->GetViewAccessibility()
+        .SetIsSelected(true);
+
+    // When the browser window is activated, fire a selection event on the
+    // currently active tab, to help enable per-tab modes in assistive
+    // technologies.
+    // We need to make sure we fire the event manually here, because even
+    // though we set the tab to selected above, there are cases where the
+    // event will not be fired since the selected state was already set
+    // on the tab. Nevertheless, JAWS needs the event to be fired regardless,
+    // as per https://crbug.com/41450089.
+    tab_at(selected_tabs_.active().value())
+        ->NotifyAccessibilityEventDeprecated(ax::mojom::Event::kSelection,
+                                             true);
+  }
+
+  UpdateHoverCard(nullptr, HoverCardUpdateType::kEvent);
 }
 
 void TabStrip::OnTouchUiChanged() {
