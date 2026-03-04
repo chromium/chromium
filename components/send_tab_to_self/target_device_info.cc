@@ -87,11 +87,25 @@ SharingDeviceNames GetSharingDeviceNames(const syncer::DeviceInfo* device) {
   TRACE_EVENT0("ui", "send_tab_to_self::GetSharingDeviceNames");
   DCHECK(device);
   std::string model = device->model_name();
+  std::string client_name = device->client_name();
+
+  bool client_name_is_high_quality =
+      !client_name.empty() && client_name != model;
+
+  // On iOS 16+, the default client name is "iPhone" or "iPad". It is not a
+  // high-quality name, so we shouldn't treat it as a custom name.
+  // See
+  // https://developer.apple.com/documentation/uikit/uidevice/name#Discussion
+  if (device->os_type() == syncer::DeviceInfo::OsType::kIOS) {
+    if (client_name == "iPhone" || client_name == "iPad") {
+      client_name_is_high_quality = false;
+    }
+  }
 
   // 1. Skip renaming for M78- devices where HardwareInfo is not available.
-  // 2. Skip renaming if client_name is high quality i.e. not equals to model.
-  if (model.empty() || model != device->client_name()) {
-    return {device->client_name(), device->client_name()};
+  // 2. Skip renaming if client_name is high quality.
+  if (model.empty() || client_name_is_high_quality) {
+    return {client_name, client_name};
   }
 
   std::string manufacturer = CapitalizeWords(device->manufacturer_name());

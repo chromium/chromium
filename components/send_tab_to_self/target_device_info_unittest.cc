@@ -81,6 +81,39 @@ TEST_F(TargetDeviceInfoTest, GetSharingDeviceNames_AppleDevices_FullySynced) {
   EXPECT_EQ("Bobs-iMac", names.short_name);
 }
 
+TEST_F(TargetDeviceInfoTest, GetSharingDeviceNames_IOS_GenericName) {
+  std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
+      "guid", "iPhone", sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+      syncer::DeviceInfo::OsType::kIOS, syncer::DeviceInfo::FormFactor::kPhone,
+      "Apple Inc.", "iPhone14,5");
+  SharingDeviceNames names = GetSharingDeviceNames(device.get());
+
+  EXPECT_EQ("iPhone14,5", names.full_name);
+  EXPECT_EQ("iPhone", names.short_name);
+}
+
+TEST_F(TargetDeviceInfoTest, GetSharingDeviceNames_IOS_CustomName) {
+  std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
+      "guid", "John's iPhone", sync_pb::SyncEnums_DeviceType_TYPE_PHONE,
+      syncer::DeviceInfo::OsType::kIOS, syncer::DeviceInfo::FormFactor::kPhone,
+      "Apple Inc.", "iPhone14,5");
+  SharingDeviceNames names = GetSharingDeviceNames(device.get());
+
+  EXPECT_EQ("John's iPhone", names.full_name);
+  EXPECT_EQ("John's iPhone", names.short_name);
+}
+
+TEST_F(TargetDeviceInfoTest, GetSharingDeviceNames_EmptyClientName) {
+  std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
+      "guid", "", sync_pb::SyncEnums_DeviceType_TYPE_WIN,
+      syncer::DeviceInfo::OsType::kWindows,
+      syncer::DeviceInfo::FormFactor::kDesktop, "Dell", "XPS 13");
+  SharingDeviceNames names = GetSharingDeviceNames(device.get());
+
+  EXPECT_EQ("Dell Computer XPS 13", names.full_name);
+  EXPECT_EQ("Dell Computer", names.short_name);
+}
+
 TEST_F(TargetDeviceInfoTest, GetSharingDeviceNames_ChromeOSDevices) {
   std::unique_ptr<syncer::DeviceInfo> device = CreateFakeDeviceInfo(
       "guid", "Chromebook", sync_pb::SyncEnums_DeviceType_TYPE_CROS,
