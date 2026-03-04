@@ -1,23 +1,21 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_URL_LOOKUP_SERVICE_H_
-#define CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_URL_LOOKUP_SERVICE_H_
+#ifndef COMPONENTS_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_URL_LOOKUP_SERVICE_H_
+#define COMPONENTS_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_URL_LOOKUP_SERVICE_H_
+
 #include <memory>
 #include <string>
 
 #include "base/containers/lru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
-#include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
 #include "components/sessions/core/session_id.h"
-
-namespace content {
-class BrowserContext;
-}  // namespace content
+#include "url/gurl.h"
 
 namespace enterprise_data_protection {
 
@@ -79,27 +77,6 @@ class DataProtectionUrlLookupService : public KeyedService {
   base::WeakPtrFactory<DataProtectionUrlLookupService> weak_factory_{this};
 };
 
-// =====================================
-// DataProtectionUrlLookupServiceFactory
-// =====================================
-
-class DataProtectionUrlLookupServiceFactory
-    : public ProfileKeyedServiceFactory {
- public:
-  static DataProtectionUrlLookupServiceFactory* GetInstance();
-  static DataProtectionUrlLookupService* GetForBrowserContext(
-      content::BrowserContext* context);
-
- private:
-  DataProtectionUrlLookupServiceFactory();
-  ~DataProtectionUrlLookupServiceFactory() override;
-  friend base::NoDestructor<DataProtectionUrlLookupServiceFactory>;
-
-  // BrowserContextKeyedServiceFactory:
-  std::unique_ptr<KeyedService> BuildServiceInstanceForBrowserContext(
-      content::BrowserContext* context) const override;
-};
-
 }  // namespace enterprise_data_protection
 
-#endif  // CHROME_BROWSER_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_URL_LOOKUP_SERVICE_H_
+#endif  // COMPONENTS_ENTERPRISE_DATA_PROTECTION_DATA_PROTECTION_URL_LOOKUP_SERVICE_H_

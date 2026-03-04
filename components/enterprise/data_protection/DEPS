@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/keyed_service/core",
+  "+components/safe_browsing/core/browser/realtime",
+  "+components/safe_browsing/core/common",
+  "+components/sessions/core",
+  "+net",
+  "+services/network/public",
+  "+url",
+]
+
+specific_include_rules = {
+  ".*unittest\.cc": [
+    "+services/network:test_support",
+  ],
+}

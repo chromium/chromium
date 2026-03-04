@@ -1,19 +1,13 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service.h"
+#include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
-#include "chrome/browser/enterprise/data_protection/data_protection_features.h"
-#include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
-#include "content/public/browser/browser_context.h"
 
 namespace {
 
@@ -116,38 +110,6 @@ void DataProtectionUrlLookupService::OnRealTimeLookupComplete(
 // static
 bool DataProtectionUrlLookupService::IsVerdictExpired(const Verdict& verdict) {
   return base::Time::Now() > verdict.expiry_time;
-}
-
-// ====================================================
-// DataProtectionUrlLookupServiceFactory implementation
-// ====================================================
-
-DataProtectionUrlLookupServiceFactory::DataProtectionUrlLookupServiceFactory()
-    : ProfileKeyedServiceFactory("DataProtectionUrlLookupService",
-                                 ProfileSelections::BuildForRegularProfile()) {}
-
-DataProtectionUrlLookupServiceFactory::
-    ~DataProtectionUrlLookupServiceFactory() = default;
-
-// static
-DataProtectionUrlLookupServiceFactory*
-DataProtectionUrlLookupServiceFactory::GetInstance() {
-  static base::NoDestructor<DataProtectionUrlLookupServiceFactory> instance;
-  return instance.get();
-}
-
-// static
-DataProtectionUrlLookupService*
-DataProtectionUrlLookupServiceFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
-  return static_cast<DataProtectionUrlLookupService*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
-}
-
-std::unique_ptr<KeyedService>
-DataProtectionUrlLookupServiceFactory::BuildServiceInstanceForBrowserContext(
-    content::BrowserContext* context) const {
-  return std::make_unique<DataProtectionUrlLookupService>();
 }
 
 // static

@@ -1,8 +1,8 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/enterprise/data_protection/data_protection_url_lookup_service.h"
+#include "components/enterprise/data_protection/data_protection_url_lookup_service.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/task_environment.h"
