@@ -411,13 +411,6 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
     return true;
   }
 
-#if BUILDFLAG(IS_APPLE)
-  // IOSurface-backed SharedImages always support low-latency usages.
-  if (Canvas2DSharedImagesBackedByIOSurface()) {
-    return true;
-  }
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
   // Low-latency usage on Android is possible only with SurfaceControl.
   if (!::features::IsAndroidSurfaceControlEnabled()) {
@@ -425,6 +418,11 @@ bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
   }
 #endif
 
+  // NOTE: crbug.com/41435781 would need to be resolved in order to support
+  // low-latency usage on Mac (currently setting the desynchronized attribute
+  // on a canvas is a no-op on Mac). If/once that bug is resolved, determine
+  // whether this method can then return true on Apple if
+  // Canvas2DSharedImagesBackedByIOSurface() holds.
   return base::FeatureList::IsEnabled(
       features::kLowLatencyCanvas2dImageChromium);
 }
