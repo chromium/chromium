@@ -8,13 +8,25 @@
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_consumer.h"
-
 @protocol AssistantAIMMutator;
+@class AssistantAIMViewController;
+
+// Delegate for the AssistantAIMViewController.
+@protocol AssistantAIMViewControllerDelegate <NSObject>
+
+// Called when the close button is tapped.
+- (void)assistantAIMViewControllerDidTapClose:
+    (AssistantAIMViewController*)viewController;
+
+@end
 
 @interface AssistantAIMViewController : UIViewController <AssistantAIMConsumer>
 
 // The mutator for this view controller.
 @property(nonatomic, weak) id<AssistantAIMMutator> mutator;
+
+// The delegate for this view controller.
+@property(nonatomic, weak) id<AssistantAIMViewControllerDelegate> delegate;
 
 @end
 

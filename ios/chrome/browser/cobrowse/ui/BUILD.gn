@@ -11,6 +11,8 @@ source_set("ui") {
   ]
   deps = [
     "//ios/chrome/browser/assistant/ui",
+    "//ios/chrome/browser/shared/ui/elements",
+    "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ui/base",

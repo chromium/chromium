@@ -4,12 +4,16 @@
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_view_controller.h"
 
 #import "ios/chrome/browser/cobrowse/ui/assistant_aim_mutator.h"
+#import "ios/chrome/browser/shared/ui/elements/extended_touch_target_button.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 namespace {
 
+constexpr CGFloat kContentMargin = 16.0;
 constexpr CGFloat kTitleVerticalMargin = 12.0;
+constexpr CGFloat kCloseButtonSymbolPointSize = 17.0;
 
 }  // namespace
 
@@ -24,6 +28,7 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
 }
 
 @synthesize mutator = _mutator;
+@synthesize delegate = _delegate;
 
 - (void)viewDidLoad {
   [super viewDidLoad];
@@ -82,6 +87,10 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
 
 // Sets up the title.
 - (void)setUpHeader {
+  // Close Button.
+  UIButton* closeButton = [self createCloseButton];
+  [self.view addSubview:closeButton];
+
   _titleLabel = [[UILabel alloc] init];
   _titleLabel.text = @"AI Assistant";
   _titleLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
@@ -93,8 +102,40 @@ constexpr CGFloat kTitleVerticalMargin = 12.0;
   [NSLayoutConstraint activateConstraints:@[
     [_titleLabel.topAnchor constraintEqualToAnchor:self.view.topAnchor
                                           constant:kTitleVerticalMargin],
+    [closeButton.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor
+                                               constant:-kContentMargin],
+    [_titleLabel.trailingAnchor
+        constraintLessThanOrEqualToAnchor:closeButton.leadingAnchor
+                                 constant:-kContentMargin],
   ]];
   AddSameCenterXConstraint(_titleLabel, self.view);
+  AddSameCenterYConstraint(closeButton, _titleLabel);
+}
+
+// Creates and configures the close button.
+- (UIButton*)createCloseButton {
+  UIButtonConfiguration* buttonConfiguration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  buttonConfiguration.image = DefaultSymbolTemplateWithPointSize(
+      kXMarkSymbol, kCloseButtonSymbolPointSize);
+  buttonConfiguration.baseForegroundColor =
+      [UIColor colorNamed:kTextPrimaryColor];
+  buttonConfiguration.background.backgroundColor =
+      [UIColor colorNamed:kPrimaryBackgroundColor];
+  buttonConfiguration.cornerStyle = UIButtonConfigurationCornerStyleCapsule;
+  ExtendedTouchTargetButton* closeButton =
+      [ExtendedTouchTargetButton buttonWithConfiguration:buttonConfiguration
+                                           primaryAction:nil];
+  [closeButton addTarget:self
+                  action:@selector(didTapCloseButton)
+        forControlEvents:UIControlEventTouchUpInside];
+  closeButton.translatesAutoresizingMaskIntoConstraints = NO;
+  return closeButton;
+}
+
+// Called when the close button is tapped.
+- (void)didTapCloseButton {
+  [self.delegate assistantAIMViewControllerDidTapClose:self];
 }
 
 - (void)setUpTemporaryTextField {

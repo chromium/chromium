@@ -13,7 +13,8 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/web/public/web_state.h"
 
-@interface AssistantAIMCoordinator () <AssistantContainerDelegate>
+@interface AssistantAIMCoordinator () <AssistantAIMViewControllerDelegate,
+                                       AssistantContainerDelegate>
 @end
 
 @implementation AssistantAIMCoordinator {
@@ -23,6 +24,7 @@
 
 - (void)start {
   _viewController = [[AssistantAIMViewController alloc] init];
+  _viewController.delegate = self;
 
   web::WebState::CreateParams params(self.browser->GetProfile());
   std::unique_ptr<web::WebState> webState = web::WebState::Create(params);
@@ -44,6 +46,7 @@
   _mediator = nil;
 
   if (_viewController) {
+    _viewController = nil;
     if (self.browser) {
       CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
       if ([dispatcher
@@ -53,8 +56,16 @@
         [containerHandler dismissAssistantContainerAnimated:NO completion:nil];
       }
     }
-    _viewController = nil;
   }
+}
+
+#pragma mark - AssistantAIMViewControllerDelegate
+
+- (void)assistantAIMViewControllerDidTapClose:
+    (AssistantAIMViewController*)viewController {
+  id<AssistantContainerCommands> containerHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), AssistantContainerCommands);
+  [containerHandler dismissAssistantContainerAnimated:YES completion:nil];
 }
 
 #pragma mark - AssistantContainerDelegate
