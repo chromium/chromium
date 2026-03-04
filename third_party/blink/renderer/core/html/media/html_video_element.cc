@@ -729,12 +729,18 @@ scoped_refptr<StaticBitmapImage> HTMLVideoElement::CreateStaticBitmapImage(
   cache_deleting_timer_.StartOneShot(kTemporaryResourceDeletionDelay,
                                      FROM_HERE);
 
-  std::optional<CanvasSnapshotProvider::Info> sw_draw_info =
-      snapshot_provider_ ? std::nullopt : cached_draw_info_;
-  auto image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), snapshot_provider_.get(),
-      std::move(sw_draw_info), sw_draw_surface_, video_renderer,
-      /*prefer_tagged_orientation=*/true, reinterpret_as_srgb);
+  scoped_refptr<StaticBitmapImage> image;
+  const bool kPreferTaggedOrientation = true;
+  if (snapshot_provider_) {
+    image = CreateAcceleratedImageFromVideoFrame(
+        std::move(media_video_frame), snapshot_provider_.get(), video_renderer,
+        kPreferTaggedOrientation, reinterpret_as_srgb);
+  } else {
+    image = CreateUnacceleratedImageFromVideoFrame(
+        std::move(media_video_frame), cached_draw_info_.value(),
+        sw_draw_surface_, video_renderer, kPreferTaggedOrientation,
+        reinterpret_as_srgb);
+  }
   if (image)
     image->SetOriginClean(!WouldTaintOrigin());
   return image;
