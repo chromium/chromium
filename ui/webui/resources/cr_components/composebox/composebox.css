@@ -637,8 +637,12 @@ search-animated-glow {
 }
 
 #toolChipsContainer {
-  padding-top: 14px;
-  padding-inline-start: 16px;
+  margin-bottom: 12px;
+  padding-inline-start: 44px;
+}
+
+:host(:not([show-file-carousel_])) #toolChipsContainer {
+  padding-top: 6px;
 }
 
 :host(:not([file-uploads-complete])) .upload-button {
@@ -761,6 +765,7 @@ search-animated-glow {
   align-items: flex-start;
   display: flex;
   flex-direction: row;
+  position: relative;
 }
 
 :host([submit-enabled_][searchbox-layout-mode='Compact']) #submitContainer {
@@ -769,13 +774,15 @@ search-animated-glow {
   position: relative;
 }
 
-:host([submit-enabled_][searchbox-layout-mode='Compact']:not([show-file-carousel_])) #submitContainer {
-  bottom: 0;
-  margin-top: 14px;
+:host([submit-enabled_][searchbox-layout-mode='Compact'][in-tool-mode_]) #submitContainer,
+:host([submit-enabled_][searchbox-layout-mode='Compact'][show-file-carousel_]) #submitContainer {
+  position: absolute;
+  bottom: 12px;
 }
 
-:host([submit-enabled_][searchbox-layout-mode='Compact'][show-file-carousel_]) #submitContainer {
-  top: 14px;
+:host([submit-enabled_][searchbox-layout-mode='Compact']:not([in-tool-mode_]):not([show-file-carousel_])) #submitContainer {
+  bottom: 0;
+  margin-top: 14px;
 }
 
 :host([submit-enabled_][searchbox-layout-mode='TallBottomContext']) #submitContainer {
@@ -800,7 +807,8 @@ search-animated-glow {
 }
 
 :host([submit-enabled_][searchbox-layout-mode='TallBottomContext'][show-dropdown_][show-file-carousel_]) .carousel-divider,
-:host([submit-enabled_][searchbox-layout-mode='Compact'][show-dropdown_][show-file-carousel_]) .carousel-divider {
+:host([submit-enabled_][searchbox-layout-mode='Compact'][show-dropdown_][show-file-carousel_]) .carousel-divider,
+:host([searchbox-layout-mode='Compact'][show-dropdown_]:not([show-file-carousel_])) .carousel-divider {
   --contextual-entrypoint-and-carousel-carousel-divider-margin-top: 8px;
 }
 
