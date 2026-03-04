@@ -11,9 +11,9 @@ namespace glic {
 
 // Passkey for invoking glic with auto submit. Reach out to OWNERS before
 // adding new callers.
-class InvokeWithAutoSubmitPasskey {
+class InvokeWithAutoSubmitPasskeyProvider {
  public:
-  using PassKey = base::PassKey<InvokeWithAutoSubmitPasskey>;
+  using PassKey = base::PassKey<InvokeWithAutoSubmitPasskeyProvider>;
 
  private:
   static PassKey GetPassKey() { return PassKey(); }
@@ -22,6 +22,9 @@ class InvokeWithAutoSubmitPasskey {
   // friend class SomeClassThatNeedsAutoSubmit;
   // friend void SomeClass::SomeFunctionThatNeedsAutoSubmit();
 };
+
+using InvokeWithAutoSubmitPasskey =
+    base::PassKey<InvokeWithAutoSubmitPasskeyProvider>;
 
 }  // namespace glic
 
