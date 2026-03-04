@@ -267,8 +267,7 @@ public class RootUiCoordinator
                 WindowFocusChangedObserver {
     private static final String TAG = "RootUiCoordinator";
 
-    protected final SettableMonotonicObservableSupplier<TabObscuringHandler>
-            mTabObscuringHandlerSupplier = ObservableSuppliers.createMonotonic();
+    protected final NonNullObservableSupplier<TabObscuringHandler> mTabObscuringHandlerSupplier;
 
     private final SettableMonotonicObservableSupplier<DeviceLockActivityLauncher>
             mDeviceLockActivityLauncherSupplier = ObservableSuppliers.createMonotonic();
@@ -569,6 +568,7 @@ public class RootUiCoordinator
                                     ? stripLayoutHelperManager.getStripVisibilityStateSupplier()
                                     : null;
                         });
+        mTabObscuringHandlerSupplier = ObservableSuppliers.createNonNull(new TabObscuringHandler());
 
         setupUnownedUserDataSuppliers();
         mActivityLifecycleDispatcher.register(this);
@@ -598,7 +598,6 @@ public class RootUiCoordinator
                 };
         mLayoutManagerImplSupplier.addSyncObserverAndPostIfNonNull(layoutManagerSupplierCallback);
 
-        mTabObscuringHandlerSupplier.set(new TabObscuringHandler());
         mDeviceLockActivityLauncherSupplier.set(DeviceLockActivityLauncherImpl.get());
         new AccessibilityVisibilityHandler(
                 mActivityLifecycleDispatcher,
@@ -742,7 +741,7 @@ public class RootUiCoordinator
 
         mExpandedBottomSheetHelper =
                 new ExpandedSheetHelperImpl(
-                        mModalDialogManagerSupplier.get(), getTabObscuringHandler());
+                        mModalDialogManagerSupplier.get(), mTabObscuringHandlerSupplier.get());
         mBottomControlsStacker =
                 new BottomControlsStacker(mBrowserControlsManager, mActivity, mWindowAndroid);
         mTopControlsStacker =

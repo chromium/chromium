@@ -627,7 +627,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                         compositorViewHolderSupplier,
                         modalDialogManagerSupplier,
                         () -> mLayoutManager.getStripLayoutHelperManager(), // Gets current SLHM
-                        getTabObscuringHandler(),
+                        mTabObscuringHandlerSupplier.get(),
                         () -> mToolbarManager // Gets current value of mToolbarManager
                         );
 
@@ -975,7 +975,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                             stub,
                             assumeNonNull(mTabModelSelectorSupplier.get()),
                             mBrowserControlsManager,
-                            assumeNonNull(mTabObscuringHandlerSupplier.get()),
+                            mTabObscuringHandlerSupplier.get(),
                             assumeNonNull(mSnackbarManagerSupplier.get()));
         }
     }
