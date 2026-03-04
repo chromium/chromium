@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/compiler_specific.h"
@@ -118,11 +119,10 @@ std::vector<std::string> VirtualPath::GetComponentsUTF8Unsafe(
 base::FilePath::StringType VirtualPath::GetNormalizedFilePath(
     const base::FilePath& path) {
   base::FilePath::StringType normalized_path = path.value();
-  const size_t num_separators =
-      base::FilePath::StringType(base::FilePath::kSeparators).length();
-  for (size_t i = 0; i < num_separators; ++i) {
-    std::replace(normalized_path.begin(), normalized_path.end(),
-                 UNSAFE_TODO(base::FilePath::kSeparators[i]), kSeparator);
+  const base::FilePath::StringType separators = base::FilePath::kSeparators;
+  for (const auto separator : separators) {
+    std::replace(normalized_path.begin(), normalized_path.end(), separator,
+                 kSeparator);
   }
 
   return (IsAbsolute(normalized_path))
@@ -203,24 +203,28 @@ GURL GetFileSystemRootURI(const GURL& origin_url, FileSystemType type) {
   // instead of the corresponding filesystem URL.
   DCHECK(!origin_url.SchemeIsFileSystem());
 
+  const auto without_leading_slash = [](std::string_view dir) {
+    DCHECK(!dir.empty());
+    DCHECK_EQ(dir.front(), '/');
+    return dir.substr(1);
+  };
+
   std::string url = "filesystem:" + origin_url.GetWithEmptyPath().spec();
   switch (type) {
     case kFileSystemTypeTemporary:
-      url +=
-          UNSAFE_TODO(kTemporaryDir + 1);  // We don't want the leading slash.
+      url += without_leading_slash(kTemporaryDir);
       return GURL(url + "/");
     case kFileSystemTypePersistent:
-      url +=
-          UNSAFE_TODO(kPersistentDir + 1);  // We don't want the leading slash.
+      url += without_leading_slash(kPersistentDir);
       return GURL(url + "/");
     case kFileSystemTypeExternal:
-      url += UNSAFE_TODO(kExternalDir + 1);  // We don't want the leading slash.
+      url += without_leading_slash(kExternalDir);
       return GURL(url + "/");
     case kFileSystemTypeIsolated:
-      url += UNSAFE_TODO(kIsolatedDir + 1);  // We don't want the leading slash.
+      url += without_leading_slash(kIsolatedDir);
       return GURL(url + "/");
     case kFileSystemTypeTest:
-      url += UNSAFE_TODO(kTestDir + 1);  // We don't want the leading slash.
+      url += without_leading_slash(kTestDir);
       return GURL(url + "/");
       // Internal types are always pointed via isolated or external URLs.
     default:

@@ -571,17 +571,20 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
 #endif
   }
 
+  const auto data_to_append = buf->first(base::checked_cast<size_t>(buf_len));
   if (offset_u == dp->entry->file_content.size()) {
-    dp->entry->file_content.insert(dp->entry->file_content.end(), buf->data(),
-                                   UNSAFE_TODO(buf->data() + buf_len));
+    dp->entry->file_content.insert(dp->entry->file_content.end(),
+                                   data_to_append.begin(),
+                                   data_to_append.end());
   } else {
     if (last_position > dp->entry->file_content.size())
       dp->entry->file_content.resize(last_position);
 
     // if |offset_u| is larger than the original file size, there will be null
     // bytes between the end of the file and |offset_u|.
-    UNSAFE_TODO(
-        memcpy(dp->entry->file_content.data() + offset, buf->data(), buf_len));
+    base::span(dp->entry->file_content)
+        .subspan(offset_u, base::checked_cast<size_t>(buf_len))
+        .copy_from(buf->first(base::checked_cast<size_t>(buf_len)));
   }
   return buf_len;
 }
