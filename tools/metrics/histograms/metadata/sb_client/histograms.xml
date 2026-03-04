@@ -783,7 +783,8 @@ useful for Chirp alerts (go/crca-alerts). -->
   <owner>nwokedi@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records the size of the image embedding list. This is logged when a new
+    Records the size of the image embedding list but displays the bucket the
+    size entered which may be different than the size. This is logged when a new
     image embedding model is fetched, or on each startup.
   </summary>
 </histogram>
