@@ -224,8 +224,8 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
       gemini::FloatyUpdateSource source,
       bool is_presented);
 
-  // Returns true if the floaty is temporarily hidden.
-  bool IsFloatyTemporarilyHidden() const;
+  // Returns true if the floaty has active hiding sources.
+  bool DoesFloatyHaveActiveHidingSources() const;
 
   // Returns true if the floaty is only hidden by the keyboard.
   bool IsOnlyHiddenByKeyboard() const;
@@ -285,6 +285,10 @@ class GeminiBrowserAgent : public BrowserUserData<GeminiBrowserAgent>,
 
   // Whether the floaty is currently invoked.
   bool is_floaty_invoked_ = false;
+
+  // Whether the floaty is temporarily hidden. Used to hide the floaty without
+  // triggering logic related to ending floaty persistence.
+  bool is_floaty_temporarily_hidden_ = false;
 
   // Records when the floaty was last hidden. Prevents the floaty from
   // reappearing too soon, particularly after a

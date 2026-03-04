@@ -155,7 +155,7 @@ class GeminiBrowserAgentTest : public PlatformTest {
 
   // Getter for `is_floaty_temporarily_hidden_`.
   bool IsFloatyTemporarilyHidden() {
-    return !gemini_browser_agent_->active_hiding_sources_.empty();
+    return gemini_browser_agent_->is_floaty_temporarily_hidden_;
   }
 
   // Getter for `last_shown_view_state_`.
@@ -166,11 +166,6 @@ class GeminiBrowserAgentTest : public PlatformTest {
   // Setter for `is_floaty_invoked_`.
   void SetIsFloatyInvoked(bool is_invoked) {
     gemini_browser_agent_->is_floaty_invoked_ = is_invoked;
-  }
-
-  // Add a source to `active_hiding_sources_`.
-  void AddActiveHidingSource(gemini::FloatyUpdateSource source) {
-    gemini_browser_agent_->active_hiding_sources_.insert(source);
   }
 
   // Clear `active_hiding_sources_`.
@@ -550,7 +545,8 @@ TEST_F(GeminiBrowserAgentTest,
 // dismiss it.
 TEST_F(GeminiBrowserAgentTest, TestDismissFloatyWhenTemporarilyHidden) {
   SetIsFloatyInvoked(true);
-  AddActiveHidingSource(gemini::FloatyUpdateSource::ViewTransition);
+  gemini_browser_agent_->HideFloatyIfInvoked(
+      /*animated=*/true, /*source=*/gemini::FloatyUpdateSource::ViewTransition);
 
   gemini_browser_agent_->DismissFloaty();
 

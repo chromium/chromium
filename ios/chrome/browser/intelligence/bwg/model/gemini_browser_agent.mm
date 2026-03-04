@@ -239,7 +239,7 @@ void GeminiBrowserAgent::OnKeyboardStateChanged(bool is_visible) {
     // If the floaty is expanded or temporarily hidden, the floaty should not be
     // re-shown on keyboard updates.
     if (last_shown_view_state_ == ios::provider::GeminiViewState::kExpanded ||
-        IsFloatyTemporarilyHidden()) {
+        is_floaty_temporarily_hidden_) {
       return;
     }
 
@@ -351,8 +351,8 @@ bool GeminiBrowserAgent::ShouldShowFloatyForSource(
       source == gemini::FloatyUpdateSource::ForcedFromQueryResponse;
 
   // Re-show the floaty if a user receives a query response.
-  return IsFloatyTemporarilyHidden() ? !is_source_query_response
-                                     : is_source_query_response;
+  return is_floaty_temporarily_hidden_ ? !is_source_query_response
+                                       : is_source_query_response;
 }
 
 GeminiPageContext* GeminiBrowserAgent::CreateGeminiPageContext(
@@ -380,7 +380,7 @@ void GeminiBrowserAgent::UpdateActiveTabHelperWithPresentedSource(
 
 void GeminiBrowserAgent::UpdateForTraitCollection(
     UITraitCollection* traitCollection) {
-  if (IsFloatyTemporarilyHidden()) {
+  if (is_floaty_temporarily_hidden_) {
     return;
   }
 
@@ -600,7 +600,7 @@ void GeminiBrowserAgent::DismissFloaty() {
   // shown underneath the Gemini floaty, don't clean up and reset internal
   // Gemini properties. Clean up should occur if a user taps the floaty to
   // dismiss it or the browser agent destructing.
-  if (IsFloatyTemporarilyHidden()) {
+  if (is_floaty_temporarily_hidden_) {
     return;
   }
 
@@ -624,19 +624,20 @@ bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
     case gemini::FloatyUpdateSource::Unknown:
     case gemini::FloatyUpdateSource::ContextMenu:
     case gemini::FloatyUpdateSource::WebContextMenu:
-      return false;
-    case gemini::FloatyUpdateSource::ViewTransition:
-    case gemini::FloatyUpdateSource::WebNavigation:
-    case gemini::FloatyUpdateSource::TabGrid:
-    case gemini::FloatyUpdateSource::ForcedFromScroll:
-    case gemini::FloatyUpdateSource::Overlay:
     case gemini::FloatyUpdateSource::IneligibleSite:
     case gemini::FloatyUpdateSource::ForcedFromQueryResponse:
-    case gemini::FloatyUpdateSource::Snackbar:
-    case gemini::FloatyUpdateSource::Alert:
+    case gemini::FloatyUpdateSource::TabGrid:
     case gemini::FloatyUpdateSource::Banner:
-    case gemini::FloatyUpdateSource::Keyboard:
+    case gemini::FloatyUpdateSource::Alert:
+    case gemini::FloatyUpdateSource::Snackbar:
+    case gemini::FloatyUpdateSource::Overlay:
+    case gemini::FloatyUpdateSource::ForcedFromScroll:
+    case gemini::FloatyUpdateSource::WebNavigation:
     case gemini::FloatyUpdateSource::GestureIph:
+      return false;
+    case gemini::FloatyUpdateSource::ViewTransition:
+    case gemini::FloatyUpdateSource::Keyboard:
+
       return true;
   }
 }
@@ -644,24 +645,22 @@ bool GeminiBrowserAgent::ShouldSourceReshowFloaty(
 void GeminiBrowserAgent::HideFloatyIfInvoked(
     bool animated,
     gemini::FloatyUpdateSource source) {
+  UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/true);
+
   if (!is_floaty_invoked_) {
     return;
   }
 
   floaty_hidden_timestamp_ = base::TimeTicks::Now();
-
-  UpdateActiveTabHelperWithPresentedSource(source, /*is_presented=*/true);
-
-  bool was_temporarily_hidden = IsFloatyTemporarilyHidden();
-
   if (ShouldSourceReshowFloaty(source)) {
     active_hiding_sources_.insert(source);
   }
 
-  if (was_temporarily_hidden) {
+  if (is_floaty_temporarily_hidden_) {
     return;
   }
 
+  is_floaty_temporarily_hidden_ = true;
   ios::provider::GeminiViewState current_view_state =
       ios::provider::GetCurrentGeminiViewState();
   SetLastShownViewState(current_view_state);
@@ -706,13 +705,13 @@ void GeminiBrowserAgent::ShowFloatyIfInvoked(
   if (is_web_navigation) {
     active_hiding_sources_.clear();
   }
-
-  if (IsFloatyTemporarilyHidden()) {
+  if (DoesFloatyHaveActiveHidingSources()) {
     return;
   }
 
   RecordGeminiViewStateHiddenToShown(last_shown_view_state_);
   RecordFloatyShownFromSource(source);
+  is_floaty_temporarily_hidden_ = false;
 
   // Exit fullscreen to prepare floaty for incoming response stream.
   if (source == gemini::FloatyUpdateSource::ForcedFromQueryResponse) {
@@ -784,7 +783,7 @@ void GeminiBrowserAgent::OnScrollEvent() {
   // therefore we should force-show the floaty if invoked. Uses the command
   // handler to do eligibility checks outside of this browser agent before
   // showing the floaty.
-  if (IsFloatyTemporarilyHidden()) {
+  if (is_floaty_temporarily_hidden_) {
     id<BWGCommands> gemini_handler =
         HandlerForProtocol(browser_->GetCommandDispatcher(), BWGCommands);
     [gemini_handler
@@ -819,7 +818,7 @@ void GeminiBrowserAgent::OnGeminiTabHelperDestroyed(BwgTabHelper* tab_helper) {
 void GeminiBrowserAgent::FullscreenProgressUpdated(
     FullscreenController* controller,
     CGFloat progress) {
-  if (!is_floaty_invoked_ || IsFloatyTemporarilyHidden()) {
+  if (!is_floaty_invoked_ || is_floaty_temporarily_hidden_) {
     return;
   }
 
@@ -856,7 +855,7 @@ void GeminiBrowserAgent::FullscreenDidAnimate(FullscreenController* controller,
   }
 }
 
-bool GeminiBrowserAgent::IsFloatyTemporarilyHidden() const {
+bool GeminiBrowserAgent::DoesFloatyHaveActiveHidingSources() const {
   return !active_hiding_sources_.empty();
 }
 
