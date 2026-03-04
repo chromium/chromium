@@ -202,91 +202,6 @@ RecentActivityBubbleDialogView::RecentActivityBubbleDialogView(
 
 RecentActivityBubbleDialogView::~RecentActivityBubbleDialogView() = default;
 
-// TODO(crbug.com/410609387): Update the bubble dialog view to replace the
-// options menu button with a secondary button, and revert the custom title view
-// back to using the default title and close button provided by the bubble
-// dialog.
-void RecentActivityBubbleDialogView::CreateTitleView() {
-  // Create title view.
-  auto title_view = std::make_unique<views::View>();
-  title_view->SetBorder(
-      views::CreateEmptyBorder(gfx::Insets::TLBR(12, 0, 8, 0)));
-  auto* box_layout =
-      title_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
-  title_view->SetID(TITLE_VIEW_ID);
-
-  // Add title.
-  auto* title = title_view->AddChildView(std::make_unique<views::Label>(
-      l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE),
-      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
-  title->SetID(TITLE_ID);
-
-  // Add spacer that fills the space between title and the menu button.
-  auto* spacer = title_view->AddChildView(std::make_unique<views::View>());
-  box_layout->SetFlexForView(spacer, 1);
-
-  // Add buttons container for menu button and close button.
-  const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
-  const int button_horizontal_spacing = layout_provider->GetDistanceMetric(
-      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
-  auto* buttons_container =
-      title_view->AddChildView(std::make_unique<views::View>());
-  buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-      button_horizontal_spacing));
-
-  buttons_container->AddChildView(CreateOptionsMenuButton());
-  buttons_container->AddChildView(CreateCloseButton());
-
-  // Add title view to bubble dialog view.
-  AddChildView(std::move(title_view));
-}
-
-std::unique_ptr<views::Button>
-RecentActivityBubbleDialogView::CreateCloseButton() {
-  auto close_button =
-      views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
-          [](views::View* view) {
-            view->GetWidget()->CloseWithReason(
-                views::Widget::ClosedReason::kCloseButtonClicked);
-          },
-          base::Unretained(this)));
-  close_button->SetVisible(true);
-  return close_button;
-}
-
-std::unique_ptr<views::Button>
-RecentActivityBubbleDialogView::CreateOptionsMenuButton() {
-  auto menu_button = views::CreateVectorImageButtonWithNativeTheme(
-      views::Button::PressedCallback(), kBrowserToolsIcon);
-  menu_button->SetCallback(base::BindRepeating(
-      &RecentActivityBubbleDialogView::ShowOptionsMenu, base::Unretained(this),
-      base::Unretained(menu_button.get())));
-
-  InstallCircleHighlightPathGenerator(menu_button.get());
-
-  menu_button->GetViewAccessibility().SetName(
-      l10n_util::GetStringUTF16(IDS_DOWNLOAD_MORE_ACTIONS));
-  menu_button->SetVisible(true);
-  return menu_button;
-}
-
-void RecentActivityBubbleDialogView::ShowOptionsMenu(views::Button* source) {
-  options_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
-
-  options_menu_model_->AddItemWithStringId(
-      OptionsMenuItem::SEE_ALL_ACTIVITY,
-      IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION);
-
-  options_menu_runner_ = std::make_unique<views::MenuRunner>(
-      options_menu_model_.get(), views::MenuRunner::COMBOBOX);
-  gfx::Rect screen_bounds = source->GetAnchorBoundsInScreen();
-  options_menu_runner_->RunMenuAt(source->GetWidget(), nullptr, screen_bounds,
-                                  views::MenuAnchorPosition::kTopRight,
-                                  ui::mojom::MenuSourceType::kMouse);
-}
-
 void RecentActivityBubbleDialogView::ExecuteCommand(int command_id,
                                                     int event_flags) {
   switch (command_id) {
@@ -428,10 +343,6 @@ void RecentActivityBubbleDialogView::CreateGroupActivity() {
   }
 }
 
-void RecentActivityBubbleDialogView::Close() {
-  LocationBarBubbleDelegateView::CloseBubble();
-}
-
 std::u16string RecentActivityBubbleDialogView::GetTitleForTesting() {
   views::View* title_view =
       views::AsViewClass<views::View>(GetViewByID(TITLE_VIEW_ID));
@@ -454,6 +365,95 @@ RecentActivityRowView* RecentActivityBubbleDialogView::GetRowForTesting(int n) {
   }
   return views::AsViewClass<RecentActivityRowView>(
       group_activity_container()->children().at(n - tab_activity_size));
+}
+
+void RecentActivityBubbleDialogView::Close() {
+  LocationBarBubbleDelegateView::CloseBubble();
+}
+
+std::unique_ptr<views::Button>
+RecentActivityBubbleDialogView::CreateCloseButton() {
+  auto close_button =
+      views::BubbleFrameView::CreateCloseButton(base::BindRepeating(
+          [](views::View* view) {
+            view->GetWidget()->CloseWithReason(
+                views::Widget::ClosedReason::kCloseButtonClicked);
+          },
+          base::Unretained(this)));
+  close_button->SetVisible(true);
+  return close_button;
+}
+
+std::unique_ptr<views::Button>
+RecentActivityBubbleDialogView::CreateOptionsMenuButton() {
+  auto menu_button = views::CreateVectorImageButtonWithNativeTheme(
+      views::Button::PressedCallback(), kBrowserToolsIcon);
+  menu_button->SetCallback(base::BindRepeating(
+      &RecentActivityBubbleDialogView::ShowOptionsMenu, base::Unretained(this),
+      base::Unretained(menu_button.get())));
+
+  InstallCircleHighlightPathGenerator(menu_button.get());
+
+  menu_button->GetViewAccessibility().SetName(
+      l10n_util::GetStringUTF16(IDS_DOWNLOAD_MORE_ACTIONS));
+  menu_button->SetVisible(true);
+  return menu_button;
+}
+
+// TODO(crbug.com/410609387): Update the bubble dialog view to replace the
+// options menu button with a secondary button, and revert the custom title view
+// back to using the default title and close button provided by the bubble
+// dialog.
+void RecentActivityBubbleDialogView::CreateTitleView() {
+  // Create title view.
+  auto title_view = std::make_unique<views::View>();
+  title_view->SetBorder(
+      views::CreateEmptyBorder(gfx::Insets::TLBR(12, 0, 8, 0)));
+  auto* box_layout =
+      title_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, gfx::Insets()));
+  title_view->SetID(TITLE_VIEW_ID);
+
+  // Add title.
+  auto* title = title_view->AddChildView(std::make_unique<views::Label>(
+      l10n_util::GetStringUTF16(IDS_DATA_SHARING_RECENT_ACTIVITY_TITLE),
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY));
+  title->SetID(TITLE_ID);
+
+  // Add spacer that fills the space between title and the menu button.
+  auto* spacer = title_view->AddChildView(std::make_unique<views::View>());
+  box_layout->SetFlexForView(spacer, 1);
+
+  // Add buttons container for menu button and close button.
+  const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  const int button_horizontal_spacing = layout_provider->GetDistanceMetric(
+      views::DISTANCE_RELATED_BUTTON_HORIZONTAL);
+  auto* buttons_container =
+      title_view->AddChildView(std::make_unique<views::View>());
+  buttons_container->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
+      button_horizontal_spacing));
+
+  buttons_container->AddChildView(CreateOptionsMenuButton());
+  buttons_container->AddChildView(CreateCloseButton());
+
+  // Add title view to bubble dialog view.
+  AddChildView(std::move(title_view));
+}
+
+void RecentActivityBubbleDialogView::ShowOptionsMenu(views::Button* source) {
+  options_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+
+  options_menu_model_->AddItemWithStringId(
+      OptionsMenuItem::SEE_ALL_ACTIVITY,
+      IDS_DATA_SHARING_MANAGE_ACTIVITY_LOG_OPTION);
+
+  options_menu_runner_ = std::make_unique<views::MenuRunner>(
+      options_menu_model_.get(), views::MenuRunner::COMBOBOX);
+  gfx::Rect screen_bounds = source->GetAnchorBoundsInScreen();
+  options_menu_runner_->RunMenuAt(source->GetWidget(), nullptr, screen_bounds,
+                                  views::MenuAnchorPosition::kTopRight,
+                                  ui::mojom::MenuSourceType::kMouse);
 }
 
 BEGIN_METADATA(RecentActivityBubbleDialogView)
@@ -706,6 +706,39 @@ RecentActivityRowImageView::RecentActivityRowImageView(ActivityLogItem item,
 
 RecentActivityRowImageView::~RecentActivityRowImageView() = default;
 
+void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
+  gfx::Rect contents_bounds = GetContentsBounds();
+  const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
+
+  // Set the bounds of the avatar based off the container.
+  gfx::Rect avatar_bounds(contents_bounds.x(), contents_bounds.y(), avatar_size,
+                          avatar_size);
+
+  if (!ShouldShowAvatar()) {
+    // Only the background should be painted as the avatar is loading.
+    PaintPlaceholderBackground(canvas, avatar_bounds);
+    return;
+  }
+
+  // Save background layer to be used in favicon container border.
+  canvas->SaveLayerAlpha(0xff);
+
+  // Draw the avatar image.
+  if (avatar_image_.isNull()) {
+    PaintPlaceholderBackground(canvas, avatar_bounds);
+    PaintFallbackIcon(canvas, avatar_bounds);
+  } else {
+    canvas->DrawImageInt(avatar_image_, 0, 0, avatar_size, avatar_size,
+                         avatar_bounds.x(), avatar_bounds.y(),
+                         avatar_bounds.width(), avatar_bounds.height(), false);
+  }
+
+  if (ShouldShowFavicon()) {
+    PaintFavicon(canvas, avatar_bounds);
+  }
+}
+
 void RecentActivityRowImageView::FetchAvatar() {
   auto user = GetRelevantUserForActivity(item_);
   if (!user.has_value() || !user->avatar_url.is_valid()) {
@@ -876,49 +909,10 @@ void RecentActivityRowImageView::PaintFallbackIcon(gfx::Canvas* canvas,
       GetColorProvider()->GetColor(ui::kColorSysOnTonalContainer));
 }
 
-void RecentActivityRowImageView::OnPaint(gfx::Canvas* canvas) {
-  gfx::Rect contents_bounds = GetContentsBounds();
-  const int avatar_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
-      DISTANCE_RECENT_ACTIVITY_AVATAR_SIZE);
-
-  // Set the bounds of the avatar based off the container.
-  gfx::Rect avatar_bounds(contents_bounds.x(), contents_bounds.y(), avatar_size,
-                          avatar_size);
-
-  if (!ShouldShowAvatar()) {
-    // Only the background should be painted as the avatar is loading.
-    PaintPlaceholderBackground(canvas, avatar_bounds);
-    return;
-  }
-
-  // Save background layer to be used in favicon container border.
-  canvas->SaveLayerAlpha(0xff);
-
-  // Draw the avatar image.
-  if (avatar_image_.isNull()) {
-    PaintPlaceholderBackground(canvas, avatar_bounds);
-    PaintFallbackIcon(canvas, avatar_bounds);
-  } else {
-    canvas->DrawImageInt(avatar_image_, 0, 0, avatar_size, avatar_size,
-                         avatar_bounds.x(), avatar_bounds.y(),
-                         avatar_bounds.width(), avatar_bounds.height(), false);
-  }
-
-  if (ShouldShowFavicon()) {
-    PaintFavicon(canvas, avatar_bounds);
-  }
-}
-
 BEGIN_METADATA(RecentActivityRowImageView)
 END_METADATA
 
 DEFINE_USER_DATA(RecentActivityBubbleCoordinator);
-
-// static
-RecentActivityBubbleCoordinator* RecentActivityBubbleCoordinator::From(
-    BrowserWindowInterface* browser) {
-  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
-}
 
 // RecentActivityBubbleCoordinator
 RecentActivityBubbleCoordinator::RecentActivityBubbleCoordinator(
@@ -926,24 +920,16 @@ RecentActivityBubbleCoordinator::RecentActivityBubbleCoordinator(
     : scoped_unowned_user_data_(browser->GetUnownedUserDataHost(), *this) {}
 RecentActivityBubbleCoordinator::~RecentActivityBubbleCoordinator() = default;
 
+// static
+RecentActivityBubbleCoordinator* RecentActivityBubbleCoordinator::From(
+    BrowserWindowInterface* browser) {
+  return browser ? Get(browser->GetUnownedUserDataHost()) : nullptr;
+}
+
 void RecentActivityBubbleCoordinator::OnWidgetDestroying(
     views::Widget* widget) {
   DCHECK(bubble_widget_observation_.IsObservingSource(widget));
   bubble_widget_observation_.Reset();
-}
-
-void RecentActivityBubbleCoordinator::ShowCommon(
-    std::unique_ptr<RecentActivityBubbleDialogView> bubble) {
-  DCHECK(!tracker_.view());
-  tracker_.SetView(bubble.get());
-  auto* widget =
-      RecentActivityBubbleDialogView::CreateBubble(std::move(bubble));
-  bubble_widget_observation_.Observe(widget);
-  widget->Show();
-
-  tab_groups::saved_tab_groups::metrics::RecordSharedTabGroupManageType(
-      tab_groups::saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::
-          kRecentActivity);
 }
 
 void RecentActivityBubbleCoordinator::Show(
@@ -987,4 +973,18 @@ RecentActivityBubbleDialogView* RecentActivityBubbleCoordinator::GetBubble()
 
 bool RecentActivityBubbleCoordinator::IsShowing() {
   return tracker_.view() != nullptr;
+}
+
+void RecentActivityBubbleCoordinator::ShowCommon(
+    std::unique_ptr<RecentActivityBubbleDialogView> bubble) {
+  DCHECK(!tracker_.view());
+  tracker_.SetView(bubble.get());
+  auto* widget =
+      RecentActivityBubbleDialogView::CreateBubble(std::move(bubble));
+  bubble_widget_observation_.Observe(widget);
+  widget->Show();
+
+  tab_groups::saved_tab_groups::metrics::RecordSharedTabGroupManageType(
+      tab_groups::saved_tab_groups::metrics::SharedTabGroupManageTypeDesktop::
+          kRecentActivity);
 }
