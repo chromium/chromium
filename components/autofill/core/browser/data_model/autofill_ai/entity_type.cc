@@ -34,7 +34,9 @@ std::u16string AttributeType::GetNameForI18n() const {
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_STATE_ATTRIBUTE_NAME);
     case AttributeTypeName::kDriversLicenseNumber:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME);
+          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
+              ? IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME_NEW
+              : IDS_AUTOFILL_AI_DRIVERS_LICENSE_NUMBER_ATTRIBUTE_NAME);
     case AttributeTypeName::kDriversLicenseExpirationDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME);
@@ -73,13 +75,17 @@ std::u16string AttributeType::GetNameForI18n() const {
           IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME);
     case AttributeTypeName::kNationalIdCardCountry:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME);
+          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
+              ? IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME_NEW
+              : IDS_AUTOFILL_AI_NATIONAL_ID_CARD_COUNTRY_ATTRIBUTE_NAME);
     case AttributeTypeName::kNationalIdCardNumber:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NUMBER_ATTRIBUTE_NAME);
     case AttributeTypeName::kNationalIdCardIssueDate:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME);
+          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
+              ? IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME_NEW
+              : IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME);
     case AttributeTypeName::kNationalIdCardExpirationDate:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_NATIONAL_ID_CARD_EXPIRATION_DATE_ATTRIBUTE_NAME);
@@ -208,7 +214,9 @@ std::u16string EntityType::GetNameForI18n() const {
           IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME);
     case EntityTypeName::kNationalIdCard:
       return l10n_util::GetStringUTF16(
-          IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME);
+          base::FeatureList::IsEnabled(features::kAutofillAiWalletPrivatePasses)
+              ? IDS_AUTOFILL_AI_ID_CARD_ENTITY_NAME
+              : IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME);
     case EntityTypeName::kOrder:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_AI_ORDER_ENTITY_NAME);
     case EntityTypeName::kPassport:
