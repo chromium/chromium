@@ -277,8 +277,6 @@ config("xctest_config") {
   if (xcode_version_int >= 2640) {
     ldflags += [
       "-Wl,--ignore-auto-link-option,UIUtilities",
-      "-Wl,-rpath,/Developer/Library/Frameworks",
-      "-Wl,-rpath,/Developer/Library/PrivateFrameworks",
       "-Wl,-needed-lXCTestSwiftSupport,-lXCTestSwiftSupport",
     ]
   }

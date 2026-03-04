@@ -14,6 +14,45 @@ import("//build/toolchain/siso.gni")
 import("//build/toolchain/toolchain.gni")
 import("//build_overrides/build.gni")
 
+# Xcode needs the following frameworks installed in the application (and
+# signed) for the XCTest to run, so install them using
+# extra_system_frameworks.
+ios_test_extra_system_frameworks = [
+  "$ios_sdk_platform_path/Developer/Library/Frameworks/XCTest.framework",
+  "$ios_sdk_platform_path/Developer/usr/lib/libXCTestBundleInject.dylib",
+]
+
+# Xcode 13 now depends on XCTestCore. To keep things future proof, copy over
+# everything that Xcode copies.
+if (xcode_version_int >= 1300) {
+  ios_test_extra_system_frameworks += [
+    "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
+    "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
+    "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
+  ]
+}
+
+# XCTestSupport framework is required as of Xcode 14.3 or later.
+if (xcode_version_int >= 1430) {
+  ios_test_extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
+}
+
+# Xcode 16.3 moved XCUIAutomation.framework
+if (xcode_version_int < 1630) {
+  ios_test_extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
+} else {
+  ios_test_extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/Frameworks/XCUIAutomation.framework" ]
+}
+
+if (xcode_version_int >= 2640) {
+  ios_test_extra_system_frameworks += [
+    "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
+    "$ios_sdk_platform_path/Developer/Library/Frameworks/_Testing_Foundation.framework",
+    "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
+    "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework",
+  ]
+}
+
 # iOS-specific wrapper around apple_mobile_create_signed_bundle.
 #
 # See //build/config/apple/mobile_rules.gni for a description of arguments.
@@ -1306,43 +1345,7 @@ template("ios_xctest_test") {
       info_plist = "//build/config/ios/Host-Info.plist"
     }
 
-    # Xcode needs the following frameworks installed in the application (and
-    # signed) for the XCTest to run, so install them using
-    # extra_system_frameworks.
-    extra_system_frameworks = [
-      "$ios_sdk_platform_path/Developer/Library/Frameworks/XCTest.framework",
-      "$ios_sdk_platform_path/Developer/usr/lib/libXCTestBundleInject.dylib",
-    ]
-
-    # Xcode 13 now depends on XCTestCore. To keep things future proof, copy over
-    # everything that Xcode copies.
-    if (xcode_version_int >= 1300) {
-      extra_system_frameworks += [
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
-        "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
-      ]
-
-      if (xcode_version_int >= 2640) {
-        extra_system_frameworks += [
-          "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
-          "$ios_sdk_platform_path/Developer/Library/Frameworks/_Testing_Foundation.framework",
-          "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
-        ]
-      }
-
-      # Xcode 16.3 moved XCUIAutomation.framework
-      if (xcode_version_int < 1630) {
-        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
-      } else {
-        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/Frameworks/XCUIAutomation.framework" ]
-      }
-    }
-
-    # XCTestSupport framework is required as of Xcode 14.3 or later.
-    if (xcode_version_int >= 1430 && xcode_version_int < 2640) {
-      extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
-    }
+    extra_system_frameworks = ios_test_extra_system_frameworks
 
     _xctest_bundle = _xctest_target + "_bundle"
     if (!defined(bundle_deps)) {
@@ -1466,42 +1469,7 @@ template("ios_xcuitest_test_runner_bundle") {
 
     output_name = _output_name
 
-    # Xcode needs the following frameworks installed in the application
-    # (and signed) for the XCUITest to run, so install them using
-    # extra_system_frameworks.
-    extra_system_frameworks = [
-      "$ios_sdk_platform_path/Developer/Library/Frameworks/XCTest.framework",
-    ]
-
-    # Xcode 13 now depends on XCTestCore. To keep things future proof, copy over
-    # everything that Xcode copies.
-    if (xcode_version_int >= 1300) {
-      extra_system_frameworks += [
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
-        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
-        "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
-      ]
-
-      if (xcode_version_int >= 2640) {
-        extra_system_frameworks += [
-          "$ios_sdk_platform_path/Developer/Library/Frameworks/Testing.framework",
-          "$ios_sdk_platform_path/Developer/Library/Frameworks/_Testing_Foundation.framework",
-          "$ios_sdk_platform_path/Developer/usr/lib/lib_TestingInterop.dylib",
-        ]
-      }
-
-      # Xcode 16.3 moved XCUIAutomation.framework
-      if (xcode_version_int < 1630) {
-        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework" ]
-      } else {
-        extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/Frameworks/XCUIAutomation.framework" ]
-      }
-    }
-
-    # XCTestSupport framework is required as of Xcode 14.3 or later.
-    if (xcode_version_int >= 1430 && xcode_version_int < 2640) {
-      extra_system_frameworks += [ "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestSupport.framework" ]
-    }
+    extra_system_frameworks = ios_test_extra_system_frameworks
 
     bundle_deps = []
     if (defined(invoker.bundle_deps)) {
