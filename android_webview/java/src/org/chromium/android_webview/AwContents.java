@@ -1517,7 +1517,7 @@ public class AwContents implements SmartClipProvider {
                 try (DualTraceEvent e2 = DualTraceEvent.scoped("AwContents.createActivityWindow")) {
                     final boolean listenToActivityState = false;
                     activityWindow =
-                            ActivityWindowAndroid.create(
+                            new ActivityWindowAndroid(
                                     activity,
                                     listenToActivityState,
                                     IntentRequestTracker.createFromActivity(activity),

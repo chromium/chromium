@@ -203,7 +203,7 @@ public class ShareHelperMultiInstanceUnitTest {
             doReturn(taskId).when(mActivity).getTaskId();
             mIntentRequestTracker = IntentRequestTracker.createFromActivity(mActivity);
             mWindow =
-                    ActivityWindowAndroid.create(
+                    new ActivityWindowAndroid(
                             mActivity,
                             /* listenToActivityState= */ false,
                             mIntentRequestTracker,

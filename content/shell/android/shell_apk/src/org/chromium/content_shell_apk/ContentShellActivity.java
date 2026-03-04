@@ -66,7 +66,7 @@ public class ContentShellActivity extends Activity {
         final boolean listenToActivityState = true;
         mIntentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid =
-                ActivityWindowAndroid.create(
+                new ActivityWindowAndroid(
                         this,
                         listenToActivityState,
                         mIntentRequestTracker,
