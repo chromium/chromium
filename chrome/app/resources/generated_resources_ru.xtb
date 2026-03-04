@@ -1182,7 +1182,7 @@
 <translation id="1784849162047402014">Свободное пространство заканчивается</translation>
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{С приложением "<ph name="APP_NAME" />" будет удалено ещё одно:}one{С приложением "<ph name="APP_NAME" />" также будут удалены:}few{С приложением "<ph name="APP_NAME" />" также будут удалены:}many{С приложением "<ph name="APP_NAME" />" также будут удалены:}other{С приложением "<ph name="APP_NAME" />" также будут удалены:}}</translation>
 <translation id="1786290960428378411">Запрос на чтение и изменение</translation>
-<translation id="1790976235243700817">Запретить доступ</translation>
+<translation id="1790976235243700817">Закрыть доступ</translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792619191750875668">Дополнительный монитор</translation>
 <translation id="1794212650797661990">Скрыть пароль для <ph name="DOMAIN" /></translation>

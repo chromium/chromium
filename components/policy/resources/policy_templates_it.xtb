@@ -346,7 +346,7 @@ I pattern corrispondenti alle origini di questa policy non possono però contene
 <translation id="1238868319430505522">Configura il flusso <ph name="CLOUD_UPLOAD_NAME" /> per <ph name="GOOGLE_DRIVE_NAME" /> e <ph name="GOOGLE_WORKSPACE_NAME" /></translation>
 <translation id="1239526922294123540">Consente di stabilire se i siti web possono o meno effettuare richieste agli endpoint di rete con un livello di protezione più alto in modo non sicuro.
 
-          Se questa policy viene impostata su true, vengono disattivati tutti i controlli di <ph name="PRIVATE_NETWORK_ACCESS" /> per tutte le origini. Gli utenti malintenzionati potrebbero riuscire a compiere attacchi <ph name="CSRF" /> su server di reti private.
+          Se questa policy viene impostata su true, vengono disattivati tutti i controlli di <ph name="PRIVATE_NETWORK_ACCESS" /> per tutte le origini. Gli attaccanti potrebbero riuscire a compiere attacchi <ph name="CSRF" /> su server di reti private.
 
           Se la policy viene impostata su false o se non viene configurata, il comportamento predefinito per le richieste agli endpoint di rete con un livello di protezione più alto dipende dalla configurazione personale dell'utente per i flag funzionalità <ph name="BLOCK_INSECURE_PRIVATE_NETWORK_REQUESTS_FEATURE_NAME" />, <ph name="PRIVATE_NETWORK_ACCESS_SEND_PREFLIGHTS_FEATURE_NAME" /> e <ph name="PRIVATE_NETWORK_ACCESS_RESPECT_PREFLIGHT_RESULTS_FEATURE_NAME" />, che possono essere configurati in base a prove sul campo o alla riga di comando.
 
@@ -3896,7 +3896,7 @@ A partire dalla versione 124 di <ph name="PRODUCT_NAME" />, questo controllo è 
 La versione 123 e le versioni precedenti di <ph name="PRODUCT_NAME" /> hanno il seguente comportamento:
 
 Se la policy viene attivata, <ph name="PRODUCT_NAME" /> eseguirà questo controllo.
-In questo modo è possibile evitare attacchi in cui un utente malintenzionato manipola il browser per interpretare una chiave in modo non intenzionale dal proprietario del certificato.
+In questo modo è possibile evitare attacchi in cui un attaccante manipola il browser per interpretare una chiave in modo non intenzionale dal proprietario del certificato.
 
 Se questa policy viene impostata su Disabled, <ph name="PRODUCT_NAME" /> ignorerà questo controllo nelle connessioni HTTPS che negoziano TLS 1.2 e utilizzano un certificato RSA che si collega a un trust anchor locale. Esempi di trust anchor locali includono i certificati radice installati dall'utente o forniti dalle policy. In tutti gli altri casi, il controllo viene eseguito indipendentemente dall'impostazione di questa policy.
 
@@ -8441,7 +8441,7 @@ La crittografia della cache del browser potrebbe influire sulle prestazioni.</tr
 <translation id="6527674993612811419">Mostra avvisi e disattiva la compilazione automatica sui moduli non sicuri</translation>
 <translation id="6532769014584932288">Consenti i wakelock</translation>
 <translation id="6533881418188970751">Chiedi all'utente dove salvare il file prima di avviare il download</translation>
-<translation id="6534181153831265700">La configurazione della policy consente di specificare la frequenza in giorni con cui un client modifica la password dell'account della propria macchina. La password viene generata automaticamente dal client e non può essere visualizzata dall'utente. Se la policy viene disattivata o se viene impostata su un numero alto di giorni, la sicurezza potrebbe risentirne, poiché i potenziali utenti malintenzionati hanno più tempo a disposizione per scoprire e utilizzare la password dell'account della macchina.
+<translation id="6534181153831265700">La configurazione della policy consente di specificare la frequenza in giorni con cui un client modifica la password dell'account della propria macchina. La password viene generata automaticamente dal client e non può essere visualizzata dall'utente. Se la policy viene disattivata o se viene impostata su un numero alto di giorni, la sicurezza potrebbe risentirne, poiché i potenziali attaccanti hanno più tempo a disposizione per scoprire e utilizzare la password dell'account della macchina.
 
 Se non viene configurata, la password dell'account della macchina viene modificata ogni 30 giorni.
 
@@ -10536,7 +10536,7 @@ Questa policy non avrà alcun effetto se la policy <ph name="SCREENSAVER_LOCK_SC
 <translation id="7924321157669251966">La percentuale di luminosità dello schermo quando viene usata la batteria.</translation>
 <translation id="7925224837072026018">La configurazione della policy consente alle estensioni o alle app per Android di accedere alle chiavi aziendali. Le chiavi sono destinate unicamente all'utilizzo aziendale se vengono generate tramite l'API chrome.enterprise.platformKeys su un account gestito. Gli utenti non possono consentire o revocare l'accesso delle estensioni o delle app per Android alle chiavi aziendali.
 
-      Per impostazione predefinita, un'estensione o un'app per Android non può utilizzare una chiave destinata all'uso aziendale, il che equivale a impostare la policy allowCorporateKeyUsage su False per tale estensione. Solo se la policy allowCorporateKeyUsage viene impostata su True per un'estensione o un'app per Android può utilizzare qualsiasi chiave della piattaforma contrassegnata per uso aziendale per firmare dati arbitrari. L'autorizzazione viene concessa solo se l'estensione o l'app per Android viene considerata protetta dall'accesso alla chiave di potenziali utenti malintenzionati.</translation>
+      Per impostazione predefinita, un'estensione o un'app per Android non può utilizzare una chiave destinata all'uso aziendale, il che equivale a impostare la policy allowCorporateKeyUsage su False per questa estensione. Solo se la policy allowCorporateKeyUsage viene impostata su True per un'estensione o un'app per Android può utilizzare qualsiasi platform key contrassegnata per uso aziendale per firmare dati arbitrari. L'autorizzazione viene concessa solo se l'estensione o l'app per Android viene considerata protetta dall'accesso alla chiave di potenziali attaccanti.</translation>
 <translation id="7928412788382651939">Consenti il raggruppamento delle finestre in sovraimpressione con AI generativa e migliora i modelli di AI.</translation>
 <translation id="7930383470029339167">ThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes è una funzionalità di Chrome progettata per rendere uniforme il comportamento di rendering degli iframe multiorigine tra più processi e nello stesso processo. Per ulteriori informazioni sulla limitazione relativa a più processi e allo stesso processo, visita la pagina https://chromestatus.com/feature/5175574929080320.
 
