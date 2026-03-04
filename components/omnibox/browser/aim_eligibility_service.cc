@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
@@ -1000,6 +1001,15 @@ void AimEligibilityService::StartServerEligibilityRequest(
   request->url = request_url;
 
   ConfigureRequestCookiesAndCredentials(request.get(), use_oauth);
+
+  // The user may be signed in or not. But we only care about experiment IDs
+  // from the variations server, which do not require the signed-in version of
+  // this method.
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      request->url,
+      configuration_.is_off_the_record ? variations::InIncognito::kYes
+                                       : variations::InIncognito::kNo,
+      request.get());
   // If mode is POST with Proto, set method to POST.
   if (GetServerEligibilityRequestMode() ==
       ServerEligibilityRequestMode::kPostWithProto) {

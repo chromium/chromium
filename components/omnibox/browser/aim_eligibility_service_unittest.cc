@@ -18,6 +18,7 @@
 #include "components/search/search.h"
 #include "components/search_engines/search_engines_test_environment.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -105,6 +106,8 @@ class AimEligibilityServiceTest : public testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  variations::test::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
   search_engines::SearchEnginesTestEnvironment search_engines_test_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   std::unique_ptr<MockAimEligibilityServiceForInterception>
