@@ -6654,6 +6654,12 @@ Handoff must also be enabled in the General section of Settings, and your device
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_HOME_WORK_ADDRESS_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete local and home or work addresses. [iOS only]">
           This deletes addresses saved on this device. It also removes selected info from Chrome, but it doesn’t delete this info from your Google Account.
       </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_TITLE_LOCAL" desc="Title for the sheet shown to the user for confirmation to delete mixed selection of addresses and entities. Locally saved only. [iOS only]">
+          This deletes selected info saved on this device.
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_TITLE_LOCAL_AND_SERVER" desc="Title for the sheet shown to the user for confirmation to delete mixed selection of addresses and entities when addresses are saved in the user's Google Account. [iOS only]">
+          This deletes selected info saved on this device and in your Google Account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+      </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_EDIT_HOME_WORK_ADDRESS_CONFIRMATION_BUTTON" desc="Edit button shown as an option in the address deletion confirmation sheet. [iOS only]">
           Edit in Google Account
       </message>
