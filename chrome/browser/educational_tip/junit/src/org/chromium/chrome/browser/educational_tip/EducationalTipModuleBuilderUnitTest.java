@@ -60,6 +60,7 @@ import org.chromium.ui.shadows.ShadowAppCompatResources;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowAppCompatResources.class})
+@EnableFeatures({ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER})
 public class EducationalTipModuleBuilderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 

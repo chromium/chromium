@@ -41,8 +41,7 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder {
     @Override
     public boolean build(
             ModuleDelegate moduleDelegate, Callback<ModuleProvider> onModuleBuiltCallback) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.SEGMENTATION_PLATFORM_EPHEMERAL_CARD_RANKER)) {
+        if (!EducationalTipModuleUtils.isEducationalTipActive()) {
             return false;
         }
 
@@ -104,7 +103,12 @@ public class EducationalTipModuleBuilder implements ModuleProviderBuilder {
             return false;
         }
 
-        // When the Setup List is inactive, only standard Educational Tip modules are eligible.
+        // When the Setup List is inactive, check if Educational Tips are active globally.
+        if (!EducationalTipModuleUtils.isEducationalTipActive()) {
+            return false;
+        }
+
+        // Only standard Educational Tip modules are eligible.
         return EducationalTipModuleUtils.getModuleTypes().contains(mModuleType);
     }
 
