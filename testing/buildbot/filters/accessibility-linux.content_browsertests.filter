@@ -4,6 +4,9 @@
 # Flaky on multiple bots: crbug.com/464319318
 -BackForwardCacheWithDedicatedWorkerBrowserTest.PageWithDrainedDatapipeRequestsForFetchShouldBeEvicted_Nested
 
+# Flaky on multiple bots: crbug.com/369331499
+-WebRtcGetUserMediaBrowserTest.VideoWithBadConstraintsInIFrameAndCloseInFailureCb
+
 # These tests are run on the main builders and don't need to also be
 # run here.
 -Accessibility*

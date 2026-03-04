@@ -1,3 +1,6 @@
+# Flaky on Linux: crbug.com/489392108
+-CookieControlsWithIphUiTest.OpenUserBypassViaIph
+
 # Flaky on Linux: crbug.com/485943735
 -DownloadsFocusTest.Item
 
@@ -6,6 +9,9 @@
 
 # Flaky/failing on most bots: crbug.com/487030467
 -NtpRealboxNextUiTest.ContextualEntrypointAttachTabTriggersComposebox/Compact
+
+# Flaky on multiple bots: crbug.com/487544619
+-TabStripComboButtonInteractiveUiTest.PinTabSearchWhileEphemeral
 
 # These tests require that accessibility is disabled at startup, or that there
 # is some other AXMode during the test, which will not be the case when

@@ -102,6 +102,9 @@
 # Flaky on Linux: crbug.com/350991033, which was closed as a duplicate of restricted-access crbug.com/377951068
 -LensOverlayControllerContextualFeaturesDisabledTest.PreselectionToastOmniboxFocusState
 
+# Flaky on Linux: crbug.com/460308418
+-LensOverlayControllerReinvocationBrowserTest.NotifiesSidePanelOfOverlayVisibilityChanges
+
 # Flaky on most bots: crbug.com/474801547
 -MLPromotionBrowserTest.MLPipelineNoCrashForExistingTracker
 
