@@ -28,6 +28,7 @@
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/mojo_param_traits.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/abseil-cpp/absl/strings/ascii.h"
 
 #if BUILDFLAG(IS_APPLE)
@@ -104,7 +105,6 @@ void WriteListValue(const base::ListValue& value,
 }
 
 void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle) {
-  bool result;
   if (recursion > kMaxRecursionDepth) {
     LOG(ERROR) << "Max recursion depth hit in WriteValue.";
     return;
@@ -112,45 +112,20 @@ void WriteValue(const base::Value& value, int recursion, base::Pickle* pickle) {
 
   pickle->WriteInt(static_cast<int>(value.type()));
 
-  switch (value.type()) {
-    case base::Value::Type::NONE:
-      break;
-    case base::Value::Type::BOOLEAN: {
-      WriteParam(pickle, value.GetBool());
-      break;
-    }
-    case base::Value::Type::INTEGER: {
-      DCHECK(value.is_int());
-      WriteParam(pickle, value.GetInt());
-      break;
-    }
-    case base::Value::Type::DOUBLE: {
-      DCHECK(value.is_int() || value.is_double());
-      WriteParam(pickle, value.GetDouble());
-      break;
-    }
-    case base::Value::Type::STRING: {
-      const std::string* val = value.GetIfString();
-      result = !!val;
-      DCHECK(result);
-      WriteParam(pickle, *val);
-      break;
-    }
-    case base::Value::Type::BINARY: {
-      pickle->WriteData(value.GetBlob());
-      break;
-    }
-    case base::Value::Type::DICT: {
-      DCHECK(value.is_dict());
-      WriteDictValue(value.GetDict(), recursion, pickle);
-      break;
-    }
-    case base::Value::Type::LIST: {
-      DCHECK(value.is_list());
-      WriteListValue(value.GetList(), recursion, pickle);
-      break;
-    }
-  }
+  value.Visit(absl::Overload{
+      [](std::monostate) {},
+      [&](bool value) { WriteParam(pickle, value); },
+      [&](int value) { WriteParam(pickle, value); },
+      [&](double value) { WriteParam(pickle, value); },
+      [&](const std::string& value) { WriteParam(pickle, value); },
+      [&](const std::vector<uint8_t>& value) { pickle->WriteData(value); },
+      [&](const base::DictValue& value) {
+        WriteDictValue(value, recursion, pickle);
+      },
+      [&](const base::ListValue& value) {
+        WriteListValue(value, recursion, pickle);
+      },
+  });
 }
 
 bool ReadValue(const base::Pickle* pickle,
