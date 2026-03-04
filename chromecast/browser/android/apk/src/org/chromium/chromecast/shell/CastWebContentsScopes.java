@@ -19,7 +19,7 @@ import org.chromium.components.embedder_support.view.ContentViewRenderView;
 import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.util.function.Supplier;
@@ -42,7 +42,7 @@ class CastWebContentsScopes {
                     return ActivityWindowAndroid.create(
                             activity,
                             /* listenToActivityState= */ true,
-                            IntentRequestTrackerImpl.createFromActivity(activity),
+                            IntentRequestTracker.createFromActivity(activity),
                             /* insetObserver= */ null,
                             /* trackOcclusion= */ true);
                 },

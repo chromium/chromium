@@ -30,7 +30,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager.ScrimClient;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.edge_to_edge.EdgeToEdgePadAdjuster;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -77,7 +77,7 @@ public class HistoryActivity extends SnackbarActivity {
                 ActivityWindowAndroid.create(
                         this,
                         /* listenToActivityState= */ true,
-                        IntentRequestTrackerImpl.createFromActivity(this),
+                        IntentRequestTracker.createFromActivity(this),
                         getInsetObserver(),
                         /* trackOcclusion= */ true);
         mHistoryManager =

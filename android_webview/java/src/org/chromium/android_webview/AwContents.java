@@ -140,7 +140,7 @@ import org.chromium.net.NetworkChangeNotifier;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.Clipboard;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
@@ -1520,7 +1520,7 @@ public class AwContents implements SmartClipProvider {
                             ActivityWindowAndroid.create(
                                     activity,
                                     listenToActivityState,
-                                    IntentRequestTrackerImpl.createFromActivity(activity),
+                                    IntentRequestTracker.createFromActivity(activity),
                                     /* insetObserver= */ null,
                                     /* trackOcclusion= */ false);
                 }

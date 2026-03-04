@@ -32,7 +32,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.ui.base.ActivityWindowAndroid;
-import org.chromium.ui.base.IntentRequestTrackerImpl;
+import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -69,7 +69,7 @@ public class SurveyClientBridgeUnitTest {
                 ActivityWindowAndroid.create(
                         mActivity,
                         /* listenToActivityState= */ false,
-                        IntentRequestTrackerImpl.createFromActivity(mActivity),
+                        IntentRequestTracker.createFromActivity(mActivity),
                         /* insetObserver= */ null,
                         /* trackOcclusion= */ true);
     }
