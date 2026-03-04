@@ -8,9 +8,11 @@
 
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface_iterator.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/saved_tab_groups/public/saved_tab_group.h"
+#include "ui/base/base_window.h"
 
 ProjectsPanelController::ProjectsPanelController(
     BrowserWindowInterface* browser,
@@ -207,16 +209,38 @@ void ProjectsPanelController::OnContextualTasksServiceInitialized() {
 }
 
 void ProjectsPanelController::OnGotThreadUrlForResumption(GURL thread_url) {
-  auto* tab_strip_model = browser_->GetTabStripModel();
-  CHECK(tab_strip_model);
+  // Look across all browser windows, in activation order, for a tab with the
+  // thread URL.
+  BrowserWindowInterface* browser_with_thread_tab = nullptr;
+  std::optional<int> thread_tab_index_in_browser;
+  ForEachCurrentBrowserWindowInterfaceOrderedByActivation(
+      [&](BrowserWindowInterface* browser_window) {
+        if (browser_window->GetProfile() != browser_->GetProfile()) {
+          return true;
+        }
 
-  // If a tab with the thread URL already exists, activate it.
-  for (int i = 0; i < tab_strip_model->count(); ++i) {
-    auto* web_contents = tab_strip_model->GetWebContentsAt(i);
-    if (web_contents->GetLastCommittedURL().EqualsIgnoringRef(thread_url)) {
-      tab_strip_model->ActivateTabAt(i);
-      return;
-    }
+        auto* tab_strip_model = browser_window->GetTabStripModel();
+        if (!tab_strip_model) {
+          return true;
+        }
+
+        for (int i = 0; i < tab_strip_model->count(); ++i) {
+          auto* web_contents = tab_strip_model->GetWebContentsAt(i);
+          if (web_contents->GetLastCommittedURL().EqualsIgnoringRef(
+                  thread_url)) {
+            browser_with_thread_tab = browser_window;
+            thread_tab_index_in_browser = i;
+            return false;
+          }
+        }
+        return true;
+      });
+
+  if (browser_with_thread_tab && thread_tab_index_in_browser.has_value()) {
+    browser_with_thread_tab->GetTabStripModel()->ActivateTabAt(
+        thread_tab_index_in_browser.value());
+    browser_with_thread_tab->GetWindow()->Activate();
+    return;
   }
 
   // If no tab exists for the thread, create a new one.
