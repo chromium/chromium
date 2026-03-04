@@ -12,6 +12,7 @@
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/bluetooth_config_service.h"
 #include "base/check.h"
+#include "base/check_deref.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/notimplemented.h"
@@ -24,7 +25,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/add_child_screen_handler.h"
@@ -45,6 +45,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/components/quick_start/types.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "components/user_manager/user_type.h"
@@ -178,16 +179,15 @@ ConnectionClosedReasonFromAbortFlowReason(
 
 }  // namespace
 
-QuickStartController::QuickStartController() {
+QuickStartController::QuickStartController(PrefService* local_state)
+    : local_state_(CHECK_DEREF(local_state)) {
   metrics_ = std::make_unique<QuickStartMetrics>();
 
-  if (g_browser_process->local_state()->GetBoolean(
-          prefs::kShouldResumeQuickStartAfterReboot)) {
+  if (local_state_->GetBoolean(prefs::kShouldResumeQuickStartAfterReboot)) {
     QS_LOG(INFO) << "This session should resume Quick Start after a reboot.";
     should_resume_quick_start_after_update_ = true;
     // Clear pref right away to prevent bad state in case of crash.
-    g_browser_process->local_state()->ClearPref(
-        prefs::kShouldResumeQuickStartAfterReboot);
+    local_state_->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
   }
 
   // Main feature flag
@@ -702,10 +702,9 @@ void QuickStartController::HandleTransitionToQuickStartScreen() {
         // was initiated but cancelled. We can't check/clear the state
         // immediately upon cancelling the update since it's possible it happens
         // before the target device persists this pref to local state.
-        if (g_browser_process->local_state()->GetBoolean(
+        if (local_state_->GetBoolean(
                 prefs::kShouldResumeQuickStartAfterReboot)) {
-          g_browser_process->local_state()->ClearPref(
-              prefs::kShouldResumeQuickStartAfterReboot);
+          local_state_->ClearPref(prefs::kShouldResumeQuickStartAfterReboot);
         }
 
         if (IsBluetoothDisabled()) {

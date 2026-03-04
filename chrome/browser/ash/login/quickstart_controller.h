@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_QUICKSTART_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_LOGIN_QUICKSTART_CONTROLLER_H_
 
+#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -17,6 +18,8 @@
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+
+class PrefService;
 
 namespace ash::quick_start {
 
@@ -96,7 +99,8 @@ class QuickStartController
       base::RepeatingCallback<void(bool)>;
   using UiState = UiDelegate::UiState;
 
-  QuickStartController();
+  // `local_state` must be non-null and must outlive `this`.
+  explicit QuickStartController(PrefService* local_state);
 
   QuickStartController(const QuickStartController&) = delete;
   QuickStartController& operator=(const QuickStartController&) = delete;
@@ -237,6 +241,8 @@ class QuickStartController
 
   // Resets all internal values. Invoked when the flow is interrupted.
   void ResetState();
+
+  const raw_ref<PrefService> local_state_;
 
   // "Main" controller for interacting with the phone. Only valid when the
   // feature flag is enabled or if the feature was enabled via the keyboard

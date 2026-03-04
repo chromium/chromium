@@ -429,7 +429,8 @@ WizardController::WizardController(
       application_locale_storage_(CHECK_DEREF(application_locale_storage)),
       shared_url_loader_factory_(std::move(shared_url_loader_factory)),
       quickstart_controller_(
-          std::make_unique<quick_start::QuickStartController>()),
+          std::make_unique<quick_start::QuickStartController>(
+              &local_state_.get())),
       screen_manager_(std::make_unique<ScreenManager>()),
       wizard_context_(wizard_context) {
   const auto has_been_skipped =
