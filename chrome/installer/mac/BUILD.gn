@@ -87,10 +87,14 @@ copy("copies") {
   deps = [
     ":copy_signing",
     "//chrome:entitlements",
+    "//third_party/libdmg-hfsplus:dmg_tool",
+    "//third_party/libdmg-hfsplus:hfs_tool",
   ]
 
   sources = [
     "$root_gen_dir/chrome/app-entitlements.plist",
+    "$root_out_dir/dmg_tool",
+    "$root_out_dir/hfs_tool",
     "//chrome/app/helper-gpu-entitlements.plist",
     "//chrome/app/helper-plugin-entitlements.plist",
     "//chrome/app/helper-renderer-entitlements.plist",
