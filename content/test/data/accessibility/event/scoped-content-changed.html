@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+  function go() {
+    let target = document.getElementById('target');
+    target.setAttribute('aria-label', 'new_name');
+    return false;
+  }
+</script>
+</head>
+<body>
+  <div id="target" aria-label="old_name"></div>
+</body>
+</html>

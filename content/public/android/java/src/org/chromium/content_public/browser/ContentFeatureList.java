@@ -125,6 +125,12 @@ public class ContentFeatureList {
                     AccessibilityFeatures.ACCESSIBILITY_MAGNIFICATION_FOLLOWS_FOCUS,
                     true);
 
+    public static final MutableFlagWithSafeDefault sAccessibilityRequestScopedContentChangedEvents =
+            new MutableFlagWithSafeDefault(
+                    ContentFeatureMap.getInstance(),
+                    ContentFeatures.ACCESSIBILITY_REQUEST_SCOPED_CONTENT_CHANGED_EVENTS,
+                    false);
+
     public static final MutableFlagWithSafeDefault sAndroidCaretBrowsing =
             new MutableFlagWithSafeDefault(
                     ContentFeatureMap.getInstance(), ContentFeatures.ANDROID_CARET_BROWSING, false);

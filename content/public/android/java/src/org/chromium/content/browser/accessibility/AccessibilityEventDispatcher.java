@@ -71,11 +71,12 @@ public class AccessibilityEventDispatcher {
          * JNI to the native code to populate the fields of the event. If successfully built, then
          * send the event and return true, otherwise return false.
          *
-         * @param virtualViewId         This virtualViewId for the view trying to send an event.
-         * @param eventType             The AccessibilityEvent type.
-         * @return                      boolean value of whether event was sent.
+         * @param virtualViewId This virtualViewId for the view trying to send an event.
+         * @param eventType The AccessibilityEvent type.
+         * @param setSubtreeChanged Whether to set AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE.
+         * @return boolean value of whether event was sent.
          */
-        boolean dispatchEvent(int virtualViewId, int eventType);
+        boolean dispatchEvent(int virtualViewId, int eventType, boolean setSubtreeChanged);
     }
 
     /** Create an AccessibilityEventDispatcher and define the delays for event types. */
@@ -91,14 +92,15 @@ public class AccessibilityEventDispatcher {
     }
 
     /**
-     * Enqueue an AccessibilityEvent. This method will leverage our throttling and queue, and
-     * check the appropriate amount of time we should delay, if at all, before building/sending this
+     * Enqueue an AccessibilityEvent. This method will leverage our throttling and queue, and check
+     * the appropriate amount of time we should delay, if at all, before building/sending this
      * event. When ready, this will handle the delayed construction and dispatching of this event.
      *
-     * @param virtualViewId     This virtualViewId for the view trying to send an event.
-     * @param eventType         The AccessibilityEvent type.
+     * @param virtualViewId This virtualViewId for the view trying to send an event.
+     * @param eventType The AccessibilityEvent type.
+     * @param setSubtreeChanged Whether the event triggers a subtree change.
      */
-    public void enqueueEvent(int virtualViewId, int eventType) {
+    public void enqueueEvent(int virtualViewId, int eventType, boolean setSubtreeChanged) {
         // Check if this is a relevant event type.
         if (!mRelevantEventTypes.contains(eventType)) {
             return;
@@ -106,7 +108,7 @@ public class AccessibilityEventDispatcher {
 
         // Check whether this type of event is one we want to throttle, and if not then send it
         if (!mEventThrottleDelays.containsKey(eventType)) {
-            mClient.dispatchEvent(virtualViewId, eventType);
+            mClient.dispatchEvent(virtualViewId, eventType, setSubtreeChanged);
             return;
         }
 
@@ -119,7 +121,7 @@ public class AccessibilityEventDispatcher {
         if (mEventLastFiredTimes.get(uuid) == null
                 || now - mEventLastFiredTimes.get(uuid) >= mEventThrottleDelays.get(eventType)) {
             // Attempt to dispatch an event, can fail and return false if node is invalid etc.
-            if (mClient.dispatchEvent(virtualViewId, eventType)) {
+            if (mClient.dispatchEvent(virtualViewId, eventType, setSubtreeChanged)) {
                 // Record time of last fired event if the dispatch was successful.
                 mEventLastFiredTimes.put(uuid, now);
             }
@@ -137,7 +139,7 @@ public class AccessibilityEventDispatcher {
                     () -> {
                         // We have delayed firing this event, so accessibility may not be enabled or
                         // the node may be invalid, in which case dispatch will return false.
-                        if (mClient.dispatchEvent(virtualViewId, eventType)) {
+                        if (mClient.dispatchEvent(virtualViewId, eventType, setSubtreeChanged)) {
                             // After sending event, record time it was sent
                             mEventLastFiredTimes.put(uuid, SystemClock.elapsedRealtime());
                         }

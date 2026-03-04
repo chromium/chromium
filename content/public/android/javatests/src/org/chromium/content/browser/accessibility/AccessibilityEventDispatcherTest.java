@@ -30,6 +30,7 @@ public class AccessibilityEventDispatcherTest {
     private boolean mRunnablePosted;
     private boolean mRunnableRemoved;
     private boolean mEventDispatched;
+    private boolean mLastSetSubtreeChanged;
 
     /**
      * Test setup, run before each test. Creates a HashMap of eventType's to delay (fake values),
@@ -56,8 +57,10 @@ public class AccessibilityEventDispatcherTest {
                             }
 
                             @Override
-                            public boolean dispatchEvent(int virtualViewId, int eventType) {
+                            public boolean dispatchEvent(
+                                    int virtualViewId, int eventType, boolean setSubtreeChanged) {
                                 mEventDispatched = true;
+                                mLastSetSubtreeChanged = setSubtreeChanged;
                                 return true;
                             }
                         },
@@ -68,17 +71,31 @@ public class AccessibilityEventDispatcherTest {
         mRunnablePosted = false;
         mRunnableRemoved = false;
         mEventDispatched = false;
+        mLastSetSubtreeChanged = false;
     }
 
     /** Test enqueue properly ignores events not being throttled and acts like a pass-through. */
     @Test
     @SmallTest
     public void testEnqueue_notThrottle() {
-        mDispatcher.enqueueEvent(1, 1);
+        mDispatcher.enqueueEvent(1, 1, false);
 
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertFalse(mRunnableRemoved);
+        Assert.assertFalse(mLastSetSubtreeChanged);
+    }
+
+    /** Test enqueue properly passes the subtree changed value. */
+    @Test
+    @SmallTest
+    public void testEnqueue_subtreeChanged() {
+        mDispatcher.enqueueEvent(1, 1, true);
+
+        Assert.assertTrue(mEventDispatched);
+        Assert.assertFalse(mRunnablePosted);
+        Assert.assertFalse(mRunnableRemoved);
+        Assert.assertTrue(mLastSetSubtreeChanged);
     }
 
     /**
@@ -88,7 +105,7 @@ public class AccessibilityEventDispatcherTest {
     @Test
     @SmallTest
     public void testEnqueue_noPreviousEvents() {
-        mDispatcher.enqueueEvent(1, 2);
+        mDispatcher.enqueueEvent(1, 2, false);
 
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
@@ -105,7 +122,7 @@ public class AccessibilityEventDispatcherTest {
     @SmallTest
     public void testEnqueue_noRecentPreviousEvents() throws InterruptedException {
         // Send first event through as normal
-        mDispatcher.enqueueEvent(1, 2);
+        mDispatcher.enqueueEvent(1, 2, false);
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
@@ -119,7 +136,7 @@ public class AccessibilityEventDispatcherTest {
         Thread.sleep(5000);
 
         // Send another event and it should pass through as normal (we waited longer than delay)
-        mDispatcher.enqueueEvent(1, 2);
+        mDispatcher.enqueueEvent(1, 2, false);
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
@@ -133,15 +150,15 @@ public class AccessibilityEventDispatcherTest {
     @SmallTest
     public void testEnqueue_recentEventsInQueue() {
         // Send first event through as normal
-        mDispatcher.enqueueEvent(1, 3);
+        mDispatcher.enqueueEvent(1, 3, false);
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
 
         // Send a series of more events rapidly
-        mDispatcher.enqueueEvent(1, 3);
-        mDispatcher.enqueueEvent(1, 3);
-        mDispatcher.enqueueEvent(1, 3);
+        mDispatcher.enqueueEvent(1, 3, false);
+        mDispatcher.enqueueEvent(1, 3, false);
+        mDispatcher.enqueueEvent(1, 3, false);
         Assert.assertTrue(mRunnablePosted);
 
         // Reset trackers
@@ -150,7 +167,7 @@ public class AccessibilityEventDispatcherTest {
         mEventDispatched = false;
 
         // Send final event, ensure runnable is posted but nothing was dispatched
-        mDispatcher.enqueueEvent(1, 3);
+        mDispatcher.enqueueEvent(1, 3, false);
         Assert.assertFalse(mEventDispatched);
         Assert.assertTrue(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
@@ -166,7 +183,7 @@ public class AccessibilityEventDispatcherTest {
         mDispatcher.updateRelevantEventTypes(relevantEvents);
 
         // Send a relevant event type and ensure it is dispatched.
-        mDispatcher.enqueueEvent(1, 3);
+        mDispatcher.enqueueEvent(1, 3, false);
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
@@ -177,7 +194,7 @@ public class AccessibilityEventDispatcherTest {
         mEventDispatched = false;
 
         // Send a not relevant event type and ensure it is dropped.
-        mDispatcher.enqueueEvent(1, 2);
+        mDispatcher.enqueueEvent(1, 2, false);
         Assert.assertFalse(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertFalse(mRunnableRemoved);
@@ -191,15 +208,15 @@ public class AccessibilityEventDispatcherTest {
         mViewIndependentEvents.add(3);
 
         // Send first event through as normal.
-        mDispatcher.enqueueEvent(1, 3);
+        mDispatcher.enqueueEvent(1, 3, false);
         Assert.assertTrue(mEventDispatched);
         Assert.assertFalse(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);
 
         // Send a series of events from various views of the same type.
-        mDispatcher.enqueueEvent(2, 3);
-        mDispatcher.enqueueEvent(3, 3);
-        mDispatcher.enqueueEvent(4, 3);
+        mDispatcher.enqueueEvent(2, 3, false);
+        mDispatcher.enqueueEvent(3, 3, false);
+        mDispatcher.enqueueEvent(4, 3, false);
         Assert.assertTrue(mRunnablePosted);
 
         // Reset trackers.
@@ -208,7 +225,7 @@ public class AccessibilityEventDispatcherTest {
         mEventDispatched = false;
 
         // Send final event, ensure runnable is posted but nothing was dispatched.
-        mDispatcher.enqueueEvent(5, 3);
+        mDispatcher.enqueueEvent(5, 3, false);
         Assert.assertFalse(mEventDispatched);
         Assert.assertTrue(mRunnablePosted);
         Assert.assertTrue(mRunnableRemoved);

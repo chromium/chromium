@@ -3080,6 +3080,9 @@ data/accessibility/event/same-page-link-navigation-expected-auralinux.txt
 data/accessibility/event/same-page-link-navigation-expected-uia-win.txt
 data/accessibility/event/same-page-link-navigation-expected-win.txt
 data/accessibility/event/same-page-link-navigation.html
+data/accessibility/event/scoped-content-changed-disabled-expected-android.txt
+data/accessibility/event/scoped-content-changed-enabled-expected-android.txt
+data/accessibility/event/scoped-content-changed.html
 data/accessibility/event/scroll-horizontal-scroll-percent-change-expected-android.txt
 data/accessibility/event/scroll-horizontal-scroll-percent-change-expected-uia-win.txt
 data/accessibility/event/scroll-horizontal-scroll-percent-change-expected-win.txt

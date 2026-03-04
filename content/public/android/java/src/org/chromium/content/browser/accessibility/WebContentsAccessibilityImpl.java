@@ -409,9 +409,11 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     }
 
                     @Override
-                    public boolean dispatchEvent(int virtualViewId, int eventType) {
+                    public boolean dispatchEvent(
+                            int virtualViewId, int eventType, boolean setSubtreeChanged) {
                         AccessibilityEvent event =
-                                buildAccessibilityEvent(virtualViewId, eventType);
+                                buildAccessibilityEvent(
+                                        virtualViewId, eventType, setSubtreeChanged);
                         if (event == null) return false;
 
                         // Invalidate cached state for the node that has changed.
@@ -1187,7 +1189,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 : "Two clients are both trying to obscure web contents accessibility. These are "
                         + "duplicate requests, or prone to error.";
         mIsObscuredByAnotherView = isObscured;
-        sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
     }
 
     @Override
@@ -1197,7 +1199,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         } else {
             mOccludingRects.remove(viewId);
         }
-        sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
     }
 
     private boolean shouldPreventNativeEngineUse() {
@@ -1643,7 +1645,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
 
         // Invalidate the container view, since the chrome accessibility tree is now
         // ready and listed as the child of the container view.
-        sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
 
         // (Re-) focus focused element, since we weren't able to create an
         // AccessibilityNodeInfoCompat for this element before.
@@ -1968,7 +1970,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
      */
     @CalledByNative
     private void sendDelayedWindowContentChangedEvent() {
-        sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
     }
 
     private void sendAccessibilityEvent(int virtualViewId, int eventType) {
@@ -1983,10 +1985,29 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         }
 
         mHistogramRecorder.incrementEnqueuedEvents();
-        mEventDispatcher.enqueueEvent(virtualViewId, eventType);
+        mEventDispatcher.enqueueEvent(virtualViewId, eventType, /* setSubtreeChanged= */ false);
+    }
+
+    private void sendWindowContentChangedEvent(int virtualViewId, boolean setSubtreeChanged) {
+        // The container view is indicated by a virtualViewId of
+        // NO_ID; post these events directly
+        // since there's no web-specific information to attach.
+        if (virtualViewId == View.NO_ID) {
+            mView.sendAccessibilityEvent(AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            return;
+        }
+
+        mHistogramRecorder.incrementEnqueuedEvents();
+        mEventDispatcher.enqueueEvent(
+                virtualViewId, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED, setSubtreeChanged);
     }
 
     private @Nullable AccessibilityEvent buildAccessibilityEvent(int virtualViewId, int eventType) {
+        return buildAccessibilityEvent(virtualViewId, eventType, /* setSubtreeChanged= */ true);
+    }
+
+    private @Nullable AccessibilityEvent buildAccessibilityEvent(
+            int virtualViewId, int eventType, boolean setSubtreeChanged) {
         // If accessibility is disabled, node is invalid, or we don't have any frame info,
         // then the virtual hierarchy doesn't exist in the view of the Android framework,
         // so should never send any events.
@@ -1999,7 +2020,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         final AccessibilityEvent event = AccessibilityEvent.obtain(eventType);
         event.setPackageName(mContext.getPackageName());
         event.setSource(mView, virtualViewId);
-        if (eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED) {
+        if (eventType == AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED && setSubtreeChanged) {
             event.setContentChangeTypes(AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE);
         }
         if (!WebContentsAccessibilityImplJni.get()
@@ -2176,8 +2197,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleContentChanged(int id) {
-        sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+    private void handleContentChanged(int id, boolean setSubtreeChanged) {
+        sendWindowContentChangedEvent(id, setSubtreeChanged);
     }
 
     @CalledByNative
@@ -2200,14 +2221,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mLastAccessibilityFocusId = View.NO_ID;
         mCurrentRootId = newRootId;
         // Invalidate the host, since its child is now gone.
-        sendAccessibilityEvent(View.NO_ID, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+        sendWindowContentChangedEvent(View.NO_ID, /* setSubtreeChanged= */ true);
     }
 
     @CalledByNative
     protected void handleScrollPositionChanged(int id) {
         sendAccessibilityEvent(id, AccessibilityEvent.TYPE_VIEW_SCROLLED);
         if (mPendingScrollToMakeNodeVisible) {
-            sendAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+            sendWindowContentChangedEvent(id, /* setSubtreeChanged= */ true);
             mPendingScrollToMakeNodeVisible = false;
         }
     }
@@ -2220,7 +2241,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     @CalledByNative
     protected void handleSortDirectionChanged(int id) {
         AccessibilityEvent event =
-                buildAccessibilityEvent(id, AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED);
+                buildAccessibilityEvent(
+                        id,
+                        AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
+                        /* setSubtreeChanged= */ true);
         if (event == null) return;
 
         AconfigFlaggedApiDelegate delegate = AconfigFlaggedApiDelegate.getInstance();
