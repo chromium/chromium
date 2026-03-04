@@ -689,33 +689,6 @@ void Tab::OnMouseEntered(const ui::MouseEvent& event) {
   MaybeUpdateHoverStatus(event);
 }
 
-void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
-  // During system-DnD-based tab dragging we sometimes receive mouse events, but
-  // we shouldn't update the hover status during a drag.
-  if (mouse_hovered_ || !GetWidget()->IsMouseEventsEnabled() ||
-      TabDragController::IsActive()) {
-    return;
-  }
-
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
-  // Move the hit test area for hovering up so that it is not overlapped by tab
-  // hover cards when they are shown.
-  // TODO(crbug.com/41467565): Once Linux/CrOS widget transparency is solved,
-  // remove that case.
-  constexpr int kHoverCardOverlap = 6;
-  if (event.location().y() >= height() - kHoverCardOverlap) {
-    return;
-  }
-#endif
-
-  mouse_hovered_ = true;
-  controller_->ShowHover(this, TabStyle::ShowHoverStyle::kSubtle);
-  if (g_show_hover_card_on_mouse_hover) {
-    controller_->UpdateHoverCard(
-        this, TabSlotController::HoverCardUpdateType::kHover);
-  }
-}
-
 void Tab::OnMouseExited(const ui::MouseEvent& event) {
   if (!mouse_hovered_) {
     return;
@@ -767,54 +740,6 @@ void Tab::OnGestureEvent(ui::GestureEvent* event) {
       break;
   }
   event->SetHandled();
-}
-
-void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
-  tab_style_views()->ShowHover(style);
-  UpdateForegroundColors();
-  DeprecatedLayoutImmediately();
-}
-
-void Tab::HideHover(TabStyle::HideHoverStyle style) {
-  tab_style_views()->HideHover(style);
-  UpdateForegroundColors();
-  DeprecatedLayoutImmediately();
-}
-
-// This function updates the accessible name for the tab whenever any of the
-// parameters that influence the accessible name change. It ultimately calls
-// BrowserView::GetAccessibleTabLabel to get the updated accessible name.
-//
-// Note: If any new parameters are added or existing ones are removed that
-// affect the accessible name, ensure that the corresponding logic in
-// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
-// consistency.
-void Tab::UpdateAccessibleName() {
-  std::u16string name = controller_->GetAccessibleTabName(this);
-  if (!name.empty()) {
-    GetViewAccessibility().SetName(name);
-  } else {
-    // Under some conditions, `GetAccessibleTabName` returns an empty string.
-    GetViewAccessibility().SetName(
-        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
-  }
-}
-
-void Tab::OnAXNameChanged(ax::mojom::StringAttribute attribute,
-                          const std::optional<std::string>& name) {
-  if (GetWidget() && IsActive()) {
-    GetWidget()->UpdateAccessibleNameForRootView();
-  }
-}
-
-void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
-  TabSlotView::SetGroup(group);
-  UpdateAccessibleName();
-}
-
-void Tab::SetSplit(std::optional<split_tabs::SplitTabId> split) {
-  TabSlotView::SetSplit(split);
-  UpdateAccessibleName();
 }
 
 gfx::Size Tab::CalculatePreferredSize(
@@ -891,6 +816,42 @@ TabSizeInfo Tab::GetTabSizeInfo() const {
           tab_style()->GetMinimumActiveWidth(split().has_value()),
           tab_style()->GetMinimumInactiveWidth(),
           tab_style()->GetStandardWidth(split().has_value())};
+}
+
+void Tab::SetGroup(std::optional<tab_groups::TabGroupId> group) {
+  TabSlotView::SetGroup(group);
+  UpdateAccessibleName();
+}
+
+void Tab::SetSplit(std::optional<split_tabs::SplitTabId> split) {
+  TabSlotView::SetSplit(split);
+  UpdateAccessibleName();
+}
+
+// This function updates the accessible name for the tab whenever any of the
+// parameters that influence the accessible name change. It ultimately calls
+// BrowserView::GetAccessibleTabLabel to get the updated accessible name.
+//
+// Note: If any new parameters are added or existing ones are removed that
+// affect the accessible name, ensure that the corresponding logic in
+// BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
+// consistency.
+void Tab::UpdateAccessibleName() {
+  std::u16string name = controller_->GetAccessibleTabName(this);
+  if (!name.empty()) {
+    GetViewAccessibility().SetName(name);
+  } else {
+    // Under some conditions, `GetAccessibleTabName` returns an empty string.
+    GetViewAccessibility().SetName(
+        std::string(), ax::mojom::NameFrom::kAttributeExplicitlyEmpty);
+  }
+}
+
+void Tab::OnAXNameChanged(ax::mojom::StringAttribute attribute,
+                          const std::optional<std::string>& name) {
+  if (GetWidget() && IsActive()) {
+    GetWidget()->UpdateAccessibleNameForRootView();
+  }
 }
 
 void Tab::SetClosing(bool closing) {
@@ -1059,6 +1020,18 @@ void Tab::CreateFreezingVote(content::WebContents* contents) {
 
 void Tab::ReleaseFreezingVote() {
   freezing_vote_.reset();
+}
+
+void Tab::ShowHover(TabStyle::ShowHoverStyle style) {
+  tab_style_views()->ShowHover(style);
+  UpdateForegroundColors();
+  DeprecatedLayoutImmediately();
+}
+
+void Tab::HideHover(TabStyle::HideHoverStyle style) {
+  tab_style_views()->HideHover(style);
+  UpdateForegroundColors();
+  DeprecatedLayoutImmediately();
 }
 
 // static
@@ -1285,6 +1258,33 @@ void Tab::UpdateForegroundColors() {
     focus_ring->SetOutsetFocusRingDisabled(true);
   }
   SchedulePaint();
+}
+
+void Tab::MaybeUpdateHoverStatus(const ui::MouseEvent& event) {
+  // During system-DnD-based tab dragging we sometimes receive mouse events, but
+  // we shouldn't update the hover status during a drag.
+  if (mouse_hovered_ || !GetWidget()->IsMouseEventsEnabled() ||
+      TabDragController::IsActive()) {
+    return;
+  }
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Move the hit test area for hovering up so that it is not overlapped by tab
+  // hover cards when they are shown.
+  // TODO(crbug.com/41467565): Once Linux/CrOS widget transparency is solved,
+  // remove that case.
+  constexpr int kHoverCardOverlap = 6;
+  if (event.location().y() >= height() - kHoverCardOverlap) {
+    return;
+  }
+#endif
+
+  mouse_hovered_ = true;
+  controller_->ShowHover(this, TabStyle::ShowHoverStyle::kSubtle);
+  if (g_show_hover_card_on_mouse_hover) {
+    controller_->UpdateHoverCard(
+        this, TabSlotController::HoverCardUpdateType::kHover);
+  }
 }
 
 void Tab::CloseButtonPressed(const ui::Event& event) {
