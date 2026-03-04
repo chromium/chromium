@@ -34,7 +34,7 @@ constexpr uint8_t kCaptchaProviderPublicKeySha256[32] = {
     0xf6, 0x9c, 0x45, 0x3d, 0xec, 0xbf, 0x0a, 0xb2, 0x59, 0x2a, 0x9c,
     0xfc, 0xb4, 0x58, 0x84, 0xcb, 0x22, 0xb7, 0xb8, 0xbe, 0xbc};
 
-constexpr char kCaptchaProviderManifestName[] = "Probabilistic Reveal Tokens";
+constexpr char kCaptchaProviderManifestName[] = "Captcha Providers";
 
 constexpr base::FilePath::CharType kCaptchaProviderJsonFileName[] =
     FILE_PATH_LITERAL("captcha_providers.json");
