@@ -1320,6 +1320,31 @@ void PrefetchContainer::SimulatePrefetchStartedForTest() {
   OnPrefetchStarted();
 }
 
+// Simulates successful cases of
+// `PrefetchService::OnGotEligibilityForRedirect()`.
+void PrefetchContainer::SimulatePrefetchRedirectedForTest(  // IN-TEST
+    const GURL& redirect_url,
+    PreloadingEligibility eligibility) {
+  // Add a redirect hop with dummy redirect info that should be good enough in
+  // most cases.
+  net::RedirectInfo redirect_info;
+  redirect_info.status_code = 302;
+  redirect_info.new_method = "GET";
+  redirect_info.new_url = redirect_url;
+  redirect_info.new_site_for_cookies =
+      net::SiteForCookies::FromUrl(redirect_info.new_url);
+
+  CHECK_GE(redirect_chain_.size(), 1u);
+
+  AddRedirectHop(redirect_info.new_url);
+
+  OnEligibilityCheckComplete(eligibility);
+
+  auto [updates_for_resource_request, updates_for_follow_redirect] =
+      PrepareUpdateHeaders(redirect_info.new_url);
+  UpdateResourceRequest(redirect_info, std::move(updates_for_resource_request));
+}
+
 void PrefetchContainer::SimulatePrefetchCompletedForTest() {
   SetPrefetchStatus(PrefetchStatus::kPrefetchSuccessful);
 }

@@ -159,25 +159,6 @@ class PrefetchContainerTestBase : public PrefetchingMetricsTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-namespace {
-
-// Add a redirect hop with dummy redirect info that should be good enough in
-// most cases.
-void AddRedirectHop(PrefetchContainer* container, const GURL& url) {
-  net::RedirectInfo redirect_info;
-  redirect_info.status_code = 302;
-  redirect_info.new_method = "GET";
-  redirect_info.new_url = url;
-  redirect_info.new_site_for_cookies = net::SiteForCookies::FromUrl(url);
-  container->AddRedirectHop(redirect_info.new_url);
-  auto [updates_for_resource_request, updates_for_follow_redirect] =
-      container->PrepareUpdateHeaders(redirect_info.new_url);
-  container->UpdateResourceRequest(redirect_info,
-                                   std::move(updates_for_resource_request));
-}
-
-}  // namespace
-
 class PrefetchContainerTest
     : public PrefetchContainerTestBase,
       public ::testing::WithParamInterface<PrefetchRearchParam> {
@@ -253,7 +234,7 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
   EXPECT_FALSE(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
 
-  AddRedirectHop(prefetch_container.get(), kTestEligibleUrl);
+  prefetch_container->SimulatePrefetchRedirectedForTest(kTestEligibleUrl);
   EXPECT_EQ(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader),
       !IsIncognito());
@@ -276,7 +257,7 @@ TEST_P(PrefetchContainerXClientDataHeaderTest,
   EXPECT_FALSE(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
 
-  AddRedirectHop(prefetch_container.get(), kTestNonEligibleUrl2);
+  prefetch_container->SimulatePrefetchRedirectedForTest(kTestNonEligibleUrl2);
   EXPECT_FALSE(
       request->cors_exempt_headers.HasHeader(variations::kClientDataHeader));
 }
@@ -408,27 +389,16 @@ TEST_P(PrefetchContainerTest, CookieListener) {
 
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl1);
 
+  // Cookie listeners for each redirect hop are registered inside
+  // `SimulatePrefetchEligibleForTest()`/`SimulatePrefetchRedirectedForTest()`.
   prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
-
-  // Add redirect hops, and register its own cookie listener for each hop.
-  AddRedirectHop(prefetch_container.get(), kTestUrl2);
-  prefetch_container->RegisterCookieListenerForTesting();
-  AddRedirectHop(prefetch_container.get(), kTestUrl3);
-  prefetch_container->RegisterCookieListenerForTesting();
+  prefetch_container->SimulatePrefetchRedirectedForTest(kTestUrl2);
+  prefetch_container->SimulatePrefetchRedirectedForTest(kTestUrl3);
 
   // Check the cookies for `kTestUrl1`, `kTestUrl2` and `kTestUrl3`,
   // respectively. AdvanceCurrentURLToServe() is used to set the current hop to
   // check the cookies.
-  {
-    auto serving_handle = prefetch_container->CreateServingHandle();
-    EXPECT_FALSE(serving_handle.HaveDefaultContextCookiesChanged());
-    serving_handle.AdvanceCurrentURLToServe();
-    EXPECT_FALSE(serving_handle.HaveDefaultContextCookiesChanged());
-    serving_handle.AdvanceCurrentURLToServe();
-    EXPECT_FALSE(serving_handle.HaveDefaultContextCookiesChanged());
-  }
-
   {
     auto serving_handle = prefetch_container->CreateServingHandle();
     EXPECT_FALSE(serving_handle.HaveDefaultContextCookiesChanged());
@@ -533,14 +503,13 @@ TEST_P(PrefetchContainerTest, CookieCopyWithRedirects) {
   const GURL kRedirectUrl2 = GURL("https://redirect2.com");
   base::HistogramTester histogram_tester;
   auto prefetch_container = CreateSpeculationRulesPrefetchContainer(kTestUrl);
+
+  // Cookie listeners for each redirect hop are registered inside
+  // `SimulatePrefetchEligibleForTest()`/`SimulatePrefetchRedirectedForTest()`.
   prefetch_container->SimulatePrefetchEligibleForTest();
   prefetch_container->SimulatePrefetchStartedForTest();
-
-  AddRedirectHop(prefetch_container.get(), kRedirectUrl1);
-  prefetch_container->RegisterCookieListenerForTesting();
-
-  AddRedirectHop(prefetch_container.get(), kRedirectUrl2);
-  prefetch_container->RegisterCookieListenerForTesting();
+  prefetch_container->SimulatePrefetchRedirectedForTest(kRedirectUrl1);
+  prefetch_container->SimulatePrefetchRedirectedForTest(kRedirectUrl2);
 
   auto serving_handle = prefetch_container->CreateServingHandle();
 
@@ -845,9 +814,7 @@ TEST_P(PrefetchContainerTest, EligibilityCheck) {
             1);
 
   // Add a redirect, register a callback for it, and then mark it as eligible.
-  AddRedirectHop(prefetch_container.get(), kTestUrl2);
-  prefetch_container->OnEligibilityCheckComplete(
-      PreloadingEligibility::kEligible);
+  prefetch_container->SimulatePrefetchRedirectedForTest(kTestUrl2);
 
   // Referring page metrics is only incremented for the original prefetch URL
   // and not any redirects.
@@ -876,10 +843,9 @@ TEST_P(PrefetchContainerTest, IneligibleRedirect) {
                 .prefetch_eligible_count,
             1);
 
-  // Add a redirect, register a callback for it, and then mark it as ineligible.
-  AddRedirectHop(prefetch_container.get(), kTestUrl2);
-  prefetch_container->OnEligibilityCheckComplete(
-      PreloadingEligibility::kUserHasCookies);
+  // Receives an ineligible redirect.
+  prefetch_container->SimulatePrefetchRedirectedForTest(
+      kTestUrl2, PreloadingEligibility::kUserHasCookies);
 
   // Ineligible redirects are treated as failed prefetches, and not ineligible
   // prefetches.
@@ -1303,28 +1269,32 @@ TEST_P(PrefetchContainerTest, IsIsolatedNetworkRequiredWithRedirect) {
   EXPECT_FALSE(
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
 
-  AddRedirectHop(prefetch_container.get(), GURL("https://test.com/redirect"));
+  prefetch_container->SimulatePrefetchRedirectedForTest(
+      GURL("https://test.com/redirect"));
 
   EXPECT_FALSE(
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_FALSE(prefetch_container
                    ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 
-  AddRedirectHop(prefetch_container.get(), GURL("https://m.test.com/redirect"));
+  prefetch_container->SimulatePrefetchRedirectedForTest(
+      GURL("https://m.test.com/redirect"));
 
   EXPECT_FALSE(
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_FALSE(prefetch_container
                    ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 
-  AddRedirectHop(prefetch_container.get(), GURL("https://other.com/redirect1"));
+  prefetch_container->SimulatePrefetchRedirectedForTest(
+      GURL("https://other.com/redirect1"));
 
   EXPECT_TRUE(
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
   EXPECT_FALSE(prefetch_container
                    ->IsIsolatedNetworkContextRequiredForPreviousRedirectHop());
 
-  AddRedirectHop(prefetch_container.get(), GURL("https://other.com/redirect2"));
+  prefetch_container->SimulatePrefetchRedirectedForTest(
+      GURL("https://other.com/redirect2"));
 
   EXPECT_TRUE(
       prefetch_container->IsIsolatedNetworkContextRequiredForCurrentPrefetch());
