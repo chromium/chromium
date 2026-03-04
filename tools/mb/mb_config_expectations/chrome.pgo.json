@@ -84,6 +84,24 @@
       "v8_is_on_release_branch": true
     }
   },
+  "webview-arm64-pgo": {
+    "gn_args": {
+      "android_override_version_code": "1234567980",
+      "chrome_pgo_phase": 1,
+      "clang_use_default_sample_profile": false,
+      "debuggable_apks": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_reclient": false,
+      "use_remoteexec": true,
+      "v8_is_on_release_branch": true
+    }
+  },
   "win-arm64-pgo": {
     "gn_args": {
       "chrome_pgo_phase": 1,

@@ -53,6 +53,7 @@
       'linux-pgo': 'official_linux_pgo',
       'mac-arm-pgo': 'official_mac_arm_pgo_with_symbols',
       'mac-pgo': 'official_mac_pgo_with_symbols',
+      'webview-arm64-pgo': 'official_webview_arm64_pgo',
       'win-arm64-pgo': 'official_win_arm64_pgo',
       'win32-pgo': 'official_x86_pgo',
       'win64-pgo': 'official_x64_pgo',
@@ -608,6 +609,10 @@
 
     'official_webview_arm64_orderfile': [
       'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'orderfile_common',
+    ],
+
+    'official_webview_arm64_pgo': [
+      'official', 'remoteexec', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1', 'stable_version_code',
     ],
 
     'official_win_arm64_pgo': [
