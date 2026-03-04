@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/core/channel_posix.h"
 
 #include <errno.h>
@@ -20,6 +15,7 @@
 #include <tuple>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -72,7 +68,7 @@ class MessageView {
   }
 
   const void* data() const {
-    return static_cast<const char*>(message_->data()) + offset_;
+    return UNSAFE_TODO(static_cast<const char*>(message_->data()) + offset_);
   }
 
   size_t data_num_bytes() const { return message_->data_num_bytes() - offset_; }
@@ -382,7 +378,7 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
             sizeof(int) * fds.size(), 0, Message::MessageType::HANDLES_SENT);
         int* fd_data = reinterpret_cast<int*>(fds_message->mutable_payload());
         for (size_t i = 0; i < fds.size(); ++i) {
-          fd_data[i] = fds[i].get();
+          UNSAFE_TODO(fd_data[i]) = fds[i].get();
         }
         outgoing_messages_.emplace_back(std::move(fds_message), 0);
         {
@@ -520,7 +516,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
       }
       MessagePtr message = Message::CreateMessage(
           payload_size, 0, Message::MessageType::HANDLES_SENT_ACK);
-      memcpy(message->mutable_payload(), payload, payload_size);
+      UNSAFE_TODO(memcpy(message->mutable_payload(), payload, payload_size));
       Write(std::move(message));
       return true;
     }
@@ -568,7 +564,7 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   // message, and map that to a vector of FDs to close, to avoid the
   // need for this traversal? Id could even be the first FD in the message.
   for (; i < num_fds && it != fds_to_close_.end(); i++, ++it) {
-    if (it->get() != fds[i]) {
+    if (it->get() != UNSAFE_TODO(fds[i])) {
       return false;
     }
   }

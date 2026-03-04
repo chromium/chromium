@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
 #include <stddef.h>
@@ -14,6 +9,7 @@
 #include <sys/uio.h>
 #include <unistd.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -95,7 +91,8 @@ ssize_t SendmsgWithHandles(base::PlatformFile socket,
   cmsg->cmsg_len = CMSG_LEN(descriptors.size() * sizeof(int));
   for (size_t i = 0; i < descriptors.size(); ++i) {
     DCHECK_GE(descriptors[i].get(), 0);
-    reinterpret_cast<int*>(CMSG_DATA(cmsg))[i] = descriptors[i].get();
+    UNSAFE_TODO(reinterpret_cast<int*>(CMSG_DATA(cmsg))[i]) =
+        descriptors[i].get();
   }
   return HANDLE_EINTR(sendmsg(socket, &msg, MSG_NOSIGNAL));
 }
@@ -126,14 +123,14 @@ ssize_t SocketRecvmsg(base::PlatformFile socket,
 
   descriptors->clear();
   for (cmsghdr* cmsg = CMSG_FIRSTHDR(&msg); cmsg;
-       cmsg = CMSG_NXTHDR(&msg, cmsg)) {
+       cmsg = UNSAFE_TODO(CMSG_NXTHDR(&msg, cmsg))) {
     if (cmsg->cmsg_level == SOL_SOCKET && cmsg->cmsg_type == SCM_RIGHTS) {
       size_t payload_length = cmsg->cmsg_len - CMSG_LEN(0);
       DCHECK_EQ(payload_length % sizeof(int), 0u);
       size_t num_fds = payload_length / sizeof(int);
-      const int* fds = reinterpret_cast<int*>(CMSG_DATA(cmsg));
+      const int* fds = reinterpret_cast<int*>(UNSAFE_TODO(CMSG_DATA(cmsg)));
       for (size_t i = 0; i < num_fds; ++i) {
-        base::ScopedFD fd(fds[i]);
+        base::ScopedFD fd(UNSAFE_TODO(fds[i]));
         DCHECK(fd.is_valid());
         descriptors->emplace_back(std::move(fd));
       }
