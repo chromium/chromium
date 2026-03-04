@@ -192,6 +192,7 @@ def _build_supported_extended_attributes():
         E("Transferable", applicable_to=[T.INTERFACE]),
         E("URL", applicable_to=[T.ATTRIBUTE]),
         E("Unscopable", applicable_to=[T.ATTRIBUTE, T.OPERATION]),
+        E("V8EnableIndexOf", applicable_to=[T.INTERFACE]),
     ]
 
     desc_map = dict()
