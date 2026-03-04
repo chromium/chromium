@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/base64.h"
+#include <utility>
+
 #include "base/strings/strcat.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
-#include "cc/test/pixel_comparator.h"
-#include "cc/test/pixel_test_utils.h"
 #include "chrome/browser/actor/actor_features.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
@@ -24,7 +23,6 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "ui/compositor/compositor_switches.h"
-#include "ui/gfx/codec/png_codec.h"
 
 #if BUILDFLAG(IS_LINUX)
 #include "ui/ozone/public/ozone_platform.h"
@@ -44,6 +42,85 @@ const SkBitmap GenerateSquareBitmap(int size, SkColor color) {
   bitmap.eraseColor(color);
   bitmap.setImmutable();
   return bitmap;
+}
+
+void SetCredentialRequestHandler(
+    content::WebContents* glic_contents,
+    int credential_index,
+    webui::mojom::UserGrantedPermissionDuration permission_duration) {
+  static constexpr char kHandleDialogRequest[] =
+      R"js(
+      (() => {
+        /** Converts a PNG (Blob) to a base64 encoded string. */
+        function blobToBase64(blob) {
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              resolve(reader.result);
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          });
+        }
+
+        async function iconGetterToDataUrl(iconGetter) {
+          if (!iconGetter) {
+            return undefined;
+          }
+          const blob = await iconGetter();
+          if (!blob) {
+            return undefined;
+          }
+          return await blobToBase64(blob);
+        }
+
+        window.credentialDialogRequestData = new Promise(resolve => {
+          client.browser.selectCredentialDialogRequestHandler().subscribe(
+            async (request) => {
+              // Respond to the request by selecting the specified credential.
+              request.onDialogClosed({
+                response: {
+                  taskId: request.taskId,
+                  selectedCredentialId: request.credentials[$1].id,
+                  permissionDuration: $2,
+                }
+              });
+
+              const credentialsWithIcons = await Promise.all(
+                request.credentials.map(async (cred) => {
+                  const {getIcon, ...rest} = cred;
+                  const icon = await iconGetterToDataUrl(getIcon);
+                  return {...rest, icon};
+                })
+              );
+
+              // Resolve the promise with the request data to be verified in
+              // C++.
+              resolve({
+                taskId: request.taskId,
+                showDialog: request.showDialog,
+                credentials: credentialsWithIcons,
+              });
+            }
+          );
+        });
+      })();
+      )js";
+  ASSERT_TRUE(content::ExecJs(
+      glic_contents,
+      content::JsReplace(kHandleDialogRequest, credential_index,
+                         std::to_underlying(permission_duration))));
+}
+
+base::DictValue ExtractRequestData(content::WebContents* glic_contents) {
+  static constexpr char kGetRequestData[] =
+      R"js(
+        (() => {
+          return window.credentialDialogRequestData;
+        })();
+      )js";
+  auto eval_result = content::EvalJs(glic_contents, kGetRequestData);
+  return eval_result.ExtractDict().Clone();
 }
 
 class MockExecutionEngine : public ExecutionEngine {
@@ -196,7 +273,23 @@ class AttemptLoginToolInteractiveUiTest
     return credential_id_generator_.GenerateNextId();
   }
 
-  const SkBitmap& red_bitmap() { return red_bitmap_; }
+  // Note that the URL here is the bitmap encoded `red_bitmap_` image, as
+  // bitmap encoding is what glic vends. I visually confirmed this is the same
+  // image.
+  const GURL kRedIconDataUrl{
+      "data:image/bmp;base64,Qk0aAgAAAAAAAIoAAAB8AAAACgAAAPb///"
+      "8BACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/"
+      "yBuaVcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA"
+      "AAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
+      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
+      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
+      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
+      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//w=="};
+
+  const gfx::Image& red_image() const { return red_image_; }
 
  protected:
   MockActorLoginService mock_login_service_;
@@ -237,65 +330,12 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
 
   // Toggle the glic window.
   RunTestSequence(InAnyContext(WithElement(
-      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) mutable {
-        static constexpr char kHandleDialogRequest[] =
-            R"js(
-      (() => {
-        /** Converts a PNG (Blob) to a base64 encoded string. */
-        function blobToBase64(blob) {
-          return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-              resolve(reader.result);
-            };
-            reader.onerror = reject;
-            reader.readAsDataURL(blob);
-          });
-        }
-
-        window.credentialDialogRequestData = new Promise(resolve => {
-          client.browser.selectCredentialDialogRequestHandler().subscribe(
-            async (request) => {
-              // Respond to the request by selecting the second credential.
-              request.onDialogClosed({
-                response: {
-                  taskId: request.taskId,
-                  selectedCredentialId: request.credentials[1].id,
-                  // 1 corresponds to UserGrantedPermissionDuration.ALWAYS_ALLOW
-                  permissionDuration: 1,
-                }
-              });
-
-              const credentialsWithIcons = await Promise.all(
-                request.credentials.map(async (cred) => {
-                  const {getIcon, ...rest} = cred;
-                  if (!getIcon) {
-                    return rest;
-                  }
-                  const blob = await getIcon();
-                  if (!blob) {
-                    return rest;
-                  }
-                  const icon = await blobToBase64(blob);
-                  return {...rest, icon};
-                })
-              );
-
-              // Resolve the promise with the request data to be verified in
-              // C++.
-              resolve({
-                taskId: request.taskId,
-                showDialog: request.showDialog,
-                credentials: credentialsWithIcons,
-              });
-            }
-          );
-        });
-      })();
-              )js";
+      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
-        ASSERT_TRUE(content::ExecJs(glic_contents, kHandleDialogRequest));
+        SetCredentialRequestHandler(
+            glic_contents, 1,
+            webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow);
       })));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
@@ -305,23 +345,6 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
   // shouldn't be placed inside `RunTestSequence()`.
   ExpectOkResult(result);
 
-  // Note that the URL here is the bitmap encoded `red_bitmap()` image, as
-  // bitmap encoding is what glic vends. I visually confirmed this is the same
-  // image.
-  constexpr char kExpectedIconBase64Url[] =
-      "Qk0aAgAAAAAAAIoAAAB8AAAACgAAAPb///"
-      "8BACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/"
-      "yBuaVcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA"
-      "AAAAAAAAAAAAAAAAAAAAAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
-      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
-      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
-      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
-      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
-      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
-      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
-      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//w==";
-  const std::string kExpectedIconDataUrl =
-      base::StrCat({"data:image/bmp;base64,", kExpectedIconBase64Url});
   const std::string expected_request_origin =
       url::Origin::Create(url).Serialize();
   const std::string expected_display_origin = "example.com:12345";
@@ -339,7 +362,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
                           .Set("sourceSiteOrApp", url.GetWithEmptyPath().spec())
                           .Set("requestOrigin", expected_request_origin)
                           .Set("displayOrigin", expected_display_origin)
-                          .Set("icon", kExpectedIconDataUrl)
+                          .Set("icon", kRedIconDataUrl.spec())
                           .Set("type", actor_login::CredentialType::kPassword))
                   .Append(
                       base::DictValue()
@@ -348,7 +371,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
                           .Set("sourceSiteOrApp", url.GetWithEmptyPath().spec())
                           .Set("requestOrigin", expected_request_origin)
                           .Set("displayOrigin", expected_display_origin)
-                          .Set("icon", kExpectedIconDataUrl)
+                          .Set("icon", kRedIconDataUrl.spec())
                           .Set("type",
                                actor_login::CredentialType::kPassword)));
 
@@ -357,14 +380,8 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest, MAYBE_SmokeTest) {
       glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
-        static constexpr char kGetRequestData[] =
-            R"js(
-              (() => {
-                return window.credentialDialogRequestData;
-              })();
-            )js";
-        auto eval_result = content::EvalJs(glic_contents, kGetRequestData);
-        const auto& actual_request = eval_result.ExtractDict();
+        const base::DictValue actual_request =
+            ExtractRequestData(glic_contents);
         ASSERT_EQ(expected_request, actual_request);
       })));
 
@@ -481,37 +498,11 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
   // Toggle the glic window.
   RunTestSequence(InAnyContext(WithElement(
       glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
-        static constexpr char kHandleDialogRequest[] =
-            R"js(
-      (() => {
-        window.credentialDialogRequestData = new Promise(resolve => {
-          client.browser.selectCredentialDialogRequestHandler().subscribe(
-            async (request) => {
-              // Respond to the request by selecting the first credential.
-              request.onDialogClosed({
-                response: {
-                  taskId: request.taskId,
-                  selectedCredentialId: request.credentials[0].id,
-                  // 1 corresponds to UserGrantedPermissionDuration.ALWAYS_ALLOW
-                  permissionDuration: 1,
-                }
-              });
-
-              // Resolve the promise with the request data to be verified in
-              // C++.
-              resolve({
-                taskId: request.taskId,
-                showDialog: request.showDialog,
-                credentials: request.credentials,
-              });
-            }
-          );
-        });
-      })();
-              )js";
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
-        ASSERT_TRUE(content::ExecJs(glic_contents, kHandleDialogRequest));
+        SetCredentialRequestHandler(
+            glic_contents, 0,
+            webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow);
       })));
 
   std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
@@ -535,7 +526,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                       base::DictValue()
                           .Set("id", GenerateCredentialId().value())
                           .Set("username", "username1")
-                          .Set("sourceSiteOrApp", url.GetWithEmptyPath().spec())
+                          .Set("sourceSiteOrApp", url.host())
                           .Set("requestOrigin", expected_request_origin)
                           .Set("displayOrigin", expected_display_origin)
                           .Set("type", actor_login::CredentialType::kFederated))
@@ -543,7 +534,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                       base::DictValue()
                           .Set("id", GenerateCredentialId().value())
                           .Set("username", "username2")
-                          .Set("sourceSiteOrApp", url.GetWithEmptyPath().spec())
+                          .Set("sourceSiteOrApp", url.host())
                           .Set("requestOrigin", expected_request_origin)
                           .Set("displayOrigin", expected_display_origin)
                           .Set("type", actor_login::CredentialType::kFederated))
@@ -554,6 +545,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                           .Set("sourceSiteOrApp", url.GetWithEmptyPath().spec())
                           .Set("requestOrigin", expected_request_origin)
                           .Set("displayOrigin", expected_display_origin)
+                          .Set("icon", kRedIconDataUrl.spec())
                           .Set("type", actor_login::CredentialType::kPassword))
                   .Append(
                       base::DictValue()
@@ -562,6 +554,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
                           .Set("sourceSiteOrApp", url.GetWithEmptyPath().spec())
                           .Set("requestOrigin", expected_request_origin)
                           .Set("displayOrigin", expected_display_origin)
+                          .Set("icon", kRedIconDataUrl.spec())
                           .Set("type",
                                actor_login::CredentialType::kPassword)));
 
@@ -570,14 +563,7 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
       glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
         content::WebContents* glic_contents =
             AsInstrumentedWebContents(el)->web_contents();
-        static constexpr char kGetRequestData[] =
-            R"js(
-              (() => {
-                return window.credentialDialogRequestData;
-              })();
-            )js";
-        auto eval_result = content::EvalJs(glic_contents, kGetRequestData);
-        const auto& actual_request = eval_result.ExtractDict();
+        const auto actual_request = ExtractRequestData(glic_contents);
         ASSERT_EQ(expected_request, actual_request);
       })));
 

@@ -67,6 +67,9 @@ actor_login::Credential MakeTestCredentialFederated(
   credential.federation_detail =
       actor_login::FederationDetail{.idp_origin = url::Origin::Create(url),
                                     .account_id = base::ToString(username)};
+  // In the federated case, the URL is formatted for display. Just using the
+  // host here is close enough for testing.
+  credential.source_site_or_app = base::UTF8ToUTF16(url.host());
   return credential;
 }
 
