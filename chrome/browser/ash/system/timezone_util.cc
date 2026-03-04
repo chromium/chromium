@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -156,7 +156,7 @@ std::u16string GetTimezoneName(const icu::TimeZone& timezone) {
 bool CanSetSystemTimezoneFromManagedGuestSession() {
   const int automatic_detection_policy =
       g_browser_process->local_state()->GetInteger(
-          prefs::kSystemTimezoneAutomaticDetectionPolicy);
+          ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 
   return (automatic_detection_policy ==
           enterprise_management::SystemTimezoneProto::DISABLED) ||
@@ -216,8 +216,9 @@ bool HasSystemTimezonePolicy() {
 }
 
 bool IsTimezonePrefsManaged(const std::string& pref_name) {
-  DCHECK(pref_name == kSystemTimezone || pref_name == prefs::kUserTimezone ||
-         pref_name == prefs::kResolveTimezoneByGeolocationMethod);
+  DCHECK(pref_name == kSystemTimezone ||
+         pref_name == ash::prefs::kUserTimezone ||
+         pref_name == ash::prefs::kResolveTimezoneByGeolocationMethod);
 
   std::string policy_timezone;
   if (CrosSettings::Get()->GetString(kSystemTimezonePolicy, &policy_timezone) &&
@@ -235,19 +236,19 @@ bool IsTimezonePrefsManaged(const std::string& pref_name) {
 
   const PrefService* local_state = g_browser_process->local_state();
   if (!local_state->IsManagedPreference(
-          prefs::kSystemTimezoneAutomaticDetectionPolicy)) {
+          ash::prefs::kSystemTimezoneAutomaticDetectionPolicy)) {
     return false;
   }
 
-  int resolve_policy_value =
-      local_state->GetInteger(prefs::kSystemTimezoneAutomaticDetectionPolicy);
+  int resolve_policy_value = local_state->GetInteger(
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 
   switch (resolve_policy_value) {
     case enterprise_management::SystemTimezoneProto::USERS_DECIDE:
       return false;
     case enterprise_management::SystemTimezoneProto::DISABLED:
       // This only disables resolving.
-      return pref_name == prefs::kResolveTimezoneByGeolocationMethod;
+      return pref_name == ash::prefs::kResolveTimezoneByGeolocationMethod;
     case enterprise_management::SystemTimezoneProto::IP_ONLY:
     case enterprise_management::SystemTimezoneProto::SEND_WIFI_ACCESS_POINTS:
     case enterprise_management::SystemTimezoneProto::SEND_ALL_LOCATION_INFO:
@@ -283,7 +284,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone) {
       if (!profile)
         return;
 
-      profile->GetPrefs()->SetString(prefs::kUserTimezone,
+      profile->GetPrefs()->SetString(ash::prefs::kUserTimezone,
                                      timezone->timeZoneId);
       // For non-enterprise device, `Preferences::ApplyPreferences()`
       // will automatically change system timezone because user is primary.
@@ -302,7 +303,7 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone) {
 }
 
 void UpdateSystemTimezone(Profile* profile) {
-  if (IsTimezonePrefsManaged(prefs::kUserTimezone)) {
+  if (IsTimezonePrefsManaged(ash::prefs::kUserTimezone)) {
     VLOG(1) << "Ignoring user timezone change, because timezone is enterprise "
                "managed.";
     return;
@@ -318,10 +319,10 @@ void UpdateSystemTimezone(Profile* profile) {
       owner.is_valid() && (owner == user->GetAccountId());
 
   const std::string value =
-      profile->GetPrefs()->GetString(prefs::kUserTimezone);
+      profile->GetPrefs()->GetString(ash::prefs::kUserTimezone);
   if (user_is_owner) {
-    g_browser_process->local_state()->SetString(prefs::kSigninScreenTimezone,
-                                                value);
+    g_browser_process->local_state()->SetString(
+        ash::prefs::kSigninScreenTimezone, value);
   }
 
   if (user_manager->GetPrimaryUser() == user && PerUserTimezoneEnabled())
@@ -368,7 +369,7 @@ void SetSystemAndSigninScreenTimezone(const std::string& timezone) {
   if (timezone.empty())
     return;
 
-  g_browser_process->local_state()->SetString(prefs::kSigninScreenTimezone,
+  g_browser_process->local_state()->SetString(ash::prefs::kSigninScreenTimezone,
                                               timezone);
 
   std::string current_timezone_id;
@@ -405,7 +406,7 @@ void SetTimezoneFromUI(Profile* profile, const std::string& timezone_id) {
 
   Profile* primary_profile = ProfileManager::GetPrimaryUserProfile();
   if (primary_profile && profile->IsSameOrParent(primary_profile)) {
-    profile->GetPrefs()->SetString(prefs::kUserTimezone, timezone_id);
+    profile->GetPrefs()->SetString(ash::prefs::kUserTimezone, timezone_id);
     return;
   }
 

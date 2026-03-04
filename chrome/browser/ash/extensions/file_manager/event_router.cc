@@ -728,7 +728,7 @@ void EventRouter::ObserveEvents() {
     pref_change_registrar_->Add(drive::prefs::kDisableDrive, cb);
     pref_change_registrar_->Add(ash::prefs::kFilesAppTrashEnabled, cb);
     pref_change_registrar_->Add(prefs::kSearchSuggestEnabled, cb);
-    pref_change_registrar_->Add(prefs::kUse24HourClock, cb);
+    pref_change_registrar_->Add(ash::prefs::kUse24HourClock, cb);
     pref_change_registrar_->Add(arc::prefs::kArcEnabled, cb);
     pref_change_registrar_->Add(arc::prefs::kArcHasAccessToRemovableMedia, cb);
     pref_change_registrar_->Add(ash::prefs::kFilesAppFolderShortcuts, cb);

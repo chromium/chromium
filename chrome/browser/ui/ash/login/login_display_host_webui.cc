@@ -11,6 +11,7 @@
 #include "ash/accessibility/ui/focus_ring_controller.h"
 #include "ash/booting/booting_animation_controller.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/login_accelerators.h"
@@ -328,7 +329,7 @@ void ShowLoginWizardFinish(
   // Restore system timezone.
   std::string timezone;
   if (system::PerUserTimezoneEnabled()) {
-    timezone = local_state->GetString(::prefs::kSigninScreenTimezone);
+    timezone = local_state->GetString(ash::prefs::kSigninScreenTimezone);
   }
 
   // TODO(crbug.com/1105387): Part of initial screen logic.

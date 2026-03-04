@@ -130,8 +130,8 @@ class MarketingOptInScreenTest : public OobeBaseTest,
 
   // US as default location for non-parameterized tests.
   void SetUpLocalState() override {
-    g_browser_process->local_state()->SetString(::prefs::kSigninScreenTimezone,
-                                                "America/Los_Angeles");
+    g_browser_process->local_state()->SetString(
+        ash::prefs::kSigninScreenTimezone, "America/Los_Angeles");
   }
 
   // Logs in as a normal user. Overridden by subclasses.
@@ -476,8 +476,8 @@ class RegionAsParameterInterface
 
   void SetUpLocalStateRegion() {
     RegionToCodeMap param = GetParam();
-    g_browser_process->local_state()->SetString(::prefs::kSigninScreenTimezone,
-                                                param.region);
+    g_browser_process->local_state()->SetString(
+        ash::prefs::kSigninScreenTimezone, param.region);
   }
 };
 

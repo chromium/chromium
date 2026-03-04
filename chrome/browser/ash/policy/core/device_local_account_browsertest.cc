@@ -613,7 +613,7 @@ class DeviceLocalAccountTest : public DevicePolicyCrosBrowserTest,
     proto.mutable_system_timezone()->set_timezone_detection_type(policy);
     RefreshDevicePolicy();
 
-    LocalStateValueWaiter(prefs::kSystemTimezoneAutomaticDetectionPolicy,
+    LocalStateValueWaiter(ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
                           base::Value(policy))
         .Wait();
     policy_test_server_mixin_.UpdateDevicePolicy(proto);

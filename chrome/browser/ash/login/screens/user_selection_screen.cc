@@ -48,7 +48,6 @@
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/ash/login/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/l10n_util.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -644,7 +643,7 @@ void UserSelectionScreen::HandleFocusPod(const AccountId& account_id) {
 
   user_manager::KnownUser known_user(&local_state_.get());
   std::optional<bool> use_24hour_clock =
-      known_user.FindBoolPath(account_id, ::prefs::kUse24HourClock);
+      known_user.FindBoolPath(account_id, ash::prefs::kUse24HourClock);
   if (!use_24hour_clock.has_value()) {
     focused_user_clock_type_.reset();
   } else {
@@ -825,7 +824,7 @@ UserSelectionScreen::UpdateAndReturnUserListForAsh() {
     user_manager::KnownUser known_user(&local_state_.get());
 
     user_info.use_24hour_clock =
-        known_user.FindBoolPath(account_id, ::prefs::kUse24HourClock)
+        known_user.FindBoolPath(account_id, ash::prefs::kUse24HourClock)
             .value_or(base::GetHourClockType() == base::k24HourClock);
 
     user_info.basic_user_info.display_name =

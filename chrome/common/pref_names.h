@@ -497,23 +497,6 @@ inline constexpr char kInsightsExtensionEnabled[] =
 // Controlled by policy.
 inline constexpr char kEnableSyncConsent[] = "sync_consent.enabled";
 
-// A boolean pref set to true if time should be displayed in 24-hour clock.
-inline constexpr char kUse24HourClock[] = "settings.clock.use_24hour_clock";
-
-// A string pref containing Timezone ID for this user.
-inline constexpr char kUserTimezone[] = "settings.timezone";
-
-// This setting controls what information is sent to the server to get
-// device location to resolve time zone in user session. Values must
-// match TimeZoneResolverManager::TimeZoneResolveMethod enum.
-inline constexpr char kResolveTimezoneByGeolocationMethod[] =
-    "settings.resolve_timezone_by_geolocation_method";
-
-// This setting is true when kResolveTimezoneByGeolocation value
-// has been migrated to kResolveTimezoneByGeolocationMethod.
-inline constexpr char kResolveTimezoneByGeolocationMigratedToMethod[] =
-    "settings.resolve_timezone_by_geolocation_migrated_to_method";
-
 // A boolean pref which turns on Advanced Filesystem
 // (USB support, SD card, etc).
 inline constexpr char kLabsAdvancedFilesystemEnabled[] =
@@ -3174,25 +3157,6 @@ inline constexpr char kDebuggingFeaturesRequested[] =
 // Indicates that the user has requested that ARC APK Sideloading be enabled.
 inline constexpr char kEnableAdbSideloadingRequested[] =
     "EnableAdbSideloadingRequested";
-
-#if BUILDFLAG(IS_CHROMEOS)
-// This setting controls initial device timezone that is used before user
-// session started. It is controlled by device owner.
-inline constexpr char kSigninScreenTimezone[] =
-    "settings.signin_screen_timezone";
-
-// This setting controls what information is sent to the server to get
-// device location to resolve time zone outside of user session. Values must
-// match TimeZoneResolverManager::TimeZoneResolveMethod enum.
-inline constexpr char kResolveDeviceTimezoneByGeolocationMethod[] =
-    "settings.resolve_device_timezone_by_geolocation_method";
-
-// This is policy-controlled preference.
-// It has values defined in policy enum
-// SystemTimezoneAutomaticDetectionProto_AutomaticTimezoneDetectionType;
-inline constexpr char kSystemTimezoneAutomaticDetectionPolicy[] =
-    "settings.resolve_device_timezone_by_geolocation_policy";
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Pref name for the policy controlling whether to enable Media Router.
 inline constexpr char kEnableMediaRouter[] = "media_router.enable_media_router";

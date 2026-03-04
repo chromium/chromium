@@ -327,7 +327,7 @@ FileManagerPrivateGetPreferencesFunction::Run() {
       prefs->GetBoolean(drive::prefs::kDriveFsBulkPinningEnabled);
   result.search_suggest_enabled =
       prefs->GetBoolean(prefs::kSearchSuggestEnabled);
-  result.use24hour_clock = prefs->GetBoolean(prefs::kUse24HourClock);
+  result.use24hour_clock = prefs->GetBoolean(ash::prefs::kUse24HourClock);
   result.timezone = base::UTF16ToUTF8(
       ash::system::TimezoneSettings::GetInstance()->GetCurrentTimezoneID());
   result.arc_enabled = prefs->GetBoolean(arc::prefs::kArcEnabled);

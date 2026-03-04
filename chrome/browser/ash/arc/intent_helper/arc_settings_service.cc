@@ -445,9 +445,9 @@ void ArcSettingsServiceImpl::OnPrefChanged(const std::string& pref_name) const {
     }
   } else if (pref_name == ::prefs::kConsumerAutoUpdateToggle) {
     SyncConsumerAutoUpdateToggle();
-  } else if (pref_name == ::prefs::kUse24HourClock) {
+  } else if (pref_name == ash::prefs::kUse24HourClock) {
     SyncUse24HourClock();
-  } else if (pref_name == ::prefs::kResolveTimezoneByGeolocationMethod) {
+  } else if (pref_name == ash::prefs::kResolveTimezoneByGeolocationMethod) {
     SyncTimeZoneByGeolocation();
   } else if (pref_name == proxy_config::prefs::kProxy ||
              pref_name == ::prefs::kSystemProxyUserTrafficHostAndPort) {
@@ -549,9 +549,9 @@ void ArcSettingsServiceImpl::StartObservingSettingsChanges() {
   AddPrefToObserve(::prefs::kAccessibilityCaptionsTextOpacity);
   AddPrefToObserve(::prefs::kAccessibilityCaptionsTextShadow);
   AddPrefToObserve(::prefs::kAccessibilityCaptionsTextSize);
-  AddPrefToObserve(::prefs::kResolveTimezoneByGeolocationMethod);
+  AddPrefToObserve(ash::prefs::kResolveTimezoneByGeolocationMethod);
   AddPrefToObserve(::prefs::kSystemProxyUserTrafficHostAndPort);
-  AddPrefToObserve(::prefs::kUse24HourClock);
+  AddPrefToObserve(ash::prefs::kUse24HourClock);
   AddPrefToObserve(ash::prefs::kAccessibilityFocusHighlightEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityLargeCursorEnabled);
   AddPrefToObserve(ash::prefs::kAccessibilityScreenMagnifierEnabled);
@@ -887,7 +887,7 @@ void ArcSettingsServiceImpl::SyncTimeZoneByGeolocation() const {
 
 void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   const PrefService::Preference* pref =
-      registrar_.prefs()->FindPreference(::prefs::kUse24HourClock);
+      registrar_.prefs()->FindPreference(ash::prefs::kUse24HourClock);
   DCHECK(pref);
   DCHECK(pref->GetValue()->is_bool());
   bool use24HourClock = pref->GetValue()->GetBool();

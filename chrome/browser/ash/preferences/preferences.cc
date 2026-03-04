@@ -113,7 +113,7 @@ const char* const kCopyToKnownUserPrefs[] = {
     ::prefs::kLanguageRemapExternalMetaKeyTo,
 
     prefs::kLoginDisplayPasswordButtonEnabled,
-    ::prefs::kUse24HourClock,
+    ash::prefs::kUse24HourClock,
     prefs::kDarkModeEnabled};
 
 }  // namespace
@@ -141,13 +141,14 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kOwnerTapToClickEnabled, true);
   // TODO(jamescook): Move ownership and registration into ash.
   registry->RegisterStringPref(::prefs::kLogoutStartedLast, std::string());
-  registry->RegisterStringPref(::prefs::kSigninScreenTimezone, std::string());
+  registry->RegisterStringPref(ash::prefs::kSigninScreenTimezone,
+                               std::string());
   registry->RegisterIntegerPref(
-      ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
+      ash::prefs::kResolveDeviceTimezoneByGeolocationMethod,
       static_cast<int>(
           system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY));
   registry->RegisterIntegerPref(
-      ::prefs::kSystemTimezoneAutomaticDetectionPolicy,
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       enterprise_management::SystemTimezoneProto::USERS_DECIDE);
   registry->RegisterStringPref(::prefs::kMinimumAllowedChromeVersion, "");
   registry->RegisterBooleanPref(prefs::kDeviceSystemWideTracingEnabled, true);
@@ -261,7 +262,8 @@ void Preferences::RegisterProfilePrefs(
       prefs::kTouchpadHapticClickSensitivity, 3,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF);
   registry->RegisterBooleanPref(
-      ::prefs::kUse24HourClock, base::GetHourClockType() == base::k24HourClock,
+      ash::prefs::kUse24HourClock,
+      base::GetHourClockType() == base::k24HourClock,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   // We don't sync ::prefs::kLanguageCurrentInputMethod and PreviousInputMethod
   // because they're just used to track the logout state of the device.
@@ -403,10 +405,10 @@ void Preferences::RegisterProfilePrefs(
   }
   // |current_timezone_id| will be empty if CrosSettings doesn't know the
   // timezone yet.
-  registry->RegisterStringPref(::prefs::kUserTimezone, current_timezone_id);
+  registry->RegisterStringPref(ash::prefs::kUserTimezone, current_timezone_id);
 
   registry->RegisterBooleanPref(
-      ::prefs::kResolveTimezoneByGeolocationMigratedToMethod, false,
+      ash::prefs::kResolveTimezoneByGeolocationMigratedToMethod, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
 
   bool allow_time_zone_resolve_by_default = true;
@@ -422,7 +424,7 @@ void Preferences::RegisterProfilePrefs(
   }
 
   registry->RegisterIntegerPref(
-      ::prefs::kResolveTimezoneByGeolocationMethod,
+      ash::prefs::kResolveTimezoneByGeolocationMethod,
       static_cast<int>(
           allow_time_zone_resolve_by_default
               ? system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY
@@ -759,8 +761,8 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
   pref_change_registrar_.Add(ash::prefs::kUserGeolocationAccessLevel, callback);
   pref_change_registrar_.Add(ash::prefs::kUserPreviousGeolocationAccessLevel,
                              callback);
-  pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
-  pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocationMethod,
+  pref_change_registrar_.Add(ash::prefs::kUserTimezone, callback);
+  pref_change_registrar_.Add(ash::prefs::kResolveTimezoneByGeolocationMethod,
                              callback);
   pref_change_registrar_.Add(::prefs::kParentAccessCodeConfig, callback);
   for (auto* copy_pref : kCopyToKnownUserPrefs) {
@@ -1286,24 +1288,24 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     }
   }
 
-  if (pref_name == ::prefs::kUserTimezone &&
+  if (pref_name == ash::prefs::kUserTimezone &&
       reason != REASON_ACTIVE_USER_CHANGED) {
     system::UpdateSystemTimezone(ProfileHelper::Get()->GetProfileByUser(user_));
   }
 
   if (reason == REASON_INITIALIZATION ||
-      (pref_name == ::prefs::kResolveTimezoneByGeolocationMethod &&
+      (pref_name == ash::prefs::kResolveTimezoneByGeolocationMethod &&
        reason != REASON_ACTIVE_USER_CHANGED)) {
-    if (prefs_->GetInteger(::prefs::kResolveTimezoneByGeolocationMethod) !=
+    if (prefs_->GetInteger(ash::prefs::kResolveTimezoneByGeolocationMethod) !=
         static_cast<int>(
             system::TimeZoneResolverManager::TimeZoneResolveMethod::DISABLED)) {
-      prefs_->SetBoolean(::prefs::kResolveTimezoneByGeolocationMigratedToMethod,
-                         true);
+      prefs_->SetBoolean(
+          ash::prefs::kResolveTimezoneByGeolocationMigratedToMethod, true);
     }
     if (user_is_owner) {
       // Policy check is false here, because there is no owner for enterprise.
       g_browser_process->local_state()->SetInteger(
-          ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
+          ash::prefs::kResolveDeviceTimezoneByGeolocationMethod,
           static_cast<int>(system::TimeZoneResolverManager::
                                GetEffectiveUserTimeZoneResolveMethod(
                                    prefs_, false /* check_policy */)));

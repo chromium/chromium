@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/system/system_tray_client_impl.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/web_app_id_constants.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/login_screen_test_api.h"
@@ -35,7 +36,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
@@ -194,7 +194,8 @@ class SystemTrayClientClockTest : public ash::LoginManagerTest {
   void SetupUserProfile(const AccountId& account_id, bool use_24_hour_clock) {
     const user_manager::User* user = UserManager::Get()->FindUser(account_id);
     Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
-    profile->GetPrefs()->SetBoolean(prefs::kUse24HourClock, use_24_hour_clock);
+    profile->GetPrefs()->SetBoolean(ash::prefs::kUse24HourClock,
+                                    use_24_hour_clock);
     // Allow clock setting to be sent to ash over mojo.
     content::RunAllPendingInMessageLoop();
   }
@@ -279,11 +280,12 @@ class SystemTrayClientClockUnknownPrefTest : public SystemTrayClientClockTest {
     SystemTrayClientClockTest::SetUpLocalStatePrefService(local_state);
     user_manager::KnownUser known_user(local_state);
     // First user does not have a preference.
-    ASSERT_FALSE(known_user.FindBoolPath(account_id1_, ::prefs::kUse24HourClock)
-                     .has_value());
+    ASSERT_FALSE(
+        known_user.FindBoolPath(account_id1_, ash::prefs::kUse24HourClock)
+            .has_value());
 
     // Set preference for the second user only.
-    known_user.SetBooleanPref(account_id2_, ::prefs::kUse24HourClock, false);
+    known_user.SetBooleanPref(account_id2_, ash::prefs::kUse24HourClock, false);
   }
 
  protected:

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/settings_private/chromeos_resolve_time_zone_by_geolocation_method_short.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/system/timezone_resolver_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/extensions/profile_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/settings_private.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace extensions {
@@ -96,8 +96,9 @@ SetPrefResult GeneratedResolveTimezoneByGeolocationMethodShort::SetPref(
     return SetPrefResult::SUCCESS;
   }
 
-  profile_->GetPrefs()->SetInteger(::prefs::kResolveTimezoneByGeolocationMethod,
-                                   static_cast<int>(new_value));
+  profile_->GetPrefs()->SetInteger(
+      ash::prefs::kResolveTimezoneByGeolocationMethod,
+      static_cast<int>(new_value));
 
   return SetPrefResult::SUCCESS;
 }

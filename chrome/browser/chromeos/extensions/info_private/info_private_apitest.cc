@@ -14,7 +14,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
@@ -54,7 +53,8 @@ class ChromeOSInfoPrivateTest : public extensions::ExtensionApiTest {
 IN_PROC_BROWSER_TEST_F(ChromeOSInfoPrivateTest, DISABLED_TestGetAndSet) {
   // Set the initial timezone different from what JS function
   // timezoneSetTest() will attempt to set.
-  profile()->GetPrefs()->SetString(prefs::kUserTimezone, "America/Los_Angeles");
+  profile()->GetPrefs()->SetString(ash::prefs::kUserTimezone,
+                                   "America/Los_Angeles");
 
   // Check that accessibility settings are set to default values.
   PrefService* prefs = profile()->GetPrefs();

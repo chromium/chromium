@@ -246,7 +246,7 @@ void MarketingOptInScreen::Initialize() {
   // Set the country to be used based on the timezone
   // and supported country list.
   SetCountryFromTimezoneIfAvailable(
-      local_state_->GetString(::prefs::kSigninScreenTimezone));
+      local_state_->GetString(ash::prefs::kSigninScreenTimezone));
 
   // Only show the opt in option if this is a supported region, and if the user
   // never made a choice regarding emails.

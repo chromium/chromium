@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check_deref.h"
 #include "base/check_is_test.h"
@@ -333,7 +334,7 @@ void WelcomeScreen::SetDeviceRequisition(const std::string& requisition) {
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
     // CfM devices default to static timezone.
     local_state_->SetInteger(
-        ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
+        ash::prefs::kResolveDeviceTimezoneByGeolocationMethod,
         static_cast<int>(
             system::TimeZoneResolverManager::TimeZoneResolveMethod::DISABLED));
   }

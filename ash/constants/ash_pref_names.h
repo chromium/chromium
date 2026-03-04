@@ -2869,6 +2869,44 @@ inline constexpr char kLanguagePreviousInputMethod[] =
 inline constexpr char kLanguageShouldMergeInputMethods[] =
     "settings.language.merge_input_methods";
 
+//-----------------------------------------------------------------------------
+// Clock/Timezone related Prefs
+//-----------------------------------------------------------------------------
+
+// This setting controls what information is sent to the server to get
+// device location to resolve time zone outside of user session. Values must
+// match TimeZoneResolverManager::TimeZoneResolveMethod enum.
+inline constexpr char kResolveDeviceTimezoneByGeolocationMethod[] =
+    "settings.resolve_device_timezone_by_geolocation_method";
+
+// This setting controls what information is sent to the server to get
+// device location to resolve time zone in user session. Values must
+// match TimeZoneResolverManager::TimeZoneResolveMethod enum.
+inline constexpr char kResolveTimezoneByGeolocationMethod[] =
+    "settings.resolve_timezone_by_geolocation_method";
+
+// This setting is true when kResolveTimezoneByGeolocation value
+// has been migrated to kResolveTimezoneByGeolocationMethod.
+inline constexpr char kResolveTimezoneByGeolocationMigratedToMethod[] =
+    "settings.resolve_timezone_by_geolocation_migrated_to_method";
+
+// This setting controls initial device timezone that is used before user
+// session started. It is controlled by device owner.
+inline constexpr char kSigninScreenTimezone[] =
+    "settings.signin_screen_timezone";
+
+// This is policy-controlled preference.
+// It has values defined in policy enum
+// SystemTimezoneAutomaticDetectionProto_AutomaticTimezoneDetectionType;
+inline constexpr char kSystemTimezoneAutomaticDetectionPolicy[] =
+    "settings.resolve_device_timezone_by_geolocation_policy";
+
+// A boolean pref set to true if time should be displayed in 24-hour clock.
+inline constexpr char kUse24HourClock[] = "settings.clock.use_24hour_clock";
+
+// A string pref containing Timezone ID for this user.
+inline constexpr char kUserTimezone[] = "settings.timezone";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

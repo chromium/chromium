@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_paths.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -742,7 +742,7 @@ class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {
 
     const std::string signin_screen_timezone =
         g_browser_process->local_state()->GetString(
-            prefs::kSigninScreenTimezone);
+            ash::prefs::kSigninScreenTimezone);
     EXPECT_EQ(timezone, signin_screen_timezone);
   }
 

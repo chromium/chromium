@@ -1607,7 +1607,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     metrics::prefs::kMetricsReportingEnabled,
     base::Value::Type::BOOLEAN },
   { key::kSystemTimezoneAutomaticDetection,
-    prefs::kSystemTimezoneAutomaticDetectionPolicy,
+    ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
     base::Value::Type::INTEGER },
   { key::kDeviceWiFiFastTransitionEnabled,
     ash::prefs::kDeviceWiFiFastTransitionEnabled,

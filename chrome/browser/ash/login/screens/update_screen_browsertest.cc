@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_base.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/update_screen_handler.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -158,8 +158,8 @@ class UpdateScreenTest : public OobeBaseTest,
 
   void SetUpLocalState() override {
     RegionToCodeMap param = GetParam();
-    g_browser_process->local_state()->SetString(::prefs::kSigninScreenTimezone,
-                                                param.region);
+    g_browser_process->local_state()->SetString(
+        ash::prefs::kSigninScreenTimezone, param.region);
   }
 
   void SetTickClockAndDefaultDelaysForTesting(

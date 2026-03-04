@@ -953,7 +953,8 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kBoolean;
 
   // Misc.
-  (*s_allowlist)[::prefs::kUse24HourClock] = settings_api::PrefType::kBoolean;
+  (*s_allowlist)[ash::prefs::kUse24HourClock] =
+      settings_api::PrefType::kBoolean;
   (*s_allowlist)[::language::prefs::kPreferredLanguages] =
       settings_api::PrefType::kString;
   (*s_allowlist)[ash::prefs::kTapDraggingEnabled] =
@@ -1014,7 +1015,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
 
   // Timezone settings.
   (*s_allowlist)[ash::kSystemTimezone] = settings_api::PrefType::kString;
-  (*s_allowlist)[prefs::kUserTimezone] = settings_api::PrefType::kString;
+  (*s_allowlist)[ash::prefs::kUserTimezone] = settings_api::PrefType::kString;
   (*s_allowlist)[settings_private::kResolveTimezoneByGeolocationOnOff] =
       settings_api::PrefType::kBoolean;
   (*s_allowlist)[ash::kPerUserTimezoneEnabled] =
@@ -1023,7 +1024,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
   (*s_allowlist)[ash::kFineGrainedTimeZoneResolveEnabled] =
       settings_api::PrefType::kBoolean;
-  (*s_allowlist)[prefs::kSystemTimezoneAutomaticDetectionPolicy] =
+  (*s_allowlist)[ash::prefs::kSystemTimezoneAutomaticDetectionPolicy] =
       settings_api::PrefType::kNumber;
 
   // Ash settings.
@@ -1670,10 +1671,11 @@ bool PrefsUtil::IsPrefEnterpriseManaged(const std::string& pref_name) {
     return false;
   }
 
-  // The enterprise management of ash::kSystemTimezone and prefs::kUserTimezone
-  // is determined by the system timezone policies (kSystemTimezonePolicy and
-  // kSystemTimezoneAutomaticDetectionPolicy).
-  if (pref_name == ash::kSystemTimezone || pref_name == prefs::kUserTimezone) {
+  // The enterprise management of ash::kSystemTimezone and
+  // ash::prefs::kUserTimezone is determined by the system timezone policies
+  // (kSystemTimezonePolicy and kSystemTimezoneAutomaticDetectionPolicy).
+  if (pref_name == ash::kSystemTimezone ||
+      pref_name == ash::prefs::kUserTimezone) {
     return ash::system::IsTimezonePrefsManaged(pref_name);
   }
 
@@ -1698,7 +1700,8 @@ bool PrefsUtil::IsPrefOwnerControlled(const std::string& pref_name) {
 bool PrefsUtil::IsPrefPrimaryUserControlled(const std::string& pref_name) {
   // ash::kSystemTimezone is read-only, but for the non-primary users
   // it should have "primary user controlled" attribute.
-  if (pref_name == prefs::kUserTimezone || pref_name == ash::kSystemTimezone) {
+  if (pref_name == ash::prefs::kUserTimezone ||
+      pref_name == ash::kSystemTimezone) {
     user_manager::UserManager* user_manager = user_manager::UserManager::Get();
     const user_manager::User* user =
         ash::ProfileHelper::Get()->GetUserByProfile(profile_);

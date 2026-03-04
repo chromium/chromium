@@ -48,12 +48,12 @@ enum ServiceConfiguration {
 ServiceConfiguration GetServiceConfigurationFromAutomaticDetectionPolicy() {
   PrefService* local_state = g_browser_process->local_state();
   const bool is_managed = local_state->IsManagedPreference(
-      ::prefs::kSystemTimezoneAutomaticDetectionPolicy);
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
   if (!is_managed)
     return UNSPECIFIED;
 
-  int policy_value =
-      local_state->GetInteger(::prefs::kSystemTimezoneAutomaticDetectionPolicy);
+  int policy_value = local_state->GetInteger(
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 
   switch (policy_value) {
     case enterprise_management::SystemTimezoneProto::USERS_DECIDE:
@@ -98,7 +98,7 @@ ServiceConfiguration GetServiceConfigurationFromUserPrefs(
     const PrefService* user_prefs) {
   return TimeZoneResolverManager::TimeZoneResolveMethodFromInt(
              user_prefs->GetInteger(
-                 ::prefs::kResolveTimezoneByGeolocationMethod)) ==
+                 ash::prefs::kResolveTimezoneByGeolocationMethod)) ==
                  TimeZoneResolverManager::TimeZoneResolveMethod::DISABLED
              ? SHOULD_STOP
              : SHOULD_START;
@@ -117,7 +117,7 @@ ServiceConfiguration GetServiceConfigurationForSigninScreen() {
 
   const PrefService::Preference* device_pref =
       g_browser_process->local_state()->FindPreference(
-          ::prefs::kResolveDeviceTimezoneByGeolocationMethod);
+          ash::prefs::kResolveDeviceTimezoneByGeolocationMethod);
   if (!device_pref || device_pref->IsDefaultValue()) {
     // CfM devices default to static timezone.
     bool keyboard_driven_oobe =
@@ -158,7 +158,7 @@ TimeZoneResolverManager::TimeZoneResolverManager(
 
   local_state_pref_change_registrar_.Init(g_browser_process->local_state());
   local_state_pref_change_registrar_.Add(
-      ::prefs::kSystemTimezoneAutomaticDetectionPolicy,
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       base::BindRepeating(&TimeZoneResolverManager::UpdateTimezoneResolver,
                           base::Unretained(this)));
 
@@ -268,7 +268,7 @@ int TimeZoneResolverManager::GetEffectiveAutomaticTimezoneManagementSetting() {
   }
 
   int policy_value = g_browser_process->local_state()->GetInteger(
-      ::prefs::kSystemTimezoneAutomaticDetectionPolicy);
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
   DCHECK(policy_value <= enterprise_management::SystemTimezoneProto::
                              AutomaticTimezoneDetectionType_MAX);
 
@@ -428,9 +428,9 @@ TimeZoneResolverManager::GetEffectiveUserTimeZoneResolveMethod(
     }
   }
   if (user_prefs->GetBoolean(
-          ::prefs::kResolveTimezoneByGeolocationMigratedToMethod)) {
-    return TimeZoneResolveMethodFromInt(
-        user_prefs->GetInteger(::prefs::kResolveTimezoneByGeolocationMethod));
+          ash::prefs::kResolveTimezoneByGeolocationMigratedToMethod)) {
+    return TimeZoneResolveMethodFromInt(user_prefs->GetInteger(
+        ash::prefs::kResolveTimezoneByGeolocationMethod));
   }
   return TimeZoneResolveMethod::IP_ONLY;
 }

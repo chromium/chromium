@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string_view>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
@@ -111,7 +112,7 @@ void RecordUpdateCheckTimeout(bool timeout) {
 // Determines if the device is in EU zone to show info about opt out.
 bool CheckIfOptOutIsEnabled(PrefService& local_state) {
   auto country = system::GetCountryCodeFromTimezoneIfAvailable(
-      local_state.GetString(::prefs::kSigninScreenTimezone));
+      local_state.GetString(ash::prefs::kSigninScreenTimezone));
   if (!country.has_value()) {
     return false;
   }

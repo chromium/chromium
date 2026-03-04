@@ -37,7 +37,6 @@
 #include "chrome/browser/ui/webui/ash/login/sync_consent_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/welcome_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/settings/pref_names.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/prefs/pref_service.h"
@@ -549,7 +548,7 @@ IN_PROC_BROWSER_TEST_F(SyncConsentTimezoneOverride, MakesTimezoneRequest) {
   LoginAndShowSyncConsentScreenWithCapability();
   EXPECT_EQ("TimezonePropagationTest",
             g_browser_process->local_state()->GetString(
-                ::prefs::kSigninScreenTimezone));
+                ash::prefs::kSigninScreenTimezone));
 }
 
 class SyncConsentMinorModeTest : public SyncConsentTest {

@@ -485,10 +485,9 @@ void ChromeCaptureModeDelegate::OpenScreenshotInImageEditor(
 
 bool ChromeCaptureModeDelegate::Uses24HourFormat() const {
   Profile* profile = ProfileManager::GetActiveUserProfile();
-  // TODO(afakhry): Consider moving |prefs::kUse24HourClock| to ash/public so
-  // we can do this entirely in ash.
+  // TODO(afakhry): Consider moving this entirely in ash.
   if (profile) {
-    return profile->GetPrefs()->GetBoolean(prefs::kUse24HourClock);
+    return profile->GetPrefs()->GetBoolean(ash::prefs::kUse24HourClock);
   }
   return base::GetHourClockType() == base::k24HourClock;
 }

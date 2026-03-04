@@ -41,8 +41,8 @@ void ApplyTimeZone(const TimeZoneResponseData* timezone);
 // Returns true if given timezone preference is enterprise-managed.
 // Works for:
 // - kSystemTimezone
-// - prefs::kUserTimezone
-// - prefs::kResolveTimezoneByGeolocationMethod
+// - ash::prefs::kUserTimezone
+// - ash::prefs::kResolveTimezoneByGeolocationMethod
 bool IsTimezonePrefsManaged(const std::string& pref_name);
 
 // Updates system timezone from user profile data if needed.
@@ -63,7 +63,7 @@ bool CanSetSystemTimezone(const user_manager::User* user);
 bool SetSystemTimezone(const user_manager::User* user,
                        const std::string& timezone);
 
-// Updates Local State preference prefs::kSigninScreenTimezone AND
+// Updates Local State preference ash::prefs::kSigninScreenTimezone AND
 // also immediately sets system timezone (ash::system::TimezoneSettings).
 // This is called when there is no user session (i.e. OOBE and signin screen),
 // or when device policies are updated.

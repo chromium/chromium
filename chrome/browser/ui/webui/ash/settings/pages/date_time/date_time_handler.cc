@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/date_time/date_time_handler.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/child_accounts/parent_access_controller.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/check_op.h"
@@ -17,7 +18,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/set_time/set_time_dialog.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/dbus/system_clock/system_clock_client.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
@@ -34,7 +34,7 @@ namespace {
 // managed, which may override the user's setting.
 bool IsSystemTimezoneAutomaticDetectionManaged() {
   return g_browser_process->local_state()->IsManagedPreference(
-      prefs::kSystemTimezoneAutomaticDetectionPolicy);
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 }
 
 // Returns the system's automatic time zone detection policy value, which
@@ -44,7 +44,7 @@ int GetSystemTimezoneAutomaticDetectionPolicyValue() {
   DCHECK(IsSystemTimezoneAutomaticDetectionManaged());
 
   return g_browser_process->local_state()->GetInteger(
-      prefs::kSystemTimezoneAutomaticDetectionPolicy);
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy);
 }
 
 // Returns whether the user can set the automatic detection setting, based on
@@ -103,7 +103,7 @@ void DateTimeHandler::OnJavascriptAllowed() {
   // The auto-detection policy can force auto-detection on or off.
   local_state_pref_change_registrar_.Init(g_browser_process->local_state());
   local_state_pref_change_registrar_.Add(
-      prefs::kSystemTimezoneAutomaticDetectionPolicy,
+      ash::prefs::kSystemTimezoneAutomaticDetectionPolicy,
       base::BindRepeating(
           &DateTimeHandler::NotifyTimezoneAutomaticDetectionPolicy,
           base::Unretained(this)));
