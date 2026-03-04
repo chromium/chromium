@@ -9,3 +9,7 @@ per-file Clipboard*.java=ender@chromium.org
 
 # Device form factor
 per-file DeviceFormFactor.java=skavuluru@google.com
+
+# Activity result tracker
+per-file ActivityResultTracker.java=myuu@google.com
+per-file ActivityResultTrackerImpl.java=myuu@google.com
