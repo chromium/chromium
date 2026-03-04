@@ -106,17 +106,18 @@ class WebnnGraphLPMFuzzer {
  private:
   mojo_base::BigBuffer GenerateBytes(size_t byte_size) {
     mojo_base::BigBuffer buffer(byte_size);
-    auto [head, tail] = base::span(buffer).split_at(
-        (byte_size / sizeof(uint64_t)) * sizeof(uint64_t));
     // SAFETY: Generating a uint64_t view over an existing buffer where we hold
-    // the only pointer.
-    base::span<uint64_t> uint64_head =
-        UNSAFE_BUFFERS(base::span(reinterpret_cast<uint64_t*>(head.data()),
-                                  head.size() / sizeof(uint64_t)));
-    std::ranges::generate(uint64_head,
-                          [this]() { return input_generator_.RandUint64(); });
-    std::ranges::generate(tail,
-                          [this]() { return input_generator_.RandUint32(); });
+    // the only pointer. Unsafe buffer access patterns are used to avoid the
+    // overhead of bounds checks when the code is heavily instrumented for
+    // fuzzing.
+    uint64_t* buffer_ptr = reinterpret_cast<uint64_t*>(buffer.data());
+    for (size_t i = 0; i < byte_size / sizeof(uint64_t); ++i) {
+      UNSAFE_BUFFERS(buffer_ptr[i]) = input_generator_.RandUint64();
+    }
+    for (size_t i = byte_size / sizeof(uint64_t) * sizeof(uint64_t);
+         i < byte_size; ++i) {
+      UNSAFE_BUFFERS(buffer.data()[i]) = input_generator_.RandUint32();
+    }
     return buffer;
   }
 
