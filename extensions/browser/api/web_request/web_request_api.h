@@ -343,7 +343,7 @@ class WebRequestAPI : public BrowserContextKeyedAPI,
                           const ExtensionId& extension_id,
                           const std::string& sub_event_name);
 
-  // Internal implemntation of MaybeProxyURLLoaderFactory that returns a
+  // Internal implementation of MaybeProxyURLLoaderFactory that returns a
   // detailed reason, ProxyDecision, to tell why the proxy is used.
   ProxyDecision MaybeProxyURLLoaderFactoryInternal(
       content::BrowserContext* browser_context,
