@@ -86,7 +86,9 @@ public class SetupListManagerUnitTest {
         mSharedPreferencesManager = ChromeSharedPreferences.getInstance();
         SetupListModuleUtils.resetAllModuleCompletionForTesting();
         FirstRunStatus.setFirstRunTriggeredForTesting(false);
-        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP);
+        // Set a valid timestamp by default so the Setup List is active for most tests.
+        mSharedPreferencesManager.writeLong(
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
 
         RegionalCapabilitiesServiceClientAndroid.setInstanceForTests(mRegionalServiceClient);
         when(mRegionalServiceClient.getDeviceProgram()).thenReturn(RegionalProgram.DEFAULT);
@@ -218,9 +220,6 @@ public class SetupListManagerUnitTest {
         SetupListManager.setInstanceForTesting(new SetupListManager());
         assertFalse(SetupListManager.getInstance().isSetupListActive());
         assertFalse(SetupListManager.getInstance().shouldShowTwoCellLayout());
-        assertFalse(
-                mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
     }
 
     @Test
@@ -231,31 +230,19 @@ public class SetupListManagerUnitTest {
         SetupListManager.setInstanceForTesting(new SetupListManager());
         assertFalse(SetupListManager.getInstance().isSetupListActive());
         assertFalse(SetupListManager.getInstance().shouldShowTwoCellLayout());
-        assertFalse(
-                mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
     }
 
     @Test
     @SmallTest
-    public void testIsSetupListActive_TrueAndSetsTimestampWhenNotSet() {
+    public void testIsSetupListActive_FalseWhenTimestampNotSet() {
         // Ensure the timestamp is not set initially.
+        mSharedPreferencesManager.removeKey(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP);
         assertFalse(
-                mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
+                mSharedPreferencesManager.contains(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP));
 
         // Re-create instance.
         SetupListManager.setInstanceForTesting(new SetupListManager());
-        assertTrue(SetupListManager.getInstance().isSetupListActive());
-        assertFalse(SetupListManager.getInstance().shouldShowTwoCellLayout());
-        // Check that the timestamp is now set.
-        assertTrue(
-                mSharedPreferencesManager.contains(
-                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP));
-        assertEquals(
-                TimeUtils.currentTimeMillis(),
-                mSharedPreferencesManager.readLong(
-                        ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP, -1L));
+        assertFalse(SetupListManager.getInstance().isSetupListActive());
     }
 
     @Test
@@ -263,8 +250,7 @@ public class SetupListManagerUnitTest {
     public void testIsSetupListActive_ReturnsTrueWithinActiveWindow() {
         // Set the timestamp to be within the active window.
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
-                TimeUtils.currentTimeMillis());
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
                 SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS - ONE_MINUTE_IN_MILLIS);
         // Re-create instance after time is advanced.
@@ -276,8 +262,7 @@ public class SetupListManagerUnitTest {
     @SmallTest
     public void testTwoCellLayout_InActiveWithinThreeDays() {
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
-                TimeUtils.currentTimeMillis());
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
                 SetupListManager.TWO_CELL_LAYOUT_ACTIVE_WINDOW_MILLIS - ONE_MINUTE_IN_MILLIS);
         // Re-create instance after time is advanced.
@@ -290,8 +275,7 @@ public class SetupListManagerUnitTest {
     @SmallTest
     public void testTwoCellLayout_ActiveAfterThreeDays() {
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
-                TimeUtils.currentTimeMillis());
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
                 SetupListManager.TWO_CELL_LAYOUT_ACTIVE_WINDOW_MILLIS + ONE_MINUTE_IN_MILLIS);
         // Re-create instance after time is advanced.
@@ -305,8 +289,7 @@ public class SetupListManagerUnitTest {
     public void testIsSetupListActive_ReturnsFalseOutsideActiveWindow() {
         // Set the timestamp to be outside the active window.
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
-                TimeUtils.currentTimeMillis());
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, TimeUtils.currentTimeMillis());
         mFakeTime.advanceMillis(
                 SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS + ONE_MINUTE_IN_MILLIS);
         // Re-create instance after time is advanced.
@@ -427,7 +410,7 @@ public class SetupListManagerUnitTest {
 
         // Verify that it returns null when inactive.
         mSharedPreferencesManager.writeLong(
-                ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
+                ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP,
                 TimeUtils.currentTimeMillis() - SetupListManager.SETUP_LIST_ACTIVE_WINDOW_MILLIS);
         SetupListManager.setInstanceForTesting(new SetupListManager());
         assertNull(SetupListManager.getInstance().getManualRank(firstModule));

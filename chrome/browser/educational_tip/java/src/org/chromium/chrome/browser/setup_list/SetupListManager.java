@@ -180,23 +180,17 @@ public class SetupListManager
      * Records the initial timestamp if it hasn't been set yet.
      */
     private void updateTimeWindowStatus() {
-        long setupListFirstShownTimestamp =
+        long firstCtaStartTimestamp =
                 ChromeSharedPreferences.getInstance()
-                        .readLong(ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP, -1L);
+                        .readLong(ChromePreferenceKeys.FIRST_CTA_START_TIMESTAMP, -1L);
 
-        if (setupListFirstShownTimestamp == -1L) {
-            // If the timestamp is not set, this is the first time SetupListManager is
-            // instantiated after the first run. Mark the list as active and record the
-            // current time as the start of the 14-day window.
-            mIsTimeWindowActive = true;
+        if (firstCtaStartTimestamp == -1L) {
+            // The user hasn't completed FRE / opened the main activity yet.
+            mIsTimeWindowActive = false;
             mIsTwoCellLayoutAllowed = false;
-            ChromeSharedPreferences.getInstance()
-                    .writeLong(
-                            ChromePreferenceKeys.SETUP_LIST_FIRST_SHOWN_TIMESTAMP,
-                            TimeUtils.currentTimeMillis());
         } else {
-            // If the setup list has been shown before, check if it's within the active window.
-            long timeSinceFirstStart = TimeUtils.currentTimeMillis() - setupListFirstShownTimestamp;
+            // Setup list is active if it's been less than 14 days since the first CTA start.
+            long timeSinceFirstStart = TimeUtils.currentTimeMillis() - firstCtaStartTimestamp;
             mIsTimeWindowActive = timeSinceFirstStart < SETUP_LIST_ACTIVE_WINDOW_MILLIS;
             mIsTwoCellLayoutAllowed =
                     mIsTimeWindowActive
