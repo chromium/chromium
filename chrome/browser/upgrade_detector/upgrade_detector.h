@@ -355,6 +355,7 @@ class UpgradeDetector {
   FRIEND_TEST_ALL_PREFIXES(SystemTrayClientTest, UpdateTrayIcon);
   friend class RelaunchNotificationControllerUiTest;
   friend class UpgradeMetricsProviderTest;
+  friend class UpdateMetricsProviderBrowserTest;
 
   // Called on the UI thread after one or more monitored prefs or
   // `last_served_date_` have changed. If an update has been detected,
