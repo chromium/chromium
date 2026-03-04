@@ -49,9 +49,8 @@
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/content_settings/core/browser/content_settings_info.h"
-#include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/crx_file/id_util.h"
 #include "components/grit/components_resources.h"
@@ -588,15 +587,15 @@ void ResetAllContentSettingsForWebApp(Profile* profile, const GURL& app_scope) {
     }
 
     // ContentSettingsType enum values may include deprecated types or other
-    // that are not registered in the ContentSettingsRegistry.
+    // that are not registered in the PermissionSettingsRegistry.
     // `Get()` returns nullptr for unregistered types. Skip these, as they
     // cannot be managed or reset via HostContentSettingsMap.
-    if (!content_settings::ContentSettingsRegistry::GetInstance()->Get(
+    if (!content_settings::PermissionSettingsRegistry::GetInstance()->Get(
             content_type)) {
       continue;
     }
 
-    host_content_settings_map->SetContentSettingDefaultScope(
+    host_content_settings_map->SetPermissionSettingDefaultScope(
         app_scope, app_scope, content_type, CONTENT_SETTING_DEFAULT);
   }
 }

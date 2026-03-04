@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
@@ -18,6 +19,10 @@
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/common/chrome_constants.h"
+#include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -236,5 +241,31 @@ TEST_F(WebAppUtilsTest, GeminiAppWillBeSystemWebApp) {
   }
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && BUILDFLAG(IS_CHROMEOS)
+
+TEST_F(WebAppUtilsTest, ResetAllContentSettings) {
+  HostContentSettingsMap* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  GURL url("isolated-app://abcdef");
+  host_content_settings_map->SetPermissionSettingDefaultScope(
+      url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
+      GeolocationSetting{.approximate = PermissionOption::kAllowed,
+                         .precise = PermissionOption::kDenied});
+  host_content_settings_map->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::NOTIFICATIONS,
+      ContentSetting::CONTENT_SETTING_ALLOW);
+
+  ResetAllContentSettingsForWebApp(profile(), url);
+
+  EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
+                url, url, ContentSettingsType::GEOLOCATION_WITH_OPTIONS),
+            content_settings::PermissionSettingsRegistry::GetInstance()
+                ->Get(ContentSettingsType::GEOLOCATION_WITH_OPTIONS)
+                ->GetInitialDefaultSetting());
+  EXPECT_EQ(host_content_settings_map->GetPermissionSetting(
+                url, url, ContentSettingsType::NOTIFICATIONS),
+            content_settings::PermissionSettingsRegistry::GetInstance()
+                ->Get(ContentSettingsType::NOTIFICATIONS)
+                ->GetInitialDefaultSetting());
+}
 
 }  // namespace web_app
