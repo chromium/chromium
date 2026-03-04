@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
 import android.os.Binder;
@@ -23,6 +24,16 @@ import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 @NullMarked
 public class ActorForegroundServiceImpl extends SplitCompatService.Impl {
     private final IBinder mBinder = new LocalBinder();
+
+    /**
+     * Start the foreground service with this given context.
+     *
+     * @param context The context used to start service.
+     */
+    public static void startActorForegroundService(Context context) {
+        ForegroundServiceUtils.getInstance()
+                .startForegroundService(new Intent(context, ActorForegroundService.class));
+    }
 
     /**
      * Starts or updates the foreground service with a notification.
