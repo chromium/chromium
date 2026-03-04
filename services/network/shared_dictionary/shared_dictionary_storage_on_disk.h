@@ -138,7 +138,10 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
   void OnSharedDictionaryDeleted(
       const base::UnguessableToken& disk_cache_key_token);
 
-  void OnMemoryPressure(base::MemoryPressureLevel level) override;
+  // base::MemoryPressureListener:
+  // Note: This class only cares about querying the current level, so no need to
+  // actually react on memory pressure level change.
+  void OnMemoryPressure(base::MemoryPressureLevel level) override {}
 
   const std::map<
       url::SchemeHostPort,
@@ -163,8 +166,6 @@ class SharedDictionaryStorageOnDisk : public SharedDictionaryStorage,
 
   std::unique_ptr<base::AsyncMemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;
-  base::MemoryPressureLevel memory_pressure_level_ =
-      base::MEMORY_PRESSURE_LEVEL_NONE;
 
   bool get_dictionary_called_ = false;
   bool is_metadata_ready_ = false;

@@ -254,7 +254,7 @@ SharedDictionaryStorageOnDisk::GetDictionarySyncInternal(
           weak_factory_.GetWeakPtr(), info->disk_cache_key_token())));
   dictionaries_.emplace(info->disk_cache_key_token(), shared_dictionary.get());
 
-  if (memory_pressure_level_ == base::MEMORY_PRESSURE_LEVEL_NONE) {
+  if (memory_pressure_level() == base::MEMORY_PRESSURE_LEVEL_NONE) {
     dictionary_cache_->Put(info->disk_cache_key_token(), destination,
                            shared_dictionary);
   }
@@ -381,16 +381,6 @@ void SharedDictionaryStorageOnDisk::OnDictionaryDeleted(
   }
   std::erase_if(dictionary_info_map_,
                 [](const auto& it) { return it.second.empty(); });
-}
-
-void SharedDictionaryStorageOnDisk::OnMemoryPressure(
-    base::MemoryPressureLevel level) {
-  // TODO(pmonette): This doesn't handle NONE notifications for historical
-  // reasons. Fix this.
-  if (level == base::MEMORY_PRESSURE_LEVEL_NONE) {
-    return;
-  }
-  memory_pressure_level_ = level;
 }
 
 }  // namespace network
