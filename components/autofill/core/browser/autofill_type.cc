@@ -4,12 +4,8 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
-#include <string_view>
-#include <variant>
-#include <vector>
+#include <string>
 
-#include "base/containers/to_vector.h"
-#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"

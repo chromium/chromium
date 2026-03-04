@@ -5,18 +5,13 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_TYPE_H_
 
-#include <optional>
-#include <string_view>
-#include <variant>
-#include <vector>
+#include <string>
 
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_types.h"
 
 namespace autofill {
-
-class AutofillField;
 
 // Represents which types of data an AutofillField may accept. These types are
 // encoded either as a set of FieldTypes.
