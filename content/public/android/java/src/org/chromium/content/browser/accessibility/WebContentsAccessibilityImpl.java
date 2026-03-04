@@ -78,7 +78,6 @@ import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.ViewStructure;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.autofill.AutofillManager;
@@ -178,7 +177,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             "android.view.accessibility.extra.ABSOLUTE_DRAWING_ORDER";
 
     private final AccessibilityDelegate mDelegate;
-    protected AccessibilityManager mAccessibilityManager;
     protected Context mContext;
     private final @Nullable String mProductVersion;
     protected long mNativeObj;
@@ -293,8 +291,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mView = mDelegate.getContainerView();
         mContext = mView.getContext();
         mProductVersion = mDelegate.getProductVersion();
-        mAccessibilityManager =
-                (AccessibilityManager) mContext.getSystemService(Context.ACCESSIBILITY_SERVICE);
 
         // Need to be initialized before AXTreeUpdate initialization because updateMaxNodesInCache
         // gets called then. Also needs to be initialized before the WindowEventObserver is added,
@@ -544,7 +540,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     public boolean isAccessibilityEnabled() {
         return isNativeInitialized()
                 && (mAccessibilityEnabledOverride
-                        || mAccessibilityManager.isEnabled()
+                        // The following two checks are both required. Due to previous experiences
+                        // with possible races, either being true should be sufficient for us to
+                        // enable accessibility.
+                        || AccessibilityState.isAccessibilityManagerEnabled()
                         || AccessibilityState.isAnyAccessibilityServiceEnabled());
     }
 

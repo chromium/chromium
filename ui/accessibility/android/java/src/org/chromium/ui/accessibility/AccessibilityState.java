@@ -385,6 +385,16 @@ public class AccessibilityState {
         return assumeNonNull(sState).isAnyAccessibilityServiceEnabled;
     }
 
+    /**
+     * Returns the value of AccessibilityManager.isEnabled(). This indicates whether the
+     * accessibility manager is currently enabled.
+     *
+     * @return true if the accessibility manager is enabled.
+     */
+    public static boolean isAccessibilityManagerEnabled() {
+        return fetchAccessibilityManager().isEnabled();
+    }
+
     public static boolean isAccessibilityToolPresent() {
         if (!sInitialized) updateAccessibilityServices();
         return assumeNonNull(sState).isAccessibilityToolPresent;
