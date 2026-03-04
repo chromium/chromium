@@ -168,7 +168,7 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected handleClick_(e: Event): void {
+  protected onClick_(e: Event): void {
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);
     const chip = this.actionChips_[index]!;
     switch (chip.suggestTemplateInfo.typeIcon) {
@@ -193,7 +193,7 @@ export class ActionChipsElement extends CrLitElement {
     }
   }
 
-  protected removeChip_(e: MouseEvent) {
+  protected onRemoveClick_(e: MouseEvent) {
     e.preventDefault();
     e.stopPropagation();
     const index = Number((e.currentTarget as HTMLElement).dataset['index']);

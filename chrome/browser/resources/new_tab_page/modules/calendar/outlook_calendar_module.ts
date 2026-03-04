@@ -114,7 +114,7 @@ export class OutlookCalendarModuleElement extends
     });
   }
 
-  protected onSignOutButtonClick_() {
+  protected onSignoutButtonClick_() {
     ParentTrustedDocumentProxy.getInstance()?.getChildDocument().signOut();
   }
 }

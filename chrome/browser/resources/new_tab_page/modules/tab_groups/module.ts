@@ -176,11 +176,11 @@ export class ModuleElement extends ModuleElementBase {
     this.showInfoDialog = false;
   }
 
-  protected onCreateNewTabGroupClickFromZeroState_() {
+  protected onCreateNewTabGroupFromZeroStateClick_() {
     this.onCreateNewTabGroupClick_(true);
   }
 
-  protected onCreateNewTabGroupClickFromSteadyState_() {
+  protected onCreateNewTabGroupFromSteadyStateClick_() {
     this.onCreateNewTabGroupClick_(false);
   }
 

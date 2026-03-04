@@ -84,7 +84,15 @@ export class SetupListModuleWrapperElement extends CrLitElement {
     this.eventTracker_.removeAll();
   }
 
-  protected onHideModule_(e: UndoActionEvent) {
+  protected onDisableModule_(e: UndoActionEvent) {
+    this.onHideModule_(e);
+  }
+
+  protected onDismissModuleInstance_(e: UndoActionEvent) {
+    this.onHideModule_(e);
+  }
+
+  private onHideModule_(e: UndoActionEvent) {
     this.moduleHidden_ = true;
     const restoreCallback = e.detail.restoreCallback;
     this.undoData_ = {

@@ -12,8 +12,8 @@ export function getHtml(this: SetupListModuleWrapperElement) {
 <div id="container"
     ?hidden="${this.isModuleHidden_()}"
     @module-ready="${this.onModuleReady_}"
-    @disable-module="${this.onHideModule_}"
-    @dismiss-module-instance="${this.onHideModule_}">
+    @disable-module="${this.onDisableModule_}"
+    @dismiss-module-instance="${this.onDismissModuleInstance_}">
   <div id="moduleElement">
     <setup-list id="setupList" maxPromos="${this.maxPromos}"
         maxCompletedPromos="${this.maxCompletedPromos}">

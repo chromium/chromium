@@ -119,7 +119,7 @@ export class MicrosoftFilesModuleElement extends
     this.showInfoDialog_ = false;
   }
 
-  protected onSignOutButtonClick_() {
+  protected onSignoutButtonClick_() {
     ParentTrustedDocumentProxy.getInstance()?.getChildDocument().signOut();
   }
 

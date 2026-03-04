@@ -117,7 +117,7 @@ export class ModuleElement extends I18nMixinLit
     });
   }
 
-  protected onDismissAllButtonClick_() {
+  protected onHeaderDismissButtonClick_() {
     MostRelevantTabResumptionProxyImpl.getInstance().handler.dismissModule(
         this.urlVisits);
     this.fire('dismiss-module-instance', {

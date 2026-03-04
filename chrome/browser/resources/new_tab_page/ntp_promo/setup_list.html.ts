@@ -35,7 +35,7 @@ export function getHtml(this: SetupListElement) {
     @dismiss-button-click="${this.onDismissButtonClick_}"
     @info-button-click="${this.onInfoButtonClick_}">
 </ntp-module-header>
-<div id="promos" @ntp-promo-click="${this.onPromoClick_}">
+<div id="promos" @ntp-promo-click="${this.onNtpPromoClick_}">
   ${this.eligiblePromos_.map(item => html`
     <setup-list-item
         body-icon-name="${item.iconName}"

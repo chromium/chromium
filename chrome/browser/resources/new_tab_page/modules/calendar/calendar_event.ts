@@ -163,7 +163,7 @@ export class CalendarEventElement extends CalendarEventElementBase {
     return !attachment.resourceUrl;
   }
 
-  protected openAttachment_(e: Event) {
+  protected onAttachmentClick_(e: Event) {
     this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
     recordCalendarAction(CalendarAction.ATTACHMENT_CLICKED, this.moduleName);
     const currentTarget = e.currentTarget as HTMLElement;
@@ -175,14 +175,14 @@ export class CalendarEventElement extends CalendarEventElementBase {
     }
   }
 
-  protected openVideoConference_() {
+  protected onVideoConferenceClick_() {
     this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
     recordCalendarAction(
         CalendarAction.CONFERENCE_CALL_CLICKED, this.moduleName);
     WindowProxy.getInstance().navigate(this.event.conferenceUrl!);
   }
 
-  protected recordHeaderClick_() {
+  protected onHeaderClick_() {
     this.dispatchEvent(new Event('usage', {composed: true, bubbles: true}));
     let action = CalendarAction.BASIC_EVENT_HEADER_CLICKED;
     if (this.expanded) {

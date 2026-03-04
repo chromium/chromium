@@ -1,8 +1,8 @@
 <div id="dialog" ?hidden="${this.isHidden_}" tabindex="-1"
     lang="$i18n{language}" role="dialog" aria-modal="true"
-    @focusout="${this.onFocusOut_}">
-  <ntp-lens-form id="lensForm" @loading="${this.handleFormLoading_}"
-      @error="${this.handleFormError_}">
+    @focusout="${this.onFocusout_}">
+  <ntp-lens-form id="lensForm" @loading="${this.onFormLoading_}"
+      @error="${this.onFormError_}">
   </ntp-lens-form>
   <div id="container">
     <cr-icon-button id="closeButton" class="icon-clear"
@@ -11,8 +11,8 @@
         @keydown="${this.onCloseButtonKeydown_}">
     </cr-icon-button>
     <div id="title">$i18n{lensSearchUploadDialogTitle}</div>
-    <div id="dragDropArea" @dragenter="${this.onDragEnter_}"
-        @dragover="${this.onDragOver_}" @dragleave="${this.onDragLeave_}"
+    <div id="dragDropArea" @dragenter="${this.onDragenter_}"
+        @dragover="${this.onDragover_}" @dragleave="${this.onDragleave_}"
         @drop="${this.onDrop_}">
       <!-- Error state -->
       ${this.isError_ ? html`
@@ -28,8 +28,8 @@
             <span id="dragText">$i18n{lensSearchUploadDialogDragTitle}</span>
             <span tabindex="0" role="button" id="uploadText"
                 @click="${this.onUploadFileClick_}"
-                @keydown="${this.onUploadFileKeyDown_}"
-                @touchend="${this.onUploadFileTouchEnd_}">
+                @keydown="${this.onUploadFileKeydown_}"
+                @touchend="${this.onUploadFileTouchend_}">
               $i18n{lensSearchUploadDialogUploadFileTitle}
             </span>
           </div>
@@ -45,10 +45,10 @@
                 placeholder="$i18n{lensSearchUploadDialogTextPlaceholder}"
                 text="text" .value="${this.uploadUrl_}"
                 @input="${this.onInputBoxInput_}"
-                @keydown="${this.onUrlKeyDown_}">
+                @keydown="${this.onUrlKeydown_}">
             <div id="inputSubmit" tabindex="0" role="button"
-                @click="${this.onSubmitUrl_}"
-                @keydown="${this.onInputSubmitKeyDown_}">
+                @click="${this.onInputSubmitClick_}"
+                @keydown="${this.onInputSubmitKeydown_}">
               $i18n{lensSearchUploadDialogSearchButtonLabel}
             </div>
           </div>

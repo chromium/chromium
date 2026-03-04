@@ -111,7 +111,7 @@ export class SetupListElement extends I18nMixinLit
     }
   }
 
-  protected onPromoClick_(e: CustomEvent) {
+  protected onNtpPromoClick_(e: CustomEvent) {
     const promoId = e.detail;
     assert(promoId, 'Entry should never have empty promo ID.');
     this.handler_.onPromoClicked(promoId);

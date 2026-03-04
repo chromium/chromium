@@ -77,6 +77,14 @@ interface ClickEventDetail {
   shiftKey: boolean;
 }
 
+export interface OpenComposeboxEventDetail {
+  searchboxText: string;
+  contextFiles: ContextualUpload[];
+  mode: ToolMode;
+  model: ModelMode;
+  inputState: InputState|null;
+}
+
 export interface SearchboxElement {
   $: {
     icon: SearchboxIconElement,
@@ -1218,7 +1226,7 @@ export class SearchboxElement extends SearchboxElementBase implements
       assert(context);
       context.closeMenu();
     }
-    this.fire('open-composebox', {
+    this.fire<OpenComposeboxEventDetail>('open-composebox', {
       searchboxText: this.$.input.value,
       contextFiles: uploads,
       mode: mode,

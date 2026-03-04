@@ -321,7 +321,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     this.setOnlineState_();
   }
 
-  protected onUploadFileKeyDown_(event: KeyboardEvent) {
+  protected onUploadFileKeydown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
       this.$.lensForm.openSystemFilePicker();
     }
@@ -334,11 +334,11 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
   // Remove this after the NTP is fully migrated off of Polymer.
   // This is to stop Polymer from running its touchend event listener that
   // keeps the event from making it to the file input.
-  protected onUploadFileTouchEnd_(e: Event) {
+  protected onUploadFileTouchend_(e: Event) {
     e.stopPropagation();
   }
 
-  protected handleFormLoading_(event: CustomEvent<LensSubmitType>) {
+  protected onFormLoading_(event: CustomEvent<LensSubmitType>) {
     this.dialogState_ = DialogState.LOADING;
     switch (event.detail) {
       case LensSubmitType.FILE:
@@ -352,7 +352,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  protected handleFormError_(event: CustomEvent<LensErrorType>) {
+  protected onFormError_(event: CustomEvent<LensErrorType>) {
     switch (event.detail) {
       case LensErrorType.MULTIPLE_FILES:
         this.dialogState_ = DialogState.ERROR;
@@ -400,30 +400,34 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  protected onUrlKeyDown_(event: KeyboardEvent) {
+  protected onUrlKeydown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER) {
       event.preventDefault();
-      this.onSubmitUrl_();
+      this.submitUrl_();
     }
   }
 
-  protected onInputSubmitKeyDown_(event: KeyboardEvent) {
+  protected onInputSubmitKeydown_(event: KeyboardEvent) {
     if (event.key === EventKeys.ENTER || event.key === EventKeys.SPACE) {
-      this.onSubmitUrl_();
+      this.submitUrl_();
     } else if (event.key === EventKeys.TAB && !event.shiftKey) {
       event.preventDefault();
       this.$.closeButton.focus();
     }
   }
 
-  protected onSubmitUrl_() {
+  protected onInputSubmitClick_() {
+    this.submitUrl_();
+  }
+
+  private submitUrl_() {
     const url = this.uploadUrl_.trim();
     if (url.length > 0) {
       this.$.lensForm.submitUrl(url);
     }
   }
 
-  protected onDragEnter_(e: DragEvent) {
+  protected onDragenter_(e: DragEvent) {
     e.preventDefault();
     this.dragCount += 1;
 
@@ -432,11 +436,11 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  protected onDragOver_(e: DragEvent) {
+  protected onDragover_(e: DragEvent) {
     e.preventDefault();
   }
 
-  protected onDragLeave_(e: DragEvent) {
+  protected onDragleave_(e: DragEvent) {
     e.preventDefault();
     this.dragCount -= 1;
 
@@ -455,7 +459,7 @@ export class LensUploadDialogElement extends LensUploadDialogElementBase {
     }
   }
 
-  protected onFocusOut_(event: FocusEvent) {
+  protected onFocusout_(event: FocusEvent) {
     // If the focus event is occurring during a drag into the upload dialog,
     // do nothing. See b/284201957#6 for scenario in which this is necessary.
     if (this.dragCount === 1) {

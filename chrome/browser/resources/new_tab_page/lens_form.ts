@@ -110,7 +110,7 @@ export class LensFormElement extends CrLitElement {
     this.$.fileInput.click();
   }
 
-  protected handleFileInputChange_() {
+  protected onFileInputChange_() {
     const fileList = this.$.fileInput.files;
     if (fileList) {
       this.submitFileList(fileList);

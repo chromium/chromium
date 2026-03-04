@@ -20,7 +20,7 @@ import type {ContextualUpload} from 'chrome://resources/cr_components/composebox
 import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {VoiceSearchAction as ComposeVoiceSearchAction} from 'chrome://resources/cr_components/composebox/composebox.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
-import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
+import type {OpenComposeboxEventDetail, SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.js';
 import type {ClickInfo} from 'chrome://resources/js/browser_command.mojom-webui.js';
@@ -886,13 +886,11 @@ export class AppElement extends AppElementBase {
     this.pendingComposeboxInputState_ = null;
   }
 
-  protected openComposebox_(e: CustomEvent<{
-    searchboxText: string,
-    contextFiles: ContextualUpload[],
-    mode: ToolMode,
-    model: ModelMode,
-    inputState: InputState|null,
-  }>) {
+  protected onActionChipClick_(e: CustomEvent<OpenComposeboxEventDetail>) {
+    this.onOpenComposebox_(e);
+  }
+
+  protected onOpenComposebox_(e: CustomEvent<OpenComposeboxEventDetail>) {
     if (e.detail.searchboxText) {
       this.pendingComposeboxText_ = e.detail.searchboxText;
     }
@@ -935,10 +933,10 @@ export class AppElement extends AppElementBase {
       cancelable: true,
     });
 
-    this.closeComposebox_(closeComposebox);
+    this.onCloseComposebox_(closeComposebox);
   }
 
-  protected closeComposebox_(e: CustomEvent) {
+  protected onCloseComposebox_(e: CustomEvent) {
     const composeboxDialog =
         this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
     assert(composeboxDialog);
@@ -1258,7 +1256,7 @@ export class AppElement extends AppElementBase {
     }
   }
 
-  protected onMiddleSlotPromoLoaded_() {
+  protected onNtpMiddleSlotPromoLoaded_() {
     this.middleSlotPromoLoaded_ = true;
   }
 
@@ -1442,13 +1440,13 @@ export class AppElement extends AppElementBase {
     this.realboxHadSecondarySide = e.detail.value;
   }
 
-  protected onSearchboxContainerFocusIn_() {
+  protected onSearchboxContainerFocusin_() {
     if (this.ntpRealboxNextEnabled_) {
       this.containerFocused_ = true;
     }
   }
 
-  protected onSearchboxContainerFocusOut_() {
+  protected onSearchboxContainerFocusout_() {
     if (this.ntpRealboxNextEnabled_) {
       this.containerFocused_ =
           this.shadowRoot.getElementById('searchboxContainer')!.matches(
@@ -1499,6 +1497,16 @@ export class AppElement extends AppElementBase {
    * @param undoToastContext - An event that contains the undo toast message and
    *                           the undo callback function.
    */
+  protected onMostVisitedAutoRemoved_(
+      undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
+    this.showAutoRemovedToast_(undoToastContext);
+  }
+
+  protected onModulesAutoRemoved_(
+      undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
+    this.showAutoRemovedToast_(undoToastContext);
+  }
+
   protected showAutoRemovedToast_(
       undoToastContext: CustomEvent<{message: string, undo: () => void}>) {
     this.pendingAutoRemovalToasts_.push(undoToastContext.detail);

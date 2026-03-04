@@ -25,7 +25,7 @@ export function getHtml(this: ActionChipsElement) {
                     this.isDeepDiveChip_(chip) ? 'deep-dive-chip' : ''}"
             data-index="${index}"
             title="${this.getChipTitle_(chip)}"
-            @click="${this.handleClick_}">
+            @click="${this.onClick_}">
             <div class="action-chip-icon-container ${
                     this.getAdditionalIconClasses_(chip)}">
               ${
@@ -50,7 +50,7 @@ export function getHtml(this: ActionChipsElement) {
             ${this.showDismissalUI_ ? html`
               <cr-icon-button
                 class="chip-remove-button" data-index="${index}"
-                @click="${this.removeChip_}">
+                @click="${this.onRemoveClick_}">
               </cr-icon-button>
                 ` : nothing}
           </button>
