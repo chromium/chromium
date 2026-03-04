@@ -13,9 +13,13 @@ sys.path.insert(0, REPOSITORY_ROOT)
 
 # Help Python find typ in //third_party/catapult/third_party/typ/
 sys.path.append(
-    os.path.join(REPOSITORY_ROOT, 'third_party', 'catapult', 'third_party', 'typ'))
+    os.path.join(REPOSITORY_ROOT, 'third_party', 'catapult', 'third_party',
+                 'typ'))
 import typ
 
-
 if __name__ == '__main__':
-  sys.exit(typ.main(top_level_dirs=[os.path.join(REPOSITORY_ROOT, 'components', 'cronet')], skip=['tools.api_static_checks_unittest.*']))
+    sys.exit(
+        typ.main(top_level_dirs=[
+            os.path.join(REPOSITORY_ROOT, 'components', 'cronet')
+        ],
+                 skip=['tools.api_static_checks_unittest.*']))

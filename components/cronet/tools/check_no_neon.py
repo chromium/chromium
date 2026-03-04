@@ -2,7 +2,6 @@
 # Copyright 2016 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """check_no_neon.py - Check modules do not contain ARM Neon instructions."""
 
 import argparse
@@ -17,20 +16,20 @@ from util import build_utils  # pylint: disable=wrong-import-position
 
 
 def main(args):
-  parser = argparse.ArgumentParser(
-      description='Check modules do not contain ARM Neon instructions.')
-  parser.add_argument('objdump', metavar='path/to/ARM/objdump')
-  parser.add_argument('objects', metavar='files/to/check/*.o')
-  parser.add_argument('--stamp', help='Path to touch on success.')
-  opts = parser.parse_args(args)
-  ret = os.system(opts.objdump + ' -d --no-show-raw-insn ' +
-      opts.objects + ' | grep -q "vld[1-9]\\|vst[1-9]"')
+    parser = argparse.ArgumentParser(
+        description='Check modules do not contain ARM Neon instructions.')
+    parser.add_argument('objdump', metavar='path/to/ARM/objdump')
+    parser.add_argument('objects', metavar='files/to/check/*.o')
+    parser.add_argument('--stamp', help='Path to touch on success.')
+    opts = parser.parse_args(args)
+    ret = os.system(opts.objdump + ' -d --no-show-raw-insn ' + opts.objects +
+                    ' | grep -q "vld[1-9]\\|vst[1-9]"')
 
-  # Non-zero exit code means no neon.
-  if ret and opts.stamp:
-    build_utils.Touch(opts.stamp)
-  return ret
+    # Non-zero exit code means no neon.
+    if ret and opts.stamp:
+        build_utils.Touch(opts.stamp)
+    return ret
 
 
 if __name__ == '__main__':
-  sys.exit(0 if main(sys.argv[1:]) != 0 else -1)
+    sys.exit(0 if main(sys.argv[1:]) != 0 else -1)

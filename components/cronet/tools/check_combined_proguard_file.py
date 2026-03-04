@@ -19,41 +19,42 @@ import components.cronet.tools.utils as cronet_utils  # pylint: disable=wrong-im
 # files.
 _REBASELINE_PROGUARD = os.environ.get('REBASELINE_PROGUARD', '0') != '0'
 
+
 def CompareGeneratedWithGolden(generated_file_path, golden_file_path):
-  golden_text = cronet_utils.read_file(golden_file_path)
-  generated_text = cronet_utils.read_file(generated_file_path)
-  if _REBASELINE_PROGUARD:
-    if golden_text != generated_text:
-      print('Updated', golden_file_path)
-      with open(golden_file_path, 'w') as f:
-        f.write(generated_text)
-    return None
+    golden_text = cronet_utils.read_file(golden_file_path)
+    generated_text = cronet_utils.read_file(generated_file_path)
+    if _REBASELINE_PROGUARD:
+        if golden_text != generated_text:
+            print('Updated', golden_file_path)
+            with open(golden_file_path, 'w') as f:
+                f.write(generated_text)
+        return None
 
-  if golden_text is None:
-    print(f'Golden file does not exist: {golden_file_path}')
+    if golden_text is None:
+        print(f'Golden file does not exist: {golden_file_path}')
 
-  return cronet_utils.compare_text_and_generate_diff(generated_text,
-                                                     golden_text,
-                                                     golden_file_path)
+    return cronet_utils.compare_text_and_generate_diff(generated_text,
+                                                       golden_text,
+                                                       golden_file_path)
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--input_generated_file',
-                      type=str,
-                      help="Path to the generated file.")
-  parser.add_argument('--input_golden_file',
-                      type=str,
-                      help='Path to the input golden file.')
-  parser.add_argument('--target_name',
-                      help='Target name that generates the golden file.')
-  parser.add_argument('--stamp', type=str, help='Path to touch on success')
-  args = parser.parse_args()
-  text_diff = CompareGeneratedWithGolden(args.input_generated_file,
-                                         args.input_golden_file)
-  if text_diff:
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--input_generated_file',
+                        type=str,
+                        help="Path to the generated file.")
+    parser.add_argument('--input_golden_file',
+                        type=str,
+                        help='Path to the input golden file.')
+    parser.add_argument('--target_name',
+                        help='Target name that generates the golden file.')
+    parser.add_argument('--stamp', type=str, help='Path to touch on success')
+    args = parser.parse_args()
+    text_diff = CompareGeneratedWithGolden(args.input_generated_file,
+                                           args.input_golden_file)
+    if text_diff:
 
-    print(f"""
+        print(f"""
 Cronet Proguard golden test failed. To generate it:
 #######################################################
 #                                                     #
@@ -80,9 +81,10 @@ REBASELINE_PROGUARD=1 autoninja -C out/proguard_config \
 This will generate a GN output directory with the appropriate GN\
 flags to run the golden_test in generation mode rather than verification mode.
 """)
-    sys.exit(-1)
-  else:
-    build_utils.Touch(args.stamp)
+        sys.exit(-1)
+    else:
+        build_utils.Touch(args.stamp)
+
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

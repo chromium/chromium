@@ -18,96 +18,100 @@ import components.cronet.tools.breakages_constants as breakages_constants  # pyl
 
 class TestRunGN2BPUnitTest(unittest.TestCase):
 
-  def test_bad_change_id_no_good_change_id_should_throw(self):
-    self.assertRaisesRegex(
-        RuntimeError,
-        'Stopping the import: there is a breakage that has not been fixed yet.',
-        run_gn2bp.validate_release, [{
-            breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-            breakages_constants.GOOD_CHANGE_IDS_TXT: []
-        }], {'foo': 0})
+    def test_bad_change_id_no_good_change_id_should_throw(self):
+        self.assertRaisesRegex(
+            RuntimeError,
+            'Stopping the import: there is a breakage that has not been fixed yet.',
+            run_gn2bp.validate_release,
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: []
+            }], {'foo': 0})
 
-  def test_bad_change_id_and_no_good_change_id_but_but_both_not_in_history_should_throw(
-      self):
-    self.assertRaisesRegex(
-        RuntimeError,
-        'Stopping the import: there is a breakage that has not been fixed yet.',
-        run_gn2bp.validate_release, [{
-            breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-            breakages_constants.GOOD_CHANGE_IDS_TXT: []
-        }], {})
+    def test_bad_change_id_and_no_good_change_id_but_but_both_not_in_history_should_throw(
+            self):
+        self.assertRaisesRegex(
+            RuntimeError,
+            'Stopping the import: there is a breakage that has not been fixed yet.',
+            run_gn2bp.validate_release,
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: []
+            }], {})
 
-  def test_bad_change_id_and_good_change_id_but_but_both_not_in_history_should_not_throw(
-      self):
-    run_gn2bp.validate_release([{
-        breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-        breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
-    }], {})
+    def test_bad_change_id_and_good_change_id_but_but_both_not_in_history_should_not_throw(
+            self):
+        run_gn2bp.validate_release(
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
+            }], {})
 
-  def test_bad_change_id_and_good_change_id_but_but_bad_not_in_history_should_not_throw(
-      self):
-    run_gn2bp.validate_release([{
-        breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-        breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
-    }], {'bar': 0})
+    def test_bad_change_id_and_good_change_id_but_but_bad_not_in_history_should_not_throw(
+            self):
+        run_gn2bp.validate_release(
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
+            }], {'bar': 0})
 
-  def test_bad_change_id_and_good_change_id_but_not_in_history_should_throw(
-      self):
-    self.assertRaisesRegex(
-        RuntimeError,
-        'Stopping the import: the current checkout includes a breaking change, but not its fix.',
-        run_gn2bp.validate_release,
-        [{
-            breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-            breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
-        }], {'foo': 0})
+    def test_bad_change_id_and_good_change_id_but_not_in_history_should_throw(
+            self):
+        self.assertRaisesRegex(
+            RuntimeError,
+            'Stopping the import: the current checkout includes a breaking change, but not its fix.',
+            run_gn2bp.validate_release,
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
+            }], {'foo': 0})
 
-  def test_sort_versions(self):
-    self.assertEqual(
-        run_gn2bp.sort_versions(["123.0.1000.0", "123.0.999.0",
-                                 "123.0.1001.0"]),
-        ["123.0.999.0", "123.0.1000.0", "123.0.1001.0"])
+    def test_sort_versions(self):
+        self.assertEqual(
+            run_gn2bp.sort_versions(
+                ["123.0.1000.0", "123.0.999.0", "123.0.1001.0"]),
+            ["123.0.999.0", "123.0.1000.0", "123.0.1001.0"])
 
+    def test_bad_change_id_and_good_change_id_in_history_should_not_throw(
+            self):
+        run_gn2bp.validate_release(
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
+            }], {
+                'bar': 0,
+                'foo': 1
+            })
 
+    def test_bad_change_id_and_good_change_id_but_before_bad_change_id_should_throw(
+            self):
+        self.assertRaisesRegex(
+            RuntimeError,
+            'the local history shows a bad change ID that is more recent than its fix',
+            run_gn2bp.validate_release,
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
+            }], {
+                'bar': 1,
+                'foo': 0
+            })
 
-  def test_bad_change_id_and_good_change_id_in_history_should_not_throw(self):
-    run_gn2bp.validate_release([{
-        breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-        breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
-    }], {
-        'bar': 0,
-        'foo': 1
-    })
-
-  def test_bad_change_id_and_good_change_id_but_before_bad_change_id_should_throw(
-      self):
-    self.assertRaisesRegex(
-        RuntimeError,
-        'the local history shows a bad change ID that is more recent than its fix',
-        run_gn2bp.validate_release,
-        [{
-            breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-            breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar']
-        }], {
-            'bar': 1,
-            'foo': 0
-        })
-
-  def test_bad_change_id_but_two_good_change_ids_should_throw(self):
-    self.assertRaisesRegex(
-        RuntimeError,
-        'Multiple good change IDs are only necessary when a fix has to be cherry-picked into a release',
-        run_gn2bp.validate_release,
-        [{
-            breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
-            breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar', 'bar_branch']
-        }], {
-            'bar': 0,
-            'bar_branch': 1,
-            'foo': 2
-        })
+    def test_bad_change_id_but_two_good_change_ids_should_throw(self):
+        self.assertRaisesRegex(
+            RuntimeError,
+            'Multiple good change IDs are only necessary when a fix has to be cherry-picked into a release',
+            run_gn2bp.validate_release,
+            [{
+                breakages_constants.BAD_CHANGE_ID_TXT: 'foo',
+                breakages_constants.GOOD_CHANGE_IDS_TXT: ['bar', 'bar_branch']
+            }], {
+                'bar': 0,
+                'bar_branch': 1,
+                'foo': 2
+            })
 
 
 if __name__ == '__main__':
-  # This allows you to run the file directly
-  unittest.main()
+    # This allows you to run the file directly
+    unittest.main()

@@ -88,7 +88,9 @@ class Metadata:
 
         cpe_prefix = self.metadata.get("CPEPrefix")
         if cpe_prefix is not None:
-            third_party_dict["security"] = security_dict = metadata_dictionary.MetadataDictionary("security")
+            third_party_dict[
+                "security"] = security_dict = metadata_dictionary.MetadataDictionary(
+                    "security")
             security_dict["tag"] = f"\"NVD-CPE2.3:{cpe_prefix}\""
 
         return "\n".join(
