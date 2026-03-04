@@ -16,6 +16,7 @@ import androidx.annotation.IntDef;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.ObserverList;
@@ -76,11 +77,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
      */
     public static @Nullable SmartSelectionClient fromWebContents(
             ResultCallback callback, WebContents webContents) {
-        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
-        if (windowAndroid == null) return null;
-
-        // Don't do Smart Selection when device is not provisioned or in incognito mode.
-        if (!isDeviceProvisioned(windowAndroid.getContext().get()) || webContents.isIncognito()) {
+        if (skipForWebContents(webContents)) {
             return null;
         }
 
@@ -96,7 +93,7 @@ public class SmartSelectionClient implements SelectionClient, UserData {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             mSmartSelectionEventProcessor = SmartSelectionEventProcessor.create(webContents);
         }
-        mNativeSmartSelectionClient = SmartSelectionClientJni.get().init(this, webContents);
+        mNativeSmartSelectionClient = SmartSelectionClientJni.get().init(webContents);
     }
 
     @Initializer
@@ -219,9 +216,30 @@ public class SmartSelectionClient implements SelectionClient, UserData {
         return !TextUtils.isEmpty(text) && 0 <= start && start < end && end <= text.length();
     }
 
+    private static boolean skipForWebContents(WebContents webContents) {
+        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        if (windowAndroid == null) return true;
+
+        // Smart selection is not supported if the device is unprovisioned or if the WebContents is
+        // in incognito mode.
+        return !isDeviceProvisioned(windowAndroid.getContext().get()) || webContents.isIncognito();
+    }
+
+    /**
+     * Called only by native so there is no need to check {@link #skipForWebContents(WebContents)}
+     * as it has historically always had access to the Java object after creation. If this is ever
+     * invoked elsewhere or as part of the public C++ API, then a check should be added.
+     */
+    @CalledByNative
+    private static @Nullable SmartSelectionClient getFromWebContents(
+            @JniType("content::WebContents*") WebContents webContents) {
+        return webContents.getOrSetUserData(
+                SmartSelectionClient.class, /* userDataFactory= */ null);
+    }
+
     @NativeMethods
     interface Natives {
-        long init(SmartSelectionClient self, WebContents webContents);
+        long init(@JniType("content::WebContents*") WebContents webContents);
 
         void requestSurroundingText(
                 long nativeSmartSelectionClient, int numExtraCharacters, int callbackData);

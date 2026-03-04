@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/android/jni_weak_ref.h"
+#include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
@@ -23,9 +23,7 @@ class WebContents;
 // asynchronously from the current focused frame and passed back to Java layer.
 class SmartSelectionClient {
  public:
-  SmartSelectionClient(JNIEnv* env,
-                       const base::android::JavaRef<jobject>& obj,
-                       WebContents* web_contents);
+  explicit SmartSelectionClient(WebContents* web_contents);
 
   SmartSelectionClient(const SmartSelectionClient&) = delete;
   SmartSelectionClient& operator=(const SmartSelectionClient&) = delete;
@@ -46,8 +44,7 @@ class SmartSelectionClient {
                                  uint32_t start,
                                  uint32_t end);
 
-  // A weak reference to the Java ContentSelectionClient object.
-  JavaObjectWeakGlobalRef java_ref_;
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject(JNIEnv* env);
 
   // WebContents is used to find the relevant RenderFrameHost that can send
   // the request for the text.
