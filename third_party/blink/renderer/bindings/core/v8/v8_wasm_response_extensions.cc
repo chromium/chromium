@@ -546,7 +546,7 @@ void StreamFromResponseCallback(
   // The spec explicitly disallows any extras on the Content-Type header,
   // so we check against ContentType() rather than MimeType(), which
   // implicitly strips extras.
-  if (!EqualIgnoringASCIICase(response->ContentType(), "application/wasm")) {
+  if (!EqualIgnoringAsciiCase(response->ContentType(), "application/wasm")) {
     base::UmaHistogramEnumeration("V8.WasmStreamingInputType",
                                   WasmStreamingInputType::kWrongMimeType);
     auto exception = V8ThrowException::CreateTypeError(

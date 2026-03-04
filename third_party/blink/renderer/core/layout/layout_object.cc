@@ -2298,7 +2298,7 @@ DOMNodeId LayoutObject::OwnerNodeId(bool is_internal_content) const {
         if (auto* svg_element = DynamicTo<Element>(obj->GetNode())) {
           const AtomicString& role =
               svg_element->FastGetAttribute(html_names::kRoleAttr);
-          if (EqualIgnoringASCIICase(role, "img")) {
+          if (EqualIgnoringAsciiCase(role, "img")) {
             return svg_element->GetDomNodeId();
           }
         }

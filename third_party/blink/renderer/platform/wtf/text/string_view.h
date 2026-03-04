@@ -498,18 +498,6 @@ inline bool EqualIgnoringAsciiCase(const StringView& a,
                     : EqualIgnoringAsciiCase(a.Span16(), span);
 }
 
-// Use EqualIgnoringAsciiCase() instead.
-inline bool EqualIgnoringASCIICase(const StringView& a, const StringView& b) {
-  return EqualIgnoringAsciiCase(a, b);
-}
-
-// Use EqualIgnoringAsciiCase() instead.
-template <size_t N>
-inline bool EqualIgnoringASCIICase(const StringView& a,
-                                   const char (&literal)[N]) {
-  return EqualIgnoringAsciiCase<N>(a, literal);
-}
-
 WTF_EXPORT int CodeUnitCompareIgnoringAsciiCase(StringView a, StringView b);
 inline bool CodeUnitCompareIgnoringAsciiCaseLessThan(StringView a,
                                                      StringView b) {
