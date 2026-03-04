@@ -18,7 +18,7 @@
 
 void ComposeboxQueryControllerIOS::CreateImageUploadRequest(
     lens::LensOverlayRequestId request_id,
-    const std::vector<uint8_t>& image_data,
+    std::vector<uint8_t> image_data,
     std::optional<lens::ImageEncodingOptions> image_options,
     std::optional<std::string> file_name,
     RequestBodyProtoCreatedCallback callback) {
