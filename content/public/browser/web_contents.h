@@ -1587,18 +1587,22 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // ui::Events will be always ignored without asking the callback. The given
   // callback will be invoked only while the returned ScopedIgnoreInputEvents
   // alives.
+  // By default, this also blocks all interactive accessibility actions,
+  // treating them as standard user input, while still permitting hit testing
+  // for screenreaders.
   using WebInputEventAuditCallback =
       base::RepeatingCallback<bool(const blink::WebInputEvent&)>;
   [[nodiscard]] inline ScopedIgnoreInputEvents IgnoreInputEvents(
       std::optional<WebInputEventAuditCallback> audit_callback) {
     return IgnoreInputEvents(std::move(audit_callback),
-                             /*should_ignore_a11y_input=*/false);
+                             /*should_ignore_a11y_input=*/true);
   }
   // If `should_ignore_a11y_input` is true, this also blocks all
   // accessibility actions from interacting with the WebContents, other than the
   // hit test.
-  // TODO(crbug.com/452693512): Consider ignoring a11y input events as the
-  // default behavior for ignoring input events in general.
+  // TODO(crbug.com/452693512): Remove this overloaded method and the
+  // `should_ignore_a11y_input` parameter once all callers have been migrated to
+  // the 1-argument version.
   [[nodiscard]] virtual ScopedIgnoreInputEvents IgnoreInputEvents(
       std::optional<WebInputEventAuditCallback> audit_callback,
       bool should_ignore_a11y_input) = 0;
