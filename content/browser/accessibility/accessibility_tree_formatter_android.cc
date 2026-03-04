@@ -5,6 +5,7 @@
 #include "content/browser/accessibility/accessibility_tree_formatter_android.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -275,10 +276,23 @@ std::string AccessibilityTreeFormatterAndroid::ProcessTreeForOutput(
         true, StringPrintf("%s='%s'", attribute_name, value->c_str()), &line);
   }
 
+  // TODO(crbug.com/489414511): Move empty value filtering upstream into
+  // AccessibilityTreeFormatterAndroid::AddProperties. Instead of globally
+  // dropping 0s here to reduce dump test noise, properties should be added
+  // conditionally (e.g., using std::optional for indices). Until then,
+  // hardcoded exceptions are required below to preserve valid 0-based
+  // coordinates.
+  bool is_collection_item = dict.FindBool("collection_item").value_or(false);
   for (const char* attribute_name : INT_ATTRIBUTES) {
     int value = dict.FindInt(attribute_name).value_or(0);
     if (value == 0) {
-      continue;
+      std::string_view attr_view(attribute_name);
+      bool is_zero_based_index = attr_view == "item_index" ||
+                                 attr_view == "row_index" ||
+                                 attr_view == "column_index";
+      if (!is_zero_based_index || !is_collection_item) {
+        continue;
+      }
     }
     WriteAttribute(true, StringPrintf("%s=%d", attribute_name, value), &line);
   }

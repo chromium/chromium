@@ -2,11 +2,11 @@ android.webkit.WebView focusable focused
 ++android.view.View role_description='article' interesting name='This is an ARIA article 1.'
 ++android.view.View role_description='article' interesting name='This is an ARIA article 2.'
 ++android.widget.ListView clickable collection interesting item_count=2 row_count=2 column_count=1 selection_mode=1
-++++android.view.View clickable collection_item focusable interesting name='Item 1' row_span=1 column_span=1
-++++android.view.View clickable collection_item focusable interesting name='Item 2' item_index=1 row_index=1 row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable interesting name='Item 1' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
+++++android.view.View clickable collection_item focusable interesting name='Item 2' item_index=1 row_index=1 row_span=1 column_index=0 column_span=1
 ++android.widget.ListView clickable collection interesting item_count=2 row_count=2 column_count=1 selection_mode=1
-++++android.view.View clickable collection_item focusable interesting name='Item 1' row_span=1 column_span=1
-++++android.view.View clickable collection_item focusable interesting name='Item 2' item_index=1 row_index=1 row_span=1 column_span=1
+++++android.view.View clickable collection_item focusable interesting name='Item 1' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
+++++android.view.View clickable collection_item focusable interesting name='Item 2' item_index=1 row_index=1 row_span=1 column_index=0 column_span=1
 ++android.view.View
 ++++android.widget.RadioButton checkable clickable focusable interesting state_description='Not checked. In group, option 3 of 2' item_index=2 row_index=2
 ++++android.widget.TextView interesting name='1'
@@ -31,11 +31,11 @@ android.webkit.WebView focusable focused
 ++++++android.widget.RadioButton checkable clickable focusable interesting name='blue'
 ++android.widget.GridView clickable collection interesting item_count=100 row_count=100 column_count=1
 ++++android.view.View focusable interesting name='content' item_index=1 row_index=1
-++++++android.view.View collection_item name='content' row_span=1 column_span=1
+++++++android.view.View collection_item name='content' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
 ++android.widget.GridView collection row_count=1 column_count=1
 ++++android.view.View name='content'
-++++++android.view.View collection_item interesting name='content' row_span=1 column_span=1
+++++++android.view.View collection_item interesting name='content' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
 ++android.widget.GridView collection row_count=1 column_count=1
 ++++android.view.View
-++++++android.view.View collection_item interesting name='content' row_span=1 column_span=1
+++++++android.view.View collection_item interesting name='content' item_index=0 row_index=0 row_span=1 column_index=0 column_span=1
 ++android.widget.TextView interesting name='Done'
