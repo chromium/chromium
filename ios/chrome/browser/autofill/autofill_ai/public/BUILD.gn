@@ -5,6 +5,7 @@
 source_set("public") {
   sources = [
     "autofill_ai_constants.h",
+    "autofill_ai_constants.mm",
     "save_entity_params.h",
     "save_entity_params.mm",
   ]

@@ -51,8 +51,10 @@
 #import "components/sync/service/sync_service.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
+#import "ios/chrome/browser/autofill/autofill_ai/public/save_entity_params.h"
 #import "ios/chrome/browser/autofill/model/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/model/autocomplete_history_manager_factory.h"
+#import "ios/chrome/browser/autofill/model/autofill_ai_save_entity_infobar_delegate_ios.h"
 #import "ios/chrome/browser/autofill/model/autofill_ai_util.h"
 #import "ios/chrome/browser/autofill/model/autofill_log_router_factory.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -594,6 +596,71 @@ void ChromeAutofillClientIOS::RemoveAutofillSaveCardInfoBar() {
   if (save_card_infobar != infobar_manager_->infobars().cend()) {
     infobar_manager_->RemoveInfoBar(*save_card_infobar);
   }
+}
+
+void ChromeAutofillClientIOS::ShowEntityImportBubble(
+    EntityInstance new_entity,
+    std::optional<EntityInstance> old_entity,
+    bool save_is_synchronous,
+    EntityImportPromptResultCallback prompt_result_callback) {
+  // Enhanced Autofill is only available to signed-in users.
+  std::optional<std::u16string> user_email = GetUserEmail();
+  if (!user_email.has_value()) {
+    std::move(prompt_result_callback).Run(AutofillAiBubbleResult::kUnknown);
+    return;
+  }
+
+  // Remove any existing infobars of the same type.
+  CloseEntityImportBubble();
+
+  SaveEntityParams params(std::move(new_entity), std::move(old_entity),
+                          std::move(user_email.value()),
+                          std::move(prompt_result_callback));
+
+  auto delegate = std::make_unique<AutofillAiSaveEntityInfoBarDelegateIOS>(
+      std::move(params),
+      base::BindOnce(&ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI,
+                     weak_ptr_factory_.GetWeakPtr()));
+
+  infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
+      InfobarType::kInfobarTypeAutofillAiSaveEntity, std::move(delegate)));
+}
+
+void ChromeAutofillClientIOS::CloseEntityImportBubble() {
+  const auto existing_infobar = std::ranges::find(
+      infobar_manager_->infobars(),
+      infobars::InfoBarDelegate::AUTOFILL_AI_SAVE_ENTITY_INFOBAR_DELEGATE_IOS,
+      &infobars::InfoBar::GetIdentifier);
+
+  if (existing_infobar != infobar_manager_->infobars().cend()) {
+    infobar_manager_->RemoveInfoBar(*existing_infobar);
+  }
+}
+
+AutofillAiSaveEntityInfoBarDelegateIOS*
+ChromeAutofillClientIOS::GetAutofillAiSaveEntityInfoBarDelegateIOS() {
+  const auto existing_infobar = std::ranges::find(
+      infobar_manager_->infobars(),
+      infobars::InfoBarDelegate::AUTOFILL_AI_SAVE_ENTITY_INFOBAR_DELEGATE_IOS,
+      &infobars::InfoBar::GetIdentifier);
+
+  if (existing_infobar != infobar_manager_->infobars().cend()) {
+    return static_cast<AutofillAiSaveEntityInfoBarDelegateIOS*>(
+        (*existing_infobar)->delegate());
+  } else {
+    return nullptr;
+  }
+}
+
+void ChromeAutofillClientIOS::ShowAutofillAiSaveUpdateUI() {
+  AutofillAiSaveEntityInfoBarDelegateIOS* delegate =
+      GetAutofillAiSaveEntityInfoBarDelegateIOS();
+  if (!delegate) {
+    return;
+  }
+
+  autofill::SaveEntityParams params = delegate->ExtractParams();
+  [commands_handler_ showSaveEntityDialog:std::move(params)];
 }
 
 }  // namespace autofill

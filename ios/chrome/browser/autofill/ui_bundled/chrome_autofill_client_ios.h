@@ -48,6 +48,7 @@ class WebState;
 
 namespace autofill {
 
+class AutofillAiSaveEntityInfoBarDelegateIOS;
 class LogRouter;
 
 enum class SuggestionType;
@@ -160,6 +161,14 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
       FormGlobalId form_id,
       FieldGlobalId field_id) const override;
 
+  void ShowEntityImportBubble(
+      EntityInstance new_entity,
+      std::optional<EntityInstance> old_entity,
+      bool save_is_synchronous,
+      EntityImportPromptResultCallback prompt_result_callback) override;
+
+  void CloseEntityImportBubble() override;
+
   // Searches infobars managed by the infobar_manager_ for infobar of the type
   // AutofillSaveCardInfoBarDelegateIOS and returns it if found else returns a
   // nullptr.
@@ -175,6 +184,13 @@ class ChromeAutofillClientIOS : public AutofillClientIOS {
   // Returns the account email of the signed-in user, or nullopt if there is no
   // signed-in user.
   std::optional<std::u16string> GetUserEmail();
+
+  // Searches for Autofill AI save entity infobar and returns its delegate.
+  AutofillAiSaveEntityInfoBarDelegateIOS*
+  GetAutofillAiSaveEntityInfoBarDelegateIOS();
+
+  // Shows the detailed save/update UI for Autofill AI entities.
+  void ShowAutofillAiSaveUpdateUI();
 
   raw_ptr<PrefService, DanglingUntriaged> pref_service_;
   raw_ptr<syncer::SyncService, DanglingUntriaged> sync_service_;
