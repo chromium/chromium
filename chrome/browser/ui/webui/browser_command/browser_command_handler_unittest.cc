@@ -55,7 +55,6 @@ std::vector<Command> supported_commands = {
     Command::kOpenGlic,
     Command::kOpenGlicSettings,
     Command::kPrewarmGlicFre,
-    Command::kOpenSplitView,
 };
 
 class TestCommandHandler : public BrowserCommandHandler {
@@ -225,8 +224,6 @@ class MockCommandHandler : public TestCommandHandler {
   MOCK_METHOD(void, OpenGlicSettings, ());
 
   MOCK_METHOD(void, PrewarmGlicFre, ());
-
-  MOCK_METHOD(void, OpenSplitView, ());
 };
 
 class MockCommandUpdater : public CommandUpdaterImpl {
@@ -698,11 +695,4 @@ TEST_F(BrowserCommandHandlerTest, OpenGlicSettingsCommand) {
   info->meta_key = true;
   EXPECT_CALL(*command_handler_, OpenGlicSettings());
   EXPECT_TRUE(ExecuteCommand(Command::kOpenGlicSettings, std::move(info)));
-}
-
-TEST_F(BrowserCommandHandlerTest, OpenSplitViewCommand) {
-  EXPECT_TRUE(CanExecuteCommand(Command::kOpenSplitView));
-  ClickInfoPtr info = ClickInfo::New();
-  EXPECT_CALL(*command_handler_, OpenSplitView());
-  EXPECT_TRUE(ExecuteCommand(Command::kOpenSplitView, std::move(info)));
 }

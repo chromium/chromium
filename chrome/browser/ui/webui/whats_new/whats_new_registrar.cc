@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/webui/whats_new/whats_new_registrar.h"
 
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/whats_new/whats_new_storage_service_impl.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_features.h"
@@ -35,10 +34,6 @@ void RegisterWhatsNewModules(whats_new::WhatsNewRegistry* registry) {
       WhatsNewModule("Googlepayreauth", "vinnypersky@google.com",
                      BrowserCommand::kOpenPaymentsSettings));
 
-  // M142
-  registry->RegisterModule(WhatsNewModule(::features::kSideBySide,
-                                          "agale@google.com",
-                                          BrowserCommand::kOpenSplitView));
   // M143
   registry->RegisterModule(
       WhatsNewModule(::syncer::kSyncAccountSettings, "vizcay@google.com",
