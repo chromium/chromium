@@ -74,13 +74,19 @@ class PLATFORM_EXPORT ScrollPredictor {
   void ResampleEvent(base::TimeTicks frame_time,
                      base::TimeDelta frame_interval,
                      WebInputEvent* event,
-                     int64_t trace_id);
+                     int64_t trace_id,
+                     bool use_synthetic_predictor);
 
   // Reports metrics scores UMA histogram based on the metrics defined
   // in |PredictionMetricsHandler|
   void EvaluatePrediction();
 
   std::unique_ptr<ui::InputPredictor> predictor_;
+  // Predictor used specifically for generating synthetic scroll events to fill
+  // gaps between real input events (e.g., at VSync). This allows using a
+  // different prediction algorithm (like Kalman) for synthetic gap-filling
+  // while keeping the primary algorithm for real events.
+  std::unique_ptr<ui::InputPredictor> synthetic_predictor_;
   std::unique_ptr<ui::InputFilter> filter_;
 
   std::unique_ptr<FilterFactory> filter_factory_;

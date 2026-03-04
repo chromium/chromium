@@ -35,12 +35,28 @@ class ScrollPredictorTest : public testing::Test {
   void SetUp() override {
     original_events_.clear();
     scroll_predictor_ = std::make_unique<ScrollPredictor>();
-    scroll_predictor_->predictor_ = std::make_unique<ui::EmptyPredictor>();
+    SetPredictor(std::make_unique<ui::EmptyPredictor>());
+    SetSyntheticPredictor(std::make_unique<ui::EmptyPredictor>());
+  }
+
+  void SetPredictor(std::unique_ptr<ui::InputPredictor> predictor) {
+    scroll_predictor_->predictor_ = std::move(predictor);
+  }
+
+  void SetSyntheticPredictor(std::unique_ptr<ui::InputPredictor> predictor) {
+    scroll_predictor_->synthetic_predictor_ = std::move(predictor);
+  }
+
+  ui::InputPredictor* predictor() {
+    return scroll_predictor_->predictor_.get();
+  }
+
+  ui::InputPredictor* synthetic_predictor() {
+    return scroll_predictor_->synthetic_predictor_.get();
   }
 
   void SetUpLSQPredictor() {
-    scroll_predictor_->predictor_ =
-        std::make_unique<ui::LeastSquaresPredictor>();
+    SetPredictor(std::make_unique<ui::LeastSquaresPredictor>());
   }
 
   std::unique_ptr<WebInputEvent> CreateGestureScrollUpdate(
@@ -102,7 +118,14 @@ class ScrollPredictorTest : public testing::Test {
     base::TimeTicks frame_time = WebInputEvent::GetStaticTimeStampForTests() +
                                  base::Milliseconds(time_delta_in_milliseconds);
     // Tests with 60Hz.
-    return scroll_predictor_->predictor_->GeneratePrediction(frame_time);
+    return predictor()->GeneratePrediction(frame_time);
+  }
+
+  std::unique_ptr<ui::InputPredictor::InputData> SyntheticPredictionAvailable(
+      double time_delta_in_milliseconds = 0) {
+    base::TimeTicks frame_time = WebInputEvent::GetStaticTimeStampForTests() +
+                                 base::Milliseconds(time_delta_in_milliseconds);
+    return synthetic_predictor()->GeneratePrediction(frame_time);
   }
 
   gfx::PointF GetLastAccumulatedDelta() {
@@ -684,6 +707,39 @@ TEST_F(ScrollPredictorTest, RefinedHasPredictionTimeout) {
     EXPECT_TRUE(scroll_predictor_->HasPrediction(time_a, interval));
     EXPECT_FALSE(scroll_predictor_->HasPrediction(time_b, interval));
   }
+}
+
+TEST_F(ScrollPredictorTest, AlgorithmDivergence) {
+  // 1. Manually assign different algorithms to each role.
+  // Real events use Linear, Synthetic uses Empty (static).
+  SetPredictor(std::make_unique<ui::LinearPredictor>(
+      ui::LinearPredictor::EquationOrder::kFirstOrder));
+  SetSyntheticPredictor(std::make_unique<ui::EmptyPredictor>());
+
+  SendGestureScrollBegin();
+
+  // 2. Send 2 GSUs to establish a velocity for Linear.
+  // Event 1 at t=10ms, delta = -10 (total accumulated = -10)
+  // Event 2 at t=20ms, delta = -10 (total accumulated = -20)
+  // Velocity = 1 unit/ms.
+  for (int i = 1; i <= 2; ++i) {
+    std::unique_ptr<WebInputEvent> gsu =
+        CreateGestureScrollUpdate(0, -10, 10 * i);
+    HandleResampleScrollEvents(gsu, 10 * i);
+  }
+
+  // 3. Request predictions for t=30ms (a 10ms look-ahead from t=20ms).
+  auto real_result = PredictionAvailable(30);
+  auto synthetic_result = SyntheticPredictionAvailable(30);
+
+  ASSERT_TRUE(real_result);
+  ASSERT_TRUE(synthetic_result);
+
+  // 4. Verify divergence.
+  // Linear should predict -30 (-20 + 1u/ms * 10ms).
+  // Empty should return exactly the last sample (-20).
+  EXPECT_EQ(real_result->pos.y(), -30);
+  EXPECT_EQ(synthetic_result->pos.y(), -20);
 }
 
 }  // namespace test
