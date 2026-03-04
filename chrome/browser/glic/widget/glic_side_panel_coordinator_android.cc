@@ -58,6 +58,7 @@ void GlicSidePanelCoordinatorAndroid::Show(bool suppress_animations) {
 void GlicSidePanelCoordinatorAndroid::SetWebContents(
     content::WebContents* web_contents) {
   if (!web_contents) {
+    last_web_contents_.reset();
     co_browse_views_.Reset();
     return;
   }
@@ -70,6 +71,13 @@ void GlicSidePanelCoordinatorAndroid::SetWebContents(
   if (!window_android) {
     return;
   }
+
+  if (last_web_contents_ && last_web_contents_.get() == web_contents) {
+    // The web contents didn't change, so we don't need to do anything.
+    return;
+  }
+
+  last_web_contents_ = web_contents->GetWeakPtr();
   JNIEnv* env = base::android::AttachCurrentThread();
   // Call Factory to get CoBrowseViews and save it
   co_browse_views_.Reset(Java_CoBrowseViewFactory_getCoBrowseViews(
