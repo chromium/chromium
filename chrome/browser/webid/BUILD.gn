@@ -61,7 +61,6 @@ if (is_android) {
 
 source_set("webid") {
   sources = [
-    "federated_actor_login_request.h",
     "federated_identity_account_keyed_permission_context.h",
     "federated_identity_api_permission_context.h",
     "federated_identity_api_permission_context_factory.h",
@@ -95,7 +94,6 @@ source_set("webid") {
 
 source_set("impl") {
   sources = [
-    "federated_actor_login_request.cc",
     "federated_identity_account_keyed_permission_context.cc",
     "federated_identity_api_permission_context.cc",
     "federated_identity_api_permission_context_factory.cc",
@@ -138,7 +136,7 @@ source_set("impl") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "federated_actor_login_request_unittest.cc",
+    "federated_embedder_login_request_unittest.cc",
     "federated_identity_account_keyed_permission_context_unittest.cc",
     "federated_identity_api_permission_context_unittest.cc",
     "federated_identity_auto_reauthn_permission_context_unittest.cc",

@@ -17,7 +17,6 @@
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
-#include "chrome/browser/webid/federated_actor_login_request.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -29,6 +28,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
@@ -203,7 +203,8 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
             std::move(callback).Run(std::move(result));
 
             // Manually trigger the federated login completion callback.
-            auto* request = FederatedActorLoginRequest::Get(web_contents());
+            auto* request = content::webid::FederatedEmbedderLoginRequest::Get(
+                web_contents());
             ASSERT_TRUE(request);
             request->OnFederatedResultReceived(
                 content::webid::FederatedLoginResult::kSuccess);

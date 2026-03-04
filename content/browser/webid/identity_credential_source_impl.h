@@ -25,6 +25,7 @@ namespace content {
 class RenderFrameHost;
 
 namespace webid {
+
 class CONTENT_EXPORT IdentityCredentialSourceImpl
     : public DocumentUserData<IdentityCredentialSourceImpl>,
       public IdentityCredentialSource {
@@ -40,6 +41,11 @@ class CONTENT_EXPORT IdentityCredentialSourceImpl
 
   bool SelectAccount(const url::Origin& idp_origin,
                      const std::string& account_id) override;
+
+  void SetEmbedderLoginRequest(
+      const url::Origin& idp_origin,
+      const std::string& account_id,
+      base::RepeatingCallback<void(FederatedLoginResult)> callback) override;
 
   void SetNetworkManagerForTests(
       std::unique_ptr<IdpNetworkRequestManager> network_manager);
