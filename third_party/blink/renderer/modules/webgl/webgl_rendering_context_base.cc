@@ -6458,28 +6458,27 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     return;
   }
 
-  std::optional<CanvasSnapshotProvider::Info> sw_draw_info;
-  CanvasNon2DResourceProviderSharedImage* snapshot_provider_si = nullptr;
-  sk_sp<SkSurface> sw_draw_surface;
-
+  // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
+  // handle tagged orientation, we set |prefer_tagged_orientation| to false.
+  const bool kPreferTaggedOrientation = false;
+  scoped_refptr<StaticBitmapImage> image;
   if (snapshot_provider->IsExternalBitmapProvider()) {
-    sw_draw_info = info;
+    sk_sp<SkSurface> draw_surface;
     if (base::FeatureList::IsEnabled(kWebGLVideoFrameDrawCacheSkSurface)) {
-      sw_draw_surface =
+      draw_surface =
           static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider)
               ->GetCachedSurface();
     }
+    image = CreateUnacceleratedImageFromVideoFrame(
+        std::move(media_video_frame), info, draw_surface, video_renderer,
+        kPreferTaggedOrientation, reinterpret_video_as_srgb);
   } else {
-    snapshot_provider_si =
-        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider);
+    image = CreateAcceleratedImageFromVideoFrame(
+        std::move(media_video_frame),
+        static_cast<CanvasNon2DResourceProviderSharedImage*>(snapshot_provider),
+        video_renderer, kPreferTaggedOrientation, reinterpret_video_as_srgb);
   }
 
-  // Since TexImageStaticBitmapImage() and TexImageGPU() don't know how to
-  // handle tagged orientation, we set |prefer_tagged_orientation| to false.
-  scoped_refptr<StaticBitmapImage> image = CreateImageFromVideoFrame(
-      std::move(media_video_frame), snapshot_provider_si,
-      std::move(sw_draw_info), sw_draw_surface, video_renderer,
-      /*prefer_tagged_orientation=*/false, reinterpret_video_as_srgb);
   if (!image) {
     return;
   }
