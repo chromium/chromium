@@ -1,0 +1,32 @@
+owners:
+- anunoy@chromium.org
+- file://components/policy/OWNERS
+caption: Control extension DOM activity logging
+desc: |-
+  Control whether extension DOM activity logging is enabled for enterprise users.
+
+  Setting the policy to Enabled turns on telemetry for extension DOM activity. This includes monitoring code injection and sensitive data access by extensions.
+
+  If this policy is set to Enabled, <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> will collect and transmit signals about extension interactions with web pages to the Extension Telemetry Service for security auditing.
+  If this policy is set to Disabled or not set, these signals are not collected or transmitted for enterprise users.
+
+  Actual values of sensitive data (like cookies or input values) are NOT collected, only the fact that they were accessed.
+
+future_on:
+- chrome.*
+- chrome_os
+- android
+features:
+  dynamic_refresh: true
+  per_profile: true
+default: false
+example_value: true
+items:
+- caption: Enable extension DOM activity logging
+  value: true
+- caption: Disable extension DOM activity logging
+  value: false
+schema:
+  type: boolean
+tags: []
+type: main

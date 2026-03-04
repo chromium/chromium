@@ -2373,6 +2373,7 @@ chromium-metrics-reviews@google.com.
   <int value="1431" label="ForceForegroundPriorityForAllTabs"/>
   <int value="1432" label="WebRtcDiagnosticLogCollectionAllowedForOrigins"/>
   <int value="1433" label="IsolatedWebAppUserInstallationEnabled"/>
+  <int value="1434" label="ExtensionDOMActivityLoggingEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

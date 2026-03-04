@@ -1432,6 +1432,7 @@ policies:
   1431: ForceForegroundPriorityForAllTabs
   1432: WebRtcDiagnosticLogCollectionAllowedForOrigins
   1433: IsolatedWebAppUserInstallationEnabled
+  1434: ExtensionDOMActivityLoggingEnabled
 
 atomic_groups:
   1: Homepage

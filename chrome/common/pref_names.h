@@ -3514,6 +3514,11 @@ inline constexpr char kCloudExtensionRequestEnabled[] =
 inline constexpr char kCloudExtensionRequestIds[] =
     "enterprise_reporting.extension_request.ids";
 
+// Boolean pref indicating whether extension DOM activity logging is enabled
+// for enterprise telemetry.
+inline constexpr char kExtensionDOMActivityLoggingEnabled[] =
+    "enterprise_reporting.extension_dom_activity_logging_enabled";
+
 // A list of URLs (for U2F) or domains (for webauthn) that automatically permit
 // direct attestation of a Security Key.
 inline constexpr char kSecurityKeyPermitAttestation[] =
