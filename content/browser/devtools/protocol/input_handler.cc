@@ -2029,8 +2029,8 @@ Response InputHandler::SetIgnoreInputEvents(bool ignore) {
   if (!ignore) {
     scoped_ignore_input_events_.reset();
   } else if (web_contents_) {
-    scoped_ignore_input_events_ =
-        web_contents_->IgnoreInputEvents(std::nullopt);
+    scoped_ignore_input_events_ = web_contents_->IgnoreInputEvents(
+        std::nullopt, /*should_ignore_a11y_input=*/true);
   }
   return Response::Success();
 }
