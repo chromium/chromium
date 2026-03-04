@@ -464,6 +464,89 @@ class EslintTsTest(unittest.TestCase):
       self.assertFalse(
           e in str(context.exception), f'Found unexpected error: {e}')
 
+  def testWebUiEslintPlugin_LitElementInvalidInterface(self):
+    with self.assertRaises(RuntimeError) as context:
+      self._run_test([
+          "with_webui_plugin_lit_element_invalid_interface_violations.ts",
+          "with_webui_plugin_lit_element_invalid_interface_violations.html.ts",
+          "with_webui_plugin_lit_element_invalid_interface_violations_no_template_file.ts",
+      ])
+
+    _EXPECTED_STRING = "@webui-eslint/lit-element-invalid-interface"
+    self.assertTrue(_EXPECTED_STRING in str(context.exception))
+
+    _INCORRECT_NOTATION_ERROR = "Use camelCase identifiers, not dash-case literals, for DOM ids in the interface. Change %(incorrectIdentifier)s to %(suggestedName)s in the interface for %(className)s"
+
+    _MISSING_ID_ERROR = "Id '%(domId)s' is listed in the interface definition for %(className)s, but no element with that ID was found in the template file 'with_webui_plugin_lit_element_invalid_interface_violations.html.ts'"
+
+    _MISSING_ID_NO_TEMPLATE_ERROR = "Id '%(domId)s' is listed in the interface definition for %(className)s, but no element with that ID was found in the template"
+    # The following strings *should* appear in the error output.
+    errors = [
+        _INCORRECT_NOTATION_ERROR % {
+            'incorrectIdentifier': '\'three\'',
+            'suggestedName': 'three',
+            'className': 'MyDummyElement',
+        },
+        _INCORRECT_NOTATION_ERROR % {
+            'incorrectIdentifier': '\'four-four\'',
+            'suggestedName': 'fourFour',
+            'className': 'MyDummyElement',
+        },
+        _MISSING_ID_ERROR % {
+            'domId': 'doesNotExist',
+            'className': 'MyDummyElement',
+        },
+        _MISSING_ID_NO_TEMPLATE_ERROR % {
+            'domId': 'doesNotExistTest',
+            'className': 'MyDummyTestElement',
+        },
+    ]
+    for e in errors:
+      self.assertTrue(
+          e in str(context.exception), f'Didn\'t find expected error: {e}')
+
+    # The following strings *should not* appear in the error output.
+    non_errors = [
+        _INCORRECT_NOTATION_ERROR % {
+            'incorrectIdentifier': 'one',
+            'suggestedName': 'one',
+            'className': 'MyDummyElement',
+        },
+        _INCORRECT_NOTATION_ERROR % {
+            'incorrectIdentifier': 'two',
+            'suggestedName': 'two',
+            'className': 'MyDummyElement',
+        },
+        _INCORRECT_NOTATION_ERROR % {
+            'incorrectIdentifier': 'one',
+            'suggestedName': 'one',
+            'className': 'MyDummyTestElement',
+        },
+        _INCORRECT_NOTATION_ERROR % {
+            'incorrectIdentifier': 'two',
+            'suggestedName': 'two',
+            'className': 'MyDummyTestElement',
+        },
+        _MISSING_ID_ERROR % {
+            'domId': 'one',
+            'className': 'MyDummyElement',
+        },
+        _MISSING_ID_NO_TEMPLATE_ERROR % {
+            'domId': 'one',
+            'className': 'MyDummyTestElement',
+        },
+        _MISSING_ID_ERROR % {
+            'domId': 'two',
+            'className': 'MyDummyElement',
+        },
+        _MISSING_ID_NO_TEMPLATE_ERROR % {
+            'domId': 'two',
+            'className': 'MyDummyTestElement',
+        },
+    ]
+    for e in non_errors:
+      self.assertFalse(
+          e in str(context.exception), f'Found unexpected error: {e}')
 
 if __name__ == "__main__":
   unittest.main()
