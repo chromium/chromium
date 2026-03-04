@@ -100,14 +100,14 @@ std::unique_ptr<views::Background> TabGroupStyle::GetEmptyTitleChipBackground(
   return views::CreateRoundedRectBackground(color, GetChipCornerRadius());
 }
 
-gfx::Insets TabGroupStyle::GetInsetsForHeaderChip() const {
-  return gfx::Insets::TLBR(kHeaderChipVerticalInset, GetChipCornerRadius(),
-                           kHeaderChipVerticalInset, GetChipCornerRadius());
-}
-
 int TabGroupStyle::GetHighlightPathGeneratorCornerRadius(
     const views::View* const title) const {
   return GetChipCornerRadius();
+}
+
+gfx::Insets TabGroupStyle::GetInsetsForHeaderChip() const {
+  return gfx::Insets::TLBR(kHeaderChipVerticalInset, GetChipCornerRadius(),
+                           kHeaderChipVerticalInset, GetChipCornerRadius());
 }
 
 int TabGroupStyle::GetTitleAdjustmentToTabGroupHeaderDesiredWidth(
