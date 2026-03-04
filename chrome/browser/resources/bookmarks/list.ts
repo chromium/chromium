@@ -87,6 +87,8 @@ export class BookmarksListElement extends BookmarksListElementBase {
     super.disconnectedCallback();
 
     this.eventTracker_.remove(document, 'highlight-items');
+    this.eventTracker_.remove(document, 'import-began');
+    this.eventTracker_.remove(document, 'import-ended');
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
