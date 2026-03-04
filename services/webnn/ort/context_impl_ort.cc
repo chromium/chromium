@@ -68,15 +68,26 @@ std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> ContextImplOrt::Create(
   scoped_refptr<SessionOptions> session_options =
       SessionOptions::Create(device_type, env);
 
+  // The ONNX Runtime default CPU EP has a limitation that DequantizeLinear with
+  // type int32 should have no zero point or all zero points should be 0. This
+  // limitation will result in context lost triggered by ONNX Runtime session
+  // run failure. To avoid this issue, we should remove int32 from supported
+  // data types if the default CPU EP is selected first.
+  // TODO(crbug.com/488090100): Remove this workaround when int32 is supported
+  // by ORT 1.24.
+  bool dequantize_linear_input_support_int32 =
+      !Environment::IsDefaultCpuEpDevice(
+          session_options->first_selected_device());
+
   std::unique_ptr<WebNNContextImpl, OnTaskRunnerDeleter> context_impl(
-      new ContextImplOrt(std::move(receiver), std::move(context_provider),
-                         std::move(ep_workarounds), std::move(options),
-                         std::move(session_options),
-                         std::move(write_tensor_consumer),
-                         std::move(read_tensor_producer), std::move(env),
-                         std::move(gpu_sequence), std::move(memory_tracker),
-                         std::move(owning_task_runner), shared_image_manager,
-                         std::move(main_task_runner)),
+      new ContextImplOrt(
+          std::move(receiver), std::move(context_provider),
+          std::move(ep_workarounds), dequantize_linear_input_support_int32,
+          std::move(options), std::move(session_options),
+          std::move(write_tensor_consumer), std::move(read_tensor_producer),
+          std::move(env), std::move(gpu_sequence), std::move(memory_tracker),
+          std::move(owning_task_runner), shared_image_manager,
+          std::move(main_task_runner)),
       OnTaskRunnerDeleter(std::move(task_runner)));
   return context_impl;
 }
@@ -85,6 +96,7 @@ ContextImplOrt::ContextImplOrt(
     mojo::PendingReceiver<mojom::WebNNContext> receiver,
     base::WeakPtr<WebNNContextProviderImpl> context_provider,
     const EpWorkarounds& ep_workarounds,
+    bool dequantize_linear_input_support_int32,
     mojom::CreateContextOptionsPtr options,
     scoped_refptr<SessionOptions> session_options,
     mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -99,7 +111,8 @@ ContextImplOrt::ContextImplOrt(
           std::move(receiver),
           std::move(context_provider),
           ContextBackendUma::kONNXRuntime,
-          GetContextProperties(ep_workarounds.resample2d_limit_to_nchw),
+          GetContextProperties(ep_workarounds.resample2d_limit_to_nchw,
+                               dequantize_linear_input_support_int32),
           std::move(options),
           std::move(write_tensor_consumer),
           std::move(write_tensor_producer),
@@ -119,7 +132,8 @@ ContextImplOrt::~ContextImplOrt() = default;
 
 // static
 ContextProperties ContextImplOrt::GetContextProperties(
-    bool resample2d_limit_to_nchw) {
+    bool resample2d_limit_to_nchw,
+    bool dequantize_linear_input_support_int32) {
   // TODO(crbug.com/412844034): Investigate how to set the tensor byte length
   // limit and supported tensor ranks.
   static constexpr uint64_t kTensorByteLengthLimit =
@@ -188,9 +202,16 @@ ContextProperties ContextImplOrt::GetContextProperties(
        {DataTypeConstraint::kFloat16To32, SupportedRanks::Exactly(1)},
        /*cumulative_sum_input=*/{kFloat16To32Int32To64, kMaxNonScalarRank},
        /*dequantize_linear_input=*/
-       {DataTypeConstraint::kInts4ToInts8, kMaxRank},
+       {dequantize_linear_input_support_int32
+            ? kInts4To8Int32
+            : DataTypeConstraint::kInts4ToInts8,
+        kMaxRank},
        /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*dequantize_linear_zero_point=*/{kInts4To8Int32, kMaxRank},
+       /*dequantize_linear_zero_point=*/
+       {dequantize_linear_input_support_int32
+            ? kInts4To8Int32
+            : DataTypeConstraint::kInts4ToInts8,
+        kMaxRank},
        /*add_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/

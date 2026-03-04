@@ -57,6 +57,8 @@ class Environment : public base::subtle::RefCountedThreadSafeBase {
       base::span<const OrtEpDevice* const> available_devices,
       OrtHardwareDeviceType device_type);
 
+  static bool IsDefaultCpuEpDevice(const OrtEpDevice* device);
+
   // Returns a span of registered execution provider devices in `env`. The span
   // is guaranteed to be valid until `env_` is released or the list of execution
   // providers is modified.

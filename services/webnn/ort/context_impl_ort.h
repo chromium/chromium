@@ -44,6 +44,7 @@ class ContextImplOrt final : public WebNNContextImpl {
   ContextImplOrt(mojo::PendingReceiver<mojom::WebNNContext> receiver,
                  base::WeakPtr<WebNNContextProviderImpl> context_provider,
                  const EpWorkarounds& ep_workarounds,
+                 bool dequantize_linear_input_support_int32,
                  mojom::CreateContextOptionsPtr options,
                  scoped_refptr<SessionOptions> session_options,
                  mojo::ScopedDataPipeConsumerHandle write_tensor_consumer,
@@ -62,7 +63,9 @@ class ContextImplOrt final : public WebNNContextImpl {
   // WebNNContextImpl:
   base::WeakPtr<WebNNContextImpl> AsWeakPtr() override;
 
-  static ContextProperties GetContextProperties(bool resample2d_limit_to_nchw);
+  static ContextProperties GetContextProperties(
+      bool resample2d_limit_to_nchw,
+      bool dequantize_linear_input_support_int32);
 
   scoped_refptr<Environment> env() const { return env_; }
 

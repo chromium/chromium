@@ -112,13 +112,6 @@ ParseEpLibraryPathSwitch(std::wstring_view value) {
   return std::make_pair(ep_name, ep_library_path);
 }
 
-bool IsDefaultCpuEpDevice(const OrtEpDevice* device) {
-  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
-
-  return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
-         kCpuExecutionProvider;
-}
-
 bool IsDmlEpDevice(const OrtEpDevice* device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
@@ -263,8 +256,8 @@ std::vector<const OrtEpDevice*> SelectEpDevicesForCpu(
 
   // Add the default CPU EP device to ensure maximum coverage of opsets and
   // operators.
-  if (!IsDefaultCpuEpDevice(first_cpu) &&
-      IsDefaultCpuEpDevice(sorted_devices.back())) {
+  if (!Environment::IsDefaultCpuEpDevice(first_cpu) &&
+      Environment::IsDefaultCpuEpDevice(sorted_devices.back())) {
     selected_devices.push_back(sorted_devices.back());
   }
 
@@ -395,8 +388,8 @@ std::vector<const OrtEpDevice*> SortEpDevices(
           return a_matches_vendor;
         }
 
-        bool a_is_default_cpu = IsDefaultCpuEpDevice(a);
-        bool b_is_default_cpu = IsDefaultCpuEpDevice(b);
+        bool a_is_default_cpu = Environment::IsDefaultCpuEpDevice(a);
+        bool b_is_default_cpu = Environment::IsDefaultCpuEpDevice(b);
         CHECK(!(a_is_default_cpu && b_is_default_cpu))
             << "Default CPU EP should be unique.";
 
@@ -681,6 +674,14 @@ std::vector<const OrtEpDevice*> Environment::SelectEpDevices(
   }
 
   return selected_devices;
+}
+
+// static
+bool Environment::IsDefaultCpuEpDevice(const OrtEpDevice* device) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+
+  return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
+         kCpuExecutionProvider;
 }
 
 base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
