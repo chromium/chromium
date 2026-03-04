@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">Дозволи за овај сајт</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Изабрана је опција за назив улице</translation>
+<translation id="3576315803647905285">Формално</translation>
 <translation id="3576616784287504635">Уграђена страница на <ph name="SITE" /> наводи:</translation>
 <translation id="3577473026931028326">Дошло је до грешке. Пробајте поново.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -1909,6 +1910,7 @@
 <translation id="4031179711345676612">Микрофон је дозвољен</translation>
 <translation id="4036753017940930924">Парцеле и земља</translation>
 <translation id="403724377879219932">Може да затражи приступ другим уређајима на локалној мрежи</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, ново</translation>
 <translation id="4039506337798853114">Да бисте омогућили приказ курсора, притисните |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Приближна</translation>
 <translation id="4045070493270310437">Поново отвори картице</translation>
@@ -2636,6 +2638,7 @@
 <translation id="5190835502935405962">Трака са обележивачима</translation>
 <translation id="5191315092027169558">Профилом управља <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> жели да преузме више датотека</translation>
+<translation id="5199121357983849992">Желите да сачувате лични документ?</translation>
 <translation id="5200063972779787617">Сачувајте адресу на налогу</translation>
 <translation id="5201306358585911203">Уграђена страница на овој веб-страници наводи:</translation>
 <translation id="5203716867500274632">Администратор је омогућио синхронизацију следећих елемената између претходних и актуелних сесија на свим ChromeOS уређајима:</translation>
@@ -2684,6 +2687,7 @@
 <translation id="5266128565379329178">Повез на врху</translation>
 <translation id="5269225904387178860">Четвороструко бушење на дну</translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ није подржан услов за „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
+<translation id="527191520368130807">Дотерај</translation>
 <translation id="5273658854610202413">Упозорење: Ове смернице нису обједињене као што је наведено у смерницама PolicyDictionaryMultipleSourceMergeList зато што нису део смерница за речнике које могу да се обједињују.</translation>
 <translation id="5278778426231952189">Отпреми одмах</translation>
 <translation id="5279286380302340275">Управљајте преузимањима</translation>
@@ -2793,6 +2797,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Да бисте брже плаћали, сачувајте овај CVC у Google новчанику (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Апликације на уређају</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, претходно <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Обрнутим редоследом са одштампаном страном нагоре</translation>
 <translation id="5447235695608032700">Дозволите да <ph name="SITE" /> користи информације које је сачувао о вама</translation>
 <translation id="5447973833955560753">Лозинка за опоравак</translation>
@@ -3583,6 +3588,7 @@
 <translation id="6698097747703777657">Нисте добили кôд? <ph name="BEGIN_LINK" />Преузми нов кôд<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Направљено:</translation>
 <translation id="6698769547327354196">Да бисте искључили Pix у Chrome-у, идите у <ph name="BEGIN_LINK1" />подешавања плаћања<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Сачувајте информације и брже обављајте ствари, попут попуњавања образаца у Google производима. Можете да <ph name="MANAGE_INFO_LINK" /> у услузи <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за налог <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Клизач за трајање</translation>
 <translation id="6702851555558236418">Софтвер за аудио записе и музику</translation>
 <translation id="6702919718839027939">Презентација</translation>
@@ -4074,6 +4080,7 @@
 <translation id="746412105358554870">Оптимизација и безбедност JavaScript-а</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ће знати да сте посетили <ph name="TOP_LEVEL_URL" />.</translation>
 <translation id="7465963048299965912">10×13 in</translation>
+<translation id="7467332121947433617">Желите да ажурирате лични документ?</translation>
 <translation id="7469935732330206581">Образац није безбедан</translation>
 <translation id="7470854469646445678">Наведите разлог за копирање (обавезно)</translation>
 <translation id="7471007961486718967">Наведите разлог за пренос (обавезно)</translation>
@@ -4095,6 +4102,7 @@
 <translation id="7499188644237027195">Када купујете у Chrome-у, погледајте е-новчаник и Pix као опције</translation>
 <translation id="7500917112031739411">Прикажи према групи</translation>
 <translation id="7501663406926337752">Организација је обележила сајт у наставку</translation>
+<translation id="7502044688973049724">управљате информацијама</translation>
 <translation id="7507075214339298899">Коверта бр. 9</translation>
 <translation id="7508255263130623398">Враћени ИД уређаја за смернице је празан или се не подудара са актуелним ИД-ом уређаја</translation>
 <translation id="7508577201115425418">Канцеларијске и штампарске услуге</translation>
@@ -5148,6 +5156,7 @@
 <translation id="9191834167571392248">Бушење у доњем левом углу</translation>
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9192947025498305328">Природни козметички производи</translation>
+<translation id="9193018794001479794">Разради</translation>
 <translation id="9195969368671142407">Када организација ограничи чување на Google налогу, не можете да делите групе картица нити да им се придружите</translation>
 <translation id="9198613052465150219">Google налог може да има друге облике историје прегледања на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>

@@ -996,15 +996,6 @@ Chrome 앱은 ID(예: <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY_CHRO
 
 이 정책은 <ph name="PRODUCT_NAME" /> 147부터 지원 중단됩니다. IT 관리자는 앞으로 <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> 정책을 사용하여 이 기능을 제어할 수 있습니다.</translation>
 <translation id="1686952487081322272">빠른 답변 사용 안함</translation>
-<translation id="1688920969335897857">정책을 설정하면 기존 확장 프로그램 관련 정책으로 제어되는 설정을 포함해 <ph name="PRODUCT_NAME" />의 확장 프로그램 관리 설정을 제어할 수 있습니다. 기존에 설정된 정책이 있을 경우 이 정책으로 대체됩니다.
-
-이 정책은 확장 프로그램 ID 또는 업데이트 URL을 특정 설정에만 매핑합니다. 특수 ID <ph name="DEFAULT_SCOPE" />에 기본 구성을 설정할 수 있으며, 정책에서 맞춤 구성이 설정되지 않은 모든 확장 프로그램에 기본 구성이 적용됩니다. 업데이트 URL이 있으면 구성은 확장 프로그램 매니페스트(http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)에 규정된 정확한 업데이트 URL을 포함하는 확장 프로그램에 적용됩니다. 'override_update_url' 플래그가 true로 설정된 경우 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 정책 또는 이 정책의 'update_url' 필드에 지정된 'update' URL을 사용하여 확장 프로그램이 설치 및 업데이트됩니다. 'update_url'이 Chrome 웹 스토어 url인 경우 'override_update_url' 플래그가 무시됩니다.
-
-<ph name="MS_WIN_NAME" /> 인스턴스의 경우 인스턴스가 <ph name="MS_AD_NAME" /> 도메인에 연결되거나, <ph name="MS_AAD_NAME" />에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
-
-<ph name="MAC_OS_NAME" /> 인스턴스의 경우 인스턴스가 MDM을 통해 관리되거나, MCX를 통해 도메인에 연결되거나, <ph name="CHROME_ENTERPRISE_CORE_NAME" />에 등록된 경우에만 Chrome 웹 스토어 외부의 앱 및 확장 프로그램이 강제 설치될 수 있습니다.
-
-참고: 이 정책은 확장 프로그램을 지원하는 플랫폼에만 적용됩니다.</translation>
 <translation id="1690383938831887552">서명된 HTTP 교환(SXG) 로드 차단</translation>
 <translation id="1692325295652827195">정책을 True로 설정하면 키 보고서와 정책에 의해 실행된 Android 앱 설치 이벤트가 Google로 전송됩니다.
 

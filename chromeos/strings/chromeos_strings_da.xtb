@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Download af transskriptionsmodellen for <ph name="LANGUAGE_NAME" /> er gennemført</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
+<translation id="4217571870635786043">Diktering</translation>
 <translation id="4227825898293920515">Adgangskoden udløber om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen udskriftsjobs er i gang</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8420955526972171689">Kør tests og fejlfinding af hardwareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ned</translation>
+<translation id="8427213022735114808">Diktering sender din stemme til Google, så du kan indtale tekst i alle tekstfelter.</translation>
 <translation id="8428213095426709021">Indstillinger</translation>
 <translation id="8431300646573772016">Nyt i ChromeOS</translation>
 <translation id="8433186206711564395">Netværksindstillinger</translation>

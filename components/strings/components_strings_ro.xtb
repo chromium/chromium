@@ -1614,6 +1614,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="3575121482199441727">Permite pentru acest site</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">A fost selectată opțiunea pentru numele străzii</translation>
+<translation id="3576315803647905285">Transformă în limbaj formal</translation>
 <translation id="3576616784287504635">O pagină încorporată de pe <ph name="SITE" /> afișează mesajul</translation>
 <translation id="3577473026931028326">A apărut o eroare. Încearcă din nou.</translation>
 <translation id="3577902790357386792">Gimnastică</translation>
@@ -2684,6 +2685,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="5266128565379329178">Legare în partea de sus</translation>
 <translation id="5269225904387178860">Perforare cvadruplă în partea de jos</translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> nu este o condiție acceptată pentru <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
+<translation id="527191520368130807">Îmbunătățește</translation>
 <translation id="5273658854610202413">Atenție: această politică nu a fost îmbinată așa cum este indicat în politica PolicyListMultipleSourceMergeList, deoarece nu este o parte din politicile din dicționar care pot fi îmbinate.</translation>
 <translation id="5278778426231952189">Încarcă acum</translation>
 <translation id="5279286380302340275">Gestionează descărcările</translation>
@@ -3584,6 +3586,7 @@ Pentru a ascunde opțiunile de plată mai târziu, accesează <ph name="BEGIN_LI
 <translation id="6698097747703777657">Nu ai primit codul? <ph name="BEGIN_LINK" />Obține un cod nou<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creat:</translation>
 <translation id="6698769547327354196">Pentru a dezactiva Pix în Chrome, accesează <ph name="BEGIN_LINK1" />setările pentru plăți<ph name="END_LINK1" />.</translation>
+<translation id="669903922988126943">Salvează informațiile și lucrează mai productiv, de exemplu, completează formulare în produsele Google. Poți să <ph name="MANAGE_INFO_LINK" /> în <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pentru <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Glisor pentru timp</translation>
 <translation id="6702851555558236418">Software audio și muzical</translation>
 <translation id="6702919718839027939">Prezentare</translation>
@@ -4096,6 +4099,7 @@ Detalii suplimentare:
 <translation id="7499188644237027195">Când faci achiziții în Chrome, vezi portofelul electronic și Pix ca opțiuni</translation>
 <translation id="7500917112031739411">Afișează în funcție de grup</translation>
 <translation id="7501663406926337752">Site-ul care urmează este semnalat de organizația ta</translation>
+<translation id="7502044688973049724">îți gestionezi informațiile</translation>
 <translation id="7507075214339298899">Plic 9</translation>
 <translation id="7508255263130623398">ID-ul de dispozitiv returnat pentru politică este gol sau nu corespunde cu ID-ul de dispozitiv actual</translation>
 <translation id="7508577201115425418">Servicii de printare și pentru documente</translation>
@@ -5149,6 +5153,7 @@ Detalii suplimentare:
 <translation id="9191834167571392248">Perforare în stânga jos</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Frumusețe naturală</translation>
+<translation id="9193018794001479794">Dezvoltă</translation>
 <translation id="9195969368671142407">Când organizația limitează salvarea în Contul Google, nu poți să permiți accesul sau să te alături grupurilor de file</translation>
 <translation id="9198613052465150219">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Printarea este blocată</translation>

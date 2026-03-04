@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Pristupite lozinkama u drugim aplikacijama.</translation>
 <translation id="3485558910355485767">Novi anonimni prozor</translation>
 <translation id="3488501490964659223">Kartice su zatvorene i podaci o pregledanju su izbrisani. Odjavljeni ste</translation>
+<translation id="3490396108106323715">Dijeli trenutnu karticu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="349446645805573740">Odaberite gdje želite sačuvati fajl "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Postavke</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspjelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Sačuvajte na drugi način</translation>
+<translation id="3572503683475187385">Trenutna kartica se dijeli s Geminijem kada pokrenete novi chat. Kada podijelite karticu s Geminijem, njeni sadržaji i URL se šalju Googleu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na vašem Google računu</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
 <translation id="3575426792457739946">Lista sadržava sve učitane profile.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Zaustavljanje pretraživanja ekrana putem Google Objektiva</translation>
 <translation id="3753408171347588045">Praćenje cijena</translation>
 <translation id="3753618528540214374">Plavo-zelena tema</translation>
+<translation id="3759491607478608474">Dijelite sadržaj trenutne kartice s Geminijem da dobijate relevantnije odgovore</translation>
 <translation id="3762232513783804601">Napravljeno za vaš iPad</translation>
 <translation id="3768725474733206671">Ponovno otvaranje posljednje zatvorene kartice</translation>
 <translation id="3779810277399252432">Nema internetske veze.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Nastavite kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Sakrij nakon 1 minute}one{Sakrij nakon {count} minute}few{Sakrij nakon {count} minute}other{Sakrij nakon {count} minuta}}</translation>
 <translation id="4652817563047461855">Osigurajte da lozinke budu na sigurnom, saznajte ako su ugrožene i dobijte savjet o tome kako se zaštititi online. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Uključite dijeljenje kartice</translation>
 <translation id="4658335131052370646">Sačuvaj</translation>
 <translation id="466307903888586355">Organizacija je blokirala pohranjivanje fajlova</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="5718049162805123412">Trebate ih odmah promijeniti</translation>
 <translation id="5721040778297053709">Postavite kreditnu karticu u ovaj okvir</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
+<translation id="5724590854763964497">Prema zadanim postavkama, trenutna kartica se dijeli kada pokrenete novi chat. Kada se kartice dijele, njihovi sadržaji i URL-ovi se šalju Googleu, ali se neće koristiti za poboljšavanje generativnih AI modela. Možete promijeniti ovu postavku bilo kada.</translation>
 <translation id="5724941645893276623">Da privatno pregledate web, dodajte novu karticu</translation>
 <translation id="5728072125198221967">Povezane Googleove usluge</translation>
 <translation id="5728700505257787410">Žao nam je, došlo je do problema s prijavom na vaš račun.</translation>
@@ -1964,6 +1969,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8059533439631660104">Sužavanje odjeljka.</translation>
 <translation id="8061584726507121204">Historija</translation>
 <translation id="8064946459644399612">Primijenjene su postavke stranice Nova kartica</translation>
+<translation id="8065556469005366939">Dobijajte relevantnije odgovore dijeljenjem kartica</translation>
 <translation id="8069394452933076548">Odaberite kada se kartice koje niste nedavno koristili premještaju u odjeljak neaktivnih kartica.</translation>
 <translation id="8073670137947914548">Preuzimanje je završeno</translation>
 <translation id="8076492880354921740">Kartice</translation>
@@ -2132,6 +2138,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="8660600697590740984">Slika koja je kopirana u Objektivu</translation>
 <translation id="866266761389616183">Oh, ne!</translation>
 <translation id="8663764600409216912">Koristite lozinke za koje se čini da ih je teško pogoditi</translation>
+<translation id="8664992138761940052">Prema zadanim postavkama, trenutna kartica se dijeli kada pokrenete novi chat. Kada se kartice dijele, njihovi sadržaji i URL-ovi se šalju Googleu. Možete promijeniti ovu postavku bilo kada.</translation>
 <translation id="8668210798914567634">Ova stranica je sačuvana na vašu Listu za čitanje.</translation>
 <translation id="8672642291731179042">Prevedi stranice</translation>
 <translation id="8672733398999596205">Omogući sve</translation>

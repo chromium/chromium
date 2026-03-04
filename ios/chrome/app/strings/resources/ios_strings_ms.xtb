@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}other{{count} penanda halaman disimpan pada "{title}" dalam akaun anda, {email}}}</translation>
 <translation id="1207493287814084192">5:30 MLM</translation>
 <translation id="1217294226280635614">Paparan pisah</translation>
+<translation id="1218730690561976633">Togol pengesahan pengguna autolengkap dipertingkatkan</translation>
 <translation id="1219674500290482172">Tidak dapat menyambung ke Internet.</translation>
 <translation id="1223498995510244364">Ringkaskan</translation>
 <translation id="1227113644794103810">Tab tidak aktif</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Perkongsian gagal kerana anda tidak disambungkan ke rangkaian.</translation>
 <translation id="1668001730617725852">Buka dalam Kumpulan Tab Baharu</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> kepada <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Berdasarkan dasar organisasi anda, fail ini mungkin mengandungi maklumat sensitif</translation>
 <translation id="168389590065701766">Kini anda boleh membuka Google Lens daripada bar alamat anda dan mencari apa-apa perkara yang anda lihat</translation>
 <translation id="1689333818294560261">Nama panggilan</translation>
 <translation id="169048873465870056">Alih keluar tab dan padamkan kumpulan?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">Anda juga boleh menggunakan kata laluan yang disimpan pada peranti anda yang lain.</translation>
 <translation id="3177338796769255211">Log masuk untuk mendapatkan penanda halaman dan pelbagai lagi pada semua peranti anda</translation>
 <translation id="3181954750937456830">Penyemakan Imbas Selamat (melindungi anda dan peranti anda daripada tapak yang berbahaya)</translation>
+<translation id="3183362380688692618">Kumpulan Tab Baharu...</translation>
 <translation id="3186796054637504691">Kosongkan Data Sejarah dan Laman Web</translation>
 <translation id="3190736958609431397">Nyahjejak</translation>
 <translation id="3208260410153224535">Organisasi anda telah mematikan log masuk. Penanda halaman, kata laluan baharu dan banyak lagi akan disimpan pada peranti ini sahaja.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} daripada {count} kaedah pembayaran}other{{position} daripada {count} kaedah pembayaran}}</translation>
 <translation id="5075939510584558547">Simpan tanpa penyulitan</translation>
 <translation id="5076534614343816664">Penjejakan harga</translation>
+<translation id="507762438756999615">Fail tidak dapat dikongsi disebabkan oleh dasar organisasi anda</translation>
 <translation id="5078303485429639424">Hidupkan pemberitahuan untuk <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Gunakan kata laluan yang disyorkan</translation>
 <translation id="5083464117946352670">Tidak dapat menentukan saiz fail.</translation>
@@ -1969,6 +1973,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8059533439631660104">Meruntuhkan bahagian.</translation>
 <translation id="8061584726507121204">Sejarah</translation>
 <translation id="8064946459644399612">Pilihan halaman Tab Baharu anda telah digunakan</translation>
+<translation id="8065136076319366194">Penyimpanan tidak disyorkan</translation>
 <translation id="8065556469005366939">Dapatkan jawapan yang lebih berkaitan dengan berkongsi tab anda</translation>
 <translation id="8069394452933076548">Pilih waktu untuk mengalihkan tab yang tidak digunakan baru-baru ini kepada bahagian tab tidak aktif.</translation>
 <translation id="8073670137947914548">Muat turun selesai</translation>
@@ -1991,6 +1996,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8131740175452115882">Sahkan</translation>
 <translation id="8132598642024322408">Kini <ph name="PRICE" />, sebelum ini <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Gunakan kata laluan unik untuk setiap laman atau apl. Jika seseorang menemukan kata laluan yang digunakan semula, kata laluan itu boleh digunakan untuk mengakses akaun anda yang lain. Klik untuk membuka laman web dan tukar kata laluan sekarang.</translation>
+<translation id="8133810265969517544">Perkongsian tidak disyorkan</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} tab ditutup}other{{count} tab ditutup}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 yang lain}other{# yang lain}}</translation>
 <translation id="8150167929304790980">Nama penuh</translation>
@@ -2240,6 +2246,7 @@ Serah mestilah turut didayakan dalam bahagian Umum pada Tetapan dan peranti anda
 <translation id="8976414606286374109">Kad disimpan pada Google Account anda.</translation>
 <translation id="8981454092730389528">Kawalan Aktiviti Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, laman yang disematkan</translation>
+<translation id="8990960056509724223">Fail tidak dapat disimpan disebabkan oleh dasar organisasi anda</translation>
 <translation id="8998289560386111590">Tidak tersedia pada peranti anda</translation>
 <translation id="9000532564152265066">Semua Tab</translation>
 <translation id="9003677638446136377">Semak sekali lagi</translation>

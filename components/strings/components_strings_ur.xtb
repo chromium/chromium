@@ -1615,6 +1615,7 @@
 <translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">گلی کا نام اختیار منتخب کیا گیا</translation>
+<translation id="3576315803647905285">رسمی بنائیں</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> پر انضمام کردہ ایک صفحے کے مطابق</translation>
 <translation id="3577473026931028326">کچھ غلط ہو گیا۔ دوبارہ کوشش کریں۔</translation>
 <translation id="3577902790357386792">جمناسٹکس</translation>
@@ -2637,6 +2638,7 @@
 <translation id="5190835502935405962">بُک مارکس بار</translation>
 <translation id="5191315092027169558">آپ کی پروفائل <ph name="DOMAIN" /> کے زیر انتظام ہے</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> متعدد فائلز ڈاؤن لوڈ کرنا چاہتا ہے</translation>
+<translation id="5199121357983849992">‏‫ID کارڈ محفوظ کریں؟</translation>
 <translation id="5200063972779787617">اکاؤنٹ میں پتہ محفوظ کریں</translation>
 <translation id="5201306358585911203">اس صفحے پر انضمام کردہ ایک صفحے کے مطابق</translation>
 <translation id="5203716867500274632">‏آپ کے منتظم نے آپ کے ChromeOS آلات پر آپ کے گزشتہ اور موجودہ سیشنز کو مطابقت پذیر رکھنے کیلئے مندرجہ ذیل کو فعال کیا ہے:</translation>
@@ -2685,6 +2687,7 @@
 <translation id="5266128565379329178">اوپر باندھیں</translation>
 <translation id="5269225904387178860">نیچے مستطیل سوراخ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" کے لیے "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ایک تعاون یافتہ شرط نہیں ہے</translation>
+<translation id="527191520368130807">پولش</translation>
 <translation id="5273658854610202413">‏وراننگ: اس پالیسی کو PolicyDictionaryMultipleSourceMergeList کی پالیسی کی وضاحت کے مطابق ضم نہیں کیا گیا ہے کیوں کہ یہ لغت کی ان پالیسیوں کا حصہ نہیں ہے جنہیں ضم کیا جا سکے۔</translation>
 <translation id="5278778426231952189">ابھی اپ لوڈ کریں</translation>
 <translation id="5279286380302340275">ڈاؤن لوڈز کا نظم کریں</translation>
@@ -3586,6 +3589,7 @@
 <translation id="6698097747703777657">آپ کا کوڈ موصول نہیں ہوا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">بنا دی گئی:</translation>
 <translation id="6698769547327354196">‏‫Chrome میں Pix کو آف کرنے کے لیے، اپنی <ph name="BEGIN_LINK1" />ادائیگی کی ترتیبات<ph name="END_LINK1" /> پر جائیں</translation>
+<translation id="669903922988126943">‏اپنی معلومات محفوظ کریں اور Google پروڈکٹس پر فارمز پُر کرنے جیسے کام تیزی سے کریں۔ آپ <ph name="ACCOUNT" /> کے لیے <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> میں <ph name="MANAGE_INFO_LINK" /> کر سکتے ہیں۔</translation>
 <translation id="67007264085648978">ٹائم اسکربر</translation>
 <translation id="6702851555558236418">آڈیو اور موسیقی سافٹ ویئر</translation>
 <translation id="6702919718839027939">پیش کریں</translation>
@@ -4076,6 +4080,7 @@
 <translation id="746412105358554870">‏‫JavaScript کی آپٹیمائزیشن اور سیکیورٹی</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> کو معلوم ہو جائے گا کہ آپ نے <ph name="TOP_LEVEL_URL" /> ملاحظہ کیا ہے</translation>
 <translation id="7465963048299965912">‏‎10 x 13 انچ</translation>
+<translation id="7467332121947433617">‏‫ID کارڈ اپ ڈیٹ کریں؟</translation>
 <translation id="7469935732330206581">فارم محفوظ نہیں ہے</translation>
 <translation id="7470854469646445678">کاپی کرنے کی وجہ فراہم کریں (درکار ہے)</translation>
 <translation id="7471007961486718967">منتقل کرنے کی وجہ فراہم کریں (درکار ہے)</translation>
@@ -4097,6 +4102,7 @@
 <translation id="7499188644237027195">‏جب آپ Chrome میں خريداری کرتے ہيں تو eWallet اور Pix کو اختيارات کے طور پر ديکھيں</translation>
 <translation id="7500917112031739411">گروپ کے لحاظ سے دکھائیں</translation>
 <translation id="7501663406926337752">آگے کی سائٹ کو آپ کی تنظیم نے پرچم لگا دیا ہے</translation>
+<translation id="7502044688973049724">اپنی معلومات کا نظم کریں</translation>
 <translation id="7507075214339298899">#9 لفافہ</translation>
 <translation id="7508255263130623398">‏واپس کردہ پالیسی آلہ id خالی ہے یا موجودہ آلہ id سے مماثل نہیں ہے</translation>
 <translation id="7508577201115425418">دستاویز اور پرنٹنگ سروسز</translation>
@@ -5149,6 +5155,7 @@
 <translation id="9191834167571392248">نیچے بائیں طرف سوراخ</translation>
 <translation id="9192361865877479444">میٹل (مَیٹ)</translation>
 <translation id="9192947025498305328">بے داغ حسن</translation>
+<translation id="9193018794001479794">وضاحت کریں</translation>
 <translation id="9195969368671142407">‏جب آپ کی تنظیم آپ کے Google اکاؤنٹ میں محفوظ کرنے کے عمل کو محدود کرتی ہے تو آپ ٹیب گروپس کا اشتراک نہیں کر سکتے یا اس میں شامل نہیں ہو سکتے</translation>
 <translation id="9198613052465150219">‏ممکن ہے کہ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />‎ پر آپ کے Google اکاؤنٹ میں براؤزنگ کی سرگزشت کی دیگر شکلیں موجود ہوں</translation>
 <translation id="9199905725844810519">پرنٹنگ مسدود ہے</translation>

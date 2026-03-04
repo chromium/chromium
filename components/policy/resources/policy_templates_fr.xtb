@@ -989,15 +989,6 @@ Si la règle est définie sur 1 (Ne pas autoriser), la fonctionnalité n'est pas
 
 À partir de <ph name="PRODUCT_NAME" /> 147, cette règle sera supprimée. Les administrateurs informatiques pourront utiliser <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> pour contrôler cette fonctionnalité à l'avenir.</translation>
 <translation id="1686952487081322272">Désactiver Réponses rapides</translation>
-<translation id="1688920969335897857">Cette règle permet de contrôler les paramètres de gestion des extensions pour <ph name="PRODUCT_NAME" />, y compris ceux contrôlés par des règles existantes liées aux extensions. Elle remplace toutes les anciennes règles susceptibles d'être configurées.
-
-Elle fait correspondre un ID d'extension ou une URL de mise à jour uniquement avec sa configuration spécifique. Une configuration par défaut peut être définie pour l'ID spécial <ph name="DEFAULT_SCOPE" />, lequel s'applique à toutes les extensions pour lesquelles aucune configuration personnalisée n'est définie dans cette règle. Avec une URL de mise à jour, la configuration s'applique aux extensions avec l'URL de mise à jour telle qu'elle est indiquée dans le fichier manifeste de ces extensions (voir http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si l'indicateur "override_update_url" est défini sur "True", l'extension est installée et mise à jour à l'aide de l'URL spécifiée dans la règle "<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" />" ou dans le champ "update_url" de cette règle. L'indicateur "override_update_url" est ignoré si le champ "update_url" contient une URL du Chrome Web Store.
-
-Pour les instances <ph name="MS_WIN_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est associée à un domaine <ph name="MS_AD_NAME" />, à <ph name="MS_AAD_NAME" /> ou bénéficie de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Pour les instances <ph name="MAC_OS_NAME" />, les applis et extensions non issues du Chrome Web Store ne peuvent être installées d'office que si l'instance est gérée via MDM, associée à un domaine via MCX ou bénéficie de <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Remarque : Cette règle ne s'applique qu'aux plates-formes compatibles avec les extensions.</translation>
 <translation id="1690383938831887552">Empêcher le chargement de Signed HTTP Exchange</translation>
 <translation id="1692325295652827195">Si la règle est définie sur "True", des rapports sur les événements critiques d'installation d'applis Android déclenchée par des règles sont transmis à Google.
 

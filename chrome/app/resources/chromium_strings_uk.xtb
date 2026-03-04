@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Коли ви входите на YouTube, у Gmail або інші сервіси Google за допомогою облікового запису <ph name="USER_EMAIL" />, його також можна використовувати для автоматичного входу в Chromium</translation>
 <translation id="1290883685122687410">Помилка налаштування: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Налаштуйте новий профіль Chromium</translation>
+<translation id="132092532143527429">Спробувати з Gemini у Chromium</translation>
 <translation id="1324107359134968521">Для пошуку пристроїв із Bluetooth вебпереглядачу
 Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Визначити мову</translation>
@@ -609,6 +610,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="7622753900276619808">Тепер у Chromium доступно більше функцій</translation>
 <translation id="7624307931717240213">Ми використовуємо цю інформацію, щоб покращувати сервіс. Перегляньте Політику конфіденційності й Умови використання.</translation>
 <translation id="7649070708921625228">Довідка</translation>
+<translation id="7650134251917003571">Завантажити додаток Chromium</translation>
 <translation id="7656340475565475526">Дозвольте Chromium шукати інформацію для вас</translation>
 <translation id="7658239707568436148">Скасувати</translation>
 <translation id="7686590090926151193">Chromium не є вашим веб-переглядачем за умовчанням</translation>

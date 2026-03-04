@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">如果一併將書籤儲存在 Google 帳戶中，就可以在 Chrome 中追蹤產品價格，並在降價時收到通知</translation>
 <translation id="3242123554343253302">新增 Chrome 設定檔</translation>
 <translation id="3245429137663807393">如果你一併提供 Chrome 使用報告，這些報告中會包含你造訪的網址</translation>
+<translation id="3259748324892322072">下載 Chrome 應用程式</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="3292333338048274092">接著，你必須重新啟動 Chrome。</translation>
 <translation id="3324218984287646518">向 Google 智慧鏡頭詢問這部影片的相關問題</translation>
@@ -279,7 +280,6 @@
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3893985792899396936">Chrome 提示：使用智慧鏡頭搜尋</translation>
 <translation id="3906096710440765802">只要登入 Chrome，即可在所有裝置上使用你的密碼、書籤和其他資料</translation>
-<translation id="3921132130819999051">讓 Chrome 幫你瀏覽網頁</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不受支援。</translation>
 <translation id="395904275706073188">受保護的頁面無法讀取，請試試其他頁面。</translation>
 <translation id="3968962723676998462">請輸入通關密語，才能將 Chrome 資料儲存到帳戶 (<ph name="ACCOUNT_EMAIL" />)，或使用帳戶中的 Chrome 資料</translation>
@@ -492,7 +492,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6180522807229584611">這個分頁使用的資源過多。為提升效能，請讓 Chrome 將其設為閒置分頁。</translation>
 <translation id="6182736845697986886">更新伺服器發生內部錯誤，因此安裝失敗。</translation>
-<translation id="6183773856988300112">Chrome 內建 Gemini 使用自動瀏覽功能，能在分頁中完成你交辦的工作。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome 提示：儲存密碼</translation>
 <translation id="6192058120268468905">你在 Chrome 中的帳戶</translation>
 <translation id="6220551899604141979">「<ph name="PARTNER_NAME" />」新增了一個擴充功能，可能會改變 Chrome 的運作方式。

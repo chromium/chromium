@@ -226,6 +226,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3226612997184048185">Ako sačuvate oznake i na svoj Google račun možete pratiti cijene proizvoda u Chromeu i primati obavještenja kada cijena padne</translation>
 <translation id="3242123554343253302">Dodaj Chrome profil</translation>
 <translation id="3245429137663807393">Ako dijelite i izvještaje o korištenju Chromea, ti izvještaji uključuju URL-ove koje posjećujete</translation>
+<translation id="3259748324892322072">Preuzmite aplikaciju Chrome</translation>
 <translation id="3286538390144397061">Ponovo pokreni sada</translation>
 <translation id="3292333338048274092">Zatim ćete morati ponovo pokrenuti Chrome.</translation>
 <translation id="3324218984287646518">Postavite pitanje Google Objektivu o ovom videozapisu</translation>
@@ -284,7 +285,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3892148308691398805">Kopiraj tekst</translation>
 <translation id="3893985792899396936">Savjet za Chrome: pretražujte putem Objektiva</translation>
 <translation id="3906096710440765802">Prijavite se u Chrome da dobijete lozinke, oznake i druge stavke na svim svojim uređajima</translation>
-<translation id="3921132130819999051">Dozvolite Chromeu da pregleda za vas</translation>
 <translation id="3941890832296813527">Greška prilikom instaliranja: naziv fajla programa za instaliranje nije važeći ili nije podržan.</translation>
 <translation id="395904275706073188">Zaštićene stranice se ne mogu čitati. Pokušajte s drugom stranicom.</translation>
 <translation id="3968962723676998462">Unesite pristupni izraz da koristite i sačuvate podatke Chromea na računu <ph name="ACCOUNT_EMAIL" /></translation>
@@ -499,7 +499,6 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Kartica koristi dodatne resurse. Da poboljšate performanse, dozvolite Chromeu da je deaktivira.</translation>
 <translation id="6182736845697986886">Instalacija nije uspjela zbog interne greške na serveru za ažuriranje.</translation>
-<translation id="6183773856988300112">Gemini u Chromeu koristi automatsko pregledanje za rad na vašim karticama i izvršavanje zadataka koje mu dodijelite. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Savjet za Chrome: sačuvajte lozinke</translation>
 <translation id="6192058120268468905">Vaš račun u Chromeu</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> je dodao ekstenziju koja će možda promijeniti funkcioniranje Chromea.

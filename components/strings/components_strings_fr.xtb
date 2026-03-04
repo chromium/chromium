@@ -1614,6 +1614,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="3575121482199441727">Autoriser pour ce site</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Option "Rue" sélectionnée</translation>
+<translation id="3576315803647905285">Rendre plus formel</translation>
 <translation id="3576616784287504635">Une page intégrée à l'adresse <ph name="SITE" /> indique</translation>
 <translation id="3577473026931028326">Un problème est survenu. Réessayez.</translation>
 <translation id="3577902790357386792">Gymnastique</translation>
@@ -1909,6 +1910,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="4031179711345676612">Micro autorisé</translation>
 <translation id="4036753017940930924">Terrains et terres</translation>
 <translation id="403724377879219932">Peut demander à accéder à d'autres appareils sur votre réseau local</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, nouveau</translation>
 <translation id="4039506337798853114">Pour afficher le curseur, appuyez sur |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Approximative</translation>
 <translation id="4045070493270310437">Rouvrir les onglets</translation>
@@ -2636,6 +2638,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5190835502935405962">Barre de favoris</translation>
 <translation id="5191315092027169558">Votre profil est géré par <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> souhaite télécharger plusieurs fichiers</translation>
+<translation id="5199121357983849992">Enregistrer la pièce d'identité ?</translation>
 <translation id="5200063972779787617">Enregistrer l'adresse dans le compte</translation>
 <translation id="5201306358585911203">Une page intégrée à cette page Web indique</translation>
 <translation id="5203716867500274632">Votre administrateur a autorisé la synchronisation des éléments suivants entre vos sessions précédentes et actuelles sur vos appareils ChromeOS :</translation>
@@ -2684,6 +2687,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5266128565379329178">Reliure en haut</translation>
 <translation id="5269225904387178860">Quadruple perforation en bas</translation>
 <translation id="5271381225185906340">La condition "<ph name="DATA_CONTROLS_ATTRIBUTE" />" n'est pas acceptée pour "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">Peaufiner</translation>
 <translation id="5273658854610202413">Avertissement : Cette règle n'a pas été fusionnée comme indiqué dans la règle PolicyDictionaryMultipleSourceMergeList, car elle ne fait pas partie des règles de dictionnaire fusionnables.</translation>
 <translation id="5278778426231952189">Importer maintenant</translation>
 <translation id="5279286380302340275">Gérer les téléchargements</translation>
@@ -2761,7 +2765,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="5392506727170022660">Métal (semi-brillance)</translation>
 <translation id="5394069166371280357">Émissions TV pour la famille</translation>
 <translation id="5396631636586785122">Agrafage par le bord droit</translation>
-<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, avant <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
+<translation id="5396837962335265787"><ph name="ATTRIBUTE_NAME" />, avant : <ph name="OLD_ATTRIBUTE_ATTRIBUTE" /></translation>
 <translation id="5397794290049113714">Vous</translation>
 <translation id="5398461103557553443">Pour que cet IBAN soit complété automatiquement la prochaine fois, enregistrez-le dans Google Wallet</translation>
 <translation id="5398772614898833570">Annonces bloquées</translation>
@@ -2793,6 +2797,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Pour payer plus rapidement, enregistrez ce code CVC dans Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Applis sur l'appareil</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, avant <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Ordre inverse, face vers le haut</translation>
 <translation id="5447235695608032700">Autoriser <ph name="SITE" /> à utiliser les informations qu'il a enregistrées vous concernant</translation>
 <translation id="5447973833955560753">Mot de passe de récupération</translation>
@@ -3584,6 +3589,7 @@ Pour masquer les options de paiement différé, accédez aux <ph name="BEGIN_LIN
 <translation id="6698097747703777657">Vous n'avez pas reçu votre code ? <ph name="BEGIN_LINK" />Obtenez-en un nouveau.<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Créé :</translation>
 <translation id="6698769547327354196">Pour désactiver Pix dans Chrome, accédez à vos <ph name="BEGIN_LINK1" />paramètres de paiement<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Enregistrez vos informations pour gagner du temps, par exemple en remplissant des formulaires dans les produits Google. Vous pouvez <ph name="MANAGE_INFO_LINK" /> dans <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pour <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Curseur de durée</translation>
 <translation id="6702851555558236418">Logiciels audio et musicaux</translation>
 <translation id="6702919718839027939">Présenter</translation>
@@ -4076,6 +4082,7 @@ Informations supplémentaires :
 <translation id="746412105358554870">Optimisation et sécurité JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> saura que vous avez consulté <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 pouces</translation>
+<translation id="7467332121947433617">Mettre à jour la pièce d'identité ?</translation>
 <translation id="7469935732330206581">Formulaire non sécurisé</translation>
 <translation id="7470854469646445678">Indiquez le motif de la copie (obligatoire)</translation>
 <translation id="7471007961486718967">Indiquez le motif du transfert (obligatoire)</translation>
@@ -4097,6 +4104,7 @@ Informations supplémentaires :
 <translation id="7499188644237027195">Lorsque vous effectuez des achats sur Chrome, les options "e-portefeuille" et "Pix" s'affichent</translation>
 <translation id="7500917112031739411">Afficher par groupe</translation>
 <translation id="7501663406926337752">Le site que vous essayez d'ouvrir est signalé par votre organisation</translation>
+<translation id="7502044688973049724">gérer vos infos</translation>
 <translation id="7507075214339298899">Enveloppe n°9</translation>
 <translation id="7508255263130623398">L'ID d'appareil de la règle renvoyé est vide ou ne correspond pas à l'ID d'appareil actuel.</translation>
 <translation id="7508577201115425418">Services documentaires et d'impression</translation>
@@ -5148,6 +5156,7 @@ Informations supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9192361865877479444">Métal (mat)</translation>
 <translation id="9192947025498305328">Beauté éthique</translation>
+<translation id="9193018794001479794">Développer</translation>
 <translation id="9195969368671142407">Lorsque votre organisation limite l'enregistrement dans votre compte Google, vous ne pouvez pas rejoindre ni partager de groupes d'onglets</translation>
 <translation id="9198613052465150219">Votre compte Google conserve peut-être d'autres contenus d'historique de navigation sur <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Impression bloquée</translation>

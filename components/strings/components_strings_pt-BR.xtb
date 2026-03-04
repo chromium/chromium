@@ -1844,6 +1844,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="3927932062596804919">Negar</translation>
 <translation id="3928806096717999469">Editar. Abre uma nova janela.</translation>
 <translation id="3930260846839546333">Bolsas</translation>
+<translation id="393417216277380082">Sensores de movimento e luz</translation>
 <translation id="3937834511546249636">Indústria de defesa</translation>
 <translation id="3939773374150895049">Usar WebAuthn em vez de CVC?</translation>
 <translation id="3941630233824954464">Ativar a reautenticação obrigatória</translation>
@@ -2530,6 +2531,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5018802455907704660">16 x 20 pol.</translation>
 <translation id="5019198164206649151">Armazenamento de backup em estado inválido</translation>
 <translation id="5019293549442035120">Os endereços salvos podem ser usados em vários produtos do Google. Esse endereço será salvo na sua conta <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">sensores de movimento e luz</translation>
 <translation id="5019952743397118625">A política <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> foi definida. A <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> não vai controlar a disponibilidade do modo de desenvolvedor na página de extensões.</translation>
 <translation id="5021500396464456616">Entre em contato com a pessoa que enviou o link</translation>
 <translation id="5021557570875267742">Monitore preços com o Chrome</translation>
@@ -2573,6 +2575,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="5093232627742069661">Dobra sanfona</translation>
 <translation id="5093417502834168387">Problemas no login? Tente de outro jeito</translation>
 <translation id="5094747076828555589">Este servidor não conseguiu provar que é <ph name="DOMAIN" />. O certificado de segurança não é confiável para o Chromium. Isso pode ser causado por uma configuração incorreta ou pela interceptação da sua conexão por um invasor.</translation>
+<translation id="5096066272198024688">Salvando as informações…</translation>
 <translation id="5097099694988056070">Estatísticas do dispositivo, como uso de CPU/RAM</translation>
 <translation id="5097468150760963273">27 x 39 pol.</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3778,6 +3781,7 @@ Se quiser ocultar as opções para pagar depois, acesse as <ph name="BEGIN_LINK"
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
 <translation id="7003322000677139268">Peças e acessórios de veículos</translation>
 <translation id="7004499039102548441">Guias recentes</translation>
+<translation id="700483187606163535">Os dados são salvos na <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />. Você pode usar esse recurso nos produtos do Google para preencher formulários com mais rapidez.</translation>
 <translation id="7006930604109697472">Enviar mesmo assim</translation>
 <translation id="7009364359744329733">Este card não está disponível no momento. Tente novamente mais tarde.</translation>
 <translation id="7010658264061801199">Comidas e bebidas</translation>

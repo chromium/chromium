@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">이 사이트에 허용</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">거리 이름 옵션 선택됨</translation>
+<translation id="3576315803647905285">격식체로 변경</translation>
 <translation id="3576616784287504635"><ph name="SITE" />에 삽입된 페이지 내용:</translation>
 <translation id="3577473026931028326">문제가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="3577902790357386792">체조</translation>
@@ -2684,6 +2685,7 @@
 <translation id="5266128565379329178">상단 바인드</translation>
 <translation id="5269225904387178860">하단 4공 펀칭</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />"은(는) "<ph name="DATA_CONTROLS_RESTRICTION" />"에 지원되는 조건이 아닙니다.</translation>
+<translation id="527191520368130807">글을 수정</translation>
 <translation id="5273658854610202413">경고: 이 정책은 병합 가능한 사전 정책의 일부가 아니므로 PolicyDictionaryMultipleSourceMergeList 정책에 명시된 대로 병합되지 않았습니다.</translation>
 <translation id="5278778426231952189">지금 업로드</translation>
 <translation id="5279286380302340275">다운로드 관리</translation>
@@ -3584,6 +3586,7 @@
 <translation id="6698097747703777657">코드를 받지 못하셨나요? <ph name="BEGIN_LINK" />새 코드 받기<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">생성됨:</translation>
 <translation id="6698769547327354196">Chrome에서 PIX를 사용 중지하려면 <ph name="BEGIN_LINK1" />결제 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
+<translation id="669903922988126943">정보를 저장해 두면 Google 제품 전반에서 양식 작성과 같은 작업을 더 빠르게 완료할 수 있습니다. <ph name="ACCOUNT" />의 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />에서 <ph name="MANAGE_INFO_LINK" />할 수 있습니다.</translation>
 <translation id="67007264085648978">시간 슬라이더</translation>
 <translation id="6702851555558236418">오디오 및 음악 소프트웨어</translation>
 <translation id="6702919718839027939">발표</translation>
@@ -4095,6 +4098,7 @@
 <translation id="7499188644237027195">Chrome에서 구매할 때 전자 지갑 및 Pix 옵션이 표시됩니다.</translation>
 <translation id="7500917112031739411">그룹별로 표시</translation>
 <translation id="7501663406926337752">조직에서 신고한 사이트입니다</translation>
+<translation id="7502044688973049724">내 정보를 관리</translation>
 <translation id="7507075214339298899">봉투 #9</translation>
 <translation id="7508255263130623398">반환된 정책 기기 ID가 비었거나 현재 기기 ID와 일치하지 않음</translation>
 <translation id="7508577201115425418">문서 및 인쇄 서비스</translation>
@@ -5146,6 +5150,7 @@
 <translation id="9191834167571392248">왼쪽 하단 펀칭</translation>
 <translation id="9192361865877479444">금속(매트)</translation>
 <translation id="9192947025498305328">클린 뷰티</translation>
+<translation id="9193018794001479794">상세하게 작성</translation>
 <translation id="9195969368671142407">조직에서 Google 계정에 저장하는 것을 제한하는 경우 탭 그룹을 공유하거나 탭 그룹에 참여할 수 없습니다.</translation>
 <translation id="9198613052465150219">Google 계정의 내 활동(<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />)에 방문 기록이 다른 형식으로 남아 있을 수도 있습니다</translation>
 <translation id="9199905725844810519">인쇄가 차단됨</translation>

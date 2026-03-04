@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Jos tallennat kirjanmerkit myös Google-tilillesi, voit seurata tuotteiden hintoja Chromessa ja saada ilmoituksen, kun hinta laskee</translation>
 <translation id="3242123554343253302">Lisää Chrome-profiili</translation>
 <translation id="3245429137663807393">Jos jaat myös Chromen käyttöraportteja, avaamasi URL-osoitteet näkyvät niissä</translation>
+<translation id="3259748324892322072">Lataa Chrome-sovellus</translation>
 <translation id="3286538390144397061">Käynnistä uudelleen</translation>
 <translation id="3292333338048274092">Käynnistä Chrome uudelleen.</translation>
 <translation id="3324218984287646518">Kysy Google Lensilta tästä videosta</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Kopioi teksti</translation>
 <translation id="3893985792899396936">Chrome-vinkki: Hae Lensilla</translation>
 <translation id="3906096710440765802">Kirjaudu Chromeen, jotta voit käyttää esimerkiksi salasanoja ja kirjanmerkkejä kaikilla laitteilla</translation>
-<translation id="3921132130819999051">Anna Chromen selata puolestasi</translation>
 <translation id="3941890832296813527">Asennusvirhe: Asennusohjelman tiedostonimi on virheellinen, tai sitä ei tueta.</translation>
 <translation id="395904275706073188">Suojattuja sivuja ei voi lukea. Kokeile toista sivua.</translation>
 <translation id="3968962723676998462">Lisää tunnuslause, jotta voit käyttää ja tallentaa Chrome-dataa tililläsi: <ph name="ACCOUNT_EMAIL" /></translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tämä välilehti käyttää ylimääräisiä resursseja. Jos haluat parantaa suorituskykyä, anna Chromen tehdä siitä ei-aktiivisen.</translation>
 <translation id="6182736845697986886">Asennus epäonnistui päivityspalvelimen sisäisen virheen takia.</translation>
-<translation id="6183773856988300112">Gemini in Chrome käyttää automaattista selausta, jotta se voi toimia välilehdilläsi ja hoitaa sille antamiasi tehtäviä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome-vinkki: Tallenna salasanat</translation>
 <translation id="6192058120268468905">Tilisi Chromessa</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> on lisännyt laajennuksen, joka voi muuttaa Chromen toimintaa.

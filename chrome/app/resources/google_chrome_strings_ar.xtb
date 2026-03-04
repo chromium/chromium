@@ -224,6 +224,7 @@
 <translation id="3226612997184048185">‏إذا حفظت أيضًا إشاراتك المرجعية في حسابك على Google، يمكنك تتبُّع أسعار المنتجات من خلال Chrome وتلقّي إشعارات عند انخفاض السعر.</translation>
 <translation id="3242123554343253302">‏إضافة ملف شخصي على Chrome</translation>
 <translation id="3245429137663807393">‏في حال شاركت أيضًا تقارير استخدام Chrome، ستتضمّن عناوين URL التي تنتقل إليها.</translation>
+<translation id="3259748324892322072">‏تنزيل تطبيق Chrome</translation>
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>
 <translation id="3292333338048274092">‏بعد ذلك، عليك إعادة تشغيل Chrome.</translation>
 <translation id="3324218984287646518">‏طرح أسئلة حول هذا الفيديو باستخدام "عدسة Google"</translation>
@@ -282,7 +283,6 @@
 <translation id="3892148308691398805">نسخ النص</translation>
 <translation id="3893985792899396936">‏نصيحة من Chrome: البحث باستخدام "عدسة Google"</translation>
 <translation id="3906096710440765802">‏يُرجى تسجيل الدخول إلى Chrome للوصول إلى كلمات المرور والإشارات المرجعية وغيرها على جميع أجهزتك</translation>
-<translation id="3921132130819999051">‏ما رأيك بالاستفادة من قدرات Chrome في التصفّح؟</translation>
 <translation id="3941890832296813527">خطأ في التثبيت: اسم ملف أداة التثبيت غير صالح أو غير متوافق.</translation>
 <translation id="395904275706073188">لا يمكن قراءة الصفحات المحمية. ننصحك بتجربة الميزة على صفحة مختلفة.</translation>
 <translation id="3968962723676998462">‏يُرجى إدخال عبارة المرور لاستخدام بيانات Chrome وحفظها في حسابك (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -495,7 +495,6 @@
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - الإصدار التجريبي من Google Chrome</translation>
 <translation id="6180522807229584611">‏تستخدم علامة التبويب هذه موارد إضافية. لتحسين أداء التصفُّح، ننصح بالسماح لمتصفّح Chrome بإيقاف علامة التبويب هذه.</translation>
 <translation id="6182736845697986886">تعذَّر تثبيت التطبيق بسبب حدوث خطأ داخلي في خادم التحديث.</translation>
-<translation id="6183773856988300112">‏يستخدم "Gemini في Chrome" ميزة التصفّح التلقائي للعمل في علامات التبويب وإكمال المهام المطلوبة منه. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">‏نصيحة من Chrome: حفظ كلمات المرور أولوية</translation>
 <translation id="6192058120268468905">‏حسابك في Chrome</translation>
 <translation id="6220551899604141979">‏ثبَّت الشريك <ph name="PARTNER_NAME" /> إضافة جديدة قد تؤدي إلى تغيير طريقة عمل Chrome.

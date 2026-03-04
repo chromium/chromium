@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Accesează-ți parolele în alte aplicații.</translation>
 <translation id="3485558910355485767">Fereastră incognito nouă</translation>
 <translation id="3488501490964659223">Filele au fost închise și datele de navigare au fost șterse. Te-ai deconectat.</translation>
+<translation id="3490396108106323715">Permite accesul la fila actuală</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /> despre conținutul sugerat</translation>
 <translation id="349446645805573740">Alege unde vrei să salvezi <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Setări</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Nu s-au putut încărca imaginile</translation>
 <translation id="3565930036634619844">Filă. <ph name="TAB_INDEX" /> din <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salvează altfel</translation>
+<translation id="3572503683475187385">Fila actuală este trimisă la Gemini când începi un chat nou. Când trimiți o filă la Gemini, conținutul și adresa URL ale acesteia sunt trimise la Google. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">În Contul Google</translation>
 <translation id="3575234738189584619">Caută cu Lens</translation>
 <translation id="3575426792457739946">Această listă conține toate profilurile încărcate.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Nu mai căuta pe ecran folosind Google Lens</translation>
 <translation id="3753408171347588045">Se urmăresc prețurile</translation>
 <translation id="3753618528540214374">Temă verde-smarald</translation>
+<translation id="3759491607478608474">Trimite conținutul filei actuale la Gemini pentru a primi răspunsuri mai relevante</translation>
 <translation id="3762232513783804601">Creat pentru iPad</translation>
 <translation id="3768725474733206671">Redeschide ultima filă închisă</translation>
 <translation id="3779810277399252432">Nicio conexiune la internet.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Continuă ca <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Ascunde după un minut}few{Ascunde după {count} minute}other{Ascunde după {count} de minute}}</translation>
 <translation id="4652817563047461855">Asigură-te că parolele tale sunt în siguranță, află dacă au fost compromise și primește sfaturi pentru a te proteja online. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Activează permiterea accesului la file</translation>
 <translation id="4658335131052370646">Salvează</translation>
 <translation id="466307903888586355">Salvarea fișierelor este blocată de organizația ta</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="5718049162805123412">Ar trebui să le schimbi acum</translation>
 <translation id="5721040778297053709">Poziționează cardul de credit în acest cadru</translation>
 <translation id="572328651809341494">File recente</translation>
+<translation id="5724590854763964497">În mod prestabilit, fila actuală este trimisă când începi un chat nou. Când sunt trimise file, conținutul paginilor și adresele URL respective sunt trimise la Google, dar nu vor fi folosite pentru a îmbunătăți modelele de AI generativ. Poți modifica oricând această setare.</translation>
 <translation id="5724941645893276623">Pentru a răsfoi în privat pe web, adaugă o filă nouă</translation>
 <translation id="5728072125198221967">Servicii Google conectate</translation>
 <translation id="5728700505257787410">A apărut o problemă de conectare la cont.</translation>
@@ -1964,6 +1969,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8061584726507121204">Istoric</translation>
 <translation id="8064946459644399612">Preferințele pentru pagina Filă nouă au fost aplicate</translation>
+<translation id="8065556469005366939">Primește răspunsuri mai relevante permițând accesul la file</translation>
 <translation id="8069394452933076548">Alege momentul în care filele care nu au folosite recent se mută în secțiunea filelor inactive.</translation>
 <translation id="8073670137947914548">Descărcarea s-a finalizat</translation>
 <translation id="8076492880354921740">File</translation>
@@ -2132,6 +2138,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8660600697590740984">Imaginea copiată din Lens</translation>
 <translation id="866266761389616183">Of, nu mai merge!</translation>
 <translation id="8663764600409216912">Folosești parole greu de ghicit</translation>
+<translation id="8664992138761940052">În mod prestabilit, fila actuală este trimisă când începi un chat nou. Când sunt trimise file, conținutul paginilor și adresele URL respective sunt trimise la Google. Poți modifica oricând această setare.</translation>
 <translation id="8668210798914567634">Această pagină a fost salvată în Lista de lectură.</translation>
 <translation id="8672642291731179042">Tradu paginile</translation>
 <translation id="8672733398999596205">Activează-le pe toate</translation>

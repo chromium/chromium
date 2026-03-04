@@ -284,7 +284,6 @@
 <translation id="3892148308691398805">複製文字</translation>
 <translation id="3893985792899396936">Chrome 提示：使用「智能鏡頭」搜尋</translation>
 <translation id="3906096710440765802">只要登入 Chrome，即可在所有裝置上取用你的密碼、書籤和其他資料</translation>
-<translation id="3921132130819999051">讓 Chrome 為你瀏覽</translation>
 <translation id="3941890832296813527">安裝錯誤：安裝程式檔案名稱無效或不支援。</translation>
 <translation id="395904275706073188">無法讀取受保護的頁面，請嘗試其他頁面。</translation>
 <translation id="3968962723676998462">輸入用於在帳戶 <ph name="ACCOUNT_EMAIL" /> 中使用及儲存 Chrome 資料的密碼短語</translation>
@@ -499,7 +498,6 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta 版</translation>
 <translation id="6180522807229584611">此分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設定為閒置分頁。</translation>
 <translation id="6182736845697986886">由於更新伺服器發生內部錯誤，因此無法安裝。</translation>
-<translation id="6183773856988300112">Chrome 版 Gemini 會使用自動瀏覽功能在分頁中運作，完成你指派的任務。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome 提示：儲存密碼</translation>
 <translation id="6192058120268468905">你在 Chrome 的帳戶</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> 所新增的擴充程式可能會變更 Chrome 的運作方式。

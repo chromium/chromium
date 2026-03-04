@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Când te conectezi la Servicii Google, cum ar fi Gmail sau YouTube, cu <ph name="USER_EMAIL" />, te poți conecta automat la Chromium cu același cont</translation>
 <translation id="1290883685122687410">Eroare de configurare: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configurează noul profil Chromium</translation>
+<translation id="132092532143527429">Încearcă cu Gemini în Chromium</translation>
 <translation id="1324107359134968521">Chromium are nevoie de acces la Bluetooth pentru a explora 
  Dispozitive Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Identifică limba</translation>
@@ -609,6 +610,7 @@ Chromium nu poate recupera setările.</translation>
 <translation id="7622753900276619808">Acum ai mai multe funcții disponibile în Chromium</translation>
 <translation id="7624307931717240213">Folosim informații ca să îmbunătățim acest serviciu. Consultă Politica de confidențialitate și Termenii și condițiile.</translation>
 <translation id="7649070708921625228">Ajutor</translation>
+<translation id="7650134251917003571">Descarcă aplicația Chromium</translation>
 <translation id="7656340475565475526">Permite browserului Chromium să navigheze pentru tine</translation>
 <translation id="7658239707568436148">Anulează</translation>
 <translation id="7686590090926151193">Chromium nu este browserul prestabilit</translation>

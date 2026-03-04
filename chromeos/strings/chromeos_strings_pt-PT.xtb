@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">A transferência do modelo de transcrição em <ph name="LANGUAGE_NAME" /> foi concluída</translation>
 <translation id="42126664696688958">Exportar</translation>
 <translation id="4213104098953699324">Teclado USB</translation>
+<translation id="4217571870635786043">Ditado</translation>
 <translation id="4227825898293920515">A palavra-passe expira daqui a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenhuma tarefa de impressão em curso.</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8420955526972171689">Execute testes e a resolução de problemas de hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">para baixo</translation>
+<translation id="8427213022735114808">A introdução por voz envia a sua voz para o Google para permitir a digitação por voz em qualquer campo de texto.</translation>
 <translation id="8428213095426709021">Definições</translation>
 <translation id="8431300646573772016">Novidades no ChromeOS</translation>
 <translation id="8433186206711564395">Definições de rede</translation>

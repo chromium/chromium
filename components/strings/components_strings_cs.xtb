@@ -1611,6 +1611,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="3575121482199441727">Povolit pro tento web</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Byla vybrána možnost Název ulice</translation>
+<translation id="3576315803647905285">Formalizovat</translation>
 <translation id="3576616784287504635">Vložená stránka na webu <ph name="SITE" /> říká</translation>
 <translation id="3577473026931028326">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="3577902790357386792">Gymnastika</translation>
@@ -1905,6 +1906,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="4031179711345676612">Mikrofon je povolen</translation>
 <translation id="4036753017940930924">Pozemky</translation>
 <translation id="403724377879219932">Může žádat o přístup k dalším zařízením v místní síti</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, nové</translation>
 <translation id="4039506337798853114">Pokud chcete zobrazit kurzor, stiskněte |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Přibližná</translation>
 <translation id="4045070493270310437">Znovu otevřít karty</translation>
@@ -2681,6 +2683,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
 <translation id="5266128565379329178">Vazba nahoře</translation>
 <translation id="5269225904387178860">Čtyři otvory dole</translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ není podporovaná podmínka pro „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
+<translation id="527191520368130807">Vylepšit</translation>
 <translation id="5273658854610202413">Upozornění: Tato zásada nebyla sloučena podle zásady PolicyDictionaryMultipleSourceMergeList, protože nepatří mezi slovníkové zásady, které lze sloučit.</translation>
 <translation id="5278778426231952189">Nahrát</translation>
 <translation id="5279286380302340275">Spravovat stahování</translation>
@@ -2790,6 +2793,7 @@ Pokud chcete možnosti uhrazení na splátky skrýt, přejděte na <ph name="BEG
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Pokud chcete platit rychleji, uložte si tento kód CVC do Peněženky Google (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Aplikace v zařízení</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, původně <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Obrácené pořadí lícem nahoru</translation>
 <translation id="5447235695608032700">Povolit webu <ph name="SITE" /> používat informace, které si o vás uložil</translation>
 <translation id="5447973833955560753">Heslo pro obnovení</translation>
@@ -3580,6 +3584,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6698097747703777657">Kód jste neobdrželi? <ph name="BEGIN_LINK" />Vygenerovat nový kód<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Vytvořil:</translation>
 <translation id="6698769547327354196">Pokud službu PIX chcete v Chromu vypnout, přejděte do <ph name="BEGIN_LINK1" />nastavení plateb<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Uložte si své údaje, ať můžete ve službách Google pracovat rychleji, například rychleji vyplňovat formuláře. <ph name="MANAGE_INFO_LINK" /> můžete v aplikaci <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> pro účet <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Posuvník času</translation>
 <translation id="6702851555558236418">Audio a hudební software</translation>
 <translation id="6702919718839027939">Prezentovat</translation>
@@ -4092,6 +4097,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="7499188644237027195">Při nakupování v Chromu zobrazovat jako možnosti elektronickou peněženku a službu Pix</translation>
 <translation id="7500917112031739411">Zobrazit podle skupiny</translation>
 <translation id="7501663406926337752">Web je nahlášen vaší organizací</translation>
+<translation id="7502044688973049724">Spravovat své údaje</translation>
 <translation id="7507075214339298899">Envelope č. 9</translation>
 <translation id="7508255263130623398">Vrácené ID zařízení pro zásady je prázdné nebo neodpovídá aktuálnímu ID zařízení</translation>
 <translation id="7508577201115425418">Kancelářské a tiskové služby</translation>
@@ -5144,6 +5150,7 @@ Další podrobnosti:
 <translation id="9191834167571392248">Děrování vlevo dole</translation>
 <translation id="9192361865877479444">Kov (matný)</translation>
 <translation id="9192947025498305328">Ekologická krása</translation>
+<translation id="9193018794001479794">Rozvést</translation>
 <translation id="9195969368671142407">Když vaše organizace omezuje ukládání do vašeho účtu Google, nemůžete sdílet skupiny karet ani se k nim připojovat</translation>
 <translation id="9198613052465150219">Na stránce <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> mohou být k dispozici další druhy historie prohlížení zaznamenané ve vašem účtu Google.</translation>
 <translation id="9199905725844810519">Tisk je blokován</translation>

@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Amikor <ph name="USER_EMAIL" /> fiókjával bejelentkezik a Google-szolgáltatásokba (például a Gmailbe vagy a YouTube-ba), ugyanazzal a fiókkal automatikusan bejelentkezhet a Chromiumba is.</translation>
 <translation id="1290883685122687410">Beállítási hiba: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" />.</translation>
 <translation id="1315551408014407711">Új Chromium-profil beállítása</translation>
+<translation id="132092532143527429">Kipróbálás a Gemini a Chromiumban funkcióval</translation>
 <translation id="1324107359134968521">A Chromiumnak Bluetooth-hozzáférésre van szüksége a 
  Bluetooth-eszközök felfedezéséhez. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Nyelvfelismerés</translation>
@@ -607,6 +608,7 @@ A Chromium nem tudja visszaállítani a beállításait.</translation>
 <translation id="7622753900276619808">Mostantól több funkció áll rendelkezésre a Chromiumban</translation>
 <translation id="7624307931717240213">Ezeket az információkat a szolgáltatás továbbfejlesztésére használjuk fel. Lásd: Adatvédelmi irányelvek és Általános Szerződési Feltételek.</translation>
 <translation id="7649070708921625228">Súgó</translation>
+<translation id="7650134251917003571">A Chromium app letöltése</translation>
 <translation id="7656340475565475526">A Chromium böngészhet Ön helyett</translation>
 <translation id="7658239707568436148">Mégse</translation>
 <translation id="7686590090926151193">A Chromium nem az alapértelmezett böngésző</translation>

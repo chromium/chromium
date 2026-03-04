@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">移動書籤</translation>
 <translation id="1197761954713363183">已關閉密碼金鑰確認工作表</translation>
 <translation id="1197933394627598677">顯示閱讀模式</translation>
+<translation id="1197935538609051549">停用</translation>
 <translation id="1201402288615127009">繼續</translation>
 <translation id="1202892408424955784">已追蹤的產品</translation>
 <translation id="1204037785786432551">下載連結</translation>
@@ -506,6 +507,7 @@
 <translation id="3122883569442693641">詳細資料</translation>
 <translation id="3123734510202723619">公告事項</translation>
 <translation id="3134385238404760368">最近未使用任何分頁</translation>
+<translation id="3135655388926735587">輕觸「最近關閉的分頁」</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">手動排序</translation>
 <translation id="3159335509547415276">瞭解封鎖的帳戶</translation>
@@ -850,6 +852,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
 <translation id="4641919525231168205">前往下一頁</translation>
 <translation id="4642472735733036929">已停止追蹤價格</translation>
+<translation id="4649493483932335039">查看最近關閉的分頁</translation>
 <translation id="465657074423018424">「安全瀏覽」功能可協助你防範詐騙網站。如果停用這項功能，在瀏覽網站時請提高警覺，尤其在輸入密碼前請特別留意。</translation>
 <translation id="4662373422909645029">暱稱不可包含數字</translation>
 <translation id="4663756553811254707">已刪除 <ph name="NUMBER_OF_BOOKMARKS" /> 個書籤</translation>
@@ -1562,6 +1565,7 @@
 <translation id="7363349185727752629">隱私權選項指南</translation>
 <translation id="7364103838544876661">更多用於刪除瀏覽資料的選項</translation>
 <translation id="7365073365123878797">請先更新 Google Play 服務，再開始透過 Google 密碼管理工具儲存或使用密碼。</translation>
+<translation id="7368009310682364976">查看最近曾開啟的分頁</translation>
 <translation id="7368927539449986686">編輯網站搜尋引擎</translation>
 <translation id="7375125077091615385">類型：</translation>
 <translation id="7376560087009844242">使用輕觸搜尋功能時，納入較多網頁文字也許能找到更相關的結果。你隨時可以前往<ph name="BEGIN_LINK" />設定頁面<ph name="END_LINK" />調整設定。</translation>
@@ -1679,6 +1683,7 @@
 <translation id="7824665136384946951">貴機構已關閉安全瀏覽功能</translation>
 <translation id="7826342993930002256">Chrome 是你的隨身幫手</translation>
 <translation id="7844171778363018843">沒有選取要同步處理的資料</translation>
+<translation id="784453721355882533">試用 Chrome 內建的 Gemini，取得解答、重點摘要等資訊。</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
 <translation id="7846296061357476882">Google 服務</translation>
 <translation id="784652447248278262">目前的視窗</translation>
@@ -1688,6 +1693,7 @@
 <translation id="7853202427316060426">活動</translation>
 <translation id="7859988229622350291">一律不翻譯</translation>
 <translation id="7866213166286285359">翻譯這裡的頁面</translation>
+<translation id="7873610418439765081">透過「更多選項」按鈕來試用 Chrome 內建的 Gemini，取得解答、重點摘要等資訊。</translation>
 <translation id="7875915731392087153">建立電子郵件</translation>
 <translation id="7876243839304621966">全部移除</translation>
 <translation id="7886917304091689118">正在 Chrome 中執行</translation>
@@ -1738,6 +1744,7 @@
 <translation id="8062594758852531064">延伸預先載入模式：</translation>
 <translation id="8063895661287329888">無法加入書籤。</translation>
 <translation id="8066816452984416180">快速將這個頁面加入書籤，按住即可編輯這個捷徑。</translation>
+<translation id="8072436850275034464">無論在何處使用 Chrome，都能重新開啟最近關閉的分頁</translation>
 <translation id="8073388330009372546">在新分頁中開啟圖片</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8078096376109663956">僅分享文字</translation>
@@ -1849,6 +1856,7 @@
 <translation id="8460008946585880786">將一個分頁拖曳到另一個分頁上</translation>
 <translation id="8460448946170646641">查看最重要的隱私權和安全性控制項</translation>
 <translation id="8460932807646981183">管理搜尋引擎和網站搜尋</translation>
+<translation id="8465252176946159372">無效</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="847433688444405067">跨裝置瀏覽</translation>
 <translation id="8477178913400731244">刪除資料</translation>

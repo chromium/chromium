@@ -727,6 +727,7 @@
 <translation id="4212169537710712814">Zakończono pobieranie modelu transkrypcji w języku: <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">Eksportuj</translation>
 <translation id="4213104098953699324">Klawiatura USB</translation>
+<translation id="4217571870635786043">Dyktowanie</translation>
 <translation id="4227825898293920515">Hasło wygasa za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Brak zadań drukowania w toku</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1682,6 +1683,7 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8420955526972171689">Uruchamianie testów i rozwiązywanie problemów ze sprzętem</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">w dół</translation>
+<translation id="8427213022735114808">Dyktowanie wysyła Twój głos do Google, by umożliwić pisanie głosowe w dowolnym polu tekstowym.</translation>
 <translation id="8428213095426709021">Ustawienia</translation>
 <translation id="8431300646573772016">Co nowego w Chrome OS</translation>
 <translation id="8433186206711564395">Ustawienia sieci</translation>

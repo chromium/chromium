@@ -990,15 +990,6 @@ A partir de la versión 140 de <ph name="PRODUCT_NAME" />, si no se define esta 
 
 A partir de la versión 147 de <ph name="PRODUCT_NAME" />, esta política dejará de estar disponible. Los administradores de TI pueden usar <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> para controlar esta función de ahora en adelante.</translation>
 <translation id="1686952487081322272">Inhabilitar Respuestas rápidas</translation>
-<translation id="1688920969335897857">Si se define esta política, se controlará la configuración de gestión de extensiones de <ph name="PRODUCT_NAME" />, incluidas las que controlen las políticas vigentes relacionadas con las extensiones. Esta política sustituirá a todas las políticas antiguas que se hubieran definido.
-
-Esta política asociará un ID de extensión o una URL de actualización únicamente a su configuración específica. Se puede definir una configuración predeterminada para el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las extensiones para las que no se haya definido una configuración personalizada en esta política. Si se usa una URL de actualización, la configuración se aplicará a las extensiones que incluyan la misma URL de actualización en su archivo de manifiesto (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Si a la marca "override_update_url" se le asigna el valor true, la extensión se instalará y se actualizará mediante la URL de actualización que se especifique en la política <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o en el campo "update_url" de esta política. Se ignorará la marca "override_update_url" si el valor de "update_url" es una URL de Chrome Web Store.
-
-En instancias de <ph name="MS_WIN_NAME" />, las aplicaciones y extensiones que no estén alojadas en Chrome Web Store solo se podrán instalar de manera forzada si la instancia está vinculada a un dominio de <ph name="MS_AD_NAME" /> o a <ph name="MS_AAD_NAME" />, o si se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-En las instancias de <ph name="MAC_OS_NAME" />, las aplicaciones y extensiones externas a Chrome Web Store solo se podrán instalar de manera forzada si la instancia se gestiona mediante MDM, está vinculada a un dominio a través de MCX o se ha registrado en <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Nota: Esta política solo se aplica a las plataformas compatibles con extensiones.</translation>
 <translation id="1690383938831887552">Evitar que se cargue contenido Signed HTTP Exchange</translation>
 <translation id="1692325295652827195">Si se le asigna el valor True a esta política, se enviarán a Google informes de los principales eventos de instalación de aplicaciones de Android activados por la política.
 

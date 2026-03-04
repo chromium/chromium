@@ -728,6 +728,7 @@
 <translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> transcription model download completed</translation>
 <translation id="42126664696688958">Export</translation>
 <translation id="4213104098953699324">USB keyboard</translation>
+<translation id="4217571870635786043">Dictation</translation>
 <translation id="4227825898293920515">Password expires in <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No print jobs in progress</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8420955526972171689">Run tests and troubleshooting for hardware issues</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">down</translation>
+<translation id="8427213022735114808">Dictation sends your voice to Google to allow voice typing in any text field.</translation>
 <translation id="8428213095426709021">Settings</translation>
 <translation id="8431300646573772016">What's new with Chrome OS</translation>
 <translation id="8433186206711564395">Network settings</translation>

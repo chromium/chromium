@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Hvis du også gemmer dine bogmærker på din Google-konto, kan du holde øje med produktpriser i Chrome og få besked, når prisen falder</translation>
 <translation id="3242123554343253302">Tilføj Chrome-profil</translation>
 <translation id="3245429137663807393">Hvis du også deler Chrome-brugsrapporter, omfatter de pågældende rapporter de webadresser, du besøger</translation>
+<translation id="3259748324892322072">Hent Chrome-appen</translation>
 <translation id="3286538390144397061">Genstart nu</translation>
 <translation id="3292333338048274092">Du skal derefter genstarte Chrome.</translation>
 <translation id="3324218984287646518">Stil Google Lens spørgsmål om denne video</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Kopiér tekst</translation>
 <translation id="3893985792899396936">Tip til Chrome: Søg med Lens</translation>
 <translation id="3906096710440765802">Log ind i Chrome for at se dine adgangskoder, bogmærker m.m. på alle dine enheder</translation>
-<translation id="3921132130819999051">Lad Chrome browse for dig</translation>
 <translation id="3941890832296813527">Installationsfejl: Installationens filnavn er ugyldigt eller understøttes ikke.</translation>
 <translation id="395904275706073188">Beskyttede sider kan ikke læses. Prøv en anden side.</translation>
 <translation id="3968962723676998462">Angiv din adgangssætning for at bruge og gemme Chrome-data på din konto, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome beta</translation>
 <translation id="6180522807229584611">Denne fane bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre den inaktiv.</translation>
 <translation id="6182736845697986886">Installationen mislykkedes på grund af en intern fejl i opdateringsserveren.</translation>
-<translation id="6183773856988300112">Gemini i Chrome bruger automatisk browsing til at arbejde på dine faner og udføre de opgaver, du giver den. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Tip til Chrome: Gem adgangskoder</translation>
 <translation id="6192058120268468905">Din konto i Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> har tilføjet en udvidelse, der kan ændre den måde, Chrome fungerer på.

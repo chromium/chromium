@@ -1610,6 +1610,7 @@
 <translation id="3575121482199441727">இந்தத் தளத்திற்கு அனுமதி</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">தெருப் பெயருக்கான விருப்பம் தேர்ந்தெடுக்கப்பட்டது</translation>
+<translation id="3576315803647905285">முறையானதாக்கு</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> இல் உள்ள உட்பொதிக்கப்பட்ட பக்கம் தெரிவிப்பது:</translation>
 <translation id="3577473026931028326">ஏதோ தவறாகிவிட்டது. மீண்டும் முயலவும்.</translation>
 <translation id="3577902790357386792">ஜிம்னாஸ்டிக்ஸ்</translation>
@@ -2680,6 +2681,7 @@
 <translation id="5266128565379329178">பைண்டு டாப்</translation>
 <translation id="5269225904387178860">குவாட் பஞ்ச் பாட்டம்</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" நிபந்தனையை "<ph name="DATA_CONTROLS_RESTRICTION" />க்குப்" பயன்படுத்த முடியாது</translation>
+<translation id="527191520368130807">மேம்படுத்து</translation>
 <translation id="5273658854610202413">எச்சரிக்கை: இது ஒன்றிணைக்கப்படக்கூடிய டிக்‌ஷனரி கொள்கைகளைச் சேர்ந்ததல்ல என்பதால் PolicyDictionaryMultipleSourceMergeList கொள்கையில் குறிப்பிட்டுள்ளபடி ஒன்றிணைக்கப்படவில்லை.</translation>
 <translation id="5278778426231952189">இப்போது பதிவேற்று</translation>
 <translation id="5279286380302340275">பதிவிறக்கங்களை நிர்வகிக்கவும்</translation>
@@ -3579,6 +3581,7 @@
 <translation id="6698097747703777657">குறியீட்டைப் பெறவில்லையா? <ph name="BEGIN_LINK" />புதிய குறியீட்டைப் பெறுக<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">உருவாக்கப்பட்டது:</translation>
 <translation id="6698769547327354196">Chromeமில் PIXஸை முடக்க <ph name="BEGIN_LINK1" />பேமெண்ட் அமைப்புகளுக்குச்<ph name="END_LINK1" /> செல்லவும்</translation>
+<translation id="669903922988126943">உங்கள் தகவல்களைச் சேமித்து Google தயாரிப்புகள் எல்லாவற்றிலும் படிவங்களை நிரப்புவது போன்ற செயல்களை விரைவாக மேற்கொள்ளலாம். <ph name="ACCOUNT" /> என்ற கணக்குக்கு <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> இல் <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="67007264085648978">டைம் ஸ்கிரப்பர்</translation>
 <translation id="6702851555558236418">ஆடியோ மற்றும் இசை மென்பொருள்</translation>
 <translation id="6702919718839027939">ஸ்கிரீனைப் பகிர்</translation>
@@ -4091,6 +4094,7 @@
 <translation id="7499188644237027195">Chromeமில் பர்ச்சேஸ்களைச் செய்யும்போது இ-வாலட் மற்றும் Pix விருப்பங்களாகக் காட்டப்படும்</translation>
 <translation id="7500917112031739411">குழுவின்படி காட்டு</translation>
 <translation id="7501663406926337752">உங்கள் நிறுவனம் இந்தத் தளத்தைக் கொடியிட்டுள்ளது</translation>
+<translation id="7502044688973049724">உங்கள் தகவல்களை நிர்வகியுங்கள்</translation>
 <translation id="7507075214339298899">என்வெலப் #9</translation>
 <translation id="7508255263130623398">கிடைத்த பாலிசி சாதன ஐடி காலியாக உள்ளது அல்லது தற்போதைய சாதன ஐடியுடன் பொருந்தவில்லை</translation>
 <translation id="7508577201115425418">ஆவணம் &amp; அச்சிடல் சேவைகள்</translation>
@@ -5144,6 +5148,7 @@
 <translation id="9191834167571392248">பஞ்ச் பாட்டம் லெஃப்ட்</translation>
 <translation id="9192361865877479444">மேட் மெட்டல்</translation>
 <translation id="9192947025498305328">தீங்கற்ற அழகுப் பொருட்கள்</translation>
+<translation id="9193018794001479794">விவரி</translation>
 <translation id="9195969368671142407">உங்கள் Google கணக்கில் சேமிப்பதை உங்கள் நிறுவனம் கட்டுப்படுத்தினால், பக்கக் குழுக்களை உங்களால் பகிரவோ அவற்றில் சேரவோ முடியாது</translation>
 <translation id="9198613052465150219">பிற வகை பிரவுசிங் பதிவுகள் உங்கள் Google கணக்கின் <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> பக்கத்தில் இருக்கலாம்</translation>
 <translation id="9199905725844810519">பிரிண்ட் செய்வது தடுக்கப்பட்டுள்ளது</translation>

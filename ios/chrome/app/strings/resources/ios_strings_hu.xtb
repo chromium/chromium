@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Más alkalmazásokban is hozzáférhet a jelszavaihoz.</translation>
 <translation id="3485558910355485767">Új inkognitó ablak</translation>
 <translation id="3488501490964659223">A lapok bezáródtak, a böngészési adatok pedig törlődtek. A rendszer kijelentkeztette Önt</translation>
+<translation id="3490396108106323715">Aktuális lap megosztása</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /> a javasolt tartalomról</translation>
 <translation id="349446645805573740">Válassza ki, hogy hova szeretné menteni a következő fájlt: „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Beállítások</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Nem sikerült a képek betöltése</translation>
 <translation id="3565930036634619844">Lap. <ph name="NUMBER_OF_TABS" />/<ph name="TAB_INDEX" />.</translation>
 <translation id="3567168891086460374">Mentés más módon</translation>
+<translation id="3572503683475187385">Az aktuális lap meg lesz osztva a Geminivel, amikor Ön új csevegést indít. Amikor megoszt egy lapot a Geminivel, a rendszer elküldi a lap tartalmát és URL-jét a Google-nak. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
 <translation id="3572607909481582402">A Google-fiókjában</translation>
 <translation id="3575234738189584619">Keresés a Lens segítségével</translation>
 <translation id="3575426792457739946">Ez a lista az összes betöltött profilt tartalmazza.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">A képernyőn való Google Lens-keresés leállítása</translation>
 <translation id="3753408171347588045">Az árak nyomon követése elkezdődött</translation>
 <translation id="3753618528540214374">Viridiánzöld téma</translation>
+<translation id="3759491607478608474">Megoszthatja a jelenlegi lap tartalmát a Geminivel, hogy relevánsabb válaszokat kaphasson.</translation>
 <translation id="3762232513783804601">iPadhez készült</translation>
 <translation id="3768725474733206671">A legutóbb bezárt lap újranyitása</translation>
 <translation id="3779810277399252432">Nincs internetkapcsolat.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Folytatás mint <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Elrejtés 1 perc után}other{Elrejtés {count} perc után}}</translation>
 <translation id="4652817563047461855">Meggyőződhet arról, hogy jelszavai biztonságosak, kiderítheti, hogy illetéktelenül hozzájuk fértek-e, és tanácsot kaphat az online biztonság megőrzéséhez. <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="4653053602672040238">Lapmegosztás bekapcsolása</translation>
 <translation id="4658335131052370646">Mentés</translation>
 <translation id="466307903888586355">A fájlok mentését a szervezete letiltotta</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="5718049162805123412">Azonnal módosítania kell őket</translation>
 <translation id="5721040778297053709">Igazítsa a hitelkártyát ehhez a kerethez</translation>
 <translation id="572328651809341494">Nemrég megnyitott lapok</translation>
+<translation id="5724590854763964497">Alapértelmezés szerint az aktuális lap meg lesz osztva, amikor Ön új csevegést indít. A lapok megosztásakor a rendszer elküldi a tartalmukat és az URL-jeiket a Google-nak, de nem használjuk fel őket generatív AI-modellek továbbfejlesztéséhez. Ezt a beállítást bármikor módosíthatja.</translation>
 <translation id="5724941645893276623">Ha privát módon szeretne böngészni az interneten, nyisson meg egy új lapot.</translation>
 <translation id="5728072125198221967">Összekapcsolt Google-szolgáltatások</translation>
 <translation id="5728700505257787410">A fiókjába történő bejelentkezés során hiba történt.</translation>
@@ -1964,6 +1969,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
 <translation id="8061584726507121204">Előzmények</translation>
 <translation id="8064946459644399612">Az Új lap oldal beállításai alkalmazva</translation>
+<translation id="8065556469005366939">Relevánsabb válaszokat kaphat, ha megosztja a lapjait</translation>
 <translation id="8069394452933076548">Válassza ki, hogy mikor kerüljenek a legutóbb nem használt lapok az inaktív lapok szakaszba.</translation>
 <translation id="8073670137947914548">Sikeres letöltés</translation>
 <translation id="8076492880354921740">Lapok</translation>
@@ -2132,6 +2138,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8660600697590740984">Lens-keresés a másolt képen</translation>
 <translation id="866266761389616183">A manóba!</translation>
 <translation id="8663764600409216912">Olyan jelszavakat használ, amelyeket valószínűleg nehéz kitalálni</translation>
+<translation id="8664992138761940052">Alapértelmezés szerint az aktuális lap meg lesz osztva, amikor Ön új csevegést indít. A lapok megosztásakor a rendszer elküldi a tartalmukat és az URL-jeiket a Google-nak. Ezt a beállítást bármikor módosíthatja.</translation>
 <translation id="8668210798914567634">Ez az oldal az Ön olvasási listájára van mentve.</translation>
 <translation id="8672642291731179042">Oldalak lefordítása</translation>
 <translation id="8672733398999596205">Az összes bekapcsolása</translation>

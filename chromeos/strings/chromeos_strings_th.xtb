@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">ดาวน์โหลดโมเดลการถอดเสียงเป็นคำของภาษา<ph name="LANGUAGE_NAME" />เสร็จสมบูรณ์แล้ว</translation>
 <translation id="42126664696688958">ส่งออก</translation>
 <translation id="4213104098953699324">แป้นพิมพ์ USB</translation>
+<translation id="4217571870635786043">การพิมพ์ตามคำบอก</translation>
 <translation id="4227825898293920515">รหัสผ่านจะหมดอายุในอีก <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ไม่มีงานที่กำลังพิมพ์</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">ทำการทดสอบและแก้ปัญหาเกี่ยวกับฮาร์ดแวร์</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ลง</translation>
+<translation id="8427213022735114808">การพิมพ์ตามคำบอกจะส่งเสียงของคุณไปยัง Google เพื่อให้พิมพ์ด้วยเสียงในช่องข้อความต่างๆ</translation>
 <translation id="8428213095426709021">การตั้งค่า</translation>
 <translation id="8431300646573772016">มีอะไรใหม่ใน Chrome OS</translation>
 <translation id="8433186206711564395">การตั้งค่าเครือข่าย</translation>

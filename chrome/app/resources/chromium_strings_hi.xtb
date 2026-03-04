@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Gmail या YouTube जैसी Google की सेवाओं में <ph name="USER_EMAIL" /> से साइन इन करने पर, Chromium में इसी खाते से अपने-आप साइन इन किया जा सकता है</translation>
 <translation id="1290883685122687410">सेटअप करने में गड़बड़ी हुई: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">क्रोमियम पर अपनी नई प्रोफ़ाइल सेट अप करें</translation>
+<translation id="132092532143527429">Chromium में Gemini को आज़माएं</translation>
 <translation id="1324107359134968521">Chromium को ब्लूटूथ का ऐक्सेस चाहिए, ताकि वह ब्लूटूथ डिवाइस ढूंढ पाए. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">भाषा का पता लगाएं</translation>
 <translation id="1330742950061766891">Chromium की सुझाई गई ब्राउज़र सेटिंग का इस्तेमाल करें</translation>
@@ -608,6 +609,7 @@
 <translation id="7622753900276619808">अब आपके लिए Chromium में ज़्यादा सुविधाएं उपलब्ध हैं</translation>
 <translation id="7624307931717240213">हम जानकारी का इस्तेमाल, इस सेवा को बेहतर बनाने के लिए करते हैं. निजता नीति और सेवा की शर्तें देखें.</translation>
 <translation id="7649070708921625228">सहायता</translation>
+<translation id="7650134251917003571">Chromium ऐप्लिकेशन डाउनलोड करें</translation>
 <translation id="7656340475565475526">Chromium को आपके लिए ब्राउज़ करने की अनुमति दें</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7686590090926151193">क्रोमियम आपका डिफ़ॉल्ट ब्राउज़र नहीं है</translation>

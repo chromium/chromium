@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Başka uygulamalardaki şifrelerinize erişin.</translation>
 <translation id="3485558910355485767">Yeni Gizli Pencere</translation>
 <translation id="3488501490964659223">Sekmeler kapatıldı ve tarama verileri silindi. Oturumunuz kapatıldı</translation>
+<translation id="3490396108106323715">Mevcut sekmeyi paylaş</translation>
 <translation id="3493531032208478708">Önerilen içerik hakkında <ph name="BEGIN_LINK" />daha fazla bilgi edinin<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" dosyasının nereye kaydedileceğini seçin</translation>
 <translation id="3504377992102007712">Ayarlar</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Resimler yüklenemedi</translation>
 <translation id="3565930036634619844">Sekme. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Başka şekilde kaydet</translation>
+<translation id="3572503683475187385">Yeni bir sohbet başlattığınızda geçerli sekme Gemini ile paylaşılır. Gemini ile paylaştığınız sekmelerin içerikleri ve URL'leri Google'a gönderilir. <ph name="BEGIN_LINK" />Daha fazla bilgi edinin<ph name="END_LINK" />.</translation>
 <translation id="3572607909481582402">Google Hesabınızda</translation>
 <translation id="3575234738189584619">Lens ile ara</translation>
 <translation id="3575426792457739946">Bu liste, yüklenen tüm profilleri içerir.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Google Lens ile ekranımda arama yapmayı durdur</translation>
 <translation id="3753408171347588045">Fiyatlar takip ediliyor</translation>
 <translation id="3753618528540214374">Zümrüt yeşili tema</translation>
+<translation id="3759491607478608474">Daha alakalı yanıtlar almak için mevcut sekme içeriğini Gemini ile paylaşın</translation>
 <translation id="3762232513783804601">iPad'iniz İçin Geliştirildi</translation>
 <translation id="3768725474733206671">Son Kapatılan Sekmeyi Yeniden Aç</translation>
 <translation id="3779810277399252432">İnternet bağlantısı yok.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> olarak devam et</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 dakika sonra gizle}other{{count} dakika sonra gizle}}</translation>
 <translation id="4652817563047461855">Şifrelerinizin güvenliğini sağlayın, güvenliğin ihlal edilip edilmediğini öğrenin ve internette kendinizi korumanıza yardımcı olacak öneriler alın. <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Sekme paylaşımını etkinleştirin</translation>
 <translation id="4658335131052370646">Kaydet</translation>
 <translation id="466307903888586355">Dosya kaydetme işlemi, kuruluşunuz tarafından engelleniyor</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="5718049162805123412">Bu şifreleri hemen değiştirmelisiniz</translation>
 <translation id="5721040778297053709">Kredi kartını bu çerçeveye yerleştirin</translation>
 <translation id="572328651809341494">Son sekmeler</translation>
+<translation id="5724590854763964497">Yeni bir sohbet başlattığınızda mevcut sekmeniz varsayılan olarak paylaşılır. Paylaşılan sekmelerin içerikleri ve URL'leri Google'a gönderilir ancak üretken yapay zeka modellerini daha iyi hale getirmek için kullanılmaz. Bu ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="5724941645893276623">Web'e gizli modda göz atmak için yeni bir sekme ekleyin</translation>
 <translation id="5728072125198221967">Bağlı Google hizmetleri</translation>
 <translation id="5728700505257787410">Maalesef hesabınızda oturum açmayla ilgili bir sorun oldu.</translation>
@@ -1964,6 +1969,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8059533439631660104">Bölümü daraltır.</translation>
 <translation id="8061584726507121204">Geçmiş</translation>
 <translation id="8064946459644399612">Yeni Sekme sayfası tercihleriniz uygulandı</translation>
+<translation id="8065556469005366939">Sekmelerinizi paylaşarak daha alakalı yanıtlar alın</translation>
 <translation id="8069394452933076548">Yakın zamanda kullanılmayan sekmelerin, etkin olmayan sekmeler bölümüne ne zaman taşınacağı seçin.</translation>
 <translation id="8073670137947914548">İndirme tamamlandı</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
@@ -2132,6 +2138,7 @@ Handoff'un ayrıca, Ayarlar'ın Genel bölümünde de etkinleştirilmesi ve ciha
 <translation id="8660600697590740984">Kopyaladığınız Lens resmi</translation>
 <translation id="866266761389616183">Hay aksi!</translation>
 <translation id="8663764600409216912">Tahmin edilmesi zor görünen şifreler kullanıyorsunuz</translation>
+<translation id="8664992138761940052">Yeni bir sohbet başlattığınızda mevcut sekmeniz varsayılan olarak paylaşılır. Paylaşılan sekmelerin sayfa içerikleri ve URL'leri Google'a gönderilir. Bu ayarı dilediğiniz zaman değiştirebilirsiniz.</translation>
 <translation id="8668210798914567634">Bu sayfa Okuma Listenize kaydedildi.</translation>
 <translation id="8672642291731179042">Sayfaları çevir</translation>
 <translation id="8672733398999596205">Tümünü Etkinleştir</translation>

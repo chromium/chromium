@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Когато използвате <ph name="USER_EMAIL" /> за вход в услуги на Google, като например Gmail или YouTube, можете автоматично да влизате в Chromium със същия профил</translation>
 <translation id="1290883685122687410">Грешка при настройването: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Настройване на новия ви потребителски профил в Chromium</translation>
+<translation id="132092532143527429">Изпробване с Gemini в Chromium</translation>
 <translation id="1324107359134968521">Chromium се нуждае от достъп до Bluetooth, за да преглежда
 устройствата с Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Разпознаване на езика</translation>
@@ -603,6 +604,7 @@
 <translation id="7622753900276619808">Вече разполагате с повече функции в Chromium</translation>
 <translation id="7624307931717240213">Използваме информацията, за да подобряваме тази услуга. Вижте Декларацията за поверителност и Общите условия.</translation>
 <translation id="7649070708921625228">Помощ</translation>
+<translation id="7650134251917003571">Изтегляне на приложението Chromium</translation>
 <translation id="7656340475565475526">Разрешете на Chromium да сърфира вместо вас</translation>
 <translation id="7658239707568436148">Отказ</translation>
 <translation id="7686590090926151193">Chromium не е браузърът ви по подразбиране</translation>

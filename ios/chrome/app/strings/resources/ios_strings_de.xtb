@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">In anderen Apps auf deine Passwörter zugreifen.</translation>
 <translation id="3485558910355485767">Neues Inkognitofenster</translation>
 <translation id="3488501490964659223">Tabs wurden geschlossen und Browserdaten gelöscht. Du wurdest abgemeldet.</translation>
+<translation id="3490396108106323715">Aktuellen Tab teilen</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /> zu vorgeschlagenen Inhalten</translation>
 <translation id="349446645805573740">Wähle einen Speicherort für die Datei <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> aus</translation>
 <translation id="3504377992102007712">Einstellungen</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Bilder konnten nicht geladen werden</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" /> von <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Anders speichern</translation>
+<translation id="3572503683475187385">Der aktuelle Tab wird mit Gemini geteilt, wenn du einen neuen Chat startest. Inhalte und URLs geteilter Tabs werden an Google gesendet. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Im Google-Konto</translation>
 <translation id="3575234738189584619">Mit Lens suchen</translation>
 <translation id="3575426792457739946">Diese Liste enthält alle geladenen Profile.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Suche auf dem Bildschirm mit Google Lens beenden</translation>
 <translation id="3753408171347588045">Preise werden beobachtet</translation>
 <translation id="3753618528540214374">Blaugrünes Design</translation>
+<translation id="3759491607478608474">Inhalte des aktuellen Tabs mit Gemini teilen, um relevantere Antworten zu erhalten</translation>
 <translation id="3762232513783804601">Für dein iPad entwickelt</translation>
 <translation id="3768725474733206671">Zuletzt geschlossenen Tab wieder öffnen</translation>
 <translation id="3779810277399252432">Keine Internetverbindung</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Als <ph name="FIRST_RUN_ACCOUNT_NAME" /> fortfahren</translation>
 <translation id="4651927776207937667">{count,plural, =1{Nach 1 Minute ausblenden}other{Nach {count} Minuten ausblenden}}</translation>
 <translation id="4652817563047461855">Prüfe, ob deine Passwörter sicher sind, finde heraus, ob sie kompromittiert wurden, und informiere dich darüber, wie du dich im Internet besser schützen kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Tabfreigabe aktivieren</translation>
 <translation id="4658335131052370646">Speichern</translation>
 <translation id="466307903888586355">Das Speichern von Dateien wird von deiner Organisation blockiert</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="5718049162805123412">Du solltest dieses Passwort bzw. diese Passwörter jetzt ändern</translation>
 <translation id="5721040778297053709">Positioniere die Kreditkarte in diesem Bereich</translation>
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
+<translation id="5724590854763964497">Standardmäßig wird dein aktueller Tab geteilt, wenn du einen neuen Chat startest. Wenn Tabs geteilt werden, werden ihre Inhalte und URLs an Google gesendet, aber nicht zur Verbesserung generativer KI-Modelle verwendet. Du kannst diese Einstellung jederzeit ändern.</translation>
 <translation id="5724941645893276623">Füge einen neuen Tab hinzu, um privat im Web zu surfen</translation>
 <translation id="5728072125198221967">Verknüpfte Google-Dienste</translation>
 <translation id="5728700505257787410">Beim Anmelden in deinem Konto ist ein Fehler aufgetreten.</translation>
@@ -1964,6 +1969,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8059533439631660104">Abschnitt minimieren</translation>
 <translation id="8061584726507121204">Verlauf</translation>
 <translation id="8064946459644399612">Einstellungen für die Seite „Neuer Tab“ wurden übernommen</translation>
+<translation id="8065556469005366939">Tab teilen und relevantere Antworten erhalten</translation>
 <translation id="8069394452933076548">Lege fest, wann Tabs, die länger nicht verwendet wurden, in den Bereich „Inaktive Tabs“ verschoben werden sollen.</translation>
 <translation id="8073670137947914548">Download abgeschlossen</translation>
 <translation id="8076492880354921740">Tabs</translation>
@@ -2132,6 +2138,7 @@ Handoff muss auch im Abschnitt „Allgemein“ deiner Einstellungen aktiviert se
 <translation id="8660600697590740984">Aus Lens kopiertes Bild</translation>
 <translation id="866266761389616183">Oh nein!</translation>
 <translation id="8663764600409216912">Du verwendest Passwörter, die nicht einfach zu erraten sein dürften</translation>
+<translation id="8664992138761940052">Standardmäßig wird dein aktueller Tab geteilt, wenn du einen neuen Chat startest. Inhalte und URLs geteilter Tabs werden an Google gesendet. Du kannst diese Einstellung jederzeit ändern.</translation>
 <translation id="8668210798914567634">Diese Seite wurde in deiner Leseliste gespeichert.</translation>
 <translation id="8672642291731179042">Seiten übersetzen</translation>
 <translation id="8672733398999596205">Alle aktivieren</translation>

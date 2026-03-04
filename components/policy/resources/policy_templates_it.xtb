@@ -1014,15 +1014,6 @@ A partire dalla versione 140 di <ph name="PRODUCT_NAME" />, se la policy non vie
 
 A partire dalla versione 147 di <ph name="PRODUCT_NAME" />, questa policy verrà ritirata. Gli amministratori IT possono utilizzare <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> per controllare questa funzionalità in futuro.</translation>
 <translation id="1686952487081322272">Disattiva Risposte rapide</translation>
-<translation id="1688920969335897857">La configurazione della policy permette di controllare le impostazioni di gestione delle estensioni per <ph name="PRODUCT_NAME" />, incluse quelle controllate da policy relative alle estensioni esistenti. La policy prevale su tutte le policy precedenti che potrebbero essere state impostate.
-
-Questa policy consente di mappare un ID estensione o un URL di aggiornamento soltanto alla relativa impostazione specifica. È possibile impostare una configurazione predefinita per l'ID speciale <ph name="DEFAULT_SCOPE" />, che verrà applicata a tutte le estensioni senza una configurazione personalizzata in questa policy. Con un URL di aggiornamento, la configurazione verrà applicata alle estensioni con l'esatto URL di aggiornamento indicato nel file manifest dell'estensione (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Se il flag "override_update_url" viene impostato su true, l'estensione verrà installata e aggiornata usando l'URL di aggiornamento ("update") specificato nella policy <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> o nel campo "update_url" di questa policy. Il flag "override_update_url" viene ignorato se il valore "update_url" è un URL del Chrome Web Store.
-
-Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è aggiunta a un dominio <ph name="MS_AD_NAME" />, aggiunta a <ph name="MS_AAD_NAME" /> o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Nota: questa policy si applica solo alle piattaforme che supportano le estensioni.</translation>
 <translation id="1690383938831887552">Impedisci il caricamento di scambi Signed HTTP Exchange</translation>
 <translation id="1692325295652827195">Se la policy è impostata su True, Google riceverà report sui principali eventi di installazione delle app Android attivati dalla policy.
 

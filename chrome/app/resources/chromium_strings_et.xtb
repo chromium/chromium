@@ -27,6 +27,7 @@
 <translation id="126567311906253476">E-posti aadressiga <ph name="USER_EMAIL" /> Google'i teenustesse (nt Gmaili või Youtube'i) sisse logides saate Chromiumi automaatselt sisse logida sama kontoga</translation>
 <translation id="1290883685122687410">Seadistuse viga: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Uue Chromiumi profiili seadistamine</translation>
+<translation id="132092532143527429">Proovige Geminiga Chromiumis</translation>
 <translation id="1324107359134968521">Chromium vajab Bluetooth-seadmete avastamiseks 
  juurdepääsu Bluetoothile. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Keele tuvastamine</translation>
@@ -609,6 +610,7 @@ Chromium ei saa teie seadeid taastada.</translation>
 <translation id="7622753900276619808">Nüüd on teil Chromiumis rohkem funktsioone saadaval.</translation>
 <translation id="7624307931717240213">Kasutame teavet selle teenuse täiustamiseks. Vaadake privaatsuseeskirju ja teenusetingimusi.</translation>
 <translation id="7649070708921625228">Abi</translation>
+<translation id="7650134251917003571">Hankige Chromiumi rakendus</translation>
 <translation id="7656340475565475526">Laske Chromiumil teie eest sirvida</translation>
 <translation id="7658239707568436148">Tühista</translation>
 <translation id="7686590090926151193">Chromium ei ole teie vaikebrauser</translation>

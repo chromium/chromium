@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Модель расшифровки скачана. Язык: <ph name="LANGUAGE_NAME" />.</translation>
 <translation id="42126664696688958">Экспортировать</translation>
 <translation id="4213104098953699324">Клавиатура USB</translation>
+<translation id="4217571870635786043">Голосовой ввод</translation>
 <translation id="4227825898293920515">Срок действия пароля истекает через <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Задания печати не выполняются</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">Запускайте тесты и устраняйте неполадки аппаратного обеспечения.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">вниз</translation>
+<translation id="8427213022735114808">Запись вашего голоса отправляется в Google. Это позволяет использовать голосовой набор для любого текстового поля.</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8431300646573772016">Что нового в Chrome OS</translation>
 <translation id="8433186206711564395">Настройки сети</translation>

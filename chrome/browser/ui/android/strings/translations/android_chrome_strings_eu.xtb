@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Mugitu laster-markak</translation>
 <translation id="1197761954713363183">Itxi da sarbide-gakoa berresteko orria</translation>
 <translation id="1197933394627598677">Erakutsi irakurtzeko modua</translation>
+<translation id="1197935538609051549">Desaktibatu</translation>
 <translation id="1201402288615127009">Hurrengoa</translation>
 <translation id="1202892408424955784">Jarraipena egiten diezun produktuak</translation>
 <translation id="1204037785786432551">Deskargatu estekako edukia</translation>
@@ -506,6 +507,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="3122883569442693641">Xehetasun gehiago</translation>
 <translation id="3123734510202723619">Iragarpenak</translation>
 <translation id="3134385238404760368">Ez dago azkenaldiko fitxarik</translation>
+<translation id="3135655388926735587">Sakatu Azkenaldiko fitxak</translation>
 <translation id="314939179385989105">Chrome-ren orri nagusia</translation>
 <translation id="3158667104057012316">Eskuz ordenatzen</translation>
 <translation id="3159335509547415276">Lortu blokeatutako kontuei buruzko informazioa</translation>
@@ -850,6 +852,7 @@ Baliteke Google-ko kontuak arakatze-historiako bestelako datu batzuk (adibidez, 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 pasahitz dago arriskuan}other{# pasahitz daude arriskuan}}</translation>
 <translation id="4641919525231168205">Joan hurrengo orrira</translation>
 <translation id="4642472735733036929">Prezioaren jarraipena egiteari utzi zaio</translation>
+<translation id="4649493483932335039">Ikusi azkenaldiko fitxak</translation>
 <translation id="465657074423018424">Arakatze seguruak webgune arriskutsuen aurka babesten zaitu. Hura desaktibatuz gero, ibili tentuz arakatzean, bereziki pasahitzak idatzi baino lehen.</translation>
 <translation id="4662373422909645029">Goitizenak ezin du eduki zenbakirik</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> laster-marka ezabatu dira</translation>
@@ -1562,6 +1565,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7363349185727752629">Zure pribatutasun-aukeren gida bat</translation>
 <translation id="7364103838544876661">Arakatze-datuak ezabatzeko aukera gehiago</translation>
 <translation id="7365073365123878797">Pasahitzak Google-ren Pasahitz-kudeatzailea zerbitzuarekin gordetzen eta erabiltzen hasteko, eguneratu Google Play Services</translation>
+<translation id="7368009310682364976">Ikusi azkenaldian irekitako fitxak</translation>
 <translation id="7368927539449986686">Editatu webgunearen bilaketa</translation>
 <translation id="7375125077091615385">Mota:</translation>
 <translation id="7376560087009844242">Orriko testu gehiago barne hartuz gero, agian emaitza hobeak ikusiko dituzu Sakatu bilatzeko erabiltzean. Aukera hori aldatzeko, joan <ph name="BEGIN_LINK" />ezarpenetara<ph name="END_LINK" />.</translation>
@@ -1679,6 +1683,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7824665136384946951">Erakundeak Arakatze segurua desaktibatu du</translation>
 <translation id="7826342993930002256">Zure Chrome edonon</translation>
 <translation id="7844171778363018843">Ez da daturik hautatu sinkronizatzeko</translation>
+<translation id="784453721355882533">Probatu Chrome-ko Gemini erantzunak, ideia nagusiak eta abar lortzeko.</translation>
 <translation id="7846161022626028328">Errore bat gertatu da. Saiatu berriro.</translation>
 <translation id="7846296061357476882">Google-ren zerbitzuak</translation>
 <translation id="784652447248278262">Oraingo leihoa</translation>
@@ -1688,6 +1693,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="7853202427316060426">Jarduerak</translation>
 <translation id="7859988229622350291">Ez itzuli edukirik hizkuntza hauetako batean badago:</translation>
 <translation id="7866213166286285359">Itzuli orriak hemen bertan</translation>
+<translation id="7873610418439765081">Probatu Chrome-ko Gemini erantzunak, ideia nagusiak eta abar lortzeko Aukera gehiago botoiaren bidez.</translation>
 <translation id="7875915731392087153">Sortu mezu elektronikoa</translation>
 <translation id="7876243839304621966">Kendu guztiak</translation>
 <translation id="7886917304091689118">Chrome-n abian da</translation>
@@ -1738,6 +1744,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8062594758852531064">Aurrez kargatzeko modu hedatua:</translation>
 <translation id="8063895661287329888">Ezin izan da gehitu laster-marka.</translation>
 <translation id="8066816452984416180">Egin orri honen laster-marka bizkor. Lasterbidea editatzeko, eduki ezazu sakatuta.</translation>
+<translation id="8072436850275034464">Duela gutxi itxi dituzun fitxak berriro ireki ditzakezu Chrome erabiltzen duzun edozein gailutatik</translation>
 <translation id="8073388330009372546">Ireki irudia beste fitxa batean</translation>
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8078096376109663956">Partekatu testua soilik</translation>
@@ -1849,6 +1856,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />ezabatu kontuko Chrome-ko datuak
 <translation id="8460008946585880786">Arrastatu eta jaregin fitxa bat beste baten gainera</translation>
 <translation id="8460448946170646641">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak</translation>
 <translation id="8460932807646981183">Kudeatu bilatzaileak eta webgune-bilaketa</translation>
+<translation id="8465252176946159372">Ez du balio</translation>
 <translation id="8473863474539038330">Helbideak eta beste</translation>
 <translation id="847433688444405067">Arakatu gailu guztietan</translation>
 <translation id="8477178913400731244">Ezabatu datuak</translation>

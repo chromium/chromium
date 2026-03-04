@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Skuif boekmerke</translation>
 <translation id="1197761954713363183">Toegangsleutelbevestigingsblad is toegemaak</translation>
 <translation id="1197933394627598677">Wys Leesmodus</translation>
+<translation id="1197935538609051549">Deaktiveer</translation>
 <translation id="1201402288615127009">Volgende</translation>
 <translation id="1202892408424955784">Nagespoorde produkte</translation>
 <translation id="1204037785786432551">Laai skakel af</translation>
@@ -506,6 +507,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="3122883569442693641">Meer besonderhede</translation>
 <translation id="3123734510202723619">Aankondigings</translation>
 <translation id="3134385238404760368">Geen onlangse oortjies nie</translation>
+<translation id="3135655388926735587">Tik op onlangse oortjies</translation>
 <translation id="314939179385989105">Chrome se tuisblad</translation>
 <translation id="3158667104057012316">Sorteer tans orde handmatig</translation>
 <translation id="3159335509547415276">Kry meer inligting oor geblokkeerde rekeninge</translation>
@@ -850,6 +852,7 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 gekompromitteerde wagwoord}other{# gekompromitteerde wagwoorde}}</translation>
 <translation id="4641919525231168205">Gaan na volgende bladsy</translation>
 <translation id="4642472735733036929">Prysnasporing is gestop</translation>
+<translation id="4649493483932335039">Bekyk onlangse oortjies</translation>
 <translation id="465657074423018424">Veiligblaai beskerm jou teen misleidende werwe. As jy dit afskakel, moet jy baie versigtig wees wanneer jy blaai – veral voordat jy wagwoorde invoer.</translation>
 <translation id="4662373422909645029">Laat syfers uit bynaam</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> boekmerke is uitgevee</translation>
@@ -1562,6 +1565,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7363349185727752629">'n Gids tot jou privaatheidkeuses</translation>
 <translation id="7364103838544876661">Nog opsies om blaaierdata uit te vee</translation>
 <translation id="7365073365123878797">Dateer Google Play Dienste op om wagwoorde met Google Wagwoordbestuurder te begin stoor en te gebruik</translation>
+<translation id="7368009310682364976">Bekyk oortjies wat onlangs oopgemaak is</translation>
 <translation id="7368927539449986686">Wysig werfsoektog</translation>
 <translation id="7375125077091615385">Tipe:</translation>
 <translation id="7376560087009844242">As jy meer van 'n bladsy se teks insluit, sal jy dalk beter resultate sien wanneer jy Raak om te Soek gebruik. Jy kan altyd <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> besoek om dit te verander.</translation>
@@ -1679,6 +1683,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7824665136384946951">Jou organisasie het Veiligblaai afgeskakel</translation>
 <translation id="7826342993930002256">Jou Chrome, oral</translation>
 <translation id="7844171778363018843">Geen data gekies om te sinkroniseer nie</translation>
+<translation id="784453721355882533">Probeer Gemini in Chrome om antwoorde, sleutelgedagtes en meer te kry.</translation>
 <translation id="7846161022626028328">Iets is fout. Probeer weer.</translation>
 <translation id="7846296061357476882">Google-dienste</translation>
 <translation id="784652447248278262">Huidige venster</translation>
@@ -1688,6 +1693,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7853202427316060426">Aktiwiteit</translation>
 <translation id="7859988229622350291">Moet nooit vertaal nie</translation>
 <translation id="7866213166286285359">Vertaal bladsye hier</translation>
+<translation id="7873610418439765081">Probeer Gemini in Chrome om antwoorde, sleutelpunte en meer te kry vanaf die Meer Opsies-knoppie.</translation>
 <translation id="7875915731392087153">Skep e-pos</translation>
 <translation id="7876243839304621966">Verwyder alles</translation>
 <translation id="7886917304091689118">Werk in Chrome</translation>
@@ -1738,6 +1744,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8062594758852531064">Uitgebreide vooraflaai:</translation>
 <translation id="8063895661287329888">Kon nie boekmerk byvoeg nie.</translation>
 <translation id="8066816452984416180">Boekmerk hierdie bladsy vinnig. Raak en hou om hierdie kortpad te wysig.</translation>
+<translation id="8072436850275034464">Jy kan oortjies wat jy onlangs toegemaak het, weer oopmaak van waar ook al jy Chrome gebruik</translation>
 <translation id="8073388330009372546">Maak prent in nuwe oortjie oop</translation>
 <translation id="8076492880354921740">Oortjies</translation>
 <translation id="8078096376109663956">Deel net teks</translation>
@@ -1849,6 +1856,7 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8460008946585880786">Sleep en los een oortjie oor ’n ander</translation>
 <translation id="8460448946170646641">Gaan belangrike privaatheid- en sekuriteitkontroles na</translation>
 <translation id="8460932807646981183">Bestuur soekenjins en werfsoektog</translation>
+<translation id="8465252176946159372">Nie geldig nie</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="847433688444405067">Blaai op verskillende toestelle</translation>
 <translation id="8477178913400731244">Vee data uit</translation>

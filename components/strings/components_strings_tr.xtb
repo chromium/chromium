@@ -1614,6 +1614,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="3575121482199441727">Bu site için izin ver</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Sokak seçeneği belirlendi</translation>
+<translation id="3576315803647905285">Resmi dille yaz</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> web sitesindeki yerleşik bir sayfanın mesajı</translation>
 <translation id="3577473026931028326">Bir sorun oldu. Tekrar deneyin.</translation>
 <translation id="3577902790357386792">Jimnastik</translation>
@@ -2684,6 +2685,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="5266128565379329178">Üstten bağlı</translation>
 <translation id="5269225904387178860">Altta dörtlü delik</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />", "<ph name="DATA_CONTROLS_RESTRICTION" />" için desteklenen bir koşul değil</translation>
+<translation id="527191520368130807">Lehçe</translation>
 <translation id="5273658854610202413">Uyarı: Bu politika, birleştirilebilecek sözlük politikalarının parçası olmadığından PolicyDictionaryMultipleSourceMergeList politikasında belirtildiği gibi birleştirilmemiştir.</translation>
 <translation id="5278778426231952189">Şimdi yükle</translation>
 <translation id="5279286380302340275">İndirilenleri yönet</translation>
@@ -3584,6 +3586,7 @@ Sonra ödeme seçeneklerini gizlemek için <ph name="BEGIN_LINK" />ödeme ayarla
 <translation id="6698097747703777657">Kodunuzu almadınız mı? <ph name="BEGIN_LINK" />Yeni kod alın<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Oluşturma tarihi:</translation>
 <translation id="6698769547327354196">Chrome'da PIX'i devre dışı bırakmak için <ph name="BEGIN_LINK1" />ödeme ayarlarınıza<ph name="END_LINK1" /> gidin.</translation>
+<translation id="669903922988126943">Google ürünlerinde form doldurma gibi işlemleri daha hızlı yapmak için bilgilerinizi kaydedin. <ph name="ACCOUNT" /> adresine ait <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="67007264085648978">Zaman işaretçisi</translation>
 <translation id="6702851555558236418">Ses ve Müzik Yazılımları</translation>
 <translation id="6702919718839027939">Sunum</translation>
@@ -4096,6 +4099,7 @@ Ek ayrıntılar:
 <translation id="7499188644237027195">Chrome'da alışveriş yaparken e-cüzdan ve Pix seçenekleri gösterilir</translation>
 <translation id="7500917112031739411">Gruba göre göster</translation>
 <translation id="7501663406926337752">Gideceğiniz site kuruluşunuz tarafından işaretlendi</translation>
+<translation id="7502044688973049724">bilgilerinizi yönetebilirsiniz</translation>
 <translation id="7507075214339298899">Zarf #9</translation>
 <translation id="7508255263130623398">Döndürülen politika cihaz kimliği boş veya mevcut cihaz kimliğiyle eşleşmiyor</translation>
 <translation id="7508577201115425418">Belge ve Baskı Hizmetleri</translation>
@@ -5148,6 +5152,7 @@ Ek ayrıntılar:
 <translation id="9191834167571392248">Sol altta delik</translation>
 <translation id="9192361865877479444">Metal (Mat)</translation>
 <translation id="9192947025498305328">Temiz İçeriğe Sahip Güzellik Ürünleri</translation>
+<translation id="9193018794001479794">Detaylandır</translation>
 <translation id="9195969368671142407">Kuruluşunuz, Google Hesabınıza kaydetme işlemini kısıtladığında sekme gruplarını paylaşamaz veya bunlara katılamazsınız</translation>
 <translation id="9198613052465150219">Google Hesabınızın <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> adresinde başka biçimlerde tarama geçmişi olabilir</translation>
 <translation id="9199905725844810519">Yazdırma engellendi</translation>

@@ -1614,6 +1614,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="3575121482199441727">Dopusti za ovu web-lokaciju</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Odabrana je opcija naziva ulice</translation>
+<translation id="3576315803647905285">Formaliziraj</translation>
 <translation id="3576616784287504635">Na ugrađenoj stranici na web-lokaciji <ph name="SITE" /> navodi se sljedeće</translation>
 <translation id="3577473026931028326">Nešto nije u redu. Pokušajte ponovo.</translation>
 <translation id="3577902790357386792">Gimnastika</translation>
@@ -2683,6 +2684,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="5266128565379329178">Uvez pri vrhu</translation>
 <translation id="5269225904387178860">Četverostruko bušenje s desne strane</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" nije podržani uvjet za vrijednost "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">Poboljšaj</translation>
 <translation id="5273658854610202413">Upozorenje: pravilo nije spojeno prema uputama u pravilu PolicyDictionaryMultipleSourceMergeList jer ne pripada pravilima rječnika koja se mogu spajati.</translation>
 <translation id="5278778426231952189">Prenesi odmah</translation>
 <translation id="5279286380302340275">Upravljajte preuzimanjima</translation>
@@ -3583,6 +3585,7 @@ Da biste sakrili opcije plaćanja kasnije, otvorite <ph name="BEGIN_LINK" />post
 <translation id="6698097747703777657">Niste primili kôd? <ph name="BEGIN_LINK" />Zatražite novi kôd<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Autor/ica:</translation>
 <translation id="6698769547327354196">Pix u Chromeu možete isključiti u <ph name="BEGIN_LINK1" />postavkama plaćanja<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Spremite svoje podatke da biste brže obavljali zadatke kao što je ispunjavanje obrazaca u Googleovim proizvodima. Možete <ph name="MANAGE_INFO_LINK" /> u <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Klizač za vrijeme</translation>
 <translation id="6702851555558236418">Audiosoftver i glazbeni softver</translation>
 <translation id="6702919718839027939">Prezentacija</translation>
@@ -4095,6 +4098,7 @@ Dodatne pojedinosti:
 <translation id="7499188644237027195">Kad kupujete u Chromeu, e-novčanik i Pix će se prikazivati kao opcije</translation>
 <translation id="7500917112031739411">Prikaži po grupi</translation>
 <translation id="7501663406926337752">Vaša organizacija označila je web-lokaciju koja slijedi</translation>
+<translation id="7502044688973049724">upravljati svojim podacima</translation>
 <translation id="7507075214339298899">Omotnica br. 9</translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja pravila prazan je ili ne odgovara trenutačnom ID-u uređaja</translation>
 <translation id="7508577201115425418">Usluge izrade dokumenata i ispisa</translation>
@@ -5148,6 +5152,7 @@ i netočne vjerodajnice. To može značiti da se neki napadač pokušava predsta
 <translation id="9191834167571392248">Bušenje pri dnu lijevo</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Prirodna kozmetika</translation>
+<translation id="9193018794001479794">Upotpuni</translation>
 <translation id="9195969368671142407">Kada vaša organizacija ograniči spremanje na vaš Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
 <translation id="9198613052465150219">Na vašem Google računu možda postoje drugi oblici povijesti pregledavanja na stranici <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Ispis je blokiran</translation>

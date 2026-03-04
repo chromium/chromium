@@ -100,6 +100,7 @@
 <translation id="1761091787730831947">แชร์กับ <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">ใบรับรองการตรวจสอบสิทธิ์ได้รับการปฏิเสธในท้องถิ่น</translation>
 <translation id="1775381402323441512">ข้อมูลวิดีโอ</translation>
+<translation id="1787208118234640571">เบลเยียม</translation>
 <translation id="180035236176489073">คุณจะต้องออนไลน์เพื่อเข้าถึงไฟล์เหล่านี้</translation>
 <translation id="1807938677607439181">ไฟล์ทั้งหมด</translation>
 <translation id="1810764548349082891">ไม่มีพรีวิว</translation>
@@ -113,9 +114,11 @@
 <translation id="1853795129690976061">โฟลเดอร์นี้แชร์กับ Linux อยู่</translation>
 <translation id="1864756863218646478">ไม่พบไฟล์</translation>
 <translation id="1877377730633446520">การดำเนินการนี้จะใช้พื้นที่ประมาณ <ph name="REQUIRED_SPACE" /> ขณะนี้คุณมีพื้นที่เหลืออยู่ <ph name="FREE_SPACE" /></translation>
+<translation id="18790189037341066">นอร์เวย์</translation>
 <translation id="1884013283844450420">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, เชื่อมต่อ</translation>
 <translation id="1920670151694390848">มาลายาลัม (การทับศัพท์)</translation>
 <translation id="1920798810075583923">แตงโม</translation>
+<translation id="1922341967219151064">ยูเครน</translation>
 <translation id="1924372192547904021">จัดรูปแบบ <ph name="DRIVE_NAME" /> แล้ว</translation>
 <translation id="1942765061641586207">ความละเอียดของรูปภาพ</translation>
 <translation id="1972984168337863910">ขยายแผงความคิดเห็นเกี่ยวกับไฟล์</translation>
@@ -124,15 +127,19 @@
 <translation id="2004942826429452291">ระบบจะจัดเก็บไฟล์ไว้ในระบบคลาวด์และใน Chromebook เครื่องนี้</translation>
 <translation id="2009067268969781306">การฟอร์แมตไดรฟ์จะลบข้อมูลทั้งหมดที่เก็บไว้ในไดรฟ์ การดำเนินการนี้ยกเลิกไม่ได้</translation>
 <translation id="2025955442973426285">ตีกรินยา</translation>
+<translation id="2029385776150020336">แป้นพิมพ์ขยายแบบสหรัฐอเมริกา</translation>
 <translation id="2037845485764049925">รัสเซีย</translation>
 <translation id="2044023416777079300">ไม่ได้จดทะเบียนโมเด็ม</translation>
 <translation id="2046702855113914483">ราเม็ง</translation>
+<translation id="2070397826966158357">เอสโทเนีย</translation>
 <translation id="2070909990982335904">ชื่อที่ขึ้นต้นด้วยจุดสงวนไว้สำหรับระบบ โปรดเลือกชื่ออื่น</translation>
 <translation id="2079545284768500474">เลิกทำ</translation>
 <translation id="2084108471225856927">การตั้งค่าอุปกรณ์</translation>
 <translation id="2084809735218147718">กำลังเขียนขอบคุณ</translation>
 <translation id="2088690981887365033">เครือข่าย VPN</translation>
+<translation id="2096167581623663959">ดัตช์</translation>
 <translation id="209653272837065803">มีพื้นที่เก็บข้อมูลไม่เพียงพอที่จะซิงค์ไฟล์ต่อ</translation>
+<translation id="2101288073618388449">มองโกเลีย</translation>
 <translation id="2114191879048183086">ระบบจะลบ <ph name="NUMBER_OF_ITEMS" /> รายการและคุณจะกู้คืนไม่ได้</translation>
 <translation id="2122305276694332719">การเชื่อมต่อเครือข่ายที่ซ่อนอยู่โดยอัตโนมัติจะทำให้คนอื่นๆ เห็นอุปกรณ์ของคุณและการตั้งค่าเครือข่ายบางอย่าง เราไม่แนะนำให้เชื่อมต่อ</translation>
 <translation id="2125607626296734455">เขมร</translation>
@@ -200,6 +207,7 @@
 <translation id="2587195714949534472">กำลังเตรียมการซิงค์ <ph name="FILE_NAME" />...</translation>
 <translation id="2602810353103180630">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
 <translation id="2614589611416690597">วิดีโอ <ph name="VIDEO_TYPE" /></translation>
+<translation id="2619043364735935227">ดีโวรักสหราชอาณาจักร</translation>
 <translation id="2620090360073999360">ไม่สามารถเข้าถึง Google ไดรฟ์ได้ในเวลานี้</translation>
 <translation id="2621713457727696555">ปลอดภัย</translation>
 <translation id="2638942478653899953">ไม่สามารถเข้าถึง Google ไดรฟ์ โปรด<ph name="BEGIN_LINK" />ออกจากระบบ<ph name="END_LINK" /> และเข้าสู่ระบบใหม่อีกครั้ง</translation>
@@ -207,8 +215,12 @@
 <translation id="2653059201992392941">คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="2663066752008346276">พม่า/เมียนมาด้วยแป้นพิมพ์เมียนซาน</translation>
 <translation id="2664412712123763093">ตำแหน่งที่ตั้งไฟล์</translation>
+<translation id="2672394942808662069">แคนาดาแบบหลายภาษา</translation>
+<translation id="2707357721402813583">ไอร์แลนด์</translation>
+<translation id="2708477391501452176">ภาษาฝรั่งเศสแบบ BÉPO</translation>
 <translation id="2719020180254996569">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, รายละเอียด</translation>
 <translation id="2724954091494693138">ตุรกี (F-keyboard)</translation>
+<translation id="2728450421877450246">ฝรั่งเศส</translation>
 <translation id="2732288874651063549">จัดการการแชร์กับ <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">เวียดนาม (VNI)</translation>
 <translation id="2735623501230989521">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ในโฟลเดอร์ "<ph name="FOLDER_NAME" />"</translation>
@@ -216,16 +228,19 @@
 <translation id="2771816809568414714">ชีส</translation>
 <translation id="2802583107108007218">ดูข้อมูลเพิ่มเติมเกี่ยวกับข้อจำกัดเหล่านี้</translation>
 <translation id="2803375539583399270">ป้อน PIN</translation>
+<translation id="2817444452774702982">จอร์เจีย</translation>
 <translation id="2819519502129272135">การซิงค์ไฟล์ปิดอยู่</translation>
 <translation id="2820957248982571256">กำลังสแกน...</translation>
 <translation id="2830077785865012357">จีน (Zhuyin)</translation>
 <translation id="2843806747483486897">เปลี่ยนค่าเริ่มต้น...</translation>
 <translation id="2873951654529031587">ถังขยะ</translation>
+<translation id="2887314858867008269">Colemak แบบสหรัฐอเมริกา</translation>
 <translation id="2887525882758501333">เอกสาร PDF</translation>
 <translation id="2888807692577297075">ไม่มีรายการที่ตรงกับ &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">ข้อมูล</translation>
 <translation id="2904378509913846215">มีโฟลเดอร์ที่ชื่อ "<ph name="FILENAME" />" อยู่แล้ว ต้องการแทนที่โฟลเดอร์ดังกล่าวด้วยโฟลเดอร์ที่คุณจะย้ายไหม</translation>
 <translation id="290843123675549676">มราฐี</translation>
+<translation id="2939595088421183401">สโลวีเนีย</translation>
 <translation id="2943503720238418293">ใช้ชื่อที่สั้นลง</translation>
 <translation id="2949781154072577687">กำลังจัดรูปแบบ <ph name="DRIVE_NAME" />...</translation>
 <translation id="2951236788251446349">แมงกะพรุน</translation>
@@ -243,6 +258,7 @@
 <translation id="3067790092342515856">ไฟล์ Windows</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">โฮสต์ SOCKS</translation>
+<translation id="3091469289665833668">โรมาเนีย</translation>
 <translation id="3104793765551262433">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, ถูกผู้ดูแลระบบบล็อก, รายละเอียด</translation>
 <translation id="3113592018909187986">คุณลองได้อีก 1 ครั้ง คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>
 <translation id="3124404833828281817">คนฝันกลางวัน</translation>
@@ -261,6 +277,7 @@
 <translation id="3255159654094949700">อาหรับ</translation>
 <translation id="326396468955264502">ย้ายไม่ได้ <ph name="NUMBER_OF_FILES" /> ไฟล์เนื่องจากมีการเข้ารหัส</translation>
 <translation id="3264582393905923483">บริบท</translation>
+<translation id="3269333278563769269">โปรตุเกส</translation>
 <translation id="3272909651715601089">เปิด "<ph name="PATH" />" ไม่ได้</translation>
 <translation id="3280431534455935878">กำลังเตรียม</translation>
 <translation id="3280719573299097127">คุณกำลังใช้เครือข่ายแบบจำกัดปริมาณ การซิงก์ไฟล์หยุดชั่วคราว</translation>
@@ -282,6 +299,8 @@
 <translation id="3408072735282270043">เปิดใช้งาน <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">เยอรมัน (เยอรมนี) ด้วยแป้นพิมพ์ Neo 2</translation>
 <translation id="3414856743105198592">การฟอร์แมตอุปกรณ์แบบถอดได้จะทำให้ข้อมูลทั้งหมดถูกลบออก คุณต้องการดำเนินการต่อหรือไม่</translation>
+<translation id="3430687179542180192">ฝรั่งเศสแบบแคนาดา</translation>
+<translation id="3436358745602312794">ภาษาตุรกี-F</translation>
 <translation id="3437801641691368414">เวลาที่สร้าง</translation>
 <translation id="343907260260897561">กล้องอินสแตนท์</translation>
 <translation id="3455931012307786678">เอสโทเนีย</translation>
@@ -299,9 +318,11 @@
 <translation id="3553048479571901246">หากต้องการเปิดไฟล์ด้วย <ph name="APP_NAME" /> ให้คัดลอกไปที่โฟลเดอร์ไฟล์ของ Windows ก่อน</translation>
 <translation id="3556731189587832921">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์พีซีแบบสากล</translation>
 <translation id="3557414470514932909">กำลังย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะ</translation>
+<translation id="3560848236447534728">การออกเสียงภาษาอาร์เมเนีย</translation>
 <translation id="3567221313191587603">เลือกไฟล์แล้วเปิด <ph name="OFFLINE_CHECKBOX_NAME" /> เพื่อเข้าถึงไฟล์แบบออฟไลน์</translation>
 <translation id="3587482841069643663">ทั้งหมด</translation>
 <translation id="3592251141500063301">ทำให้ <ph name="FILE_NAME" /> ใช้งานแบบออฟไลน์ไม่ได้</translation>
+<translation id="3599083260824681324">ญี่ปุ่น</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3616113530831147358">เสียง</translation>
 <translation id="3619115746895587757">คาปูชิโน</translation>
@@ -329,14 +350,17 @@
 <translation id="3811494700605067549">เลือกแล้ว 1 ไฟล์</translation>
 <translation id="3817579325494460411">ไม่ได้ระบุ</translation>
 <translation id="3819448694985509187">PIN ไม่ถูกต้อง คุณลองได้อีก 1 ครั้ง</translation>
+<translation id="3826081788392587762">แฟโร</translation>
 <translation id="3830674330436234648">ไม่สามารถเล่นได้</translation>
 <translation id="3839045880592694915">ผู้ให้บริการไม่อนุญาตให้เชื่อมต่อโมเด็ม โปรดติดต่อผู้ให้บริการเพื่อสอบถามรายละเอียดเพิ่มเติม</translation>
 <translation id="385051799172605136">กลับ</translation>
 <translation id="3858860766373142691">ชื่อ</translation>
+<translation id="3874963587970919929">สหรัฐอเมริกา</translation>
 <translation id="3899991606604168269">ฝรั่งเศส (แคนาดา) ด้วยแป้นพิมพ์หลายภาษา</translation>
 <translation id="3901991538546252627">กำลังเชื่อมต่อกับ <ph name="NAME" /></translation>
 <translation id="3906232975181435906">กำลังติดตั้งโปรไฟล์มือถือ, เครือข่าย <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3934861075411093298">Neo 2 แบบเยอรมัน</translation>
 <translation id="3943857333388298514">วาง</translation>
 <translation id="3950820424414687140">ลงชื่อเข้าใช้</translation>
 <translation id="3952872973865944257">เตลูกู (ตามการออกเสียง)</translation>
@@ -349,9 +373,11 @@
 <translation id="4002066346123236978">ชื่อ</translation>
 <translation id="4017788180641807848">อังกฤษ (สหรัฐฯ) ด้วยแป้นพิมพ์ Workman</translation>
 <translation id="4040753847560036377">PUK ไม่ถูกต้อง</translation>
+<translation id="4043426908238742491">สหราชอาณาจักร</translation>
 <translation id="4057991113334098539">กำลังเปิดการใช้งาน...</translation>
 <translation id="4092890906744441904">ไอร์แลนด์</translation>
 <translation id="4101601646343868113">ลงชื่อเข้าใช้เครือข่ายมือถือและยืนยันว่าแพ็กเกจอินเทอร์เน็ตมือถือของคุณใช้งานได้</translation>
+<translation id="4103534645423593971">ลัตเวีย</translation>
 <translation id="4124731372776320263">กำลังซิงค์ไฟล์ในไดรฟ์ 1 รายการ</translation>
 <translation id="4124935795427217608">ยูนิคอร์น</translation>
 <translation id="4131235941541910880">ย้ายรายการที่คุณไม่ต้องการไปยังถังขยะ</translation>
@@ -445,9 +471,12 @@
 <translation id="4789067489790477934">ให้สิทธิ์ Parallels Desktop เข้าถึงไฟล์ใน Google ไดรฟ์ การเปลี่ยนแปลงจะซิงค์กับอุปกรณ์อื่นๆ ของคุณ</translation>
 <translation id="4790766916287588578">ภาษาฮินดีด้วยแป้นพิมพ์ InScript</translation>
 <translation id="4801956050125744859">เก็บไว้ทั้งสองเวอร์ชัน</translation>
+<translation id="4802185962157240723">ฮังการี</translation>
 <translation id="4804827417948292437">อะโวคาโด</translation>
 <translation id="4805966553127040832">กำลังกู้คืน <ph name="COUNT" /> รายการ</translation>
+<translation id="4823376603577118337">บราซิล</translation>
 <translation id="4826849268470072925">ทมิฬ (ITRANS)</translation>
+<translation id="4838707632718400841">เดนมาร์ก</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">ดู</translation>
 <translation id="4862885579661885411">การตั้งค่า Files</translation>
@@ -477,6 +506,7 @@
 <translation id="5010406651457630570">คอมพิวเตอร์</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">การดำเนินการใช้เวลานานกว่าที่คาดไว้ คุณต้องการล้มเลิกไหม</translation>
+<translation id="5036141350290856713">การออกเสียงภาษารัสเซีย</translation>
 <translation id="5036159836254554629">จัดการการแชร์ Parallels Desktop</translation>
 <translation id="5038625366300922036">ดูเพิ่มเติม...</translation>
 <translation id="5044852990838351217">อาร์เมเนีย</translation>
@@ -500,6 +530,7 @@
    การนำอุปกรณ์ออกขณะใช้งานอยู่อาจทำให้ข้อมูลสูญหาย โปรดรอจนกว่าการทำงานจะเสร็จสิ้น จากนั้นนำอุปกรณ์ออกโดยใช้แอป "Files"</translation>
 <translation id="5163869187418756376">การแชร์ล้มเหลว ตรวจสอบการเชื่อมต่อของคุณและพยายามอีกครั้งในภายหลัง</translation>
 <translation id="5177526793333269655">มุมมองรูปภาพขนาดย่อ</translation>
+<translation id="5178355323709925287">การออกเสียงภาษาบัลแกเรีย</translation>
 <translation id="5181896909298187506">ไม่มีไฟล์ล่าสุด</translation>
 <translation id="5194713942430106590">คลิกเพื่อจัดเรียงคอลัมน์จากน้อยไปหามาก</translation>
 <translation id="5211614973734216083">แฟโร</translation>
@@ -547,15 +578,18 @@
 <translation id="5534520101572674276">กำลังคำนวณขนาด</translation>
 <translation id="554153475311314364">กรีก (การทับศัพท์)</translation>
 <translation id="5554171655917412781">เลือกไว้ <ph name="SELECTED_FOLDERS_COUNT" /> โฟลเดอร์</translation>
+<translation id="5568003358606822240">QWERTY ภาษาเช็ก</translation>
 <translation id="5580591966435005537">เครื่องเสมือน</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">ความกว้างเครื่องหมายวรรคตอนเป็นแบบเต็ม</translation>
 <translation id="5596627076506792578">ตัวเลือกเพิ่มเติม</translation>
 <translation id="5602622065581044566">บัลแกเรียด้วยแป้นพิมพ์ตามการออกเสียง</translation>
+<translation id="5604409170937514933">สวีเดน</translation>
 <translation id="560739212255190568">ผู้ดูแลระบบได้ตั้งกฎการลบล้างพร็อกซี นอกเหนือจากการบังคับใช้พร็อกซีต่อไปนี้</translation>
 <translation id="5618330573454123917">ไฟล์นี้ออกแบบมาสำหรับคอมพิวเตอร์ที่ใช้ซอฟต์แวร์ Macintosh จึงไม่สามารถใช้ร่วมกับอุปกรณ์ของคุณซึ่งใช้ Chrome OS <ph name="BEGIN_LINK_HELP" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK_HELP" />เกี่ยวกับการเปิดไฟล์ใน Chrome OS</translation>
 <translation id="5625294776298156701">ทมิฬด้วยแป้นพิมพ์ Tamil99</translation>
 <translation id="5633226425545095130">การย้ายรายการนี้จะเป็นการแชร์กับทุกคนที่ดูโฟลเดอร์ที่แชร์ "<ph name="DESTINATION_NAME" />" ได้</translation>
+<translation id="5646106346566990960">ตุรกี</translation>
 <translation id="5649768706273821470">ฟัง</translation>
 <translation id="5650895901941743674">ตรวจสอบการกำหนดค่า APN</translation>
 <translation id="5669691691057771421">ป้อน PIN ใหม่</translation>
@@ -565,9 +599,11 @@
 <translation id="5691596662111998220">อ๊ะ ไม่มี <ph name="FILE_NAME" /> แล้ว</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, ปลดล็อก</translation>
 <translation id="5700087501958648444">ข้อมูลเสียง</translation>
+<translation id="5718459114973371204">มาซีโดเนีย</translation>
 <translation id="5720028165859493293">ย้าย <ph name="FILE_NAME" /> ไปที่ถังขยะแล้ว</translation>
 <translation id="5724172041621205163">ไทยด้วยแป้นพิมพ์ปัตตะโชติ</translation>
 <translation id="57383366388012121">เดือนที่แล้ว</translation>
+<translation id="5744221903031815187">สวิส</translation>
 <translation id="575175778971367197">ซิงค์ไฟล์นี้ไม่ได้ในขณะนี้</translation>
 <translation id="5760252553414789727">เลือกไว้ <ph name="SELECTED_FILES_COUNT" /> รายการ</translation>
 <translation id="5763377084591234761">เยอรมัน (สวิตเซอร์แลนด์)</translation>
@@ -597,8 +633,10 @@
 <translation id="5948255720516436063">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, , เปิดใช้งานหลังจากตั้งค่าอุปกรณ์</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> รายการ</translation>
 <translation id="5957366693331451795">Chromebox</translation>
+<translation id="5959163675722155317">สหรัฐอเมริกาสากล</translation>
 <translation id="5982621672636444458">ตัวเลือกการจัดเรียง</translation>
 <translation id="6011074160056912900">เครือข่ายอีเธอร์เน็ต</translation>
+<translation id="6023337265947005432">เช็ก</translation>
 <translation id="603895874132768835">คุณจะใช้เครือข่ายนี้ไม่ได้จนกว่าจะตั้งค่า PIN ใหม่</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6055907707645252013">เครือข่าย <ph name="NETWORK_TYPE" /> ยังไม่ได้เชื่อมต่อ</translation>
@@ -615,6 +653,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" /> ไม่มีเครือข่าย</translation>
 <translation id="6146563240635539929">วิดีโอ</translation>
 <translation id="6150853954427645995">หากต้องการบันทึกไฟล์นี้เพื่อการใช้งานแบบออฟไลน์ ให้คลิกขวาที่ไฟล์ แล้วเลือกตัวเลือก <ph name="OFFLINE_CHECKBOX_NAME" /></translation>
+<translation id="6162247388574239985">ลิทัวเนีย</translation>
 <translation id="6164412158936057769">ผีเสื้อ</translation>
 <translation id="6165508094623778733">ดูข้อมูลเพิ่มเติม</translation>
 <translation id="6170470584681422115">แซนด์วิช</translation>
@@ -624,6 +663,7 @@
 <translation id="6198252989419008588">เปลี่ยน PIN</translation>
 <translation id="6199801702437275229">กำลังรอข้อมูลพื้นที่...</translation>
 <translation id="6205710420833115353">การดำเนินการบางอย่างใช้เวลานานกว่าที่คาดไว้ คุณต้องการล้มเลิกไหม</translation>
+<translation id="6214593504928642973">เซอร์เบีย</translation>
 <translation id="6220423280121890987">ปัญจาบ</translation>
 <translation id="6224240818060029162">เดนมาร์ก</translation>
 <translation id="6224253798271602650">ฟอร์แมต <ph name="DRIVE_NAME" /></translation>
@@ -650,17 +690,22 @@
 <translation id="6394388407447716302">อ่านอย่างเดียว</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> รายการ</translation>
 <translation id="6407769893376380348">ย้าย <ph name="FILE_NAME" /> ไม่ได้เนื่องจากมีการเข้ารหัส</translation>
+<translation id="6417922483715629770">เยอรมัน</translation>
+<translation id="6421174876526901486">ฮิบรู</translation>
 <translation id="642282551015776456">ชื่อนี้ไม่สามารถใช้เป็นชื่อไฟล์ของโฟลเดอร์</translation>
 <translation id="6423031066725912715">เวียดนามด้วยแป้นพิมพ์ TCVN</translation>
 <translation id="6430271654280079150">คุณลองได้อีก 1 ครั้ง</translation>
 <translation id="643243556292470964">ย้ายไฟล์ที่ลบไปยังถังขยะแล้ว</translation>
 <translation id="6438480100790416671">กําลังตรวจสอบพื้นที่เก็บข้อมูล…</translation>
 <translation id="6451527188465304418">กำลังตรวจสอบไฟล์กับนโยบายความปลอดภัยขององค์กร...</translation>
+<translation id="6480474281747138552">ดีโวรักโปรแกรมเมอร์สหรัฐอเมริกา</translation>
+<translation id="6483241221370343062">โปแลนด์</translation>
 <translation id="6485131920355264772">การดึงข้อมูลพื้นที่ล้มเหลว</translation>
 <translation id="6495925982925244349">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, จัดการโดยผู้ดูแลระบบ, รายละเอียด</translation>
 <translation id="649877868557234318">กำลังแตกข้อมูล <ph name="FILE_NAME" /> ไปที่ <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">ไม่อนุญาตพร็อกซีสำหรับเครือข่ายที่มีการแชร์</translation>
 <translation id="6503285896705205014">นโยบายของผู้ดูแลระบบบล็อกการคัดลอกไฟล์ <ph name="COUNT" /> ไฟล์</translation>
+<translation id="652312300422421604">รัสเซีย</translation>
 <translation id="6528513914570774834">อนุญาตให้ผู้ใช้อุปกรณ์นี้คนอื่นๆ ใช้เครือข่ายนี้ได้</translation>
 <translation id="6549689063733911810">ล่าสุด</translation>
 <translation id="6558280019477628686">เกิดข้อผิดพลาด อาจไม่ได้ลบบางรายการ</translation>
@@ -675,6 +720,7 @@
 <translation id="6650726141019353908">ผีเสื้อสีชมพู</translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="6658865850469097484">ระบบจะลบไฟล์ที่อยู่ในถังขยะนานเกิน 30 วันออกโดยอัตโนมัติ</translation>
+<translation id="6660283757324568684">ฝรั่งเศส (สวิส)</translation>
 <translation id="6673674183150363784">ฝรั่งเศส (ฝรั่งเศส) ด้วยแป้นพิมพ์แบบ Bépo</translation>
 <translation id="670380500182402678">แทนที่ทั้งหมด</translation>
 <translation id="6710022688720561421">หุ่นยนต์</translation>
@@ -698,6 +744,7 @@
 <translation id="6861394552169064235">เปอร์เซีย</translation>
 <translation id="6862635236584086457">ไฟล์ทั้งหมดที่บันทึกไว้ในโฟลเดอร์นี้จะถูกสำรองข้อมูลแบบออนไลน์โดยอัตโนมัติ</translation>
 <translation id="6864328437977279120">สันสกฤต</translation>
+<translation id="6870343452066868538">ลาตินอเมริกา</translation>
 <translation id="6874758081814639712">คนกำลังรำไทชิ</translation>
 <translation id="6876155724392614295">จักรยาน</translation>
 <translation id="6878261347041253038">แป้นพิมพ์ภาษาเทวานาครี (คำที่ใช้ออกเสียง)</translation>
@@ -709,6 +756,7 @@
 <translation id="6935521024859866267">กลับหัว</translation>
 <translation id="6943836128787782965">การรับ HTTP ล้มเหลว</translation>
 <translation id="6949408524333579394">เซอร์เบีย (การทับศัพท์)</translation>
+<translation id="6950304227892369683">เบลารุส</translation>
 <translation id="69548399407432279">ปีที่แล้ว</translation>
 <translation id="6960565108681981554">ไม่ได้เปิดการใช้งาน โปรดติดต่อผู้ให้บริการเครือข่าย</translation>
 <translation id="696203921837389374">เปิดใช้การซิงค์ผ่านข้อมูลมือถือ</translation>
@@ -717,6 +765,7 @@
 <translation id="6973630695168034713">โฟลเดอร์</translation>
 <translation id="6976795442547527108">สิงโต</translation>
 <translation id="6979158407327259162">Google ไดรฟ์</translation>
+<translation id="6987318887406266229">กรีก</translation>
 <translation id="6989942356279143254">สวีเดน</translation>
 <translation id="6990081529015358884">คุณไม่มีพื้นที่เหลือแล้ว</translation>
 <translation id="6993826899923627728">รายการเหล่านี้อยู่ในถังขยะ</translation>
@@ -731,6 +780,7 @@
 <translation id="7048024426273850086">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, แบตเตอรี่โทรศัพท์ <ph name="BATTERY_STATUS" />%, เชื่อมต่อ</translation>
 <translation id="7070804685954057874">การป้อนโดยตรง </translation>
 <translation id="7075931588889865715">ไทยด้วยแป้นพิมพ์ TIS 820-2531</translation>
+<translation id="7080126840087683316">สเปน</translation>
 <translation id="708278670402572152">ยกเลิกการเชื่อมต่อเพื่อเปิดใช้การสแกน</translation>
 <translation id="7086590977277044826">ทมิฬด้วยแป้นพิมพ์ InScript</translation>
 <translation id="7088615885725309056">เก่ากว่า</translation>
@@ -741,12 +791,15 @@
 <translation id="7135561821015524160">กันนาดา (ตามการออกเสียง)</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">ไม่มี "การจับคู่ชื่อสำรองของหัวเรื่อง" หรือ "การจับคู่ส่วนต่อท้ายโดเมน" ซึ่งใช้ในการยืนยันตัวตนของเซิร์ฟเวอร์การตรวจสอบสิทธิ์</translation>
+<translation id="7163653800467169701">อิตาลี</translation>
 <translation id="7165320105431587207">ล้มเหลวในการกำหนดค่าเครือข่าย</translation>
 <translation id="7170041865419449892">อยู่นอกระยะสัญญาณ</translation>
 <translation id="7179579940054351344">การเข้าถึงไฟล์จากเว็บไซต์และ URL ทั้งหมด ยกเว้น <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">รีเฟรช</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">บันทึกแฟ้มเป็น</translation>
+<translation id="7192364647705823015">โครเอเชีย</translation>
+<translation id="7224162581405244205">ไอซ์แลนด์</translation>
 <translation id="7229570126336867161">ต้องใช้ EVDO</translation>
 <translation id="7230898482850090046">ผู้ดูแลระบบขอให้คุณปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="7238097264433196391">ชื่อไดรฟ์</translation>
@@ -773,6 +826,7 @@
 <translation id="7417453074306512035">แป้นพิมพ์ภาษาเอธิโอเปีย</translation>
 <translation id="7417705661718309329">แผนที่ Google</translation>
 <translation id="7419668828140929293">กำลังกู้คืน "<ph name="FILENAME" />"</translation>
+<translation id="7435577899926900307">ดีโวรักสหรัฐอเมริกา</translation>
 <translation id="7458955835361612701">ไม่มีรูปภาพล่าสุด</translation>
 <translation id="7469894403370665791">เชื่อมต่อกับเครือข่ายนี้อัตโนมัติ</translation>
 <translation id="7486315294984620427">ต้องคัดลอกไฟล์ดังกล่าวไปยังไฟล์ Windows เพื่อวางใน Parallels Desktop</translation>
@@ -811,8 +865,10 @@
 <translation id="7724603315864178912">ตัด</translation>
 <translation id="7732111077498238432">เครือข่ายมีนโยบายควบคุม</translation>
 <translation id="7736003208887389532">ลบไฟล์เหล่านี้อย่างถาวรใช่ไหม</translation>
+<translation id="7737249716250841853">QWERTY ภาษาฮังการี</translation>
 <translation id="7740287852186792672">ผลการค้นหา</translation>
 <translation id="7748626145866214022">มีตัวเลือกเพิ่มเติมในแถบการทำงาน กด Alt + A เพื่อโฟกัสแถบการทำงาน</translation>
+<translation id="7758806833942383902">คาตาลัน</translation>
 <translation id="7760449188139285140">จีน (Wubi)</translation>
 <translation id="7765158879357617694">ย้าย</translation>
 <translation id="7774365994322694683">นก</translation>
@@ -824,6 +880,7 @@
 <translation id="7794058097940213561">ฟอร์แมตอุปกรณ์</translation>
 <translation id="7799329977874311193">เอกสาร HTML</translation>
 <translation id="7801354353640549019">Chromebook</translation>
+<translation id="7804303447453320114">คาซัค</translation>
 <translation id="7805768142964895445">สถานะ</translation>
 <translation id="7806708061868529807">ฮิบรู</translation>
 <translation id="78104721049218340">ไทยด้วยแป้นพิมพ์เกษมณี</translation>
@@ -833,9 +890,11 @@
 <translation id="7839804798877833423">การดึงไฟล์เหล่านี้จะใช้ข้อมูลมือถือขนาดประมาณ <ph name="FILE_SIZE" /></translation>
 <translation id="7846076177841592234">ยกเลิกการเลือก</translation>
 <translation id="7857117644404132472">เพิ่มข้อยกเว้น</translation>
+<translation id="7859924767769322048">เกาหลี</translation>
 <translation id="7868774406711971383">โปแลนด์</translation>
 <translation id="7874321682039004450">ฟิลิปปินส์</translation>
 <translation id="78946041517601018">ไดรฟ์ที่แชร์</translation>
+<translation id="7901567919203965902">Workman สหรัฐอเมริกาแบบสากล</translation>
 <translation id="7903984238293908205">คะตะคะนะ</translation>
 <translation id="7908793776359722643">การฟอร์แมตพาร์ติชันจะลบข้อมูลทั้งหมดที่จัดเก็บในพาร์ติชันนั้น การดำเนินการนี้เลิกทำไม่ได้</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -897,6 +956,7 @@
 <translation id="8336153091935557858">เมื่อวานนี้ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">มีไฟล์หรือไดเรกทอรีที่มีชื่อเดียวกันนี้อยู่แล้ว</translation>
 <translation id="83651606385705612">ให้สิทธิ์แก่ <ph name="VM_NAME" /> ในการเข้าถึงไฟล์ในโฟลเดอร์ <ph name="FOLDER_NAME" /></translation>
+<translation id="837225070446042993">Workman สหรัฐอเมริกา</translation>
 <translation id="8372369524088641025">คีย์ WEP ไม่ถูกต้อง</translation>
 <translation id="8372852072747894550">กรีก</translation>
 <translation id="8377269993083688872">เลย์เอาต์อีเมล</translation>
@@ -925,6 +985,7 @@
 <translation id="8512483403832814140">ทุกเวลา</translation>
 <translation id="853494022971700746">ฝรั่งเศส (ฝรั่งเศส)</translation>
 <translation id="8540608333167683902">เครือข่ายที่ <ph name="NETWORK_INDEX" /> จาก <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, ความแรงสัญญาณ <ph name="SIGNAL_STRENGTH" />%, รายละเอียด</translation>
+<translation id="8543218582821188600">อังกฤษแบบแคนาดา</translation>
 <translation id="8545476925160229291">อังกฤษ (สหรัฐฯ)</translation>
 <translation id="854655314928502177">URL การค้นพบเว็บพร็อกซีโดยอัตโนมัติ:</translation>
 <translation id="8547747809824590510">ผู้ดูแลระบบได้ตั้งกฎการลบล้างพร็อกซี</translation>
@@ -939,6 +1000,7 @@
 <translation id="8600173386174225982">เปลี่ยนรายการไฟล์เป็นมุมมองภาพขนาดย่อแล้ว</translation>
 <translation id="8601932370724196034">ไฟล์ภาพ Crostini</translation>
 <translation id="8609695766746872526">ไอซ์แลนด์</translation>
+<translation id="86185366481240448">สโลวัก</translation>
 <translation id="8630384863424041081">ป้อน PIN ของซิมการ์ดหรือ PIN เริ่มต้นที่ผู้ให้บริการให้ไว้ ติดต่อผู้ให้บริการเพื่อขอรับการสนับสนุน</translation>
 <translation id="863903787380594467">PIN ไม่ถูกต้อง คุณลองได้อีก <ph name="RETRIES" /> ครั้ง</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - พอร์ต</translation>
@@ -967,6 +1029,7 @@
 <translation id="8873014196523807561">หากต้องการกู้คืนรายการเหล่านี้ ให้ลากไปที่โฟลเดอร์ใหม่ ระบบลบโฟลเดอร์เดิมของบางรายการเหล่านี้แล้ว</translation>
 <translation id="8874184842967597500">ไม่เชื่อมต่อ</translation>
 <translation id="8876368061475701452">อยู่ในคิว</translation>
+<translation id="8902208737522818687">สหรัฐอเมริกาสากล (พีซี)</translation>
 <translation id="8903931173357132290">รับปริญญา</translation>
 <translation id="8912078710089354287">สุนัขกำลังกระดิกหาง</translation>
 <translation id="8949925099261528566">เชื่อมต่อแล้ว ไม่พบอินเทอร์เน็ต</translation>
@@ -1009,11 +1072,13 @@
 <translation id="931652069802536959">เครือข่ายถูกบล็อกโดยนโยบาย</translation>
 <translation id="938470336146445890">โปรดติดตั้งใบรับรองของผู้ใช้</translation>
 <translation id="939736085109172342">โฟลเดอร์ใหม่</translation>
+<translation id="941005944931359847">บัลแกเรีย</translation>
 <translation id="943972244133411984">แก้ไขโดย</translation>
 <translation id="945522503751344254">ส่งความคิดเห็น</translation>
 <translation id="947144732524271678">เลือกรายการทั้งหมด <ph name="ENTRY_COUNT" /> รายการตั้งแต่ <ph name="FROM_ENTRY_NAME" /> จนถึง <ph name="TO_ENTRY_NAME" /></translation>
 <translation id="954194396377670556">นโยบายของผู้ดูแลระบบจะป้องกันสิ่งต่อไปนี้</translation>
 <translation id="965477715979482472">อังกฤษ (แอฟริกาใต้)</translation>
+<translation id="97351090361893336">ฟินแลนด์</translation>
 <translation id="976666271385981812">กำลังย้าย <ph name="NUMBER_OF_ITEMS" /> รายการไปที่ถังขยะ</translation>
 <translation id="981121421437150478">ออฟไลน์</translation>
 <translation id="988685240266037636">มีไฟล์ชื่อ "<ph name="FILE_NAME" />" อยู่แล้ว คุณต้องการแทนที่ไฟล์ดังกล่าวไหม</translation>

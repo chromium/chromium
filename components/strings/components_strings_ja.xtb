@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">このサイトを許可</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">町名のオプションが選択されました</translation>
+<translation id="3576315803647905285">フォーマルに</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> に埋め込まれているページの内容</translation>
 <translation id="3577473026931028326">エラーが発生しました。もう一度お試しください。</translation>
 <translation id="3577902790357386792">体操</translation>
@@ -2636,6 +2637,7 @@
 <translation id="5190835502935405962">ブックマーク バー</translation>
 <translation id="5191315092027169558">お使いのプロフィールは <ph name="DOMAIN" /> によって管理されています</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> で複数のファイルがダウンロードされようとしています</translation>
+<translation id="5199121357983849992">ID カードを保存しますか？</translation>
 <translation id="5200063972779787617">アカウントに住所を保存</translation>
 <translation id="5201306358585911203">このページに埋め込まれているページの内容</translation>
 <translation id="5203716867500274632">管理者が ChromeOS デバイスの以前と現在のセッション間で次の項目の同期を有効にしました。</translation>
@@ -2684,6 +2686,7 @@
 <translation id="5266128565379329178">製本（上綴じ）</translation>
 <translation id="5269225904387178860">4 穴パンチ（下）</translation>
 <translation id="5271381225185906340">「<ph name="DATA_CONTROLS_ATTRIBUTE" />」は「<ph name="DATA_CONTROLS_RESTRICTION" />」のサポートされている条件ではありません</translation>
+<translation id="527191520368130807">ポーランド語</translation>
 <translation id="5273658854610202413">警告: このポリシーは統合可能な辞書ポリシーに含まれていないため、PolicyDictionaryMultipleSourceMergeList ポリシーで指定されているとおりには統合されませんでした。</translation>
 <translation id="5278778426231952189">今すぐアップロード</translation>
 <translation id="5279286380302340275">ダウンロードを管理</translation>
@@ -3584,6 +3587,7 @@
 <translation id="6698097747703777657">コードが届かない場合は、<ph name="BEGIN_LINK" />新しいコードを取得<ph name="END_LINK" />してください</translation>
 <translation id="6698381487523150993">作成:</translation>
 <translation id="6698769547327354196">Chrome で Pix をオフにするには、<ph name="BEGIN_LINK1" />お支払い設定<ph name="END_LINK1" />に移動してください</translation>
+<translation id="669903922988126943">情報を保存すると、Google サービス全体でフォームの入力などをすばやく行えるようになります。<ph name="ACCOUNT" /> の <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />で<ph name="MANAGE_INFO_LINK" />できます。</translation>
 <translation id="67007264085648978">シークバー</translation>
 <translation id="6702851555558236418">オーディオ、音楽ソフトウェア</translation>
 <translation id="6702919718839027939">プレゼンテーション</translation>
@@ -4075,6 +4079,7 @@
 <translation id="746412105358554870">JavaScript の最適化とセキュリティ</translation>
 <translation id="7465036432780054056">あなたが <ph name="TOP_LEVEL_URL" /> にアクセスしたことが <ph name="EMBEDDED_URL" /> で認識されます</translation>
 <translation id="7465963048299965912">10x13 インチ</translation>
+<translation id="7467332121947433617">ID カードを更新しますか？</translation>
 <translation id="7469935732330206581">安全でないフォーム</translation>
 <translation id="7470854469646445678">コピーする理由をお知らせください（必須）</translation>
 <translation id="7471007961486718967">転送する理由をお知らせください（必須）</translation>
@@ -4096,6 +4101,7 @@
 <translation id="7499188644237027195">Chrome で購入手続きのオプションとして電子ウォレットと Pix が表示されます</translation>
 <translation id="7500917112031739411">グループ別に表示</translation>
 <translation id="7501663406926337752">アクセスしようとしたサイトは組織でフラグが付けられています</translation>
+<translation id="7502044688973049724">情報を管理</translation>
 <translation id="7507075214339298899">#9 封筒</translation>
 <translation id="7508255263130623398">返されたポリシーのデバイス ID が空であるか、現在のデバイス ID と一致しません</translation>
 <translation id="7508577201115425418">コピー、印刷サービス</translation>
@@ -5149,6 +5155,7 @@
 <translation id="9191834167571392248">パンチ（左下）</translation>
 <translation id="9192361865877479444">金属（非光沢）</translation>
 <translation id="9192947025498305328">クリーン ビューティー</translation>
+<translation id="9193018794001479794">より詳しく</translation>
 <translation id="9195969368671142407">組織が Google アカウントへの保存を制限している場合、タブグループを共有したり、タブグループに参加したりすることはできません</translation>
 <translation id="9198613052465150219">お使いの Google アカウントの <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> に、他の形式の閲覧履歴が記録されている場合があります</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>

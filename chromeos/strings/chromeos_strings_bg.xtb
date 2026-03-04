@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Изтеглянето на модела за транскрибиране на <ph name="LANGUAGE_NAME" /> завърши</translation>
 <translation id="42126664696688958">Експортиране</translation>
 <translation id="4213104098953699324">Клавиатура с USB</translation>
+<translation id="4217571870635786043">Диктуване</translation>
 <translation id="4227825898293920515">Паролата изтича след <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Няма активни задания за отпечатване</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">Извършвайте тестове и отстранявайте неизправности при проблеми с хардуера</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">надолу</translation>
+<translation id="8427213022735114808">Функцията за диктуване изпраща гласа ви до Google, за да даде възможност за гласово въвеждане във всяко текстово поле.</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8431300646573772016">Новите неща в Chrome OS</translation>
 <translation id="8433186206711564395">Настройки на мрежата</translation>

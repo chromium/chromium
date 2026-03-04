@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Transkriptionsmodell für <ph name="LANGUAGE_NAME" /> wurde heruntergeladen</translation>
 <translation id="42126664696688958">Exportieren</translation>
 <translation id="4213104098953699324">USB-Tastatur</translation>
+<translation id="4217571870635786043">Spracheingabe</translation>
 <translation id="4227825898293920515">Passwort läuft in <ph name="TIME" /> ab</translation>
 <translation id="4238516577297848345">Keine laufenden Druckaufträge</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8420955526972171689">Tests und Fehlerbehebungsschritte bei Hardwareproblemen</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">Nach unten</translation>
+<translation id="8427213022735114808">Die Diktierfunktion sendet deine Spracheingaben an Google, damit sie in das entsprechende Textfeld eingetragen werden können.</translation>
 <translation id="8428213095426709021">Einstellungen</translation>
 <translation id="8431300646573772016">Neues bei Chrome OS</translation>
 <translation id="8433186206711564395">Netzwerkeinstellungen</translation>

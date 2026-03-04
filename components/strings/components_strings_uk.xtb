@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Вибрано опцію "Назва вулиці"</translation>
+<translation id="3576315803647905285">Описати у формальнішому стилі</translation>
 <translation id="3576616784287504635">Повідомлення з вбудованої сторінки сайту <ph name="SITE" /></translation>
 <translation id="3577473026931028326">Сталася помилка. Повторіть спробу.</translation>
 <translation id="3577902790357386792">Гімнастика</translation>
@@ -1909,6 +1910,7 @@
 <translation id="4031179711345676612">Дозволено використовувати мікрофон</translation>
 <translation id="4036753017940930924">Земельні ділянки</translation>
 <translation id="403724377879219932">Може запитувати дозвіл на доступ до інших пристроїв у вашій локальній мережі</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, нове</translation>
 <translation id="4039506337798853114">Щоб показати курсор, натисніть клавішу |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Приблизне</translation>
 <translation id="4045070493270310437">Повторно відкрити вкладки</translation>
@@ -2636,6 +2638,7 @@
 <translation id="5190835502935405962">Панель закладок</translation>
 <translation id="5191315092027169558">Вашим профілем керує <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> хоче завантажити кілька файлів</translation>
+<translation id="5199121357983849992">Зберегти дані посвідчення особи?</translation>
 <translation id="5200063972779787617">Зберегти адресу в обліковому записі</translation>
 <translation id="5201306358585911203">Повідомлення з вбудованої сторінки на цій сторінці</translation>
 <translation id="5203716867500274632">Адміністратор налаштував синхронізацію наведених нижче даних між попередніми й поточними сеансами на ваших пристроях із ChromeOS.</translation>
@@ -2684,6 +2687,7 @@
 <translation id="5266128565379329178">Зшити вгорі</translation>
 <translation id="5269225904387178860">Пробити чотири отвори внизу</translation>
 <translation id="5271381225185906340">Умова <ph name="DATA_CONTROLS_ATTRIBUTE" /> не підтримується для правила <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
+<translation id="527191520368130807">Покращити</translation>
 <translation id="5273658854610202413">Застереження: це правило не об'єднано, як указано в PolicyDictionaryMultipleSourceMergeList, оскільки воно не є частиною правил щодо словників, які можна об'єднувати.</translation>
 <translation id="5278778426231952189">Завантажити зараз</translation>
 <translation id="5279286380302340275">Керувати завантаженнями</translation>
@@ -2793,6 +2797,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Щоб розраховуватися швидше, збережіть цей код CVC в Google Гаманці (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Установлені додатки</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, було: <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Зворотний порядок лицевою стороною вгору</translation>
 <translation id="5447235695608032700">Дозволити сайту <ph name="SITE" /> використовувати збережену про вас інформацію</translation>
 <translation id="5447973833955560753">Пароль для відновлення</translation>
@@ -3584,6 +3589,7 @@
 <translation id="6698097747703777657">Не отримали код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Створено:</translation>
 <translation id="6698769547327354196">Щоб вимкнути Pix у Chrome, перейдіть у <ph name="BEGIN_LINK1" />налаштування платежів<ph name="END_LINK1" />.</translation>
+<translation id="669903922988126943">Збережіть свою інформацію, щоб швидше виконувати завдання, наприклад заповнювати форми в продуктах Google. Ви можете <ph name="MANAGE_INFO_LINK" /> в додатку <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Повзунок часу</translation>
 <translation id="6702851555558236418">Програмне забезпечення для обробки звуку й музики</translation>
 <translation id="6702919718839027939">Презентація</translation>
@@ -4075,6 +4081,7 @@
 <translation id="746412105358554870">Оптимізація і захист JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> дізнається, що ви відвідали сайт <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 дюйм.</translation>
+<translation id="7467332121947433617">Оновити дані посвідчення особи?</translation>
 <translation id="7469935732330206581">Форма незахищена</translation>
 <translation id="7470854469646445678">Укажіть причину копіювання (обов’язково)</translation>
 <translation id="7471007961486718967">Укажіть причину перенесення (обов’язково)</translation>
@@ -4096,6 +4103,7 @@
 <translation id="7499188644237027195">Роблячи покупки в Chrome, ви бачитимете серед способів оплати електронний гаманець і систему Pix</translation>
 <translation id="7500917112031739411">Показувати за групами</translation>
 <translation id="7501663406926337752">Адміністратор вашої організації позначив указаний сайт як такий, що порушує правила</translation>
+<translation id="7502044688973049724">керувати цією інформацією</translation>
 <translation id="7507075214339298899">Конверт № 9</translation>
 <translation id="7508255263130623398">Отриманий ідентифікатор правил пристрою порожній або не збігається з поточним ідентифікатором пристрою</translation>
 <translation id="7508577201115425418">Поліграфічні й друкарські послуги</translation>
@@ -5149,6 +5157,7 @@
 <translation id="9191834167571392248">Пробити отвір унизу ліворуч</translation>
 <translation id="9192361865877479444">Метал (матовий)</translation>
 <translation id="9192947025498305328">Свідома краса</translation>
+<translation id="9193018794001479794">Описати докладніше</translation>
 <translation id="9195969368671142407">Якщо ваша організація дозволяє зберігати в обліковому записі Google не всі дані, ви не зможете ділитися групами вкладок або приєднуватися до них</translation>
 <translation id="9198613052465150219">Історія вебперегляду також може зберігатись у вашому обліковому записі Google на сторінці <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Друк заблоковано</translation>

@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">బుక్‌మార్క్‌లను తరలించు</translation>
 <translation id="1197761954713363183">పాస్-కీ నిర్ధారణ షీట్ మూసివేయబడింది</translation>
 <translation id="1197933394627598677">రీడింగ్ మోడ్‌ను చూడండి</translation>
+<translation id="1197935538609051549">డీయాక్టివేట్ చేయండి</translation>
 <translation id="1201402288615127009">తర్వాత</translation>
 <translation id="1202892408424955784">ట్రాక్ చేసిన ప్రోడక్ట్‌లు</translation>
 <translation id="1204037785786432551">లింక్‌ను డౌన్‌లోడ్ చేయి</translation>
@@ -745,6 +746,7 @@
 <translation id="4198423547019359126">డౌన్‌లోడ్ స్థానాలు అందుబాటులో లేవు</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ఈ సైట్‌లో ఉపయోగించారు</translation>
 <translation id="4214315110991671325">మీరు కుక్కీలను అనుమతిస్తే, Chrome వాటిని ప్రీ - లోడింగ్ కోసం ఉపయోగించవచ్చు.</translation>
+<translation id="421517251707893998">'ఈ షార్ట్‌కట్‌ను పిన్ చేయండి' అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="4216511743389425832">ఈ పేజీ‌లోని ఆడియోను వినండి</translation>
 <translation id="4225725533026049334">ఫాలో అవుతున్నారు</translation>
 <translation id="4225895483398857530">Toolbar షార్ట్‌కట్</translation>
@@ -1322,6 +1324,7 @@
 <translation id="6508722015517270189">Chromeను పునఃప్రారంభించండి</translation>
 <translation id="6513924416597632811">ఈ సెర్చ్ క్వెరీ కోసం సెర్చ్ ఫలితాల పేజీకి లింక్‌ను కాపీ చేయండి: <ph name="SEARCH_QUERY" />. సోర్స్: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">ధృవీకరించు</translation>
+<translation id="6521218807522232085">మీ పాస్‌వర్డ్‌లను క్రియేట్ చేయండి, సేవ్ చేయండి, అలాగే మేనేజ్ చేయండి, తద్వారా మీరు సులభంగా సైన్ ఇన్ చేయవచ్చు</translation>
 <translation id="6527303717912515753">షేర్ చేయండి</translation>
 <translation id="652948702951888897">Chrome హిస్టరీ</translation>
 <translation id="6532866250404780454">మీరు Chromeలో సందర్శించిన సైట్‌లు చూపబడవు. అన్ని సైట్ టైమర్‌లు తొలగించబడతాయి.</translation>
@@ -1370,6 +1373,7 @@
 <translation id="6684262542644248484">ఏదైనా వెబ్‌సైట్‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="6684809838922667136">Chromeను మెరుగుపరచండి</translation>
 <translation id="6689436252814043643">రీడింగ్ మోడ్ అందుబాటులో లేదు</translation>
+<translation id="669971068476817798">సేవ్ చేయండి అనే ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="6700279777779583398">ఎంపికలు సేవ్ అయ్యాయి</translation>
 <translation id="670498945988402717">నిన్న చెక్ చేసింది</translation>
 <translation id="6710213216561001401">మునుపటి</translation>
@@ -1479,6 +1483,7 @@
 <translation id="7054588988317389591">ఇమేజ్ వివరణలను పొందాలనుకుంటున్నారా?</translation>
 <translation id="7057969023583258980">పూర్తి Chrome హిస్టరీని తెరవండి</translation>
 <translation id="7063006564040364415">సింక్ సర్వర్‌కు కనెక్ట్ చేయడం సాధ్యపడలేదు.</translation>
+<translation id="7063106218165698546">ట్యాబ్ గ్రూప్‌ను అనుకూలంగా మార్చి, 'పూర్తయింది'ని ట్యాప్ చేయండి</translation>
 <translation id="7071521146534760487">ఖాతాను నిర్వహిస్తుంది</translation>
 <translation id="707155805709242880">దేనిని సింక్ చేయాలో దిగువున ఎంచుకోండి</translation>
 <translation id="7077143737582773186">SD కార్డ్</translation>
@@ -1853,6 +1858,7 @@
 <translation id="8460008946585880786">ఒక ట్యాబ్‌ను మరొక ట్యాబ్‌పైకి లాగి, వదలండి</translation>
 <translation id="8460448946170646641">ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్ రివ్యూ</translation>
 <translation id="8460932807646981183">సెర్చ్ ఇంజిన్‌లను, సైట్ సెర్చ్‌ను మేనేజ్ చేయండి</translation>
+<translation id="8465252176946159372">చెల్లదు</translation>
 <translation id="8473863474539038330">అడ్రస్‌లు, మరికొన్ని వివరాలు</translation>
 <translation id="847433688444405067">పరికరాలన్నింటిలో బ్రౌజ్ చేయండి</translation>
 <translation id="8477178913400731244">డేటాను తొలగించండి</translation>

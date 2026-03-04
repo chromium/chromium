@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">Разрешаване за този сайт</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">Избрана бе опцията за име на улицата</translation>
+<translation id="3576315803647905285">Официално</translation>
 <translation id="3576616784287504635">Вградена страница на адрес <ph name="SITE" /> изпраща съобщение</translation>
 <translation id="3577473026931028326">Нещо се обърка. Опитайте отново.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -1909,6 +1910,7 @@
 <translation id="4031179711345676612">Достъпът до микрофона е разрешен</translation>
 <translation id="4036753017940930924">Парцели и земя</translation>
 <translation id="403724377879219932">Може да извежда запитвания за достъп до други устройства в локалната ви мрежа</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, ново</translation>
 <translation id="4039506337798853114">За да се покаже курсорът, натиснете |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Приблизително</translation>
 <translation id="4045070493270310437">Повторно отваряне на разделите</translation>
@@ -2636,6 +2638,7 @@
 <translation id="5190835502935405962">Лента на отметките</translation>
 <translation id="5191315092027169558">Потребителският ви профил се управлява от <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> иска да изтегли няколко файла</translation>
+<translation id="5199121357983849992">Да се запази ли личната карта?</translation>
 <translation id="5200063972779787617">Запазване на адреса в профила</translation>
 <translation id="5201306358585911203">Страница, вградена в тази страница, изпраща съобщение</translation>
 <translation id="5203716867500274632">Администраторът ви даде възможност за синхронизиране на следните неща между предишните и текущите ви сесии на устройствата ви с ChromeOS:</translation>
@@ -2684,6 +2687,7 @@
 <translation id="5266128565379329178">Подвързване в горната част</translation>
 <translation id="5269225904387178860">Четворно перфориране в долната част</translation>
 <translation id="5271381225185906340"><ph name="DATA_CONTROLS_ATTRIBUTE" /> не е поддържано условие за <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
+<translation id="527191520368130807">Подобряване</translation>
 <translation id="5273658854610202413">Предупреждение: Това правило не бе обединено според посоченото в правилото PolicyDictionaryMultipleSourceMergeList, тъй като не е част от правилата речници с възможност за обединяване.</translation>
 <translation id="5278778426231952189">Качване сега</translation>
 <translation id="5279286380302340275">Управление на изтеглянията</translation>
@@ -2793,6 +2797,7 @@
 <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">С цел по-бързо плащане запазете този код за проверка в Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Приложения на устройството</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, беше <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">В обратен ред с отпечатаната страна нагоре</translation>
 <translation id="5447235695608032700">Разрешаване на <ph name="SITE" /> да използва запазената за вас информация</translation>
 <translation id="5447973833955560753">Парола за възстановяване</translation>
@@ -3584,6 +3589,7 @@
 <translation id="6698097747703777657">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Създадено:</translation>
 <translation id="6698769547327354196">За да изключите PIX в Chrome, отворете <ph name="BEGIN_LINK1" />настройките за плащане<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Запазете информацията си и извършвайте по-бързо различни неща, като например попълване на формуляри в продуктите на Google. Можете <ph name="MANAGE_INFO_LINK" /> в <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> за <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Времеви плъзгач</translation>
 <translation id="6702851555558236418">Софтуер за музика и аудиозаписи</translation>
 <translation id="6702919718839027939">Представяне</translation>
@@ -4075,6 +4081,7 @@
 <translation id="746412105358554870">Оптимизиране и защита на JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ще знае, че сте посетили <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 инча</translation>
+<translation id="7467332121947433617">Да се актуализира ли личната карта?</translation>
 <translation id="7469935732330206581">Формулярът не е защитен</translation>
 <translation id="7470854469646445678">Посочете причина за копирането (задължително)</translation>
 <translation id="7471007961486718967">Посочете причина за прехвърлянето (задължително)</translation>
@@ -4096,6 +4103,7 @@
 <translation id="7499188644237027195">Когато извършвате покупки в Chrome, ще виждате eWallet и Pix като опции</translation>
 <translation id="7500917112031739411">Показване по група</translation>
 <translation id="7501663406926337752">За сайта е подаден сигнал от организацията ви</translation>
+<translation id="7502044688973049724">да управлявате информацията си</translation>
 <translation id="7507075214339298899">Плик №9</translation>
 <translation id="7508255263130623398">Върнатият от правилата идентификационен номер на устройството е празен или не съответства на текущия</translation>
 <translation id="7508577201115425418">Документни и печатни услуги</translation>
@@ -5148,6 +5156,7 @@
 <translation id="9191834167571392248">Перфориране долу вляво</translation>
 <translation id="9192361865877479444">Метал (матиран)</translation>
 <translation id="9192947025498305328">Чисти продукти за красота</translation>
+<translation id="9193018794001479794">Подробно</translation>
 <translation id="9195969368671142407">Когато организацията ви ограничи запазването в профила ви в Google, не можете да споделяте или да се присъединявате към групи раздели</translation>
 <translation id="9198613052465150219">В профила ви в Google може да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>

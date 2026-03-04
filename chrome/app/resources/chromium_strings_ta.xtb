@@ -27,6 +27,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> கணக்கின் மூலம் Gmail, YouTube போன்ற Google சேவைகளில் உள்நுழையும்போது Chromiumமிலும் அதே கணக்கின் மூலம் தானாக நீங்கள் உள்நுழையலாம்.</translation>
 <translation id="1290883685122687410">அமைவுப் பிழை: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">உங்கள் புதிய Chromium சுயவிவரத்தை அமைத்திடுங்கள்</translation>
+<translation id="132092532143527429">Chromiumமில் Gemini மூலம் பயன்படுத்துக</translation>
 <translation id="1324107359134968521">புளூடூத் சாதனங்களைக் கண்டறிய 
  Chromiumமிற்கு புளூடூத் அணுகல் தேவை. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">மொழியைக் கண்டறி</translation>
@@ -609,6 +610,7 @@
 <translation id="7622753900276619808">Chromiumமில் இப்போது உங்களுக்குக் கூடுதல் அம்சங்கள் கிடைக்கும்</translation>
 <translation id="7624307931717240213">இந்தச் சேவையை மேம்படுத்த தகவல்களைப் பயன்படுத்துகிறோம். தனியுரிமைக் கொள்கை மற்றும் சேவை விதிமுறைகளைப் பாருங்கள்.</translation>
 <translation id="7649070708921625228">உதவி</translation>
+<translation id="7650134251917003571">Chromium ஆப்ஸைப் பெறுங்கள்</translation>
 <translation id="7656340475565475526">உங்களுக்காக Chromium தேடட்டும்</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7686590090926151193">Chromium, உங்கள் இயல்புநிலை உலாவியாக இல்லை</translation>

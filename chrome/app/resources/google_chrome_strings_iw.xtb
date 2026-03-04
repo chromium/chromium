@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">‏אם הסימניות שלך נשמרות גם בחשבון Google, יש לך אפשרות לעקוב אחרי מחירי מוצרים ב-Chrome ולקבל הודעות כשהמחירים יורדים</translation>
 <translation id="3242123554343253302">‏הוספת פרופיל Chrome</translation>
 <translation id="3245429137663807393">‏אם בנוסף ישותפו דוחות שימוש ב-Chrome, הדוחות האלה יכללו את כתובות ה-URL שבהן ביקרת</translation>
+<translation id="3259748324892322072">‏הורדת אפליקציית Chrome</translation>
 <translation id="3286538390144397061">הפעל מחדש כעת</translation>
 <translation id="3292333338048274092">‏לאחר מכן יהיה עליך להפעיל מחדש את Chrome.</translation>
 <translation id="3324218984287646518">‏רוצה לשאול ב-Google Lens על הסרטון הזה?</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">העתקת הטקסט</translation>
 <translation id="3893985792899396936">‏טיפ ל-Chrome: חיפוש באמצעות Lens</translation>
 <translation id="3906096710440765802">‏כדי לקבל גישה לסיסמאות, לסימניות ולנתונים נוספים בכל המכשירים שלך, צריך להיכנס לחשבון ב-Chrome</translation>
-<translation id="3921132130819999051">‏רוצה ש-Chrome יחפש בשבילך?</translation>
 <translation id="3941890832296813527">שגיאת התקנה: שם הקובץ של מנהל ההתקנה לא תקין או לא נתמך.</translation>
 <translation id="395904275706073188">לא ניתן לקרוא דפים מוגנים. כדאי לנסות דף אחר.</translation>
 <translation id="3968962723676998462">‏כדי להשתמש בנתונים של Chrome ולשמור אותם בחשבון <ph name="ACCOUNT_EMAIL" />, צריך להזין את ביטוי הסיסמה</translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878">‏<ph name="PAGE_TITLE" /> - Google Chrome בגרסת ביטא</translation>
 <translation id="6180522807229584611">‏בכרטיסייה הזו נעשה שימוש במשאבים נוספים. כדי לשפר את הביצועים, כדאי לאפשר ל-Chrome להשבית אותה.</translation>
 <translation id="6182736845697986886">ההתקנה נכשלה עקב שגיאה פנימית בשרת העדכון.</translation>
-<translation id="6183773856988300112">‏‫Gemini ב-Chrome משתמש בגלישה אוטומטית כדי לפעול בכרטיסיות שלך ולהשלים משימות שהוא מקבל ממך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">‏טיפ ל-Chrome: שמירת סיסמאות</translation>
 <translation id="6192058120268468905">‏החשבון שלך ב-Chrome</translation>
 <translation id="6220551899604141979">‏התוסף התווסף על ידי <ph name="PARTNER_NAME" /> ויכול לשנות את אופן הפעולה של Chrome.

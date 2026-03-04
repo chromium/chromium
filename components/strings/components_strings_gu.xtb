@@ -1910,6 +1910,7 @@
 <translation id="4031179711345676612">માઇક્રોફોનને મંજૂરી</translation>
 <translation id="4036753017940930924">પ્લૉટ અને જમીન</translation>
 <translation id="403724377879219932">તમારા સ્થાનિક નેટવર્ક પરના અન્ય ડિવાઇસ ઍક્સેસ કરવા માટે પૂછી શકે છે</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, નવું</translation>
 <translation id="4039506337798853114">તમારું કર્સર બતાવવા માટે, |<ph name="ACCELERATOR" />| દબાવો</translation>
 <translation id="4042597221652780603">અંદાજિત</translation>
 <translation id="4045070493270310437">ટૅબ ફરીથી ખોલો</translation>
@@ -2796,6 +2797,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">વધુ ઝડપી ચેકઆઉટ માટે, આ CVCને Google Wallet (<ph name="ACCOUNT_EMAIL" />)માં સાચવો</translation>
 <translation id="5436307623797390637">ડિવાઇસ પરની ઍપ</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, જે <ph name="PREVIOUS_VALUE" /> હતી</translation>
 <translation id="5443468954631487277">ઉલટા ક્રમમાં ઉપર તરફ</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> દ્વારા તમારા વિશે સાચવવામાં આવેલી માહિતીનો ઉપયોગ કરવાની તેમને મંજૂરી આપો</translation>
 <translation id="5447973833955560753">રિકવરી પાસવર્ડ</translation>

@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">העברת סימניות</translation>
 <translation id="1197761954713363183">גיליון האישור של מפתח הגישה סגור</translation>
 <translation id="1197933394627598677">הצגת מצב הקריאה</translation>
+<translation id="1197935538609051549">השבתה</translation>
 <translation id="1201402288615127009">הבא</translation>
 <translation id="1202892408424955784">מוצרים במעקב</translation>
 <translation id="1204037785786432551">הורדת קישור</translation>
@@ -506,6 +507,7 @@
 <translation id="3122883569442693641">פרטים נוספים</translation>
 <translation id="3123734510202723619">הודעות</translation>
 <translation id="3134385238404760368">אין לך כרטיסיות מהזמן האחרון</translation>
+<translation id="3135655388926735587">לוחצים על סמל הכרטיסיות האחרונות</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
 <translation id="3159335509547415276">מידע על חשבונות חסומים</translation>
@@ -850,6 +852,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{סיסמה אחת שנחשפה}one{# סיסמאות שנחשפו}two{# סיסמאות שנחשפו}other{# סיסמאות שנחשפו}}</translation>
 <translation id="4641919525231168205">מעבר לדף הבא</translation>
 <translation id="4642472735733036929">המעקב אחר מחירים הופסק</translation>
+<translation id="4649493483932335039">לכרטיסיות אחרונות</translation>
 <translation id="465657074423018424">גלישה בטוחה מגינה עליך מפני אתרי מרמה. אם משביתים את הגלישה הבטוחה, חשוב להיזהר מאוד כשגולשים באתרים לא מוכרים, במיוחד לפני שמזינים סיסמאות.</translation>
 <translation id="4662373422909645029">אין לכלול מספרים בכינוי</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> סימניות נמחקו</translation>
@@ -1562,6 +1565,7 @@
 <translation id="7363349185727752629">מדריך לבחירות שלך בנושא פרטיות</translation>
 <translation id="7364103838544876661">אפשרויות נוספות למחיקה של נתוני הגלישה</translation>
 <translation id="7365073365123878797">‏צריך לעדכן את Google Play Services כדי להתחיל לשמור סיסמאות ולהשתמש בהן עם מנהל הסיסמאות של Google</translation>
+<translation id="7368009310682364976">צופים בכרטיסיות שנפתחו לאחרונה</translation>
 <translation id="7368927539449986686">עריכת החיפוש באתר</translation>
 <translation id="7375125077091615385">סוג:</translation>
 <translation id="7376560087009844242">אם כוללים כמה שיותר מהטקסט שמופיע בדף, יכול להיות שיתקבלו תוצאות טובות יותר כשמשתמשים בחיפוש בהקשה. יש לך אפשרות לשנות זאת בכל שלב ב<ph name="BEGIN_LINK" />הגדרות<ph name="END_LINK" />.</translation>
@@ -1679,6 +1683,7 @@
 <translation id="7824665136384946951">הארגון שלך השבית את הגלישה הבטוחה</translation>
 <translation id="7826342993930002256">‏חשבון Chrome, בכל מקום</translation>
 <translation id="7844171778363018843">אין נתונים שנבחרו לסנכרון</translation>
+<translation id="784453721355882533">‏כדי לקבל תשובות, מסקנות ועוד, כדאי לנסות את Gemini ב-Chrome.</translation>
 <translation id="7846161022626028328">אירעה שגיאה. אפשר לנסות שוב.</translation>
 <translation id="7846296061357476882">‏שירותי Google</translation>
 <translation id="784652447248278262">חלון נוכחי</translation>
@@ -1688,6 +1693,7 @@
 <translation id="7853202427316060426">פעילות</translation>
 <translation id="7859988229622350291">אין לתרגם אף פעם</translation>
 <translation id="7866213166286285359">תרגום הדפים שכאן</translation>
+<translation id="7873610418439765081">‏כדאי לנסות את Gemini ב-Chrome כדי לקבל תשובות, מסקנות ועוד בעזרת הכפתור "אפשרויות נוספות".</translation>
 <translation id="7875915731392087153">הודעת אימייל חדשה</translation>
 <translation id="7876243839304621966">הסרת הכול</translation>
 <translation id="7886917304091689118">‏פועל ב-Chrome</translation>
@@ -1738,6 +1744,7 @@
 <translation id="8062594758852531064">טעינה מורחבת מראש:</translation>
 <translation id="8063895661287329888">הוספת הסימנייה נכשלה.</translation>
 <translation id="8066816452984416180">הוספה מהירה של הדף הזה לסימניות. ניתן לערוך את קיצור הדרך הזה בלחיצה ארוכה.</translation>
+<translation id="8072436850275034464">‏אפשר לפתוח מחדש כרטיסיות שנסגרו לאחרונה מכל מקום שבו משתמשים ב-Chrome</translation>
 <translation id="8073388330009372546">פתיחת התמונה בכרטיסייה חדשה</translation>
 <translation id="8076492880354921740">כרטיסיות</translation>
 <translation id="8078096376109663956">יש לשתף טקסט בלבד</translation>
@@ -1849,6 +1856,7 @@
 <translation id="8460008946585880786">גוררים כרטיסייה אחת מעל כרטיסייה אחרת ומשחררים אותה</translation>
 <translation id="8460448946170646641">בדיקה של אמצעי הבקרה החשובים ביותר על פרטיות ואבטחה</translation>
 <translation id="8460932807646981183">ניהול של מנועי החיפוש ושל החיפוש באתרים ספציפיים</translation>
+<translation id="8465252176946159372">לא חוקי</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="847433688444405067">גלישה בכמה מכשירים</translation>
 <translation id="8477178913400731244">מחיקת נתונים</translation>

@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Ha Google-fiókjába is menti könyvjelzőit, a Chrome-ban nyomon követheti a termékek árait, és értesítést kaphat, amikor az árak csökkennek.</translation>
 <translation id="3242123554343253302">Chrome-profil hozzáadása</translation>
 <translation id="3245429137663807393">Ha a Chrome használati jelentéseit is megosztja, ezek a jelentések tartalmazzák az Ön által felkeresett URL-eket.</translation>
+<translation id="3259748324892322072">A Chrome app letöltése</translation>
 <translation id="3286538390144397061">Újraindítás most</translation>
 <translation id="3292333338048274092">Ezután újra kell indítania a Chrome-ot.</translation>
 <translation id="3324218984287646518">Kérdés feltevése a Google Lensnek erről a videóról</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Szöveg másolása</translation>
 <translation id="3893985792899396936">Chrome-tipp: Kereshet a Lens segítségével</translation>
 <translation id="3906096710440765802">Jelentkezzen be a Chrome-ba, hogy az összes eszközén hozzáférhessen jelszavaihoz, könyvjelzőihez és más beállításaihoz.</translation>
-<translation id="3921132130819999051">A Chrome böngészhet Ön helyett</translation>
 <translation id="3941890832296813527">Telepítési hiba: A telepítő fájlneve érvénytelen vagy nem támogatott.</translation>
 <translation id="395904275706073188">A védett oldalakat nem lehet olvasni. Próbálkozzon másik oldallal.</translation>
 <translation id="3968962723676998462">Adja meg összetett jelszavát, ha a Chrome-adatokat szeretné használni és tárolni a fiókjában (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Béta</translation>
 <translation id="6180522807229584611">Ez a lap plusz erőforrásokat használ. A teljesítmény javítása érdekében engedélyezze, hogy a Chrome inaktiválhassa.</translation>
 <translation id="6182736845697986886">A telepítés a frissítési szerver belső hibája miatt nem sikerült.</translation>
-<translation id="6183773856988300112">A Gemini a Chrome-ban az automatikus böngészés funkciót használja az Ön lapjain való munkavégzéshez és az Ön által adott feladatok elvégzéséhez. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6187085551300363958">Chrome-tipp: Jelszavak mentése</translation>
 <translation id="6192058120268468905">Az Ön fiókja a Chrome-ban</translation>
 <translation id="6220551899604141979">A(z) <ph name="PARTNER_NAME" /> olyan bővítményt adott hozzá, amely módosíthatja a Chrome működését.

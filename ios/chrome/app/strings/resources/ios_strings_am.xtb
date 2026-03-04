@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">የይለፍ ቃላትዎን በሌሎች መተግበሪያዎች ላይ ይድረሱ።</translation>
 <translation id="3485558910355485767">አዲስ ማንነትን የማያሳውቅ መስኮት</translation>
 <translation id="3488501490964659223">ትሮች ተዘግተዋል እና የአሰሳ ውሂብ ተሰርዟል። እርስዎ ዘግተው ወጥተዋል</translation>
+<translation id="3490396108106323715">የአሁኑን ትር አጋራ</translation>
 <translation id="3493531032208478708">ስለሚጠቆም ይዘት <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">«<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />» የት እንደሚቀመጥ ይምረጡ</translation>
 <translation id="3504377992102007712">ቅንብሮች</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">ምስሎችን መጫን አልተቻለም።</translation>
 <translation id="3565930036634619844">ትር። <ph name="TAB_INDEX" /> ከ<ph name="NUMBER_OF_TABS" />።</translation>
 <translation id="3567168891086460374">በሌላ መንገድ አስቀምጥ</translation>
+<translation id="3572503683475187385">አዲስ ውይይት ሲጀምሩ የአሁኑ ትር ለGemini ይጋራል። ትርን ለGemini ሲያጋሩ ይዘቶቻቸው እና ዩአርኤላቸው ወደ Google ይላካሉ። <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">በእርስዎ የGoogle መለያ ውስጥ</translation>
 <translation id="3575234738189584619">በሌንስ ፈልግ</translation>
 <translation id="3575426792457739946">ይህ ዝርዝር ሁሉንም የተጫኑ መገለጫዎች ይዟል።</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">ማያ ገፅዎን በGoogle ሌንስ መፈለግ ያቁሙ</translation>
 <translation id="3753408171347588045">ዋጋዎችን በመከታተል ላይ</translation>
 <translation id="3753618528540214374">ጠቆር ያለ አረንጓዴ ገጽታ</translation>
+<translation id="3759491607478608474">ይበልጥ አግባብነት ያላቸው መልሶችን ለማግኘት የአሁኑን የትር ይዘት ለGemini ያጋሩ</translation>
 <translation id="3762232513783804601">ለእርስዎ iPad የተገነባ</translation>
 <translation id="3768725474733206671">መጨረሻ ላይ የተዘጋውን ትር ዳግም ክፈት</translation>
 <translation id="3779810277399252432">ምንም የበይነመረብ ግንኙነት የለም።</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">እንደ <ph name="FIRST_RUN_ACCOUNT_NAME" /> ቀጥል</translation>
 <translation id="4651927776207937667">{count,plural, =1{ከ1 ደቂቃ በኋላ ደብቅ}one{ከ{count} ደቂቃ በኋላ ደብቅ}other{ከ{count} ደቂቃዎች በኋላ ደብቅ}}</translation>
 <translation id="4652817563047461855">የእርስዎ ይለፍ ቃሎች ደህንነታቸው የተጠበቀ እንደሆኑ ያረጋግጡ፣ ተጠልፈው ከሆነ ይጣሩ እና መስመር ላይ ለእራስዎ ጥበቃ ለማድረግ የሚያግዙ ምክሮችን ያግኙ። <ph name="BEGIN_LINK" />የበለጠ ይወቁ<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">ትር ማጋራትን ያብሩ</translation>
 <translation id="4658335131052370646">አስቀምጥ</translation>
 <translation id="466307903888586355">ፋይሎችን ማስቀመጥ በድርጅትዎ ታግዷል</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="5718049162805123412">እነዚህን አሁን መቀየር አለብዎት</translation>
 <translation id="5721040778297053709">ክሬዲት ካርድን በዚህ ክፈፍ ውስጥ ያድርጉት</translation>
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
+<translation id="5724590854763964497">በነባሪ፣ አዲስ ውይይት ሲጀምሩ የአሁኑ ትርዎ ይጋራል። ትሮች ሲጋሩ የገጽ ይዘቶቻቸው እና ዩአርኤሎቻቸው ወደ Google ይላካሉ ነገር ግን ሰው ሠራሽ አስተውሎት አመንጪ ሞዴሎችን ለማሻሻል ሥራ ላይ አይውሉም። ይህን ቅንብር በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="5724941645893276623">ድሩን በግል ለማሰስ አዲስ ትር ያክሉ</translation>
 <translation id="5728072125198221967">የተገናኙ የGoogle አገልግሎቶች</translation>
 <translation id="5728700505257787410">ይቅርታ፣ ወደ መለያዎ መግባት ላይ ችግር ነበር።</translation>
@@ -1964,6 +1969,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8059533439631660104">ክፍሉን ይሰበስባል።</translation>
 <translation id="8061584726507121204">ታሪክ</translation>
 <translation id="8064946459644399612">የአዲስ ትር ገጽ ምርጫዎችዎ ተተግብረዋል</translation>
+<translation id="8065556469005366939">ትሮችዎን በማጋራት ይበልጥ አግባብነት ያላቸው መልሶችን ያግኙ</translation>
 <translation id="8069394452933076548">በቅርብ ጥቅም ላይ ያልዋሉ ትሮች ወደ ገቢር ያልሆነ ትር ክፍል መቼ እንደሚንቀሳቀሱ ይምረጡ።</translation>
 <translation id="8073670137947914548">ማውረድ ተጠናቅቋል</translation>
 <translation id="8076492880354921740">ትሮች</translation>
@@ -2132,6 +2138,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8660600697590740984">በሌንስ የተቀዳ ምስል</translation>
 <translation id="866266761389616183">ውይ፣ ተሰናከለ!</translation>
 <translation id="8663764600409216912">ሲታዩ ለመገመት ከባድ የሚመስሉ የይለፍ ቃላትን እየተጠቀሙ ነው</translation>
+<translation id="8664992138761940052">በነባሪ፣ አዲስ ውይይት ሲጀምሩ የአሁኑ ትርዎ ይጋራል። ትሮች ሲጋሩ የገጽ ይዘቶቻቸው እና ዩአርኤሎቻቸው ወደ Google ይላካሉ። ይህን ቅንብር በማንኛውም ጊዜ መለወጥ ይችላሉ።</translation>
 <translation id="8668210798914567634">ይህ ገፅ ወደ የእርስዎ ንባብ ዝርዝር ተቀምጧል።</translation>
 <translation id="8672642291731179042">ገፆችን ተርጉም</translation>
 <translation id="8672733398999596205">ሁሉንም አንቃ</translation>

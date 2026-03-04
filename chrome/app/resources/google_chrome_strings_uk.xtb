@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Щоб відстежувати ціни на товари в Chrome і отримувати сповіщення, якщо вони знизяться, також збережіть закладки в обліковому записі Google</translation>
 <translation id="3242123554343253302">Додати профіль Chrome</translation>
 <translation id="3245429137663807393">Якщо ви також будете надсилати звіти про використання Chrome, у них буде включено дані про відвідані URL-адреси</translation>
+<translation id="3259748324892322072">Завантажити додаток Chrome</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="3292333338048274092">Потім вам потрібно буде перезапустити Chrome.</translation>
 <translation id="3324218984287646518">Запитати Google Об’єктив про це відео</translation>
@@ -280,7 +281,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="3892148308691398805">Копіювати текст</translation>
 <translation id="3893985792899396936">Підказка щодо Chrome: шукайте за допомогою Об’єктива</translation>
 <translation id="3906096710440765802">Увійдіть в обліковий запис у Chrome, щоб отримати доступ до своїх паролів, закладок і інших даних на всіх пристроях</translation>
-<translation id="3921132130819999051">Дозвольте Chrome шукати інформацію для вас</translation>
 <translation id="3941890832296813527">Сталася помилка. Назва файлу програми встановлення недійсна або не підтримується.</translation>
 <translation id="395904275706073188">Захищені сторінки не можна зчитувати. Спробуйте на іншій сторінці.</translation>
 <translation id="3968962723676998462">Щоб використовувати й зберігати дані Chrome в обліковому записі <ph name="ACCOUNT_EMAIL" />, введіть парольну фразу</translation>
@@ -491,7 +491,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
 <translation id="6180522807229584611">Ця вкладка використовує додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити її неактивною.</translation>
 <translation id="6182736845697986886">Не вдалося встановити через внутрішню помилку сервера оновлень.</translation>
-<translation id="6183773856988300112">Gemini у Chrome використовує функцію автоматичного перегляду, щоб шукати інформацію на ваших вкладках і виконувати для вас завдання. <ph name="LINK_BEGIN" />Докладніше<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Порада щодо Chrome: зберігайте паролі</translation>
 <translation id="6192058120268468905">Ваш обліковий запис у Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> додає розширення, яке може вплинути на роботу Chrome.

@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">বুকমার্কগুলি সরান</translation>
 <translation id="1197761954713363183">পাসকী কনফার্মেশন শিট বন্ধ করা হয়েছে</translation>
 <translation id="1197933394627598677">রিডিং মোড দেখুন</translation>
+<translation id="1197935538609051549">বন্ধ করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1202892408424955784">যে প্রোডাক্টগুলি ট্র্যাক করা হয়েছে</translation>
 <translation id="1204037785786432551">লিঙ্ক ডাউনলোড করুন</translation>
@@ -506,6 +507,7 @@
 <translation id="3122883569442693641">আরও বিবরণ</translation>
 <translation id="3123734510202723619">ঘোষণা</translation>
 <translation id="3134385238404760368">কোনও সাম্প্রতিক ট্যাব নেই</translation>
+<translation id="3135655388926735587">সাম্প্রতিক ট্যাবে ট্যাপ করুন</translation>
 <translation id="314939179385989105">Chrome-এর হোমপেজ</translation>
 <translation id="3158667104057012316">ম্যানুয়াল অর্ডার অনুযায়ী সাজানো হচ্ছে</translation>
 <translation id="3159335509547415276">ব্লক করা অ্যাকাউন্ট সম্পর্কে জানুন</translation>
@@ -850,6 +852,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{১টি চুরি হয়ে যাওয়া পাসওয়ার্ড}one{#টি চুরি হয়ে যাওয়া পাসওয়ার্ড}other{#টি চুরি হয়ে যাওয়া পাসওয়ার্ড}}</translation>
 <translation id="4641919525231168205">পরবর্তী পৃষ্ঠায় যান</translation>
 <translation id="4642472735733036929">দাম ট্র্যাকিং বন্ধ আছে</translation>
+<translation id="4649493483932335039">সাম্প্রতিক ট্যাব দেখুন</translation>
 <translation id="465657074423018424">Safe Browsing প্রতাণামূলক ওয়েবসাইট থেকে আপনাকে নিরাপদে রাখে। এটি বন্ধ করা থাকলে, ব্রাউজ করার সময় (বিশেষ করে পাসওয়ার্ড লেখার আগে) অতিরিক্ত সতর্কতা অবলম্বন করুন।</translation>
 <translation id="4662373422909645029">ডাকনামে সংখ্যা থাকবে না</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" />টি বুকমার্ক মোছা হয়েছে</translation>
@@ -1562,6 +1565,7 @@
 <translation id="7363349185727752629">আপনার গোপনীয়তা পছন্দ গাইড</translation>
 <translation id="7364103838544876661">ব্রাউজ করা ডেটা মুছে দেওয়ার আরও বিকল্প</translation>
 <translation id="7365073365123878797">Google Password Manager-এর সাহায্যে পাসওয়ার্ড সেভ করা শুরু এবং ব্যবহার করতে, Google Play পরিষেবা আপডেট করুন</translation>
+<translation id="7368009310682364976">সম্প্রতি খোলা ট্যাব দেখুন</translation>
 <translation id="7368927539449986686">সাইট সার্চ করার সুবিধা এডিট করুন</translation>
 <translation id="7375125077091615385">প্রকার:</translation>
 <translation id="7376560087009844242">কোনও পৃষ্ঠার টেক্সটে আরও শব্দ যোগ করলে, 'সার্চ করতে টাচ করুন' ফিচার ব্যবহার করার সময় আপনি হয়ত আরও ভাল ফলাফল দেখতে পারবেন। এটি পরিবর্তন করতে আপনি সব সময় <ph name="BEGIN_LINK" />সেটিংস<ph name="END_LINK" />-এ যেতে পারবেন।</translation>
@@ -1679,6 +1683,7 @@
 <translation id="7824665136384946951">আপনার সংগঠন Safe Browsing ফিচারটি বন্ধ করে দিয়েছে</translation>
 <translation id="7826342993930002256">যেকোনও জায়গায় আপনার পছন্দের ব্রাউজার Chrome ব্যবহার করুন</translation>
 <translation id="7844171778363018843">সিঙ্ক করার জন্য কোনও ডেটা বেছে নেওয়া হয়নি</translation>
+<translation id="784453721355882533">উত্তর, গুরুত্বপূর্ণ তথ্য ও আরও অনেক কিছু পেতে Chrome-এ Gemini ব্যবহার করে দেখুন।</translation>
 <translation id="7846161022626028328">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
 <translation id="7846296061357476882">Google পরিষেবা</translation>
 <translation id="784652447248278262">বর্তমান উইন্ডো</translation>
@@ -1688,6 +1693,7 @@
 <translation id="7853202427316060426">ক্রিয়াকলাপ</translation>
 <translation id="7859988229622350291">কখনও অনুবাদ করবেন না</translation>
 <translation id="7866213166286285359">এখানে পৃষ্ঠা অনুবাদ করুন</translation>
+<translation id="7873610418439765081">Chrome-এ Gemini ব্যবহার করে উত্তর, গুরুত্বপূর্ণ তথ্য ও আরও বিকল্প বোতাম থেকে আরও অনেক কিছু পান।</translation>
 <translation id="7875915731392087153">ইমেল আইডি তৈরি করুন</translation>
 <translation id="7876243839304621966">সকল সরান</translation>
 <translation id="7886917304091689118">Chrome এ চালানো হচ্ছে</translation>
@@ -1738,6 +1744,7 @@
 <translation id="8062594758852531064">এক্সটেনডেড প্রিলোডিং:</translation>
 <translation id="8063895661287329888">বুকমার্ক যোগ করতে ব্যর্থ হয়েছে।</translation>
 <translation id="8066816452984416180">এই পৃষ্ঠা দ্রুত বুকমার্ক করুন। এই শর্টকার্ট এডিট করতে, টাচ করে ধরে রাখুন।</translation>
+<translation id="8072436850275034464">আপনি Chrome ব্যবহার করেন এমন যেকোনও জায়গা থেকে সম্প্রতি বন্ধ করা ট্যাব আবার খুলতে পারবেন</translation>
 <translation id="8073388330009372546">নতুন ট্যাবে ছবি খুলুন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8078096376109663956">শুধুমাত্র টেক্সট শেয়ার করুন</translation>
@@ -1849,6 +1856,7 @@
 <translation id="8460008946585880786">একটি ট্যাব টেনে এনে অন্যটির উপরে রাখুন</translation>
 <translation id="8460448946170646641">মূল গোপনীয়তা এবং নিরাপত্তা নিয়ন্ত্রণ পর্যালোচনা করুন</translation>
 <translation id="8460932807646981183">সার্চ ইঞ্জিন এবং সাইট সার্চ করা ম্যানেজ করুন</translation>
+<translation id="8465252176946159372">বৈধ না</translation>
 <translation id="8473863474539038330">ঠিকানা ও আরও অনেককিছু</translation>
 <translation id="847433688444405067">ডিভাইস জুড়ে ব্রাউজ করা</translation>
 <translation id="8477178913400731244">ডেটা মুছুন</translation>

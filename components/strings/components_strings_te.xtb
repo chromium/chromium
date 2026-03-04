@@ -1839,6 +1839,7 @@
 <translation id="3927932062596804919">తిరస్కరించు</translation>
 <translation id="3928806096717999469">ఎడిట్, కొత్త విండో తెరుచుకుంటుంది</translation>
 <translation id="3930260846839546333">హ్యాండ్‌బ్యాగ్‌లు &amp; పర్సులు</translation>
+<translation id="393417216277380082">మోషన్, లైట్ సెన్సార్‌లు</translation>
 <translation id="3937834511546249636">డిఫెన్స్ పరిశ్రమ</translation>
 <translation id="3939773374150895049">CVCకి బదులుగా WebAuthnను ఉపయోగించాలా?</translation>
 <translation id="3941630233824954464">తప్పనిసరి మళ్లీ ఆథెంటికేషన్ చేయడాన్ని ఎనేబుల్ చేయండి</translation>
@@ -2526,6 +2527,7 @@
 <translation id="5018802455907704660">16 x 20 అంగుళాలు</translation>
 <translation id="5019198164206649151">బ్యాకింగ్ స్టోరేజ్‌ చెల్లని స్థితిలో ఉంది</translation>
 <translation id="5019293549442035120">మీరు Google ప్రోడక్ట్‌లలో సేవ్ చేసిన అడ్రస్‌లను ఉపయోగించవచ్చు. ఈ అడ్రస్ మీ Google ఖాతా <ph name="USER_EMAIL" />‌లో సేవ్ చేయబడుతుంది.</translation>
+<translation id="5019819206251569004">మోషన్, లైట్ సెన్సార్‌లు</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> పాలసీ సెట్ చేయబడింది. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" />, ఎక్స్‌టెన్షన్‌ల పేజీలో డెవలపర్ మోడ్ లభ్యతను కంట్రోల్ చేయదు.</translation>
 <translation id="5021500396464456616">ఈ లింక్ పంపిన వ్యక్తిని సంప్రదించండి</translation>
 <translation id="5021557570875267742">Chromeతో ధరలు ట్రాక్ చేయండి</translation>
@@ -2569,6 +2571,7 @@
 <translation id="5093232627742069661">Z-ఫోల్డ్</translation>
 <translation id="5093417502834168387">సైన్ ఇన్ చేయడంలో సమస్య ఉందా? మరొక మార్గాన్ని ట్రై చేయండి</translation>
 <translation id="5094747076828555589">ఈ సర్వర్ <ph name="DOMAIN" /> అని నిరూపించుకోలేకపోయింది; దీని భద్రతా ప్రమాణపత్రాన్ని Chromium విశ్వసించలేదు. ఇది తప్పుగా కాన్ఫిగర్ చేయడం వలన లేదా దాడిచేసే వ్యక్తి మీ కనెక్షన్‌కు అంతరాయం కలిగించడం వలన జరిగి ఉండవచ్చు.</translation>
+<translation id="5096066272198024688">మీ సమాచారం సేవ్ అవుతోంది</translation>
 <translation id="5097099694988056070">CPU/RAM వినియోగం లాంటి పరికర గణాంకాలు</translation>
 <translation id="5097468150760963273">27 x 39 అంగుళాలు</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3775,6 +3778,7 @@
 <translation id="7003278537452757231">రగ్గులు &amp; తివాచీలు</translation>
 <translation id="7003322000677139268">వాహన భాగాలు &amp; యాక్సెసరీలు</translation>
 <translation id="7004499039102548441">ఇటీవలి ట్యాబ్‌లు</translation>
+<translation id="700483187606163535">మీ సమాచారం, <ph name="ACCOUNT" /> కోసం <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />‌లో సేవ్ చేయబడుతుంది. ఫారమ్‌లను వేగంగా పూరించడానికి మీరు దీన్ని Google సర్వీస్‌లలో ఉపయోగించవచ్చు.</translation>
 <translation id="7006930604109697472">ఏదేమైనా పంపు</translation>
 <translation id="7009364359744329733">ప్రస్తుతానికి ఈ కార్డ్ అందుబాటులో లేదు. దయచేసి తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="7010658264061801199">ఫుడ్ &amp; డ్రింక్</translation>

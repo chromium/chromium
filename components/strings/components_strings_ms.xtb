@@ -1911,6 +1911,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
 <translation id="4031179711345676612">Mikrofon dibenarkan</translation>
 <translation id="4036753017940930924">Bidang Tanah &amp; Tanah</translation>
 <translation id="403724377879219932">Boleh meminta untuk mengakses peranti lain pada rangkaian setempat anda</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, baharu</translation>
 <translation id="4039506337798853114">Untuk menunjukkan kursor anda, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Anggaran</translation>
 <translation id="4045070493270310437">Buka semula tab</translation>
@@ -2797,6 +2798,7 @@ Untuk menyembunyikan pilihan bayar kemudian, akses <ph name="BEGIN_LINK" />tetap
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Untuk semak keluar yang lebih pantas, simpan CVC ini dalam Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Apl pada peranti</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, sebelum ini <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Susunan terbalik menghadap ke atas</translation>
 <translation id="5447235695608032700">Benarkan <ph name="SITE" /> menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="5447973833955560753">Kata laluan pemulihan</translation>

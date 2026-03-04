@@ -1911,6 +1911,7 @@
 <translation id="4031179711345676612">Микрофоныг зөвшөөрсөн</translation>
 <translation id="4036753017940930924">Талбай, газар</translation>
 <translation id="403724377879219932">Таны дотоод сүлжээн дээрх бусад төхөөрөмжид хандахыг хүсэх боломжтой</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, шинэ</translation>
 <translation id="4039506337798853114">Курсороо харуулахын тулд |<ph name="ACCELERATOR" />|-г дарна уу</translation>
 <translation id="4042597221652780603">Барагцаалсан</translation>
 <translation id="4045070493270310437">Табуудыг дахин нээх</translation>
@@ -2797,6 +2798,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Илүү хурдан тооцоо хийх бол энэ карт баталгаажуулалтын кодыг Google Wallet-д (<ph name="ACCOUNT_EMAIL" />) хадгална уу</translation>
 <translation id="5436307623797390637">Төхөөрөмж дээрх аппууд</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, <ph name="PREVIOUS_VALUE" /> байсан</translation>
 <translation id="5443468954631487277">Нүүрээр нь дээш харуулж, хуудасны урвуу дарааллаар</translation>
 <translation id="5447235695608032700"><ph name="SITE" />-д таны талаар хадгалсан мэдээллээ ашиглахыг зөвшөөрнө үү</translation>
 <translation id="5447973833955560753">Сэргээх нууц үг</translation>

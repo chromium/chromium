@@ -1612,6 +1612,7 @@
 <translation id="3575121482199441727">ਇਸ ਸਾਈਟ ਨੂੰ ਦਿਖਾਉਣ ਦਿਓ</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">'ਗਲੀ ਦਾ ਨਾਮ' ਵਿਕਲਪ ਚੁਣਿਆ ਗਿਆ</translation>
+<translation id="3576315803647905285">ਰਸਮੀ ਬਣਾਓ</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 'ਤੇ ਇੱਕ ਪਰੋਏ ਗਏ ਪੰਨੇ ਦੇ ਮੁਤਾਬਕ</translation>
 <translation id="3577473026931028326">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="3577902790357386792">ਜਿਮਨਾਸਟਿਕਸ</translation>
@@ -1906,6 +1907,7 @@
 <translation id="4031179711345676612">ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਇਜਾਜ਼ਤ ਦਿੱਤੀ ਗਈ</translation>
 <translation id="4036753017940930924">ਪਲਾਟ ਅਤੇ ਜ਼ਮੀਨ</translation>
 <translation id="403724377879219932">ਤੁਹਾਡੇ ਸਥਾਨਕ ਨੈੱਟਵਰਕ 'ਤੇ ਹੋਰ ਡੀਵਾਈਸਾਂ ਤੱਕ ਪਹੁੰਚ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀ ਹੈ</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, ਨਵਾਂ</translation>
 <translation id="4039506337798853114">ਆਪਣਾ ਕਰਸਰ ਦਿਖਾਉਣ ਲਈ, |<ph name="ACCELERATOR" />| ਨੂੰ ਦਬਾਓ</translation>
 <translation id="4042597221652780603">ਅੰਦਾਜ਼ਨ</translation>
 <translation id="4045070493270310437">ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਖੋਲ੍ਹੋ</translation>
@@ -2633,6 +2635,7 @@
 <translation id="5190835502935405962">ਬੁੱਕਮਾਰਸ ਬਾਰ</translation>
 <translation id="5191315092027169558">ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਦਾ ਪ੍ਰਬੰਧਨ <ph name="DOMAIN" /> ਵੱਲੋਂ ਕੀਤਾ ਜਾਂਦਾ ਹੈ</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ਇੱਕ ਤੋਂ ਵੱਧ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰਨਾ ਚਾਹੁੰਦੀ ਹੈ</translation>
+<translation id="5199121357983849992">ਕੀ ਆਈਡੀ ਕਾਰਡ ਨੂੰ ਰੱਖਿਅਤ ਕਰਨਾ ਹੈ?</translation>
 <translation id="5200063972779787617">ਖਾਤੇ ਵਿੱਚ ਪਤਾ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5201306358585911203">ਇਸ ਪੰਨੇ 'ਤੇ ਇੱਕ ਪਰੋਏ ਗਏ ਪੰਨੇ ਦੇ ਮੁਤਾਬਕ</translation>
 <translation id="5203716867500274632">ਤੁਹਾਡੇ ਪ੍ਰਸ਼ਾਸਕ ਨੇ ਤੁਹਾਡੇ ChromeOS ਡੀਵਾਈਸਾਂ 'ਤੇ ਤੁਹਾਡੇ ਪਿਛਲੇ ਅਤੇ ਮੌਜੂਦਾ ਸੈਸ਼ਨਾਂ ਵਿਚਕਾਰ ਸਿੰਕ ਕਰਨ ਲਈ ਅੱਗੇ ਦਿੱਤਿਆਂ ਨੂੰ ਚਾਲੂ ਕੀਤਾ:</translation>
@@ -2681,6 +2684,7 @@
 <translation id="5266128565379329178">ਉੱਪਰ ਜਿਲਦਬੰਦ</translation>
 <translation id="5269225904387178860">ਹੇਠਾਂ ਚਾਰ ਮੋਰੀਆਂ</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ਲਈ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ਸਮਰਥਿਤ ਸ਼ਰਤ ਨਹੀਂ ਹੈ</translation>
+<translation id="527191520368130807">ਬਿਹਤਰ ਬਣਾਓ</translation>
 <translation id="5273658854610202413">ਚਿਤਾਵਨੀ: ਇਹ ਨੀਤੀ PolicyDictionaryMultipleSourceMergeList ਨੀਤੀ ਵਿੱਚ ਨਿਰਧਾਰਤ ਕੀਤੇ ਮੁਤਾਬਕ ਵਿਲੀਨ ਨਹੀਂ ਕੀਤੀ ਗਈ ਕਿਉਂਕਿ ਇਹ ਉਹਨਾਂ ਸ਼ਬਦਕੋਸ਼ ਨੀਤੀਆਂ ਦਾ ਹਿੱਸਾ ਨਹੀਂ ਹੈ ਜਿਨ੍ਹਾਂ ਨੂੰ ਵਿਲੀਨ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।</translation>
 <translation id="5278778426231952189">ਹੁਣੇ ਅੱਪਲੋਡ ਕਰੋ</translation>
 <translation id="5279286380302340275">ਡਾਊਨਲੋਡਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
@@ -2790,6 +2794,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">ਤੇਜ਼ੀ ਨਾਲ ਚੈੱਕ-ਆਊਟ ਕਰਨ ਲਈ, ਇਸ CVC ਨੂੰ Google Wallet (<ph name="ACCOUNT_EMAIL" />) ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5436307623797390637">ਡੀਵਾਈਸ 'ਤੇ ਐਪਾਂ</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, ਪਹਿਲਾਂ ਕੀਮਤ <ph name="PREVIOUS_VALUE" /> ਸੀ</translation>
 <translation id="5443468954631487277">ਉਲਟੇ ਕ੍ਰਮ ਵਿੱਚ ਪਾਸਾ ਉੱਪਰ ਕੀਤੇ ਹੋਏ</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> ਨੂੰ ਉਨ੍ਹਾਂ ਵੱਲੋਂ ਤੁਹਾਡੇ ਬਾਰੇ ਰੱਖਿਅਤ ਕੀਤੀ ਜਾਣਕਾਰੀ ਦੀ ਵਰਤੋਂ ਕਰਨ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="5447973833955560753">ਰਿਕਵਰੀ ਪਾਸਵਰਡ</translation>
@@ -3580,6 +3585,7 @@
 <translation id="6698097747703777657">ਕੀ ਤੁਹਾਨੂੰ ਕੋਡ ਪ੍ਰਾਪਤ ਨਹੀਂ ਹੋਇਆ? <ph name="BEGIN_LINK" />ਨਵਾਂ ਕੋਡ ਪ੍ਰਾਪਤ ਕਰੋ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ਬਣਾਇਆ:</translation>
 <translation id="6698769547327354196">Chrome ਵਿੱਚ Pix ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ <ph name="BEGIN_LINK1" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> ਵਿੱਚ ਜਾਓ</translation>
+<translation id="669903922988126943">ਆਪਣੀ ਜਾਣਕਾਰੀ ਨੂੰ ਰੱਖਿਅਤ ਕਰੋ ਅਤੇ Google ਉਤਪਾਦਾਂ ਵਿੱਚ ਫ਼ਾਰਮ ਭਰਨ ਵਰਗੇ ਕੰਮ ਤੇਜ਼ੀ ਨਾਲ ਕਰੋ। ਤੁਸੀਂ <ph name="ACCOUNT" /> ਲਈ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ਵਿੱਚ <ph name="MANAGE_INFO_LINK" /> ਕਰ ਸਕਦੇ ਹੋ।</translation>
 <translation id="67007264085648978">ਸਮੇਂ ਦਾ ਸਕ੍ਰਬਰ</translation>
 <translation id="6702851555558236418">ਆਡੀਓ ਅਤੇ ਸੰਗੀਤ ਸਾਫ਼ਟਵੇਅਰ</translation>
 <translation id="6702919718839027939">ਪੇਸ਼ਕਾਰੀ ਮੋਡ</translation>
@@ -4070,6 +4076,7 @@
 <translation id="746412105358554870">JavaScript ਸੁਯੋਗਕਰਨ ਅਤੇ ਸੁਰੱਖਿਆ</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> ਨੂੰ ਪਤਾ ਲੱਗ ਜਾਵੇਗਾ ਕਿ ਤੁਸੀਂ <ph name="TOP_LEVEL_URL" /> 'ਤੇ ਗਏ ਸੀ</translation>
 <translation id="7465963048299965912">10 x 13 ਇੰਚ</translation>
+<translation id="7467332121947433617">ਕੀ ਆਈਡੀ ਕਾਰਡ ਨੂੰ ਅੱਪਡੇਟ ਕਰਨਾ ਹੈ?</translation>
 <translation id="7469935732330206581">ਫ਼ਾਰਮ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="7470854469646445678">ਕਾਪੀ ਕਰਨ ਦਾ ਕਾਰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ (ਲੋੜੀਂਦਾ)</translation>
 <translation id="7471007961486718967">ਟ੍ਰਾਂਸਫ਼ਰ ਕਰਨ ਦਾ ਕਾਰਨ ਮੁਹੱਈਆ ਕਰਵਾਓ (ਲੋੜੀਂਦਾ)</translation>
@@ -4091,6 +4098,7 @@
 <translation id="7499188644237027195">ਜਦੋਂ ਤੁਸੀਂ Chrome ਵਿੱਚ ਖਰੀਦਾਂ ਕਰਦੇ ਹੋ, ਤਾਂ ਈ-ਵਾਲੇਟ ਅਤੇ Pix ਨੂੰ ਵਿਕਲਪਾਂ ਵਜੋਂ ਦੇਖੋ</translation>
 <translation id="7500917112031739411">ਗਰੁੱਪ ਮੁਤਾਬਕ ਦਿਖਾਓ</translation>
 <translation id="7501663406926337752">ਅੱਗੇ ਦਿੱਤੀ ਸਾਈਟ ਤੁਹਾਡੀ ਸੰਸਥਾ ਵੱਲੋਂ ਫਲੈਗ ਕੀਤੀ ਗਈ ਹੈ</translation>
+<translation id="7502044688973049724">ਆਪਣੀ ਜਾਣਕਾਰੀ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="7507075214339298899">#9 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="7508255263130623398">ਵਾਪਸੀ ਸੰਬੰਧੀ ਨੀਤੀ ਡੀਵਾਈਸ ਆਈ.ਡੀ. ਖਾਲੀ ਹੈ ਜਾਂ ਵਰਤਮਾਨ ਡੀਵਾਈਸ ਆਈ.ਡੀ. ਨਾਲ ਮੇਲ ਨਹੀਂ ਖਾਂਦੀ ਹੈ</translation>
 <translation id="7508577201115425418">ਦਸਤਾਵੇਜ਼ ਅਤੇ ਪ੍ਰਿੰਟਿੰਗ ਸੇਵਾਵਾਂ</translation>
@@ -5143,6 +5151,7 @@
 <translation id="9191834167571392248">ਹੇਠਾਂ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="9192361865877479444">ਧਾਤ (ਮੈਟ)</translation>
 <translation id="9192947025498305328">ਨਿਰਮਲ ਸੁੰਦਰਤਾ</translation>
+<translation id="9193018794001479794">ਵਿਸਤਾਰ ਕਰੋ</translation>
 <translation id="9195969368671142407">ਜਦੋਂ ਤੁਹਾਡੀ ਸੰਸਥਾ ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰਨ ਦੀ ਸੁਵਿਧਾ ਨੂੰ ਸੀਮਤ ਕਰਦੀ ਹੈ, ਤਾਂ ਤੁਸੀਂ ਟੈਬ ਗਰੁੱਪਾਂ ਨੂੰ ਸਾਂਝਾ ਨਹੀਂ ਕਰ ਸਕਦੇ ਜਾਂ ਉਨ੍ਹਾਂ ਵਿੱਚ ਸ਼ਾਮਲ ਨਹੀਂ ਹੋ ਸਕਦੇ</translation>
 <translation id="9198613052465150219">ਤੁਹਾਡੇ Google ਖਾਤੇ ਵਿੱਚ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 'ਤੇ ਬ੍ਰਾਊਜ਼ਿੰਗ ਇਤਿਹਾਸ ਦੀਆਂ ਹੋਰ ਕਿਸਮਾਂ ਹੋ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="9199905725844810519">ਪ੍ਰਿੰਟ ਕਰਨਾ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>

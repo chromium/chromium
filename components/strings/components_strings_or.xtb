@@ -1612,6 +1612,7 @@
 <translation id="3575121482199441727">ଏହି ସାଇଟ୍ ପାଇଁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">ଷ୍ଟ୍ରୀଟ ନାମ ବିକଳ୍ପ ଚୟନ କରାଯାଇଛି</translation>
+<translation id="3576315803647905285">ଫର୍ମାଲାଇଜ କରିବା</translation>
 <translation id="3576616784287504635"><ph name="SITE" />ରେ ଏକ ଏମ୍ବେଡ୍‌ ହୋ‍ଇଥିବା ପୃଷ୍ଠା କହେ ଯେ</translation>
 <translation id="3577473026931028326">କିଛି ତ୍ରୁଟି ହୋଇଛି। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</translation>
 <translation id="3577902790357386792">ଜିମ୍ନାଷ୍ଟିକ୍ସ</translation>
@@ -1906,6 +1907,7 @@
 <translation id="4031179711345676612">ମାଇକ୍ରୋଫୋନ୍‌କୁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
 <translation id="4036753017940930924">ଲଟ୍ସ ଏବଂ ଭୂମି</translation>
 <translation id="403724377879219932">ଆପଣଙ୍କ ସ୍ଥାନୀୟ ନେଟୱାର୍କରେ ଥିବା ଅନ୍ୟ ଡିଭାଇସକୁ ଆକ୍ସେସ କରିବା ପାଇଁ ପଚାରିପାରିବ</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, ନୂଆ</translation>
 <translation id="4039506337798853114">ଆପଣଙ୍କ କର୍ସର ଦେଖାଇବା ପାଇଁ |<ph name="ACCELERATOR" />|କୁ ଦବାନ୍ତୁ</translation>
 <translation id="4042597221652780603">ଆନୁମାନିକ</translation>
 <translation id="4045070493270310437">ଟାବଗୁଡ଼ିକୁ ପୁଣି ଖୋଲନ୍ତୁ</translation>
@@ -2633,6 +2635,7 @@
 <translation id="5190835502935405962">ବୁକମାର୍କ ବାର୍</translation>
 <translation id="5191315092027169558">ଆପଣଙ୍କ ପ୍ରୋଫାଇଲ <ph name="DOMAIN" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ଏକାଧିକ ଫାଇଲ୍ ଡାଉନ୍‌ଲୋଡ୍ କରିବାକୁ ଚାହୁଁଛି</translation>
+<translation id="5199121357983849992">ID କାର୍ଡକୁ ସେଭ କରିବେ?</translation>
 <translation id="5200063972779787617">ଆକାଉଣ୍ଟରେ ଠିକଣା ସେଭ କରନ୍ତୁ</translation>
 <translation id="5201306358585911203">ଏହି ପୃଷ୍ଠାରେ ଏକ ଏମ୍ବାଡ୍ ହୋଇଥିବା ପୃଷ୍ଠା ଏହା ଜଣାଏ</translation>
 <translation id="5203716867500274632">ଆପଣଙ୍କର ଆଡମିନିଷ୍ଟ୍ରେଟର ଆପଣଙ୍କର ସମଗ୍ର ChromeOS ଡିଭାଇସରେ ଆପଣଙ୍କର ପୂର୍ବ ଏବଂ ବର୍ତ୍ତମାନର ସେସନଗୁଡ଼ିକ ମଧ୍ୟରେ ସିଙ୍କ ହେବା ପାଇଁ ନିମ୍ନୋକ୍ତଗୁଡ଼ିକୁ ସକ୍ଷମ କରିଛନ୍ତି:</translation>
@@ -2681,6 +2684,7 @@
 <translation id="5266128565379329178">ଉପର ପଟରେ ବାଇଣ୍ଡ</translation>
 <translation id="5269225904387178860">ତଳ ପଟରେ ଚାରୋଟି ପଞ୍ଚ୍</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_RESTRICTION" />" ପାଇଁ "<ph name="DATA_CONTROLS_ATTRIBUTE" />" ଏକ ସମର୍ଥିତ ସର୍ତ୍ତ ନୁହେଁ</translation>
+<translation id="527191520368130807">ପଲିସ କରନ୍ତୁ</translation>
 <translation id="5273658854610202413">ଚେତାବନୀ: ଏହି ନୀତିକୁ ନିର୍ଦ୍ଦିଷ୍ଟ କରାଯାଇଥିବା PolicyDictionaryMultipleSourceMergeList ନୀତିରେ ମିଶାଯାଇ ନଥିଲା କାରଣ ଏହା ଏକ ଅଭିଧାନ ନୀତିରେ ମିଶ୍ରଣ କରାଯିବାର ଅଂଶ ନୁହେଁ।</translation>
 <translation id="5278778426231952189">ବର୍ତ୍ତମାନ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="5279286380302340275">ଡାଉନଲୋଡଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
@@ -2790,6 +2794,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">ଶୀଘ୍ର ଚେକଆଉଟ ପାଇଁ ଏହି CVCକୁ Google Wallet (<ph name="ACCOUNT_EMAIL" />)ରେ ସେଭ କରନ୍ତୁ</translation>
 <translation id="5436307623797390637">ଡିଭାଇସରେ ଥିବା ଆପ୍ସ</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, ମୂଳ ମୂଲ୍ୟ <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">ଓଲଟା ଅର୍ଡରରେ ଫେସ୍ ଅପ୍</translation>
 <translation id="5447235695608032700">ଆପଣଙ୍କ ବିଷୟରେ <ph name="SITE" /> ସେଭ କରିଥିବା ସୂଚନା ବ୍ୟବହାର କରିବା ପାଇଁ ଏହି ସାଇଟକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="5447973833955560753">ରିକଭରି ପାସୱାର୍ଡ</translation>
@@ -3580,6 +3585,7 @@
 <translation id="6698097747703777657">ଆପଣଙ୍କ କୋଡ ପାଇନାହାଁନ୍ତି? <ph name="BEGIN_LINK" />ନୂଆ କୋଡ ପାଆନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ସୃଷ୍ଟିହେଲା:</translation>
 <translation id="6698769547327354196">Chromeରେ Pix ବନ୍ଦ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK1" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
+<translation id="669903922988126943">ଆପଣଙ୍କ ସୂଚନା ସେଭ କରି ସମଗ୍ର Google ପ୍ରଡକ୍ଟରେ ଫର୍ମଗୁଡ଼ିକୁ ପୂରଣ କରିବା ପରି କାର୍ଯ୍ୟଗୁଡ଼ିକ ଶୀଘ୍ର କରନ୍ତୁ। ଆପଣ <ph name="ACCOUNT" />ରେ <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />ରେ <ph name="MANAGE_INFO_LINK" /> କରିପାରିବେ।</translation>
 <translation id="67007264085648978">ଟାଇମ ସ୍କ୍ରବର</translation>
 <translation id="6702851555558236418">ଅଡିଓ ଏବଂ ମ୍ୟୁଜିକ ସଫ୍ଟୱେର</translation>
 <translation id="6702919718839027939">ବର୍ତ୍ତମାନ</translation>
@@ -4070,6 +4076,7 @@
 <translation id="746412105358554870">JavaScript ଅପ୍ଟିମାଇଜେସନ ଏବଂ ସୁରକ୍ଷା</translation>
 <translation id="7465036432780054056">ଆପଣ <ph name="TOP_LEVEL_URL" />କୁ ଭିଜିଟ କରିଥିବା <ph name="EMBEDDED_URL" /> ଜାଣିବ</translation>
 <translation id="7465963048299965912">10 x 13 ଇଞ୍ଚ</translation>
+<translation id="7467332121947433617">ID କାର୍ଡକୁ ଅପଡେଟ କରିବେ?</translation>
 <translation id="7469935732330206581">ଫର୍ମ ସୁରକ୍ଷିତ ନୁହେଁ</translation>
 <translation id="7470854469646445678">କପି କରିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
 <translation id="7471007961486718967">ଟ୍ରାନ୍ସଫର କରିବାର କାରଣ ପ୍ରଦାନ କରନ୍ତୁ (ଆବଶ୍ୟକ)</translation>
@@ -4091,6 +4098,7 @@
 <translation id="7499188644237027195">ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ, eWallet ଏବଂ Pixକୁ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ</translation>
 <translation id="7500917112031739411">ଗୋଷ୍ଠୀ ଅନୁସାରେ ଦେଖାନ୍ତୁ</translation>
 <translation id="7501663406926337752">ଆଗରେ ଥିବା ସାଇଟକୁ ଆପଣଙ୍କ ସଂସ୍ଥା ଦ୍ୱାରା ଫ୍ଲାଗ କରାଯାଇଛି</translation>
+<translation id="7502044688973049724">ଆପଣଙ୍କ ସୂଚନା ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7507075214339298899">ଏନଭେଲପ #9</translation>
 <translation id="7508255263130623398">ଫେରସ୍ତ ନୀତି ଡିଭାଇସ୍ id ଖାଲି ଅଛି କିମ୍ବା ବର୍ତ୍ତମାନର ଡିଭାଇସ୍ id ସହିତ ମେଳ ହେଉନାହିଁ</translation>
 <translation id="7508577201115425418">ଡକ୍ୟୁମେଣ୍ଟ ଏବଂ ପ୍ରିଣ୍ଟିଂ ସେବା</translation>
@@ -5142,6 +5150,7 @@
 <translation id="9191834167571392248">ତଳ ବାମ ପଟରେ ପଞ୍ଚ୍</translation>
 <translation id="9192361865877479444">ମେଟାଲ (ମେଟ)</translation>
 <translation id="9192947025498305328">କ୍ଲିନ ବିୟୁଟି</translation>
+<translation id="9193018794001479794">ବିସ୍ତୃତ କରନ୍ତୁ</translation>
 <translation id="9195969368671142407">ଆପଣଙ୍କ ସଂସ୍ଥା ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ସେଭ କରିବା ସୀମିତ କଲେ, ଆପଣ ଟାବ ଗ୍ରୁପଗୁଡ଼ିକୁ ସେୟାର କରିପାରିବେ ନାହିଁ କିମ୍ବା ଏଥିରେ ଯୋଗ ଦେଇପାରିବେ ନାହିଁ</translation>
 <translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />ରେ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟର ଅନ୍ୟ ପ୍ରକାରର ବ୍ରାଉଜିଂ ଇତିହାସ ଥାଇପାରେ</translation>
 <translation id="9199905725844810519">ପ୍ରିଣ୍ଟିଂକୁ ବ୍ଲକ୍ କରାଯାଇଛି</translation>

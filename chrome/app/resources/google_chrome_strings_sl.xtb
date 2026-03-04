@@ -226,6 +226,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3226612997184048185">Če v računu Google shranite tudi zaznamke, lahko v Chromu spremljate cene izdelkov in prejmete obvestilo, ko se cena zniža</translation>
 <translation id="3242123554343253302">Dodaj profil v Chromu</translation>
 <translation id="3245429137663807393">Če delite tudi poročila o uporabi Chroma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
+<translation id="3259748324892322072">Prenos aplikacije Chrome</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="3292333338048274092">Nato boste morali znova zagnati Chrome.</translation>
 <translation id="3324218984287646518">Vprašajte Google Lens o tem videoposnetku</translation>
@@ -284,7 +285,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3892148308691398805">Kopiraj besedilo</translation>
 <translation id="3893985792899396936">Nasvet za Chrome: Iščite z Googlom Lens</translation>
 <translation id="3906096710440765802">Prijavite se v Chrome, če želite dostopati do gesel, zaznamkov in drugega v vseh napravah</translation>
-<translation id="3921132130819999051">Naj Chrome brska za vas</translation>
 <translation id="3941890832296813527">Napaka pri namestitvi: Ime datoteke namestitvenega programa je neveljavno ali ni podprto.</translation>
 <translation id="395904275706073188">Zaščitenih strani ni mogoče prebrati. Poskusite z drugo stranjo.</translation>
 <translation id="3968962723676998462">Vnesite geslo, če želite podatke iz Chroma uporabljati in shranjevati v računu, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -499,7 +499,6 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> različica beta Google Chroma</translation>
 <translation id="6180522807229584611">Ta zavihek uporablja dodatna sredstva. Če želite izboljšati učinkovitost delovanja, pustite Chromu, da ga spremeni v neaktivnega.</translation>
 <translation id="6182736845697986886">Namestitev ni uspela zaradi notranje napake strežnika za posodobitve.</translation>
-<translation id="6183773856988300112">Gemini v Chromu uporablja samodejno brskanje za delo na vaših zavihkih in dokončanje opravil, ki mu jih dodelite. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Nasvet za Chrome: Shranite gesla</translation>
 <translation id="6192058120268468905">Vaš račun v Chromu</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> je dodal razširitev, ki lahko morda spremeni način delovanja Chroma.

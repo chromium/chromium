@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Nedladdning av transkriptionsmodell för <ph name="LANGUAGE_NAME" /> har slutförts</translation>
 <translation id="42126664696688958">Exportera</translation>
 <translation id="4213104098953699324">USB-tangentbord</translation>
+<translation id="4217571870635786043">Diktering</translation>
 <translation id="4227825898293920515">Lösenordet upphör att gälla om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Inga utskriftsjobb pågår</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8420955526972171689">Kör tester och felsök vid problem med hårdvara</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ned</translation>
+<translation id="8427213022735114808">Med diktering skickas det du säger till Google så att du kan tala in text i vilket textfält som helst.</translation>
 <translation id="8428213095426709021">Inställningar</translation>
 <translation id="8431300646573772016">Nyheter i ChromeOS</translation>
 <translation id="8433186206711564395">Nätverksinställningar</translation>

@@ -1907,6 +1907,7 @@
 <translation id="4031179711345676612">মাইক্ৰ’ফ’নৰ অনুমতি আছে</translation>
 <translation id="4036753017940930924">ভূমিৰ টুকুৰা আৰু ভূমি</translation>
 <translation id="403724377879219932">আপোনাৰ স্থানীয় নেটৱৰ্কৰ অন্য ডিভাইচ এক্সেছ কৰিবলৈ বিচাৰিব পাৰে</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, নতুন</translation>
 <translation id="4039506337798853114">আপোনাৰ কাৰ্ছৰডাল দেখুৱাবলৈ, |<ph name="ACCELERATOR" />| টিপক</translation>
 <translation id="4042597221652780603">আনুমানিক</translation>
 <translation id="4045070493270310437">টেব পুনৰ খোলক</translation>
@@ -2792,6 +2793,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">দ্ৰুততাৰে চেকআউট কৰিবলৈ, এইটো CVC Google Walletত (<ph name="ACCOUNT_EMAIL" />) ছেভ কৰক</translation>
 <translation id="5436307623797390637">ডিভাইচত থকা এপ্‌</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, পূৰ্বে <ph name="PREVIOUS_VALUE" /> আছিল</translation>
 <translation id="5443468954631487277">ওপৰমুখীয়াকৈ বিপৰীত ক্ৰম</translation>
 <translation id="5447235695608032700"><ph name="SITE" />এ আপোনাৰ বিষয়ে ছেভ কৰি ৰখা তথ্য ব্যৱহাৰ কৰিবলৈ অনুমতি দিয়ক</translation>
 <translation id="5447973833955560753">পুনৰুদ্ধাৰৰ পাছৱর্ড</translation>

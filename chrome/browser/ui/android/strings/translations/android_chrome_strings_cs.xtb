@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Přesunutí záložek</translation>
 <translation id="1197761954713363183">Byla zavřena tabulka k potvrzení přístupového klíče</translation>
 <translation id="1197933394627598677">Zobrazit režim čtení</translation>
+<translation id="1197935538609051549">Deaktivovat</translation>
 <translation id="1201402288615127009">Další</translation>
 <translation id="1202892408424955784">Sledované produkty</translation>
 <translation id="1204037785786432551">Stáhnout odkaz</translation>
@@ -506,6 +507,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="3122883569442693641">Další podrobnosti</translation>
 <translation id="3123734510202723619">Oznámení</translation>
 <translation id="3134385238404760368">Žádné nedávné karty</translation>
+<translation id="3135655388926735587">Klepněte na Nedávno použité karty</translation>
 <translation id="314939179385989105">Domovská stránka Chromu</translation>
 <translation id="3158667104057012316">Ruční řazení</translation>
 <translation id="3159335509547415276">Další informace o blokovaných účtech</translation>
@@ -850,6 +852,7 @@ Na stránce <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> moh
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Bylo nalezeno jedno prolomené heslo}few{Byla nalezena # prolomená hesla}many{Bylo nalezeno # prolomeného hesla}other{Bylo nalezeno # prolomených hesel}}</translation>
 <translation id="4641919525231168205">Přejít na další stránku</translation>
 <translation id="4642472735733036929">Sledování ceny bylo ukončeno</translation>
+<translation id="4649493483932335039">Zobrazit nedávno použité karty</translation>
 <translation id="465657074423018424">Bezpečné prohlížení vás chrání před podvodnými weby. Pokud ho vypnete, buďte při prohlížení mimořádně opatrní, zejména před zadáváním hesel.</translation>
 <translation id="4662373422909645029">Přezdívka nesmí obsahovat čísla</translation>
 <translation id="4663756553811254707">Smazané záložky: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1562,6 +1565,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7363349185727752629">Průvodce možnostmi ochrany soukromí</translation>
 <translation id="7364103838544876661">Další možnosti smazání údajů o prohlížení</translation>
 <translation id="7365073365123878797">Pokud chcete začít ukládat a používat hesla pomocí Správce hesel Google, aktualizujte služby Google Play</translation>
+<translation id="7368009310682364976">Zobrazit nedávno otevřené karty</translation>
 <translation id="7368927539449986686">Upravit vyhledávání na webu</translation>
 <translation id="7375125077091615385">Typ:</translation>
 <translation id="7376560087009844242">Zahrnutím většího množství textu ze stránky můžete pomocí Vyhledání klepnutím získat lepší výsledky. Tuto možnost můžete v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" /> kdykoliv změnit.</translation>
@@ -1679,6 +1683,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7824665136384946951">Vaše organizace Bezpečné prohlížení vypnula</translation>
 <translation id="7826342993930002256">Váš Chrome, všude</translation>
 <translation id="7844171778363018843">Nebyla vybrána žádná data k synchronizaci</translation>
+<translation id="784453721355882533">Vyzkoušejte Gemini v Chromu a získejte odpovědi, klíčové poznatky a další informace.</translation>
 <translation id="7846161022626028328">Došlo k chybě. Zkuste to znovu.</translation>
 <translation id="7846296061357476882">Služby Google</translation>
 <translation id="784652447248278262">Aktuální okno</translation>
@@ -1688,6 +1693,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="7853202427316060426">Aktivita</translation>
 <translation id="7859988229622350291">Nikdy nepřekládat</translation>
 <translation id="7866213166286285359">Překlad stránek je k dispozici zde</translation>
+<translation id="7873610418439765081">Vyzkoušejte Gemini v Chromu a získejte odpovědi, klíčové poznatky a další informace pomocí tlačítka Další možnosti.</translation>
 <translation id="7875915731392087153">Vytvořit e-mail</translation>
 <translation id="7876243839304621966">Odstranit vše</translation>
 <translation id="7886917304091689118">Spuštěno v Chromu</translation>
@@ -1738,6 +1744,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8062594758852531064">Rozšířené předběžné načítání:</translation>
 <translation id="8063895661287329888">Přidání záložky se nezdařilo.</translation>
 <translation id="8066816452984416180">Rychle tuto stránku přidat do záložek. Pokud tuto zkratku chcete upravit, podržte ji.</translation>
+<translation id="8072436850275034464">Nedávno zavřené karty můžete znovu otevřít kdekoli, kde používáte Chrome</translation>
 <translation id="8073388330009372546">Otevřít na nové kartě</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8078096376109663956">Sdílet pouze text</translation>
@@ -1849,6 +1856,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="8460008946585880786">Přetáhněte jednu kartu na druhou</translation>
 <translation id="8460448946170646641">Zkontrolujte klíčové ovládací prvky ochrany soukromí a zabezpečení</translation>
 <translation id="8460932807646981183">Spravovat vyhledávače a vyhledávání na webu</translation>
+<translation id="8465252176946159372">Neplatné</translation>
 <translation id="8473863474539038330">Adresy a další</translation>
 <translation id="847433688444405067">Synchronizujte své procházení</translation>
 <translation id="8477178913400731244">Vymazat data</translation>

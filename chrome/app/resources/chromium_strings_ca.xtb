@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Si inicies la sessió en serveis de Google com ara Gmail o YouTube amb <ph name="USER_EMAIL" />, pots utilitzar el mateix compte per iniciar la sessió automàticament a Chromium</translation>
 <translation id="1290883685122687410">Error de configuració: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configura el teu perfil de Chromium nou</translation>
+<translation id="132092532143527429">Prova-ho amb Gemini a Chromium</translation>
 <translation id="1324107359134968521">Chromium necessita accedir al Bluetooth per explorar 
  dispositius Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />.</translation>
 <translation id="1330562121671411446">Detecta l'idioma</translation>
@@ -609,6 +610,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7622753900276619808">Ara tens més funcions disponibles a Chromium</translation>
 <translation id="7624307931717240213">Utilitzem la informació per millorar aquest servei. Consulta la política de privadesa i les condicions del servei.</translation>
 <translation id="7649070708921625228">Ajuda</translation>
+<translation id="7650134251917003571">Obtén l'aplicació Chromium</translation>
 <translation id="7656340475565475526">Deixa que Chromium navegui per tu</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7686590090926151193">Chromium no és el navegador predeterminat</translation>

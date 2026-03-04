@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Lortu zure pasahitzak beste aplikazioetatik.</translation>
 <translation id="3485558910355485767">Ireki ezkutuko leiho bat</translation>
 <translation id="3488501490964659223">Fitxak itxi dira, eta arakatze-datuak ezabatu dira. Zure saioa amaitu da.</translation>
+<translation id="3490396108106323715">Partekatu oraingo fitxa</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /> iradokitako edukiari buruz</translation>
 <translation id="349446645805573740">Aukeratu non gorde nahi duzun "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Ezarpenak</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Ezin izan dira kargatu irudiak</translation>
 <translation id="3565930036634619844">Fitxa. <ph name="NUMBER_OF_TABS" /> fitxatatik <ph name="TAB_INDEX" />garrena.</translation>
 <translation id="3567168891086460374">Gorde beste modu batera</translation>
+<translation id="3572503683475187385">Elkarrizketa bat hasten duzunean, irekita daukazun fitxa Gemini-rekin partekatzen da. Fitxa bat Gemini-rekin partekatzen duzunean, haren edukia eta URLa Google-ra bidaltzen dira. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google-ko kontuan daudenak</translation>
 <translation id="3575234738189584619">Bilatu Lens bidez</translation>
 <translation id="3575426792457739946">Zerrenda honek kargatutako profil guztiak ditu.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Utzi pantailako edukia bilatzeari Google Lens bidez</translation>
 <translation id="3753408171347588045">Prezioen jarraipena egiten ari zara</translation>
 <translation id="3753618528540214374">Biridiano-koloreko gaia</translation>
+<translation id="3759491607478608474">Erantzun egokiagoak lortzeko, partekatu irekita dagoen fitxaren edukia Gemini-rekin</translation>
 <translation id="3762232513783804601">Zure iPad-erako garatua</translation>
 <translation id="3768725474733206671">Ireki itxitako azken fitxa</translation>
 <translation id="3779810277399252432">Ez zaude konektatuta Internetera.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Egin aurrera <ph name="FIRST_RUN_ACCOUNT_NAME" /> gisa</translation>
 <translation id="4651927776207937667">{count,plural, =1{Ezkutatu minutu baten ostean}other{Ezkutatu {count} minuturen ostean}}</translation>
 <translation id="4652817563047461855">Ziurtatu zure pasahitzak babestuta daudela, jakin arriskuan jarri diren eta jaso zeure burua sarean babesteko aholkuak. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Aktibatu fitxak partekatzeko aukera</translation>
 <translation id="4658335131052370646">Gorde</translation>
 <translation id="466307903888586355">Zure erakundeak fitxategiak gordetzeko aukera blokeatu du</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">Berehala aldatzea gomendatzen dizugu</translation>
 <translation id="5721040778297053709">Ezarri kreditu-txartela markoaren barnean</translation>
 <translation id="572328651809341494">Azkenaldiko fitxak</translation>
+<translation id="5724590854763964497">Modu lehenetsian, irekita daukazun fitxa partekatzen da elkarrizketa bat hasten duzunean. Fitxak partekatzen direnean, edukia eta URLak Google-ra bidaltzen dira, baina ez dira erabiliko AA generatiboko ereduak hobetzeko. Nahi duzunean alda dezakezu ezarpena.</translation>
 <translation id="5724941645893276623">Sarea modu pribatuan arakatzeko, gehitu beste fitxa bat</translation>
 <translation id="5728072125198221967">Lotutako Google-ren zerbitzuak</translation>
 <translation id="5728700505257787410">Arazo bat izan da kontuan saioa hastean.</translation>
@@ -1964,6 +1969,7 @@
 <translation id="8059533439631660104">Hautapena tolesten du.</translation>
 <translation id="8061584726507121204">Historia</translation>
 <translation id="8064946459644399612">Aplikatu dira fitxa berriaren orriaren hobespenak</translation>
+<translation id="8065556469005366939">Lortu erantzun egokiagoak fitxak partekatuta</translation>
 <translation id="8069394452933076548">Hautatu noiz eramaten diren azkenaldian erabili ez diren fitxak fitxa inaktiboen atalera.</translation>
 <translation id="8073670137947914548">Deskargatu da</translation>
 <translation id="8076492880354921740">Fitxak</translation>
@@ -2132,6 +2138,7 @@
 <translation id="8660600697590740984">Lens-en kopiatu duzun irudia</translation>
 <translation id="866266761389616183">Hutsegite bat izan da.</translation>
 <translation id="8663764600409216912">Asmatzen zailak diruditen pasahitzak darabiltzazu</translation>
+<translation id="8664992138761940052">Modu lehenetsian, irekita daukazun fitxa partekatzen da elkarrizketa bat hasten duzunean. Fitxak partekatzen direnean, edukia eta URLak Google-ra bidaltzen dira Nahi duzunean alda dezakezu ezarpena.</translation>
 <translation id="8668210798914567634">Irakurketa-zerrendan dago gordeta orri hau.</translation>
 <translation id="8672642291731179042">Itzuli orriak</translation>
 <translation id="8672733398999596205">Gaitu guztiak</translation>

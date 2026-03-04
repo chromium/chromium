@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Når du logger ind i Google-tjenester som f.eks. Gmail eller YouTube med <ph name="USER_EMAIL" />, kan du automatisk logge ind i Chromium med den samme konto</translation>
 <translation id="1290883685122687410">Konfigurationsfejl: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfigurer din nye Chromium-profil</translation>
+<translation id="132092532143527429">Prøv med Gemini i Chromium</translation>
 <translation id="1324107359134968521">Chromium skal have adgang til Bluetooth for at finde 
  Bluetooth-enheder. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Registrer sprog</translation>
@@ -609,6 +610,7 @@ Chromium kan ikke gendanne dine præferencer.</translation>
 <translation id="7622753900276619808">Du har nu flere tilgængelige funktioner i Chromium</translation>
 <translation id="7624307931717240213">Vi bruger oplysninger til at forbedre denne tjeneste. Se privatlivspolitikken og servicevilkårene.</translation>
 <translation id="7649070708921625228">Hjælp</translation>
+<translation id="7650134251917003571">Hent Chromium-appen</translation>
 <translation id="7656340475565475526">Lad Chromium browse for dig</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7686590090926151193">Chromium er ikke din standardbrowser</translation>

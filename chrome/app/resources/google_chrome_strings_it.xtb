@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Se salvi anche i preferiti nel tuo Account Google, puoi monitorare i prezzi dei prodotti in Chrome e ricevere notifiche quando il prezzo scende</translation>
 <translation id="3242123554343253302">Aggiungi profilo Chrome</translation>
 <translation id="3245429137663807393">Se condividi anche report sull'utilizzo di Chrome, tali report includono gli URL visitati</translation>
+<translation id="3259748324892322072">Installa l'app Chrome</translation>
 <translation id="3286538390144397061">Riavvia adesso</translation>
 <translation id="3292333338048274092">Dovrai quindi riavviare Chrome.</translation>
 <translation id="3324218984287646518">Chiedi a Google Lens informazioni su questo video</translation>
@@ -279,7 +280,6 @@
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3893985792899396936">Suggerimento per Chrome: Cerca con Lens</translation>
 <translation id="3906096710440765802">Accedi a Chrome per trovare le password, i preferiti e altri dati su tutti i tuoi dispositivi</translation>
-<translation id="3921132130819999051">Lascia che Chrome navighi per te</translation>
 <translation id="3941890832296813527">Errore di installazione: il nome file del programma di installazione non è valido o non è supportato.</translation>
 <translation id="395904275706073188">Le pagine protette non possono essere lette. Prova con un'altra pagina.</translation>
 <translation id="3968962723676998462">Inserisci la tua passphrase per utilizzare e salvare i dati di Chrome nel tuo account, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -490,7 +490,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Questa scheda utilizza risorse aggiuntive. Per migliorare le prestazioni, consenti a Chrome di renderla inattiva.</translation>
 <translation id="6182736845697986886">Installazione non riuscita a causa di un errore interno del server di aggiornamento.</translation>
-<translation id="6183773856988300112">Gemini in Chrome utilizza la navigazione automatica per lavorare nelle tue schede e completare le attività che gli assegni. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Suggerimento per Chrome: salva le password</translation>
 <translation id="6192058120268468905">Il tuo account in Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha aggiunto un'estensione che potrebbe modificare il funzionamento di Chrome.

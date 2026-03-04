@@ -990,15 +990,6 @@ Als je het beleid niet instelt, wordt het gedrag vanaf <ph name="PRODUCT_NAME" /
 
 Vanaf <ph name="PRODUCT_NAME" /> 147 wordt dit beleid beëindigd. IT-beheerders kunnen <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> gebruiken om deze functie in de toekomst te beheren.</translation>
 <translation id="1686952487081322272">Snelle antwoorden uitzetten</translation>
-<translation id="1688920969335897857">Als je dit beleid instelt, worden de extensiebeheerinstellingen voor <ph name="PRODUCT_NAME" /> beheerd, waaronder instellingen die worden beheerd door bestaande, aan extensies gerelateerde beleidsregels. Dit beleid vervangt verouderde beleidsregels die misschien zijn ingesteld.
-
-Met dit beleid wordt alleen een extensie-ID of een update-URL toegewezen aan de bijbehorende specifieke instelling. Er kan een standaardconfiguratie worden ingesteld voor de speciale ID <ph name="DEFAULT_SCOPE" />, die van toepassing is op alle extensies waarvoor geen aangepaste configuratie is ingesteld in dit beleid. Bij een update-URL is de configuratie van toepassing op alle extensies met de exacte update-URL die wordt vermeld in het manifest van de extensie (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Als de markering override_update_url is ingesteld op waar, wordt de extensie geïnstalleerd en krijgt die een update met de update-URL die is gespecificeerd in het beleid <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> of in het veld update_url in dit beleid. De markering override_update_url wordt genegeerd als de update_url een URL voor de Chrome Web Store is.
-
-In <ph name="MS_WIN_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie is gekoppeld aan een <ph name="MS_AD_NAME" />-domein of aan <ph name="MS_AAD_NAME" />, of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-In <ph name="MAC_OS_NAME" /> kunnen instanties, apps en extensies van buiten de Chrome Web Store alleen afgedwongen worden geïnstalleerd als de instantie wordt beheerd via MDM, via MCX aan een domein is gekoppeld of is ingeschreven voor <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Opmerking: Dit beleid geldt alleen voor platforms die extensies ondersteunen.</translation>
 <translation id="1690383938831887552">Niet toestaan dat Signed HTTP Exchanges worden geladen</translation>
 <translation id="1692325295652827195">Als je het beleid instelt op True, worden rapporten over belangrijke, op basis van beleid geactiveerde installatiegebeurtenissen voor Android-apps naar Google gestuurd.
 

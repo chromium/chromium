@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">بُک مارکس منتقل کریں</translation>
 <translation id="1197761954713363183">پاسکی کی تصدیقی شیٹ بند کر دی گئی</translation>
 <translation id="1197933394627598677">ریڈنگ موڈ دکھائیں</translation>
+<translation id="1197935538609051549">غیر فعال کریں</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1202892408424955784">ٹریک کردہ پروڈکٹس</translation>
 <translation id="1204037785786432551">ڈاؤن لوڈ کا لنک</translation>
@@ -506,6 +507,7 @@
 <translation id="3122883569442693641">مزید تفصیلات</translation>
 <translation id="3123734510202723619">اعلانات</translation>
 <translation id="3134385238404760368">کوئی حالیہ ٹیب نہیں</translation>
+<translation id="3135655388926735587">حالیہ ٹیبز پر تھپتھپائیں</translation>
 <translation id="314939179385989105">‏Chrome کا ہوم پیج</translation>
 <translation id="3158667104057012316">دستی ترتیب کے لحاظ سے ترتیب دیا جا رہا ہے</translation>
 <translation id="3159335509547415276">مسدود کردہ اکاؤنٹس کے بارے میں جانیں</translation>
@@ -850,6 +852,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 متاثرہ پاس ورڈ}other{# متاثرہ پاس ورڈز}}</translation>
 <translation id="4641919525231168205">اگلے صفحے پر جائیں</translation>
 <translation id="4642472735733036929">قیمت کی ٹریکنگ بند کی گئی</translation>
+<translation id="4649493483932335039">حالیہ ٹیبز دیکھیں</translation>
 <translation id="465657074423018424">محفوظ براؤزنگ گمراہ کن ویب سائٹس سے آپ کی حفاظت کرتی ہے۔ اگر آپ اسے آف کرتے ہیں تو براؤز کرتے وقت، خاص طور پر پاس ورڈ داخل کرنے سے پہلے خوب محتاط رہیں۔</translation>
 <translation id="4662373422909645029">عرفی نام میں نمبرز شامل نہیں ہو سکتے</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> بُک مارکس حذف کر دیے گئے</translation>
@@ -1562,6 +1565,7 @@
 <translation id="7363349185727752629">آپ کی رازداری کے انتخابات کی گائیڈ</translation>
 <translation id="7364103838544876661">براؤزنگ ڈیٹا کو حذف کرنے کے لیے مزید اختیارات</translation>
 <translation id="7365073365123878797">‏‫Google پاس ورڈ مینیجر کے ذریعے پاس ورڈز محفوظ کرنے اور استعمال کرنے کے لیے، Google Play سروسز کو اپ ڈیٹ کریں</translation>
+<translation id="7368009310682364976">حال ہی میں کھولے گئے ٹیبز دیکھیں</translation>
 <translation id="7368927539449986686">سائٹ کی تلاش میں ترمیم کریں</translation>
 <translation id="7375125077091615385">قسم:</translation>
 <translation id="7376560087009844242">صفحے کے مزید متن کو شامل کر کے، آپ تلاش کرنے کے لیے ٹچ کریں کا استعمال کرتے وقت بہتر نتائج دیکھ سکتے ہیں۔ آپ اسے تبدیل کرنے کے لیے ہمیشہ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> ملاحظہ کر سکتے ہیں۔</translation>
@@ -1679,6 +1683,7 @@
 <translation id="7824665136384946951">آپ کی تنظیم نے محفوظ براؤزنگ کو آف کر دیا ہے</translation>
 <translation id="7826342993930002256">‏آپ کا Chrome، ہر جگہ</translation>
 <translation id="7844171778363018843">مطابقت پذیری کے ليے کوئی ڈیٹا منتخب نہیں کیا گیا</translation>
+<translation id="784453721355882533">‏جوابات، اہم نکات اور مزید حاصل کرنے کے لیے Chrome میں Gemini آزمائیں۔</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
 <translation id="7846296061357476882">‏Google سروسز</translation>
 <translation id="784652447248278262">موجودہ ونڈو</translation>
@@ -1688,6 +1693,7 @@
 <translation id="7853202427316060426">سرگرمی</translation>
 <translation id="7859988229622350291">کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="7866213166286285359">یہاں صفحات کا ترجمہ کریں</translation>
+<translation id="7873610418439765081">‏مزید اختیارات بٹن سے جوابات، اہم نکات اور مزید بہت کچھ حاصل کرنے کے لیے Chrome میں Gemini کو آزمائیں۔</translation>
 <translation id="7875915731392087153">ای میل تخلیق کریں</translation>
 <translation id="7876243839304621966">سبھی ہٹائیں</translation>
 <translation id="7886917304091689118">‏Chrome میں چل رہا ہے</translation>
@@ -1738,6 +1744,7 @@
 <translation id="8062594758852531064">توسیع شدہ پیشگی لوڈنگ:</translation>
 <translation id="8063895661287329888">بُک مارک شامل کرنے میں ناکام۔</translation>
 <translation id="8066816452984416180">فوری طور پر اس صفحہ کو بُک مارک کریں۔ اس شارٹ کٹ میں ترمیم کرنے کے لیے، ٹچ کریں اور دبائے رکھیں۔</translation>
+<translation id="8072436850275034464">‏آپ ان ٹیبز کو دوبارہ کھول سکتے ہیں جنہیں آپ نے حال ہی میں بند کر دیا ہے جہاں بھی آپ Chrome استعمال کرتے ہیں</translation>
 <translation id="8073388330009372546">تصویر نئے ٹیب میں کھولیں</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
 <translation id="8078096376109663956">صرف ٹیکسٹ کا اشتراک کریں</translation>
@@ -1849,6 +1856,7 @@
 <translation id="8460008946585880786">ایک ٹیب کو دوسرے ٹیب پر گھسیٹ کر ڈالیں</translation>
 <translation id="8460448946170646641">کلیدی رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
 <translation id="8460932807646981183">سرچ انجنز اور سائٹ کی تلاش کا نظم کریں</translation>
+<translation id="8465252176946159372">درست نہیں ہے</translation>
 <translation id="8473863474539038330">پتے وغیرہ</translation>
 <translation id="847433688444405067">آلات پر براؤز کریں</translation>
 <translation id="8477178913400731244">ڈیٹا حذف کریں</translation>

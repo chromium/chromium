@@ -100,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> と共有</translation>
 <translation id="1773212559869067373">認証証明書がローカルで拒否されました</translation>
 <translation id="1775381402323441512">動画情報</translation>
+<translation id="1787208118234640571">ベルギー語</translation>
 <translation id="180035236176489073">このファイルにアクセスするには、オンライン接続が必要です。</translation>
 <translation id="1807938677607439181">すべてのファイル</translation>
 <translation id="1810764548349082891">プレビュー機能はご利用いただけません</translation>
@@ -113,9 +114,11 @@
 <translation id="1853795129690976061">このフォルダは Linux と共有されています</translation>
 <translation id="1864756863218646478">ファイルが見つかりませんでした。</translation>
 <translation id="1877377730633446520">この操作で約 <ph name="REQUIRED_SPACE" /> が使用されます。現在の空き容量は <ph name="FREE_SPACE" /> です。</translation>
+<translation id="18790189037341066">ノルウェー語</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、接続</translation>
 <translation id="1920670151694390848">マラヤーラム語（文字変換）</translation>
 <translation id="1920798810075583923">スイカ</translation>
+<translation id="1922341967219151064">ウクライナ語</translation>
 <translation id="1924372192547904021">「<ph name="DRIVE_NAME" />」をフォーマットしました</translation>
 <translation id="1942765061641586207">画像解像度</translation>
 <translation id="1972984168337863910">ファイルのフィードバック パネルを展開します</translation>
@@ -124,15 +127,19 @@
 <translation id="2004942826429452291">ファイルはクラウドとこの Chromebook に保存されます。</translation>
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
+<translation id="2029385776150020336">US 拡張</translation>
 <translation id="2037845485764049925">ロシア語</translation>
 <translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="2046702855113914483">ラーメン</translation>
+<translation id="2070397826966158357">エストニア語</translation>
 <translation id="2070909990982335904">ドットで始まる名前はシステム専用です。別の名前を指定してください。</translation>
 <translation id="2079545284768500474">元に戻す</translation>
 <translation id="2084108471225856927">デバイス設定</translation>
 <translation id="2084809735218147718">ありがとうとサインする</translation>
 <translation id="2088690981887365033">VPN ネットワーク</translation>
+<translation id="2096167581623663959">オランダ語</translation>
 <translation id="209653272837065803">空き容量が不足しているため、ファイルの同期を続行できません</translation>
+<translation id="2101288073618388449">モンゴル語</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムが削除され、復元できなくなります。</translation>
 <translation id="2122305276694332719">非公開ネットワークに自動接続すると、お使いのデバイスと一部のネットワーク設定が他のユーザーに公開されます。そのためこの設定はおすすめしません。</translation>
 <translation id="2125607626296734455">クメール語</translation>
@@ -200,6 +207,7 @@
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> の同期を準備しています...</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="2614589611416690597">動画（<ph name="VIDEO_TYPE" />）</translation>
+<translation id="2619043364735935227">UK Dvorak 配列</translation>
 <translation id="2620090360073999360">現在 Google ドライブにアクセスできません。</translation>
 <translation id="2621713457727696555">保護あり</translation>
 <translation id="2638942478653899953">Google ドライブにアクセスできませんでした。<ph name="BEGIN_LINK" />ログアウト<ph name="END_LINK" />してもう一度ログインしてください。</translation>
@@ -207,8 +215,12 @@
 <translation id="2653059201992392941">入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="2663066752008346276">ビルマ語 / ミャンマー語（Myansan）キーボード</translation>
 <translation id="2664412712123763093">ファイルの場所</translation>
+<translation id="2672394942808662069">カナダ多言語</translation>
+<translation id="2707357721402813583">アイルランド語</translation>
+<translation id="2708477391501452176">フランス語 BÉPO</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、詳細</translation>
 <translation id="2724954091494693138">トルコ語（F）キーボード</translation>
+<translation id="2728450421877450246">フランス語</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> との共有を管理</translation>
 <translation id="2732839045120506979">ベトナム語（VNI）</translation>
 <translation id="2735623501230989521">Parallels Desktop に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
@@ -216,16 +228,19 @@
 <translation id="2771816809568414714">チーズ</translation>
 <translation id="2802583107108007218">これらの制限の詳細</translation>
 <translation id="2803375539583399270">PIN を入力</translation>
+<translation id="2817444452774702982">ジョージア語</translation>
 <translation id="2819519502129272135">ファイルの同期がオフになっています</translation>
 <translation id="2820957248982571256">スキャンしています…</translation>
 <translation id="2830077785865012357">中国語（注音）</translation>
 <translation id="2843806747483486897">デフォルトを変更...</translation>
 <translation id="2873951654529031587">ゴミ箱</translation>
+<translation id="2887314858867008269">US Colemak 配列</translation>
 <translation id="2887525882758501333">PDF ドキュメント</translation>
 <translation id="2888807692577297075">&lt;b&gt;「<ph name="SEARCH_STRING" />」&lt;/b&gt;に一致するアイテムはありません</translation>
 <translation id="2894654529758326923">情報</translation>
 <translation id="2904378509913846215">「<ph name="FILENAME" />」という名前のフォルダはすでに存在します。移動するフォルダで上書きしますか？</translation>
 <translation id="290843123675549676">マラーティー語</translation>
+<translation id="2939595088421183401">スロベニア語</translation>
 <translation id="2943503720238418293">もう少し短い名前にしてください</translation>
 <translation id="2949781154072577687">「<ph name="DRIVE_NAME" />」をフォーマットしています...</translation>
 <translation id="2951236788251446349">クラゲ</translation>
@@ -243,6 +258,7 @@
 <translation id="3067790092342515856">Windows ファイル</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS ホスト</translation>
+<translation id="3091469289665833668">ルーマニア語</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="3113592018909187986">入力できるのはあと 1 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>
 <translation id="3124404833828281817">空想にふけっている人</translation>
@@ -261,6 +277,7 @@
 <translation id="3255159654094949700">アラビア語</translation>
 <translation id="326396468955264502">暗号化されているため、<ph name="NUMBER_OF_FILES" /> 個のファイルを移動できませんでした。</translation>
 <translation id="3264582393905923483">コンテキスト</translation>
+<translation id="3269333278563769269">ポルトガル語</translation>
 <translation id="3272909651715601089">「<ph name="PATH" />」を開けませんでした</translation>
 <translation id="3280431534455935878">準備中</translation>
 <translation id="3280719573299097127">従量制ネットワークに接続しています。ファイルの同期を一時停止しました。</translation>
@@ -282,6 +299,8 @@
 <translation id="3408072735282270043"><ph name="NETWORK_NAME" /> を有効にする</translation>
 <translation id="3408236822532681288">ドイツ語（ドイツ）（Neo 2）キーボード</translation>
 <translation id="3414856743105198592">リムーバブル メディアをフォーマットすると、すべてのデータが消去されます。続行しますか？</translation>
+<translation id="3430687179542180192">フランス語（カナダ）</translation>
+<translation id="3436358745602312794">トルコ語-F</translation>
 <translation id="3437801641691368414">作成日時</translation>
 <translation id="343907260260897561">インスタント カメラ</translation>
 <translation id="3455931012307786678">エストニア語</translation>
@@ -299,9 +318,11 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> でファイルを開くには、まず [Windows ファイル] フォルダにファイルをコピーしてください。</translation>
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> をゴミ箱に移動しています</translation>
+<translation id="3560848236447534728">アルメニア語（表音）</translation>
 <translation id="3567221313191587603">ファイルにオフラインでアクセスするには、ファイルを選択し、[<ph name="OFFLINE_CHECKBOX_NAME" />] をオンに切り替えます。</translation>
 <translation id="3587482841069643663">すべて</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> をオフラインで使用するよう設定できませんでした</translation>
+<translation id="3599083260824681324">日本語</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3616113530831147358">音声</translation>
 <translation id="3619115746895587757">カプチーノ</translation>
@@ -329,14 +350,17 @@
 <translation id="3811494700605067549">1 個のファイルを選択しました</translation>
 <translation id="3817579325494460411">指定されていません</translation>
 <translation id="3819448694985509187">PIN が正しくありません。入力できるのはあと 1 回です。</translation>
+<translation id="3826081788392587762">フェロー語</translation>
 <translation id="3830674330436234648">再生機能はご利用いただけません</translation>
 <translation id="3839045880592694915">携帯通信会社がモデムの接続を許可していません。詳細については、携帯通信会社にお問い合わせください。</translation>
 <translation id="385051799172605136">戻る</translation>
 <translation id="3858860766373142691">名前</translation>
+<translation id="3874963587970919929">US</translation>
 <translation id="3899991606604168269">フランス語（カナダ）（多言語）キーボード</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> に接続しています</translation>
 <translation id="3906232975181435906">モバイル プロファイルのインストール中 - <ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3934861075411093298">ドイツ語（Neo 2）</translation>
 <translation id="3943857333388298514">貼り付け</translation>
 <translation id="3950820424414687140">ログイン</translation>
 <translation id="3952872973865944257">テルグ語（表音）</translation>
@@ -349,9 +373,11 @@
 <translation id="4002066346123236978">タイトル</translation>
 <translation id="4017788180641807848">英語（アメリカ）（Workman）キーボード</translation>
 <translation id="4040753847560036377">PUK が正しくありません</translation>
+<translation id="4043426908238742491">UK</translation>
 <translation id="4057991113334098539">有効にしています...</translation>
 <translation id="4092890906744441904">アイルランド語</translation>
 <translation id="4101601646343868113">モバイル ネットワークにログインしてモバイルデータ プランが有効になっていることを確認する</translation>
+<translation id="4103534645423593971">ラトビア語</translation>
 <translation id="4124731372776320263">1 個のドライブ ファイルを同期しています</translation>
 <translation id="4124935795427217608">ユニコーン</translation>
 <translation id="4131235941541910880">不要なアイテムはゴミ箱に移動してください</translation>
@@ -445,9 +471,12 @@
 <translation id="4789067489790477934">Parallels Desktop に Google ドライブのファイルへのアクセスを許可します。変更が加えられた場合は他のデバイスに同期されます。</translation>
 <translation id="4790766916287588578">ヒンディー語（字母）キーボード</translation>
 <translation id="4801956050125744859">両方を保持</translation>
+<translation id="4802185962157240723">ハンガリー語</translation>
 <translation id="4804827417948292437">アボカド</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> 個のアイテムを復元しています</translation>
+<translation id="4823376603577118337">ブラジル配列</translation>
 <translation id="4826849268470072925">タミル語（ITRANS）</translation>
+<translation id="4838707632718400841">デンマーク語</translation>
 <translation id="4843566743023903107">Chromebase</translation>
 <translation id="4850886885716139402">表示</translation>
 <translation id="4862885579661885411">ファイル設定</translation>
@@ -477,6 +506,7 @@
 <translation id="5010406651457630570">パソコン</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">操作に予想より時間がかかっています。中止しますか？</translation>
+<translation id="5036141350290856713">ロシア語（表音）</translation>
 <translation id="5036159836254554629">Parallels Desktop との共有を管理</translation>
 <translation id="5038625366300922036">もっと見る...</translation>
 <translation id="5044852990838351217">アルメニア語</translation>
@@ -500,6 +530,7 @@
    使用中のデバイスを取り外すと、データが失われる恐れがあります。操作が完了してから、ファイル アプリを使ってデバイスを取り外してください。</translation>
 <translation id="5163869187418756376">共有できませんでした。接続を確認し、しばらくしてからもう一度お試しください。</translation>
 <translation id="5177526793333269655">サムネイル ビュー</translation>
+<translation id="5178355323709925287">ブルガリア語（表音）</translation>
 <translation id="5181896909298187506">最近使用したファイルはありません</translation>
 <translation id="5194713942430106590">クリックすると、列が昇順で並べ替えられます。</translation>
 <translation id="5211614973734216083">フェロー語</translation>
@@ -547,15 +578,18 @@
 <translation id="5534520101572674276">サイズを計算しています</translation>
 <translation id="554153475311314364">ギリシア語（文字変換）</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> 個のフォルダが選択されています</translation>
+<translation id="5568003358606822240">チェコ語 QWERTY 配列</translation>
 <translation id="5580591966435005537">仮想マシン</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">句読点幅は全角です</translation>
 <translation id="5596627076506792578">その他のオプション</translation>
 <translation id="5602622065581044566">ブルガリア語（表音）キーボード</translation>
+<translation id="5604409170937514933">スウェーデン語</translation>
 <translation id="560739212255190568">管理者が次のプロキシの適用に加え、プロキシのオーバーライド ルールを設定しています</translation>
 <translation id="5618330573454123917">このファイルは Macintosh ソフトウェアを使用するパソコン用に作成されています。ご使用のデバイスでは ChromeOS が実行されているため、互換性がありません。ChromeOS でファイルを開く方法については、<ph name="BEGIN_LINK_HELP" />こちら<ph name="END_LINK_HELP" />をご覧ください。</translation>
 <translation id="5625294776298156701">タミル語（Tamil99）キーボード</translation>
 <translation id="5633226425545095130">このアイテムを移動すると、アイテムは共有フォルダ「<ph name="DESTINATION_NAME" />」を閲覧できるすべてのユーザーと共有されます。</translation>
+<translation id="5646106346566990960">トルコ語</translation>
 <translation id="5649768706273821470">聴く</translation>
 <translation id="5650895901941743674">APN 設定を確認してください</translation>
 <translation id="5669691691057771421">新しい PIN を入力</translation>
@@ -565,9 +599,11 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> が存在しません。</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />、ロックを解除</translation>
 <translation id="5700087501958648444">オーディオ情報</translation>
+<translation id="5718459114973371204">マケドニア語</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> をゴミ箱に移動しました</translation>
 <translation id="5724172041621205163">タイ語（Pattachote）キーボード</translation>
 <translation id="57383366388012121">先月</translation>
+<translation id="5744221903031815187">スイス語</translation>
 <translation id="575175778971367197">現在、このファイルを同期できません</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> 個のアイテムが選択されています</translation>
 <translation id="5763377084591234761">ドイツ語（スイス）</translation>
@@ -597,8 +633,10 @@
 <translation id="5948255720516436063"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" />件）、<ph name="NETWORK_NAME" />、デバイスのセットアップ後に有効化</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> 個のアイテム</translation>
 <translation id="5957366693331451795">Chromebox</translation>
+<translation id="5959163675722155317">US インターナショナル</translation>
 <translation id="5982621672636444458">並べ替え方法</translation>
 <translation id="6011074160056912900">イーサネット ネットワーク</translation>
+<translation id="6023337265947005432">チェコ語</translation>
 <translation id="603895874132768835">新しい PIN を設定するまでこのネットワークは使用できません。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ネットワーク、未接続</translation>
@@ -615,6 +653,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />、ネットワークなし</translation>
 <translation id="6146563240635539929">動画</translation>
 <translation id="6150853954427645995">このファイルを保存してオフラインで使用できるようにするには、オンラインに戻ってファイルを右クリックし、[<ph name="OFFLINE_CHECKBOX_NAME" />] オプションを選択します。</translation>
+<translation id="6162247388574239985">リトアニア語</translation>
 <translation id="6164412158936057769">蝶</translation>
 <translation id="6165508094623778733">詳細</translation>
 <translation id="6170470584681422115">サンドイッチ</translation>
@@ -624,6 +663,7 @@
 <translation id="6198252989419008588">PIN を変更</translation>
 <translation id="6199801702437275229">空き容量情報を待機中...</translation>
 <translation id="6205710420833115353">一部の操作に予想より時間がかかっています。中止しますか？</translation>
+<translation id="6214593504928642973">セルビア語</translation>
 <translation id="6220423280121890987">パンジャブ語</translation>
 <translation id="6224240818060029162">デンマーク語</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> をフォーマット</translation>
@@ -650,17 +690,22 @@
 <translation id="6394388407447716302">読み取り専用</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> 個のアイテム</translation>
 <translation id="6407769893376380348">暗号化されているため、<ph name="FILE_NAME" /> を移動できませんでした。</translation>
+<translation id="6417922483715629770">ドイツ語</translation>
+<translation id="6421174876526901486">ヘブライ語</translation>
 <translation id="642282551015776456">この名前はフォルダのファイル名として使用できません</translation>
 <translation id="6423031066725912715">ベトナム語（TCVN）キーボード</translation>
 <translation id="6430271654280079150">入力できるのはあと 1 回です。</translation>
 <translation id="643243556292470964">削除したファイルはゴミ箱に移されました</translation>
 <translation id="6438480100790416671">保存容量を確認しています…</translation>
 <translation id="6451527188465304418">組織のセキュリティ ポリシーに沿ってファイルをチェックしています...</translation>
+<translation id="6480474281747138552">US Programmer Dvorak 配列</translation>
+<translation id="6483241221370343062">ポーランド語</translation>
 <translation id="6485131920355264772">空き容量情報を取得できませんでした</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によって管理、詳細</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に展開しています</translation>
 <translation id="6499681088828539489">共有ネットワークのプロキシを許可しない</translation>
 <translation id="6503285896705205014"><ph name="COUNT" /> 個のファイルのコピーは管理者が設定したポリシーによってブロックされています</translation>
+<translation id="652312300422421604">ロシア語</translation>
 <translation id="6528513914570774834">このデバイスの他のユーザーにこのネットワークの使用を許可する</translation>
 <translation id="6549689063733911810">最近使用したアイテム</translation>
 <translation id="6558280019477628686">エラーが発生しました。一部の項目が削除されていない可能性があります。</translation>
@@ -675,6 +720,7 @@
 <translation id="6650726141019353908">ピンクの蝶</translation>
 <translation id="6657585470893396449">パスワード</translation>
 <translation id="6658865850469097484">ゴミ箱のファイルは 30 日後に自動的に削除されます。</translation>
+<translation id="6660283757324568684">フランス語（スイス）</translation>
 <translation id="6673674183150363784">フランス語（フランス）（BÉPO）キーボード</translation>
 <translation id="670380500182402678">すべて置換</translation>
 <translation id="6710022688720561421">ロボット</translation>
@@ -698,6 +744,7 @@
 <translation id="6861394552169064235">ペルシャ語</translation>
 <translation id="6862635236584086457">このフォルダに保存されているすべてのファイルが自動的にオンラインにバックアップされます。</translation>
 <translation id="6864328437977279120">サンスクリット語</translation>
+<translation id="6870343452066868538">ラテンアメリカ</translation>
 <translation id="6874758081814639712">太極拳をしている人</translation>
 <translation id="6876155724392614295">自転車</translation>
 <translation id="6878261347041253038">デバナーガリ語キーボード（表音）</translation>
@@ -709,6 +756,7 @@
 <translation id="6935521024859866267">逆さま</translation>
 <translation id="6943836128787782965">HTTP を取得できませんでした</translation>
 <translation id="6949408524333579394">セルビア語（文字変換）</translation>
+<translation id="6950304227892369683">ベラルーシ語</translation>
 <translation id="69548399407432279">昨年</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="696203921837389374">モバイルデータとの同期を有効にする</translation>
@@ -717,6 +765,7 @@
 <translation id="6973630695168034713">フォルダ</translation>
 <translation id="6976795442547527108">ライオン</translation>
 <translation id="6979158407327259162">Google ドライブ</translation>
+<translation id="6987318887406266229">ギリシャ語</translation>
 <translation id="6989942356279143254">スウェーデン語</translation>
 <translation id="6990081529015358884">空き容量が不足しています</translation>
 <translation id="6993826899923627728">これらのアイテムはゴミ箱に入っています</translation>
@@ -731,6 +780,7 @@
 <translation id="7048024426273850086"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="PROVIDER_NAME" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、接続</translation>
 <translation id="7070804685954057874">直接入力</translation>
 <translation id="7075931588889865715">タイ語（TIS 820-2531）キーボード</translation>
+<translation id="7080126840087683316">スペイン語</translation>
 <translation id="708278670402572152">スキャンを有効にするにはネットワークから切断してください</translation>
 <translation id="7086590977277044826">タミル語（字母）キーボード</translation>
 <translation id="7088615885725309056">次</translation>
@@ -741,12 +791,15 @@
 <translation id="7135561821015524160">カンナダ語（表音）</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">認証サーバーの ID を検証するための「サブジェクト代替名マッチ」または「ドメイン サフィックス マッチ」がありません</translation>
+<translation id="7163653800467169701">イタリア語</translation>
 <translation id="7165320105431587207">ネットワークを設定できませんでした</translation>
 <translation id="7170041865419449892">圏外</translation>
 <translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> を除く、すべてのウェブサイトと URL によるファイル アクセス</translation>
 <translation id="7180611975245234373">更新</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">名前を付けて保存</translation>
+<translation id="7192364647705823015">クロアチア語</translation>
+<translation id="7224162581405244205">アイスランド語</translation>
 <translation id="7229570126336867161">EVDO が必要です</translation>
 <translation id="7230898482850090046">管理者が「SIM をロックする」設定をオフにするようリクエストしました</translation>
 <translation id="7238097264433196391">ドライブ名</translation>
@@ -773,6 +826,7 @@
 <translation id="7417453074306512035">エチオピア語キーボード</translation>
 <translation id="7417705661718309329">Google マップ</translation>
 <translation id="7419668828140929293">「<ph name="FILENAME" />」を復元しています</translation>
+<translation id="7435577899926900307">US Dvorak 配列</translation>
 <translation id="7458955835361612701">最近使用した画像はありません</translation>
 <translation id="7469894403370665791">このネットワークに自動接続する</translation>
 <translation id="7486315294984620427">Parallels Desktop にファイルをドロップするには、[Windows ファイル] にファイルをコピーする必要があります。</translation>
@@ -811,8 +865,10 @@
 <translation id="7724603315864178912">切り取り</translation>
 <translation id="7732111077498238432">ネットワークはポリシーによって管理されています</translation>
 <translation id="7736003208887389532">これらのファイルを完全に削除しますか？</translation>
+<translation id="7737249716250841853">ハンガリー語 QWERTY 配列</translation>
 <translation id="7740287852186792672">検索結果</translation>
 <translation id="7748626145866214022">アクションバーのオプションが増えました。アクションバーにフォーカスを移動するには Alt+A キーを押してください。</translation>
+<translation id="7758806833942383902">カタルーニャ語</translation>
 <translation id="7760449188139285140">中国語（五筆）</translation>
 <translation id="7765158879357617694">移動</translation>
 <translation id="7774365994322694683">鳥</translation>
@@ -824,6 +880,7 @@
 <translation id="7794058097940213561">デバイスをフォーマット</translation>
 <translation id="7799329977874311193">HTML ドキュメント</translation>
 <translation id="7801354353640549019">Chromebook</translation>
+<translation id="7804303447453320114">カザフ語</translation>
 <translation id="7805768142964895445">ステータス</translation>
 <translation id="7806708061868529807">ヘブライ語</translation>
 <translation id="78104721049218340">タイ語（Kedmanee）キーボード</translation>
@@ -833,9 +890,11 @@
 <translation id="7839804798877833423">このファイルを取得すると、約 <ph name="FILE_SIZE" /> のモバイル データを使用します。</translation>
 <translation id="7846076177841592234">選択解除</translation>
 <translation id="7857117644404132472">例外を追加</translation>
+<translation id="7859924767769322048">韓国語</translation>
 <translation id="7868774406711971383">ポーランド語</translation>
 <translation id="7874321682039004450">フィリピン語</translation>
 <translation id="78946041517601018">共有ドライブ</translation>
+<translation id="7901567919203965902">US Workman インターナショナル配列</translation>
 <translation id="7903984238293908205">カタカナ</translation>
 <translation id="7908793776359722643">パーティションをフォーマットすると、そのパーティションに保存されているすべてのデータが消去されます。この操作は元に戻せません。</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -897,6 +956,7 @@
 <translation id="8336153091935557858">昨日 <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">同じ名前のファイルまたはディレクトリが既に存在しています。</translation>
 <translation id="83651606385705612"><ph name="VM_NAME" /> に <ph name="FOLDER_NAME" /> フォルダのファイルへのアクセスを許可します</translation>
+<translation id="837225070446042993">US Workman 配列</translation>
 <translation id="8372369524088641025">WEP キーが正しくありません</translation>
 <translation id="8372852072747894550">ギリシャ語</translation>
 <translation id="8377269993083688872">メール レイアウト</translation>
@@ -925,6 +985,7 @@
 <translation id="8512483403832814140">全期間</translation>
 <translation id="853494022971700746">フランス語（フランス）</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
+<translation id="8543218582821188600">英語（カナダ）</translation>
 <translation id="8545476925160229291">英語（アメリカ）</translation>
 <translation id="854655314928502177">ウェブプロキシ自動検出 URL:</translation>
 <translation id="8547747809824590510">管理者がプロキシのオーバーライド ルールを設定しています</translation>
@@ -939,6 +1000,7 @@
 <translation id="8600173386174225982">ファイルの一覧がサムネイル表示に切り替わりました。</translation>
 <translation id="8601932370724196034">Crostini イメージ ファイル</translation>
 <translation id="8609695766746872526">アイスランド語</translation>
+<translation id="86185366481240448">スロバキア語</translation>
 <translation id="8630384863424041081">SIM カードの PIN または携帯通信会社から提供されたデフォルトの PIN を入力してください。サポートが必要な場合は、携帯通信会社にお問い合わせください。</translation>
 <translation id="863903787380594467">PIN が正しくありません。入力できるのはあと <ph name="RETRIES" /> 回です。</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - ポート</translation>
@@ -967,6 +1029,7 @@
 <translation id="8873014196523807561">これらのアイテムを復元するには、新しいフォルダにドラッグしてください。アイテムの元のフォルダは一部削除されています。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8876368061475701452">キューに追加済み</translation>
+<translation id="8902208737522818687">US インターナショナル（PC）</translation>
 <translation id="8903931173357132290">卒業</translation>
 <translation id="8912078710089354287">尻尾を振る犬</translation>
 <translation id="8949925099261528566">接続済み、インターネット接続なし</translation>
@@ -1009,11 +1072,13 @@
 <translation id="931652069802536959">ネットワークはポリシーによってブロックされています</translation>
 <translation id="938470336146445890">ユーザー証明書をインストールしてください。</translation>
 <translation id="939736085109172342">新しいフォルダ</translation>
+<translation id="941005944931359847">ブルガリア語</translation>
 <translation id="943972244133411984">更新者</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
 <translation id="954194396377670556">管理者のポリシーで禁止されていること:</translation>
 <translation id="965477715979482472">英語（南アフリカ）</translation>
+<translation id="97351090361893336">フィンランド語</translation>
 <translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> 個のアイテムをゴミ箱に移動しています</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>

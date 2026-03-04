@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Favori enregistré dans "{title}" sur votre compte {email}}one{{count} favori enregistré dans "{title}" sur votre compte {email}}other{{count} favoris enregistrés dans "{title}" sur votre compte {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Vue fractionnée</translation>
+<translation id="1218730690561976633">Activez/Désactivez la validation de l'utilisateur pour la saisie automatique améliorée</translation>
 <translation id="1219674500290482172">Impossible de se connecter à Internet.</translation>
 <translation id="1223498995510244364">Obtenez un résumé</translation>
 <translation id="1227113644794103810">Onglets inactifs</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Échec du partage, car vous n'êtes pas connecté au réseau.</translation>
 <translation id="1668001730617725852">Ouvrir dans un nouveau groupe d'onglets</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> vers <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Conformément aux règles de votre organisation, ce fichier peut contenir des informations sensibles</translation>
 <translation id="168389590065701766">Vous pouvez désormais ouvrir Google Lens depuis la barre d'adresse et effectuer une recherche sur tout ce que vous voyez</translation>
 <translation id="1689333818294560261">Nom de la carte</translation>
 <translation id="169048873465870056">Supprimer l'onglet et le groupe ?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">Vous pouvez aussi utiliser des mots de passe enregistrés sur vos autres appareils.</translation>
 <translation id="3177338796769255211">Connectez-vous pour accéder à vos favoris et plus sur tous vos appareils</translation>
 <translation id="3181954750937456830">Navigation sécurisée (assure votre protection et celle de votre appareil contre les sites dangereux)</translation>
+<translation id="3183362380688692618">Nouveau groupe d'onglets...</translation>
 <translation id="3186796054637504691">Effacer l'historique et les données de sites</translation>
 <translation id="3190736958609431397">Ne plus suivre</translation>
 <translation id="3208260410153224535">Votre organisation a désactivé la connexion. Les nouveaux favoris, mots de passe, etc. ne seront enregistrés que sur cet appareil.</translation>
@@ -668,6 +671,7 @@
 <translation id="3476450923187944815">Retrouvez vos mots de passe dans d'autres applis.</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés et les données de navigation ont été supprimées. Vous avez été déconnecté.</translation>
+<translation id="3490396108106323715">Partager l'onglet actuel</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="349446645805573740">Choisissez où enregistrer "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Paramètres</translation>
@@ -694,6 +698,7 @@
 <translation id="3565012355885596568">Impossible de charger les images</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
+<translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez une nouvelle discussion. Lorsque vous partagez un onglet avec Gemini, son contenu et son URL sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Rechercher avec Lens</translation>
 <translation id="3575426792457739946">Cette liste contient tous les profils chargés.</translation>
@@ -737,6 +742,7 @@
 <translation id="3751873026576444885">Arrêter de rechercher sur l'écran avec Google Lens</translation>
 <translation id="3753408171347588045">Suivi des prix</translation>
 <translation id="3753618528540214374">Thème vert émeraude</translation>
+<translation id="3759491607478608474">Partagez le contenu de l'onglet actuel avec Gemini pour obtenir des réponses plus pertinentes</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3768725474733206671">Dernier onglet fermé</translation>
 <translation id="3779810277399252432">Aucune connexion Internet.</translation>
@@ -984,6 +990,7 @@
 <translation id="4650125387981512669">Continuer en tant que <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Masquer au bout de 1 minute}one{Masquer au bout de {count} minute}other{Masquer au bout de {count} minutes}}</translation>
 <translation id="4652817563047461855">Assurez-vous que vos mots de passe sont protégés, vérifiez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Activer le partage d'onglet</translation>
 <translation id="4658335131052370646">Enregistrer</translation>
 <translation id="466307903888586355">L'enregistrement de fichiers est bloqué par votre organisation</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1112,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} mode de paiement sur {count}}one{{position} mode de paiement sur {count}}other{{position} modes de paiement sur {count}}}</translation>
 <translation id="5075939510584558547">Enregistrer sans chiffrement</translation>
 <translation id="5076534614343816664">Suivi des prix</translation>
+<translation id="507762438756999615">Impossible de partager le fichier à cause des règles de votre organisation</translation>
 <translation id="5078303485429639424">Activer les notifications "<ph name="FEATURE_NAME" />"</translation>
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="5083464117946352670">Impos. déterm. taille fichier.</translation>
@@ -1297,6 +1305,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5718049162805123412">Vous devriez les modifier immédiatement</translation>
 <translation id="5721040778297053709">Positionnez la carte de crédit dans ce cadre</translation>
 <translation id="572328651809341494">Onglets récents</translation>
+<translation id="5724590854763964497">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsque des onglets sont partagés, leur contenu et leur URL sont envoyés à Google, mais ne sont pas utilisés pour améliorer les modèles d'IA générative. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="5724941645893276623">Pour naviguer sur le Web en mode privé, ajoutez un onglet</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5728700505257787410">Désolé, problème lors de la connexion à votre compte.</translation>
@@ -1964,6 +1973,8 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8061584726507121204">Historique</translation>
 <translation id="8064946459644399612">Vos préférences pour la page "Nouvel onglet" ont été appliquées</translation>
+<translation id="8065136076319366194">Enregistrement non recommandé</translation>
+<translation id="8065556469005366939">Obtenez des réponses plus pertinentes en partageant vos onglets</translation>
 <translation id="8069394452933076548">Indiquez quand déplacer les onglets non utilisés récemment vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8076492880354921740">Onglets</translation>
@@ -1985,6 +1996,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8132598642024322408"><ph name="PRICE" /> (précédemment à <ph name="PREVIOUS_PRICE" />).</translation>
 <translation id="813370552429173916">Choisissez un mot de passe différent pour chaque site ou appli. Si quelqu'un découvre un mot de passe réutilisé, il pourra s'en servir pour accéder à vos autres comptes. Cliquez pour ouvrir le site Web et modifier le mot de passe immédiatement.</translation>
+<translation id="8133810265969517544">Partage non recommandé</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} onglet fermé}one{{count} onglet fermé}other{{count} onglets fermés}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 autre}one{# autre}other{# autres}}</translation>
 <translation id="8150167929304790980">Nom complet</translation>
@@ -2132,6 +2144,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8660600697590740984">Image Lens copiée</translation>
 <translation id="866266761389616183">Aïe aïe aïe</translation>
 <translation id="8663764600409216912">Vos mots de passe semblent difficiles à deviner</translation>
+<translation id="8664992138761940052">Par défaut, l'onglet actuel est partagé lorsque vous démarrez une nouvelle discussion. Lorsque des onglets sont partagés, leur contenu et leur URL sont envoyés à Google. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
 <translation id="8672642291731179042">Traduire les pages</translation>
 <translation id="8672733398999596205">Tout activer</translation>
@@ -2233,6 +2246,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="8976414606286374109">Les cartes sont enregistrées dans votre compte Google.</translation>
 <translation id="8981454092730389528">Commandes relatives à l'activité Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site épinglé</translation>
+<translation id="8990960056509724223">Impossible d'enregistrer le fichier à cause des règles de votre organisation</translation>
 <translation id="8998289560386111590">Non disponible sur votre appareil</translation>
 <translation id="9000532564152265066">Tous les onglets</translation>
 <translation id="9003677638446136377">Revérifier</translation>

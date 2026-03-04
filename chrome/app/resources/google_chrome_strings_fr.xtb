@@ -225,6 +225,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3226612997184048185">Si vous enregistrez également vos favoris dans votre compte Google, vous pouvez suivre le prix de produits dans Chrome et être averti lorsqu'ils baissent</translation>
 <translation id="3242123554343253302">Ajouter un profil Chrome</translation>
 <translation id="3245429137663807393">Si vous partagez aussi les rapports d'utilisation Chrome, ceux-ci incluent les URL que vous consultez</translation>
+<translation id="3259748324892322072">Télécharger l'appli Chrome</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="3292333338048274092">Vous devrez ensuite redémarrer Chrome.</translation>
 <translation id="3324218984287646518">Demander des infos sur cette vidéo à Google Lens</translation>
@@ -283,7 +284,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="3892148308691398805">Copier le texte</translation>
 <translation id="3893985792899396936">Astuce Chrome : recherchez avec Lens</translation>
 <translation id="3906096710440765802">Connectez-vous à Chrome pour accéder à vos mots de passe, vos favoris et bien plus sur tous vos appareils</translation>
-<translation id="3921132130819999051">Laissez Chrome naviguer pour vous</translation>
 <translation id="3941890832296813527">Erreur d'installation : le nom de fichier du programme d'installation est incorrect ou non compatible.</translation>
 <translation id="395904275706073188">Impossible de lire les pages protégées. Essayez une autre page.</translation>
 <translation id="3968962723676998462">Saisissez votre phrase secrète pour utiliser et enregistrer des données Chrome dans votre compte <ph name="ACCOUNT_EMAIL" /></translation>
@@ -498,7 +498,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Bêta</translation>
 <translation id="6180522807229584611">Cet onglet utilise des ressources supplémentaires. Pour améliorer les performances, autorisez Chrome à le désactiver.</translation>
 <translation id="6182736845697986886">Échec de l'installation en raison d'une erreur interne du serveur de mise à jour.</translation>
-<translation id="6183773856988300112">Gemini dans Chrome utilise la navigation automatique pour travailler dans vos onglets et effectuer les tâches que vous lui confiez. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Astuce Chrome : enregistrez vos mots de passe</translation>
 <translation id="6192058120268468905">Votre compte dans Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> a ajouté une extension qui pourrait modifier le fonctionnement de Chrome.

@@ -226,6 +226,7 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3226612997184048185">Si también guardas los marcadores en tu cuenta de Google, puedes hacer un seguimiento de los precios de los productos en Chrome y recibir una notificación cuando bajen</translation>
 <translation id="3242123554343253302">Añadir perfil de Chrome</translation>
 <translation id="3245429137663807393">Si también compartes informes de uso de Chrome, esos informes incluirán las URLs que visites.</translation>
+<translation id="3259748324892322072">Descargar aplicación Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3292333338048274092">Después, tendrás que reiniciar Chrome.</translation>
 <translation id="3324218984287646518">Pregunta a Google Lens sobre este vídeo</translation>
@@ -284,7 +285,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3893985792899396936">Consejo de Chrome: busca con Lens</translation>
 <translation id="3906096710440765802">Inicia sesión en Chrome para acceder a tus contraseñas y marcadores, entre otros, en todos tus dispositivos</translation>
-<translation id="3921132130819999051">Deja que Chrome navegue por ti</translation>
 <translation id="3941890832296813527">Error de instalación: el nombre de archivo del instalador no es válido o no se admite.</translation>
 <translation id="395904275706073188">Las páginas protegidas no se pueden leer. Prueba con otra página.</translation>
 <translation id="3968962723676998462">Introduce tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta (<ph name="ACCOUNT_EMAIL" />)</translation>
@@ -499,7 +499,6 @@ Google Chrome no puede recuperar tu configuración.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> ‑ Google Chrome Beta</translation>
 <translation id="6180522807229584611">Esta pestaña está usando recursos adicionales. Para mejorar tu rendimiento, permite que Chrome la inactive.</translation>
 <translation id="6182736845697986886">No se ha podido realizar la instalación debido a un error interno del servidor de actualizaciones.</translation>
-<translation id="6183773856988300112">Gemini en Chrome usa la navegación automática en tus pestañas para completar las tareas que le asignes. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Consejo de Chrome: guarda contraseñas</translation>
 <translation id="6192058120268468905">Tu cuenta en Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha añadido una extensión que puede cambiar el funcionamiento de Chrome.

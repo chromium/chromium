@@ -964,15 +964,6 @@ Attribution Reporting API 已淘汰，因此這項政策也已在 <ph name="PROD
       如果設定這項政策，當裝置上的可用磁碟空間小於政策所要求的值時，系統將無法安裝 <ph name="PLUGIN_VM_NAME" />。</translation>
 <translation id="1682893353675650337">有了智慧鏡頭疊加功能，只要拍下目前頁面的螢幕截圖或提出相關問題，就能透過 Google 搜尋相關資訊。使用者須主動啟用這項功能。只要未經本政策停用，這項功能將開放給所有以 Google 做為預設搜尋引擎的使用者。如果不設定政策或設為「0 - 允許」，使用者就能存取這項功能。如果將政策設為「1 - 不允許」，使用者就無法存取這項功能。從 <ph name="PRODUCT_NAME" /> 140 版開始，如果未設定這項政策，系統就會以 <ph name="GEN_AI_DEFAULT_SETTINGS_POLICY_NAME" /> 政策決定行為。<ph name="PRODUCT_NAME" /> 147 以上版本將淘汰這項政策。之後 IT 管理員可以透過 <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> 控制這項功能。</translation>
 <translation id="1686952487081322272">停用快速解答功能</translation>
-<translation id="1688920969335897857">設定這項政策可以控管 <ph name="PRODUCT_NAME" /> 的擴充功能管理設定，包括由現有擴充功能相關政策控管的設定。也就是說，如果先前已有設定的舊版政策，這項政策會直接取代。
-
-此政策僅會將擴充功能 ID 或更新網址，對應到其特定設定。你可以設定特殊 ID <ph name="DEFAULT_SCOPE" /> 的預設設定。未透過這項政策自訂設定的擴充功能，會一律套用預設設定。如果指定了更新網址，系統會根據擴充功能資訊清單中載明的更新網址，將設定套用到擴充功能 (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy)。如果「override_update_url」旗標的設定為 True，系統會根據 <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> 政策或這項政策在「update_url」欄位中指定的「更新」網址，安裝及更新擴充功能。如果「update_url」是 Chrome 線上應用程式商店網址，系統會忽略「override_update_url」旗標。
-
-<ph name="MS_WIN_NAME" /> 執行個體必須加入 <ph name="MS_AD_NAME" /> 網域或 <ph name="MS_AAD_NAME" />，或者註冊<ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
-
-<ph name="MAC_OS_NAME" /> 執行個體必須由行動裝置管理 (MDM) 軟體控管、透過 MCX 加入網域，或者註冊 <ph name="CHROME_ENTERPRISE_CORE_NAME" />，才能強制安裝 Chrome 線上應用程式商店以外的應用程式和擴充功能。
-
-注意：這項政策僅適用支援擴充功能的平台。</translation>
 <translation id="1690383938831887552">禁止載入採用 Signed HTTP Exchange 技術的內容</translation>
 <translation id="1692325295652827195">如果將這項政策設為 True，系統會將政策觸發的主要 Android 應用程式安裝事件報告傳送給 Google。
 

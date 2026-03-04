@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Dacă salvezi marcajele și în Contul Google, poți să urmărești prețurile produselor în Chrome și să primești notificări când scad</translation>
 <translation id="3242123554343253302">Adaugă un profil Chrome</translation>
 <translation id="3245429137663807393">Dacă trimiți rapoarte privind folosirea Chrome, acestea includ adresele URL pe care le accesezi</translation>
+<translation id="3259748324892322072">Descarcă aplicația Chrome</translation>
 <translation id="3286538390144397061">Repornește acum</translation>
 <translation id="3292333338048274092">Apoi va trebui să repornești Chrome.</translation>
 <translation id="3324218984287646518">Întreabă Google Lens despre acest videoclip</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Copiază textul</translation>
 <translation id="3893985792899396936">Sfat pentru Chrome: caută cu Lens</translation>
 <translation id="3906096710440765802">Conectează-te la Chrome pentru a accesa parolele, marcajele și altele pe toate dispozitivele tale</translation>
-<translation id="3921132130819999051">Permite browserului Chromium să navigheze pentru tine</translation>
 <translation id="3941890832296813527">Eroare la instalare: numele de fișier al programului de instalare nu este valid sau acceptat.</translation>
 <translation id="395904275706073188">Paginile protejate nu pot fi citite. Încearcă altă pagină.</translation>
 <translation id="3968962723676998462">Introdu expresia de acces pentru a folosi și a salva datele Chrome în contul <ph name="ACCOUNT_EMAIL" /></translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Această filă folosește resurse suplimentare. Pentru a-ți îmbunătăți performanța, permite-i browserului Chrome să le dezactiveze.</translation>
 <translation id="6182736845697986886">Nu s-a instalat, din cauza unei erori interne a serverului de actualizare.</translation>
-<translation id="6183773856988300112">Gemini folosește navigarea automată în Chrome ca să lucreze în filele tale și să finalizeze activitățile pe care i le aloci. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Sfat pentru Chrome: salvează parolele</translation>
 <translation id="6192058120268468905">Contul tău în Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> a adăugat o extensie care poate schimba modul în care funcționează Chrome.

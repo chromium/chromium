@@ -1614,6 +1614,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="3575121482199441727">Laat vir hierdie werf toe</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Straatnaamopsie is gekies</translation>
+<translation id="3576315803647905285">Formaliseer</translation>
 <translation id="3576616784287504635">'n Ingebedde bladsy by <ph name="SITE" /> sê</translation>
 <translation id="3577473026931028326">Iets was fout. Probeer weer.</translation>
 <translation id="3577902790357386792">Gimnastiek</translation>
@@ -2684,6 +2685,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="5266128565379329178">Bo gebind</translation>
 <translation id="5269225904387178860">Vierpons onder</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" is nie ’n gesteunde voorwaarde vir "<ph name="DATA_CONTROLS_RESTRICTION" />" nie</translation>
+<translation id="527191520368130807">Afwerk</translation>
 <translation id="5273658854610202413">Waarskuwing: Hierdie beleid is nie saamgevoeg soos in PolicyListMultipleSourceMergeList-beleid gespesifiseer nie omdat dit nie deel is van die woordeboekbeleide wat saamgevoeg kan word nie.</translation>
 <translation id="5278778426231952189">Laai nou op</translation>
 <translation id="5279286380302340275">Bestuur aflaaie</translation>
@@ -3584,6 +3586,7 @@ Gaan na <ph name="BEGIN_LINK" />betalinginstellings<ph name="END_LINK" /> om Bet
 <translation id="6698097747703777657">Het jy nie die kode ontvang nie? <ph name="BEGIN_LINK" />Kry nuwe kode<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Geskep:</translation>
 <translation id="6698769547327354196">Gaan na jou <ph name="BEGIN_LINK1" />betalinginstellings<ph name="END_LINK1" /> om Pix in Chrome af te skakel</translation>
+<translation id="669903922988126943">Stoor jou inligting en kry dinge vinniger gedoen, soos om vorms in verskillende Google-produkte in te vul. Jy kan <ph name="MANAGE_INFO_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> vir <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Tydglyer</translation>
 <translation id="6702851555558236418">Oudio- en musieksagteware</translation>
 <translation id="6702919718839027939">Bied aan</translation>
@@ -4095,6 +4098,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7499188644237027195">Beskou eWallet en Pix as opsies wanneer jy aankope in Chrome doen</translation>
 <translation id="7500917112031739411">Wys volgens groep</translation>
 <translation id="7501663406926337752">Die werf voor is deur jou organisasie gevlag</translation>
+<translation id="7502044688973049724">Bestuur jou inligting</translation>
 <translation id="7507075214339298899">Koevert #9</translation>
 <translation id="7508255263130623398">Teruggestuurde beleidtoestel-ID is leeg of stem nie met huidige toestel-ID ooreen nie</translation>
 <translation id="7508577201115425418">Dokument- en drukdienste</translation>
@@ -5147,6 +5151,7 @@ Bykomende besonderhede:
 <translation id="9191834167571392248">Pons links onder</translation>
 <translation id="9192361865877479444">Metaal (mat)</translation>
 <translation id="9192947025498305328">Skoon skoonheid</translation>
+<translation id="9193018794001479794">Brei uit</translation>
 <translation id="9195969368671142407">As jou organisasie jou Google-rekening se storing beperk, kan jy nie oortjiegroepe deel of by hulle aansluit nie</translation>
 <translation id="9198613052465150219">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis by <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> hê</translation>
 <translation id="9199905725844810519">Druk word geblokkeer</translation>

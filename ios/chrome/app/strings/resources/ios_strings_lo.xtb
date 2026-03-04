@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">ເຂົ້າເຖິງລະຫັດຜ່ານຂອງທ່ານໃນທົ່ວແອັບອື່ນ.</translation>
 <translation id="3485558910355485767">ໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນໃໝ່</translation>
 <translation id="3488501490964659223">ແຖບຈະຖືກປິດໄວ້ ແລະ ຂໍ້ມູນການທ່ອງເວັບຈະຖືກລຶບ. ທ່ານອອກຈາກລະບົບແລ້ວ</translation>
+<translation id="3490396108106323715">ແບ່ງປັນແຖບປັດຈຸບັນ</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /> ກ່ຽວກັບເນື້ອຫາທີ່ແນະນຳ</translation>
 <translation id="349446645805573740">ເລືອກຕຳແໜ່ງທີ່ຈະບັນທຶກ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">ການຕັ້ງຄ່າ</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">ບໍ່ສາມາດໂຫຼດຮູບໄດ້</translation>
 <translation id="3565930036634619844">ແຖບ. <ph name="TAB_INDEX" /> ຈາກທັງໝົດ <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">ບັນທຶກດ້ວຍວິທີອື່ນ</translation>
+<translation id="3572503683475187385">ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນກັບ Gemini ເມື່ອທ່ານເລີ່ມການສົນທະນາໃໝ່. ເມື່ອທ່ານແບ່ງປັນແຖບກັບ Gemini, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ຂອງແຖບໄປຫາ Google. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">ໃນບັນຊີ Google ຂອງທ່ານ</translation>
 <translation id="3575234738189584619">ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="3575426792457739946">ລາຍຊື່ມີໂປຣໄຟລ໌ທີ່ໂຫຼດທັງໝົດ.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">ຢຸດການຊອກຫາໜ້າຈໍຂອງທ່ານດ້ວຍ Google Lens</translation>
 <translation id="3753408171347588045">ກຳລັງຕິດຕາມລາຄາ</translation>
 <translation id="3753618528540214374">ຮູບແບບສີສັນສີຂຽວອົມຟ້າ</translation>
+<translation id="3759491607478608474">ແບ່ງປັນເນື້ອຫາຂອງແຖບປັດຈຸບັນກັບ Gemini ເພື່ອຮັບຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ</translation>
 <translation id="3762232513783804601">ສ້າງມາສຳລັບ iPad ຂອງທ່ານ</translation>
 <translation id="3768725474733206671">ເປີດແຖບທີ່ປິດແລ້ວຫຼ້າສຸດຄືນໃໝ່</translation>
 <translation id="3779810277399252432">ບໍ່ມີການເຊື່ອມຕໍ່ອິນເຕີເນັດ.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">ສືບຕໍ່ເປັນ <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{ເຊື່ອງຫຼັງຈາກ 1 ນາທີ}other{ເຊື່ອງຫຼັງຈາກ {count} ນາທີ}}</translation>
 <translation id="4652817563047461855">ກວດສອບວ່າລະຫັດຜ່ານຂອງທ່ານປອດໄພ, ເບິ່ງວ່າລະຫັດຜ່ານຖືກລະເມີດຫຼືບໍ່ ແລະ ຮັບຄຳແນະນຳເພື່ອຊ່ວຍປົກປ້ອງຕົນເອງໃນໂລກອອນລາຍ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມ<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">ເປີດການແບ່ງປັນແຖບ</translation>
 <translation id="4658335131052370646">ບັນທຶກ</translation>
 <translation id="466307903888586355">ການບັນທຶກໄຟລ໌ຖືກບລັອກໂດຍອົງກອນຂອງທ່ານ</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="5718049162805123412">ທ່ານຄວນປ່ຽນລະຫັດເຫຼົ່ານີ້ດຽວນີ້</translation>
 <translation id="5721040778297053709">ຈັດຕຳແໜ່ງບັດເຄຣດິດໃຫ້ຢູ່ໃນກອບນີ້</translation>
 <translation id="572328651809341494">ແຖບບໍ່ດົນມານີ້</translation>
+<translation id="5724590854763964497">ໂດຍຄ່າເລີ່ມຕົ້ນ, ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານເມື່ອທ່ານເລີ່ມການສົນທະນາໃໝ່. ເມື່ອແບ່ງປັນແຖບ, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ຂອງແຖບໄປຫາ Google ແຕ່ຈະບໍ່ນຳເອົາໄປໃຊ້ໃນການປັບປຸງໂມເດວ AI ສ້າງເນື້ອຫາ. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="5724941645893276623">ເພື່ອທ່ອງເວັບແບບເປັນສ່ວນຕົວ, ກະລຸນາເພີ່ມແຖບໃໝ່</translation>
 <translation id="5728072125198221967">ບໍລິການ Google ທີ່ລິ້ງໄວ້</translation>
 <translation id="5728700505257787410">ຂໍ​ອະ​ໄພ​, ມີ​ບັນ​ຫາ​ການເຂົ້າ​ສູ່​ບັນ​ຊີ​ລະ​ບົບ​ຂອງ​ທ່ານ.</translation>
@@ -1964,6 +1969,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8059533439631660104">ຫຍໍ້​ສ່ວນ​ລົງ.</translation>
 <translation id="8061584726507121204">ປະຫວັດ</translation>
 <translation id="8064946459644399612">ນຳໃຊ້ການຕັ້ງຄ່າໜ້າແຖບໃໝ່ຂອງທ່ານແລ້ວ</translation>
+<translation id="8065556469005366939">ຮັບຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນໂດຍການແບ່ງປັນແຖບຂອງທ່ານ</translation>
 <translation id="8069394452933076548">ເລືອກເວລາທີ່ຈະຍ້າຍແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້ໃນປັດຈຸບັນໄປໄວ້ໃນພາກສ່ວນແຖບທີ່ບໍ່ໄດ້ນຳໃຊ້.</translation>
 <translation id="8073670137947914548">ສຳເລັດການດາວໂຫຼດແລ້ວ</translation>
 <translation id="8076492880354921740">ແຖບ</translation>
@@ -2132,6 +2138,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8660600697590740984">ຮູບທີ່ສຳເນົາດ້ວຍ Lens</translation>
 <translation id="866266761389616183">ອ່າ, ຊວຍແທ້!</translation>
 <translation id="8663764600409216912">ທ່ານກຳລັງໃຊ້ລະຫັດຜ່ານທີ່ຄາດເດົາໄດ້ຍາກ</translation>
+<translation id="8664992138761940052">ໂດຍຄ່າເລີ່ມຕົ້ນ, ລະບົບຈະແບ່ງປັນແຖບປັດຈຸບັນຂອງທ່ານເມື່ອທ່ານເລີ່ມການສົນທະນາໃໝ່. ເມື່ອແບ່ງປັນແຖບ, ລະບົບຈະສົ່ງເນື້ອຫາ ແລະ URL ຂອງແຖບໄປຫາ Google. ທ່ານສາມາດປ່ຽນການຕັ້ງຄ່ານີ້ໄດ້ທຸກເວລາ.</translation>
 <translation id="8668210798914567634">ໜ້ານີ້ໄດ້ຖືກບັນທຶກໃສ່ລາຍການທີ່ຈະອ່ານຂອງທ່ານແລ້ວ.</translation>
 <translation id="8672642291731179042">ແປໜ້າເວັບ</translation>
 <translation id="8672733398999596205">ເປີດການນຳໃຊ້ທັງໝົດ</translation>

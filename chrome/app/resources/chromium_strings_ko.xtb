@@ -29,6 +29,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> 계정으로 Gmail 또는 YouTube와 같은 Google 서비스에 로그인하면 동일한 계정으로 Chromium에 자동으로 로그인할 수 있습니다.</translation>
 <translation id="1290883685122687410">설정 오류: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">새 Chromium 프로필 설정</translation>
+<translation id="132092532143527429">Chromium의 Gemini로 사용해 보기</translation>
 <translation id="1324107359134968521">블루투스 기기를 탐색하려면 Chromium에 블루투스 액세스 권한이 필요합니다. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">언어 감지</translation>
 <translation id="1330742950061766891">Chromium 권장 브라우저 설정 사용</translation>
@@ -610,6 +611,7 @@ Chromium에서 설정을 복구할 수 없습니다.</translation>
 <translation id="7622753900276619808">이제 Chromium에서 더 많은 기능을 사용할 수 있습니다.</translation>
 <translation id="7624307931717240213">이 정보는 서비스 개선에 사용됩니다. 개인정보처리방침 및 서비스 약관을 확인하세요.</translation>
 <translation id="7649070708921625228">도움말</translation>
+<translation id="7650134251917003571">Chromium 앱 다운로드</translation>
 <translation id="7656340475565475526">Chromium이 대신 탐색하도록 허용</translation>
 <translation id="7658239707568436148">취소</translation>
 <translation id="7686590090926151193">Chromium이 기본 브라우저로 설정되어 있지 않습니다</translation>

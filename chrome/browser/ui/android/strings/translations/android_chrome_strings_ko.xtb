@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">북마크 이동</translation>
 <translation id="1197761954713363183">패스키 확인 시트 닫힘</translation>
 <translation id="1197933394627598677">읽기 모드 표시</translation>
+<translation id="1197935538609051549">비활성화</translation>
 <translation id="1201402288615127009">다음</translation>
 <translation id="1202892408424955784">추적 중인 제품</translation>
 <translation id="1204037785786432551">링크 다운로드</translation>
@@ -506,6 +507,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3122883569442693641">세부정보 더보기</translation>
 <translation id="3123734510202723619">공지사항</translation>
 <translation id="3134385238404760368">최근 탭 없음</translation>
+<translation id="3135655388926735587">최근 탭을 탭합니다</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3158667104057012316">직접 정렬</translation>
 <translation id="3159335509547415276">차단된 계정에 관해 자세히 알아보기</translation>
@@ -850,6 +852,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{유출된 비밀번호 1개}other{유출된 비밀번호 #개}}</translation>
 <translation id="4641919525231168205">다음 페이지로 이동</translation>
 <translation id="4642472735733036929">가격 추적이 중지됨</translation>
+<translation id="4649493483932335039">최근 탭 보기</translation>
 <translation id="465657074423018424">세이프 브라우징은 사기성 웹사이트로부터 사용자를 보호합니다. 이 기능을 사용 중지하는 경우 인터넷을 탐색할 때, 특히 비밀번호를 입력할 때 주의하시기 바랍니다.</translation>
 <translation id="4662373422909645029">닉네임에 숫자를 포함할 수 없음</translation>
 <translation id="4663756553811254707">북마크 <ph name="NUMBER_OF_BOOKMARKS" />개 삭제됨</translation>
@@ -1562,6 +1565,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7363349185727752629">개인 정보 보호 선택 가이드</translation>
 <translation id="7364103838544876661">인터넷 사용 기록 삭제 옵션 더보기</translation>
 <translation id="7365073365123878797">Google 비밀번호 관리자로 비밀번호를 저장하고 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
+<translation id="7368009310682364976">최근에 연 탭 보기</translation>
 <translation id="7368927539449986686">사이트 검색 편집</translation>
 <translation id="7375125077091615385">유형:</translation>
 <translation id="7376560087009844242">페이지 텍스트를 더 많이 포함하면 터치하여 검색 기능을 사용할 때 더 나은 검색결과를 확인할 수 있습니다. 이를 변경하려면 언제든지 <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />을 방문하세요.</translation>
@@ -1679,6 +1683,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7824665136384946951">조직에서 세이프 브라우징을 사용 중지했습니다.</translation>
 <translation id="7826342993930002256">어디에서나 나만의 Chrome을 사용하세요</translation>
 <translation id="7844171778363018843">동기화할 데이터 선택 안됨</translation>
+<translation id="784453721355882533">Chrome의 Gemini를 사용해 답변을 얻고 핵심 내용 등을 확인하세요.</translation>
 <translation id="7846161022626028328">오류가 발생했습니다. 다시 시도하세요.</translation>
 <translation id="7846296061357476882">Google 서비스</translation>
 <translation id="784652447248278262">현재 창</translation>
@@ -1688,6 +1693,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7853202427316060426">활동</translation>
 <translation id="7859988229622350291">번역 안 함</translation>
 <translation id="7866213166286285359">여기에 페이지 번역하기</translation>
+<translation id="7873610418439765081">Chrome의 Gemini를 사용해 보세요. '옵션 더보기' 버튼을 눌러 답변을 얻고 핵심 내용 등을 확인할 수 있습니다.</translation>
 <translation id="7875915731392087153">이메일 작성</translation>
 <translation id="7876243839304621966">모두 삭제</translation>
 <translation id="7886917304091689118">Chrome에서 실행 중</translation>
@@ -1738,6 +1744,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8062594758852531064">확장된 미리 로드:</translation>
 <translation id="8063895661287329888">북마크를 추가하지 못했습니다.</translation>
 <translation id="8066816452984416180">이 페이지를 빠르게 북마크에 추가합니다. 바로가기를 수정하려면 길게 터치하세요.</translation>
+<translation id="8072436850275034464">Chrome을 사용하면 어디서나 최근에 닫은 탭을 다시 열 수 있습니다</translation>
 <translation id="8073388330009372546">새 탭에서 이미지 열기</translation>
 <translation id="8076492880354921740">탭</translation>
 <translation id="8078096376109663956">텍스트만 공유하세요.</translation>
@@ -1849,6 +1856,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="8460008946585880786">탭을 다른 탭 위로 드래그 앤 드롭하세요</translation>
 <translation id="8460448946170646641">주요 개인 정보 보호 및 보안 제어 기능 검토</translation>
 <translation id="8460932807646981183">검색엔진 및 사이트 검색 관리</translation>
+<translation id="8465252176946159372">잘못된 값입니다.</translation>
 <translation id="8473863474539038330">주소 및 기타</translation>
 <translation id="847433688444405067">여러 기기에서 탐색하기</translation>
 <translation id="8477178913400731244">데이터 삭제</translation>

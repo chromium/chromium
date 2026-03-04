@@ -728,6 +728,7 @@
 <translation id="4212169537710712814"><ph name="LANGUAGE_NAME" />转写模型下载完毕</translation>
 <translation id="42126664696688958">导出</translation>
 <translation id="4213104098953699324">USB 键盘</translation>
+<translation id="4217571870635786043">语音输入</translation>
 <translation id="4227825898293920515">密码将于 <ph name="TIME" />后到期</translation>
 <translation id="4238516577297848345">没有正在进行的打印任务</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">运行硬件测试以排查硬件问题</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">向下</translation>
+<translation id="8427213022735114808">语音输入功能会将您的语音内容发送给 Google，以便能在任何文本字段中进行语音输入。</translation>
 <translation id="8428213095426709021">设置</translation>
 <translation id="8431300646573772016">Chrome 操作系统的新变化</translation>
 <translation id="8433186206711564395">网络设置</translation>

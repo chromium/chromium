@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">他のアプリからパスワードにアクセスできます。</translation>
 <translation id="3485558910355485767">新規シークレット ウインドウ</translation>
 <translation id="3488501490964659223">タブを閉じて閲覧データを削除し、ログアウトしました</translation>
+<translation id="3490396108106323715">現在のタブを共有</translation>
 <translation id="3493531032208478708">詳しくは、<ph name="BEGIN_LINK" />おすすめのコンテンツ<ph name="END_LINK" />についての説明をご覧ください</translation>
 <translation id="349446645805573740">「<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />」の保存先を選択してください</translation>
 <translation id="3504377992102007712">設定</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">画像を読み込めませんでした</translation>
 <translation id="3565930036634619844">タブ <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />。</translation>
 <translation id="3567168891086460374">別の方法で保存</translation>
+<translation id="3572503683475187385">新しいチャットを開始すると、現在のタブが Gemini と共有されます。タブを Gemini と共有すると、そのタブのコンテンツと URL が Google に送信されます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google アカウント</translation>
 <translation id="3575234738189584619">レンズで検索</translation>
 <translation id="3575426792457739946">読み込まれたすべてのプロフィールのリストです。</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Google レンズを使用した画面の検索を停止</translation>
 <translation id="3753408171347588045">価格を追跡中</translation>
 <translation id="3753618528540214374">ビリジアンのテーマ</translation>
+<translation id="3759491607478608474">現在のタブのコンテンツを Gemini と共有すると、より関連性の高い回答が得られます</translation>
 <translation id="3762232513783804601">iPad 向けの設計</translation>
 <translation id="3768725474733206671">最後に閉じたタブを開く</translation>
 <translation id="3779810277399252432">インターネットに接続されていません。</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> として続行</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 分後に非表示にする}other{{count} 分後に非表示にする}}</translation>
 <translation id="4652817563047461855">パスワードを安全に保管し、不正使用の有無を確認し、オンラインでご自身を守るためのアドバイスを得ることができます。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">タブの共有をオンにする</translation>
 <translation id="4658335131052370646">保存</translation>
 <translation id="466307903888586355">ファイルの保存は組織によってブロックされています</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">今すぐ変更してください</translation>
 <translation id="5721040778297053709">クレジット カードをこの枠に合わせます</translation>
 <translation id="572328651809341494">最近使ったタブ</translation>
+<translation id="5724590854763964497">デフォルトでは、新しいチャットを開始すると現在のタブが共有されます。タブを共有すると、そのタブのコンテンツと URL が Google に送信されますが、これらの情報が生成 AI モデルの改善に使用されることはありません。この設定はいつでも変更できます。</translation>
 <translation id="5724941645893276623">ウェブをプライベートに閲覧するには、新しいタブを追加してください</translation>
 <translation id="5728072125198221967">リンクされている Google サービス</translation>
 <translation id="5728700505257787410">アカウントへのログイン中に問題が発生しました。</translation>
@@ -1964,6 +1969,7 @@
 <translation id="8059533439631660104">セクションを折りたたみます。</translation>
 <translation id="8061584726507121204">履歴</translation>
 <translation id="8064946459644399612">新しいタブページの設定を適用しました</translation>
+<translation id="8065556469005366939">タブを共有すると、より関連性の高い回答が得られます</translation>
 <translation id="8069394452933076548">最近使用していないタブを無効なタブセクションにいつ移動するかを選択します。</translation>
 <translation id="8073670137947914548">ダウンロードが完了しました</translation>
 <translation id="8076492880354921740">タブ</translation>
@@ -2132,6 +2138,7 @@
 <translation id="8660600697590740984">コピーした画像をレンズで検索</translation>
 <translation id="866266761389616183">エラー</translation>
 <translation id="8663764600409216912">推測しにくいパスワードが使用されています</translation>
+<translation id="8664992138761940052">デフォルトでは、新しいチャットを開始すると現在のタブが共有されます。タブを共有すると、そのタブのコンテンツと URL が Google に送信されます。この設定はいつでも変更できます。</translation>
 <translation id="8668210798914567634">このページはリーディング リストに保存されています。</translation>
 <translation id="8672642291731179042">ページを翻訳する</translation>
 <translation id="8672733398999596205">すべて有効にする</translation>

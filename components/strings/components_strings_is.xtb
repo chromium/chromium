@@ -1844,6 +1844,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="3927932062596804919">Hafna</translation>
 <translation id="3928806096717999469">Breyta, opnast í nýjum glugga</translation>
 <translation id="3930260846839546333">Handtöskur og veski</translation>
+<translation id="393417216277380082">Hreyfi- og birtuskynjarar</translation>
 <translation id="3937834511546249636">Varnarmál</translation>
 <translation id="3939773374150895049">Nota WebAuthn í stað CVC-númers?</translation>
 <translation id="3941630233824954464">Virkja áskilda endurauðkenningu</translation>
@@ -2531,6 +2532,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5018802455907704660">16 x 20 to.</translation>
 <translation id="5019198164206649151">Geymsla bakenda er í slæmri stöðu</translation>
 <translation id="5019293549442035120">Þú getur notað vistuð heimilisföng í Google-vörum. Þetta heimilisfang verður vistað á Google-reikningnum þínum, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">hreyfi- og birtuskynjara</translation>
 <translation id="5019952743397118625">Reglan <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> er stillt. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> mun ekki stjórna tiltækileika forritarastillingar á viðbótasíðu.</translation>
 <translation id="5021500396464456616">Hafðu samband við einstaklinginn sem sendi þennan tengil</translation>
 <translation id="5021557570875267742">Vaktaðu verð með Chrome</translation>
@@ -2574,6 +2576,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="5093232627742069661">Z-brot</translation>
 <translation id="5093417502834168387">Vandamál með innskráningu? Prófa aðra leið</translation>
 <translation id="5094747076828555589">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; Chromium treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
+<translation id="5096066272198024688">Vistar upplýsingarnar þínar...</translation>
 <translation id="5097099694988056070">Talnagögn tækis eins og notkun örgjörva/vinnsluminnis</translation>
 <translation id="5097468150760963273">27 x 39 to.</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3780,6 +3783,7 @@ Farðu í <ph name="BEGIN_LINK" />greiðslustillingar<ph name="END_LINK" /> til 
 <translation id="7003278537452757231">Mottur og gólfteppi</translation>
 <translation id="7003322000677139268">Varahlutir og aukabúnaður fyrir bíla</translation>
 <translation id="7004499039102548441">Nýlegir flipar</translation>
+<translation id="700483187606163535">Upplýsingarnar þínar eru vistaðar í <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> fyrir <ph name="ACCOUNT" /> Þú getur notað þær í Google-þjónustum til að fylla eyðublöð út hraðar.</translation>
 <translation id="7006930604109697472">Senda samt</translation>
 <translation id="7009364359744329733">Þetta kort er ekki tiltækt sem stendur. Reyndu aftur síðar.</translation>
 <translation id="7010658264061801199">Matur og drykkur</translation>

@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Juurdepääs oma paroolidele teistes rakendustes.</translation>
 <translation id="3485558910355485767">Uus inkognito aken</translation>
 <translation id="3488501490964659223">Vahelehed suleti ja sirvimisandmed kustutati. Teid logiti välja</translation>
+<translation id="3490396108106323715">Praeguse vahelehe jagamine</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /> soovitatud sisu kohta</translation>
 <translation id="349446645805573740">Valige, kuhu salvestada fail „<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”.</translation>
 <translation id="3504377992102007712">Seaded</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Pilte ei õnnestunud laadida</translation>
 <translation id="3565930036634619844">Vaheleht. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salvesta muul viisil</translation>
+<translation id="3572503683475187385">Uue vestluse alustamisel jagatakse praegust vahelehte Geminiga. Kui jagate vahelehte Geminiga, saadetakse selle sisu ja URL Google'ile. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Teie Google’i kontol</translation>
 <translation id="3575234738189584619">Otsi Lensiga</translation>
 <translation id="3575426792457739946">See loend hõlmab kõiki laaditud profiile.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Lõpetage Google Lensiga ekraanil kuvatu otsimine</translation>
 <translation id="3753408171347588045">Jälgite hindu</translation>
 <translation id="3753618528540214374">Viridiaani teema</translation>
+<translation id="3759491607478608474">Jagage praeguse vahelehe sisu Geminiga, et saada asjakohasemaid vastuseid.</translation>
 <translation id="3762232513783804601">Loodud teie iPadile</translation>
 <translation id="3768725474733206671">Viimati suletud vahelehe uuesti avamine</translation>
 <translation id="3779810277399252432">Interneti-ühendus puudub.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Jätkake kasutajana <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Peida 1 minuti möödudes}other{Peida {count} minuti möödudes}}</translation>
 <translation id="4652817563047461855">Saate veenduda, et teie paroolid oleksid kaitstud, kontrollida, kas need pole ohustatud, ja saada nõu, kuidas end veebis kaitsta. <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Lülitage vahelehtede jagamine sisse</translation>
 <translation id="4658335131052370646">Salvesta</translation>
 <translation id="466307903888586355">Teie organisatsioon on failide salvestamise blokeerinud</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="5718049162805123412">Peaksite need kohe ära muutma</translation>
 <translation id="5721040778297053709">Paigutage krediitkaart sellesse kaadrisse.</translation>
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
+<translation id="5724590854763964497">Vaikimisi jagatakse uue vestluse alustamisel teie praegust vahelehte. Vahelehtede jagamise korral saadetakse nende sisu ja URL-id Google'ile, kuid neid ei kasutata generatiivse AI mudelite täiustamiseks. Seda seadet saab igal ajal muuta.</translation>
 <translation id="5724941645893276623">Privaatselt veebi sirvimiseks lisage uus vaheleht</translation>
 <translation id="5728072125198221967">Lingitud Google’i teenused</translation>
 <translation id="5728700505257787410">Kahjuks ilmnes kontole sisselogimisel probleem.</translation>
@@ -1964,6 +1969,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8059533439631660104">Ahendab jaotist.</translation>
 <translation id="8061584726507121204">Ajalugu</translation>
 <translation id="8064946459644399612">Teie uue vahelehe eelistused on rakendatud.</translation>
+<translation id="8065556469005366939">Jagage oma vahelehti, et saada asjakohasemaid vastuseid</translation>
 <translation id="8069394452933076548">Valige, millal vahelehed, mida hiljuti pole kasutatud, teisaldatakse inaktiivsete vahelehtede jaotisse.</translation>
 <translation id="8073670137947914548">Allalaadimine jõudis lõpule</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
@@ -2132,6 +2138,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="8660600697590740984">Otsi kopeeritud pilti Lensiga</translation>
 <translation id="866266761389616183">Ups, ebaõnn!</translation>
 <translation id="8663764600409216912">Kasutate paroole, mida on raske ära arvata</translation>
+<translation id="8664992138761940052">Vaikimisi jagatakse uue vestluse alustamisel teie praegust vahelehte. Vahelehtede jagamise korral saadetakse nende sisu ja URL-id Google'ile. Seda seadet saab igal ajal muuta.</translation>
 <translation id="8668210798914567634">See leht on jäädvustatud teie lugemisloendisse.</translation>
 <translation id="8672642291731179042">Tõlgi lehed</translation>
 <translation id="8672733398999596205">Luba kõik</translation>

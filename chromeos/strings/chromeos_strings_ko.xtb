@@ -728,6 +728,7 @@
 <translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> 스크립트 작성 모델 다운로드 완료</translation>
 <translation id="42126664696688958">내보내기</translation>
 <translation id="4213104098953699324">USB 키보드</translation>
+<translation id="4217571870635786043">음성기록</translation>
 <translation id="4227825898293920515">비밀번호가 <ph name="TIME" /> 후에 만료됨</translation>
 <translation id="4238516577297848345">진행 중인 인쇄 작업 없음</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">테스트 실행 및 하드웨어 문제 해결</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">아래</translation>
+<translation id="8427213022735114808">음성기록을 사용하면 모든 텍스트 입력란에서 음성 입력 기능을 지원하기 위해 Google에 음성이 전송됩니다.</translation>
 <translation id="8428213095426709021">설정</translation>
 <translation id="8431300646573772016">ChromeOS의 새로운 기능</translation>
 <translation id="8433186206711564395">네트워크 설정</translation>

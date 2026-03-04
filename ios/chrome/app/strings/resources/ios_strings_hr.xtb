@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Pristupajte svojim zaporkama u drugim aplikacijama.</translation>
 <translation id="3485558910355485767">Novi anonimni prozor</translation>
 <translation id="3488501490964659223">Kartice su zatvorene i izbrisani su podaci o pregledavanju. Odjavljeni ste</translation>
+<translation id="3490396108106323715">Podijeli trenutačnu karticu</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /> o predloženom sadržaju</translation>
 <translation id="349446645805573740">Odaberite mjesto za spremanje datoteke <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Postavke</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Učitavanje slika nije uspjelo</translation>
 <translation id="3565930036634619844">Kartica. <ph name="TAB_INDEX" /> od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Spremi na drugi način</translation>
+<translation id="3572503683475187385">Trenutačna kartica dijeli se s Geminijem kad započnete novi razgovor. Kad podijelite karticu s Geminijem, njezin sadržaj i URL šalju se Googleu. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Na vašem Google računu</translation>
 <translation id="3575234738189584619">Pretraživanje pomoću Objektiva</translation>
 <translation id="3575426792457739946">Ovaj popis sadrži sve učitane profile.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Zaustavite pretraživanje zaslona pomoću Google objektiva</translation>
 <translation id="3753408171347588045">Praćenje cijena</translation>
 <translation id="3753618528540214374">Plavo-zelena tema</translation>
+<translation id="3759491607478608474">Podijelite sadržaj trenutačne kartice s Geminijem da biste dobili relevantnije odgovore</translation>
 <translation id="3762232513783804601">Razvijeno za vaš iPad</translation>
 <translation id="3768725474733206671">Ponovno otvori posljednju zatvorenu karticu</translation>
 <translation id="3779810277399252432">Nema internetske veze.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Nastavi kao <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Sakrij nakon 1 minute}one{Sakrij nakon {count} minute}few{Sakrij nakon {count} minute}other{Sakrij nakon {count} minuta}}</translation>
 <translation id="4652817563047461855">Provjerite jesu li vaše zaporke sigurne, saznajte jesu li ugrožene i primite savjete koji će vam pomoći da se zaštitite online. <ph name="BEGIN_LINK" />Saznaj više<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Uključite dijeljenje kartice</translation>
 <translation id="4658335131052370646">Spremi</translation>
 <translation id="466307903888586355">Spremanje datoteka blokirala je vaša organizacija</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="5718049162805123412">Trebali biste ih odmah promijeniti</translation>
 <translation id="5721040778297053709">Postavite kreditnu karticu u ovaj okvir</translation>
 <translation id="572328651809341494">Nedavne kartice</translation>
+<translation id="5724590854763964497">Prema zadanim postavkama trenutačna kartica dijeli se kad započnete novi razgovor. Kad se kartice dijele, njihov sadržaj i URL-ovi šalju se Googleu, ali se neće upotrebljavati za poboljšanje generativnih AI modela. Tu postavku uvijek možete izmijeniti.</translation>
 <translation id="5724941645893276623">Da biste privatno pregledavali web, dodajte novu karticu</translation>
 <translation id="5728072125198221967">Povezane Googleove usluge</translation>
 <translation id="5728700505257787410">Došlo je do problema prilikom prijave na vaš račun.</translation>
@@ -1964,6 +1969,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8059533439631660104">Sažima odjeljak.</translation>
 <translation id="8061584726507121204">Povijest</translation>
 <translation id="8064946459644399612">Primijenjene su vaše postavke stranice Nova kartica</translation>
+<translation id="8065556469005366939">Podijelite kartice da biste dobili relevantnije odgovore</translation>
 <translation id="8069394452933076548">Odaberite kada će se kartice koje nisu korištene u posljednje vrijeme premjestiti u odjeljak neaktivnih kartica.</translation>
 <translation id="8073670137947914548">Preuzimanje je dovršeno</translation>
 <translation id="8076492880354921740">Kartice</translation>
@@ -2132,6 +2138,7 @@ Handoff mora biti omogućen i u odjeljku Općenito u Postavkama, a vaši uređaj
 <translation id="8660600697590740984">Slika koju je kopirao Objektiv</translation>
 <translation id="866266761389616183">O, ne!</translation>
 <translation id="8663764600409216912">Upotrebljavate zaporke koje je teško pogoditi</translation>
+<translation id="8664992138761940052">Prema zadanim postavkama trenutačna kartica dijeli se kad započnete novi razgovor. Kad se kartice dijele, njihov sadržaj i URL-ovi šalju se Googleu. Tu postavku uvijek možete izmijeniti.</translation>
 <translation id="8668210798914567634">Ova je stranica spremljena na vaš popis za čitanje.</translation>
 <translation id="8672642291731179042">Prijevod stranica</translation>
 <translation id="8672733398999596205">Omogući sve</translation>

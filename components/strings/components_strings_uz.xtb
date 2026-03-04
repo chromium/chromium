@@ -1905,6 +1905,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
 <translation id="4031179711345676612">Mikrofondan foydalanish mumkin</translation>
 <translation id="4036753017940930924">Yer va yer uchastkalari</translation>
 <translation id="403724377879219932">Mahalliy tarmoqdagi boshqa qurilmalarga ruxsat soʻrashi mumkin</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, yangi</translation>
 <translation id="4039506337798853114">Kursorni chiqarish uchun |<ph name="ACCELERATOR" />| tugmasini bosing</translation>
 <translation id="4042597221652780603">Taxminiy</translation>
 <translation id="4045070493270310437">Varaqlarni qayta oching</translation>
@@ -2791,6 +2792,7 @@ Keyinroq toʻlash usullarini berkitish uchun <ph name="BEGIN_LINK" />toʻlov soz
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Tezroq hisob-kitob qilish uchun ushbu CVC kodini Google Wallet (<ph name="ACCOUNT_EMAIL" />) hamyoniga saqlang</translation>
 <translation id="5436307623797390637">Qurilmadagi ilovalar</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, ilgari <ph name="PREVIOUS_VALUE" /> edi</translation>
 <translation id="5443468954631487277">Teskari tartibda old tomonida</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> saytiga siz haqingizdagi saqlangan maʼlumotlardan foydalanishiga ruxsat bering</translation>
 <translation id="5447973833955560753">Zaxiraviy parol</translation>

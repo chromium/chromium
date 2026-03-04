@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Teisalda järjehoidjad</translation>
 <translation id="1197761954713363183">Pääsuvõtme kinnitusleht on suletud</translation>
 <translation id="1197933394627598677">Kuva lugemisrežiim</translation>
+<translation id="1197935538609051549">Inaktiveeri</translation>
 <translation id="1201402288615127009">Järgmine</translation>
 <translation id="1202892408424955784">Jälgitavad tooted</translation>
 <translation id="1204037785786432551">Allalaadimislink</translation>
@@ -506,6 +507,7 @@ Teie krüpteeritud andmeid saab lugeda ainult isik, kes teab teie parooli. Paroo
 <translation id="3122883569442693641">Rohkem üksikasju</translation>
 <translation id="3123734510202723619">Teadaanded</translation>
 <translation id="3134385238404760368">Hiljutisi vahelehti pole.</translation>
+<translation id="3135655388926735587">Puudutage valikut Hiljutised vahelehed.</translation>
 <translation id="314939179385989105">Chrome'i avaleht</translation>
 <translation id="3158667104057012316">Sortimine käsitsi järjestuse järgi</translation>
 <translation id="3159335509547415276">Teave blokeeritud kontode kohta</translation>
@@ -850,6 +852,7 @@ Veebisaidil <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 parool on ohus}other{# parooli on ohus}}</translation>
 <translation id="4641919525231168205">Järgmisele lehele liikumine</translation>
 <translation id="4642472735733036929">Hinna jälgimine on peatatud</translation>
+<translation id="4649493483932335039">Hiljutiste vahelehtede vaatamine</translation>
 <translation id="465657074423018424">Google'i ohutu sirvimine kaitseb teid petlike veebisaitide eest. Kui selle välja lülitate, olge sirvimisel väga ettevaatlik (eriti siis, kui sisestate paroole).</translation>
 <translation id="4662373422909645029">Hüüdnimes ei tohi olla numbreid</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> järjehoidjat kustutati</translation>
@@ -1562,6 +1565,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7363349185727752629">Teie privaatsusvalikute juhend</translation>
 <translation id="7364103838544876661">Rohkem võimalusi sirvimisandmete kustutamiseks</translation>
 <translation id="7365073365123878797">Google'i paroolihalduri abil paroolide salvestamise ja kasutamise alustamiseks värskendage Google Play teenuseid</translation>
+<translation id="7368009310682364976">Hiljuti avatud vahelehtede vaatamine</translation>
 <translation id="7368927539449986686">Saidiotsingu muutmine</translation>
 <translation id="7375125077091615385">Tüüp:</translation>
 <translation id="7376560087009844242">Kaasates rohkem lehe teksti võite näha paremaid tulemusi, kui kasutate otsimiseks puudutamist. Selle muutmiseks võite alati avada <ph name="BEGIN_LINK" />seaded<ph name="END_LINK" />.</translation>
@@ -1679,6 +1683,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7824665136384946951">Teie organisatsioon lülitas Google'i ohutu sirvimise välja</translation>
 <translation id="7826342993930002256">Teie Chrome, kõikjal</translation>
 <translation id="7844171778363018843">Sünkroonimiseks pole andmeid valitud</translation>
+<translation id="784453721355882533">Proovige Geminit Chrome'is, et saada vastuseid, põhipunkte ja muud.</translation>
 <translation id="7846161022626028328">Ilmnes viga. Proovige uuesti.</translation>
 <translation id="7846296061357476882">Google'i teenused</translation>
 <translation id="784652447248278262">Praegune aken</translation>
@@ -1688,6 +1693,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="7853202427316060426">Tegevus</translation>
 <translation id="7859988229622350291">Ära kunagi tõlgi</translation>
 <translation id="7866213166286285359">Tõlkige lehed siin</translation>
+<translation id="7873610418439765081">Proovige Geminit Chrome'is, et saada vastuseid, põhipunkte ja muudki, kasutades nuppu Rohkem valikuid.</translation>
 <translation id="7875915731392087153">Looge meil</translation>
 <translation id="7876243839304621966">Eemalda kõik</translation>
 <translation id="7886917304091689118">Töötab Chrome'is</translation>
@@ -1738,6 +1744,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8062594758852531064">Laiendatud eellaadimine:</translation>
 <translation id="8063895661287329888">Järjehoidja lisamine ebaõnnestus.</translation>
 <translation id="8066816452984416180">Lisage see leht kiiresti järjehoidjatesse. Selle otsetee muutmiseks puudutage pikalt.</translation>
+<translation id="8072436850275034464">Saate hiljuti suletud vahelehed uuesti avada kõikjal, kus Chrome'i kasutate.</translation>
 <translation id="8073388330009372546">Ava pilt uuel vahelehel</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8078096376109663956">Jagage ainult teksti</translation>
@@ -1849,6 +1856,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="8460008946585880786">Pukseerige üks vaheleht teise peale.</translation>
 <translation id="8460448946170646641">Vaadake üle peamised privaatsus- ja turvaseaded</translation>
 <translation id="8460932807646981183">Otsingumootorite ja saidiotsingu haldamine</translation>
+<translation id="8465252176946159372">Pole kehtiv</translation>
 <translation id="8473863474539038330">Aadressid ja muu</translation>
 <translation id="847433688444405067">Sirvige mitmes seadmes</translation>
 <translation id="8477178913400731244">Kustuta andmed</translation>

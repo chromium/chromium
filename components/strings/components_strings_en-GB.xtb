@@ -1614,6 +1614,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3575121482199441727">Allow for this site</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">Street name option selected</translation>
+<translation id="3576315803647905285">Formalise</translation>
 <translation id="3576616784287504635">An embedded page at <ph name="SITE" /> says</translation>
 <translation id="3577473026931028326">Something went wrong. Try again.</translation>
 <translation id="3577902790357386792">Gymnastics</translation>
@@ -2636,6 +2637,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5190835502935405962">Bookmarks bar</translation>
 <translation id="5191315092027169558">Your profile is managed by <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> wants to download multiple files</translation>
+<translation id="5199121357983849992">Save ID card?</translation>
 <translation id="5200063972779787617">Save address in account</translation>
 <translation id="5201306358585911203">An embedded page on this page says</translation>
 <translation id="5203716867500274632">Your administrator enabled the following to be synced between your previous and current sessions across your ChromeOS devices:</translation>
@@ -2684,6 +2686,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5266128565379329178">Bind top</translation>
 <translation id="5269225904387178860">Quad punch bottom</translation>
 <translation id="5271381225185906340">'<ph name="DATA_CONTROLS_ATTRIBUTE" />' is not a supported condition for '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
+<translation id="527191520368130807">Polish</translation>
 <translation id="5273658854610202413">Warning: This policy was not merged as specified in PolicyDictionaryMultipleSourceMergeList policy because it is not part of the dictionary policies that can be merged.</translation>
 <translation id="5278778426231952189">Upload now</translation>
 <translation id="5279286380302340275">Manage downloads</translation>
@@ -3584,6 +3587,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="6698097747703777657">Didn't receive your code? <ph name="BEGIN_LINK" />Get a new code<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Created:</translation>
 <translation id="6698769547327354196">To turn off Pix in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Save your info and get things done faster, like filling forms across Google products. You can <ph name="MANAGE_INFO_LINK" /> in <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Time scrubber</translation>
 <translation id="6702851555558236418">Audio and music software</translation>
 <translation id="6702919718839027939">Present</translation>
@@ -4075,6 +4079,7 @@ Additional details:
 <translation id="746412105358554870">JavaScript optimisation and security</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> will know that you visited <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 in x 13 in</translation>
+<translation id="7467332121947433617">Update ID card?</translation>
 <translation id="7469935732330206581">Form is not secure</translation>
 <translation id="7470854469646445678">Provide reason for copying (required)</translation>
 <translation id="7471007961486718967">Provide reason for transferring (required)</translation>
@@ -4096,6 +4101,7 @@ Additional details:
 <translation id="7499188644237027195">When you make purchases in Chrome, see eWallet and Pix as options</translation>
 <translation id="7500917112031739411">Show by group</translation>
 <translation id="7501663406926337752">The site ahead is flagged by your organisation</translation>
+<translation id="7502044688973049724">manage your info</translation>
 <translation id="7507075214339298899">Envelope no.9</translation>
 <translation id="7508255263130623398">Returned policy device ID is empty or doesn't match current device ID</translation>
 <translation id="7508577201115425418">Document and Printing Services</translation>
@@ -5148,6 +5154,7 @@ Additional details:
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9192361865877479444">Metal (matte)</translation>
 <translation id="9192947025498305328">Clean beauty</translation>
+<translation id="9193018794001479794">Elaborate</translation>
 <translation id="9195969368671142407">When your organisation limits saving to your Google Account, you can’t share or join tab groups</translation>
 <translation id="9198613052465150219">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Printing is blocked</translation>

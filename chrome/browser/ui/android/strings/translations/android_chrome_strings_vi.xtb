@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Di chuyển dấu trang</translation>
 <translation id="1197761954713363183">Đã đóng trang xác nhận khoá truy cập</translation>
 <translation id="1197933394627598677">Hiện Chế độ đọc</translation>
+<translation id="1197935538609051549">Tắt</translation>
 <translation id="1201402288615127009">Tiếp theo</translation>
 <translation id="1202892408424955784">Các sản phẩm bạn theo dõi</translation>
 <translation id="1204037785786432551">Tải đường liên kết xuống</translation>
@@ -506,6 +507,7 @@ Chỉ những người có cụm mật khẩu mới đọc được dữ liệu 
 <translation id="3122883569442693641">Thông tin chi tiết khác</translation>
 <translation id="3123734510202723619">Thông báo</translation>
 <translation id="3134385238404760368">Không có thẻ nào gần đây</translation>
+<translation id="3135655388926735587">Nhấn vào Các thẻ gần đây</translation>
 <translation id="314939179385989105">Trang chủ của Chrome</translation>
 <translation id="3158667104057012316">Sắp xếp thủ công</translation>
 <translation id="3159335509547415276">Tìm hiểu về tài khoản bị chặn</translation>
@@ -850,6 +852,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mật khẩu bị lộ}other{# mật khẩu bị lộ}}</translation>
 <translation id="4641919525231168205">Chuyển tới trang tiếp theo</translation>
 <translation id="4642472735733036929">Tính năng theo dõi giá đã dừng hoạt động</translation>
+<translation id="4649493483932335039">Xem các thẻ gần đây</translation>
 <translation id="465657074423018424">Tính năng Duyệt web an toàn bảo vệ bạn khỏi các trang web lừa đảo. Nếu bạn tắt tính năng này, hãy cẩn thận hơn khi duyệt web, đặc biệt là trước khi nhập mật khẩu.</translation>
 <translation id="4662373422909645029">Biệt hiệu không được bao gồm số</translation>
 <translation id="4663756553811254707">Đã xóa <ph name="NUMBER_OF_BOOKMARKS" /> dấu trang</translation>
@@ -1562,6 +1565,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7363349185727752629">Hướng dẫn về các lựa chọn liên quan đến quyền riêng tư</translation>
 <translation id="7364103838544876661">Xem thêm lựa chọn xoá dữ liệu duyệt web</translation>
 <translation id="7365073365123878797">Để bắt đầu lưu và sử dụng mật khẩu bằng Trình quản lý mật khẩu của Google, hãy cập nhật dịch vụ Google Play</translation>
+<translation id="7368009310682364976">Xem các thẻ đã mở gần đây</translation>
 <translation id="7368927539449986686">Chỉnh sửa công cụ tìm kiếm trên trang web</translation>
 <translation id="7375125077091615385">Loại:</translation>
 <translation id="7376560087009844242">Bạn có thể thấy kết quả phù hợp hơn khi dùng tính năng Chạm để tìm kiếm bằng cách bao gồm thêm nhiều văn bản của trang. Bạn có thể truy cập phần <ph name="BEGIN_LINK" />cài đặt<ph name="END_LINK" /> để thay đổi lựa chọn này bất cứ lúc nào.</translation>
@@ -1679,6 +1683,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7824665136384946951">Tổ chức của bạn đã tắt tính năng Duyệt web an toàn</translation>
 <translation id="7826342993930002256">Chrome luôn bên bạn</translation>
 <translation id="7844171778363018843">Bạn chưa chọn dữ liệu nào để đồng bộ hóa</translation>
+<translation id="784453721355882533">Dùng thử Gemini trong Chrome để nhận câu trả lời, thông tin quan trọng và nhiều nội dung khác.</translation>
 <translation id="7846161022626028328">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="7846296061357476882">Các dịch vụ của Google</translation>
 <translation id="784652447248278262">Cửa sổ hiện tại</translation>
@@ -1688,6 +1693,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7853202427316060426">Hoạt động</translation>
 <translation id="7859988229622350291">Không bao giờ dịch</translation>
 <translation id="7866213166286285359">Nhấp vào đây để chọn dịch trang</translation>
+<translation id="7873610418439765081">Dùng thử Gemini trong Chrome để nhận câu trả lời, thông tin quan trọng và nhiều nội dung khác qua nút Lựa chọn khác.</translation>
 <translation id="7875915731392087153">Tạo email</translation>
 <translation id="7876243839304621966">Xóa tất cả</translation>
 <translation id="7886917304091689118">Đang chạy trong Chrome</translation>
@@ -1738,6 +1744,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8062594758852531064">Chế độ tải trước mở rộng:</translation>
 <translation id="8063895661287329888">Không thêm được dấu trang.</translation>
 <translation id="8066816452984416180">Nhanh chóng đánh dấu trang này. Để chỉnh sửa lối tắt này, hãy chạm và giữ lối tắt.</translation>
+<translation id="8072436850275034464">Bạn có thể mở lại các thẻ gần đây bạn đã đóng trên bất cứ thiết bị nào mà bạn có dùng Chrome</translation>
 <translation id="8073388330009372546">Mở ảnh trong thẻ mới</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8078096376109663956">Chỉ chia sẻ văn bản</translation>
@@ -1849,6 +1856,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8460008946585880786">Kéo và thả một thẻ lên một thẻ khác</translation>
 <translation id="8460448946170646641">Xem xét các chế độ kiểm soát quan trọng đối với quyền riêng tư và tính bảo mật</translation>
 <translation id="8460932807646981183">Quản lý các công cụ tìm kiếm và tính năng tìm kiếm trong trang web</translation>
+<translation id="8465252176946159372">Không hợp lệ</translation>
 <translation id="8473863474539038330">Địa chỉ và các lựa chọn khác</translation>
 <translation id="847433688444405067">Duyệt xem trên các thiết bị</translation>
 <translation id="8477178913400731244">Xoá dữ liệu</translation>

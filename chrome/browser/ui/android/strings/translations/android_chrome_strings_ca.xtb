@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Mou les adreces d'interès</translation>
 <translation id="1197761954713363183">S'ha tancat el full de confirmació de la clau d'accés</translation>
 <translation id="1197933394627598677">Mostra el mode de lectura</translation>
+<translation id="1197935538609051549">Desactiva</translation>
 <translation id="1201402288615127009">Següent</translation>
 <translation id="1202892408424955784">Productes que segueixes</translation>
 <translation id="1204037785786432551">Baixa l'enllaç</translation>
@@ -506,6 +507,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="3122883569442693641">Més detalls</translation>
 <translation id="3123734510202723619">Anuncis</translation>
 <translation id="3134385238404760368">No hi ha cap pestanya recent</translation>
+<translation id="3135655388926735587">Toca Pestanyes recents</translation>
 <translation id="314939179385989105">Pàgina d'inici de Chrome</translation>
 <translation id="3158667104057012316">S'ordena manualment</translation>
 <translation id="3159335509547415276">Informació sobre els comptes bloquejats</translation>
@@ -850,6 +852,7 @@ Només les persones que sàpiguen la teva frase de contrasenya podran llegir les
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasenya en perill}other{# contrasenyes en perill}}</translation>
 <translation id="4641919525231168205">Ves a la pàgina següent</translation>
 <translation id="4642472735733036929">S'ha aturat el seguiment dels preus</translation>
+<translation id="4649493483932335039">Mostra les pestanyes recents</translation>
 <translation id="465657074423018424">Navegació segura et protegeix de llocs web perillosos. Si la desactives, ves molt amb compte quan naveguis, especialment abans d'introduir contrasenyes.</translation>
 <translation id="4662373422909645029">L'àlies no pot incloure nombres</translation>
 <translation id="4663756553811254707">S'han suprimit <ph name="NUMBER_OF_BOOKMARKS" /> adreces d'interès</translation>
@@ -1562,6 +1565,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7363349185727752629">Guia de les teves opcions de privadesa</translation>
 <translation id="7364103838544876661">Més opcions per suprimir les dades de navegació</translation>
 <translation id="7365073365123878797">Per començar a desar i utilitzar contrasenyes amb el gestor de contrasenyes de Google, actualitza Serveis de Google Play</translation>
+<translation id="7368009310682364976">Mostra les pestanyes obertes recentment</translation>
 <translation id="7368927539449986686">Edita la cerca al lloc web</translation>
 <translation id="7375125077091615385">Tipus:</translation>
 <translation id="7376560087009844242">Si inclous més text d'una pàgina, pots obtenir millors resultats quan utilitzis Toca per cercar. Pots visitar la <ph name="BEGIN_LINK" />configuració<ph name="END_LINK" /> en qualsevol moment per canviar-ho.</translation>
@@ -1679,6 +1683,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7824665136384946951">La teva organització ha desactivat Navegació segura</translation>
 <translation id="7826342993930002256">El teu Chrome, siguis on siguis</translation>
 <translation id="7844171778363018843">No s'han seleccionat dades per sincronitzar</translation>
+<translation id="784453721355882533">Prova Gemini a Chrome per obtenir respostes, conclusions clau i més.</translation>
 <translation id="7846161022626028328">S'ha produït un error. Torna-ho a provar.</translation>
 <translation id="7846296061357476882">Serveis de Google</translation>
 <translation id="784652447248278262">Finestra actual</translation>
@@ -1688,6 +1693,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="7853202427316060426">Activitat</translation>
 <translation id="7859988229622350291">No tradueixis mai</translation>
 <translation id="7866213166286285359">Fes clic aquí per veure el botó Tradueix pàgines</translation>
+<translation id="7873610418439765081">Prova Gemini a Chrome per obtenir respostes, conclusions clau i més des del botó Més opcions.</translation>
 <translation id="7875915731392087153">Crea una adreça electrònica</translation>
 <translation id="7876243839304621966">Suprimeix-ho tot</translation>
 <translation id="7886917304091689118">S'està executant a Chrome</translation>
@@ -1738,6 +1744,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8062594758852531064">Precàrrega ampliada:</translation>
 <translation id="8063895661287329888">L'adreça d'interès no s'ha pogut afegir.</translation>
 <translation id="8066816452984416180">Afegeix ràpidament aquesta pàgina a les adreces d'interès. Per editar aquesta drecera, mantén-la premuda.</translation>
+<translation id="8072436850275034464">Pots tornar a obrir les pestanyes que has tancat recentment des de qualsevol lloc en què utilitzis Chrome</translation>
 <translation id="8073388330009372546">Obre en una pestanya nova</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
 <translation id="8078096376109663956">Comparteix només el text</translation>
@@ -1849,6 +1856,7 @@ Per canviar aquesta opció de configuració, <ph name="BEGIN_LINK" />suprimeix l
 <translation id="8460008946585880786">Arrossega i deixa anar una pestanya sobre una altra</translation>
 <translation id="8460448946170646641">Revisa els controls principals de privadesa i seguretat</translation>
 <translation id="8460932807646981183">Gestiona els motors de cerca i la cerca al lloc</translation>
+<translation id="8465252176946159372">No és vàlid</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="847433688444405067">Navega per tots els dispositius</translation>
 <translation id="8477178913400731244">Suprimeix les dades</translation>

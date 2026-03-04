@@ -29,6 +29,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="126567311906253476">Kada se prijavljujete u Google usluge kao što su Gmail ili YouTube pomoću naloga <ph name="USER_EMAIL" />, možete automatski da se prijavite u Chromium pomoću istog naloga</translation>
 <translation id="1290883685122687410">Greška pri podešavanju: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Podesite nov Chromium profil</translation>
+<translation id="132092532143527429">Isprobajte sa Gemini-jem u Chromium-u</translation>
 <translation id="1324107359134968521">Chromium zahteva pristup Bluetooth-u da bi istraživao 
  Bluetooth uređaje. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Otkriveni jezik</translation>
@@ -611,6 +612,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="7622753900276619808">Sada imate još funkcija dostupnih u Chromium-u</translation>
 <translation id="7624307931717240213">Informacije koristimo da bismo poboljšali ovu uslugu. Pogledajte politiku privatnosti i uslove korišćenja usluge.</translation>
 <translation id="7649070708921625228">Pomoć</translation>
+<translation id="7650134251917003571">Preuzmi aplikaciju Chromium</translation>
 <translation id="7656340475565475526">Dozvolite da Chromium pregleda za vas</translation>
 <translation id="7658239707568436148">Otkaži</translation>
 <translation id="7686590090926151193">Chromium nije podrazumevani pregledač</translation>

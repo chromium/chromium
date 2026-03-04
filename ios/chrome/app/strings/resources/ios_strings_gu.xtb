@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{તમારા એકાઉન્ટ, {email}માં "{title}"માં બુકમાર્ક સાચવવામાં આવ્યું}one{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યું}other{તમારા એકાઉન્ટ, {email}માં "{title}"માં {count} બુકમાર્ક સાચવવામાં આવ્યા}}</translation>
 <translation id="1207493287814084192">સાંજે 5:30 વાગ્યે</translation>
 <translation id="1217294226280635614">વિભાજિત વ્યૂ</translation>
+<translation id="1218730690561976633">વપરાશકર્તાની વધુ સારી બનાવેલી ઑટોમૅટિક રીતે ભરવાની સુવિધાની ચકાસણી ટૉગલ કરો</translation>
 <translation id="1219674500290482172">ઇન્ટરનેટથી કનેક્ટ કરવામાં અક્ષમ.</translation>
 <translation id="1223498995510244364">સારાંશ આપો</translation>
 <translation id="1227113644794103810">નિષ્ક્રિય ટૅબ</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">શેરિંગ નિષ્ફળ થઇ કારણ કે તમે નેટવર્ક સાથે જોડાયેલ નથી.</translation>
 <translation id="1668001730617725852">નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />થી<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">તમારી સંસ્થાની પૉલિસીઓના આધારે, આ ફાઇલમાં સંવેદનશીલ માહિતી હોઈ શકે છે</translation>
 <translation id="168389590065701766">હવે તમે તમારા ઍડ્રેસ બારમાંથી Google Lens ખોલી શકો છો અને તમને જે કંઈ પણ દેખાય છે તેને શોધી શકો છો</translation>
 <translation id="1689333818294560261">ઉપનામ</translation>
 <translation id="169048873465870056">શું ટૅબ કાઢી નાખીને ગ્રૂપ ડિલીટ કરીએ?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">તમે તમારા અન્ય ડિવાઇસ પર પણ સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="3177338796769255211">તમારા બધા ડિવાઇસ પર બુકમાર્ક અને બીજું ઘણું મેળવવા માટે, સાઇન ઇન કરો</translation>
 <translation id="3181954750937456830">Safe Browsing (તમારું અને તમારા ડિવાઇસનું જોખમી સાઇટથી રક્ષણ કરે છે)</translation>
+<translation id="3183362380688692618">ટૅબનું નવું ગ્રૂપ...</translation>
 <translation id="3186796054637504691">ઇતિહાસ અને વેબસાઇટનો ડેટા સાફ કરો</translation>
 <translation id="3190736958609431397">ટ્રૅક કરવાનું બંધ કરો</translation>
 <translation id="3208260410153224535">તમારી સંસ્થાએ સાઇન ઇન કરવાનું બંધ કર્યું છે. નવા બુકમાર્ક, પાસવર્ડ વગેરે માત્ર આ ડિવાઇસમાં સાચવવામાં આવશે.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{count}માંથી {position} નંબરની ચુકવણી પદ્ધતિ}one{{count}માંથી {position} નંબરની ચુકવણી પદ્ધતિ}other{{count}માંથી {position} નંબરની ચુકવણી પદ્ધતિ}}</translation>
 <translation id="5075939510584558547">એન્ક્રિપ્શન વિના સાચવો</translation>
 <translation id="5076534614343816664">કિંમતને ટ્રૅક કરવી</translation>
+<translation id="507762438756999615">તમારી સંસ્થાની પૉલિસીઓને કારણે ફાઇલ શેર કરી શકાતી નથી</translation>
 <translation id="5078303485429639424"><ph name="FEATURE_NAME" /> માટે નોટિફિકેશન ચાલુ કરો</translation>
 <translation id="5079950360618752063">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="5083464117946352670">ફાઇલ કદ નિર્ધારિત કરી શકાતું નથી.</translation>
@@ -1969,6 +1973,7 @@
 <translation id="8059533439631660104">વિભાગને સંકુચિત કરે છે.</translation>
 <translation id="8061584726507121204">ઇતિહાસ</translation>
 <translation id="8064946459644399612">તમારા નવા ટૅબ પેજની પસંદગીઓ લાગુ કરી</translation>
+<translation id="8065136076319366194">સાચવવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="8065556469005366939">તમારા ટૅબ શેર કરીને વધુ સંબંધિત જવાબો મેળવો</translation>
 <translation id="8069394452933076548">તાજેતરમાં જે ટૅબનો ઉપયોગ કરવામાં આવ્યો ન હોય, તેમને નિષ્ક્રિય ટૅબના વિભાગમાં ક્યારે ખસેડવામાં આવે તે પસંદ કરો.</translation>
 <translation id="8073670137947914548">ડાઉનલોડ સમાપ્ત</translation>
@@ -1991,6 +1996,7 @@
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8132598642024322408">હવે <ph name="PRICE" /> છે, પહેલાં <ph name="PREVIOUS_PRICE" /> હતી.</translation>
 <translation id="813370552429173916">દરેક સાઇટ અથવા ઍપ પર વિશિષ્ટ પાસવર્ડનો ઉપયોગ કરો. જો કોઈને ફરીથી ઉપયોગમાં લેવાયેલો પાસવર્ડ મળે, તો તે પાસવર્ડ તમારા અન્ય એકાઉન્ટને ઍક્સેસ કરવામાં ઉપયોગમાં લેવામાં આવી શકે છે. વેબસાઇટ ખોલવા ક્લિક કરો અને હમણાં જ પાસવર્ડ બદલો.</translation>
+<translation id="8133810265969517544">શેર કરવાનો સુઝાવ આપવામાં આવતો નથી</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} બંધ ટૅબ}one{{count} બંધ ટૅબ}other{{count} બંધ ટૅબ}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{અન્ય 1}one{અન્ય #}other{અન્ય #}}</translation>
 <translation id="8150167929304790980">પૂરું નામ</translation>
@@ -2240,6 +2246,7 @@
 <translation id="8976414606286374109">કાર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે છે.</translation>
 <translation id="8981454092730389528">Google પ્રવૃત્તિ નિયંત્રણો</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, પિન કરેલી સાઇટ</translation>
+<translation id="8990960056509724223">તમારી સંસ્થાની પૉલિસીઓને કારણે ફાઇલ સાચવી શકાઈ નથી</translation>
 <translation id="8998289560386111590">તમારા ડિવાઇસ પર ઉપલબ્ધ નથી</translation>
 <translation id="9000532564152265066">તમામ ટૅબ</translation>
 <translation id="9003677638446136377">ફરી તપાસો</translation>

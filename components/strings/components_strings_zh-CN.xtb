@@ -1611,6 +1611,7 @@
 <translation id="3575121482199441727">允许此网站显示通知</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">已选择“街道名称”选项</translation>
+<translation id="3576315803647905285">使用正式语气</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> 上的嵌入式页面显示</translation>
 <translation id="3577473026931028326">出了点问题。请重试。</translation>
 <translation id="3577902790357386792">体操</translation>
@@ -2680,6 +2681,7 @@
 <translation id="5266128565379329178">装订（顶部）</translation>
 <translation id="5269225904387178860">四孔（底部）</translation>
 <translation id="5271381225185906340">“<ph name="DATA_CONTROLS_ATTRIBUTE" />”不是“<ph name="DATA_CONTROLS_RESTRICTION" />”支持的条件</translation>
+<translation id="527191520368130807">波兰语</translation>
 <translation id="5273658854610202413">警告：系统未按照 PolicyDictionaryMultipleSourceMergeList 政策中指定的方式合并此政策，因为此政策不是可合并的字典政策的一部分。</translation>
 <translation id="5278778426231952189">立即上传</translation>
 <translation id="5279286380302340275">管理下载内容</translation>
@@ -3579,6 +3581,7 @@
 <translation id="6698097747703777657">没收到验证码？<ph name="BEGIN_LINK" />获取新验证码<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">创建时间：</translation>
 <translation id="6698769547327354196">如需在 Chrome 中关闭 Pix，请前往<ph name="BEGIN_LINK1" />支付设置<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">保存信息可以提升效率，例如在不同 Google 产品中快速填写表单。您可以在 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />中<ph name="MANAGE_INFO_LINK" />。</translation>
 <translation id="67007264085648978">时间滑块</translation>
 <translation id="6702851555558236418">音频与音乐软件</translation>
 <translation id="6702919718839027939">演示</translation>
@@ -4091,6 +4094,7 @@
 <translation id="7499188644237027195">当您在 Chrome 中购物时，可看到电子钱包和 Pix 选项</translation>
 <translation id="7500917112031739411">分组显示</translation>
 <translation id="7501663406926337752">您要访问的网站已被贵组织标记</translation>
+<translation id="7502044688973049724">管理您的信息</translation>
 <translation id="7507075214339298899">#9 信封</translation>
 <translation id="7508255263130623398">返回的政策设备 ID 为空，或与当前的设备 ID 不一致</translation>
 <translation id="7508577201115425418">文件与印刷服务</translation>
@@ -5143,6 +5147,7 @@
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9192361865877479444">金属（哑光）</translation>
 <translation id="9192947025498305328">洁净美容</translation>
+<translation id="9193018794001479794">详述</translation>
 <translation id="9195969368671142407">如果您所在的组织限制您将内容保存到 Google 账号，您将无法分享或加入标签页分组</translation>
 <translation id="9198613052465150219">您的 Google 账号在 <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> 上可能有其他形式的浏览记录</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>

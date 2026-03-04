@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केला आहे}other{{count} बुकमार्क तुमच्या {email} या खात्यामध्ये "{title}" मध्ये सेव्ह केले आहेत}}</translation>
 <translation id="1207493287814084192">संध्याकाळी ५:३० वाजता</translation>
 <translation id="1217294226280635614">विभाजित दृश्य</translation>
+<translation id="1218730690561976633">वर्धित ऑटोफिल वापरकर्ता पडताळणी टॉगल करा</translation>
 <translation id="1219674500290482172">इंटरनेटशी कनेक्ट करण्यात अक्षम.</translation>
 <translation id="1223498995510244364">सारांश द्या</translation>
 <translation id="1227113644794103810">इनॅक्टिव्ह टॅब</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">सामायिकरण अयशस्वी झाले कारण तुम्ही नेटवर्कशी कनेक्ट केलेले नाही.</translation>
 <translation id="1668001730617725852">नवीन टॅब गटामध्ये उघडा</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> ते <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">तुमच्या संस्थेच्या धोरणांनुसार, या फाइलमध्ये संवेदनशील माहिती असू शकते</translation>
 <translation id="168389590065701766">तुम्ही आता तुमच्या अ‍ॅड्रेस बारमधून Google Lens उघडू शकता आणि तुम्हाला दिसणारी कोणतीही गोष्ट शोधू शकता</translation>
 <translation id="1689333818294560261">टोपणनाव</translation>
 <translation id="169048873465870056">टॅब काढून टाकून गट हटवायचा आहे का?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">तुम्ही तुमच्या इतर डिव्हाइसवर सेव्ह केलेले पासवर्डदेखील वापरू शकता.</translation>
 <translation id="3177338796769255211">तुमच्या सर्व डिव्हाइसवर तुमचे बुकमार्क आणि आणखी बरेच काही मिळवण्यासाठी साइन इन करा</translation>
 <translation id="3181954750937456830">सुरक्षित ब्राउझिंग (तुम्हाला आणि तुमच्या डिव्हाइसना धोकादायक साइटपासून सुरक्षित ठेवते)</translation>
+<translation id="3183362380688692618">नवीन टॅब गट...</translation>
 <translation id="3186796054637504691">इतिहास आणि वेबसाइट डेटा साफ करा</translation>
 <translation id="3190736958609431397">माग ठेवणे रद्द करा</translation>
 <translation id="3208260410153224535">तुमच्या संस्थेने साइन इन करणे बंद केले आहे. नवीन बुकमार्क, पासवर्ड आणि आणखी बऱ्याच गोष्टी फक्त या डिव्हाइसवर सेव्ह केल्या जातील.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{count} पैकी {position} क्रमांकाची पेमेंट पद्धत}other{{count} पैकी {position} क्रमांकाची पेमेंट पद्धत}}</translation>
 <translation id="5075939510584558547">एन्क्रिप्शनशिवाय सेव्ह करा</translation>
 <translation id="5076534614343816664">किमतीचा माग ठेवणे</translation>
+<translation id="507762438756999615">तुमच्या संस्थेच्या धोरणांमुळे फाइल शेअर केली जाऊ शकत नाही</translation>
 <translation id="5078303485429639424"><ph name="FEATURE_NAME" /> साठी नोटिफिकेशन सुरू करा</translation>
 <translation id="5079950360618752063">सुचवलेला पासवर्ड वापरा</translation>
 <translation id="5083464117946352670">फाईल आकार निर्धारित करू शकत नाही.</translation>
@@ -1970,6 +1974,7 @@
 <translation id="8059533439631660104">विभाग संकुचित करा.</translation>
 <translation id="8061584726507121204">इतिहास</translation>
 <translation id="8064946459644399612">तुमची नवीन टॅब पेजसंबंधित प्राधान्ये लागू केली आहेत</translation>
+<translation id="8065136076319366194">सेव्ह करण्याची शिफारस केली जात नाही</translation>
 <translation id="8065556469005366939">तुमचे टॅब शेअर करून आणखी सुसंबद्ध उत्तरे मिळवा</translation>
 <translation id="8069394452933076548">अलीकडे वापरलेले टॅब इनॅक्टिव्ह टॅब विभागात कधी हलवले जातील ते निवडा.</translation>
 <translation id="8073670137947914548">डाउनलोड पूर्ण झाले</translation>
@@ -1992,6 +1997,7 @@
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8132598642024322408">आता <ph name="PRICE" /> आहे, आधी <ph name="PREVIOUS_PRICE" /> होती.</translation>
 <translation id="813370552429173916">प्रत्येक साइट किंवा अ‍ॅपसाठी युनिक पासवर्ड वापरा. एखाद्या व्यक्तीला पुन्हा वापरलेला पासवर्ड आढळल्यास, तो तुमची इतर खाती अ‍ॅक्सेस करण्यासाठी वापरला जाऊ शकतो. वेबसाइट उघडून ते आता बदलण्यासाठी क्लिक करा.</translation>
+<translation id="8133810265969517544">शेअर करण्याची शिफारस केलेली नाही</translation>
 <translation id="8135556271852808840">{count,plural, =1{बंद केलेला {count} टॅब}other{बंद केलेले {count} टॅब}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{आणखी १}other{आणखी #}}</translation>
 <translation id="8150167929304790980">पूर्ण नाव</translation>
@@ -2241,6 +2247,7 @@
 <translation id="8976414606286374109">कार्ड तुमच्या Google खाते मध्ये सेव्ह केली जातात.</translation>
 <translation id="8981454092730389528">Google ॲक्टिव्हिटी नियंत्रणे</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, पिन केलेली साइट</translation>
+<translation id="8990960056509724223">तुमच्या संस्थेच्या धोरणांमुळे फाइल सेव्ह करता आली नाही</translation>
 <translation id="8998289560386111590">तुमच्या डिव्हाइसवर उपलब्ध नाही</translation>
 <translation id="9000532564152265066">सर्व टॅब</translation>
 <translation id="9003677638446136377">पुन्हा तपासा</translation>

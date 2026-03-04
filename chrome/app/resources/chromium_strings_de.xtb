@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Wenn du dich mit <ph name="USER_EMAIL" /> in Google-Diensten wie Gmail oder YouTube anmeldest, kannst du dich mit demselben Konto automatisch in Chromium anmelden</translation>
 <translation id="1290883685122687410">Einrichtungsfehler: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Neues Chromium-Profil erstellen</translation>
+<translation id="132092532143527429">Mit Gemini in Chromium ausprobieren</translation>
 <translation id="1324107359134968521">Chromium benötigt Bluetooth-Zugriff, um Bluetooth-Geräte zu suchen. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Sprache erkennen</translation>
 <translation id="1330742950061766891">Empfohlene Browsereinstellungen von Chromium verwenden</translation>
@@ -608,6 +609,7 @@ Chromium kann deine Einstellungen nicht wiederherstellen.</translation>
 <translation id="7622753900276619808">Du hast jetzt Zugriff auf weitere Funktionen in Chromium</translation>
 <translation id="7624307931717240213">Wir verwenden Informationen, um diesen Dienst zu verbessern. Weitere Informationen findest du in der Datenschutzerklärung und den Nutzungsbedingungen.</translation>
 <translation id="7649070708921625228">Hilfe</translation>
+<translation id="7650134251917003571">Chromium App herunterladen</translation>
 <translation id="7656340475565475526">Chromium für dich suchen lassen</translation>
 <translation id="7658239707568436148">Abbrechen</translation>
 <translation id="7686590090926151193">Chromium ist nicht als dein Standardbrowser festgelegt</translation>

@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Premjesti oznake</translation>
 <translation id="1197761954713363183">Tabela za potvrdu pristupnog ključa je zatvorena</translation>
 <translation id="1197933394627598677">Prikaži način rada za čitanje</translation>
+<translation id="1197935538609051549">Deaktiviraj</translation>
 <translation id="1201402288615127009">Naprijed</translation>
 <translation id="1202892408424955784">Praćeni proizvodi</translation>
 <translation id="1204037785786432551">Link za preuzimanje</translation>
@@ -506,6 +507,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="3122883569442693641">Više detalja</translation>
 <translation id="3123734510202723619">Najave</translation>
 <translation id="3134385238404760368">Nema nedavnih kartica</translation>
+<translation id="3135655388926735587">Dodirnite Nedavne kartice</translation>
 <translation id="314939179385989105">Početna stranica Chromea</translation>
 <translation id="3158667104057012316">Sortiranje ručnim redoslijedom</translation>
 <translation id="3159335509547415276">Saznajte više o blokiranim računima</translation>
@@ -850,6 +852,7 @@ Vaš Google račun može imati druge oblike historije pregledanja kao što su pr
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ugrožena lozinka}one{# ugrožena lozinka}few{# ugrožene lozinke}other{# ugroženih lozinki}}</translation>
 <translation id="4641919525231168205">Odlazak na sljedeću stranicu</translation>
 <translation id="4642472735733036929">Praćenje cijene se zaustavilo</translation>
+<translation id="4649493483932335039">Prikaži nedavne kartice</translation>
 <translation id="465657074423018424">Sigurno pregledanje vas štiti od obmanjujućih web lokacija. Ako ga isključite, budite posebno oprezni prilikom pregledanja, naročito prije unošenja lozinki.</translation>
 <translation id="4662373422909645029">Nadimak ne može imati brojeve</translation>
 <translation id="4663756553811254707">Broj izbrisanih oznaka: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1562,6 +1565,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7363349185727752629">Vodič za vaše odabire u vezi s privatnošću</translation>
 <translation id="7364103838544876661">Više opcija za brisanje podataka pregledanja</translation>
 <translation id="7365073365123878797">Da počnete pohranjivati i koristiti lozinke uz Google upravitelja lozinki, ažurirajte Google Play usluge</translation>
+<translation id="7368009310682364976">Pregledajte nedavno otvorene kartice</translation>
 <translation id="7368927539449986686">Uredite pretraživanja web lokacije</translation>
 <translation id="7375125077091615385">Vrsta:</translation>
 <translation id="7376560087009844242">Ako obuhvatite više teksta stranice, možda ćete dobiti bolje rezultate prilikom korištenja Pretraživanja dodirom. Uvijek možete posjetiti <ph name="BEGIN_LINK" />postavke<ph name="END_LINK" /> da to promijenite.</translation>
@@ -1679,6 +1683,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7824665136384946951">Vaša organizacija je isključila Sigurno pregledanje</translation>
 <translation id="7826342993930002256">Vaš Chrome svugdje</translation>
 <translation id="7844171778363018843">Nije odabrana nijedna vrsta podataka za sinhroniziranje</translation>
+<translation id="784453721355882533">Isprobajte Gemini u Chromeu da dobijate odgovore, ključne informacije i drugo.</translation>
 <translation id="7846161022626028328">Došlo je do greške. Pokušajte ponovo.</translation>
 <translation id="7846296061357476882">Googleove usluge</translation>
 <translation id="784652447248278262">Trenutni prozor</translation>
@@ -1688,6 +1693,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="7853202427316060426">Aktivnost</translation>
 <translation id="7859988229622350291">Nikad ne prevodi</translation>
 <translation id="7866213166286285359">Prevedite stranice ovdje</translation>
+<translation id="7873610418439765081">Isprobajte Gemini u Chromeu da dobijate odgovore, ključne informacije i drugo putem dugmeta Više opcija.</translation>
 <translation id="7875915731392087153">Kreirajte adresu e-pošte</translation>
 <translation id="7876243839304621966">Ukloni sve</translation>
 <translation id="7886917304091689118">Pokrenuto je u Chromeu</translation>
@@ -1738,6 +1744,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8062594758852531064">Prošireno predučitavanje:</translation>
 <translation id="8063895661287329888">Dodavanje oznake nije uspjelo.</translation>
 <translation id="8066816452984416180">Brzo označite stranicu. Dodirnite i zadržite da uredite ovu prečicu.</translation>
+<translation id="8072436850275034464">Možete ponovo otvoriti kartice koje ste nedavno zatvorili s bilo kojeg uređaja na kojem koristite Chrome</translation>
 <translation id="8073388330009372546">Otvori sliku u novoj kartici</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8078096376109663956">Dijeli samo tekst</translation>
@@ -1849,6 +1856,7 @@ Da promijenite ovu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chromea 
 <translation id="8460008946585880786">Prevucite i ispustite jednu karticu preko druge</translation>
 <translation id="8460448946170646641">Pregledajte ključne kontrole privatnosti i sigurnosti</translation>
 <translation id="8460932807646981183">Upravljajte pretraživačima i pretraživanjem web lokacija</translation>
+<translation id="8465252176946159372">Nije važeće</translation>
 <translation id="8473863474539038330">Adrese i još mnogo toga</translation>
 <translation id="847433688444405067">Pregledajte na uređajima</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

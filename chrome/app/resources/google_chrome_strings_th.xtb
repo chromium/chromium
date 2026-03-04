@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">หากบันทึกบุ๊กมาร์กไว้ในบัญชี Google ด้วย คุณจะติดตามราคาผลิตภัณฑ์ใน Chrome และรับการแจ้งเตือนเมื่อราคาต่ำลงได้</translation>
 <translation id="3242123554343253302">เพิ่มโปรไฟล์ Chrome</translation>
 <translation id="3245429137663807393">หากคุณแชร์รายงานการใช้งาน Chrome ด้วย รายงานดังกล่าวจะรวม URL ที่คุณเข้าชม</translation>
+<translation id="3259748324892322072">ดาวน์โหลดแอป Chrome</translation>
 <translation id="3286538390144397061">รีสตาร์ทเดี๋ยวนี้</translation>
 <translation id="3292333338048274092">จากนั้นคุณต้องรีสตาร์ท Chrome</translation>
 <translation id="3324218984287646518">ถาม Google Lens เกี่ยวกับวิดีโอนี้</translation>
@@ -279,7 +280,6 @@
 <translation id="3892148308691398805">คัดลอกข้อความ</translation>
 <translation id="3893985792899396936">เคล็ดลับสำหรับ Chrome: ค้นหาด้วย Lens</translation>
 <translation id="3906096710440765802">ลงชื่อเข้าใช้ Chrome เพื่อรับรหัสผ่าน บุ๊กมาร์ก และข้อมูลอื่นๆ ในอุปกรณ์ทุกเครื่องของคุณ</translation>
-<translation id="3921132130819999051">ให้ Chrome ท่องเว็บแทนคุณ</translation>
 <translation id="3941890832296813527">ข้อผิดพลาดในการติดตั้ง: ชื่อไฟล์ของโปรแกรมติดตั้งไม่ถูกต้องหรือระบบไม่รองรับ</translation>
 <translation id="395904275706073188">อ่านหน้าเว็บที่มีการป้องกันไม่ได้ โปรดลองใช้หน้าอื่น</translation>
 <translation id="3968962723676998462">ป้อนรหัสผ่านเพื่อใช้และบันทึกข้อมูล Chrome ในบัญชี <ph name="ACCOUNT_EMAIL" /></translation>
@@ -490,7 +490,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome เบต้า</translation>
 <translation id="6180522807229584611">แท็บนี้ใช้ทรัพยากรมากเป็นพิเศษ ให้ Chrome ช่วยปิดใช้งานแท็บเหล่านี้เพื่อปรับปรุงประสิทธิภาพ</translation>
 <translation id="6182736845697986886">การติดตั้งไม่สำเร็จเนื่องจากเกิดข้อผิดพลาดภายในเซิร์ฟเวอร์การอัปเดต</translation>
-<translation id="6183773856988300112">Gemini ใน Chrome ใช้การท่องเว็บอัตโนมัติเพื่อทำงานในแท็บและดำเนินงานที่คุณมอบหมายให้เสร็จสมบูรณ์ <ph name="LINK_BEGIN" />ดูข้อมูลเพิ่มเติม<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">เคล็ดลับสำหรับ Chrome: บันทึกรหัสผ่าน</translation>
 <translation id="6192058120268468905">บัญชีของคุณใน Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ได้เพิ่มส่วนขยายที่อาจเปลี่ยนวิธีการทำงานของ Chrome

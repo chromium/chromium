@@ -1610,6 +1610,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3575121482199441727">Eman webgune honen jakinarazpenak ikusteko baimena</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Kalearen aukera hautatu da</translation>
+<translation id="3576315803647905285">Bihurtu formalago</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> webguneko orri kapsulatu batek hau dio:</translation>
 <translation id="3577473026931028326">Arazoren bat izan da. Saiatu berriro.</translation>
 <translation id="3577902790357386792">Gimnastika</translation>
@@ -2680,6 +2681,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5266128565379329178">Koadernatu goitik</translation>
 <translation id="5269225904387178860">Lau zulo behean</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" baldintza ez da onartzen "<ph name="DATA_CONTROLS_RESTRICTION" />" murriztapenean</translation>
+<translation id="527191520368130807">Hobetu</translation>
 <translation id="5273658854610202413">Abisua: gidalerro hau ez da bateratu PolicyDictionaryMultipleSourceMergeList gidalerroan zehaztu bezala, ez delako sartzen batera daitezkeen hiztegi-gidalerroetan.</translation>
 <translation id="5278778426231952189">Kargatu</translation>
 <translation id="5279286380302340275">Kudeatu deskargak</translation>
@@ -3579,6 +3581,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="6698097747703777657">Ez duzu jaso kodea? <ph name="BEGIN_LINK" />Lortu beste kode bat<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Sortze-data:</translation>
 <translation id="6698769547327354196">Chrome-n Pix desaktibatzeko, joan <ph name="BEGIN_LINK1" />ordainketa-ezarpenetara<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Gorde informazioa gauzak bizkorrago egiteko, hala nola Google-ren produktuetan inprimakiak betetzeko. <ph name="ACCOUNT" /> kontuari buruzko <ph name="MANAGE_INFO_LINK" />, joan <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> zerbitzura.</translation>
 <translation id="67007264085648978">Denboraren garapen-adierazlea</translation>
 <translation id="6702851555558236418">Audio- eta musika-softwarea</translation>
 <translation id="6702919718839027939">Aurkeztu</translation>
@@ -4090,6 +4093,7 @@ Xehetasun gehiago:
 <translation id="7499188644237027195">Chrome-n erosketak egitean, izan diru-zorro digitala eta Pix kontuan</translation>
 <translation id="7500917112031739411">Erakutsi taldearen arabera</translation>
 <translation id="7501663406926337752">Zure erakundeak webgune hori salatu du</translation>
+<translation id="7502044688973049724">informazioa kudeatzeko</translation>
 <translation id="7507075214339298899">Gutun-azala 9</translation>
 <translation id="7508255263130623398">Itzuli den gidalerroaren gailu-identifikatzailea hutsik dago edo ez dator bat gailu-identifikatzailearekin</translation>
 <translation id="7508577201115425418">Dokumentuak eta inprimaketa-zerbitzuak</translation>
@@ -5141,6 +5145,7 @@ Xehetasun gehiago:
 <translation id="9191834167571392248">Zulo bat behean, ezkerretara</translation>
 <translation id="9192361865877479444">Metala (matea)</translation>
 <translation id="9192947025498305328">Moda garbia</translation>
+<translation id="9193018794001479794">Zehaztu</translation>
 <translation id="9195969368671142407">Erakundeak Google-ko kontuan gordetzeko aukera mugatzen dizunean, ezin dituzu partekatu fitxa taldeak, ezta haietan sartu ere</translation>
 <translation id="9198613052465150219">Google-ko kontuko historia arakatzeko beste modu batzuk aurkitu nahi izanez gero, joan <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> helbidera</translation>
 <translation id="9199905725844810519">Inprimatzeko aukera blokeatuta dago</translation>

@@ -29,6 +29,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="126567311906253476">Lorsque vous vous connectez à des services Google comme Gmail ou YouTube avec <ph name="USER_EMAIL" />, vous pouvez vous connecter automatiquement à Chromium avec le même compte</translation>
 <translation id="1290883685122687410">Erreur de configuration : <ph name="METAINSTALLER_EXIT_CODE" /> <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configurer votre nouveau profil Chromium</translation>
+<translation id="132092532143527429">Essayer avec Gemini dans Chromium</translation>
 <translation id="1324107359134968521">Chromium a besoin d'un accès au Bluetooth pour découvrir les appareils Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Détecter la langue</translation>
 <translation id="1330742950061766891">Utiliser les paramètres du navigateur recommandés de Chromium</translation>
@@ -610,6 +611,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7622753900276619808">Vous avez maintenant accès à davantage de fonctionnalités dans Chromium</translation>
 <translation id="7624307931717240213">Nous utilisons les renseignements pour améliorer ce service. Consultez la politique de confidentialité et les conditions d'utilisation.</translation>
 <translation id="7649070708921625228">Aide</translation>
+<translation id="7650134251917003571">Obtenir l'appli Chromium</translation>
 <translation id="7656340475565475526">Laisser Chromium naviguer pour vous</translation>
 <translation id="7658239707568436148">Annuler</translation>
 <translation id="7686590090926151193">Chromium n'est pas votre navigateur par défaut</translation>

@@ -27,6 +27,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ile Gmail veya YouTube gibi Google hizmetlerinde oturum açarken aynı hesapla Chromium'da otomatik olarak oturum açabilirsiniz</translation>
 <translation id="1290883685122687410">Kurulum hatası: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Yeni Chromium profilinizi oluşturun</translation>
+<translation id="132092532143527429">Chromium'da Gemini ile deneyin</translation>
 <translation id="1324107359134968521">Chromium'un Bluetooth cihazları keşfedebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Dili algıla</translation>
 <translation id="1330742950061766891">Chromium'un önerdiği tarayıcı ayarlarını kullanın</translation>
@@ -606,6 +607,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7622753900276619808">Artık Chromium'da daha fazla özellik kullanabilirsiniz</translation>
 <translation id="7624307931717240213">Bilgileri bu hizmeti geliştirmek için kullanırız. Gizlilik Politikası ve Hizmet Şartları'na göz atın.</translation>
 <translation id="7649070708921625228">Yardım</translation>
+<translation id="7650134251917003571">Chromium uygulamasını indirin</translation>
 <translation id="7656340475565475526">Chromium'un sizin için göz atmasına izin verin</translation>
 <translation id="7658239707568436148">İptal</translation>
 <translation id="7686590090926151193">Chromium varsayılan tarayıcınız değil</translation>

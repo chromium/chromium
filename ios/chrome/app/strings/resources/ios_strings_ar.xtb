@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">يمكنك الوصول في التطبيقات الأخرى إلى كلمات المرور.</translation>
 <translation id="3485558910355485767">نافذة جديدة للتصفُّح المتخفي</translation>
 <translation id="3488501490964659223">تم إغلاق علامات التبويب وحذف بيانات التصفُّح وتسجيل خروجك</translation>
+<translation id="3490396108106323715">مشاركة علامة التبويب الحالية</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /> حول المحتوى المقترح</translation>
 <translation id="349446645805573740">يُرجى اختيار مكان لحفظ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">الإعدادات</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">تعذَّر تحميل الصور</translation>
 <translation id="3565930036634619844">علامة التبويب رقم <ph name="TAB_INDEX" /> من <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3567168891086460374">الحفظ بطريقة أخرى</translation>
+<translation id="3572503683475187385">‏ستتم مشاركة علامة التبويب الحالية مع Gemini عند بدء محادثة جديدة، وإرسال محتواها وعنوان URL إلى Google. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏في حسابك على Google</translation>
 <translation id="3575234738189584619">‏البحث باستخدام "عدسة Google"</translation>
 <translation id="3575426792457739946">تحتوي هذه القائمة على جميع الملفات الشخصية التي تم تحميلها.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">‏إيقاف البحث عن محتوى شاشتك باستخدام "عدسة Google"</translation>
 <translation id="3753408171347588045">يتم حاليًا تتبُّع الأسعار</translation>
 <translation id="3753618528540214374">مظهر باللون الأخضر الزبرجدي</translation>
+<translation id="3759491607478608474">‏يمكنك مشاركة محتوى علامة التبويب الحالية مع Gemini لتلقّي ردود أكثر صلة بطلبك</translation>
 <translation id="3762232513783804601">‏المتصفِّح مصمَّم خصيصًا لأجهزة iPad</translation>
 <translation id="3768725474733206671">إعادة فتح آخر علامة تبويب تم إغلاقها</translation>
 <translation id="3779810277399252432">لا يتوفر اتصال بالإنترنت.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">المتابعة بحساب "<ph name="FIRST_RUN_ACCOUNT_NAME" />"</translation>
 <translation id="4651927776207937667">{count,plural, =1{إخفاء علامات التبويب بعد دقيقة واحدة}zero{إخفاء علامات التبويب بعد {count} دقيقة}two{إخفاء علامات التبويب بعد دقيقتَين ({count})}few{إخفاء علامات التبويب بعد {count} دقائق}many{إخفاء علامات التبويب بعد {count} دقيقة}other{إخفاء علامات التبويب بعد {count} دقيقة}}</translation>
 <translation id="4652817563047461855">ستساعدك هذه الميزة في  التأكّد من أنّ كلمات مرورك آمنة وما إذا تم اختراقها، وستزوّدك بنصائح لحماية نفسك على الإنترنت. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">تفعيل ميزة مشاركة محتوى الصفحة</translation>
 <translation id="4658335131052370646">حفظ</translation>
 <translation id="466307903888586355">حظرت مؤسستك حفظ الملفات</translation>
 <translation id="4668929960204016307">،</translation>
@@ -1295,6 +1299,7 @@
 <translation id="5718049162805123412">يجب تغيير كلمات المرور هذه الآن</translation>
 <translation id="5721040778297053709">يُرجى وضع بطاقة الائتمان في هذا الإطار</translation>
 <translation id="572328651809341494">علامات التبويب الأخيرة</translation>
+<translation id="5724590854763964497">‏تتم تلقائيًا مشاركة علامة التبويب الحالية عند بدء محادثة جديدة، وإرسال محتواها وعناوين URL إلى Google، ولكنّها لن تُستخدَم لتحسين نماذج الذكاء الاصطناعي التوليدي. ويمكنك تغيير هذه الإعدادات متى شئت.</translation>
 <translation id="5724941645893276623">لتصفّح الويب بخصوصية تامّة، يمكنك إضافة علامة تبويب جديدة.</translation>
 <translation id="5728072125198221967">‏خدمات Google المرتبطة</translation>
 <translation id="5728700505257787410">عذرًا، حدثت مشكلة أثناء تسجيل الدخول إلى حسابك.</translation>
@@ -1962,6 +1967,7 @@
 <translation id="8059533439631660104">طي القسم.</translation>
 <translation id="8061584726507121204">السجلّ</translation>
 <translation id="8064946459644399612">تم تطبيق الإعدادات المفضّلة لصفحة "علامة تبويب جديدة"</translation>
+<translation id="8065556469005366939">يمكنك الحصول على ردود أكثر ملاءمةً من خلال مشاركة علامات التبويب</translation>
 <translation id="8069394452933076548">يمكنك اختيار وقت نقل علامات التبويب غير المستخدَمة مؤخرًا إلى قسم علامات التبويب غير النشطة.</translation>
 <translation id="8073670137947914548">اكتمل التنزيل</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
@@ -2131,6 +2137,7 @@
 <translation id="8660600697590740984">‏البحث باستخدام "عدسة Google" عن الصورة المنسوخة</translation>
 <translation id="866266761389616183">عذرًا!</translation>
 <translation id="8663764600409216912">أنت تستخدم حاليًا كلمات مرور يصعُب تخمينها.</translation>
+<translation id="8664992138761940052">‏تتم تلقائيًا مشاركة علامة التبويب الحالية عند بدء محادثة جديدة، وإرسال محتواها وعناوين URL إلى Google. ويمكنك تغيير هذه الإعدادات متى شئت.</translation>
 <translation id="8668210798914567634">تم حفظ هذه الصفحة في قائمة القراءة.</translation>
 <translation id="8672642291731179042">ترجمة الصفحات</translation>
 <translation id="8672733398999596205">تفعيل الكل</translation>

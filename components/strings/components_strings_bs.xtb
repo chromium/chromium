@@ -1614,6 +1614,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="3575121482199441727">Omogući za ovu web lokaciju</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Odabrana je opcija naziva ulice</translation>
+<translation id="3576315803647905285">Formaliziraj</translation>
 <translation id="3576616784287504635">Na ugrađenoj stranici na web lokaciji <ph name="SITE" /> se navodi</translation>
 <translation id="3577473026931028326">Nešto nije uredu. Pokušajte ponovo.</translation>
 <translation id="3577902790357386792">Gimnastika</translation>
@@ -2636,6 +2637,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5190835502935405962">Traka oznaka</translation>
 <translation id="5191315092027169558">Vašim profilom upravlja domena <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> želi preuzeti više fajlova</translation>
+<translation id="5199121357983849992">Sačuvati lični dokument?</translation>
 <translation id="5200063972779787617">Sačuvajte adresu na račun</translation>
 <translation id="5201306358585911203">Stranica ugrađena u ovu stranicu kaže</translation>
 <translation id="5203716867500274632">Administrator je omogućio sinhronizaciju sljedećih podataka između prethodne i trenutne sesije na bilo kojem ChromeOS uređaju:</translation>
@@ -2684,6 +2686,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="5266128565379329178">Povezivanje gornje strane</translation>
 <translation id="5269225904387178860">Četverostruko bušenje donje strane</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" nije podržano stanje za "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">poljski</translation>
 <translation id="5273658854610202413">Upozorenje: Ovo pravilo nije objedinjeno kao što je navedeno u pravilu PolicyDictionaryMultipleSourceMergeList jer nije sastavni dio pravila rječnika koja je moguće objediniti.</translation>
 <translation id="5278778426231952189">Otpremi sada</translation>
 <translation id="5279286380302340275">Upravljajte preuzimanjima</translation>
@@ -3584,6 +3587,7 @@ Da sakrijete opcije kasnijeg plaćanja, idite u <ph name="BEGIN_LINK" />postavke
 <translation id="6698097747703777657">Niste primili kôd? <ph name="BEGIN_LINK" />Preuzmite novi kȏd<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Kreirano:</translation>
 <translation id="6698769547327354196">Da isključite Pix u Chromeu, idite u <ph name="BEGIN_LINK1" />postavke plaćanja<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Sačuvajte informacije da brže izvršavate radnje, npr. popunjavate obrasce na Googleovim proizvodima. Možete <ph name="MANAGE_INFO_LINK" /> u aplikaciji <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Regulator vremena</translation>
 <translation id="6702851555558236418">Audio i muzički softver</translation>
 <translation id="6702919718839027939">Prezentacija</translation>
@@ -4075,6 +4079,7 @@ Dodatni detalji:
 <translation id="746412105358554870">Optimizacija i sigurnost JavaScripta</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> će znati da ste posjetili <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 in</translation>
+<translation id="7467332121947433617">Ažurirati lični dokument?</translation>
 <translation id="7469935732330206581">Obrazac nije siguran</translation>
 <translation id="7470854469646445678">Navedite razlog za kopiranje (obavezno)</translation>
 <translation id="7471007961486718967">Navedite razlog za prenos (obavezno)</translation>
@@ -4096,6 +4101,7 @@ Dodatni detalji:
 <translation id="7499188644237027195">E-novčanik i Pix će se prikazivati kao opcije prilikom izvršavanja kupovina u Chromeu</translation>
 <translation id="7500917112031739411">Prikaži po grupi</translation>
 <translation id="7501663406926337752">Vaša organizacija je prijavila web lokaciju koja slijedi</translation>
+<translation id="7502044688973049724">upravljati informacijama</translation>
 <translation id="7507075214339298899">Koverta #9</translation>
 <translation id="7508255263130623398">Vraćeni ID uređaja pravila ne postoji ili ne odgovara trenutnom ID-u uređaja</translation>
 <translation id="7508577201115425418">Usluge za izradu i štampanje dokumenata</translation>
@@ -5148,6 +5154,7 @@ Dodatni detalji:
 <translation id="9191834167571392248">Bušenje u donjem lijevom uglu</translation>
 <translation id="9192361865877479444">Metal (mat)</translation>
 <translation id="9192947025498305328">Čista ljepota</translation>
+<translation id="9193018794001479794">Elaboriraj</translation>
 <translation id="9195969368671142407">Kada vaša organizacija ograniči pohranjivanje na Google račun, ne možete dijeliti grupe kartica niti im se pridruživati</translation>
 <translation id="9198613052465150219">Google račun može imati druge oblike historije pregledanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>

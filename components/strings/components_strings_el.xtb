@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">Να επιτρέπεται για αυτόν τον ιστότοπο</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Ορίστηκε η επιλογή για το όνομα οδού</translation>
+<translation id="3576315803647905285">Επίσημη εκδοχή</translation>
 <translation id="3576616784287504635">Μια ενσωματωμένη σελίδα στον ιστότοπο <ph name="SITE" /> λέει</translation>
 <translation id="3577473026931028326">Παρουσιάστηκε κάποιο πρόβλημα. Επανάληψη.</translation>
 <translation id="3577902790357386792">Ενόργανη γυμναστική</translation>
@@ -2685,6 +2686,7 @@
 <translation id="5266128565379329178">Βιβλιοδεσία στο επάνω μέρος</translation>
 <translation id="5269225904387178860">Τετραπλό τρύπημα στο κάτω μέρος</translation>
 <translation id="5271381225185906340">Το στοιχείο <ph name="DATA_CONTROLS_ATTRIBUTE" /> δεν είναι υποστηριζόμενη συνθήκη για το στοιχείο <ph name="DATA_CONTROLS_RESTRICTION" /></translation>
+<translation id="527191520368130807">Πολωνικά</translation>
 <translation id="5273658854610202413">Προειδοποίηση: Αυτή η πολιτική δεν συγχωνεύτηκε, όπως ορίζεται στην πολιτική PolicyDictionaryMultipleSourceMergeList, επειδή δεν ανήκει στις πολιτικές λεξικού που μπορούν να συγχωνευτούν.</translation>
 <translation id="5278778426231952189">Μεταφόρτωση τώρα</translation>
 <translation id="5279286380302340275">Διαχείριση στοιχείων λήψης</translation>
@@ -3586,6 +3588,7 @@
 <translation id="6698097747703777657">Δεν λάβατε τον κωδικό σας; <ph name="BEGIN_LINK" />Λήψη νέου κωδικού<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Δημιουργήθηκε:</translation>
 <translation id="6698769547327354196">Για να απενεργοποιήσετε το Pix στο Chrome, μεταβείτε στις <ph name="BEGIN_LINK1" />ρυθμίσεις πληρωμής<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Αποθηκεύστε τις πληροφορίες σας και ολοκληρώστε πιο γρήγορα εργασίες, όπως τη συμπλήρωση φορμών σε όλα τα προϊόντα Google. Μπορείτε να <ph name="MANAGE_INFO_LINK" /> στο <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> για τον λογαριασμό <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Δείκτης χρόνου</translation>
 <translation id="6702851555558236418">Λογισμικό ήχου και μουσικής</translation>
 <translation id="6702919718839027939">Παρουσίαση</translation>
@@ -4098,6 +4101,7 @@
 <translation id="7499188644237027195">Όταν κάνετε αγορές στο Chrome, να εμφανίζονται οι επιλογές Ηλεκτρονικό πορτοφόλι και Pix</translation>
 <translation id="7500917112031739411">Εμφάνιση κατά ομάδα</translation>
 <translation id="7501663406926337752">Ο ιστότοπος που θέλετε να επισκεφτείτε έχει επισημανθεί από τον οργανισμό σας</translation>
+<translation id="7502044688973049724">διαχειριστείτε τις πληροφορίες σας</translation>
 <translation id="7507075214339298899">Φάκελος #9</translation>
 <translation id="7508255263130623398">Η εμφανιζόμενη συσκευή πολιτικής είναι κενή ή δεν αντιστοιχεί στο τρέχον αναγνωριστικό συσκευής</translation>
 <translation id="7508577201115425418">Υπηρεσίες εγγράφων και εκτύπωσης</translation>
@@ -5151,6 +5155,7 @@
 <translation id="9191834167571392248">Τρύπημα κάτω αριστερά</translation>
 <translation id="9192361865877479444">Μέταλλο (Ματ)</translation>
 <translation id="9192947025498305328">Καθαρή ομορφιά</translation>
+<translation id="9193018794001479794">Σύνθετο</translation>
 <translation id="9195969368671142407">Όταν ο οργανισμός σας περιορίζει την αποθήκευση στοιχείων στον Λογαριασμό σας Google, δεν μπορείτε να μοιραστείτε ή να συμμετάσχετε σε ομάδες καρτελών</translation>
 <translation id="9198613052465150219">Ο Λογαριασμός Google ενδέχεται να διαθέτει άλλες μορφές ιστορικού περιήγησης στη διεύθυνση <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Η εκτύπωση αποκλείστηκε</translation>

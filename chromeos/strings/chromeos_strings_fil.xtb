@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Tapos na ang pag-download ng modelo ng transcription sa <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">I-export</translation>
 <translation id="4213104098953699324">USB na keyboard</translation>
+<translation id="4217571870635786043">Pagdidikta</translation>
 <translation id="4227825898293920515">Mag-e-expire ang password sa loob ng <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Walang kasalukuyang pag-print</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8420955526972171689">Magpatakbo ng mga pagsusuri at pag-troubleshoot para sa mga isyu sa hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">pababa</translation>
+<translation id="8427213022735114808">Ipinapadala ng Dictation ang iyong boses sa Google para mabigyang-daan ang voice-typing sa anumang field ng text.</translation>
 <translation id="8428213095426709021">Mga Setting</translation>
 <translation id="8431300646573772016">Ano'ng bago sa ChromeOS</translation>
 <translation id="8433186206711564395">Mga setting ng network</translation>

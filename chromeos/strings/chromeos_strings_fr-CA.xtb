@@ -728,6 +728,7 @@ L'IA générative est expérimentale, en début de développement et sa disponib
 <translation id="4212169537710712814">Téléchargement du modèle de transcription en <ph name="LANGUAGE_NAME" /> terminé</translation>
 <translation id="42126664696688958">Exporter</translation>
 <translation id="4213104098953699324">Clavier USB</translation>
+<translation id="4217571870635786043">Dictée</translation>
 <translation id="4227825898293920515">Le mot de passe expire dans <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Aucune tâche d'impression en cours</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8420955526972171689">Réalisez des tests et des étapes de dépannage en cas de problèmes matériels</translation>
 <translation id="8422748173858722634">IIEM</translation>
 <translation id="8424039430705546751">bas</translation>
+<translation id="8427213022735114808">La fonction de dictée envoie votre voix à Google pour autoriser la saisie vocale dans n'importe quel champ de texte.</translation>
 <translation id="8428213095426709021">Paramètres</translation>
 <translation id="8431300646573772016">Nouveautés dans Chrome OS</translation>
 <translation id="8433186206711564395">Paramètres réseau</translation>

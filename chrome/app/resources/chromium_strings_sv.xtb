@@ -29,6 +29,7 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="126567311906253476">När du loggar in på Googles tjänster, som Gmail eller YouTube, med <ph name="USER_EMAIL" /> kan du logga in automatiskt i Chromium med samma konto</translation>
 <translation id="1290883685122687410">Konfigureringsfel: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Konfigurera din nya profil i Chromium</translation>
+<translation id="132092532143527429">Testa med Gemini i Chromium</translation>
 <translation id="1324107359134968521">Chromium behöver åtkomst till Bluetooth för att utforska 
  Bluetooth-enheter. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Identifiera språk</translation>
@@ -611,6 +612,7 @@ Chromium kan inte återställa dina inställningar.</translation>
 <translation id="7622753900276619808">Nu finns fler funktioner tillgängliga i Chromium</translation>
 <translation id="7624307931717240213">Vi använder informationen för att förbättra tjänsten. Läs integritetspolicyn och användarvillkoren.</translation>
 <translation id="7649070708921625228">Hjälp</translation>
+<translation id="7650134251917003571">Skaffa Chromium-appen</translation>
 <translation id="7656340475565475526">Låt Chromium surfa åt dig</translation>
 <translation id="7658239707568436148">Avbryt</translation>
 <translation id="7686590090926151193">Chromium är inte din standardwebbläsare</translation>

@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">S'ha completat la baixada del model de transcripció per a <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">Exporta</translation>
 <translation id="4213104098953699324">Teclat USB</translation>
+<translation id="4217571870635786043">Dictat</translation>
 <translation id="4227825898293920515">La contrasenya caduca d'aquí a <ph name="TIME" /></translation>
 <translation id="4238516577297848345">No hi ha tasques d'impressió en curs</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8420955526972171689">Executa proves i resol els problemes relacionats amb el maquinari</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">avall</translation>
+<translation id="8427213022735114808">El dictat envia la teva veu a Google per permetre l'escriptura per veu en qualsevol camp de text.</translation>
 <translation id="8428213095426709021">Configuració</translation>
 <translation id="8431300646573772016">Novetats de Chrome OS</translation>
 <translation id="8433186206711564395">Configuració de la xarxa</translation>

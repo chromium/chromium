@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Google Hesabınıza yer işaretlerinizi de kaydediyorsanız Chrome'da ürün fiyatlarını takip edebilir ve fiyat düştüğünde bildirim alabilirsiniz</translation>
 <translation id="3242123554343253302">Chrome profili ekle</translation>
 <translation id="3245429137663807393">Chrome kullanım raporlarını da paylaşıyorsanız, ziyaret ettiğiniz URL'ler de bu raporlar kapsamında paylaşılır</translation>
+<translation id="3259748324892322072">Chrome uygulamasını indirin</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
 <translation id="3292333338048274092">Ardından Chrome'u yeniden başlatmanız gerekir.</translation>
 <translation id="3324218984287646518">Google Lens'e bu video hakkında soru sorun</translation>
@@ -279,7 +280,6 @@
 <translation id="3892148308691398805">Metni kopyala</translation>
 <translation id="3893985792899396936">Chrome İpucu: Lens ile Arama Yapın</translation>
 <translation id="3906096710440765802">Tüm cihazlarınızda şifrelerinizi almak ve daha pek çok şey yapmak için Chrome'da oturum açın</translation>
-<translation id="3921132130819999051">Chrome'un sizin için göz atmasına izin verin</translation>
 <translation id="3941890832296813527">Yükleme hatası: Yükleyici dosya adı geçersiz veya desteklenmiyor.</translation>
 <translation id="395904275706073188">Korumalı sayfalar okunamaz. Farklı bir sayfa deneyin.</translation>
 <translation id="3968962723676998462">Chrome verilerini kullanmak ve <ph name="ACCOUNT_EMAIL" /> hesabınıza kaydetmek için parolanızı girin</translation>
@@ -492,7 +492,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Bu sekme ekstra kaynak kullanıyor. Performansınızı artırmak için Chrome'un bu sekmeleri devre dışı bırakmasına izin verin.</translation>
 <translation id="6182736845697986886">Güncelleme sunucusundaki dahili hata nedeniyle yükleme işlemi başarısız oldu.</translation>
-<translation id="6183773856988300112">Chrome'da Gemini, sekmelerinizde çalışmak ve verdiğiniz görevleri tamamlamak için otomatik göz atma özelliğini kullanır. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
 <translation id="6187085551300363958">Chrome İpucu: Şifreleri Kaydedin</translation>
 <translation id="6192058120268468905">Chrome'daki Hesabınız</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />, Chrome'un çalışma şeklini değiştirebilecek bir uzantı ekledi.

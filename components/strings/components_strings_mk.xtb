@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">Дозволи за овој сајт</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Избрана е опцијата за име на улица</translation>
+<translation id="3576315803647905285">Формално</translation>
 <translation id="3576616784287504635">Вметнатата страница на <ph name="SITE" /> вели</translation>
 <translation id="3577473026931028326">Нешто тргна наопаку. Обидете се повторно.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -2684,6 +2685,7 @@
 <translation id="5266128565379329178">Врзување горе</translation>
 <translation id="5269225904387178860">Четири дупки долу</translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ не е поддржан услов за „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
+<translation id="527191520368130807">Подобро</translation>
 <translation id="5273658854610202413">Предупредување: правилово не беше споено како што е наведено во правилото PolicyDictionaryMultipleSourceMergeList бидејќи не е дел од правилата на речникот што може да се спојат.</translation>
 <translation id="5278778426231952189">Прикачи сега</translation>
 <translation id="5279286380302340275">Управувајте со преземањата</translation>
@@ -3584,6 +3586,7 @@
 <translation id="6698097747703777657">Не го примивте вашиот код? <ph name="BEGIN_LINK" />Побарајте нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создадено:</translation>
 <translation id="6698769547327354196">За да исклучите Pix во Chrome, одете во <ph name="BEGIN_LINK1" />поставките за плаќање<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Зачувајте ги вашите податоци и завршувајте ги работите побрзо, како пополнувањето формулари во производите на Google. <ph name="MANAGE_INFO_LINK" /> за <ph name="ACCOUNT" /> во <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="67007264085648978">Прелистувач на „Времеплов“</translation>
 <translation id="6702851555558236418">Софтвер за аудио и музика</translation>
 <translation id="6702919718839027939">Презентација</translation>
@@ -4095,6 +4098,7 @@
 <translation id="7499188644237027195">Кога купувате во Chrome, погледнете ги eWallet и Pix како опции</translation>
 <translation id="7500917112031739411">Прикажи резултати според група</translation>
 <translation id="7501663406926337752">Сајтот е означен од вашата организација</translation>
+<translation id="7502044688973049724">Управувајте со вашите податоци</translation>
 <translation id="7507075214339298899">Плик #9</translation>
 <translation id="7508255263130623398">Вратениот id на уредот на правилото е празен или не соодветствува со тековниот id на уредот</translation>
 <translation id="7508577201115425418">Услуги за документи и печатење</translation>
@@ -5147,6 +5151,7 @@
 <translation id="9191834167571392248">Дупка долу лево</translation>
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9192947025498305328">Природна убавина</translation>
+<translation id="9193018794001479794">Подетално</translation>
 <translation id="9195969368671142407">Кога вашата организација ќе го ограничи зачувувањето во вашата сметка на Google, нема да може да споделувате или да се придружувате во групи картички</translation>
 <translation id="9198613052465150219">Вашата сметка на Google може да има други форми на историја на прелистувањето на <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Печатењето е блокирано</translation>

@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Cuando accedes a servicios de Google, como Gmail o YouTube, con <ph name="USER_EMAIL" />, puedes ingresar automáticamente a Chromium con la misma cuenta</translation>
 <translation id="1290883685122687410">Error de configuración: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Configura tu nuevo perfil de Chromium</translation>
+<translation id="132092532143527429">Probar con Gemini en Chromium</translation>
 <translation id="1324107359134968521">Chromium necesita acceso a la conexión Bluetooth para explorar 
  los dispositivos Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detectar idioma</translation>
@@ -603,6 +604,7 @@ No se pueden guardar nuevos favoritos en tu cuenta hasta que borres algunos. Si 
 <translation id="7622753900276619808">Ahora tienes más funciones disponibles en Chromium</translation>
 <translation id="7624307931717240213">Usamos la información para mejorar este servicio. Consulta la Política de Privacidad y las Condiciones del Servicio.</translation>
 <translation id="7649070708921625228">Ayuda</translation>
+<translation id="7650134251917003571">Obtener la app de Chromium</translation>
 <translation id="7656340475565475526">Deja que Chromium navegue por ti</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7686590090926151193">Chromium no es el navegador predeterminado</translation>

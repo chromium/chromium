@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Descărcarea modelului de transcriere pentru <ph name="LANGUAGE_NAME" /> s-a finalizat</translation>
 <translation id="42126664696688958">Exportă</translation>
 <translation id="4213104098953699324">Tastatură USB</translation>
+<translation id="4217571870635786043">Dictare</translation>
 <translation id="4227825898293920515">Parola expiră în <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nicio sarcină de printare în desfășurare</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8420955526972171689">Rulează teste și remediază erorile hardware</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">jos</translation>
+<translation id="8427213022735114808">Dictarea îți trimite vocea la Google pentru a permite tastarea vocală în orice câmp de text.</translation>
 <translation id="8428213095426709021">Setări</translation>
 <translation id="8431300646573772016">Noutăți în SO Chrome</translation>
 <translation id="8433186206711564395">Setări de rețea</translation>

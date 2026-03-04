@@ -728,6 +728,7 @@
 <translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> ट्रान्स्क्रिप्सन मोडेल डाउनलोड गरिएको छ</translation>
 <translation id="42126664696688958">एक्सपोर्ट गर्नुहोस्</translation>
 <translation id="4213104098953699324">USB किबोर्ड</translation>
+<translation id="4217571870635786043">श्रुतिलेखन</translation>
 <translation id="4227825898293920515">पासवर्डको म्याद <ph name="TIME" /> मा सकिन्छ</translation>
 <translation id="4238516577297848345">प्रिन्टसम्बन्धी कुनै पनि काम भइरहेको छैन</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">हार्डवेयरसम्बन्धी समस्याहरू पत्ता लगाउन परीक्षण गर्नुहोस् र ती समस्या निवारण गर्नुहोस्</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">तल</translation>
+<translation id="8427213022735114808">श्रुतिलेखन सुविधाले कुनै पनि पाठ क्षेत्रमा आवाजमार्फत टाइप गर्ने सुविधा सक्षम पार्न तपाईंको आवाज Google मा पठाउँछ।</translation>
 <translation id="8428213095426709021">सेटिङहरू</translation>
 <translation id="8431300646573772016">ChromeOS मा नयाँ के छ</translation>
 <translation id="8433186206711564395">नेटवर्क सम्बन्धी सेटिङहरू</translation>

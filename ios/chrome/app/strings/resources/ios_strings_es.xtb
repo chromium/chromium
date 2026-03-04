@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Accede a tus contraseñas en otras aplicaciones.</translation>
 <translation id="3485558910355485767">Nueva ventana de Incógnito</translation>
 <translation id="3488501490964659223">Se han cerrado las pestañas y eliminado los datos de navegación. Se ha cerrado tu sesión.</translation>
+<translation id="3490396108106323715">Compartir pestaña actual</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /> sobre el contenido sugerido</translation>
 <translation id="349446645805573740">Elige dónde guardar "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Configuración</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">No se han podido cargar las imágenes</translation>
 <translation id="3565930036634619844">Pestaña <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Guardar de otra forma</translation>
+<translation id="3572503683475187385">La pestaña actual se comparte con Gemini cuando inicias una conversación. Cuando compartes una pestaña con Gemini, el contenido y la URL se envían a Google. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">En tu cuenta de Google</translation>
 <translation id="3575234738189584619">Buscar con Lens</translation>
 <translation id="3575426792457739946">Esta lista contiene todos los perfiles cargados.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Deja de buscar en tu pantalla con Google Lens</translation>
 <translation id="3753408171347588045">Seguimiento de precios</translation>
 <translation id="3753618528540214374">Tema viridián</translation>
+<translation id="3759491607478608474">Comparte el contenido de la pestaña actual con Gemini para obtener respuestas más pertinentes</translation>
 <translation id="3762232513783804601">Diseñado para tu iPad</translation>
 <translation id="3768725474733206671">Volver a abrir última pestaña cerrada</translation>
 <translation id="3779810277399252432">No hay conexión a Internet.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Seguir como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Ocultar después de 1 minuto}other{Ocultar después de {count} minutos}}</translation>
 <translation id="4652817563047461855">Asegúrate de que tus contraseñas sean seguras, averigua si se han vulnerado y recibe consejos para protegerte en Internet. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Activar la opción de compartir pestañas</translation>
 <translation id="4658335131052370646">Guardar</translation>
 <translation id="466307903888586355">Tu organización ha bloqueado la opción de guardar archivos</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5718049162805123412">Deberías cambiarlas de inmediato</translation>
 <translation id="5721040778297053709">Coloca la tarjeta de crédito dentro del marco</translation>
 <translation id="572328651809341494">Pestañas recientes</translation>
+<translation id="5724590854763964497">De forma predeterminada, la pestaña actual se comparte cuando inicias una conversación. Cuando se comparten pestañas, el contenido y las URLs se envían a Google, pero no se usan para mejorar los modelos de IA generativa. Puedes cambiar este ajuste en cualquier momento.</translation>
 <translation id="5724941645893276623">Para navegar por la Web de forma privada, añade una nueva pestaña.</translation>
 <translation id="5728072125198221967">Servicios de Google vinculados</translation>
 <translation id="5728700505257787410">Error al iniciar sesión en tu cuenta</translation>
@@ -1964,6 +1969,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8059533439631660104">Oculta la sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
 <translation id="8064946459644399612">Se han aplicado tus preferencias de la página Nueva pestaña</translation>
+<translation id="8065556469005366939">Comparte tus pestañas para obtener respuestas más pertinentes</translation>
 <translation id="8069394452933076548">Elige cuándo se moverán las pestañas que no se han usado recientemente a la sección de pestañas inactivas.</translation>
 <translation id="8073670137947914548">Descarga finalizada</translation>
 <translation id="8076492880354921740">Pestañas</translation>
@@ -2132,6 +2138,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="8660600697590740984">Imagen copiada de Lens</translation>
 <translation id="866266761389616183">¡Oh, no!</translation>
 <translation id="8663764600409216912">Estás usando contraseñas difíciles de adivinar</translation>
+<translation id="8664992138761940052">De forma predeterminada, la pestaña actual se comparte cuando inicias una conversación. Cuando se comparten pestañas, el contenido y las URLs se envían a Google. Puedes cambiar este ajuste en cualquier momento.</translation>
 <translation id="8668210798914567634">Esta página se ha guardado en tu lista de lectura.</translation>
 <translation id="8672642291731179042">Traducir páginas</translation>
 <translation id="8672733398999596205">Habilitar todo</translation>

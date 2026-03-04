@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Si también guardas tus favoritos en tu Cuenta de Google, puedes realizar un seguimiento de precios de productos en Chrome y recibir notificaciones cuando haya reducciones de los precios</translation>
 <translation id="3242123554343253302">Agregar perfil de Chrome</translation>
 <translation id="3245429137663807393">Si también compartes los informes de uso de Chrome, estos incluirán las URLs que visites</translation>
+<translation id="3259748324892322072">Obtener la app de Chrome</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
 <translation id="3292333338048274092">Luego, deberás reiniciar Chrome.</translation>
 <translation id="3324218984287646518">Preguntar a Google Lens acerca de este video</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Copiar texto</translation>
 <translation id="3893985792899396936">Sugerencia de Chrome: Busca con Lens</translation>
 <translation id="3906096710440765802">Accede a tu cuenta en Chrome para obtener tus contraseñas, favoritos y mucho más en todos tus dispositivos</translation>
-<translation id="3921132130819999051">Deja que Chrome navegue por ti</translation>
 <translation id="3941890832296813527">Error de instalación: El nombre de archivo del instalador no es válido o no es compatible.</translation>
 <translation id="395904275706073188">No se pueden leer las páginas protegidas. Prueba con otra página.</translation>
 <translation id="3968962723676998462">Ingresa tu frase de contraseña para usar y guardar datos de Chrome en tu cuenta, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" />: Versión Beta de Google Chrome</translation>
 <translation id="6180522807229584611">Esta pestaña está usando recursos adicionales. Para mejorar el rendimiento, permite que Chrome la desactive.</translation>
 <translation id="6182736845697986886">No se pudo completar la instalación debido a un error interno del servidor de actualización.</translation>
-<translation id="6183773856988300112">Gemini en Chrome usa la navegación automática para trabajar en tus pestañas y completar las tareas que le asignes. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Sugerencia de Chrome: Guardar contraseñas</translation>
 <translation id="6192058120268468905">Tu cuenta en Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> agregó una extensión que puede cambiar el funcionamiento de Chrome.

@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Premakni zavihke</translation>
 <translation id="1197761954713363183">List za potrditev ključa za dostop je zaprt</translation>
 <translation id="1197933394627598677">Prikažite način za branje</translation>
+<translation id="1197935538609051549">Onemogoči</translation>
 <translation id="1201402288615127009">Naprej</translation>
 <translation id="1202892408424955784">Spremljani izdelki</translation>
 <translation id="1204037785786432551">Prenesi povezavo</translation>
@@ -506,6 +507,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="3122883569442693641">Več podrobnosti</translation>
 <translation id="3123734510202723619">Obvestila</translation>
 <translation id="3134385238404760368">Ni nedavnih zavihkov</translation>
+<translation id="3135655388926735587">Dotaknite se Nedavni zavihki</translation>
 <translation id="314939179385989105">Chromova začetna stran</translation>
 <translation id="3158667104057012316">Ročno razvrščanje</translation>
 <translation id="3159335509547415276">Preberite več o blokiranih računih</translation>
@@ -850,6 +852,7 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 ogroženo geslo}one{# ogroženo geslo}two{# ogroženi gesli}few{# ogrožena gesla}other{# ogroženih gesel}}</translation>
 <translation id="4641919525231168205">Na naslednjo stran</translation>
 <translation id="4642472735733036929">Sledenje cenam je ustavljeno</translation>
+<translation id="4649493483932335039">Ogled nedavnih zavihkov</translation>
 <translation id="465657074423018424">Varno brskanje vas ščiti pred zavajajočimi spletnimi mesti. Če ga izklopite, bodite zelo previdni pri brskanju, zlasti pred vnašanjem gesel.</translation>
 <translation id="4662373422909645029">Vzdevek ne sme vsebovati številk</translation>
 <translation id="4663756553811254707">Št. izbrisanih zaznamkov: <ph name="NUMBER_OF_BOOKMARKS" /></translation>
@@ -1562,6 +1565,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7363349185727752629">Vodnik po vaših izbirah zasebnosti</translation>
 <translation id="7364103838544876661">Več možnosti za izbris podatkov brskanja</translation>
 <translation id="7365073365123878797">Če želite začeti shranjevati in uporabljati gesla z Googlovim upraviteljem gesel, posodobite storitve Google Play</translation>
+<translation id="7368009310682364976">Ogled nedavno odprtih zavihkov</translation>
 <translation id="7368927539449986686">Urejanje iskanja po spletnem mestu</translation>
 <translation id="7375125077091615385">Vrsta:</translation>
 <translation id="7376560087009844242">Če vključite več besedila na strani, bodo morda prikazani boljši rezultati, ko uporabljate dotikanje za iskanje. To lahko kadar koli spremenite v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
@@ -1679,6 +1683,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7824665136384946951">Vaša organizacija je izklopila Varno brskanje</translation>
 <translation id="7826342993930002256">Vaš Chrome povsod</translation>
 <translation id="7844171778363018843">Ni izbranih podatkov za sinhronizacijo</translation>
+<translation id="784453721355882533">Preizkusite Geminija v Chromu in prejmite odgovore, ključne poudarke in drugo.</translation>
 <translation id="7846161022626028328">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="7846296061357476882">Googlove storitve</translation>
 <translation id="784652447248278262">Trenutno okno</translation>
@@ -1688,6 +1693,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7853202427316060426">Dejavnost</translation>
 <translation id="7859988229622350291">Nikoli ne prevedi</translation>
 <translation id="7866213166286285359">Prevajanje strani tukaj</translation>
+<translation id="7873610418439765081">Preizkusite Geminija v Chromu in z gumbom za več možnosti prejmite odgovore, ključne poudarke in drugo.</translation>
 <translation id="7875915731392087153">Ustvarite e-poštno sporočilo</translation>
 <translation id="7876243839304621966">Odstrani vse</translation>
 <translation id="7886917304091689118">Izvaja se v Chromu</translation>
@@ -1738,6 +1744,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8062594758852531064">Razširjeno vnaprejšnje nalaganje:</translation>
 <translation id="8063895661287329888">Zaznamka ni bilo mogoče dodati.</translation>
 <translation id="8066816452984416180">Hitro shranite to stran med zaznamke. Če želite urediti to bližnjico, pridržite.</translation>
+<translation id="8072436850275034464">Zavihke, ki ste jih nedavno zaprli, lahko znova odprete v napravah, v katerih uporabljate Chrome</translation>
 <translation id="8073388330009372546">Odpri sliko na novem zavihku</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8078096376109663956">Besedilo lahko samo delite.</translation>
@@ -1849,6 +1856,7 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8460008946585880786">Povlecite in spustite en zavihek na drugega</translation>
 <translation id="8460448946170646641">Pregled ključnih kontrolnikov varnosti in zasebnosti</translation>
 <translation id="8460932807646981183">Upravljanje iskalnikov in iskanja po spletnih mestih</translation>
+<translation id="8465252176946159372">Neveljavno</translation>
 <translation id="8473863474539038330">Naslovi in drugo</translation>
 <translation id="847433688444405067">Brskanje po vseh napravah</translation>
 <translation id="8477178913400731244">Izbriši podatke</translation>

@@ -728,6 +728,7 @@ Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt
 <translation id="4212169537710712814">Downloaden van transcriptiemodel voor <ph name="LANGUAGE_NAME" /> afgerond</translation>
 <translation id="42126664696688958">Exporteren</translation>
 <translation id="4213104098953699324">USB-toetsenbord</translation>
+<translation id="4217571870635786043">Dicteren</translation>
 <translation id="4227825898293920515">Wachtwoord verloopt over <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Er worden geen afdruktaken uitgevoerd</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8420955526972171689">Tests uitvoeren en hardwareproblemen oplossen</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">omlaag</translation>
+<translation id="8427213022735114808">Bij dicteren wordt je stem verzonden naar Google, waardoor spraakgestuurd typen in tekstvelden mogelijk wordt.</translation>
 <translation id="8428213095426709021">Instellingen</translation>
 <translation id="8431300646573772016">Nieuw bij Chrome OS</translation>
 <translation id="8433186206711564395">Netwerkinstellingen</translation>

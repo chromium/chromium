@@ -1614,6 +1614,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3575121482199441727">Izinkan untuk situs ini</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Opsi nama jalan dipilih</translation>
+<translation id="3576315803647905285">Buat lebih formal</translation>
 <translation id="3576616784287504635">Halaman tersemat di <ph name="SITE" /> menyatakan</translation>
 <translation id="3577473026931028326">Terjadi error. Coba lagi.</translation>
 <translation id="3577902790357386792">Senam</translation>
@@ -2636,6 +2637,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5190835502935405962">Bilah Bookmark</translation>
 <translation id="5191315092027169558">Profil Anda dikelola oleh <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ingin mendownload beberapa file</translation>
+<translation id="5199121357983849992">Simpan kartu tanda pengenal?</translation>
 <translation id="5200063972779787617">Simpan alamat di akun</translation>
 <translation id="5201306358585911203">Halaman tersemat di halaman ini menyatakan</translation>
 <translation id="5203716867500274632">Administrator Anda telah mengaktifkan sinkronisasi hal-hal berikut antara sesi sebelumnya dan sesi saat ini di semua perangkat ChromeOS Anda:</translation>
@@ -2684,6 +2686,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="5266128565379329178">Jilid di atas</translation>
 <translation id="5269225904387178860">Empat lubang di bawah</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" bukan kondisi yang didukung untuk "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">Perbaiki</translation>
 <translation id="5273658854610202413">Peringatan: Kebijakan ini tidak digabung sebagaimana yang ditetapkan dalam kebijakan PolicyDictionaryMultipleSourceMergeList karena bukan merupakan bagian dari kebijakan kamus yang dapat digabung.</translation>
 <translation id="5278778426231952189">Upload sekarang</translation>
 <translation id="5279286380302340275">Kelola download</translation>
@@ -3584,6 +3587,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="6698097747703777657">Tidak menerima kode? <ph name="BEGIN_LINK" />Dapatkan kode baru<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Dibuat:</translation>
 <translation id="6698769547327354196">Untuk menonaktifkan Pix di Chrome, buka <ph name="BEGIN_LINK1" />setelan pembayaran<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Simpan info Anda dan selesaikan berbagai hal lebih cepat, seperti mengisi formulir di seluruh produk Google. Anda dapat <ph name="MANAGE_INFO_LINK" /> di <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> untuk <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Scrubber waktu</translation>
 <translation id="6702851555558236418">Software Audio &amp; Musik</translation>
 <translation id="6702919718839027939">Presentasi</translation>
@@ -4073,6 +4077,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="746412105358554870">Pengoptimalan &amp; keamanan JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> akan mengetahui bahwa Anda mengunjungi <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 inci (25 x 33 cm)</translation>
+<translation id="7467332121947433617">Perbarui kartu tanda pengenal?</translation>
 <translation id="7469935732330206581">Formulir tidak aman</translation>
 <translation id="7470854469646445678">Berikan alasan penyalinan (wajib)</translation>
 <translation id="7471007961486718967">Berikan alasan transfer (wajib)</translation>
@@ -4094,6 +4099,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="7499188644237027195">Saat Anda melakukan pembelian di Chrome, lihat eWallet dan Pix sebagai opsi</translation>
 <translation id="7500917112031739411">Tampilkan menurut grup</translation>
 <translation id="7501663406926337752">Situs yang akan dibuka ditandai oleh organisasi Anda</translation>
+<translation id="7502044688973049724">kelola info Anda</translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">ID perangkat kebijakan yang dikembalikan kosong atau tidak cocok dengan ID perangkat saat ini</translation>
 <translation id="7508577201115425418">Layanan Dokumen &amp; Pencetakan</translation>
@@ -5144,6 +5150,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="9191834167571392248">Lubang di kiri bawah</translation>
 <translation id="9192361865877479444">Logam (Matte)</translation>
 <translation id="9192947025498305328">Produk Kecantikan Ramah Lingkungan</translation>
+<translation id="9193018794001479794">Jelaskan</translation>
 <translation id="9195969368671142407">Jika organisasi membatasi penyimpanan ke Akun Google, Anda tidak dapat berbagi atau bergabung ke grup tab</translation>
 <translation id="9198613052465150219">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Pencetakan diblokir</translation>

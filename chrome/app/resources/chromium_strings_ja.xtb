@@ -27,6 +27,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> で Gmail や YouTube などの Google サービスにログインするときに、同じアカウントで Chromium に自動的にログインできます</translation>
 <translation id="1290883685122687410">設定エラー: <ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">新しい Chromium プロファイルの設定</translation>
+<translation id="132092532143527429">Gemini in Chromium を使ってみる</translation>
 <translation id="1324107359134968521">Bluetooth デバイスを検出するには、Chromium に Bluetooth へのアクセスを許可する必要があります。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">検出言語</translation>
 <translation id="1330742950061766891">Chromium の推奨ブラウザ設定を使用する</translation>
@@ -602,6 +603,7 @@
 <translation id="7622753900276619808">Chromium で新機能をご利用いただけるようになりました</translation>
 <translation id="7624307931717240213">情報はこのサービスの改善に役立てられます。プライバシー ポリシーと利用規約をご確認ください。</translation>
 <translation id="7649070708921625228">ヘルプ</translation>
+<translation id="7650134251917003571">Chromium アプリを入手</translation>
 <translation id="7656340475565475526">Chromium のブラウジング サポート</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>

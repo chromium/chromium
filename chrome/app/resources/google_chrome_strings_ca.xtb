@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Si també deses les teves adreces d'interès al teu Compte de Google, pots fer un seguiment dels preus dels productes a Chrome i rebre una notificació quan baixi el preu</translation>
 <translation id="3242123554343253302">Afegeix un perfil de Chrome</translation>
 <translation id="3245429137663807393">Si també comparteixes els informes d'ús de Chrome, aquests informes inclouen els URL que visites</translation>
+<translation id="3259748324892322072">Obtén l'aplicació Chrome</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="3292333338048274092">Després hauràs de reiniciar Chrome.</translation>
 <translation id="3324218984287646518">Pregunta a Google Lens sobre aquest vídeo</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Copia el text</translation>
 <translation id="3893985792899396936">Consell de Chrome: cerca amb Lens</translation>
 <translation id="3906096710440765802">Inicia la sessió a Chrome per accedir a les teves contrasenyes, adreces d'interès i altres elements en tots els teus dispositius</translation>
-<translation id="3921132130819999051">Deixa que Chrome navegui per tu</translation>
 <translation id="3941890832296813527">Error d'instal·lació: el nom de fitxer de l'instal·lador no és vàlid o no s'admet.</translation>
 <translation id="395904275706073188">Les pàgines protegides no es poden llegir. Prova una altra pàgina.</translation>
 <translation id="3968962723676998462">Introdueix la frase de contrasenya per utilitzar i desar les dades de Chrome al teu compte, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Aquesta pestanya utilitza recursos addicionals. Per millorar el rendiment, permet que Chrome la desactivi.</translation>
 <translation id="6182736845697986886">La instal·lació ha fallat a causa d'un error intern del servidor d'actualitzacions.</translation>
-<translation id="6183773856988300112">Gemini a Chrome utilitza la navegació automàtica per treballar a les teves pestanyes i completar les tasques que li demanis. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Consell de Chrome: desa les contrasenyes</translation>
 <translation id="6192058120268468905">El teu compte a Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ha afegit una extensió que pot canviar el funcionament de Chrome.

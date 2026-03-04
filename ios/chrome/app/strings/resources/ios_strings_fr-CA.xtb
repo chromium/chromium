@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Accédez à vos mots de passe sur d'autres applications.</translation>
 <translation id="3485558910355485767">Nouvelle fenêtre de navigation privée</translation>
 <translation id="3488501490964659223">Les onglets ont été fermés, et les données de navigation ont été supprimées. Vous avez été déconnecté</translation>
+<translation id="3490396108106323715">Partager l'onglet actuel</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /> sur le contenu suggéré</translation>
 <translation id="349446645805573740">Choisissez l'endroit où enregistrer « <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /> »</translation>
 <translation id="3504377992102007712">Réglages</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Impossible de charger les images</translation>
 <translation id="3565930036634619844">Onglet. <ph name="TAB_INDEX" /> sur <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Enregistrer autrement</translation>
+<translation id="3572503683475187385">L'onglet actuel est partagé avec Gemini lorsque vous démarrez un nouveau clavardage. Lorsque vous partagez un onglet avec Gemini, son URL et son contenu sont envoyés à Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Dans votre compte Google</translation>
 <translation id="3575234738189584619">Rechercher avec Lentille</translation>
 <translation id="3575426792457739946">Cette liste contient tous les profils chargés.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Arrêter de rechercher sur votre écran avec Lentille Google</translation>
 <translation id="3753408171347588045">Suivi des prix</translation>
 <translation id="3753618528540214374">Thème viridien</translation>
+<translation id="3759491607478608474">Partagez le contenu de l'onglet actuel avec Gemini pour obtenir des réponses plus pertinentes</translation>
 <translation id="3762232513783804601">Conçu pour votre iPad</translation>
 <translation id="3768725474733206671">Rouvrir le dernier onglet fermé</translation>
 <translation id="3779810277399252432">Pas de connexion Internet.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Continuer comme <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Masquer après 1 minute}one{Masquer après {count} minute}other{Masquer après {count} minutes}}</translation>
 <translation id="4652817563047461855">Assurez-vous que vos mots de passe sont sûrs, découvrez s'ils ont été compromis et obtenez des conseils pour vous protéger en ligne. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Activer le partage d'onglets</translation>
 <translation id="4658335131052370646">Enregistrer</translation>
 <translation id="466307903888586355">L'enregistrement des fichiers est bloqué par votre organisation</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="5718049162805123412">Vous devriez les modifier maintenant</translation>
 <translation id="5721040778297053709">Positionnez la carte de crédit dans ce cadre</translation>
 <translation id="572328651809341494">Onglets récents</translation>
+<translation id="5724590854763964497">Par défaut, votre onglet actuel est partagé lorsque vous démarrez un nouveau clavardage. Lorsque des onglets sont partagés, leurs URL et leur contenu sont envoyés à Google, mais ne seront pas utilisés pour améliorer les modèles d'IA générative. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="5724941645893276623">Pour naviguer confidentiellement sur le Web, ouvrez un nouvel onglet</translation>
 <translation id="5728072125198221967">Services Google associés</translation>
 <translation id="5728700505257787410">Un problème est survenu lors de la connexion à votre compte.</translation>
@@ -1964,6 +1969,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8059533439631660104">Réduit la section.</translation>
 <translation id="8061584726507121204">Historique</translation>
 <translation id="8064946459644399612">Préférences de votre page Nouvel onglet appliquées</translation>
+<translation id="8065556469005366939">Obtenir des réponses plus pertinentes en partageant vos onglets</translation>
 <translation id="8069394452933076548">Choisir quand les onglets qui n'ont pas été utilisés récemment sont déplacés vers la section des onglets inactifs.</translation>
 <translation id="8073670137947914548">Téléchargement terminé</translation>
 <translation id="8076492880354921740">Onglets</translation>
@@ -2132,6 +2138,7 @@ La fonction de transfert doit également être activée dans la section Généra
 <translation id="8660600697590740984">Image copiée de Lentille</translation>
 <translation id="866266761389616183">Zut alors!</translation>
 <translation id="8663764600409216912">Vous utilisez des mots de passe qui semblent difficiles à deviner</translation>
+<translation id="8664992138761940052">Par défaut, votre onglet actuel est partagé lorsque vous démarrez un nouveau clavardage. Lorsque des onglets sont partagés, leurs URL et leur contenu sont envoyés à Google. Vous pouvez modifier ce paramètre à tout moment.</translation>
 <translation id="8668210798914567634">Cette page a été enregistrée dans votre liste de lecture.</translation>
 <translation id="8672642291731179042">Traduire les pages</translation>
 <translation id="8672733398999596205">Tout activer</translation>

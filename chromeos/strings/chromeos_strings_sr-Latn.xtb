@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Model transkripcije za <ph name="LANGUAGE_NAME" /> je preuzet</translation>
 <translation id="42126664696688958">Izvezi</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
+<translation id="4217571870635786043">Diktiranje</translation>
 <translation id="4227825898293920515">Lozinka ističe za <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nijedan zadatak štampanja nije u toku</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8420955526972171689">Pokretanje testova i rešavanje problema sa hardverom</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">nadole</translation>
+<translation id="8427213022735114808">Diktiranje šalje glas Google-u da bi se omogućilo pisanje glasom u poljima za tekst.</translation>
 <translation id="8428213095426709021">Podešavanja</translation>
 <translation id="8431300646573772016">Novosti u Chrome OS-u</translation>
 <translation id="8433186206711564395">Mrežna podešavanja</translation>

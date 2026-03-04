@@ -280,7 +280,6 @@
 <translation id="3892148308691398805">Kopiuj tekst</translation>
 <translation id="3893985792899396936">Wskazówka dotycząca Chrome: wyszukuj za pomocą Obiektywu</translation>
 <translation id="3906096710440765802">Zaloguj się w Chrome, aby mieć dostęp do haseł, zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
-<translation id="3921132130819999051">Pozwól Chrome przeglądać strony za Ciebie</translation>
 <translation id="3941890832296813527">Błąd instalacji: nazwa pliku instalatora jest nieprawidłowa lub nieobsługiwana.</translation>
 <translation id="395904275706073188">Zabezpieczonych stron nie można odczytywać. Wypróbuj inną stronę.</translation>
 <translation id="3968962723676998462">Wpisz hasło, aby móc zapisywać dane z Chrome na koncie <ph name="ACCOUNT_EMAIL" /> i ich używać</translation>
@@ -491,7 +490,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Ta karta wykorzystuje dodatkowe zasoby. Aby zwiększyć wydajność, pozwól Chrome ją dezaktywować.</translation>
 <translation id="6182736845697986886">Instalacja się nie udała z powodu wewnętrznego błędu serwera aktualizacji.</translation>
-<translation id="6183773856988300112">Gemini w Chrome używa automatycznego przeglądania, aby działać na kartach i realizować zadania, o których wykonanie poprosisz. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Wskazówka od Chrome: zapisuj hasła</translation>
 <translation id="6192058120268468905">Twoje konto w Chrome</translation>
 <translation id="6220551899604141979">Rozszerzenie dodane przez: <ph name="PARTNER_NAME" /> może zmienić sposób działania Chrome.

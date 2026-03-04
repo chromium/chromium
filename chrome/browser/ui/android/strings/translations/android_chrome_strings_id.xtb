@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Pindahkan bookmark</translation>
 <translation id="1197761954713363183">Sheet konfirmasi kunci sandi ditutup</translation>
 <translation id="1197933394627598677">Tampilkan Mode Baca</translation>
+<translation id="1197935538609051549">Nonaktifkan</translation>
 <translation id="1201402288615127009">Berikutnya</translation>
 <translation id="1202892408424955784">Produk yang dipantau</translation>
 <translation id="1204037785786432551">Download link</translation>
@@ -506,6 +507,7 @@ Hanya orang yang memiliki frasa sandi Anda yang dapat membaca data terenkripsi A
 <translation id="3122883569442693641">Detail selengkapnya</translation>
 <translation id="3123734510202723619">Pengumuman</translation>
 <translation id="3134385238404760368">Tidak ada tab terbaru</translation>
+<translation id="3135655388926735587">Ketuk Tab terbaru</translation>
 <translation id="314939179385989105">Halaman beranda Chrome</translation>
 <translation id="3158667104057012316">Mengurutkan berdasarkan urutan manual</translation>
 <translation id="3159335509547415276">Pelajari artikel tentang akun yang diblokir</translation>
@@ -850,6 +852,7 @@ Akun Google Anda mungkin memiliki bentuk histori penjelajahan lain seperti penel
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 sandi telah dibobol}other{# sandi telah dibobol}}</translation>
 <translation id="4641919525231168205">Buka halaman berikutnya</translation>
 <translation id="4642472735733036929">Pemantauan harga dihentikan</translation>
+<translation id="4649493483932335039">Lihat tab terbaru</translation>
 <translation id="465657074423018424">Safe Browsing melindungi Anda dari situs yang tidak jujur. Jika dinonaktifkan, Anda harus lebih berhati-hati saat menjelajah, terutama sebelum memasukkan sandi.</translation>
 <translation id="4662373422909645029">Nama panggilan tidak boleh berisi angka</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> bookmark dihapus</translation>
@@ -1562,6 +1565,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7363349185727752629">Panduan terkait pilihan privasi Anda</translation>
 <translation id="7364103838544876661">Opsi lainnya untuk menghapus data penjelajahan</translation>
 <translation id="7365073365123878797">Untuk mulai menyimpan dan menggunakan sandi dengan Pengelola Sandi Google, update layanan Google Play</translation>
+<translation id="7368009310682364976">Lihat tab yang baru saja dibuka</translation>
 <translation id="7368927539449986686">Edit penelusuran situs</translation>
 <translation id="7375125077091615385">Jenis:</translation>
 <translation id="7376560087009844242">Dengan menyertakan lebih banyak teks halaman, Anda dapat melihat hasil yang lebih baik saat menggunakan fitur Sentuh untuk Menelusuri. Anda dapat membuka <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja untuk mengubahnya.</translation>
@@ -1679,6 +1683,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7824665136384946951">Organisasi Anda menonaktifkan Safe Browsing</translation>
 <translation id="7826342993930002256">Chrome Anda, di mana saja</translation>
 <translation id="7844171778363018843">Tidak ada data yang dipilih untuk disinkronkan</translation>
+<translation id="784453721355882533">Coba Gemini di Chrome untuk mendapatkan jawaban, poin-poin penting, dan lainnya.</translation>
 <translation id="7846161022626028328">Terjadi error. Coba lagi.</translation>
 <translation id="7846296061357476882">Layanan Google</translation>
 <translation id="784652447248278262">Jendela aktif</translation>
@@ -1688,6 +1693,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="7853202427316060426">Aktivitas</translation>
 <translation id="7859988229622350291">Jangan pernah terjemahkan</translation>
 <translation id="7866213166286285359">Terjemahkan halaman di sini</translation>
+<translation id="7873610418439765081">Coba Gemini di Chrome untuk mendapatkan jawaban, poin-poin penting, dan lainnya dari tombol Opsi Lainnya.</translation>
 <translation id="7875915731392087153">Buat email</translation>
 <translation id="7876243839304621966">Hapus semua</translation>
 <translation id="7886917304091689118">Berjalan di Chrome</translation>
@@ -1738,6 +1744,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8062594758852531064">Pramuat ekstensif:</translation>
 <translation id="8063895661287329888">Gagal menambahkan bookmark.</translation>
 <translation id="8066816452984416180">Bookmark halaman ini dengan cepat. Sentuh lama untuk mengedit pintasan ini.</translation>
+<translation id="8072436850275034464">Anda dapat membuka kembali tab yang baru saja ditutup dari mana pun Anda menggunakan Chrome</translation>
 <translation id="8073388330009372546">Buka gambar di tab baru</translation>
 <translation id="8076492880354921740">Tab</translation>
 <translation id="8078096376109663956">Bagikan teks saja</translation>
@@ -1849,6 +1856,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="8460008946585880786">Tarik lalu lepas satu tab ke tab lain</translation>
 <translation id="8460448946170646641">Tinjau kontrol privasi dan keamanan utama</translation>
 <translation id="8460932807646981183">Kelola mesin telusur dan penelusuran situs</translation>
+<translation id="8465252176946159372">Tidak valid</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="847433688444405067">Menjelajah di berbagai perangkat</translation>
 <translation id="8477178913400731244">Hapus data</translation>

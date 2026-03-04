@@ -29,6 +29,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="126567311906253476">When signing in to Google services like Gmail or YouTube with <ph name="USER_EMAIL" />, you can automatically sign in to Chromium with the same account</translation>
 <translation id="1290883685122687410">Setup error: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Set up your new Chromium profile</translation>
+<translation id="132092532143527429">Try with Gemini in Chromium</translation>
 <translation id="1324107359134968521">Chromium needs Bluetooth access to explore 
  Bluetooth devices. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Detect language</translation>
@@ -611,6 +612,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="7622753900276619808">You now have more features available in Chromium</translation>
 <translation id="7624307931717240213">We use info to improve this service. See Privacy Policy and Terms of Service.</translation>
 <translation id="7649070708921625228">Help</translation>
+<translation id="7650134251917003571">Get the Chromium app</translation>
 <translation id="7656340475565475526">Let Chromium browse for you</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7686590090926151193">Chromium isn't your default browser</translation>

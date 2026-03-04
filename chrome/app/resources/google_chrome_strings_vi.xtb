@@ -224,6 +224,7 @@
 <translation id="3226612997184048185">Nếu cũng lưu dấu trang trong Tài khoản Google, bạn có thể theo dõi giá sản phẩm trong Chrome và nhận thông báo khi sản phẩm giảm giá</translation>
 <translation id="3242123554343253302">Thêm hồ sơ Chrome</translation>
 <translation id="3245429137663807393">Nếu bạn cũng chia sẻ báo cáo sử dụng của Chrome, các báo cáo đó sẽ bao gồm cả những URL bạn truy cập</translation>
+<translation id="3259748324892322072">Tải ứng dụng Chrome</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
 <translation id="3292333338048274092">Sau đó, bạn cần khởi động lại Chrome.</translation>
 <translation id="3324218984287646518">Hỏi Google Ống kính về video này</translation>
@@ -282,7 +283,6 @@
 <translation id="3892148308691398805">Sao chép văn bản</translation>
 <translation id="3893985792899396936">Mẹo dùng Chrome: Tìm kiếm bằng Ống kính</translation>
 <translation id="3906096710440765802">Đăng nhập vào Chrome để nhận mật khẩu, dấu trang và nhiều nội dung khác trên tất cả các thiết bị của bạn</translation>
-<translation id="3921132130819999051">Để Chrome duyệt web giúp bạn</translation>
 <translation id="3941890832296813527">Lỗi cài đặt: Tên tệp của trình cài đặt không hợp lệ hoặc không được hỗ trợ.</translation>
 <translation id="395904275706073188">Không thể đọc các trang được bảo vệ. Hãy thử đọc một trang khác.</translation>
 <translation id="3968962723676998462">Nhập cụm mật khẩu để sử dụng và lưu dữ liệu trên Chrome vào tài khoản <ph name="ACCOUNT_EMAIL" /> của bạn</translation>
@@ -495,7 +495,6 @@ Một số tính năng có thể không khả dụng. Vui lòng chỉ định th
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome phiên bản beta</translation>
 <translation id="6180522807229584611">Thẻ này đang sử dụng thêm tài nguyên. Để cải thiện hiệu suất, hãy cho phép Chrome dừng hoạt động của thẻ này.</translation>
 <translation id="6182736845697986886">Không cài đặt được do lỗi nội bộ của máy chủ cập nhật.</translation>
-<translation id="6183773856988300112">Gemini trong Chrome sử dụng tính năng tự động duyệt web để hoạt động trong các thẻ của bạn và hoàn thành những nhiệm vụ bạn giao. <ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Mẹo khi dùng Chrome: Lưu mật khẩu</translation>
 <translation id="6192058120268468905">Tài khoản của bạn trong Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> đã thêm một tiện ích có thể thay đổi cách Chrome hoạt động.

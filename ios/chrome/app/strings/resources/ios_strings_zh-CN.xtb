@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">在不同应用中使用保存的密码。</translation>
 <translation id="3485558910355485767">打开新的无痕式窗口</translation>
 <translation id="3488501490964659223">标签页已关闭，而且浏览数据已被删除。您已退出账号</translation>
+<translation id="3490396108106323715">分享当前标签页</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />详细了解<ph name="END_LINK" />推荐内容</translation>
 <translation id="349446645805573740">选择保存“<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”的位置</translation>
 <translation id="3504377992102007712">设置</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">无法加载图片</translation>
 <translation id="3565930036634619844">标签页。第 <ph name="NUMBER_OF_TABS" /> 个，共 <ph name="TAB_INDEX" /> 个。</translation>
 <translation id="3567168891086460374">换一种方式保存</translation>
+<translation id="3572503683475187385">开始新对话时，系统会与 Gemini 分享当前标签页。如果与 Gemini 分享标签页，系统就会将其内容和网址发送给 Google。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">在您的 Google 账号中</translation>
 <translation id="3575234738189584619">使用智能镜头搜索</translation>
 <translation id="3575426792457739946">此列表包含所有已加载的个人资料。</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">停止使用 Google 智能镜头搜索屏幕内容</translation>
 <translation id="3753408171347588045">正在跟踪价格</translation>
 <translation id="3753618528540214374">深绿色主题</translation>
+<translation id="3759491607478608474">与 Gemini 分享当前标签页内容，以获得更符合需求的回答</translation>
 <translation id="3762232513783804601">专为 iPad 打造</translation>
 <translation id="3768725474733206671">重新打开最后关闭的标签页</translation>
 <translation id="3779810277399252432">无互联网连接。</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">以<ph name="FIRST_RUN_ACCOUNT_NAME" />的身份继续</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 分钟后隐藏}other{{count} 分钟后隐藏}}</translation>
 <translation id="4652817563047461855">确保密码安全，检查密码是否遭泄露，并了解如何保障上网安全。<ph name="BEGIN_LINK" />了解详情<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">开启标签页分享功能</translation>
 <translation id="4658335131052370646">保存</translation>
 <translation id="466307903888586355">您的组织已禁止保存文件</translation>
 <translation id="4668929960204016307">、</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">您应立即更改密码</translation>
 <translation id="5721040778297053709">将信用卡放到此框内</translation>
 <translation id="572328651809341494">最近打开的标签页</translation>
+<translation id="5724590854763964497">默认情况下，开始新对话时，系统会分享当前标签页。如果分享标签页，系统就会将其内容和网址发送给 Google，但这些信息不会用于改进生成式 AI 模型。您可以随时更改此设置。</translation>
 <translation id="5724941645893276623">若要私密地浏览网页，请添加新标签页</translation>
 <translation id="5728072125198221967">关联的 Google 服务</translation>
 <translation id="5728700505257787410">很抱歉，登录您的账号时出现问题。</translation>
@@ -1964,6 +1969,7 @@
 <translation id="8059533439631660104">合拢此部分。</translation>
 <translation id="8061584726507121204">历史记录</translation>
 <translation id="8064946459644399612">已应用“新标签页”页面偏好设置</translation>
+<translation id="8065556469005366939">分享标签页，以获得更贴合需求的回答</translation>
 <translation id="8069394452933076548">选择何时将最近未使用的标签页移至“闲置标签页”部分中。</translation>
 <translation id="8073670137947914548">已下载完毕</translation>
 <translation id="8076492880354921740">标签页</translation>
@@ -2132,6 +2138,7 @@
 <translation id="8660600697590740984">使用智能镜头搜索复制的图片</translation>
 <translation id="866266761389616183">喔唷，崩溃啦！</translation>
 <translation id="8663764600409216912">您使用的密码不易猜中</translation>
+<translation id="8664992138761940052">默认情况下，开始新对话时，系统会分享当前标签页。如果分享标签页，系统就会将其内容和网址发送给 Google。您可以随时更改此设置。</translation>
 <translation id="8668210798914567634">此页面已保存到您的阅读列表。</translation>
 <translation id="8672642291731179042">翻译网页</translation>
 <translation id="8672733398999596205">全部可选</translation>

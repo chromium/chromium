@@ -1613,6 +1613,7 @@
 <translation id="3575121482199441727">ഈ സൈറ്റിന് അനുവദിക്കുക</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">തെരുവിന്റെ പേര് ഓപ്‌ഷൻ തിരഞ്ഞെടുത്തു</translation>
+<translation id="3576315803647905285">ഔദ്യോഗിക ഭാഷയിലാക്കുക</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> സൈറ്റിലെ ഉൾച്ചേർത്ത പേജ് പറയുന്നത്:</translation>
 <translation id="3577473026931028326">എന്തോ കുഴപ്പമുണ്ടായി. വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3577902790357386792">ജിംനാസ്റ്റിക്‌സ്</translation>
@@ -1908,6 +1909,7 @@
 <translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
 <translation id="4036753017940930924">ലോട്ടുകളും സ്ഥലവും</translation>
 <translation id="403724377879219932">നിങ്ങളുടെ ലോക്കൽ നെറ്റ്‌വർക്കിലെ മറ്റ് ഉപകരണങ്ങൾ ആക്‌സസ് ചെയ്യാൻ അനുവാദം തേടാം</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, പുതിയത്</translation>
 <translation id="4039506337798853114">നിങ്ങളുടെ കഴ്‌സർ കാണിക്കാൻ |<ph name="ACCELERATOR" />| അമർത്തുക</translation>
 <translation id="4042597221652780603">ഏകദേശം</translation>
 <translation id="4045070493270310437">ടാബുകൾ വീണ്ടും തുറക്കുക</translation>
@@ -2635,6 +2637,7 @@
 <translation id="5190835502935405962">ബുക്ക്‌മാര്‍‌ക്ക് ബാര്‍‌</translation>
 <translation id="5191315092027169558">നിങ്ങളുടെ പ്രൊഫൈൽ മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" />, ഒന്നിലധികം ഫയലുകൾ ഡൗൺലോഡ് ചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
+<translation id="5199121357983849992">ഐഡി കാർഡ് സംരക്ഷിക്കണോ?</translation>
 <translation id="5200063972779787617">വിലാസം അക്കൗണ്ടിൽ സംരക്ഷിക്കുക</translation>
 <translation id="5201306358585911203">ഈ പേജിലെ ഉൾച്ചേർത്ത പേജ് പറയുന്നത്:</translation>
 <translation id="5203716867500274632">ChromeOS ഉപകരണങ്ങളിലുടനീളം നിങ്ങളുടെ മുമ്പത്തേതും നിലവിലുള്ളതുമായ സെഷനുകൾക്കിടയിൽ സമന്വയിപ്പിക്കുന്നതിന്, നിങ്ങളുടെ അഡ്‌മിൻ, ഇനിപ്പറയുന്നത് പ്രവർത്തനക്ഷമമാക്കി:</translation>
@@ -2683,6 +2686,7 @@
 <translation id="5266128565379329178">മുകളിൽ ബൈൻഡ് ചെയ്യുക</translation>
 <translation id="5269225904387178860">താഴെ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" എന്നത് "<ph name="DATA_CONTROLS_RESTRICTION" />" എന്നതിനുള്ള പിന്തുണയ്ക്കുന്ന വ്യവസ്ഥയല്ല</translation>
+<translation id="527191520368130807">പോളിഷ് ചെയ്യുക</translation>
 <translation id="5273658854610202413">മുന്നറിയിപ്പ്: ഈ നയം ലയിപ്പിക്കാവുന്ന നിഘണ്ടു നയങ്ങളുടെ ഭാഗമല്ലാത്തതിനാലാണ് PolicyDictionaryMultipleSourceMergeList നയത്തിൽ വ്യക്തമാക്കിയിരിക്കുന്നത് പോലെ ലയിപ്പിക്കാത്തത്.</translation>
 <translation id="5278778426231952189">ഇപ്പോൾ അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="5279286380302340275">ഡൗൺലോഡുകൾ മാനേജ് ചെയ്യുക</translation>
@@ -2792,6 +2796,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">വേഗത്തിലുള്ള ചെക്ക്ഔട്ടിന്, ഈ CVC Google Wallet-ൽ (<ph name="ACCOUNT_EMAIL" />) സംരക്ഷിക്കുക</translation>
 <translation id="5436307623797390637">ഉപകരണത്തിലെ ആപ്പുകൾ</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, <ph name="PREVIOUS_VALUE" /> ആയിരുന്നു</translation>
 <translation id="5443468954631487277">വിപരീത ക്രമത്തിൽ ഫേസ് അപ്പ്</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> സൈറ്റിനെ, അത് നിങ്ങളെ കുറിച്ച് സംരക്ഷിച്ചിരിക്കുന്ന വിവരങ്ങൾ ഉപയോഗിക്കാൻ അനുവദിക്കുക</translation>
 <translation id="5447973833955560753">വീണ്ടെടുക്കൽ പാസ്‌വേഡ്</translation>
@@ -3583,6 +3588,7 @@
 <translation id="6698097747703777657">കോഡ് ലഭിച്ചില്ലേ? <ph name="BEGIN_LINK" />പുതിയ കോഡ് നേടുക<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">സൃഷ്ടിച്ചു:</translation>
 <translation id="6698769547327354196">Chrome-ൽ Pix ഓഫാക്കാൻ, നിങ്ങളുടെ <ph name="BEGIN_LINK1" />പേയ്‌മെന്റ് ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
+<translation id="669903922988126943">Google ഉൽപ്പന്നങ്ങളിലുടനീളം ഫോമുകൾ പൂരിപ്പിക്കുന്നത് പോലെ, നിങ്ങളുടെ വിവരങ്ങൾ സംരക്ഷിച്ച് കാര്യങ്ങൾ വേഗത്തിൽ പൂർത്തിയാക്കുക. <ph name="ACCOUNT" /> എന്ന അക്കൗണ്ടിനായി നിങ്ങൾക്ക് <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> എന്നതിൽ <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="67007264085648978">ടൈം സ്‌ക്രബർ</translation>
 <translation id="6702851555558236418">ഓഡിയോ, സംഗീത സോഫ്റ്റ്‌വെയർ</translation>
 <translation id="6702919718839027939">ദൃശ്യമാക്കുക</translation>
@@ -4072,6 +4078,7 @@
 <translation id="746412105358554870">Javascript ഒപ്റ്റിമൈസേഷനും സുരക്ഷയും</translation>
 <translation id="7465036432780054056">നിങ്ങൾ <ph name="TOP_LEVEL_URL" /> സന്ദർശിച്ചെന്ന് <ph name="EMBEDDED_URL" /> എന്നതിന് അറിയിപ്പ് ലഭിക്കും</translation>
 <translation id="7465963048299965912">10 x 13 ഇഞ്ച്</translation>
+<translation id="7467332121947433617">ഐഡി കാർഡ് അപ്ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="7469935732330206581">ഫോം സുരക്ഷിതമല്ല</translation>
 <translation id="7470854469646445678">പകർത്തുന്നതിനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
 <translation id="7471007961486718967">കൈമാറാനുള്ള കാരണം നൽകുക (ആവശ്യമാണ്)</translation>
@@ -4093,6 +4100,7 @@
 <translation id="7499188644237027195">നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി ഇ-വാലറ്റും Pix-ഉം കാണുക</translation>
 <translation id="7500917112031739411">ഗ്രൂപ്പ് പ്രകാരം കാണിക്കുക</translation>
 <translation id="7501663406926337752">നിങ്ങൾ പോകാനിരിക്കുന്ന സൈറ്റ് നിങ്ങളുടെ സ്ഥാപനം ഫ്ലാഗ് ചെയ്‌തതാണ്</translation>
+<translation id="7502044688973049724">നിങ്ങളുടെ വിവരങ്ങൾ മാനേജ് ചെയ്യാം</translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">നൽകിയ നയ ഉപകരണ ഐഡി ശൂന്യമാണ് അല്ലെങ്കിൽ നിലവിലെ ഉപകരണ ഐഡിയുമായി യോജിക്കുന്നില്ല</translation>
 <translation id="7508577201115425418">ഡോക്യുമെന്റ്, പ്രിന്റിംഗ് സേവനങ്ങൾ</translation>
@@ -5145,6 +5153,7 @@
 <translation id="9191834167571392248">താഴെ ഇടതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
 <translation id="9192361865877479444">മെറ്റൽ (തിളക്കമില്ലാത്തത്)</translation>
 <translation id="9192947025498305328">പ്രകൃതിദത്ത സൗന്ദര്യം</translation>
+<translation id="9193018794001479794">വിശദമാക്കുക</translation>
 <translation id="9195969368671142407">നിങ്ങളുടെ Google Account-ലേക്ക് സംരക്ഷിക്കുന്നത് നിങ്ങളുടെ സ്ഥാപനം പരിമിതപ്പെടുത്തുമ്പോൾ, നിങ്ങൾക്ക് ടാബ് ഗ്രൂപ്പുകൾ പങ്കിടാനോ അവയിൽ ചേരാനോ കഴിയില്ല</translation>
 <translation id="9198613052465150219">നിങ്ങളുടെ Google Account-ൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം, അവ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> -ൽ കണ്ടെത്താനാകും</translation>
 <translation id="9199905725844810519">പ്രിന്റ് ചെയ്യൽ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു</translation>

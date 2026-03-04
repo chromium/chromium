@@ -283,7 +283,6 @@
 <translation id="3892148308691398805">मजकूर कॉपी करा</translation>
 <translation id="3893985792899396936">Chrome टीप: Lens वापरून शोधा</translation>
 <translation id="3906096710440765802">तुमच्या सर्व डिव्हाइसवर तुमचे पासवर्ड, बुकमार्क आणि आणखी बऱ्याच गोष्टी मिळवण्यासाठी Chrome मध्ये साइन इन करा</translation>
-<translation id="3921132130819999051">Chrome ला तुमच्यासाठी ब्राउझ करू द्या</translation>
 <translation id="3941890832296813527">इंस्टॉलसंबंधित एरर: इंस्टॉलर फाइल नाव चुकीचे आहे किंवा त्यास सपोर्ट नाही.</translation>
 <translation id="395904275706073188">सुरक्षित पेज वाचू शकत नाही. वेगळे पेज वापरून पहा.</translation>
 <translation id="3968962723676998462">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये Chrome डेटा वापरण्यासाठी आणि सेव्ह करण्यासाठी तुमचा पासफ्रेझ एंटर करा</translation>
@@ -497,7 +496,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="6180522807229584611">हा टॅब अतिरिक्त स्रोत वापरत आहे. तुमच्या परफॉर्मन्समध्ये सुधारणा करण्यासाठी, Chrome ला तो इनॅक्टिव्ह करू द्या.</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
-<translation id="6183773856988300112">Chrome मधील Gemini तुमच्या टॅबमध्ये काम करण्यासाठी आणि तुम्ही त्याला दिलेल्या टास्क पूर्ण करण्यासाठी ऑटोमॅटिक ब्राउझ वापरते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome टीप: पासवर्ड सेव्ह करा</translation>
 <translation id="6192058120268468905">Chrome मधील तुमचे खाते</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ने असे एक्स्टेंशन जोडले आहे, ज्यामुळे Chrome ची काम करण्याची पद्धत बदलू शकते.
@@ -696,7 +694,8 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="80471789339884597">इंस्टॉल केल्याबद्दल धन्यवाद. तुम्ही <ph name="BUNDLE_NAME" /> वापरण्यापूर्वी तुमचे सर्व ब्राउझर रीस्टार्ट करणे आवश्यक आहे.</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064965390968184078">१. खाली <ph name="BUTTON_LABEL" /> वर क्लिक करा
-2. तुमच्या Windows सेटिंग्जमध्ये <ph name="BUTTON_2" /> वर क्लिक करा झटपट अ‍ॅक्सेससाठी Chrome तुमच्या टास्कबारवर पिन करण्याकरिता Windows नोटिफिकेशनमध्ये <ph name="BUTTON_3" /> वर क्लिक करा</translation>
+२. तुमच्या Windows सेटिंग्जमध्ये <ph name="BUTTON_2" /> वर क्लिक करा
+३. झटपट अ‍ॅक्सेससाठी Chrome तुमच्या टास्कबारवर पिन करण्याकरिता Windows नोटिफिकेशनमध्ये <ph name="BUTTON_3" /> वर क्लिक करा</translation>
 <translation id="8077579734294125741">इतर Chrome प्रोफाइल</translation>
 <translation id="8086881907087796310">इंस्टॉलेशन यशस्वी झाले नाही, कारण तुमचा कॉंप्युटर हा हार्डवेअरच्या किमान आवश्यकतांची पूर्तता करत नाही.</translation>
 <translation id="8113883687556086139">तुमच्या <ph name="ACCOUNT_EMAIL" /> खात्यामध्ये, Chrome वापरण्यासाठी किंवा सेव्ह करण्यासाठी हे तुम्हीच असल्याची पडताळणी करा</translation>

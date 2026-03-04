@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Digər tətbiqlərdə parollarınıza giriş.</translation>
 <translation id="3485558910355485767">Yeni Anonim Pəncərə</translation>
 <translation id="3488501490964659223">Tablar bağlandı və baxış datası silindi. Çıxış edildi</translation>
+<translation id="3490396108106323715">Cari tabı paylaşın</translation>
 <translation id="3493531032208478708">Təklif məzmunu haqqında <ph name="BEGIN_LINK" />daha ətraflı<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">"<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" faylını harada yadda saxlayacağınızı seçin</translation>
 <translation id="3504377992102007712">Ayarlar</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Şəkillər yüklənmir</translation>
 <translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Başqa cür saxlayın</translation>
+<translation id="3572503683475187385">Yeni söhbətə başladığınız zaman cari tab Gemini ilə paylaşılır. Tabı Gemini ilə paylaşdığınız zaman tabın kontenti və URL-i Google-a göndərilir. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google Hesabında</translation>
 <translation id="3575234738189584619">Linza ilə axtarış edin</translation>
 <translation id="3575426792457739946">Bütün yüklənmiş profillər bu siyahıda göstərilir.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Google Linza ilə ekranda axtarış etməyi dayandırın</translation>
 <translation id="3753408171347588045">Qiymətlər izlənilir</translation>
 <translation id="3753618528540214374">Yaşılımtıl mavi tema</translation>
+<translation id="3759491607478608474">Daha uyğun cavablar almaq üçün cari tab kontentini Gemini ilə paylaşın</translation>
 <translation id="3762232513783804601">iPad'iniz üçün hazırlanıb</translation>
 <translation id="3768725474733206671">Son Bağlanmış Tabı yenidən açın</translation>
 <translation id="3779810277399252432">İnternet bağlantısı yoxdur.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669"><ph name="FIRST_RUN_ACCOUNT_NAME" /> kimi davam edin</translation>
 <translation id="4651927776207937667">{count,plural, =1{1 dəqiqədən sonra gizlədin}other{{count} dəqiqədən sonra gizlədin}}</translation>
 <translation id="4652817563047461855">Parolların güvənli olduğundan əmin olun, onların ələ keçirilib-keçirilmədiyini müəyyən edin və özünüzü onlayn qorumaq üçün məsləhət alın. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Tab paylaşımını aktiv edin</translation>
 <translation id="4658335131052370646">Yadda saxlayın</translation>
 <translation id="466307903888586355">Faylların yadda saxlanılması təşkilatınız tərəfindən bloklanıb</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="5718049162805123412">Bunları indi dəyişməlisiniz</translation>
 <translation id="5721040778297053709">Kredit kartını çərçivəyə yerləşdirin</translation>
 <translation id="572328651809341494">Son panellər</translation>
+<translation id="5724590854763964497">Yeni çat başlatdığınız zaman defolt olaraq cari tabınız paylaşılır. Paylaşılan tabların kontentləri və URL-ləri Google-a göndərilir, lakin generativ Sİ modellərini təkmilləşdirmək üçün istifadə edilmir. Bu ayarı dəyişə bilərsiniz.</translation>
 <translation id="5724941645893276623">Vebdə məxfi axtarış etmək üçün yeni tab açın</translation>
 <translation id="5728072125198221967">Əlaqələndirilmiş Google xidmətləri</translation>
 <translation id="5728700505257787410">Üzr istəyirik, hesabınıza daxil olarkən problem baş verdi.</translation>
@@ -1964,6 +1969,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8059533439631660104">Bölməni yığcamlaşdırır.</translation>
 <translation id="8061584726507121204">Tarixçə</translation>
 <translation id="8064946459644399612">Yeni Tab səhifəsi tərcihləriniz tətbiq edildi</translation>
+<translation id="8065556469005366939">Tablarınızı paylaşmaqla daha uyğun cavablar əldə edin</translation>
 <translation id="8069394452933076548">Son vaxtlar istifadə edilməyən tabların nə vaxt fəaliyyətsiz tab bölməsinə köçürüləcəyini seçin.</translation>
 <translation id="8073670137947914548">Endirmə tamamlandı</translation>
 <translation id="8076492880354921740">Tablar</translation>
@@ -2132,6 +2138,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="8660600697590740984">Linza ilə kopiyalanan şəkil</translation>
 <translation id="866266761389616183">Eh, alınmadı!</translation>
 <translation id="8663764600409216912">Asan təxmin edilməyən parollar istifadə edirsiniz</translation>
+<translation id="8664992138761940052">Yeni çat başlatdığınız zaman defolt olaraq cari tabınız paylaşılır. Tablar paylaşıldıqda onların kontenti və URL-ləri Google-a göndərilir. Bu ayarı dəyişə bilərsiniz.</translation>
 <translation id="8668210798914567634">Bu səhifə Oxu Siyahısında yadda saxlanılmışdır.</translation>
 <translation id="8672642291731179042">Səhifələri tərcümə edin</translation>
 <translation id="8672733398999596205">Hamısını aktiv edin</translation>

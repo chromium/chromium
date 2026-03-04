@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Khi đăng nhập vào các dịch vụ của Google như Gmail hoặc YouTube bằng <ph name="USER_EMAIL" />, bạn có thể tự động được đăng nhập vào Chromium bằng cùng một tài khoản</translation>
 <translation id="1290883685122687410">Lỗi thiết lập: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Thiết lập hồ sơ Chromium mới</translation>
+<translation id="132092532143527429">Dùng thử với Gemini trong Chromium</translation>
 <translation id="1324107359134968521">Chromium cần có quyền truy cập Bluetooth để tìm 
  các thiết bị Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Phát hiện ngôn ngữ</translation>
@@ -609,6 +610,7 @@ Chromium không thể khôi phục cài đặt của bạn.</translation>
 <translation id="7622753900276619808">Giờ đây, bạn có thể sử dụng nhiều tính năng hơn trong Chromium</translation>
 <translation id="7624307931717240213">Chúng tôi sử dụng thông tin để cải thiện dịch vụ này. Vui lòng xem Chính sách quyền riêng tư và Điều khoản dịch vụ.</translation>
 <translation id="7649070708921625228">Trợ giúp</translation>
+<translation id="7650134251917003571">Tải ứng dụng Chromium</translation>
 <translation id="7656340475565475526">Để Chromium duyệt web giúp bạn</translation>
 <translation id="7658239707568436148">Huỷ</translation>
 <translation id="7686590090926151193">Chromium không phải là trình duyệt mặc định của bạn</translation>

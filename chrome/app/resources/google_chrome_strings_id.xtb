@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">Jika Anda juga menyimpan bookmark di Akun Google, Anda dapat memantau harga produk di Chrome dan mendapatkan notifikasi jika ada penurunan harga</translation>
 <translation id="3242123554343253302">Tambahkan profil Chrome</translation>
 <translation id="3245429137663807393">Jika Anda juga membagikan laporan penggunaan Chrome, laporan tersebut akan menyertakan URL yang Anda buka</translation>
+<translation id="3259748324892322072">Dapatkan Aplikasi Chrome</translation>
 <translation id="3286538390144397061">Mulai Ulang Sekarang</translation>
 <translation id="3292333338048274092">Kemudian, Anda harus memulai ulang Chrome.</translation>
 <translation id="3324218984287646518">Tanya Google Lens info tentang video ini</translation>
@@ -280,7 +281,6 @@
 <translation id="3892148308691398805">Salin teks</translation>
 <translation id="3893985792899396936">Tips Chrome: Telusuri Dengan Lens</translation>
 <translation id="3906096710440765802">Login ke Chrome untuk mendapatkan sandi, bookmark, dan lainnya di semua perangkat Anda</translation>
-<translation id="3921132130819999051">Izinkan Chrome melakukan penjelajahan untuk Anda</translation>
 <translation id="3941890832296813527">Error penginstalan: Nama file penginstal tidak valid atau tidak didukung.</translation>
 <translation id="395904275706073188">Halaman yang dilindungi tidak dapat dibaca. Coba halaman lain.</translation>
 <translation id="3968962723676998462">Masukkan frasa sandi untuk menggunakan dan menyimpan data Chrome di akun Anda, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -491,7 +491,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tab ini menggunakan resource tambahan. Untuk meningkatkan performa Anda, izinkan Chrome menonaktifkannya.</translation>
 <translation id="6182736845697986886">Penginstalan gagal karena server update mengalami error internal.</translation>
-<translation id="6183773856988300112">Gemini di Chrome menggunakan penjelajahan otomatis untuk bekerja di tab Anda dan menyelesaikan tugas yang Anda berikan. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Tips Chrome: Simpan Sandi</translation>
 <translation id="6192058120268468905">Akun Anda di Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> telah menambahkan ekstensi yang dapat mengubah cara kerja Chrome.

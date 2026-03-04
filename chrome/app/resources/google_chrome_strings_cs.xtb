@@ -226,6 +226,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3226612997184048185">Pokud si záložky uložíte také do účtu Google, můžete v Chromu sledovat ceny produktů a dostávat upozornění, když cena klesne</translation>
 <translation id="3242123554343253302">Přidat profil Chrome</translation>
 <translation id="3245429137663807393">Pokud také sdílíte přehledy využití Chromu, budou zahrnovat adresy URL, které navštěvujete</translation>
+<translation id="3259748324892322072">Stáhnout aplikaci Chrome</translation>
 <translation id="3286538390144397061">Restartovat</translation>
 <translation id="3292333338048274092">Budete Chrome muset restartovat.</translation>
 <translation id="3324218984287646518">Zeptat se Google Lens na toto video</translation>
@@ -283,7 +284,6 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="3892148308691398805">Kopírovat text</translation>
 <translation id="3893985792899396936">Tip pro Chrome: Vyhledávejte pomocí Lens</translation>
 <translation id="3906096710440765802">Pokud chcete mít svá hesla a další obsah na všech zařízeních, přihlaste se do Chromu</translation>
-<translation id="3921132130819999051">Nechte Chrome procházet internet za vás</translation>
 <translation id="3941890832296813527">Chyba instalace: Název souboru instalačního programu je neplatný nebo není podporován.</translation>
 <translation id="395904275706073188">Chráněné stránky nelze číst. Zkuste jinou stránku.</translation>
 <translation id="3968962723676998462">Pokud chcete používat a ukládat data Chromu ve svém účtu <ph name="ACCOUNT_EMAIL" />, zadejte heslovou frázi</translation>
@@ -498,7 +498,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome Beta</translation>
 <translation id="6180522807229584611">Tato karta využívá další zdroje. Ke zlepšení výkonu ji Chrome nechte deaktivovat.</translation>
 <translation id="6182736845697986886">Instalace se nezdařila kvůli interní chybě serveru s aktualizací.</translation>
-<translation id="6183773856988300112">Gemini v Chromu používá automatické procházení k práci na vašich kartách a plnění zadaných úkolů. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Tip pro Chrome: Ukládání hesel</translation>
 <translation id="6192058120268468905">Váš účet v Chromu</translation>
 <translation id="6220551899604141979">Partner <ph name="PARTNER_NAME" /> přidal rozšíření, které může změnit fungování Chromu.

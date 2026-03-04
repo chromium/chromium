@@ -728,6 +728,7 @@
 <translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> keele transkriptsioonimudeli allalaadimine on lõpule jõudnud</translation>
 <translation id="42126664696688958">Eksportimine</translation>
 <translation id="4213104098953699324">USB-klaviatuur</translation>
+<translation id="4217571870635786043">Dikteerimine</translation>
 <translation id="4227825898293920515">Parooli aegumiseni on jäänud <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ühtegi prinditööd pole pooleli</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8420955526972171689">Käitage teste ja tehke veaotsingut, et lahendada riistvaraprobleeme</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">alla</translation>
+<translation id="8427213022735114808">Dikteerimisel saadetakse teie hääl Google'ile, et lubada häälsisestus kõigil tekstiväljadel.</translation>
 <translation id="8428213095426709021">Seaded</translation>
 <translation id="8431300646573772016">Mis on Chrome OS-is uut?</translation>
 <translation id="8433186206711564395">Võrguseaded</translation>

@@ -1614,6 +1614,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="3575121482199441727">Permitir en este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Opción de nombre de calle seleccionada</translation>
+<translation id="3576315803647905285">Formalizar</translation>
 <translation id="3576616784287504635">Una página insertada en <ph name="SITE" /> dice</translation>
 <translation id="3577473026931028326">Se ha producido un error. Inténtalo de nuevo.</translation>
 <translation id="3577902790357386792">Gimnasia</translation>
@@ -2685,6 +2686,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="5266128565379329178">Encuadernar por la parte superior</translation>
 <translation id="5269225904387178860">Perforado cuádruple en la parte inferior</translation>
 <translation id="5271381225185906340">La condición "<ph name="DATA_CONTROLS_ATTRIBUTE" />" no se admite en "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">Pulir</translation>
 <translation id="5273658854610202413">Advertencia: Esta política no se ha combinado tal como se especifica en la política PolicyDictionaryMultipleSourceMergeList porque no forma parte de las políticas de diccionario que se pueden combinar.</translation>
 <translation id="5278778426231952189">Subir ahora</translation>
 <translation id="5279286380302340275">Gestionar descargas</translation>
@@ -3585,6 +3587,7 @@ Para ocultar las opciones de pago aplazado, ve a la <ph name="BEGIN_LINK" />conf
 <translation id="6698097747703777657">¿No has recibido tu código? <ph name="BEGIN_LINK" />Obtén uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6698769547327354196">Para desactivar Pix en Chrome, ve a tu <ph name="BEGIN_LINK1" />configuración de pago<ph name="END_LINK1" />.</translation>
+<translation id="669903922988126943">Guarda tu información y realiza tareas más rápido, como rellenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> de <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Control deslizante de tiempo</translation>
 <translation id="6702851555558236418">Software de música y audio</translation>
 <translation id="6702919718839027939">Presentar</translation>
@@ -4098,6 +4101,7 @@ Más información:
 <translation id="7499188644237027195">Cuando hagas compras en Chrome, verás tu cartera electrónica y Pix como opciones</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">Tu organización ha marcado el sitio al que vas a acceder</translation>
+<translation id="7502044688973049724">gestionar tu información</translation>
 <translation id="7507075214339298899">Sobre n.º 9</translation>
 <translation id="7508255263130623398">El ID de dispositivo de política devuelto está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508577201115425418">Servicios de copistería y de impresión</translation>
@@ -5150,6 +5154,7 @@ Más información:
 <translation id="9191834167571392248">Perforado en la parte inferior izquierda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Belleza con productos sostenibles</translation>
+<translation id="9193018794001479794">Desarrollar</translation>
 <translation id="9195969368671142407">Si tu organización limita lo que puedes guardar en tu cuenta de Google, no podrás compartir ni unirte a grupos de pestañas</translation>
 <translation id="9198613052465150219">Es posible que tu cuenta de Google tenga otros tipos de historial de navegación en la página <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">La impresión está bloqueada</translation>

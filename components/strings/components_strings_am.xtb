@@ -1613,6 +1613,7 @@
 <translation id="3575121482199441727">ለዚህ ጣቢያ ፍቀድ</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">የጎዳና ስም አማራጭ ተመርጧል</translation>
+<translation id="3576315803647905285">መደበኛ አድርግ</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> ላይ የተካተተ ገፅ እንዲህ ይላል፦</translation>
 <translation id="3577473026931028326">የሆነ ችግር ተፈጥሯል። እንደገና ይሞክሩ።</translation>
 <translation id="3577902790357386792">ጂምናስቲክስ</translation>
@@ -2635,6 +2636,7 @@
 <translation id="5190835502935405962">የዕልባቶች አሞሌ</translation>
 <translation id="5191315092027169558">የእርስዎ መገለጫ የሚተዳደረው በ<ph name="DOMAIN" /> ነው።</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> በርካታ ፋይሎችን ለማውረድ ይፈልጋል</translation>
+<translation id="5199121357983849992">መታወቂያ ካርድ ይቀመጥ?</translation>
 <translation id="5200063972779787617">አድራሻን በመለያ ውስጥ ያስቀምጡ</translation>
 <translation id="5201306358585911203">በዚህ ድረ-ገፅ ላይ ያለ የተካተተ ገፅ እንዲህ ይላል፦</translation>
 <translation id="5203716867500274632">አስተዳዳሪዎ የሚከተለውን በመላው ChromeOS መሣሪያዎችዎ ላይ በእርስዎ ቀዳሚ እና የአሁን ክፍለ-ጊዜዎች መካከል እንዲሠምር አስችለውታል፦</translation>
@@ -2683,6 +2685,7 @@
 <translation id="5266128565379329178">ከላይ ጠርዝ</translation>
 <translation id="5269225904387178860">አራቴ ከታች ብሳ</translation>
 <translation id="5271381225185906340">«<ph name="DATA_CONTROLS_ATTRIBUTE" />» ለ«<ph name="DATA_CONTROLS_RESTRICTION" />» የሚደገፍ ሁኔታ አይደለም</translation>
+<translation id="527191520368130807">አሳምር</translation>
 <translation id="5273658854610202413">ማስጠንቀቂያ፦ ይህ መመሪያ ሊዋሃዱ የሚችሉ የመዝገበ-ቃላት መመሪያዎች አካል ስላልሆነ በPolicyDictionaryMultipleSourceMergeList መመሪያ ላይ በተገለጸው መሠረትት አልተዋሃደም።</translation>
 <translation id="5278778426231952189">አሁን ስቀል</translation>
 <translation id="5279286380302340275">ውርዶችን ያቀናብሩ</translation>
@@ -3583,6 +3586,7 @@
 <translation id="6698097747703777657">ኮድዎ አልደረሰዎትም? <ph name="BEGIN_LINK" />አዲስ ኮድ ያግኙ<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ተፈጠረ:</translation>
 <translation id="6698769547327354196">Chrome ውስጥ Pixን ለማጥፋት ወደ የእርስዎ <ph name="BEGIN_LINK1" />የክፍያ ቅንብሮች<ph name="END_LINK1" /> ይሂዱ</translation>
+<translation id="669903922988126943">መረጃዎን ያስቀምጡ እና በመላው የGoogle ምርቶች ላይ እንደ ቅጾችን መሙላት ያሉ ነገሮችን በፍጥነት ያከናውኑ። ለ<ph name="ACCOUNT" /> በ<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> ውስጥ <ph name="MANAGE_INFO_LINK" /> ይችላሉ።</translation>
 <translation id="67007264085648978">የጊዜ መጎተቻ</translation>
 <translation id="6702851555558236418">የኦዲዮ እና ሙዚቃ ሶፍትዌር</translation>
 <translation id="6702919718839027939">አቅርብ</translation>
@@ -4074,6 +4078,7 @@
 <translation id="746412105358554870">ጃቫስክሪፕት ማመቻቸት እና ደህንነት</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> የሚለውን እንደጎበኙ ያውቃል</translation>
 <translation id="7465963048299965912">10 x 13 ኢንች</translation>
+<translation id="7467332121947433617">መታወቂያ ካርድ ይዘመን?</translation>
 <translation id="7469935732330206581">የቅጽ ደህንነቱ የተጠበቀ አይደለም</translation>
 <translation id="7470854469646445678">የመቅዳት ምክንያት ያቅርቡ (አስፈላጊ)</translation>
 <translation id="7471007961486718967">የማስተላለፍ ምክንያት ያቅርቡ (አስፈላጊ)</translation>
@@ -4095,6 +4100,7 @@
 <translation id="7499188644237027195">Chrome ውስጥ ግዢዎችን ሲፈጽሙ ኢ-ኪስ ቦርሳ እና Pixን እንደ አማራጮች ይመልከቱ</translation>
 <translation id="7500917112031739411">በቡድን አሳይ</translation>
 <translation id="7501663406926337752">ከፊት ያለው ጣቢያ በድርጅትዎ ተጠቁሟል</translation>
+<translation id="7502044688973049724">መረጃዎን ያስተዳድሩ</translation>
 <translation id="7507075214339298899">#9 ፖስታ</translation>
 <translation id="7508255263130623398">የተመላሽ መመሪያ መሣሪያ መታወቂያ ባዶ ነው ወይም ከአሁኑ የመሣሪያ መታወቂያ ጋር አይዛመድም</translation>
 <translation id="7508577201115425418">የሰነድ እና ህትመት አገልግሎቶች</translation>
@@ -5148,6 +5154,7 @@
 <translation id="9191834167571392248">ግራ በኩል ከታች ብሳ</translation>
 <translation id="9192361865877479444">ብረት (ድብዳብ)</translation>
 <translation id="9192947025498305328">ንጹህ ውበት</translation>
+<translation id="9193018794001479794">አብራራ</translation>
 <translation id="9195969368671142407">ድርጅትዎ ወደ Google መለያ ማስቀመጥን ከገደበ የትር ቡድኖችን ማጋራት ወይም መቀላቀል አይችሉም</translation>
 <translation id="9198613052465150219">የእርስዎ Google መለያ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> ላይ ሌሎች የአሰሳ ታሪክ ዓይነቶች ሊኖረው ይችላል።</translation>
 <translation id="9199905725844810519">ማተም ታግዷል</translation>

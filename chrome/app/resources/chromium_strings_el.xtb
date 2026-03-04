@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Όταν συνδέεστε σε υπηρεσίες Google, όπως το Gmail ή το YouTube, με τον λογαριασμό <ph name="USER_EMAIL" />, μπορείτε να συνδέεστε αυτόματα στο Chromium με τον ίδιο λογαριασμό</translation>
 <translation id="1290883685122687410">Σφάλμα ρύθμισης: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Ρυθμίστε το νέο σας προφίλ στο Chromium</translation>
+<translation id="132092532143527429">Δοκιμάστε τη με το Gemini στο Chromium</translation>
 <translation id="1324107359134968521">Το Chromium χρειάζεται πρόσβαση στο Bluetooth για εξερεύνηση 
  Συσκευών Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Εντοπισμός γλώσσας</translation>
@@ -609,6 +610,7 @@
 <translation id="7622753900276619808">Έχετε πλέον περισσότερες διαθέσιμες λειτουργίες στο Chromium</translation>
 <translation id="7624307931717240213">Χρησιμοποιούμε πληροφορίες για τη βελτίωση αυτής της υπηρεσίας. Ανατρέξτε στην Πολιτική απορρήτου και στους Όρους παροχής υπηρεσιών.</translation>
 <translation id="7649070708921625228">Βοήθεια</translation>
+<translation id="7650134251917003571">Λήψη της εφαρμογής Chromium</translation>
 <translation id="7656340475565475526">Επιτρέψτε στο Chromium να κάνει περιήγηση για εσάς</translation>
 <translation id="7658239707568436148">Ακύρωση</translation>
 <translation id="7686590090926151193">Το Chromium δεν είναι το προεπιλεγμένο πρόγραμμα περιήγησης</translation>

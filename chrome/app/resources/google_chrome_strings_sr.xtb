@@ -226,6 +226,7 @@
 <translation id="3226612997184048185">Ако сачувате обележиваче и на Google налогу, можете да пратите цене производа у Chrome-у и да добијате обавештења када падне цена</translation>
 <translation id="3242123554343253302">Додај Chrome профил</translation>
 <translation id="3245429137663807393">Ако делите и Chrome извештаје о коришћењу, ти извештаји обухватају URL-ове које посећујете</translation>
+<translation id="3259748324892322072">Преузми апликацију Chrome</translation>
 <translation id="3286538390144397061">Рестартуј одмах</translation>
 <translation id="3292333338048274092">Затим треба да рестартујете Chrome.</translation>
 <translation id="3324218984287646518">Поставите питање Google објективу о овом видеу</translation>
@@ -284,7 +285,6 @@
 <translation id="3892148308691398805">Копирај текст</translation>
 <translation id="3893985792899396936">Савет за Chrome: Претражујте помоћу Објектива</translation>
 <translation id="3906096710440765802">Пријавите се у Chrome да би вам лозинке, обележивачи и други садржај били доступни на свим уређајима</translation>
-<translation id="3921132130819999051">Дозволите Chrome-у да прегледа за вас</translation>
 <translation id="3941890832296813527">Грешка при инсталацији: Назив фајла програма за инсталацију је неважећи или није подржан.</translation>
 <translation id="395904275706073188">Заштићене странице не могу да се читају. Пробајте са другом страницом.</translation>
 <translation id="3968962723676998462">Унесите приступну фразу да бисте користили и сачували Chrome податке на налогу, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -499,7 +499,6 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome бета</translation>
 <translation id="6180522807229584611">Ова картица користи додатне ресурсе. Да бисте побољшали перформансе, дозволите Chrome-у да је учини неактивном.</translation>
 <translation id="6182736845697986886">Инсталација није успела због интерне грешке сервера за ажурирање.</translation>
-<translation id="6183773856988300112">Gemini у Chrome-у користи аутоматско прегледање за рад на картицама и обављање задатака које му доделите. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Напомена за Chrome: Сачувајте лозинке</translation>
 <translation id="6192058120268468905">Ваш налог у Chrome-у</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> је додао додатак који може да промени начин на који Chrome функционише.

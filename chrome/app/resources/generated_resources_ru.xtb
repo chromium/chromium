@@ -362,7 +362,6 @@
 <translation id="1223853788495130632">Администратор рекомендует выбрать определенное значение для этого параметра.</translation>
 <translation id="1225177025209879837">Обработка запроса...</translation>
 <translation id="1227107020813934021">Поиск сканеров документов</translation>
-<translation id="1227113644794103810">Неактивные вкладки</translation>
 <translation id="1227260640693522019">Замок</translation>
 <translation id="1227660082540388410">Изменение ключа доступа</translation>
 <translation id="1227993798763400520">Не удалось начать трансляцию. Повторите попытку</translation>
@@ -1043,6 +1042,7 @@
 <translation id="1682696837763999627">Крупный указатель</translation>
 <translation id="1682867089915960590">Включить режим активного курсора?</translation>
 <translation id="1686550358074589746">Включить непрерывный ввод</translation>
+<translation id="1686684082159608623">Администратор заблокировал обновление этого приложения, поэтому оно может работать неправильно.</translation>
 <translation id="1686785653877010442">Обычно сайты показывают уведомления, чтобы оповещать вас о сообщениях в чате или срочных новостях.</translation>
 <translation id="168715261339224929">Чтобы получить доступ к закладкам на всех ваших устройствах, включите синхронизацию.</translation>
 <translation id="1688935057616748272">Необходимо добавить букву</translation>
@@ -1512,7 +1512,6 @@
 <translation id="1999763610967697511">Перетаскивание</translation>
 <translation id="2002109485265116295">В режиме реального времени</translation>
 <translation id="2003130567827682533">Чтобы активировать службу передачи данных "<ph name="NAME" />", сначала подключитесь к сети Wi-Fi.</translation>
-<translation id="200321182559008924">Уберите ненужные вкладки</translation>
 <translation id="2003596238737586336">Текущее расписание: <ph name="SUNRISE" />–<ph name="SUNSET" />. Этим параметром управляет администратор.</translation>
 <translation id="2004413981947727241">Получайте доступ к паролям на любых устройствах</translation>
 <translation id="2006638907958895361">Открыть ссылку в приложении "<ph name="APP" />"</translation>
@@ -2269,7 +2268,6 @@
 <translation id="2501278716633472235">Назад</translation>
 <translation id="2501797496290880632">Укажите быстрые клавиши</translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
-<translation id="2502267564852819530">Удалить из списка вкладку "<ph name="TAB_TITLE" />". <ph name="LAST_ACTIVE" />.</translation>
 <translation id="2502441965851148920">Включен режим автоматического обновления. Функция обновления вручную отключена администратором.</translation>
 <translation id="2502719318159902502">Расширения с полным доступом</translation>
 <translation id="2504801073028762184">Рекомендации по безопасности</translation>
@@ -4397,6 +4395,7 @@
 <translation id="3920504717067627103">Политики сертификатов</translation>
 <translation id="3920909973552939961">Запретить сайтам устанавливать обработчики платежей</translation>
 <translation id="3920938867981797493">Правила для программы обновления</translation>
+<translation id="3921132130819999051">Разрешить Chrome искать информацию в интернете</translation>
 <translation id="3922823422695198027">Вы хотите установить "<ph name="APP_NAME" />" в качестве приложения по умолчанию? После изменения эти ссылки больше не будут открываться в приложениях "<ph name="APP_NAME_2" />", "<ph name="APP_NAME_3" />" и "<ph name="APP_NAME_4" />".</translation>
 <translation id="3923184630988645767">Передача данных</translation>
 <translation id="3923221004758245114">Удалить <ph name="VM_NAME" /> с устройства <ph name="DEVICE_TYPE" />? Все приложения и данные на виртуальной машине будут утеряны.</translation>
@@ -4730,7 +4729,6 @@
 <translation id="4147911968024186208">Повторите попытку. Если сообщение об ошибке появится снова, свяжитесь со службой поддержки.</translation>
 <translation id="4148195018520464922">Вы можете разрешить вход только определенным пользователям. Тогда на экране входа не будет варианта "Добавить пользователя". Вы также можете удалить существующих пользователей.</translation>
 <translation id="4148957013307229264">Установка...</translation>
-<translation id="4149385644005013189">Полный порядок!</translation>
 <translation id="4150201353443180367">Экран</translation>
 <translation id="4151449637210235443">Расскажите о недавнем геймплее.</translation>
 <translation id="4151503145138736576">Нет автономного хранилища, которое нужно очистить</translation>
@@ -4787,7 +4785,6 @@
 <translation id="4195643157523330669">Открыть в новой вкладке</translation>
 <translation id="4195814663415092787">Ранее открытые вкладки</translation>
 <translation id="4198268995694216131">Другие сайты</translation>
-<translation id="4198420883535766848">Удалить вкладку из списка</translation>
 <translation id="4200609364258658652">&amp;Копировать кадр видео</translation>
 <translation id="4200689466366162458">Специальные слова</translation>
 <translation id="4200983522494130825">Новая &amp;вкладка</translation>
@@ -4816,7 +4813,6 @@
 <translation id="42137655013211669">Доступ к этому ресурсу запрещен сервером.</translation>
 <translation id="4213918571089943508">Аккаунт Google ребенка</translation>
 <translation id="4214192212360095377">Отключить</translation>
-<translation id="4214313983951846766">{NUM_TABS,plural, =0{Неактивных вкладок нет}=1{Посмотреть 1 неактивную вкладку}one{Посмотреть # неактивную вкладку}few{Посмотреть # неактивные вкладки}many{Посмотреть # неактивных вкладок}other{Посмотреть # неактивной вкладки}}</translation>
 <translation id="4216407171061541111">Ваша организация отключила сохранение вкладок в аккаунте Google.</translation>
 <translation id="4217571870635786043">Голосовой ввод</translation>
 <translation id="4218081191298393750">Нажмите на значок динамика, чтобы отключить звук на этой вкладке.</translation>
@@ -5598,7 +5594,6 @@
 <translation id="4756378406049221019">Остановить/Перезапустить</translation>
 <translation id="4756388243121344051">&amp;История</translation>
 <translation id="4756671452988984333">Расшифровка для аудио</translation>
-<translation id="4757654665487479524"><ph name="HEADING" />. <ph name="SUBHEADING" />.</translation>
 <translation id="4759202969060787081">Не открывать</translation>
 <translation id="4759238208242260848">Скачанные файлы</translation>
 <translation id="4761104368405085019">Использование микрофона</translation>
@@ -5632,7 +5627,6 @@
 <translation id="4779083564647765204">Масштаб</translation>
 <translation id="4779136857077979611">Онигири</translation>
 <translation id="4779766576531456629">Переименовать мобильную сеть eSIM</translation>
-<translation id="4779855924282373274"><ph name="URL" /> • 1 копия</translation>
 <translation id="4780321648949301421">Сохранить страницу как...</translation>
 <translation id="4780558987886269159">Для работы</translation>
 <translation id="4781633367688946589">Начать новый сеанс</translation>
@@ -5685,7 +5679,6 @@
 <translation id="4816336393325437908">{COUNT,plural, =1{Удалена 1 закладка.}one{Удалена {COUNT} закладка.}few{Удалено {COUNT} закладки.}many{Удалено {COUNT} закладок.}other{Удалено {COUNT} закладки.}}</translation>
 <translation id="481689174647911539">Этот файл может оказаться вирусом или вредоносным ПО.<ph name="LINE_BREAK" />Вы можете отправить его в сервис "Google Безопасный просмотр", чтобы проверить, представляет ли он угрозу. Обычно сканирование занимает несколько секунд.</translation>
 <translation id="4816900689218414104">Создайте ключ доступа на телефоне или планшете</translation>
-<translation id="481917177323309377">Вкладки, которые вы не открывали несколько дней (<ph name="COUNT" /> и более)</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браузер закрыт.}=1{Браузер будет закрыт через 1 секунду.}one{Браузер будет закрыт через # секунду.}few{Браузер будет закрыт через # секунды.}many{Браузер будет закрыт через # секунд.}other{Браузер будет закрыт через # секунды.}}</translation>
 <translation id="4819818293886748542">Ссылка для получения инструмента поддержки</translation>
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
@@ -5712,7 +5705,6 @@
 <translation id="4833683849865011483">На сервере печати найден 1 принтер.</translation>
 <translation id="4835598628985424375">Сложить губы трубочкой</translation>
 <translation id="4835677468087803981">Скрыть PIN-код</translation>
-<translation id="4835743726635354518"><ph name="URL" /> • копии (<ph name="DUPLICATE_COUNT" />)</translation>
 <translation id="4836504898754963407">Управление отпечатками</translation>
 <translation id="4837128290434901661">Вернуться к Google Поиску?</translation>
 <translation id="4837926214103741331">У вас нет доступа к этому устройству. Свяжитесь с его владельцем.</translation>
@@ -6272,7 +6264,6 @@
 <translation id="5217883660859035687">Это было сделано, чтобы освободить место для закладок.</translation>
 <translation id="5220011581825921581">Поиск + Стрелка вверх</translation>
 <translation id="5221516927483787768">Не удалось запустить трансляцию с сайта <ph name="HOST_NAME" /></translation>
-<translation id="5221834113325601057">Вкладка удалена из списка</translation>
 <translation id="5222403284441421673">Незащищенное скачивание заблокировано</translation>
 <translation id="5222676887888702881">Выйти</translation>
 <translation id="5225324770654022472">Показывать кнопку "Сервисы"</translation>
@@ -6366,7 +6357,6 @@
 <translation id="5283677936944177147">Не удалось определить модель или серийный номер устройства.</translation>
 <translation id="5284445933715251131">Продолжить скачивание</translation>
 <translation id="5284883268399745283">Пароль должен содержать хотя бы один символ.</translation>
-<translation id="5285484405698525101">Неиспользуемых вкладок нет.</translation>
 <translation id="5285635972691565180">Экран <ph name="DISPLAY_ID" /></translation>
 <translation id="5286194356314741248">Сканирование...</translation>
 <translation id="5287425679749926365">Аккаунты</translation>
@@ -6644,7 +6634,6 @@
 <translation id="5481941284378890518">Добавить ближайшие принтеры</translation>
 <translation id="5482417738572414119">Войдите в аккаунт, чтобы получать рекомендации Chrome по группировке вкладок.</translation>
 <translation id="5483005706243021437">Остаться в этом</translation>
-<translation id="5483112456833117221">{NUM_TABS,plural, =0{Неиспользуемых вкладок нет}=1{Посмотреть 1 неиспользуемую вкладку}one{Посмотреть # неиспользуемую вкладку}few{Посмотреть # неиспользуемые вкладки}many{Посмотреть # неиспользуемых вкладок}other{Посмотреть # неиспользуемой вкладки}}</translation>
 <translation id="5484772771923374861">{NUM_DAYS,plural, =1{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> сегодня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}one{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}few{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}many{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дней. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}other{По правилам <ph name="MANAGER" /> вам нужно выполнить резервное копирование данных и вернуть <ph name="DEVICE_TYPE" /> в течение {NUM_DAYS} дня. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" />}}</translation>
 <translation id="5485102783864353244">Установить приложение</translation>
 <translation id="5485435764083510385">Предпочитаемый язык субтитров</translation>
@@ -7659,6 +7648,7 @@
 <translation id="6181431612547969857">Скачивание запрещено</translation>
 <translation id="6182100780603067202">Также передавать аудио из приложения (из всех его окон)</translation>
 <translation id="6183369864942961155">Автоматическое включение светлой/тёмной темы</translation>
+<translation id="6183773856988300112">Gemini в Chrome будет автоматически искать информацию, чтобы выполнять задачи на вкладках браузера. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6184099524311454384">Поиск по вкладкам</translation>
 <translation id="6185132558746749656">Местоположение устройства</translation>
 <translation id="6185151644843671709">Ключ доступа сохранен, PIN-код создан</translation>
@@ -7784,7 +7774,6 @@
 <translation id="6266984048393265562">Настроить профиль</translation>
 <translation id="6267166720438879315">Выберите сертификат для аутентификации на <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Открыть в приложении <ph name="APP" /></translation>
-<translation id="6269050081341530851">Если закрыть одинаковые вкладки, останется самая старая из них.</translation>
 <translation id="6270309713620950855">Напоминать включить микрофон</translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6270770586500173387">Отправлять <ph name="BEGIN_LINK1" />информацию о системе и приложениях<ph name="END_LINK1" /> и различные <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
@@ -8498,7 +8487,6 @@
 <translation id="677394079035748956">Необходимо ввести одноразовый код</translation>
 <translation id="6774710250118040929">Добавление пароля</translation>
 <translation id="6775163072363532304">Здесь будут появляться доступные устройства.</translation>
-<translation id="6775992990195573904">Наведите порядок во вкладках</translation>
 <translation id="677646486571529447">Добавить заметку</translation>
 <translation id="6776589734354015877">Вас ждут дополнительные функции</translation>
 <translation id="6776729248872343918">Включить Быстрое подключение</translation>
@@ -8929,7 +8917,6 @@
 <translation id="7044606776288350625">Синхронизация данных</translation>
 <translation id="7050037487872780845">Неверная конфигурация точки доступа.</translation>
 <translation id="7051222203795962489">{COUNT,plural, =1{Пароль сохранен в вашем аккаунте Google (<ph name="USER_EMAIL" />).}one{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}few{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}many{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}other{Пароли сохранены в вашем аккаунте Google (<ph name="USER_EMAIL" />).}}</translation>
-<translation id="7052147783849658969">Неактивных вкладок нет.</translation>
 <translation id="7052762602787632571">&amp;Удалить данные о работе в браузере…</translation>
 <translation id="705352103640172578">Водопад</translation>
 <translation id="7053983685419859001">Блокировать</translation>
@@ -9318,7 +9305,6 @@
 <translation id="733058866272972585">Этому сайту запрещено использовать идентификаторы для воспроизведения защищенного контента</translation>
 <translation id="7331646370422660166">Alt + Стрелка вниз</translation>
 <translation id="7332053360324989309">Dedicated Worker: <ph name="SCRIPT_URL" /></translation>
-<translation id="7332138995369063163">Одинаковые вкладки</translation>
 <translation id="7333388112938984914">Загрузка файлов недоступна, когда используется подключение с тарификацией.</translation>
 <translation id="7335974957018254119">Для каких языков применяется проверка правописания</translation>
 <translation id="7336799713063880535">Заблокировано.</translation>
@@ -10096,7 +10082,6 @@
 <translation id="7851457902707056880">Войти можно только с аккаунтом владельца. Перезагрузите компьютер сейчас или подождите 30 секунд до автоматической перезагрузки, а затем войдите в аккаунт владельца.</translation>
 <translation id="7851716364080026749">Всегда блокировать доступ к камере и микрофону</translation>
 <translation id="78526636422538552">Добавлять другие аккаунты Google нельзя.</translation>
-<translation id="785371335555334021">Покинуть страницу "<ph name="TITLE" />"</translation>
 <translation id="7853747251428735">Дополнительные инструмен&amp;ты</translation>
 <translation id="7855258394151767387">Чтобы нажать кнопку мыши, используйте клавишу W.</translation>
 <translation id="7855678561139483478">Открыть вкладку в новом окне</translation>
@@ -10127,6 +10112,7 @@
 <translation id="7876027585589532670">Не удалось изменить ярлык.</translation>
 <translation id="7876243839304621966">Удалить все</translation>
 <translation id="7877126887274043657">Исправить ошибку &amp;синхронизации</translation>
+<translation id="7877212753140190672">Спросить об этом изображении</translation>
 <translation id="7877451762676714207">Обнаружена неизвестная ошибка сервера. Повторите попытку или свяжитесь с его администратором.</translation>
 <translation id="7879172417209159252">Расширение нельзя использовать</translation>
 <translation id="7879478708475862060">Использовать выбранный режим ввода</translation>
@@ -10360,7 +10346,6 @@
 <translation id="8026471514777758216">Синхронизация данных на всех устройствах</translation>
 <translation id="8026700655446696031">Другие действия с домашним адресом (<ph name="ADDRESS_SUMMARY" />)</translation>
 <translation id="8026784703228858744">Синхронизируйте закладки и другие данные, чтобы не терять к ним доступ.</translation>
-<translation id="8027325966409484573">{NUM_DAYS,plural, =0{Вы открывали 0 дней назад}=1{Вы открывали 1 день назад}one{Вы открывали # день назад}few{Вы открывали # дня назад}many{Вы открывали # дней назад}other{Вы открывали # дня назад}}</translation>
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
 <translation id="8028993641010258682">Размер</translation>
@@ -10963,7 +10948,6 @@
 <translation id="8425213833346101688">Изменить</translation>
 <translation id="8425492902634685834">Закрепить на панели задач</translation>
 <translation id="8425768983279799676">Вы можете использовать PIN-код, чтобы разблокировать устройство.</translation>
-<translation id="8427213022735114808">Запись вашего голоса отправляется в Google. Это позволяет использовать голосовой набор для любого текстового поля.</translation>
 <translation id="8427292751741042100">встроено на любом хосте</translation>
 <translation id="8428213095426709021">Настройки</translation>
 <translation id="8428257636009471988">Перейти в интернет-магазин</translation>
@@ -11702,7 +11686,6 @@
 <translation id="8914504000324227558">Перезапустить Chrome</translation>
 <translation id="8915307125957890427">Нажмите правой кнопкой мыши на вкладку и выберите "Добавить вкладку в группу", а затем "Новая группа".</translation>
 <translation id="8915370057835397490">Загрузка подсказки</translation>
-<translation id="8915916167043355778">Закрыть все</translation>
 <translation id="8916476537757519021">Субфрейм в режиме инкогнито: <ph name="SUBFRAME_SITE" /></translation>
 <translation id="8917490105272468696">Включить</translation>
 <translation id="8918637186205009138"><ph name="DEVICE_TYPE" /> пользователя <ph name="GIVEN_NAME" /></translation>

@@ -100,6 +100,7 @@
 <translation id="1761091787730831947">Del med <ph name="VM_NAME" /></translation>
 <translation id="1773212559869067373">Godkendelsescertifikatet blev afvist lokalt</translation>
 <translation id="1775381402323441512">Videooplysninger</translation>
+<translation id="1787208118234640571">Belgisk</translation>
 <translation id="180035236176489073">Du skal være online for at få adgang til disse filer.</translation>
 <translation id="1807938677607439181">Alle filer</translation>
 <translation id="1810764548349082891">Ingen tilgængelig forhåndsvisning</translation>
@@ -113,9 +114,11 @@
 <translation id="1853795129690976061">Denne mappe deles med Linux</translation>
 <translation id="1864756863218646478">Filen blev ikke fundet.</translation>
 <translation id="1877377730633446520">Dette kræver ca. <ph name="REQUIRED_SPACE" /> ledig plads. Du har i øjeblikket <ph name="FREE_SPACE" /> ledig plads.</translation>
+<translation id="18790189037341066">Norsk</translation>
 <translation id="1884013283844450420">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, opret forbindelse</translation>
 <translation id="1920670151694390848">Malayalam translitteration</translation>
 <translation id="1920798810075583923">Vandmelon</translation>
+<translation id="1922341967219151064">Ukrainsk</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> er formateret</translation>
 <translation id="1942765061641586207">Billedopløsning</translation>
 <translation id="1972984168337863910">Udvid paneler med feedback til filer</translation>
@@ -124,15 +127,19 @@
 <translation id="2004942826429452291">Filerne gemmes i skyen og på denne Chromebook.</translation>
 <translation id="2009067268969781306">Formatering af et drev sletter alle de data, der er gemt på det. Denne handling kan ikke fortrydes.</translation>
 <translation id="2025955442973426285">Tigrinsk</translation>
+<translation id="2029385776150020336">Amerikansk (udvidet)</translation>
 <translation id="2037845485764049925">Russisk</translation>
 <translation id="2044023416777079300">Der blev ikke registreret noget modem</translation>
 <translation id="2046702855113914483">Ramen</translation>
+<translation id="2070397826966158357">Estisk</translation>
 <translation id="2070909990982335904">Navne, der begynder med punktum, må kun bruges af systemet. Vælg et andet navn.</translation>
 <translation id="2079545284768500474">Fortryd</translation>
 <translation id="2084108471225856927">Enhedsindstillinger</translation>
 <translation id="2084809735218147718">Siger tak på tegnsprog</translation>
 <translation id="2088690981887365033">VPN-netværk</translation>
+<translation id="2096167581623663959">Nederlandsk</translation>
 <translation id="209653272837065803">Der er ikke nok lagerplads til at fortsætte filsynkroniseringen</translation>
+<translation id="2101288073618388449">Mongolsk</translation>
 <translation id="2114191879048183086"><ph name="NUMBER_OF_ITEMS" /> elementer slettes, og du kan ikke gendanne dem.</translation>
 <translation id="2122305276694332719">Vi anbefaler, at du ikke tillader automatisk forbindelse til skjulte netværk, da det gør det muligt for andre at se din enhed og visse netværksindstillinger.</translation>
 <translation id="2125607626296734455">Khmer</translation>
@@ -200,6 +207,7 @@
 <translation id="2587195714949534472">Gør klar til at synkronisere <ph name="FILE_NAME" />...</translation>
 <translation id="2602810353103180630">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" />-video</translation>
+<translation id="2619043364735935227">Britisk Dvorak</translation>
 <translation id="2620090360073999360">Der er ikke adgang til Google Drev på nuværende tidspunkt.</translation>
 <translation id="2621713457727696555">Beskyttet</translation>
 <translation id="2638942478653899953">Der kunne ikke oprettes forbindelse til Google Drev. <ph name="BEGIN_LINK" />Log ud <ph name="END_LINK" />, og log ind igen.</translation>
@@ -207,8 +215,12 @@
 <translation id="2653059201992392941">Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="2663066752008346276">Burmesisk/myanmarsk Myansan-tastatur</translation>
 <translation id="2664412712123763093">Filplacering</translation>
+<translation id="2672394942808662069">Canadisk (flere sprog)</translation>
+<translation id="2707357721402813583">Irsk</translation>
+<translation id="2708477391501452176">Fransk BÉPO</translation>
 <translation id="2719020180254996569">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, info</translation>
 <translation id="2724954091494693138">Tyrkisk med F-tastatur</translation>
+<translation id="2728450421877450246">Fransk</translation>
 <translation id="2732288874651063549">Administrer deling for <ph name="VM_NAME" /></translation>
 <translation id="2732839045120506979">Vietnamesisk VNI</translation>
 <translation id="2735623501230989521">Giv Parallels Desktop adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
@@ -216,16 +228,19 @@
 <translation id="2771816809568414714">Ost</translation>
 <translation id="2802583107108007218">Få flere oplysninger om disse begrænsninger</translation>
 <translation id="2803375539583399270">Angiv pinkode</translation>
+<translation id="2817444452774702982">Georgisk</translation>
 <translation id="2819519502129272135">Filsynkronisering er deaktiveret</translation>
 <translation id="2820957248982571256">Scanner…</translation>
 <translation id="2830077785865012357">Kinesisk zhuyin</translation>
 <translation id="2843806747483486897">Skift standardindstillinger...</translation>
 <translation id="2873951654529031587">Papirkurv</translation>
+<translation id="2887314858867008269">Amerikansk Colemak</translation>
 <translation id="2887525882758501333">PDF-dokument</translation>
 <translation id="2888807692577297075">Ingen filer matcher &lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt;</translation>
 <translation id="2894654529758326923">Oplysninger</translation>
 <translation id="2904378509913846215">Der findes allerede en mappe ved navn "<ph name="FILENAME" />". Vil du erstatte den med den, du er ved at flytte?</translation>
 <translation id="290843123675549676">Marathi</translation>
+<translation id="2939595088421183401">Slovensk</translation>
 <translation id="2943503720238418293">Brug et kortere navn</translation>
 <translation id="2949781154072577687">Formaterer <ph name="DRIVE_NAME" />…</translation>
 <translation id="2951236788251446349">Vandmand</translation>
@@ -243,6 +258,7 @@
 <translation id="3067790092342515856">Windows-filer</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-host</translation>
+<translation id="3091469289665833668">Rumænsk</translation>
 <translation id="3104793765551262433">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke på <ph name="SIGNAL_STRENGTH" /> %, blokeret af din administrator, oplysninger</translation>
 <translation id="3113592018909187986">Du har 1 forsøg tilbage. Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode.</translation>
 <translation id="3124404833828281817">Person dagdrømmer</translation>
@@ -261,6 +277,7 @@
 <translation id="3255159654094949700">Arabisk</translation>
 <translation id="326396468955264502"><ph name="NUMBER_OF_FILES" /> filer kunne ikke flyttes, fordi de er krypteret.</translation>
 <translation id="3264582393905923483">Kontekst</translation>
+<translation id="3269333278563769269">Portugisisk</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" kunne ikke åbnes</translation>
 <translation id="3280431534455935878">Forbereder</translation>
 <translation id="3280719573299097127">Du er på et forbrugsbaseret netværk. Filsynkronisering er sat på pause.</translation>
@@ -282,6 +299,8 @@
 <translation id="3408072735282270043">Aktivér <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Tysk (Tyskland) Neo 2-tastatur</translation>
 <translation id="3414856743105198592">Formatering af de flytbare medier kommer til at slette alle data. Vil du fortsætte?</translation>
+<translation id="3430687179542180192">Canadisk fransk</translation>
+<translation id="3436358745602312794">Tyrkisk-F</translation>
 <translation id="3437801641691368414">Oprettelsestidspunkt</translation>
 <translation id="343907260260897561">Polaroidkamera</translation>
 <translation id="3455931012307786678">Estisk</translation>
@@ -299,9 +318,11 @@
 <translation id="3553048479571901246">Hvis du vil åbne filer med <ph name="APP_NAME" />, skal du først kopiere dem til mappen med Windows-filer.</translation>
 <translation id="3556731189587832921">Engelsk (USA) med internationalt computertastatur</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> flyttes til papirkurven</translation>
+<translation id="3560848236447534728">Armensk (fonetisk)</translation>
 <translation id="3567221313191587603">Vælg en fil, og aktivér <ph name="OFFLINE_CHECKBOX_NAME" /> for at give offlineadgang til dine filer.</translation>
 <translation id="3587482841069643663">Alle</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> kunne ikke gøres tilgængelig offline</translation>
+<translation id="3599083260824681324">Japansk</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3616113530831147358">Lyd</translation>
 <translation id="3619115746895587757">Cappuccino</translation>
@@ -329,14 +350,17 @@
 <translation id="3811494700605067549">Én fil er valgt</translation>
 <translation id="3817579325494460411">Ikke angivet</translation>
 <translation id="3819448694985509187">Forkert pinkode. Du har 1 forsøg tilbage.</translation>
+<translation id="3826081788392587762">Færøsk</translation>
 <translation id="3830674330436234648">Der er ingen tilgængelig afspilning.</translation>
 <translation id="3839045880592694915">Dit mobilselskab har ikke givet dit modem tilladelse til at oprette forbindelse. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="385051799172605136">Tilbage</translation>
 <translation id="3858860766373142691">Navn</translation>
+<translation id="3874963587970919929">USA</translation>
 <translation id="3899991606604168269">Fransk (Canada) tastatur til flere sprog</translation>
 <translation id="3901991538546252627">Opretter forbindelse til <ph name="NAME" /></translation>
 <translation id="3906232975181435906">Mobilprofil installeres. Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">Meta</translation>
+<translation id="3934861075411093298">Tysk Neo 2</translation>
 <translation id="3943857333388298514">Indsæt</translation>
 <translation id="3950820424414687140">Log ind</translation>
 <translation id="3952872973865944257">Telugu fonetisk</translation>
@@ -349,9 +373,11 @@
 <translation id="4002066346123236978">Titel</translation>
 <translation id="4017788180641807848">Engelsk (USA) med Workman-tastatur</translation>
 <translation id="4040753847560036377">PUK-koden er forkert</translation>
+<translation id="4043426908238742491">Storbritannien</translation>
 <translation id="4057991113334098539">Aktiverer...</translation>
 <translation id="4092890906744441904">Irsk</translation>
 <translation id="4101601646343868113">Log ind på dit mobilnetværk, og bekræft, at dit mobildataabonnement er aktivt</translation>
+<translation id="4103534645423593971">Lettisk</translation>
 <translation id="4124731372776320263">Synkroniserer 1 Drev-fil</translation>
 <translation id="4124935795427217608">Enhjørning</translation>
 <translation id="4131235941541910880">Flyt overflødige elementer til papirkurven</translation>
@@ -445,9 +471,12 @@
 <translation id="4789067489790477934">Giv Parallels Desktop adgang til filer i Google Drev. Ændringer synkroniseres med dine andre enheder.</translation>
 <translation id="4790766916287588578">Hindi med InScript-tastatur</translation>
 <translation id="4801956050125744859">Behold begge</translation>
+<translation id="4802185962157240723">Ungarsk</translation>
 <translation id="4804827417948292437">Avocado</translation>
 <translation id="4805966553127040832"><ph name="COUNT" /> elementer gendannes</translation>
+<translation id="4823376603577118337">Brasiliansk</translation>
 <translation id="4826849268470072925">Tamil ITRANS</translation>
+<translation id="4838707632718400841">Dansk</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">Se</translation>
 <translation id="4862885579661885411">Indstillinger for Filer</translation>
@@ -477,6 +506,7 @@
 <translation id="5010406651457630570">Computere</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">En handling tager længere tid end forventet. Vil du afbryde den?</translation>
+<translation id="5036141350290856713">Russisk (fonetisk)</translation>
 <translation id="5036159836254554629">Administrer deling med Parallels Desktop</translation>
 <translation id="5038625366300922036">Få flere oplysninger...</translation>
 <translation id="5044852990838351217">Armensk</translation>
@@ -500,6 +530,7 @@
    Hvis du fjerner din enhed, mens den er i brug, kan det medføre datatab. Vent, indtil handlingen er fuldført, og fjern derefter enheden ved hjælp af appen Filer.</translation>
 <translation id="5163869187418756376">Deling mislykkedes. Kontrollér din forbindelse, og prøv igen senere.</translation>
 <translation id="5177526793333269655">Miniaturevisning</translation>
+<translation id="5178355323709925287">Bulgarsk (fonetisk)</translation>
 <translation id="5181896909298187506">Du har ikke åbnet nogen filer for nylig</translation>
 <translation id="5194713942430106590">Klik for at sortere kolonnen i stigende rækkefølge.</translation>
 <translation id="5211614973734216083">Færøsk</translation>
@@ -547,15 +578,18 @@
 <translation id="5534520101572674276">Beregner størrelse</translation>
 <translation id="554153475311314364">Græsk translitteration</translation>
 <translation id="5554171655917412781"><ph name="SELECTED_FOLDERS_COUNT" /> mapper er valgt</translation>
+<translation id="5568003358606822240">Tjekkisk QWERTY</translation>
 <translation id="5580591966435005537">virtuel maskine</translation>
 <translation id="5583640892426849032">Backspace</translation>
 <translation id="5583664733673201137">Tegnsætningsbredden er Fuld</translation>
 <translation id="5596627076506792578">Flere valgmuligheder</translation>
 <translation id="5602622065581044566">Bulgarsk med fonetisk tastatur</translation>
+<translation id="5604409170937514933">Svensk</translation>
 <translation id="560739212255190568">Din administrator har angivet regler for tilsidesættelse af proxy og håndhæver desuden følgende proxy</translation>
 <translation id="5618330573454123917">Denne fil er beregnet til en computer med Macintosh-software. Den er ikke kompatibel med din enhed, som kører ChromeOS. <ph name="BEGIN_LINK_HELP" />Få flere oplysninger<ph name="END_LINK_HELP" /> om, hvordan du åbner filer i ChromeOS.</translation>
 <translation id="5625294776298156701">Tamil med Tamil99-tastatur</translation>
 <translation id="5633226425545095130">Hvis du flytter dette element, deles det med alle, der kan se den delte mappe "<ph name="DESTINATION_NAME" />".</translation>
+<translation id="5646106346566990960">Tyrkisk</translation>
 <translation id="5649768706273821470">Lyt</translation>
 <translation id="5650895901941743674">Tjek din APN-konfiguration</translation>
 <translation id="5669691691057771421">Angiv ny pinkode</translation>
@@ -565,9 +599,11 @@
 <translation id="5691596662111998220"><ph name="FILE_NAME" /> eksisterer ikke længere.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, Lås op</translation>
 <translation id="5700087501958648444">Lydoplysninger</translation>
+<translation id="5718459114973371204">Makedonisk</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> er flyttet til papirkurven</translation>
 <translation id="5724172041621205163">Thai med Pattachote-tastatur</translation>
 <translation id="57383366388012121">Sidste måned</translation>
+<translation id="5744221903031815187">Schweizisk</translation>
 <translation id="575175778971367197">Denne fil kan ikke synkroniseres lige nu</translation>
 <translation id="5760252553414789727"><ph name="SELECTED_FILES_COUNT" /> elementer er valgt</translation>
 <translation id="5763377084591234761">Tysk (Schweiz)</translation>
@@ -597,8 +633,10 @@
 <translation id="5948255720516436063">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, aktivér efter konfiguration af enhed</translation>
 <translation id="5955954492236143329"><ph name="NUMBER_OF_ITEMS" /> elementer</translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
+<translation id="5959163675722155317">Amerikansk (internationalt)</translation>
 <translation id="5982621672636444458">Sorteringsmuligheder</translation>
 <translation id="6011074160056912900">Ethernet-netværk</translation>
+<translation id="6023337265947005432">Tjekkisk</translation>
 <translation id="603895874132768835">Du kan ikke bruge dette netværk, før du har oprettet en ny pinkode</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" />-netværk, ingen forbindelse</translation>
@@ -615,6 +653,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, intet netværk</translation>
 <translation id="6146563240635539929">Videoer</translation>
 <translation id="6150853954427645995">Hvis du vil gemme denne fil til offlinebrug, skal du gå online igen, højreklikke på filerne og vælge indstillingen <ph name="OFFLINE_CHECKBOX_NAME" />.</translation>
+<translation id="6162247388574239985">Litauisk</translation>
 <translation id="6164412158936057769">Sommerfugle</translation>
 <translation id="6165508094623778733">Flere oplysninger</translation>
 <translation id="6170470584681422115">Sandwich</translation>
@@ -624,6 +663,7 @@
 <translation id="6198252989419008588">Skift pinkode</translation>
 <translation id="6199801702437275229">Venter på oplysninger om ledig plads...</translation>
 <translation id="6205710420833115353">Nogle handlinger tager længere tid end forventet. Vil du afbryde dem?</translation>
+<translation id="6214593504928642973">Serbisk</translation>
 <translation id="6220423280121890987">Punjabi</translation>
 <translation id="6224240818060029162">Dansk</translation>
 <translation id="6224253798271602650">Formatér <ph name="DRIVE_NAME" /></translation>
@@ -650,17 +690,22 @@
 <translation id="6394388407447716302">Skrivebeskyttet</translation>
 <translation id="6395575651121294044"><ph name="NUMBER_OF_FILES" /> elementer</translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> kunne ikke flyttes, fordi den er krypteret.</translation>
+<translation id="6417922483715629770">Tysk</translation>
+<translation id="6421174876526901486">Hebræisk</translation>
 <translation id="642282551015776456">Dette navn kan ikke bruges som fil- eller mappenavn</translation>
 <translation id="6423031066725912715">Vietnamesisk med TCVN-tastatur</translation>
 <translation id="6430271654280079150">Du har 1 forsøg tilbage.</translation>
 <translation id="643243556292470964">Slettede filer flyttes nu til papirkurven</translation>
 <translation id="6438480100790416671">Tjekker lagerplads…</translation>
 <translation id="6451527188465304418">Tjekker, om filen overholder din organisations sikkerhedspolitikker…</translation>
+<translation id="6480474281747138552">Amerikansk Programmer Dvorak</translation>
+<translation id="6483241221370343062">Polsk</translation>
 <translation id="6485131920355264772">Pladsoplysningerne kunne ikke hentes</translation>
 <translation id="6495925982925244349">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, administreret af din administrator, info</translation>
 <translation id="649877868557234318">Pakker <ph name="FILE_NAME" /> ud i <ph name="FOLDER_NAME" /></translation>
 <translation id="6499681088828539489">Tillad ikke proxyer på delte netværk</translation>
 <translation id="6503285896705205014">Administratorpolitikken tillader ikke, at du kopierer <ph name="COUNT" /> filer</translation>
+<translation id="652312300422421604">Russisk</translation>
 <translation id="6528513914570774834">Giv andre brugere af denne enhed tilladelse til at bruge dette netværk</translation>
 <translation id="6549689063733911810">Seneste</translation>
 <translation id="6558280019477628686">Der opstod en fejl. Nogle elementer blev muligvis ikke slettet.</translation>
@@ -675,6 +720,7 @@
 <translation id="6650726141019353908">Lyserød sommerfugl</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6658865850469097484">Filer i papirkurven slettes automatisk efter 30 dage.</translation>
+<translation id="6660283757324568684">Schweizisk fransk</translation>
 <translation id="6673674183150363784">Fransk (Frankrig) Bépo-tastatur</translation>
 <translation id="670380500182402678">Erstat alle</translation>
 <translation id="6710022688720561421">Robot</translation>
@@ -698,6 +744,7 @@
 <translation id="6861394552169064235">Persisk</translation>
 <translation id="6862635236584086457">Alle de filer, der er gemt i denne mappe, sikkerhedskopieres automatisk online</translation>
 <translation id="6864328437977279120">Sanskrit</translation>
+<translation id="6870343452066868538">Latinamerikansk</translation>
 <translation id="6874758081814639712">Person, der dyrker tai chi</translation>
 <translation id="6876155724392614295">Cykel</translation>
 <translation id="6878261347041253038">Devanagari-tastatur (fonetisk)</translation>
@@ -709,6 +756,7 @@
 <translation id="6935521024859866267">På hovedet</translation>
 <translation id="6943836128787782965">Det lykkedes ikke at hente HTTP</translation>
 <translation id="6949408524333579394">Serbisk translitteration</translation>
+<translation id="6950304227892369683">Hviderussisk</translation>
 <translation id="69548399407432279">Sidste år</translation>
 <translation id="6960565108681981554">Ikke aktiveret. Kontakt dit mobilselskab.</translation>
 <translation id="696203921837389374">Aktivér synkronisering via mobildata</translation>
@@ -717,6 +765,7 @@
 <translation id="6973630695168034713">Mapper</translation>
 <translation id="6976795442547527108">Løve</translation>
 <translation id="6979158407327259162">Google Drev</translation>
+<translation id="6987318887406266229">Græsk</translation>
 <translation id="6989942356279143254">Svensk</translation>
 <translation id="6990081529015358884">Der er ikke mere plads</translation>
 <translation id="6993826899923627728">Disse elementer er i din papirkurv</translation>
@@ -731,6 +780,7 @@
 <translation id="7048024426273850086">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, telefonbatteri <ph name="BATTERY_STATUS" /> %, opret forbindelse</translation>
 <translation id="7070804685954057874">Direkte indtastning</translation>
 <translation id="7075931588889865715">Thai med TIS 820-2531-tastatur</translation>
+<translation id="7080126840087683316">Spansk</translation>
 <translation id="708278670402572152">Afbryd forbindelsen for at aktivere scanning</translation>
 <translation id="7086590977277044826">Tamil med InScript-tastatur</translation>
 <translation id="7088615885725309056">Ældre</translation>
@@ -741,12 +791,15 @@
 <translation id="7135561821015524160">Kannada (fonetisk)</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">Der mangler et "Match af alternativt emnenavn" eller "Match af domænesuffiks" for at validere identiteten for godkendelsesserveren</translation>
+<translation id="7163653800467169701">Italiensk</translation>
 <translation id="7165320105431587207">Netværket kunne ikke konfigureres</translation>
 <translation id="7170041865419449892">Intet signal</translation>
 <translation id="7179579940054351344">Filadgang for alle websites og webadresser undtagen <ph name="NON_RESTRICTED_DESTINATIONS" /></translation>
 <translation id="7180611975245234373">Opdater</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">Gem fil som</translation>
+<translation id="7192364647705823015">Kroatisk</translation>
+<translation id="7224162581405244205">Islandsk</translation>
 <translation id="7229570126336867161">EVDO mangler</translation>
 <translation id="7230898482850090046">Din administrator har bedt dig om at deaktivere indstillingen "Lås SIM-kort"</translation>
 <translation id="7238097264433196391">Navn på drev</translation>
@@ -773,6 +826,7 @@
 <translation id="7417453074306512035">Etiopisk tastatur</translation>
 <translation id="7417705661718309329">Google-kort</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" gendannes</translation>
+<translation id="7435577899926900307">Amerikansk Dvorak</translation>
 <translation id="7458955835361612701">Du har ikke åbnet nogen billeder for nylig</translation>
 <translation id="7469894403370665791">Opret automatisk forbindelse til dette netværk</translation>
 <translation id="7486315294984620427">Filer skal først kopieres til mappen med Windows-filer, før du kan trække dem til Parallels Desktop.</translation>
@@ -811,8 +865,10 @@
 <translation id="7724603315864178912">Klip</translation>
 <translation id="7732111077498238432">Netværket er underlagt politikker</translation>
 <translation id="7736003208887389532">Vil du slette disse filer permanent?</translation>
+<translation id="7737249716250841853">Ungarsk QWERTY</translation>
 <translation id="7740287852186792672">Søgeresultater</translation>
 <translation id="7748626145866214022">Der er flere tilgængelige muligheder på handlingslinjen. Tryk på Alt+A for at fokusere på handlingslinjen.</translation>
+<translation id="7758806833942383902">Catalansk</translation>
 <translation id="7760449188139285140">Kinesisk wubi</translation>
 <translation id="7765158879357617694">Flyt</translation>
 <translation id="7774365994322694683">Fugl</translation>
@@ -824,6 +880,7 @@
 <translation id="7794058097940213561">Formater enhed</translation>
 <translation id="7799329977874311193">HTML-dokument</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
+<translation id="7804303447453320114">Kasakhisk</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7806708061868529807">Hebræisk</translation>
 <translation id="78104721049218340">Thai med kedmanee-tastatur</translation>
@@ -833,9 +890,11 @@
 <translation id="7839804798877833423">Hvis du henter disse filer, bruge du ca. <ph name="FILE_SIZE" /> mobildata.</translation>
 <translation id="7846076177841592234">Annuller valg</translation>
 <translation id="7857117644404132472">Tilføj undtagelse</translation>
+<translation id="7859924767769322048">Koreansk</translation>
 <translation id="7868774406711971383">Polsk</translation>
 <translation id="7874321682039004450">Filippinsk</translation>
 <translation id="78946041517601018">Fællesdrev</translation>
+<translation id="7901567919203965902">Amerikansk Workman international</translation>
 <translation id="7903984238293908205">Katakana</translation>
 <translation id="7908793776359722643">Formatering af en partition sletter alle de data, der er gemt på den. Denne handling kan ikke fortrydes.</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -897,6 +956,7 @@
 <translation id="8336153091935557858">I går <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">Der findes allerede en fil eller en mappe med samme navn.</translation>
 <translation id="83651606385705612">Giv <ph name="VM_NAME" /> adgang til filer i mappen <ph name="FOLDER_NAME" /></translation>
+<translation id="837225070446042993">Amerikansk Workman</translation>
 <translation id="8372369524088641025">Ugyldig WEP-nøgle</translation>
 <translation id="8372852072747894550">Græsk</translation>
 <translation id="8377269993083688872">Maillayouts</translation>
@@ -925,6 +985,7 @@
 <translation id="8512483403832814140">Når som helst</translation>
 <translation id="853494022971700746">Fransk (Frankrig)</translation>
 <translation id="8540608333167683902">Netværk <ph name="NETWORK_INDEX" /> af <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrke <ph name="SIGNAL_STRENGTH" /> %, info</translation>
+<translation id="8543218582821188600">Canadisk engelsk</translation>
 <translation id="8545476925160229291">Engelsk (USA)</translation>
 <translation id="854655314928502177">Webadresse for automatisk registrering af webproxy:</translation>
 <translation id="8547747809824590510">Din administrator har angivet regler for tilsidesættelse af proxy</translation>
@@ -939,6 +1000,7 @@
 <translation id="8600173386174225982">Der blev skiftet til miniaturevisning for listen med filer.</translation>
 <translation id="8601932370724196034">Crostini-billedfil</translation>
 <translation id="8609695766746872526">Islandsk</translation>
+<translation id="86185366481240448">Slovakisk</translation>
 <translation id="8630384863424041081">Indtast PIN-koden til dit SIM-kort eller standard-PIN-koden fra dit mobilselskab Kontakt dit mobilselskab for at få hjælp.</translation>
 <translation id="863903787380594467">Forkert pinkode. Du har <ph name="RETRIES" /> forsøg tilbage.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> – port</translation>
@@ -967,6 +1029,7 @@
 <translation id="8873014196523807561">Hvis du vil gendanne disse elementer, skal du trække dem til en ny mappe. De oprindelige mapper for nogle af disse elementer er blevet slettet.</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
 <translation id="8876368061475701452">I kø</translation>
+<translation id="8902208737522818687">Amerikansk internationalt (pc)</translation>
 <translation id="8903931173357132290">Dimittend</translation>
 <translation id="8912078710089354287">Hund, der logrer med halen</translation>
 <translation id="8949925099261528566">Forbundet – intet internet</translation>
@@ -1009,11 +1072,13 @@
 <translation id="931652069802536959">Netværket er blokeret af en politik</translation>
 <translation id="938470336146445890">Installer et brugercertifikat.</translation>
 <translation id="939736085109172342">Ny mappe</translation>
+<translation id="941005944931359847">Bulgarsk</translation>
 <translation id="943972244133411984">Ændret af</translation>
 <translation id="945522503751344254">Send feedback</translation>
 <translation id="947144732524271678">Valgte et interval med <ph name="ENTRY_COUNT" /> elementer fra <ph name="FROM_ENTRY_NAME" /> til <ph name="TO_ENTRY_NAME" />.</translation>
 <translation id="954194396377670556">Administratorpolitikken forhindrer:</translation>
 <translation id="965477715979482472">Engelsk (Sydafrika)</translation>
+<translation id="97351090361893336">Finsk</translation>
 <translation id="976666271385981812"><ph name="NUMBER_OF_ITEMS" /> elementer flyttes til papirkurven</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Der findes allerede en fil med navnet "<ph name="FILE_NAME" />". Vil du erstatte den?</translation>

@@ -224,6 +224,7 @@
 <translation id="3226612997184048185">Kui salvestate ka oma järjehoidjad Google'i kontole, saate jälgida Chrome'is toodete hindu ja saada teateid hinnalanguste kohta</translation>
 <translation id="3242123554343253302">Chrome'i profiili lisamine</translation>
 <translation id="3245429137663807393">Kui jagate ka Chrome'i kasutusaruandeid, hõlmavad need teie külastatavaid URL-e</translation>
+<translation id="3259748324892322072">Hankige Chrome'i rakendus</translation>
 <translation id="3286538390144397061">Taaskäivitada kohe</translation>
 <translation id="3292333338048274092">Seejärel peate Chrome'i taaskäivitama.</translation>
 <translation id="3324218984287646518">Küsige Google Lensilt selle video kohta</translation>
@@ -282,7 +283,6 @@
 <translation id="3892148308691398805">Kopeeri tekst</translation>
 <translation id="3893985792899396936">Chrome'i nõuanne: otsige Lensiga</translation>
 <translation id="3906096710440765802">Logige Chrome'is sisse, et paroole, järjehoidjaid ja muud kõigis oma seadmetes kasutada</translation>
-<translation id="3921132130819999051">Laske Chrome'il teie eest sirvida</translation>
 <translation id="3941890832296813527">Installimisviga: installiprogrammi failinimi on sobimatu või seda ei toetata.</translation>
 <translation id="395904275706073188">Kaitstud lehti ei saa lugeda. Proovige teist lehte.</translation>
 <translation id="3968962723676998462">Sisestage pääsukood, et Chrome'i andmeid kasutada ja oma kontole <ph name="ACCOUNT_EMAIL" /> salvestada</translation>
@@ -495,7 +495,6 @@ Mõned funktsioonid ei pruugi saadaval olla. Määrake muu profiilikataloog või
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Google Chrome'i beetaversioon</translation>
 <translation id="6180522807229584611">See vaheleht kasutab lisaressursse. Laske Chrome'il see toimivuse täiustamiseks interaktiivseks teha.</translation>
 <translation id="6182736845697986886">Installimine ebaõnnestus, kuna värskendusserveris ilmnes sisemine viga.</translation>
-<translation id="6183773856988300112">Gemini Chrome'is kasutab teie vahelehtedel töötamiseks ja antud ülesannete täitmiseks automaatset sirvimist. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome'i nõuanne: salvestage paroolid</translation>
 <translation id="6192058120268468905">Teie konto Chrome'is</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> lisas laienduse, mis võib muuta Chrome’i tööpõhimõtteid.

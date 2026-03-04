@@ -226,6 +226,7 @@
 <translation id="3226612997184048185">ນອກຈາກນັ້ນ, ຫາກທ່ານບັນທຶກບຸກມາກຂອງທ່ານໃນບັນຊີ Google ຂອງທ່ານ, ທ່ານສາມາດຕິດຕາມລາຄາຜະລິດຕະພັນໃນ Chrome ແລະ ຮັບການແຈ້ງເຕືອນເມື່ອລາຄາຫຼຸດລົງໄດ້</translation>
 <translation id="3242123554343253302">ເພີ່ມໂປຣໄຟລ໌ Chrome</translation>
 <translation id="3245429137663807393">ຫາກທ່ານແບ່ງປັນລາຍງານການນຳໃຊ້ Chrome ນຳ, ລາຍງານເຫຼົ່ານັ້ນຈະຮວມເອົາ URL ທີ່ທ່ານເຂົ້າໄວ້ພ້ອມ</translation>
+<translation id="3259748324892322072">ດາວໂຫຼດແອັບ Chrome</translation>
 <translation id="3286538390144397061">ປິດເປີດໃໝ່ດຽວນີ້</translation>
 <translation id="3292333338048274092">ຈາກນັ້ນທ່ານຈະຕ້ອງຣີສະຕາດ Chrome.</translation>
 <translation id="3324218984287646518">ຖາມ Google Lens ກ່ຽວກັບວິດີໂອນີ້</translation>
@@ -284,7 +285,6 @@
 <translation id="3892148308691398805">ສຳເນົາຂໍ້ຄວາມ</translation>
 <translation id="3893985792899396936">ເຄັດລັບສຳລັບ Chrome: ຊອກຫາດ້ວຍ Lens</translation>
 <translation id="3906096710440765802">ເຂົ້າສູ່ລະບົບ Chrome ເພື່ອຮັບລະຫັດຜ່ານ, ບຸກມາກ ແລະ ຂໍ້ມູນອື່ນໆໃນອຸປະກອນທຸກເຄື່ອງຂອງທ່ານ.</translation>
-<translation id="3921132130819999051">ໃຫ້ Chrome ທ່ອງເວັບແທນທ່ານ</translation>
 <translation id="3941890832296813527">ຂໍ້ຜິດພາດໃນການຕິດຕັ້ງ: ຊື່ໄຟລ໌ຂອງຕົວຕິດຕັ້ງບໍ່ຖືກຕ້ອງ ຫຼື ລະບົບບໍ່ຮອງຮັບ.</translation>
 <translation id="395904275706073188">ບໍ່ສາມາດອ່ານໜ້າທີ່ມີການປ້ອງກັນໄດ້. ລອງໃຊ້ໜ້າອື່ນ.</translation>
 <translation id="3968962723676998462">ໃສ່ລະຫັດຜ່ານຂອງທ່ານເພື່ອໃຊ້ ແລະ ບັນທຶກຂໍ້ມູນ Chrome ໃນບັນຊີຂອງທ່ານ, <ph name="ACCOUNT_EMAIL" /></translation>
@@ -499,7 +499,6 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">ແຖບນີ້ກຳລັງໃຊ້ຊັບພະຍາກອນເພີ່ມເຕີມ. ເພື່ອປັບປຸງປະສິດທິພາບຂອງທ່ານ, ໃຫ້ Chrome ຊ່ວຍເຮັດໃຫ້ມັນບໍ່ເຮັດວຽກ.</translation>
 <translation id="6182736845697986886">ການຕິດຕັ້ງບໍ່ສຳເລັດເນື່ອງຈາກເຊີບເວີອັບເດດເກີດຂໍ້ຜິດພາດພາຍໃນ.</translation>
-<translation id="6183773856988300112">Gemini ໃນ Chrome ໃຊ້ການທ່ອງເວັບອັດຕະໂນມັດເພື່ອເຮັດວຽກໃນແຖບຂອງທ່ານ ແລະ ເຮັດໜ້າວຽກທີ່ທ່ານກຳນົດໃຫ້ສຳເລັດ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">ເຄັດລັບ Chrome: ບັນທຶກລະຫັດຜ່ານ</translation>
 <translation id="6192058120268468905">ບັນຊີຂອງທ່ານໃນ Chrome</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ໄດ້ເພີ່ມສ່ວນຂະຫຍາຍທີ່ອາດປ່ຽນວິທີການເຮັດວຽກຂອງ Chrome.

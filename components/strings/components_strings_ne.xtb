@@ -1611,6 +1611,7 @@
 <translation id="3575121482199441727">यो साइटलाई अनुमति दिनुहोस्</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">सडकको नाम विकल्प चयन गरियो</translation>
+<translation id="3576315803647905285">औपचारिक बनाउनुहोस्</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> मा इम्बेड गरिएको पृष्ठले यसो भन्छ</translation>
 <translation id="3577473026931028326">कुनै समस्या आयो। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3577902790357386792">जिम्नास्टिक्स</translation>
@@ -2682,6 +2683,7 @@
 <translation id="5266128565379329178">सिरानको बाइन्ड</translation>
 <translation id="5269225904387178860">फेदमा चार प्वाल</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" लाई "<ph name="DATA_CONTROLS_RESTRICTION" />" को सर्तका रूपमा प्रयोग गर्न मिल्दैन</translation>
+<translation id="527191520368130807">सच्याउनुहोस्</translation>
 <translation id="5273658854610202413">चेतावनी: यो नीति गाभ्न मिल्ने शब्दकोशसम्बन्धी नीतिहरूको भाग नभएका कारण यसलाई PolicyDictionaryMultipleSourceMergeList नीतिमा तोकिएअनुसार गाभिएन।</translation>
 <translation id="5278778426231952189">अहिले नै अपलोड गर्नुहोस्</translation>
 <translation id="5279286380302340275">डाउनलोड गरिएका सामग्री व्यवस्थापन गर्नुहोस्</translation>
@@ -3582,6 +3584,7 @@
 <translation id="6698097747703777657">तपाईंले कोड प्राप्त गर्नुभएन? <ph name="BEGIN_LINK" />नयाँ कोड प्राप्त गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">सिर्जना गरिएको:</translation>
 <translation id="6698769547327354196">Chrome मा Pix अफ गर्न <ph name="BEGIN_LINK1" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
+<translation id="669903922988126943">आफ्नो जानकारी सेभ गर्नुहोस् र Google का विभिन्न उत्पादनमा फाराम भर्ने जस्ता कामहरू अझ छिटो पूरा गर्नुहोस्। तपाईं <ph name="ACCOUNT" /> को <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> मा <ph name="MANAGE_INFO_LINK" /> सक्नुहुन्छ।</translation>
 <translation id="67007264085648978">समय स्क्रबर</translation>
 <translation id="6702851555558236418">अडियो तथा सङ्गीतसम्बन्धी सफ्टवेयर</translation>
 <translation id="6702919718839027939">प्रेजेन्ट गर्नुहोस्</translation>
@@ -4093,6 +4096,7 @@
 <translation id="7499188644237027195">तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं इवालेट र Pix विकल्पहरूका रूपमा देख्नु हुने छ</translation>
 <translation id="7500917112031739411">समूहअनुसार देखाउनुहोस्</translation>
 <translation id="7501663406926337752">तपाईंले खोल्न लाग्नुभएको फाइललाई तपाईंको सङ्गठनले फ्ल्याग गरेको छ</translation>
+<translation id="7502044688973049724">आफ्नो जानकारी व्यवस्थापन गर्न</translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">फिर्ता गरिएको नीति सम्बन्धी यन्त्र खाली छ वा हालको यन्त्रको id सँग मेल खाँदैन</translation>
 <translation id="7508577201115425418">कागजात र प्रिन्टिङ सेवा</translation>
@@ -4125,7 +4129,7 @@
 <translation id="7543525346216957623">आफ्नो अभिभावकलाई सोध्नुहोस्</translation>
 <translation id="7546409722674205727">‍<ph name="APP_NAME" /> सुरु गरिँदै छ</translation>
 <translation id="7548892272833184391">जडानसम्बन्धी त्रुटिहरू ठिक गर्नुहोस्</translation>
-<translation id="7549584377607005141">यो वेबपृष्ठ ठीकसँग प्रदर्शित हुनको लागि यस वेबपृष्ठलाई तपाइँले पहिले प्रविष्ट गर्नुभएको लगत आवश्यक छ। तपाइँले यो लगत फेरि पठाउन सक्नुहुन्छ, तर यसो गर्नाले यस पृष्ठले पहिले प्रददर्शन गरेको कुनै पनि कार्य तपाइँले फेरि गर्नुहुनेछ।</translation>
+<translation id="7549584377607005141">यो वेबपृष्ठ ठीकसँग प्रदर्शित हुनको लागि यस वेबपृष्ठलाई तपाइँले पहिले प्रविष्ट गर्नुभएको लगत आवश्यक छ। तपाइँले यो लगत फेरि पठाउन सक्नुहुन्छ, तर यसो गर्नाले यस पृष्ठले पहिले प्रददर्शन गरेको कुनै पनि कार्य तपाइँले फेरि गर्नुहुने छ।</translation>
 <translation id="7550637293666041147">तपाईंको डिभाइसको युजरनेम र Chrome को युजरनेम</translation>
 <translation id="7552846755917812628">निम्न सुझावहरूको पालना गरी हेर्नुहोस्:</translation>
 <translation id="7554242657529665960">तपाईंका एड्मिनबाट प्राप्त म्यासेज: "<ph name="ADMIN_MESSAGE" />"</translation>
@@ -5145,6 +5149,7 @@
 <translation id="9191834167571392248">फेदको बायाँपट्टि प्वाल</translation>
 <translation id="9192361865877479444">मेटल (म्याट)</translation>
 <translation id="9192947025498305328">स्वास्थ्य तथा वातावरणमैत्री सौन्दर्य प्रसाधन</translation>
+<translation id="9193018794001479794">व्याख्या गर्नुहोस्</translation>
 <translation id="9195969368671142407">तपाईंको सङ्गठनले तपाईंको Google खातामा सेभ गर्न पाइने कुराहरूको सीमा तोकेका अवस्थामा तपाईं ट्याब समूह सेयर गर्न वा तिनमा सामेल हुन पाउनुहुन्न</translation>
 <translation id="9198613052465150219">तपाईंको Google खाताका अन्य प्रकारका ब्राउजिङ हिस्ट्री <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> मा सेभ गरिएका हुन सक्छन्</translation>
 <translation id="9199905725844810519">प्रिन्ट गर्ने सुविधा ब्लक गरिएको छ</translation>

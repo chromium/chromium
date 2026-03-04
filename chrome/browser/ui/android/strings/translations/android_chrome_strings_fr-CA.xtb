@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Déplacer les favoris</translation>
 <translation id="1197761954713363183">Feuille de confirmation de la clé d'accès fermée</translation>
 <translation id="1197933394627598677">Afficher le mode Lecture</translation>
+<translation id="1197935538609051549">Désactiver</translation>
 <translation id="1201402288615127009">Suivant</translation>
 <translation id="1202892408424955784">Produits suivis</translation>
 <translation id="1204037785786432551">Télécharger le lien</translation>
@@ -506,6 +507,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="3122883569442693641">Plus de détails</translation>
 <translation id="3123734510202723619">Annonces</translation>
 <translation id="3134385238404760368">Aucun onglet récent</translation>
+<translation id="3135655388926735587">Touchez Onglets récents.</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3158667104057012316">Tri par ordre manuel</translation>
 <translation id="3159335509547415276">En savoir plus sur les comptes bloqués</translation>
@@ -850,6 +852,7 @@ D'autres formes d'historique de navigation, telles que les recherches et l'activ
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 mot de passe compromis}one{# mot de passe compromis}other{# mots de passe compromis}}</translation>
 <translation id="4641919525231168205">Accéder à la page suivante</translation>
 <translation id="4642472735733036929">Suivi des prix arrêté</translation>
+<translation id="4649493483932335039">Afficher les onglets récents</translation>
 <translation id="465657074423018424">La navigation sécurisée vous protège contre les sites Web trompeurs. Si vous la désactivez, faites bien attention durant la navigation, surtout lorsque vous entrez des mots de passe.</translation>
 <translation id="4662373422909645029">Aucun chiffre dans le pseudo</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> favoris supprimés</translation>
@@ -1562,6 +1565,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7363349185727752629">Un guide de vos choix en matière de confidentialité</translation>
 <translation id="7364103838544876661">Plus d'options pour supprimer les données de navigation</translation>
 <translation id="7365073365123878797">Pour commencer à enregistrer et à utiliser des mots de passe avec le gestionnaire de mots de passe Google, mettez à jour les services Google Play</translation>
+<translation id="7368009310682364976">Affichez les onglets récemment ouverts.</translation>
 <translation id="7368927539449986686">Modifier la recherche sur le site</translation>
 <translation id="7375125077091615385">Type :</translation>
 <translation id="7376560087009844242">En ajoutant plus de texte d'une page, vous pourriez obtenir de meilleurs résultats lorsque vous utilisez la fonctionnalité Toucher pour rechercher. Vous pouvez toujours accéder aux <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" /> pour modifier cette option.</translation>
@@ -1679,6 +1683,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7824665136384946951">Votre organisation a désactivé la Navigation sécurisée</translation>
 <translation id="7826342993930002256">Votre Chrome, partout</translation>
 <translation id="7844171778363018843">Aucune donnée à synchroniser n'a été sélectionnée</translation>
+<translation id="784453721355882533">Essayez Gemini dans Chrome pour obtenir des réponses, des points principaux à retenir et plus encore.</translation>
 <translation id="7846161022626028328">Une erreur est survenue. Réessayez.</translation>
 <translation id="7846296061357476882">Services Google</translation>
 <translation id="784652447248278262">Fenêtre actuelle</translation>
@@ -1688,6 +1693,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="7853202427316060426">Activité</translation>
 <translation id="7859988229622350291">Ne jamais traduire les pages rédigées en</translation>
 <translation id="7866213166286285359">Traduisez les pages ici</translation>
+<translation id="7873610418439765081">Essayez Gemini dans Chrome pour obtenir des réponses, des points principaux à retenir et plus encore à partir du bouton Plus d'options.</translation>
 <translation id="7875915731392087153">Créer un courriel</translation>
 <translation id="7876243839304621966">Tout supprimer</translation>
 <translation id="7886917304091689118">S'exécute dans Chrome</translation>
@@ -1738,6 +1744,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8062594758852531064">Préchargement étendu :</translation>
 <translation id="8063895661287329888">Échec de l'ajout du favori.</translation>
 <translation id="8066816452984416180">Ajoutez rapidement cette page à vos favoris. Pour modifier ce raccourci, le maintenir appuyer.</translation>
+<translation id="8072436850275034464">Vous pouvez rouvrir les onglets que vous avez fermés récemment à partir de n'importe quel appareil sur lequel vous utilisez Chrome</translation>
 <translation id="8073388330009372546">Ouvrir dans un nouvel onglet</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8078096376109663956">Partager le texte seulement</translation>
@@ -1849,6 +1856,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />supprimez les données Chro
 <translation id="8460008946585880786">Glissez-déposez un onglet sur un autre</translation>
 <translation id="8460448946170646641">Passer en revue les principaux paramètres de confidentialité et de sécurité</translation>
 <translation id="8460932807646981183">Gérer les moteurs de recherche et la recherche de sites</translation>
+<translation id="8465252176946159372">Non valide</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="847433688444405067">Passez d'un appareil à l'autre</translation>
 <translation id="8477178913400731244">Supprimer les données</translation>

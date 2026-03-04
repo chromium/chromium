@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">移动书签</translation>
 <translation id="1197761954713363183">已关闭通行密钥确认工作表</translation>
 <translation id="1197933394627598677">显示阅读模式</translation>
+<translation id="1197935538609051549">停用</translation>
 <translation id="1201402288615127009">下一步</translation>
 <translation id="1202892408424955784">跟踪的商品</translation>
 <translation id="1204037785786432551">下载链接</translation>
@@ -506,6 +507,7 @@
 <translation id="3122883569442693641">更多详情</translation>
 <translation id="3123734510202723619">通告</translation>
 <translation id="3134385238404760368">近期没有打开标签页</translation>
+<translation id="3135655388926735587">点按“最近打开的标签页”</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3158667104057012316">手动排序</translation>
 <translation id="3159335509547415276">了解被屏蔽的账号</translation>
@@ -850,6 +852,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
 <translation id="4641919525231168205">前往下一页</translation>
 <translation id="4642472735733036929">已停止跟踪价格</translation>
+<translation id="4649493483932335039">查看最近打开的标签页</translation>
 <translation id="465657074423018424">“安全浏览”功能会保护您免受诈骗网站的侵害。如果您关闭此功能，当浏览网站时（特别是在输入密码之前），请一定多加小心。</translation>
 <translation id="4662373422909645029">昵称不能包含数字</translation>
 <translation id="4663756553811254707">已删除 <ph name="NUMBER_OF_BOOKMARKS" /> 个书签</translation>
@@ -1560,6 +1563,7 @@
 <translation id="7363349185727752629">隐私控制选项指南</translation>
 <translation id="7364103838544876661">用于删除浏览数据的更多选项</translation>
 <translation id="7365073365123878797">如需开始使用 Google 密码管理工具保存和使用密码，请更新 Google Play 服务</translation>
+<translation id="7368009310682364976">查看最近打开的标签页</translation>
 <translation id="7368927539449986686">修改网站搜索引擎</translation>
 <translation id="7375125077091615385">类型：</translation>
 <translation id="7376560087009844242">如果选择纳入相应页面上的更多文字，您便可能会在使用“轻触搜索”功能时看到相关性更高的结果。您随时可访问<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />以更改此设置。</translation>
@@ -1677,6 +1681,7 @@
 <translation id="7824665136384946951">您的组织已关闭“安全浏览”功能</translation>
 <translation id="7826342993930002256">您的专属 Chrome 浏览器，走到哪带到哪</translation>
 <translation id="7844171778363018843">未选择任何要同步的数据</translation>
+<translation id="784453721355882533">试用 Chrome 中的 Gemini，轻松获取答案、要点总结等。</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
 <translation id="7846296061357476882">Google 服务</translation>
 <translation id="784652447248278262">当前窗口</translation>
@@ -1686,6 +1691,7 @@
 <translation id="7853202427316060426">活动</translation>
 <translation id="7859988229622350291">一律不翻译</translation>
 <translation id="7866213166286285359">翻译此处显示的网页</translation>
+<translation id="7873610418439765081">通过“更多选项”按钮试用 Chrome 中的 Gemini，轻松获取答案、要点总结等。</translation>
 <translation id="7875915731392087153">创建电子邮件</translation>
 <translation id="7876243839304621966">全部删除</translation>
 <translation id="7886917304091689118">正在 Chrome 中运行</translation>
@@ -1736,6 +1742,7 @@
 <translation id="8062594758852531064">扩展型预加载：</translation>
 <translation id="8063895661287329888">无法添加书签。</translation>
 <translation id="8066816452984416180">快速为此页添加书签。若要修改此快捷方式，请轻触并按住这里。</translation>
+<translation id="8072436850275034464">在任何使用 Chrome 的设备上，您都可以重新打开最近关闭的标签页</translation>
 <translation id="8073388330009372546">在新标签页中打开图片</translation>
 <translation id="8076492880354921740">标签页</translation>
 <translation id="8078096376109663956">只能分享文本</translation>
@@ -1847,6 +1854,7 @@
 <translation id="8460008946585880786">将一个标签页拖放到另一个标签页上</translation>
 <translation id="8460448946170646641">检查重要的隐私控制设置和安全控件</translation>
 <translation id="8460932807646981183">管理搜索引擎和网站搜索</translation>
+<translation id="8465252176946159372">无效</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="847433688444405067">跨设备浏览</translation>
 <translation id="8477178913400731244">删除数据</translation>

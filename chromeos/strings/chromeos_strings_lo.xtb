@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">ດາວໂຫຼດໂມເດວການຖອດຖ່າຍຂໍ້ຄວາມຂອງພາສາ <ph name="LANGUAGE_NAME" /> ສຳເລັດແລ້ວ</translation>
 <translation id="42126664696688958">​ສົ່ງ​ອອກ</translation>
 <translation id="4213104098953699324">ແປ້ນພິມ USB</translation>
+<translation id="4217571870635786043">ການພິມຕາມຄຳບອກ</translation>
 <translation id="4227825898293920515">ລະຫັດຜ່ານໝົດອາຍຸໃນ <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ບໍ່ມີວຽກການພິມທີ່ພວມດຳເນີນຢູ່</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1687,6 +1688,7 @@
 <translation id="8420955526972171689">ທົດສອບ ແລະ ແກ້ໄຂບັນຫາຮາດແວ</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ລົງ</translation>
+<translation id="8427213022735114808">ການຂຽນຕາມຄຳບອກສົ່ງສຽງຂອງທ່ານໃຫ້ Google ເພື່ອອະນຸຍາດການພິມດ້ວຍສຽງໃນຊ່ອງໃສ່ຂໍ້ຄວາມຕ່າງໆ.</translation>
 <translation id="8428213095426709021">ການ​ຕັ້ງຄ່າ</translation>
 <translation id="8431300646573772016">ມີຫຍັງໃໝ່ກັບ ChromeOS</translation>
 <translation id="8433186206711564395">ການຕັ້ງຄ່າເຄືອຂ່າຍ</translation>

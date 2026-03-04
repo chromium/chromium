@@ -29,6 +29,7 @@
 <translation id="126567311906253476">በ<ph name="USER_EMAIL" /> እንደ Gmail ወይም YouTube ወዳሉ የGoogle አገልግሎቶች ሲገቡ በተመሳሳይ መለያ ወደ Chromium መግባት ይችላሉ</translation>
 <translation id="1290883685122687410">የውቅረት ስህተት፦ <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">አዲሱን የChromium መገለጫዎ ያቀናብሩት</translation>
+<translation id="132092532143527429">በGemini በChromium ውስጥ ይሞክሩ</translation>
 <translation id="1324107359134968521">Chromium የብሉቱዝ መሣሪያዎችን ለማሰስ የብሉቱዝ መዳረሻ 
 ያስፈልገዋል። <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ቋንቋ አግኝ</translation>
@@ -611,6 +612,7 @@ Chromium ቅንብሮችዎን ማስመለስ አልቻለም።</translation>
 <translation id="7622753900276619808">አሁን Chromium ውስጥ የሚገኙ ተጨማሪ ባህሪያት አሉዎት</translation>
 <translation id="7624307931717240213">ይህን አገልግሎት ለማሻሻል መረጃ እንጠቀማለን። የግላዊነት መመሪያን እና የአገልግሎት ውልን ይመልከቱ።</translation>
 <translation id="7649070708921625228">እገዛ</translation>
+<translation id="7650134251917003571">የChromium መተግበሪያን ያግኙ</translation>
 <translation id="7656340475565475526">Chromium ለእርስዎ እንዲያስስ ይፍቀዱ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7686590090926151193">Chromium ነባሪ አሳሽዎ አይደለም</translation>

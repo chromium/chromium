@@ -222,6 +222,7 @@
 <translation id="3226612997184048185">如果您还将书签保存在 Google 账号中，则可在 Chrome 中跟踪商品价格，并在降价时收到通知</translation>
 <translation id="3242123554343253302">添加 Chrome 个人资料</translation>
 <translation id="3245429137663807393">如果您还共享了 Chrome 使用情况报告，这些报告会包含您访问过的网址</translation>
+<translation id="3259748324892322072">获取 Chrome 应用</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="3292333338048274092">然后，您需要重启 Chrome。</translation>
 <translation id="3324218984287646518">向 Google 智能镜头询问此视频</translation>
@@ -279,7 +280,6 @@
 <translation id="3892148308691398805">复制文字</translation>
 <translation id="3893985792899396936">Chrome 提示：使用智能镜头搜索</translation>
 <translation id="3906096710440765802">登录 Chrome 即可在所有设备上获取密码、书签等信息</translation>
-<translation id="3921132130819999051">让 Chrome 代您浏览</translation>
 <translation id="3941890832296813527">安装时出错：安装程序文件名无效或不受支持。</translation>
 <translation id="395904275706073188">无法读取受保护的页面，请尝试其他页面。</translation>
 <translation id="3968962723676998462">请输入您的口令，以便将 Chrome 数据保存在您的账号 <ph name="ACCOUNT_EMAIL" /> 中并使用这些数据</translation>
@@ -490,7 +490,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome 测试版</translation>
 <translation id="6180522807229584611">此标签页正在占用额外的资源。请通过 Chrome 将其设为非活跃状态，以便提升性能。</translation>
 <translation id="6182736845697986886">更新服务器出现内部错误，因此安装失败。</translation>
-<translation id="6183773856988300112">Chrome 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome 提示：保存密码</translation>
 <translation id="6192058120268468905">设置 Chrome 账号</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" />添加了一个扩展程序，可能会改变 Chrome 的工作方式。

@@ -1910,6 +1910,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
 <translation id="4031179711345676612">Caniateir meicroffon</translation>
 <translation id="4036753017940930924">Lotiau a Thir</translation>
 <translation id="403724377879219932">Yn gallu gofyn am gael mynediad at ddyfeisiau eraill ar eich rhwydwaith lleol</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, newydd</translation>
 <translation id="4039506337798853114">I ddangos eich cyrchwr, pwyswch |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Lleoliad bras</translation>
 <translation id="4045070493270310437">Ailagor tabiau</translation>
@@ -2796,6 +2797,7 @@ I guddio opsiynau talu'n ddiweddarach, ewch i'r <ph name="BEGIN_LINK" />gosodiad
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">I dalu'n gyflymach, cadwch y CVC hwn yn Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Apiau ar y ddyfais</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, gynt yn <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Yn y drefn wrthol wyneb i fyny</translation>
 <translation id="5447235695608032700">Caniatáu i <ph name="SITE" /> ddefnyddio gwybodaeth y maent wedi cadw amdanoch chi</translation>
 <translation id="5447973833955560753">Cyfrinair adfer</translation>

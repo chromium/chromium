@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">اكتمل تنزيل نموذج تحويل الصوت إلى نص باللغة <ph name="LANGUAGE_NAME" /></translation>
 <translation id="42126664696688958">تصدير</translation>
 <translation id="4213104098953699324">‏لوحة مفاتيح USB</translation>
+<translation id="4217571870635786043">إملاء</translation>
 <translation id="4227825898293920515">تنتهي صلاحية كلمة المرور في <ph name="TIME" /></translation>
 <translation id="4238516577297848345">ما من مهام قيد الطباعة.</translation>
 <translation id="4239069858505860023">‏شبكة GPRS</translation>
@@ -1686,6 +1687,7 @@
 <translation id="8420955526972171689">يمكنك إجراء اختبارات وتحديد مشاكل الجهاز وحلّها.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">لأسفل</translation>
+<translation id="8427213022735114808">‏ترسل ميزة "الإملاء" صوتك إلى Google للسماح بالكتابة بالصوت في أي حقل نصي.</translation>
 <translation id="8428213095426709021">الإعدادات</translation>
 <translation id="8431300646573772016">‏الجديد في نظام Chrome</translation>
 <translation id="8433186206711564395">إعدادات الشبكة</translation>

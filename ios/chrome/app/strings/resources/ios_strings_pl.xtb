@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Zakładka została zapisana w folderze „{title}” na Twoim koncie {email}}few{{count} zakładki zostały zapisane w folderze „{title}” na Twoim koncie {email}}many{{count} zakładek zostało zapisanych w folderze „{title}” na Twoim koncie {email}}other{{count} zakładki zostało zapisane w folderze „{title}” na Twoim koncie {email}}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Widok dzielony</translation>
+<translation id="1218730690561976633">Włącz lub wyłącz weryfikację użytkownika w ulepszonym autouzupełnianiu</translation>
 <translation id="1219674500290482172">Nie można połączyć się z internetem.</translation>
 <translation id="1223498995510244364">Streść</translation>
 <translation id="1227113644794103810">Nieaktywne karty</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Nie udało się udostępnić, bo nie masz połączenia z siecią.</translation>
 <translation id="1668001730617725852">Otwórz w nowej grupie kart</translation>
 <translation id="1674504678466460478">Z: <ph name="SOURCE_LANGUAGE" /> na: <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Zgodnie z zasadami obowiązującymi w organizacji ten plik może zawierać informacje poufne</translation>
 <translation id="168389590065701766">Teraz możesz otwierać Obiektyw Google z poziomu paska adresu i wyszukiwać wszystko, co widzisz</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="169048873465870056">Usunąć kartę i grupę?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">Z zapisanych haseł możesz też korzystać na innych urządzeniach.</translation>
 <translation id="3177338796769255211">Zaloguj się, aby mieć dostęp do zakładek oraz innych ustawień i danych na wszystkich swoich urządzeniach</translation>
 <translation id="3181954750937456830">Bezpieczne przeglądanie (chroni Ciebie i Twoje urządzenie przed niebezpiecznymi witrynami)</translation>
+<translation id="3183362380688692618">Nowa grupa kart…</translation>
 <translation id="3186796054637504691">Wyczyść historię i dane witryn</translation>
 <translation id="3190736958609431397">Wyłącz śledzenie</translation>
 <translation id="3208260410153224535">Twoja organizacja wyłączyła logowanie się. Nowe zakładki, hasła i inne ustawienia będą zapisywane tylko na tym urządzeniu.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} z {count} formy płatności}few{{position} z {count} form płatności}many{{position} z {count} form płatności}other{{position} z {count} formy płatności}}</translation>
 <translation id="5075939510584558547">Zapisz bez szyfrowania</translation>
 <translation id="5076534614343816664">Śledzenie cen</translation>
+<translation id="507762438756999615">Ze względu na zasady obowiązujące w Twojej organizacji nie można udostępnić pliku</translation>
 <translation id="5078303485429639424">Włącz powiadomienia z funkcji <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Użyj sugerowanego hasła</translation>
 <translation id="5083464117946352670">Nie można ustalić rozmiaru pliku.</translation>
@@ -1969,6 +1973,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8059533439631660104">Zwija sekcję.</translation>
 <translation id="8061584726507121204">Historia</translation>
 <translation id="8064946459644399612">Zastosowano ustawienia strony nowej karty</translation>
+<translation id="8065136076319366194">Zapisywanie nie jest zalecane</translation>
 <translation id="8065556469005366939">Udostępnij karty, aby otrzymywać trafniejsze odpowiedzi</translation>
 <translation id="8069394452933076548">Wybierz, kiedy nieużywane karty mają być przenoszone do sekcji kart nieaktywnych.</translation>
 <translation id="8073670137947914548">Pobieranie zakończone</translation>
@@ -1991,6 +1996,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8132598642024322408">Teraz <ph name="PRICE" />, wcześniej <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Na każdej stronie i w każdej aplikacji używaj innego, unikalnego hasła. Gdyby ktoś zdobył użyte wielokrotnie hasło, mógłby je wykorzystać do zalogowania się również na inne Twoje konta. Kliknij, aby otworzyć stronę i od razu zmienić hasło.</translation>
+<translation id="8133810265969517544">Udostępnianie nie jest zalecane</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} zamknięta karta}few{{count} zamknięte karty}many{{count} zamkniętych kart}other{{count} zamkniętej karty}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 inny element}few{# inne elementy}many{# innych elementów}other{# innego elementu}}</translation>
 <translation id="8150167929304790980">Imię i nazwisko</translation>
@@ -2240,6 +2246,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="8976414606286374109">Karty zostały zapisane na koncie Google.</translation>
 <translation id="8981454092730389528">Zarządzanie aktywnością w Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, przypięta witryna</translation>
+<translation id="8990960056509724223">Ze względu na zasady obowiązujące w Twojej organizacji nie udało się zapisać pliku</translation>
 <translation id="8998289560386111590">Niedostępne na Twoim urządzeniu</translation>
 <translation id="9000532564152265066">Wszystkie karty</translation>
 <translation id="9003677638446136377">Sprawdź ponownie</translation>

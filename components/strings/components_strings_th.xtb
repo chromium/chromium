@@ -1613,6 +1613,7 @@
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">เลือกตัวเลือกชื่อถนนแล้ว</translation>
+<translation id="3576315803647905285">เพิ่มความเป็นทางการ</translation>
 <translation id="3576616784287504635">หน้าที่ฝังไว้ใน <ph name="SITE" /> บอกว่า</translation>
 <translation id="3577473026931028326">เกิดข้อผิดพลาด ลองใหม่</translation>
 <translation id="3577902790357386792">ยิมนาสติก</translation>
@@ -2683,6 +2684,7 @@
 <translation id="5266128565379329178">เย็บเล่มด้านบน</translation>
 <translation id="5269225904387178860">เจาะรูด้านล่าง 4 รู</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ไม่ใช่เงื่อนไขที่รองรับสำหรับ "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">ปรับ</translation>
 <translation id="5273658854610202413">คำเตือน: ระบบไม่ได้รวมนโยบายนี้ตามที่ระบุในนโยบาย PolicyDictionaryMultipleSourceMergeList เพราะไม่ใช่ส่วนหนึ่งของนโยบายพจนานุกรมที่รวมได้</translation>
 <translation id="5278778426231952189">อัปโหลดเลย</translation>
 <translation id="5279286380302340275">จัดการการดาวน์โหลด</translation>
@@ -3583,6 +3585,7 @@
 <translation id="6698097747703777657">หากไม่ได้รับรหัส ให้<ph name="BEGIN_LINK" />ขอรหัสใหม่<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">สร้าง:</translation>
 <translation id="6698769547327354196">หากต้องการปิด Pix ใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">บันทึกข้อมูลเพื่อทำสิ่งต่างๆ ให้เสร็จเร็วขึ้น เช่น การกรอกแบบฟอร์มในผลิตภัณฑ์ต่างๆ ของ Google คุณสามารถ<ph name="MANAGE_INFO_LINK" />ใน <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> สำหรับ <ph name="ACCOUNT" /> ได้</translation>
 <translation id="67007264085648978">ตัวควบคุมเวลา</translation>
 <translation id="6702851555558236418">ซอฟต์แวร์ดนตรีและเสียง</translation>
 <translation id="6702919718839027939">การนำเสนอ</translation>
@@ -4095,6 +4098,7 @@
 <translation id="7499188644237027195">เมื่อทำการซื้อใน Chrome คุณจะเห็นอีวอลเล็ตและ Pix เป็นตัวเลือก</translation>
 <translation id="7500917112031739411">แสดงตามกลุ่ม</translation>
 <translation id="7501663406926337752">เว็บไซต์ที่กำลังจะเข้าชมนั้นองค์กรของคุณได้ติดธงไว้ว่าไม่เหมาะสม</translation>
+<translation id="7502044688973049724">จัดการข้อมูลของคุณ</translation>
 <translation id="7507075214339298899">Envelope #9</translation>
 <translation id="7508255263130623398">รหัสอุปกรณ์นโยบายที่ส่งกลับว่างเปล่าหรือไม่ตรงกับรหัสอุปกรณ์ปัจจุบัน</translation>
 <translation id="7508577201115425418">บริการด้านเอกสารและการพิมพ์</translation>
@@ -5147,6 +5151,7 @@
 <translation id="9191834167571392248">เจาะรูด้านซ้ายล่าง</translation>
 <translation id="9192361865877479444">โลหะ (ด้าน)</translation>
 <translation id="9192947025498305328">ผลิตภัณฑ์เสริมความงามจากธรรมชาติ</translation>
+<translation id="9193018794001479794">ลงรายละเอียด</translation>
 <translation id="9195969368671142407">เมื่อองค์กรจำกัดการบันทึกลงในบัญชี Google ของคุณ คุณจะแชร์หรือเข้าร่วมกลุ่มแท็บไม่ได้</translation>
 <translation id="9198613052465150219">บัญชี Google อาจมีประวัติการท่องเว็บรูปแบบอื่นๆ ที่ <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">การพิมพ์ถูกบล็อก</translation>

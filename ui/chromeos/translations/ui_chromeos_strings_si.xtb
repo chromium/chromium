@@ -100,6 +100,7 @@
 <translation id="1761091787730831947"><ph name="VM_NAME" /> සමග බෙදා ගන්න</translation>
 <translation id="1773212559869067373">තහවුරු කිරීමේ සහතිකය ස්ථානීයව ප්‍රතික්ෂේප කෙරිණි</translation>
 <translation id="1775381402323441512">වීඩියෝ තොරතුරු</translation>
+<translation id="1787208118234640571">බෙල්ජියානු</translation>
 <translation id="180035236176489073">මෙම ගොනු වෙත පිවිසීමට ඔබ ඔන්ලයින් සිටිය යුතුය.</translation>
 <translation id="1807938677607439181">සියළු ගොනු</translation>
 <translation id="1810764548349082891">පෙරදසුන ලබාගත නොහැකිය</translation>
@@ -113,9 +114,11 @@
 <translation id="1853795129690976061">මෙම ෆෝල්ඩරය Linux සමග බෙදා ගෙන ඇත</translation>
 <translation id="1864756863218646478">ගොනුව සොයාගත නොහැකි විය.</translation>
 <translation id="1877377730633446520">මෙය <ph name="REQUIRED_SPACE" /> පමණ භාවිත කරයි. ඔබට දැනට <ph name="FREE_SPACE" /> තිබේ.</translation>
+<translation id="18790189037341066">නෝර්වීජියානු</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, සබඳින්න</translation>
 <translation id="1920670151694390848">මලයාලම් අක්ෂර පරිවර්තනය</translation>
 <translation id="1920798810075583923">දිය කොමඩු</translation>
+<translation id="1922341967219151064">යුක්‍රේනියානු</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> හැඩතල ගැන්වීය</translation>
 <translation id="1942765061641586207">රූප විභේදනය</translation>
 <translation id="1972984168337863910">ගොනු ප්‍රතිපෝෂණ පැනල් දිග හරින්න</translation>
@@ -124,15 +127,19 @@
 <translation id="2004942826429452291">ගොනු ක්ලවුඩ්හි සහ මෙම Chromebook මත ගබඩා කෙරේ.</translation>
 <translation id="2009067268969781306">ධාවකයක් ආකෘති කිරීම එහි ගබඩා කර ඇති සියලුම දත්ත මකා දමයි. මෙම ක්‍රියාව අස් කළ නොහැක.</translation>
 <translation id="2025955442973426285">ටිග්රින්යා</translation>
+<translation id="2029385776150020336">US දිගු කළ</translation>
 <translation id="2037845485764049925">රුසියානු</translation>
 <translation id="2044023416777079300">මොඩමය ලියාපදිංචි කර නැත</translation>
 <translation id="2046702855113914483">රාමෙන්</translation>
+<translation id="2070397826966158357">එස්තෝනියානු</translation>
 <translation id="2070909990982335904">තිතකින් ආරම්භ වන නම් පද්ධතිය සඳහා වෙන් කෙරිණි. කරුණාකර වෙනත් නමක් තෝරන්න.</translation>
 <translation id="2079545284768500474">පසුගමනය</translation>
 <translation id="2084108471225856927">උපාංග සැකසීම්</translation>
 <translation id="2084809735218147718">ඔබට ස්තුතියි යැයි සංඥා කරමින්</translation>
 <translation id="2088690981887365033">VPN ජාලය</translation>
+<translation id="2096167581623663959">ලන්දේසි</translation>
 <translation id="209653272837065803">ගොනු සමමුහුර්ත කිරීම දිගටම කරගෙන යාමට ප්‍රමාණවත් ආචයන ඉඩක් නොමැත</translation>
+<translation id="2101288073618388449">මොන්ගෝලියානු</translation>
 <translation id="2114191879048183086">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් මකනු ඇති අතර ඔබට ඒවා ප්‍රතිසාධනය කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="2122305276694332719">සැඟවුණු ජාලයකට ස්වයංක්‍රීයව සම්බන්ධ කිරීම අන් අයට ඔබේ උපාංගය සහ යම් ජාල සැකසීම් බැලීමට ඉඩ සලසන අතර, එය නිර්දේශ නොකෙරේ.</translation>
 <translation id="2125607626296734455">ඛමර්</translation>
@@ -200,6 +207,7 @@
 <translation id="2587195714949534472"><ph name="FILE_NAME" /> සමමුහුර්ත කිරීමට සූදානම් කරමින්...</translation>
 <translation id="2602810353103180630"><ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />වන ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="2614589611416690597"><ph name="VIDEO_TYPE" /> වීඩියෝ</translation>
+<translation id="2619043364735935227">UK ඩ්වොරැක්</translation>
 <translation id="2620090360073999360">මේ අවස්ථාවේ Google Drive වෙත ලගාවිය නොහැක.</translation>
 <translation id="2621713457727696555">ආරක්ෂිතයි</translation>
 <translation id="2638942478653899953">Google Drive වෙත ප්‍රවේශ විය නොහැක. <ph name="BEGIN_LINK" />ප්‍රවිෂ්ටයෙන් පිට වී<ph name="END_LINK" /> නැවතත් ප්‍රවිෂ්ට වන්න.</translation>
@@ -207,8 +215,12 @@
 <translation id="2653059201992392941">ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="2663066752008346276">මයන්සන් යතුරුපුවරුව සමග බුරුම/මියන්මාර</translation>
 <translation id="2664412712123763093">ගොනු ස්ථානය</translation>
+<translation id="2672394942808662069">කැනේඩියානු බහු භාෂා</translation>
+<translation id="2707357721402813583">අයිරිෂ්</translation>
+<translation id="2708477391501452176">ප්‍රංශ BÉPO</translation>
 <translation id="2719020180254996569"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, විස්තර</translation>
 <translation id="2724954091494693138">F-යතුරුපුවරුව සමග තුර්කි</translation>
+<translation id="2728450421877450246">ප්‍රංශ</translation>
 <translation id="2732288874651063549"><ph name="VM_NAME" /> බෙදා ගැනීම කළමනා කරන්න</translation>
 <translation id="2732839045120506979">වියට්නාම VNI</translation>
 <translation id="2735623501230989521">Parallels Desktop හට <ph name="FOLDER_NAME" /> ෆෝල්ඩරය තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසර දෙන්න</translation>
@@ -216,16 +228,19 @@
 <translation id="2771816809568414714">චීස්</translation>
 <translation id="2802583107108007218">මෙම සීමා කිරීම් ගැන තව දැන ගන්න</translation>
 <translation id="2803375539583399270">PIN අංකය ඇතුළත් කරන්න</translation>
+<translation id="2817444452774702982">ජෝර්ජියානු</translation>
 <translation id="2819519502129272135">ගොනු සමමුහුර්ත කිරීම ක්‍රියාවිරහිතයි</translation>
 <translation id="2820957248982571256">ස්කෑන් කරමින්...</translation>
 <translation id="2830077785865012357">චීන ෂුයින්</translation>
 <translation id="2843806747483486897">පෙරනිමිය වෙනස් කරන්න...</translation>
 <translation id="2873951654529031587">කුණු කූඩය</translation>
+<translation id="2887314858867008269">US කෝල්මාක්</translation>
 <translation id="2887525882758501333">PDF ලේඛනය</translation>
 <translation id="2888807692577297075">&lt;b&gt;"<ph name="SEARCH_STRING" />"&lt;/b&gt; වෙත කිසිඳු අයිතමයක් නොගැලපේ</translation>
 <translation id="2894654529758326923">තොරතුරු</translation>
 <translation id="2904378509913846215">"<ph name="FILENAME" />" නමැති ෆෝල්ඩරයක් දැනටමත් පවතියි. ඔබට එය ඔබ ගෙන යන එක සමග ප්‍රතිස්ථාපනය කිරීමට අවශ්‍ය ද?</translation>
 <translation id="290843123675549676">මරාති</translation>
+<translation id="2939595088421183401">ස්ලෝවැකියානු</translation>
 <translation id="2943503720238418293">කෙටි නමක් භාවිතා කරන්න</translation>
 <translation id="2949781154072577687"><ph name="DRIVE_NAME" /> හැඩතල ගන්වමින්...</translation>
 <translation id="2951236788251446349">ජෙලිෆිෂ්</translation>
@@ -243,6 +258,7 @@
 <translation id="3067790092342515856">Windows ගොනු</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS සංග්‍රාහක</translation>
+<translation id="3091469289665833668">රුමේනියානු</translation>
 <translation id="3104793765551262433"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබගේ පරිපාලක විසින් අවහිර කර ඇත, විස්තර</translation>
 <translation id="3113592018909187986">ඔබට උත්සාහයන් 1ක් ඉතිරිව ඇත. ඔබ නව PIN එකක් පිහිටුවන තුරු ඔබට මෙම ජාලය භාවිත කිරීමට නොහැකි වනු ඇත.</translation>
 <translation id="3124404833828281817">දවල් සිහින දකින පුද්ගලයා</translation>
@@ -261,6 +277,7 @@
 <translation id="3255159654094949700">අරාබි</translation>
 <translation id="326396468955264502">ගොනු <ph name="NUMBER_OF_FILES" />ක් සංකේතනය කර ඇති නිසා ඒවා ගෙන යාමට නොහැකි විය.</translation>
 <translation id="3264582393905923483">සන්දර්භය</translation>
+<translation id="3269333278563769269">පෘතුගීසි</translation>
 <translation id="3272909651715601089">"<ph name="PATH" />" විවෘත කිරීමට නොහැකි විය</translation>
 <translation id="3280431534455935878">සූදානම් කරමින්</translation>
 <translation id="3280719573299097127">ඔබ මනුගත ජාලයක සිටී. ගොනු සමමුහුර්ත කිරීම විරාම කර ඇත.</translation>
@@ -282,6 +299,8 @@
 <translation id="3408072735282270043">සක්‍රිය කරන්න, <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 යතුරුපුවරුව සමග ජර්මානු (ජර්මනිය)</translation>
 <translation id="3414856743105198592">ඉවත් කළ හැකි මාධ්‍යය හැඩතල ගැන්වීම සියලු දත්ත මැකීමට සුදානම් වේ. ඔබ දිගටම කරගෙන යාමට කැමතිද?</translation>
+<translation id="3430687179542180192">කැනේඩියානු ප්‍රංශ</translation>
+<translation id="3436358745602312794">තුර්කි-F</translation>
 <translation id="3437801641691368414">සාදන ලද වේලාව</translation>
 <translation id="343907260260897561">ක්ෂණික කැමරාව</translation>
 <translation id="3455931012307786678">එස්තෝනියානු</translation>
@@ -299,9 +318,11 @@
 <translation id="3553048479571901246"><ph name="APP_NAME" /> සමඟ ගොනු විවෘත කිරීමට, පළමුව ඒවා Windows ගොනු ෆෝල්ඩරයට පිටපත් කරන්න.</translation>
 <translation id="3556731189587832921">ජාත්‍යන්තර PC යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="3557414470514932909"><ph name="FILE_NAME" /> කුණු කූඩය වෙත ගෙන යමින්</translation>
+<translation id="3560848236447534728">ආර්මේනියානු ශබ්දානුකූල</translation>
 <translation id="3567221313191587603">ගොනුවක් තෝරා, ඔබගේ ගොනුවලට නොබැඳි පිවිසීම සඳහා <ph name="OFFLINE_CHECKBOX_NAME" /> ටොගල ක්‍රියාත්මක කරන්න.</translation>
 <translation id="3587482841069643663">සියළු</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> නොබැඳිව ලබා ගත හැකි බවට පත් කළ නොහැකි විය</translation>
+<translation id="3599083260824681324">ජපන්</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3616113530831147358">ශබ්ද</translation>
 <translation id="3619115746895587757">කපුචිනෝ</translation>
@@ -329,14 +350,17 @@
 <translation id="3811494700605067549">1 ගොනුවක් තෝරන ලදී</translation>
 <translation id="3817579325494460411">සපයා නොමැත</translation>
 <translation id="3819448694985509187">වැරදි PIN එකකි. ඔබට උත්සාහයන් 1ක් ඉතිරිව ඇත.</translation>
+<translation id="3826081788392587762">ෆාරෝස්</translation>
 <translation id="3830674330436234648">පසුධාවනය ලබා ගත නොහැකිය.</translation>
 <translation id="3839045880592694915">ඔබේ මොඩමයට ඔබේ වාහකයා සම්බන්ධ වීමට ඉඩ නොදෙයි. වැඩි විස්තර සඳහා ඔබේ වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="385051799172605136">ආපසු</translation>
 <translation id="3858860766373142691">නම</translation>
+<translation id="3874963587970919929">එක්සත් ජනපදය</translation>
 <translation id="3899991606604168269">බහුභාෂා යතුරුපුවරුව සමග ප්‍රංශ (කැනඩාව)</translation>
 <translation id="3901991538546252627"><ph name="NAME" /> වෙත සබඳ වෙමින්</translation>
 <translation id="3906232975181435906">ජංගම පැතිකඩ ස්ථාපනය කරමින්, ජාල <ph name="NETWORK_COUNT" />කින් <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /></translation>
 <translation id="3924145049010392604">මෙටා</translation>
+<translation id="3934861075411093298">ජර්මානු නියෝ 2</translation>
 <translation id="3943857333388298514">අලවන්න</translation>
 <translation id="3950820424414687140">පුරන්න</translation>
 <translation id="3952872973865944257">තෙළිඟු ශබ්දිම</translation>
@@ -349,9 +373,11 @@
 <translation id="4002066346123236978">සිරස්තලය</translation>
 <translation id="4017788180641807848">Workman යතුරුපුවරුව සමග ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="4040753847560036377">වැරදි PUK එකකි.</translation>
+<translation id="4043426908238742491">එක්සත් රාජධානිය</translation>
 <translation id="4057991113334098539">සක්‍රිය කරමින්...</translation>
 <translation id="4092890906744441904">අයිරිෂ්</translation>
 <translation id="4101601646343868113">ඔබේ ජංගම ජාලයට පුරනය වී ඔබේ ජංගම දත්ත සැලසුම සක්‍රිය බව තහවුරු කරන්න</translation>
+<translation id="4103534645423593971">ලැට්වියානු</translation>
 <translation id="4124731372776320263">Drive 1 ගොනුවක් සමමුහූර්ත කරමින්</translation>
 <translation id="4124935795427217608">කඟවේනා</translation>
 <translation id="4131235941541910880">ඔබට අවශ්‍ය නොවන අයිතම කුණු කූඩයට ගෙන යන්න</translation>
@@ -445,9 +471,12 @@
 <translation id="4789067489790477934">Parallels Desktop හට ඔබගේ Google Drive තුළ ඇති ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න වෙනස් කිරීම් ඔබගේ අනෙකුත් උපාංගවලට සමමුහුර්ත කරනු ඇත.</translation>
 <translation id="4790766916287588578">InScript යතුරුපුවරුව සමග හින්දි</translation>
 <translation id="4801956050125744859">දෙකම තබා ගන්න</translation>
+<translation id="4802185962157240723">හංගේරියානු</translation>
 <translation id="4804827417948292437">අලිගැටපේර</translation>
 <translation id="4805966553127040832">අයිතම <ph name="COUNT" />ක් ප්‍රතිසාධනය කරමින්</translation>
+<translation id="4823376603577118337">බ්‍රසීලියානු</translation>
 <translation id="4826849268470072925">දෙමළ ITRANS</translation>
+<translation id="4838707632718400841">ඩෙන්මාර්ක</translation>
 <translation id="4843566743023903107">Chromebases</translation>
 <translation id="4850886885716139402">දසුන</translation>
 <translation id="4862885579661885411">ගොනු සැකසීම්</translation>
@@ -477,6 +506,7 @@
 <translation id="5010406651457630570">පරිගණක</translation>
 <translation id="5011233892417813670">Chromebook</translation>
 <translation id="5024856940085636730">මෙහෙයුමක් අපේක්ෂිත කාලයට වඩා වඩාත් දිගු කාලයක් ගනිමින් තිබේ. ඔබට එය අහෝසි කිරීමට අවශ්‍යද?</translation>
+<translation id="5036141350290856713">රුසියානු ශබ්දානුකූල</translation>
 <translation id="5036159836254554629">Parallels Desktop බෙදා ගැනීම කළමනාකරණය කරන්න</translation>
 <translation id="5038625366300922036">තව බලන්න...</translation>
 <translation id="5044852990838351217">ආර්මේනියානු</translation>
@@ -500,6 +530,7 @@
    එය භාවිතයේ ඇති අතරතුර ඔබගේ උපාංගය ඉවත් කිරීම දත්ත හානියට හේතු විය හැකිය.  කරුණාකර මෙහෙයුම අවසන් වනතුරු රැඳී සිට, අනතුරුව ගොනු යෙදුම භාවිතයෙන් උපාංගය විසර්ජනය කරන්න.</translation>
 <translation id="5163869187418756376">බෙදාගැනීම අසාර්ථකයි. ඔබේ සබඳතාව පිරික්සා නැවත උත්සහ කරන්න.</translation>
 <translation id="5177526793333269655">කුඩාරූ දසුන</translation>
+<translation id="5178355323709925287">බල්ගේරියානු ශබ්දානුකූල</translation>
 <translation id="5181896909298187506">මෑත ගොනු නැත</translation>
 <translation id="5194713942430106590">තීරුව නැඟෙන පිළිවෙළට සැකසීමට ක්ලික් කරන්න.</translation>
 <translation id="5211614973734216083">ෆාරෝස්</translation>
@@ -547,15 +578,18 @@
 <translation id="5534520101572674276">විශාලත්වය ගණනය කෙරෙමින්</translation>
 <translation id="554153475311314364">ග්‍රීක අක්ෂර පරිවර්තනය</translation>
 <translation id="5554171655917412781">ෆෝල්ඩර <ph name="SELECTED_FOLDERS_COUNT" />ක් තෝරා ඇත</translation>
+<translation id="5568003358606822240">චෙක් ක්වර්ටි</translation>
 <translation id="5580591966435005537">අතථ්‍ය යන්ත්‍රය</translation>
 <translation id="5583640892426849032">ආපසුයවනය</translation>
 <translation id="5583664733673201137">විරාම ලකුණු පළල පිරී ඇත</translation>
 <translation id="5596627076506792578">තවත් විකල්ප</translation>
 <translation id="5602622065581044566">ශබ්දිම යතුරුපුවරුව සමග බල්ගේරියානු</translation>
+<translation id="5604409170937514933">ස්වීඩන</translation>
 <translation id="560739212255190568">ඔබේ පරිපාලක පහත ප්‍රොක්සිය බලාත්මක කිරීමට අමතරව ප්‍රොක්සි ප්‍රතික්ෂේප කිරීමේ රීති සකසා ඇත</translation>
 <translation id="5618330573454123917">මෙම ගොනුව Macintosh මෘදුකාංගය භාවිත කරන පරිගණකයක් සඳහා සැලසුම් කර ඇත. මෙය ChromeOS ධාවනය වන ඔබගේ උපාංගය සමග නොගැළපෙයි. ChromeOS හි ගොනු විවෘත කිරීම ගැන <ph name="BEGIN_LINK_HELP" />තව දැන ගන්න<ph name="END_LINK_HELP" />.</translation>
 <translation id="5625294776298156701">Tamil99 යතුරුපුවරුව සමග දෙමළ</translation>
 <translation id="5633226425545095130">මෙම අයිතමය ගෙන යාම '<ph name="DESTINATION_NAME" />' බෙදා ගත් ෆෝල්ඩරය දැකිය හැකි සියලු දෙනා සමග එය බෙදා ගනු ඇත.</translation>
+<translation id="5646106346566990960">තුර්කි</translation>
 <translation id="5649768706273821470">සවන් දෙන්න</translation>
 <translation id="5650895901941743674">ඔබේ APN වින්‍යාසය පරීක්ෂා කරන්න</translation>
 <translation id="5669691691057771421">නව PIN ඇතුළු කරන්න</translation>
@@ -565,9 +599,11 @@
 <translation id="5691596662111998220">අහෝ, <ph name="FILE_NAME" /> තව දුරටත් නොපවතී.</translation>
 <translation id="5698411045597658393"><ph name="NETWORK_NAME" />, අගුලු හරින්න</translation>
 <translation id="5700087501958648444">ශ්‍රව්‍ය තතු</translation>
+<translation id="5718459114973371204">මැසිඩෝනියානු</translation>
 <translation id="5720028165859493293"><ph name="FILE_NAME" /> කුණු කූඩය වෙත ගෙන යන ලදි</translation>
 <translation id="5724172041621205163">පට්ටචොට් යතුරුපුවරුව සමඟ තායි</translation>
 <translation id="57383366388012121">පසුගිය මාසය</translation>
+<translation id="5744221903031815187">ස්විස්</translation>
 <translation id="575175778971367197">මෙම ගොනුව දැන් සමමුහූර්ත කළ නොහැක</translation>
 <translation id="5760252553414789727">අයිතම <ph name="SELECTED_FILES_COUNT" />ක් තෝරා ඇත</translation>
 <translation id="5763377084591234761">ජර්මානු (ස්විට්සර්ලන්තය)</translation>
@@ -597,8 +633,10 @@
 <translation id="5948255720516436063"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, උපාංග පිහිටුවීමෙන් පසු සක්‍රිය කරන්න</translation>
 <translation id="5955954492236143329">අයිතම <ph name="NUMBER_OF_ITEMS" /></translation>
 <translation id="5957366693331451795">Chromeboxes</translation>
+<translation id="5959163675722155317">US ජාත්‍යන්තර</translation>
 <translation id="5982621672636444458">අනුපිළිවෙලට සකසන්න විකල්ප</translation>
 <translation id="6011074160056912900">ඊතර්නෙට් ජාලය</translation>
+<translation id="6023337265947005432">චෙක්</translation>
 <translation id="603895874132768835">ඔබ නව PIN එකක් පිහිටුවන තුරු ඔබට මෙම ජාලය භාවිත කිරීමට නොහැකි වනු ඇත</translation>
 <translation id="6040143037577758943">වසන්න</translation>
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ජාලය, සම්බන්ධ කර නැත</translation>
@@ -615,6 +653,7 @@
 <translation id="6138894911715675297"><ph name="NETWORK_TYPE" />, ජාලයක් නැත</translation>
 <translation id="6146563240635539929">වීඩියෝ</translation>
 <translation id="6150853954427645995">මෙම ගොනුව මාර්ගගත නොවී භාවිත කිරීම සඳහා, මාර්ගගත වී, ගොනුව මත දකුණු ක්ලික් කර, <ph name="OFFLINE_CHECKBOX_NAME" /> අභිප්‍රේතය තෝරන්න.</translation>
+<translation id="6162247388574239985">ලිතුවේනියානු</translation>
 <translation id="6164412158936057769">සමනලුන්</translation>
 <translation id="6165508094623778733">තව දැන ගන්න</translation>
 <translation id="6170470584681422115">සැන්ඩ්විච්</translation>
@@ -624,6 +663,7 @@
 <translation id="6198252989419008588">PIN අංකය වෙනස් කරන්න</translation>
 <translation id="6199801702437275229">ඉඩ තොරතුරු අපේක්ෂාවෙන්...</translation>
 <translation id="6205710420833115353">සමහර මෙහෙයුම් අපේක්ෂිත කාලයට වඩා වඩාත දිගු කාලයක් ගනී. ඒවා අහෝසි කිරීමට ඔබට අවශ්‍යද?</translation>
+<translation id="6214593504928642973">සර්බියානු</translation>
 <translation id="6220423280121890987">පන්ජාබි</translation>
 <translation id="6224240818060029162">ඩෙන්මාර්ක</translation>
 <translation id="6224253798271602650"><ph name="DRIVE_NAME" /> ආකෘති කරන්න</translation>
@@ -650,17 +690,22 @@
 <translation id="6394388407447716302">කියවීමට-පමණි</translation>
 <translation id="6395575651121294044">අයිතම <ph name="NUMBER_OF_FILES" /></translation>
 <translation id="6407769893376380348"><ph name="FILE_NAME" /> සංකේතනය කර ඇති නිසා එය ගෙන යාමට නොහැකි විය.</translation>
+<translation id="6417922483715629770">ජර්මානු</translation>
+<translation id="6421174876526901486">හීබෲ</translation>
 <translation id="642282551015776456">මෙම නම ගොනුවක් හෝ ෆෝල්ඩර නමක් ලෙස භාවිතා නොවනු ඇත</translation>
 <translation id="6423031066725912715">TCVN යතුරු පුවරුව සමඟ වියට්නාම</translation>
 <translation id="6430271654280079150">ඔබට 1 උත්සාහයක් ඉතුරුයි.</translation>
 <translation id="643243556292470964">මකා දැමූ ගොනු දැන් කුණු කූඩයට ගෙන ගොස් ඇත</translation>
 <translation id="6438480100790416671">ආචයන ඉඩ පරීක්ෂා කරමින්…</translation>
 <translation id="6451527188465304418">ඔබේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්තිවලට එදිරිව ගොනුව පරීක්ෂා කරමින්...</translation>
+<translation id="6480474281747138552">US ක්‍රමලේඛක ඩ්වොරැක්</translation>
+<translation id="6483241221370343062">පෝලන්ත</translation>
 <translation id="6485131920355264772">ඉඩ තතු යළි ලබා ගැනීමට අසමත් විය</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, ඔබේ පරිපාලකයා විසින් කළමනාකරණය කරයි, විස්තර</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> වෙත උපුටා ගනිමින්</translation>
 <translation id="6499681088828539489">බෙදා ගත් ජාල සඳහා ප්‍රොක්සිවලට ඉඩ නොදෙන්න</translation>
 <translation id="6503285896705205014">පරිපාලක ප්‍රතිපත්තිය මගින් ගොනු <ph name="COUNT" />ක් පිටපත් කිරීම අවහිර කර ඇත</translation>
+<translation id="652312300422421604">රුසියානු</translation>
 <translation id="6528513914570774834">මෙම උපාංගයේ වෙනත් පරිශීලකයින්ට මෙම ජාලය භාවිතා කිරීමට ඉඩ දෙන්න</translation>
 <translation id="6549689063733911810">මෑත</translation>
 <translation id="6558280019477628686">දෝෂයක් සිදු විය. සමහර අයිතම මැකී නොතිබීමට ඉඩ ඇත.</translation>
@@ -675,6 +720,7 @@
 <translation id="6650726141019353908">රෝස සමනලයා</translation>
 <translation id="6657585470893396449">මුරපදය</translation>
 <translation id="6658865850469097484">දින 30කට වඩා වැඩි කාලයක් කුණු කූඩයේ ඇති ගොනු ස්වයංක්‍රීයව මැකී යයි.</translation>
+<translation id="6660283757324568684">ස්විස් ප්‍රංශ</translation>
 <translation id="6673674183150363784">Bépo යතුරු පුවරුව සමග ප්‍රංශ (ප්‍රංශය)</translation>
 <translation id="670380500182402678">සියල්ල ප්‍රතිස්ථාපනය කරන්න</translation>
 <translation id="6710022688720561421">රොබෝව</translation>
@@ -698,6 +744,7 @@
 <translation id="6861394552169064235">පර්සියානු</translation>
 <translation id="6862635236584086457">මෙම ෆෝල්ඩරයේ සියළු ගොනු ස්වයංක්‍රියව මාර්ගගතව උපස්ථ වේ</translation>
 <translation id="6864328437977279120">සංස්කෘත</translation>
+<translation id="6870343452066868538">ලතින් ඇමරිකානු</translation>
 <translation id="6874758081814639712">තායි චි කරන පුද්ගලයා</translation>
 <translation id="6876155724392614295">පාපැදිය</translation>
 <translation id="6878261347041253038">දේවනාගරි යතුරු පුවරුව (ශබ්දිම)</translation>
@@ -709,6 +756,7 @@
 <translation id="6935521024859866267">යටිකුරු</translation>
 <translation id="6943836128787782965">HTTP අසාර්ථක විය</translation>
 <translation id="6949408524333579394">සර්බියානු අක්ෂර පරිවර්තනය</translation>
+<translation id="6950304227892369683">බෙලරුසියානු</translation>
 <translation id="69548399407432279">පසුගිය වසර</translation>
 <translation id="6960565108681981554">සක්‍රිය කර නැත. ඔබගේ වාහකය අමතන්න.</translation>
 <translation id="696203921837389374">ජංගම දත්ත ඔස්සේ සමමුහුර්ත කිරීම සබල කරන්න</translation>
@@ -717,6 +765,7 @@
 <translation id="6973630695168034713">ෆෝල්ඩර</translation>
 <translation id="6976795442547527108">සිංහයා</translation>
 <translation id="6979158407327259162">Google Drive</translation>
+<translation id="6987318887406266229">ග්‍රීක</translation>
 <translation id="6989942356279143254">ස්වීඩන</translation>
 <translation id="6990081529015358884">ඔබගේ ඉඩ අවසන්ව තිබේ</translation>
 <translation id="6993826899923627728">මෙම අයිතම ඔබේ කුණු කූඩයේ ඇත</translation>
@@ -731,6 +780,7 @@
 <translation id="7048024426273850086"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="PHONE_NAME" />, <ph name="PROVIDER_NAME" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, දුරකථන බැටරිය <ph name="BATTERY_STATUS" />%, සබඳින්න</translation>
 <translation id="7070804685954057874">සෘජු ආදානය</translation>
 <translation id="7075931588889865715">TIS 820-2531 යතුරුපුවරුව සමග තායි</translation>
+<translation id="7080126840087683316">ස්පාඤ්ඤ</translation>
 <translation id="708278670402572152">ස්කෑන් කිරීම සබල කිරීමට විසන්ධි කරන්න</translation>
 <translation id="7086590977277044826">InScript යතුරුපුවරුව සමග දෙමළ</translation>
 <translation id="7088615885725309056">පැරණි</translation>
@@ -741,12 +791,15 @@
 <translation id="7135561821015524160">කන්නඩ ශබ්දිම</translation>
 <translation id="714034171374937760">Chromebase</translation>
 <translation id="7162080671816799010">සත්‍යාපන සේවාදායක අනන්‍යතාවය වලංගු කිරීම සඳහා 'විෂය විකල්ප නාම ගැළපීම' හෝ 'වසම් උපසර්ග ගැළපීම' අස්ථානගත වී ඇත</translation>
+<translation id="7163653800467169701">ඉතාලි</translation>
 <translation id="7165320105431587207">ජාලය සැකසීම අසාර්ථකයි</translation>
 <translation id="7170041865419449892">පරාසයෙන් තොරයි</translation>
 <translation id="7179579940054351344"><ph name="NON_RESTRICTED_DESTINATIONS" /> හැර අනෙකුත් සියලු වෙබ් අඩවි සහ URLs මගින් ගොනු ප්‍රවේශය</translation>
 <translation id="7180611975245234373">නැවුම් කරන්න</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> GB</translation>
 <translation id="7191454237977785534">ගොනුව මෙලෙස සුරකින්න</translation>
+<translation id="7192364647705823015">ක්‍රොඒෂියානු</translation>
+<translation id="7224162581405244205">අයිස්ලන්ත</translation>
 <translation id="7229570126336867161">EVDO අවශ්‍යයි</translation>
 <translation id="7230898482850090046">ඔබේ පරිපාලකයා "SIM අගුළු දැමීමේ" සැකසීම ක්‍රියා විරහිත කරන ලෙස ඉල්ලා ඇත</translation>
 <translation id="7238097264433196391">Drive නම</translation>
@@ -773,6 +826,7 @@
 <translation id="7417453074306512035">ඉතියෝපික් යතුරු පුවරුව</translation>
 <translation id="7417705661718309329">Google සිතියම්</translation>
 <translation id="7419668828140929293">"<ph name="FILENAME" />" ප්‍රතිසාධනය කරමින්</translation>
+<translation id="7435577899926900307">US ඩ්වොරැක්</translation>
 <translation id="7458955835361612701">මෑත රූප නැත</translation>
 <translation id="7469894403370665791">මෙම ජාලය වෙත ස්වයංව සම්බන්ධ වන්න</translation>
 <translation id="7486315294984620427">Parallels Desktop තුළට ගොනු හෙළීමට, ගොනුව Windows ගොනු වෙත පිටපත් කළ යුතුය.</translation>
@@ -811,8 +865,10 @@
 <translation id="7724603315864178912">කැපීම</translation>
 <translation id="7732111077498238432">ජාලය ප්‍රතිපත්තියෙන් පාලනය වේ</translation>
 <translation id="7736003208887389532">මෙම ගොනු ස්ථිරවම මකන්න ද?</translation>
+<translation id="7737249716250841853">හංගේරියානු ක්වර්ටි</translation>
 <translation id="7740287852186792672">සෙවීම් ප්‍රතිඵල</translation>
 <translation id="7748626145866214022">ක්‍රියා තීරුවෙහි තවත් විකල්ප තිබේ. ක්‍රියා තීරුවට අවධානය යොමු කිරීමට Alt + A ඔබන්න.</translation>
+<translation id="7758806833942383902">කැටලන්</translation>
 <translation id="7760449188139285140">චීන වුබි</translation>
 <translation id="7765158879357617694">චලනය කරන්න</translation>
 <translation id="7774365994322694683">කුරුල්ලා</translation>
@@ -824,6 +880,7 @@
 <translation id="7794058097940213561">උපාංගය හැඩතල ගන්වන්න</translation>
 <translation id="7799329977874311193">HTML ලේඛනය</translation>
 <translation id="7801354353640549019">Chromebooks</translation>
+<translation id="7804303447453320114">කසක්</translation>
 <translation id="7805768142964895445">තත්වය</translation>
 <translation id="7806708061868529807">හීබෲ</translation>
 <translation id="78104721049218340">කෙඩ්මනී යතුරු පුවරුව සමඟ තායි</translation>
@@ -833,9 +890,11 @@
 <translation id="7839804798877833423">මෙම ගොනු සොයා ගැනීමෙන් ආසන්න වශයෙන් ජංගම දත්ත <ph name="FILE_SIZE" /> භාවිතා වේ.</translation>
 <translation id="7846076177841592234">තේරීම අවලංගු කරන්න</translation>
 <translation id="7857117644404132472">ව්‍යතිරේකයක් එක් කරන්න</translation>
+<translation id="7859924767769322048">කොරියානු</translation>
 <translation id="7868774406711971383">පෝලන්ත</translation>
 <translation id="7874321682039004450">පිලිපීන</translation>
 <translation id="78946041517601018">බෙදාගත් ධාවක</translation>
+<translation id="7901567919203965902">US සේවක අන්තර්ජාතික</translation>
 <translation id="7903984238293908205">කටගනා</translation>
 <translation id="7908793776359722643">කොටසක් හැඩ ගැන්වීම එහි ගබඩා කර ඇති සියලු දත්ත මකනු ඇත. මෙම ක්‍රියාව පසුගමනය කළ නොහැකිය.</translation>
 <translation id="7911118814695487383">Linux</translation>
@@ -897,6 +956,7 @@
 <translation id="8336153091935557858">ඊයේ <ph name="YESTERDAY_DAYTIME" /></translation>
 <translation id="8342318071240498787">එකම නම ඇති ගොනුවක් හෝ නාමාවලියක් දැනටමත් පවතී.</translation>
 <translation id="83651606385705612"><ph name="VM_NAME" /> හට <ph name="FOLDER_NAME" /> යන ෆෝල්ඩරය තුළ ගොනු වෙත ප්‍රවේශ වීමට අවසරය දෙන්න</translation>
+<translation id="837225070446042993">US සේවකයා</translation>
 <translation id="8372369524088641025">දූශිත WEP යතුරක්</translation>
 <translation id="8372852072747894550">ග්‍රීක</translation>
 <translation id="8377269993083688872">ඉ-තැපැල් පිරිසැලසුම්</translation>
@@ -925,6 +985,7 @@
 <translation id="8512483403832814140">ඕනෑම වේලාවක</translation>
 <translation id="853494022971700746">ප්‍රංශ (ප්‍රංශය)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" />න් <ph name="NETWORK_INDEX" /> වැනි ජාලය, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, සංඥා ප්‍රබලතාව <ph name="SIGNAL_STRENGTH" />%, විස්තර</translation>
+<translation id="8543218582821188600">කැනේඩියානු ඉංග්‍රීසි</translation>
 <translation id="8545476925160229291">ඉංග්‍රීසි (එ.ජ.)</translation>
 <translation id="854655314928502177">වෙබ් ප්‍රොක්සි ස්වයං අනාවරණ URL</translation>
 <translation id="8547747809824590510">ඔබේ පරිපාලක ප්‍රොක්සි අභිබවා යාමේ රීති සකසයි</translation>
@@ -939,6 +1000,7 @@
 <translation id="8600173386174225982">ගොනු ලැයිස්තුව සිඟිති රූ දසුනට වෙනස් විය.</translation>
 <translation id="8601932370724196034">Crostini රූප ගොනුව</translation>
 <translation id="8609695766746872526">අයිස්ලන්ත</translation>
+<translation id="86185366481240448">ස්ලෝවැක්</translation>
 <translation id="8630384863424041081">ඔබේ SIM කාඩ්පත් PIN හෝ ඔබේ වාහකයා විසින් සපයන ලද පෙරනිමි PIN අංකය ඇතුළු කරන්න. සහාය සඳහා ඔබේ වාහකය සම්බන්ධ කර ගන්න.</translation>
 <translation id="863903787380594467">වැරදි PIN එකකි. ඔබට උත්සාහයන් <ph name="RETRIES" />ක් ඉතිරිව ඇත.</translation>
 <translation id="8639391553632924850"><ph name="INPUT_LABEL" /> - තොට</translation>
@@ -967,6 +1029,7 @@
 <translation id="8873014196523807561">මෙම අයිතම ප්‍රතිසාධනය කිරීමට, ඒවා නව ෆෝල්ඩරයකට අදින්න. මෙම අයිතම සමහරක් සඳහා මුල් ෆෝල්ඩර මකා ඇත.</translation>
 <translation id="8874184842967597500">සබඳවී නොමැත</translation>
 <translation id="8876368061475701452">පෙළ ගසන ලදි</translation>
+<translation id="8902208737522818687">US ජාත්‍යන්තර (PC)</translation>
 <translation id="8903931173357132290">ළමා විය ඉක්මවූ</translation>
 <translation id="8912078710089354287">වලිගය වනන සුනඛයා</translation>
 <translation id="8949925099261528566">සම්බන්ධයි, අන්තර්ජාලය නැත</translation>
@@ -1009,11 +1072,13 @@
 <translation id="931652069802536959">ප්‍රතිපත්තිය මඟින් ජාලය අවහිර කර ඇත</translation>
 <translation id="938470336146445890">කරුණාකර පරිශීලක සහතිකයක් ස්ථාපනය කරන්න.</translation>
 <translation id="939736085109172342">නව ෆෝල්ඩරය</translation>
+<translation id="941005944931359847">බල්ගේරියානු</translation>
 <translation id="943972244133411984">වෙනස් කරන ලද්දේ</translation>
 <translation id="945522503751344254">අදහස් හා යෝජනා යවන්න</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> සිට <ph name="TO_ENTRY_NAME" /> දක්වා <ph name="ENTRY_COUNT" /> ඇතුළත් කිරීම් පරාසයක් තේරිණි.</translation>
 <translation id="954194396377670556">පරිපාලක ප්‍රතිපත්තිය වළක්වයි:</translation>
 <translation id="965477715979482472">ඉංග්‍රීසි (දකුණු අප්‍රිකාව)</translation>
+<translation id="97351090361893336">ෆින්ලන්ත</translation>
 <translation id="976666271385981812">අයිතම <ph name="NUMBER_OF_ITEMS" />ක් කුණු කූඩය වෙත ගෙන යමින්</translation>
 <translation id="981121421437150478">ඕෆ්ලයින්</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" නමැති ෆෝල්ඩරයක් දැනටමත් පවතියි. ඔබට එය ප්‍රතිස්ථාපන කළ යුතුද?</translation>

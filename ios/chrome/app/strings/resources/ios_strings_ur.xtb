@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">دیگر ایپس پر اپنے پاس ورڈز تک رسائی حاصل کریں۔</translation>
 <translation id="3485558910355485767">نئی پوشیدگی ونڈو</translation>
 <translation id="3488501490964659223">ٹیبز کو بند کر دیا گیا تھا اور براؤزنگ ڈیٹا کو حذف کر دیا گیا تھا آپ کو سائن آؤٹ کر دیا گیا</translation>
+<translation id="3490396108106323715">موجودہ ٹیب کا اشتراک کریں</translation>
 <translation id="3493531032208478708">تجویز کردہ مواد کے بارے میں <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">منتخب کریں کہ "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" کو کہاں محفوظ کرنا ہے</translation>
 <translation id="3504377992102007712">ترتیبات</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">تصاویر لوڈ نہیں ہو سکیں</translation>
 <translation id="3565930036634619844">ٹیب۔ <ph name="NUMBER_OF_TABS" /> میں سے <ph name="TAB_INDEX" />۔</translation>
 <translation id="3567168891086460374">دوسرے طریقے سے محفوظ کریں</translation>
+<translation id="3572503683475187385">‏جب آپ نئی چیٹ شروع کرتے ہیں تو موجودہ ٹیب کا اشتراک Gemini کے ساتھ کیا جاتا ہے۔ جب آپ Gemini کے ساتھ کسی ٹیب کا اشتراک کرتے ہیں تو اس کے مواد اور URL کو Google کو بھیج دیا جاتا ہے۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏آپ کے Google اکاؤنٹ میں</translation>
 <translation id="3575234738189584619">لینز کا استعمال کرتے ہوئے تلاش کریں</translation>
 <translation id="3575426792457739946">اس فہرست ميں تمام لوڈ کردہ پروفائلز شامل ہیں۔</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">‏‫Google لینز کے ساتھ اپنی اسکرین کو تلاش کرنا بند کریں</translation>
 <translation id="3753408171347588045">قیمتیں ٹریک کی جا رہی ہیں</translation>
 <translation id="3753618528540214374">فیروزی تھیم</translation>
+<translation id="3759491607478608474">‏مزید متعلقہ جوابات حاصل کرنے کے لیے Gemini کے ساتھ موجودہ ٹیب کے مواد کا اشتراک کریں</translation>
 <translation id="3762232513783804601">‏آپ کے iPad کے لیے بنایا گیا</translation>
 <translation id="3768725474733206671">آخری بند کردہ ٹیب دوبارہ کھولیں</translation>
 <translation id="3779810277399252432">کوئی انٹرنیٹ کنکشن نہیں ہے۔</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">بطور <ph name="FIRST_RUN_ACCOUNT_NAME" /> جاری رکھیں</translation>
 <translation id="4651927776207937667">{count,plural, =1{‫1 منٹ کے بعد چھپائیں}other{‫{count} منٹ کے بعد چھپائیں}}</translation>
 <translation id="4652817563047461855">اس بات کو یقینی بنائیں کہ آپ کے پاس ورڈز محفوظ ہیں، معلوم کریں کہ آیا ان سے سمجھوتہ کیا گیا ہے اور اپنے آپ کو آن لائن محفوظ رکھنے میں مدد کے لیے مشورہ حاصل کریں۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">ٹیب کا اشتراک آن کریں</translation>
 <translation id="4658335131052370646">محفوظ کریں</translation>
 <translation id="466307903888586355">فائلز کو محفوظ کرنا آپ کی تنظیم نے مسدود کر دیا ہے</translation>
 <translation id="4668929960204016307">،</translation>
@@ -1297,6 +1301,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="5718049162805123412">آپ کو اب اسے تبدیل کرنا چاہیے</translation>
 <translation id="5721040778297053709">کریڈٹ کارڈ کو اس فریم میں رکھیں</translation>
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
+<translation id="5724590854763964497">‏بطور ڈیفالٹ، جب آپ نئی چیٹ شروع کرتے ہیں تو آپ کے موجودہ ٹیب کا اشتراک کیا جاتا ہے۔ ٹیبز کا اشتراک کرنے پر، ان کے مواد اور URLs کو Google کو بھیجا جاتا ہے لیکن تخلیق کر سکنے والے AI ماڈلز کو بہتر بنانے کے لیے استعمال نہیں کیا جائے گا۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="5724941645893276623">نجی طور پر ویب براؤز کرنے کیلئے، نیا ٹیب شامل کریں۔</translation>
 <translation id="5728072125198221967">‏لنک کردہ Google سروسز</translation>
 <translation id="5728700505257787410">معذرت، آپ کے اکاؤنٹ میں سائن ان کرتے ہوئے ایک مسئلہ پیش آگیا۔</translation>
@@ -1964,6 +1969,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8059533439631660104">سیکشن کو سکیڑیں۔</translation>
 <translation id="8061584726507121204">سرگزشت</translation>
 <translation id="8064946459644399612">آپ کے نئے ٹیب کے صفحہ کی ترجیحات لاگو ہو گئیں</translation>
+<translation id="8065556469005366939">اپنے ٹیبز کا اشتراک کر کے مزید متعلقہ جوابات حاصل کریں</translation>
 <translation id="8069394452933076548">منتخب کریں کہ وہ ٹیبز جو حال ہی میں استعمال نہیں ہوئے ہیں انہیں غیر فعال ٹیب سیکشن میں کب منتقل کیا جائے۔</translation>
 <translation id="8073670137947914548">ڈاؤن لوڈ کا عمل مکمل ہو گیا</translation>
 <translation id="8076492880354921740">ٹیبز</translation>
@@ -2132,6 +2138,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="8660600697590740984">لینز نے تصویر کو کاپی کیا</translation>
 <translation id="866266761389616183">اوہ، نہیں!</translation>
 <translation id="8663764600409216912">آپ ایسے پاس ورڈ کا استعمال کر رہے ہیں جن کا اندازہ لگانا مشکل ہے</translation>
+<translation id="8664992138761940052">‏بطور ڈیفالٹ، جب آپ نئی چیٹ شروع کرتے ہیں تو آپ کے موجودہ ٹیب کا اشتراک کیا جاتا ہے۔ ٹیبز کا اشتراک کرنے پر، ان کے مواد اور URLs کو Google کو بھیجا جاتا ہے۔ آپ اس ترتیب کو کسی بھی وقت تبدیل کر سکتے ہیں۔</translation>
 <translation id="8668210798914567634">اس صفحہ کو آپ کی پڑھنے کی فہرست میں محفوظ کر دیا گیا ہے۔</translation>
 <translation id="8672642291731179042">صفحات کا ترجمہ کریں</translation>
 <translation id="8672733398999596205">تمام کو فعال کریں</translation>

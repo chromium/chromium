@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Mover favoritos</translation>
 <translation id="1197761954713363183">Página de confirmação da chave de acesso fechada</translation>
 <translation id="1197933394627598677">Mostrar Modo de Leitura</translation>
+<translation id="1197935538609051549">Desativar</translation>
 <translation id="1201402288615127009">Avançar</translation>
 <translation id="1202892408424955784">Produtos monitorados</translation>
 <translation id="1204037785786432551">Baixar link</translation>
@@ -745,6 +746,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="4198423547019359126">Não há locais de download disponíveis</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Você usou neste site</translation>
 <translation id="4214315110991671325">Se você autorizar, o Chrome pode usar cookies no pré-carregamento.</translation>
+<translation id="421517251707893998">Toque em fixar este atalho</translation>
 <translation id="4216511743389425832">Ouvir esta página</translation>
 <translation id="4225725533026049334">Seguindo</translation>
 <translation id="4225895483398857530">Atalho da barra de ferramentas</translation>
@@ -1325,6 +1327,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6508722015517270189">Reiniciar o Chrome</translation>
 <translation id="6513924416597632811">Copiar o link para a página de resultados da pesquisa de: <ph name="SEARCH_QUERY" />. Fonte: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Confirmar</translation>
+<translation id="6521218807522232085">Crie, salve e gerencie suas senhas para fazer login com facilidade</translation>
 <translation id="6527303717912515753">Compartilhar</translation>
 <translation id="652948702951888897">Histórico do Chrome</translation>
 <translation id="6532866250404780454">Os sites que você visita no Chrome não serão exibidos. Todos os timers do site serão excluídos.</translation>
@@ -1373,6 +1376,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6684262542644248484">Faça login em um site</translation>
 <translation id="6684809838922667136">Melhorar o Chrome</translation>
 <translation id="6689436252814043643">O Modo de Leitura está indisponível</translation>
+<translation id="669971068476817798">Toque em salvar</translation>
 <translation id="6700279777779583398">Opções salvas</translation>
 <translation id="670498945988402717">Verificado ontem</translation>
 <translation id="6710213216561001401">Anterior</translation>
@@ -1482,6 +1486,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7054588988317389591">Ver descrições de imagens?</translation>
 <translation id="7057969023583258980">Abrir o histórico completo do Chrome</translation>
 <translation id="7063006564040364415">Não foi possível conectar ao servidor de sincronização.</translation>
+<translation id="7063106218165698546">Personalize o grupo de guias e clique em concluído</translation>
 <translation id="7071521146534760487">Gerenciar conta</translation>
 <translation id="707155805709242880">Escolha o que será sincronizado abaixo</translation>
 <translation id="7077143737582773186">Cartão SD</translation>
@@ -1856,6 +1861,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />exclua os dados do Chrom
 <translation id="8460008946585880786">Arraste e solte uma guia sobre outra</translation>
 <translation id="8460448946170646641">Revise os principais controles de privacidade e segurança</translation>
 <translation id="8460932807646981183">Gerenciar mecanismos de pesquisa e pesquisas em sites</translation>
+<translation id="8465252176946159372">Entrada inválida</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="847433688444405067">Navegue em vários dispositivos</translation>
 <translation id="8477178913400731244">Excluir dados</translation>

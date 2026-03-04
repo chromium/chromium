@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Sử dụng mật khẩu của bạn trên các ứng dụng khác.</translation>
 <translation id="3485558910355485767">Cửa sổ ẩn danh mới</translation>
 <translation id="3488501490964659223">Hệ thống đã đóng các thẻ và xoá dữ liệu duyệt web. Bạn cũng đã bị đăng xuất</translation>
+<translation id="3490396108106323715">Chia sẻ thẻ hiện tại</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /> về nội dung đề xuất</translation>
 <translation id="349446645805573740">Chọn vị trí lưu "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Cài đặt</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Không tải được hình ảnh</translation>
 <translation id="3565930036634619844">Thẻ. <ph name="TAB_INDEX" /> trên <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Lưu theo cách khác</translation>
+<translation id="3572503683475187385">Thẻ hiện tại sẽ được chia sẻ với Gemini khi bạn bắt đầu một cuộc trò chuyện mới. Khi bạn chia sẻ một thẻ với Gemini, nội dung và URL của thẻ đó sẽ được gửi đến Google. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Trong Tài khoản Google của bạn</translation>
 <translation id="3575234738189584619">Tìm kiếm bằng Ống kính</translation>
 <translation id="3575426792457739946">Danh sách này chứa mọi hồ sơ đã tải.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Dừng tìm kiếm về nội dung trên màn hình bằng Google Ống kính</translation>
 <translation id="3753408171347588045">Theo dõi giá</translation>
 <translation id="3753618528540214374">Giao diện màu xanh lục ánh lam</translation>
+<translation id="3759491607478608474">Chia sẻ nội dung của thẻ hiện tại với Gemini để nhận được câu trả lời phù hợp hơn</translation>
 <translation id="3762232513783804601">Dành riêng cho iPad</translation>
 <translation id="3768725474733206671">Mở lại thẻ đóng gần đây nhất</translation>
 <translation id="3779810277399252432">Không có kết nối Internet.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Tiếp tục bằng tên <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Ẩn sau 1 phút}other{Ẩn sau {count} phút}}</translation>
 <translation id="4652817563047461855">Đảm bảo mật khẩu của bạn an toàn, tìm hiểu xem mật khẩu có bị lộ không và nhận lời khuyên giúp bạn tự bảo vệ bản thân trên mạng. <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Bật tính năng chia sẻ thẻ</translation>
 <translation id="4658335131052370646">Lưu</translation>
 <translation id="466307903888586355">Tổ chức của bạn đã chặn tính năng lưu tệp</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@
 <translation id="5718049162805123412">Bạn nên đổi mật khẩu ngay</translation>
 <translation id="5721040778297053709">Đặt thẻ tín dụng vào khung này</translation>
 <translation id="572328651809341494">Thẻ gần đây</translation>
+<translation id="5724590854763964497">Theo mặc định, thẻ hiện tại sẽ được chia sẻ khi bạn bắt đầu một cuộc trò chuyện mới. Khi các thẻ được chia sẻ, nội dung và URL của các thẻ đó sẽ được gửi đến Google, nhưng không nhằm mục đích cải thiện các mô hình AI tạo sinh. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="5724941645893276623">Để duyệt web ở chế độ riêng tư, hãy thêm một thẻ mới</translation>
 <translation id="5728072125198221967">Các dịch vụ của Google được liên kết</translation>
 <translation id="5728700505257787410">Rất tiếc, đã xảy ra sự cố khi đăng nhập tài khoản của bạn.</translation>
@@ -1964,6 +1969,7 @@
 <translation id="8059533439631660104">Thu gọn phần.</translation>
 <translation id="8061584726507121204">Nhật ký</translation>
 <translation id="8064946459644399612">Đã áp dụng các lựa chọn ưu tiên của bạn đối với trang Thẻ mới</translation>
+<translation id="8065556469005366939">Chia sẻ thẻ để nhận được câu trả lời phù hợp hơn</translation>
 <translation id="8069394452933076548">Chọn thời điểm di chuyển các thẻ mà gần đây bạn không sử dụng đến phần thẻ không hoạt động.</translation>
 <translation id="8073670137947914548">Đã hoàn tất tải xuống</translation>
 <translation id="8076492880354921740">Thẻ</translation>
@@ -2132,6 +2138,7 @@
 <translation id="8660600697590740984">Dùng Ống kính để tìm hình ảnh đã sao chép</translation>
 <translation id="866266761389616183">Ôi, hỏng!</translation>
 <translation id="8663764600409216912">Bạn đang sử dụng các mật khẩu khá khó đoán</translation>
+<translation id="8664992138761940052">Theo mặc định, thẻ hiện tại sẽ được chia sẻ khi bạn bắt đầu một cuộc trò chuyện mới. Khi các thẻ được chia sẻ, nội dung và URL của các thẻ đó sẽ được gửi đến Google. Bạn có thể thay đổi chế độ cài đặt này bất cứ lúc nào.</translation>
 <translation id="8668210798914567634">Trang này đã được lưu vào danh sách đọc của bạn.</translation>
 <translation id="8672642291731179042">Dịch trang</translation>
 <translation id="8672733398999596205">Bật tất cả</translation>

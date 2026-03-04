@@ -1614,6 +1614,7 @@
 <translation id="3575121482199441727">אישור לאתר הזה</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">נבחרה האפשרות של שם הרחוב</translation>
+<translation id="3576315803647905285">כתיבה בסגנון רשמי</translation>
 <translation id="3576616784287504635">דף מוטמע באתר <ph name="SITE" /> אומר</translation>
 <translation id="3577473026931028326">משהו השתבש. יש לנסות שוב.</translation>
 <translation id="3577902790357386792">התעמלות</translation>
@@ -2640,6 +2641,7 @@ Del</translation>
 <translation id="5190835502935405962">סרגל הסימניות</translation>
 <translation id="5191315092027169558">הפרופיל שלך מנוהל על ידי <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> רוצה להוריד מספר קבצים</translation>
+<translation id="5199121357983849992">לשמור את התעודה המזהה?</translation>
 <translation id="5200063972779787617">שמירת הכתובת בחשבון</translation>
 <translation id="5201306358585911203">דף מוטמע בדף הזה אומר</translation>
 <translation id="5203716867500274632">‏האדמין מאפשר לסנכרן את הפריטים הבאים בין הסשן הקודם והסשן הנוכחי בכל מכשירי ChromeOS:</translation>
@@ -2688,6 +2690,7 @@ Del</translation>
 <translation id="5266128565379329178">כריכה בקצה העליון</translation>
 <translation id="5269225904387178860">4 ניקובים בחלק התחתון</translation>
 <translation id="5271381225185906340">התנאי '<ph name="DATA_CONTROLS_ATTRIBUTE" />' לא נתמך עבור '<ph name="DATA_CONTROLS_RESTRICTION" />'</translation>
+<translation id="527191520368130807">ליטוש</translation>
 <translation id="5273658854610202413">‏אזהרה: המדיניות הזו לא עברה מיזוג בהתאם למדיניות PolicyDictionaryMultipleSourceMergeList, מאחר שהיא לא חלק מכללי מדיניות המילון שניתן למזג.</translation>
 <translation id="5278778426231952189">העלאה עכשיו</translation>
 <translation id="5279286380302340275">ניהול ההורדות</translation>
@@ -3589,6 +3592,7 @@ Del</translation>
 <translation id="6698097747703777657">לא קיבלת קוד? <ph name="BEGIN_LINK" />לקבלת קוד חדש<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">נוצר:</translation>
 <translation id="6698769547327354196">‏כדי להשבית את Pix ב-Chrome, צריך לעבור אל <ph name="BEGIN_LINK1" />הגדרות התשלומים<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">‏כדי לבצע פעולות כמו מילוי טפסים מהר יותר בכל מוצרי Google, כדאי לשמור את הפרטים. אפשר <ph name="MANAGE_INFO_LINK" /> של <ph name="ACCOUNT" /> ב-<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="67007264085648978">מחוון זמן</translation>
 <translation id="6702851555558236418">תוכנות מוזיקה ואודיו</translation>
 <translation id="6702919718839027939">הצגה</translation>
@@ -4080,6 +4084,7 @@ Del</translation>
 <translation id="746412105358554870">‏אופטימיזציה ואבטחה של JavaScript</translation>
 <translation id="7465036432780054056">הביקור שלך בכתובת <ph name="TOP_LEVEL_URL" /> יהיה ידוע ל-<ph name="EMBEDDED_URL" /></translation>
 <translation id="7465963048299965912">‏10x13 אינץ'</translation>
+<translation id="7467332121947433617">לעדכן את התעודה המזהה?</translation>
 <translation id="7469935732330206581">הטופס הזה לא מאובטח</translation>
 <translation id="7470854469646445678">צריך לציין את הסיבה להעתקה (חובה)</translation>
 <translation id="7471007961486718967">צריך לציין את הסיבה להעברה (חובה)</translation>
@@ -4101,6 +4106,7 @@ Del</translation>
 <translation id="7499188644237027195">‏כשמבצעים רכישות ב-Chrome, הארנק האלקטרוני ו-Pix יופיעו כאפשרויות</translation>
 <translation id="7500917112031739411">הצגה לפי קבוצה</translation>
 <translation id="7501663406926337752">האתר שבכתובת הזו סומן על ידי הארגון שלך</translation>
+<translation id="7502044688973049724">ניהול המידע</translation>
 <translation id="7507075214339298899">מעטפה 9</translation>
 <translation id="7508255263130623398">מזהה המכשיר במדיניות שהוחזר ריק או שאינו תואם את מזהה המכשיר הנוכחי</translation>
 <translation id="7508577201115425418">שירותי מסמכים והדפסה</translation>
@@ -5153,6 +5159,7 @@ Del</translation>
 <translation id="9191834167571392248">ניקוב בפינה השמאלית התחתונה</translation>
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">קוסמטיקה ידידותית לסביבה</translation>
+<translation id="9193018794001479794">יצירת פירוט</translation>
 <translation id="9195969368671142407">‏כשהארגון מגביל את האפשרות לשמור בחשבון Google, לא ניתן לשתף קבוצות של כרטיסיות או להצטרף אליהן</translation>
 <translation id="9198613052465150219">‏אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>

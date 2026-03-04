@@ -1613,6 +1613,7 @@
 <translation id="3575121482199441727">Ушул сайт үчүн уруксат берүү</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Cунушталган көчөнүн аталышы тандалды</translation>
+<translation id="3576315803647905285">Расмийлештирүү</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> сайтында кыстарылган баракча мындай дейт:</translation>
 <translation id="3577473026931028326">Бир жерден ката кетти. Кайталап көрүңүз.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -2635,6 +2636,7 @@
 <translation id="5190835502935405962">Кыстармалар тилкеси</translation>
 <translation id="5191315092027169558">Профилиңиз <ph name="DOMAIN" /> тарабынан тескелет</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> бир нече файлды жүктөп алганы жатат</translation>
+<translation id="5199121357983849992">Мамлекеттик ID карта сакталсынбы?</translation>
 <translation id="5200063972779787617">Даректи аккаунтка сактоо</translation>
 <translation id="5201306358585911203">Бул веб баракчада кыстарылган барак мындай дейт:</translation>
 <translation id="5203716867500274632">Администраторуңуз төмөнкү нерселерди каалаган ChromeOS түзмөгүндөгү мурунку жана учурдагы сеанстардын ортосунда шайкештештирүүгө уруксат берди:</translation>
@@ -2683,6 +2685,7 @@
 <translation id="5266128565379329178">Жогорку жагын байлоо</translation>
 <translation id="5269225904387178860">Төмөнкү жагын төрт жолу тешүү</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" "<ph name="DATA_CONTROLS_RESTRICTION" />" үчүн колдоого алынган шарт эмес</translation>
+<translation id="527191520368130807">Полякча</translation>
 <translation id="5273658854610202413">Эскертүү: Бул эреже PolicyDictionaryMultipleSourceMergeList саясатында белгиленгендей бириктирилген жок, себеби ал бириктириле турган сөздүк эрежелеринин бөлүгү эмес.</translation>
 <translation id="5278778426231952189">Азыр жүктөп берүү</translation>
 <translation id="5279286380302340275">Жүктөлүп алынгандарды башкаруу</translation>
@@ -3583,6 +3586,7 @@
 <translation id="6698097747703777657">Код келген жокпу? <ph name="BEGIN_LINK" />Жаңы код алуу<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Түзүлгөн:</translation>
 <translation id="6698769547327354196">Chrome'до Pix'ти өчүрүү үчүн <ph name="BEGIN_LINK1" />төлөм параметрлерине<ph name="END_LINK1" /> өтүңүз</translation>
+<translation id="669903922988126943">Маалыматыңызды сактап, Google кызматтарында формаларды толтуруу сыяктуу иштерди тезирээк бүтүрүңүз. <ph name="MANAGE_INFO_LINK" /> <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> <ph name="ACCOUNT" /> колдоно аласыз.</translation>
 <translation id="67007264085648978">Убакытты түргүч</translation>
 <translation id="6702851555558236418">Аудио жана музыка программалары</translation>
 <translation id="6702919718839027939">Презентация</translation>
@@ -4073,6 +4077,7 @@
 <translation id="746412105358554870">JavaScript'ти оптималдаштыруу жана коргоо</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> сайтына <ph name="TOP_LEVEL_URL" /> барагын ачканыңыз жөнүндө маалымат жөнөтүлөт</translation>
 <translation id="7465963048299965912">10 x 13 дюйм</translation>
+<translation id="7467332121947433617">Мамлекеттик ID карта жаңыртылсынбы?</translation>
 <translation id="7469935732330206581">Форма кооптуу</translation>
 <translation id="7470854469646445678">Көчүрүүнүн себебин көрсөтүңүз (милдеттүү)</translation>
 <translation id="7471007961486718967">Өткөрүүнүн себебин көрсөтүңүз (милдеттүү)</translation>
@@ -4094,6 +4099,7 @@
 <translation id="7499188644237027195">Chrome'до нерселерди сатып алганда, электрондук капчыкты жана Pix'ти варианттар катары караңыз</translation>
 <translation id="7500917112031739411">Топ боюнча көрсөтүү</translation>
 <translation id="7501663406926337752">Ачыла турган сайт уюмуңуз тарабынан кабарланган</translation>
+<translation id="7502044688973049724">маалыматты тескөө</translation>
 <translation id="7507075214339298899">Конверт #9</translation>
 <translation id="7508255263130623398">Кайтарылган саясат түзмөгүнүн id'си бош же учурдагы түзмөктүн id'сине дал келбейт</translation>
 <translation id="7508577201115425418">Документ жана басып чыгаруу кызматтары</translation>
@@ -5146,6 +5152,7 @@
 <translation id="9191834167571392248">Төмөнкү сол жагын тешүү</translation>
 <translation id="9192361865877479444">Металл (Жылтырабаган кагаз)</translation>
 <translation id="9192947025498305328">Таза сулуулук</translation>
+<translation id="9193018794001479794">Толуктоо</translation>
 <translation id="9195969368671142407">Уюмуңуз Google аккаунтуңузда сактоону чектегенде, өтмөктөр топторуна кошула же бөлүшө албайсыз</translation>
 <translation id="9198613052465150219">Көрүлгөн вебсайттардын тизмеси Google аккаунтуңузда (<ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />) сакталышы мүмкүн</translation>
 <translation id="9199905725844810519">Басып чыгаруу бөгөттөлгөн</translation>

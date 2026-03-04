@@ -1615,6 +1615,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="3575121482199441727">Salli tällä sivustolla</translation>
 <translation id="3575168918110434329">A4 x 7</translation>
 <translation id="3575589330755445706">Kadun nimi ‐vaihtoehto on valittu</translation>
+<translation id="3576315803647905285">Korjaa muodollisemmaksi</translation>
 <translation id="3576616784287504635">Viesti upotetulta sivulta osoitteessa <ph name="SITE" /></translation>
 <translation id="3577473026931028326">Jotain meni pieleen. Yritä uudelleen.</translation>
 <translation id="3577902790357386792">Voimistelu</translation>
@@ -2686,6 +2687,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="5266128565379329178">Sidottu yläreunassa</translation>
 <translation id="5269225904387178860">Neljä reikää alareunassa</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" ei ole tuettu ehto tälle: "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">puola</translation>
 <translation id="5273658854610202413">Varoitus: tätä käytäntöä ei yhdistetty PolicyDictionaryMultipleSourceMergeList-käytännössä kuvatulla tavalla, sillä se ei kuulu yhdistettävissä oleviin sanakirjakäytäntöihin.</translation>
 <translation id="5278778426231952189">Lataa nyt</translation>
 <translation id="5279286380302340275">Tarkista lataukset</translation>
@@ -3586,6 +3588,7 @@ Jos haluat piilottaa maksa myöhemmin ‑vaihtoehdot, siirry <ph name="BEGIN_LIN
 <translation id="6698097747703777657">Etkö saanut koodia? <ph name="BEGIN_LINK" />Pyydä uusi koodi<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Luomispvm:</translation>
 <translation id="6698769547327354196">Voit laittaa Pixin pois päältä Chromessa <ph name="BEGIN_LINK1" />maksuasetuksista<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Tallenna tietosi, niin voit hoitaa asioita nopeammin, esimerkiksi täyttää lomakkeita Googlen tuotteissa. Voit <ph name="MANAGE_INFO_LINK" /> (<ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />, <ph name="ACCOUNT" />).</translation>
 <translation id="67007264085648978">Ajan liukusäädin</translation>
 <translation id="6702851555558236418">Audio‑ ja musiikkiohjelmistot</translation>
 <translation id="6702919718839027939">Esitystila</translation>
@@ -4099,6 +4102,7 @@ Lisätietoja:
 <translation id="7499188644237027195">Kun teet ostoksia Chromessa, näet vaihtoehtoina sähköisen lompakon ja Pixin</translation>
 <translation id="7500917112031739411">Näytä ryhmän mukaan</translation>
 <translation id="7501663406926337752">Organisaatiosi on merkinnyt tämän sivuston</translation>
+<translation id="7502044688973049724">hallinnoida tietojasi</translation>
 <translation id="7507075214339298899">Kirjekuori #9</translation>
 <translation id="7508255263130623398">Palautettu käytännön laitetunnus on tyhjä tai ei vastaa nykyistä laitetunnusta.</translation>
 <translation id="7508577201115425418">Kopiointi- ja tulostuspalvelut</translation>
@@ -5152,6 +5156,7 @@ Lisätietoja:
 <translation id="9191834167571392248">Reikä vasemmassa alakulmassa</translation>
 <translation id="9192361865877479444">Metalli (matta)</translation>
 <translation id="9192947025498305328">Puhdasta kauneutta</translation>
+<translation id="9193018794001479794">Kerro lisää</translation>
 <translation id="9195969368671142407">Kun organisaatiosi rajoittaa tallentamista Google-tilillesi, et voi jakaa välilehtiryhmiä tai liittyä niihin</translation>
 <translation id="9198613052465150219">Google-tililläsi voi olla muita selaushistoriatietoja osoitteessa <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Tulostus on estetty</translation>

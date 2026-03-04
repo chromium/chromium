@@ -1615,6 +1615,7 @@
 <translation id="3575121482199441727">ဤဝဘ်ဆိုက်အတွက် ခွင့်ပြုရန်</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">လမ်းအမည် ရွေးစရာကို ရွေးထားသည်</translation>
+<translation id="3576315803647905285">ရုံးသုံး</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> ပေါ်တွင် ထည့်ထားသည့် စာမျက်နှာက ဆိုထားသည်မှာ</translation>
 <translation id="3577473026931028326">တစ်ခုခုမှားသွားသည်။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3577902790357386792">ကျွမ်းဘား</translation>
@@ -2637,6 +2638,7 @@
 <translation id="5190835502935405962">စာညှပ် ဘား</translation>
 <translation id="5191315092027169558">သင့်ပရိုဖိုင်ကို <ph name="DOMAIN" /> က စီမံသည်</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> က ဖိုင်အများအပြားကို ​ဒေါင်းလုဒ်လုပ်လိုသည်</translation>
+<translation id="5199121357983849992">ID ကတ်ကို သိမ်းမလား</translation>
 <translation id="5200063972779787617">အကောင့်တွင် လိပ်စာသိမ်းခြင်း</translation>
 <translation id="5201306358585911203">ဤစာမျက်နှာပေါ်တွင် ထည့်ထားသည့် စာမျက်နှာက ဆိုထားသည်မှာ</translation>
 <translation id="5203716867500274632">သင့်စီမံခန့်ခွဲသူက ChromeOS စက်ပစ္စည်းများတွင် သင်၏ ယခင်နှင့် လက်ရှိ စက်ရှင်များအကြား စင့်ခ်လုပ်နိုင်ရန်အတွက် အောက်ပါတို့ကို ဖွင့်လိုက်သည်-</translation>
@@ -2685,6 +2687,7 @@
 <translation id="5266128565379329178">ထိပ်တွင် တွဲချုပ်ရန်</translation>
 <translation id="5269225904387178860">အောက်ခြေတွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="5271381225185906340">“<ph name="DATA_CONTROLS_ATTRIBUTE" />” သည် “<ph name="DATA_CONTROLS_RESTRICTION" />” အတွက် ပံ့ပိုးထားသော အခြေအနေမဟုတ်ပါ</translation>
+<translation id="527191520368130807">ပိုလန်</translation>
 <translation id="5273658854610202413">သတိပေးချက်− ဤမူဝါဒသည် ပေါင်းစည်းနိုင်သည့် အဘိဓာန် မူဝါဒများတွင် မပါဝင်သောကြောင့် PolicyDictionaryMultipleSourceMergeList မူဝါဒတွင် သတ်မှတ်ထားသည့်အတိုင်း ၎င်းကို ပေါင်းစည်းမထားပါ။</translation>
 <translation id="5278778426231952189">ယခုအပ်လုဒ်လုပ်ရန်</translation>
 <translation id="5279286380302340275">ဒေါင်းလုဒ်များစီမံရန်</translation>
@@ -3584,6 +3587,7 @@
 <translation id="6698097747703777657">ကုဒ်မရရှိဘူးလား။ <ph name="BEGIN_LINK" />ကုဒ်အသစ် ရယူရန်<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">ဖန်တီးခဲ့:</translation>
 <translation id="6698769547327354196">Chrome တွင် Pix ပိတ်ရန် <ph name="BEGIN_LINK1" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK1" /> သို့သွားပါ။</translation>
+<translation id="669903922988126943">Google ထုတ်ကုန်များတွင် ဖောင်ဖြည့်ခြင်းကဲ့သို့ ကိစ္စများအမြန်ပြီးမြောက်ရန် သင့်အချက်အလက်ကို သိမ်းနိုင်သည်။ <ph name="ACCOUNT" /> ဖြင့် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> တွင် <ph name="MANAGE_INFO_LINK" /> နိုင်သည်။</translation>
 <translation id="67007264085648978">အချိန်ရွှေ့စနစ်</translation>
 <translation id="6702851555558236418">အသံ၊ တေးဂီတ ဆော့ဖ်ဝဲ</translation>
 <translation id="6702919718839027939">တင်ပြရန်</translation>
@@ -4075,6 +4079,7 @@
 <translation id="746412105358554870">JavaScript အကောင်းဆုံးချိန်ညှိမှုနှင့် လုံခြုံရေး</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" /> သို့ သင်ဝင်ကြည့်ကြောင်း <ph name="EMBEDDED_URL" /> က သိပါမည်</translation>
 <translation id="7465963048299965912">၁၀ x ၁၃ လက်မ</translation>
+<translation id="7467332121947433617">ID ကတ်ကို အပ်ဒိတ်လုပ်မလား</translation>
 <translation id="7469935732330206581">ဖောင်က မလုံခြုံပါ</translation>
 <translation id="7470854469646445678">မိတ္တူကူးရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
 <translation id="7471007961486718967">လွှဲပြောင်းရန်အတွက် အကြောင်းရင်းပေးရန် (လိုအပ်သည်)</translation>
@@ -4096,6 +4101,7 @@
 <translation id="7499188644237027195">Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ eWallet နှင့် Pix တို့ကို ရွေးစရာများအနေနှင့် ကြည့်နိုင်သည်</translation>
 <translation id="7500917112031739411">အုပ်စုအလိုက် ပြပါ</translation>
 <translation id="7501663406926337752">ဖွင့်မည့်ဝဘ်ဆိုက်ကို သင့်အဖွဲ့အစည်းက အလံပြထားသည်</translation>
+<translation id="7502044688973049724">သင့်အချက်အလက်ကို စီမံရန်</translation>
 <translation id="7507075214339298899">#9 စာအိတ်</translation>
 <translation id="7508255263130623398">ပစ္စည်းပြန်ပို့နိုင်သည့် မူဝါဒဆိုင်ရာကိရိယာအိုင်ဒီသည် ကွက်လပ်ဖြစ်နေပါသည် သို့မဟုတ် လက်ရှိကိရိယာအိုင်ဒီနှင့် ကိုက်ညီမှုမရှိပါ</translation>
 <translation id="7508577201115425418">စာရွက်စာတမ်းနှင့် ပုံနှိပ်ဝန်ဆောင်မှု</translation>
@@ -5149,6 +5155,7 @@
 <translation id="9191834167571392248">ဘယ်ဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
 <translation id="9192361865877479444">သတ္တု (မှိုင်းပျပျ)</translation>
 <translation id="9192947025498305328">သဘာဝ အလှကုန်</translation>
+<translation id="9193018794001479794">အသေးစိတ်ရှင်းပြပါ</translation>
 <translation id="9195969368671142407">သင်၏ Google Account တွင် သိမ်းသည့်အရာများကို သင့်အဖွဲ့အစည်းက ကန့်သတ်လိုက်သည့်အခါ တဘ်အုပ်စုများကို မျှဝေခြင်း (သို့) ၎င်းတို့တွင် ပါဝင်ခြင်းတို့ မလုပ်နိုင်ပါ</translation>
 <translation id="9198613052465150219">သင့် Google Account သည် <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> တွင် အခြားပုံစံဖြင့် ကြည့်ရှုမှုမှတ်တမ်းများ ရှိနေနိုင်သည်</translation>
 <translation id="9199905725844810519">ပုံနှိပ်ထုတ်ယူခြင်းကို ပိတ်ထားသည်</translation>

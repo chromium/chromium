@@ -29,6 +29,7 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="126567311906253476">Keď sa budete účtom <ph name="USER_EMAIL" /> prihlasovať do služieb Googlu, ako je Gmail alebo YouTube, môžete sa ním automaticky prihlásiť aj do prehliadača Chromium</translation>
 <translation id="1290883685122687410">Chyba nastavenia: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Nastavte si nový profil prehliadača Chromium</translation>
+<translation id="132092532143527429">Vyskúšať s Gemini v prehliadači Chromium</translation>
 <translation id="1324107359134968521">Chromium potrebuje na preskúmanie zariadení s rozhraním Bluetooth prístup k rozhraniu Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Rozpoznať jazyk</translation>
 <translation id="1330742950061766891">Používajte odporúčané nastavenia prehliadača Chromium</translation>
@@ -610,6 +611,7 @@ Prehliadač Chromium nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="7622753900276619808">Teraz máte v prehliadači Chromium k dispozícii viac funkcií</translation>
 <translation id="7624307931717240213">Informácie používame na zlepšovanie tejto služby. Prečítajte si pravidlá ochrany súkromia a zmluvné podmienky.</translation>
 <translation id="7649070708921625228">Pomocník</translation>
+<translation id="7650134251917003571">Získať aplikáciu Chromium</translation>
 <translation id="7656340475565475526">Nechajte Chromium prehliadať za vás</translation>
 <translation id="7658239707568436148">Zrušiť</translation>
 <translation id="7686590090926151193">Chromium nie je váš predvolený prehliadač</translation>

@@ -722,6 +722,7 @@
 <translation id="4212169537710712814"><ph name="LANGUAGE_NAME" /> valodas transkribēšanas modeļa lejupielāde ir pabeigta</translation>
 <translation id="42126664696688958">Eksportēt</translation>
 <translation id="4213104098953699324">USB tastatūra</translation>
+<translation id="4217571870635786043">Diktēšana</translation>
 <translation id="4227825898293920515">Paroles derīguma termiņš: <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Nenotiek neviens drukas darbs</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1674,6 +1675,7 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8420955526972171689">Veiciet aparatūras problēmu pārbaudes un novērsiet problēmas.</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">uz leju</translation>
+<translation id="8427213022735114808">Diktēšanas funkcija nosūta jūsu balss datus Google serveriem, lai atļautu rakstīšanu ar balsi jebkurā teksta laukā.</translation>
 <translation id="8428213095426709021">Iestatījumi</translation>
 <translation id="8431300646573772016">Chrome OS jaunumi</translation>
 <translation id="8433186206711564395">Tīkla iestatījumi</translation>

@@ -1614,6 +1614,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3575121482199441727">Cho phép đối với trang web này</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Đã chọn tuỳ chọn tên đường phố</translation>
+<translation id="3576315803647905285">Làm cho trang trọng hơn</translation>
 <translation id="3576616784287504635">Một trang được nhúng tại <ph name="SITE" /> cho biết</translation>
 <translation id="3577473026931028326">Đã xảy ra lỗi. Hãy thử lại.</translation>
 <translation id="3577902790357386792">Thể dục thẩm mỹ</translation>
@@ -2684,6 +2685,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="5266128565379329178">Đóng gáy trên cùng</translation>
 <translation id="5269225904387178860">Đục 4 lỗ dưới cùng</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" không phải là điều kiện được hỗ trợ cho "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">Trau chuốt</translation>
 <translation id="5273658854610202413">Cảnh báo: Chính sách này không được hợp nhất như chỉ định trong chính sách PolicyDictionaryMultipleSourceMergeList vì chính sách này không thuộc các chính sách từ điển có thể hợp nhất.</translation>
 <translation id="5278778426231952189">Tải lên ngay</translation>
 <translation id="5279286380302340275">Quản lý tệp đã tải xuống</translation>
@@ -3584,6 +3586,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6698097747703777657">Bạn chưa nhận được mã? <ph name="BEGIN_LINK" />Yêu cầu mã mới<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Tạo:</translation>
 <translation id="6698769547327354196">Để tắt Pix trong Chrome, hãy chuyển đến phần <ph name="BEGIN_LINK1" />cài đặt thông tin thanh toán<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Lưu thông tin của bạn để hoàn thành công việc nhanh hơn, chẳng hạn như điền vào biểu mẫu trên các sản phẩm của Google. Bạn có thể <ph name="MANAGE_INFO_LINK" /> trong <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> cho <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Thanh trượt thời gian</translation>
 <translation id="6702851555558236418">Phần mềm âm thanh và âm nhạc</translation>
 <translation id="6702919718839027939">Thuyết trình</translation>
@@ -4096,6 +4099,7 @@ Thông tin chi tiết bổ sung:
 <translation id="7499188644237027195">Khi bạn mua hàng trên Chrome, hãy cân nhắc sử dụng Ví điện tử và Pix</translation>
 <translation id="7500917112031739411">Hiển thị theo nhóm</translation>
 <translation id="7501663406926337752">Tổ chức của bạn đã gắn cờ trang web bạn sắp truy cập</translation>
+<translation id="7502044688973049724">quản lý thông tin của bạn</translation>
 <translation id="7507075214339298899">Phong bì số 9</translation>
 <translation id="7508255263130623398">ID thiết bị thuộc chính sách trả lại trống hoặc không khớp với ID của thiết bị hiện tại</translation>
 <translation id="7508577201115425418">Tài liệu và dịch vụ in</translation>
@@ -5149,6 +5153,7 @@ Thông tin chi tiết bổ sung:
 <translation id="9191834167571392248">Đục lỗ dưới cùng bên trái</translation>
 <translation id="9192361865877479444">Kim loại (Không bóng)</translation>
 <translation id="9192947025498305328">Mỹ phẩm sạch</translation>
+<translation id="9193018794001479794">Trình bày chi tiết</translation>
 <translation id="9195969368671142407">Khi tổ chức của bạn giới hạn những nội dung bạn được lưu vào Tài khoản Google, bạn sẽ không thể chia sẻ hoặc tham gia nhóm thẻ</translation>
 <translation id="9198613052465150219">Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web khác tại <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">Tính năng in đã bị chặn</translation>

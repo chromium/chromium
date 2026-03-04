@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Piekļūstiet savām parolēm citās lietotnēs.</translation>
 <translation id="3485558910355485767">Jauns inkognito režīma logs</translation>
 <translation id="3488501490964659223">Cilnes tika aizvērtas, un pārlūkošanas dati tika dzēsti. Jūs tikāt izrakstīts.</translation>
+<translation id="3490396108106323715">Kopīgot pašreizējo cilni</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" /> par ieteikto saturu.</translation>
 <translation id="349446645805573740">Izvēlieties, kur saglabāt failu “<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />”</translation>
 <translation id="3504377992102007712">Iestatījumi</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Nevarēja ielādēt attēlus.</translation>
 <translation id="3565930036634619844">Cilne numur <ph name="TAB_INDEX" />, kopējais skaits ir <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Saglabāt citā veidā</translation>
+<translation id="3572503683475187385">Pašreizējā cilne tiek kopīgota ar Gemini, kad sākat jaunu tērzēšanas sarunu. Kad kopīgojat cilni ar Gemini, tās saturs un URL tiek nosūtīts uz Google serveriem. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="3572607909481582402">Jūsu Google kontā</translation>
 <translation id="3575234738189584619">Meklēt ar Lens</translation>
 <translation id="3575426792457739946">Šajā sarakstā ir iekļauti visi ielādētie profili.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Pārtraukt meklēšanu ekrānā, izmantojot Google Lens</translation>
 <translation id="3753408171347588045">Cenu izsekošana</translation>
 <translation id="3753618528540214374">Viridiāna motīvs</translation>
+<translation id="3759491607478608474">Lai saņemtu atbilstošākas atbildes, kopīgojiet pašreizējās cilnes saturu ar Gemini.</translation>
 <translation id="3762232513783804601">Izstrādāts jūsu iPad planšetdatoram</translation>
 <translation id="3768725474733206671">Vēlreiz atvērt pēdējo aizvērto cilni</translation>
 <translation id="3779810277399252432">Nav interneta savienojuma.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Turpināt kā: <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Paslēpt pēc vienas minūtes}zero{Paslēpt pēc {count} minūtēm}one{Paslēpt pēc {count} minūtes}other{Paslēpt pēc {count} minūtēm}}</translation>
 <translation id="4652817563047461855">Aizsargājiet savas paroles, uzziniet, vai tās nav uzlauztas, un saņemiet padomus par drošību tiešsaistē. <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
+<translation id="4653053602672040238">Ieslēdziet cilnes kopīgošanu</translation>
 <translation id="4658335131052370646">Saglabāt</translation>
 <translation id="466307903888586355">Jūsu organizācija ir bloķējusi failu saglabāšanu.</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="5718049162805123412">Nekavējoties nomainiet šīs paroles</translation>
 <translation id="5721040778297053709">Novietojiet kredītkarti rāmī</translation>
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
+<translation id="5724590854763964497">Pēc noklusējuma, sākot jaunu tērzēšanas sarunu, tiek kopīgota pašreizējā cilne. Kad tiek kopīgotas cilnes, to saturs un vietrāži URL tiek nosūtīti uz Google serveriem, taču tie netiks izmantoti ģeneratīvo MI modeļu uzlabošanai. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="5724941645893276623">Lai pārlūkotu tīmekli privāti, pievienojiet jaunu cilni</translation>
 <translation id="5728072125198221967">Saistītie Google pakalpojumi</translation>
 <translation id="5728700505257787410">Diemžēl, pierakstoties kontā, radās problēma.</translation>
@@ -1964,6 +1969,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8059533439631660104">Sakļauj sadaļu.</translation>
 <translation id="8061584726507121204">Vēsture</translation>
 <translation id="8064946459644399612">Tika lietotas jaunas cilnes lapas preferences</translation>
+<translation id="8065556469005366939">Saņemiet atbilstošākas atbildes, kopīgojot savas cilnes</translation>
 <translation id="8069394452933076548">Izvēlieties, kad uz neaktīvo ciļņu sadaļu tiek pārvietotas cilnes, kas pēdējā laikā nav izmantotas.</translation>
 <translation id="8073670137947914548">Lejupielāde ir pabeigta</translation>
 <translation id="8076492880354921740">Cilnes</translation>
@@ -2132,6 +2138,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="8660600697590740984">Pakalpojumā Lens nokopētais attēls</translation>
 <translation id="866266761389616183">Ak, vai!</translation>
 <translation id="8663764600409216912">Jūs izmantojat paroles, ko varētu būt grūti uzminēt</translation>
+<translation id="8664992138761940052">Pēc noklusējuma, sākot jaunu tērzēšanas sarunu, tiek kopīgota pašreizējā cilne. Kad tiek kopīgotas cilnes, to saturs un vietrāži URL tiek nosūtīti uz Google serveriem. Jebkurā laikā varat mainīt šo iestatījumu.</translation>
 <translation id="8668210798914567634">Šī lapa ir saglabāta jūsu lasīšanas sarakstā.</translation>
 <translation id="8672642291731179042">Lapu tulkošana</translation>
 <translation id="8672733398999596205">Iespējot visus</translation>

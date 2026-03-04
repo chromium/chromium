@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Dostopajte do gesel v drugih aplikacijah.</translation>
 <translation id="3485558910355485767">Novo anonimno &amp;okno</translation>
 <translation id="3488501490964659223">Zavihki so bili zaprti in podatki brskanja so bili izbrisani. Bili ste odjavljeni.</translation>
+<translation id="3490396108106323715">Deli trenutni zavihek</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Preberite več<ph name="END_LINK" /> o predlagani vsebini</translation>
 <translation id="349446645805573740">Izberite, kam želite shraniti datoteko »<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />«</translation>
 <translation id="3504377992102007712">Nastavitve</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Slik ni bilo mogoče naložiti</translation>
 <translation id="3565930036634619844">Zavihek. <ph name="TAB_INDEX" />. od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Shrani na drug način</translation>
+<translation id="3572503683475187385">Trenutni zavihek se deli z Geminijem, ko začnete nov klepet. Ko zavihek delite z Geminijem, se njegova vsebina in URL pošljeta Googlu. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">V računu za Google</translation>
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
 <translation id="3575426792457739946">Na tem seznamu so vsi naloženi profili</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Ustavitev iskanja po zaslonu z Googlom Lens</translation>
 <translation id="3753408171347588045">Poteka spremljanje cen</translation>
 <translation id="3753618528540214374">Zelenkasta tema</translation>
+<translation id="3759491607478608474">Delite vsebino trenutnega zavihka z Geminijem in prejmite ustreznejše odgovore</translation>
 <translation id="3762232513783804601">Ustvarjeno za vaš iPad</translation>
 <translation id="3768725474733206671">Vnovično odpiranje nazadnje zaprtega zavihka</translation>
 <translation id="3779810277399252432">Ni internetne povezave.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Nadaljuj kot <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Skrij po 1 minuti}one{Skrij po {count} minuti}two{Skrij po {count} minutah}few{Skrij po {count} minutah}other{Skrij po {count} minutah}}</translation>
 <translation id="4652817563047461855">Poskrbite za varnost gesel, preverite, ali so bila ogrožena, in poiščite nasvete za zaščito v spletu. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Vklop deljenja zavihkov</translation>
 <translation id="4658335131052370646">Shrani</translation>
 <translation id="466307903888586355">Shranjevanje datotek blokira vaša organizacija</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5718049162805123412">Takoj jih spremenite.</translation>
 <translation id="5721040778297053709">Kreditno kartico postavite v ta okvir</translation>
 <translation id="572328651809341494">Nedavni zavihki</translation>
+<translation id="5724590854763964497">Trenutni zavihek se privzeto deli, ko začnete nov klepet. Ko se zavihki delijo, se njihova vsebina in URL-ji pošljejo Googlu, vendar se ne uporabljajo za izboljšanje modelov generativne umetne inteligence. To nastavitev lahko kadar koli spremenite.</translation>
 <translation id="5724941645893276623">Če želite zasebno brskati po spletu, dodajte nov zavihek</translation>
 <translation id="5728072125198221967">Povezane Googlove storitve</translation>
 <translation id="5728700505257787410">Žal je bila pri prijavi v račun težava.</translation>
@@ -1964,6 +1969,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8059533439631660104">Strni razdelek.</translation>
 <translation id="8061584726507121204">Zgodovina</translation>
 <translation id="8064946459644399612">Nastavitve strani »Nov zavihek« so bile uporabljene</translation>
+<translation id="8065556469005366939">Delite zavihke in prejmite ustreznejše odgovore</translation>
 <translation id="8069394452933076548">Izberite, kdaj se zavihki, ki niso bili nedavno uporabljeni, premaknejo v razdelek neaktivnih zavihkov.</translation>
 <translation id="8073670137947914548">Prenos je končan</translation>
 <translation id="8076492880354921740">Zavihki</translation>
@@ -2132,6 +2138,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8660600697590740984">Iskanje kopirane slike z Googlom Lens</translation>
 <translation id="866266761389616183">Ti šment!</translation>
 <translation id="8663764600409216912">Uporabljate gesla, ki jih je težko ugotoviti.</translation>
+<translation id="8664992138761940052">Trenutni zavihek se privzeto deli, ko začnete nov klepet. Ko se zavihki delijo, se njihova vsebina in URL-ji pošljejo Googlu To nastavitev lahko kadar koli spremenite.</translation>
 <translation id="8668210798914567634">Ta stran je shranjena na bralni seznam.</translation>
 <translation id="8672642291731179042">Prevajanje strani</translation>
 <translation id="8672733398999596205">Omogoči vse</translation>

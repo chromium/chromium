@@ -29,6 +29,7 @@
 <translation id="126567311906253476"><ph name="USER_EMAIL" /> ମାଧ୍ୟମରେ Gmail କିମ୍ବା YouTube ପରି Google ସେବାଗୁଡ଼ିକରେ ସାଇନ ଇନ କରିବା ସମୟରେ, ଆପଣ ସମାନ ଆକାଉଣ୍ଟ ମାଧ୍ୟମରେ ସ୍ୱତଃ Chromiumରେ ସାଇନ ଇନ କରିପାରିବେ</translation>
 <translation id="1290883685122687410">ସେଟଅପ ତ୍ରୁଟି: <ph name="METAINSTALLER_EXIT_CODE" />। <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">ଆପଣଙ୍କର ନୂଆ Chromium ପ୍ରୋଫାଇଲ୍ ସେଟ୍ ଅପ୍ କରନ୍ତୁ</translation>
+<translation id="132092532143527429">Chromiumରେ Gemini ସହ ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="1324107359134968521">ବ୍ଲୁଟୁଥ ଡିଭାଇସଗୁଡ଼ିକୁ ଏକ୍ସପ୍ଲୋର କରିବା ପାଇଁ Chromium ବ୍ଲୁଟୁଥ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ। <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">ଭାଷା ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="1330742950061766891">Chromiumର ସୁପାରିଶ କରାଯାଇଥିବା ବ୍ରାଉଜର ସେଟିଂସ ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -610,6 +611,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="7622753900276619808">ଆପଣଙ୍କ ପାଖରେ ବର୍ତ୍ତମାନ Chromiumରେ ଅଧିକ ଫିଚର ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7624307931717240213">ଏହି ସର୍ଭିସକୁ ଉନ୍ନତ କରିବା ପାଇଁ ଆମେ ସୂଚନା ବ୍ୟବହାର କରୁ। ଗୋପନୀୟତା ନୀତି ଏବଂ ସର୍ଭିସର ସର୍ତ୍ତାବଳୀ ଦେଖନ୍ତୁ।</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
+<translation id="7650134251917003571">Chromium ଆପ ପାଆନ୍ତୁ</translation>
 <translation id="7656340475565475526">Chromiumକୁ ଆପଣଙ୍କ ପାଇଁ ବ୍ରାଉଜ କରିବାକୁ ଦିଅନ୍ତୁ</translation>
 <translation id="7658239707568436148">ବାତିଲ</translation>
 <translation id="7686590090926151193">Chromium ଆପଣଙ୍କର ଡିଫଲ୍ଟ ବ୍ରାଉଜର୍ ନୁହେଁ</translation>

@@ -1614,6 +1614,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="3575121482199441727">Luba selle saidi puhul</translation>
 <translation id="3575168918110434329">A4 × 7</translation>
 <translation id="3575589330755445706">Tehti valik Tänavanimi</translation>
+<translation id="3576315803647905285">Kirjuta ümber ametlikus stiilis</translation>
 <translation id="3576616784287504635">Manustatud leht saidil <ph name="SITE" /> ütleb</translation>
 <translation id="3577473026931028326">Midagi läks valesti. Proovige uuesti.</translation>
 <translation id="3577902790357386792">Võimlemine</translation>
@@ -2684,6 +2685,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="5266128565379329178">Köide ülal</translation>
 <translation id="5269225904387178860">Neli auku all</translation>
 <translation id="5271381225185906340">Tingimust „<ph name="DATA_CONTROLS_ATTRIBUTE" />“ piirangu „<ph name="DATA_CONTROLS_RESTRICTION" />“ puhul ei toetata</translation>
+<translation id="527191520368130807">Viimistlemine</translation>
 <translation id="5273658854610202413">Hoiatus! Seda reeglit ei liidetud reeglis PolicyDictionaryMultipleSourceMergeList määratud viisil, kuna see ei ole osa sõnastiku reeglitest, mida saab liita.</translation>
 <translation id="5278778426231952189">Laadi kohe üles</translation>
 <translation id="5279286380302340275">Allalaadimiste haldamine</translation>
@@ -3584,6 +3586,7 @@ Hiljem maksmise valikute peitmiseks avage <ph name="BEGIN_LINK" />makseseaded<ph
 <translation id="6698097747703777657">Kas te ei saanud koodi? <ph name="BEGIN_LINK" />Hankige uus kood<ph name="END_LINK" />.</translation>
 <translation id="6698381487523150993">Loodud:</translation>
 <translation id="6698769547327354196">Pixi väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" />.</translation>
+<translation id="669903922988126943">Salvestage oma teave, et Google'i teenustes kiiremini tegutseda, näiteks vorme täita. Saate konto <ph name="ACCOUNT" /> <ph name="MANAGE_INFO_LINK" /> rakenduses <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />.</translation>
 <translation id="67007264085648978">Ajakursor</translation>
 <translation id="6702851555558236418">Heli- ja muusikatarkvara</translation>
 <translation id="6702919718839027939">Esitlemine</translation>
@@ -4096,6 +4099,7 @@ Lisateave:
 <translation id="7499188644237027195">Kui teete oste Chrome'is, on valikus ka e-rahakott ja Pix</translation>
 <translation id="7500917112031739411">Kuva grupi järgi</translation>
 <translation id="7501663406926337752">Teie organisatsioon on selle lehe märgistanud</translation>
+<translation id="7502044688973049724">teavet hallata</translation>
 <translation id="7507075214339298899">Ümbrik nr 9</translation>
 <translation id="7508255263130623398">Tagastatud reegli seadme-ID on tühi või ei kattu praeguse seadme-ID-ga</translation>
 <translation id="7508577201115425418">Kontori- ja printimisteenused</translation>
@@ -5148,6 +5152,7 @@ Lisateave:
 <translation id="9191834167571392248">Auk vasakul all</translation>
 <translation id="9192361865877479444">Metall (matt)</translation>
 <translation id="9192947025498305328">Puhas ilu</translation>
+<translation id="9193018794001479794">Täpsustamine</translation>
 <translation id="9195969368671142407">Kui teie organisatsiooni piirab Google'i kontole salvestamist, ei saa te vahelehegruppe jagada ega nendega liituda</translation>
 <translation id="9198613052465150219">Aadressil <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> võib teie Google'i kontol olla muus vormis sirvimisajalugu</translation>
 <translation id="9199905725844810519">Printimine on blokeeritud</translation>

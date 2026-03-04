@@ -226,6 +226,7 @@
 <translation id="3226612997184048185">ਜੇ ਤੁਸੀਂ ਵੀ ਆਪਣੇ Google ਖਾਤੇ ਵਿੱਚ ਆਪਣੇ ਬੁੱਕਮਾਰਕ ਨੂੰ ਰੱਖਿਅਤ ਕਰਦੇ ਹੋ ਤਾਂ, ਤੁਸੀਂ Chrome ਵਿੱਚ ਉਤਪਾਦਾਂ ਦੀਆਂ ਕੀਮਤਾਂ ਨੂੰ ਟਰੈਕ ਕਰ ਸਕਦੇ ਹੋ ਅਤੇ ਕੀਮਤਾਂ ਡਿੱਗਣ 'ਤੇ ਸੂਚਨਾ ਪ੍ਰਾਪਤ ਕਰ ਸਕਦੇ ਹੋ</translation>
 <translation id="3242123554343253302">Chrome ਪ੍ਰੋਫਾਈਲ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="3245429137663807393">ਜੇ ਤੁਸੀਂ Chrome ਵਰਤੋਂ ਸੰਬੰਧੀ ਰਿਪੋਰਟਾਂ ਨੂੰ ਵੀ ਸਾਂਝਾ ਕਰਦੇ ਹੋ, ਤਾਂ ਇਨ੍ਹਾਂ ਰਿਪੋਰਟਾਂ ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਖੋਲ੍ਹੇ ਜਾਣ ਵਾਲੇ URL ਵੀ ਸ਼ਾਮਲ ਹੁੰਦੇ ਹਨ</translation>
+<translation id="3259748324892322072">Chrome ਐਪ ਪ੍ਰਾਪਤ ਕਰੋ</translation>
 <translation id="3286538390144397061">ਹੁਣ ਰੀਸਟਾਰਟ ਕਰੋ</translation>
 <translation id="3292333338048274092">ਫਿਰ ਤੁਹਾਨੂੰ Chrome ਨੂੰ ਮੁੜ-ਸ਼ੁਰੂ ਕਰਨ ਦੀ ਲੋੜ ਪਵੇਗੀ।</translation>
 <translation id="3324218984287646518">ਇਸ ਵੀਡੀਓ ਬਾਰੇ Google Lens ਨੂੰ ਪੁੱਛੋ</translation>
@@ -284,7 +285,6 @@
 <translation id="3892148308691398805">ਲਿਖਤ ਕਾਪੀ ਕਰੋ</translation>
 <translation id="3893985792899396936">Chrome ਦਾ ਨੁਕਤਾ: Lens ਰਾਹੀਂ ਖੋਜੋ</translation>
 <translation id="3906096710440765802">ਆਪਣੇ ਸਾਰੇ ਡੀਵਾਈਸਾਂ 'ਤੇ ਆਪਣੇ ਪਾਸਵਰਡ, ਬੁੱਕਮਾਰਕ ਅਤੇ ਹੋਰ ਜਾਣਕਾਰੀ ਪ੍ਰਾਪਤ ਕਰਨ ਲਈ Chrome ਵਿੱਚ ਸਾਈਨ-ਇਨ ਕਰੋ</translation>
-<translation id="3921132130819999051">Chrome ਨੂੰ ਤੁਹਾਡੇ ਲਈ ਬ੍ਰਾਊਜ਼ ਕਰਨ ਦਿਓ</translation>
 <translation id="3941890832296813527">ਸਥਾਪਤ ਕਰਨ ਵਿੱਚ ਗੜਬੜ: ਸਥਾਪਨਾਕਾਰ ਫ਼ਾਈਲ ਨਾਮ ਅਵੈਧ ਜਾਂ ਅਸਮਰਥਿਤ ਹੈ।</translation>
 <translation id="395904275706073188">ਸੁਰੱਖਿਅਤ ਪੰਨਿਆਂ ਨੂੰ ਪੜ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ। ਇੱਕ ਵੱਖਰਾ ਪੰਨਾ ਅਜ਼ਮਾਓ।</translation>
 <translation id="3968962723676998462">ਆਪਣੇ ਖਾਤੇ, <ph name="ACCOUNT_EMAIL" /> ਵਿੱਚ Chrome ਡਾਟੇ ਨੂੰ ਵਰਤਣ ਅਤੇ ਰੱਖਿਅਤ ਕਰਨ ਲਈ ਆਪਣਾ ਪਾਸਫਰੇਜ਼ ਦਾਖਲ ਕਰੋ</translation>
@@ -499,7 +499,6 @@ Google Chrome ਤੁਹਾਡੀਆਂ ਸੈਟਿੰਗਾਂ ਮੁੜ-ਹਾ
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome ਬੀਟਾ</translation>
 <translation id="6180522807229584611">ਇਹ ਟੈਬ ਵਾਧੂ ਸਰੋਤਾਂ ਦੀ ਵਰਤੋਂ ਕਰ ਰਹੀ ਹੈ। ਕਾਰਗੁਜ਼ਾਰੀ ਨੂੰ ਬਿਹਤਰ ਬਣਾਉਣ ਲਈ Chrome ਨੂੰ ਇਸ ਟੈਬ ਨੂੰ ਅਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਦਿਓ।</translation>
 <translation id="6182736845697986886">ਅੱਪਡੇਟ ਸਰਵਰ ਦੀ ਅੰਦਰੂਨੀ ਗੜਬੜ ਕਾਰਨ ਸਥਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ।</translation>
-<translation id="6183773856988300112">Chrome ਵਿੱਚ Gemini ਤੁਹਾਡੀਆਂ ਟੈਬਾਂ ਵਿੱਚ ਕੰਮ ਕਰਨ ਅਤੇ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦਿੱਤੇ ਗਏ ਕਾਰਜਾਂ ਨੂੰ ਪੂਰਾ ਕਰਨ ਲਈ ਸਵੈਚਲਿਤ ਬ੍ਰਾਊਜ਼ ਦੀ ਵਰਤੋਂ ਕਰਦਾ ਹੈ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome ਨੁਕਤਾ: ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6192058120268468905">Chrome ਵਿੱਚ ਤੁਹਾਡਾ ਖਾਤਾ</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> ਨੇ ਇੱਕ ਅਜਿਹੀ ਐਕਸਟੈਂਸ਼ਨ ਸ਼ਾਮਲ ਕੀਤੀ ਹੈ ਜੋ Chrome ਦੇ ਕੰਮ ਕਰਨ ਦੇ ਤਰੀਕੇ ਨੂੰ ਬਦਲ ਸਕਦੀ ਹੈ।

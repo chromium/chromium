@@ -1910,6 +1910,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4036753017940930924">Mga Lote at Lupain</translation>
 <translation id="403724377879219932">Puwedeng humiling na i-access ang iba pang device sa iyong lokal na network</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, bago</translation>
 <translation id="4039506337798853114">Para ipakita ang iyong cursor, pindutin ang |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Tinatantya</translation>
 <translation id="4045070493270310437">Buksan ulit ang mga tab</translation>
@@ -2796,6 +2797,7 @@ Para i-hide ang mga opsyon sa pay later, pumunta sa <ph name="BEGIN_LINK" />mga 
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Para sa mas mabilis na pag-checkout, i-save ang CVC na ito sa Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Mga app sa device</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, na dating <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Baligtarin ang pagkakasunod-sunod nang nakatihaya</translation>
 <translation id="5447235695608032700">Payagan ang <ph name="SITE" /> na gumamit ng impormasyong na-save nito tungkol sa iyo</translation>
 <translation id="5447973833955560753">Password sa pag-recover</translation>

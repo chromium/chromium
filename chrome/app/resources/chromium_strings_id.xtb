@@ -27,6 +27,7 @@
 <translation id="126567311906253476">Saat login ke layanan Google seperti Gmail atau YouTube dengan <ph name="USER_EMAIL" />, Anda dapat login otomatis ke Chromium dengan akun yang sama</translation>
 <translation id="1290883685122687410">Kesalahan saat penyiapan: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">Siapkan profil Chromium baru Anda</translation>
+<translation id="132092532143527429">Coba dengan Gemini di Chromium</translation>
 <translation id="1324107359134968521">Chromium memerlukan akses Bluetooth untuk menjelajah 
  perangkat Bluetooth. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">Deteksi bahasa</translation>
@@ -607,6 +608,7 @@ Chromium tidak dapat memulihkan setelan Anda.</translation>
 <translation id="7622753900276619808">Anda kini memiliki lebih banyak fitur yang tersedia di Chromium</translation>
 <translation id="7624307931717240213">Kami menggunakan info untuk meningkatkan kualitas layanan ini. Lihat Kebijakan Privasi dan Persyaratan Layanan.</translation>
 <translation id="7649070708921625228">Bantuan</translation>
+<translation id="7650134251917003571">Dapatkan Aplikasi Chromium</translation>
 <translation id="7656340475565475526">Izinkan Chromium melakukan penjelajahan untuk Anda</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7686590090926151193">Chromium bukan browser default</translation>

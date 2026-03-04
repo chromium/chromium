@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Accedi alle tue password su altre app.</translation>
 <translation id="3485558910355485767">Nuova finestra di navigazione in incognito</translation>
 <translation id="3488501490964659223">Le schede sono state chiuse e i dati di navigazione sono stati eliminati. Il tuo account è stato disconnesso</translation>
+<translation id="3490396108106323715">Condividi scheda corrente</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /> sui contenuti suggeriti</translation>
 <translation id="349446645805573740">Scegli dove salvare "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />"</translation>
 <translation id="3504377992102007712">Impostazioni</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Impossibile caricare le immagini</translation>
 <translation id="3565930036634619844">Scheda. <ph name="TAB_INDEX" /> di <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Salva in altro modo</translation>
+<translation id="3572503683475187385">La scheda corrente viene condivisa con Gemini quando avvii una nuova chat. Quando condividi una scheda con Gemini, i relativi contenuti e l'URL vengono inviati a Google. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Nel tuo Account Google</translation>
 <translation id="3575234738189584619">Cerca con Lens</translation>
 <translation id="3575426792457739946">Questo elenco contiene tutti i profili caricati.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Interrompi la ricerca sullo schermo con Google Lens</translation>
 <translation id="3753408171347588045">Stai monitorando i prezzi</translation>
 <translation id="3753618528540214374">Tema verde veronese</translation>
+<translation id="3759491607478608474">Condividi i contenuti della scheda corrente con Gemini per ricevere risposte più pertinenti</translation>
 <translation id="3762232513783804601">Realizzato per il tuo iPad</translation>
 <translation id="3768725474733206671">Riapri l'ultima scheda chiusa</translation>
 <translation id="3779810277399252432">Nessuna connessione a Internet.</translation>
@@ -950,7 +953,7 @@
 <translation id="4525629404718770519">Mostra anteprime link</translation>
 <translation id="452750746583162491">Verifica i tuoi dati sincronizzati</translation>
 <translation id="4532845899244822526">Scegli cartella</translation>
-<translation id="454217142158335225">Puoi riaprire gli elementi chiusi dalle sezioni Schede recenti o Gruppi di schede. Le schede bloccate non verranno chiuse.</translation>
+<translation id="454217142158335225">Puoi riaprire gli elementi chiusi dalle sezioni Schede recenti o Gruppi di schede. Le schede fissate non verranno chiuse.</translation>
 <translation id="4547181496285029457">Torna alla scheda recente</translation>
 <translation id="4552042254369397518">Copia in corso…</translation>
 <translation id="4564893319561643483">Nascondi "<ph name="TITLE" />"</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Continua come <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Nascondi dopo 1 minuto}other{Nascondi dopo {count} minuti}}</translation>
 <translation id="4652817563047461855">Assicurati che le tue password siano al sicuro, scopri se sono state compromesse e ricevi consigli per proteggerti online. <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Attiva la condivisione della scheda</translation>
 <translation id="4658335131052370646">Salva</translation>
 <translation id="466307903888586355">La tua organizzazione ha bloccato il salvataggio dei file</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="5718049162805123412">Dovresti cambiarle subito</translation>
 <translation id="5721040778297053709">Posiziona la carta di credito all'interno di quest'area</translation>
 <translation id="572328651809341494">Schede recenti</translation>
+<translation id="5724590854763964497">Per impostazione predefinita, la scheda corrente viene condivisa quando avvii una nuova chat. Quando le schede vengono condivise, i relativi contenuti e URL vengono inviati a Google, ma non saranno usati per migliorare i modelli di AI generativa. Puoi modificare questa impostazione in qualsiasi momento.</translation>
 <translation id="5724941645893276623">Per navigare sul Web in privato, aggiungi una nuova scheda</translation>
 <translation id="5728072125198221967">Servizi Google collegati</translation>
 <translation id="5728700505257787410">Spiacenti, problema durante l'accesso all'account.</translation>
@@ -1964,6 +1969,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8059533439631660104">Viene compressa la sezione.</translation>
 <translation id="8061584726507121204">Cronologia</translation>
 <translation id="8064946459644399612">Preferenze della pagina Nuova scheda applicate</translation>
+<translation id="8065556469005366939">Ricevi risposte più pertinenti condividendo le tue schede</translation>
 <translation id="8069394452933076548">Scegli quando spostare nella sezione Schede non attive le schede che non sono state utilizzate di recente.</translation>
 <translation id="8073670137947914548">Download terminato</translation>
 <translation id="8076492880354921740">Schede</translation>
@@ -2132,6 +2138,7 @@ La funzione Handoff deve anche essere attivata nella sezione Generali di Imposta
 <translation id="8660600697590740984">Immagine copiata da Lens</translation>
 <translation id="866266761389616183">Uffa!</translation>
 <translation id="8663764600409216912">Stai utilizzando password che sembrano difficili da indovinare</translation>
+<translation id="8664992138761940052">Per impostazione predefinita, la scheda corrente viene condivisa quando avvii una nuova chat. Quando le schede vengono condivise, i relativi contenuti e URL vengono inviati a Google. Puoi modificare questa impostazione in qualsiasi momento.</translation>
 <translation id="8668210798914567634">Questa pagina è stata salvata nel tuo Elenco di lettura.</translation>
 <translation id="8672642291731179042">Traduci pagine</translation>
 <translation id="8672733398999596205">Attiva tutto</translation>

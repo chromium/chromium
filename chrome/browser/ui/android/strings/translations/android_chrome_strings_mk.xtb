@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Премести обележувачи</translation>
 <translation id="1197761954713363183">Листот за потврдување на криптографскиот клуч е затворен</translation>
 <translation id="1197933394627598677">Прикажи го „Режимот за читање“</translation>
+<translation id="1197935538609051549">Деактивирај</translation>
 <translation id="1201402288615127009">Следно</translation>
 <translation id="1202892408424955784">Следени производи</translation>
 <translation id="1204037785786432551">Преземи линк</translation>
@@ -506,6 +507,7 @@
 <translation id="3122883569442693641">Повеќе детали</translation>
 <translation id="3123734510202723619">Соопштенија</translation>
 <translation id="3134385238404760368">Нема неодамнешни картички</translation>
+<translation id="3135655388926735587">Допрете „Неодамнешни картички“</translation>
 <translation id="314939179385989105">Почетна страница на Chrome</translation>
 <translation id="3158667104057012316">Се подредува рачно</translation>
 <translation id="3159335509547415276">Дознајте повеќе за блокираните сметки</translation>
@@ -850,6 +852,7 @@
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 компромитирана лозинка}one{# компромитирана лозинка}other{# компромитирани лозинки}}</translation>
 <translation id="4641919525231168205">Оди на следната страница</translation>
 <translation id="4642472735733036929">Следењето на цените е сопрено</translation>
+<translation id="4649493483932335039">Прегледајте ги неодамнешните картички</translation>
 <translation id="465657074423018424">„Безбедното прелистување“ ве заштитува од измамнички веб-сајтови. Ако го исклучите, бидете многу внимателни при прелистувањето, особено пред внесување лозинки.</translation>
 <translation id="4662373422909645029">Прекарот не може да содржи броеви</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> обележувачи се избришани</translation>
@@ -1562,6 +1565,7 @@
 <translation id="7363349185727752629">Упатство за вашите опции за приватноста</translation>
 <translation id="7364103838544876661">Повеќе опции за бришење на податоците од прелистување</translation>
 <translation id="7365073365123878797">За да започнете со зачувување и користење лозинки со Google Password Manager, ажурирајте ја „Услуги на Google Play“</translation>
+<translation id="7368009310682364976">Прегледајте ги неодамна отворените картички</translation>
 <translation id="7368927539449986686">Изменете го пребарувањето сајтови</translation>
 <translation id="7375125077091615385">Тип:</translation>
 <translation id="7376560087009844242">Ако вклучите повеќе текст од страницата, можеби ќе гледате подобри резултати кога ќе користите „Допрете за пребарување“ Може да одите во <ph name="BEGIN_LINK" />поставки<ph name="END_LINK" /> во секое време за да го промените ова.</translation>
@@ -1679,6 +1683,7 @@
 <translation id="7824665136384946951">Вашата организација го исклучи „Безбедното прелистување“</translation>
 <translation id="7826342993930002256">Вашиот Chrome, насекаде</translation>
 <translation id="7844171778363018843">Не се избрани податоци за синхронизација</translation>
+<translation id="784453721355882533">Испробајте го Gemini во Chrome за да добивате одговори, заклучоци и друго.</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
 <translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="784652447248278262">Тековен прозорец</translation>
@@ -1688,6 +1693,7 @@
 <translation id="7853202427316060426">Активност</translation>
 <translation id="7859988229622350291">Никогаш не преведувај</translation>
 <translation id="7866213166286285359">Преведувајте страници овде</translation>
+<translation id="7873610418439765081">Испробајте го Gemini во Chrome за да добивате одговори, заклучоци и друго со копчето „Повеќе опции“.</translation>
 <translation id="7875915731392087153">Создајте е-пошта</translation>
 <translation id="7876243839304621966">Отстрани ги сите</translation>
 <translation id="7886917304091689118">Се извршува во Chrome</translation>
@@ -1738,6 +1744,7 @@
 <translation id="8062594758852531064">Продолжено вчитување однапред:</translation>
 <translation id="8063895661287329888">Не успеа да се додаде обележувачот.</translation>
 <translation id="8066816452984416180">Брзо обележете ја страницава. За да ја измените кратенкава, допрете и задржете.</translation>
+<translation id="8072436850275034464">Картичките што сте ги затвориле неодамна може да ги отворите повторно од секаде каде што користите Chrome</translation>
 <translation id="8073388330009372546">Отвори слика во нова картичка</translation>
 <translation id="8076492880354921740">Картички</translation>
 <translation id="8078096376109663956">Споделете само текст</translation>
@@ -1849,6 +1856,7 @@
 <translation id="8460008946585880786">Повлечете и спуштете една картичка врз друга</translation>
 <translation id="8460448946170646641">Прегледајте ги клучните контроли за приватноста и безбедноста</translation>
 <translation id="8460932807646981183">Управувајте со пребарувачи и пребарување сајтови</translation>
+<translation id="8465252176946159372">Неважечко</translation>
 <translation id="8473863474539038330">Адреси и друго</translation>
 <translation id="847433688444405067">Прелистување на уредите</translation>
 <translation id="8477178913400731244">Избришете ги податоците</translation>

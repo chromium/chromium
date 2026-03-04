@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Käytä salasanojasi muissa sovelluksissa.</translation>
 <translation id="3485558910355485767">Uusi incognito-ikkuna</translation>
 <translation id="3488501490964659223">Välilehdet suljettiin ja selausdata poistettiin. Sinut on kirjattu ulos</translation>
+<translation id="3490396108106323715">Jaa nykyinen välilehti</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Lue lisätietoja<ph name="END_LINK" /> suositellusta sisällöstä.</translation>
 <translation id="349446645805573740">Valitse, minne "<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />" tallennetaan</translation>
 <translation id="3504377992102007712">Asetukset</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">Kuvia ei voitu ladata</translation>
 <translation id="3565930036634619844">Välilehti. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Tallenna eri tavalla</translation>
+<translation id="3572503683475187385">Nykyinen välilehti jaetaan Geminille, kun aloitat uuden keskustelun. Kun jaat välilehden Geminille, sen sisältö ja URL-osoite lähetetään Googlelle. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Google-tililläsi</translation>
 <translation id="3575234738189584619">Hae Lensilla</translation>
 <translation id="3575426792457739946">Tämä lista sisältää kaikki ladatut profiilit.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Lopeta näytön hakeminen Google Lensillä</translation>
 <translation id="3753408171347588045">Hintoja seurataan</translation>
 <translation id="3753618528540214374">Kromivihreä teema</translation>
+<translation id="3759491607478608474">Jaa nykyisen välilehden sisältö Geminille, niin saat relevantimpia vastauksia</translation>
 <translation id="3762232513783804601">Suunniteltu iPadille</translation>
 <translation id="3768725474733206671">Avaa viimeksi suljettu välilehti uudelleen</translation>
 <translation id="3779810277399252432">Ei internetyhteyttä</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Jatka tilillä <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Piilota 1 minuutin kuluttua}other{Piilota {count} minuutin kuluttua}}</translation>
 <translation id="4652817563047461855">Varmista, että salasanasi ovat turvassa ja selvitä, ovatko ne vaarantuneet. Saat myös ohjeita itsesi suojaamiseen verkossa. <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Laita välilehden jakaminen päälle</translation>
 <translation id="4658335131052370646">Tallenna</translation>
 <translation id="466307903888586355">Organisaatiosi estää tiedostojen tallentamisen</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="5718049162805123412">Vaihda nämä nyt</translation>
 <translation id="5721040778297053709">Aseta credit-kortti tähän kehykseen</translation>
 <translation id="572328651809341494">Hiljattain suljetut välilehdet</translation>
+<translation id="5724590854763964497">Nykyinen välilehti jaetaan oletuksena, kun aloitat uuden keskustelun. Kun välilehtiä jaetaan, niiden sisältö ja URL-osoitteet lähetetään Googlelle, mutta niitä ei käytetä generatiivisten tekoälymallien kehittämiseen. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="5724941645893276623">Jos haluat selata verkkoa yksityisesti, lisää uusi välilehti</translation>
 <translation id="5728072125198221967">Linkitetyt Googlen palvelut</translation>
 <translation id="5728700505257787410">Tiliin kirjautuminen epäonnistui.</translation>
@@ -1964,6 +1969,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8059533439631660104">Tiivistää osion.</translation>
 <translation id="8061584726507121204">Historia</translation>
 <translation id="8064946459644399612">Uusi välilehti ‑sivun asetukset otettu käyttöön</translation>
+<translation id="8065556469005366939">Saat osuvampia vastauksia jakamalla välilehdet</translation>
 <translation id="8069394452933076548">Valitse, milloin viime aikoina käyttämättömät välilehdet siirretään ei-aktiivisiin välilehtiin.</translation>
 <translation id="8073670137947914548">Lataus valmis</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
@@ -2132,6 +2138,7 @@ Handoff täytyy ottaa käyttöön myös Asetusten Yleiset-osiossa. Lisäksi mole
 <translation id="8660600697590740984">Kopioitu Lens-kuva</translation>
 <translation id="866266761389616183">Harmin paikka!</translation>
 <translation id="8663764600409216912">Käyttämäsi salasanat näyttävät vaikeasti arvattavilta</translation>
+<translation id="8664992138761940052">Nykyinen välilehti jaetaan oletuksena, kun aloitat uuden keskustelun. Kun välilehtiä jaetaan, niiden sisältö ja URL-osoitteet lähetetään Googlelle. Voit muuttaa asetusta milloin tahansa.</translation>
 <translation id="8668210798914567634">Sivu on tallennettu lukulistallesi.</translation>
 <translation id="8672642291731179042">Käännä sivuja</translation>
 <translation id="8672733398999596205">Ota kaikki käyttöön</translation>

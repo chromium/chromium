@@ -728,6 +728,7 @@
 <translation id="4212169537710712814">Transkripsjonsmodellen for <ph name="LANGUAGE_NAME" /> er ferdig lastet ned</translation>
 <translation id="42126664696688958">Eksportér</translation>
 <translation id="4213104098953699324">USB-tastatur</translation>
+<translation id="4217571870635786043">Diktering</translation>
 <translation id="4227825898293920515">Passordet utløper om <ph name="TIME" /></translation>
 <translation id="4238516577297848345">Ingen utskriftsjobber pågår</translation>
 <translation id="4239069858505860023">GPRS</translation>
@@ -1686,6 +1687,7 @@ Last ned transkripsjonsmodellen (opptil 100 MB) for å få disse transkripsjonen
 <translation id="8420955526972171689">Kjør tester og feilsøking for maskinvareproblemer</translation>
 <translation id="8422748173858722634">IMEI</translation>
 <translation id="8424039430705546751">ned</translation>
+<translation id="8427213022735114808">Diktat sender stemmen din til Google for å muliggjøre stemmestyrt skriving i alle tekstfelt.</translation>
 <translation id="8428213095426709021">Innstillinger</translation>
 <translation id="8431300646573772016">Dette er nytt i ChromeOS</translation>
 <translation id="8433186206711564395">Nettverksinnstillinger</translation>

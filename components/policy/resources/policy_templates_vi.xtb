@@ -991,15 +991,6 @@ Bắt đầu từ <ph name="PRODUCT_NAME" /> 140, nếu bạn không đặt chí
 
 Kể từ <ph name="PRODUCT_NAME" /> 147, chính sách này sẽ không được dùng nữa. Từ nay trở đi, Quản trị viên CNTT có thể dùng <ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> để kiểm soát tính năng này.</translation>
 <translation id="1686952487081322272">Tắt tính năng Thông tin nhanh</translation>
-<translation id="1688920969335897857">Nếu bạn đặt chính sách này, hệ thống sẽ kiểm soát các chế độ cài đặt quản lý tiện ích cho <ph name="PRODUCT_NAME" />, bao gồm cả những chế độ cài đặt chịu sự kiểm soát của các chính sách hiện có liên quan đến tiện ích. Chính sách này sẽ thay thế mọi chính sách cũ mà bạn có thể đã đặt.
-
-Chính sách này chỉ ánh xạ một mã tiện ích hoặc một URL cập nhật với chế độ cài đặt cụ thể tương ứng. Bạn có thể đặt cấu hình mặc định cho mã đặc biệt <ph name="DEFAULT_SCOPE" />. Cấu hình này sẽ áp dụng cho tất cả tiện ích chưa đặt cấu hình tuỳ chỉnh trong chính sách này. Với URL cập nhật, cấu hình sẽ áp dụng cho những tiện ích có URL cập nhật chính xác được nêu trong tệp kê khai của tiện ích đó (http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy). Nếu bạn đặt cờ "override_update_url" thành true, thì tiện ích đó sẽ được cài đặt và cập nhật bằng URL "cập nhật" được chỉ định trong chính sách <ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> hoặc trong trường "update_url" của chính sách này. Cờ "override_update_url" sẽ bị bỏ qua nếu "update_url" là một URL của Cửa hàng Chrome trực tuyến.
-
-Trên các phiên bản <ph name="MS_WIN_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó đã liên kết với một miền <ph name="MS_AD_NAME" />, <ph name="MS_AAD_NAME" /> hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Trên các phiên bản <ph name="MAC_OS_NAME" />, bạn chỉ có thể buộc cài đặt các ứng dụng và tiện ích từ bên ngoài Cửa hàng Chrome trực tuyến nếu phiên bản đó được quản lý qua MDM (Quản lý thiết bị di động), đã liên kết với một miền qua MCX hoặc đã đăng ký <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
-
-Lưu ý: Chính sách này chỉ áp dụng cho những nền tảng hỗ trợ tiện ích.</translation>
 <translation id="1690383938831887552">Ngăn Signed HTTP Exchanges tải</translation>
 <translation id="1692325295652827195">Nếu bạn đặt chính sách này thành True, thì các báo cáo về sự kiện cài đặt ứng dụng Android chính do chính sách kích hoạt sẽ được gửi tới Google.
 

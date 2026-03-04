@@ -1614,6 +1614,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3575121482199441727">Dovoli za to spletno mesto</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Izbrana je bila možnost imena ulice</translation>
+<translation id="3576315803647905285">Oblikuj bolj formalno</translation>
 <translation id="3576616784287504635">Vdelana stran na spletnem mestu <ph name="SITE" /> sporoča:</translation>
 <translation id="3577473026931028326">Prišlo je do napake. Poskusite znova.</translation>
 <translation id="3577902790357386792">Gimnastika</translation>
@@ -2685,6 +2686,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5266128565379329178">Vezava zgoraj</translation>
 <translation id="5269225904387178860">Četverno luknjanje spodaj</translation>
 <translation id="5271381225185906340">»<ph name="DATA_CONTROLS_ATTRIBUTE" />« ni podprt pogoj za element »<ph name="DATA_CONTROLS_RESTRICTION" />«</translation>
+<translation id="527191520368130807">Izboljšaj</translation>
 <translation id="5273658854610202413">Opozorilo: ta pravilnik ni bil združen, kot je določeno v pravilniku PolicyDictionaryMultipleSourceMergeList, ker ne sodi k pravilnikom o slovarjih, ki jih je mogoče združiti.</translation>
 <translation id="5278778426231952189">Naloži zdaj</translation>
 <translation id="5279286380302340275">Upravljanje prenosov</translation>
@@ -3585,6 +3587,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6698097747703777657">Niste prejeli kode? <ph name="BEGIN_LINK" />Pošiljanje nove kode<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Ustvarjeno:</translation>
 <translation id="6698769547327354196">Če želite izklopiti Pix v Chromu, odprite <ph name="BEGIN_LINK1" />nastavitve plačil<ph name="END_LINK1" />.</translation>
+<translation id="669903922988126943">Shranite podatke in hitreje opravite delo, na primer izpolnite obrazce v Googlovih izdelkih. <ph name="MANAGE_INFO_LINK" /> v storitvi <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> za <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Časovni krmilnik</translation>
 <translation id="6702851555558236418">Programska oprema za zvok in glasbo</translation>
 <translation id="6702919718839027939">Predstavitev</translation>
@@ -4098,6 +4101,7 @@ Dodatne podrobnosti:
 <translation id="7499188644237027195">Pri nakupih v Chromu naj bosta kot možnosti prikazani e-denarnica in storitev Pix</translation>
 <translation id="7500917112031739411">Prikaz glede na skupino</translation>
 <translation id="7501663406926337752">Vaša organizacija je označila spletno mesto, ki sledi</translation>
+<translation id="7502044688973049724">Podatke lahko upravljate</translation>
 <translation id="7507075214339298899">Kuverta št. 9</translation>
 <translation id="7508255263130623398">Vrnjen ID naprave pravilnika je prazen ali se ne ujema s trenutnim ID-jem naprave</translation>
 <translation id="7508577201115425418">Storitve za dokumente in tiskarske storitve</translation>
@@ -5150,6 +5154,7 @@ Dodatne podrobnosti:
 <translation id="9191834167571392248">Luknjanje spodaj levo</translation>
 <translation id="9192361865877479444">Metal (Matte)</translation>
 <translation id="9192947025498305328">Čistilna kozmetika</translation>
+<translation id="9193018794001479794">Podrobneje razloži</translation>
 <translation id="9195969368671142407">Ko organizacija omeji shranjevanje v računu Google, ne morete deliti ali se pridružiti skupinam zavihkov</translation>
 <translation id="9198613052465150219">V računu Google so morda druge vrste zgodovine brskanja na <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" />.</translation>
 <translation id="9199905725844810519">Tiskanje je blokirano</translation>

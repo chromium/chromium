@@ -120,7 +120,7 @@
 <translation id="4689010477870442157">{YEARS,plural, =1{1 anno fa}other{# anni fa}}</translation>
 <translation id="4724120544754982507">Centro notifiche, <ph name="UNREAD_NOTIFICATION_COUNT" /> notifiche da leggere</translation>
 <translation id="4729257764711776855">numero</translation>
-<translation id="4746179598275229723">Estensione sbloccata</translation>
+<translation id="4746179598275229723">Estensione non fissata</translation>
 <translation id="4788285488841504513">{MONTHS,plural, =1{1 mese rimasto}other{# mesi rimasti}}</translation>
 <translation id="4816695657735045067">{COUNT,plural, =1{La tua organizzazione richiede un'estensione per usare la modalità di navigazione in incognito}other{La tua organizzazione richiede alcune estensioni per usare la modalità di navigazione in incognito}}</translation>
 <translation id="482932175346970750">Digita <ph name="BEGIN_BOLD" />chrome://extensions<ph name="END_BOLD" /> nel browser</translation>

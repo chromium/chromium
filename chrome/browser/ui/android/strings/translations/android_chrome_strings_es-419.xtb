@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Mover favoritos</translation>
 <translation id="1197761954713363183">Se cerró la hoja de confirmación de la llave de acceso</translation>
 <translation id="1197933394627598677">Mostrar el Modo de lectura</translation>
+<translation id="1197935538609051549">Desactivar</translation>
 <translation id="1201402288615127009">Siguiente</translation>
 <translation id="1202892408424955784">Productos con seguimiento</translation>
 <translation id="1204037785786432551">Descargar vínculo</translation>
@@ -506,6 +507,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="3122883569442693641">Más detalles</translation>
 <translation id="3123734510202723619">Anuncios</translation>
 <translation id="3134385238404760368">No hay pestañas recientes</translation>
+<translation id="3135655388926735587">Presiona Pestañas recientes.</translation>
 <translation id="314939179385989105">Página principal de Chrome</translation>
 <translation id="3158667104057012316">Ordenados manualmente</translation>
 <translation id="3159335509547415276">Más información sobre cuentas bloqueadas</translation>
@@ -850,6 +852,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contraseña hackeada}other{# contraseñas hackeadas}}</translation>
 <translation id="4641919525231168205">Ir a la página siguiente</translation>
 <translation id="4642472735733036929">Se detuvo el seguimiento de precios</translation>
+<translation id="4649493483932335039">Ver pestañas recientes</translation>
 <translation id="465657074423018424">La Navegación segura te protege ante sitios web engañosos. Si la desactivas, debes tener mucho cuidado cuando navegas, en especial al ingresar contraseñas.</translation>
 <translation id="4662373422909645029">El sobrenombre no admite números</translation>
 <translation id="4663756553811254707"><ph name="NUMBER_OF_BOOKMARKS" /> favoritos eliminados</translation>
@@ -1562,6 +1565,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7363349185727752629">Una guía de las opciones de privacidad</translation>
 <translation id="7364103838544876661">Más opciones para borrar los datos de navegación</translation>
 <translation id="7365073365123878797">Para comenzar a guardar y usar contraseñas con el Administrador de contraseñas de Google, actualiza los Servicios de Google Play</translation>
+<translation id="7368009310682364976">Accede a las pestañas abiertas recientemente.</translation>
 <translation id="7368927539449986686">Edita las búsquedas en el sitio</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Si incluyes más texto de la página, obtendrás mejores resultados cuando uses la función Tocar para buscar. Puedes cambiar esta opción en la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> en cualquier momento.</translation>
@@ -1679,6 +1683,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7824665136384946951">Tu organización desactivó la Navegación segura</translation>
 <translation id="7826342993930002256">Tu navegador Chrome, en todos lados</translation>
 <translation id="7844171778363018843">No se seleccionaron datos para sincronizar</translation>
+<translation id="784453721355882533">Prueba Gemini en Chrome para obtener respuestas, información clave y mucho más.</translation>
 <translation id="7846161022626028328">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="7846296061357476882">Servicios de Google</translation>
 <translation id="784652447248278262">Ventana actual</translation>
@@ -1688,6 +1693,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="7853202427316060426">Actividad</translation>
 <translation id="7859988229622350291">Nunca traducir</translation>
 <translation id="7866213166286285359">Presiona aquí para mostrar la opción "Traducir páginas"</translation>
+<translation id="7873610418439765081">Prueba Gemini en Chrome para obtener respuestas, información clave y mucho más con el botón Más opciones.</translation>
 <translation id="7875915731392087153">Crear correo electrónico</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7886917304091689118">Se está ejecutando en Chrome</translation>
@@ -1738,6 +1744,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8062594758852531064">Precarga extendida:</translation>
 <translation id="8063895661287329888">Se produjo un error al agregar el marcador.</translation>
 <translation id="8066816452984416180">Agrega esta página a favoritos de forma rápida. Para editar este acceso directo, mantenlo presionado.</translation>
+<translation id="8072436850275034464">Puedes volver a abrir las pestañas que cerraste recientemente desde cualquier lugar en el que uses Chrome</translation>
 <translation id="8073388330009372546">Abrir imagen en pestaña nueva</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8078096376109663956">Comparte texto solamente.</translation>
@@ -1849,6 +1856,7 @@ Para cambiar este parámetro de configuración, <ph name="BEGIN_LINK" />borra lo
 <translation id="8460008946585880786">Arrastra y suelta una pestaña sobre otra.</translation>
 <translation id="8460448946170646641">Revisa los controles de seguridad y privacidad más importantes</translation>
 <translation id="8460932807646981183">Administrar la búsqueda en sitios y los motores de búsqueda</translation>
+<translation id="8465252176946159372">No válido</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="847433688444405067">Navega en distintos dispositivos</translation>
 <translation id="8477178913400731244">Borrar datos</translation>

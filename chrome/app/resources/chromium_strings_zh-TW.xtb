@@ -27,6 +27,7 @@
 <translation id="126567311906253476">使用 <ph name="USER_EMAIL" /> 登入 Gmail 或 YouTube 等 Google 服務時，可以用同一個帳戶自動登入 Chromium</translation>
 <translation id="1290883685122687410">設定錯誤：<ph name="METAINSTALLER_EXIT_CODE" />。<ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">設定新的 Chromium 設定檔</translation>
+<translation id="132092532143527429">試用 Chromium 內建的 Gemini</translation>
 <translation id="1324107359134968521">Chromium 需要藍牙存取權才能偵測藍牙裝置。<ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">偵測語言</translation>
 <translation id="1330742950061766891">使用 Chromium 建議的瀏覽器設定</translation>
@@ -608,6 +609,7 @@ Chromium 無法復原你的設定。</translation>
 <translation id="7622753900276619808">現在可以使用更多 Chromium 功能</translation>
 <translation id="7624307931717240213">我們會使用資訊改善這項服務。請參閱《隱私權政策》和《服務條款》。</translation>
 <translation id="7649070708921625228">說明</translation>
+<translation id="7650134251917003571">取得 Chromium 應用程式</translation>
 <translation id="7656340475565475526">讓 Chromium 幫你瀏覽網頁</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7686590090926151193">Chromium 不是你的預設瀏覽器</translation>

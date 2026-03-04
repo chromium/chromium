@@ -961,15 +961,6 @@ Virtual Tasks の場合は <ph name="DEFAULT_HANDLERS_FOR_FILE_EXTENSIONS_POLICY
 
 <ph name="PRODUCT_NAME" /> 147 以降、このポリシーは非推奨となります。IT 管理者は今後、<ph name="SEARCH_CONTENT_SHARING_SETTINGS_POLICY_NAME" /> を使用してこの機能を制御できます。</translation>
 <translation id="1686952487081322272">クイック アンサーを無効にする</translation>
-<translation id="1688920969335897857">このポリシーでは、既存の拡張機能関連ポリシーで管理している設定もすべて含め、<ph name="PRODUCT_NAME" /> の拡張機能の設定を管理します。このポリシーは、設定済みの以前のポリシーよりも優先されます。
-
-このポリシーでは、特定の設定のみを指定するには拡張機能 ID または更新 URL を使用します。また、「<ph name="DEFAULT_SCOPE" />」という特別な ID でデフォルトの設定を指定できます。デフォルトの設定は、このポリシーでカスタムの設定が指定されていないすべての拡張機能に適用されます。更新 URL を使用すると、拡張機能マニフェストにその更新 URL が指定された拡張機能に対して設定が適用されます（http://support.google.com/chrome/a?p=Configure_ExtensionSettings_policy）。「override_update_url」フラグが true に設定されている場合、拡張機能は、<ph name="EXTENSION_INSTALL_FORCELIST_POLICY_NAME" /> ポリシーまたはこのポリシーの「update_url」フィールドで指定された「更新」URL を使用してインストールおよび更新されます。「update_url」が Chrome ウェブストアの URL の場合、「override_update_url」フラグは無視されます。
-
-<ph name="MS_WIN_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、<ph name="MS_AD_NAME" /> ドメインに追加されたインスタンス、<ph name="MS_AAD_NAME" /> に追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスのみです。
-
-<ph name="MAC_OS_NAME" /> の場合、Chrome ウェブストア以外から取得されたアプリと拡張機能を自動インストールできるのは、MDM を介して管理されるインスタンス、MCX を介してドメインに追加されたインスタンス、または <ph name="CHROME_ENTERPRISE_CORE_NAME" /> に登録されているインスタンスのみです。
-
-注: このポリシーは、拡張機能がサポートされているプラットフォームにのみ適用されます。</translation>
 <translation id="1690383938831887552">Signed HTTP Exchange の読み込みを許可しない</translation>
 <translation id="1692325295652827195">このポリシーを True に設定した場合、ポリシーによってトリガーされた主要な Android アプリ インストール イベントのレポートが Google に送信されます。
 

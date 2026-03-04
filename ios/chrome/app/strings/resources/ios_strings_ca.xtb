@@ -668,6 +668,7 @@
 <translation id="3476450923187944815">Accedeix a les teves contrasenyes en altres aplicacions.</translation>
 <translation id="3485558910355485767">Finestra d'incògnit nova</translation>
 <translation id="3488501490964659223">Les pestanyes s'han tancat i les dades de navegació s'han suprimit. S'ha tancat la teva sessió</translation>
+<translation id="3490396108106323715">Comparteix la pestanya actual</translation>
 <translation id="3493531032208478708"><ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /> sobre el contingut suggerit</translation>
 <translation id="349446645805573740">Tria on vols desar <ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" /></translation>
 <translation id="3504377992102007712">Configuració</translation>
@@ -694,6 +695,7 @@
 <translation id="3565012355885596568">No s'han pogut carregar les imatges</translation>
 <translation id="3565930036634619844">Pestanya. <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">Desa d'altra forma</translation>
+<translation id="3572503683475187385">La pestanya actual es comparteix amb Gemini quan inicies un xat nou. Quan comparteixes una pestanya amb Gemini, el contingut i l'URL corresponents s'envien a Google. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">Al teu Compte de Google</translation>
 <translation id="3575234738189584619">Cerca amb Lens</translation>
 <translation id="3575426792457739946">Aquesta llista conté tots els perfils carregats.</translation>
@@ -737,6 +739,7 @@
 <translation id="3751873026576444885">Deixa de cercar a la pantalla amb Google Lens</translation>
 <translation id="3753408171347588045">S'està fent un seguiment dels preus</translation>
 <translation id="3753618528540214374">Tema verd veronès</translation>
+<translation id="3759491607478608474">Comparteix el contingut de la pestanya actual amb Gemini per obtenir respostes més rellevants</translation>
 <translation id="3762232513783804601">Creat per a l'iPad</translation>
 <translation id="3768725474733206671">Torna a obrir l'última pestanya que es va tancar</translation>
 <translation id="3779810277399252432">No hi ha connexió a Internet.</translation>
@@ -984,6 +987,7 @@
 <translation id="4650125387981512669">Continua com a <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{Amaga al cap d'1 minut}other{Amaga al cap de {count} minuts}}</translation>
 <translation id="4652817563047461855">Assegura't que les teves contrasenyes siguin segures, esbrina si estan en perill i obtén consells per protegir-te en línia. <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">Activa la compartició de pestanyes</translation>
 <translation id="4658335131052370646">Desa</translation>
 <translation id="466307903888586355">La teva organització ha bloquejat l'opció de desar fitxers</translation>
 <translation id="4668929960204016307">,</translation>
@@ -1297,6 +1301,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="5718049162805123412">Hauries de canviar-les ara</translation>
 <translation id="5721040778297053709">Situa la targeta de crèdit dins d'aquest marc</translation>
 <translation id="572328651809341494">Pestanyes recents</translation>
+<translation id="5724590854763964497">De manera predeterminada, la pestanya actual es comparteix quan inicies un xat nou. Quan es comparteixen pestanyes, el contingut i els URL corresponents s'envien a Google, però no s'utilitzen per millorar els models d'IA generativa. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="5724941645893276623">Per navegar pel web de manera privada, obre una pestanya nova</translation>
 <translation id="5728072125198221967">Serveis de Google enllaçats</translation>
 <translation id="5728700505257787410">Hi ha hagut un problema en iniciar la sessió al vostre compte.</translation>
@@ -1964,6 +1969,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8059533439631660104">Replega la secció.</translation>
 <translation id="8061584726507121204">Historial</translation>
 <translation id="8064946459644399612">S'han aplicat les teves preferències de la pàgina Pestanya nova</translation>
+<translation id="8065556469005366939">Obtén respostes més rellevants compartint les teves pestanyes</translation>
 <translation id="8069394452933076548">Tria quan es mouran les pestanyes que no s'han utilitzat recentment a la secció de pestanyes inactives.</translation>
 <translation id="8073670137947914548">La baixada ha finalitzat</translation>
 <translation id="8076492880354921740">Pestanyes</translation>
@@ -2132,6 +2138,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="8660600697590740984">Imatge de Lens copiada</translation>
 <translation id="866266761389616183">Vaja!</translation>
 <translation id="8663764600409216912">Estàs utilitzant contrasenyes que semblen difícils d'endevinar</translation>
+<translation id="8664992138761940052">De manera predeterminada, la pestanya actual es comparteix quan inicies un xat nou. Quan es comparteixen pestanyes, el contingut i els URL corresponents s'envien a Google. Pots canviar aquesta opció de configuració en qualsevol moment.</translation>
 <translation id="8668210798914567634">Aquesta pàgina s'ha desat a la teva llista de lectura.</translation>
 <translation id="8672642291731179042">Tradueix pàgines</translation>
 <translation id="8672733398999596205">Activa-ho tot</translation>

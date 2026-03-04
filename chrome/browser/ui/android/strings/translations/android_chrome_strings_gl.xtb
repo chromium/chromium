@@ -56,6 +56,7 @@
 <translation id="1197267115302279827">Mover marcadores</translation>
 <translation id="1197761954713363183">Pechouse a folla de confirmación da clave de acceso</translation>
 <translation id="1197933394627598677">Mostrar modo de lectura</translation>
+<translation id="1197935538609051549">Desactivar</translation>
 <translation id="1201402288615127009">Seguinte</translation>
 <translation id="1202892408424955784">Produtos dos que se fai un seguimento</translation>
 <translation id="1204037785786432551">Descargar ligazón</translation>
@@ -506,6 +507,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3122883569442693641">Máis detalles</translation>
 <translation id="3123734510202723619">Avisos</translation>
 <translation id="3134385238404760368">Non hai ningunha pestana recente</translation>
+<translation id="3135655388926735587">Toca Pestanas recentes</translation>
 <translation id="314939179385989105">Páxina de inicio de Chrome</translation>
 <translation id="3158667104057012316">Ordenando de maneira manual</translation>
 <translation id="3159335509547415276">Máis información acerca das contas bloqueadas</translation>
@@ -850,6 +852,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado}other{# contrasinais vulnerados}}</translation>
 <translation id="4641919525231168205">Ir á páxina seguinte</translation>
 <translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
+<translation id="4649493483932335039">Ver pestanas recentes</translation>
 <translation id="465657074423018424">A función Navegación segura protéxete contra os sitios web enganosos. Se a desactivas, ten moito coidado ao navegar, sobre todo antes de escribir contrasinais.</translation>
 <translation id="4662373422909645029">O alcume non pode ter números</translation>
 <translation id="4663756553811254707">Elimináronse <ph name="NUMBER_OF_BOOKMARKS" /> marcadores</translation>
@@ -1562,6 +1565,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7363349185727752629">Unha guía das túas opcións de privacidade</translation>
 <translation id="7364103838544876661">Máis opcións para eliminar os datos de navegación</translation>
 <translation id="7365073365123878797">Para comezar a gardar e usar contrasinais co xestor de contrasinais de Google, actualiza os servizos de Google Play</translation>
+<translation id="7368009310682364976">Mira as pestanas abertas recentemente</translation>
 <translation id="7368927539449986686">Editar a busca do sitio</translation>
 <translation id="7375125077091615385">Tipo:</translation>
 <translation id="7376560087009844242">Se inclúes máis texto dunha páxina cando utilizas a función Tocar para buscar, poderías obter mellores resultados. Sempre podes ir á <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> para cambiar esta preferencia.</translation>
@@ -1679,6 +1683,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7824665136384946951">A túa organización desactivou Navegación segura</translation>
 <translation id="7826342993930002256">Goza de Chrome en todas partes</translation>
 <translation id="7844171778363018843">Non se seleccionaron datos para sincronizalos</translation>
+<translation id="784453721355882533">Proba Gemini en Chrome para obter respostas, extraer puntos clave e moito máis.</translation>
 <translation id="7846161022626028328">Produciuse un erro. Téntao de novo.</translation>
 <translation id="7846296061357476882">Servizos de Google</translation>
 <translation id="784652447248278262">Ventá actual</translation>
@@ -1688,6 +1693,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7853202427316060426">Actividade</translation>
 <translation id="7859988229622350291">Non traducir nunca</translation>
 <translation id="7866213166286285359">Traduce páxinas aquí</translation>
+<translation id="7873610418439765081">Proba Gemini en Chrome para obter respostas, extraer puntos clave e moito máis desde o botón Máis opcións.</translation>
 <translation id="7875915731392087153">Crea un correo electrónico</translation>
 <translation id="7876243839304621966">Eliminar todo</translation>
 <translation id="7886917304091689118">A páxina estase executando en Chrome</translation>
@@ -1738,6 +1744,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8062594758852531064">Precarga ampliada:</translation>
 <translation id="8063895661287329888">Non se puido engadir o marcador.</translation>
 <translation id="8066816452984416180">Engade rapidamente esta páxina aos marcadores. Mantén premido este atallo para editalo.</translation>
+<translation id="8072436850275034464">Podes volver abrir as pestanas que pechaches recentemente desde calquera dispositivo no que uses Chrome</translation>
 <translation id="8073388330009372546">Abrir imaxe na pestana nova</translation>
 <translation id="8076492880354921740">Pestanas</translation>
 <translation id="8078096376109663956">Comparte só o texto</translation>
@@ -1849,6 +1856,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="8460008946585880786">Arrastra e solta unha pestana sobre outra</translation>
 <translation id="8460448946170646641">Revisa os controis clave de privacidade e seguranza</translation>
 <translation id="8460932807646981183">Xestionar motores de busca e busca de sitios</translation>
+<translation id="8465252176946159372">Non válido</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="847433688444405067">Navega en varios dispositivos</translation>
 <translation id="8477178913400731244">Eliminar datos</translation>

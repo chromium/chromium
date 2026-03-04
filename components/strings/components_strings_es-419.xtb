@@ -1615,6 +1615,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="3575121482199441727">Permitir para este sitio</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Se seleccionó la opción de nombre de calle</translation>
+<translation id="3576315803647905285">Usar un tono más formal</translation>
 <translation id="3576616784287504635">Una página incorporada en <ph name="SITE" /> dice</translation>
 <translation id="3577473026931028326">Se produjo un error. Vuelve a intentarlo.</translation>
 <translation id="3577902790357386792">Gimnasia</translation>
@@ -2685,6 +2686,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="5266128565379329178">Encuadernado en la parte superior</translation>
 <translation id="5269225904387178860">Perforación cuádruple en la parte inferior</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" no es una condición admitida para "<ph name="DATA_CONTROLS_RESTRICTION" />"</translation>
+<translation id="527191520368130807">Pulir</translation>
 <translation id="5273658854610202413">Advertencia: Esta política no se combinó según la política PolicyDictionaryMultipleSourceMergeList porque no es parte de las políticas del diccionario que se pueden combinar.</translation>
 <translation id="5278778426231952189">Subir ahora</translation>
 <translation id="5279286380302340275">Administrar las descargas</translation>
@@ -3585,6 +3587,7 @@ Para ocultar las opciones de pago más tarde, ve a la <ph name="BEGIN_LINK" />co
 <translation id="6698097747703777657">¿No recibiste el código? <ph name="BEGIN_LINK" />Obtener uno nuevo<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Creado:</translation>
 <translation id="6698769547327354196">Para desactivar Pix en Chrome, ve a la <ph name="BEGIN_LINK1" />configuración de pagos<ph name="END_LINK1" /></translation>
+<translation id="669903922988126943">Guarda tu información y completa tareas más rápido, como llenar formularios en los productos de Google. Puedes <ph name="MANAGE_INFO_LINK" /> en <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> para <ph name="ACCOUNT" />.</translation>
 <translation id="67007264085648978">Punto de arrastre de tiempo</translation>
 <translation id="6702851555558236418">Software de música y audio</translation>
 <translation id="6702919718839027939">Presente</translation>
@@ -4097,6 +4100,7 @@ Detalles adicionales:
 <translation id="7499188644237027195">Cuando realices compras en Chrome, verás la billetera electrónica y Pix como opciones</translation>
 <translation id="7500917112031739411">Mostrar por grupo</translation>
 <translation id="7501663406926337752">Tu organización marcó el sitio que intentas abrir</translation>
+<translation id="7502044688973049724">administrar tu información</translation>
 <translation id="7507075214339298899">Sobre n.º 9</translation>
 <translation id="7508255263130623398">El ID de dispositivo de la política que se muestra está vacío o no coincide con el ID de dispositivo actual</translation>
 <translation id="7508577201115425418">Servicios de impresión y documentos</translation>
@@ -5150,6 +5154,7 @@ Detalles adicionales:
 <translation id="9191834167571392248">Perforación en la esquina inferior izquierda</translation>
 <translation id="9192361865877479444">Metal (mate)</translation>
 <translation id="9192947025498305328">Productos de belleza ecológicos</translation>
+<translation id="9193018794001479794">Desarrollar</translation>
 <translation id="9195969368671142407">Cuando tu organización limita el guardado en tu Cuenta de Google, no puedes compartir grupos de pestañas ni unirte a ellos</translation>
 <translation id="9198613052465150219">Es posible que tu cuenta de Google tenga otras formas de historial de navegación en <ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /></translation>
 <translation id="9199905725844810519">No se permite imprimir este contenido</translation>

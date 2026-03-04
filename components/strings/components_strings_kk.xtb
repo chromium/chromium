@@ -1613,6 +1613,7 @@
 <translation id="3575121482199441727">Осы сайт үшін рұқсат ету</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Көше атауы опциясы таңдалды</translation>
+<translation id="3576315803647905285">Ресмилендіру</translation>
 <translation id="3576616784287504635"><ph name="SITE" /> сайтына ендірілген беттегі сұрау</translation>
 <translation id="3577473026931028326">Бірдеңе дұрыс болмады. Қайталап көріңіз.</translation>
 <translation id="3577902790357386792">Гимнастика</translation>
@@ -2635,6 +2636,7 @@
 <translation id="5190835502935405962">Бетбелгілер жолағы</translation>
 <translation id="5191315092027169558">Профиліңізді <ph name="DOMAIN" /> басқарады.</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> бірнеше файл жүктеп алғысы келеді</translation>
+<translation id="5199121357983849992">Жеке куәлік деректерін сақтау керек пе?</translation>
 <translation id="5200063972779787617">Мекенжайды аккаунтқа сақтау</translation>
 <translation id="5201306358585911203">Бұл веббетке ендірілген беттегі сұрау</translation>
 <translation id="5203716867500274632">Әкімші келесі деректерді ChromeOS құрылғыларындағы алдыңғы және ағымдағы сеанстар арасында синхрондауды қосты:</translation>
@@ -2683,6 +2685,7 @@
 <translation id="5266128565379329178">Жоғарғы жағын байлау</translation>
 <translation id="5269225904387178860">Төменгі жағын төрт рет тесу</translation>
 <translation id="5271381225185906340">"<ph name="DATA_CONTROLS_ATTRIBUTE" />" "<ph name="DATA_CONTROLS_RESTRICTION" />" үшін қолдау көрсетілетін шарт емес</translation>
+<translation id="527191520368130807">Өңдеу</translation>
 <translation id="5273658854610202413">Ескерту: бұл саясат PolicyDictionaryMultipleSourceMergeList саясатында көрсетілгендей біріктірілмеген, себебі ол біріктіруге болатын сөздік саясаттарының бөлігі емес.</translation>
 <translation id="5278778426231952189">Қазір жүктеп салу</translation>
 <translation id="5279286380302340275">Жүктеп алынғандарды басқару</translation>
@@ -3583,6 +3586,7 @@
 <translation id="6698097747703777657">Код келмеді ме? <ph name="BEGIN_LINK" />Жаңа код алыңыз<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Жасалған кезі:</translation>
 <translation id="6698769547327354196">Chrome-дағы Pix қызметін өшіру үшін <ph name="BEGIN_LINK1" />төлем параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
+<translation id="669903922988126943">Ақпаратыңызды сақтау арқылы үлгілерді толтыру секілді Google өнімдеріндегі әрекеттерді жылдам орындай аласыз. <ph name="ACCOUNT" /> аккаунтына арналған <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> қолданбасында келесі әрекетті орындай аласыз: <ph name="MANAGE_INFO_LINK" />.</translation>
 <translation id="67007264085648978">Уақыт сырғытпасы</translation>
 <translation id="6702851555558236418">Аудио мен музыкаға арналған бағдарламалық құралдар</translation>
 <translation id="6702919718839027939">Презентация</translation>
@@ -4073,6 +4077,7 @@
 <translation id="746412105358554870">JavaScript оңтайландыру мүмкіндігі және қауіпсіздігі</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" /> сайтына кірсеңіз, <ph name="EMBEDDED_URL" /> біліп отырады.</translation>
 <translation id="7465963048299965912">10 x 13 дюйм</translation>
+<translation id="7467332121947433617">Жеке куәлік деректерін жаңарту керек пе?</translation>
 <translation id="7469935732330206581">Үлгі қорғалмаған</translation>
 <translation id="7470854469646445678">Көшіру себебін көрсетіңіз (міндетті)</translation>
 <translation id="7471007961486718967">Тасымалдау себебін көрсетіңіз (міндетті)</translation>
@@ -4094,6 +4099,7 @@
 <translation id="7499188644237027195">Chrome-да тауар сатып алатын кезде, электрондық әмиян және Pix опциялар ретінде көрсетіледі.</translation>
 <translation id="7500917112031739411">Топ бойынша көрсету</translation>
 <translation id="7501663406926337752">Ұйымыңыз сіз ашайын деп жатқан сайтты белгіледі</translation>
+<translation id="7502044688973049724">ақпаратты басқару</translation>
 <translation id="7507075214339298899">#9 хатқалта</translation>
 <translation id="7508255263130623398">Қайтарылған құрылғының сервердегі идентификаторы бос немесе оның ағымдағы идентификаторына сәйкес келмейді</translation>
 <translation id="7508577201115425418">Құжат және басып шығару қызметтері</translation>
@@ -5145,6 +5151,7 @@
 <translation id="9191834167571392248">Төменгі сол жақты тесу</translation>
 <translation id="9192361865877479444">Металл (күңгірт)</translation>
 <translation id="9192947025498305328">Таза сұлулық</translation>
+<translation id="9193018794001479794">Толықтыру</translation>
 <translation id="9195969368671142407">Ұйымыңыз Google аккаунтына сақтауға шектеу қойса, қойындылар топтарын бөлісу не оларға қосылу мүмкін болмайды.</translation>
 <translation id="9198613052465150219"><ph name="BEGIN_LINK_GMA" />myactivity.google.com<ph name="END_LINK_GMA" /> мекенжайында Google аккаунтымен браузерді қолдану тарихының басқа түрлері болуы мүмкін.</translation>
 <translation id="9199905725844810519">Басып шығаруға тыйым салынған</translation>

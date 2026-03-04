@@ -226,6 +226,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3226612997184048185">Era berean, laster-markak Google-ko kontuan gordetzen badituzu, Chrome-n produktuen prezioen jarraipena egin ahal izango duzu, eta prezioak jaisten direnean jakinarazpenak jaso</translation>
 <translation id="3242123554343253302">Gehitu Chrome-ko profil bat</translation>
 <translation id="3245429137663807393">Chrome-ren erabilera-txostenak ere partekatzen badituzu, bisitatzen dituzun URLak agertuko dira txosten horietan</translation>
+<translation id="3259748324892322072">Lortu Chrome aplikazioa</translation>
 <translation id="3286538390144397061">Berrabiarazi orain</translation>
 <translation id="3292333338048274092">Chrome berrabiarazi beharko duzu ondoren.</translation>
 <translation id="3324218984287646518">Egin bideo honi buruzko galdera bat Google Lens-i</translation>
@@ -283,7 +284,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3892148308691398805">Kopiatu testua</translation>
 <translation id="3893985792899396936">Chrome-ri buruzko aholkua: bilatu Lens bidez</translation>
 <translation id="3906096710440765802">Pasahitzak, laster-markak eta abar gailu guztietan eskura izateko, hasi saioa Chrome-n</translation>
-<translation id="3921132130819999051">Eman zure izenean arakatzeko baimena Chrome-ri</translation>
 <translation id="3941890832296813527">Instalazio-errorea: instalatzailearen fitxategi-izenak ez du balio edo ez da onartzen.</translation>
 <translation id="395904275706073188">Babestutako orriak ezin dira irakurri. Probatu beste orri batekin.</translation>
 <translation id="3968962723676998462">Chrome-ko datuak zure kontuan (<ph name="ACCOUNT_EMAIL" />) erabiltzeko eta gordetzeko, idatzi pasaesaldia</translation>
@@ -498,7 +498,6 @@ Google Chrome-k ezin ditu berreskuratu zure ezarpenak.</translation>
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome Beta</translation>
 <translation id="6180522807229584611">Fitxa honek baliabide gehiago erabiltzen ditu. Errendimendua hobetzeko, eman fitxa inaktibo ezartzeko baimena Chrome-ri.</translation>
 <translation id="6182736845697986886">Instalazioak huts egin du, eguneratze-zerbitzariak barneko errore bat izan duelako.</translation>
-<translation id="6183773856988300112">Chrome-ko Gemini-k arakatze automatikoa erabiltzen du fitxetan lan egiteko eta ematen dizkiozun zereginak osatzeko. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6187085551300363958">Chrome-rako aholkua: gorde pasahitzak</translation>
 <translation id="6192058120268468905">Zure kontua Chrome-n</translation>
 <translation id="6220551899604141979"><ph name="PARTNER_NAME" /> bazkideak Chrome-ren funtzionamenduari agian eragingo dion luzapen bat gehitu du.
