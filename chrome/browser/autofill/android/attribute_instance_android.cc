@@ -48,7 +48,7 @@ AttributeInstanceAndroid AttributeInstanceAndroid::FromJavaAttributeInstance(
          .year = Java_AttributeInstance_getYear(env, j_attribute_instance)});
   } else {
     return AttributeInstanceAndroid(
-        type, Java_AttributeInstance_getValue(env, j_attribute_instance));
+        type, Java_AttributeInstance_getStringValue(env, j_attribute_instance));
   }
 }
 

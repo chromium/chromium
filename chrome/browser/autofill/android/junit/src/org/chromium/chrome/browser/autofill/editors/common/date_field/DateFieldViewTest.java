@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.autofill.editors.common.date_field;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,11 +17,12 @@ import static org.chromium.chrome.browser.autofill.editors.common.field.FieldPro
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownDate;
+import static org.chromium.chrome.browser.autofill.editors.utils.TestUtils.setDropdownValue;
 
 import android.app.Activity;
 import android.text.TextUtils;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import org.junit.Before;
@@ -33,7 +33,6 @@ import org.robolectric.Robolectric;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.R;
-import org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldView;
 import org.chromium.chrome.browser.autofill.editors.common.field.FieldView;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -56,21 +55,6 @@ public class DateFieldViewTest {
                 .with(LABEL, "Date field label")
                 .with(VALUE, date == null ? "" : date.toString())
                 .build();
-    }
-
-    private void setDropdownValue(DropdownFieldView dropdown, String value) {
-        ArrayAdapter<String> adapter = (ArrayAdapter<String>) dropdown.getDropdown().getAdapter();
-        int index = adapter.getPosition(value);
-        assertThat(index, greaterThan(-1));
-        dropdown.getDropdown().setSelection(index);
-    }
-
-    private void setDropdownDate(DateFieldView dateField, int month, int day, int year) {
-        setDropdownValue(
-                dateField.getMonthPickerForTest(),
-                DateFieldView.getMonthName(mActivity, /* month= */ month));
-        setDropdownValue(dateField.getDayPickerForTest(), String.valueOf(day));
-        setDropdownValue(dateField.getYearPickerForTest(), String.valueOf(year));
     }
 
     @Test

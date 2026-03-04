@@ -4,9 +4,13 @@
 
 package org.chromium.chrome.browser.autofill.editors.common;
 
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.ERROR_MESSAGE;
+import static org.chromium.chrome.browser.autofill.editors.common.field.FieldProperties.VALIDATOR;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -67,7 +71,9 @@ public class EditorComponentsProperties {
     }
 
     public static boolean isEditable(ListItem fieldItem) {
-        return fieldItem.type == ItemType.DROPDOWN || fieldItem.type == ItemType.TEXT_INPUT;
+        return fieldItem.type == ItemType.DROPDOWN
+                || fieldItem.type == ItemType.TEXT_INPUT
+                || fieldItem.type == ItemType.DATE;
     }
 
     /** Properties specific for the non-editable text fields. */
@@ -101,5 +107,20 @@ public class EditorComponentsProperties {
         public static final PropertyKey[] NOTICE_ALL_KEYS = {
             NOTICE_TEXT, SHOW_BACKGROUND, IMPORTANT_FOR_ACCESSIBILITY
         };
+    }
+
+    public static boolean validateForm(ListModel<EditorItem> editorFields) {
+        boolean isValid = true;
+        for (ListItem item : editorFields) {
+            if (!isEditable(item)) {
+                continue;
+            }
+            if (item.model.get(VALIDATOR) == null) {
+                continue;
+            }
+            item.model.get(VALIDATOR).validate(item.model);
+            isValid &= item.model.get(ERROR_MESSAGE) == null;
+        }
+        return isValid;
     }
 }

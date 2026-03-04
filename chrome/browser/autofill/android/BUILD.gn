@@ -302,6 +302,7 @@ robolectric_library("junit") {
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/date_field/DateFieldViewTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/dropdown_field/DropdownFieldViewUnitTest.java",
     "junit/src/org/chromium/chrome/browser/autofill/editors/common/text_field/TextFieldViewUnitTest.java",
+    "junit/src/org/chromium/chrome/browser/autofill/editors/utils/TestUtils.java",
     "junit/src/org/chromium/chrome/browser/autofill/options/AutofillOptionsTest.java",
   ]
 

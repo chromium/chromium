@@ -21,7 +21,6 @@ import static org.chromium.chrome.browser.autofill.editors.address.EditorPropert
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.VISIBLE;
 import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.scrollToFieldWithErrorMessage;
-import static org.chromium.chrome.browser.autofill.editors.address.EditorProperties.validateForm;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
@@ -35,6 +34,7 @@ import static org.chromium.chrome.browser.autofill.editors.common.EditorComponen
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.NoticeProperties.SHOW_BACKGROUND;
+import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.validateForm;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_CALLBACK;
 import static org.chromium.chrome.browser.autofill.editors.common.dropdown_field.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
@@ -452,7 +452,7 @@ public class AddressEditorMediator {
 
     private void onCommitChanges() {
         assumeNonNull(mEditorModel);
-        if (!validateForm(mEditorModel)) {
+        if (!validateForm(mEditorModel.get(EDITOR_FIELDS))) {
             scrollToFieldWithErrorMessage(mEditorModel);
             return;
         }

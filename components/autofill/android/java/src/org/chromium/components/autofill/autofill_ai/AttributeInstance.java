@@ -33,8 +33,12 @@ public class AttributeInstance {
             mValue = value;
         }
 
-        @CalledByNative
         public @JniType("std::u16string") String getValue() {
+            return mValue;
+        }
+
+        @Override
+        public String toString() {
             return mValue;
         }
 
@@ -92,18 +96,15 @@ public class AttributeInstance {
             }
         }
 
-        @CalledByNative
-        public @JniType("std::u16string") String getDay() {
+        public String getDay() {
             return mDate != null ? Integer.toString(mDate.getDayOfMonth()) : "";
         }
 
-        @CalledByNative
-        public @JniType("std::u16string") String getMonth() {
+        public String getMonth() {
             return mDate != null ? Integer.toString(mDate.getMonthValue()) : "";
         }
 
-        @CalledByNative
-        public @JniType("std::u16string") String getYear() {
+        public String getYear() {
             return mDate != null ? Integer.toString(mDate.getYear()) : "";
         }
 
@@ -163,6 +164,30 @@ public class AttributeInstance {
 
     public AttributeValue getAttributeValue() {
         return mAttributeValue;
+    }
+
+    @CalledByNative
+    public @JniType("std::u16string") String getStringValue() {
+        assert !isDateType();
+        return ((StringValue) mAttributeValue).getValue();
+    }
+
+    @CalledByNative
+    public @JniType("std::u16string") String getDay() {
+        assert isDateType();
+        return ((DateValue) mAttributeValue).getDay();
+    }
+
+    @CalledByNative
+    public @JniType("std::u16string") String getMonth() {
+        assert isDateType();
+        return ((DateValue) mAttributeValue).getMonth();
+    }
+
+    @CalledByNative
+    public @JniType("std::u16string") String getYear() {
+        assert isDateType();
+        return ((DateValue) mAttributeValue).getYear();
     }
 
     @CalledByNative

@@ -319,7 +319,7 @@ public class DateFieldView extends LinearLayout implements FieldView {
     }
 
     @VisibleForTesting
-    static final String getMonthName(Context context, int month) {
+    public static final String getMonthName(Context context, int month) {
         if (month < 1 || month > 12) {
             return "";
         }
@@ -391,15 +391,15 @@ public class DateFieldView extends LinearLayout implements FieldView {
         return context.getString(R.string.autofill_ai_entity_editor_date_field_year_label);
     }
 
-    DropdownFieldView getMonthPickerForTest() {
+    public DropdownFieldView getMonthPickerForTest() {
         return mMonthDropdown;
     }
 
-    DropdownFieldView getDayPickerForTest() {
+    public DropdownFieldView getDayPickerForTest() {
         return mDayDropdown;
     }
 
-    DropdownFieldView getYearPickerForTest() {
+    public DropdownFieldView getYearPickerForTest() {
         return mYearDropdown;
     }
 }
