@@ -486,7 +486,7 @@ export class TsReadModelImpl implements ReadAloudModelBrowserProxy {
         // Create the text node (e.g., "1. "). A newline is added to the
         // beginning of the node to ensure that it is not accidentally
         // grouped with the previous text node for sentence segmentation.
-        const markerNode = document.createTextNode('\n' + number + '. ');
+        const markerNode = document.createTextNode(`\n${number}. `);
         const readAloudNode = ReadAloudNode.create(markerNode);
         if (readAloudNode instanceof DomReadAloudNode) {
           textNodes.push(readAloudNode);

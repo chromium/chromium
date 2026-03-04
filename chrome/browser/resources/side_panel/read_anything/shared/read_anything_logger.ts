@@ -78,8 +78,8 @@ export class ReadAnythingLogger {
   }
 
   logTimeFrom(from: TimeFrom, startTime: number, endTime: number) {
-    const umaName = 'Accessibility.ReadAnything.' +
-        'TimeFrom' + from + 'StartedToConstructor';
+    const umaName =
+        `Accessibility.ReadAnything.TimeFrom${from}StartedToConstructor`;
     this.metrics.recordTime(umaName, endTime - startTime);
   }
 
@@ -157,7 +157,7 @@ export class ReadAnythingLogger {
 
   logSpeechControlClick(control: SpeechControls) {
     this.metrics.incrementMetricCount(
-        'Accessibility.ReadAnything.ReadAloud' + control + 'SessionCount');
+        `Accessibility.ReadAnything.ReadAloud${control}SessionCount`);
   }
 
   logLineFocusSession() {
@@ -174,7 +174,7 @@ export class ReadAnythingLogger {
 
   logLinkStatusCount(status: LinkStatus, count: number) {
     const umaName =
-        'Accessibility.ReadAnything.Readability.PageLinks' + status + 'Count';
+        `Accessibility.ReadAnything.Readability.PageLinks${status}Count`;
     this.metrics.recordCount(umaName, count);
   }
 

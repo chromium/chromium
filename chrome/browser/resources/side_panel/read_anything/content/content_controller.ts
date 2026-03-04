@@ -19,8 +19,7 @@ const DATA_PREFIX = 'data-';
 const LINK_DATA_ATTR = 'link';
 const LINKS_OFF_TAG = 'span';
 const LINKS_ON_TAG = 'a';
-const LINKS_OFF_SELECTOR =
-    LINKS_OFF_TAG + '[' + DATA_PREFIX + LINK_DATA_ATTR + ']';
+const LINKS_OFF_SELECTOR = `${LINKS_OFF_TAG}[${DATA_PREFIX}${LINK_DATA_ATTR}]`;
 export const HIGHLIGHTED_LINK_CLASS = 'highlighted-link';
 
 // Reading mode sometimes needs to use a different html tag to display a
@@ -536,7 +535,8 @@ export class ContentController {
     // Copy all attributes from the old element to the new one.
     for (const attrName of elemToReplace.getAttributeNames()) {
       // Skip the attributes we are manually changing.
-      if (attrName === 'href' || attrName === DATA_PREFIX + LINK_DATA_ATTR) {
+      if (attrName === 'href' ||
+          attrName === `${DATA_PREFIX}${LINK_DATA_ATTR}`) {
         continue;
       }
       const attrValue = elemToReplace.getAttribute(attrName)!;
@@ -559,7 +559,7 @@ export class ContentController {
     const newClass =
         showLinks ? HIGHLIGHTED_LINK_CLASS : previousReadHighlightClass;
     const highlightedNodes =
-        Array.from(newElem.querySelectorAll<HTMLElement>('.' + originalClass));
+        Array.from(newElem.querySelectorAll<HTMLElement>(`.${originalClass}`));
     if (newElem.classList.contains(originalClass)) {
       highlightedNodes.push(newElem);
     }
@@ -589,7 +589,7 @@ export class ContentController {
       return;
     }
     const highlightedNodes =
-        shadowRoot.querySelectorAll<HTMLElement>('.' + HIGHLIGHTED_LINK_CLASS);
+        shadowRoot.querySelectorAll<HTMLElement>(`.${HIGHLIGHTED_LINK_CLASS}`);
     highlightedNodes.forEach(
         node => node.classList.remove(HIGHLIGHTED_LINK_CLASS));
   }

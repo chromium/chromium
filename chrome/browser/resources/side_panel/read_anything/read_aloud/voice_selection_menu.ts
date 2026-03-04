@@ -407,8 +407,9 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
 
   protected voiceLabel_(selected: boolean, voiceName: string) {
     const selectedPrefix = selected ? loadTimeData.getString('selected') : '';
-    return selectedPrefix + ' ' +
-        loadTimeData.getStringF('readingModeLanguageMenuItemLabel', voiceName);
+    return `${selectedPrefix} ${
+        loadTimeData.getStringF(
+            'readingModeLanguageMenuItemLabel', voiceName)}`;
   }
 
   protected shouldDisableButton_(voiceDropdown: VoiceDropdownItem) {

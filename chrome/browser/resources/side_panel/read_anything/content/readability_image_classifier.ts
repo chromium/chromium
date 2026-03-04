@@ -53,7 +53,7 @@ export class ReadabilityImageClassifier {
     const mathyKeywords =
         ['math', 'latex', 'equation', 'formula', 'tex', 'icon'];
     this.mathyKeywordsRegex_ =
-        new RegExp('\\b(' + mathyKeywords.join('|') + ')\\b', 'i');
+        new RegExp(`\\b(${mathyKeywords.join('|')})\\b`, 'i');
 
     // Matches characters commonly found in inline formulas.
     this.mathyAltTextRegex_ = /[+\-=_^{}\\]/;
@@ -82,7 +82,7 @@ export class ReadabilityImageClassifier {
     }
 
     // "Mathy" or decorative clues in attributes.
-    const classAndId = (img.className + ' ' + img.id);
+    const classAndId = `${img.className} ${img.id}`;
     if (this.mathyKeywordsRegex_.test(classAndId)) {
       return true;
     }

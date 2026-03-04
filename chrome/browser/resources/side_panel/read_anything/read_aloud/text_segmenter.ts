@@ -88,7 +88,7 @@ export class TextSegmenter {
         sentence.text = sentence.text.slice(0, -openingPunctuationLength);
         if (i + 1 < initialSentences.length && initialSentences[i + 1]) {
           initialSentences[i + 1]!.text =
-              openingPunctuation + initialSentences[i + 1]!.text;
+              `${openingPunctuation}${initialSentences[i + 1]!.text}`;
           initialSentences[i + 1]!.index -= openingPunctuationLength;
         }
       }

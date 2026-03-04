@@ -90,7 +90,7 @@ export class FontMenuElement extends FontMenuElementBase implements
     this.options_ = fontList.map(font => ({
                                    title: this.getFontItemLabel_(font),
                                    data: font,
-                                   style: 'font-family:' + font,
+                                   style: `font-family:${font}`,
                                  }));
   }
 
