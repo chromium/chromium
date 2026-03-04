@@ -1019,6 +1019,38 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     /**
+     * Builds a fresh node for comparison with a cached node.
+     *
+     * <p>Note: This is a temporary method to validate the accessibility node cache.
+     *
+     * @param virtualViewId The virtual view id of the node to build.
+     * @return The fresh node or null if the node is not valid.
+     */
+    public @Nullable AccessibilityNodeInfoCompat buildFreshAccessibilityNodeInfo(
+            int virtualViewId) {
+        if (!isAccessibilityEnabled()
+                || !isFrameInfoInitialized()
+                || !WebContentsAccessibilityImplJni.get().isNodeValid(mNativeObj, virtualViewId)) {
+            return null;
+        }
+        final AccessibilityNodeInfoCompat info = AccessibilityNodeInfoCompat.obtain(mView);
+        info.setPackageName(mContext.getPackageName());
+        info.setSource(mView, virtualViewId);
+
+        if (virtualViewId == mCurrentRootId) {
+            info.setParent(mView);
+        }
+
+        if (WebContentsAccessibilityImplJni.get()
+                .populateAccessibilityNodeInfo(mNativeObj, info, virtualViewId)) {
+            return info;
+        } else {
+            info.recycle();
+            return null;
+        }
+    }
+
+    /**
      * Deep equality check of two {@link AccessibilityNodeInfoCompat} nodes.
      *
      * <p>Requires API level 33 (Tiramisu) for deprecation of {@link
@@ -1053,6 +1085,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         Parcel bParcel = Parcel.obtain();
         b.unwrap().writeToParcel(bParcel, 0);
         return Arrays.equals(aParcel.marshall(), bParcel.marshall());
+    }
+
+    public int getCurrentRootIdForTesting() {
+        return mCurrentRootId;
     }
 
     @Override
@@ -1109,19 +1145,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 // Check cache freshness by drawing from C++ (Finch experiment).
                 if (ContentFeatureList.enabledAccessibilityCheckJavaNodeCacheFreshness()) {
                     final AccessibilityNodeInfoCompat freshNode =
-                            AccessibilityNodeInfoCompat.obtain(mView);
-                    freshNode.setPackageName(mContext.getPackageName());
-                    freshNode.setSource(mView, virtualViewId);
-
-                    if (virtualViewId == mCurrentRootId) {
-                        freshNode.setParent(mView);
-                    }
-
-                    if (WebContentsAccessibilityImplJni.get()
-                            .populateAccessibilityNodeInfo(mNativeObj, freshNode, virtualViewId)) {
-                        if (nodesAreEqual(cachedNode, freshNode)) {
-                            mHistogramRecorder.incrementNodeWasFreshInCache();
-                        }
+                            buildFreshAccessibilityNodeInfo(virtualViewId);
+                    if (freshNode != null && nodesAreEqual(cachedNode, freshNode)) {
+                        mHistogramRecorder.incrementNodeWasFreshInCache();
                     } // If node is still in the cache when it's not in C++, treat as stale
                 }
 
