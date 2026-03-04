@@ -152,7 +152,7 @@ constexpr auto kFontDefaults = std::to_array<FontDefault>({
     {prefs::kWebKitFantasyFontFamily, IDS_FANTASY_FONT_FAMILY},
     {prefs::kWebKitMathFontFamily, IDS_MATH_FONT_FAMILY},
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || \
-    BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+    BUILDFLAG(IS_LINUX) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
     {prefs::kWebKitStandardFontFamilyJapanese,
      IDS_STANDARD_FONT_FAMILY_JAPANESE},
     {prefs::kWebKitFixedFontFamilyJapanese, IDS_FIXED_FONT_FAMILY_JAPANESE},
@@ -175,6 +175,12 @@ constexpr auto kFontDefaults = std::to_array<FontDefault>({
      IDS_SERIF_FONT_FAMILY_TRADITIONAL_HAN},
     {prefs::kWebKitSansSerifFontFamilyTraditionalHan,
      IDS_SANS_SERIF_FONT_FAMILY_TRADITIONAL_HAN},
+    {prefs::kWebKitStandardFontFamilyDevanagari,
+     IDS_STANDARD_FONT_FAMILY_DEVANAGARI},
+    {prefs::kWebKitFixedFontFamilyDevanagari, IDS_FIXED_FONT_FAMILY_DEVANAGARI},
+    {prefs::kWebKitSerifFontFamilyDevanagari, IDS_SERIF_FONT_FAMILY_DEVANAGARI},
+    {prefs::kWebKitSansSerifFontFamilyDevanagari,
+     IDS_SANS_SERIF_FONT_FAMILY_DEVANAGARI},
 #endif
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {prefs::kWebKitCursiveFontFamilySimplifiedHan,

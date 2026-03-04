@@ -125,3 +125,66 @@ IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, GenericFontFamilies) {
             web_prefs.math_font_family_map[blink::web_pref::kCommonScript]);
 }
 #endif
+
+// Tests that Devanagari font family preferences are registered and populated
+// with platform-specific default values from GRD resources.
+IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, DevanagariDefaultPrefs) {
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+
+  // Verify the Devanagari prefs are registered.
+  const PrefService::Preference* standard_pref =
+      prefs->FindPreference(prefs::kWebKitStandardFontFamilyDevanagari);
+  const PrefService::Preference* fixed_pref =
+      prefs->FindPreference(prefs::kWebKitFixedFontFamilyDevanagari);
+  const PrefService::Preference* serif_pref =
+      prefs->FindPreference(prefs::kWebKitSerifFontFamilyDevanagari);
+  const PrefService::Preference* sans_serif_pref =
+      prefs->FindPreference(prefs::kWebKitSansSerifFontFamilyDevanagari);
+
+  ASSERT_TRUE(standard_pref);
+  ASSERT_TRUE(fixed_pref);
+  ASSERT_TRUE(serif_pref);
+  ASSERT_TRUE(sans_serif_pref);
+
+  // All four should still be at their default values (not overridden by user).
+  EXPECT_TRUE(standard_pref->IsDefaultValue());
+  EXPECT_TRUE(fixed_pref->IsDefaultValue());
+  EXPECT_TRUE(serif_pref->IsDefaultValue());
+  EXPECT_TRUE(sans_serif_pref->IsDefaultValue());
+
+  // The defaults should be non-empty (populated from GRD resources).
+  EXPECT_FALSE(
+      prefs->GetString(prefs::kWebKitStandardFontFamilyDevanagari).empty());
+  EXPECT_FALSE(
+      prefs->GetString(prefs::kWebKitFixedFontFamilyDevanagari).empty());
+  EXPECT_FALSE(
+      prefs->GetString(prefs::kWebKitSerifFontFamilyDevanagari).empty());
+  EXPECT_FALSE(
+      prefs->GetString(prefs::kWebKitSansSerifFontFamilyDevanagari).empty());
+}
+
+// Tests that Devanagari font family preferences propagate correctly to Blink's
+// WebPreferences font family maps under the "Deva" script key.
+#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_DESKTOP_ANDROID_EXTENSIONS)
+IN_PROC_BROWSER_TEST_F(PrefsTabHelperBrowserTest, DevanagariFontFamilies) {
+  PrefService* prefs = chrome_test_utils::GetProfile(this)->GetPrefs();
+  prefs->SetString(prefs::kWebKitStandardFontFamilyDevanagari,
+                   "CustomDevaStandard");
+  prefs->SetString(prefs::kWebKitFixedFontFamilyDevanagari, "CustomDevaFixed");
+  prefs->SetString(prefs::kWebKitSerifFontFamilyDevanagari, "CustomDevaSerif");
+  prefs->SetString(prefs::kWebKitSansSerifFontFamilyDevanagari,
+                   "CustomDevaSansSerif");
+
+  content::WebContents* web_contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  web_contents->NotifyPreferencesChanged();
+  blink::web_pref::WebPreferences web_prefs =
+      web_contents->GetOrCreateWebPreferences();
+
+  EXPECT_EQ(u"CustomDevaStandard", web_prefs.standard_font_family_map["Deva"]);
+  EXPECT_EQ(u"CustomDevaFixed", web_prefs.fixed_font_family_map["Deva"]);
+  EXPECT_EQ(u"CustomDevaSerif", web_prefs.serif_font_family_map["Deva"]);
+  EXPECT_EQ(u"CustomDevaSansSerif",
+            web_prefs.sans_serif_font_family_map["Deva"]);
+}
+#endif

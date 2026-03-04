@@ -282,6 +282,30 @@
         Noto Sans CJK TC
       </message>
 
+      <!-- The default value for |WebPreference::standard_font_family_map| for
+           Devanagari script. -->
+      <message name="IDS_STANDARD_FONT_FAMILY_DEVANAGARI" use_name_for_id="true">
+        Noto Sans Devanagari
+      </message>
+
+      <!-- The default value for |WebPreference::fixed_font_family_map| for
+           Devanagari script. -->
+      <message name="IDS_FIXED_FONT_FAMILY_DEVANAGARI" use_name_for_id="true">
+        Noto Sans Mono
+      </message>
+
+      <!-- The default value for |WebPreference::serif_font_family_map| for
+           Devanagari script. -->
+      <message name="IDS_SERIF_FONT_FAMILY_DEVANAGARI" use_name_for_id="true">
+        Noto Serif Devanagari
+      </message>
+
+      <!-- The default value for |WebPreference::sans_serif_font_family_map| for
+           Devanagari script.  -->
+      <message name="IDS_SANS_SERIF_FONT_FAMILY_DEVANAGARI" use_name_for_id="true">
+        Noto Sans Devanagari
+      </message>
+
       <!-- The default value for |WebPreference::minimum_font_size| -->
       <message name="IDS_MINIMUM_FONT_SIZE" use_name_for_id="true">
         0

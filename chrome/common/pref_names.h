@@ -305,6 +305,14 @@ inline constexpr char kWebKitCursiveFontFamilySimplifiedHan[] =
 inline constexpr char kWebKitCursiveFontFamilyTraditionalHan[] =
     "webkit.webprefs.fonts.cursive.Hant";
 #endif
+inline constexpr char kWebKitStandardFontFamilyDevanagari[] =
+    "webkit.webprefs.fonts.standard.Deva";
+inline constexpr char kWebKitFixedFontFamilyDevanagari[] =
+    "webkit.webprefs.fonts.fixed.Deva";
+inline constexpr char kWebKitSerifFontFamilyDevanagari[] =
+    "webkit.webprefs.fonts.serif.Deva";
+inline constexpr char kWebKitSansSerifFontFamilyDevanagari[] =
+    "webkit.webprefs.fonts.sansserif.Deva";
 
 // WebKit preferences.
 inline constexpr char kWebKitWebSecurityEnabled[] =
