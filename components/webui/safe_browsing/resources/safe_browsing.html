@@ -24,8 +24,8 @@
       <div slot="tab" id="hash-cache">Hash Cache</div>
 </if>
       <div slot="tab" id="download-protection">Download Protection</div>
-<if expr="not is_android">
       <div slot="tab" id="deep-scan">Deep Scans</div>
+<if expr="not is_android">
       <div slot="tab" id="hprt-lookup">HPRT Lookup</div>
 </if>
       <div slot="panel">
@@ -196,11 +196,11 @@
         </div>
 </if>
       </div>
-<if expr="not is_android">
       <div slot="panel">
         <h2>Deep Scans</h2>
         <table id="deep-scan-list" class="request-response"></table>
       </div>
+<if expr="not is_android">
       <div slot="panel">
         <h2>HPRT Lookup Pings</h2>
         <table id="hprt-lookup-ping-list" class="request-response"></table>
