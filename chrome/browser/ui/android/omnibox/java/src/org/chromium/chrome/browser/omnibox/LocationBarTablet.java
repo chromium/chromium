@@ -19,11 +19,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxCoordinator.FuseboxState;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
@@ -68,6 +70,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
     private @FuseboxState int mFuseboxState;
     private boolean mHasSuggestions;
     private int mScreenWidthDp;
+    private @Nullable ViewOutlineProvider mOutlineProvider;
 
     /** Constructor used to inflate from XML. */
     public LocationBarTablet(Context context, AttributeSet attrs) {
@@ -192,6 +195,12 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             mScreenWidthDp = screenWidthDp;
             mHandler.post(() -> onFuseboxStateChanged(mFuseboxState));
         }
+    }
+
+    @Override
+    public void setOutlineProvider(ViewOutlineProvider provider) {
+        mOutlineProvider = provider;
+        super.setOutlineProvider(provider);
     }
 
     /** Returns amount by which to adjust to move value inside the given range. */
@@ -423,6 +432,10 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             layoutParams.gravity = Gravity.TOP;
             setPadding(expansionPx, expansionPx, expansionPx, getPaddingBottom());
             setTranslationZ(OVERLAY_Z_TRANSLATION);
+            // Call super to avoid overwriting our locally saved reference to our OutlineProvider.
+            // Null out the outline provider to avoid casting a shadow on views with translationZ
+            // lower than ours.
+            super.setOutlineProvider(null);
             ViewUtils.setAncestorsShouldClipToPadding(this, false, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, false, View.NO_ID);
             setBackground(mFocusedPopupDrawable);
@@ -435,6 +448,7 @@ class LocationBarTablet extends LocationBarLayout implements OnLongClickListener
             layoutParams.gravity = Gravity.CENTER_VERTICAL;
             setPadding(0, 0, 0, getPaddingBottom());
             setTranslationZ(NEUTRAL_Z_TRANSLATION);
+            super.setOutlineProvider(mOutlineProvider);
             ViewUtils.setAncestorsShouldClipToPadding(this, true, View.NO_ID);
             ViewUtils.setAncestorsShouldClipChildren(this, true, View.NO_ID);
             // Put the focused background back into its starting state before swapping it out;

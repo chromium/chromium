@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.doReturn;
 
@@ -16,6 +17,7 @@ import android.view.Gravity;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup.LayoutParams;
+import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
 
 import org.junit.Before;
@@ -60,6 +62,7 @@ public class LocationBarTabletUnitTest {
     private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
     private @Mock StatusCoordinator mStatusCoordinator;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
+    private @Mock ViewOutlineProvider mOutlineProvider;
 
     private Activity mActivity;
     private LocationBarTablet mLocationBarTablet;
@@ -99,6 +102,7 @@ public class LocationBarTabletUnitTest {
         mLocationBarTablet.measure(
                 MeasureSpec.makeMeasureSpec(prefocusWidth, MeasureSpec.EXACTLY),
                 MeasureSpec.makeMeasureSpec(100, MeasureSpec.EXACTLY));
+        mLocationBarTablet.setOutlineProvider(mOutlineProvider);
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.EXPANDED);
         int expansionPx =
                 mLocationBarTablet
@@ -120,6 +124,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(expansionPx, mLocationBarTablet.getPaddingRight());
         assertEquals(expansionPx, mLocationBarTablet.getPaddingTop());
         assertEquals(1.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
+        assertNull(mLocationBarTablet.getOutlineProvider());
         mLocationBarTablet.onFuseboxStateChanged(FuseboxState.DISABLED);
         layoutParams = (LinearLayout.LayoutParams) mLocationBarTablet.getLayoutParams();
         assertEquals(
@@ -135,6 +140,7 @@ public class LocationBarTabletUnitTest {
         assertEquals(0, mLocationBarTablet.getPaddingRight());
         assertEquals(0, mLocationBarTablet.getPaddingTop());
         assertEquals(0.0f, mLocationBarTablet.getTranslationZ(), MathUtils.EPSILON);
+        assertEquals(mOutlineProvider, mLocationBarTablet.getOutlineProvider());
     }
 
     @Test
