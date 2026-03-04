@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "chrome/browser/ui/views/page_action/test_support/page_action_interactive_test_mixin.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -58,7 +57,6 @@ class PriceInsightsIconViewBaseInteractiveTest
     : public PageActionInteractiveTestMixin<InteractiveFeaturePromoTest> {
  public:
   explicit PriceInsightsIconViewBaseInteractiveTest(
-      bool is_migration_enabled,
       std::vector<base::test::FeatureRef> iph_features = {})
       : PageActionInteractiveTestMixin(
             UseDefaultTrackerAllowingPromos(std::move(iph_features))) {
@@ -66,14 +64,6 @@ class PriceInsightsIconViewBaseInteractiveTest
         /*enabled_features=*/
         {
             {commerce::kPriceInsights, {{}}},
-            {
-                ::features::kPageActionsMigration,
-                {
-                    {::features::kPageActionsMigrationPriceInsights.name,
-                     is_migration_enabled ? "true" : "false"},
-                },
-            },
-
         },
         /*disabled_features*/ {commerce::kEnableDiscountInfoApi});
   }
@@ -173,15 +163,10 @@ class PriceInsightsIconViewBaseInteractiveTest
       weak_ptr_factory_{this};
 };
 
-class PriceInsightsIconViewInteractiveTest
-    : public PriceInsightsIconViewBaseInteractiveTest,
-      public ::testing::WithParamInterface<bool> {
- public:
-  PriceInsightsIconViewInteractiveTest()
-      : PriceInsightsIconViewBaseInteractiveTest(GetParam()) {}
-};
+using PriceInsightsIconViewInteractiveTest =
+    PriceInsightsIconViewBaseInteractiveTest;
 
-IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        SidePanelShownOnPress) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
       .Times(testing::AnyNumber());
@@ -213,7 +198,7 @@ IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
       entries[0], embedded_test_server()->GetURL(kShoppingURL));
 }
 
-IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        IconIsNotHighlightedAfterClicking) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
       .Times(testing::AnyNumber());
@@ -240,7 +225,7 @@ IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
 }
 
 // TODO(crbug.com/429709568): Disabled due to flakiness.
-IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        DISABLED_TabDiscardDuringNavigationNoCrash) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
   DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(
@@ -305,21 +290,11 @@ IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewInteractiveTest,
   // expected.
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         PriceInsightsIconViewInteractiveTest,
-                         ::testing::Values(false, true),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "MigrationEnabled"
-                                             : "MigrationDisabled";
-                         });
-
 class PriceInsightsIconViewEngagementTest
-    : public PriceInsightsIconViewBaseInteractiveTest,
-      public ::testing::WithParamInterface<bool> {
+    : public PriceInsightsIconViewBaseInteractiveTest {
  public:
   PriceInsightsIconViewEngagementTest()
       : PriceInsightsIconViewBaseInteractiveTest(
-            GetParam(),
             {feature_engagement::kIPHPriceInsightsPageActionIconLabelFeature}) {
   }
 
@@ -392,7 +367,7 @@ class PriceInsightsIconViewEngagementTest
   }
 };
 
-IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewEngagementTest, ExpandedIconShown) {
+IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewEngagementTest, ExpandedIconShown) {
   EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl)
       .Times(testing::AnyNumber());
   EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl)
@@ -400,11 +375,3 @@ IN_PROC_BROWSER_TEST_P(PriceInsightsIconViewEngagementTest, ExpandedIconShown) {
 
   VerifyIconExpanded();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PriceInsightsIconViewEngagementTest,
-                         ::testing::Values(false, true),
-                         [](const testing::TestParamInfo<bool>& info) {
-                           return info.param ? "MigrationEnabled"
-                                             : "MigrationDisabled";
-                         });

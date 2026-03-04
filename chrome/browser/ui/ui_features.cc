@@ -384,12 +384,6 @@ BASE_FEATURE_PARAM(bool,
                    true);
 
 BASE_FEATURE_PARAM(bool,
-                   kPageActionsMigrationPriceInsights,
-                   &kPageActionsMigration,
-                   "price_insights",
-                   true);
-
-BASE_FEATURE_PARAM(bool,
                    kPageActionsMigrationDiscounts,
                    &kPageActionsMigration,
                    "discounts",

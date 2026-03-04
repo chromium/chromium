@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/raw_ref.h"
-#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 class ScopedCallToActionLock;
@@ -20,6 +19,18 @@ class PageActionController;
 namespace tabs {
 class TabInterface;
 }
+
+// Enum for logging the price insights icon label. Each label we ever use
+// should have a separate enum even if they are semantically similar (e.g.
+// "Price is low" vs. "Great price") since it could have a nontrivial effect
+// on the click-through rate. These values are persisted to logs. Entries
+// should not be renumbered and numeric values should never be reused.
+enum class PriceInsightsIconLabelType {
+  kNone = 0,
+  kPriceIsLow = 1,
+  kPriceIsHigh = 2,
+  kMaxValue = kPriceIsHigh,
+};
 
 namespace commerce {
 

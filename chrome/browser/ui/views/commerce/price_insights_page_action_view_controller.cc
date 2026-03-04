@@ -24,7 +24,6 @@ PriceInsightsPageActionViewController::PriceInsightsPageActionViewController(
     : tab_interface_(tab_interface),
       page_action_controller_(page_action_controller),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kPriceInsights));
 }
 
 PriceInsightsPageActionViewController::

@@ -33,7 +33,6 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/commerce/discounts_bubble_dialog_view.h"
 #include "chrome/browser/ui/views/commerce/discounts_page_action_view_controller.h"
-#include "chrome/browser/ui/views/commerce/price_insights_icon_view.h"
 #include "chrome/browser/ui/views/commerce/price_insights_page_action_view_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
@@ -236,15 +235,10 @@ void CommerceUiTabHelper::TriggerUpdateForIconView() {
 }
 
 void CommerceUiTabHelper::UpdatePriceInsightsIconView() {
-  if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
-    PriceInsightsPageActionViewController::From(tab())->UpdatePageActionIcon(
-        ShouldShowPriceInsightsIconView(),
-        ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
-        GetPriceInsightsIconLabelTypeForPage());
-    return;
-  }
-
-  UpdatePageActionIconView(PageActionIconType::kPriceInsights);
+  PriceInsightsPageActionViewController::From(tab())->UpdatePageActionIcon(
+      ShouldShowPriceInsightsIconView(),
+      ShouldExpandPageActionIcon(PageActionIconType::kPriceInsights),
+      GetPriceInsightsIconLabelTypeForPage());
 }
 
 void CommerceUiTabHelper::SetImageFetcherForTesting(

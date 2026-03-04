@@ -217,12 +217,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         std::make_unique<PwaInstallPageActionController>(
             tab, *page_action_controller_);
 
-    if (IsPageActionMigrated(PageActionIconType::kPriceInsights)) {
-      commerce_price_insights_page_action_view_controller_ =
-          GetUserDataFactory()
-              .CreateInstance<commerce::PriceInsightsPageActionViewController>(
-                  tab, tab, *page_action_controller_);
-    }
+    commerce_price_insights_page_action_view_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<commerce::PriceInsightsPageActionViewController>(
+                tab, tab, *page_action_controller_);
 
     if (IsPageActionMigrated(PageActionIconType::kManagePasswords)) {
       manage_passwords_page_action_controller_ =
