@@ -3084,9 +3084,17 @@ static void LogMTCCertVerifyMetrics(
       old_client = true;
       UMA_HISTOGRAM_COUNTS_1000("Net.QuicSession.MTCLandmarkDelta.OldClient",
                                 *server_landmark - *client_landmark);
+      base::UmaHistogramCounts1000(
+          HistogramNameForResumptionVariant(
+              "Net.QuicSession.MTCLandmarkDelta.OldClient", is_resumption),
+          *server_landmark - *client_landmark);
     } else {
       UMA_HISTOGRAM_COUNTS_1000(
           "Net.QuicSession.MTCLandmarkDelta.CurrentClient",
+          *client_landmark - *server_landmark);
+      base::UmaHistogramCounts1000(
+          HistogramNameForResumptionVariant(
+              "Net.QuicSession.MTCLandmarkDelta.CurrentClient", is_resumption),
           *client_landmark - *server_landmark);
     }
   }
@@ -4012,12 +4020,13 @@ void QuicChromiumClientSession::OnCryptoHandshakeComplete() {
 
     size_t handshake_bytes = crypto_stream_->crypto_bytes_read() +
                              crypto_stream_->crypto_bytes_written();
-    UMA_HISTOGRAM_COUNTS_100000("Net.QuicSession.TLSHandshakeBytes.MTC",
-                                handshake_bytes);
-    base::UmaHistogramCounts10000(
+    base::UmaHistogramCustomCounts("Net.QuicSession.TLSHandshakeBytes.MTC2",
+                                   handshake_bytes, /*min=*/1,
+                                   /*exclusive_max=*/8000, /*buckets=*/100);
+    base::UmaHistogramCustomCounts(
         HistogramNameForResumptionVariant(
-            "Net.QuicSession.TLSHandshakeBytes.MTC", is_resumption),
-        handshake_bytes);
+            "Net.QuicSession.TLSHandshakeBytes.MTC2", is_resumption),
+        handshake_bytes, /*min=*/1, /*exclusive_max=*/8000, /*buckets=*/100);
   }
 
   // Indicate that the handshake is complete so that we can safely send pings

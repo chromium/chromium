@@ -406,6 +406,14 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
   histograms.ExpectTotalCount("Net.QuicSession.MTCLandmarkDelta.OldClient", 0);
   histograms.ExpectTotalCount("Net.QuicSession.MTCLandmarkDelta.CurrentClient",
                               0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.MTCLandmarkDelta.OldClient.NewConnection", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.MTCLandmarkDelta.CurrentClient.NewConnection", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.MTCLandmarkDelta.OldClient.Resumption", 0);
+  histograms.ExpectTotalCount(
+      "Net.QuicSession.MTCLandmarkDelta.CurrentClient.Resumption", 0);
 
   histograms.ExpectTimeBucketCount("Net.QuicSession.MTCMetadataAge",
                                    kMtcUpdateAge, 1);
@@ -456,11 +464,11 @@ TEST_F(QuicEndToEndMTCTest, SimpleConnection) {
 
   // Should be logged, but we don't know what the exact value will be, so just
   // check that a sample is present.
-  histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC", 1);
+  histograms.ExpectTotalCount("Net.QuicSession.TLSHandshakeBytes.MTC2", 1);
   histograms.ExpectTotalCount(
-      "Net.QuicSession.TLSHandshakeBytes.MTC.NewConnection", 1);
+      "Net.QuicSession.TLSHandshakeBytes.MTC2.NewConnection", 1);
   histograms.ExpectTotalCount(
-      "Net.QuicSession.TLSHandshakeBytes.MTC.Resumption", 0);
+      "Net.QuicSession.TLSHandshakeBytes.MTC2.Resumption", 0);
 }
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 

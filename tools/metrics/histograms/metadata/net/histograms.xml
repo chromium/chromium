@@ -5947,7 +5947,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.MTCLandmarkDelta.CurrentClient"
+<histogram name="Net.QuicSession.MTCLandmarkDelta.CurrentClient{IsResumption}"
     units="MTC landmarks" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5959,9 +5959,16 @@ chromium-metrics-reviews@google.com.
     server's MTC). Only recorded for QUIC connections where the client supports
     verifying MTCs and the server supports sending MTCs.
   </summary>
+  <token key="IsResumption">
+    <variant name=""
+        summary="aggregated across new connections and resumption"/>
+    <variant name=".NewConnection" summary="on a new connection"/>
+    <variant name=".Resumption"
+        summary="on a connection that Chrome is attempting to resume"/>
+  </token>
 </histogram>
 
-<histogram name="Net.QuicSession.MTCLandmarkDelta.OldClient"
+<histogram name="Net.QuicSession.MTCLandmarkDelta.OldClient{IsResumption}"
     units="MTC landmarks" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
@@ -5973,6 +5980,13 @@ chromium-metrics-reviews@google.com.
     unable to verify the server's MTC). Only recorded for QUIC connections where
     the client supports verifying MTCs and the server supports sending MTCs.
   </summary>
+  <token key="IsResumption">
+    <variant name=""
+        summary="aggregated across new connections and resumption"/>
+    <variant name=".NewConnection" summary="on a new connection"/>
+    <variant name=".Resumption"
+        summary="on a connection that Chrome is attempting to resume"/>
+  </token>
 </histogram>
 
 <histogram name="Net.QuicSession.MTCMetadataAge" units="Milliseconds"
@@ -6886,7 +6900,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.QuicSession.TLSHandshakeBytes.MTC{IsResumption}"
+<histogram name="Net.QuicSession.TLSHandshakeBytes.MTC2{IsResumption}"
     units="bytes" expires_after="2026-08-23">
   <owner>nharper@chromium.org</owner>
   <owner>mattm@chromium.org</owner>
