@@ -6,6 +6,8 @@ package org.chromium.components.embedder_support.delegate;
 
 import static android.view.Display.INVALID_DISPLAY;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.graphics.Bitmap;
 import android.graphics.Rect;
 import android.view.KeyEvent;
@@ -26,6 +28,10 @@ import org.chromium.content_public.common.ResourceRequestBody;
 import org.chromium.ui.resources.dynamics.CaptureResult;
 import org.chromium.url.GURL;
 
+import java.lang.ref.WeakReference;
+import java.util.HashMap;
+import java.util.Map;
+
 /** Java peer of the native class of the same name. */
 @JNINamespace("web_contents_delegate_android")
 @NullMarked
@@ -38,6 +44,15 @@ public class WebContentsDelegateAndroid {
     public static final int LOG_LEVEL_WARNING = 2;
     // Equivalent of WebCore::WebConsoleMessage::LevelError.
     public static final int LOG_LEVEL_ERROR = 3;
+
+    /**
+     * Map of native pointer to {@link WebContentsDelegateAndroid} instance. This allows us to avoid
+     * a global ref in native code of which there is a finite table of 51200 entries. We only hold a
+     * weak reference and rely on the provider of the object to hold a strong reference. This allows
+     * it to be GCed when it is no longer needed.
+     */
+    private static final Map<Long, WeakReference<WebContentsDelegateAndroid>> sRefMap =
+            new HashMap<>();
 
     /**
      * @param disposition The new tab disposition, defined in
@@ -391,4 +406,30 @@ public class WebContentsDelegateAndroid {
      * </ul>
      */
     public void lostPointerLock() {}
+
+    @CalledByNative
+    private static void registerRef(
+            long nativeWebContentsDelegateAndroid, WebContentsDelegateAndroid delegate) {
+        var oldValue = sRefMap.put(nativeWebContentsDelegateAndroid, new WeakReference<>(delegate));
+        if (oldValue != null) {
+            throw new IllegalStateException(
+                    "WebContentsDelegateAndroid already exists for native pointer: "
+                            + nativeWebContentsDelegateAndroid);
+        }
+    }
+
+    @CalledByNative
+    private static void unregisterRef(long nativeWebContentsDelegateAndroid) {
+        var oldValue = sRefMap.remove(nativeWebContentsDelegateAndroid);
+        assert oldValue != null;
+    }
+
+    @CalledByNative
+    private static @Nullable WebContentsDelegateAndroid getDelegate(
+            long nativeWebContentsDelegateAndroid) {
+        WeakReference<WebContentsDelegateAndroid> reference =
+                sRefMap.get(nativeWebContentsDelegateAndroid);
+        assumeNonNull(reference);
+        return reference.get();
+    }
 }

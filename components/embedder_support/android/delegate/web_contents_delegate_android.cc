@@ -63,14 +63,21 @@ namespace web_contents_delegate_android {
 
 WebContentsDelegateAndroid::WebContentsDelegateAndroid(
     JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj)
-    : weak_java_delegate_(env, obj) {}
+    const jni_zero::JavaRef<jobject>& obj) {
+  Java_WebContentsDelegateAndroid_registerRef(
+      env, reinterpret_cast<intptr_t>(this), obj);
+}
 
-WebContentsDelegateAndroid::~WebContentsDelegateAndroid() = default;
+WebContentsDelegateAndroid::~WebContentsDelegateAndroid() {
+  JNIEnv* env = AttachCurrentThread();
+  Java_WebContentsDelegateAndroid_unregisterRef(
+      env, reinterpret_cast<intptr_t>(this));
+}
 
 ScopedJavaLocalRef<jobject> WebContentsDelegateAndroid::GetJavaDelegate(
     JNIEnv* env) const {
-  return weak_java_delegate_.get(env);
+  return Java_WebContentsDelegateAndroid_getDelegate(
+      env, reinterpret_cast<intptr_t>(this));
 }
 
 // ----------------------------------------------------------------------------

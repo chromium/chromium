@@ -49,6 +49,10 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
                              const jni_zero::JavaRef<jobject>& obj);
   ~WebContentsDelegateAndroid() override;
 
+  WebContentsDelegateAndroid(const WebContentsDelegateAndroid&) = delete;
+  WebContentsDelegateAndroid& operator=(const WebContentsDelegateAndroid&) =
+      delete;
+
   // Overridden from WebContentsDelegate:
   content::WebContents* OpenURLFromTab(
       content::WebContents* source,
@@ -144,12 +148,6 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
 
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;
-
- private:
-  // We depend on the java side user of WebContentDelegateAndroid to hold a
-  // strong reference to that object as long as they want to receive callbacks
-  // on it. Using a weak ref here allows it to be correctly GCed.
-  JavaObjectWeakGlobalRef weak_java_delegate_;
 };
 
 }  // namespace web_contents_delegate_android
