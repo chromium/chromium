@@ -46,8 +46,6 @@ class PersistTabContextBrowserAgent
       std::string,
       std::optional<std::unique_ptr<optimization_guide::proto::PageContext>>>;
 
-  // TODO(crbug.com/454689025): This browser agent's API is not yet approved for
-  // use by clients. DO NOT USE.
   // Asynchronously fetches a single page context associated with the given
   // `webstate_unique_id`.
   void GetSingleContextAsync(
@@ -56,8 +54,6 @@ class PersistTabContextBrowserAgent
                                   optimization_guide::proto::PageContext>>)>
           callback);
 
-  // TODO(crbug.com/454689025): This browser agent's API is not yet approved for
-  // use by clients. DO NOT USE.
   // Asynchronously fetches multiple page contexts for the provided vector of
   // `webstate_unique_ids`.
   void GetMultipleContextsAsync(

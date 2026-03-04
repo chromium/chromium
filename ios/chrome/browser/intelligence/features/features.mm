@@ -227,7 +227,7 @@ bool IsSmartTabGroupingEnabled() {
   return base::FeatureList::IsEnabled(kSmartTabGrouping);
 }
 
-BASE_FEATURE(kPersistTabContext, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kPersistTabContext, base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char kPersistTabContextStorageParam[] = "storage_implementation";
 const char kPersistTabContextExtractionTimingParam[] = "extraction_timing";
@@ -237,7 +237,7 @@ BASE_FEATURE_PARAM(int,
                    kPersistTabContextStorageFeatureParam,
                    &kPersistTabContext,
                    kPersistTabContextStorageParam,
-                   static_cast<int>(PersistTabStorageType::kFileSystem));
+                   static_cast<int>(PersistTabStorageType::kSQLite));
 
 BASE_FEATURE_PARAM(int,
                    kPersistTabContextExtractionTimingFeatureParam,
@@ -292,7 +292,7 @@ bool IsCleanupPersistedTabContextsEnabled() {
 }
 
 // The default Time-To-Live in days for persisted contexts.
-constexpr int kPersistTabContextDefaultTTL = 21;
+constexpr int kPersistTabContextDefaultTTL = 7;
 
 BASE_FEATURE_PARAM(int,
                    kPersistTabContextTTLParam,

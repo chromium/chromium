@@ -276,7 +276,7 @@ TEST_P(PersistTabContextBrowserAgentTest, TestPurgeExpiredContexts) {
     return;
   }
 
-  base::TimeDelta test_ttl = base::Days(21);
+  base::TimeDelta test_ttl = base::Days(7);
 
   web::WebStateID id_expired = web::WebStateID::FromSerializedValue(100);
   base::Time expired_time = base::Time::Now() - test_ttl - base::Days(1);
