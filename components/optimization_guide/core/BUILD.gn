@@ -299,6 +299,8 @@ source_set("ondevice") {
       "model_execution/on_device_model_adaptation_controller.h",
       "model_execution/on_device_model_adaptation_loader.cc",
       "model_execution/on_device_model_adaptation_loader.h",
+      "model_execution/on_device_model_classifier_controller.cc",
+      "model_execution/on_device_model_classifier_controller.h",
       "model_execution/on_device_model_component.cc",
       "model_execution/on_device_model_component.h",
       "model_execution/on_device_model_download_progress_manager.cc",
