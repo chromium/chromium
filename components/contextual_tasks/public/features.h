@@ -129,24 +129,6 @@ extern const base::FeatureParam<std::string>
 extern const base::FeatureParam<bool>
     kContextualTasksEnableNativeZeroStateSuggestions;
 
-// The scheme component of the "display url" associated with the contextual
-// tasks page.
-extern const base::FeatureParam<std::string> kContextualTasksDisplayUrlScheme;
-
-// The host component of the "display url" associated with the contextual tasks
-// page.
-extern const base::FeatureParam<std::string> kContextualTasksDisplayUrlHost;
-
-// The path component of the "display url" associated with the contextual tasks
-// page.
-// NOTE: The value of this feature param must start with a forward slash to
-// align with GURL path semantics (e.g. "/search" is OK, while "search" is not).
-extern const base::FeatureParam<std::string> kContextualTasksDisplayUrlPath;
-
-// Whether to show the expanded security chip in the location bar for the
-// contextual tasks page.
-extern const base::FeatureParam<bool> kContextualTasksShowExpandedSecurityChip;
-
 // The maximum number of times the onboarding tooltip can be shown to the user
 // in a single session before it no longer shows up.
 extern int GetContextualTasksShowOnboardingTooltipSessionImpressionCap();
@@ -183,6 +165,22 @@ extern bool ShouldForceBasicModeIfOpeningThreadHistory();
 
 // Returns the base URL for the AI page.
 extern std::string GetContextualTasksAiPageUrl();
+
+// Returns scheme component of the "display url" associated with the contextual
+// tasks page.
+extern std::string GetContextualTasksDisplayUrlScheme();
+
+// Returns host component of the "display url" associated with the contextual
+// tasks page.
+extern std::string GetContextualTasksDisplayUrlHost();
+
+// Returns path component of the "display url" associated with the contextual
+// tasks page.
+extern std::string GetContextualTasksDisplayUrlPath();
+
+// Returns whether to show the expanded security chip in the location bar for
+// the contextual tasks page.
+extern bool ShouldShowExpandedSecurityChip();
 
 // Returns the host that all URLs loaded in the embedded page in the Contextual
 // Tasks WebUi should be routed to.

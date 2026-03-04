@@ -348,7 +348,7 @@ TEST_F(LocationBarModelImplContextualTasksUrlTest, DefaultDisplayUrl) {
 TEST_F(LocationBarModelImplContextualTasksUrlTest, CustomScheme) {
   feature_list()->InitAndEnableFeatureWithParameters(
       contextual_tasks::kContextualTasks,
-      {{contextual_tasks::kContextualTasksDisplayUrlScheme.name, "test"}});
+      {{"ContextualTasksDisplayUrlScheme", "test"}});
   EXPECT_EQ(u"test://google.com/search?q=hello+world",
             model()->GetURLForDisplay());
 }
@@ -356,14 +356,14 @@ TEST_F(LocationBarModelImplContextualTasksUrlTest, CustomScheme) {
 TEST_F(LocationBarModelImplContextualTasksUrlTest, CustomHost) {
   feature_list()->InitAndEnableFeatureWithParameters(
       contextual_tasks::kContextualTasks,
-      {{contextual_tasks::kContextualTasksDisplayUrlHost.name, "test"}});
+      {{"ContextualTasksDisplayUrlHost", "test"}});
   EXPECT_EQ(u"chrome://test/search?q=hello+world", model()->GetURLForDisplay());
 }
 
 TEST_F(LocationBarModelImplContextualTasksUrlTest, CustomPath) {
   feature_list()->InitAndEnableFeatureWithParameters(
       contextual_tasks::kContextualTasks,
-      {{contextual_tasks::kContextualTasksDisplayUrlPath.name, "/test"}});
+      {{"ContextualTasksDisplayUrlPath", "/test"}});
   EXPECT_EQ(u"chrome://google.com/test?q=hello+world",
             model()->GetURLForDisplay());
 }
@@ -371,9 +371,9 @@ TEST_F(LocationBarModelImplContextualTasksUrlTest, CustomPath) {
 TEST_F(LocationBarModelImplContextualTasksUrlTest, CustomSchemeHostPath) {
   feature_list()->InitAndEnableFeatureWithParameters(
       contextual_tasks::kContextualTasks,
-      {{contextual_tasks::kContextualTasksDisplayUrlScheme.name, "test"},
-       {contextual_tasks::kContextualTasksDisplayUrlHost.name, "foo"},
-       {contextual_tasks::kContextualTasksDisplayUrlPath.name, "/bar"}});
+      {{"ContextualTasksDisplayUrlScheme", "test"},
+       {"ContextualTasksDisplayUrlHost", "foo"},
+       {"ContextualTasksDisplayUrlPath", "/bar"}});
   EXPECT_EQ(u"test://foo/bar?q=hello+world", model()->GetURLForDisplay());
 }
 

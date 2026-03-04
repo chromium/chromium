@@ -200,11 +200,11 @@ void AdjustTextForCopy(int sel_min,
   // "origin-swapping" logic to generate a valid shareable URL.
   if (url_from_text->is_valid() &&
       url_from_text->SchemeIs(
-          contextual_tasks::kContextualTasksDisplayUrlScheme.Get()) &&
+          contextual_tasks::GetContextualTasksDisplayUrlScheme()) &&
       url_from_text->GetHost() ==
-          contextual_tasks::kContextualTasksDisplayUrlHost.Get() &&
+          contextual_tasks::GetContextualTasksDisplayUrlHost() &&
       url_from_text->GetPath() ==
-          contextual_tasks::kContextualTasksDisplayUrlPath.Get()) {
+          contextual_tasks::GetContextualTasksDisplayUrlPath()) {
     const GURL inner_frame_url = client->GetContextualTasksInnerFrameURL();
     if (!inner_frame_url.is_valid()) {
       return;

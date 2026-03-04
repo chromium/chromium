@@ -274,10 +274,9 @@ TEST_F(OmniboxTextUtilTest, AdjustTextForCopy) {
   scoped_feature_list.InitWithFeaturesAndParameters(
       /*enabled_features=*/
       {{contextual_tasks::kContextualTasks,
-        {{contextual_tasks::kContextualTasksDisplayUrlScheme.name, "chrome"},
-         {contextual_tasks::kContextualTasksDisplayUrlHost.name,
-          "googlesearch"},
-         {contextual_tasks::kContextualTasksDisplayUrlPath.name, "/"}}}},
+        {{"ContextualTasksDisplayUrlScheme", "chrome"},
+         {"ContextualTasksDisplayUrlHost", "googlesearch"},
+         {"ContextualTasksDisplayUrlPath", "/"}}}},
       /*disabled_features=*/{});
   ON_CALL(*client(), GetContextualTasksInnerFrameURL())
       .WillByDefault(testing::Return(

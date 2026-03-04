@@ -202,7 +202,7 @@ bool LocationIconView::GetShowText() const {
       url.SchemeIs(url::kFileScheme) ||
       url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
       (location_bar_model->IsContextualTasksPage() &&
-       contextual_tasks::kContextualTasksShowExpandedSecurityChip.Get())) {
+       contextual_tasks::ShouldShowExpandedSecurityChip())) {
     return true;
   }
 
@@ -218,13 +218,10 @@ std::u16string LocationIconView::GetText() const {
     return std::u16string();
   }
 
-  if (delegate_->GetLocationBarModel()->IsContextualTasksPage() &&
-      contextual_tasks::kContextualTasksShowExpandedSecurityChip.Get()) {
-    return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
-  }
-
   if (delegate_->GetLocationBarModel()->GetURL().SchemeIs(
-          content::kChromeUIScheme)) {
+          content::kChromeUIScheme) ||
+      (contextual_tasks::ShouldShowExpandedSecurityChip() &&
+       delegate_->GetLocationBarModel()->IsContextualTasksPage())) {
     return l10n_util::GetStringUTF16(IDS_SHORT_PRODUCT_NAME);
   }
 

@@ -60,15 +60,15 @@ std::u16string LocationBarModelImpl::GetURLForDisplay() const {
     GURL::Replacements replacements;
 
     std::string display_url_scheme =
-        contextual_tasks::kContextualTasksDisplayUrlScheme.Get();
+        contextual_tasks::GetContextualTasksDisplayUrlScheme();
     replacements.SetSchemeStr(display_url_scheme);
 
     std::string display_url_host =
-        contextual_tasks::kContextualTasksDisplayUrlHost.Get();
+        contextual_tasks::GetContextualTasksDisplayUrlHost();
     replacements.SetHostStr(display_url_host);
 
     std::string display_url_path =
-        contextual_tasks::kContextualTasksDisplayUrlPath.Get();
+        contextual_tasks::GetContextualTasksDisplayUrlPath();
     replacements.SetPathStr(display_url_path);
 
     const auto display_url = inner_frame_url.ReplaceComponents(replacements);
