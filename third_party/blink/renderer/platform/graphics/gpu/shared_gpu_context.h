@@ -75,8 +75,9 @@ class PLATFORM_EXPORT SharedGpuContext {
   // Cleared on the next invocation of Reset() of the global context.
   static void SetUseMappableSharedImagesForCanvas2DForTesting(bool enable);
 
-  // Whether SharedImages used for canvas2D content may be placed into overlays.
-  static bool OverlaysSupportedForCanvas2D();
+  // Whether SharedImages used for canvas2D content should be placed into
+  // overlays.
+  static bool UseOverlaysForCanvas2D();
 
   // Whether SharedImages used for canvas2D content may be given usage optimized
   // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).

@@ -227,7 +227,7 @@ OffscreenCanvasRenderingContext2D::GetOrCreateResourceProvider() {
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
     if (host->HasPlaceholderCanvas() &&
-        SharedGpuContext::OverlaysSupportedForCanvas2D()) {
+        SharedGpuContext::UseOverlaysForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 

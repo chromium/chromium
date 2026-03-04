@@ -1347,7 +1347,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     if (low_latency_supported) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                   gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-    } else if (SharedGpuContext::OverlaysSupportedForCanvas2D()) {
+    } else if (SharedGpuContext::UseOverlaysForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
 

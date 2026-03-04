@@ -383,7 +383,7 @@ void SharedGpuContext::SetUseMappableSharedImagesForCanvas2DForTesting(
   g_use_mappable_shared_images_for_canvas_2d_for_testing = enable;
 }
 
-bool SharedGpuContext::OverlaysSupportedForCanvas2D() {
+bool SharedGpuContext::UseOverlaysForCanvas2D() {
 #if BUILDFLAG(IS_APPLE)
   // Delegated compositing on Apple platforms is all-or-nothing as there is no
   // API for partial delegation. Hence, if delegated compositing is enabled, we
