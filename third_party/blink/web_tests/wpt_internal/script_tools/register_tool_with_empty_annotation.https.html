@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<title>Script Tools: register tool with empty annotation</title>
+<link rel="author" href="mailto:dom@chromium.org">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<script>
+promise_test(async () => {
+  async function echo(obj) {
+    return obj.text;
+  }
+
+  const modelContext = navigator.modelContext;
+
+  modelContext.registerTool({
+    execute: echo,
+    name: "echo",
+    description: "echo input",
+    annotations: {
+      // No `readOnlyHint` member.
+    },
+  });
+
+  modelContext.unregisterTool("echo");
+}, "register tool with empty annotations");
+</script>

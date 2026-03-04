@@ -467,6 +467,7 @@ bool ModelContext::RegisterTool(ScriptState* script_state,
 
   if (tool->hasAnnotations()) {
     script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
+    CHECK(tool->annotations()->hasReadOnlyHint());
     script_tool->annotations->read_only = tool->annotations()->readOnlyHint();
   }
 
