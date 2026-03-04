@@ -10,6 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -21,6 +22,7 @@
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "components/contextual_tasks/public/mock_contextual_tasks_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/saved_tab_groups/public/features.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -67,7 +69,9 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
 
     EXPECT_CALL(mock_browser_window_interface_, GetProfile())
         .WillRepeatedly(testing::Return(profile()));
+  }
 
+  void CreateView() {
     auto view = std::make_unique<ProjectsPanelView>(
         &mock_browser_window_interface_, root_action_item_.get());
     widget_ = CreateTestWidget(views::Widget::InitParams::CLIENT_OWNS_WIDGET);
@@ -120,6 +124,7 @@ class ProjectsPanelViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(ProjectsPanelViewTest, CallbackRunsWhenAnimationsDisabled) {
+  CreateView();
   ProjectsPanelView::disable_animations_for_testing();
 
   // Show the panel (animations disabled -> instant show)
@@ -142,6 +147,7 @@ TEST_F(ProjectsPanelViewTest, CallbackRunsWhenAnimationsDisabled) {
 }
 
 TEST_F(ProjectsPanelViewTest, CallbackDoesNotRunWhenVisible) {
+  CreateView();
   ProjectsPanelView::disable_animations_for_testing();
 
   // Show the panel
@@ -158,4 +164,24 @@ TEST_F(ProjectsPanelViewTest, CallbackDoesNotRunWhenVisible) {
   projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
 
   EXPECT_TRUE(projects_panel_view()->GetVisible());
+}
+
+TEST_F(ProjectsPanelViewTest, ThreadsContainerHiddenWhenNoThreads) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      tab_groups::kProjectsPanel,
+      {{tab_groups::kProjectsPanelWithThreads.name, "true"}});
+
+  CreateView();
+  ProjectsPanelView::disable_animations_for_testing();
+
+  // Show the panel
+  state_controller()->SetProjectsVisible(true);
+  projects_panel_view()->OnProjectsPanelStateChanged(state_controller());
+
+  // Verify threads container and separator are hidden when there are no
+  // threads.
+  EXPECT_FALSE(
+      projects_panel_view()->threads_container_for_testing()->GetVisible());
+  EXPECT_FALSE(projects_panel_view()->separator_for_testing()->GetVisible());
 }

@@ -176,11 +176,10 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     tab_groups_view_->disable_animations_for_testing();  // IN-TEST
   }
 
-  views::Separator* separator = nullptr;
   if (threads_enabled) {
-    separator =
+    separator_ =
         content_container_->AddChildView(std::make_unique<views::Separator>());
-    separator->SetColorId(kColorProjectsPanelListsSeparator);
+    separator_->SetColorId(kColorProjectsPanelListsSeparator);
 
     auto* threads_container = content_container_->AddChildView(
         std::make_unique<views::FlexLayoutView>());
@@ -204,9 +203,9 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   }
 
   content_container_->SetLayoutManager(
-      std::make_unique<ProjectsPanelViewLayout>(controls_view_,
-                                                tab_groups_container_,
-                                                threads_container_, separator));
+      std::make_unique<ProjectsPanelViewLayout>(
+          controls_view_, tab_groups_container_, threads_container_,
+          separator_));
 
   resize_animation_.SetTweenType(gfx::Tween::Type::EASE_IN_OUT_EMPHASIZED);
 
@@ -252,7 +251,13 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
     // pipe updates to the list.
     tab_groups_view_->SetTabGroups(panel_controller_->GetTabGroups());
     if (threads_view_) {
-      threads_view_->SetThreads(panel_controller_->GetThreads());
+      const auto threads = panel_controller_->GetThreads();
+      threads_view_->SetThreads(threads);
+
+      // Hide the threads section when empty.
+      const bool show_threads = threads.size() > 0;
+      threads_container_->SetVisible(show_threads);
+      separator_->SetVisible(show_threads);
     }
   } else {
     event_monitor_.reset();
