@@ -206,7 +206,6 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_SURFACE_COLOR_UPDATE = "AndroidSurfaceColorUpdate";
     public static final String ANDROID_TAB_DECLUTTER_DEDUPE_TAB_IDS_KILL_SWITCH =
             "AndroidTabDeclutterDedupeTabIdsKillSwitch";
-    public static final String ANDROID_TAB_HIGHLIGHTING = "AndroidTabHighlighting";
     public static final String ANDROID_TAB_SKIP_SAVE_TABS_TASK_KILLSWITCH =
             "AndroidTabSkipSaveTabsTaskKillswitch";
     public static final String ANDROID_THEME_MODULE = "AndroidThemeModule";
@@ -1312,8 +1311,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS, true);
     public static final MutableFlagWithSafeDefault sAndroidPinnedTabsTabletTabStrip =
             newMutableFlagWithSafeDefault(ANDROID_PINNED_TABS_TABLET_TAB_STRIP, true);
-    public static final MutableFlagWithSafeDefault sAndroidTabHighlighting =
-            newMutableFlagWithSafeDefault(ANDROID_TAB_HIGHLIGHTING, true);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotifications =
             newMutableFlagWithSafeDefault(ANDROID_TIPS_NOTIFICATIONS, false);
     public static final MutableFlagWithSafeDefault sAndroidTipsNotificationsV2 =
@@ -1876,11 +1873,6 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault
             sOmniboxAutofocusOnIncognitoNtpNoZeroSuggest =
                     sOmniboxAutofocusOnIncognitoNtp.newBooleanParam("disable_zero_suggest", false);
-
-    public static final MutableBooleanParamWithSafeDefault sAndroidTabHighlightingForceCtrlClick =
-            sAndroidTabHighlighting.newBooleanParam("force_ctrl_click", false);
-    public static final MutableBooleanParamWithSafeDefault sAndroidTabHighlightingForceShiftClick =
-            sAndroidTabHighlighting.newBooleanParam("force_shift_click", false);
 
     public static final MutableBooleanParamWithSafeDefault sTabBottomSheetDontShowFusebox =
             sTabBottomSheet.newBooleanParam("dont_show_fusebox", false);

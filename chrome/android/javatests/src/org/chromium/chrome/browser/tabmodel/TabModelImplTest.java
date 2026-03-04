@@ -1275,7 +1275,6 @@ public class TabModelImplTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testHighlightTabs() {
         createTabs(2);
 

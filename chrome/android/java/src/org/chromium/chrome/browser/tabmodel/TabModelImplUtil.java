@@ -9,7 +9,6 @@ import org.chromium.base.supplier.MonotonicObservableSupplier;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
 
@@ -153,7 +152,6 @@ class TabModelImplUtil {
             boolean isSelected,
             Set<Integer> multiSelectedTabs,
             ObserverList<TabModelObserver> observers) {
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return;
         if (isSelected) {
             multiSelectedTabs.addAll(tabIds);
         } else {
@@ -175,7 +173,6 @@ class TabModelImplUtil {
             boolean notifyObservers,
             Set<Integer> multiSelectedTabs,
             ObserverList<TabModelObserver> observers) {
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return;
         if (multiSelectedTabs.isEmpty()) return;
         multiSelectedTabs.clear();
         if (notifyObservers) {
@@ -194,9 +191,8 @@ class TabModelImplUtil {
      * @param model The TabModel, used to get the currently active tab.
      * @return true if the tab is selected, false otherwise.
      */
-    /* package */  static boolean isTabMultiSelected(
+    /* package */ static boolean isTabMultiSelected(
             int tabId, Set<Integer> multiSelectedTabs, TabModel model) {
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return false;
         return multiSelectedTabs.contains(tabId) || tabId == TabModelUtils.getCurrentTabId(model);
     }
 }

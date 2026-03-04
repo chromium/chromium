@@ -20,7 +20,6 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ActivityType;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.NewWindowAppSource;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManagerFactory;
@@ -534,7 +533,6 @@ public abstract class TabModelJniBridge implements TabModelInternal {
     protected void highlightTabs(
             @JniType("TabAndroid*") Tab tabToActivate,
             @JniType("std::vector<TabAndroid*>") List<Tab> tabs) {
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled()) return;
         assert !tabs.isEmpty() : "The provided tab list cannot be empty.";
         assert tabToActivate != null : "tabToActivate cannot be null";
         Set<Integer> tabIds = new HashSet<>();

@@ -261,7 +261,6 @@ public class TabStripPinUnpinTabsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testPinAndUnpin_AllTabs() {
         TabStripTestUtils.createTabs(
                 mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
@@ -302,7 +301,6 @@ public class TabStripPinUnpinTabsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testPinAndUnpin_MultipleTabs() {
         TabStripTestUtils.createTabs(
                 mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);
@@ -349,7 +347,6 @@ public class TabStripPinUnpinTabsTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testPinAndUnpin_MultipleTabs_MixedPinnedUnPinned_PinTabs() {
         TabStripTestUtils.createTabs(
                 mActivityTestRule.getActivity(), /* isIncognito= */ false, /* numOfTabs= */ 5);

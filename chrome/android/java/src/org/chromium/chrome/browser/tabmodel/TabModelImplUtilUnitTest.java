@@ -28,8 +28,6 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.Features;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -348,7 +346,6 @@ public class TabModelImplUtilUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testSetTabsMultiSelected_Add() {
         Set<Integer> tabsToAdd = new HashSet<>(Arrays.asList(1, 2, 3));
         TabModelImplUtil.setTabsMultiSelected(tabsToAdd, true, mSelectedTabs, mObservers);
@@ -358,7 +355,6 @@ public class TabModelImplUtilUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testSetTabsMultiSelected_Remove() {
         mSelectedTabs.addAll(Arrays.asList(1, 2, 3, 4));
         Set<Integer> tabsToRemove = new HashSet<>(Arrays.asList(2, 4));
@@ -372,7 +368,6 @@ public class TabModelImplUtilUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testClearMultiSelection_WithNotification() {
         mSelectedTabs.addAll(Arrays.asList(1, 2, 3));
         TabModelImplUtil.clearMultiSelection(true, mSelectedTabs, mObservers);
@@ -382,7 +377,6 @@ public class TabModelImplUtilUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testClearMultiSelection_WithoutNotification() {
         mSelectedTabs.addAll(Arrays.asList(1, 2, 3));
         TabModelImplUtil.clearMultiSelection(false, mSelectedTabs, mObservers);
@@ -392,7 +386,6 @@ public class TabModelImplUtilUnitTest {
     }
 
     @Test
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_TAB_HIGHLIGHTING)
     public void testIsTabMultiSelected() {
         Tab currentTab = createTab();
         int currentTabId = currentTab.getId();

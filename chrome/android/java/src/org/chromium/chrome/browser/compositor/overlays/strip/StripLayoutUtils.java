@@ -401,9 +401,9 @@ public class StripLayoutUtils {
      * @param tabModel The {@link TabModel}.
      */
     public static void recordTabMultiSelectionTabCount(@Nullable TabModel tabModel) {
-        if (!ChromeFeatureList.sAndroidTabHighlighting.isEnabled() || tabModel == null) return;
+        if (tabModel == null) return;
         RecordHistogram.recordCount100Histogram(
-                "Tabs.Selections.Count",tabModel.getMultiSelectedTabsCount());
+                "Tabs.Selections.Count", tabModel.getMultiSelectedTabsCount());
     }
 
     // Other methods.
@@ -419,14 +419,6 @@ public class StripLayoutUtils {
     }
 
     // Testing booleans
-    public static boolean isTabHighlightingForceCtrlClick() {
-        return ChromeFeatureList.sAndroidTabHighlightingForceCtrlClick.getValue();
-    }
-
-    public static boolean isTabHighlightingForceShiftClick() {
-        return ChromeFeatureList.sAndroidTabHighlightingForceShiftClick.getValue();
-    }
-
     public static boolean isTabPinningFromStripEnabled() {
         return ChromeFeatureList.sAndroidPinnedTabsTabletTabStrip.isEnabled();
     }

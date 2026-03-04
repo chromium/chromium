@@ -4217,14 +4217,6 @@ const FeatureEntry::FeatureVariation kAndroidHubSearchTabGroupsVariations[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidTabHighlightingForceCtrlClick[] = {
-    {"force_ctrl_click", "true"}};
-const FeatureEntry::FeatureParam kAndroidTabHighlightingForceShiftClick[] = {
-    {"force_shift_click", "true"}};
-const FeatureEntry::FeatureVariation kAndroidTabHighlightingVariations[] = {
-    {"Force Ctrl Click", kAndroidTabHighlightingForceCtrlClick, nullptr},
-    {"Force Shift Click", kAndroidTabHighlightingForceShiftClick, nullptr}};
-
 const FeatureEntry::FeatureParam kTabBottomSheetDontShowFusebox[] = {
     {"dont_show_fusebox", "true"}};
 const FeatureEntry::FeatureVariation kTabBottomSheetVariations[] = {
@@ -10118,12 +10110,6 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-    {"android-tab-highlighting", flag_descriptions::kAndroidTabHighlightingName,
-     flag_descriptions::kAndroidTabHighlightingDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kAndroidTabHighlighting,
-                                    kAndroidTabHighlightingVariations,
-                                    "AndroidTabHighlightingVariations")},
-
     {"android-zoom-indicator", flag_descriptions::kAndroidZoomIndicatorName,
      flag_descriptions::kAndroidZoomIndicatorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(browser_ui::kAndroidZoomIndicator)},
