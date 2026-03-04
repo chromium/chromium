@@ -749,6 +749,9 @@ class AvatarToolbarButtonBaseBrowserTest {
       case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
         break;
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+        // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+        NOTREACHED() << "Test for this promo is not supported yet.";
     }
   }
 #endif
@@ -1581,6 +1584,9 @@ class MAYBE_AvatarToolbarButtonPromoBrowserTest
             {{syncer::kReplaceSyncPromosWithSignInPromos, false},
              {switches::kAvatarButtonSyncPromoForTesting, true}});
         break;
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+        // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+        NOTREACHED() << "Test for this promo is not supported yet.";
     }
   }
 
@@ -1604,6 +1610,9 @@ class MAYBE_AvatarToolbarButtonPromoBrowserTest
         return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
       case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+        // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+        NOTREACHED() << "Test for this promo is not supported yet.";
     }
   }
 
@@ -1629,6 +1638,9 @@ IN_PROC_BROWSER_TEST_P(MAYBE_AvatarToolbarButtonPromoBrowserTest,
     case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       EXPECT_EQ(avatar->GetText(), std::u16string());
       break;
+    case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+      NOTREACHED() << "Test for this promo is not supported yet.";
   }
 }
 
@@ -1954,6 +1966,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
     case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       EnableSync(test_email(), test_given_name());
       break;
+    case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+      NOTREACHED() << "Test for this promo is not supported yet.";
   }
 
   // The button should return to the normal state.
@@ -2141,6 +2156,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
                   kProfileMenuPrimaryButtonWithWindows10DepreciationActionFromAvatarPromo,
               testing::_));
       break;
+    case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+      NOTREACHED() << "Test for this promo is not supported yet.";
   }
   ASSERT_NO_FATAL_FAILURE(
       ClickIdentityButton(coordinator->GetProfileMenuViewBaseForTesting()));
@@ -2199,6 +2217,9 @@ TEST_WITH_SIGNED_IN_FROM_PRE(IN_PROC_BROWSER_TEST_P,
                                            account_name_2));
       avatar->ClearActiveStateForTesting();
       break;
+    case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // TODO(crbug.com/486109449): Adapt the tests to support this promo.
+      NOTREACHED() << "Test for this promo is not supported yet.";
   }
   // The promo should be shown for the new account (rate limiting is per
   // account).
@@ -2280,16 +2301,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_AvatarToolbarButtonSignedOutPromoBrowserTest,
   ASSERT_EQ(avatar->GetText(), std::u16string());
 
   ASSERT_TRUE(avatar->GetStateAndFireSignedOutTriggerDelayTimerForTesting());
-  // TODO(crbug.com/486109449): Improve expectation when implementation
-  // finalizes.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO));
 
   Browser* new_browser = CreateBrowser(browser()->GetProfile());
   AvatarToolbarButton* new_avatar = GetAvatarToolbarButton(new_browser);
   EXPECT_FALSE(avatar->GetStateAndFireSignedOutTriggerDelayTimerForTesting());
-  // TODO(crbug.com/486109449): Improve expectation when implementation
-  // finalizes.
-  EXPECT_EQ(new_avatar->GetText(), std::u16string());
+  EXPECT_EQ(new_avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO));
 }
 
 // TODO(crbug.com/331746545): Check flaky test issue on windows.
@@ -2366,9 +2385,8 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(GetIdentityManager()->AreRefreshTokensLoaded());
   // Timer is now started and the promo computation happens.
   EXPECT_TRUE(avatar->GetStateAndFireSignedOutTriggerDelayTimerForTesting());
-  // TODO(crbug.com/486109449): Improve expectation when implementation
-  // finalizes.
-  EXPECT_EQ(avatar->GetText(), std::u16string());
+  EXPECT_EQ(avatar->GetText(),
+            l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

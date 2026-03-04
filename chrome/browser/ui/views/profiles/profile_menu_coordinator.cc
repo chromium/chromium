@@ -52,24 +52,14 @@ void ProfileMenuCoordinator::Show(bool is_source_accelerator,
   }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-  // Only request promo info if the user is signed in.
-  if (signin_util::GetSignedInState(IdentityManagerFactory::GetForProfile(
-          GetProfile())) == signin_util::SignedInState::kSignedIn) {
-    signin::ComputeProfileMenuAvatarButtonPromoInfo(
-        *GetProfile(),
-        base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
-                       weak_pointer_factory_.GetWeakPtr(),
-                       is_source_accelerator, from_avatar_promo));
-    return;
-  }
+  signin::ComputeProfileMenuAvatarButtonPromoInfo(
+      *GetProfile(),
+      base::BindOnce(&ProfileMenuCoordinator::ShowWithPromoResults,
+                     weak_pointer_factory_.GetWeakPtr(), is_source_accelerator,
+                     from_avatar_promo));
+#else
+  ShowWithPromoResults(is_source_accelerator, from_avatar_promo);
 #endif
-
-  ShowWithPromoResults(is_source_accelerator, from_avatar_promo
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-                       ,
-                       signin::ProfileMenuAvatarButtonPromoInfo()
-#endif
-  );
 }
 
 void ProfileMenuCoordinator::ShowWithPromoResults(

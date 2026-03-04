@@ -1237,6 +1237,8 @@ class PromoStateProvider : public StateProvider {
       case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
         CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
         return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
+      case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+        return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SIGNIN_PROMO);
     }
   }
 

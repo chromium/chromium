@@ -813,6 +813,8 @@ prefs when the profile is loaded.  -->
     intereacted with it. Recorded when that interaction was made.
   </summary>
   <token key="AvatarPillPromoType">
+<!-- LINT.IfChange(AvatarPillPromoType) -->
+
     <variant name="BatchUpload"
         summary="Batch Upload Promo on the Avatar Pill, that lead to
                  performing a Batch Upload,"/>
@@ -825,8 +827,12 @@ prefs when the profile is loaded.  -->
     <variant name="HistorySync"
         summary="History Sync promo on the Avatar Pill, that lead to turning
                  history sync on,"/>
+    <variant name="Signin"
+        summary="Signin Promo no the Avatar Pill, that lead to signing in,"/>
     <variant name="Sync"
         summary="Sync Promo on the Avatar Pill, that lead to turning Sync on,"/>
+<!-- LINT.ThenChange(//chrome/browser/signin/signin_promo_util.cc:AvatarPillPromoType) -->
+
   </token>
 </histogram>
 

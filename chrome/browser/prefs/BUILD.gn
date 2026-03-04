@@ -83,6 +83,7 @@ source_set("impl") {
     "//chrome/browser/search",
     "//chrome/browser/search/background",
     "//chrome/browser/serial",
+    "//chrome/browser/signin",
     "//chrome/browser/signin:signin_promo",
     "//chrome/browser/subscription_eligibility",
     "//chrome/browser/sync",

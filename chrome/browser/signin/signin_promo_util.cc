@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/signin_promo_util.h"
 
 #include "base/check_deref.h"
+#include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
@@ -16,7 +17,9 @@
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -65,11 +68,21 @@ using signin_util::SignedInState;
 constexpr int kSigninPromoShownThreshold = 5;
 constexpr int kSigninPromoDismissedThreshold = 2;
 
-// Prefs that are part of the dictionary from
-// `SigninPrefs::GetOrCreateAvatarButtonPromoCountDictionary()` that maps the
-// used and shown counts for the promos listed in
-// `ProfileMenuAvatarButtonPromoInfo::Type` (Except for
-// `ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo`).
+// Profile based dictionary for AvatarButton promos.
+constexpr char kAvatarButtonPromoProfileDictionary[] =
+    "signin.avatar_button_promo_dict";
+
+// The following prefs are mapped to the used and shown counts of the promos
+// listed in `ProfileMenuAvatarButtonPromoInfo::Type` (Except for
+// `ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo`). Some promos can be
+// tied to an account/`GaiaId` (through
+// `SigninPrefs::GetOrCreateAvatarButtonPromoCountDictionary()` dictionary), or
+// to the Profile directly through `kAvatarButtonPromoProfileDictionary`
+// dictionary). Some prefs can also be mapped to both at the same time, in this
+// case we use the same pref, but it will depend on which dictionary it will be
+// stored.
+//
+// The following prefs are only attached to a `GaiaId`.
 constexpr char kAvatarButtonHistorySyncPromoShownCount[] =
     "AvatarButtonHistorySyncPromoShownCount";
 constexpr char kAvatarButtonHistorySyncPromoUsedCount[] =
@@ -86,6 +99,11 @@ constexpr char kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount[] =
     "AvatarButtonBatchUploadWindows10DepreciationPromoShownCount";
 constexpr char kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount[] =
     "AvatarButtonBatchUploadWindows10DepreciationPromoUsedCount";
+// The following prefs can be attached to a `GaiaId` or the Profile.
+constexpr char kAvatarButtonSigninPromoShownCount[] =
+    "AvatarButtonSigninPromoShownCount";
+constexpr char kAvatarButtonSigninPromoUsedCount[] =
+    "AvatarButtonSigninPromoUsedCount";
 
 const char* GetAvatarButtonPromoShownKey(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
@@ -102,6 +120,8 @@ const char* GetAvatarButtonPromoShownKey(
       return kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount;
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      return kAvatarButtonSigninPromoShownCount;
   }
 }
 
@@ -120,12 +140,28 @@ const char* GetAvatarButtonPromoUsedKey(
       return kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount;
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       NOTREACHED() << "SyncPromo uses the SigninPrefs values directly";
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      return kAvatarButtonSigninPromoUsedCount;
   }
+}
+
+// Returns the Gaia tied dictionary or the global profile dictionary for the
+// promo counts.
+base::DictValue& GetPromoCountsDictionary(PrefService& pref_service,
+                                          SigninPrefs& signin_prefs,
+                                          GaiaId gaia) {
+  if (gaia.empty()) {
+    return ScopedDictPrefUpdate(pref_service,
+                                kAvatarButtonPromoProfileDictionary)
+        .Get();
+  }
+  return signin_prefs.GetOrCreateAvatarButtonPromoCountDictionary(gaia);
 }
 
 // Returns the Shown/Used count pair for `promo_type`.
 std::pair<int, int> GetPromoUsageCounts(
-    SigninPrefs signin_prefs,
+    PrefService& pref_service,
+    SigninPrefs& signin_prefs,
     ProfileMenuAvatarButtonPromoInfo::Type promo_type,
     GaiaId gaia) {
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
@@ -134,13 +170,13 @@ std::pair<int, int> GetPromoUsageCounts(
             signin_prefs.GetSyncPromoIdentityPillUsedCount(gaia)};
   }
 
+  std::string_view shown_key = GetAvatarButtonPromoShownKey(promo_type);
+  std::string_view used_key = GetAvatarButtonPromoUsedKey(promo_type);
   base::DictValue& promo_counts =
-      signin_prefs.GetOrCreateAvatarButtonPromoCountDictionary(gaia);
+      GetPromoCountsDictionary(pref_service, signin_prefs, gaia);
 
-  return {promo_counts.FindInt(GetAvatarButtonPromoShownKey(promo_type))
-              .value_or(0),
-          promo_counts.FindInt(GetAvatarButtonPromoUsedKey(promo_type))
-              .value_or(0)};
+  return {promo_counts.FindInt(shown_key).value_or(0),
+          promo_counts.FindInt(used_key).value_or(0)};
 }
 
 bool WasPreviouslySyncingWithPrimaryAccount(Profile* profile) {
@@ -161,12 +197,20 @@ bool WasPreviouslySyncingWithPrimaryAccount(Profile* profile) {
   return last_syncing_gaia_id == primary_account_gaia_id;
 }
 
-void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
+ProfileMenuAvatarButtonPromoInfo
+ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
     Profile* profile,
-    base::OnceCallback<void(ProfileMenuAvatarButtonPromoInfo)> result_callback,
     std::map<syncer::DataType, syncer::LocalDataDescription> local_map_result) {
   CHECK(
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos));
+
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  if (base::FeatureList::IsEnabled(switches::kSigninPromoOnAvatarPill) &&
+      !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    return {.type = ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo,
+            .local_data_count = 0u};
+  }
 
   size_t local_data_count = std::accumulate(
       local_map_result.begin(), local_map_result.end(), 0u,
@@ -177,12 +221,9 @@ void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
 
   // Batch Upload promo: Windows 10 depreciation promo.
   if (local_data_count > 0 && switches::IsSigninWindows10DepreciationState()) {
-    std::move(result_callback)
-        .Run(ProfileMenuAvatarButtonPromoInfo{
-            .type = ProfileMenuAvatarButtonPromoInfo::Type::
+    return {.type = ProfileMenuAvatarButtonPromoInfo::Type::
                 kBatchUploadWindows10DepreciationPromo,
-            .local_data_count = local_data_count});
-    return;
+            .local_data_count = local_data_count};
   }
 
   // Batch Upload Bookmarks promo: for users that have local bookmarks and were
@@ -190,41 +231,28 @@ void ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult(
   if (WasPreviouslySyncingWithPrimaryAccount(profile)) {
     if (auto it = local_map_result.find(syncer::BOOKMARKS);
         it != local_map_result.end() && !it->second.local_data_models.empty()) {
-      std::move(result_callback)
-          .Run(ProfileMenuAvatarButtonPromoInfo{
-              .type = ProfileMenuAvatarButtonPromoInfo::Type::
+      return {.type = ProfileMenuAvatarButtonPromoInfo::Type::
                   kBatchUploadBookmarksPromo,
-              .local_data_count = local_data_count});
-      return;
+              .local_data_count = local_data_count};
     }
   }
   // History sync promo.
   if (signin_util::ShouldShowHistorySyncOptinScreen(*profile) ==
           signin_util::ShouldShowHistorySyncOptinResult::kShow &&
       !signin_util::HasExplicitlyDisabledHistorySync(
-          SyncServiceFactory::GetForProfile(profile),
-          IdentityManagerFactory::GetForProfile(profile))) {
-    std::move(result_callback)
-        .Run(ProfileMenuAvatarButtonPromoInfo{
-            .type = ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
-            .local_data_count = local_data_count});
-    return;
+          SyncServiceFactory::GetForProfile(profile), identity_manager)) {
+    return {.type = ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
+            .local_data_count = local_data_count};
   }
 
   // Regular Batch Upload promo: for users that have any local data type.
   if (local_data_count > 0) {
-    std::move(result_callback)
-        .Run(ProfileMenuAvatarButtonPromoInfo{
-            .type = ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
-            .local_data_count = local_data_count});
-    return;
+    return {.type = ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo,
+            .local_data_count = local_data_count};
   }
 
   // No promo.
-  std::move(result_callback)
-      .Run(ProfileMenuAvatarButtonPromoInfo{
-          .type = std::nullopt, .local_data_count = local_data_count});
-  return;
+  return {.type = std::nullopt, .local_data_count = local_data_count};
 }
 
 syncer::DataType GetDataTypeFromSignInPromoType(SignInPromoType type) {
@@ -705,6 +733,7 @@ void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
       "Signin.AvatarPillPromo.AcceptedAtShownCount.";
 
   std::string_view promo_type_suffix;
+  // LINT.IfChange(AvatarPillPromoType)
   switch (promo_type) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
       CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
@@ -723,10 +752,15 @@ void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
         kBatchUploadWindows10DepreciationPromo:
       promo_type_suffix = "BatchUploadWindows10Depreciation";
       break;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      promo_type_suffix = "Signin";
+      break;
   }
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/histograms.xml:AvatarPillPromoType)
 
+  SigninPrefs signin_prefs(prefs);
   int promo_shown_count =
-      GetPromoUsageCounts(SigninPrefs(prefs), promo_type, primary_gaia).first;
+      GetPromoUsageCounts(prefs, signin_prefs, promo_type, primary_gaia).first;
   base::UmaHistogramExactLinear(
       base::StrCat({kAvatarPillPromoAcceptedAtShownCountBaseHistogram,
                     promo_type_suffix}),
@@ -740,12 +774,20 @@ void ComputeProfileMenuAvatarButtonPromoInfo(
         result_callback) {
   if (base::FeatureList::IsEnabled(
           syncer::kReplaceSyncPromosWithSignInPromos)) {
+    BatchUploadService* batch_upload =
+        BatchUploadServiceFactory::GetForProfile(&profile);
+    if (!batch_upload) {
+      std::move(result_callback).Run(ProfileMenuAvatarButtonPromoInfo{});
+      return;
+    }
+
     // Note: `GetLocalDataDescriptionsForAvailableTypes()` will return no data
     // if the SyncService is not initialized.
-    BatchUploadServiceFactory::GetForProfile(&profile)
-        ->GetLocalDataDescriptionsForAvailableTypes(base::BindOnce(
+    batch_upload->GetLocalDataDescriptionsForAvailableTypes(
+        base::BindOnce(
             &ComputeProfileMenuAvatarButtonPromoInfoWithBatchUploadResult,
-            &profile, std::move(result_callback)));
+            &profile)
+            .Then(std::move(result_callback)));
     return;
   }
 
@@ -780,6 +822,7 @@ AvatarButtonPromoManager::AvatarButtonPromoManager(
     int max_used_count)
     : identity_manager_(identity_manager),
       signin_prefs_(std::make_unique<SigninPrefs>(CHECK_DEREF(pref_service))),
+      pref_service_(pref_service),
       max_shown_count_(max_shown_count),
       max_used_count_(max_used_count) {
   CHECK(identity_manager_);
@@ -788,43 +831,51 @@ AvatarButtonPromoManager::AvatarButtonPromoManager(
 
 AvatarButtonPromoManager::~AvatarButtonPromoManager() = default;
 
+// static
+void AvatarButtonPromoManager::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterDictionaryPref(kAvatarButtonPromoProfileDictionary);
+}
+
 bool AvatarButtonPromoManager::ShouldShowPromo(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
-  const AccountInfo account = GetSignedInAccountInfo();
-  if (account.gaia.empty()) {
-    // If there is no account available, there is nothing to record (the promos
-    // should be shown only for signed in users).
-    return false;
-  }
   if (!ArePromotionsEnabled()) {
     return false;
   }
 
+  if (!IsSigninStateAlignedWithPromoType(promo_type)) {
+    return false;
+  }
+
+  CHECK(pref_service_);
   CHECK(signin_prefs_);
-  auto [promo_shown_count, promo_used_count] =
-      GetPromoUsageCounts(*signin_prefs_.get(), promo_type, account.gaia);
+  CHECK(identity_manager_);
+
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager_);
+  auto [promo_shown_count, promo_used_count] = GetPromoUsageCounts(
+      *pref_service_.get(), *signin_prefs_.get(), promo_type, account.gaia);
   return promo_shown_count < max_shown_count_ &&
          promo_used_count < max_used_count_;
 }
 
 void AvatarButtonPromoManager::RecordPromoShown(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
-  const AccountInfo account = GetSignedInAccountInfo();
-  if (account.gaia.empty()) {
-    // If there is no account available, there is nothing to record (the promos
-    // should be shown only for signed in users).
-    return;
-  }
-
+  CHECK(pref_service_);
   CHECK(signin_prefs_);
+  CHECK(identity_manager_);
+  CHECK(IsSigninStateAlignedWithPromoType(promo_type));
+
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager_);
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
     CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
     signin_prefs_->IncrementSyncPromoIdentityPillShownCount(account.gaia);
     return;
   }
 
-  base::DictValue& promo_counts =
-      signin_prefs_->GetOrCreateAvatarButtonPromoCountDictionary(account.gaia);
+  base::DictValue& promo_counts = GetPromoCountsDictionary(
+      *pref_service_.get(), *signin_prefs_.get(), account.gaia);
   const char* shown_key = GetAvatarButtonPromoShownKey(promo_type);
   int new_conut = promo_counts.FindInt(shown_key).value_or(0) + 1;
   promo_counts.Set(shown_key, new_conut);
@@ -832,22 +883,21 @@ void AvatarButtonPromoManager::RecordPromoShown(
 
 void AvatarButtonPromoManager::RecordPromoUsed(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
-  const AccountInfo account = GetSignedInAccountInfo();
-  if (account.gaia.empty()) {
-    // If there is no account available, there is nothing to record (the promos
-    // should be shown only for signed in users).
-    return;
-  }
-
+  CHECK(pref_service_);
   CHECK(signin_prefs_);
+  CHECK(identity_manager_);
+  CHECK(IsSigninStateAlignedWithPromoType(promo_type));
+
+  const AccountInfo account =
+      signin_ui_util::GetSingleAccountForPromos(identity_manager_);
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
     CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
     signin_prefs_->IncrementSyncPromoIdentityPillUsedCount(account.gaia);
     return;
   }
 
-  base::DictValue& promo_counts =
-      signin_prefs_->GetOrCreateAvatarButtonPromoCountDictionary(account.gaia);
+  base::DictValue& promo_counts = GetPromoCountsDictionary(
+      *pref_service_.get(), *signin_prefs_.get(), account.gaia);
   const char* used_key = GetAvatarButtonPromoUsedKey(promo_type);
   int new_conut = promo_counts.FindInt(used_key).value_or(0) + 1;
   promo_counts.Set(used_key, new_conut);
@@ -856,6 +906,24 @@ void AvatarButtonPromoManager::RecordPromoUsed(
 bool AvatarButtonPromoManager::ArePromotionsEnabled() const {
   PrefService* local_state = g_browser_process->local_state();
   return local_state && local_state->GetBoolean(prefs::kPromotionsEnabled);
+}
+
+bool AvatarButtonPromoManager::IsSigninStateAlignedWithPromoType(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type) const {
+  signin_util::SignedInState signed_in_state =
+      signin_util::GetSignedInState(identity_manager_);
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+      return signed_in_state == signin_util::SignedInState::kSignedIn;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      return signed_in_state == signin_util::SignedInState::kSignedOut ||
+             signed_in_state == signin_util::SignedInState::kWebOnlySignedIn;
+  }
 }
 
 void AvatarButtonPromoManager::OnIdentityManagerShutdown(
@@ -871,19 +939,8 @@ void AvatarButtonPromoManager::OnIdentityManagerShutdown(
   // The need to clear the prefs here is primarily for unit tests that combines
   // `Browser` + `TestingProfile` (where the `PrefService` is owned by the
   // profile itself).
+  pref_service_ = nullptr;
   signin_prefs_.reset();
-}
-
-AccountInfo AvatarButtonPromoManager::GetSignedInAccountInfo() const {
-  CHECK(identity_manager_);
-  CHECK(identity_manager_->AreRefreshTokensLoaded());
-  // Checks for accounts in error as well.
-  if (signin_util::GetSignedInState(identity_manager_.get()) !=
-      signin_util::SignedInState::kSignedIn) {
-    return AccountInfo();
-  }
-  return identity_manager_->FindExtendedAccountInfo(
-      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
 }
 
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -2309,6 +2309,18 @@ Google Chrome is unable to recover your settings.
         <message name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="The avatar button label when the user has just signed in. When clicked, it opens the profile menu.">
           Making Chrome yours...
         </message>
+
+        <!-- Sign-in Promo Avatar Button Label Desktop -->
+        <if expr="not use_titlecase">
+          <message name="IDS_AVATAR_BUTTON_SIGNIN_PROMO" desc="The avatar button promo label inviting the user to sign-in. Shown for signed out users, and signed in to the web only. When clicked, it opens the profile menu.">
+            Sign in to Chrome?
+          </message>
+        </if>
+        <if expr="use_titlecase">
+           <message name="IDS_AVATAR_BUTTON_SIGNIN_PROMO" desc="The avatar button promo label inviting the user to sign-in. Shown for signed out users, and signed in to the web only. When clicked, it opens the profile menu.">
+            Sign In to Chrome?
+          </message>
+        </if>
       </if>
 
       <!-- OOBE -->

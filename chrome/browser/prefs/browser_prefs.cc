@@ -75,6 +75,7 @@
 #include "chrome/browser/serial/serial_policy_allowed_ports.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/signin/chrome_signin_client.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
 #include "chrome/browser/subscription_eligibility/subscription_eligibility_prefs.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -1823,6 +1824,9 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
       registry);
   SessionStartupPref::RegisterProfilePrefs(registry);
   SharingSyncPreference::RegisterProfilePrefs(registry);
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+  signin::AvatarButtonPromoManager::RegisterProfilePrefs(registry);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
   SigninPrefs::RegisterProfilePrefs(registry);
   site_engagement::SiteEngagementService::RegisterProfilePrefs(registry);
   subscription_eligibility::prefs::RegisterProfilePrefs(registry);

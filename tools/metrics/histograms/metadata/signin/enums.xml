@@ -824,6 +824,7 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Batch Upload - Bookmarks deduplication"/>
   <int value="3" label="Batch Upload - Windows10 Depreciation"/>
   <int value="4" label="Sync Promo"/>
+  <int value="5" label="Signin Promo"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/signin/signin_promo_util.h:ProfileMenuAvatarButtonPromoType) -->

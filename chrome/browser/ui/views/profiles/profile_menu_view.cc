@@ -758,6 +758,13 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
 
       access_point =
           signin_metrics::AccessPoint::kAvatarBubbleSignInWithSyncPromo;
+      if (from_avatar_promo_) {
+        CHECK(promo_info_.type.has_value());
+        CHECK_EQ(promo_info_.type.value(),
+                 signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo);
+        access_point = access_point =
+            signin_metrics::AccessPoint::kAvatarPillExpandPromo;
+      }
       signin_metrics::LogSignInOffered(
           access_point,
           account_info_for_promos.IsEmpty()
@@ -874,6 +881,8 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
             params.button_text = l10n_util::GetStringUTF16(
                 IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO);
             break;
+          case signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+            NOTREACHED() << "This promo type is not possible when signed in.";
         }
       } else {
         if (base::FeatureList::IsEnabled(
