@@ -52,7 +52,10 @@ source_set("default_browser") {
   if (is_win) {
     sources += [ "default_browser_monitor_win.cc" ]
 
-    deps += [ "//chrome/browser/win:registry_watcher" ]
+    deps += [
+      "//chrome/browser/win:registry_watcher",
+      "//chrome/install_static:install_static_util",
+    ]
   } else {
     sources += [ "default_browser_monitor_stub.cc" ]
   }
