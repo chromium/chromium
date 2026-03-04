@@ -166,8 +166,13 @@ AddressRewriter::AddressRewriter(const CompiledRuleVector* compiled_rules)
 std::u16string AddressRewriter::RewriteForCountryCode(
     const AddressCountryCode& country_code,
     const std::u16string& normalized_text) {
-  AddressRewriter rewriter = AddressRewriter::ForCountryCode(country_code);
-  return rewriter.Rewrite(normalized_text);
+  return ForCountryCode(country_code).Rewrite(normalized_text);
+}
+
+// static
+std::u16string AddressRewriter::RewriteUsingGlobalRules(
+    const std::u16string& normalized_text) {
+  return ForGlobalRules().Rewrite(normalized_text);
 }
 
 // static
@@ -176,6 +181,13 @@ AddressRewriter AddressRewriter::ForCountryCode(
   const std::string region = base::ToUpperASCII(country_code.value());
   const CompiledRuleVector* rules =
       Cache::GetInstance()->GetRulesForRegion(region);
+  return AddressRewriter(rules);
+}
+
+// static
+AddressRewriter AddressRewriter::ForGlobalRules() {
+  const CompiledRuleVector* rules =
+      Cache::GetInstance()->GetRulesForRegion("GLOBAL");
   return AddressRewriter(rules);
 }
 

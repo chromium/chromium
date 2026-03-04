@@ -318,18 +318,6 @@ std::string CaptureTypeWithPatternOptional(
       type, base::StrCat(base::span(pattern_span_initializer_list)));
 }
 
-std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
-                                   const std::u16string& text,
-                                   bool keep_white_space) {
-  return AddressRewriter::RewriteForCountryCode(
-      country_code->empty() ? AddressCountryCode("US") : country_code,
-      normalization::NormalizeForComparison(
-          text,
-          keep_white_space ? normalization::WhitespaceSpec::kRetain
-                           : normalization::WhitespaceSpec::kDiscard,
-          country_code));
-}
-
 std::string ParseCountryCode(const AutofillType& type,
                              std::u16string_view value,
                              std::string_view app_locale) {

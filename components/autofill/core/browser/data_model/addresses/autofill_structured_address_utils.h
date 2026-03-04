@@ -249,12 +249,6 @@ std::string CaptureTypeWithPatternOptional(
     const FieldType& type,
     std::initializer_list<std::string_view> pattern_span_initializer_list);
 
-// Normalizes and rewrites `text` using the rules for `country_code`.
-// If `country_code` is empty, it defaults to US.
-std::u16string NormalizeAndRewrite(const AddressCountryCode& country_code,
-                                   const std::u16string& text,
-                                   bool keep_white_space);
-
 // Determines the 2-letter country code from a given value.
 // This function handles two cases:
 // 1. The value is expected to be a country code (e.g.,

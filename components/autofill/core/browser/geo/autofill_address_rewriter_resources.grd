@@ -61,6 +61,7 @@
       <include name="IDR_ADDRESS_REWRITER_FR_RULES_UPDATED" file="address_rewrite_rules/FR_FIXED.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_GB_RULES" file="address_rewrite_rules/GB.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_GB_RULES_UPDATED" file="address_rewrite_rules/GB_FIXED.txt" type="BINDATA" compress="gzip"/>
+      <include name="IDR_ADDRESS_REWRITER_GLOBAL_RULES" file="address_rewrite_rules/GLOBAL.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_GR_RULES" file="address_rewrite_rules/GR.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_GT_RULES" file="address_rewrite_rules/GT.txt" type="BINDATA" compress="gzip"/>
       <include name="IDR_ADDRESS_REWRITER_GT_RULES_UPDATED" file="address_rewrite_rules/GT_FIXED.txt" type="BINDATA" compress="gzip"/>

@@ -234,15 +234,6 @@ TEST(AutofillStructuredAddressUtils, TokenizeValue) {
   EXPECT_EQ(TokenizeValue(u"이영호"), expected_cjk_tokens);
 }
 
-TEST(AutofillStructuredAddressUtils, TestGetRewriter) {
-  EXPECT_EQ(NormalizeAndRewrite(AddressCountryCode("us"), u"unit #3",
-                                /*keep_white_space=*/true),
-            u"u 3");
-  EXPECT_EQ(NormalizeAndRewrite(AddressCountryCode("us"), u"california",
-                                /*keep_white_space=*/true),
-            u"ca");
-}
-
 TEST(AutofillStructuredAddressUtils, AreStringTokenCompatible) {
   EXPECT_TRUE(AreStringTokenCompatible(u"moto hello", u"hello, moto"));
   EXPECT_TRUE(AreStringTokenCompatible(u"moto hello", u"hello, moto cross"));

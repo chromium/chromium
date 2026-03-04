@@ -328,5 +328,21 @@ TEST(AddressRewriterTest, ZA) {
             za.Rewrite(u"south africa"));
 }
 
+TEST(AddressRewriterTest, GLOBAL) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillIntroduceGlobalEmptyValueRewriterRules);
+
+  AddressRewriter global = AddressRewriter::ForGlobalRules();
+
+  EXPECT_EQ(global.Rewrite(u"null"), u"");
+  EXPECT_EQ(global.Rewrite(u"none"), u"");
+  EXPECT_EQ(global.Rewrite(u"nan"), u"");
+  EXPECT_EQ(global.Rewrite(u"undefined"), u"");
+  EXPECT_EQ(global.Rewrite(u"not applicable"), u"");
+  EXPECT_EQ(global.Rewrite(u"n a"), u"");
+
+  EXPECT_EQ(AddressRewriter::RewriteUsingGlobalRules(u"null"), u"");
+}
+
 }  // namespace
 }  // namespace autofill

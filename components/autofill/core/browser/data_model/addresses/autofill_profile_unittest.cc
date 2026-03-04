@@ -2114,6 +2114,18 @@ TEST_F(AutofillProfileTest, EmitsDaysUntilFirstUsageProfile) {
       1UL);
 }
 
+TEST_F(AutofillProfileTest, GetMatchingTypes_EmptyValuePlaceholder) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillIntroduceGlobalEmptyValueRewriterRules);
+
+  AutofillProfile profile(AddressCountryCode("US"));
+  profile.SetRawInfo(ADDRESS_HOME_STATE, u"none");
+
+  FieldTypeSet matching_types;
+  profile.GetMatchingTypes(u"none", "en-US", &matching_types);
+  EXPECT_THAT(matching_types, IsEmpty());
+}
+
 }  // namespace
 
 }  // namespace autofill

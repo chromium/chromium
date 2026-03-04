@@ -60,4 +60,35 @@ TEST(AutofillNormalizationUtilsTest,
                                    AddressCountryCode("US")));
 }
 
+TEST(AutofillNormalizationUtilsTest, NormalizeForComparisonWithGlobalRules) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillIntroduceGlobalEmptyValueRewriterRules);
+
+  EXPECT_EQ(u"", NormalizeForComparison(u"null"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"none"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"nan"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"undefined"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"not applicable"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"n a"));
+  EXPECT_EQ(u"123 main st", NormalizeForComparison(u"123 Main St null"));
+  EXPECT_EQ(u"123 main st", NormalizeForComparison(u"null 123 Main St"));
+  EXPECT_EQ(u"123 main st", NormalizeForComparison(u"123 Main null St"));
+
+  // Ensure it doesn't remove parts of words.
+  EXPECT_EQ(u"banana", NormalizeForComparison(u"banana"));
+  EXPECT_EQ(u"nonevent", NormalizeForComparison(u"nonevent"));
+}
+
+TEST(AutofillNormalizationUtilsTest,
+     NormalizeForComparisonWithCountrySpecificRules) {
+  EXPECT_EQ(NormalizeForComparison(u"unit #3", WhitespaceSpec::kRetain,
+                                   AddressCountryCode("us"),
+                                   /*apply_country_rewriter_rules=*/true),
+            u"u 3");
+  EXPECT_EQ(NormalizeForComparison(u"california", WhitespaceSpec::kRetain,
+                                   AddressCountryCode("us"),
+                                   /*apply_country_rewriter_rules=*/true),
+            u"ca");
+}
+
 }  // namespace autofill::normalization

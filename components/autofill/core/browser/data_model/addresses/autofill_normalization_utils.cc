@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversion_utils.h"
 #include "components/autofill/core/browser/data_model/transliterator.h"
 #include "components/autofill/core/browser/field_type_utils.h"
+#include "components/autofill/core/browser/geo/address_rewriter.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
 
@@ -118,7 +119,8 @@ bool HasOnlySkippableCharacters(std::u16string_view text) {
 
 std::u16string NormalizeForComparison(std::u16string_view text,
                                       WhitespaceSpec whitespace_spec,
-                                      const AddressCountryCode& country_code) {
+                                      const AddressCountryCode& country_code,
+                                      bool apply_country_rewriter_rules) {
   // This algorithm is not designed to be perfect, we could get arbitrarily
   // fancy here trying to canonicalize address lines. Instead, this is designed
   // to handle common cases for all types of data (addresses and names) without
@@ -155,7 +157,23 @@ std::u16string NormalizeForComparison(std::u16string_view text,
     result.resize(result.size() - 1);
   }
 
-  return RemoveDiacriticsAndConvertToLowerCase(result, country_code);
+  const AddressCountryCode non_empty_country_code =
+      country_code->empty() ? AddressCountryCode("US") : country_code;
+
+  result =
+      RemoveDiacriticsAndConvertToLowerCase(result, non_empty_country_code);
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillIntroduceGlobalEmptyValueRewriterRules)) {
+    result = AddressRewriter::RewriteUsingGlobalRules(result);
+  }
+
+  if (apply_country_rewriter_rules) {
+    result =
+        AddressRewriter::RewriteForCountryCode(non_empty_country_code, result);
+  }
+
+  return result;
 }
 
 }  // namespace autofill::normalization

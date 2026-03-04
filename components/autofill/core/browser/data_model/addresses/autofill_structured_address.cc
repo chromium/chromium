@@ -201,8 +201,9 @@ void StreetAddressNode::UnsetValue() {
 std::u16string StreetAddressNode::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
-  return NormalizeAndRewrite(common_country_code, value,
-                             /*keep_white_space=*/true);
+  return normalization::NormalizeForComparison(
+      value, normalization::WhitespaceSpec::kRetain, common_country_code,
+      /*apply_country_rewriter_rules=*/true);
 }
 
 void StreetAddressNode::SetValue(std::u16string value,
@@ -345,8 +346,9 @@ std::optional<std::u16string> StateNode::GetCanonicalizedValue() const {
 std::u16string StateNode::GetValueForComparison(
     const std::u16string& value,
     const AddressCountryCode& common_country_code) const {
-  return NormalizeAndRewrite(common_country_code, value,
-                             /*keep_white_space=*/true);
+  return normalization::NormalizeForComparison(
+      value, normalization::WhitespaceSpec::kRetain, common_country_code,
+      /*apply_country_rewriter_rules=*/true);
 }
 
 // Zips are mergeable when one is a substring of the other one.

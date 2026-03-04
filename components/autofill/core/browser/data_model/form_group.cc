@@ -37,6 +37,10 @@ void FormGroup::GetMatchingTypes(std::u16string_view text,
 
   std::u16string canonicalized_text =
       normalization::NormalizeForComparison(text);
+  if (canonicalized_text.empty()) {
+    return;
+  }
+
   for (FieldType type : GetSupportedTypes()) {
     if (AutofillProfileComparator::Compare(
             canonicalized_text, GetInfo(type, app_locale),

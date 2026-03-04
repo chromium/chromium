@@ -473,6 +473,36 @@ TEST_F(AutofillProfileComparatorTest, AreMergeable) {
   EXPECT_FALSE(comparator_.AreMergeable(p, not_mergeable_by_phone_number));
 }
 
+TEST_F(AutofillProfileComparatorTest, AreMergeable_EmptyValuePlaceholders) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillIntroduceGlobalEmptyValueRewriterRules);
+
+  AutofillProfile p1(AddressCountryCode("US"));
+  test::SetProfileInfo(&p1, test::SetProfileInfoOptionsBuilder()
+                                .with_first_name("Marion")
+                                .with_last_name("Morrison")
+                                .with_address1("Main str 123, apt 10")
+                                .with_city("Hollywood")
+                                .with_state("CA")
+                                .with_zipcode("12345")
+                                .Build());
+
+  AutofillProfile p2 = CopyAndModify(p1, {{ADDRESS_HOME_STATE, u"n/a"}});
+
+  AutofillProfile p3 =
+      CopyAndModify(p1, {{ADDRESS_HOME_ZIP, u"not applicable"}});
+
+  AutofillProfile p4 =
+      CopyAndModify(p1, {{ADDRESS_HOME_LINE1, u"Main str 123, NULL"}});
+
+  // State "CA" vs "n/a" -> mergeable.
+  EXPECT_TRUE(comparator_.AreMergeable(p1, p2));
+  // Zip "12345" vs "not applicable" -> mergeable.
+  EXPECT_TRUE(comparator_.AreMergeable(p1, p3));
+  // Address line "Main str 123, apt 10" vs "Main str 123, NULL" -> mergeable.
+  EXPECT_TRUE(comparator_.AreMergeable(p1, p4));
+}
+
 TEST_F(AutofillProfileComparatorTest, MergeEmailAddresses) {
   static const char kEmailA[] = "testaccount@domain.net";
   static const char16_t kEmailA16[] = u"testaccount@domain.net";

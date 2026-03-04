@@ -64,7 +64,8 @@ class NormalizingIterator {
 bool HasOnlySkippableCharacters(std::u16string_view text);
 
 // Returns a copy of `text` with uppercase converted to lowercase and
-// diacritics are rewritten using rules for given `country_code`.
+// diacritics are rewritten using rules for given `country_code`. If
+// `country_code` is empty, it defaults to "US".
 //
 // If `whitespace_spec` is kRetain, punctuation is converted to
 // spaces, and extraneous whitespace is trimmed and collapsed. For example,
@@ -72,10 +73,14 @@ bool HasOnlySkippableCharacters(std::u16string_view text);
 //
 // If `whitespace_spec` is kDiscard, punctuation and whitespace are discarded.
 // For example, +1 (234) 567-8900 becomes 12345678900.
+//
+// If `apply_country_rewriter_rules` is true, country-specific rewriter
+// rules are applied.
 std::u16string NormalizeForComparison(
     std::u16string_view text,
     WhitespaceSpec whitespace_spec = WhitespaceSpec::kRetain,
-    const AddressCountryCode& country_code = AddressCountryCode(""));
+    const AddressCountryCode& country_code = AddressCountryCode(""),
+    bool apply_country_rewriter_rules = false);
 }  // namespace autofill::normalization
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_ADDRESSES_AUTOFILL_NORMALIZATION_UTILS_H_

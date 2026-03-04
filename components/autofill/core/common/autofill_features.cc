@@ -723,6 +723,12 @@ BASE_FEATURE(kAutofillImprovePhoneFieldParser,
 BASE_FEATURE(kAutofillImprovePhoneNumberRationalization,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, global rules are applied to rewrite empty string values like
+// "null" to an empty string. These rules are applied for all types during
+// address normalization.
+BASE_FEATURE(kAutofillIntroduceGlobalEmptyValueRewriterRules,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // TODO(crbug.com/346507576): Remove once the experiment is over.
 // When enabled, makes autocomplete label sensitive.
 BASE_FEATURE(kAutofillLabelSensitiveAutocomplete,
