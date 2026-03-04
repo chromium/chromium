@@ -18385,7 +18385,7 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledStartup",
+                    "name": "MostlyLaunched",
                     "params": {
                         "trigger": "startup"
                     },
