@@ -34,7 +34,6 @@ import android.view.WindowManager;
 import android.window.TrustedPresentationThresholds;
 
 import androidx.annotation.RequiresApi;
-import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
@@ -46,6 +45,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
@@ -99,7 +99,7 @@ public class WindowAndroid
     private static final float MAX_REFRESH_RATE_DELTA = 2.f;
 
     private final @Nullable LifetimeAssert mLifetimeAssert;
-    private @Nullable IntentRequestTracker mIntentRequestTracker;
+    private @Nullable IntentRequestTrackerImpl mIntentRequestTracker;
 
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate =
             KeyboardVisibilityDelegate.getInstance();
@@ -245,7 +245,7 @@ public class WindowAndroid
                 DisplayAndroid.getNonMultiDisplay(context),
                 activityTopResumedSupported,
                 trackOcclusion);
-        mIntentRequestTracker = tracker;
+        mIntentRequestTracker = (IntentRequestTrackerImpl) tracker;
         mInsetObserver = insetObserver;
         mApplicationBottomInsetSupplier.setInsetObserver(mInsetObserver);
         if (mInsetObserver != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
@@ -437,9 +437,7 @@ public class WindowAndroid
      * @return Whether the intent was shown.
      */
     public boolean showIntent(
-            PendingIntent intent,
-            @Nullable IntentCallback callback,
-            @Nullable @StringRes Integer errorId) {
+            PendingIntent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return false;
@@ -457,9 +455,7 @@ public class WindowAndroid
      * @return Whether the intent was shown.
      */
     public boolean showIntent(
-            @Nullable Intent intent,
-            @Nullable IntentCallback callback,
-            @Nullable @StringRes Integer errorId) {
+            @Nullable Intent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return false;
@@ -478,9 +474,7 @@ public class WindowAndroid
      *     START_INTENT_FAILURE if failed.
      */
     public int showCancelableIntent(
-            PendingIntent intent,
-            @Nullable IntentCallback callback,
-            @Nullable @StringRes Integer errorId) {
+            PendingIntent intent, @Nullable IntentCallback callback, @Nullable Integer errorId) {
         if (mIntentRequestTracker == null) {
             Log.d(TAG, "Can't show intent as context is not an Activity: " + intent);
             return START_INTENT_FAILURE;
@@ -507,9 +501,19 @@ public class WindowAndroid
         return mIntentRequestTracker.showCancelableIntent(intent, callback, errorId);
     }
 
+    public int showCancelableIntent(
+            Callback<Integer> intentTrigger,
+            @Nullable IntentCallback callback,
+            @Nullable Integer errorId) {
+        if (mIntentRequestTracker == null) {
+            Log.d(TAG, "Can't show intent as context is not an Activity");
+            return START_INTENT_FAILURE;
+        }
+        return mIntentRequestTracker.showCancelableIntent(intentTrigger, callback, errorId);
+    }
+
     /**
      * Force finish another activity that you had previously started with showCancelableIntent.
-     *
      * @param requestCode The request code returned from showCancelableIntent.
      */
     public void cancelIntent(int requestCode) {
@@ -811,10 +815,11 @@ public class WindowAndroid
         return ActivityState.DESTROYED;
     }
 
-    /** Run upon intent completion to inform caller of the results and return any data. */
-    @FunctionalInterface
+    /** An interface that intent callback objects have to implement. */
     public interface IntentCallback {
         /**
+         * Handles the data returned by the requested intent.
+         *
          * @param resultCode Result code of the requested intent.
          * @param data The data returned by the intent.
          */
