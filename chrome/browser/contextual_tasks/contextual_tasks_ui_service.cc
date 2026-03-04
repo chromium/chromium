@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "base/containers/adapters.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
@@ -458,30 +459,38 @@ void ContextualTasksUiService::OnThreadLinkClicked(
       if (task_id.is_valid()) {
         AssociateWebContentsToTask(new_contents_ptr, task_id);
       }
-#if BUILDFLAG(IS_ANDROID)
-      // Insert the WebContents after the current active.
-      int active_tab_index = tab_list->GetActiveIndex();
-      tabs::TabInterface* active_tab = tab_list->GetActiveTab();
-      tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
-          active_tab_index + 1, std::move(new_contents),
-          /*should_pin=*/false,
-          /*group=*/active_tab->GetGroup());
-      tab_list->SetOpenerForTab(new_tab->GetHandle(), active_tab->GetHandle());
-      tab_list->ActivateTab(new_tab->GetHandle());
-#else
-      // TODO(crbug.com/483442073): Remove TabStripModel once we address the
-      // loss of ui::PAGE_TRANSITION_LINK upon migrating from
-      // TabStripModel::AddTab() to TabListInterface::InsertWebContentsAt().
-      TabStripModel* tab_strip_model = browser->GetTabStripModel();
-      // Creates the Tab so session ID is created for the WebContents.
-      auto tab_to_insert = std::make_unique<tabs::TabModel>(
-          std::move(new_contents), tab_strip_model);
-      // Insert the WebContents after the current active.
-      int active_tab_index = tab_strip_model->active_index();
-      tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
-                              ui::PAGE_TRANSITION_LINK,
-                              AddTabTypes::ADD_ACTIVE);
+
+      bool use_insert_web_contents_at = base::FeatureList::IsEnabled(
+          contextual_tasks::kContextualTasksInsertWebContentsAt);
+      if (use_insert_web_contents_at) {
+        // Insert the WebContents after the current active.
+        int active_tab_index = tab_list->GetActiveIndex();
+        tabs::TabInterface* active_tab = tab_list->GetActiveTab();
+        tabs::TabInterface* new_tab = tab_list->InsertWebContentsAt(
+            active_tab_index + 1, std::move(new_contents),
+            /*should_pin=*/false,
+            /*group=*/active_tab ? active_tab->GetGroup() : std::nullopt);
+        if (active_tab) {
+          tab_list->SetOpenerForTab(new_tab->GetHandle(),
+                                    active_tab->GetHandle());
+        }
+        tab_list->ActivateTab(new_tab->GetHandle());
+      } else {
+#if !BUILDFLAG(IS_ANDROID)
+        // TODO(crbug.com/483442073): Remove TabStripModel once we address the
+        // loss of ui::PAGE_TRANSITION_LINK upon migrating from
+        // TabStripModel::AddTab() to TabListInterface::InsertWebContentsAt().
+        TabStripModel* tab_strip_model = browser->GetTabStripModel();
+        // Creates the Tab so session ID is created for the WebContents.
+        auto tab_to_insert = std::make_unique<tabs::TabModel>(
+            std::move(new_contents), tab_strip_model);
+        // Insert the WebContents after the current active.
+        int active_tab_index = tab_strip_model->active_index();
+        tab_strip_model->AddTab(std::move(tab_to_insert), active_tab_index + 1,
+                                ui::PAGE_TRANSITION_LINK,
+                                AddTabTypes::ADD_ACTIVE);
 #endif
+      }
     } else {
       // If the tab was found, check if there was a text fragment to search for
       // in the URL. If so, highlight them to be shown to the user.

@@ -55,6 +55,10 @@ BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
 // contextual tasks URL and redirect to aim URL.
 BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 
+// Enables use of TabListInterface::InsertWebContentsAt in
+// ContextualTasksUiService.
+BASE_DECLARE_FEATURE(kContextualTasksInsertWebContentsAt);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
