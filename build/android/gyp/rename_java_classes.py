@@ -17,7 +17,7 @@ import zip_helpers
 
 
 def _RenameJars(options):
-  with tempfile.NamedTemporaryFile() as temp:
+  with tempfile.NamedTemporaryFile(suffix='.jar') as temp:
     cmd = build_utils.JavaCmd() + [
         '-cp',
         options.r8_path,
@@ -31,9 +31,9 @@ def _RenameJars(options):
       cmd += ['--map', mapping_rule]
 
     build_utils.CheckOutput(cmd)
-    # use zip_helper.merge_zips to hermetize the zip because R8 changes the
-    # times and permissions inside the output jar for some reason.
-    zip_helpers.merge_zips(options.output_jar, [temp.name])
+    # Use zip_helper.merge_zips to hermetize the zip because R8 changes the
+    # permissions inside the output jar for some reason.
+    zip_helpers.merge_zips(options.output_jar, [temp.name], compress=False)
 
 
 def main():
