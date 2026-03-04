@@ -65,12 +65,12 @@ class TabStyleViewsImpl : public TabStyleViews {
   SkPath GetPath(TabStyle::PathType path_type,
                  float scale,
                  const TabPathFlags& flags) const override;
+  void PaintTab(gfx::Canvas* canvas) const override;
   gfx::Insets GetContentsInsets() const override;
   float GetZValue() const override;
-  float GetCurrentActiveOpacity() const override;
   bool IsApparentlyActive() const override;
+  float GetCurrentActiveOpacity() const override;
   TabStyle::TabColors CalculateTargetColors() const override;
-  void PaintTab(gfx::Canvas* canvas) const override;
   void ShowHover(TabStyle::ShowHoverStyle style) override;
   void HideHover(TabStyle::HideHoverStyle style) override;
 
@@ -496,6 +496,57 @@ SkPath TabStyleViewsImpl::GetPath(TabStyle::PathType path_type,
   return path.detach();
 }
 
+void TabStyleViewsImpl::PaintTab(gfx::Canvas* canvas) const {
+  std::optional<int> active_tab_fill_id;
+  if (tab_->GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
+    active_tab_fill_id = IDR_THEME_TOOLBAR;
+  }
+  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
+  const std::optional<int> inactive_tab_fill_id =
+      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
+                               BrowserFrameActiveState::kUseCurrent)
+                         : std::nullopt;
+
+  if (active_tab_fill_id.has_value() || inactive_tab_fill_id.has_value()) {
+    PaintTabBackgroundWithImages(canvas, active_tab_fill_id,
+                                 inactive_tab_fill_id);
+  } else {
+    PaintTabBackground(canvas, GetSelectionState(), IsHoverAnimationActive(),
+                       std::nullopt, 0);
+  }
+}
+
+void TabStyleViewsImpl::PaintTabBackgroundWithImages(
+    gfx::Canvas* canvas,
+    std::optional<int> active_tab_fill_id,
+    std::optional<int> inactive_tab_fill_id) const {
+  // When at least one of the active or inactive tab backgrounds have an image,
+  // we must paint them with the previous method of layering the active and
+  // inactive images with two paint calls.
+
+  const int active_tab_y_inset = GetStrokeThickness(true);
+  const TabStyle::TabSelectionState current_state = GetSelectionState();
+
+  if (current_state == TabStyle::TabSelectionState::kActive) {
+    PaintTabBackground(canvas, TabStyle::TabSelectionState::kActive,
+                       /*hovered=*/false, active_tab_fill_id,
+                       active_tab_y_inset);
+  } else {
+    PaintTabBackground(canvas, TabStyle::TabSelectionState::kInactive,
+                       /*hovered=*/false, inactive_tab_fill_id, 0);
+
+    const float opacity = GetCurrentActiveOpacity();
+    if (opacity > 0) {
+      canvas->SaveLayerAlpha(base::ClampRound<uint8_t>(opacity * 0xff),
+                             tab_->GetLocalBounds());
+      PaintTabBackground(canvas, TabStyle::TabSelectionState::kActive,
+                         /*hovered=*/false, active_tab_fill_id,
+                         active_tab_y_inset);
+      canvas->Restore();
+    }
+  }
+}
+
 gfx::Insets TabStyleViewsImpl::GetContentsInsets() const {
   gfx::Insets base_style_insets = tab_style()->GetContentsInsets();
   gfx::Insets split_insets = gfx::Insets(0);
@@ -554,6 +605,17 @@ float TabStyleViewsImpl::GetZValue() const {
   return sort_value;
 }
 
+bool TabStyleViewsImpl::IsApparentlyActive() const {
+  const TabStyle::TabSelectionState selection_state = GetSelectionState();
+  if (selection_state == TabStyle::TabSelectionState::kActive) {
+    return true;
+  }
+  if (IsHovering()) {
+    return GetHoverOpacity() > 0.5f;
+  }
+  return selection_state == TabStyle::TabSelectionState::kSelected;
+}
+
 float TabStyleViewsImpl::GetCurrentActiveOpacity() const {
   const TabStyle::TabSelectionState selection_state = GetSelectionState();
   if (selection_state == TabStyle::TabSelectionState::kActive) {
@@ -569,73 +631,11 @@ float TabStyleViewsImpl::GetCurrentActiveOpacity() const {
   return std::lerp(base_opacity, GetHoverOpacity(), GetHoverAnimationValue());
 }
 
-bool TabStyleViewsImpl::IsApparentlyActive() const {
-  const TabStyle::TabSelectionState selection_state = GetSelectionState();
-  if (selection_state == TabStyle::TabSelectionState::kActive) {
-    return true;
-  }
-  if (IsHovering()) {
-    return GetHoverOpacity() > 0.5f;
-  }
-  return selection_state == TabStyle::TabSelectionState::kSelected;
-}
-
 TabStyle::TabColors TabStyleViewsImpl::CalculateTargetColors() const {
   return tab_style()->CalculateTargetColors(
       GetSelectionState(), IsApparentlyActive(), IsHovering(),
       tab()->GetWidget() ? tab()->GetWidget()->ShouldPaintAsActive() : true,
       tab()->GetColorProvider());
-}
-
-void TabStyleViewsImpl::PaintTab(gfx::Canvas* canvas) const {
-  std::optional<int> active_tab_fill_id;
-  if (tab_->GetThemeProvider()->HasCustomImage(IDR_THEME_TOOLBAR)) {
-    active_tab_fill_id = IDR_THEME_TOOLBAR;
-  }
-  BrowserFrameView* const browser_frame_view = GetBrowserFrameView();
-  const std::optional<int> inactive_tab_fill_id =
-      browser_frame_view ? browser_frame_view->GetCustomBackgroundId(
-                               BrowserFrameActiveState::kUseCurrent)
-                         : std::nullopt;
-
-  if (active_tab_fill_id.has_value() || inactive_tab_fill_id.has_value()) {
-    PaintTabBackgroundWithImages(canvas, active_tab_fill_id,
-                                 inactive_tab_fill_id);
-  } else {
-    PaintTabBackground(canvas, GetSelectionState(), IsHoverAnimationActive(),
-                       std::nullopt, 0);
-  }
-}
-
-void TabStyleViewsImpl::PaintTabBackgroundWithImages(
-    gfx::Canvas* canvas,
-    std::optional<int> active_tab_fill_id,
-    std::optional<int> inactive_tab_fill_id) const {
-  // When at least one of the active or inactive tab backgrounds have an image,
-  // we must paint them with the previous method of layering the active and
-  // inactive images with two paint calls.
-
-  const int active_tab_y_inset = GetStrokeThickness(true);
-  const TabStyle::TabSelectionState current_state = GetSelectionState();
-
-  if (current_state == TabStyle::TabSelectionState::kActive) {
-    PaintTabBackground(canvas, TabStyle::TabSelectionState::kActive,
-                       /*hovered=*/false, active_tab_fill_id,
-                       active_tab_y_inset);
-  } else {
-    PaintTabBackground(canvas, TabStyle::TabSelectionState::kInactive,
-                       /*hovered=*/false, inactive_tab_fill_id, 0);
-
-    const float opacity = GetCurrentActiveOpacity();
-    if (opacity > 0) {
-      canvas->SaveLayerAlpha(base::ClampRound<uint8_t>(opacity * 0xff),
-                             tab_->GetLocalBounds());
-      PaintTabBackground(canvas, TabStyle::TabSelectionState::kActive,
-                         /*hovered=*/false, active_tab_fill_id,
-                         active_tab_y_inset);
-      canvas->Restore();
-    }
-  }
 }
 
 void TabStyleViewsImpl::ShowHover(TabStyle::ShowHoverStyle style) {
@@ -1184,11 +1184,11 @@ ui::metadata::TypeConverter<TabStyle::TabColors>::GetValidStrings() {
 
 // TabStyleViews ---------------------------------------------------------------
 
-TabStyleViews::TabStyleViews() : tab_style_(TabStyle::Get()) {}
-
-TabStyleViews::~TabStyleViews() = default;
-
 // static
 std::unique_ptr<TabStyleViews> TabStyleViews::CreateForTab(Tab* tab) {
   return std::make_unique<TabStyleViewsImpl>(tab);
 }
+
+TabStyleViews::TabStyleViews() : tab_style_(TabStyle::Get()) {}
+
+TabStyleViews::~TabStyleViews() = default;
