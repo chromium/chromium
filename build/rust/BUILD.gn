@@ -53,7 +53,7 @@ if (toolchain_has_rust) {
         defines = [ "CXX_RS_EXPORT=" ]
       }
 
-      deps = [
+      public_deps = [
         # Depending on the C++ bindings side of cxx then requires also depending
         # on the Rust bindings, since one calls the other. And the Rust bindings
         # require the Rust standard library.
