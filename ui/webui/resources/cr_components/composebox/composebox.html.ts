@@ -45,6 +45,10 @@ export function getHtml(this: ComposeboxElement) {
           <div id="aimIcon"></div>
         </div>
         <div id="inputWrapper">
+          ${!this.disableCaretColorAnimation ? html`
+            <div id="mirror" part="mirror" aria-hidden="true"></div>
+            <div id="caret"></div>
+          ` : ''}
           <textarea
             aria-expanded="${this.showDropdown_}" aria-controls="matches"
             role="combobox" autocomplete="off" id="input"
@@ -52,6 +56,8 @@ export function getHtml(this: ComposeboxElement) {
             placeholder="${this.inputPlaceholder_}"
             part="input"
             .value="${this.input_}"
+            @click="${this.updateCaret_}"
+            @keyup="${this.updateCaret_}"
             @input="${this.handleInput_}"
             @scroll="${this.handleScroll_}"
             @focusin="${this.handleInputFocusIn_}"></textarea>

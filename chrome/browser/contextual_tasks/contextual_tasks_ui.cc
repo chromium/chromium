@@ -423,6 +423,10 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
       contextual_tasks::GetExpandButtonOption() ==
           contextual_tasks::ExpandButtonOption::kSidePanelExpandButton);
 
+  source->AddBoolean("caretAnimationEnabled",
+                     base::FeatureList::IsEnabled(
+                         contextual_tasks::kContextualTasksAnimatedCaret));
+
   // Set up chrome://contextual-tasks/internals debug UI.
   source->AddResourcePath(
       "internals",

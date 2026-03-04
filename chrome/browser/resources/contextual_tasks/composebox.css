@@ -173,7 +173,8 @@
 
 #composebox::part(input),
 #composebox::part(tool-chip-label),
-#composebox::part(file-thumbnail-title) {
+#composebox::part(file-thumbnail-title),
+#composebox::part(mirror) {
   font-family: var(--google-sans-font);
 }
 

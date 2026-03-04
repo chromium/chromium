@@ -63,6 +63,9 @@ BASE_FEATURE(kContextualTasksSendFullVersionListEnabled,
 BASE_FEATURE(kContextualTasksUrlRedirectToAimUrl,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, animates the caret.
+BASE_FEATURE(kContextualTasksAnimatedCaret, base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kContextualTasksInsertWebContentsAt,
              base::FEATURE_DISABLED_BY_DEFAULT);

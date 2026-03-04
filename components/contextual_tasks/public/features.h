@@ -59,6 +59,9 @@ BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 // ContextualTasksUiService.
 BASE_DECLARE_FEATURE(kContextualTasksInsertWebContentsAt);
 
+// If enabled, animates the caret.
+BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,
