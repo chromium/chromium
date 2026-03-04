@@ -135,6 +135,11 @@ export class PostSelectionRendererElement extends
         value: () => loadTimeData.getBoolean('cornerSlidersEnabled'),
         reflectToAttribute: true,
       },
+      backgroundGradientHidden: {
+        type: Boolean,
+        reflectToAttribute: true,
+        value: false,
+      },
     };
   }
 
@@ -157,6 +162,8 @@ export class PostSelectionRendererElement extends
   // Whether the region selected glow is enabled via feature flag.
   declare private regionSelectedGlowEnabled: boolean;
   declare private selectionOverlayRect: DOMRect;
+  // Whether the background gradient should be hidden.
+  declare private backgroundGradientHidden: boolean;
 
   private context: CanvasRenderingContext2D;
   // Listener IDs for events tracked from the browser.

@@ -62,7 +62,8 @@
     transition: none;
   }
 
-  :host([region-selected-glow-enabled]) #postSelection:before {
+  :host([region-selected-glow-enabled]:not([background-gradient-hidden]))
+    #postSelection:before {
     animation: postSelectionGlowFadeIn 120ms cubic-bezier(0, 0, 0, 1) forwards;
     background: conic-gradient(
       from 90deg at center,

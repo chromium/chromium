@@ -109,6 +109,26 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
         value: getFallbackTheme,
       },
       selectionOverlayRect: Object,
+      regionStrokeColor1: {
+        type: String,
+        value: GLIF_HEX_COLORS.blue,
+      },
+      regionStrokeColor2: {
+        type: String,
+        value: GLIF_HEX_COLORS.blue,
+      },
+      regionStrokeColor3: {
+        type: String,
+        value: GLIF_HEX_COLORS.red,
+      },
+      regionStrokeColor4: {
+        type: String,
+        value: GLIF_HEX_COLORS.yellow,
+      },
+      regionStrokeColor5: {
+        type: String,
+        value: GLIF_HEX_COLORS.green,
+      },
     };
   }
 
@@ -135,6 +155,13 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
   declare private selectionOverlayRect: DOMRect;
   // Whether keyboard selection should be displayed.
   declare private displayKeyboardSelection: boolean;
+
+  // The colors used for the gradient stroke of the region selection.
+  declare private regionStrokeColor1: string;
+  declare private regionStrokeColor2: string;
+  declare private regionStrokeColor3: string;
+  declare private regionStrokeColor4: string;
+  declare private regionStrokeColor5: string;
 
   private baseHandler: SelectionOverlayBaseHandler =
       SelectionOverlayBaseHandler.getInstance();
@@ -311,11 +338,11 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
     if (this.gradientRegionStrokeEnabled) {
       // Use AIM style GLIF color gradient.
       gradient = this.context.createConicGradient(0, centerX, centerY);
-      gradient.addColorStop(0, GLIF_HEX_COLORS.blue);
-      gradient.addColorStop(0.45, GLIF_HEX_COLORS.blue);
-      gradient.addColorStop(0.6, GLIF_HEX_COLORS.red);
-      gradient.addColorStop(0.76, GLIF_HEX_COLORS.yellow);
-      gradient.addColorStop(0.92, GLIF_HEX_COLORS.green);
+      gradient.addColorStop(0, this.regionStrokeColor1);
+      gradient.addColorStop(0.45, this.regionStrokeColor2);
+      gradient.addColorStop(0.6, this.regionStrokeColor3);
+      gradient.addColorStop(0.76, this.regionStrokeColor4);
+      gradient.addColorStop(0.92, this.regionStrokeColor5);
     } else if (this.whiteRegionStrokeEnabled) {
       // Use white gradient.
       gradient = this.context.createLinearGradient(
