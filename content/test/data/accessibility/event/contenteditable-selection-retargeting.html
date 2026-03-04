@@ -1,0 +1,25 @@
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+<html>
+<body>
+  <div id="ce" contenteditable autofocus>
+    This is a <a href="https://google.com">link</a> inside a contenteditable.
+  </div>
+  <script>
+    function go() {
+      const ce = document.getElementById('ce');
+      const range = document.createRange();
+      // Move cursor to the beginning of the text node after the link
+      range.setStart(ce.lastChild, 1);
+      range.setEnd(ce.lastChild, 1);
+      const selection = window.getSelection();
+      selection.removeAllRanges();
+      selection.addRange(range);
+      return false;
+    }
+  </script>
+</body>
+</html>

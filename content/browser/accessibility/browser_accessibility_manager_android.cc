@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/accessibility/browser_accessibility_android.h"
 #include "content/browser/accessibility/web_contents_accessibility_android.h"
+#include "content/common/features.h"
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_event_generator.h"
@@ -245,6 +246,57 @@ void BrowserAccessibilityManagerAndroid::FireSourceEvent(
   }
 }
 
+void BrowserAccessibilityManagerAndroid::FireDocumentSelectionChangedEvent(
+    WebContentsAccessibilityAndroid* wcax) {
+  ui::AXNodeID focus_id = ax_tree()->GetUnignoredSelection().focus_object_id;
+  ui::AXNodeID anchor_id = ax_tree()->GetUnignoredSelection().anchor_object_id;
+  BrowserAccessibilityAndroid* focus_object =
+      static_cast<BrowserAccessibilityAndroid*>(GetFromID(focus_id));
+
+  const bool extended_selection_enabled =
+      base::FeatureList::IsEnabled(features::kAccessibilityExtendedSelection);
+  const bool expose_children_enabled = base::FeatureList::IsEnabled(
+      features::kAccessibilityExposeNonAtomicTextFieldChildren);
+
+  if (extended_selection_enabled) {
+    bool should_send_to_root = false;
+
+    if (expose_children_enabled) {
+      // Send the event to the root of the frame if selection should be
+      // cleared, or multiple nodes are selected, or
+      // a non-atomic text field. Atomic text fields will continue to receive
+      // their event on them, the rest should go to the root web area.
+      // Note that this is to support contenteditables, where the
+      // contenteditable root itself is a non-atomic text field, and its
+      // children may be editable.
+      should_send_to_root = !focus_object || focus_id != anchor_id ||
+                            !focus_object->IsAtomicTextField();
+    } else {
+      // Send the event to the root of the frame if selection should be
+      // cleared, or multiple nodes are selected, or the node is not editable.
+      should_send_to_root = !focus_object || focus_id != anchor_id ||
+                            !focus_object->IsTextField();
+    }
+
+    if (should_send_to_root) {
+      BrowserAccessibilityAndroid* android_root_object =
+          static_cast<BrowserAccessibilityAndroid*>(
+              GetFromAXNode(ax_tree()->root()));
+      ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
+      wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
+      return;
+    }
+  } else if (!focus_object) {
+    // If focus object does not exist and extended selection is not
+    // enabled, there is nothing more to do since previous selection node is
+    // not known here and can't be cleared.
+    return;
+  }
+
+  // Send event to the focus node.
+  wcax->HandleTextSelectionChanged(focus_object->GetUniqueId());
+}
+
 void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
     ui::AXEventGenerator::Event event_type,
     const ui::AXNode* node) {
@@ -308,37 +360,7 @@ void BrowserAccessibilityManagerAndroid::FireGeneratedEvent(
       break;
     }
     case ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED: {
-      ui::AXNodeID focus_id =
-          ax_tree()->GetUnignoredSelection().focus_object_id;
-      ui::BrowserAccessibility* focus_object = GetFromID(focus_id);
-      if (base::FeatureList::IsEnabled(
-              features::kAccessibilityExtendedSelection)) {
-        ui::AXNodeID anchor_id =
-            ax_tree()->GetUnignoredSelection().anchor_object_id;
-        // Send the event to the root of the frame if selection should be
-        // cleared, or multiple nodes are selected, or the node is not editable.
-        if (!focus_object || focus_id != anchor_id ||
-            !focus_object->IsTextField()) {
-          BrowserAccessibilityAndroid* android_root_object =
-              static_cast<BrowserAccessibilityAndroid*>(
-                  GetFromAXNode(ax_tree()->root()));
-          ClearNodeInfoCacheForGivenId(android_root_object->GetUniqueId());
-          wcax->HandleTextSelectionChanged(android_root_object->GetUniqueId());
-          break;
-        }
-      } else {
-        // If focus object does not exist and extended selection is not
-        // enabled, there is nothing more to do since previous selection node is
-        // not known here and can't be cleared.
-        if (!focus_object) {
-          break;
-        }
-      }
-
-      // Send event to the focus node.
-      BrowserAccessibilityAndroid* android_focus_object =
-          static_cast<BrowserAccessibilityAndroid*>(focus_object);
-      wcax->HandleTextSelectionChanged(android_focus_object->GetUniqueId());
+      FireDocumentSelectionChangedEvent(wcax);
       break;
     }
     case ui::AXEventGenerator::Event::EXPANDED: {

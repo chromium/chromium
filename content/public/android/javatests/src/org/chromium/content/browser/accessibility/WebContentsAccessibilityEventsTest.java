@@ -23,6 +23,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.TestAnimations;
+import org.chromium.content.common.ContentInternalFeatures;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.ui.test.util.DeviceRestriction;
@@ -1491,5 +1492,14 @@ public class WebContentsAccessibilityEventsTest {
     public void test_visibilityHiddenChanged() {
         performTest(
                 "visibility-hidden-changed.html", "visibility-hidden-changed-expected-android.txt");
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ContentInternalFeatures.ACCESSIBILITY_EXPOSE_NON_ATOMIC_TEXT_FIELD_CHILDREN)
+    public void test_contenteditableSelectionRetargeting() {
+        performTest(
+                "contenteditable-selection-retargeting.html",
+                "contenteditable-selection-retargeting-expected-android.txt");
     }
 }

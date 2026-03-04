@@ -2664,6 +2664,8 @@ data/accessibility/event/children-changed-only-on-ancestor-expected-auralinux.tx
 data/accessibility/event/children-changed-only-on-ancestor-expected-uia-win.txt
 data/accessibility/event/children-changed-only-on-ancestor-expected-win.txt
 data/accessibility/event/children-changed-only-on-ancestor.html
+data/accessibility/event/contenteditable-selection-retargeting-expected-android.txt
+data/accessibility/event/contenteditable-selection-retargeting.html
 data/accessibility/event/css-display-descendants-expected-android.txt
 data/accessibility/event/css-display-descendants-expected-win.txt
 data/accessibility/event/css-display-descendants.html

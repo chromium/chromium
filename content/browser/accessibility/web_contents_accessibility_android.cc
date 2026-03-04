@@ -1795,8 +1795,18 @@ void WebContentsAccessibilityAndroid::PopulateAccessibilityNodeInfoSelection(
     return;
   }
 
-  BrowserAccessibilityManagerAndroid* root_manager =
-      static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+  // When children are exposed for contenteditables, we fetch the top-level
+  // manager, so we can set the extended selection data in the top-level root
+  // node that represents the web view.
+  BrowserAccessibilityManagerAndroid* root_manager;
+  if (base::FeatureList::IsEnabled(
+          features::kAccessibilityExposeNonAtomicTextFieldChildren)) {
+    root_manager = GetRootBrowserAccessibilityManager();
+  } else {
+    root_manager =
+        static_cast<BrowserAccessibilityManagerAndroid*>(node->manager());
+  }
+
   if (!root_manager) {
     return;
   }
