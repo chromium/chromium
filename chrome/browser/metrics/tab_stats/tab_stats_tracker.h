@@ -133,6 +133,10 @@ class TabStatsTracker :
     // The name of the histogram that records each window's width, in DIPs.
     static const char kWindowWidthHistogramName[];
 
+    // The name of the histogram that records if a window's vertical tab strip
+    // is collapsed.
+    static const char kVerticalTabStripCollapseStateHistogramName[];
+
     // The names of the histograms that record daily discard/reload counts
     // caused for each discard reason.
     static const char kDailyDiscardsExternalHistogramName[];

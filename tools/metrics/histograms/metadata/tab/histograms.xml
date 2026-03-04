@@ -3866,6 +3866,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Tabs.VerticalTabs.CollapseState"
+    enum="VerticalTabStripCollapseState" expires_after="2027-03-01">
+  <owner>agale@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Logs whether the vertical tab strip is collapsed or expanded. This is
+    recorded every 5 minutes (the heartbeat interval) for each window that has
+    the vertical tab strip enabled. Desktop only.
+  </summary>
+</histogram>
+
 <histogram name="Tabs.VerticalTabs.EnabledAtSessionStart" enum="BooleanEnabled"
     expires_after="2026-07-01">
   <owner>charlesmeng@chromium.org</owner>

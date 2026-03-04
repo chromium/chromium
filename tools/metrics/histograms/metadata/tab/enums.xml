@@ -517,6 +517,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_metrics_provider.h:VerticalTabsState) -->
 
+<!-- LINT.IfChange(VerticalTabStripCollapseState) -->
+
+<enum name="VerticalTabStripCollapseState">
+  <int value="0" label="Expanded"/>
+  <int value="1" label="Collapsed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/tabs/tab_enums.h:VerticalTabStripCollapseState) -->
+
 <!-- LINT.IfChange(VerticalTabStripEntryPoint) -->
 
 <enum name="VerticalTabStripEntryPoint">

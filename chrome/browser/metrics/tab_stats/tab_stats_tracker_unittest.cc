@@ -882,6 +882,34 @@ TEST_F(TabStatsTrackerTest, HeartbeatMetricsWithVerticalTabs) {
                     ".VerticalTabStrip"}),
       expected_tab_count, 1);
 }
+
+TEST_F(TabStatsTrackerTest, HeartbeatMetricsWithVerticalTabsCollapseState) {
+  auto* controller =
+      tabs::VerticalTabStripStateController::From(browser_.get());
+  controller->SetVerticalTabsEnabled(true);
+
+  // Default is not collapsed (Expanded).
+  EXPECT_FALSE(controller->IsCollapsed());
+  tab_stats_tracker_->OnHeartbeatEvent();
+  histogram_tester_.ExpectUniqueSample(
+      UmaStatsReportingDelegate::kVerticalTabStripCollapseStateHistogramName,
+      VerticalTabStripCollapseState::kExpanded, 1);
+
+  // Collapse it.
+  controller->SetCollapsed(true);
+  tab_stats_tracker_->OnHeartbeatEvent();
+  histogram_tester_.ExpectBucketCount(
+      UmaStatsReportingDelegate::kVerticalTabStripCollapseStateHistogramName,
+      VerticalTabStripCollapseState::kCollapsed, 1);
+
+  // Disable vertical tabs.
+  controller->SetVerticalTabsEnabled(false);
+  tab_stats_tracker_->OnHeartbeatEvent();
+  // No new sample for the collapse state.
+  histogram_tester_.ExpectTotalCount(
+      UmaStatsReportingDelegate::kVerticalTabStripCollapseStateHistogramName,
+      2);
+}
 #endif
 
 TEST_F(TabStatsTrackerTest, VideoPlayingInTab) {

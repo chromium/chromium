@@ -105,4 +105,14 @@ enum class TabActivationTypes {
   kMaxValue = kContextMenu,
 };
 
+// Enumerates the collapse state of the vertical tab strip.
+// KEEP IN SYNC WITH THE VerticalTabStripCollapseState ENUM IN enums.xml.
+// LINT.IfChange(VerticalTabStripCollapseState)
+enum class VerticalTabStripCollapseState {
+  kExpanded = 0,
+  kCollapsed = 1,
+  kMaxValue = kCollapsed,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:VerticalTabStripCollapseState)
+
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ENUMS_H_

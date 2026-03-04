@@ -248,6 +248,9 @@ const char
 const char
     TabStatsTracker::UmaStatsReportingDelegate::kWindowWidthHistogramName[] =
         "Tabs.WindowWidth";
+const char TabStatsTracker::UmaStatsReportingDelegate::
+    kVerticalTabStripCollapseStateHistogramName[] =
+        "Tabs.VerticalTabs.CollapseState";
 
 // Daily discard/reload histograms.
 const char TabStatsTracker::UmaStatsReportingDelegate::
@@ -910,6 +913,15 @@ void TabStatsTracker::UmaStatsReportingDelegate::ReportHeartbeatMetrics(
 
     UmaHistogramCounts10000WithTabStripModeVariant(kTabCountHistogramName,
                                                    tab_strip);
+
+    auto* controller = tabs::VerticalTabStripStateController::From(
+        tab_strip.browser_window_interface());
+    if (controller && controller->ShouldDisplayVerticalTabs()) {
+      base::UmaHistogramEnumeration(
+          kVerticalTabStripCollapseStateHistogramName,
+          controller->IsCollapsed() ? VerticalTabStripCollapseState::kCollapsed
+                                    : VerticalTabStripCollapseState::kExpanded);
+    }
 
     // Record the width of all open browser windows with tabs.
     const ui::BaseWindow* window =
