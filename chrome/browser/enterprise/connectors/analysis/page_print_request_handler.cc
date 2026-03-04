@@ -9,10 +9,12 @@
 #include "base/no_destructor.h"
 #include "chrome/browser/enterprise/connectors/analysis/page_print_analysis_request.h"
 #include "chrome/browser/enterprise/connectors/analysis/request_handler_base.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/analysis_settings.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_request.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/safe_browsing/content/browser/web_ui/web_ui_content_info_singleton.h"
@@ -177,15 +179,15 @@ void PagePrintRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, content_analysis_info_.get(),
+      ReportingEventRouterFactory::GetForBrowserContext(profile_),
+      content_analysis_info_.get(),
       /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,
       /*content_tranfer_method*/ "",
       content_analysis_info_->GetContentAreaAccountEmail(),
-      /*content_size*/ -1, content_analysis_info_->referrer_chain(), result,
-      response_,
+      /*content_size*/ -1, result, response_,
       CalculateEventResult(content_analysis_info_->settings(),
                            request_handler_result.complies, should_warn));
 

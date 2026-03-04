@@ -36,11 +36,11 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   // Returns email of the active Gaia user based on the values provided by
   // `tab_url()` and `identity_manager()`. Only returns a value for Workspace
   // sites.
-  std::string GetContentAreaAccountEmail() const;
+  std::string GetContentAreaAccountEmail() const override;
 };
 
 // Simple implementation of `ContentAnalysisInfo` meant to obtain the value
-// returned by `GetContentAreaAccountEmail`. This class shouldn't expose
+// returned by `content_area_account_email`. This class shouldn't expose
 // non-static methods unless every other override required to support it are
 // implemented.
 class ContentAreaUserProvider : public ContentAnalysisInfo {

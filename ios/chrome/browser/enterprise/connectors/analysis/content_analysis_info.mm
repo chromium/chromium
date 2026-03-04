@@ -38,8 +38,7 @@ signin::IdentityManager* ContentAnalysisInfo::identity_manager() const {
   return identity_manager_.get();
 }
 
-const enterprise_connectors::AnalysisSettings& ContentAnalysisInfo::settings()
-    const {
+const AnalysisSettings& ContentAnalysisInfo::settings() const {
   return settings_;
 }
 
@@ -59,8 +58,7 @@ std::string ContentAnalysisInfo::email() const {
   NOTREACHED();
 }
 
-enterprise_connectors::ContentAnalysisRequest::Reason
-ContentAnalysisInfo::reason() const {
+ContentAnalysisRequest::Reason ContentAnalysisInfo::reason() const {
   NOTREACHED();
 }
 
@@ -72,6 +70,10 @@ ContentAnalysisInfo::referrer_chain() const {
 google::protobuf::RepeatedPtrField<std::string>
 ContentAnalysisInfo::frame_url_chain() const {
   return {};
+}
+
+std::string ContentAnalysisInfo::GetContentAreaAccountEmail() const {
+  return std::string();
 }
 
 }  // namespace enterprise_connectors

@@ -26,27 +26,6 @@ class ContentAnalysisResponse;
 
 namespace safe_browsing {
 
-// Helper function to examine a ContentAnalysisResponse and report the
-// appropriate events to the enterprise admin. |download_digest_sha256| must be
-// encoded using base::HexEncode.  |event_result| indicates whether the user was
-// ultimately allowed to access the text or file.
-void MaybeReportDeepScanningVerdict(
-    Profile* profile,
-    const enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
-    const std::string& source,
-    const std::string& destination,
-    const std::string& file_name,
-    const std::string& download_digest_sha256,
-    const std::string& mime_type,
-    const std::string& trigger,
-    const std::string& content_transfer_method,
-    const std::string& source_email,
-    const int64_t content_size,
-    const safe_browsing::ReferrerChain& referrer_chain,
-    enterprise_connectors::ScanRequestUploadResult result,
-    const enterprise_connectors::ContentAnalysisResponse& response,
-    enterprise_connectors::EventResult event_result);
-
 // Helper function to report the user bypassed a warning to the enterprise
 // admin. This is split from MaybeReportDeepScanningVerdict since it happens
 // after getting a response. |download_digest_sha256| must be encoded using

@@ -36,6 +36,7 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
   const AnalysisSettings& settings() const override;
+  std::string GetContentAreaAccountEmail() const override;
 
  private:
   int user_action_requests_count() const override;

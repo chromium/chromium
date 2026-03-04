@@ -23,30 +23,6 @@ namespace {
 constexpr int kMinBytesPerSecond = 1;
 constexpr int kMaxBytesPerSecond = 100 * 1024 * 1024;  // 100 MB/s
 
-std::string MaybeGetUnscannedReason(
-    enterprise_connectors::ScanRequestUploadResult result) {
-  switch (result) {
-    case enterprise_connectors::ScanRequestUploadResult::kSuccess:
-    case enterprise_connectors::ScanRequestUploadResult::kUnauthorized:
-      // Don't report an unscanned file event on these results.
-      return "";
-
-    case enterprise_connectors::ScanRequestUploadResult::kFileTooLarge:
-      return enterprise_connectors::kFileTooLargeUnscannedReason;
-    case enterprise_connectors::ScanRequestUploadResult::kTooManyRequests:
-      return enterprise_connectors::kTooManyRequestsUnscannedReason;
-    case enterprise_connectors::ScanRequestUploadResult::kTimeout:
-      return enterprise_connectors::kTimeoutUnscannedReason;
-    case enterprise_connectors::ScanRequestUploadResult::kUnknown:
-    case enterprise_connectors::ScanRequestUploadResult::kUploadFailure:
-    case enterprise_connectors::ScanRequestUploadResult::kFailedToGetToken:
-    case enterprise_connectors::ScanRequestUploadResult::kIncompleteResponse:
-      return enterprise_connectors::kServiceUnavailableUnscannedReason;
-    case enterprise_connectors::ScanRequestUploadResult::kFileEncrypted:
-      return enterprise_connectors::kFilePasswordProtectedUnscannedReason;
-  }
-}
-
 crash_reporter::CrashKeyString<7>* GetScanCrashKey(ScanningCrashKey key) {
   static crash_reporter::CrashKeyString<7> pending_file_uploads(
       "pending-file-upload-scans");
@@ -144,71 +120,6 @@ void AddCustomMessageRule(
 }
 
 }  // namespace
-
-void MaybeReportDeepScanningVerdict(
-    Profile* profile,
-    const enterprise_connectors::ContentAnalysisInfo* content_analysis_info,
-    const std::string& source,
-    const std::string& destination,
-    const std::string& file_name,
-    const std::string& download_digest_sha256,
-    const std::string& mime_type,
-    const std::string& trigger,
-    const std::string& content_transfer_method,
-    const std::string& source_email,
-    const int64_t content_size,
-    const safe_browsing::ReferrerChain& referrer_chain,
-    enterprise_connectors::ScanRequestUploadResult result,
-    const enterprise_connectors::ContentAnalysisResponse& response,
-    enterprise_connectors::EventResult event_result) {
-  DCHECK(std::ranges::all_of(download_digest_sha256, base::IsHexDigit<char>));
-  DCHECK(content_analysis_info);
-
-  auto* reporting_event_router =
-      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
-          profile);
-  if (!reporting_event_router) {
-    return;
-  }
-
-  std::string unscanned_reason = MaybeGetUnscannedReason(result);
-  if (!unscanned_reason.empty()) {
-    reporting_event_router->OnUnscannedFileEvent(
-        GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-        source, destination, file_name, download_digest_sha256, mime_type,
-        trigger, unscanned_reason, content_transfer_method, content_size,
-        event_result);
-  }
-
-  if (result != enterprise_connectors::ScanRequestUploadResult::kSuccess) {
-    return;
-  }
-
-  for (const auto& response_result : response.results()) {
-    if (response_result.status() !=
-        enterprise_connectors::ContentAnalysisResponse::Result::SUCCESS) {
-      unscanned_reason = "UNSCANNED_REASON_UNKNOWN";
-      if (response_result.tag() == "malware")
-        unscanned_reason = "MALWARE_SCAN_FAILED";
-      else if (response_result.tag() == "dlp")
-        unscanned_reason = "DLP_SCAN_FAILED";
-
-      reporting_event_router->OnUnscannedFileEvent(
-          GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-          source, destination, file_name, download_digest_sha256, mime_type,
-          trigger, std::move(unscanned_reason), content_transfer_method,
-          content_size, event_result);
-    } else if (response_result.triggered_rules_size() > 0) {
-      reporting_event_router->OnAnalysisConnectorResult(
-          GURL(content_analysis_info->url()), content_analysis_info->tab_url(),
-          source, destination, file_name, download_digest_sha256, mime_type,
-          trigger, response.request_token(), content_transfer_method,
-          source_email, content_analysis_info->GetContentAreaAccountEmail(),
-          response_result, content_size, referrer_chain,
-          content_analysis_info->frame_url_chain(), event_result);
-    }
-  }
-}
 
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,

@@ -19,6 +19,7 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_downloads_delegate.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/enterprise/data_protection/data_protection_features.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
@@ -33,6 +34,7 @@
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/enterprise/connectors/core/cloud_content_scanning/binary_upload_service.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
@@ -794,16 +796,17 @@ void DeepScanningRequest::OnEnterpriseScanComplete(
   DCHECK(file_metadata_.count(current_path));
   file_metadata_.at(current_path).scan_response = std::move(response);
   if (profile) {
-    safe_browsing::ReferrerChain referrers = referrer_chain();
     const auto& file_metadata = file_metadata_.at(current_path);
+    auto* reporting_event_router = enterprise_connectors::
+        ReportingEventRouterFactory::GetForBrowserContext(profile);
     report_callbacks_.AddUnsafe(base::BindOnce(
-        &MaybeReportDeepScanningVerdict, profile, this, /*source=*/"",
+        &enterprise_connectors::MaybeReportDeepScanningVerdict,
+        reporting_event_router, this, /*source=*/"",
         /*destination=*/GetDestinationString(download_result),
-        file_metadata.filename, file_metadata.sha256,
-        file_metadata.mime_type,
+        file_metadata.filename, file_metadata.sha256, file_metadata.mime_type,
         enterprise_connectors::kFileDownloadDataTransferEventTrigger,
         /*content_transfer_method=*/"", GetContentAreaAccountEmail(),
-        file_metadata.size, referrers, result, file_metadata.scan_response));
+        file_metadata.size, result, file_metadata.scan_response));
 
     metadata_->AddScanResultMetadata(file_metadata);
   }

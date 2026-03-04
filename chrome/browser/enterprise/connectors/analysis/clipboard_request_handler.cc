@@ -5,7 +5,9 @@
 #include "chrome/browser/enterprise/connectors/analysis/clipboard_request_handler.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_utils.h"
+#include "components/enterprise/connectors/core/cloud_content_scanning/deep_scanning_utils.h"
 #include "components/enterprise/connectors/core/common.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
 #include "components/enterprise/connectors/core/reporting_event_router.h"
@@ -165,15 +167,15 @@ void ClipboardRequestHandler::OnContentAnalysisResponse(
                      FinalContentAnalysisResult::WARNING;
 
   MaybeReportDeepScanningVerdict(
-      profile_, content_analysis_info_.get(),
+      ReportingEventRouterFactory::GetForBrowserContext(profile_),
+      content_analysis_info_.get(),
       /*source*/
       ReportingEventRouter::GetClipboardSourceString(clipboard_source_),
       /*destination*/ url_.spec(),
       type_ == Type::kText ? "Text data" : "Image data",
       /*download_digest_sha256*/ "", type_ == Type::kText ? "text/plain" : "",
       kWebContentUploadDataTransferEventTrigger, content_transfer_method_,
-      source_content_area_email_, content_size_,
-      content_analysis_info_->referrer_chain(), result, response_,
+      source_content_area_email_, content_size_, result, response_,
       CalculateEventResult(content_analysis_info_->settings(),
                            request_handler_result.complies, should_warn));
 

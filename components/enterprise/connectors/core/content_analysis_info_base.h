@@ -45,6 +45,9 @@ class ContentAnalysisInfoBase {
   referrer_chain() const = 0;
   virtual google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const = 0;
+
+  // Method to compute and get the content area user email.
+  virtual std::string GetContentAreaAccountEmail() const = 0;
 };
 
 }  // namespace enterprise_connectors
