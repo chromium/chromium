@@ -81,14 +81,12 @@ TEST_F(QueryClassifierTest, EntityIntents) {
   EXPECT_EQ(classifier_->Classify(u"my vehicle"), QueryIntentType::kVehicle);
   EXPECT_EQ(classifier_->Classify(u"passport info"),
             QueryIntentType::kPassportFull);
-  EXPECT_EQ(classifier_->Classify(u"flight number"),
-            QueryIntentType::kFlightReservationFull);
   EXPECT_EQ(classifier_->Classify(u"my reservation"),
             QueryIntentType::kFlightReservationFull);
   EXPECT_EQ(classifier_->Classify(u"national id"),
             QueryIntentType::kNationalIdCardFull);
   EXPECT_EQ(classifier_->Classify(u"redress number"),
-            QueryIntentType::kRedressNumberFull);
+            QueryIntentType::kRedressNumberNumber);
   EXPECT_EQ(classifier_->Classify(u"known traveler number"),
             QueryIntentType::kKnownTravelerNumberFull);
   EXPECT_EQ(classifier_->Classify(u"my KTN"),
@@ -97,6 +95,78 @@ TEST_F(QueryClassifierTest, EntityIntents) {
             QueryIntentType::kDriversLicenseFull);
   EXPECT_EQ(classifier_->Classify(u"driving license"),
             QueryIntentType::kDriversLicenseFull);
+}
+
+TEST_F(QueryClassifierTest, EntityAttributeIntents) {
+  // Vehicle attributes
+  EXPECT_EQ(classifier_->Classify(u"car make"), QueryIntentType::kVehicleMake);
+  EXPECT_EQ(classifier_->Classify(u"vehicle model"),
+            QueryIntentType::kVehicleModel);
+  EXPECT_EQ(classifier_->Classify(u"car year"), QueryIntentType::kVehicleYear);
+  EXPECT_EQ(classifier_->Classify(u"vehicle owner"),
+            QueryIntentType::kVehicleOwner);
+  EXPECT_EQ(classifier_->Classify(u"plate state"),
+            QueryIntentType::kVehiclePlateState);
+
+  // Passport attributes
+  EXPECT_EQ(classifier_->Classify(u"passport number"),
+            QueryIntentType::kPassportNumber);
+  EXPECT_EQ(classifier_->Classify(u"passport expiration"),
+            QueryIntentType::kPassportExpirationDate);
+  EXPECT_EQ(classifier_->Classify(u"passport issue"),
+            QueryIntentType::kPassportIssueDate);
+  EXPECT_EQ(classifier_->Classify(u"passport country"),
+            QueryIntentType::kPassportCountry);
+  EXPECT_EQ(classifier_->Classify(u"passport name"),
+            QueryIntentType::kPassportName);
+
+  // Flight Reservation attributes
+  EXPECT_EQ(classifier_->Classify(u"flight number"),
+            QueryIntentType::kFlightReservationFlightNumber);
+  EXPECT_EQ(classifier_->Classify(u"ticket number"),
+            QueryIntentType::kFlightReservationTicketNumber);
+  EXPECT_EQ(classifier_->Classify(u"confirmation code"),
+            QueryIntentType::kFlightReservationConfirmationCode);
+  EXPECT_EQ(classifier_->Classify(u"passenger name"),
+            QueryIntentType::kFlightReservationPassengerName);
+  EXPECT_EQ(classifier_->Classify(u"departure airport"),
+            QueryIntentType::kFlightReservationDepartureAirport);
+  EXPECT_EQ(classifier_->Classify(u"arrival airport"),
+            QueryIntentType::kFlightReservationArrivalAirport);
+  EXPECT_EQ(classifier_->Classify(u"departure date"),
+            QueryIntentType::kFlightReservationDepartureDate);
+
+  // National ID attributes
+  EXPECT_EQ(classifier_->Classify(u"national id number"),
+            QueryIntentType::kNationalIdCardNumber);
+  EXPECT_EQ(classifier_->Classify(u"national id name"),
+            QueryIntentType::kNationalIdCardName);
+
+  // Redress/KTN attributes
+  EXPECT_EQ(classifier_->Classify(u"redress name"),
+            QueryIntentType::kRedressNumberName);
+  EXPECT_EQ(classifier_->Classify(u"ktn number"),
+            QueryIntentType::kKnownTravelerNumberNumber);
+
+  // Drivers License attributes
+  EXPECT_EQ(classifier_->Classify(u"driver's license number"),
+            QueryIntentType::kDriversLicenseNumber);
+  EXPECT_EQ(classifier_->Classify(u"drivers license state"),
+            QueryIntentType::kDriversLicenseState);
+}
+
+TEST_F(QueryClassifierTest, OrderIntents) {
+  EXPECT_EQ(classifier_->Classify(u"order id"), QueryIntentType::kOrderId);
+  EXPECT_EQ(classifier_->Classify(u"order number"), QueryIntentType::kOrderId);
+  EXPECT_EQ(classifier_->Classify(u"order date"), QueryIntentType::kOrderDate);
+  EXPECT_EQ(classifier_->Classify(u"merchant name"),
+            QueryIntentType::kOrderMerchantName);
+  EXPECT_EQ(classifier_->Classify(u"store name"),
+            QueryIntentType::kOrderMerchantName);
+  EXPECT_EQ(classifier_->Classify(u"order grand total"),
+            QueryIntentType::kOrderGrandTotal);
+  EXPECT_EQ(classifier_->Classify(u"what is my order"),
+            QueryIntentType::kOrderFull);
 }
 
 TEST_F(QueryClassifierTest, MixedWithStopWords) {

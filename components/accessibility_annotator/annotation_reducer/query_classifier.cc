@@ -94,6 +94,174 @@ QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
     return (contains_single_phrase(keyword_phrases) || ...);
   };
 
+  // Vehicle
+  if (contains(u"vin")) {
+    return QueryIntentType::kVehicleVin;
+  }
+  if (contains(u"vehicle make", u"car make")) {
+    return QueryIntentType::kVehicleMake;
+  }
+  if (contains(u"vehicle model", u"car model")) {
+    return QueryIntentType::kVehicleModel;
+  }
+  if (contains(u"vehicle year", u"car year")) {
+    return QueryIntentType::kVehicleYear;
+  }
+  if (contains(u"vehicle owner", u"car owner")) {
+    return QueryIntentType::kVehicleOwner;
+  }
+  if (contains(u"plate state", u"license plate state")) {
+    return QueryIntentType::kVehiclePlateState;
+  }
+  if (contains(u"vehicle", u"car")) {
+    return QueryIntentType::kVehicle;
+  }
+  if (contains(u"license plate", u"plate number", u"plate")) {
+    return QueryIntentType::kVehiclePlateNumber;
+  }
+
+  // Passport
+  if (contains(u"passport number")) {
+    return QueryIntentType::kPassportNumber;
+  }
+  if (contains(u"passport expiration", u"passport expiry")) {
+    return QueryIntentType::kPassportExpirationDate;
+  }
+  if (contains(u"passport issue")) {
+    return QueryIntentType::kPassportIssueDate;
+  }
+  if (contains(u"passport country")) {
+    return QueryIntentType::kPassportCountry;
+  }
+  if (contains(u"passport name")) {
+    return QueryIntentType::kPassportName;
+  }
+  if (contains(u"passport")) {
+    return QueryIntentType::kPassportFull;
+  }
+
+  // Flight Reservation
+  if (contains(u"flight number")) {
+    return QueryIntentType::kFlightReservationFlightNumber;
+  }
+  if (contains(u"ticket number")) {
+    return QueryIntentType::kFlightReservationTicketNumber;
+  }
+  if (contains(u"confirmation code", u"flight confirmation")) {
+    return QueryIntentType::kFlightReservationConfirmationCode;
+  }
+  if (contains(u"passenger name", u"flight passenger")) {
+    return QueryIntentType::kFlightReservationPassengerName;
+  }
+  if (contains(u"departure airport", u"from airport")) {
+    return QueryIntentType::kFlightReservationDepartureAirport;
+  }
+  if (contains(u"arrival airport", u"to airport")) {
+    return QueryIntentType::kFlightReservationArrivalAirport;
+  }
+  if (contains(u"departure date", u"flight date")) {
+    return QueryIntentType::kFlightReservationDepartureDate;
+  }
+  if (contains(u"flight reservation", u"flight", u"reservation")) {
+    return QueryIntentType::kFlightReservationFull;
+  }
+
+  // Order
+  if (contains(u"order id", u"order number")) {
+    return QueryIntentType::kOrderId;
+  }
+  if (contains(u"order account")) {
+    return QueryIntentType::kOrderAccount;
+  }
+  if (contains(u"order date")) {
+    return QueryIntentType::kOrderDate;
+  }
+  if (contains(u"merchant name", u"store name", u"order merchant")) {
+    return QueryIntentType::kOrderMerchantName;
+  }
+  if (contains(u"merchant domain")) {
+    return QueryIntentType::kOrderMerchantDomain;
+  }
+  if (contains(u"product names", u"order products")) {
+    return QueryIntentType::kOrderProductNames;
+  }
+  if (contains(u"grand total", u"order total", u"total amount")) {
+    return QueryIntentType::kOrderGrandTotal;
+  }
+  if (contains(u"order")) {
+    return QueryIntentType::kOrderFull;
+  }
+
+  // National ID Card
+  if (contains(u"national id number")) {
+    return QueryIntentType::kNationalIdCardNumber;
+  }
+  if (contains(u"national id expiration", u"national id expiry")) {
+    return QueryIntentType::kNationalIdCardExpirationDate;
+  }
+  if (contains(u"national id issue")) {
+    return QueryIntentType::kNationalIdCardIssueDate;
+  }
+  if (contains(u"national id country")) {
+    return QueryIntentType::kNationalIdCardCountry;
+  }
+  if (contains(u"national id name")) {
+    return QueryIntentType::kNationalIdCardName;
+  }
+  if (contains(u"id")) {
+    return QueryIntentType::kNationalIdCardFull;
+  }
+
+  // Redress Number
+  if (contains(u"redress number name", u"redress name")) {
+    return QueryIntentType::kRedressNumberName;
+  }
+  if (contains(u"redress number")) {
+    return QueryIntentType::kRedressNumberNumber;
+  }
+  if (contains(u"redress")) {
+    return QueryIntentType::kRedressNumberFull;
+  }
+
+  // Known Traveler Number
+  if (contains(u"known traveler number name", u"ktn name")) {
+    return QueryIntentType::kKnownTravelerNumberName;
+  }
+  if (contains(u"known traveler number number", u"ktn number")) {
+    return QueryIntentType::kKnownTravelerNumberNumber;
+  }
+  if (contains(u"known traveler number expiration", u"ktn expiration",
+               u"ktn expiry")) {
+    return QueryIntentType::kKnownTravelerNumberExpirationDate;
+  }
+  if (contains(u"known traveler number", u"traveler number", u"ktn")) {
+    return QueryIntentType::kKnownTravelerNumberFull;
+  }
+
+  // Drivers License
+  if (contains(u"drivers license number", u"driver's license number",
+               u"driver license number")) {
+    return QueryIntentType::kDriversLicenseNumber;
+  }
+  if (contains(u"drivers license state", u"driver's license state")) {
+    return QueryIntentType::kDriversLicenseState;
+  }
+  if (contains(u"drivers license expiration", u"driver's license expiration",
+               u"drivers license expiry", u"driver's license expiry")) {
+    return QueryIntentType::kDriversLicenseExpirationDate;
+  }
+  if (contains(u"drivers license issue", u"driver's license issue")) {
+    return QueryIntentType::kDriversLicenseIssueDate;
+  }
+  if (contains(u"drivers license name", u"driver's license name")) {
+    return QueryIntentType::kDriversLicenseName;
+  }
+  if (contains(u"drivers license", u"driver's license", u"driving license",
+               u"license")) {
+    return QueryIntentType::kDriversLicenseFull;
+  }
+
+  // Personal profiles
   if (contains(u"zip", u"zip-code", u"postal-code", u"postal")) {
     return QueryIntentType::kAddressZip;
   }
@@ -123,34 +291,6 @@ QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
   }
   if (contains(u"iban", u"bank account")) {
     return QueryIntentType::kIban;
-  }
-  if (contains(u"license plate", u"plate number", u"plate")) {
-    return QueryIntentType::kVehiclePlateNumber;
-  }
-  if (contains(u"vin")) {
-    return QueryIntentType::kVehicleVin;
-  }
-  if (contains(u"vehicle", u"car")) {
-    return QueryIntentType::kVehicle;
-  }
-  if (contains(u"passport")) {
-    return QueryIntentType::kPassportFull;
-  }
-  if (contains(u"flight reservation", u"flight", u"reservation")) {
-    return QueryIntentType::kFlightReservationFull;
-  }
-  if (contains(u"national id", u"id card", u"id")) {
-    return QueryIntentType::kNationalIdCardFull;
-  }
-  if (contains(u"redress number", u"redress")) {
-    return QueryIntentType::kRedressNumberFull;
-  }
-  if (contains(u"known traveler number", u"traveler number", u"ktn")) {
-    return QueryIntentType::kKnownTravelerNumberFull;
-  }
-  if (contains(u"drivers license", u"driver's license", u"driving license",
-               u"license")) {
-    return QueryIntentType::kDriversLicenseFull;
   }
 
   return QueryIntentType::kUnknown;
