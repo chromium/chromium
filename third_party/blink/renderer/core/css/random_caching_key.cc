@@ -19,12 +19,11 @@ RandomCachingKey* RandomCachingKey::Create(
     const RandomValueSharing& random_value_sharing,
     const Element* element) {
   DCHECK(!random_value_sharing.IsFixed());
-  const Element* element_for_caching =
-      random_value_sharing.IsElementShared() ? nullptr : element;
+  DCHECK(!random_value_sharing.IsElementShared());
   AtomicString name = random_value_sharing.Name();
   DCHECK(!name.IsNull());
   return MakeGarbageCollected<RandomCachingKey>(
-      base::PassKey<RandomCachingKey>(), name, element_for_caching);
+      base::PassKey<RandomCachingKey>(), name, element);
 }
 
 bool RandomCachingKey::operator==(const RandomCachingKey& other) const {

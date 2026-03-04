@@ -4754,6 +4754,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(user_rule_set_groups_);
   visitor->Trace(functional_media_query_results_);
   visitor->Trace(random_base_value_cache_);
+  visitor->Trace(element_keeps_random_caching_key_alive_);
   FontSelectorClient::Trace(visitor);
 }
 
@@ -4990,15 +4991,35 @@ void StyleEngine::NavigationsMayHaveChanged() {
 double StyleEngine::GetCachedRandomBaseValue(
     const RandomValueSharing& random_value_sharing,
     const Element* element) {
+  if (random_value_sharing.IsElementShared()) {
+    ElementSharedRandomValueCache::AddResult element_shared_cache_result =
+        element_shared_random_base_value_cache_.insert(
+            random_value_sharing.Name(), 0);
+    if (element_shared_cache_result.is_new_entry) {
+      element_shared_cache_result.stored_value->value = base::RandDouble();
+    }
+    return element_shared_cache_result.stored_value->value;
+  }
+
   RandomCachingKey* random_caching_key =
       RandomCachingKey::Create(random_value_sharing, element);
-  auto it = random_base_value_cache_.find(random_caching_key);
-  if (it != random_base_value_cache_.end()) {
-    return it->value;
+
+  const RandomCachingKeyLifetimeCache::AddResult&
+      random_caching_key_lifetime_cache_result =
+          element_keeps_random_caching_key_alive_.insert(element, nullptr);
+  if (random_caching_key_lifetime_cache_result.is_new_entry) {
+    random_caching_key_lifetime_cache_result.stored_value->value =
+        MakeGarbageCollected<GCedHeapHashSet<Member<RandomCachingKey>>>();
   }
-  double value = base::RandDouble();
-  random_base_value_cache_.insert(random_caching_key, value);
-  return value;
+  random_caching_key_lifetime_cache_result.stored_value->value->insert(
+      random_caching_key);
+
+  RandomValueCache::AddResult result =
+      random_base_value_cache_.insert(random_caching_key, 0);
+  if (result.is_new_entry) {
+    result.stored_value->value = base::RandDouble();
+  }
+  return result.stored_value->value;
 }
 
 }  // namespace blink

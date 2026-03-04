@@ -30,21 +30,22 @@ class RandomCachingKey : public GarbageCollected<RandomCachingKey> {
   unsigned GetHash() const;
   void Trace(Visitor* visitor) const;
   AtomicString Name() const { return name_; }
+  const Element* GetElement() const { return element_.Get(); }
 
  private:
   AtomicString name_;
-  Member<const Element> element_;
+  WeakMember<const Element> element_;
 };
 
 template <>
-struct HashTraits<Member<RandomCachingKey>>
-    : MemberHashTraits<RandomCachingKey> {
-  static unsigned GetHash(const Member<RandomCachingKey>& key) {
+struct HashTraits<WeakMember<RandomCachingKey>>
+    : WeakMemberHashTraits<RandomCachingKey> {
+  static unsigned GetHash(const WeakMember<RandomCachingKey>& key) {
     return key ? key->GetHash() : 0;
   }
 
-  static bool Equal(const Member<RandomCachingKey>& a,
-                    const Member<RandomCachingKey>& b) {
+  static bool Equal(const WeakMember<RandomCachingKey>& a,
+                    const WeakMember<RandomCachingKey>& b) {
     if (!a) {
       return !b;
     }
@@ -54,8 +55,8 @@ struct HashTraits<Member<RandomCachingKey>>
     return *a == *b;
   }
 
-  // True because a default-constructed Member (nullptr) is distinct from
-  // any valid Member<RandomCachingKey> instance, and deleted slots are also
+  // True because a default-constructed WeakMember (nullptr) is distinct from
+  // any valid WeakMember<RandomCachingKey> instance, and deleted slots are also
   // distinct.
   static constexpr bool kSafeToCompareToEmptyOrDeleted = false;
 };

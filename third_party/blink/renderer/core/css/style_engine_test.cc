@@ -163,6 +163,13 @@ class StyleEngineTest : public PageTestBase {
   wtf_size_t FunctionalMediaQueryResultsSize() {
     return GetStyleEngine().functional_media_query_results_.size();
   }
+
+  // Returns the total size of the random() base value caches (element-shared
+  // and element-dependent).
+  wtf_size_t GetRandomBaseValueCacheSize() {
+    return GetStyleEngine().random_base_value_cache_.size() +
+           GetStyleEngine().element_shared_random_base_value_cache_.size();
+  }
 };
 
 class StyleEngineContainerQueryTest : public StyleEngineTest {};
@@ -7644,6 +7651,33 @@ TEST_F(StyleEngineTest, UpdateRootFontRelativeUnits_NoRecalcForNonInherited) {
   EXPECT_EQ(1u, after_count - before_count)
       << "Changing root background-color should not trigger recalc cascade for "
          "descendant elements using rem/ch units";
+}
+
+TEST_F(StyleEngineTest, TestRandomValueCacheCleanedWhenElementIsGone) {
+  GetDocument().body()->SetInnerHTMLWithoutTrustedTypes(R"HTML(
+    <div id='test'></div>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+
+  Element* element = GetDocument().getElementById(AtomicString("test"));
+
+  RandomValueSharing* random_value_sharing =
+      MakeGarbageCollected<RandomValueSharing>(
+          AtomicString("--ident"), RandomValueSharing::ElementShared(false));
+  GetStyleEngine().GetCachedRandomBaseValue(*random_value_sharing, element);
+  RandomValueSharing* random_value_sharing_element_shared =
+      MakeGarbageCollected<RandomValueSharing>(
+          AtomicString("--ident"), RandomValueSharing::ElementShared(true));
+  GetStyleEngine().GetCachedRandomBaseValue(
+      *random_value_sharing_element_shared, element);
+
+  EXPECT_EQ(GetRandomBaseValueCacheSize(), 2);
+
+  element->remove();
+  ThreadState::Current()->CollectAllGarbageForTesting(
+      ThreadState::StackState::kNoHeapPointers);
+
+  EXPECT_EQ(GetRandomBaseValueCacheSize(), 1);
 }
 
 }  // namespace blink

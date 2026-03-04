@@ -1128,7 +1128,8 @@ struct DowncastTraits<CSSMathExpressionSiblingFunction> {
 // <random-value-sharing> = [ [ auto | <dashed-ident> ] || element-shared ]
 //                          | fixed <number [0,1]>
 // https://drafts.csswg.org/css-values-5/#typedef-random-value-sharing
-class RandomValueSharing : public GarbageCollected<RandomValueSharing> {
+class CORE_EXPORT RandomValueSharing
+    : public GarbageCollected<RandomValueSharing> {
  public:
   static const RandomValueSharing* Parse(CSSParserTokenStream& stream,
                                          const CSSParserContext&,
