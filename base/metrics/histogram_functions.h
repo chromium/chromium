@@ -111,7 +111,13 @@ void UmaHistogramEnumeration(const StringType& name, T sample) {
 template <typename StringType, typename T>
 void UmaHistogramEnumeration(const StringType& name, T sample, T enum_size) {
   static_assert(std::is_enum_v<T>, "T is not an enum.");
-  DCHECK_LE(static_cast<uintmax_t>(enum_size), static_cast<uintmax_t>(INT_MAX));
+  constexpr auto kBucketCountMax =
+      static_cast<uintmax_t>(LinearHistogram::kBucketCount_MAX);
+  // Note: UmaHistogramExactLinear() adds 1 to the bucket count for the overflow
+  // bucket, so kBucketCount must be less than kBucketCount_MAX.
+  DCHECK_LE(static_cast<uintmax_t>(enum_size), kBucketCountMax)
+      << "Enumeration's enum_size is out of range of "
+         "LinearHistogram::kBucketCount_MAX. Use a sparse histogram instead.";
   DCHECK_LT(static_cast<uintmax_t>(sample), static_cast<uintmax_t>(enum_size));
   // While UmaHistogramExactLinear’s documentation states that the third
   // argument should be 101 or less, a value up to 1001 is actually accepted.
