@@ -13,6 +13,7 @@
 #import "base/task/bind_post_task.h"
 #import "components/password_manager/core/browser/ui/password_check_referrer.h"
 #import "components/prefs/pref_service.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/content_suggestions/safety_check/model/safety_check_utils.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
@@ -359,10 +360,6 @@ void SafetyCheckNotificationClient::GetPendingRequests(
 bool SafetyCheckNotificationClient::IsPermitted() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/362260014): Replace current opt-in state logic with
-  // `GetMobileNotificationPermissionStatusForClient()` once
-  // `PushNotificationClient` dependencies are refactored.
-
   PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
 
   if (CanSendProvisionalNotifications(
@@ -371,10 +368,11 @@ bool SafetyCheckNotificationClient::IsPermitted() {
     return true;
   }
 
-  return local_pref_service
-      ->GetDict(prefs::kAppLevelPushNotificationPermissions)
-      .FindBool(kSafetyCheckNotificationKey)
-      .value_or(false);
+  // SafetyCheck is an app-wide client, not tied to any account. An empty
+  // `GaiaId` is passed.
+  return push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kSafetyCheck, GaiaId());
 }
 
 bool SafetyCheckNotificationClient::IsSceneLevelForegroundActive() {

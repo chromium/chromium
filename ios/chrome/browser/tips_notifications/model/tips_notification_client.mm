@@ -16,10 +16,12 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
+#import "ios/chrome/browser/push_notification/model/push_notification_settings_util.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
@@ -77,7 +79,6 @@ TipsNotificationClient::TipsNotificationClient()
                           base::Unretained(this));
   pref_change_registrar_.Add(prefs::kPushNotificationAuthorizationStatus,
                              auth_pref_callback);
-  permitted_ = IsPermitted();
   user_type_ = GetTipsNotificationUserType(local_state_);
 }
 
@@ -209,6 +210,7 @@ void TipsNotificationClient::OnSceneActiveForegroundBrowserReady(
 void TipsNotificationClient::CheckAndMaybeRequestNotification(
     base::OnceClosure closure) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // `permitted_` is not set during initialization, so refresh it here.
   permitted_ = IsPermitted();
 
   if (interacted_type_.has_value()) {
@@ -536,12 +538,11 @@ void TipsNotificationClient::OnGetDeliveredNotifications(
 
 bool TipsNotificationClient::IsPermitted() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/325279788): use
-  // GetMobileNotificationPermissionStatusForClient to determine opt-in
-  // state.
-  return local_state_->GetDict(prefs::kAppLevelPushNotificationPermissions)
-      .FindBool(kTipsNotificationKey)
-      .value_or(false);
+  // Tips is an app-wide client, not tied to any account. An empty `GaiaId` is
+  // passed.
+  return push_notification_settings::
+      GetMobileNotificationPermissionStatusForClient(
+          PushNotificationClientId::kTips, GaiaId());
 }
 
 bool TipsNotificationClient::CanSendReactivation() const {
@@ -592,8 +593,9 @@ void TipsNotificationClient::UpdateProvisionalAllowed() {
 
 void TipsNotificationClient::OnPermittedPrefChanged(const std::string& name) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  bool newpermitted_ = IsPermitted();
-  if (permitted_ != newpermitted_) {
+  bool new_permitted = IsPermitted();
+  if (permitted_ != new_permitted) {
+    permitted_ = new_permitted;
     ClearAllRequestedNotifications();
     if (IsSceneLevelForegroundActive()) {
       CheckAndMaybeRequestNotification(base::DoNothing());
