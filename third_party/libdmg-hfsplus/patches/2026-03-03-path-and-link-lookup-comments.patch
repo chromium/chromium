@@ -1,0 +1,168 @@
+diff --git a/third_party/libdmg-hfsplus/src/hfs/catalog.c b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+index f7068313df0fa..c6465bd73a1bf 100644
+--- a/third_party/libdmg-hfsplus/src/hfs/catalog.c
++++ b/third_party/libdmg-hfsplus/src/hfs/catalog.c
+@@ -545,10 +545,15 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+   int exact;
+ 
+   if(path[0] == '\0' || (path[0] == '/' && path[1] == '\0')) {
++    // Special case to find the root folder. The empty path is interpreted
++    // as the root folder, even if `parentID` is not the root directory.
+     if(name != NULL) {
+       *name = (char*)path;
+     }
++    // This appears to be a duplicate of `getRecordByCNID(kHFSRootFolderID, volume)`
++    // except with fewer safety checks.
+ 
++    // Construct an ID-only key for the root directory.
+     key.keyLength = sizeof(key.parentID) + sizeof(key.nodeName.length);
+     key.parentID = kHFSRootFolderID;
+     key.nodeName.length = 0;
+@@ -559,6 +564,9 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+ 
+     free(record);
+ 
++    // Traverse from the thread record returned from an ID-only search to the
++    // complete record. For more information on thread records, see
++    // https://developer.apple.com/library/archive/technotes/tn/tn1150.html#CatalogThreadRecord
+     record = (HFSPlusCatalogRecord*) search(volume->catalogTree, (BTKey*)(&key), &exact, NULL, NULL);
+     return record;
+   }
+@@ -576,6 +584,7 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+ 
+   pathLimit = myPath + strlen(myPath);
+ 
++  // Traverse the path, component by component.
+   for(word = (char*)strtok(myPath, "/"); word && (word < pathLimit);
+       word = ((word + strlen(word) + 1) < pathLimit) ? (char*)strtok(word + strlen(word) + 1, "/") : NULL) {
+ 
+@@ -593,6 +602,9 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+     }
+ 
+     if(strcmp(word, "..") == 0) {
++      // A key with a zero-length name searches for the thread record of the
++      // parent directory. For more details, see
++      // https://developer.apple.com/library/archive/technotes/tn/tn1150.html#CatalogThreadRecord
+       key.nodeName.length = 0;
+     } else {
+       ASCIIToUnicode(word, &key.nodeName);
+@@ -608,9 +620,14 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+       return NULL;
+     }
+ 
++    // Should links be traversed?
+     if(traverse) {
++      // Note: `returnLink` means to *traverse* the final path component as a
++      // link, *not* to return the link itself!
+       if(((word + strlen(word) + 1) < pathLimit) || returnLink) {
++        // getLinkTarget returns `record` itself if `record` is not a link.
+         record = getLinkTarget(record, key.parentID, &key, volume);
++        // The check against `exact` appears spurious.
+         if(record == NULL || exact == FALSE) {
+           free(origPath);
+           return NULL;
+@@ -619,6 +636,7 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+     }
+ 
+     if(record->recordType == kHFSPlusFileRecord) {
++      // If we've reached the end of the path, return the record.
+       if((word + strlen(word) + 1) >= pathLimit) {
+         free(origPath);
+ 
+@@ -628,6 +646,7 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+ 
+         return record;
+       } else {
++        // Stop traversal: we found a file, but the path continues.
+         free(origPath);
+         free(record);
+         return NULL;
+@@ -636,10 +655,13 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+ 
+     if(record->recordType == kHFSPlusFolderThreadRecord) {
+       key.parentID = ((HFSPlusCatalogThread*)record)->parentID;
++      // The node name will be overwritten in the next iteration.
+       continue;
+     }
+ 
+     if(record->recordType != kHFSPlusFolderRecord) {
++      // It wasn't a file, folder, or folder thread record. We shouldn't find
++      // anything else by traversing filenames in the catalog tree.
+       hfs_panic("inconsistent catalog tree!");
+     }
+ 
+@@ -648,6 +670,8 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char
+   }
+ 
+   if(record->recordType == kHFSPlusFolderThreadRecord) {
++    // We've reached the end of the path, but it was a thread record. Return
++    // the actual folder record.
+     free(record);
+     record = getRecordByCNID(key.parentID, volume);
+   }
+diff --git a/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h b/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
+index a6f51caf37265..628e01461f019 100644
+--- a/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
++++ b/third_party/libdmg-hfsplus/src/includes/hfs/hfsplus.h
+@@ -575,10 +575,61 @@ extern "C" {
+ 
+ 	HFSCatalogNodeID getMetadataDirectoryID(Volume* volume);
+ 	HFSPlusCatalogRecord* getRecordByCNID(HFSCatalogNodeID CNID, Volume* volume);
++
++	/* If `record` points to a symlink or hardlink record, this returns the target
++	 * of the link, resolved relative to the path specified by `parentID` if
++	 * `record` represents a relative symlink, searching within the specified
++	 * volume. The caller owns the returned record.
++	 *
++	 * If `record` is not a link, this returns `record` and does not assign `key`.
++	 *
++	 * If `record` is a link to a valid target, possibly by traversing a series
++	 * of **symlinks only** (the first step may be a hard link), then `key` is
++	 * the key of that record. If a hardlink is found in a multi-step traversal,
++	 * this returns the target of that link without further recursion (and `key`
++	 * is set to the `key` of the record returned).
++	 *
++	 * If no valid record is found at the end of a chain of links, NULL is
++	 * returned and the value of `key` is undefined.
++	 *
++	 * If `record`'s parent is not `parentID`, or `volume` is not the correct
++	 * volume to resolve `record`'s target on, behavior is undefined.
++	 */
+ 	HFSPlusCatalogRecord* getLinkTarget(HFSPlusCatalogRecord* record, HFSCatalogNodeID parentID, HFSPlusCatalogKey *key, Volume* volume);
++
+ 	CatalogRecordList* getFolderContents(HFSCatalogNodeID CNID, Volume* volume);
+ 	HFSPlusCatalogRecord* getRecordFromPath(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey);
+ 	HFSPlusCatalogRecord* getRecordFromPath2(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey, char traverse);
++
++	/* Finds the catalog record for the given `path` on the given `volume`,
++	 * calculated relative to the node with catalog ID `parentID` if `path` is
++	 * relative. If `path` is not found, this returns NULL. As a special case,
++	 * the empty string is treated as a path to the root directory, even if
++	 * `parentID` is not the root.
++	 *
++	 * The caller owns the returned record.
++	 *
++	 * If `traverse` is false, links (whether symbolic or hard) are not traversed.
++	 * If a link record is retrieved in the middle of the path, the path will not
++	 * resolve and this will return NULL. If the path ends in a link, the link
++	 * itself is returned, unless `returnLink` is true, in which case the target
++	 * of the link is returned. NOTE: READ THAT LAST SENTENCE VERY CLOSELY.
++	 * `returnLink` BEHAVES EXACTLY BACKWARDS FROM WHAT A REASONABLE PERSON
++	 * WOULD EXPECT.
++	 *
++	 * If `name` is not NULL, it is set to point to the first character of the
++	 * last component of the path that is traversed during the execution of the
++	 * function; if the return value is not NULL, then `name` will point to the
++	 * last component of `path`. This is a pointer into `path`, not an independent
++	 * string.
++	 *
++	 * If `retKey` is not NULL, it is set to the key of the returned record, if a
++	 * record is returned, unless the path searched was either "/" or "", in which
++	 * case it is not changed. If no record is returned, `retKey` is not changed.
++	 *
++	 * If `volume` is the wrong volume, or `parentID` is not a correct parent
++	 * for `path`, behavior is undefined.
++	 */
+ 	HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char **name, HFSPlusCatalogKey* retKey, char traverse, char returnLink, HFSCatalogNodeID parentID);
+ 	void releaseCatalogRecordList(CatalogRecordList* list);
+ 

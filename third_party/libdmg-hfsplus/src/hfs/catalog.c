@@ -545,10 +545,15 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
   int exact;
 
   if(path[0] == '\0' || (path[0] == '/' && path[1] == '\0')) {
+    // Special case to find the root folder. The empty path is interpreted
+    // as the root folder, even if `parentID` is not the root directory.
     if(name != NULL) {
       *name = (char*)path;
     }
+    // This appears to be a duplicate of `getRecordByCNID(kHFSRootFolderID, volume)`
+    // except with fewer safety checks.
 
+    // Construct an ID-only key for the root directory.
     key.keyLength = sizeof(key.parentID) + sizeof(key.nodeName.length);
     key.parentID = kHFSRootFolderID;
     key.nodeName.length = 0;
@@ -559,6 +564,9 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
 
     free(record);
 
+    // Traverse from the thread record returned from an ID-only search to the
+    // complete record. For more information on thread records, see
+    // https://developer.apple.com/library/archive/technotes/tn/tn1150.html#CatalogThreadRecord
     record = (HFSPlusCatalogRecord*) search(volume->catalogTree, (BTKey*)(&key), &exact, NULL, NULL);
     return record;
   }
@@ -576,6 +584,7 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
 
   pathLimit = myPath + strlen(myPath);
 
+  // Traverse the path, component by component.
   for(word = (char*)strtok(myPath, "/"); word && (word < pathLimit);
       word = ((word + strlen(word) + 1) < pathLimit) ? (char*)strtok(word + strlen(word) + 1, "/") : NULL) {
 
@@ -593,6 +602,9 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
     }
 
     if(strcmp(word, "..") == 0) {
+      // A key with a zero-length name searches for the thread record of the
+      // parent directory. For more details, see
+      // https://developer.apple.com/library/archive/technotes/tn/tn1150.html#CatalogThreadRecord
       key.nodeName.length = 0;
     } else {
       ASCIIToUnicode(word, &key.nodeName);
@@ -608,9 +620,14 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
       return NULL;
     }
 
+    // Should links be traversed?
     if(traverse) {
+      // Note: `returnLink` means to *traverse* the final path component as a
+      // link, *not* to return the link itself!
       if(((word + strlen(word) + 1) < pathLimit) || returnLink) {
+        // getLinkTarget returns `record` itself if `record` is not a link.
         record = getLinkTarget(record, key.parentID, &key, volume);
+        // The check against `exact` appears spurious.
         if(record == NULL || exact == FALSE) {
           free(origPath);
           return NULL;
@@ -619,6 +636,7 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
     }
 
     if(record->recordType == kHFSPlusFileRecord) {
+      // If we've reached the end of the path, return the record.
       if((word + strlen(word) + 1) >= pathLimit) {
         free(origPath);
 
@@ -628,6 +646,7 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
 
         return record;
       } else {
+        // Stop traversal: we found a file, but the path continues.
         free(origPath);
         free(record);
         return NULL;
@@ -636,10 +655,13 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
 
     if(record->recordType == kHFSPlusFolderThreadRecord) {
       key.parentID = ((HFSPlusCatalogThread*)record)->parentID;
+      // The node name will be overwritten in the next iteration.
       continue;
     }
 
     if(record->recordType != kHFSPlusFolderRecord) {
+      // It wasn't a file, folder, or folder thread record. We shouldn't find
+      // anything else by traversing filenames in the catalog tree.
       hfs_panic("inconsistent catalog tree!");
     }
 
@@ -648,6 +670,8 @@ HFSPlusCatalogRecord* getRecordFromPath3(const char* path, Volume* volume, char 
   }
 
   if(record->recordType == kHFSPlusFolderThreadRecord) {
+    // We've reached the end of the path, but it was a thread record. Return
+    // the actual folder record.
     free(record);
     record = getRecordByCNID(key.parentID, volume);
   }

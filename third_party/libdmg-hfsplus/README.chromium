@@ -132,3 +132,8 @@ Local modifications:
       attribute B-tree node size. `newfs_hfs -n a=16384 ...` does this;
       `hdiutil create -fsargs "-n a=16384 -fs HFS+ ..." causes hdiutil to
       propagate this flag when it creates the file system.
+  * patches/2026-03-03-path-and-link-lookup-comments.patch
+    * Adds comment to `getRecordFromPath3` explaining the interpretation of
+      each parameter and the apparent semantics of the function.
+    * Adds comment to `getLinkTarget` explaining its behavior.
+    * This patch contains only comments.
