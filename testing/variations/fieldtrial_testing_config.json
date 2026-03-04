@@ -4496,6 +4496,24 @@
             ]
         }
     ],
+    "BypassRequestForbiddenHeadersCheck": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BypassRequestForbiddenHeadersCheck"
+                    ]
+                }
+            ]
+        }
+    ],
     "CADisplayLinkInBrowser": [
         {
             "platforms": [
