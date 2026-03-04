@@ -22,9 +22,6 @@ const CGFloat kSymbolLocationBarPointSize = 10;
 
 OmniboxSuggestionIconType GetOmniboxSuggestionIconTypeForAutocompleteMatchType(
     AutocompleteMatchType::Type type) {
-  // TODO(crbug.com/40716245): Handle trending zero-prefix suggestions by
-  // checking the match subtype similar to AutocompleteMatch::GetVectorIcon().
-
   switch (type) {
     case AutocompleteMatchType::BOOKMARK_TITLE:
     case AutocompleteMatchType::CLIPBOARD_URL:
