@@ -19,11 +19,11 @@ public final class TestUtils {
     /** Prevents instantiation. */
     private TestUtils() {}
 
-    public static EntityType getVehicleEntityType() {
+    public static EntityType getVehicleEntityType(boolean isReadOnly, boolean isEnabled) {
         return new EntityType(
                 EntityTypeName.VEHICLE,
-                /* isReadOnly= */ false,
-                /* isEnabled= */ true,
+                isReadOnly,
+                isEnabled,
                 /* typeNameAsString= */ "Vehicle",
                 /* typeNameAsMetricsString= */ "Vehicle",
                 /* addEntityTypeString= */ "Add Vehicle",
@@ -32,11 +32,15 @@ public final class TestUtils {
                 /* attributeTypes= */ Collections.emptyList());
     }
 
-    public static EntityType getPassportEntityType() {
+    public static EntityType getVehicleEntityType() {
+        return getVehicleEntityType(/* isReadOnly= */ false, /* isEnabled= */ true);
+    }
+
+    public static EntityType getPassportEntityType(boolean isReadOnly, boolean isEnabled) {
         return new EntityType(
                 EntityTypeName.PASSPORT,
-                /* isReadOnly= */ false,
-                /* isEnabled= */ true,
+                isReadOnly,
+                isEnabled,
                 /* typeNameAsString= */ "Passport",
                 /* typeNameAsMetricsString= */ "Passport",
                 /* addEntityTypeString= */ "Add passport",
@@ -45,17 +49,25 @@ public final class TestUtils {
                 /* attributeTypes= */ Collections.emptyList());
     }
 
-    public static EntityType getNationalIdEntityType() {
+    public static EntityType getPassportEntityType() {
+        return getPassportEntityType(/* isReadOnly= */ false, /* isEnabled= */ true);
+    }
+
+    public static EntityType getNationalIdEntityType(boolean isReadOnly, boolean isEnabled) {
         return new EntityType(
                 EntityTypeName.NATIONAL_ID_CARD,
-                /* isReadOnly= */ false,
-                /* isEnabled= */ true,
+                isReadOnly,
+                isEnabled,
                 /* typeNameAsString= */ "National ID",
                 /* typeNameAsMetricsString= */ "NationalId",
                 /* addEntityTypeString= */ "Add National ID",
                 /* editEntityTypeString= */ "Edit National ID",
                 /* deleteEntityTypeString= */ "Delete National ID",
                 /* attributeTypes= */ Collections.emptyList());
+    }
+
+    public static EntityType getNationalIdEntityType() {
+        return getNationalIdEntityType(/* isReadOnly= */ false, /* isEnabled= */ true);
     }
 
     public static EntityInstanceWithLabels buildEntityInstanceWithLabels(

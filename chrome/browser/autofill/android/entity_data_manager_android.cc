@@ -55,7 +55,9 @@ EntityDataManagerAndroid::EntityDataManagerAndroid(
       sync_service_(sync_service),
       account_setting_service_(account_setting_service),
       is_off_the_record_(is_off_the_record),
-      entity_data_manager_(CHECK_DEREF(entity_data_manager)) {}
+      entity_data_manager_(CHECK_DEREF(entity_data_manager)) {
+  entity_data_manager_observer_.Observe(entity_data_manager);
+}
 
 EntityDataManagerAndroid::~EntityDataManagerAndroid() = default;
 

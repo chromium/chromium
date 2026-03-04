@@ -146,9 +146,17 @@ public class EntityDataManager implements Destroyable {
                     instancesByType.getOrDefault(type.getTypeName(), new ArrayList<>());
             typeInstances.sort(
                     (a, b) -> {
-                        String labelA = a.getEntityInstanceLabel() + a.getEntityInstanceSubLabel();
-                        String labelB = b.getEntityInstanceLabel() + b.getEntityInstanceSubLabel();
-                        return collator.compare(labelA, labelB);
+                        int labelComparison =
+                                collator.compare(
+                                        a.getEntityInstanceLabel(), b.getEntityInstanceLabel());
+
+                        if (labelComparison != 0) {
+                            return labelComparison;
+                        }
+
+                        // If the primary labels are the same, compare the sub-labels.
+                        return collator.compare(
+                                a.getEntityInstanceSubLabel(), b.getEntityInstanceSubLabel());
                     });
             result.put(type, typeInstances);
         }
