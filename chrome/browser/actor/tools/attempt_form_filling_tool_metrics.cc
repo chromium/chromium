@@ -6,13 +6,20 @@
 
 #include "base/metrics/histogram_functions.h"
 
-namespace actor {
+namespace actor::actor_metrics {
 
 void RecordOnSuggestionPresentedMetrics(
     int form_index,
     AttemptFormFillingToolRequest::RequestedData requested_data) {
   base::UmaHistogramEnumeration(
-      "Autofill.Actor.AutofillSuggestionPresented.Type", requested_data);
+      "Autofill.Actor.AutofillSuggestionPresented.RecordType", requested_data);
 }
 
-}  // namespace actor
+void RecordOnSuggestionConfirmedMetrics(
+    int form_index,
+    AttemptFormFillingToolRequest::RequestedData requested_data) {
+  base::UmaHistogramEnumeration(
+      "Autofill.Actor.AutofillSuggestionAccepted.RecordType", requested_data);
+}
+
+}  // namespace actor::actor_metrics

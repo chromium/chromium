@@ -27,7 +27,8 @@ class AutofillSelectionDialogEventHandler {
           params) = 0;
 
   // Called when a form is confirmed with a selected suggestion.
-  virtual void OnFormConfirmed(
+  // Returns false when `params` are invalid.
+  virtual bool OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr
           params) = 0;
 };

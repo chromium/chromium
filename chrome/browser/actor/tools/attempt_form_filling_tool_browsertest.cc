@@ -328,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/0)));
   histogram_tester.ExpectUniqueSample(
-      "Autofill.Actor.AutofillSuggestionPresented.Type",
+      "Autofill.Actor.AutofillSuggestionPresented.RecordType",
       AttemptFormFillingToolRequest::RequestedData::kHomeAddress, 1);
   EXPECT_FALSE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
@@ -352,13 +352,21 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
 
   // Expect that OnFormConfirmed calls FillForm
   EXPECT_CALL(mock_form_filling_service(),
-              FillForm(Ref(*active_tab()), 40,
+              FillForm(Ref(*active_tab()), 0,
                        MakeActorFormFillingSelection(suggestion.id)));
-  captured_handler->OnFormConfirmed(
+  EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
-          /*form_filling_request_index=*/40,
+          /*form_filling_request_index=*/0,
           webui::mojom::FormFillingResponse::New(
-              /*suggestion_id=*/"123")));
+              /*suggestion_id=*/"123"))));
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.AutofillSuggestionAccepted.RecordType",
+      AttemptFormFillingToolRequest::RequestedData::kHomeAddress, 1);
+  EXPECT_FALSE(captured_handler->OnFormConfirmed(
+      webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
+          /*form_filling_request_index=*/1,
+          webui::mojom::FormFillingResponse::New(
+              /*suggestion_id=*/"123"))));
 
   std::move(captured_callback).Run(MakeAutofillSuggestionsErrorResponse());
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);

@@ -110,7 +110,7 @@ class MockAutofillSelectionDialogEventHandler
            params),
       (override));
   MOCK_METHOD(
-      void,
+      bool,
       OnFormConfirmed,
       (webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params),
       (override));

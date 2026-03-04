@@ -346,7 +346,7 @@ bool AttemptFormFillingTool::OnFormPresented(
     return false;
   }
 
-  RecordOnSuggestionPresentedMetrics(
+  actor_metrics::RecordOnSuggestionPresentedMetrics(
       request_index, tool_fill_requests_[request_index].requested_data);
   tool_delegate().GetActorFormFillingService().ScrollToForm(*tab,
                                                             request_index);
@@ -373,19 +373,32 @@ void AttemptFormFillingTool::OnFormPreviewChanged(
   }
 }
 
-void AttemptFormFillingTool::OnFormConfirmed(
+bool AttemptFormFillingTool::OnFormConfirmed(
     webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params) {
   tabs::TabInterface* tab = GetTargetTab().Get();
   if (!tab) {
-    return;
+    return true;
+  }
+  if (params->form_filling_request_index < 0) {
+    return false;
+  }
+  size_t request_index =
+      static_cast<size_t>(params->form_filling_request_index);
+  if (request_index >= tool_fill_requests_.size()) {
+    return false;
   }
   uint32_t id = 0;
-  if (base::StringToUint(params->response->selected_suggestion_id, &id)) {
-    autofill::ActorFormFillingSelection selection;
-    selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
-    tool_delegate().GetActorFormFillingService().FillForm(
-        *tab, params->form_filling_request_index, std::move(selection));
+  if (!base::StringToUint(params->response->selected_suggestion_id, &id)) {
+    return false;
   }
+
+  actor_metrics::RecordOnSuggestionConfirmedMetrics(
+      request_index, tool_fill_requests_[request_index].requested_data);
+  autofill::ActorFormFillingSelection selection;
+  selection.selected_suggestion_id = autofill::ActorSuggestionId(id);
+  tool_delegate().GetActorFormFillingService().FillForm(
+      *tab, params->form_filling_request_index, std::move(selection));
+  return true;
 }
 
 }  // namespace actor

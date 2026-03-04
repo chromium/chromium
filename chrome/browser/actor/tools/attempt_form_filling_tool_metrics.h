@@ -7,13 +7,18 @@
 
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 
-namespace actor {
+namespace actor::actor_metrics {
 
 // Records metrics when an autofill suggestion form is presented in the dialog.
 void RecordOnSuggestionPresentedMetrics(
     int form_index,
     AttemptFormFillingToolRequest::RequestedData requested_data);
 
-}  // namespace actor
+// Records metrics when an autofill suggestion form is confirmed in the dialog.
+void RecordOnSuggestionConfirmedMetrics(
+    int form_index,
+    AttemptFormFillingToolRequest::RequestedData requested_data);
+
+}  // namespace actor::actor_metrics
 
 #endif  // CHROME_BROWSER_ACTOR_TOOLS_ATTEMPT_FORM_FILLING_TOOL_METRICS_H_

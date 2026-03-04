@@ -53,7 +53,7 @@ class AttemptFormFillingTool : public Tool,
   void OnFormPreviewChanged(
       webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParamsPtr
           params) override;
-  void OnFormConfirmed(
+  bool OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParamsPtr params)
       override;
 
