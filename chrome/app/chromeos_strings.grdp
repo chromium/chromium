@@ -513,27 +513,6 @@
   <message name="IDS_AUTOSTART_WARNING_TITLE" desc="Title of the kiosk autostart screen">
     Auto-launch permission requested
   </message>
-  <message name="IDS_KIOSK_AUTOSTART_SCREEN_WARNING_MSG" desc="Warning text shown on kiosk autolaunch screen above the exclamation icon.">
-    Do you want to automatically start this app when the machine turns on?
-  </message>
-  <message name="IDS_KIOSK_AUTOSTART_CONFIRM" desc="Confirm button text">
-    Confirm
-  </message>
-  <message name="IDS_KIOSK_ENABLE_SCREEN_WARNING" desc="Title of the kiosk enable screen">
-    Automatic Kiosk Mode
-  </message>
-  <message name="IDS_KIOSK_ENABLE_SCREEN_WARNING_DETAILS" desc="Warning text shown on kiosk auto-launch enable screen above the exclamation icon.">
-    Enabling this setting allows kiosk applications to launch automatically on startup.
-  </message>
-  <message name="IDS_KIOSK_ENABLE_SCREEN_SUCCESS" desc="Confirmation text shown on kiosk auto-launch enable screen after the feature is successfully enabled.">
-    Kiosk applications can now be configured to auto-launch on this device.
-  </message>
-  <message name="IDS_KIOSK_ENABLE_SCREEN_ERROR" desc="Error text shown on kiosk enable screen after we failed enabling this feature.">
-   An error occurred. Kiosk application will not be able to auto-launch on this device.
-  </message>
-  <message name="IDS_KIOSK_ENABLE_SCREEN_ENABLE_BUTTON" desc="Enable button text">
-    Enable
-  </message>
   <message name="IDS_RESET_SCREEN_TITLE" desc="Title of the reset screen">
     Factory reset
   </message>
