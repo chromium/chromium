@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Dedicated Worker</title>
+
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="support.sub.js"></script>
+<script>
+"use strict";
+
+// Set the 'loopback-network' permission then attempt to fetch a URL in the
+// loopback address space from a dedicated worker.
+//
+// By default, 'loopback-network' permission is set to 'granted'. This can
+// be changed by passing in a different value via the 'permission' URL parameter.
+// Valid values:
+//
+//    * granted
+//    * denied
+//    * prompt
+Promise.resolve().then(async () => {
+    const window_url = new URL(window.location.href);
+    let permission_name = 'loopback-network'
+    let permission_value = 'granted';
+    if (window_url.searchParams.has('permission')) {
+        permission_value = window_url.searchParams.get('permission');
+    }
+    test_driver.set_test_context(opener);
+    await test_driver.set_permission({ name: permission_name }, permission_value);
+
+    const target = {
+      server: Server.HTTPS_LOOPBACK,
+      behavior: { response: ResponseBehavior.allowCrossOrigin() },
+    };
+    const targetUrl = resolveTargetUrl(target);
+
+    const worker = new Worker('dedicated-worker.js');
+
+    worker.addEventListener("message", (evt) => {
+      opener.postMessage(evt.data, "*");
+    });
+
+    worker.addEventListener("error", (evt) => {
+      opener.postMessage({ error: evt.message || "unknown error" }, "*");
+    });
+
+    worker.postMessage(targetUrl.toString());
+});
+</script>
