@@ -16,13 +16,20 @@ proto_library("confidential_compute_proto") {
   sources = [
     "src/fcp/protos/confidentialcompute/data_upload_config.proto",
     "src/fcp/protos/confidentialcompute/key.proto",
+    "src/fcp/protos/confidentialcompute/payload_transparency.proto",
     "src/fcp/protos/confidentialcompute/signed_endorsements.proto",
     "src/fcp/protos/federatedcompute/confidential_encryption_config.proto",
   ]
 
-  deps = [ "//third_party/oak:oak_proto" ]
+  deps = [
+    "//third_party/oak:oak_proto",
+    "//third_party/protobuf:google_protobuf_timestamp_lite_proto",
+  ]
 
-  import_dirs = [ "//third_party/oak/chromium" ]
+  import_dirs = [
+    "//third_party/oak/chromium",
+    "//third_party/protobuf/src",
+  ]
 
   proto_in_dir = "src"
 
