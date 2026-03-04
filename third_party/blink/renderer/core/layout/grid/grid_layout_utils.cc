@@ -967,4 +967,13 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
   track_collection.BuildSets(style, grid_available_size);
 }
 
+bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
+  for (const auto& grid_item : grid_items.IncludeSubgriddedItems()) {
+    if (grid_item.is_sizing_dependent_on_block_size) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace blink

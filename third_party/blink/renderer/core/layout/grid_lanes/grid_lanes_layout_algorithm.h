@@ -169,7 +169,7 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       GridTrackSizingDirection track_direction,
       SizingConstraint sizing_constraint,
       const ConstraintSpace space_for_measure,
-      const GridItemData* virtual_item,
+      GridItemData* virtual_item,
       const bool needs_intrinsic_track_size) const;
 
   ConstraintSpace CreateConstraintSpace(

@@ -20,6 +20,7 @@ class BlockNode;
 class BoxFragmentBuilder;
 class ConstraintSpace;
 class GridLayoutData;
+class GridItems;
 class GridLayoutTrackCollection;
 class GridLineResolver;
 class GridSizingTrackCollection;
@@ -256,6 +257,10 @@ void InitializeTrackCollection(const SubgriddedItemData& opt_subgrid_data,
                                const LogicalSize grid_available_size,
                                GridTrackSizingDirection track_direction,
                                GridLayoutData* layout_data);
+
+// Checks if any of the items within `grid_items` have block-size dependent
+// sizing.
+bool HasBlockSizeDependentGridItem(const GridItems& grid_items);
 
 }  // namespace blink
 

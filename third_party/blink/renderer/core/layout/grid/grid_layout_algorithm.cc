@@ -55,18 +55,6 @@ GridLayoutAlgorithm::GridLayoutAlgorithm(const LayoutAlgorithmParams& params)
   }
 }
 
-namespace {
-
-bool HasBlockSizeDependentGridItem(const GridItems& grid_items) {
-  for (const auto& grid_item : grid_items.IncludeSubgriddedItems()) {
-    if (grid_item.is_sizing_dependent_on_block_size)
-      return true;
-  }
-  return false;
-}
-
-}  // namespace
-
 const LayoutResult* GridLayoutAlgorithm::Layout() {
   const auto* result = LayoutInternal();
   if (result->Status() == LayoutResult::kDisableFragmentation) {
