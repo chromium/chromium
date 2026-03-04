@@ -22495,6 +22495,114 @@
             ]
         }
     ],
+    "SigninSurveyAndroidBookmarkPromo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "o2YBX3ZJc0tK1KeaPYj0UveLWhmf"
+                    },
+                    "enable_features": [
+                        "ChromeAndroidIdentitySurveyBookmarkPromo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SigninSurveyAndroidFirstRun": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "HhgAhQYhw0tK1KeaPYj0NeTaRKBh"
+                    },
+                    "enable_features": [
+                        "ChromeAndroidIdentitySurveyFirstRun"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SigninSurveyAndroidNtpAccountAvatarTap": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "DujcsCGkZ0tK1KeaPYj0RGm9FgKX"
+                    },
+                    "enable_features": [
+                        "ChromeAndroidIdentitySurveyNtpAccountAvatarTap"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SigninSurveyAndroidNtpPromo": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "15CWgMniG0tK1KeaPYj0RkWoZ4B9"
+                    },
+                    "enable_features": [
+                        "ChromeAndroidIdentitySurveyNtpPromo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SigninSurveyAndroidNtpSigninButton": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "yirfCKnhD0tK1KeaPYj0P9BTzPNw"
+                    },
+                    "enable_features": [
+                        "ChromeAndroidIdentitySurveyNtpSigninButton"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SigninSurveyAndroidWeb": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "en_site_id": "36F2N72TP0tK1KeaPYj0SdXcHEJ4"
+                    },
+                    "enable_features": [
+                        "ChromeAndroidIdentitySurveyWeb"
+                    ]
+                }
+            ]
+        }
+    ],
     "SimdutfBase64Encode": [
         {
             "platforms": [

@@ -127,6 +127,8 @@ public class SigninSurveyControllerTest {
     @Test
     @MediumTest
     @Features.EnableFeatures(SigninFeatures.CHROME_ANDROID_IDENTITY_SURVEY_BOOKMARK_PROMO + TRIGGER)
+    // Disable the feature as it's enabled in testing/variations/fieldtrial_testing_config.json.
+    @Features.DisableFeatures(SigninFeatures.CHROME_ANDROID_IDENTITY_SURVEY_WEB)
     public void notShownForDifferentType() {
         Profile profile =
                 ThreadUtils.runOnUiThreadBlocking(ProfileManager::getLastUsedRegularProfile);
