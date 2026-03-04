@@ -144,8 +144,7 @@ void ScreenMacHeadless::RemoveDisplay(int64_t display_id) {
 }
 
 void ScreenMacHeadless::SetPrimaryDisplay(int64_t display_id) {
-  // TODO(crbug.com/397350115): Implement.
-  NOTIMPLEMENTED();
+  headless::SetPrimaryDisplay(display_list(), display_id);
 }
 
 }  // namespace display
