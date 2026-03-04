@@ -96,6 +96,7 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   friend class PaintChunker;
   friend class PaintController;
   friend class PaintControllerCycleScope;
+  friend class ClipPathPaintDefinitionTest;
 
   void MarkForValidation() const { marked_for_validation_ = 1; }
   bool IsMarkedForValidation() const { return marked_for_validation_; }

@@ -83,6 +83,12 @@ class MockChromeClientWithAnimationHost : public EmptyChromeClient {
   raw_ptr<cc::AnimationHost> animation_host_;
 };
 
+// TODO(clchambers): This should probably be subclassed at some point from
+// ObjectInvalidatorTest, since it has most of the machinery we use. Either the
+// animation-specific code can be added to RenderingTestChromeClient, or instead
+// we can compromise and just call PendingAnimations more directly since it
+// should be the same thing. Be sure to cleanup  the friend class decl in
+// DisplayItemClient when this is done.
 class ClipPathPaintDefinitionTest : public PageTestBase {
  public:
   ClipPathPaintDefinitionTest() = default;
@@ -142,6 +148,15 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
 
+    // Check the element's DisplayItemClient for invalidation - if we're
+    // expecting an repaint, then IsValid() will be false. For a composited clip
+    // path animation, this means that a new PaintWorkletDeferredImage is
+    // created (or removed, for a fallback), which is necessary to ensure that
+    // the latest keyframes are on the compositor and that we don't get stale
+    // paint.
+    EXPECT_EQ(static_cast<DisplayItemClient*>(lo)->IsValid(),
+              !(updates & kPaintInvalidated));
+
     // Composited paint status should be resolved by this point.
     EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
               status);
@@ -168,6 +183,10 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
         // the first frame after an animation cancel.
         EXPECT_EQ(!!(updates & kScheduledAnimationUpdate),
                   Client()->HasScheduledAnimation());
+        // If the animation is still running on cc, it means that something went
+        // wrong with a fallback. kNotComposited should always be coincident
+        // with a pending cancel.
+        EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
         break;
       case CompositedPaintStatus::kComposited:
         // GetAnimationIfCompositable should return the given animation, if it
@@ -179,11 +198,17 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
         // updates after the first paint.
         EXPECT_EQ(!!(updates & kScheduledAnimationUpdate),
                   Client()->HasScheduledAnimation());
+        // The animation should be have been set up for compositing during
+        // PreCommit.
+        EXPECT_TRUE(animation->HasActiveAnimationsOnCompositor());
         break;
       case CompositedPaintStatus::kNeedsRepaint:
         // kNeedsRepaint is only valid before pre-paint has been run.
         NOTREACHED();
     }
+
+    // Clear paint invalidation reasons
+    static_cast<DisplayItemClient*>(lo)->Validate();
   }
 
   // Given an element with a *CSS* defined compositable clip-path animation with
