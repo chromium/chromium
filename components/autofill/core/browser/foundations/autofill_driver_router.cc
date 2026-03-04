@@ -604,6 +604,14 @@ void AutofillDriverRouter::SendTypePredictionsToRenderer(
   }
 }
 
+void AutofillDriverRouter::ScrollFieldIntoView(
+    RoutedCallback<FieldRendererId> callback,
+    FieldGlobalId field_id) {
+  if (auto* target = DriverOfFrame(field_id.frame_token)) {
+    callback(*target, field_id.renderer_id);
+  }
+}
+
 void AutofillDriverRouter::RendererShouldAcceptDataListSuggestion(
     RoutedCallback<FieldRendererId, const std::u16string&> callback,
     const FieldGlobalId& field_id,

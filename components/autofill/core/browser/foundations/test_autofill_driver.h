@@ -118,6 +118,7 @@ class TestAutofillDriverTemplate : public T {
   void DispatchEmailVerifiedEvent(
       FieldGlobalId field_id,
       const std::string& presentation_token) override {}
+  void ScrollFieldIntoView(FieldGlobalId field_id) override {}
 
   // The return value contains the FieldGlobalIds of all elements (field_id,
   // type) of `field_type_map` for which

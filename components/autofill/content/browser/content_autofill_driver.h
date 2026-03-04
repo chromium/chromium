@@ -238,6 +238,7 @@ class ContentAutofillDriver : public AutofillDriver,
       const FieldGlobalId& field_id,
       AutofillSuggestionTriggerSource trigger_source) override;
   void SendTypePredictionsToRenderer(const FormStructure& form) override;
+  void ScrollFieldIntoView(FieldGlobalId field_id) override;
 
   // Group (1c): browser -> renderer events, directed to this driver's main
   // frame's agent (see comment above).

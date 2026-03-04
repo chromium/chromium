@@ -312,6 +312,8 @@ class AutofillDriverRouter {
   void SendTypePredictionsToRenderer(
       RoutedCallback<const std::vector<FormDataPredictions>&> callback,
       const FormDataPredictions& type_predictions);
+  void ScrollFieldIntoView(RoutedCallback<FieldRendererId> callback,
+                           FieldGlobalId field_id);
 
   // Returns the underlying renderer forms of `browser_form`.
   // Note that this function is intended for use outside of the `autofill`

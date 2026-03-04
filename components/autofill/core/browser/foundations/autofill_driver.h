@@ -371,6 +371,10 @@ class AutofillDriver {
       FieldGlobalId field_id,
       const std::string& presentation_token) = 0;
 
+  // Scrolls the page containing the field corresponding to `field_id` until it
+  // becomes visible on the user's display.
+  virtual void ScrollFieldIntoView(FieldGlobalId field_id) = 0;
+
  private:
   friend class AutofillDriverTestApi;
 

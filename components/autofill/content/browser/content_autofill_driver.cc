@@ -530,6 +530,11 @@ void ContentAutofillDriver::SendTypePredictionsToRenderer(
                form.GetFieldTypePredictions());
 }
 
+void ContentAutofillDriver::ScrollFieldIntoView(FieldGlobalId field_id) {
+  RouteToAgent(router(), &AutofillDriverRouter::ScrollFieldIntoView,
+               &mojom::AutofillAgent::ScrollFieldIntoView, field_id);
+}
+
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestion(
     const FieldGlobalId& field_id,
     const std::u16string& value) {

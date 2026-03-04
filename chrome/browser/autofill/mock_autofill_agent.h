@@ -100,6 +100,10 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               DispatchEmailVerifiedEvent,
               (::autofill::FieldRendererId, const std::string&),
               (override));
+  MOCK_METHOD(void,
+              ScrollFieldIntoView,
+              (::autofill::FieldRendererId),
+              (override));
 
  private:
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;

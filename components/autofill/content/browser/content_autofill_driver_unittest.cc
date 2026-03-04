@@ -301,6 +301,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   void PreviewPasswordGenerationSuggestion(
       const std::u16string& password) override {}
 
+  void ScrollFieldIntoView(FieldRendererId field_id) override {}
+
   mojo::AssociatedReceiverSet<mojom::AutofillAgent> receivers_;
 
   base::OnceClosure quit_closure_;

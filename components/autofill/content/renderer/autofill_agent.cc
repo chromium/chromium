@@ -1711,6 +1711,17 @@ void AutofillAgent::DoFillFieldWithValue(std::u16string_view value,
                            /*form_cache=*/{});
 }
 
+void AutofillAgent::ScrollFieldIntoView(FieldRendererId field_id) {
+  WebFormControlElement element =
+      form_util::GetFormControlByRendererId(field_id);
+  if (!element) {
+    return;
+  }
+  // TODO(crbug.com/481379667): Make sure the field ends up in a reasonable
+  // portion of the display and not just at the very bottom or very top.
+  element.ScrollIntoViewIfNeeded();
+}
+
 void AutofillAgent::TriggerFormExtraction() {
   ExtractForms(process_forms_form_extraction_timer_, /*callback=*/{});
 }

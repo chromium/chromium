@@ -172,6 +172,7 @@ class AutofillAgent : public content::RenderFrameObserver,
                      base::OnceCallback<void(bool)> callback) override;
 
   // mojom::AutofillAgent:
+  void ScrollFieldIntoView(FieldRendererId field_id) override;
   void TriggerFormExtraction() override;
   void TriggerFormExtractionWithResponse(
       base::OnceCallback<void(bool)> callback) override;

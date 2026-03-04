@@ -883,4 +883,9 @@ void AutofillDriverIOS::DispatchEmailVerifiedEvent(
   NOTIMPLEMENTED();
 }
 
+void AutofillDriverIOS::ScrollFieldIntoView(FieldGlobalId field_id) {
+  // TODO(crbug.com/481379667): Implement scrolling logic on iOS.
+  NOTIMPLEMENTED();
+}
+
 }  // namespace autofill

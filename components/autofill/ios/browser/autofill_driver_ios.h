@@ -144,6 +144,7 @@ class AutofillDriverIOS final : public AutofillDriver,
       const FieldGlobalId& field_id,
       mojom::AutofillSuggestionAvailability suggestion_availability) override;
   std::optional<net::IsolationInfo> GetIsolationInfo() override;
+  void ScrollFieldIntoView(FieldGlobalId field_id) override;
 
   bool is_processed() const { return processed_; }
   void set_processed(bool processed) { processed_ = processed; }

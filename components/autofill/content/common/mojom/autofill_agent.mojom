@@ -10,6 +10,11 @@ import "mojo/public/mojom/base/string16.mojom";
 // There is one instance of this interface per render frame in the render
 // process. All methods are called by browser on renderer.
 interface AutofillAgent {
+  // Scrolls the page to make sure that the element corresponding to `field_id`
+  // is visible on the user's display. This will be used by Autofill to bring a
+  // field into display before showing suggestions to fill that field.
+  ScrollFieldIntoView(FieldRendererId field_id);
+
   // Triggers extraction of new or updated forms. This is called when a form is
   // seen in a subframe and it is not known yet which form in the parent frame
   // contains the form in the subframe.
