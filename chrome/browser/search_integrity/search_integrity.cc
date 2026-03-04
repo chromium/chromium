@@ -6,8 +6,10 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
@@ -27,17 +29,36 @@ namespace search_integrity {
 
 namespace {
 
+// A list of common words to ignore when comparing search engine names from the
+// prepopulated engines list file.
+static constexpr auto kStopList = base::MakeFixedFlatSet<std::u16string_view>(
+    {u"search", u"engine", u"web", u"internet", u"net", u"plus", u"next"});
+
 // Returns true if candidate_name and default_name share at least one common
 // word.
 bool IsNameMatch(std::u16string_view candidate_name,
                  std::u16string_view default_name) {
-  for (const auto& name_one : base::SplitStringPiece(
+  constexpr size_t kMinWordLength = 3;
+
+  for (const auto& name_one_piece : base::SplitStringPiece(
            candidate_name, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
            base::SPLIT_WANT_NONEMPTY)) {
-    for (const auto& name_two : base::SplitStringPiece(
+    if (name_one_piece.length() < kMinWordLength) {
+      continue;
+    }
+    const std::u16string lower_name_one = base::i18n::ToLower(name_one_piece);
+
+    if (kStopList.contains(lower_name_one)) {
+      continue;
+    }
+
+    for (const auto& name_two_piece : base::SplitStringPiece(
              default_name, base::kWhitespaceUTF16, base::TRIM_WHITESPACE,
              base::SPLIT_WANT_NONEMPTY)) {
-      if (base::i18n::ToLower(name_one) == base::i18n::ToLower(name_two)) {
+      if (name_two_piece.length() < kMinWordLength) {
+        continue;
+      }
+      if (lower_name_one == base::i18n::ToLower(name_two_piece)) {
         return true;
       }
     }

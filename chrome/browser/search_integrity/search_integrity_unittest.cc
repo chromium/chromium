@@ -186,6 +186,45 @@ TEST_F(SearchIntegrityTest, CheckMatchingPolicyEngine_TokenMismatch) {
   EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
 }
 
+TEST_F(SearchIntegrityTest, IsNameMatch_StopWordsAreIgnored) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"My Search", "http://custom.example.com");
+  AddSearchEngine(u"Your Search", "http://policy.example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, IsNameMatch_ShortWordsAreIgnored) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"A B", "http://custom.example.com");
+  AddSearchEngine(u"C A", "http://policy.example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_FALSE(report.is_default_custom_with_matching_policy_engine);
+}
+
+TEST_F(SearchIntegrityTest, IsNameMatch_ValidWordsMatch) {
+  TemplateURL* custom_engine =
+      AddSearchEngine(u"My Alpha Search", "http://custom.example.com");
+  AddSearchEngine(u"Your Alpha Engine", "http://policy.example.com",
+                  /*created_by_policy=*/true);
+  SetDefaultSearchProvider(custom_engine);
+
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.is_default_custom);
+  EXPECT_TRUE(report.is_default_custom_with_matching_policy_engine);
+}
+
 TEST_F(SearchIntegrityTest, Histograms_LoggedCorrectly) {
   base::HistogramTester histogram_tester;
 
