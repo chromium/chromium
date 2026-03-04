@@ -186,8 +186,12 @@ IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, MAYBE_EditProfile_NotLoaded) {
 // Regression test for https://crbug.com/1382509
 IN_PROC_BROWSER_TEST_F(AvatarMenuBrowserTest, Guest) {
   // Keep the browser process running while browsers are closed.
+  Profile* profile = browser()->profile();
   ScopedKeepAlive keep_alive(KeepAliveOrigin::BROWSER,
                              KeepAliveRestartOption::DISABLED);
+  ScopedProfileKeepAlive profile_keep_alive(
+      profile, ProfileKeepAliveOrigin::kBrowserWindow);
+
   ui_test_utils::BrowserDestroyedObserver observer(browser());
   CloseAllBrowsers();
   observer.Wait();
