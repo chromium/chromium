@@ -67,7 +67,9 @@ public final class IntentRequestTrackerImpl implements IntentRequestTracker {
          * @return True if the error has been handled. Otherwise, the caller needs to handle the
          *     unhandled error.
          */
-        boolean onCallbackNotFoundError(String error);
+        default boolean onCallbackNotFoundError(String error) {
+            return false;
+        }
     }
 
     /**

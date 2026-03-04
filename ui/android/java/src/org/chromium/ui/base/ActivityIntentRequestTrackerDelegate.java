@@ -66,9 +66,4 @@ public class ActivityIntentRequestTrackerDelegate implements Delegate {
     public final WeakReference<Activity> getActivity() {
         return mActivityWeakRefHolder;
     }
-
-    @Override
-    public boolean onCallbackNotFoundError(String error) {
-        return false;
-    }
 }
