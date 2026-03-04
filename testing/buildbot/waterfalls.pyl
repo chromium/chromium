@@ -92,12 +92,36 @@
         'os_type': 'chromeos',
         'cros_board': 'betty',
       },
+      'chromeos-betty-chrome-cqtast': {
+        'test_suites': {
+          'skylab_tests': 'chromeos_vmlab_cqtast',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+      },
       'chromeos-betty-chrome-dchecks': {
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
         'test_suites': {
           'skylab_tests': 'chromeos_vmlab_tests',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+      },
+      'chromeos-betty-chrome-gtest': {
+        'test_suites': {
+          'skylab_tests': 'chromeos_vmlab_gtest',
+        },
+        'os_type': 'chromeos',
+        'cros_board': 'betty',
+        'cros_dut_pool': 'vmlab',
+      },
+      'chromeos-betty-chrome-tast': {
+        'test_suites': {
+          'skylab_tests': 'chromeos_vmlab_tast',
         },
         'os_type': 'chromeos',
         'cros_board': 'betty',

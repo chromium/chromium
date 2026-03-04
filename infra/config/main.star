@@ -277,6 +277,7 @@ chromium_luci.configure_targets(
             "skylab-rdb-gtest": True,
             "skylab-rdb-native": True,
             "skylab-rdb-tast": True,
+            "tfc-cq-tast": True,
             "vaapi_unittest_args": True,
             "win-arm64": True,
             "win10": True,

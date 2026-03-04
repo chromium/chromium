@@ -2776,6 +2776,85 @@
       },
     },
 
+    'chromeos_vmlab_cqtast': {
+      'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'skylab-rdb-tast',
+          'tfc-cq-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+    },
+
+    'chromeos_vmlab_gtest': {
+      'chromeos_integration_tests_suite': {
+        'mixins': [
+          'skylab-rdb-gtest',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_system_friendly_gtests_fails_vmlab': {
+        'mixins': [
+          'experiments',
+          'skylab-rdb-gtest',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_system_friendly_gtests_vmlab': {
+        'mixins': [
+          'skylab-rdb-gtest',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_vaapi_gtests': {
+        'mixins': [
+          'experiments',
+          'skylab-rdb-gtest',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+    },
+
+    'chromeos_vmlab_tast': {
+      'chromeos_chrome_all_tast_tests': {
+        'mixins': [
+          'skylab-40-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_chrome_criticalstaging_tast_tests': {
+        'mixins': [
+          'skylab-40-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+      'chromeos_chrome_disabled_tast_tests': {
+        'mixins': [
+          'skylab-20-tests-per-shard',
+          'skylab-rdb-tast',
+        ],
+        'variants': [
+          'CROS_LKGM',
+        ],
+      },
+    },
+
     'chromeos_vmlab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [

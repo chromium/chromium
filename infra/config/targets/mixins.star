@@ -581,6 +581,14 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "tfc-cq-tast",
+    skylab = targets.skylab(
+        cros_test_tags = ["group:mainline", "dep:chrome", "group:cq-medium"],
+        cros_test_max_in_shard = 10,
+    ),
+)
+
+targets.mixin(
     name = "chromeos-generic-vm",
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",

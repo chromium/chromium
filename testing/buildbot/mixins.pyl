@@ -868,6 +868,16 @@
       'containment_type': 'AUTO',
     },
   },
+  'tfc-cq-tast': {
+    'skylab': {
+      'cros_test_tags': [
+        'group:mainline',
+        'dep:chrome',
+        'group:cq-medium',
+      ],
+      'cros_test_max_in_shard': 10
+    },
+  },
   'timeout_15m': {
     'fail_if_unused': False,
     'swarming': {
