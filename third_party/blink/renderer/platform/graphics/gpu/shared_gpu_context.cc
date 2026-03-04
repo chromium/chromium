@@ -30,11 +30,8 @@ namespace blink {
 
 namespace {
 
-namespace {
-
 std::optional<bool> g_use_mappable_shared_images_for_canvas_2d_for_testing;
 std::optional<bool> g_low_latency_usage_supported_for_canvas_2d_for_testing;
-}
 
 #if BUILDFLAG(IS_APPLE)
 bool IsDelegatedCompositingEnabled() {
