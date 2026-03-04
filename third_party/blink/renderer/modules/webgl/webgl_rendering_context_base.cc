@@ -6463,12 +6463,11 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
   const bool kPreferTaggedOrientation = false;
   scoped_refptr<StaticBitmapImage> image;
   if (snapshot_provider->IsExternalBitmapProvider()) {
-    sk_sp<SkSurface> draw_surface;
-    if (base::FeatureList::IsEnabled(kWebGLVideoFrameDrawCacheSkSurface)) {
-      draw_surface =
-          static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider)
-              ->GetCachedSurface();
-    }
+    sk_sp<SkSurface> draw_surface =
+        base::FeatureList::IsEnabled(kWebGLVideoFrameDrawCacheSkSurface)
+            ? static_cast<CanvasNon2DSnapshotProviderBitmap*>(snapshot_provider)
+                  ->GetCachedSurface()
+            : nullptr;
     image = CreateUnacceleratedImageFromVideoFrame(
         std::move(media_video_frame), info, draw_surface, video_renderer,
         kPreferTaggedOrientation, reinterpret_video_as_srgb);
