@@ -362,7 +362,13 @@ IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, PRE_Reboot) {
       << "Initial primary display scale after policy set";
 }
 
-IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, Reboot) {
+// TODO(crbug.com/489591497): Re-enable this after fixing flakiness.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_Reboot DISABLED_Reboot
+#else
+#define MAYBE_Reboot Reboot
+#endif
+IN_PROC_BROWSER_TEST_P(DisplayResolutionBootTest, MAYBE_Reboot) {
   const PolicyValue policy_value = GetParam();
 
   AddExternalDisplay(display_helper()->GetDisplayManager());
