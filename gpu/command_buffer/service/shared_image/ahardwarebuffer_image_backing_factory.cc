@@ -322,6 +322,19 @@ class AHardwareBufferImageBacking : public AndroidImageBacking {
       VideoDevice device) override;
 
  private:
+  struct GLTextureParams {
+    GLTextureParams();
+    ~GLTextureParams();
+    GLTextureParams(GLTextureParams&&);
+    GLTextureParams& operator=(GLTextureParams&&);
+
+    gl::ScopedEGLImage egl_image;
+    GLFormatDesc gl_format_desc;
+    GLuint service_id = 0;
+  };
+
+  std::optional<GLTextureParams> GetGLTextureParams();
+
   const base::android::ScopedHardwareBufferHandle hardware_buffer_handle_;
 
   scoped_refptr<OverlayImage> overlay_image_ GUARDED_BY(lock_);
@@ -478,18 +491,23 @@ AHardwareBufferImageBacking::GetAhbHandle() const {
   return hardware_buffer_handle_.Clone();
 }
 
-std::unique_ptr<GLTextureImageRepresentation>
-AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
-                                              MemoryTypeTracker* tracker) {
-  // Use same texture for all the texture representations generated from same
-  // backing.
+AHardwareBufferImageBacking::GLTextureParams::GLTextureParams() = default;
+AHardwareBufferImageBacking::GLTextureParams::~GLTextureParams() = default;
+AHardwareBufferImageBacking::GLTextureParams::GLTextureParams(
+    GLTextureParams&&) = default;
+AHardwareBufferImageBacking::GLTextureParams&
+AHardwareBufferImageBacking::GLTextureParams::operator=(GLTextureParams&&) =
+    default;
+
+std::optional<AHardwareBufferImageBacking::GLTextureParams>
+AHardwareBufferImageBacking::GetGLTextureParams() {
   DCHECK(hardware_buffer_handle_.is_valid());
 
   auto egl_image =
       CreateEGLImageFromAHardwareBuffer(hardware_buffer_handle_.get());
 
   if (!egl_image.is_valid()) {
-    return nullptr;
+    return std::nullopt;
   }
 
   // Android documentation states that right GL format for RGBX AHardwareBuffer
@@ -504,50 +522,49 @@ AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
   GLuint service_id =
       CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
 
-  auto* texture =
-      gles2::CreateGLES2TextureWithLightRef(service_id, gl_format_desc.target);
-  texture->SetLevelInfo(gl_format_desc.target, 0,
-                        gl_format_desc.image_internal_format, size().width(),
-                        size().height(), 1, 0, gl_format_desc.data_format,
-                        gl_format_desc.data_type, ClearedRect());
+  GLTextureParams params;
+  params.egl_image = std::move(egl_image);
+  params.gl_format_desc = gl_format_desc;
+  params.service_id = service_id;
+  return params;
+}
+
+std::unique_ptr<GLTextureImageRepresentation>
+AHardwareBufferImageBacking::ProduceGLTexture(SharedImageManager* manager,
+                                              MemoryTypeTracker* tracker) {
+  auto params = GetGLTextureParams();
+  if (!params) {
+    return nullptr;
+  }
+
+  auto* texture = gles2::CreateGLES2TextureWithLightRef(
+      params->service_id, params->gl_format_desc.target);
+  texture->SetLevelInfo(params->gl_format_desc.target, 0,
+                        params->gl_format_desc.image_internal_format,
+                        size().width(), size().height(), 1, 0,
+                        params->gl_format_desc.data_format,
+                        params->gl_format_desc.data_type, ClearedRect());
   texture->SetImmutable(true, false);
 
   return std::make_unique<GLTextureAndroidImageRepresentation>(
-      manager, this, tracker, std::move(egl_image), std::move(texture));
+      manager, this, tracker, std::move(params->egl_image), std::move(texture));
 }
 
 std::unique_ptr<GLTexturePassthroughImageRepresentation>
 AHardwareBufferImageBacking::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
-  // Use same texture for all the texture representations generated from same
-  // backing.
-  DCHECK(hardware_buffer_handle_.is_valid());
-
-  auto egl_image =
-      CreateEGLImageFromAHardwareBuffer(hardware_buffer_handle_.get());
-  if (!egl_image.is_valid()) {
+  auto params = GetGLTextureParams();
+  if (!params) {
     return nullptr;
   }
 
-  // Android documentation states that right GL format for RGBX AHardwareBuffer
-  // is GL_RGB8, so we don't use angle rgbx.
-  GLFormatDesc gl_format_desc;
-  if (format().PrefersExternalSampler()) {
-    gl_format_desc = gl_format_caps_.ToGLFormatDescExternalSampler(format());
-  } else {
-    gl_format_desc = gl_format_caps_.ToGLFormatDescOverrideHalfFloatType(
-        format(), /*plane_index=*/0);
-  }
-  GLuint service_id =
-      CreateAndBindTexture(egl_image.get(), gl_format_desc.target);
-
   auto texture = base::MakeRefCounted<gles2::TexturePassthrough>(
-      service_id, gl_format_desc.target);
+      params->service_id, params->gl_format_desc.target);
   texture->SetEstimatedSize(GetEstimatedSize());
 
   return std::make_unique<GLTexturePassthroughAndroidImageRepresentation>(
-      manager, this, tracker, std::move(egl_image), std::move(texture));
+      manager, this, tracker, std::move(params->egl_image), std::move(texture));
 }
 
 std::unique_ptr<SkiaGraphiteImageRepresentation>
