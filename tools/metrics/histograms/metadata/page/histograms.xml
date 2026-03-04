@@ -1380,6 +1380,21 @@ chromium-metrics-reviews@google.com.
       variants="BrowserInitializationStatus"/>
 </histogram>
 
+<histogram name="PageLoad.Clients.GoogleSearch.AcceptCHFrameReceived{Profile}"
+    enum="Boolean" expires_after="2026-09-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Whether an Accept-CH frame was received during the connection for the main
+    resource of a main frame navigation, for Google Search page loads. Recorded
+    when the navigation is completed or the app is backgrounded on Android.
+  </summary>
+  <token key="Profile">
+    <variant name="" summary="normal and incognito modes"/>
+    <variant name=".Incognito" summary="incognito mode"/>
+  </token>
+</histogram>
+
 <histogram
     name="PageLoad.Clients.GoogleSearch.AdvertisedAltSvcState{QuicAvailability}{IncognitoSuffix}"
     enum="AdvertisedAltSvcState" expires_after="2026-08-02">
@@ -1994,6 +2009,21 @@ chromium-metrics-reviews@google.com.
   <token key="BrowserInitializationStatus"
       variants="BrowserInitializationStatus"/>
   <token key="TabInitializationStatus" variants="TabInitializationStatus"/>
+</histogram>
+
+<histogram name="PageLoad.Clients.GoogleSearch.OnConnectedCalled{Profile}"
+    enum="Boolean" expires_after="2026-09-01">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Whether the connected callback was called during the connection for the main
+    resource of a main frame navigation, for Google Search page loads. Recorded
+    when the navigation is completed or the app is backgrounded on Android.
+  </summary>
+  <token key="Profile">
+    <variant name="" summary="normal and incognito modes"/>
+    <variant name=".Incognito" summary="incognito mode"/>
+  </token>
 </histogram>
 
 <histogram

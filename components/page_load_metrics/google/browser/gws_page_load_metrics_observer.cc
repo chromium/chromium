@@ -78,6 +78,10 @@ const char kHistogramGWSConnectedCallbackDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.ConnectedCallbackDelay2";
 const char kHistogramGWSInitializeStreamDelay[] =
     HISTOGRAM_PREFIX "NavigationTiming.InitializeStreamDelay";
+const char kHistogramGWSAcceptCHFrameReceived[] =
+    HISTOGRAM_PREFIX "AcceptCHFrameReceived";
+const char kHistogramGWSOnConnectedCalled[] =
+    HISTOGRAM_PREFIX "OnConnectedCalled";
 
 const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[] =
     HISTOGRAM_PREFIX "ConnectTiming.FirstRequestDomainLookupDelay";
@@ -1041,9 +1045,30 @@ void GWSPageLoadMetricsObserver::RecordPreCommitHistograms() {
   CHECK(!is_prerendered_);
   base::UmaHistogramEnumeration(internal::kHistogramGWSNavigationSourceType,
                                 source_type_);
-  if (!was_cached_) {
-    RecordConnectionReuseHistograms();
+  if (was_cached_) {
+    return;
   }
+
+  RecordConnectionReuseHistograms();
+
+  const bool is_incognito = IsIncognitoProfile();
+  auto record_boolean_with_incognito = [](const std::string& histogram_name,
+                                          bool value, bool is_incognito) {
+    base::UmaHistogramBoolean(histogram_name, value);
+    if (is_incognito) {
+      base::UmaHistogramBoolean(
+          base::StrCat({histogram_name, internal::kHistogramIncognitoSuffix}),
+          value);
+    }
+  };
+
+  record_boolean_with_incognito(
+      internal::kHistogramGWSAcceptCHFrameReceived,
+      navigation_handle_timing_.accept_ch_frame_received, is_incognito);
+  record_boolean_with_incognito(
+      internal::kHistogramGWSOnConnectedCalled,
+      !navigation_handle_timing_.connected_callback_delay.is_zero(),
+      is_incognito);
 }
 
 void GWSPageLoadMetricsObserver::RecordConnectionReuseHistograms() {

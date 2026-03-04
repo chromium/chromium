@@ -19,7 +19,9 @@
 #include "components/page_load_metrics/google/browser/gws_abandoned_page_load_metrics_observer.h"
 #include "components/page_load_metrics/google/browser/histogram_suffixes.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/mock_navigation_handle.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 
 namespace {
@@ -188,6 +190,27 @@ TEST_F(GWSPageLoadMetricsObserverTest, Search) {
       internal::kHistogramGWSLargestContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramGWSLargestContentfulPaint, 100, 1);
+}
+
+TEST_F(GWSPageLoadMetricsObserverTest, ConnectionEvents) {
+  content::NavigationHandleTiming timing;
+  timing.connected_callback_delay = base::Milliseconds(1);
+  timing.accept_ch_frame_received = true;
+
+  content::MockNavigationHandle handle(GURL(kGoogleSearchResultsUrl),
+                                       main_rfh());
+  EXPECT_CALL(handle, GetNavigationHandleTiming())
+      .WillRepeatedly(testing::ReturnRef(timing));
+  // Explicitly ensure the mock represents a non-cached response.
+  handle.set_was_response_cached(false);
+
+  tester()->StartNavigation(GURL(kGoogleSearchResultsUrl));
+  observer_->OnCommit(&handle);
+
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSOnConnectedCalled, true, 1);
+  tester()->histogram_tester().ExpectBucketCount(
+      internal::kHistogramGWSAcceptCHFrameReceived, true, 1);
 }
 
 TEST_F(GWSPageLoadMetricsObserverTest, NonSearch) {

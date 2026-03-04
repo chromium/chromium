@@ -27,6 +27,7 @@ enum AdvertisedAltSvcState {
 struct LoadTimingInternalInfo {
   mojo_base.mojom.TimeDelta create_stream_delay;
   mojo_base.mojom.TimeDelta connected_callback_delay;
+  bool accept_ch_frame_received;
   mojo_base.mojom.TimeDelta initialize_stream_delay;
   SessionSource? session_source;
   AdvertisedAltSvcState advertised_alt_svc_state;

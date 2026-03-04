@@ -167,6 +167,9 @@ struct CONTENT_EXPORT NavigationHandleTiming {
   // HttpNetwork::Transaction connected callback delay information.
   base::TimeDelta connected_callback_delay;
 
+  // Whether the Accept-CH frame was received.
+  bool accept_ch_frame_received = false;
+
   // InitializeStream related delay information.
   base::TimeDelta initialize_stream_delay;
 

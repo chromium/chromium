@@ -28,6 +28,8 @@ extern const char kHistogramGWSFirstRequestStartToFirstResponseStart[];
 extern const char kHistogramGWSFirstRequestStartToFinalResponseStart[];
 extern const char kHistogramGWSNavigationStartToFirstLoaderCallback[];
 extern const char kHistogramGWSNavigationStartToOnComplete[];
+extern const char kHistogramGWSAcceptCHFrameReceived[];
+extern const char kHistogramGWSOnConnectedCalled[];
 
 extern const char kHistogramGWSConnectTimingFirstRequestDomainLookupDelay[];
 extern const char kHistogramGWSConnectTimingFirstRequestConnectDelay[];

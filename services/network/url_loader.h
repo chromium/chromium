@@ -744,6 +744,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // and an observer exists. May be nullptr.
   std::unique_ptr<AcceptCHFrameInterceptor> accept_ch_frame_interceptor_;
 
+  bool accept_ch_frame_received_ = false;
+
   // Stores cookies passed from the browser process to later add them to the
   // request. This prevents the network stack from overriding them.
   const bool allow_cookies_from_browser_ = false;

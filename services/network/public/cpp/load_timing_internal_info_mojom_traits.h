@@ -42,6 +42,10 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const net::LoadTimingInternalInfo& info);
   static const base::TimeDelta& connected_callback_delay(
       const net::LoadTimingInternalInfo& info);
+  static bool accept_ch_frame_received(
+      const net::LoadTimingInternalInfo& info) {
+    return info.accept_ch_frame_received;
+  }
   static const base::TimeDelta& initialize_stream_delay(
       const net::LoadTimingInternalInfo& info);
   static std::optional<net::SessionSource> session_source(

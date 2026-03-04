@@ -933,6 +933,9 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
     base::UmaHistogramBoolean("Net.URLLoader.AcceptCHFrameReceivedOnHttp3",
                               !info.accept_ch_frame.empty());
   }
+  if (!info.accept_ch_frame.empty()) {
+    accept_ch_frame_received_ = true;
+  }
   if (!accept_ch_frame_interceptor_) {
     return net::OK;
   }
@@ -943,7 +946,7 @@ int URLLoader::ProcessAcceptCHFrameOnConnected(
 
 mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
   CHECK(request_cookies_.empty() || include_request_cookies_with_response_);
-  return url_loader_util::BuildResponseHead(
+  mojom::URLResponseHeadPtr response = url_loader_util::BuildResponseHead(
       *url_request_, request_cookies_,
       local_network_access_interceptor_.ClientAddressSpace(),
       local_network_access_interceptor_.ResponseAddressSpace().value_or(
@@ -952,6 +955,11 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
       include_load_timing_internal_info_with_response_,
       /*response_start=*/base::TimeTicks::Now(), devtools_observer_.get(),
       devtools_request_id().value_or(""));
+  if (response->load_timing_internal_info) {
+    response->load_timing_internal_info->accept_ch_frame_received =
+        accept_ch_frame_received_;
+  }
+  return response;
 }
 
 void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,

@@ -43,6 +43,12 @@ struct NET_EXPORT LoadTimingInternalInfo {
   // The time taken for HTTP transaction connected callback.
   base::TimeDelta connected_callback_delay;
 
+  // WARNING: Unlike other fields in this struct, this one is set in
+  // //services/network, which is a kind of layer violation. Intermediate
+  // layers could potentially modify this value.
+  // Whether the Accept-CH frame was received.
+  bool accept_ch_frame_received = false;
+
   // The time taken for HTTP stream initialization to finish if the
   // initialization was blocked.
   base::TimeDelta initialize_stream_delay;

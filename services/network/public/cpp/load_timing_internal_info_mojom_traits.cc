@@ -125,6 +125,7 @@ bool StructTraits<network::mojom::LoadTimingInternalInfoDataView,
   if (!data.ReadConnectedCallbackDelay(&info->connected_callback_delay)) {
     return false;
   }
+  info->accept_ch_frame_received = data.accept_ch_frame_received();
   if (!data.ReadInitializeStreamDelay(&info->initialize_stream_delay)) {
     return false;
   }
