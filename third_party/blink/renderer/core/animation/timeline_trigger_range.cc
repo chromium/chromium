@@ -39,8 +39,11 @@ bool ValidateBoundary(ExecutionContext* execution_context,
                       bool allow_auto) {
   if (boundary->IsString()) {
     CSSParserTokenStream stream(boundary->GetAsString());
+    // We don't compute CSS random() function here, only check the grammar
+    // while parsing, since `value` is not used later. Hence we don't need
+    // property context here.
     CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForAnimations();
+        CSSParserLocalContext::CreateWithoutPropertyForSyntaxParsing();
     const CSSValue* value = css_parsing_utils::ConsumeAnimationRange(
         stream,
         *To<LocalDOMWindow>(execution_context)
