@@ -189,6 +189,9 @@
 #pragma mark InfobarBannerPositioner
 
 - (CGFloat)bannerYPosition {
+  if (!self.browser) {
+    return 0;
+  }
   LayoutGuideCenter* layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
 
