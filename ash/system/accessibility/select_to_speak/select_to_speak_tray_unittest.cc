@@ -64,7 +64,7 @@ class SelectToSpeakTrayTest : public AshTestBase {
   bool IsTrayBackgroundActive() { return GetTray()->is_active(); }
 
   // Gets the current tray image view.
-  views::ImageView* GetImageView() { return GetTray()->icon_; }
+  views::ImageView* GetImageView() { return GetTray()->image_view(); }
 
   // Gets the corresponding image given the |select_to_speak_state|.
   gfx::ImageSkia GetIconImage(SelectToSpeakState select_to_speak_state) {

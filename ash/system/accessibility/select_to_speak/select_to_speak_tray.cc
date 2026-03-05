@@ -11,25 +11,15 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
 #include "ash/system/tray/tray_utils.h"
-#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
-
-namespace views {
-class ImageView;
-}
 
 namespace ash {
-
 namespace {
 
 ui::ImageModel GetImageOnCurrentSelectToSpeakStatus(
@@ -71,24 +61,16 @@ std::u16string GetTooltipTextOnCurrentSelectToSpeakStatus(
 
 SelectToSpeakTray::SelectToSpeakTray(Shelf* shelf,
                                      TrayBackgroundViewCatalogName catalog_name)
-    : TrayBackgroundView(shelf, catalog_name) {
+    : ImagedTrayIcon(
+          shelf,
+          ui::ImageModel::FromVectorIcon(kSystemTraySelectToSpeakNewuiIcon,
+                                         kColorAshIconColorPrimary),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK),
+          catalog_name) {
   SetCallback(base::BindRepeating([](const ui::Event& event) {
     Shell::Get()->accessibility_controller()->RequestSelectToSpeakStateChange();
   }));
-
-  const ui::ImageModel inactive_image = ui::ImageModel::FromVectorIcon(
-      kSystemTraySelectToSpeakNewuiIcon, kColorAshIconColorPrimary);
-  auto icon = std::make_unique<views::ImageView>();
-  icon->SetImage(inactive_image);
-  const int vertical_padding =
-      (kTrayItemSize - inactive_image.Size().height()) / 2;
-  const int horizontal_padding =
-      (kTrayItemSize - inactive_image.Size().width()) / 2;
-  icon->SetBorder(views::CreateEmptyBorder(
-      gfx::Insets::VH(vertical_padding, horizontal_padding)));
-  icon->SetTooltipText(l10n_util::GetStringUTF16(
-      IDS_ASH_STATUS_TRAY_ACCESSIBILITY_SELECT_TO_SPEAK));
-  icon_ = tray_container()->AddChildView(std::move(icon));
 
   // Observe the accessibility controller state changes to know when Select to
   // Speak state is updated or when it is disabled/enabled.
@@ -119,13 +101,8 @@ void SelectToSpeakTray::Initialize() {
 void SelectToSpeakTray::HandleLocaleChange() {
   const auto select_to_speak_state =
       Shell::Get()->accessibility_controller()->GetSelectToSpeakState();
-  icon_->SetTooltipText(
+  image_view()->SetTooltipText(
       GetTooltipTextOnCurrentSelectToSpeakStatus(select_to_speak_state));
-}
-
-void SelectToSpeakTray::OnThemeChanged() {
-  TrayBackgroundView::OnThemeChanged();
-  UpdateIconOnColorChanges();
 }
 
 void SelectToSpeakTray::OnAccessibilityStatusChanged() {
@@ -145,8 +122,9 @@ void SelectToSpeakTray::UpdateUXOnCurrentStatus() {
   }
   const auto select_to_speak_state =
       accessibility_controller->GetSelectToSpeakState();
-  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
-  icon_->SetTooltipText(
+  image_view()->SetImage(
+      GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
+  image_view()->SetTooltipText(
       GetTooltipTextOnCurrentSelectToSpeakStatus(select_to_speak_state));
   SetIsActive(accessibility_controller->GetSelectToSpeakState() !=
               SelectToSpeakState::kSelectToSpeakStateInactive);
@@ -161,7 +139,8 @@ void SelectToSpeakTray::UpdateIconOnColorChanges() {
   }
   const auto select_to_speak_state =
       accessibility_controller->GetSelectToSpeakState();
-  icon_->SetImage(GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
+  image_view()->SetImage(
+      GetImageOnCurrentSelectToSpeakStatus(select_to_speak_state));
 }
 
 BEGIN_METADATA(SelectToSpeakTray);
