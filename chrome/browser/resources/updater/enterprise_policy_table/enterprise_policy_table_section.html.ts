@@ -29,11 +29,13 @@ export function getHtml(this: EnterprisePolicyTableSectionElement) {
         </div>
         <div class="column-warning">
           ${item.hasConflict ? html`
-            <cr-icon class="warning-icon" icon="cr:warning"
+            <cr-icon class="warning-icon" icon="cr:warning" role="img"
+                aria-label="$i18n{policyConflictWarning}"
                 title="$i18n{policyConflictWarning}">
             </cr-icon>
           ` : html`
-            <cr-icon class="check-icon" icon="cr:check" title="$i18n{policyOk}">
+            <cr-icon class="check-icon" icon="cr:check" role="img"
+                aria-label="$i18n{policyOk}" title="$i18n{policyOk}">
             </cr-icon>
           `}
         </div>
