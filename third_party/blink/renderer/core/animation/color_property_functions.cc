@@ -188,6 +188,9 @@ void ColorPropertyFunctions::SetUnvisitedColor(const CSSProperty& property,
     case CSSPropertyID::kRowRuleColor:
       builder.SetRowRuleColor(GapDataList<StyleColor>(style_color));
       return;
+    case CSSPropertyID::kWebkitTextFillColor:
+      builder.SetTextFillColor(style_color);
+      return;
     case CSSPropertyID::kWebkitTextStrokeColor:
       builder.SetTextStrokeColor(style_color);
       return;
@@ -251,6 +254,9 @@ void ColorPropertyFunctions::SetVisitedColor(const CSSProperty& property,
     case CSSPropertyID::kColumnRuleColor:
       builder.SetInternalVisitedColumnRuleColor(
           GapDataList<StyleColor>(style_color));
+      return;
+    case CSSPropertyID::kWebkitTextFillColor:
+      builder.SetInternalVisitedTextFillColor(style_color);
       return;
     case CSSPropertyID::kWebkitTextStrokeColor:
       builder.SetInternalVisitedTextStrokeColor(style_color);

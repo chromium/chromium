@@ -7,5 +7,5 @@ PASS - "border-bottom-color" property for "link" element at 0.5s saw something c
 PASS - "outline-color" property for "link" element at 0.5s saw something close to: 127,127,0
 PASS - "-webkit-column-rule-color" property for "link" element at 0.5s saw something close to: 127,127,0
 PASS - "-webkit-text-stroke-color" property for "link" element at 0.5s saw something close to: 127,127,0
-PASS - "-webkit-text-fill-color" property for "link" element at 0.5s saw something close to: 0,0,255
+PASS - "-webkit-text-fill-color" property for "link" element at 0.5s saw something close to: 0,127,127
 

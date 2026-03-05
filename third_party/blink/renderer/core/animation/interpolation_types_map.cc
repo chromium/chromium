@@ -294,6 +294,7 @@ const InterpolationTypes* InterpolationTypesMap::Get(
       case CSSPropertyID::kStopColor:
       case CSSPropertyID::kTextDecorationColor:
       case CSSPropertyID::kTextEmphasisColor:
+      case CSSPropertyID::kWebkitTextFillColor:
       case CSSPropertyID::kWebkitTextStrokeColor:
         applicable_types->push_back(
             MakeGarbageCollected<CSSColorInterpolationType>(property));

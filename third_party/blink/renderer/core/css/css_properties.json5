@@ -7505,6 +7505,7 @@
     {
       name: "-webkit-text-fill-color",
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
+      interpolable: true,
       inherited: true,
       field_group: "*",
       field_template: "external",

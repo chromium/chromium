@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<meta charset="UTF-8">
+<style>
+.parent {
+  -webkit-text-fill-color: blue;
+}
+.target {
+  display: inline-block;
+  font: 60pt sans-serif;
+  -webkit-text-fill-color: orange;
+}
+.expected {
+  margin-right: 15px;
+}
+</style>
+<body>
+<template id="target-template">T</template>
+<script src="resources/interpolation-test.js"></script>
+<script>
+// TODO: This test cannot be moved to WPT yet because web tests block
+// `-webkit-` web animation interpolation while WPT doesn't. This will
+// cause this test (and similar tests) to fail in WPT. We need to
+// support it well in web animation and then migrate it to WPT.
+assertInterpolation({
+  property: '-webkit-text-fill-color',
+  from: neutralKeyframe,
+  to: 'green',
+}, [
+  {at: -0.3, is: 'rgb(255, 176, 0)'},
+  {at: 0, is: 'rgb(255, 165, 0)'},
+  {at: 0.3, is: 'rgb(179, 154, 0)'},
+  {at: 0.6, is: 'rgb(102, 143, 0)'},
+  {at: 1, is: 'rgb(0, 128, 0)'},
+  {at: 1.5, is: 'rgb(0, 110, 0)'},
+]);
+
+assertInterpolation({
+  property: '-webkit-text-fill-color',
+  from: 'initial',
+  to: 'green',
+}, [
+  {at: -0.3, is: 'rgb(0, 0, 0)'},
+  {at: 0, is: 'rgb(0, 0, 0)'},
+  {at: 0.3, is: 'rgb(0, 38, 0)'},
+  {at: 0.6, is: 'rgb(0, 77, 0)'},
+  {at: 1, is: 'rgb(0, 128, 0)'},
+  {at: 1.5, is: 'rgb(0, 192, 0)'},
+]);
+
+assertInterpolation({
+  property: '-webkit-text-fill-color',
+  from: 'inherit',
+  to: 'green',
+}, [
+  {at: -0.3, is: 'rgb(0, 0, 255)'},
+  {at: 0, is: 'rgb(0, 0, 255)'},
+  {at: 0.3, is: 'rgb(0, 38, 179)'},
+  {at: 0.6, is: 'rgb(0, 77, 102)'},
+  {at: 1, is: 'rgb(0, 128, 0)'},
+  {at: 1.5, is: 'rgb(0, 192, 0)'},
+]);
+
+assertInterpolation({
+  property: '-webkit-text-fill-color',
+  from: 'unset',
+  to: 'green',
+}, [
+  {at: -0.3, is: 'rgb(0, 0, 255)'},
+  {at: 0, is: 'rgb(0, 0, 255)'},
+  {at: 0.3, is: 'rgb(0, 38, 179)'},
+  {at: 0.6, is: 'rgb(0, 77, 102)'},
+  {at: 1, is: 'rgb(0, 128, 0)'},
+  {at: 1.5, is: 'rgb(0, 192, 0)'},
+]);
+
+assertInterpolation({
+  property: '-webkit-text-fill-color',
+  from: 'black',
+  to: 'orange'
+}, [
+  {at: -0.3, is: 'black'},
+  {at: 0, is: 'black'},
+  {at: 0.3, is: 'rgb(77, 50, 0)'},
+  {at: 0.6, is: 'rgb(153, 99, 0)'},
+  {at: 1, is: 'orange'},
+  {at: 1.5, is: 'rgb(255, 248, 0)'},
+]);
+</script>
+</body>
