@@ -540,22 +540,30 @@ TEST_F(ClipPathPaintDefinitionTest, ClipDelayNotFallback) {
   StartAndVerifyEligibleClipPathAnimation(element, 1000);
 }
 
-// Test the case where we reverse a clip-path animation using javascript. In
-// this case, we will need to resync the animation with cc, but compositing
-// status should not change except being transiently set as needing a repaint.
-TEST_F(ClipPathPaintDefinitionTest, ReverseClipPathAnimationNoUpdates) {
+/* ----------------------------------------- */
+/*    ORDINARY ANIMATION FALLBACK TESTS      */
+/* For anims that fall back from the value   */
+/* filter or fail standard compositability   */
+/* checks in CheckCanStart*.                 */
+/* ----------------------------------------- */
+
+// Clip-path: initial is not composited and must fall back to main thread. This
+// is done because initial results in a special keyframe value that the
+// ClipPathPaintDefinition doesn't know what to do with. In future, we may
+// interpret this as the same as clip-path: none, which is allowed.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathInital) {
   SetBodyInnerHTML(R"HTML(
     <style>
         @keyframes clippath {
             0% {
-                clip-path: circle(50% at 50% 50%);
+                clip-path: initial;
             }
             100% {
                 clip-path: circle(30% at 30% 30%);
             }
         }
         .animation {
-            animation: clippath 4s steps(4, jump-end);
+            animation: clippath 4s;
         }
     </style>
     <div id ="target" style="width: 100px; height: 100px">
@@ -565,36 +573,7 @@ TEST_F(ClipPathPaintDefinitionTest, ReverseClipPathAnimationNoUpdates) {
   Element* element = GetElementById("target");
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
-  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
-
-  UpdateAndAdvanceTimeTo(2000 + 1);
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kNoMainFrameUpdates);
-
-  // Reverse the animation.
-  animation->updatePlaybackRate(-1);
-
-  // Run lifecycle once more: animation should still be composited. Because it's
-  // the same animation, it shouldn't schedule an animation update. We do
-  // however, create a new paint worklet here, even though it contains no new
-  // information. In future, this could potentially be optimized out, but doing
-  // so would be complex and could cause errors.
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kComposited, element, animation,
-      static_cast<UpdatesNeededForNextFrame>(
-          UpdatesNeededForNextFrame::kPaintStatusReset |
-          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate |
-          UpdatesNeededForNextFrame::kPaintInvalidated));
-
-  // Advance animation back (since it is reversed) to the 2nd frame.
-  UpdateAndAdvanceTimeTo(2000 + 1 + 1000 + 2);
-
-  // Run lifecycle once more: repaints should be avoided even with negative
-  // playback rate.
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kComposited, element, animation,
-      UpdatesNeededForNextFrame::kNoMainFrameUpdates);
+  StartAndVerifyNonEligibleClipPathAnimation(element, 2000);
 }
 
 // <br> cannot be composited due to it not supporting paint properties, so we
@@ -626,31 +605,39 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
   StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
 }
 
-// Clip-path: initial is not composited and must fall back to main thread.
-TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathInital) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-        @keyframes clippath {
-            0% {
-                clip-path: initial;
-            }
-            100% {
-                clip-path: circle(30% at 30% 30%);
-            }
-        }
-        .animation {
-            animation: clippath 4s;
-        }
-    </style>
-    <div id ="target" style="width: 100px; height: 100px">
-    </div>
-  )HTML");
+/* ----------------------------------------- */
+/*     SPECIAL ANIMATION FALLBACK TESTS      */
+/* For anims that fall back during pre-paint */
+/* ----------------------------------------- */
 
-  Element* element = GetElementById("target");
-  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+// These cases primarily are here to prevent broken painting or stuck
+// animations. Most fallback cases are either expected to set the animation
+// pending (in which case, the ordinary handling is sufficient), or are not
+// actually a reason an animation can't continue to run on the compositor.
+// Clip-path animations have special handling to ensure cases that absolutely
+// need to fall back are handled with care.
 
-  StartAndVerifyNonEligibleClipPathAnimation(element, 2000);
-}
+// These tests exist as pairs, one for the "normal" fallback case, and one for
+// the case where the disqualifying factor is added after the animation has
+// already started. This is important to test to ensure that animations that
+// start composited but then have a disqualifying factor added later properly
+// fall back, rather than getting stuck in a broken state. ie, that the paint
+// status and the animation composinting state are updated atomically.
+
+// TODO(clchambers): I hope one day most of these tests won't exist.
+// will-change: contents doesn't even apply to NPW-based clip-path animations,
+// since we don't need render surfaces. The only case we really care about is
+// when a clip-path animation is shared with a transform animation (which may
+// need a surface). Backdrop-filter should just be fixed, since masks already
+// work with backdrop filter, this behavior was just never moved to svg clips.
+// In the long term, fragmentation for clip-paths should simply be properly
+// defined so we don't need to fall back (see crbug.com/40241353), but in the
+// short term, it needs to be handled better than having a code block in the
+// middle of the pre-paint tree walk. See crbug.com/488268869. Perspective
+// transforms / child transform anims with clip-path: none will always be an
+// issue until/unless this feature is completely rewritten to clip differently
+// however, for various perf reasons. (ie, we don't want to allocate unbounded
+// mask tiles on cc). Though I envision a better way to handle that case.
 
 // TODO(crbug.com/449152897): Backdrop-filter and clip path paint worklet
 // images are not rasterized correctly.
@@ -720,43 +707,6 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathNoneWithPerspective) {
   StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
 }
 
-// Cancelling a clip path animation with web animations API should properly
-// clear all state.
-TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-        @keyframes clippath {
-            0% {
-                clip-path: circle(50% at 50% 50%);
-            }
-            100% {
-                clip-path: circle(30% at 30% 30%);
-            }
-        }
-        .animation {
-            animation: clippath 4s steps(4, jump-end);
-        }
-    </style>
-    <div id ="target" style="width: 100px; height: 100px">
-    </div>
-  )HTML");
-
-  Element* element = GetElementById("target");
-  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
-
-  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
-
-  animation->cancel();
-
-  // Cancelling the animation should reset status and the clippath properties.
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kNoAnimation, element, animation,
-      static_cast<UpdatesNeededForNextFrame>(
-          UpdatesNeededForNextFrame::kPaintStatusReset |
-          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate |
-          UpdatesNeededForNextFrame::kPaintInvalidated));
-}
-
 // Clip-path animations with descendant transform animations must fall back to
 // main thread due to difficulty determining animation bounds.
 TEST_F(ClipPathPaintDefinitionTest,
@@ -812,6 +762,158 @@ TEST_F(ClipPathPaintDefinitionTest,
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kNotComposited, element, animation,
       UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
+}
+
+TEST_F(ClipPathPaintDefinitionTest,
+       DISABLED_FallbackForDelayedWillChangeContents) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+
+        .willchangecontents {
+            will-change: contents;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  // Advance the animation time and add will-change: contents.
+  UpdateAndAdvanceTimeTo(1250);
+
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation willchangecontents"));
+
+  // Next main frame should proceed ordinarily.
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kComposited, element,
+      UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate);
+
+  // However, the animation will fall back during pre-paint.
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Main thread should still be producing frames.
+  UpdateAndAdvanceTimeTo(2001);
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
+}
+
+/* ----------------------------------------- */
+/*       ANIMATION STATE CHANGE TESTS        */
+/* For anims mutated by WAAPI, or CSS anims  */
+/* directly mutated by JS                    */
+/* ----------------------------------------- */
+
+// Test the case where we reverse a clip-path animation using javascript. In
+// this case, we will need to resync the animation with cc, but compositing
+// status should not change except being transiently set as needing a repaint.
+TEST_F(ClipPathPaintDefinitionTest, ReverseClipPathAnimationNoUpdates) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  UpdateAndAdvanceTimeTo(2000 + 1);
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kComposited, element, animation,
+      UpdatesNeededForNextFrame::kNoMainFrameUpdates);
+
+  // Reverse the animation.
+  animation->updatePlaybackRate(-1);
+
+  // Run lifecycle once more: animation should still be composited. Because it's
+  // the same animation, it shouldn't schedule an animation update. We do
+  // however, create a new paint worklet here, even though it contains no new
+  // information. In future, this could potentially be optimized out, but doing
+  // so would be complex and could cause errors.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kComposited, element, animation,
+      static_cast<UpdatesNeededForNextFrame>(
+          UpdatesNeededForNextFrame::kPaintStatusReset |
+          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate |
+          UpdatesNeededForNextFrame::kPaintInvalidated));
+
+  // Advance animation back (since it is reversed) to the 2nd frame.
+  UpdateAndAdvanceTimeTo(2000 + 1 + 1000 + 2);
+
+  // Run lifecycle once more: repaints should be avoided even with negative
+  // playback rate.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kComposited, element, animation,
+      UpdatesNeededForNextFrame::kNoMainFrameUpdates);
+}
+
+// Cancelling a clip path animation with web animations API should properly
+// clear all state.
+TEST_F(ClipPathPaintDefinitionTest, ClipPathAnimationCancel) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  animation->cancel();
+
+  // Cancelling the animation should reset status and the clippath properties.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNoAnimation, element, animation,
+      static_cast<UpdatesNeededForNextFrame>(
+          UpdatesNeededForNextFrame::kPaintStatusReset |
+          UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate |
+          UpdatesNeededForNextFrame::kPaintInvalidated));
 }
 
 // Test the case where a 2nd composited clip path animation causes a fallback to
@@ -943,61 +1045,6 @@ TEST_F(ClipPathPaintDefinitionTest,
   EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
       CompositedPaintStatus::kComposited, element_pseudo, animation,
       UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
-}
-
-// TODO(crbug.com/488090095): This test never should have passed and only did so
-// because of a deficiency in the test framework. This should be un-disabled
-// when the last part of crrev.com/c/7625319 is checked in.
-TEST_F(ClipPathPaintDefinitionTest,
-       DISABLED_FallbackForDelayedWillChangeContents) {
-  SetBodyInnerHTML(R"HTML(
-    <style>
-        @keyframes clippath {
-            0% {
-                clip-path: circle(50% at 50% 50%);
-            }
-            100% {
-                clip-path: circle(30% at 30% 30%);
-            }
-        }
-        .animation {
-            animation: clippath 4s steps(4, jump-end);
-        }
-
-        .willchangecontents {
-            will-change: contents;
-        }
-    </style>
-    <div id ="target" style="width: 100px; height: 100px">
-    </div>
-  )HTML");
-
-  Element* element = GetElementById("target");
-  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
-
-  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
-
-  // Advance the animation time and add will-change: contents.
-  UpdateAndAdvanceTimeTo(1250);
-
-  element->setAttribute(html_names::kClassAttr,
-                        AtomicString("animation willchangecontents"));
-
-  // Next main frame should proceed ordinarily.
-  EnsureCCClipPathInvariantsHoldStyleAndLayout(
-      CompositedPaintStatus::kComposited, element,
-      UpdatesNeededForNextFrame::kNeedsPaintPropertyUpdate);
-
-  // However, the animation will fall back during pre-paint.
-  EnsureCCClipPathInvariantsHoldThroughoutPainting(
-      CompositedPaintStatus::kNotComposited, element, animation,
-      UpdatesNeededForNextFrame::kAllUpdates);
-
-  // Main thread should still be producing frames.
-  UpdateAndAdvanceTimeTo(2001);
-  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
-      CompositedPaintStatus::kNotComposited, element, animation,
-      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
 }
 
 // Test that the special animation restart for percent translate animations does
@@ -1232,6 +1279,15 @@ TEST_F(ClipPathPaintDefinitionTest, TransitionRetargetVerySmallDuration) {
   element->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
   UpdateAllLifecyclePhasesForTest();
 }
+
+/* ----------------------------------------- */
+/*       ANIMATION BOUNDING RECT TESTS       */
+/* ----------------------------------------- */
+
+// The animation bounding rect is the rect that contains all keyframes,
+// including underlying value (for delays) and potential extrapolation (for
+// complex easing). This is needed so that we won't create unbounded paint
+// chunks (or mask textures) for synthesized clips, which causes perf issues.
 
 TEST_F(ClipPathPaintDefinitionTest, BoundingRectCorrectForSimpleKeyframeUnion) {
   SetBodyInnerHTML(R"HTML(
