@@ -15,7 +15,9 @@
 #include "remoting/base/constants.h"
 #include "remoting/base/name_value_map.h"
 #include "remoting/signaling/content_description.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
+#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting {
 
@@ -125,6 +127,10 @@ void JingleMessage::SetPayload(Payload payload) {
   action_ = ActionFromPayload(payload_);
 }
 
+std::string JingleMessage::ToSerializedXml() {
+  return JingleMessageToXml(*this)->Str();
+}
+
 JingleMessageReply::JingleMessageReply() = default;
 
 JingleMessageReply::JingleMessageReply(ErrorType error)
@@ -145,6 +151,10 @@ JingleMessageReply& JingleMessageReply::operator=(JingleMessageReply&&) =
     default;
 
 JingleMessageReply::~JingleMessageReply() = default;
+
+std::string JingleMessageReply::ToSerializedXml() {
+  return JingleMessageReplyToXml(*this)->Str();
+}
 
 IceTransportInfo::IceTransportInfo() = default;
 IceTransportInfo::~IceTransportInfo() = default;

@@ -23,11 +23,8 @@
 #include "remoting/signaling/ftl_device_id_provider.h"
 #include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/ftl_registration_manager.h"
-#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_address.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting {
 
@@ -196,26 +193,27 @@ bool FtlSignalStrategy::Core::SendMessage(
     return false;
   }
 
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza;
+  std::string message_id;
+  ftl::ChromotingMessage crd_message;
   if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
     // Synthesizing the from attribute in the message.
     jingle_message->from = local_address_;
 
-    stanza = JingleMessageToXml(*jingle_message);
+    message_id = jingle_message->message_id;
+    crd_message.mutable_xmpp()->set_stanza(jingle_message->ToSerializedXml());
   } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
     jingle_reply->from = local_address_;
 
-    stanza = JingleMessageReplyToXml(*jingle_reply);
+    message_id = jingle_reply->message_id;
+    crd_message.mutable_xmpp()->set_stanza(jingle_reply->ToSerializedXml());
   } else {
     NOTREACHED() << "Unsupported message type.";
   }
 
-  ftl::ChromotingMessage crd_message;
-  crd_message.mutable_xmpp()->set_stanza(stanza->Str());
   SendMessageImpl(
       destination_address, std::move(crd_message),
       base::BindOnce(&Core::OnSendMessageResponse, weak_factory_.GetWeakPtr(),
-                     destination_address, stanza->Attr(kQNameId)));
+                     destination_address, message_id));
   return GetState() == CONNECTED;
 }
 
@@ -440,14 +438,13 @@ void FtlSignalStrategy::Core::OnSendMessageResponse(
   }
 
   // Fake an error message so JingleSession will take it as PEER_IS_OFFLINE.
-  auto error_iq = std::make_unique<jingle_xmpp::XmlElement>(kQNameIq);
-  error_iq->SetAttr(kQNameType, kIqTypeError);
-  error_iq->SetAttr(kQNameId, stanza_id);
-  error_iq->SetAttr(kQNameFrom, receiver.id());
-  error_iq->SetAttr(kQNameTo, local_address_.id());
+  JingleMessageReply error_reply(JingleMessageReply::ErrorType::UNSPECIFIED);
+  error_reply.to = local_address_;
+  error_reply.from = receiver;
+  error_reply.message_id = stanza_id;
 
   ftl::ChromotingMessage crd_message;
-  crd_message.mutable_xmpp()->set_stanza(error_iq->Str());
+  crd_message.mutable_xmpp()->set_stanza(error_reply.ToSerializedXml());
   OnMessageReceived(receiver, crd_message);
 }
 

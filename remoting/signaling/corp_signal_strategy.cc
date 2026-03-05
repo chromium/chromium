@@ -21,11 +21,8 @@
 #include "remoting/base/logging.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/signaling/corp_messaging_client.h"
-#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_address.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting {
 
@@ -176,20 +173,18 @@ bool CorpSignalStrategy::Core::SendMessage(
     }
   });
 
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza;
+  internal::IqStanzaStruct iq_stanza;
   if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
     jingle_message->to = destination_address;
-    stanza = JingleMessageToXml(*jingle_message);
+    iq_stanza.xml = jingle_message->ToSerializedXml();
   } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
     jingle_reply->to = destination_address;
-    stanza = JingleMessageReplyToXml(*jingle_reply);
+    iq_stanza.xml = jingle_reply->ToSerializedXml();
   } else {
     NOTREACHED() << "Unsupported message type.";
   }
 
   internal::PeerMessageStruct peer_message;
-  internal::IqStanzaStruct iq_stanza;
-  iq_stanza.xml = stanza->Str();
   peer_message.payload = std::move(iq_stanza);
 
   messaging_client_->SendMessage(SignalingAddress(messaging_authz_token_),

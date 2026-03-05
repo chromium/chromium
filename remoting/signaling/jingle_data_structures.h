@@ -340,6 +340,8 @@ class JingleMessage {
 
   void SetPayload(Payload payload);
 
+  std::string ToSerializedXml();
+
   // Unique identifier for the message.
   std::string message_id;
 
@@ -403,6 +405,8 @@ struct JingleMessageReply {
   JingleMessageReply(JingleMessageReply&&);
   JingleMessageReply& operator=(JingleMessageReply&&);
   ~JingleMessageReply();
+
+  std::string ToSerializedXml();
 
   // Defines the role of this reply in the IQ request/response pattern.
   ReplyType reply_type = REPLY_RESULT;

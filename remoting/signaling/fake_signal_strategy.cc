@@ -15,8 +15,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_id_util.h"
-#include "remoting/signaling/xmpp_constants.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 namespace remoting {
 
