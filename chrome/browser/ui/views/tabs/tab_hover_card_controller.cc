@@ -753,6 +753,7 @@ void TabHoverCardController::OnSlideAnimationProgressed(
     double value) {
   if (hover_card_) {
     hover_card_->SetTextFade(value);
+    hover_card_->SetSliding(value > 0);
   }
   if (thumbnail_wait_state_ == ThumbnailWaitState::kWaitingWithoutPlaceholder) {
     const auto crossfade_start =
@@ -769,6 +770,7 @@ void TabHoverCardController::OnSlideAnimationComplete(
   // Make sure we're displaying the new text at 100% opacity, and none of the
   // old text.
   hover_card_->SetTextFade(1.0);
+  hover_card_->SetSliding(false);
 
   // If we were waiting for a preview image with data to load, we don't want to
   // keep showing the old image while hovering on the new tab, so clear it. This

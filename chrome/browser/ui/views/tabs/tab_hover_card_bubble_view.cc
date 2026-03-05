@@ -731,12 +731,17 @@ gfx::Size TabHoverCardBubbleView::CalculatePreferredSize(
   return preferred_size;
 }
 
-// We do not want the hover card to reposition itself according to the anchor
-// view that it is observing. It is usually undergoing slide or fade animations.
-// When in the middle of those animations, reacting to changes to the anchor
-// view can cause visual flickering with the hover card bounds.
+// While the hover card is sliding, we do not want it to reposition itself
+// according to the anchor view that it is observing. It is usually
+// undergoing slide or fade animations. When in the middle of those
+// animations, reacting to changes to the anchor view can cause visual
+// flickering with the hover card bounds.
 // See crbug.com/486948335 for an example.
-void TabHoverCardBubbleView::OnAnchorBoundsChanged() {}
+void TabHoverCardBubbleView::OnAnchorBoundsChanged() {
+  if (!sliding_) {
+    BubbleDialogDelegateView::OnAnchorBoundsChanged();
+  }
+}
 
 BEGIN_METADATA(TabHoverCardBubbleView)
 END_METADATA

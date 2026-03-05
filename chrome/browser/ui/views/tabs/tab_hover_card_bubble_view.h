@@ -89,6 +89,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // specifying that the tab has crashed.
   void SetCrashedImage();
 
+  void SetSliding(bool sliding) { sliding_ = sliding; }
+
   // Accessors used by tests.
   std::u16string_view GetTitleTextForTesting() const;
   std::u16string_view GetDomainTextForTesting() const;
@@ -115,6 +117,8 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
 
   // BubbleDialogDelegate:
   void OnAnchorBoundsChanged() override;
+
+  bool sliding_ = false;
 
   raw_ptr<FadeLabelView> title_label_ = nullptr;
   raw_ptr<FadeLabelView> domain_label_ = nullptr;
