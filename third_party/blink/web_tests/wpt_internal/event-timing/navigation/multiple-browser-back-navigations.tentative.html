@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8>
+<title>Event Timing: interleaved browser navigations.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=/event-timing/resources/event-timing-test-utils.js></script>
+<body>
+  <button id="navigateBack1">Go Back 1!</button>
+  <button id="navigateBack2">Go Back 2!</button>
+<script>
+  navigateBack1.onclick = () => {
+    if (window.testRunner) {
+      testRunner.goToOffset(-1);
+    }
+  };
+  navigateBack2.onclick = () => {
+    if (window.testRunner) {
+      testRunner.goToOffset(-1);
+    }
+  };
+
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported');
+    assert_true(!!window.testRunner, 'testRunner is required');
+    const isEnabled = window.internals && internals.runtimeFlags.navigationEventTimingEnabled;
+    if (!isEnabled) {
+      return;
+    }
+
+    const entries = [];
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        entries.push(entry);
+      }
+    });
+    observer.observe({ type: 'event', durationThreshold: 0 });
+
+    window.addEventListener('popstate', (event) => {
+      mainThreadBusy(20);
+    });
+    window.addEventListener('click', () => {
+      mainThreadBusy(20);
+    });
+    navigation.addEventListener('navigate', (event) => {
+      mainThreadBusy(20);
+    });
+
+    // Stuff our history stack first.
+    history.pushState({}, undefined, "/first");
+    history.pushState({}, undefined, "/second");
+
+    // Wait a short time.
+    await new Promise(resolve => t.step_timeout(resolve, 50));
+
+    // Simulate back button press twice rapidly.
+    // We don't await the first click to allow them to interleave.
+    if (test_driver) {
+      const click1 = test_driver.click(navigateBack1);
+      const click2 = test_driver.click(navigateBack2);
+      await click1;
+      await click2;
+    }
+
+    // Wait for all expected entries to be reported.
+    await new Promise(resolve => t.step_timeout(resolve, 500));
+
+    const clicks = entries.filter(e => e.name === 'click');
+    const navigates = entries.filter(e => e.name === 'navigate');
+    const popstates = entries.filter(e => e.name === 'popstate');
+
+    assert_equals(clicks.length, 2, 'Should have 2 clicks');
+    assert_equals(navigates.length, 2, 'Should have 2 navigates');
+    assert_equals(popstates.length, 2, 'Should have 2 popstates');
+
+    // Both click 1 and click 2 should have distinct interaction IDs.
+    const clickId1 = clicks[0].interactionId;
+    const clickId2 = clicks[1].interactionId;
+
+    assert_greater_than(clickId1, 0, 'Click 1 should have non-zero ID');
+    assert_greater_than(clickId2, 0, 'Click 2 should have non-zero ID');
+    assert_not_equals(clickId1, clickId2, 'Clicks should have different IDs');
+
+    // We verify the first and last navigates have distinct, non-zero interaction IDs.
+    const navId1 = navigates[0].interactionId;
+    const navId2 = navigates[1].interactionId;
+
+    assert_greater_than(navId1, 0, 'First navigate should have non-zero ID');
+    assert_greater_than(navId2, 0, 'Second navigate should have non-zero ID');
+    assert_not_equals(navId1, navId2, 'Navigates should have different IDs');
+
+    // Because `testRunner.goToOffset(-1)` simulates an asynchronous browser interaction,
+    // the navigations should not inherit the click's interaction ID.
+    assert_not_equals(navId1, clickId1, 'First navigate ID should NOT match first click ID');
+    assert_not_equals(navId2, clickId2, 'Second navigate ID should NOT match second click ID');
+
+    // For popstates, they should exactly match the interaction ID of the corresponding navigate event.
+    assert_equals(popstates[0].interactionId, navId1, 'First popstate matches first navigate');
+    assert_equals(popstates[1].interactionId, navId2, 'Second popstate matches second navigate');
+
+  }, "Verify that interleaved browser back navigations (no intercept) have correct interactionIds.");
+</script>
+</body>
+</html>

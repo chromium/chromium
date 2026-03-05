@@ -61,6 +61,18 @@ class CORE_EXPORT ResponsivenessMetrics
   void SetCurrentInteractionEventQueuedTimestamp(base::TimeTicks queued_time);
   base::TimeTicks CurrentInteractionEventQueuedTimestamp() const;
 
+  // The `navigate` event dispatches during a pre-commit phase of navigations
+  // and can defer actual commit until a promise resolves.
+  // `popstate` and `hashchange` will not dispatch until this deferred commit.
+  // This method is called from `NavigateEvent::CommitNow` to restore a navigate
+  // events' interaction id when this happens.
+  // The secondary value for this is to reset `last_navigate_interaction_id_`
+  // every time a non userInitiated navigation is committed.  Though we
+  // shouldn't observe those event timings, anyway.
+  void WillNavigateEventCommitNow(PerformanceTimelineEntryIdInfo id) {
+    last_navigate_interaction_id_ = id;
+  }
+
   void Trace(Visitor*) const;
 
  private:
@@ -139,7 +151,9 @@ class CORE_EXPORT ResponsivenessMetrics
   std::optional<PerformanceTimelineEntryIdInfo> last_keydown_interaction_id_;
 
   // Popstate and hashchange events can reuse the most recent navigate
-  // interaction ID.
+  // interaction ID.  This value is updated with each new navigation that is
+  // started (for sync commit), and updated when that navigation is actually
+  // committed (for deferred commit).
   PerformanceTimelineEntryIdInfo last_navigate_interaction_id_ =
       PerformanceTimelineEntryIdInfo::kNone;
 

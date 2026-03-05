@@ -11,6 +11,7 @@
 #include "third_party/blink/public/web/web_frame_load_type.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
+#include "third_party/blink/renderer/core/timing/performance_timeline_entry_id_generator.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -48,6 +49,8 @@ struct CORE_EXPORT NavigateEventDispatchParams
   bool should_skip_screenshot;
   mojo::PendingReceiver<mojom::blink::NavigationResumeDeferredCommitListener>
       resume_deferred_commit_listener;
+  PerformanceTimelineEntryIdInfo interaction_id =
+      PerformanceTimelineEntryIdInfo::kNone;
 
   void Trace(Visitor*) const;
 };

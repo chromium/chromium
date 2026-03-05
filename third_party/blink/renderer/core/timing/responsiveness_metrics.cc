@@ -241,11 +241,20 @@ void ResponsivenessMetrics::HandleNavigationInteraction(
   CHECK(new_entry);
   const AtomicString& event_type = new_entry->name();
 
+  // We expect to observe a `navigate` event for every new user initiated same
+  // document navigation (see some exceptions, below, with popstate event).
+  //
+  // Three things may follow:
+  // - Navigation is *not* intercepted, and default actions continue
+  // - Navigation is intercepted, and committed synchronously
+  // - Navigation is intercepted, and committed async (precommit handler)
+  //
+  // For either synchronous case, we save `last_navigate_interaction_id_` here
+  // right now at dispatch time (for any subsequent popstate/hashchange events).
+  // For async commit, we expect a call to `WillNavigateEventCommitNow()`.
   if (event_type == event_type_names::kNavigate) {
-    // If this navigation related event is perfectly nested inside an
-    // interaction we simply reuse its interactionId.  This helps map click
-    // event with a link default action to navigate.  Otherwise, create a new
-    // interaction.
+    // If this navigation related event is perfectly nested inside another
+    // interaction we simply reuse its interactionId (e.g. clicks).
     if (auto* scoped_entry = window_performance_->GetTopMostEventTimingEntry();
         scoped_entry && scoped_entry->IsKnownToBeAnInteraction()) {
       SetInteractionId(new_entry, *scoped_entry->GetInteractionIdInfo());
@@ -256,13 +265,21 @@ void ResponsivenessMetrics::HandleNavigationInteraction(
     return;
   }
 
+  // `popstate` and `hashchange` events *usually* come immediately after a
+  // `navigate` event, and so will reuse its interaction id.  However, they may
+  // not (e.g. because the Navigation API is disabled in the document, like an
+  // initial empty document or opaque origin). See
+  // `NavigationApi::HasEntriesAndEventsDisabled()`.  In such cases, we don't
+  // measure these at all.
+  // Note about `hashchange` specifically: this event is enqueued into a
+  // separate task for dispatch.  This means it is possible to have multiple
+  // same document navigations in a row that enqueue multiple `hashchange`
+  // events, and thus the committed navigation (interactionID, and document URL)
+  // can already have changed. Today, this also causes such delayed events to
+  // share the same final interactionId, rather than sharing the id of the
+  // original navigate event.
   if (event_type == event_type_names::kPopstate ||
       event_type == event_type_names::kHashchange) {
-    // These events *usually* come immediately after a navigate event, and so
-    // will just re-use the last navigation interaction id.  However, they may
-    // not (e.g. because the Navigation API is disabled in the document, like an
-    // initial empty document or opaque origin). See
-    // NavigationApi::HasEntriesAndEventsDisabled().
     if (last_navigate_interaction_id_ ==
         PerformanceTimelineEntryIdInfo::kNone) {
       // If we don't have a navigation id, check if we are perfectly nested

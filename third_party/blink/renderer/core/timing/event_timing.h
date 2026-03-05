@@ -71,6 +71,10 @@ class CORE_EXPORT UIEventTiming final {
                 const Event& event,
                 EventTarget* hit_test_target);
 
+  PerformanceEventTiming* GetEntry() {
+    return timing_ ? timing_->GetEntry() : nullptr;
+  }
+
  private:
   std::optional<EventTiming> timing_;
 };
@@ -82,6 +86,10 @@ class CORE_EXPORT NavigationEventTiming final {
   NavigationEventTiming(LocalFrame* frame,
                         const Event& event,
                         EventTarget* hit_test_target);
+
+  PerformanceEventTiming* GetEntry() {
+    return timing_ ? timing_->GetEntry() : nullptr;
+  }
 
  private:
   std::optional<EventTiming> timing_;

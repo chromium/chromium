@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8>
+<title>Event Timing: interleaved navigation events via precommitHandler.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=/event-timing/resources/event-timing-test-utils.js></script>
+<body>
+  <a id="link1" href="#test1">Link 1</a>
+  <a id="link2" href="#test2">Link 2</a>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported');
+    const isEnabled = window.internals && internals.runtimeFlags.navigationEventTimingEnabled;
+    if (!isEnabled) {
+      return;
+    }
+
+    const entries = [];
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        entries.push(entry);
+      }
+    });
+    observer.observe({ type: 'event', durationThreshold: 0 });
+
+    const link1 = document.getElementById('link1');
+    const link2 = document.getElementById('link2');
+
+    window.addEventListener('click', () => {
+      mainThreadBusy(20);
+    });
+
+    window.addEventListener('popstate', () => {
+      mainThreadBusy(20);
+    });
+
+    const { promise: precommitPromise1, resolve: resolvePrecommit1 } = Promise.withResolvers();
+    const { promise: precommitPromise2, resolve: resolvePrecommit2 } = Promise.withResolvers();
+
+    let navCount = 0;
+    navigation.addEventListener('navigate', (event) => {
+      navCount++;
+      mainThreadBusy(20);
+
+      if (navCount === 1) {
+        event.intercept({
+          precommitHandler: async () => {
+            await precommitPromise1;
+          }
+        });
+      } else if (navCount === 2) {
+        event.intercept({
+          precommitHandler: async () => {
+            await precommitPromise2;
+          }
+        });
+      }
+    });
+
+    // Navigate is dispatched synchronously from click.
+    // Each of these should trigger a navigate event that intercepts, but is
+    // stuck in precommit handler waiting for promise to resolve.
+    await test_driver.click(link1);
+    await test_driver.click(link2);
+
+    // Wait a short time.
+    await new Promise(resolve => t.step_timeout(resolve, 50));
+
+    assert_equals(navCount, 2, 'Both navigate events should have fired');
+
+    // Resolve first precommit handler.
+    resolvePrecommit1();
+
+    // Give it time to dispatch popstate, paint, and measure event timings.
+    await raf();
+    await raf();
+
+    // Resolve second precommit handler.
+    resolvePrecommit2();
+
+    // Wait for all expected entries to be reported.
+    // Each click triggers: click, navigate. Only the second finishes to trigger popstate.
+    await new Promise(resolve => t.step_timeout(resolve, 500));
+    const clicks = entries.filter(e => e.name === 'click');
+    const navigates = entries.filter(e => e.name === 'navigate');
+    const popstates = entries.filter(e => e.name === 'popstate');
+    assert_equals(clicks.length, 2, 'Should have 2 clicks');
+    assert_equals(navigates.length, 2, 'Should have 2 navigates');
+    assert_equals(popstates.length, 1, 'Should have 1 popstate (first navigation is aborted)');
+
+    const clickEntries = entries.filter(e => e.name === 'click');
+    const navigateEntries = entries.filter(e => e.name === 'navigate');
+    const popstateEntries = entries.filter(e => e.name === 'popstate');
+
+    // Interaction IDs should be in order of click.
+    const id1 = clickEntries[0].interactionId;
+    const id2 = clickEntries[1].interactionId;
+
+    assert_greater_than(id1, 0, 'Click 1 should have non-zero ID');
+    assert_greater_than(id2, 0, 'Click 2 should have non-zero ID');
+    assert_not_equals(id1, id2, 'Clicks should have different IDs');
+
+    // Verify first navigation events.
+    assert_equals(navigateEntries[0].interactionId, id1, 'First navigate matches first click');
+
+    // Verify second navigation events.
+    assert_equals(navigateEntries[1].interactionId, id2, 'Second navigate matches second click');
+    assert_equals(popstateEntries[0].interactionId, id2, 'The only popstate matches second click');
+
+  }, "Verify that interleaved navigation events (navigate, popstate, hashchange) have correct interactionIds when commit order differs from dispatch order.");
+</script>
+</body>
+</html>

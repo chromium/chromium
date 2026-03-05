@@ -43,6 +43,8 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_destination.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_precommit_controller.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
+#include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -464,6 +466,11 @@ void NavigateEvent::CommitNow(ScriptState* script_state) {
   CHECK(!dispatch_params_->destination_item || !dispatch_params_->state_object);
   if (signal_->aborted()) {
     return;
+  }
+
+  if (auto* performance = DOMWindowPerformance::performance(*DomWindow())) {
+    performance->GetResponsivenessMetrics().WillNavigateEventCommitNow(
+        dispatch_params_->interaction_id);
   }
 
   intercept_state_ = InterceptState::kCommitted;
