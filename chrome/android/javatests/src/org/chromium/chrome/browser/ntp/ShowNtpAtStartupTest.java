@@ -478,7 +478,7 @@ public class ShowNtpAtStartupTest {
     @Test
     @MediumTest
     @Feature({"StartSurface", "RenderTest"})
-    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @Restriction(DeviceFormFactor.PHONE)
     @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
     public void testFakeSearchBoxWidth_phones() throws IOException {
         mActivityTestRule.startFromLauncherAtNtp();
