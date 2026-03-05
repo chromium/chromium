@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SEND_TAB_TO_SELF_OUTGOING_TAB_FORM_FIELD_EXTRACTOR_H_
 #define COMPONENTS_SEND_TAB_TO_SELF_OUTGOING_TAB_FORM_FIELD_EXTRACTOR_H_
 
+#include <iosfwd>
+
 #include "components/send_tab_to_self/page_context.h"
 
 namespace autofill {
@@ -22,6 +24,13 @@ namespace send_tab_to_self {
 PageContext::FormFieldInfo ExtractOutgoingTabFormFields(
     autofill::AutofillManager& manager,
     const url::Origin& origin);
+
+// Similar to ExtractOutgoingTabFormFields, but allows injecting an ostream for
+// detailed insights of the extraction process.
+PageContext::FormFieldInfo ExtractOutgoingTabFormFieldsForTesting(
+    autofill::AutofillManager& manager,
+    const url::Origin& origin,
+    std::ostream& os);
 
 }  // namespace send_tab_to_self
 
