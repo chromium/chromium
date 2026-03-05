@@ -32,6 +32,7 @@ import * as BrowserDebugger from 'devtools/panels/browser_debugger/browser_debug
   TestRunner.domDebuggerModel.toggleDOMBreakpoint(breakpoint, false);
 
   const domBreakpointsPane = BrowserDebugger.DOMBreakpointsSidebarPane.DOMBreakpointsSidebarPane.instance();
+  await domBreakpointsPane.updateComplete;
 
   TestRunner.addResult(`DOM breakpoints container text content: ${domBreakpointContainer.contentElement.deepTextContent()}`);
   TestRunner.addResult(
