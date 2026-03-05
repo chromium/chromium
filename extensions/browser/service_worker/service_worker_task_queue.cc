@@ -232,15 +232,7 @@ void ServiceWorkerTaskQueue::SetObserverForTest(TestObserver* observer) {
 bool ServiceWorkerTaskQueue::ShouldEnqueueTask(
     BrowserContext* context,
     const Extension* extension) const {
-  // If the `OptimizeServiceWorkerStartRequests` feature is enabled, returns
-  // false (don't queue) if the worker is ready, indicating the caller should
-  // dispatch immediately. Returns true (queue) otherwise. If the feature is
-  // disabled, always returns true.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kOptimizeServiceWorkerStartRequests)) {
-    return !IsReadyToRunTasks(context, extension);
-  }
-  return true;
+  return !IsReadyToRunTasks(context, extension);
 }
 
 bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
@@ -264,25 +256,7 @@ bool ServiceWorkerTaskQueue::IsReadyToRunTasks(
       extension->id(), browser_context_->UniqueId(), *activation_token);
   const ServiceWorkerState* worker_state = GetWorkerState(context_id);
 
-  // If this feature is enabled, the worker state should be reliable
-  // and the single source of truth for worker readiness.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kOptimizeServiceWorkerStartRequests)) {
-    return worker_state && worker_state->IsReady();
-  }
-
-  if (!worker_state || !worker_state->worker_id()) {
-    // Assume the worker has not been started. It is likely in
-    // blink::EmbeddedWorkerStatus::(kStarting|kStopped) status.
-    return false;
-  }
-  // We must check both states since the worker could begin stopping and call
-  // `RendererDidStopServiceWorkerContext` after
-  // `ServiceWorkerState::BrowserState::kReady`.
-  return (worker_state->browser_state() ==
-          ServiceWorkerState::BrowserState::kReady) &&
-         (worker_state->renderer_state() ==
-          ServiceWorkerState::RendererState::kActive);
+  return worker_state && worker_state->IsReady();
 }
 
 void ServiceWorkerTaskQueue::AddPendingTask(
@@ -322,14 +296,10 @@ void ServiceWorkerTaskQueue::AddPendingTask(
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kOptimizeServiceWorkerStartRequests) &&
-      worker_state->IsReady()) {
+  if (worker_state->IsReady()) {
     DispatchTasksImmediately(context_id, base::span_from_ref(task));
   } else {
-    // This is either the behavior always (OptimizeServiceWorkerStartRequests
-    // off) or (when OptimizeServiceWorkerStartRequests on) when the worker is
-    // not ready: queue task and maybe start.
+    // When the worker is not ready: queue task and maybe start.
     AddPendingTaskForContext(std::move(task), context_id);
     MaybeStartWorker(worker_state, context_id);
   }
@@ -340,9 +310,7 @@ void ServiceWorkerTaskQueue::DispatchTasksImmediately(
     base::span<PendingTask> tasks) {
   ServiceWorkerState* worker_state = GetWorkerState(context_id);
   DCHECK(worker_state);
-  DCHECK(!base::FeatureList::IsEnabled(
-             extensions_features::kOptimizeServiceWorkerStartRequests) ||
-         worker_state->IsReady());
+  DCHECK(worker_state->IsReady());
 
   const auto& worker_id = *worker_state->worker_id();
   LazyContextTaskQueue::ContextInfo context_info(

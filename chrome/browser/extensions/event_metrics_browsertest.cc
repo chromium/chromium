@@ -526,22 +526,10 @@ IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
       /*expected_count=*/0);
 }
 
-class EventMetricsBrowserTestWithOptimizeServiceWorkerStart
-    : public EventMetricsBrowserTest,
-      public base::test::WithFeatureOverride {
- public:
-  EventMetricsBrowserTestWithOptimizeServiceWorkerStart()
-      : WithFeatureOverride(
-            extensions_features::kOptimizeServiceWorkerStartRequests) {}
-};
-
 // Tests that a running service worker will not be unnecessarily started when it
 // receives an event while it is already started.
-IN_PROC_BROWSER_TEST_P(EventMetricsBrowserTestWithOptimizeServiceWorkerStart,
+IN_PROC_BROWSER_TEST_F(EventMetricsBrowserTest,
                        ServiceWorkerRedundantStartCountTest) {
-  const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
-  const int kExpectedWakeUps = wakeup_optimization_enabled ? 0 : 1;
-
   ASSERT_TRUE(embedded_test_server()->Start());
   ExtensionTestMessageListener extension_oninstall_listener_fired(
       "installed listener fired");
@@ -570,28 +558,19 @@ IN_PROC_BROWSER_TEST_P(EventMetricsBrowserTestWithOptimizeServiceWorkerStart,
       embedded_test_server()->GetURL("example.com", "/simple.html")));
   ASSERT_TRUE(test_event_listener_fired.WaitUntilSatisfied());
 
-  if (!wakeup_optimization_enabled) {
-    SCOPED_TRACE("Waiting for the worker to start.");
-    ready_observer.WaitForWorkerStarted(extension->id());
-  }
-  // Depending on the wakeup optimization feature, we do (feature enabled) or
-  // do not (feature disabled) check if a worker is ready before attempting to
+  // We do check if a worker is ready before attempting to
   // start it again.
   histogram_tester.ExpectTotalCount(
       "Extensions.ServiceWorkerBackground."
       "RequestedWorkerStartForStartedWorker3",
-      /*expected_count=*/kExpectedWakeUps);
+      /*expected_count=*/0);
   // Verify that the value is `true` since the worker
   // will be unnecessarily started.
   histogram_tester.ExpectBucketCount(
       "Extensions.ServiceWorkerBackground."
       "RequestedWorkerStartForStartedWorker3",
-      /*sample=*/true, /*expected_count=*/kExpectedWakeUps);
+      /*sample=*/true, /*expected_count=*/0);
 }
-
-// Toggle `extensions_features::OptimizeServiceWorkerStartRequests`.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    EventMetricsBrowserTestWithOptimizeServiceWorkerStart);
 
 class EventMetricsDispatchToSenderBrowserTest
     : public ExtensionBrowserTest,

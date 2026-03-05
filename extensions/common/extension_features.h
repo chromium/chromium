@@ -271,10 +271,6 @@ BASE_DECLARE_FEATURE(kDebuggerAPIRestrictedToDevMode);
 // during execution) the error is passed back to the sender.
 BASE_DECLARE_FEATURE(kExtensionBrowserNamespaceAndPolyfillSupport);
 
-// Optimizes service worker start requests by checking readiness before
-// initiating a start.
-BASE_DECLARE_FEATURE(kOptimizeServiceWorkerStartRequests);
-
 // When enabled, a call to base::ListValue::Clone is avoided when dispatching an
 // extension function. Behind a feature to assess impact
 // (go/chrome-performance-work-should-be-finched).

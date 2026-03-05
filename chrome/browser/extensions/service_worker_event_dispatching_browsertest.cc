@@ -457,23 +457,10 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
       1, start_count_observer.GetRequestedWorkerStartedCount(extension->id()));
 }
 
-class ServiceWorkerEventDispatchingBrowserTestWithOptimizeServiceWorkerStart
-    : public ServiceWorkerEventDispatchingBrowserTest,
-      public base::test::WithFeatureOverride {
- public:
-  ServiceWorkerEventDispatchingBrowserTestWithOptimizeServiceWorkerStart()
-      : WithFeatureOverride(
-            extensions_features::kOptimizeServiceWorkerStartRequests) {}
-};
-
 // Tests the behavior of service worker start requests when a worker is already
 // running.
-IN_PROC_BROWSER_TEST_P(
-    ServiceWorkerEventDispatchingBrowserTestWithOptimizeServiceWorkerStart,
-    StartedWorkerRedundantStarts) {
-  const bool wakeup_optimization_enabled = IsParamFeatureEnabled();
-  const int kExpectedWakeUps = wakeup_optimization_enabled ? 0 : 1;
-
+IN_PROC_BROWSER_TEST_F(ServiceWorkerEventDispatchingBrowserTest,
+                       StartedWorkerRedundantStarts) {
   TestServiceWorkerContextObserver sw_started_stopped_observer(
       profile(), kTestExtensionId);
   ExtensionTestMessageListener extension_oninstall_listener_fired(
@@ -502,13 +489,8 @@ IN_PROC_BROWSER_TEST_P(
   // Confirm the expected number of start requests that are sent to the
   // extension worker during event dispatch.
   EXPECT_EQ(
-      kExpectedWakeUps,
-      start_count_observer.GetRequestedWorkerStartedCount(extension->id()));
+      0, start_count_observer.GetRequestedWorkerStartedCount(extension->id()));
 }
-
-// Toggle `extensions_features::OptimizeServiceWorkerStartRequests`.
-INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
-    ServiceWorkerEventDispatchingBrowserTestWithOptimizeServiceWorkerStart);
 
 // TODO(crbug.com/40276609): Create test for event dispatching that uses the
 // `EventRouter::DispatchEventToSender()` event flow.

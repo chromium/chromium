@@ -207,12 +207,6 @@ void ServiceWorkerState::NotifyObserversIfReady(
     return;
   }
   worker_starting_ = false;
-
-  if (!base::FeatureList::IsEnabled(
-          extensions_features::kOptimizeServiceWorkerStartRequests)) {
-    SetBrowserState(ServiceWorkerState::BrowserState::kReady);
-  }
-
   for (auto& observer : observers_) {
     observer.OnWorkerStart(context_id, *worker_id_);
   }

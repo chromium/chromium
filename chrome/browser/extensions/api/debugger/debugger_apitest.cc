@@ -867,9 +867,7 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, Debugger) {
 }
 #endif
 
-// TODO(crbug.com/40276609): Reenable this test once the
-// OptimizeServiceWorkerStartRequests feature is re-enabled.
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DISABLED_DebuggerMv3) {
+IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, DebuggerMv3) {
   ASSERT_TRUE(RunExtensionTest("debugger_mv3")) << message_;
 }
 

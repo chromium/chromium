@@ -78,9 +78,7 @@ void ExtensionBackgroundPageWaiter::WaitForBackgroundWorkerInitialized() {
   LazyContextTaskQueue* task_queue = context_id.GetTaskQueue();
 
   // If the worker is already active and ready to run tasks, we're done.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kOptimizeServiceWorkerStartRequests) &&
-      task_queue->IsReadyToRunTasks(browser_context_, extension_.get())) {
+  if (task_queue->IsReadyToRunTasks(browser_context_, extension_.get())) {
     return;
   }
 

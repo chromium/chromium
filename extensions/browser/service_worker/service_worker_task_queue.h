@@ -68,10 +68,9 @@ class Extension;
 //
 // A worker must be started before it can become ready to process the event
 // tasks. When a task arrives, the task queue checks if the worker is ready. If
-// the worker is ready (and `OptimizeServiceWorkerStartRequests` is enabled),
-// the task is dispatched immediately. If the worker is not ready (or the
-// optimization is disabled), the task is queued, and the queue requests the
-// worker to start (if it hasn't already).
+// the worker is ready, the task is dispatched immediately. If the worker is
+// not ready, the task is queued, and the queue requests the worker to start (if
+// it hasn't already).
 //
 // `RendererDidStartServiceWorkerContext()` is called asynchronously from the
 // extension renderer process (potentially before or after
