@@ -4,15 +4,14 @@
 
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
 
-#include <algorithm>
 #include <functional>
-#include <memory>
 #include <utility>
 
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
+#include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_utils.h"
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"

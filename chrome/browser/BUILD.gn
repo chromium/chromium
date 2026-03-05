@@ -490,12 +490,6 @@ static_library("browser") {
     "history/profile_based_browsing_history_driver.h",
     "history/top_sites_factory.cc",
     "history/top_sites_factory.h",
-    "history_clusters/history_clusters_metrics_logger.cc",
-    "history_clusters/history_clusters_metrics_logger.h",
-    "history_clusters/history_clusters_service_factory.cc",
-    "history_clusters/history_clusters_service_factory.h",
-    "history_clusters/history_clusters_tab_helper.cc",
-    "history_clusters/history_clusters_tab_helper.h",
     "icon_loader.cc",
     "icon_loader.h",
     "icon_manager.cc",
@@ -1401,6 +1395,8 @@ static_library("browser") {
     # TODO(crbug.com/489125036): Remove this circular dependency when
     # enterprise/connectors/reporting/reporting_event_router_factory.h gets
     # extracted into its own target.
+    "//chrome/browser/history_clusters:history_clusters",
+    "//chrome/browser/history_clusters:impl",
     "//chrome/browser/interstitials:impl",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/navigation_predictor:impl",
@@ -1547,7 +1543,6 @@ static_library("browser") {
     # c/b/external_protocol/external_protocol_handler.h"
     # c/b/profiles/profile_io_data.h"
     # c/b/history/top_sites_factory.h"
-    # c/b/history_clusters/history_clusters_service_factory.h"
     # c/b/history_embeddings/history_embeddings_service_factory.h"
     # c/b/history_embeddings/history_embeddings_utils.h"
     # c/b/preloading/prefetch/search_prefetch/search_prefetch_service.h"
@@ -1733,6 +1728,8 @@ static_library("browser") {
     "//chrome/browser/hang_monitor",
     "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
+    "//chrome/browser/history_clusters:impl",
     "//chrome/browser/history_embeddings:impl",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
@@ -2956,7 +2953,6 @@ static_library("browser") {
       "first_run/android/first_run_prefs.cc",
       "first_run/android/first_run_prefs.h",
       "first_run/android/first_run_utils.cc",
-      "history_clusters/history_clusters_tab_helper_android.cc",
       "icon_loader_android.cc",
       "incognito/android/incognito_utils_android.cc",
       "language/android/language_bridge.cc",

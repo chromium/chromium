@@ -85,6 +85,7 @@ source_set("impl") {
     "//chrome/browser/bookmarks",
     "//chrome/browser/custom_handlers",
     "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/prefs",
     "//chrome/browser/profiles",

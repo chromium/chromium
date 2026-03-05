@@ -5,12 +5,16 @@
 #ifndef CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_METRICS_LOGGER_H_
 #define CHROME_BROWSER_HISTORY_CLUSTERS_HISTORY_CLUSTERS_METRICS_LOGGER_H_
 
-#include "components/history_clusters/core/cluster_metrics_utils.h"
-#include "content/public/browser/page.h"
+#include <optional>
+
 #include "content/public/browser/page_user_data.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace history_clusters {
+
+enum class ClusterAction;
+enum class RelatedSearchAction;
+enum class VisitAction;
+enum class VisitType;
 
 // The initial state that describes how an interaction with the HistoryClusters
 // UI was started.

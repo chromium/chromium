@@ -312,6 +312,7 @@ static_library("ui") {
     "//chrome/browser/gpu",
     "//chrome/browser/hang_monitor",
     "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",

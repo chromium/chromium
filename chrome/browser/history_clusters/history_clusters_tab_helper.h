@@ -10,12 +10,22 @@
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "chrome/browser/history/history_tab_helper.h"
-#include "components/history/core/browser/history_service.h"
-#include "components/history/core/browser/history_types.h"
 #include "components/page_load_metrics/common/page_end_reason.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+
+namespace base {
+class Time;
+class TimeDelta;
+}  // namespace base
+
+namespace history {
+class HistoryService;
+struct VisitContextAnnotations;
+}  // namespace history
+
+class GURL;
+class HistoryTabHelper;
 
 namespace history_clusters {
 class HistoryClustersService;

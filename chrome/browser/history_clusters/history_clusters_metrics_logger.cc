@@ -4,13 +4,10 @@
 
 #include "chrome/browser/history_clusters/history_clusters_metrics_logger.h"
 
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "content/public/browser/page_user_data.h"
-#include "content/public/browser/web_contents.h"
+#include "components/history_clusters/core/cluster_metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
-#include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 namespace history_clusters {

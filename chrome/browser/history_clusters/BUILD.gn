@@ -2,23 +2,112 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/android/config.gni")
-import("//build/config/android/rules.gni")
-import("//chrome/browser/buildflags.gni")
-import("//third_party/jni_zero/jni_zero.gni")
+if (is_android) {
+  import("//build/config/android/rules.gni")
+  import("//third_party/jni_zero/jni_zero.gni")
 
-android_library("java") {
-  srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java" ]
+  android_library("java") {
+    srcjar_deps = [ ":jni_headers" ]
+    sources = [ "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java" ]
 
-  deps = [
-    "//base:base_java",
-    "//content/public/android:content_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
-    "//third_party/jni_zero:jni_zero_java",
+    deps = [
+      "//base:base_java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/jni_zero:jni_zero_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java" ]
+  }
+}
+
+source_set("history_clusters") {
+  sources = [
+    "history_clusters_metrics_logger.h",
+    "history_clusters_service_factory.h",
+    "history_clusters_tab_helper.h",
+  ]
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/page_load_metrics/common",
+    "//content/public/browser",
   ]
 }
 
-generate_jni("jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/history_clusters/HistoryClustersTabHelper.java" ]
+source_set("impl") {
+  sources = [
+    "history_clusters_metrics_logger.cc",
+    "history_clusters_service_factory.cc",
+    "history_clusters_tab_helper.cc",
+  ]
+  deps = [
+    ":history_clusters",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/engagement",
+    "//chrome/browser/history",
+    "//chrome/browser/optimization_guide",
+    "//chrome/browser/search_engines",
+    "//components/bookmarks/browser",
+    "//components/history/core/browser",
+    "//components/history_clusters/core",
+    "//components/site_engagement/content",
+    "//services/metrics/public/cpp:ukm_builders",
+  ]
+  if (is_android) {
+    sources += [ "history_clusters_tab_helper_android.cc" ]
+    deps += [
+      ":jni_headers",
+      "//chrome/browser/android:tabs_public",
+      "//chrome/browser/ui/android/tab_model",
+    ]
+  } else {
+    deps += [
+      "//chrome/browser/ui",
+      "//chrome/browser/ui/tabs:tab_strip",
+      "//components/ntp_tiles",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "history_clusters_metrics_browsertest.cc" ]
+    deps = [
+      ":history_clusters",
+      ":impl",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/history_clusters/core",
+      "//components/ukm:test_support",
+      "//components/variations",
+      "//content/test:test_support",
+      "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "history_clusters_tab_helper_unittest.cc" ]
+  deps = [
+    ":history_clusters",
+    ":impl",
+    "//chrome/browser/bookmarks",
+    "//chrome/browser/history",
+    "//chrome/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/test",
+    "//components/history/core/browser",
+    "//components/history/core/test",
+    "//components/history_clusters/core",
+    "//components/history_clusters/core:test_support",
+    "//components/keyed_service/core",
+    "//content/test:test_support",
+  ]
 }

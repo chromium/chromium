@@ -317,6 +317,7 @@ source_set("profiles_extra_parts_impl") {
     "//chrome/browser/glic",
     "//chrome/browser/heavy_ad_intervention",
     "//chrome/browser/history",
+    "//chrome/browser/history_clusters",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/k_anonymity_service",
     "//chrome/browser/language_detection",

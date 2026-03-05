@@ -69,6 +69,7 @@ source_set("side_panel") {
     "//base",
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser:primitives",
+    "//chrome/browser/history_clusters",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui:browser_list",
