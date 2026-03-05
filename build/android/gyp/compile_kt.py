@@ -147,6 +147,8 @@ def main(argv):
   kotlinc_cmd = [build_utils.KOTLINC_PATH]
 
   kotlinc_cmd += [
+      "-jvm-target",
+      "11",
       '-no-jdk',  # Avoid depending on the bundled JDK.
       # Avoid depending on the bundled Kotlin stdlib. This may have a version
       # skew with the one in //third_party/android_deps (which is the one we
