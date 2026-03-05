@@ -27,6 +27,7 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -98,6 +99,7 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
     private @MonotonicNonNull Configuration mConfig;
 
     private static @Nullable WebContents sWebContentsForTesting;
+    private static @Nullable WebContents sParentWebContentsForTesting;
     // TODO(crbug.com/481216447): Remove this testing bypass once CI supports Android B (API 36).
     private static boolean sIgnoreSdkVersionForTesting;
 
@@ -122,7 +124,10 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
         }
 
         mWebContents = webContents;
-        WebContents parentWebContents = mWebContents.getDocumentPictureInPictureOpener();
+        WebContents parentWebContents =
+                sParentWebContentsForTesting != null
+                        ? sParentWebContentsForTesting
+                        : mWebContents.getDocumentPictureInPictureOpener();
         mInitiatorTab = TabUtils.fromWebContents(parentWebContents);
         if (parentWebContents == null
                 || mInitiatorTab == null
@@ -569,10 +574,17 @@ public class DocumentPictureInPictureActivity extends AsyncInitializationActivit
 
     public static void setWebContentsForTesting(WebContents webContents) {
         sWebContentsForTesting = webContents;
+        ResettersForTesting.register(() -> sWebContentsForTesting = null);
+    }
+
+    public static void setParentWebContentsForTesting(WebContents webContents) {
+        sParentWebContentsForTesting = webContents;
+        ResettersForTesting.register(() -> sParentWebContentsForTesting = null);
     }
 
     public static void setIgnoreSdkVersionForTesting(boolean ignore) {
         sIgnoreSdkVersionForTesting = ignore;
+        ResettersForTesting.register(() -> sIgnoreSdkVersionForTesting = false);
     }
 
     @NativeMethods

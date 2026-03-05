@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.media;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,7 +18,6 @@ import androidx.test.filters.MediumTest;
 import androidx.test.platform.app.InstrumentationRegistry;
 import androidx.test.runner.lifecycle.Stage;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -73,27 +70,19 @@ public class DocumentPictureInPictureActivityTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mWebContents =
-                            spy(
-                                    WebContentsFactory.createWebContents(
-                                            mTab.getProfile(),
-                                            /* initiallyHidden= */ false,
-                                            /* initializeRenderer= */ true));
-                    doReturn(mParentWebContents)
-                            .when(mWebContents)
-                            .getDocumentPictureInPictureOpener();
+                            WebContentsFactory.createWebContents(
+                                    mTab.getProfile(),
+                                    /* initiallyHidden= */ false,
+                                    /* initializeRenderer= */ true);
                 });
 
         DocumentPictureInPictureActivity.setWebContentsForTesting(mWebContents);
+        DocumentPictureInPictureActivity.setParentWebContentsForTesting(mParentWebContents);
         DocumentPictureInPictureActivity.setIgnoreSdkVersionForTesting(true);
 
         Promise<Void> promise = ThreadUtils.runOnUiThreadBlocking(() -> Promise.fulfilled(null));
         when(mAconfigMock.requestPinnedWindowingLayer(any(), any())).thenReturn(promise);
         AconfigFlaggedApiDelegate.setInstanceForTesting(mAconfigMock);
-    }
-
-    @After
-    public void tearDown() {
-        DocumentPictureInPictureActivity.setWebContentsForTesting(null);
     }
 
     @Test
