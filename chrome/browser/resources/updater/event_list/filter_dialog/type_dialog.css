@@ -14,7 +14,7 @@
   display: block;
 }
 
-button.filter-menu-item {
+cr-button.filter-menu-item {
   background: none;
   color: inherit;
   border: none;
@@ -24,4 +24,5 @@ button.filter-menu-item {
   margin: 0;
   display: block;
   width: 100%;
+  border-radius: 0;
 }

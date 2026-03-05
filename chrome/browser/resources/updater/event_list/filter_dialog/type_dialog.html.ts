@@ -12,11 +12,10 @@ export function getHtml(this: TypeDialogElement) {
 <!--_html_template_start_-->
 <filter-dialog .anchorElement="${this.anchorElement}" @close="${this.onClose}">
   ${this.filterMenuItems.map(item => html`
-    <button class="filter-menu-item"
-        data-filter-category="${item.filterCategory}"
-        @click="${this.onClick}">
+    <cr-button class="filter-menu-item"
+        data-filter-category="${item.filterCategory}" @click="${this.onClick}">
       ${item.label}
-    </button>
+    </cr-button>
   `)}
 </filter-dialog>
 <!--_html_template_end_-->`;
