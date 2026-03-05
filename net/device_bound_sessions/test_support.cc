@@ -109,8 +109,8 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
     std::string cookie_name = GetQueryParameter(request.GetURL(), "cookie_name")
                                   .value_or("auth_cookie");
     response->AddCustomHeader(
-        "Set-Cookie",
-        base::StringPrintf("%s=abcdef0123;SameSite=None;Secure", cookie_name));
+        "Set-Cookie", base::StringPrintf("%s=abcdef0123;SameSite=Strict;Secure",
+                                         cookie_name));
     std::string query_params = request.GetURL().GetQuery();
     std::string refresh_path =
         base::StringPrintf("/dbsc_refresh_session?%s", query_params);
@@ -132,7 +132,8 @@ std::unique_ptr<net::test_server::HttpResponse> RequestHandler(
                      base::DictValue()
                          .Set("type", "cookie")
                          .Set("name", cookie_name)
-                         .Set("attributes", "SameSite=None; Secure")));
+                         .Set("attributes", "SameSite=Strict; Secure")))
+            .Set("allowed_refresh_initiators", base::ListValue().Append("*"));
 
     std::optional<std::string> json = base::WriteJson(registration_response);
     EXPECT_TRUE(json.has_value());

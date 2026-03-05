@@ -86,6 +86,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceNetworkDelegate
       net::CookieOptions* options,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       net::CookieInclusionStatus* inclusion_status) override;
+  bool OnShouldForceIgnoreSiteForCookies(
+      const net::URLRequest& request) override;
   net::NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const net::URLRequest& request) const override;
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(

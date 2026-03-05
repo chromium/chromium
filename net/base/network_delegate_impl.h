@@ -86,6 +86,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
       const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieInclusionStatus* inclusion_status) override;
 
+  bool OnShouldForceIgnoreSiteForCookies(const URLRequest& request) override;
+
   std::optional<cookie_util::StorageAccessStatus> OnGetStorageAccessStatus(
       const URLRequest& request,
       base::optional_ref<const RedirectInfo> redirect_info) const override;

@@ -33,6 +33,7 @@
 #include "services/network/pending_callback_chain.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/url_loader.h"
+#include "services/network/url_loader_util.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_WEBSOCKETS)
@@ -300,6 +301,13 @@ bool NetworkServiceNetworkDelegate::OnCanSetCookie(
     return web_socket->AllowCookies(request.url());
 #endif  // BUILDFLAG(ENABLE_WEBSOCKETS)
   return true;
+}
+
+bool NetworkServiceNetworkDelegate::OnShouldForceIgnoreSiteForCookies(
+    const net::URLRequest& request) {
+  return url_loader_util::ShouldForceIgnoreSiteForCookies(
+      request.url(), request.initiator(), request.site_for_cookies(),
+      network_context_->cors_origin_access_list());
 }
 
 net::NetworkDelegate::PrivacySetting

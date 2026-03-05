@@ -139,6 +139,12 @@ bool NetworkDelegate::CanSetCookie(
                         inclusion_status);
 }
 
+bool NetworkDelegate::ShouldForceIgnoreSiteForCookies(
+    const URLRequest& request) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  return OnShouldForceIgnoreSiteForCookies(request);
+}
+
 std::optional<cookie_util::StorageAccessStatus>
 NetworkDelegate::GetStorageAccessStatus(
     const URLRequest& request,

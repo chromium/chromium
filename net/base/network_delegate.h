@@ -96,6 +96,7 @@ class NET_EXPORT NetworkDelegate {
                     CookieOptions* options,
                     const net::FirstPartySetMetadata& first_party_set_metadata,
                     CookieInclusionStatus* inclusion_status);
+  bool ShouldForceIgnoreSiteForCookies(const URLRequest& request);
 
   std::optional<cookie_util::StorageAccessStatus> GetStorageAccessStatus(
       const URLRequest& request,
@@ -287,6 +288,12 @@ class NET_EXPORT NetworkDelegate {
       CookieOptions* options,
       const net::FirstPartySetMetadata& first_party_set_metadata,
       CookieInclusionStatus* inclusion_status) = 0;
+
+  // Returns true if the site for cookies should be ignored for the request.
+  // This is typically used for requests initiated by extensions, where the
+  // request's initiator is granted cross-origin access, allowing it to
+  // send cookies to the target URL.
+  virtual bool OnShouldForceIgnoreSiteForCookies(const URLRequest& request) = 0;
 
   virtual PrivacySetting OnForcePrivacyMode(
       const URLRequest& request) const = 0;

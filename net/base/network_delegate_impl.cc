@@ -72,6 +72,11 @@ bool NetworkDelegateImpl::OnCanSetCookie(
   return true;
 }
 
+bool NetworkDelegateImpl::OnShouldForceIgnoreSiteForCookies(
+    const URLRequest& request) {
+  return false;
+}
+
 std::optional<cookie_util::StorageAccessStatus>
 NetworkDelegateImpl::OnGetStorageAccessStatus(
     const URLRequest& request,
