@@ -112,8 +112,6 @@ VerticalTabDragHandlerImpl::~VerticalTabDragHandlerImpl() = default;
 
 void VerticalTabDragHandlerImpl::InitializeDrag(TabCollectionNode& node,
                                                 const ui::MouseEvent& event) {
-  // TODO(crbug.com/439963720): Look into why the state is not reset elsewhere
-  // after initializing a drag.
   ResetDragState();
   drag_controller_ = std::make_unique<TabDragController>();
 
@@ -487,7 +485,8 @@ TabDragContext* VerticalTabDragHandlerImpl::GetDragContext() {
 }
 
 bool VerticalTabDragHandlerImpl::IsDragging() const {
-  return drag_controller_ && drag_controller_->active();
+  return drag_controller_ && drag_controller_->started_drag() &&
+         drag_controller_->active();
 }
 
 bool VerticalTabDragHandlerImpl::IsViewDragging(const views::View& view) const {
