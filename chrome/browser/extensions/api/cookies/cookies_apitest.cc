@@ -151,6 +151,9 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesNoPermission) {
   ASSERT_TRUE(RunTest("cookies/no_permission")) << message_;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+// TODO(crbug.com/488468448): On Android, crashes without a stack while waiting
+// for the Java layer to asynchronously return the Java window.
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanningAsync) {
   // This version of the test creates the OTR page *after* the JavaScript test
   // code has registered the cookie listener. This tests the cookie API code
@@ -162,7 +165,7 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanningAsync) {
   ExtensionTestMessageListener listener("listening", ReplyBehavior::kWillReply);
   listener.SetOnSatisfied(
       base::BindLambdaForTesting([this, &listener](const std::string&) {
-        PlatformOpenURLOffTheRecord(profile(), GURL("chrome://newtab/"));
+        PlatformOpenURLOffTheRecord(profile(), GURL("chrome://version/"));
         listener.Reply("ok");
       }));
 
@@ -170,7 +173,10 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanningAsync) {
                       /*allow_in_incognito=*/true))
       << message_;
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+// Android only supports a single primary profile and a single OTR profile.
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsObservePrimaryOTROnly) {
   // In addition to above, this test makes sure that CookiesEventRouter
   // does not observe a non-primary OTR profile, which leads to CHECK
@@ -192,6 +198,7 @@ IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsObservePrimaryOTROnly) {
     ProfileDestroyer::DestroyOTRProfileWhenAppropriate(second_profile);
   }
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_P(CookiesApiTest, CookiesEventsSpanning) {
   // We need to initialize an incognito mode window in order have an initialized

@@ -7,6 +7,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host_queue.h"
@@ -32,6 +33,14 @@ enum class BackgroundType {
 // Yes, this is a test for a test class. It exercises the inner workings of
 // ExtensionBrowserTest itself.
 using ExtensionBrowserTestBrowserTest = ExtensionBrowserTest;
+
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTestBrowserTest,
+                       PlatformOpenURLOffTheRecord) {
+  content::WebContents* contents =
+      PlatformOpenURLOffTheRecord(profile(), GURL("chrome://version"));
+  ASSERT_TRUE(contents);
+  EXPECT_TRUE(contents->GetBrowserContext()->IsOffTheRecord());
+}
 
 class MultiBackgroundExtensionBrowserTestBrowserTest
     : public ExtensionBrowserTestBrowserTest,

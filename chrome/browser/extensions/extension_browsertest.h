@@ -33,7 +33,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class OwningTestTabModel;
 class Profile;
 
 namespace content {
@@ -453,9 +452,6 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
   ExtensionId last_loaded_extension_id_;
 
 #if BUILDFLAG(IS_ANDROID)
-  // Tab model used for incognito tab support.
-  std::unique_ptr<OwningTestTabModel> incognito_tab_model_;
-
   // Feature flags overrides are only used on Android.
   base::test::ScopedFeatureList feature_list_;
 #endif
