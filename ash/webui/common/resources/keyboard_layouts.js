@@ -1045,6 +1045,10 @@ const kLayouts = {
 
     [100, 'alt gr'],
   ],
+  /* Jordan */
+  'jo': kArabic,
+  /* Jordan with US keyboard */
+  'jo.us': kUsEnglish,
   /* Japan */
   'jp': [
     [
