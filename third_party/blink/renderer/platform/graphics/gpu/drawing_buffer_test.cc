@@ -35,14 +35,18 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "components/viz/common/resources/release_callback.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "components/viz/test/test_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/drawing_buffer_test_helpers.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_compositing_test_platform.h"
+#include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/graphics/test/test_webgraphics_shared_image_interface_provider.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "ui/gl/gpu_preference.h"
@@ -62,6 +66,9 @@ class DrawingBufferTest : public Test {
   void SetUp() override { Init(kDisableMultisampling); }
 
   void Init(UseMultisampling use_multisampling) {
+    test_context_provider_ = viz::TestContextProvider::CreateRaster();
+    InitializeSharedGpuContext(test_context_provider_.get());
+
     gfx::Size initial_size(kInitialWidth, kInitialHeight);
     auto gl = std::make_unique<GLES2InterfaceForTests>();
     auto provider =
@@ -124,6 +131,10 @@ class DrawingBufferTest : public Test {
     gl_->VerifyStateHasNotChangedSinceSave();
   }
 
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  ScopedTestingPlatformSupport<GpuCompositingTestPlatform> platform_;
+  scoped_refptr<viz::TestContextProvider> test_context_provider_;
   scoped_refptr<DrawingBufferForTests> drawing_buffer_;
 };
 
@@ -582,7 +593,7 @@ struct DepthStencilTestCase {
 // defined by WebGL. We always allocate a packed buffer in this case since many
 // desktop OpenGL drivers that support this extension do not consider a
 // framebuffer with only a depth or a stencil buffer attached to be complete.
-TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
+TEST_F(DrawingBufferTest, packedDepthStencilSupported) {
   auto cases = std::to_array<DepthStencilTestCase>({
       DepthStencilTestCase(false, false, 0, "neither"),
       DepthStencilTestCase(true, false, 1, "stencil only"),
@@ -649,6 +660,7 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
 
     drawing_buffer->BeginDestruction();
   }
+  drawing_buffer_->BeginDestruction();
 }
 
 TEST_F(DrawingBufferTest, VerifySetIsHiddenProperlyAffectsMailboxes) {

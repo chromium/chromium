@@ -2002,7 +2002,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
     bool should_use_chromium_image = false;
-    if (chromium_image_usage_ == kAllowChromiumImage) {
+    if (SharedGpuContext::IsGpuCompositingEnabled() &&
+        chromium_image_usage_ == kAllowChromiumImage) {
       should_use_chromium_image =
           RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
           (low_latency_enabled() &&
