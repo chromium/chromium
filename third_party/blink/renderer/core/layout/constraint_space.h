@@ -873,7 +873,6 @@ class CORE_EXPORT ConstraintSpace final {
       kTableSectionData,  // A table-section (display: table-section).
       kCustomData,        // A custom layout (display: layout(foo)).
       kStretchData,       // The target inline/block stretch sizes for MathML.
-      kSubgridData        // A nested grid with subgridded columns/rows.
     };
 
     RareData() {}
@@ -934,7 +933,8 @@ class CORE_EXPORT ConstraintSpace final {
               other.is_adjacent_to_paper_edge_block_start),
           is_adjacent_to_paper_edge_block_end(
               other.is_adjacent_to_paper_edge_block_end),
-          line_clamp_ancestor_chain_(other.line_clamp_ancestor_chain_) {
+          line_clamp_ancestor_chain_(other.line_clamp_ancestor_chain_),
+          subgrid_data_(other.subgrid_data_) {
       switch (GetDataUnionType()) {
         case DataUnionType::kNone:
           break;
@@ -956,9 +956,6 @@ class CORE_EXPORT ConstraintSpace final {
           break;
         case DataUnionType::kStretchData:
           new (&stretch_data_) StretchData(other.stretch_data_);
-          break;
-        case DataUnionType::kSubgridData:
-          new (&subgrid_data_) SubgridData(other.subgrid_data_);
           break;
         default:
           NOTREACHED();
@@ -986,9 +983,6 @@ class CORE_EXPORT ConstraintSpace final {
         case DataUnionType::kStretchData:
           stretch_data_.~StretchData();
           break;
-        case DataUnionType::kSubgridData:
-          subgrid_data_.~SubgridData();
-          break;
         default:
           NOTREACHED();
       }
@@ -996,6 +990,7 @@ class CORE_EXPORT ConstraintSpace final {
 
     void Trace(Visitor* visitor) const {
       visitor->Trace(line_clamp_ancestor_chain_);
+      visitor->Trace(subgrid_data_);
     }
 
     bool MaySkipLayout(const RareData& other) const {
@@ -1048,7 +1043,8 @@ class CORE_EXPORT ConstraintSpace final {
               other.is_adjacent_to_paper_edge_block_end ||
           ignore_margins_for_stretch != other.ignore_margins_for_stretch ||
           !base::ValuesEquivalent(line_clamp_ancestor_chain_,
-                                  other.line_clamp_ancestor_chain_)) {
+                                  other.line_clamp_ancestor_chain_) ||
+          !base::ValuesEquivalent(subgrid_data_, other.subgrid_data_)) {
         return false;
       }
 
@@ -1067,8 +1063,6 @@ class CORE_EXPORT ConstraintSpace final {
           return custom_data_.MaySkipLayout(other.custom_data_);
         case DataUnionType::kStretchData:
           return stretch_data_.MaySkipLayout(other.stretch_data_);
-        case DataUnionType::kSubgridData:
-          return subgrid_data_.MaySkipLayout(other.subgrid_data_);
       }
       NOTREACHED();
     }
@@ -1098,7 +1092,8 @@ class CORE_EXPORT ConstraintSpace final {
           is_adjacent_to_paper_edge_inline_end ||
           is_adjacent_to_paper_edge_block_start ||
           is_adjacent_to_paper_edge_block_end ||
-          !ignore_margins_for_stretch.IsEmpty() || line_clamp_ancestor_chain_) {
+          !ignore_margins_for_stretch.IsEmpty() || line_clamp_ancestor_chain_ ||
+          subgrid_data_) {
         return false;
       }
 
@@ -1117,8 +1112,6 @@ class CORE_EXPORT ConstraintSpace final {
           return custom_data_.IsInitialForMaySkipLayout();
         case DataUnionType::kStretchData:
           return stretch_data_.IsInitialForMaySkipLayout();
-        case DataUnionType::kSubgridData:
-          return subgrid_data_.IsInitialForMaySkipLayout();
       }
       NOTREACHED();
     }
@@ -1313,13 +1306,12 @@ class CORE_EXPORT ConstraintSpace final {
     }
 
     const GridLayoutSubtree* GetGridLayoutSubtree() const {
-      return GetDataUnionType() == DataUnionType::kSubgridData
-                 ? &subgrid_data_.layout_subtree
-                 : nullptr;
+      return subgrid_data_ ? &subgrid_data_->layout_subtree : nullptr;
     }
 
     void SetGridLayoutSubtree(GridLayoutSubtree&& grid_layout_subtree) {
-      EnsureSubgridData()->layout_subtree = std::move(grid_layout_subtree);
+      subgrid_data_ =
+          MakeGarbageCollected<SubgridData>(std::move(grid_layout_subtree));
     }
 
     DataUnionType GetDataUnionType() const {
@@ -1473,16 +1465,6 @@ class CORE_EXPORT ConstraintSpace final {
       std::optional<MathTargetStretchBlockSizes> target_stretch_block_sizes;
     };
 
-    struct SubgridData {
-      bool MaySkipLayout(const SubgridData& other) const {
-        return layout_subtree == other.layout_subtree;
-      }
-
-      bool IsInitialForMaySkipLayout() const { return !layout_subtree; }
-
-      GridLayoutSubtree layout_subtree;
-    };
-
     BlockData* EnsureBlockData() {
       DCHECK(GetDataUnionType() == DataUnionType::kNone ||
              GetDataUnionType() == DataUnionType::kBlockData);
@@ -1544,16 +1526,6 @@ class CORE_EXPORT ConstraintSpace final {
       return &stretch_data_;
     }
 
-    SubgridData* EnsureSubgridData() {
-      DCHECK(GetDataUnionType() == DataUnionType::kNone ||
-             GetDataUnionType() == DataUnionType::kSubgridData);
-      if (GetDataUnionType() != DataUnionType::kSubgridData) {
-        data_union_type = static_cast<unsigned>(DataUnionType::kSubgridData);
-        new (&subgrid_data_) SubgridData();
-      }
-      return &subgrid_data_;
-    }
-
     union {
       BlockData block_data_;
       TableCellData table_cell_data_;
@@ -1561,10 +1533,22 @@ class CORE_EXPORT ConstraintSpace final {
       TableSectionData table_section_data_;
       CustomData custom_data_;
       StretchData stretch_data_;
-      SubgridData subgrid_data_;
     };
 
     Member<const LineClampAncestorChain> line_clamp_ancestor_chain_;
+
+    struct SubgridData : public GarbageCollected<SubgridData> {
+      explicit SubgridData(GridLayoutSubtree&& layout_subtree)
+          : layout_subtree(layout_subtree) {}
+
+      void Trace(Visitor*) const {}
+
+      bool operator==(const SubgridData& other) const {
+        return layout_subtree == other.layout_subtree;
+      }
+      const GridLayoutSubtree layout_subtree;
+    };
+    Member<const SubgridData> subgrid_data_;
   };
 
   // This struct simply allows us easily copy, compare, and initialize all the
