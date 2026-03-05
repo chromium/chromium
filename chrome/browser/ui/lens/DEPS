@@ -8,4 +8,5 @@ include_rules = [
   "+components/endpoint_fetcher",
   "+components/ukm",
   "+services/metrics/public/cpp",
+  "+components/contextual_search/internal",
 ]
