@@ -6118,9 +6118,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_0",
                     "params": {
                         "ClassificationDelay": "0.0"
+                    },
+                    "enable_features": [
+                        "ClientSideDetectionNewObservers"
+                    ]
+                },
+                {
+                    "name": "Enabled_0_5",
+                    "params": {
+                        "ClassificationDelay": "0.5"
                     },
                     "enable_features": [
                         "ClientSideDetectionNewObservers"
