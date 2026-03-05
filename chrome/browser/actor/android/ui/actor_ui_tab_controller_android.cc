@@ -24,7 +24,7 @@ ActorUiTabControllerAndroid::ActorUiTabControllerAndroid(
     ActorKeyedService* actor_keyed_service)
     : ActorUiTabControllerInterface(tab),
       tab_(tab),
-      actor_keyed_service_(CHECK_DEREF(actor_keyed_service)),
+      actor_keyed_service_(actor_keyed_service),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
       scoped_unowned_user_data_(tab.GetUnownedUserDataHost(), *this) {}
 

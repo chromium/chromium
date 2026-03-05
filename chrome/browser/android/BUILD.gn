@@ -36,6 +36,7 @@ source_set("tabs_impl") {
   deps = [
     ":tabs_public",
     "//chrome/browser/actor",
+    "//chrome/browser/actor/android",
     "//chrome/browser/contextual_search",
     "//chrome/browser/glic",
     "//chrome/browser/sync",

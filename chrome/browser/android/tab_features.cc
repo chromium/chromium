@@ -5,11 +5,15 @@
 #include "chrome/browser/android/tab_features.h"
 
 #include "chrome/browser/actor/actor_features.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/actor_tab_data.h"
+#include "chrome/browser/actor/android/ui/actor_ui_tab_controller_android.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/glic/public/widget/glic_side_panel_coordinator_android.h"
 #include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/net/qwac_web_contents_observer.h"
 #include "chrome/browser/preloading/new_tab_page_preload/new_tab_page_preload_pipeline_manager.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sessions/sync_sessions_router_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
@@ -45,6 +49,15 @@ TabFeatures::TabFeatures(content::WebContents* web_contents, Profile* profile) {
     actor_tab_data_ =
         GetUserDataFactory().CreateInstance<actor::ActorTabData>(*tab, tab);
   }
+
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  if (glic::GlicEnabling::IsProfileEligible(profile) && actor_service) {
+    actor_ui_tab_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<actor::ui::ActorUiTabControllerAndroid>(
+                *tab, *tab, actor_service);
+  }
+
   tab_contextualization_controller_ =
       GetUserDataFactory().CreateInstance<lens::TabContextualizationController>(
           *tab, tab);

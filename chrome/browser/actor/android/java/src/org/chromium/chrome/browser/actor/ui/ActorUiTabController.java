@@ -190,9 +190,6 @@ public class ActorUiTabController implements UserData {
 
     @Override
     public void destroy() {
-        if (mTab.getUserDataHost().getUserData(ActorUiTabController.class) != null) {
-            mTab.getUserDataHost().removeUserData(ActorUiTabController.class);
-        }
         mObservers.clear();
     }
 

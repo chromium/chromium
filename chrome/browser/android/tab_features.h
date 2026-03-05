@@ -18,6 +18,10 @@ namespace actor {
 class ActorTabData;
 }  // namespace actor
 
+namespace actor::ui {
+class ActorUiTabControllerInterface;
+}  // namespace actor::ui
+
 namespace content {
 class WebContents;
 }  // namespace content
@@ -70,6 +74,8 @@ class TabFeatures {
 
   std::unique_ptr<glic::GlicInstanceHelper> glic_instance_helper_;
   std::unique_ptr<glic::GlicSidePanelCoordinator> glic_side_panel_coordinator_;
+  std::unique_ptr<actor::ui::ActorUiTabControllerInterface>
+      actor_ui_tab_controller_;
 };
 
 }  // namespace tabs

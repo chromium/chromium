@@ -39,7 +39,7 @@ class ActorUiTabControllerAndroid : public ActorUiTabControllerInterface {
 
  private:
   const raw_ref<tabs::TabInterface> tab_;
-  const raw_ref<ActorKeyedService> actor_keyed_service_;
+  const raw_ptr<ActorKeyedService> actor_keyed_service_;
   UiTabState current_ui_tab_state_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   ::ui::ScopedUnownedUserData<ActorUiTabControllerAndroid>
