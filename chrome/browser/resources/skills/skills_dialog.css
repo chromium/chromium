@@ -320,12 +320,5 @@ textarea::placeholder {
   gap: 4px;
   line-height: 18px;
   padding: 15px 20px 20px 20px;
-}
-
-#accountLabel {
   color: var(--color-sys-on-surface);
-}
-
-#accountEmail {
-  color: var(--color-sys-primary);
 }

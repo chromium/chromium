@@ -133,10 +133,7 @@ ${this.shouldShowErrorPage_ ? html`<error-page></error-page>` : html`
       </div>
     </div>
     <div slot="footer">
-      <div id="accountInfo">
-        <span id="accountLabel">$i18n{accountInfo}</span>
-        <span id="accountEmail">${this.signedInEmail_}</span>
-      </div>
+      <div id="accountInfo">$i18n{accountInfo} ${this.signedInEmail_}</div>
     </div>
   </cr-dialog>
 `}

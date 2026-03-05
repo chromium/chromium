@@ -67,7 +67,7 @@ export class WindowProxyImpl implements WindowProxy {
 
 export interface SkillsDialogAppElement {
   $: {
-    accountEmail: HTMLElement,
+    accountInfo: HTMLElement,
     cancelButton: HTMLElement,
     deleteButton: CrButtonElement,
     dialog: CrDialogElement,

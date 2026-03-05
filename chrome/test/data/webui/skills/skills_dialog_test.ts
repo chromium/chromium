@@ -561,10 +561,10 @@ suite('SkillsDialogAppPage', function() {
 
     await microtasksFinished();
 
-    const emailElement = skillsDialogApp.$.accountEmail;
+    const accountInfoElement = skillsDialogApp.$.accountInfo;
 
-    assertTrue(!!emailElement);
-    assertEquals(testEmail, emailElement.textContent);
+    assertTrue(!!accountInfoElement);
+    assertTrue(accountInfoElement.textContent.includes(testEmail));
   });
 
   test('RefineShowsErrorOnFailure', async function() {

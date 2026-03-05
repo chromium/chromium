@@ -122,7 +122,7 @@
     <ph name="MAX_CHARS">$1<ex>20,000</ex></ph> character limit reached
   </message>
   <message name="IDS_SKILLS_DIALOG_ACCOUNT_INFO" desc="Text for account info in the skills dialog" translateable="false">
-    Your skills get saved to your Google Account
+    Your skills get saved to your Google Account,
   </message>
   <message name="IDS_SKILLS_DIALOG_SAVE_ERROR" desc="Error message for saving a skill" translateable="false">
     Unable to save. Try again
