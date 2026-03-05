@@ -10739,6 +10739,7 @@ test("unit_tests") {
       "../browser/ui/views/autofill/popup/mock_selection_delegate.cc",
       "../browser/ui/views/autofill/popup/mock_selection_delegate.h",
       "../browser/ui/views/autofill/popup/password_favicon_loader_unittest.cc",
+      "../browser/ui/views/autofill/popup/popup_bnpl_footnote_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_cell_utils_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_loading_view_unittest.cc",
       "../browser/ui/views/autofill/popup/popup_row_content_view_unittest.cc",
