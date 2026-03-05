@@ -14,6 +14,7 @@
 #include "base/containers/heap_array.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -1219,7 +1220,7 @@ class BackgroundResourceScriptStreamer::BackgroundProcessor final
  private:
   std::unique_ptr<StreamingDetails> details_;
   CrossThreadWeakHandle<BackgroundResourceScriptStreamer> streamer_handle_;
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   std::unique_ptr<BackgroundStreamManager> stream_manager_;
 
   base::WeakPtrFactory<BackgroundProcessor> weak_factory_{this};
@@ -1402,7 +1403,7 @@ class BackgroundJSStreamManager : public BackgroundStreamManager {
   // contains the script hash from the code cache data.
   std::unique_ptr<ParkableStringImpl::SecureDigest>
       sha256_digest_from_code_cache_;
-  SourceStream* source_stream_ptr_ = nullptr;
+  raw_ptr<SourceStream> source_stream_ptr_ = nullptr;
   BackgroundStreamingState state_ = BackgroundStreamingState::kResponseReceived;
   std::optional<ScriptDecoder::Result> decoder_result_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
@@ -1422,9 +1423,7 @@ class BackgroundWasmStreamManager : public BackgroundStreamManager {
                                 std::move(body),
                                 std::nullopt,
                                 std::move(details),
-                                std::move(background_processor)),
-        wasm_module_compilation_(
-            std::make_unique<v8::WasmModuleCompilation>()) {}
+                                std::move(background_processor)) {}
 
   ~BackgroundWasmStreamManager() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -1445,7 +1444,8 @@ class BackgroundWasmStreamManager : public BackgroundStreamManager {
   static constexpr size_t kMinBytesForValidWasm = 8;
 
   SegmentedBuffer raw_bytes_;
-  std::unique_ptr<v8::WasmModuleCompilation> wasm_module_compilation_;
+  std::unique_ptr<v8::WasmModuleCompilation> wasm_module_compilation_ =
+      std::make_unique<v8::WasmModuleCompilation>();
 };
 
 BackgroundResourceScriptStreamer::BackgroundProcessor::BackgroundProcessor(
