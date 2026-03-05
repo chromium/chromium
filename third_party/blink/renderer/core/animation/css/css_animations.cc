@@ -2125,6 +2125,9 @@ void UpdateAnimationFlagsForEffect(const AnimationEffect& effect,
     builder.SetHasCurrentFilterAnimation(true);
   if (effect.Affects(PropertyHandle(GetCSSPropertyBackdropFilter())))
     builder.SetHasCurrentBackdropFilterAnimation(true);
+  if (effect.Affects(PropertyHandle(GetCSSPropertyClipPath()))) {
+    builder.SetHasCurrentClipPathAnimation(true);
+  }
   if (AffectsBackgroundColor(effect))
     builder.SetHasCurrentBackgroundColorAnimation(true);
 }

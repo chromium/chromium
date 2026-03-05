@@ -345,6 +345,17 @@ TEST_F(ComputedStyleTest,
 }
 
 TEST_F(ComputedStyleTest,
+       UpdatePropertySpecificDifferencesCompositingReasonsClipPath) {
+  const ComputedStyle* style = InitialComputedStyle();
+  ComputedStyleBuilder builder(*style);
+  builder.SetHasCurrentClipPathAnimation(true);
+  const ComputedStyle* other = builder.TakeStyle();
+
+  StyleDifference diff = style->VisualInvalidationDiff(GetDocument(), *other);
+  EXPECT_TRUE(diff.compositing_reasons_changed);
+}
+
+TEST_F(ComputedStyleTest,
        UpdatePropertySpecificDifferencesCompositingReasonsBackfaceVisibility) {
   const ComputedStyle* style = InitialComputedStyle();
   ComputedStyleBuilder builder(*style);
@@ -587,6 +598,9 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
                     ComputedStyle::Difference::kNonInherited,
                     kCompositingReasonsChanged);
   TestAnimationFlag(FLAG_PARAMS(HasCurrentBackdropFilterAnimation),
+                    ComputedStyle::Difference::kNonInherited,
+                    kCompositingReasonsChanged);
+  TestAnimationFlag(FLAG_PARAMS(HasCurrentClipPathAnimation),
                     ComputedStyle::Difference::kNonInherited,
                     kCompositingReasonsChanged);
   TestAnimationFlag(FLAG_PARAMS(SubtreeWillChangeContents),

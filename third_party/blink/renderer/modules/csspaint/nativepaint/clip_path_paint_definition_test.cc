@@ -158,6 +158,13 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
 
     LayoutObject* lo = element->GetLayoutObject();
 
+    if (status != CompositedPaintStatus::kNoAnimation &&
+        status != CompositedPaintStatus::kNotComposited) {
+      // PaintLayer is required to paint a mask clip path.
+      EXPECT_TRUE(lo->StyleRef().HasCurrentClipPathAnimation());
+      EXPECT_TRUE(lo->HasLayer());
+    }
+
     // Changes to a compositable clip-path animation should set
     // NeedsPaintPropertyUpdate. This is because we force a switch from
     // ClipPathClip (ordinary clipping) to ClipPathMask with its associated

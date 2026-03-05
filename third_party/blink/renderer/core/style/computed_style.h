@@ -2092,13 +2092,17 @@ class ComputedStyle final : public ComputedStyleBase {
     return HasCurrentOpacityAnimation() ||
            HasCurrentTransformRelatedAnimation() ||
            HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation() ||
+           (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
+            HasCurrentClipPathAnimation()) ||
            (RuntimeEnabledFeatures::CompositeBGColorAnimationEnabled() &&
             HasCurrentBackgroundColorAnimation());
   }
   bool ShouldCompositeForCurrentAnimations() const {
     return HasCurrentOpacityAnimation() ||
            HasCurrentTransformRelatedAnimation() ||
-           HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation();
+           HasCurrentFilterAnimation() || HasCurrentBackdropFilterAnimation() ||
+           (RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled() &&
+            HasCurrentClipPathAnimation());
   }
   bool IsRunningTransformRelatedAnimationOnCompositor() const {
     return IsRunningTransformAnimationOnCompositor() ||
