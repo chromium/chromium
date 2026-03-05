@@ -106,6 +106,8 @@ class WTF_EXPORT StringView {
     std::unique_ptr<char[], BufferDeleter> heapbuf_;
   };
 
+  // [string.view.cons] ---------------------------------------------
+
   // Null string.
   StringView() { Clear(); }
 
@@ -180,30 +182,33 @@ class WTF_EXPORT StringView {
   ~StringView();
 #endif
 
-  bool IsNull() const { return !bytes_; }
-  bool empty() const { return !length_; }
+  // [string.view.iterators] ----------------------------------------
+
+  // Iterator support
+  //
+  // begin() and end() return iterators for UChar32, neither UChar nor LChar.
+  // If you'd like to iterate code units, just use [] and length().
+  //
+  // * Iterate code units
+  //    for (string_size_t i = 0; i < view.length(); ++i) {
+  //      UChar code_unit = view[i];
+  //      ...
+  // * Iterate code points
+  //    for (UChar32 code_point : view) {
+  //      ...
+  CodePointIterator begin() const;
+  CodePointIterator end() const;
+
+  // [string.view.capacity] -----------------------------------------
 
   size_type length() const { return length_; }
+  bool empty() const { return !length_; }
 
-  bool Is8Bit() const {
-    DCHECK(impl_);
-    return impl_->Is8Bit();
-  }
-
-  [[nodiscard]] std::string Utf8(
-      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const;
-
-  bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
-
-  bool IsLowerASCII() const;
-  bool ContainsOnlyASCIIOrEmpty() const;
-  // Returns true if the string is empty or contains only Latin-1 characters.
-  bool ContainsOnlyLatin1OrEmpty() const;
-
-  bool SubstringContainsOnlyWhitespaceOrEmpty(size_type from,
-                                              size_type to) const;
+  bool IsNull() const { return !bytes_; }
 
   void Clear();
+
+  // [string.view.access] -------------------------------------------
 
   // Returns a code unit at the specified index.
   // This operator performs an out-of-bounds access if the specified
@@ -218,6 +223,46 @@ class WTF_EXPORT StringView {
       return static_cast<const UChar*>(bytes_)[i];
     })
   }
+
+  // Returns the Unicode code point starting at the specified offset of this
+  // string. If the offset points an unpaired surrogate, this function returns
+  // the surrogate code unit as is. If you'd like to check such surroagtes,
+  // use U_IS_SURROGATE() defined in unicode/utf.h.
+  UChar32 CodepointAt(size_type i) const;
+
+  // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
+  // Returns i+1 otherwise.
+  size_type NextCodePointOffset(size_type i) const;
+
+  // Does `CodepointAt()`, and the specified `i` is updated by
+  // `NextCodePointOffset()`.
+  UChar32 CodePointAtAndNext(size_type& i) const;
+
+  // [string.view.modifiers] ----------------------------------------
+
+  // Removes the first `len` characters from this view by advancing the start
+  // address and reducing the `length()`.
+  // If `len` is greater than `length()`, this function crashes.
+  void remove_prefix(size_type len);
+
+  // Removes the last `len` characters from this view by reducing the
+  // `length()`.
+  // If `len` is greater than `length()`, this function crashes.
+  void remove_suffix(size_type len);
+
+  // [string.view.ops] ----------------------------------------------
+
+  bool Is8Bit() const {
+    DCHECK(impl_);
+    return impl_->Is8Bit();
+  }
+
+  String ToString() const;
+  AtomicString ToAtomicString() const;
+  bool IsAtomic() const { return SharedImpl() && SharedImpl()->IsAtomic(); }
+
+  [[nodiscard]] std::string Utf8(
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const;
 
   base::span<const LChar> Span8() const {
     DCHECK(Is8Bit());
@@ -236,20 +281,6 @@ class WTF_EXPORT StringView {
     // SAFETY: bytes_ have length_ elements.
     return UNSAFE_BUFFERS({static_cast<const uint16_t*>(bytes_), length_});
   }
-
-  // Returns the Unicode code point starting at the specified offset of this
-  // string. If the offset points an unpaired surrogate, this function returns
-  // the surrogate code unit as is. If you'd like to check such surroagtes,
-  // use U_IS_SURROGATE() defined in unicode/utf.h.
-  UChar32 CodepointAt(size_type i) const;
-
-  // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
-  // Returns i+1 otherwise.
-  size_type NextCodePointOffset(size_type i) const;
-
-  // Does `CodepointAt()`, and the specified `i` is updated by
-  // `NextCodePointOffset()`.
-  UChar32 CodePointAtAndNext(size_type& i) const;
 
   const void* Bytes() const { return bytes_; }
 
@@ -275,33 +306,46 @@ class WTF_EXPORT StringView {
     return nullptr;
   }
 
-  // This will return a StringView with a version of |this| that has all ASCII
-  // characters lowercased. The returned StringView is guarantee to be valid for
-  // as long as |backing_store| is valid.
+  // Returns the substring of `this` string, starting at `offset` and consisting
+  // of at most `len` characters.
   //
-  // The odd lifetime of the returned object occurs because lowercasing may
-  // require allocation. When that happens, |backing_store| is used as the
-  // backing store and the returned StringView has the same lifetime.
-  StringView LowerASCIIMaybeUsingBuffer(StackBackingStore& backing_store) const;
+  // If `offset` > `length()`, this function crashes. It's similar to
+  // std::string_view::substr(), but not compatible with
+  // blink::String::Substring().
+  //
+  // If `offset + len` >= `length()`,  the resultant string is truncated at
+  // `length()`. It's compatible with both std::string_view::substr() and
+  // blink::String::Substring(). This behavior does not match to
+  // `StringView(*this, offset, len)`.
+  StringView substr(size_type offset, size_type len = npos) const;
 
-  String ToString() const;
-  AtomicString ToAtomicString() const;
+  // Returns `true` if `this` string starts with `other`.
+  bool starts_with(const StringView& other) const;
+  // Returns `true` if `this` string starts with `c`.
+  bool starts_with(UChar c) const { return !empty() && (*this)[0] == c; }
 
-  // Returns a version suitable for gtest and base/logging.*.  It prepends and
-  // appends double-quotes, and escapes characters other than ASCII printables.
-  [[nodiscard]] String EncodeForDebugging() const;
+  // Returns `true` if `this` string ends with `other`.
+  bool ends_with(const StringView& other) const;
+  // Returns `true` if `this` string ends with `c`.
+  bool ends_with(UChar c) const {
+    return !empty() && (*this)[length() - 1] == c;
+  }
 
+  // Returns `true` if this StringView contains the specified string.
+  bool contains(const StringView& other) const;
+  // Returns `true` if this StringView contains the specified character.
+  bool contains(UChar ch) const;
+
+  // [string.view.find] ---------------------------------------------
+
+  // Find a substring. Returns the index of the match, or `kNotFound`.
+  size_type find(const StringView& value, size_type start = 0) const;
   // Find a character. Returns the index of the match, or `kNotFound`.
   size_type find(UChar ch, size_type start = 0) const;
   // Find characters. Returns the index of the match, or `kNotFound`.
   size_type Find(CharacterMatchFunctionPtr match_function,
                  size_type start = 0) const;
-  // Find a substring. Returns the index of the match, or `kNotFound`.
-  size_type find(const StringView& value, size_type start = 0) const;
 
-  // Find the last occurrence of a character. Returns the index of the match, or
-  // `kNotFound`.
-  size_type rfind(UChar ch, size_type start = npos) const;
   // Searches for the last occurrence of a substring within this string.
   //
   // This method performs a backward search starting from the 'start' index.
@@ -316,63 +360,36 @@ class WTF_EXPORT StringView {
   // - Null strings and zero-length strings are treated as equivalent
   //   for both `this` string and the 'value' parameter.
   size_type rfind(const StringView& value, size_type start = npos) const;
+  // Find the last occurrence of a character. Returns the index of the match, or
+  // `kNotFound`.
+  size_type rfind(UChar ch, size_type start = npos) const;
 
-  // Returns `true` if this StringView contains the specified character.
-  bool contains(UChar ch) const;
-  // Returns `true` if this StringView contains the specified string.
-  bool contains(const StringView& other) const;
+  // We have no find_first_of(), find_last_of(), find_first_not_of(), and
+  // find_last_not_of().  Feel free to add them if necessary.
 
-  // Returns `true` if `this` string starts with `other`.
-  bool starts_with(const StringView& other) const;
-  // Returns `true` if `this` string starts with `c`.
-  bool starts_with(UChar c) const { return !empty() && (*this)[0] == c; }
-  // Returns `true` if `this` string ends with `other`.
-  bool ends_with(const StringView& other) const;
-  // Returns `true` if `this` string ends with `c`.
-  bool ends_with(UChar c) const {
-    return !empty() && (*this)[length() - 1] == c;
-  }
+  // Functions to analyze the content -------------------------------
+
+  bool IsLowerASCII() const;
+  bool ContainsOnlyASCIIOrEmpty() const;
+  // Returns true if the string is empty or contains only Latin-1 characters.
+  bool ContainsOnlyLatin1OrEmpty() const;
+
+  bool SubstringContainsOnlyWhitespaceOrEmpty(size_type from,
+                                              size_type to) const;
 
   template <bool isSpecialCharacter(UChar)>
   bool IsAllSpecialCharacters() const;
 
-  // Iterator support
-  //
-  // begin() and end() return iterators for UChar32, neither UChar nor LChar.
-  // If you'd like to iterate code units, just use [] and length().
-  //
-  // * Iterate code units
-  //    for (string_size_t i = 0; i < view.length(); ++i) {
-  //      UChar code_unit = view[i];
-  //      ...
-  // * Iterate code points
-  //    for (UChar32 code_point : view) {
-  //      ...
-  CodePointIterator begin() const;
-  CodePointIterator end() const;
+  // Functions creating new string(s) from `this` string ------------
 
-  // Returns the substring of `this` string, starting at `offset` and consisting
-  // of at most `len` characters.
+  // This will return a StringView with a version of |this| that has all ASCII
+  // characters lowercased. The returned StringView is guarantee to be valid for
+  // as long as |backing_store| is valid.
   //
-  // If `offset` > `length()`, this function crashes. It's similar to
-  // std::string_view::substr(), but not compatible with
-  // blink::String::Substring().
-  //
-  // If `offset + len` >= `length()`,  the resultant string is truncated at
-  // `length()`. It's compatible with both std::string_view::substr() and
-  // blink::String::Substring(). This behavior does not match to
-  // `StringView(*this, offset, len)`.
-  StringView substr(size_type offset, size_type len = npos) const;
-
-  // Removes the first `len` characters from this view by advancing the start
-  // address and reducing the `length()`.
-  // If `len` is greater than `length()`, this function crashes.
-  void remove_prefix(size_type len);
-
-  // Removes the last `len` characters from this view by reducing the
-  // `length()`.
-  // If `len` is greater than `length()`, this function crashes.
-  void remove_suffix(size_type len);
+  // The odd lifetime of the returned object occurs because lowercasing may
+  // require allocation. When that happens, |backing_store| is used as the
+  // backing store and the returned StringView has the same lifetime.
+  StringView LowerASCIIMaybeUsingBuffer(StackBackingStore& backing_store) const;
 
   // Returns a substring removing leading and trailing white spaces.
   // This function removes spaces, \n, \t, \r, \f, \v, and unicode spaces such
@@ -394,6 +411,10 @@ class WTF_EXPORT StringView {
   // `StringView(" a  b").SplitSkippingEmpty(' ')` produces ["a", "b"], and
   // `StringView("").SplitSkippingEmpty(',')` produces an empty list.
   Vector<StringView> SplitSkippingEmpty(UChar separator) const;
+
+  // Returns a version suitable for gtest and base/logging.*.  It prepends and
+  // appends double-quotes, and escapes characters other than ASCII printables.
+  [[nodiscard]] String EncodeForDebugging() const;
 
  private:
   void Set(const StringImpl&, size_type offset, size_type length);

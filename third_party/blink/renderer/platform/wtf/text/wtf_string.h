@@ -60,6 +60,72 @@ class WTF_EXPORT String {
   using size_type = string_size_t;
   static constexpr size_type npos = kNotFound;
 
+  // Factories ------------------------------------------------------
+
+  // Returns an uninitialized string. The characters needs to be written
+  // into the buffer returned in `data` before the returned string is used.
+  // Failure to do this will have unpredictable results.
+  [[nodiscard]] static String CreateUninitialized(size_type length,
+                                                  base::span<UChar>& data) {
+    return StringImpl::CreateUninitialized(length, data);
+  }
+  [[nodiscard]] static String CreateUninitialized(size_type length,
+                                                  base::span<LChar>& data) {
+    return StringImpl::CreateUninitialized(length, data);
+  }
+
+  [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
+  [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
+
+  // String::FromUTF8 will return a null string if
+  // the input data contains invalid UTF-8 sequences.
+  // Does not strip BOMs.
+  [[nodiscard]] static String FromUTF8(base::span<const uint8_t>);
+  [[nodiscard]] static String FromUTF8(const char* s);
+  [[nodiscard]] static String FromUTF8(std::string_view s) {
+    return FromUTF8(base::as_byte_span(s));
+  }
+
+  // Tries to convert the passed in string to UTF-8, but will fall back to
+  // Latin-1 if the string is not valid UTF-8.
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(
+      base::span<const uint8_t>);
+  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view s) {
+    return FromUTF8WithLatin1Fallback(base::as_byte_span(s));
+  }
+
+  template <typename CharType>
+  static String Adopt(StringBuffer<CharType>& buffer) {
+    if (!buffer.length()) {
+      return StringImpl::empty_;
+    }
+    return String(buffer.Release());
+  }
+
+  template <typename IntegerType>
+  static String Number(IntegerType number) {
+    IntegerToStringConverter<IntegerType> converter(number);
+    return StringImpl::Create(converter.Span());
+  }
+
+  static String Boolean(bool value) { return String(value ? "true" : "false"); }
+
+  [[nodiscard]] static String Number(float);
+
+  [[nodiscard]] static String Number(double, unsigned precision = 6);
+
+  // Number to String conversion following the ECMAScript definition.
+  [[nodiscard]] static String NumberToStringECMAScript(double);
+  [[nodiscard]] static String NumberToStringFixedWidth(double,
+                                                       unsigned decimal_places);
+
+  // Takes a printf format and args and prints into a String.
+  // This function supports Latin-1 characters only.
+  [[nodiscard]] PRINTF_FORMAT(1, 2) static String
+      Format(const char* format, ...);
+
+  // [string.cons] --------------------------------------------------
+
   // Construct a null string, distinguishable from an empty string.
   String() = default;
 
@@ -108,27 +174,103 @@ class WTF_EXPORT String {
   String(String&&) noexcept = default;
   String& operator=(String&&) = default;
 
-  void swap(String& o) { impl_.swap(o.impl_); }
+  // [string.iterators] ---------------------------------------------
 
-  template <typename CharType>
-  static String Adopt(StringBuffer<CharType>& buffer) {
-    if (!buffer.length())
-      return StringImpl::empty_;
-    return String(buffer.Release());
+  // `begin()` and `end()` return iterators for `UChar32`, neither `UChar` nor
+  // `LChar`. If you'd like to iterate code units, use `[]` and `length()`.
+  CodePointIterator begin() const;
+  CodePointIterator end() const;
+
+  // [string.capacity] ----------------------------------------------
+
+  size_type length() const {
+    if (!impl_) {
+      return 0;
+    }
+    return impl_->length();
   }
+
+  bool empty() const { return !impl_ || !impl_->length(); }
 
   explicit operator bool() const { return !IsNull(); }
   bool IsNull() const { return !impl_; }
-  bool empty() const { return !impl_ || !impl_->length(); }
+
+  size_t CharactersSizeInBytes() const {
+    return impl_ ? impl_->CharactersSizeInBytes() : 0;
+  }
+
+  // [string.access] ------------------------------------------------
+
+  // Returns a code unit at the specified index.
+  // This operator returns 0 if the specified index is out of range.
+  UChar operator[](size_type index) const {
+    if (!impl_ || index >= impl_->length()) {
+      return 0;
+    }
+    return (*impl_)[index];
+  }
+
+  // Returns the Unicode code point starting at the specified offset of this
+  // string. If the offset points an unpaired surrogate, this function returns
+  // 0.
+  UChar32 CharacterStartingAt(size_type) const;
+
+  // [string.modifiers] ---------------------------------------------
+
+  String& replace(size_type index,
+                  size_type length_to_replace,
+                  const StringView& replacement) {
+    if (impl_) {
+      impl_ = impl_->Replace(index, length_to_replace, replacement);
+    }
+    return *this;
+  }
+  String& Replace(UChar pattern, UChar replacement) {
+    if (impl_) {
+      impl_ = impl_->Replace(pattern, replacement);
+    }
+    return *this;
+  }
+  String& Replace(UChar pattern, const StringView& replacement) {
+    if (impl_) {
+      impl_ = impl_->Replace(pattern, replacement);
+    }
+    return *this;
+  }
+  String& Replace(const StringView& pattern, const StringView& replacement) {
+    if (impl_) {
+      impl_ = impl_->Replace(pattern, replacement);
+    }
+    return *this;
+  }
+
+  // Copy characters out of the string. See string_impl.h for detailed docs.
+  size_t CopyTo(base::span<UChar> buffer, size_type start) const {
+    return impl_ ? impl_->CopyTo(buffer, start) : 0;
+  }
+  template <typename BufferType>
+  void AppendTo(BufferType&,
+                size_type start = 0,
+                size_type length = npos) const;
+
+  void swap(String& o) { impl_.swap(o.impl_); }
+
+  void Fill(UChar c) {
+    if (impl_) {
+      impl_ = impl_->Fill(c);
+    }
+  }
+
+  void Truncate(size_type length);
+  void Remove(size_type start, size_type length = 1);
+
+  // [string.operations] --------------------------------------------
+
+  bool Is8Bit() const { return impl_->Is8Bit(); }
+  void Ensure16Bit();
 
   StringImpl* Impl() const { return impl_.get(); }
   scoped_refptr<StringImpl> ReleaseImpl() { return std::move(impl_); }
-
-  size_type length() const {
-    if (!impl_)
-      return 0;
-    return impl_->length();
-  }
 
   // Prefer Span8() and Span16() to Characters8() and Characters16().
   base::span<const LChar> Span8() const {
@@ -179,8 +321,6 @@ class WTF_EXPORT String {
     return impl_->Characters16();
   }
 
-  bool Is8Bit() const { return impl_->Is8Bit(); }
-
   [[nodiscard]] std::string Ascii() const;
   [[nodiscard]] std::string Latin1() const;
   [[nodiscard]] std::string Utf8(
@@ -195,53 +335,6 @@ class WTF_EXPORT String {
   std::u16string_view View16() const LIFETIME_BOUND {
     return base::as_string_view(Span16());
   }
-
-  // Returns a code unit at the specified index.
-  // This operator returns 0 if the specified index is out of range.
-  UChar operator[](size_type index) const {
-    if (!impl_ || index >= impl_->length())
-      return 0;
-    return (*impl_)[index];
-  }
-
-  // `begin()` and `end()` return iterators for `UChar32`, neither `UChar` nor
-  // `LChar`. If you'd like to iterate code units, use `[]` and `length()`.
-  CodePointIterator begin() const;
-  CodePointIterator end() const;
-
-  template <typename IntegerType>
-  static String Number(IntegerType number) {
-    IntegerToStringConverter<IntegerType> converter(number);
-    return StringImpl::Create(converter.Span());
-  }
-
-  static String Boolean(bool value) { return String(value ? "true" : "false"); }
-
-  [[nodiscard]] static String Number(float);
-
-  [[nodiscard]] static String Number(double, unsigned precision = 6);
-
-  // Number to String conversion following the ECMAScript definition.
-  [[nodiscard]] static String NumberToStringECMAScript(double);
-  [[nodiscard]] static String NumberToStringFixedWidth(double,
-                                                       unsigned decimal_places);
-
-  // Find characters.
-  size_type find(UChar c, size_type start = 0) const {
-    return impl_ ? impl_->Find(c, start) : npos;
-  }
-  size_type find(LChar c, size_type start = 0) const {
-    return impl_ ? impl_->Find(c, start) : npos;
-  }
-  size_type find(char c, size_type start = 0) const {
-    return find(static_cast<LChar>(c), start);
-  }
-  size_type Find(CharacterMatchFunctionPtr match_function,
-                 size_type start = 0) const {
-    return impl_ ? impl_->Find(match_function, start) : npos;
-  }
-  size_type Find(base::RepeatingCallback<bool(UChar)> match_callback,
-                 size_type index = 0) const;
 
   // Find substrings.
   size_type find(const StringView& value, size_type start = 0) const;
@@ -260,16 +353,23 @@ class WTF_EXPORT String {
     return impl_ ? impl_->FindIgnoringAsciiCase(value, start) : npos;
   }
 
-  bool contains(UChar c) const { return find(c) != npos; }
-  bool contains(LChar c) const { return find(c) != npos; }
-  bool contains(char c) const { return find(c) != npos; }
-  bool contains(const StringView& value) const { return find(value) != npos; }
-
-  // Find the last instance of a single character.
-  // Returns `npos` if it's not found in this string.
-  size_type rfind(UChar c, size_type start = npos) const {
-    return impl_ ? impl_->ReverseFind(c, start) : npos;
+  // Find characters.
+  size_type find(UChar c, size_type start = 0) const {
+    return impl_ ? impl_->Find(c, start) : npos;
   }
+  size_type find(LChar c, size_type start = 0) const {
+    return impl_ ? impl_->Find(c, start) : npos;
+  }
+  size_type find(char c, size_type start = 0) const {
+    return find(static_cast<LChar>(c), start);
+  }
+  size_type Find(CharacterMatchFunctionPtr match_function,
+                 size_type start = 0) const {
+    return impl_ ? impl_->Find(match_function, start) : npos;
+  }
+  size_type Find(base::RepeatingCallback<bool(UChar)> match_callback,
+                 size_type index = 0) const;
+
   // Searches for the last occurrence of a substring within this string.
   //
   // This method performs a backward search starting from the 'start' index.
@@ -285,10 +385,38 @@ class WTF_EXPORT String {
   //   for both `this` string and the 'value' parameter.
   size_type rfind(const StringView& value, size_type start = npos) const;
 
-  // Returns the Unicode code point starting at the specified offset of this
-  // string. If the offset points an unpaired surrogate, this function returns
-  // 0.
-  UChar32 CharacterStartingAt(size_type) const;
+  // Find the last instance of a single character.
+  // Returns `npos` if it's not found in this string.
+  size_type rfind(UChar c, size_type start = npos) const {
+    return impl_ ? impl_->ReverseFind(c, start) : npos;
+  }
+
+  // We have no find_first_of(), find_last_of(), find_first_not_of(), and
+  // find_last_not_of().  Feel free to add them if necessary.
+
+  // Returns a substring.
+  //
+  // If `pos` is greater than the string length, unlike `std::string::substr`,
+  // it crashes (`std::string::substr` throws an `std::out_of_range` exception).
+  // If `len` exceeds the length from `pos` to the end of the string, the
+  // substring from `pos` to the end is returned.
+  //
+  // This copies the content of the substring. If you don't need to copy the
+  // content, use `StringView(string, pos, len)` instead.
+  [[nodiscard]] String substr(size_type pos, size_type len = npos) const;
+  // Returns a substring.
+  //
+  // If `pos` is greater than or equal to the string length, returns an empty
+  // string. If `len` exceeds the length from `pos` to the end of the string,
+  // the substring from `pos` to the end is returned.
+  //
+  // This method exists for historical reasons. For compatibility with
+  // `std::string::substr`, consider using the `substr()` method.
+  [[nodiscard]] String Substring(size_type pos, size_type len = npos) const;
+  [[nodiscard]] String Left(size_type len) const { return Substring(0, len); }
+  [[nodiscard]] String Right(size_type len) const {
+    return Substring(length() - len, len);
+  }
 
   bool starts_with(const StringView& prefix) const {
     return impl_ ? impl_->StartsWith(prefix) : prefix.empty();
@@ -330,64 +458,27 @@ class WTF_EXPORT String {
     return impl_ ? impl_->EndsWith(character) : false;
   }
 
-  // TODO(esprehn): replace strangely both modifies this String *and* return a
-  // value. It should only do one of those.
-  String& Replace(UChar pattern, UChar replacement) {
-    if (impl_)
-      impl_ = impl_->Replace(pattern, replacement);
-    return *this;
+  bool contains(const StringView& value) const { return find(value) != npos; }
+  bool contains(UChar c) const { return find(c) != npos; }
+  bool contains(LChar c) const { return find(c) != npos; }
+  bool contains(char c) const { return find(c) != npos; }
+
+  // Functions to analyze the content -------------------------------
+
+  bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
+
+  bool ContainsOnlyASCIIOrEmpty() const {
+    return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();
   }
-  String& Replace(UChar pattern, const StringView& replacement) {
-    if (impl_)
-      impl_ = impl_->Replace(pattern, replacement);
-    return *this;
-  }
-  String& Replace(const StringView& pattern, const StringView& replacement) {
-    if (impl_)
-      impl_ = impl_->Replace(pattern, replacement);
-    return *this;
-  }
-  String& replace(size_type index,
-                  size_type length_to_replace,
-                  const StringView& replacement) {
-    if (impl_)
-      impl_ = impl_->Replace(index, length_to_replace, replacement);
-    return *this;
+  bool ContainsOnlyLatin1OrEmpty() const;
+  bool ContainsOnlyWhitespaceOrEmpty() const {
+    return !impl_ || impl_->ContainsOnlyWhitespaceOrEmpty();
   }
 
-  void Fill(UChar c) {
-    if (impl_)
-      impl_ = impl_->Fill(c);
-  }
+  template <bool isSpecialCharacter(UChar)>
+  bool IsAllSpecialCharacters() const;
 
-  void Ensure16Bit();
-
-  void Truncate(size_type length);
-  void Remove(size_type start, size_type length = 1);
-
-  // Returns a substring.
-  //
-  // If `pos` is greater than or equal to the string length, returns an empty
-  // string. If `len` exceeds the length from `pos` to the end of the string,
-  // the substring from `pos` to the end is returned.
-  //
-  // This method exists for historical reasons. For compatibility with
-  // `std::string::substr`, consider using the `substr()` method.
-  [[nodiscard]] String Substring(size_type pos, size_type len = npos) const;
-  // Returns a substring.
-  //
-  // If `pos` is greater than the string length, unlike `std::string::substr`,
-  // it crashes (`std::string::substr` throws an `std::out_of_range` exception).
-  // If `len` exceeds the length from `pos` to the end of the string, the
-  // substring from `pos` to the end is returned.
-  //
-  // This copies the content of the substring. If you don't need to copy the
-  // content, use `StringView(string, pos, len)` instead.
-  [[nodiscard]] String substr(size_type pos, size_type len = npos) const;
-  [[nodiscard]] String Left(size_type len) const { return Substring(0, len); }
-  [[nodiscard]] String Right(size_type len) const {
-    return Substring(length() - len, len);
-  }
+  // Functions creating new string(s) from `this` string ------------
 
   // Returns a lowercase version of the string. This function might convert
   // non-ASCII characters to ASCII characters. For example, DeprecatedLower()
@@ -417,32 +508,9 @@ class WTF_EXPORT String {
       StripBehavior = kStripExtraWhiteSpace) const;
 
   [[nodiscard]] String RemoveCharacters(CharacterMatchFunctionPtr) const;
-  template <bool isSpecialCharacter(UChar)>
-  bool IsAllSpecialCharacters() const;
 
   // Return the string with case folded for case insensitive comparison.
   [[nodiscard]] String FoldCase() const;
-
-  // Takes a printf format and args and prints into a String.
-  // This function supports Latin-1 characters only.
-  [[nodiscard]] PRINTF_FORMAT(1, 2) static String
-      Format(const char* format, ...);
-
-  // Returns a version suitable for gtest and base/logging.*.  It prepends and
-  // appends double-quotes, and escapes characters other than ASCII printables.
-  [[nodiscard]] String EncodeForDebugging() const;
-
-  // Returns an uninitialized string. The characters needs to be written
-  // into the buffer returned in `data` before the returned string is used.
-  // Failure to do this will have unpredictable results.
-  [[nodiscard]] static String CreateUninitialized(size_type length,
-                                                  base::span<UChar>& data) {
-    return StringImpl::CreateUninitialized(length, data);
-  }
-  [[nodiscard]] static String CreateUninitialized(size_type length,
-                                                  base::span<LChar>& data) {
-    return StringImpl::CreateUninitialized(length, data);
-  }
 
   // Returns a list of substrings of `this`, separated by `separator`.
   // This function copies the content of the string. Please consider if
@@ -467,15 +535,6 @@ class WTF_EXPORT String {
   // `String("").SplitSkippingEmpty(',')` produces an empty list.
   Vector<String> SplitSkippingEmpty(UChar separator) const;
 
-  // Copy characters out of the string. See StringImpl.h for detailed docs.
-  size_t CopyTo(base::span<UChar> buffer, size_type start) const {
-    return impl_ ? impl_->CopyTo(buffer, start) : 0;
-  }
-  template <typename BufferType>
-  void AppendTo(BufferType&,
-                size_type start = 0,
-                size_type length = npos) const;
-
 #ifdef __OBJC__
   String(NSString*);
 
@@ -489,44 +548,14 @@ class WTF_EXPORT String {
   }
 #endif
 
-  [[nodiscard]] static String Make8BitFrom16BitSource(base::span<const UChar>);
-  [[nodiscard]] static String Make16BitFrom8BitSource(base::span<const LChar>);
-
-  // String::FromUTF8 will return a null string if
-  // the input data contains invalid UTF-8 sequences.
-  // Does not strip BOMs.
-  [[nodiscard]] static String FromUTF8(base::span<const uint8_t>);
-  [[nodiscard]] static String FromUTF8(const char* s);
-  [[nodiscard]] static String FromUTF8(std::string_view s) {
-    return FromUTF8(base::as_byte_span(s));
-  }
-
-  // Tries to convert the passed in string to UTF-8, but will fall back to
-  // Latin-1 if the string is not valid UTF-8.
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(
-      base::span<const uint8_t>);
-  [[nodiscard]] static String FromUTF8WithLatin1Fallback(std::string_view s) {
-    return FromUTF8WithLatin1Fallback(base::as_byte_span(s));
-  }
-
-  bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
-
-  bool ContainsOnlyASCIIOrEmpty() const {
-    return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();
-  }
-  bool ContainsOnlyLatin1OrEmpty() const;
-  bool ContainsOnlyWhitespaceOrEmpty() const {
-    return !impl_ || impl_->ContainsOnlyWhitespaceOrEmpty();
-  }
-
-  size_t CharactersSizeInBytes() const {
-    return impl_ ? impl_->CharactersSizeInBytes() : 0;
-  }
-
 #ifndef NDEBUG
   // For use in the debugger.
   void Show() const;
 #endif
+
+  // Returns a version suitable for gtest and base/logging.*.  It prepends and
+  // appends double-quotes, and escapes characters other than ASCII printables.
+  [[nodiscard]] String EncodeForDebugging() const;
 
   void WriteIntoTrace(perfetto::TracedValue context) const;
 

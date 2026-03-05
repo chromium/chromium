@@ -68,6 +68,24 @@ class WTF_EXPORT AtomicString {
   // The function is defined in StringStatics.cpp.
   static void Init();
 
+  // Factories ------------------------------------------------------
+
+  // AtomicString::FromUTF8 will return a null string if
+  // the input data contains invalid UTF-8 sequences.
+  static AtomicString FromUTF8(base::span<const uint8_t>);
+  static AtomicString FromUTF8(const char*);
+  static AtomicString FromUTF8(std::string_view);
+
+  template <typename IntegerType>
+  static AtomicString Number(IntegerType number) {
+    IntegerToStringConverter<IntegerType> converter(number);
+    return AtomicString(converter.Span());
+  }
+
+  static AtomicString Number(double, unsigned precision = 6);
+
+  // [string.cons] --------------------------------------------------
+
   AtomicString() = default;
   explicit AtomicString(const char* chars)
       // SAFETY: The below span creation is safe if `chars` points to a
@@ -88,32 +106,47 @@ class WTF_EXPORT AtomicString {
   explicit AtomicString(const String& s) : string_(Add(s.Impl())) {}
   explicit AtomicString(String&& s) : string_(Add(s.ReleaseImpl())) {}
 
-  explicit operator bool() const { return !IsNull(); }
-  operator const String&() const { return string_; }
-  const String& GetString() const { return string_; }
+  // [string.capacity] ----------------------------------------------
 
-  StringImpl* Impl() const { return string_.Impl(); }
-
-  bool Is8Bit() const { return string_.Is8Bit(); }
   size_type length() const { return string_.length(); }
-  base::span<const LChar> Span8() const { return string_.Span8(); }
-  base::span<const UChar> Span16() const { return string_.Span16(); }
+  bool empty() const { return string_.empty(); }
+  explicit operator bool() const { return !IsNull(); }
+  bool IsNull() const { return string_.IsNull(); }
+
+  size_t CharactersSizeInBytes() const {
+    return string_.CharactersSizeInBytes();
+  }
+
+  // [string.access] ------------------------------------------------
 
   UChar operator[](size_type i) const { return string_[i]; }
 
-  // Find characters.
-  size_type find(UChar c, size_type start = 0) const {
-    return string_.find(c, start);
+  // [string.operations] --------------------------------------------
+
+  bool Is8Bit() const { return string_.Is8Bit(); }
+  StringImpl* Impl() const { return string_.Impl(); }
+
+  operator const String&() const { return string_; }
+  const String& GetString() const { return string_; }
+
+  unsigned Hash() const { return string_.Impl()->ExistingHash(); }
+
+  base::span<const LChar> Span8() const { return string_.Span8(); }
+  base::span<const UChar> Span16() const { return string_.Span16(); }
+
+  std::string Ascii() const { return string_.Ascii(); }
+  std::string Latin1() const { return string_.Latin1(); }
+  std::string Utf8(
+      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
+    return StringView(*this).Utf8(mode);
   }
-  size_type find(LChar c, size_type start = 0) const {
-    return string_.find(c, start);
-  }
-  size_type find(char c, size_type start = 0) const {
-    return find(static_cast<LChar>(c), start);
-  }
-  size_type Find(CharacterMatchFunctionPtr match_function,
-                 size_type start = 0) const {
-    return string_.Find(match_function, start);
+  // Returns a std::u16string_view pointing this AtomicString.
+  // This should be called only if !Is8Bit().
+  //
+  // This function should be removed after enabling C++23 because
+  // std::u16string_view(Span16()) will work with C++23.
+  std::u16string_view View16() const LIFETIME_BOUND {
+    return base::as_string_view(Span16());
   }
 
   // Find substrings.
@@ -137,23 +170,21 @@ class WTF_EXPORT AtomicString {
     return string_.FindIgnoringAsciiCase(value, start);
   }
 
-  // Returns `true` if this string contains the specified `c`.
-  bool contains(UChar c) const { return find(c) != npos; }
-  bool contains(LChar c) const { return find(c) != npos; }
-  bool contains(char c) const { return find(c) != npos; }
-  // Returns `true` if this string contains the specified `value`.
-  // If `value` is empty, this returns `true`.
-  bool contains(const StringView& value) const;
-  // Returns `true` if this string contains the specified `value`, using ASCII
-  // case-insensitive matching.
-  // If `value` is empty, this returns `true`.
-  bool ContainsIgnoringAsciiCase(const StringView& value) const;
-
-  // Find the last instance of a single character.
-  // Returns `npos` if it's not found in this string.
-  size_type rfind(UChar c, size_type start = npos) const {
-    return string_.rfind(c, start);
+  // Find characters.
+  size_type find(UChar c, size_type start = 0) const {
+    return string_.find(c, start);
   }
+  size_type find(LChar c, size_type start = 0) const {
+    return string_.find(c, start);
+  }
+  size_type find(char c, size_type start = 0) const {
+    return find(static_cast<LChar>(c), start);
+  }
+  size_type Find(CharacterMatchFunctionPtr match_function,
+                 size_type start = 0) const {
+    return string_.Find(match_function, start);
+  }
+
   // Searches for the last occurrence of a substring within this string.
   //
   // This method performs a backward search starting from the 'start' index.
@@ -170,6 +201,11 @@ class WTF_EXPORT AtomicString {
   size_type rfind(const StringView& value, size_type start = npos) const {
     return string_.rfind(value, start);
   }
+  // Find the last instance of a single character.
+  // Returns `npos` if it's not found in this string.
+  size_type rfind(UChar c, size_type start = npos) const {
+    return string_.rfind(c, start);
+  }
 
   bool starts_with(const StringView& prefix) const {
     return string_.starts_with(prefix);
@@ -184,12 +220,30 @@ class WTF_EXPORT AtomicString {
   bool ends_with(const StringView& suffix) const {
     return string_.ends_with(suffix);
   }
-  bool ends_with(UChar character) const { return string_.ends_with(character); }
   // Returns true if this string ends with the specified `suffix`, using ASCII
   // case-insensitive matching. If `suffix` is empty, this returns `true`.
   bool EndsWithIgnoringAsciiCase(const StringView& suffix) const {
     return string_.EndsWithIgnoringAsciiCase(suffix);
   }
+  bool ends_with(UChar character) const { return string_.ends_with(character); }
+
+  // Returns `true` if this string contains the specified `value`.
+  // If `value` is empty, this returns `true`.
+  bool contains(const StringView& value) const;
+  // Returns `true` if this string contains the specified `value`, using ASCII
+  // case-insensitive matching.
+  // If `value` is empty, this returns `true`.
+  bool ContainsIgnoringAsciiCase(const StringView& value) const;
+  // Returns `true` if this string contains the specified `c`.
+  bool contains(UChar c) const { return find(c) != npos; }
+  bool contains(LChar c) const { return find(c) != npos; }
+  bool contains(char c) const { return find(c) != npos; }
+
+  // Functions to analyze the content -------------------------------
+
+  bool IsLowerASCII() const { return string_.IsLowerASCII(); }
+
+  // Functions creating new string(s) from `this` string ------------
 
   // Returns a lowercase/uppercase version of the string.
   // These functions convert ASCII characters only.
@@ -197,53 +251,15 @@ class WTF_EXPORT AtomicString {
   AtomicString LowerASCII() const;
   AtomicString UpperASCII() const;
 
-  bool IsLowerASCII() const { return string_.IsLowerASCII(); }
-
-  template <typename IntegerType>
-  static AtomicString Number(IntegerType number) {
-    IntegerToStringConverter<IntegerType> converter(number);
-    return AtomicString(converter.Span());
-  }
-
-  static AtomicString Number(double, unsigned precision = 6);
-
-  bool IsNull() const { return string_.IsNull(); }
-  bool empty() const { return string_.empty(); }
-  unsigned Hash() const { return string_.Impl()->ExistingHash(); }
-
 #ifdef __OBJC__
   operator NSString*() const { return string_; }
 #endif
-  // AtomicString::fromUTF8 will return a null string if
-  // the input data contains invalid UTF-8 sequences.
-  static AtomicString FromUTF8(base::span<const uint8_t>);
-  static AtomicString FromUTF8(const char*);
-  static AtomicString FromUTF8(std::string_view);
-
-  std::string Ascii() const { return string_.Ascii(); }
-  std::string Latin1() const { return string_.Latin1(); }
-  std::string Utf8(
-      Utf8ConversionMode mode = Utf8ConversionMode::kLenient) const {
-    return StringView(*this).Utf8(mode);
-  }
-  // Returns a std::u16string_view pointing this AtomicString.
-  // This should be called only if !Is8Bit().
-  //
-  // This function should be removed after enabling C++23 because
-  // std::u16string_view(Span16()) will work with C++23.
-  std::u16string_view View16() const LIFETIME_BOUND {
-    return base::as_string_view(Span16());
-  }
-
-  size_t CharactersSizeInBytes() const {
-    return string_.CharactersSizeInBytes();
-  }
-
-  void WriteIntoTrace(perfetto::TracedValue context) const;
 
 #ifndef NDEBUG
   void Show() const;
 #endif
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend struct HashTraits<AtomicString>;
