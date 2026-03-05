@@ -12,11 +12,13 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 
 namespace media {
 namespace core_audio_mac {
+using LogCallback = base::RepeatingCallback<void(const std::string&)>;
 
 // Returns a vector with the IDs of all audio devices in the system.
 // The vector is empty if there are no devices or if there is an error.
@@ -29,26 +31,34 @@ std::vector<AudioObjectID> GetRelatedDeviceIDs(AudioObjectID device_id);
 
 // Returns a string with a unique device ID for the given |device_id|, or no
 // value if there is an error.
-std::optional<std::string> GetDeviceUniqueID(AudioObjectID device_id);
-
+std::optional<std::string> GetDeviceUniqueID(
+    AudioObjectID device_id,
+    const LogCallback& log_callback = LogCallback());
 // Returns a string with a descriptive label for the given |device_id|, or no
 // value if there is an error. The returned label is based on several
 // characteristics of the device.
-std::optional<std::string> GetDeviceLabel(AudioObjectID device_id,
-                                          bool is_input);
+std::optional<std::string> GetDeviceLabel(
+    AudioObjectID device_id,
+    bool is_input,
+    const LogCallback& log_callback = LogCallback());
 
 // Returns the number of input or output streams associated with the given
 // |device_id|. Returns zero if there are no streams or if there is an error.
-uint32_t GetNumStreams(AudioObjectID device_id, bool is_input);
-
+uint32_t GetNumStreams(AudioObjectID device_id,
+                       bool is_input,
+                       const LogCallback& log_callback = LogCallback());
 // Returns the source associated with the given |device_id|, or no value if
 // |device_id| has no source or if there is an error.
-std::optional<uint32_t> GetDeviceSource(AudioObjectID device_id, bool is_input);
+std::optional<uint32_t> GetDeviceSource(
+    AudioObjectID device_id,
+    bool is_input,
+    const LogCallback& log_callback = LogCallback());
 
 // Returns the transport type of the given |device_id|, or no value if
 // |device_id| has no source or if there is an error.
-std::optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id);
-
+std::optional<uint32_t> GetDeviceTransportType(
+    AudioObjectID device_id,
+    const LogCallback& log_callback = LogCallback());
 // Returns whether or not the |device_id| corresponds to a private, aggregate
 // device. Such a device gets created by instantiating a VoiceProcessingIO
 // AudioUnit.
@@ -77,7 +87,9 @@ base::TimeDelta GetHardwareLatency(AudioUnit audio_unit,
 // if no default device is found or an error occurs.
 // `input` specifies the device type to return. True for the default input
 // device, false for the default output device.
-std::optional<AudioDeviceID> GetDefaultDevice(bool input);
+std::optional<AudioDeviceID> GetDefaultDevice(
+    bool input,
+    const LogCallback& log_callback = LogCallback());
 
 }  // namespace core_audio_mac
 }  // namespace media
