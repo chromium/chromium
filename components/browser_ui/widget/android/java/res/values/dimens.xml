@@ -273,4 +273,7 @@ found in the LICENSE file.
 
     <!-- Omnibox buttons (mic, lens, ...): rounded-corner rect background -->
     <dimen name="search_box_button_background_corner_radius">12dp</dimen>
+
+    <!-- Containment -->
+    <item name="containment_item_hover_alpha" format="float" type="dimen">0.04</item>
 </resources>

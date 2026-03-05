@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.settings;
 
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceCategory;
 import androidx.preference.PreferenceGroupAdapter;
@@ -20,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
 
 import java.util.Map;
@@ -45,7 +48,16 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
     private final int mLeftMarginPx;
 
     /** Card background of the selected item. */
-    private final Drawable mSelectedBackground;
+    private @Nullable Drawable mSelectedBackground;
+
+    /** Card background of unselected items. */
+    private @Nullable Drawable mUnselectedBackground;
+
+    /** Corner radius of the card background. */
+    private final float mRadiusPx;
+
+    /** Color of the card background. */
+    private int mSelectedBackgroundColor;
 
     /**
      * Key of the selected preference defined in main_preference.xml. Maybe null if no entry in the
@@ -66,9 +78,8 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
             int verticalMarginPx, int leftMarginPx, float radiusPx, int selectedBackgroundColor) {
         mVerticalMarginPx = verticalMarginPx;
         mLeftMarginPx = leftMarginPx;
-        mSelectedBackground =
-                ContainmentViewStyler.createRoundedDrawable(
-                        radiusPx, radiusPx, selectedBackgroundColor);
+        mRadiusPx = radiusPx;
+        mSelectedBackgroundColor = selectedBackgroundColor;
     }
 
     private static @Nullable String dedup(@Nullable String key) {
@@ -120,7 +131,24 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
     }
 
     @Override
-    public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+    public void onDraw(@NonNull Canvas c, RecyclerView parent, @NonNull RecyclerView.State state) {
+        int currentColor =
+                SemanticColorUtils.getSettingsMainMenuSelectedBackgroundColor(parent.getContext());
+        if (currentColor != mSelectedBackgroundColor || mSelectedBackground == null) {
+            mSelectedBackgroundColor = currentColor;
+            mSelectedBackground =
+                    ContainmentViewStyler.createInteractiveRoundedDrawable(
+                            parent.getContext(), mRadiusPx, mRadiusPx, currentColor);
+            mIsDirty = true;
+        }
+
+        if (mUnselectedBackground == null) {
+            mUnselectedBackground =
+                    ContainmentViewStyler.createInteractiveRoundedDrawable(
+                            parent.getContext(), mRadiusPx, mRadiusPx, Color.TRANSPARENT);
+            mIsDirty = true;
+        }
+
         if (!mIsDirty) {
             return;
         }
@@ -163,13 +191,24 @@ class SelectionDecoration extends RecyclerView.ItemDecoration {
             }
             if (selected) {
                 highlightFound = true;
-                view.setBackground(mSelectedBackground);
+                if (mSelectedBackground != null && mSelectedBackground.getConstantState() != null) {
+                    view.setBackground(
+                            mSelectedBackground.getConstantState().newDrawable().mutate());
+                } else {
+                    view.setBackground(null);
+                }
                 if (view.findViewById(android.R.id.title) instanceof TextView textView) {
                     textView.setTextAppearance(
                             R.style.TextAppearance_SettingsSelectedMainMenuItemTitle);
                 }
             } else {
-                view.setBackground(null);
+                if (mUnselectedBackground != null
+                        && mUnselectedBackground.getConstantState() != null) {
+                    view.setBackground(
+                            mUnselectedBackground.getConstantState().newDrawable().mutate());
+                } else {
+                    view.setBackground(null);
+                }
                 if (view.findViewById(android.R.id.title) instanceof TextView textView) {
                     textView.setTextAppearance(R.style.TextAppearance_SettingsMainMenuItemTitle);
                 }
