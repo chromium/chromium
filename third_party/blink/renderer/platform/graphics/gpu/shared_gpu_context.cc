@@ -398,9 +398,16 @@ void SharedGpuContext::SetLowLatencyUsageSupportedForCanvas2DForTesting(
   g_low_latency_usage_supported_for_canvas_2d_for_testing = enable;
 }
 
-bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D() {
+bool SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(
+    RasterMode raster_mode) {
   if (g_low_latency_usage_supported_for_canvas_2d_for_testing) {
     return g_low_latency_usage_supported_for_canvas_2d_for_testing.value();
+  }
+
+  // Concurrent read/write only makes sense if raster writes are happening via
+  // the GPU.
+  if (raster_mode == RasterMode::kCPU) {
+    return false;
   }
 
   // Swapchain-backed SharedImages always support low-latency usages.

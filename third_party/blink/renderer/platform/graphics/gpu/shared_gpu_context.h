@@ -13,6 +13,7 @@
 #include "base/threading/sequence_local_storage_slot.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -79,9 +80,10 @@ class PLATFORM_EXPORT SharedGpuContext {
   // overlays.
   static bool UseOverlaysForCanvas2D();
 
-  // Whether SharedImages used for canvas2D content may be given usage optimized
-  // for low-latency (SCANOUT and CONCURRENT_READ_WRITE).
-  static bool LowLatencyUsageSupportedForCanvas2D();
+  // Whether SharedImages used for canvas2D content that is rasterized according
+  // to `raster_mode` may be given usage optimized for low-latency (SCANOUT and
+  // CONCURRENT_READ_WRITE).
+  static bool LowLatencyUsageSupportedForCanvas2D(RasterMode raster_mode);
 
   // Forces LowLatencyUsageSupportedForCanvas2D() to return the
   // passed-in value. Cleared on the next invocation of Reset() of the global

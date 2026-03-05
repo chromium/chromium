@@ -1337,14 +1337,16 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   if (is_gpu_compositing_enabled &&
       (use_gpu_raster ||
        SharedGpuContext::UseMappableSharedImagesForCanvas2D())) {
+    RasterMode raster_mode =
+        use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU;
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
     // Determine whether this SharedImage can be configured for low-latency
     // or placement in overlays.
     bool low_latency_supported =
-        use_gpu_raster && canvas()->LowLatencyEnabled() &&
-        SharedGpuContext::LowLatencyUsageSupportedForCanvas2D();
+        canvas()->LowLatencyEnabled() &&
+        SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(raster_mode);
     if (low_latency_supported) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT |
                                   gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
@@ -1354,8 +1356,7 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
 
     provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
         canvas()->Size(), format, alpha_type, color_space,
-        SharedGpuContext::ContextProviderWrapper(),
-        use_gpu_raster ? RasterMode::kGPU : RasterMode::kCPU,
+        SharedGpuContext::ContextProviderWrapper(), raster_mode,
         shared_image_usage_flags, canvas());
   } else if (!is_gpu_compositing_enabled) {
     // Create a CanvasResourceProvider that uses a SharedImage backed by a
