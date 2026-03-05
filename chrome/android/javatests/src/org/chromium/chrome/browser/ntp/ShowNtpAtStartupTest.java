@@ -477,6 +477,44 @@ public class ShowNtpAtStartupTest {
 
     @Test
     @MediumTest
+    @Feature({"StartSurface", "RenderTest"})
+    @Restriction(DeviceFormFactor.PHONE_OR_TABLET)
+    @EnableFeatures({START_SURFACE_RETURN_TIME_IMMEDIATE})
+    public void testFakeSearchBoxWidth_phones() throws IOException {
+        mActivityTestRule.startFromLauncherAtNtp();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        HomeSurfaceTestUtils.waitForTabModel(cta);
+
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
+
+        NewTabPage ntp = (NewTabPage) mActivityTestRule.getActivityTab().getNativePage();
+        NewTabPageLayout ntpLayout = ntp.getNewTabPageLayout();
+        View searchBoxLayout = ntpLayout.findViewById(R.id.search_box);
+
+        // Orientation changes are not supported on automotive.
+        if (DeviceInfo.isAutomotive()) {
+            mRenderTestRule.render(searchBoxLayout, "ntp_search_box_automotive");
+            return;
+        }
+
+        // Start off in landscape screen orientation.
+        mActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        waitForScreenOrientation("\"landscape\"");
+        mRenderTestRule.render(searchBoxLayout, "ntp_search_box_landscape");
+
+        // Start off in portrait screen orientation.
+        mActivityTestRule
+                .getActivity()
+                .setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        waitForScreenOrientation("\"portrait\"");
+        // Verifies there is additional margins added for the fake search box.
+        mRenderTestRule.render(searchBoxLayout, "ntp_search_box_portrait");
+    }
+
+    @Test
+    @MediumTest
     @Feature({"StartSurface"})
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
     @DisableIf.Device(DeviceFormFactor.DESKTOP) // https://crbug.com/442027285
