@@ -130,20 +130,18 @@ TEST_F(WmModeTests, TraysOnMultipleDisplays) {
            std::string(image_model.GetVectorIcon().vector_icon()->name);
   };
 
-  EXPECT_TRUE(has_same_vector_icon(tray_button_1->GetImageViewForTesting(),
-                                   kWmModeOnIcon));
-  EXPECT_TRUE(has_same_vector_icon(tray_button_2->GetImageViewForTesting(),
-                                   kWmModeOnIcon));
+  EXPECT_TRUE(has_same_vector_icon(tray_button_1->image_view(), kWmModeOnIcon));
+  EXPECT_TRUE(has_same_vector_icon(tray_button_2->image_view(), kWmModeOnIcon));
 
   LeftClickOn(tray_button_1);
   EXPECT_FALSE(controller->is_active());
   EXPECT_FALSE(tray_button_1->is_active());
   EXPECT_FALSE(tray_button_2->is_active());
 
-  EXPECT_TRUE(has_same_vector_icon(tray_button_1->GetImageViewForTesting(),
-                                   kWmModeOffIcon));
-  EXPECT_TRUE(has_same_vector_icon(tray_button_2->GetImageViewForTesting(),
-                                   kWmModeOffIcon));
+  EXPECT_TRUE(
+      has_same_vector_icon(tray_button_1->image_view(), kWmModeOffIcon));
+  EXPECT_TRUE(
+      has_same_vector_icon(tray_button_2->image_view(), kWmModeOffIcon));
 }
 
 TEST_F(WmModeTests, ScreenDimming) {
