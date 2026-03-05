@@ -1907,6 +1907,8 @@ source_set("browser") {
     "renderer_host/media/render_frame_audio_input_stream_factory.h",
     "renderer_host/media/render_frame_audio_output_stream_factory.cc",
     "renderer_host/media/render_frame_audio_output_stream_factory.h",
+    "renderer_host/media/rtc_logging_dispatcher.cc",
+    "renderer_host/media/rtc_logging_dispatcher.h",
     "renderer_host/media/service_launched_video_capture_device.cc",
     "renderer_host/media/service_launched_video_capture_device.h",
     "renderer_host/media/service_video_capture_device_launcher.cc",

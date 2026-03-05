@@ -1,0 +1,33 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// This object lives in the browser and is responsible for processing
+// requests from WebRTC Logging APIs.
+interface RTCLoggingDispatcher {
+  // Tries to start WebRTC diagnostic logging if not already started.
+  // If `upload` is true, the logs will be marked for upload to a server
+  // determined by the browser.
+  // `metadata` is a map of key-value pairs that will be included in the logs.
+  // Returns a unique identifier for the logging session.
+  // Any WebRTC activity is subject to logging after this call is made, but
+  // logging is best effort and subject to user authorization. It is not
+  // possible to determine if logging will actually occur or not based on the
+  // return value of this function.
+  // Logging may not actually start due to a number of reasons, including
+  // lack of authorization.
+  StartDiagnosticLogging(bool upload, map<string, string> metadata) => (string uuid);
+
+  // Finishes the ongoing logging session, if any. By the time this call
+  // returns, no more WebRTC activity will be logged. If the session was
+  // marked for upload, the upload may happen at any time after this call (best
+  // effort).
+  FinishDiagnosticLogging() => ();
+
+  // Cancels the ongoing logging session, if any. By the time this call
+  // returns, no more WebRTC activity will be logged and any logs collected so
+  // far in the session will be discarded and not uploaded.
+  CancelDiagnosticLogging() => ();
+};

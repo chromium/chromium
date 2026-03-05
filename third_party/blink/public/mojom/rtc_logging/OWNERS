@@ -1,0 +1,4 @@
+file://third_party/blink/common/mediastream/COMMON_OWNERS
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

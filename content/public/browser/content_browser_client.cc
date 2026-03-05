@@ -20,6 +20,7 @@
 #include "base/supports_user_data.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/uuid.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -1452,6 +1453,26 @@ std::optional<gfx::ImageSkia> ContentBrowserClient::GetProductLogo() {
 bool ContentBrowserClient::IsBuiltinComponent(BrowserContext* browser_context,
                                               const url::Origin& origin) {
   return false;
+}
+
+void ContentBrowserClient::StartRtcDiagnosticLogging(
+    RenderFrameHost& frame_host,
+    bool should_upload_on_stop,
+    base::flat_map<std::string, std::string> metadata,
+    base::OnceCallback<void(const std::string&)> callback) {
+  std::move(callback).Run(base::Uuid::GenerateRandomV4().AsLowercaseString());
+}
+
+void ContentBrowserClient::FinishRtcDiagnosticLogging(
+    RenderFrameHost& frame_host,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
+}
+
+void ContentBrowserClient::CancelRtcDiagnosticLogging(
+    RenderFrameHost& frame_host,
+    base::OnceClosure callback) {
+  std::move(callback).Run();
 }
 
 bool ContentBrowserClient::ShouldBlockRendererDebugURL(

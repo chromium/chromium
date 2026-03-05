@@ -872,6 +872,18 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool IsBuiltinComponent(content::BrowserContext* browser_context,
                           const url::Origin& origin) override;
 
+  void StartRtcDiagnosticLogging(
+      content::RenderFrameHost& frame_host,
+      bool should_upload_on_stop,
+      base::flat_map<std::string, std::string> metadata,
+      base::OnceCallback<void(const std::string&)> callback) override;
+
+  void FinishRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
+                                  base::OnceClosure callback) override;
+
+  void CancelRtcDiagnosticLogging(content::RenderFrameHost& frame_host,
+                                  base::OnceClosure callback) override;
+
   bool ShouldBlockRendererDebugURL(
       const GURL& url,
       content::BrowserContext* context,

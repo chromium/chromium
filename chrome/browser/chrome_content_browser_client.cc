@@ -102,6 +102,7 @@
 #include "chrome/browser/media/webrtc/chrome_screen_enumerator.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_device_salt_service_factory.h"
+#include "chrome/browser/media/webrtc/rtc_diagnostic_logging_utils.h"
 #include "chrome/browser/media/webrtc/webrtc_logging_controller.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/navigation_predictor/anchor_element_preloader.h"
@@ -7437,6 +7438,29 @@ bool ChromeContentBrowserClient::IsBuiltinComponent(
 #endif
 }
 
+void ChromeContentBrowserClient::StartRtcDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    bool should_upload_on_stop,
+    base::flat_map<std::string, std::string> metadata,
+    base::OnceCallback<void(const std::string&)> callback) {
+  rtc_diagnostic_logging::StartRtcDiagnosticLogging(
+      frame_host, should_upload_on_stop, std::move(metadata),
+      std::move(callback));
+}
+
+void ChromeContentBrowserClient::FinishRtcDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    base::OnceClosure callback) {
+  rtc_diagnostic_logging::FinishRtcDiagnosticLogging(frame_host,
+                                                     std::move(callback));
+}
+
+void ChromeContentBrowserClient::CancelRtcDiagnosticLogging(
+    content::RenderFrameHost& frame_host,
+    base::OnceClosure callback) {
+  rtc_diagnostic_logging::CancelRtcDiagnosticLogging(frame_host,
+                                                     std::move(callback));
+}
 bool ChromeContentBrowserClient::ShouldBlockRendererDebugURL(
     const GURL& url,
     content::BrowserContext* context,
