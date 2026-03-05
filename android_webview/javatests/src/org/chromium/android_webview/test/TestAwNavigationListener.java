@@ -171,7 +171,6 @@ public class TestAwNavigationListener implements AwNavigationListener {
     @Override
     public void onPerformanceMark(AwPage page, String markName, long markTimeMs) {
         mPerformanceMarks.add(new PerformanceMark(markName, markTimeMs));
-        mCallbackHelper.notifyCalled();
     }
 
     public static class PerformanceMark {
