@@ -83,7 +83,6 @@ struct DataTypeLimits {
   // DequantizeLinear.
   SupportedTensors dequantize_linear_input;
   SupportedTensors dequantize_linear_scale;
-  SupportedTensors dequantize_linear_zero_point;
 
   // Element-wise binary ops.
   SupportedTensors add_input;

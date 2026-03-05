@@ -986,13 +986,13 @@ ValidateDequantizeLinearAndInferOutput(
             context_properties.data_type_limits.dequantize_linear_input)));
   }
 
-  if (!context_properties.data_type_limits.dequantize_linear_zero_point
-           .Supports(zero_point)) {
+  if (!context_properties.data_type_limits.dequantize_linear_input.Supports(
+          zero_point)) {
     return base::unexpected(ErrorWithLabel(
         label,
         NotSupportedArgumentError(
             kZeroPointParam, zero_point,
-            context_properties.data_type_limits.dequantize_linear_zero_point)));
+            context_properties.data_type_limits.dequantize_linear_input)));
   }
 
   if (input.data_type() != zero_point.data_type()) {

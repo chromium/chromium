@@ -30,7 +30,6 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedTensors cumulative_sum_input,
                  SupportedTensors dequantize_linear_input,
                  SupportedTensors dequantize_linear_scale,
-                 SupportedTensors dequantize_linear_zero_point,
                  SupportedTensors add_input,
                  SupportedTensors sub_input,
                  SupportedTensors mul_input,
@@ -160,7 +159,6 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedTensors cumulative_sum_input;
   SupportedTensors dequantize_linear_input;
   SupportedTensors dequantize_linear_scale;
-  SupportedTensors dequantize_linear_zero_point;
   SupportedTensors add_input;
   SupportedTensors sub_input;
   SupportedTensors mul_input;
@@ -283,7 +281,6 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.cumulative_sum_input == rhs.cumulative_sum_input &&
          lhs.dequantize_linear_input == rhs.dequantize_linear_input &&
          lhs.dequantize_linear_scale == rhs.dequantize_linear_scale &&
-         lhs.dequantize_linear_zero_point == rhs.dequantize_linear_zero_point &&
          lhs.add_input == rhs.add_input &&
          lhs.sub_input == rhs.sub_input &&
          lhs.mul_input == rhs.mul_input &&

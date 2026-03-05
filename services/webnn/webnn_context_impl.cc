@@ -473,8 +473,6 @@ ContextProperties WebNNContextImpl::IntersectWithBaseProperties(
       .RetainAll(DataTypeConstraint::kInts4Ints8Ints32);
   backend_context_properties.data_type_limits.dequantize_linear_scale.data_types
       .RetainAll(DataTypeConstraint::kFloat16To32);
-  backend_context_properties.data_type_limits.dequantize_linear_zero_point
-      .data_types.RetainAll(DataTypeConstraint::kInts4Ints8Ints32);
   backend_context_properties.data_type_limits.logical_and_input.data_types
       .RetainAll(DataTypeConstraint::kUint8);
   backend_context_properties.data_type_limits.logical_or_input.data_types

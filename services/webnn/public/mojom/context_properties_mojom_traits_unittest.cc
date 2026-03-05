@@ -55,9 +55,6 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        /*dequantize_linear_scale=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
         kMaxRank},
-       /*dequantize_linear_zero_point=*/
-       {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
-        kMaxRank},
        /*add_input=*/
        {{webnn::OperandDataType::kFloat16, webnn::OperandDataType::kFloat32},
         kMaxRank},
@@ -247,7 +244,7 @@ TEST(ContextPropertiesMojomTraitsTest, Basic) {
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
        {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {},
-       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
+       {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}});
 
   EXPECT_TRUE(
       mojo::test::SerializeAndDeserialize<webnn::mojom::ContextProperties>(

@@ -78,10 +78,6 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.dequantize_linear_scale;
   }
-  static webnn::SupportedTensors dequantize_linear_zero_point(
-      const webnn::DataTypeLimits& data_type_limits) {
-    return data_type_limits.dequantize_linear_zero_point;
-  }
   static webnn::SupportedTensors add_input(
       const webnn::DataTypeLimits& data_type_limits) {
     return data_type_limits.add_input;
@@ -508,8 +504,6 @@ struct StructTraits<webnn::mojom::DataTypeLimitsDataView,
            data.ReadCumulativeSumInput(&out->cumulative_sum_input) &&
            data.ReadDequantizeLinearInput(&out->dequantize_linear_input) &&
            data.ReadDequantizeLinearScale(&out->dequantize_linear_scale) &&
-           data.ReadDequantizeLinearZeroPoint(
-               &out->dequantize_linear_zero_point) &&
            data.ReadAddInput(&out->add_input) &&
            data.ReadSubInput(&out->sub_input) &&
            data.ReadMulInput(&out->mul_input) &&

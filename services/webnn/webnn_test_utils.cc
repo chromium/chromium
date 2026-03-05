@@ -593,7 +593,6 @@ ContextProperties GetContextPropertiesForTesting() {
        /*cumulative_sum_input=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
        /*dequantize_linear_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*dequantize_linear_scale=*/{SupportedDataTypes::All(), kMaxRank},
-       /*dequantize_linear_zero_point=*/{SupportedDataTypes::All(), kMaxRank},
        /*add_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*sub_input=*/{SupportedDataTypes::All(), kMaxRank},
        /*mul_input=*/{SupportedDataTypes::All(), kMaxRank},

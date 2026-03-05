@@ -663,8 +663,6 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        {kInt4AndInts8Int32, SupportedRanks::UpTo(6)},
        /*dequantize_linear_scale=*/
        {DataTypeConstraint::kFloat16To32, SupportedRanks::UpTo(6)},
-       /*dequantize_linear_zero_point=*/
-       {kInt4AndInts8Int32, SupportedRanks::UpTo(6)},
        // Limited to 6D when broadcasting is required:
        // https://source.chromium.org/chromium/chromium/src/+/main:third_party/tflite/src/tensorflow/lite/kernels/add.cc
        /*add_input=*/{kFloat16To32AndInt32To64, SupportedRanks::UpTo(6)},
@@ -7294,16 +7292,15 @@ auto GraphBuilderTflite::SerializeDequantizeLinear(
     -> base::expected<OperatorOffset, std::string> {
   const mojom::Operand& input_operand =
       GetOperand(dequantize_linear.input_operand_id);
-  CHECK(context_properties_.data_type_limits.dequantize_linear_input.Supports(
-      input_operand.descriptor));
+  const mojom::Operand& zero_point_operand =
+      GetOperand(dequantize_linear.zero_point_operand_id);
+  CHECK(
+      context_properties_.data_type_limits.dequantize_linear_input.SupportsAll(
+          {input_operand.descriptor, zero_point_operand.descriptor}));
   const mojom::Operand& scale_operand =
       GetOperand(dequantize_linear.scale_operand_id);
   CHECK(context_properties_.data_type_limits.dequantize_linear_scale.Supports(
       scale_operand.descriptor));
-  const mojom::Operand& zero_point_operand =
-      GetOperand(dequantize_linear.zero_point_operand_id);
-  CHECK(context_properties_.data_type_limits.dequantize_linear_zero_point
-            .Supports(zero_point_operand.descriptor));
 
   std::optional<QuantizateParametersOffset> quantize_params =
       SerializeQuantizeParams(dequantize_linear.zero_point_operand_id,

@@ -612,8 +612,6 @@ class FakeWebNNContextProvider : public blink_mojom::WebNNContextProvider {
          {webnn::SupportedDataTypes::All(), kMaxRank},
          /*dequantize_linear_scale=*/
          {webnn::SupportedDataTypes::All(), kMaxRank},
-         /*dequantize_linear_zero_point=*/
-         {webnn::SupportedDataTypes::All(), kMaxRank},
          /*add_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*sub_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},
          /*mul_input=*/{webnn::SupportedDataTypes::All(), kMaxRank},

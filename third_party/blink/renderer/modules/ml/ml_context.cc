@@ -447,7 +447,7 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
   dequantize_linear->setScale(SupportedTensorLimitsToTensorLimits(
       data_type_limits.dequantize_linear_scale));
   dequantize_linear->setZeroPoint(SupportedTensorLimitsToTensorLimits(
-      data_type_limits.dequantize_linear_zero_point));
+      data_type_limits.dequantize_linear_input));
   dequantize_linear->setOutput(SupportedTensorLimitsToTensorLimits(
       data_type_limits.dequantize_linear_scale));
   op_support_limits->setDequantizeLinear(dequantize_linear);

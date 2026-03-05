@@ -207,11 +207,6 @@ ContextProperties ContextImplOrt::GetContextProperties(
             : DataTypeConstraint::kInts4ToInts8,
         kMaxRank},
        /*dequantize_linear_scale=*/{DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*dequantize_linear_zero_point=*/
-       {dequantize_linear_input_support_int32
-            ? kInts4To8Int32
-            : DataTypeConstraint::kInts4ToInts8,
-        kMaxRank},
        /*add_input=*/
        {DataTypeConstraint::kAllDataTypesAtLeast8bits, kMaxRank},
        /*sub_input=*/

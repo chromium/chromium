@@ -1207,8 +1207,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        /*dequantize_linear_input=*/{kInts8Ints32, kMaxRank},
        /*dequantize_linear_scale=*/
        {DataTypeConstraint::kFloat16To32, kMaxRank},
-       /*dequantize_linear_zero_point=*/
-       {kInts8Ints32, kMaxRank},
        /*add_input=*/{kFloatsAndInt32, kMaxRank},
        /*sub_input=*/{kFloatsAndInt32, kMaxRank},
        /*mul_input=*/{kFloatsAndInt32, kMaxRank},
@@ -1414,8 +1412,6 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
 
   if (__builtin_available(macOS 15, *)) {
     properties.data_type_limits.dequantize_linear_input.data_types =
-        DataTypeConstraint::kInts4Ints8Ints32;
-    properties.data_type_limits.dequantize_linear_zero_point.data_types =
         DataTypeConstraint::kInts4Ints8Ints32;
   }
   return properties;
@@ -2387,8 +2383,8 @@ GraphBuilderCoreml::AddOperationForDequantizeLinear(
             .Has(input_operand_data_type));
   CHECK(context_properties_.data_type_limits.dequantize_linear_scale.data_types
             .Has(scale_operand_data_type));
-  CHECK(context_properties_.data_type_limits.dequantize_linear_zero_point
-            .data_types.Has(zero_point_operand_data_type));
+  CHECK(context_properties_.data_type_limits.dequantize_linear_input.data_types
+            .Has(zero_point_operand_data_type));
 
   if (input_operand_data_type == OperandDataType::kInt32 ||
       input_operand_data_type == OperandDataType::kUint32) {
