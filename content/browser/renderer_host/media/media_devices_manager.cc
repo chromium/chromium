@@ -659,6 +659,7 @@ void MediaDevicesManager::EnumerateAndRankDevices(
     bool request_audio_input_capabilities,
     EnumerateDevicesCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(request_video_input_capabilities &&
              requested_types[static_cast<size_t>(
                  MediaDeviceType::kMediaVideoInput)] ||
@@ -1640,6 +1641,7 @@ bool MediaDevicesManager::IsEnumerationRequestReady(
 
 void MediaDevicesManager::HandleDevicesChanged(MediaDeviceType type) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(blink::IsValidMediaDeviceType(type));
 
   uint64_t request_id = ++next_enumeration_request_id_;
