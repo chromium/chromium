@@ -184,16 +184,11 @@ chromium-metrics-reviews@google.com.
   <variant name=".DawnSharedContext.Textures"
       summary="Only counting textures' memory used by the Graphite Dawn
                shared context."/>
-  <variant name=".DevTools.Sessions.ActiveCount"
-      summary="Reports the number of active DevTools sessions."/>
   <variant name=".Discardable"
       summary="Only counting memory used by Discardable manager."/>
   <variant name=".DurableMessages.AggregateMemoryUsage"
       summary="Reports the aggregate memory usage in megabytes by all
                DevToolsDurableMessageCollector instances."/>
-  <variant name=".DurableMessages.CollectorCount"
-      summary="Reports the number of DevToolsDurableMessageCollector
-               instances."/>
   <variant name=".ExtensionFunctions"
       summary="Only counting memory used by ExtensionFunctions."/>
   <variant name=".Extensions.ValueStore"
@@ -584,6 +579,14 @@ chromium-metrics-reviews@google.com.
   <variant name=".AXPlatformWinLiveNodeCount"
       summary="Count of live accessibility platform nodes in the browser
                process."/>
+  <variant name=".DevTools.Sessions.ActiveCount"
+      summary="Reports the number of active DevTools sessions."/>
+  <variant name=".DurableMessages.AggregateMessageCount"
+      summary="Reports the aggregate message count by all
+               DevToolsDurableMessageCollector instances."/>
+  <variant name=".DurableMessages.CollectorCount"
+      summary="Reports the number of DevToolsDurableMessageCollector
+               instances."/>
   <variant name=".ServiceDiscardableManager"
       summary="Only counting memory used by the gpu discardable cache."/>
   <variant name=".ServiceDiscardableManager.AvgImageSize"
@@ -754,9 +757,6 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ProcessMemoryAllocatorTiny2">
-  <variant name=".DurableMessages.AggregateMessageCount"
-      summary="Reports the aggregate message count by all
-               DevToolsDurableMessageCollector instances."/>
   <variant name=".Malloc.BRPQuarantinedCount"
       summary="Number of slots quarantined by BRP, recorded when
                USE_BACKUP_REF_PTR build flag is enabled."/>

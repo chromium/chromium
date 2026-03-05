@@ -102,10 +102,10 @@ bool DevtoolsDurableMessageCollectorManager::OnMemoryDump(
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
                   base::trace_event::MemoryAllocatorDump::kUnitsBytes,
                   total_memory_usage_);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+  dump->AddScalar("message_count",
                   base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                   total_message_count_);
-  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameObjectCount,
+  dump->AddScalar("collector_count",
                   base::trace_event::MemoryAllocatorDump::kUnitsObjects,
                   collectors_.size());
   return true;

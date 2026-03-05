@@ -180,12 +180,11 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
   ASSERT_NE(dump, nullptr);
   MemoryAllocatorDump::Entry entry("size", "bytes", 5 * 1024 * 1024u);
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(entry))));
-  MemoryAllocatorDump::Entry object_count_entry(
-      MemoryAllocatorDump::kNameObjectCount, MemoryAllocatorDump::kUnitsObjects,
-      1u);
-  EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(object_count_entry))));
-  MemoryAllocatorDump::Entry entry_count("object_count", "objects", 1u);
+  MemoryAllocatorDump::Entry entry_count("message_count", "objects", 1u);
   EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(entry_count))));
+  MemoryAllocatorDump::Entry collector_count_entry("collector_count", "objects",
+                                                   1u);
+  EXPECT_THAT(dump->entries(), Contains(Eq(ByRef(collector_count_entry))));
 
   collector_remote.reset();
   EXPECT_TRUE(base::test::RunUntil(
@@ -198,8 +197,11 @@ TEST_F(DevtoolsDurableMessageCollectorManagerTest, ReportAggregateMemoryUsage) {
   ASSERT_NE(dump2, nullptr);
   MemoryAllocatorDump::Entry entry2("size", "bytes", 0u);
   EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2))));
-  MemoryAllocatorDump::Entry entry2_count("object_count", "objects", 0u);
+  MemoryAllocatorDump::Entry entry2_count("message_count", "objects", 0u);
   EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2_count))));
+  MemoryAllocatorDump::Entry entry2_collector_count("collector_count",
+                                                    "objects", 0u);
+  EXPECT_THAT(dump2->entries(), Contains(Eq(ByRef(entry2_collector_count))));
 }
 
 TEST_F(DevtoolsDurableMessageCollectorManagerTest, GlobalLimit) {

@@ -25,6 +25,7 @@
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
+#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/browser_metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
@@ -465,9 +466,11 @@ MetricMap GetExpectedGpuMetrics() {
 
 void PopulateUtilityMetrics(GlobalMemoryDumpPtr& global_dump,
                             MetricMap& metrics_mb,
-                            const std::optional<std::string>& service_name) {
+                            const std::optional<std::string>& service_name,
+                            base::ProcessId pid = base::kNullProcessId) {
   auto pmd(memory_instrumentation::mojom::ProcessMemoryDump::New());
   pmd->process_type = ProcessType::UTILITY;
+  pmd->pid = pid;
   if (service_name.has_value()) {
     pmd->service_name = service_name.value();
   }
@@ -477,6 +480,20 @@ void PopulateUtilityMetrics(GlobalMemoryDumpPtr& global_dump,
   OSMemDumpPtr os_dump = GetFakeOSMemDump(metrics_mb);
   pmd->os_dump = std::move(os_dump);
   global_dump->process_dumps.push_back(std::move(pmd));
+}
+
+MetricMap GetExpectedNetworkServiceMetrics() {
+  return MetricMap({
+      {"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
+      {"Resident", 0},
+      {"Malloc", 0},
+      {"PrivateMemoryFootprint", 0},
+      {"SharedMemoryFootprint", 0},
+      {"Uptime", 42},
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
+      {"PrivateSwapFootprint", 0},
+#endif
+  });
 }
 
 MetricMap GetExpectedAudioServiceMetrics() {
@@ -1015,6 +1032,53 @@ TEST_F(ProcessMemoryMetricsEmitterTest, SingleMeasurement_ProcessInfoNotFound) {
         test_ukm_recorder_.EntryHasMetric(entry, UkmEntry::kIsVisibleName));
   }
   EXPECT_EQ(1u, entries.size());
+}
+
+TEST_F(ProcessMemoryMetricsEmitterTest, NetworkServiceHistogramsAreRecorded) {
+  base::HistogramTester histograms;
+
+  GlobalMemoryDumpPtr global_dump(
+      memory_instrumentation::mojom::GlobalMemoryDump::New());
+  global_dump->aggregated_metrics =
+      memory_instrumentation::mojom::AggregatedMetrics::New();
+
+  MetricMap expected_network_metrics = GetExpectedNetworkServiceMetrics();
+  PopulateUtilityMetrics(global_dump, expected_network_metrics,
+                         network::mojom::NetworkService::Name_, 200 /* pid */);
+
+  constexpr uint64_t kMiB = 1024 * 1024;
+  SetAllocatorDumpMetric(global_dump->process_dumps[0],
+                         "devtools/durable_message_collectors", "message_count",
+                         10);
+  SetAllocatorDumpMetric(global_dump->process_dumps[0],
+                         "devtools/durable_message_collectors",
+                         "collector_count", 2);
+  SetAllocatorDumpMetric(global_dump->process_dumps[0],
+                         "devtools/durable_message_collectors", "size",
+                         14 * kMiB);
+
+  std::vector<AnyNodeWrapper> graph_nodes = CreateTestGraphNodes();
+  auto emitter =
+      base::MakeRefCounted<ProcessMemoryMetricsEmitterFake>(test_ukm_recorder_);
+  emitter->ReceivedMemoryDump(
+      emitter->GetProcessToPageInfoMap(graph()),
+      memory_instrumentation::mojom::RequestOutcome::kSuccess,
+      GlobalMemoryDump::MoveFrom(std::move(global_dump)));
+
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.NetworkService2.DurableMessages."
+      "AggregateMemoryUsage",
+      14, 1);
+
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.NetworkService2.Custom.DurableMessages."
+      "AggregateMessageCount",
+      10, 1);
+
+  histograms.ExpectBucketCount(
+      "Memory.Experimental.NetworkService2.Custom.DurableMessages."
+      "CollectorCount",
+      2, 1);
 }
 
 TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {

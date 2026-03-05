@@ -71,6 +71,13 @@ TEST_F(MultipleDurableMessageWriterImplTest, ForwardsAddBytes) {
 
   EXPECT_EQ(msg1->byte_size_for_testing(), bytes.size());
   EXPECT_EQ(msg2->byte_size_for_testing(), bytes.size());
+
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg1)));
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg2)));
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg1)))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg2)))
+      .Times(testing::AnyNumber());
 }
 
 TEST_F(MultipleDurableMessageWriterImplTest, ForwardsMarkComplete) {
@@ -89,6 +96,13 @@ TEST_F(MultipleDurableMessageWriterImplTest, ForwardsMarkComplete) {
 
   EXPECT_TRUE(msg1->is_complete());
   EXPECT_TRUE(msg2->is_complete());
+
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg1)));
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg2)));
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg1)))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg2)))
+      .Times(testing::AnyNumber());
 }
 
 TEST_F(MultipleDurableMessageWriterImplTest, ForwardsSetClientDecodingTypes) {
@@ -108,6 +122,13 @@ TEST_F(MultipleDurableMessageWriterImplTest, ForwardsSetClientDecodingTypes) {
 
   EXPECT_EQ(msg1->get_client_decoding_types_for_testing(), types);
   EXPECT_EQ(msg2->get_client_decoding_types_for_testing(), types);
+
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg1)));
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg2)));
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg1)))
+      .Times(testing::AnyNumber());
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg2)))
+      .Times(testing::AnyNumber());
 }
 
 TEST_F(MultipleDurableMessageWriterImplTest, HandlesDestroyedMessages) {
@@ -123,6 +144,9 @@ TEST_F(MultipleDurableMessageWriterImplTest, HandlesDestroyedMessages) {
   MultipleDurableMessageWriterImpl writer(std::move(messages));
 
   // Destroy msg1
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg1)));
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg1)))
+      .Times(testing::AnyNumber());
   msg1.reset();
 
   std::string data = "test data";
@@ -137,6 +161,10 @@ TEST_F(MultipleDurableMessageWriterImplTest, HandlesDestroyedMessages) {
 
   EXPECT_TRUE(msg2->is_complete());
   EXPECT_EQ(msg2->byte_size_for_testing(), bytes.size());
+
+  EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg2)));
+  EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg2)))
+      .Times(testing::AnyNumber());
 }
 
 }  // namespace network
