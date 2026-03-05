@@ -68,7 +68,7 @@ import java.util.concurrent.atomic.AtomicReference;
     // controls works reliably;
     // Disable edge to edge as part of the test is measuring the keyboard's height, which differs
     // depending on whether Chrome is drawn e2e.
-    "disable-features=ResamplingScrollEvents,DrawCutoutEdgeToEdge,EdgeToEdgeBottomChin",
+    "disable-features=ResamplingScrollEvents",
     "hide-scrollbars"
 })
 @Batch(Batch.PER_CLASS)
