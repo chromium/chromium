@@ -383,4 +383,63 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
         testProxy.element.getNumOfFilesForTesting() === 1,
         'Ghost file should not be added');
   });
+
+  test(
+      'multiple auto active tab updates only adds one chip with latest title',
+      async () => {
+        createComposeboxElement(testProxy);
+        await microtasksFinished();
+
+        const tab1 = {
+          tabId: 1,
+          title: 'Tab 1',
+          url: 'https://example.com/1',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(1)},
+        } as any as TabInfo;
+
+        const tab1Updated = {
+          tabId: 1,
+          title: 'Tab 1 Updated Unique XYZ',
+          url: 'https://example.com/1',
+          showInCurrentTabChip: true,
+          showInPreviousTabChip: false,
+          lastActive: {internalValue: BigInt(1)},
+        } as any as TabInfo;
+
+        let resolveAddTab: (value: any) => void;
+        testProxy.searchboxHandler.setResultMapperFor(
+            ADD_TAB_CONTEXT_FN, () => {
+              return new Promise(resolve => {
+                resolveAddTab = resolve;
+              });
+            });
+
+        // First update.
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab1);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Second update with same URL but different title.
+        testProxy.searchboxCallbackRouterRemote.updateAutoSuggestedTabContext(
+            tab1Updated);
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Resolve the first (and only) addTabContext call.
+        const tokenValue = 'token-multiple';
+        resolveAddTab!({token: tokenValue});
+        await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
+
+        // Should only have one file added to carousel with the updated title.
+        assertEquals(
+            1, testProxy.searchboxHandler.getCallCount(ADD_TAB_CONTEXT_FN));
+        assertEquals(1, testProxy.element.$.carousel.files.length);
+        assertEquals(
+            'Tab 1 Updated Unique XYZ',
+            testProxy.element.$.carousel.files[0]!.name);
+      });
 });
