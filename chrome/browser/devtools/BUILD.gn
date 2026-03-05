@@ -186,6 +186,8 @@ static_library("devtools") {
       "devtools_window.h",
       "features.cc",
       "features.h",
+      "gca_service_handler.cc",
+      "gca_service_handler.h",
       "gdp_service_handler.cc",
       "gdp_service_handler.h",
       "url_constants.cc",

@@ -274,6 +274,7 @@ const char kLensOAuth2Scope[] = "https://www.googleapis.com/auth/lens";
 
 // OAuth2 scope for DevTools GenAI features.
 const char kAidaOAuth2Scope[] = "https://www.googleapis.com/auth/aida";
+const char kAiCodeOAuth2Scope[] = "https://www.googleapis.com/auth/aicode";
 
 // OAuth2 scope for Google Developer Program <-> DevTools integration features.
 const char kGdpOAuth2Scope[] =

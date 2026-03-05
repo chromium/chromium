@@ -7,6 +7,7 @@
 #include <ranges>
 
 #include "chrome/browser/devtools/aida_service_handler.h"
+#include "chrome/browser/devtools/gca_service_handler.h"
 #include "chrome/browser/devtools/gdp_service_handler.h"
 
 namespace {
@@ -67,6 +68,13 @@ DevToolsHttpServiceRegistry::DevToolsHttpServiceRegistry() {
                                   {"/v1/aida:doConversation", "POST"},
                               },
                               std::make_unique<AidaServiceHandler>()));
+  services_.push_back(Service("gcaService",
+                              {
+                                  {"/v1alpha:generateContent", "POST"},
+                                  {"/v1alpha:streamGenerateContent", "POST"},
+                                  {"/v1alpha:sendTelemetry", "POST"},
+                              },
+                              std::make_unique<GcaServiceHandler>()));
   services_.push_back(
       Service("gdpService",
               {

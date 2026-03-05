@@ -108,7 +108,8 @@ enum class OAuthConsumerId {
   kPrivateAiService = 87,
   kWalletPasses = 88,
   kAimEligibilityService = 89,
-  kMaxValue = kAimEligibilityService,
+  kDevtoolsAiCode = 90,
+  kMaxValue = kDevtoolsAiCode,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:OAuthConsumerId)
 

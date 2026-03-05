@@ -142,6 +142,7 @@ extern const char kLensOAuth2Scope[];
 
 // OAuth2 scope for DevTools GenAI features.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAidaOAuth2Scope[];
+COMPONENT_EXPORT(GOOGLE_APIS) extern const char kAiCodeOAuth2Scope[];
 
 // OAuth2 scope for DevTools Google Developer Program features.
 COMPONENT_EXPORT(GOOGLE_APIS) extern const char kGdpOAuth2Scope[];

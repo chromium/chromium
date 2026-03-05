@@ -2095,6 +2095,11 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
     response_dict.Set("devToolsGdpProfiles", std::move(gdp_profiles_dict));
   }
 
+  response_dict.Set(
+      "devToolsUseGcaApi",
+      base::DictValue().Set("enabled", base::FeatureList::IsEnabled(
+                                           ::features::kDevToolsUseGcaApi)));
+
   base::DictValue gdp_profiles_availability_dict;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   gdp_profiles_availability_dict.Set("enabled", true);

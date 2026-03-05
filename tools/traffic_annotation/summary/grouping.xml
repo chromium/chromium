@@ -401,6 +401,7 @@ after discussions on the right group.
       <annotation id="settings_overridden_dialog_icon_fetcher"/>
       <annotation id="indigo_alpha_generate"/>
       <annotation id="indigo_alpha_status"/>
+      <annotation id="devtools_gca_service"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

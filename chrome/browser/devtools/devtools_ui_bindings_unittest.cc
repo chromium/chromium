@@ -211,7 +211,7 @@ class MockServiceHandler : public DevToolsHttpServiceHandler {
 
   GURL BaseURL() const override { return GURL("http://localhost:8000"); }
   signin::OAuthConsumerId OAuthConsumerId() const override {
-    return signin::OAuthConsumerId::kDevtoolsAida;
+    return signin::OAuthConsumerId::kDevtoolsAiCode;
   }
   net::NetworkTrafficAnnotationTag NetworkTrafficAnnotationTag()
       const override {

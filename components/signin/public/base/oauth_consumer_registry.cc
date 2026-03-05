@@ -100,6 +100,7 @@ constexpr char kExtensionsIdentityAPIName[] = "extensions_identity_api";
 constexpr char kMantaName[] = "manta";
 constexpr char kChromeMemexName[] = "chrome_memex";
 constexpr char kDevtoolsAidaName[] = "devtools_aida_client";
+constexpr char kDevtoolsAiCodeName[] = "devtools_aicode_client";
 constexpr char kChromeOsBabelOrcaName[] = "chromeos_babel_orca";
 constexpr char kChromeOsBocaSchoolToolsAuthName[] =
     "chromeos_boca_school_tools_auth";
@@ -551,6 +552,10 @@ OAuthConsumer OAuthConsumerRegistry::GetOAuthConsumerFromId(
       return OAuthConsumer(
           /*name=*/kAimEligibilityServiceName,
           /*scopes=*/{GaiaConstants::kSearchResultsOAuth2Scope});
+    case OAuthConsumerId::kDevtoolsAiCode:
+      return OAuthConsumer(
+          /*name=*/kDevtoolsAiCodeName,
+          /*scopes=*/{GaiaConstants::kAiCodeOAuth2Scope});
   }
 }
 
