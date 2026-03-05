@@ -56,6 +56,19 @@ declare_args() {
       !is_high_end_android && (is_android || is_castos || is_fuchsia)
 }
 
+if (is_mac && use_lld) {
+  declare_args() {
+    # Enables the `--read-workers` flag for LLD.
+    # Currently only implemented for Mach-O (macOS) in LLD.
+    enable_lld_read_workers = false
+  }
+
+  if (enable_lld_read_workers) {
+    lld_read_workers =
+        exec_script("//build/toolchain/get_lld_read_workers.py", [], "value")
+  }
+}
+
 declare_args() {
   # Default to warnings as errors for default workflow, where we catch
   # warnings with known toolchains. Allow overriding this e.g. for Chromium
