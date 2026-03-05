@@ -16,6 +16,7 @@
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -33,6 +34,7 @@
 #include "extensions/common/api/storage.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/mojom/context_type.mojom.h"
+#include "third_party/leveldatabase/env_chromium.h"
 
 using content::BrowserContext;
 using content::BrowserThread;
@@ -45,6 +47,48 @@ namespace {
 base::LazyInstance<BrowserContextKeyedAPIFactory<StorageFrontend>>::
     DestructorAtExit g_factory = LAZY_INSTANCE_INITIALIZER;
 
+// Logs a database error or a restore/repair attempt for a local storage
+// operation.
+void LogLocalErrorOrRestore(
+    StorageFrontend::ExtensionsDatabaseOperation operation,
+    const ValueStore::Status& status,
+    StorageAreaNamespace storage_area) {
+  if (storage_area != StorageAreaNamespace::kLocal) {
+    return;
+  }
+
+  std::string operation_name;
+  switch (operation) {
+    case StorageFrontend::ExtensionsDatabaseOperation::kGet:
+      operation_name = "get";
+      break;
+    case StorageFrontend::ExtensionsDatabaseOperation::kSet:
+      operation_name = "set";
+      break;
+    case StorageFrontend::ExtensionsDatabaseOperation::kRemove:
+      operation_name = "remove";
+      break;
+    case StorageFrontend::ExtensionsDatabaseOperation::kClear:
+      operation_name = "clear";
+      break;
+  }
+
+  base::UmaHistogramEnumeration(
+      base::StringPrintf("Extensions.Database.Local.StatusCodeByOperation.%s",
+                         operation_name.c_str()),
+      status.code, value_store::ValueStore::STATUS_CODE_MAX);
+
+  if (status.restore_status != value_store::ValueStore::RESTORE_NONE) {
+    base::UmaHistogramEnumeration("Extensions.Database.Local.RestoreStatus",
+                                  status.restore_status,
+                                  value_store::ValueStore::RESTORE_STATUS_MAX);
+  }
+
+  if (!status.ok()) {
+    base::UmaHistogramEnumeration("Extensions.Database.Local.ErrorByOperation",
+                                  operation);
+  }
+}
 events::HistogramValue StorageAreaToEventHistogram(
     StorageAreaNamespace storage_area) {
   switch (storage_area) {
@@ -57,25 +101,32 @@ events::HistogramValue StorageAreaToEventHistogram(
     case StorageAreaNamespace::kSession:
       return events::STORAGE_SESSION_ON_CHANGE;
     case StorageAreaNamespace::kInvalid:
+    default:
       NOTREACHED();
   }
 }
 
 void GetKeysWithValueStore(
+    StorageAreaNamespace storage_area,
     base::OnceCallback<void(ValueStore::ReadResult)> callback,
     ValueStore* store) {
   ValueStore::ReadResult result = store->GetKeys();
+  LogLocalErrorOrRestore(StorageFrontend::ExtensionsDatabaseOperation::kGet,
+                         result.status(), storage_area);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void GetWithValueStore(
+    StorageAreaNamespace storage_area,
     std::optional<std::vector<std::string>> keys,
     base::OnceCallback<void(ValueStore::ReadResult)> callback,
     ValueStore* store) {
   ValueStore::ReadResult result =
       keys.has_value() ? store->Get(keys.value()) : store->Get();
+  LogLocalErrorOrRestore(StorageFrontend::ExtensionsDatabaseOperation::kGet,
+                         result.status(), storage_area);
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
@@ -92,27 +143,36 @@ void GetBytesInUseWithValueStore(std::optional<std::vector<std::string>> keys,
 }
 
 void SetWithValueStore(
+    StorageAreaNamespace storage_area,
     const base::DictValue& values,
     base::OnceCallback<void(ValueStore::WriteResult)> callback,
     ValueStore* store) {
   ValueStore::WriteResult result = store->Set(ValueStore::DEFAULTS, values);
+  LogLocalErrorOrRestore(StorageFrontend::ExtensionsDatabaseOperation::kSet,
+                         result.status(), storage_area);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void RemoveWithValueStore(
+    StorageAreaNamespace storage_area,
     std::vector<std::string> keys,
     base::OnceCallback<void(ValueStore::WriteResult)> callback,
     ValueStore* store) {
   ValueStore::WriteResult result = store->Remove(keys);
+  LogLocalErrorOrRestore(StorageFrontend::ExtensionsDatabaseOperation::kRemove,
+                         result.status(), storage_area);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
 
 void ClearWithValueStore(
+    StorageAreaNamespace storage_area,
     base::OnceCallback<void(ValueStore::WriteResult)> callback,
     ValueStore* store) {
   ValueStore::WriteResult result = store->Clear();
+  LogLocalErrorOrRestore(StorageFrontend::ExtensionsDatabaseOperation::kClear,
+                         result.status(), storage_area);
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
 }
@@ -296,7 +356,7 @@ void StorageFrontend::GetValues(scoped_refptr<const Extension> extension,
 
   RunWithStorage(
       extension, settings_namespace,
-      base::BindOnce(&GetWithValueStore, std::move(keys),
+      base::BindOnce(&GetWithValueStore, storage_area, std::move(keys),
                      base::BindOnce(&StorageFrontend::OnReadFinished,
                                     weak_factory_.GetWeakPtr(), extension->id(),
                                     storage_area, std::move(callback))));
@@ -338,8 +398,9 @@ void StorageFrontend::GetKeys(
   base::OnceCallback<void(ValueStore::ReadResult)> test =
       base::BindOnce(&StorageFrontend::OnReadKeysFinished,
                      weak_factory_.GetWeakPtr(), std::move(callback));
-  RunWithStorage(extension, settings_namespace,
-                 base::BindOnce(&GetKeysWithValueStore, std::move(test)));
+  RunWithStorage(
+      extension, settings_namespace,
+      base::BindOnce(&GetKeysWithValueStore, storage_area, std::move(test)));
 }
 
 void StorageFrontend::GetBytesInUse(
@@ -420,7 +481,7 @@ void StorageFrontend::Set(scoped_refptr<const Extension> extension,
 
   RunWithStorage(
       extension, settings_namespace,
-      base::BindOnce(&SetWithValueStore, std::move(values),
+      base::BindOnce(&SetWithValueStore, storage_area, std::move(values),
                      base::BindOnce(&StorageFrontend::OnWriteFinished,
                                     weak_factory_.GetWeakPtr(), extension->id(),
                                     storage_area, std::move(callback))));
@@ -461,7 +522,7 @@ void StorageFrontend::Remove(scoped_refptr<const Extension> extension,
 
   RunWithStorage(
       extension, settings_namespace,
-      base::BindOnce(&RemoveWithValueStore, keys,
+      base::BindOnce(&RemoveWithValueStore, storage_area, keys,
                      base::BindOnce(&StorageFrontend::OnWriteFinished,
                                     weak_factory_.GetWeakPtr(), extension->id(),
                                     storage_area, std::move(callback))));
@@ -502,7 +563,7 @@ void StorageFrontend::Clear(
 
   RunWithStorage(
       extension, settings_namespace,
-      base::BindOnce(&ClearWithValueStore,
+      base::BindOnce(&ClearWithValueStore, storage_area,
                      base::BindOnce(&StorageFrontend::OnWriteFinished,
                                     weak_factory_.GetWeakPtr(), extension->id(),
                                     storage_area, std::move(callback))));

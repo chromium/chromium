@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/value_store/value_store.h"
 #include "components/value_store/value_store_factory_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -19,6 +20,8 @@
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/api/storage/settings_namespace.h"
 #include "extensions/browser/api/storage/settings_test_util.h"
+#include "extensions/browser/api/storage/storage_area_namespace.h"
+#include "extensions/browser/api/storage/storage_frontend.h"
 #include "extensions/browser/extensions_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -218,6 +221,79 @@ TEST_F(ExtensionSettingsFrontendTest,
 
   EXPECT_FALSE(
       local_storage->Set(DEFAULTS, "WillError", megabyte).status().ok());
+}
+
+// Tests that a successful extension storage operation correctly emits success
+// metrics for the underlying database status.
+TEST_F(ExtensionSettingsFrontendTest, EmitUmaLevelDBMetrics) {
+  base::HistogramTester histogram_tester;
+
+  const std::string id = "ext";
+  scoped_refptr<const Extension> extension =
+      settings_test_util::AddExtensionWithId(browser_context(), id,
+                                             Manifest::Type::kExtension);
+
+  base::RunLoop run_loop;
+  base::DictValue values;
+  values.Set("foo", "bar");
+
+  frontend_->Set(extension, StorageAreaNamespace::kLocal, std::move(values),
+                 base::BindOnce(
+                     [](base::OnceClosure quit_closure,
+                        StorageFrontend::ResultStatus status) {
+                       EXPECT_TRUE(status.success);
+                       std::move(quit_closure).Run();
+                     },
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // The Set operation should have succeeded and emitted LevelDB UMA.
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Database.Local.StatusCodeByOperation.set",
+      /*sample=*/value_store::ValueStore::StatusCode::OK,
+      /*expected_bucket_count=*/1);
+}
+
+// Tests that a failed extension storage operation (e.g., due to exceeding the
+// quota limit) correctly emits an error metric for the high-level operation
+// that failed.
+TEST_F(ExtensionSettingsFrontendTest, SettingsQuotaExceededEmitsErrorMetric) {
+  base::HistogramTester histogram_tester;
+
+  const std::string id = "ext";
+  scoped_refptr<const Extension> extension =
+      settings_test_util::AddExtensionWithId(browser_context(), id,
+                                             Manifest::Type::kExtension);
+
+  base::RunLoop run_loop;
+  base::DictValue values;
+  // Local quota is 10MB. Setting 11MB should fail.
+  base::ListValue megabytes;
+  base::Value megabyte = settings_test_util::CreateMegabyte();
+  for (int i = 0; i < 11; ++i) {
+    megabytes.Append(megabyte.Clone());
+  }
+  values.Set("too_big", megabytes.Clone());
+
+  frontend_->Set(extension, StorageAreaNamespace::kLocal, std::move(values),
+                 base::BindOnce(
+                     [](base::OnceClosure quit_closure,
+                        StorageFrontend::ResultStatus status) {
+                       EXPECT_FALSE(status.success);
+                       std::move(quit_closure).Run();
+                     },
+                     run_loop.QuitClosure()));
+  run_loop.Run();
+
+  // The Set operation should have failed and emitted error metrics.
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Database.Local.ErrorByOperation",
+      /*sample=*/StorageFrontend::ExtensionsDatabaseOperation::kSet,
+      /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Extensions.Database.Local.StatusCodeByOperation.set",
+      /*sample=*/value_store::ValueStore::StatusCode::QUOTA_EXCEEDED,
+      /*expected_bucket_count=*/1);
 }
 
 }  // namespace extensions

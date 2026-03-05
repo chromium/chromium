@@ -64,6 +64,16 @@ class StorageFrontend : public BrowserContextKeyedAPI {
     std::optional<base::DictValue> data;
   };
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class ExtensionsDatabaseOperation {
+    kGet = 0,
+    kSet = 1,
+    kRemove = 2,
+    kClear = 3,
+    kMaxValue = kClear,
+  };
+
   // Returns the current instance for `context`.
   static StorageFrontend* Get(content::BrowserContext* context);
 

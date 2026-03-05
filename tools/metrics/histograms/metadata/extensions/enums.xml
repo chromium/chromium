@@ -36,6 +36,15 @@ chromium-metrics-reviews@google.com.
       label="Assessment Assistant (gndmhdcefbhlchkhipcnnbkcmicncehk)"/>
 </enum>
 
+<enum name="BackingStoreRestoreStatus">
+  <int value="0" label="RESTORE_NONE"/>
+  <int value="1" label="DB_RESTORE_DELETE_SUCCESS"/>
+  <int value="2" label="DB_RESTORE_DELETE_FAILURE"/>
+  <int value="3" label="DB_RESTORE_REPAIR_SUCCESS"/>
+  <int value="4" label="VALUE_RESTORE_DELETE_SUCCESS"/>
+  <int value="5" label="VALUE_RESTORE_DELETE_FAILURE"/>
+</enum>
+
 <enum name="BadSyncDataReason">
   <int value="0" label="Bad extension ID"/>
   <int value="1" label="Bad version"/>
@@ -3276,6 +3285,13 @@ Called by update_extension_permission.py.-->
   <int value="4" label="Non-webstore extension without hashes skipped"/>
 </enum>
 
+<enum name="ExtensionsDatabaseOperation">
+  <int value="0" label="get"/>
+  <int value="1" label="set"/>
+  <int value="2" label="remove"/>
+  <int value="3" label="clear"/>
+</enum>
+
 <enum name="ExtensionType">
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="EXTENSION"/>
@@ -3625,6 +3641,14 @@ Called by update_extension_permission.py.-->
   <int value="16" label="kErrorSerializeToJson"/>
   <int value="17" label="kErrorWriteJson"/>
   <int value="18" label="kErrorWriteFlatbuffer"/>
+</enum>
+
+<enum name="ValueStoreStatusCode">
+  <int value="0" label="OK"/>
+  <int value="1" label="CORRUPTION"/>
+  <int value="2" label="READ_ONLY"/>
+  <int value="3" label="QUOTA_EXCEEDED"/>
+  <int value="4" label="OTHER_ERROR"/>
 </enum>
 
 <enum name="VerifiedFileType">

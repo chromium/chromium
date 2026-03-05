@@ -8,10 +8,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <utility>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/values.h"
 #include "components/value_store/value_store_change.h"
 
@@ -21,6 +23,8 @@ namespace value_store {
 class ValueStore {
  public:
   // Status codes returned from storage methods.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum StatusCode {
     OK,
 
@@ -42,8 +46,14 @@ class ValueStore {
 
     // Any other error.
     OTHER_ERROR,
+
+    // Add new values above this line.
+    STATUS_CODE_MAX,
   };
 
+  // Status codes returned from attempting to restore a database.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum BackingStoreRestoreStatus {
     // No restore attempted.
     RESTORE_NONE,
@@ -57,6 +67,8 @@ class ValueStore {
     VALUE_RESTORE_DELETE_SUCCESS,
     // Corrupted value cannot be deleted.
     VALUE_RESTORE_DELETE_FAILURE,
+    // Add new values above this line.
+    RESTORE_STATUS_MAX,
   };
 
   // The status (result) of an operation on a ValueStore.

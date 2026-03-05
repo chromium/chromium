@@ -1011,6 +1011,47 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
+<histogram name="Extensions.Database.Local.ErrorByOperation"
+    enum="ExtensionsDatabaseOperation" expires_after="2026-08-31">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Records the operation being attempted when a chrome.storage.local (LevelDB)
+    database error occurs. It is emitted during the execution of a storage API
+    call from an extension.
+  </summary>
+</histogram>
+
+<histogram name="Extensions.Database.Local.RestoreStatus"
+    enum="BackingStoreRestoreStatus" expires_after="2026-08-31">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The result of a repair attempt on a corrupted chrome.storage.local LevelDB
+    database. This is emitted during an open or read operation if the underlying
+    database is found to be corrupted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Extensions.Database.Local.StatusCodeByOperation.{StorageOperation}"
+    enum="ValueStoreStatusCode" expires_after="2026-08-31">
+  <owner>jlulejian@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    The high-level ValueStore status of chrome.storage.local.{StorageOperation}
+    operations on the extensions database. It is emitted during the execution of
+    a storage API call by an extension, regardless of whether the operation
+    succeeded or failed.
+  </summary>
+  <token key="StorageOperation">
+    <variant name="clear"/>
+    <variant name="get"/>
+    <variant name="remove"/>
+    <variant name="set"/>
+  </token>
+</histogram>
+
 <histogram name="Extensions.Database.Open{ExtensionsDatabaseOpen}"
     enum="LevelDBStatus" expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
