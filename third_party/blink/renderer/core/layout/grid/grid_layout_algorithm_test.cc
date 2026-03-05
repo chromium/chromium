@@ -34,7 +34,8 @@ class GridLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
   void BuildGridGeometry(const GridLayoutAlgorithm& algorithm) {
-    auto grid_sizing_tree = BuildGridSizingTree<GridLayoutAlgorithm>(algorithm);
+    auto grid_sizing_tree = BuildGridSizingTree<GridLayoutAlgorithm>(
+        algorithm, algorithm.BuildGridLineResolver());
 
     algorithm.InitializeTrackSizes(&grid_sizing_tree);
     algorithm.CompleteTrackSizingAlgorithm(

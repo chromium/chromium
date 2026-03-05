@@ -178,6 +178,7 @@ LayoutUnit ComputeBaselineOffset(
 template <typename LayoutAlgorithmType>
 void BuildGridSizingSubtree(
     const LayoutAlgorithmType& algorithm,
+    const GridLineResolver& line_resolver,
     GridSizingTree* sizing_tree,
     HeapVector<Member<LayoutBox>>* opt_oof_children,
     const SubgriddedItemData& opt_subgrid_data = kNoSubgriddedItemData,
@@ -188,11 +189,13 @@ void BuildGridSizingSubtree(
 template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTree(
     const LayoutAlgorithmType& algorithm,
+    const GridLineResolver& line_resolver,
     HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
 
 template <typename LayoutAlgorithmType>
 GridSizingTree BuildGridSizingTreeIgnoringChildren(
-    const LayoutAlgorithmType& algorithm);
+    const LayoutAlgorithmType& algorithm,
+    const GridLineResolver& line_resolver);
 
 // Calculate the initial fragment geometry for a subgrid item.
 FragmentGeometry CalculateInitialFragmentGeometryForSubgrid(

@@ -49,9 +49,16 @@ class CORE_EXPORT GridLayoutAlgorithm
       const LogicalSize& border_box_size,
       GridItemData* out_of_flow_item);
 
-  wtf_size_t ComputeAutomaticRepetitions(
-      const GridSpan& subgrid_span,
-      GridTrackSizingDirection track_direction) const;
+  GridLineResolver BuildGridLineResolver(
+      const GridArea& subgrid_area = GridArea(),
+      const GridLineResolver* opt_parent_line_resolver = nullptr) const;
+
+  // Builds a sizing track collection for `track_direction` and sets it on
+  // `layout_data`.
+  void BuildSizingCollection(GridTrackSizingDirection track_direction,
+                             const GridLineResolver& line_resolver,
+                             GridItems& grid_items,
+                             GridLayoutData& layout_data) const;
 
   // `containing_grid_area` is an optional out parameter that holds the computed
   // grid area (offset and size) of the specified grid item.
@@ -77,6 +84,10 @@ class CORE_EXPORT GridLayoutAlgorithm
       HeapVector<Member<LayoutBox>>* oof_children);
 
   LayoutUnit ComputeIntrinsicBlockSizeIgnoringChildren() const;
+
+  wtf_size_t ComputeAutomaticRepetitions(
+      const GridSpan& subgrid_span,
+      GridTrackSizingDirection track_direction) const;
 
   // Returns the size that a grid item will distribute across the tracks with an
   // intrinsic sizing function it spans in the relevant track direction.

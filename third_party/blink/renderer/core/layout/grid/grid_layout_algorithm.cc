@@ -277,10 +277,12 @@ MinMaxSizesResult GridLayoutAlgorithm::ComputeMinMaxSizes(
   }
 
   // If we have inline size containment ignore all children.
+  const auto line_resolver = BuildGridLineResolver();
   auto grid_sizing_tree =
       node.ShouldApplyInlineSizeContainment()
-          ? BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this)
-          : BuildGridSizingTree<GridLayoutAlgorithm>(*this);
+          ? BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(
+                *this, line_resolver)
+          : BuildGridSizingTree<GridLayoutAlgorithm>(*this, line_resolver);
 
   bool depends_on_block_constraints = false;
   auto ComputeTotalColumnSize =
@@ -396,10 +398,13 @@ GridLayoutSubtree GridLayoutAlgorithm::ComputeGridGeometry(
     return *layout_subtree;
   }
 
+  const auto line_resolver = BuildGridLineResolver();
   auto grid_sizing_tree =
       node.ChildLayoutBlockedByDisplayLock()
-          ? BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this)
-          : BuildGridSizingTree<GridLayoutAlgorithm>(*this, oof_children);
+          ? BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(
+                *this, line_resolver)
+          : BuildGridSizingTree<GridLayoutAlgorithm>(*this, line_resolver,
+                                                     oof_children);
 
   InitializeTrackSizes(&grid_sizing_tree);
 
@@ -502,8 +507,10 @@ LayoutUnit GridLayoutAlgorithm::ComputeIntrinsicBlockSizeIgnoringChildren()
   if (override_intrinsic_block_size != kIndefiniteSize)
     return BorderScrollbarPadding().BlockSum() + override_intrinsic_block_size;
 
+  const auto line_resolver = BuildGridLineResolver();
   auto grid_sizing_tree =
-      BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this);
+      BuildGridSizingTreeIgnoringChildren<GridLayoutAlgorithm>(*this,
+                                                               line_resolver);
 
   InitializeTrackSizes(&grid_sizing_tree, kForRows);
   CompleteTrackSizingAlgorithm(kForRows, SizingConstraint::kLayout,
@@ -828,6 +835,55 @@ LayoutUnit GridLayoutAlgorithm::ContributionSizeForGridItem(
                       "space in maximize tracks and stretch auto tracks steps.";
   }
   return (contribution + margin_sum).ClampNegativeToZero();
+}
+
+void GridLayoutAlgorithm::BuildSizingCollection(
+    GridTrackSizingDirection track_direction,
+    const GridLineResolver& line_resolver,
+    GridItems& grid_items,
+    GridLayoutData& layout_data) const {
+  wtf_size_t start_offset = 0;
+  if (Node().HasCachedPlacementData()) {
+    start_offset = Node().CachedPlacementData().StartOffset(track_direction);
+  }
+
+  GridRangeBuilder range_builder(Style(), track_direction,
+                                 line_resolver.AutoRepetitions(track_direction),
+                                 start_offset);
+
+  bool must_create_baselines = false;
+  for (auto& grid_item : grid_items.IncludeSubgriddedItems()) {
+    if (grid_item.IsConsideredForSizing(track_direction)) {
+      must_create_baselines |= grid_item.IsBaselineSpecified(track_direction);
+    }
+
+    if (grid_item.MustCachePlacementIndices(track_direction)) {
+      auto& range_indices = grid_item.RangeIndices(track_direction);
+      range_builder.EnsureTrackCoverage(grid_item.StartLine(track_direction),
+                                        grid_item.SpanSize(track_direction),
+                                        &range_indices.begin,
+                                        &range_indices.end);
+    }
+  }
+
+  layout_data.SetTrackCollection(std::make_unique<GridSizingTrackCollection>(
+      range_builder.FinalizeRanges(), track_direction, must_create_baselines));
+}
+
+GridLineResolver GridLayoutAlgorithm::BuildGridLineResolver(
+    const GridArea& subgrid_area,
+    const GridLineResolver* opt_parent_line_resolver) const {
+  const auto& style = Style();
+  const auto column_auto_repetitions =
+      ComputeAutomaticRepetitions(subgrid_area.columns, kForColumns);
+  const auto row_auto_repetitions =
+      ComputeAutomaticRepetitions(subgrid_area.rows, kForRows);
+
+  if (opt_parent_line_resolver) {
+    return GridLineResolver(style, *opt_parent_line_resolver, subgrid_area,
+                            column_auto_repetitions, row_auto_repetitions);
+  }
+  return GridLineResolver(style, column_auto_repetitions, row_auto_repetitions);
 }
 
 // https://drafts.csswg.org/css-grid-2/#auto-repeat
