@@ -4,9 +4,9 @@
 
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_view_controller.h"
 
-#import "components/browsing_data/core/browsing_data_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_constants.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/public/quick_delete_other_data_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_header_footer_item.h"
@@ -15,6 +15,8 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ui/base/l10n/l10n_util_mac.h"
+
+using quick_delete_util::DefaultSearchEngineState;
 
 namespace {
 
@@ -51,29 +53,12 @@ UIImage* GetBrandedGoogleServicesSymbol() {
 // Returns the title for the given `itemIdentifier`.
 NSString* TitleForItemIdentifier(ItemIdentifier item_identifier) {
   switch (item_identifier) {
-    case ItemIdentifier::kPasswordsAndPasskeysIdentifier:
+    case kPasswordsAndPasskeysIdentifier:
       return l10n_util::GetNSString(IDS_SETTINGS_PASSWORDS_AND_PASSKEYS);
-    case ItemIdentifier::kSearchHistoryIdentifier:
+    case kSearchHistoryIdentifier:
       return l10n_util::GetNSString(IDS_SETTINGS_SEARCH_HISTORY);
-    case ItemIdentifier::kMyActivityIdentifier:
+    case kMyActivityIdentifier:
       return l10n_util::GetNSString(IDS_SETTINGS_MY_ACTIVITY);
-  }
-  NOTREACHED();
-}
-
-// Returns the subtitle for the given `itemIdentifier`.
-NSString* SubtitleForItemIdentifier(ItemIdentifier item_identifier) {
-  switch (item_identifier) {
-    case ItemIdentifier::kPasswordsAndPasskeysIdentifier:
-      return l10n_util::GetNSString(
-          IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER);
-    case ItemIdentifier::kSearchHistoryIdentifier:
-      // TODO(crbug.com/482036587) Replace the below
-      // placeholder string with the subtitle variable coming
-      // from the QuickDeleteOtherDataConsumer.
-      return @"Change this";
-    case ItemIdentifier::kMyActivityIdentifier:
-      return l10n_util::GetNSString(IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT);
   }
   NOTREACHED();
 }
@@ -81,12 +66,12 @@ NSString* SubtitleForItemIdentifier(ItemIdentifier item_identifier) {
 // Returns the icon for the given `itemIdentifier`.
 UIImage* IconForItemIdentifier(ItemIdentifier item_identifier) {
   switch (item_identifier) {
-    case ItemIdentifier::kPasswordsAndPasskeysIdentifier:
+    case kPasswordsAndPasskeysIdentifier:
       return CustomSymbolTemplateWithPointSize(kPasswordSymbol,
                                                kDefaultSymbolSize);
-    case ItemIdentifier::kSearchHistoryIdentifier:
+    case kSearchHistoryIdentifier:
       return DefaultSymbolWithPointSize(kSearchSymbol, kDefaultSymbolSize);
-    case ItemIdentifier::kMyActivityIdentifier:
+    case kMyActivityIdentifier:
       return GetBrandedGoogleServicesSymbol();
   }
   NOTREACHED();
@@ -96,11 +81,11 @@ UIImage* IconForItemIdentifier(ItemIdentifier item_identifier) {
 NSString* AccessibilityIdentifierForItemIdentifier(
     ItemIdentifier item_identifier) {
   switch (item_identifier) {
-    case ItemIdentifier::kPasswordsAndPasskeysIdentifier:
+    case kPasswordsAndPasskeysIdentifier:
       return kQuickDeleteOtherDataPasswordsAndPasskeysIdentifier;
-    case ItemIdentifier::kSearchHistoryIdentifier:
+    case kSearchHistoryIdentifier:
       return kQuickDeleteOtherDataSearchHistoryIdentifier;
-    case ItemIdentifier::kMyActivityIdentifier:
+    case kMyActivityIdentifier:
       return kQuickDeleteOtherDataMyActivityIdentifier;
   }
   NOTREACHED();
@@ -109,7 +94,10 @@ NSString* AccessibilityIdentifierForItemIdentifier(
 }  // namespace
 
 @interface QuickDeleteOtherDataViewController () {
+  // The table view for this view controller.
   UITableViewDiffableDataSource<NSNumber*, NSNumber*>* _dataSource;
+  // Provides the current default search engine state.
+  DefaultSearchEngineState _defaultSearchEngineState;
   // The title for the "Quick Delete Other Data" page.
   NSString* _otherDataPageTitle;
   // The subtitle for the "Search history" cell.
@@ -127,9 +115,7 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   [super viewDidLoad];
   self.navigationItem.largeTitleDisplayMode =
       UINavigationItemLargeTitleDisplayModeNever;
-  // TODO(crbug.com/482036587) Replace the below placeholder title with the
-  // title coming from the QuickDeleteOtherDataConsumer.
-  self.title = l10n_util::GetNSString(IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE);
+  self.title = _otherDataPageTitle;
   [self loadModel];
 }
 
@@ -159,21 +145,20 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];
   [snapshot appendSectionsWithIdentifiers:@[
-    @(SectionIdentifier::kPasswordsAndPasskeysSection),
-    @(SectionIdentifier::kGoogleAccountDataSection),
-    @(SectionIdentifier::kFooterSection)
+    @(kPasswordsAndPasskeysSection), @(kGoogleAccountDataSection),
+    @(kFooterSection)
   ]];
-  [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifier::kPasswordsAndPasskeysIdentifier)
-  ]
-             intoSectionWithIdentifier:
-                 @(SectionIdentifier::kPasswordsAndPasskeysSection)];
-  [snapshot appendItemsWithIdentifiers:@[
-    @(ItemIdentifier::kSearchHistoryIdentifier),
-    @(ItemIdentifier::kMyActivityIdentifier)
-  ]
-             intoSectionWithIdentifier:
-                 @(SectionIdentifier::kGoogleAccountDataSection)];
+  [snapshot appendItemsWithIdentifiers:@[ @(kPasswordsAndPasskeysIdentifier) ]
+             intoSectionWithIdentifier:@(kPasswordsAndPasskeysSection)];
+
+  if (_shouldShowSearchHistoryCell) {
+    [snapshot appendItemsWithIdentifiers:@[ @(kSearchHistoryIdentifier) ]
+               intoSectionWithIdentifier:@(kGoogleAccountDataSection)];
+  }
+  if (_shouldShowMyActivityCell) {
+    [snapshot appendItemsWithIdentifiers:@[ @(kMyActivityIdentifier) ]
+               intoSectionWithIdentifier:@(kGoogleAccountDataSection)];
+  }
 
   [_dataSource applySnapshot:snapshot animatingDifferences:NO];
 }
@@ -185,7 +170,7 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
   switch (sectionIdentifier) {
-    case SectionIdentifier::kFooterSection: {
+    case kFooterSection: {
       TableViewTextHeaderFooterView* footer =
           DequeueTableViewHeaderFooter<TableViewTextHeaderFooterView>(
               tableView);
@@ -195,8 +180,9 @@ NSString* AccessibilityIdentifierForItemIdentifier(
                 withColor:[UIColor colorNamed:kTextSecondaryColor]];
       return footer;
     }
-    case SectionIdentifier::kPasswordsAndPasskeysSection:
-    case SectionIdentifier::kGoogleAccountDataSection:
+    case kPasswordsAndPasskeysSection:
+    case kGoogleAccountDataSection:
+      // No footer is required for these sections.
       return nil;
   }
   NOTREACHED();
@@ -206,7 +192,7 @@ NSString* AccessibilityIdentifierForItemIdentifier(
     heightForFooterInSection:(NSInteger)section {
   SectionIdentifier sectionIdentifier = static_cast<SectionIdentifier>(
       [_dataSource sectionIdentifierForIndex:section].integerValue);
-  if (sectionIdentifier == SectionIdentifier::kFooterSection) {
+  if (sectionIdentifier == kFooterSection) {
     return UITableViewAutomaticDimension;
   }
   return kSectionFooterHeight;
@@ -214,42 +200,62 @@ NSString* AccessibilityIdentifierForItemIdentifier(
 
 #pragma mark - QuickDeleteOtherDataConsumer
 
-// TODO(crbug.com/471025894) Make the table view use the consumer's methods to
-// show different UI.
+- (void)setDefaultSearchEngineState:
+    (DefaultSearchEngineState)defaultSearchEngineState {
+  _defaultSearchEngineState = defaultSearchEngineState;
+}
+
 - (void)setOtherDataPageTitle:(NSString*)title {
+  if ([_otherDataPageTitle isEqualToString:title]) {
+    return;
+  }
   _otherDataPageTitle = title;
+  if (self.viewLoaded) {
+    self.title = _otherDataPageTitle;
+  }
 }
 
 - (void)setSearchHistoryCellSubtitle:(NSString*)subtitle {
+  if ([_searchHistoryCellSubtitle isEqualToString:subtitle]) {
+    return;
+  }
   _searchHistoryCellSubtitle = subtitle;
+  if (_shouldShowSearchHistoryCell) {
+    [self updateSnapshotForItemIdentifier:kSearchHistoryIdentifier];
+  }
 }
 
 - (void)setShouldShowMyActivityCell:(BOOL)shouldShowMyActivityCell {
+  if (_shouldShowMyActivityCell == shouldShowMyActivityCell) {
+    return;
+  }
   _shouldShowMyActivityCell = shouldShowMyActivityCell;
 }
 
 - (void)setShouldShowSearchHistoryCell:(BOOL)shouldShowSearchHistoryCell {
   _shouldShowSearchHistoryCell = shouldShowSearchHistoryCell;
+  // It will update the "Search history" cell and the "My Activity" cell at the
+  // same time, resulting in a cleaner UI update.
+  [self applySnapshotForGoogleAccountDataSectionAnimatingDifferences];
 }
 
 #pragma mark - Private
 
-// Sets the accessory type of the cell.
-- (void)setAccessoryTypeForCell:(UITableViewCell*)cell
-                 itemIdentifier:(ItemIdentifier)itemIdentifier {
-  switch (itemIdentifier) {
-    case ItemIdentifier::kPasswordsAndPasskeysIdentifier:
-      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-      return;
-    case ItemIdentifier::kSearchHistoryIdentifier:
-    case ItemIdentifier::kMyActivityIdentifier:
-      cell.accessoryView = [[UIImageView alloc]
-          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
-                            kExternalLinkSymbol)];
-      cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
-      return;
-  }
-  NOTREACHED();
+// Returns the cell for the corresponding `itemIdentifier`.
+- (UITableViewCell*)cellForTableView:(UITableView*)tableView
+                           indexPath:(NSIndexPath*)indexPath
+                      itemIdentifier:(ItemIdentifier)itemIdentifier {
+  UITableViewCell* cell;
+  cell = [self
+          createCellWithTitle:TitleForItemIdentifier(itemIdentifier)
+                     subtitle:[self subtitleForItemIdentifier:itemIdentifier]
+                         icon:IconForItemIdentifier(itemIdentifier)
+      accessibilityIdentifier:AccessibilityIdentifierForItemIdentifier(
+                                  itemIdentifier)];
+
+  [self setAccessoryTypeForCell:cell itemIdentifier:itemIdentifier];
+
+  return cell;
 }
 
 // Creates a cell for the table view.
@@ -276,20 +282,82 @@ NSString* AccessibilityIdentifierForItemIdentifier(
   return cell;
 }
 
-// Returns the cell for the corresponding `itemIdentifier`.
-- (UITableViewCell*)cellForTableView:(UITableView*)tableView
-                           indexPath:(NSIndexPath*)indexPath
-                      itemIdentifier:(ItemIdentifier)itemIdentifier {
-  UITableViewCell* cell;
-  cell = [self createCellWithTitle:TitleForItemIdentifier(itemIdentifier)
-                          subtitle:SubtitleForItemIdentifier(itemIdentifier)
-                              icon:IconForItemIdentifier(itemIdentifier)
-           accessibilityIdentifier:AccessibilityIdentifierForItemIdentifier(
-                                       itemIdentifier)];
+// Reloads the snapshot for the cell with the given `itemIdentifier`.
+- (void)updateSnapshotForItemIdentifier:(ItemIdentifier)itemIdentifier {
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+  [snapshot reloadItemsWithIdentifiers:@[ @(itemIdentifier) ]];
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
 
-  [self setAccessoryTypeForCell:cell itemIdentifier:itemIdentifier];
+// Applies a snapshot to the `kGoogleAccountDataSection` based on the visibility
+// flags.
+- (void)applySnapshotForGoogleAccountDataSectionAnimatingDifferences {
+  if (!_dataSource) {
+    return;
+  }
 
-  return cell;
+  NSDiffableDataSourceSnapshot<NSNumber*, NSNumber*>* snapshot =
+      [_dataSource snapshot];
+
+  // Remove existing items from the section to ensure they are added in the
+  // correct order if they become visible. We delete them first to avoid
+  // duplicates and to simplify the ordering logic.
+  [snapshot deleteItemsWithIdentifiers:@[
+    @(kSearchHistoryIdentifier), @(kMyActivityIdentifier)
+  ]];
+
+  // Add items based on visibility flags. The order here determines the order
+  // in the table view.
+  if (_shouldShowSearchHistoryCell) {
+    [snapshot appendItemsWithIdentifiers:@[ @(kSearchHistoryIdentifier) ]
+               intoSectionWithIdentifier:@(kGoogleAccountDataSection)];
+  }
+  if (_shouldShowMyActivityCell) {
+    [snapshot appendItemsWithIdentifiers:@[ @(kMyActivityIdentifier) ]
+               intoSectionWithIdentifier:@(kGoogleAccountDataSection)];
+  }
+
+  [_dataSource applySnapshot:snapshot animatingDifferences:YES];
+}
+
+// Sets the accessory type of the cell.
+- (void)setAccessoryTypeForCell:(UITableViewCell*)cell
+                 itemIdentifier:(ItemIdentifier)itemIdentifier {
+  switch (itemIdentifier) {
+    case kPasswordsAndPasskeysIdentifier:
+      cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+      return;
+    case kSearchHistoryIdentifier:
+      // The "Search history" cell does not have an accessory type when the
+      // default search engine is not Google as it will not redirect the user to
+      // Google account data.
+      if (_defaultSearchEngineState != DefaultSearchEngineState::kGoogle) {
+        return;
+      }
+      [[fallthrough]];
+    case kMyActivityIdentifier:
+      cell.accessoryView = [[UIImageView alloc]
+          initWithImage:DefaultAccessorySymbolConfigurationWithRegularWeight(
+                            kExternalLinkSymbol)];
+      cell.accessoryView.tintColor = [UIColor colorNamed:kGrey500Color];
+      return;
+  }
+  NOTREACHED();
+}
+
+// Returns the subtitle for the given `itemIdentifier`.
+- (NSString*)subtitleForItemIdentifier:(ItemIdentifier)itemIdentifier {
+  switch (itemIdentifier) {
+    case kPasswordsAndPasskeysIdentifier:
+      return l10n_util::GetNSString(
+          IDS_SETTINGS_MANAGE_IN_GOOGLE_PASSWORD_MANAGER);
+    case kSearchHistoryIdentifier:
+      return _searchHistoryCellSubtitle;
+    case kMyActivityIdentifier:
+      return l10n_util::GetNSString(IDS_SETTINGS_MANAGE_IN_YOUR_GOOGLE_ACCOUNT);
+  }
+  NOTREACHED();
 }
 
 @end

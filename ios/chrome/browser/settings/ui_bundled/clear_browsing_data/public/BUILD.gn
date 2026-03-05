@@ -16,3 +16,41 @@ source_set("features") {
   ]
   deps = [ "//base" ]
 }
+
+source_set("util") {
+  sources = [
+    "quick_delete_util.h",
+    "quick_delete_util.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/browsing_data/core",
+    "//components/search_engines",
+    "//components/strings",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "quick_delete_util_unittest.mm" ]
+  deps = [
+    ":util",
+    "//base",
+    "//components/browsing_data/core",
+    "//components/search_engines",
+    "//components/search_engines:test_support",
+    "//components/strings",
+    "//components/sync_preferences",
+    "//ios/chrome/browser/browsing_data/model:counters",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

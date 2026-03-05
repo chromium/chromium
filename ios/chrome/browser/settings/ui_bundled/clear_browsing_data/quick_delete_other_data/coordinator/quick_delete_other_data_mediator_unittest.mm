@@ -13,7 +13,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator/quick_delete_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_consumer.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"

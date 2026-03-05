@@ -5,8 +5,16 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_QUICK_DELETE_OTHER_DATA_UI_QUICK_DELETE_OTHER_DATA_CONSUMER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_CLEAR_BROWSING_DATA_QUICK_DELETE_OTHER_DATA_UI_QUICK_DELETE_OTHER_DATA_CONSUMER_H_
 
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_util.h"
+
+using quick_delete_util::DefaultSearchEngineState;
+
 // Consumer for the "Quick Delete Other Data" page.
 @protocol QuickDeleteOtherDataConsumer <NSObject>
+
+// Sets the default search engine state for the "Quick Delete Other data" page.
+- (void)setDefaultSearchEngineState:
+    (DefaultSearchEngineState)defaultSearchEngineState;
 
 // Sets the title for the "Quick Delete Other data"
 // page.

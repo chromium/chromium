@@ -9,7 +9,7 @@
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/search_engines/model/search_engine_observer_bridge.h"
-#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/coordinator/quick_delete_util.h"
+#import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public/quick_delete_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/clear_browsing_data/quick_delete_other_data/ui/quick_delete_other_data_consumer.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -112,6 +112,7 @@ using quick_delete_util::DefaultSearchEngineState;
 
 // Updates the consumer with the current state.
 - (void)updateConsumer {
+  [_consumer setDefaultSearchEngineState:_defaultSearchEngineState];
   [_consumer setOtherDataPageTitle:[self otherDataPageTitle]];
   [_consumer setSearchHistoryCellSubtitle:[self searchHistoryCellSubtitle]];
   [_consumer setShouldShowMyActivityCell:_isSignedIn];

@@ -46,13 +46,13 @@ source_set("mediator") {
     "quick_delete_mediator.mm",
   ]
   deps = [
-    ":util",
     "//base",
     "//components/browsing_data/core",
     "//components/browsing_data/core:cookie_or_cache_deletion_choice",
     "//components/feature_engagement/public",
     "//components/prefs",
     "//components/prefs/ios",
+    "//components/search_engines",
     "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//ios/chrome/app/strings",
@@ -64,36 +64,18 @@ source_set("mediator") {
     "//ios/chrome/browser/search_engines/model",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:util",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui",
     "//ios/chrome/browser/shared/public/features",
     "//ui/base",
   ]
 }
 
-source_set("util") {
-  sources = [
-    "quick_delete_util.h",
-    "quick_delete_util.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/browsing_data/core",
-    "//components/search_engines",
-    "//components/strings",
-    "//ios/chrome/browser/browsing_data/model:counters",
-    "//ui/base",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "quick_delete_mediator_unittest.mm",
-    "quick_delete_util_unittest.mm",
-  ]
+  sources = [ "quick_delete_mediator_unittest.mm" ]
   deps = [
     ":mediator",
-    ":util",
     "//base",
     "//base/test:test_support",
     "//components/browsing_data/core",
@@ -102,9 +84,9 @@ source_set("unit_tests") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser/password_store:test_support",
     "//components/prefs",
+    "//components/search_engines",
     "//components/search_engines:test_support",
     "//components/strings",
-    "//components/sync_preferences",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browsing_data/model",
     "//ios/chrome/browser/browsing_data/model:counters",
@@ -112,15 +94,14 @@ source_set("unit_tests") {
     "//ios/chrome/browser/feature_engagement/model",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/search_engines/model",
-    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/sessions/model:session_restoration_service_factory",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/model:test_support",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:features",
+    "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/public:util",
     "//ios/chrome/browser/settings/ui_bundled/clear_browsing_data/ui",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/prefs:browser_prefs",
     "//ios/chrome/browser/shared/model/profile/test",
     "//ios/chrome/browser/signin/model",
@@ -131,7 +112,6 @@ source_set("unit_tests") {
     "//ios/chrome/browser/signin/model:test_support",
     "//ios/chrome/test:test_support",
     "//ios/web/public/test",
-    "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
     "//ui/base",
