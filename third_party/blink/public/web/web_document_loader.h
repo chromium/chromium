@@ -38,7 +38,6 @@
 #include "third_party/blink/public/platform/cross_variant_mojo_util.h"
 #include "third_party/blink/public/platform/web_archive_info.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_source_location.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 
 namespace blink {
