@@ -3089,6 +3089,17 @@ even if they fit the naming pattern. -->
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.HiddenBeforeShown"
+    enum="BooleanYesNo" expires_after="2027-01-01">
+  <owner>gusmartin@google.com</owner>
+  <owner>chrome-irm-devs@google.com</owner>
+  <summary>
+    Records whether Reading Mode was closed before the UI was fully shown to the
+    user. Recorded when the Reading Mode entry is hidden, except during
+    transitions between presentation modes.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeBCP47"
     expires_after="2026-08-02">
   <owner>abigailbklein@google.com</owner>

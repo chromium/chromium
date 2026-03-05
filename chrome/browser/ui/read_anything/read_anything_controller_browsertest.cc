@@ -1407,6 +1407,8 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
   controller->OnEntryHidden();
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 1);
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.HiddenBeforeShown", false, 1);
   testing::Mock::VerifyAndClearExpectations(service);
 }
 
@@ -1444,6 +1446,22 @@ IN_PROC_BROWSER_TEST_F(
 
   histogram_tester.ExpectTotalCount(
       "Accessibility.ReadAnything.ShownDurationMax1Day", 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingControllerBrowserTest,
+                       OnEntryHidden_HiddenBeforeShownRecordsHistogram) {
+  base::HistogramTester histogram_tester;
+  tabs::TabInterface* tab = browser()->tab_strip_model()->GetActiveTab();
+  ASSERT_TRUE(tab);
+  auto* controller = ReadAnythingController::From(tab);
+  ASSERT_TRUE(controller);
+
+  controller->OnEntryHidden();
+
+  histogram_tester.ExpectUniqueSample(
+      "Accessibility.ReadAnything.HiddenBeforeShown", true, 1);
+  histogram_tester.ExpectTotalCount(
+      "Accessibility.ReadAnything.ShownDurationMax1Day", 0);
 }
 
 IN_PROC_BROWSER_TEST_F(

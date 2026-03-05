@@ -206,21 +206,34 @@ void ReadAnythingController::OnEntryHidden() {
     active_service_->OnReadAnythingHidden();
     active_service_ = nullptr;
   }
+  RecordEntryHiddenMetrics();
+}
 
-  // Only record the shown duration if RM was successfully shown. If the
-  // timestamp is null, the UI was closed or switched before it fully loaded.
-  if (!is_presentation_transitioning_ && !entry_shown_timestamp_.is_null()) {
-    base::UmaHistogramCustomTimes(
-        "Accessibility.ReadAnything.ShownDurationMax1Day",
-        base::TimeTicks::Now() - entry_shown_timestamp_,
-        /*min=*/base::Seconds(1),
-        /*max=*/base::Hours(24),
-        /*buckets=*/100);
-
-    // Reset the timestamp to null to avoid polluting data if the next RM show
-    // request is closed before it's fully shown.
-    entry_shown_timestamp_ = base::TimeTicks();
+void ReadAnythingController::RecordEntryHiddenMetrics() {
+  // If we are transitioning between UI modes (e.g., Side Panel to Immersive),
+  // don't record OnEntryHidden metrics.
+  if (is_presentation_transitioning_) {
+    return;
   }
+
+  // Record whether the UI was closed before it was successfully shown.
+  const bool hidden_before_shown = entry_shown_timestamp_.is_null();
+  base::UmaHistogramBoolean("Accessibility.ReadAnything.HiddenBeforeShown",
+                            hidden_before_shown);
+
+  if (hidden_before_shown) {
+    return;
+  }
+
+  // Only record if RM was successfully shown.
+  base::UmaHistogramCustomTimes(
+      "Accessibility.ReadAnything.ShownDurationMax1Day",
+      base::TimeTicks::Now() - entry_shown_timestamp_, /*min=*/base::Seconds(1),
+      /*max=*/base::Hours(24), /*buckets=*/100);
+
+  // Reset the timestamp to null to avoid polluting data if the next RM show
+  // request is closed before it's fully shown.
+  entry_shown_timestamp_ = base::TimeTicks();
 }
 
 void ReadAnythingController::TabWillDetach(

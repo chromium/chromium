@@ -219,6 +219,9 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   // (e.g. due to being unresponsive).
   void OnRendererCrashed();
 
+  // Helper function to record OnEntryHidden metrics.
+  void RecordEntryHiddenMetrics();
+
   // Returns the SidePanelUI for the active tab if it can be shown.
   // Otherwise, returns nullptr.
   SidePanelUI* GetSidePanelUI();
@@ -264,10 +267,10 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
 
   // When the Immersive Reading Mode overlay is shown, it covers the main web
   // contents, changing it's visibility to Visibility::OCCLUDED. This causes
-  // the renderer to make optimizations that break Reading Mode (namely, that it
-  // can stop generating accessibility events). This method tells the renderer
-  // that even though the webpage is technically occluded, we want it treated as
-  // if it were visible.
+  // the renderer to make optimizations that break Reading Mode (namely, that
+  // it can stop generating accessibility events). This method tells the
+  // renderer that even though the webpage is technically occluded, we want it
+  // treated as if it were visible.
   void CaptureMainContentsAsVisible();
   // Reset the main contents capturer handle_ when we no longer need to force
   // the main webpage to be treated as visible for IRM purposes.
@@ -276,8 +279,8 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   DistillationState distillation_state_ = DistillationState::kUndefined;
   bool distillation_state_locked_for_testing_ = false;
 
-  // The handle returned by web_contents_->IncrementCapturerCount. This is used
-  // to release the capture when the ReadAnythingController is destroyed.
+  // The handle returned by web_contents_->IncrementCapturerCount. This is
+  // used to release the capture when the ReadAnythingController is destroyed.
   // Note: Do not access this directly. Use CaptureMainContentsAsVisible() and
   // ReleaseMainContentsCapture() instead to ensure the handle is correctly
   // managed.
