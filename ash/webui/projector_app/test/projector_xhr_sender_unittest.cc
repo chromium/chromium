@@ -211,8 +211,9 @@ TEST_F(ProjectorXhrSenderTest, TokenFetchFailure) {
       /*method=*/projector::mojom::RequestType::kGet, /*request_body=*/"",
       /*use_credentials=*/false, /*use_api_key=*/false, future.GetCallback());
 
-  mock_app_client().MakeFetchTokenFailWithError(GoogleServiceAuthError(
-      GoogleServiceAuthError::State::INVALID_GAIA_CREDENTIALS));
+  mock_app_client().MakeFetchTokenFailWithError(
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::UNKNOWN));
   VerifySendRequestFuture(
       future, "", projector::mojom::XhrResponseCode::kTokenFetchFailure);
 }

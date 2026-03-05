@@ -63,9 +63,8 @@ void ProjectorOAuthTokenFetcher::GetAccessTokenFor(
   if (fetched_access_tokens_.contains(email)) {
     const auto& access_token_info = fetched_access_tokens_[email];
     if (base::Time::Now() + kBufferTime < access_token_info.expiration_time) {
-      std::move(callback).Run(
-          email, GoogleServiceAuthError(GoogleServiceAuthError::NONE),
-          access_token_info);
+      std::move(callback).Run(email, GoogleServiceAuthError::AuthErrorNone(),
+                              access_token_info);
       return;
     }
 
