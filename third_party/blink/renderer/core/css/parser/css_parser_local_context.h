@@ -72,11 +72,8 @@ class CORE_EXPORT CSSParserLocalContext {
     return CSSParserLocalContext();
   }
 
-  // TODO(crbug.com/413385732): This is used for parsing colors without element
-  // context in `blink/renderer/modules/canvas/canvas2d/canvas_style.cc`. We
-  // don't have property context there, so will use empty string as property
-  // name for property-dependent random() values. We might want to disallow
-  // random() at parse time for setting values on the canvas contexts.
+  // This constructor is used for canvas context. Since we don't have property
+  // context there, we don't allow random() values there.
   static CSSParserLocalContext CreateWithoutPropertyForCanvas() {
     return CSSParserLocalContext();
   }

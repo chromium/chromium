@@ -1997,8 +1997,10 @@ bool IsAllowedValueInParserContext(
     const CSSValue* value,
     const ColorParserContext& color_parser_context) {
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value)) {
-    return color_parser_context.InElementContext() ||
-           !primitive_value->IsElementDependent();
+    return (color_parser_context.InElementContext() ||
+            !primitive_value->IsElementDependent()) &&
+           (color_parser_context.InPropertyContext() ||
+            !primitive_value->HasRandomFunctions());
   }
   return true;
 }
@@ -2277,13 +2279,13 @@ CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream& stream,
                               ColorParserContext::AbsoluteColorContext());
 }
 
-CSSValue* ConsumeColorWithoutElementContext(
+CSSValue* ConsumeColorWithoutElementAndPropertyContext(
     CSSParserTokenStream& stream,
     const CSSParserContext& context,
     CSSParserLocalContext& local_context) {
   return ConsumeColorInternal(stream, context, local_context,
                               false /* accept_quirky_colors */,
-                              ColorParserContext::NoElementContext());
+                              ColorParserContext::NoElementNoPropertyContext());
 }
 
 CSSValue* ConsumeLineWidth(CSSParserTokenStream& stream,

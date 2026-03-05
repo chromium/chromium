@@ -77,7 +77,7 @@ static ColorParseResult ParseColor(Color& parsed_color,
   CSSParserLocalContext local_context =
       CSSParserLocalContext::CreateWithoutPropertyForCanvas();
   const CSSValue* parsed_value =
-      css_parsing_utils::ConsumeColorWithoutElementContext(
+      css_parsing_utils::ConsumeColorWithoutElementAndPropertyContext(
           stream, *StrictCSSParserContext(SecureContextMode::kInsecureContext),
           local_context);
   if (parsed_value && (parsed_value->IsColorMixValue() ||

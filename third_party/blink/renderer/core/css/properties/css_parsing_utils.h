@@ -82,11 +82,14 @@ class ColorParserContext {
   static ColorParserContext AbsoluteColorContext() {
     return {.absolute_colors_ = true};
   }
-  static ColorParserContext NoElementContext() { return {.no_element_ = true}; }
+  static ColorParserContext NoElementNoPropertyContext() {
+    return {.no_element_ = true, .no_property_ = true};
+  }
 
   bool AllColorsAllowed() const { return !absolute_colors_ && !no_element_; }
   bool OnlyAbsoluteColorsAllowed() const { return absolute_colors_; }
   bool InElementContext() const { return !(no_element_ || absolute_colors_); }
+  bool InPropertyContext() const { return !(no_property_ || absolute_colors_); }
 
   // Parsing absolute <color> values:
   // https://drafts.csswg.org/css-color-5/#absolute-color
@@ -95,6 +98,10 @@ class ColorParserContext {
   // Parsing <color> values without an element context.
   // Disallow tree counting functions.
   bool no_element_ = false;
+
+  // Parsing <color> values without a property context.
+  // Disallow random() function.
+  bool no_property_ = false;
 };
 enum class EmptyPathStringHandling { kFailure, kTreatAsNone };
 
@@ -234,9 +241,10 @@ CORE_EXPORT CSSValue* ConsumeColor(
     const ColorParserContext& = ColorParserContext());
 
 // To parse in context without element (e.g. to prevent sibling-index()).
-CORE_EXPORT CSSValue* ConsumeColorWithoutElementContext(CSSParserTokenStream&,
-                                                        const CSSParserContext&,
-                                                        CSSParserLocalContext&);
+CORE_EXPORT CSSValue* ConsumeColorWithoutElementAndPropertyContext(
+    CSSParserTokenStream&,
+    const CSSParserContext&,
+    CSSParserLocalContext&);
 
 // https://drafts.csswg.org/css-color-5/#absolute-color
 CORE_EXPORT CSSValue* ConsumeAbsoluteColor(CSSParserTokenStream&,
