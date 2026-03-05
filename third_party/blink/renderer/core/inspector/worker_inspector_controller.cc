@@ -147,6 +147,10 @@ void WorkerInspectorController::AttachSession(DevToolsSession* session,
                                                   worker_global_scope);
     CoreInitializer::GetInstance().InitWorkerInspectorAgentSession(
         session, worker_global_scope);
+
+    if (worker_global_scope->HasRunWorkerScript()) {
+      inspector_agent->WorkerScriptLoaded();
+    }
   }
 }
 

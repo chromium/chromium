@@ -1,0 +1,31 @@
+Tests Target.attachToTarget can attach to service worker later on
+Registering service worker for scope1
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : false
+    targetId : <string>
+    title : Service Worker http://127.0.0.1:8000/inspector-protocol/target/resources/mint-service-worker.pl?scope1
+    type : service_worker
+    url : http://127.0.0.1:8000/inspector-protocol/target/resources/mint-service-worker.pl?scope1
+}
+{
+    sessionId : <string>
+    targetInfo : {
+        attached : true
+        browserContextId : <string>
+        canAccessOpener : false
+        targetId : <string>
+        title : Service Worker http://127.0.0.1:8000/inspector-protocol/target/resources/mint-service-worker.pl?scope1
+        type : service_worker
+        url : http://127.0.0.1:8000/inspector-protocol/target/resources/mint-service-worker.pl?scope1
+    }
+    waitingForDebugger : false
+}
+{
+    method : Inspector.workerScriptLoaded
+    params : {
+    }
+    sessionId : <string>
+}
+

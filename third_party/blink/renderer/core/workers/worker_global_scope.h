@@ -258,6 +258,10 @@ class CORE_EXPORT WorkerGlobalScope
 
   bool IsUrlValid() { return url_.IsValid(); }
 
+  bool HasRunWorkerScript() {
+    return script_eval_state_ == ScriptEvalState::kEvaluated;
+  }
+
   void SetMainResoureIdentifier(uint64_t identifier) {
     DCHECK(!main_resource_identifier_.has_value());
     main_resource_identifier_ = identifier;
