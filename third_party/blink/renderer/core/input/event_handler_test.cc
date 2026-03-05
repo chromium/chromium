@@ -52,6 +52,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "ui/base/cursor/cursor.h"
@@ -3669,8 +3670,13 @@ TEST_F(EventHandlerSimTest, ValidClickPointerIdForUnseenPointerEvent) {
 TEST_F(EventHandlerSimTest, GestureTapHoverState) {
   ResizeView(gfx::Size(800, 600));
 
-  // RecomputeMouseHoverState() bails early if we are not focused.
-  GetPage().SetFocused(true);
+  // With this feature enabled, RecomputeMouseHoverState() fires synthetic
+  // mouse events for inactive pages. If the feature is disabled, we need to
+  // focus the page to avoid the early exit in RecomputeMouseHoverState().
+  // See crbug.com/385474535 for more details.
+  if (!RuntimeEnabledFeatures::SyntheticMouseHoverOverInactivePageEnabled()) {
+    GetPage().SetFocused(true);
+  }
 
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");

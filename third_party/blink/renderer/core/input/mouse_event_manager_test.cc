@@ -15,6 +15,8 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -49,8 +51,13 @@ class MouseEventManagerTest : public SimTest {
 TEST_F(MouseEventManagerTest, HoverEffectAfterNav) {
   LocalFrame* frame = MainFrame().GetFrame();
 
-  // RecomputeMouseHoverState() bails early if we are not focused.
-  GetPage().SetFocused(true);
+  // With this feature enabled, RecomputeMouseHoverState() fires synthetic
+  // mouse events for inactive pages. The SetFocused call remains as a fallback
+  // in case the feature needs to be disabled.
+  // See crbug.com/385474535 for more details.
+  if (!RuntimeEnabledFeatures::SyntheticMouseHoverOverInactivePageEnabled()) {
+    GetPage().SetFocused(true);
+  }
 
   // This mousemove sets last_known_mouse_position_ before we navigate.
   GetEventHandler().HandleMouseMoveEvent(
@@ -99,4 +106,62 @@ TEST_F(MouseEventManagerTest, HoverEffectAfterNav) {
   EXPECT_EQ("rgb(255, 0, 0)", color.SerializeAsCSSColor());
 }
 
+TEST_F(MouseEventManagerTest,
+       RecomputeMouseHoverStateForActiveAndInactivePage) {
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      body { margin: 10px; }
+      #target { width: 20px; height: 20px; background: gray; }
+      #target:hover { background: red; } </style>
+    <div id=target></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  // Test hover over target element on active page
+  GetPage().SetActive(true);
+
+  // Set the mouse position over the target element
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseEvent(WebInputEvent::Type::kMouseMove,
+                           gfx::PointF(20, 20)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetEventHandler().MarkHoverStateDirty();
+  GetEventHandler().RecomputeMouseHoverStateIfNeeded();
+
+  LayoutObject* target =
+      GetDocument().getElementById(AtomicString("target"))->GetLayoutObject();
+  Color hover_color =
+      target->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  // :hover pseudo-class should match when the pointer is over the element.
+  EXPECT_EQ("rgb(255, 0, 0)", hover_color.SerializeAsCSSColor());
+
+  // Move mouse position away from the target element to reset target background
+  // color to gray.
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseEvent(WebInputEvent::Type::kMouseMove,
+                           gfx::PointF(200, 200)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetEventHandler().MarkHoverStateDirty();
+  GetEventHandler().RecomputeMouseHoverStateIfNeeded();
+  hover_color =
+      target->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  EXPECT_EQ("rgb(128, 128, 128)", hover_color.SerializeAsCSSColor());
+
+  // Move mouse back over element but with page inactive.
+  GetPage().SetActive(false);
+  GetEventHandler().HandleMouseMoveEvent(
+      CreateTestMouseEvent(WebInputEvent::Type::kMouseMove,
+                           gfx::PointF(20, 20)),
+      Vector<WebMouseEvent>(), Vector<WebMouseEvent>());
+  GetEventHandler().MarkHoverStateDirty();
+  GetEventHandler().RecomputeMouseHoverStateIfNeeded();
+  hover_color =
+      target->Style()->VisitedDependentColor(GetCSSPropertyBackgroundColor());
+  // Same behavior is expected regardless of Page Active state. Per
+  // W3C Pointer Events, § 4.4.6 “mouseenter”
+  EXPECT_EQ("rgb(255, 0, 0)", hover_color.SerializeAsCSSColor());
+}
 }  // namespace blink

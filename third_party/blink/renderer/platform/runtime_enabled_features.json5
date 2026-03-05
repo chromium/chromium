@@ -5442,6 +5442,10 @@
       status: "experimental",
     },
     {
+      name: "SyntheticMouseHoverOverInactivePage",
+      status: "stable",
+    },
+    {
       name: "SystemDefaultAccentColors",
       status: "stable",
       base_feature: "none",

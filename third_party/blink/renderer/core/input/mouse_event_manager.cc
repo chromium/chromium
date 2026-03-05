@@ -385,8 +385,13 @@ void MouseEventManager::RecomputeMouseHoverState() {
   if (!view)
     return;
 
-  if (!frame_->GetPage() || !frame_->GetPage()->GetFocusController().IsActive())
+  const bool should_page_receive_mouse_hover =
+      frame_->GetPage() &&
+      (RuntimeEnabledFeatures::SyntheticMouseHoverOverInactivePageEnabled() ||
+       frame_->GetPage()->GetFocusController().IsActive());
+  if (!should_page_receive_mouse_hover) {
     return;
+  }
 
   // Don't dispatch a synthetic mouse move event if the mouse cursor is not
   // visible to the user.
