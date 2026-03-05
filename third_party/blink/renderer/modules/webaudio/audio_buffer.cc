@@ -192,10 +192,7 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
     if (!channel_data_array) {
       return;
     }
-
-    const float* src = bus->Channel(i)->Data();
-    float* dst = channel_data_array->Data();
-    UNSAFE_TODO(memmove(dst, src, length_ * sizeof(*dst)));
+    channel_data_array->AsSpan().copy_from(bus->Channel(i)->Span());
     channels_.push_back(channel_data_array);
   }
 }
