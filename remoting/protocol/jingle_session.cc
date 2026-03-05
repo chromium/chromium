@@ -36,7 +36,6 @@
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/session_config.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/webrtc/api/candidate.h"
 
 namespace remoting::protocol {

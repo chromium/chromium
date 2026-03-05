@@ -8,8 +8,6 @@ include_rules = [
   "+remoting/codec",
   "+remoting/signaling",
   "+third_party/boringssl/src/include/openssl",
-  "+third_party/grpc",
-  "+third_party/libjingle_xmpp/xmpp",
   "+third_party/protobuf/src",
   "+third_party/webrtc",
   "+third_party/webrtc_overrides",

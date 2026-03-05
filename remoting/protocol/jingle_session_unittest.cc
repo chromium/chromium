@@ -39,7 +39,6 @@
 #include "remoting/signaling/fake_signal_strategy.h"
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

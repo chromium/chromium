@@ -19,7 +19,6 @@
 #include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signal_strategy.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/webrtc/rtc_base/socket_address.h"
 
 namespace remoting::protocol {
