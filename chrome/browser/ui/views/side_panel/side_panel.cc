@@ -297,6 +297,14 @@ class ContentParentView : public views::View, public views::ViewObserver {
       views::AsViewClass<views::WebView>(child)->holder()->SetCornerRadii(
           GetRoundedCorners());
     }
+    // Try to detect if the child is a views::View wrapper of a WebView. If so,
+    // round its corners.
+    if (child->children().size() == 1 &&
+        views::IsViewClass<views::WebView>(child->children()[0])) {
+      views::AsViewClass<views::WebView>(child->children()[0])
+          ->holder()
+          ->SetCornerRadii(GetRoundedCorners());
+    }
     if (child->layer()) {
       child->layer()->SetIsFastRoundedCorner(true);
       child->layer()->SetRoundedCornerRadius(GetRoundedCorners());
