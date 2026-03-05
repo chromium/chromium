@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "chrome/browser/navigation_predictor/navigation_predictor_metrics_document_data.h"
+#include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 

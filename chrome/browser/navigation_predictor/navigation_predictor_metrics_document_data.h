@@ -5,9 +5,15 @@
 #ifndef CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_METRICS_DOCUMENT_DATA_H_
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_NAVIGATION_PREDICTOR_METRICS_DOCUMENT_DATA_H_
 
+#include <unordered_map>
+
 #include "base/time/time.h"
 #include "content/public/browser/document_user_data.h"
-#include "content/public/browser/render_frame_host.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
+
+namespace content {
+class RenderFrameHost;
+}  // namespace content
 
 class NavigationPredictorMetricsDocumentData
     : public content::DocumentUserData<NavigationPredictorMetricsDocumentData> {

@@ -2,33 +2,128 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
+
 assert(is_win || is_mac || is_linux || is_chromeos || is_android)
 
 source_set("navigation_predictor") {
   sources = [
+    "anchor_element_preloader.h",
+    "navigation_predictor.h",
+    "navigation_predictor_features.h",
     "navigation_predictor_keyed_service.h",
+    "navigation_predictor_keyed_service_factory.h",
+    "navigation_predictor_metrics_document_data.h",
+    "navigation_predictor_preconnect_client.h",
+    "preloading_model_keyed_service.h",
+    "preloading_model_keyed_service_factory.h",
     "search_engine_preconnector.h",
+    "search_engine_preconnector_keyed_service_factory.h",
   ]
   public_deps = [
     "//base",
     "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/network/public/mojom",
     "//url",
   ]
 }
 
 source_set("impl") {
   sources = [
+    "anchor_element_preloader.cc",
+    "navigation_predictor.cc",
+    "navigation_predictor_features.cc",
     "navigation_predictor_keyed_service.cc",
+    "navigation_predictor_keyed_service_factory.cc",
+    "navigation_predictor_metrics_document_data.cc",
+    "navigation_predictor_preconnect_client.cc",
+    "preloading_model_keyed_service.cc",
+    "preloading_model_keyed_service_factory.cc",
     "search_engine_preconnector.cc",
+    "search_engine_preconnector_keyed_service_factory.cc",
   ]
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
   deps = [
     ":navigation_predictor",
     "//chrome/browser/battery",
+    "//chrome/browser/optimization_guide",
     "//chrome/browser/predictors",
+    "//chrome/browser/preloading",
+    "//chrome/browser/preloading:prefs",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
-    "//content/public/browser",
+    "//chrome/common",
+    "//components/no_state_prefetch/browser",
+    "//components/prefs",
+    "//components/search_engines",
+    "//net",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common:headers",
+    "//ui/base",
   ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "preloading_model_executor.cc",
+      "preloading_model_executor.h",
+      "preloading_model_handler.cc",
+      "preloading_model_handler.h",
+    ]
+  }
+}
+
+if (!is_android) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [
+      "anchor_element_preloader_browsertest.cc",
+      "navigation_predictor_browsertest.cc",
+      "navigation_predictor_preconnect_client_browsertest.cc",
+      "search_engine_preconnector_browsertest.cc",
+    ]
+    deps = [
+      ":impl",
+      ":navigation_predictor",
+      "//chrome/browser/battery",
+      "//chrome/browser/optimization_guide:test_support",
+      "//chrome/browser/predictors",
+      "//chrome/browser/preloading",
+      "//chrome/browser/preloading:prefs",
+      "//chrome/browser/preloading:test_support",
+      "//chrome/browser/search_engines",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//chrome/test:test_support_ui",
+      "//components/no_state_prefetch/browser",
+      "//components/ukm:test_support",
+      "//content/test:test_support",
+    ]
+    if (build_with_tflite_lib) {
+      sources += [ "preloading_model_keyed_service_browsertest.cc" ]
+      data = [ "test/preloading_heuristics.tflite" ]
+    }
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "navigation_predictor_unittest.cc" ]
+  deps = [
+    ":impl",
+    ":navigation_predictor",
+    "//chrome/test:test_support",
+    "//components/ukm:test_support",
+    "//content/test:test_support",
+    "//mojo/public/cpp/test_support:test_utils",
+  ]
+  if (build_with_tflite_lib) {
+    sources += [ "preloading_model_executor_unittest.cc" ]
+    data = [ "test/preloading_heuristics.tflite" ]
+  }
 }

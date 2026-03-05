@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_NAVIGATION_PREDICTOR_SEARCH_ENGINE_PRECONNECTOR_KEYED_SERVICE_FACTORY_H_
 
 #include "base/lazy_instance.h"
-#include "chrome/browser/navigation_predictor/search_engine_preconnector.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 
 namespace content {

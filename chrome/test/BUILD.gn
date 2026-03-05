@@ -2635,7 +2635,7 @@ if (!is_android) {
       "//chrome/browser/metrics:test_support",
       "//chrome/browser/metrics/desktop_session_duration",
       "//chrome/browser/metrics/structured:test_support",
-      "//chrome/browser/navigation_predictor",
+      "//chrome/browser/navigation_predictor:browser_tests",
       "//chrome/browser/new_tab_page/chrome_colors",
       "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
       "//chrome/browser/notifications/scheduler:factory",
@@ -3614,10 +3614,6 @@ if (!is_android) {
       "../browser/metrics/variations/force_field_trials_browsertest.cc",
       "../browser/metrics/variations/variations_safe_mode_browsertest.cc",
       "../browser/metrics/variations/variations_safe_mode_end_to_end_browsertest.cc",
-      "../browser/navigation_predictor/anchor_element_preloader_browsertest.cc",
-      "../browser/navigation_predictor/navigation_predictor_browsertest.cc",
-      "../browser/navigation_predictor/navigation_predictor_preconnect_client_browsertest.cc",
-      "../browser/navigation_predictor/search_engine_preconnector_browsertest.cc",
       "../browser/net/cert_verifier_policy_browsertest.cc",
       "../browser/net/chrome_accept_encoding_header_browsertest.cc",
       "../browser/net/chrome_accept_header_browsertest.cc",
@@ -4362,13 +4358,6 @@ if (!is_android) {
         "//components/user_manager:test_support",
         "//components/webapps/isolated_web_apps",
         "//mojo/public/cpp/test_support:test_utils",
-      ]
-    }
-
-    if (build_with_tflite_lib) {
-      sources += [ "../browser/navigation_predictor/preloading_model_keyed_service_browsertest.cc" ]
-      data += [
-        "../browser/navigation_predictor/test/preloading_heuristics.tflite",
       ]
     }
 
@@ -6703,7 +6692,6 @@ test("unit_tests") {
     "../browser/metrics/tab_stats/tab_stats_data_store_unittest.cc",
     "../browser/metrics/tab_stats/tab_stats_tracker_unittest.cc",
     "../browser/metrics/variations/chrome_variations_service_client_unittest.cc",
-    "../browser/navigation_predictor/navigation_predictor_unittest.cc",
     "../browser/net/cert_verifier_policy_unittest.cc",
     "../browser/net/chrome_network_delegate_unittest.cc",
     "../browser/net/chrome_report_sender_unittest.cc",
@@ -6906,11 +6894,6 @@ test("unit_tests") {
     ]
   }
 
-  if (build_with_tflite_lib) {
-    sources += [
-      "../browser/navigation_predictor/preloading_model_executor_unittest.cc",
-    ]
-  }
   if (!is_chromeos) {
     sources += [
       "../browser/metrics/family_link_user_metrics_provider_unittest.cc",
@@ -7035,11 +7018,6 @@ test("unit_tests") {
     "//tools/metrics/histograms/enums.xml",
     "//tools/metrics/histograms/metadata/sync/enums.xml",
   ]
-
-  if (build_with_tflite_lib) {
-    data +=
-        [ "../browser/navigation_predictor/test/preloading_heuristics.tflite" ]
-  }
 
   if (is_android) {
     # Trim data specifically to what is used by unit tests on Android.
@@ -7168,6 +7146,7 @@ test("unit_tests") {
     "//chrome/browser/media/router:unittests",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/metrics/structured",
+    "//chrome/browser/navigation_predictor:unit_tests",
     "//chrome/browser/net:key_pinning_proto",
     "//chrome/browser/net:probe_message_proto",
     "//chrome/browser/new_tab_page/chrome_colors:generate_chrome_colors_info",
