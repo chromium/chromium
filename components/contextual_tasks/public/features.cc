@@ -137,7 +137,7 @@ constexpr base::FeatureParam<ExpandButtonOption>::Option kExpandButtonOption[] =
 const base::FeatureParam<ExpandButtonOption> kExpandButtonOptions(
     &kContextualTasks,
     "ContextualTasksExpandButtonOptions",
-    ExpandButtonOption::kSidePanelExpandButton,
+    ExpandButtonOption::kToolbarCloseButton,
     &kExpandButtonOption);
 
 const base::FeatureParam<bool> kTaskScopedSidePanel(
