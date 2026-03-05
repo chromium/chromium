@@ -407,9 +407,12 @@ bool ScrollableArea::SetProgrammaticScrollOffset(
     mojom::blink::ScrollBehavior behavior,
     ScriptPromiseResolver<ScrollResult>* resolver) {
   RegisterPromiseResolver(resolver);
-  return SetScrollOffsetInternal(offset,
-                                 mojom::blink::ScrollType::kProgrammatic,
-                                 source_type, behavior, false);
+  if (!SetScrollOffsetInternal(offset, mojom::blink::ScrollType::kProgrammatic,
+                               source_type, behavior, false)) {
+    promise_resolver_ = nullptr;
+    return false;
+  }
+  return true;
 }
 
 const LayoutObject* ScrollableArea::GetScrollInitialTarget() const {

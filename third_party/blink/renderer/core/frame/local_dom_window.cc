@@ -199,22 +199,6 @@ int RequestAnimationFrame(Document* document,
   return document->RequestAnimationFrame(frame_callback);
 }
 
-// TODO(https://crbug.com/41406914): Ad-hoc method until we hook up with scroll
-// animation end.
-ScriptPromise<ScrollResult> CreateScrollResolvedPromise(
-    ScriptState* script_state) {
-  // Internal scroll calls sometimes pass a null `script_state`.
-  if (!script_state ||
-      !RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
-    return EmptyPromise();  // This is exposed to JS as `undefined`.
-  }
-
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
-  resolver->Resolve(ScrollResult::Create());
-  return resolver->Promise();
-}
-
 }  // namespace
 
 class LocalDOMWindow::NetworkStateObserver final
@@ -1832,14 +1816,30 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(ScriptState* script_state,
 ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) const {
+  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
+  if (script_state &&
+      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
+    resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
+  }
+
+  ScriptPromise<ScrollResult> promise =
+      resolver ? resolver->Promise() : EmptyPromise();
+
   if (!IsCurrentlyDisplayedInFrame()) {
-    return CreateScrollResolvedPromise(script_state);
+    if (resolver) {
+      resolver->Resolve(ScrollResult::Create());
+    }
+    return promise;
   }
 
   LocalFrameView* view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   if (!view || !page) {
-    return CreateScrollResolvedPromise(script_state);
+    if (resolver) {
+      resolver->Resolve(ScrollResult::Create());
+    }
+    return promise;
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -1876,12 +1876,11 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
-  viewport->SetScrollOffset(
+  viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
-      mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kRelativeScroll, scroll_behavior);
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior, resolver);
 
-  return CreateScrollResolvedPromise(script_state);
+  return promise;
 }
 
 ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(ScriptState* script_state,
@@ -1896,14 +1895,30 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(ScriptState* script_state,
 ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(
     ScriptState* script_state,
     const ScrollToOptions* scroll_to_options) const {
+  ScriptPromiseResolver<ScrollResult>* resolver = nullptr;
+  if (script_state &&
+      RuntimeEnabledFeatures::ProgrammaticScrollPromiseEnabled()) {
+    resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
+  }
+
+  ScriptPromise<ScrollResult> promise =
+      resolver ? resolver->Promise() : EmptyPromise();
+
   if (!IsCurrentlyDisplayedInFrame()) {
-    return CreateScrollResolvedPromise(script_state);
+    if (resolver) {
+      resolver->Resolve(ScrollResult::Create());
+    }
+    return promise;
   }
 
   LocalFrameView* view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   if (!view || !page) {
-    return CreateScrollResolvedPromise(script_state);
+    if (resolver) {
+      resolver->Resolve(ScrollResult::Create());
+    }
+    return promise;
   }
 
   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
@@ -1950,12 +1965,11 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
-  viewport->SetScrollOffset(
+  viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
-      mojom::blink::ScrollType::kProgrammatic,
-      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior);
+      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior, resolver);
 
-  return CreateScrollResolvedPromise(script_state);
+  return promise;
 }
 
 void LocalDOMWindow::scrollByForTesting(double x, double y) const {
