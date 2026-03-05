@@ -94,6 +94,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     private final LogoCoordinator.@Nullable VisibilityObserver mVisibilityObserver;
     private @Nullable Drawable mDefaultGoogleLogoDrawable;
     private boolean mShouldShowLogo;
+    private boolean mIsDefaultSearchEngineGoogle;
     private boolean mIsLoadPending;
     private @Nullable String mOnLogoClickUrl;
     private @Nullable String mAnimatedLogoUrl;
@@ -144,6 +145,7 @@ public class LogoMediator implements TemplateUrlServiceObserver {
         mProfile = profile;
 
         TemplateUrlService templateUrlService = TemplateUrlServiceFactory.getForProfile(mProfile);
+        mIsDefaultSearchEngineGoogle = templateUrlService.isDefaultSearchEngineGoogle();
         TemplateUrl templateUrl = templateUrlService.getDefaultSearchEngineTemplateUrl();
         if (templateUrl != null) {
             mSearchEngineKeyword = templateUrl.getKeyword();
@@ -162,11 +164,12 @@ public class LogoMediator implements TemplateUrlServiceObserver {
     /** Update the logo based on default search engine changes. */
     @Override
     public void onTemplateURLServiceChanged() {
+        TemplateUrlService templateUrlService =
+                TemplateUrlServiceFactory.getForProfile(assumeNonNull(mProfile));
         TemplateUrl defaultSearchEngineTemplateUrl =
-                mProfile == null
-                        ? null
-                        : TemplateUrlServiceFactory.getForProfile(mProfile)
-                                .getDefaultSearchEngineTemplateUrl();
+                mProfile == null ? null : templateUrlService.getDefaultSearchEngineTemplateUrl();
+        mIsDefaultSearchEngineGoogle = templateUrlService.isDefaultSearchEngineGoogle();
+
         if (defaultSearchEngineTemplateUrl != null) {
             String currentSearchEngineKeyword = defaultSearchEngineTemplateUrl.getKeyword();
             if (mSearchEngineKeyword != null
@@ -233,9 +236,9 @@ public class LogoMediator implements TemplateUrlServiceObserver {
 
     /** Returns whether the default Google Logo is shown. */
     boolean isDefaultGoogleLogoShown() {
-        return mShouldShowLogo
-                && mLogoModel.get(LogoProperties.VISIBILITY)
-                && mLogoModel.get(LogoProperties.LOGO) == null;
+        return mIsDefaultSearchEngineGoogle
+                && mShouldShowLogo
+                && mLogoModel.get(LogoProperties.VISIBILITY);
     }
 
     /**

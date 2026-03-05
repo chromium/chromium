@@ -8,6 +8,7 @@ import static org.chromium.chrome.browser.logo.LogoUtils.getGoogleLogoDrawable;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.View.MeasureSpec;
 
@@ -29,6 +30,8 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
+import java.util.Objects;
+
 /** Coordinator used to fetch and load logo image for Start surface and NTP. */
 @NullMarked
 public class LogoCoordinator {
@@ -36,6 +39,9 @@ public class LogoCoordinator {
     private LogoMediator mMediator;
     private LogoView mLogoView;
     private NtpCustomizationConfigManager.@Nullable HomepageStateListener mHomepageStateListener;
+    // The current tint color of logo if the DSE is Google. It is null when the default colorful
+    // Google logo is used.
+    private @Nullable Integer mLogoColor;
 
     /** Interface for the observers of the logo visibility change. */
     public interface VisibilityObserver {
@@ -64,7 +70,9 @@ public class LogoCoordinator {
         PropertyModelChangeProcessor.create(mLogoModel, mLogoView, new LogoViewBinder());
 
         Drawable defaultGoogleLogoDrawable = getGoogleLogoDrawable(context);
-        NtpCustomizationUtils.setTintForDefaultGoogleLogo(context, defaultGoogleLogoDrawable);
+        mLogoColor =
+                NtpCustomizationUtils.setTintForDefaultGoogleLogo(
+                        context, defaultGoogleLogoDrawable);
 
         mMediator =
                 new LogoMediator(
@@ -93,7 +101,7 @@ public class LogoCoordinator {
                             int oldType,
                             int newType) {
                         maybeUpdateTintForDefaultGoogleLogo(
-                                context, newType, /* primaryColor= */ null);
+                                context, newType, /* primaryColor= */ Color.WHITE);
                     }
 
                     @Override
@@ -141,13 +149,6 @@ public class LogoCoordinator {
      */
     public void loadSearchProviderLogoWithAnimation() {
         mMediator.loadSearchProviderLogoWithAnimation();
-    }
-
-    /**
-     * @see LogoMediator#updateVisibility
-     */
-    public void updateVisibility(boolean animationEnabled) {
-        mMediator.updateVisibility(animationEnabled);
     }
 
     /**
@@ -227,8 +228,11 @@ public class LogoCoordinator {
             @NtpBackgroundType int backgroundType,
             @Nullable @ColorInt Integer primaryColor) {
         // If the default Google logo isn't shown, returns here.
-        if (!mMediator.isDefaultGoogleLogoShown()) return;
+        if (!mMediator.isDefaultGoogleLogoShown() || Objects.equals(mLogoColor, primaryColor)) {
+            return;
+        }
 
+        mLogoColor = primaryColor;
         Drawable defaultGoogleLogoDrawable =
                 ContextCompat.getDrawable(context, R.drawable.ic_google_logo);
         Drawable tintedDrawable =

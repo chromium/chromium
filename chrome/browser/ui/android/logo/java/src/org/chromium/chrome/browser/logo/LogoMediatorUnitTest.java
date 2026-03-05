@@ -257,11 +257,14 @@ public class LogoMediatorUnitTest {
     @Test
     public void testIsDefaultGoogleLogoShown() {
         LogoMediator logoMediator = createMediator();
-        Logo logo = mock(Logo.class);
+
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        verify(mTemplateUrlService)
+                .addObserver(mTemplateUrlServiceObserverArgumentCaptor.capture());
+        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
 
         logoMediator.setShouldShowLogoForTesting(true);
         mLogoModel.set(LogoProperties.VISIBILITY, true);
-        mLogoModel.set(LogoProperties.LOGO, null);
         assertTrue(logoMediator.isDefaultGoogleLogoShown());
 
         logoMediator.setShouldShowLogoForTesting(false);
@@ -271,9 +274,10 @@ public class LogoMediatorUnitTest {
         mLogoModel.set(LogoProperties.VISIBILITY, false);
         Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
 
+        when(mTemplateUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        mTemplateUrlServiceObserverArgumentCaptor.getValue().onTemplateURLServiceChanged();
         logoMediator.setShouldShowLogoForTesting(true);
         mLogoModel.set(LogoProperties.VISIBILITY, true);
-        mLogoModel.set(LogoProperties.LOGO, logo);
         Assert.assertFalse(logoMediator.isDefaultGoogleLogoShown());
     }
 

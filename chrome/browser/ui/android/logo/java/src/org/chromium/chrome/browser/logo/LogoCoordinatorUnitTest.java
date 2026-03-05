@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.logo;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -14,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.ContextThemeWrapper;
 
@@ -41,7 +41,9 @@ import org.chromium.chrome.browser.logo.LogoBridge.Logo;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils.NtpBackgroundType;
 import org.chromium.chrome.browser.ntp_customization.policy.NtpCustomizationPolicyManager;
-import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorFromHexInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorInfo.NtpThemeColorId;
+import org.chromium.chrome.browser.ntp_customization.theme.chrome_colors.NtpThemeColorUtils;
 import org.chromium.chrome.browser.ntp_customization.theme.upload_image.BackgroundImageInfo;
 import org.chromium.content_public.browser.LoadUrlParams;
 
@@ -102,7 +104,7 @@ public class LogoCoordinatorUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
-    public void testHomepageStateListener_logoNotShown() {
+    public void testHomepageStateListener_GoogleLogoNotShown() {
         Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
 
@@ -144,31 +146,111 @@ public class LogoCoordinatorUnitTest {
                         NtpBackgroundType.IMAGE_FROM_DISK);
 
         verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
+
+        // Test case that another image is selected.
+        clearInvocations(mLogoMediator);
+        mHomepageStateListenerCaptor
+                .getValue()
+                .onBackgroundImageChanged(
+                        Bitmap.createBitmap(20, 20, Bitmap.Config.ARGB_8888),
+                        backgroundImageInfo,
+                        false,
+                        NtpBackgroundType.IMAGE_FROM_DISK,
+                        NtpBackgroundType.THEME_COLLECTION);
+
+        verify(mLogoMediator, never()).updateDefaultGoogleLogo(any(Drawable.class));
     }
 
     @Test
     @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
     public void testHomepageStateListener_onBackgroundColorChanged() {
-        @ColorInt int backgroundColor = Color.RED;
-        @ColorInt int primaryColor = Color.BLUE;
-        NtpThemeColorFromHexInfo colorFromHexInfo =
-                new NtpThemeColorFromHexInfo(mContext, backgroundColor, primaryColor);
         when(mLogoMediator.isDefaultGoogleLogoShown()).thenReturn(true);
+        @NtpThemeColorId int colorInfoId = NtpThemeColorId.NTP_COLORS_BLUE;
+        NtpThemeColorInfo colorInfo =
+                NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        @ColorInt
+        int backgroundColor =
+                NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, colorInfo);
 
+        createLogoCoordinator();
+        verify(mNtpCustomizationConfigManager)
+                .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext), eq(true));
+
+        // Test case that a new color is selected.
+        mHomepageStateListenerCaptor
+                .getValue()
+                .onBackgroundColorChanged(
+                        colorInfo,
+                        backgroundColor,
+                        false,
+                        NtpBackgroundType.CHROME_COLOR,
+                        NtpBackgroundType.DEFAULT);
+
+        verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
+
+        // Test case that the newly selected color matches the old logo color.
+        clearInvocations(mLogoMediator);
+        mHomepageStateListenerCaptor
+                .getValue()
+                .onBackgroundColorChanged(
+                        colorInfo,
+                        backgroundColor,
+                        false,
+                        NtpBackgroundType.CHROME_COLOR,
+                        NtpBackgroundType.CHROME_COLOR);
+
+        verify(mLogoMediator, never()).updateDefaultGoogleLogo(any(Drawable.class));
+
+        colorInfoId = NtpThemeColorId.NTP_COLORS_VIOLET;
+        colorInfo = NtpThemeColorUtils.createNtpThemeColorInfo(mContext, colorInfoId);
+        backgroundColor = NtpThemeColorUtils.getBackgroundColorFromColorInfo(mContext, colorInfo);
+
+        // Test case that the newly selected color doesn't match the old logo color.
+        clearInvocations(mLogoMediator);
+        mHomepageStateListenerCaptor
+                .getValue()
+                .onBackgroundColorChanged(
+                        colorInfo,
+                        backgroundColor,
+                        false,
+                        NtpBackgroundType.CHROME_COLOR,
+                        NtpBackgroundType.CHROME_COLOR);
+
+        verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
+    }
+
+    @Test
+    @EnableFeatures({ChromeFeatureList.NEW_TAB_PAGE_CUSTOMIZATION_V2})
+    public void testHomepageStateListener_onBackgroundReset() {
+        Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        BackgroundImageInfo backgroundImageInfo = mock(BackgroundImageInfo.class);
+
+        when(mLogoMediator.isDefaultGoogleLogoShown()).thenReturn(true);
         createLogoCoordinator();
         verify(mNtpCustomizationConfigManager)
                 .addListener(mHomepageStateListenerCaptor.capture(), eq(mContext), eq(true));
 
         mHomepageStateListenerCaptor
                 .getValue()
-                .onBackgroundColorChanged(
-                        colorFromHexInfo,
-                        backgroundColor,
+                .onBackgroundImageChanged(
+                        bitmap,
+                        backgroundImageInfo,
                         false,
                         NtpBackgroundType.DEFAULT,
-                        NtpBackgroundType.COLOR_FROM_HEX);
-
+                        NtpBackgroundType.IMAGE_FROM_DISK);
         verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
+
+        // When oldType is not DEFAULT.
+        clearInvocations(mLogoMediator);
+        mHomepageStateListenerCaptor
+                .getValue()
+                .onBackgroundReset(NtpBackgroundType.IMAGE_FROM_DISK);
+        verify(mLogoMediator).updateDefaultGoogleLogo(any(Drawable.class));
+
+        // When oldType is DEFAULT.
+        clearInvocations(mLogoMediator);
+        mHomepageStateListenerCaptor.getValue().onBackgroundReset(NtpBackgroundType.DEFAULT);
+        verify(mLogoMediator, never()).updateDefaultGoogleLogo(any(Drawable.class));
     }
 
     @Test
