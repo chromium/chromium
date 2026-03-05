@@ -606,6 +606,12 @@ BASE_FEATURE(kSymphoniaAudioDecoding, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kSymphoniaMp3Decoding, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Forces D3D11VideoDecoder to use one decoder texture per picture buffer.
+// Owner: media-gpu-team@chromium.org
+// Expiry: When no longer needed for decode texture selection experiments.
+BASE_FEATURE(kD3D11VideoDecoderForceSingleTexture,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kD3D11VideoDecoderUseSharedHandle,
              base::FEATURE_DISABLED_BY_DEFAULT);
 

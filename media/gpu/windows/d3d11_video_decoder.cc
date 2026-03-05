@@ -341,6 +341,7 @@ D3D11VideoDecoder::CreateD3DVideoDecoderWrapper(
     return nullptr;
   }
   use_single_video_decoder_texture_ =
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderForceSingleTexture) ||
       use_single_texture.value() || use_shared_handle_ ||
       gpu_workarounds_.disable_decode_into_array_texture;
   if (use_single_video_decoder_texture_) {
