@@ -128,6 +128,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
       std::clamp(matchedDetent.value, minHeight, maxHeight);
 
   _heightConstraint.constant = targetHeight;
+  CGFloat targetPercentage = [self expandPercentageForHeight:targetHeight];
 
   // The shift converts an animation curve to animation options.
   // `UIViewAnimationOptionBeginFromCurrentState` ensures that if an animation
@@ -136,20 +137,20 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   UIViewAnimationOptions options =
       curve << 16 | UIViewAnimationOptionBeginFromCurrentState;
 
+  self.isAnimating = YES;
+
   if (duration <= 0) {
-    self.isAnimating = YES;
-    [self.view.superview layoutIfNeeded];
+    [self executeAlongsideAnimationWithPercentage:targetPercentage];
     [self didCompleteDetentAnimationWithDetent:matchedDetent];
     return;
   }
 
-  self.isAnimating = YES;
   __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:duration
       delay:0
       options:options
       animations:^{
-        [weakSelf.view.superview layoutIfNeeded];
+        [weakSelf executeAlongsideAnimationWithPercentage:targetPercentage];
       }
       completion:^(BOOL finished) {
         [weakSelf didCompleteDetentAnimationWithDetent:matchedDetent];
@@ -227,6 +228,18 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   }
 }
 
+// Executes the layout pass and notifies the delegate of the transition.
+- (void)executeAlongsideAnimationWithPercentage:(CGFloat)percentage {
+  [self.view.superview layoutIfNeeded];
+
+  if ([self.delegate
+          respondsToSelector:@selector(assistantContainer:
+                                 animateAlongsideTransitionToPercentage:)]) {
+    [self.delegate assistantContainer:self
+        animateAlongsideTransitionToPercentage:percentage];
+  }
+}
+
 // Updates the pan gesture enabled state based on animation and detents.
 - (void)updatePanGestureEnabledState {
   // Prevent the gesture recognizer from interfering with the animation.
@@ -291,6 +304,16 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   return MIN(self.detents.lastObject.value, absoluteMax);
 }
 
+// Converts a physical pixel height mathematically into an expansion percentage.
+- (CGFloat)expandPercentageForHeight:(CGFloat)height {
+  CGFloat minHeight = [self effectiveMinHeight];
+  CGFloat maxHeight = [self effectiveMaxHeight];
+  if (maxHeight <= minHeight) {
+    return 0.0;
+  }
+  return (height - minHeight) / (maxHeight - minHeight);
+}
+
 // Handles the state when the pan gesture changes (drags).
 - (void)handlePanGestureChanged:(UIPanGestureRecognizer*)gesture {
   CHECK(gesture == _headerPanGesture);
@@ -319,9 +342,12 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   }
 
   _heightConstraint.constant = newHeight;
+
+  CGFloat percentage = [self expandPercentageForHeight:newHeight];
   if ([self.delegate respondsToSelector:@selector(assistantContainer:
-                                                     didUpdateHeight:)]) {
-    [self.delegate assistantContainer:self didUpdateHeight:newHeight];
+                                            didUpdateExpandPercentage:)]) {
+    [self.delegate assistantContainer:self
+            didUpdateExpandPercentage:percentage];
   }
 }
 
@@ -526,6 +552,10 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
 // Animates layout changes with standard spring parameters.
 - (void)animateLayoutIfNeededWithInitialVelocity:(CGFloat)velocity {
+  CGFloat targetHeight = _heightConstraint.constant;
+  CGFloat targetPercentage = [self expandPercentageForHeight:targetHeight];
+
+  __weak __typeof(self) weakSelf = self;
   [UIView animateWithDuration:kSpringDuration
                         delay:0
        usingSpringWithDamping:kSpringDamping
@@ -533,7 +563,8 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
                       options:UIViewAnimationOptionCurveEaseOut |
                               UIViewAnimationOptionBeginFromCurrentState
                    animations:^{
-                     [self.view.superview layoutIfNeeded];
+                     [weakSelf executeAlongsideAnimationWithPercentage:
+                                   targetPercentage];
                    }
                    completion:nil];
 }

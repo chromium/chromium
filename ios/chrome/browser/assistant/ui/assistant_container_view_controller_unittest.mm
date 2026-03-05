@@ -210,6 +210,9 @@ TEST_F(AssistantContainerViewControllerTest, AnimateToDetentValid) {
       OCMStrictProtocolMock(@protocol(AssistantContainerDelegate));
   view_controller_.delegate = delegate_mock;
 
+  OCMExpect([delegate_mock assistantContainer:view_controller_
+       animateAlongsideTransitionToPercentage:1.0]);
+
   // Expect the delegate to be notified of the detent change.
   OCMExpect([delegate_mock assistantContainer:view_controller_
                               didChangeDetent:large_detent_]);
