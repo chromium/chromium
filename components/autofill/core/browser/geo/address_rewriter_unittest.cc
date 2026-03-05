@@ -340,6 +340,7 @@ TEST(AddressRewriterTest, GLOBAL) {
   EXPECT_EQ(global.Rewrite(u"undefined"), u"");
   EXPECT_EQ(global.Rewrite(u"not applicable"), u"");
   EXPECT_EQ(global.Rewrite(u"n a"), u"");
+  EXPECT_EQ(global.Rewrite(u"null null"), u"");
 
   EXPECT_EQ(AddressRewriter::RewriteUsingGlobalRules(u"null"), u"");
 }

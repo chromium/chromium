@@ -70,6 +70,9 @@ TEST(AutofillNormalizationUtilsTest, NormalizeForComparisonWithGlobalRules) {
   EXPECT_EQ(u"", NormalizeForComparison(u"undefined"));
   EXPECT_EQ(u"", NormalizeForComparison(u"not applicable"));
   EXPECT_EQ(u"", NormalizeForComparison(u"n a"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"N/A"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"null, none, nan"));
+  EXPECT_EQ(u"", NormalizeForComparison(u"(NULL)-NULL-NULL"));
   EXPECT_EQ(u"123 main st", NormalizeForComparison(u"123 Main St null"));
   EXPECT_EQ(u"123 main st", NormalizeForComparison(u"null 123 Main St"));
   EXPECT_EQ(u"123 main st", NormalizeForComparison(u"123 Main null St"));
