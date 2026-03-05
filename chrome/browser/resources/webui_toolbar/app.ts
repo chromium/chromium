@@ -94,8 +94,6 @@ export class ToolbarAppElement extends CrLitElement {
         '--split-tabs-indicator-spacing',
         `${loadTimeData.getInteger('splitTabsIndicatorSpacing')}px`);
 
-    this.setFontVariables('omniboxPrimary');
-
     this.navigationStateListenerHandle_ =
         this.browserProxy_.addNavigationStateListener(
             (state: NavigationControlsState) => {
@@ -114,26 +112,6 @@ export class ToolbarAppElement extends CrLitElement {
       this.trackedElementManager_.startTracking(
           splitTabs, 'kToolbarSplitTabsToolbarButtonElementId');
     }
-  }
-
-  /* Sets CSS font variables for given prefix based on loadData.
-   * See WebUIToolbarUI::AddFontVariables */
-  setFontVariables(fontPrefix: string) {
-    // from print_preview_sidebar_test.ts:
-    function camelToKebab(s: string): string {
-      return s.replace(/([A-Z])/g, '-$1').toLowerCase();
-    }
-
-    const cssVarPrefix = '--' + camelToKebab(fontPrefix);
-    this.style.setProperty(
-        `${cssVarPrefix}-font-family`,
-        CSS.escape(loadTimeData.getString(`${fontPrefix}Family`)));
-    this.style.setProperty(
-        `${cssVarPrefix}-font-size`,
-        loadTimeData.getInteger(`${fontPrefix}Size`) + 'px');
-    this.style.setProperty(
-        `${cssVarPrefix}-font-weight`,
-        String(loadTimeData.getInteger(`${fontPrefix}Weight`)));
   }
 
   /**

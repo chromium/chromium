@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/notreached.h"
@@ -13,7 +14,9 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/webui_url_constants.h"
+#include "ui/views/style/typography_provider.h"
 
 namespace {
 
@@ -160,7 +163,7 @@ std::string_view LayoutConstantToCssVarName(LayoutConstant layout_constant) {
 // static
 std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
   std::string css_string;
-  // At time this was implemented, actual usage was about 2.3K
+  // At time this was implemented, actual usage was about 2.5K
   css_string.reserve(3 * 1024);
   css_string.append(":host{");
 
@@ -174,6 +177,12 @@ std::string WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss() {
         {LayoutConstantToCssVarName(layout_constant), ":",
          base::NumberToString(GetLayoutConstant(layout_constant)), "px;"});
   }
+
+  const auto& typography_provider = views::TypographyProvider::Get();
+  AddFontVariables("--omnibox-primary",
+                   typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
+                                               views::style::STYLE_PRIMARY),
+                   css_string);
 
   css_string.push_back('}');
   return css_string;
@@ -216,4 +225,45 @@ void WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
 
   source->path_to_resource_map[kPathV0] =
       blink::mojom::LocalResourceValue::NewResponseBody(std::move(layout_css));
+}
+
+// static
+std::string WebUIToolbarLayoutCssHelper::EscapeCssFontName(
+    std::string_view in) {
+  // References here: CSS3 Syntax 4.3.5 and 3.3
+  std::string out;
+  out.reserve(in.size());
+  for (char c : in) {
+    if (c == '"') {
+      out += "\\\"";
+    } else if (c == '\\') {
+      out += "\\\\";
+    } else if (c < 32) {
+      // CSS pre-processing and parsing will change the meanings of CR, LF,
+      // CR-LF and FF; but for simplicity we just escape everything before
+      // space.
+      out += '\\';
+      base::AppendHexEncodedByte(c, out);
+      out += ' ';
+    } else {
+      out += c;
+    }
+  }
+  return out;
+}
+
+// static
+void WebUIToolbarLayoutCssHelper::AddFontVariables(std::string_view prefix,
+                                                   const gfx::FontList& font,
+                                                   std::string& out) {
+  DCHECK_EQ(1u, font.GetFonts().size());
+  base::StrAppend(
+      &out,
+      // clang-format off
+      {prefix, "-font-family:\"",
+       EscapeCssFontName(font.GetPrimaryFont().GetFontName()), "\";",
+       prefix, "-font-size:", base::NumberToString(font.GetFontSize()), "px;",
+       prefix, "-font-weight:",
+       base::NumberToString(static_cast<int>(font.GetFontWeight())), ";"});
+  // clang-format on
 }

@@ -26,14 +26,6 @@
 #include "ui/webui/resources/js/tracked_element/tracked_element.mojom.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 
-namespace content {
-class WebUIDataSource;
-}  // namespace content
-
-namespace gfx {
-class FontList;
-}  // namespace gfx
-
 class CommandUpdater;
 
 // The webui controller for the webui toolbar. This class has a two part
@@ -91,17 +83,6 @@ class WebUIToolbarUI : public TopChromeWebUIController {
 
   void WebUIRenderFrameCreated(
       content::RenderFrameHost* render_frame_host) override;
-
-  // Adds a set of variables describing `font` into `source`. Assumes
-  // `font` has one entry.
-  //
-  // The variables are:
-  // ${prefix}Family --- the font name, as string. May need escaping before use!
-  // ${prefix}Size --- font height in pixels, as integer.
-  // ${prefix}Weight --- font weight, as integer.
-  static void AddFontVariables(std::string_view prefix,
-                               const gfx::FontList& font,
-                               content::WebUIDataSource* source);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebUIToolbarUITest,

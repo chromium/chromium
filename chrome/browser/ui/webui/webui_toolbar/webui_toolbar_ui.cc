@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter_service.h"
@@ -42,7 +41,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/views/style/typography_provider.h"
 #include "ui/views/widget/widget.h"
 #include "ui/webui/tracked_element/tracked_element_handler.h"
 #include "ui/webui/webui_util.h"
@@ -67,12 +65,6 @@ WebUIToolbarUI::WebUIToolbarUI(content::WebUI* web_ui)
       // go/keep-sorted end
   };
   source->AddLocalizedStrings(kStrings);
-
-  const auto& typography_provider = views::TypographyProvider::Get();
-  AddFontVariables("omniboxPrimary",
-                   typography_provider.GetFont(CONTEXT_OMNIBOX_PRIMARY,
-                                               views::style::STYLE_PRIMARY),
-                   source);
 
   webui::SetupWebUIDataSource(source, kWebuiToolbarResources,
                               IDR_WEBUI_TOOLBAR_WEBUI_TOOLBAR_HTML);
@@ -206,18 +198,6 @@ void WebUIToolbarUI::WebUIRenderFrameCreated(
     render_frame_host->GetRenderWidgetHost()->SetHungRendererDelay(
         features::kWebUIReloadButtonRestartUnresponsiveRenderersTimeout.Get());
   }
-}
-
-// static
-void WebUIToolbarUI::AddFontVariables(std::string_view prefix,
-                                      const gfx::FontList& font,
-                                      content::WebUIDataSource* source) {
-  DCHECK_EQ(1u, font.GetFonts().size());
-  source->AddString(base::StrCat({prefix, "Family"}),
-                    font.GetPrimaryFont().GetFontName());
-  source->AddInteger(base::StrCat({prefix, "Size"}), font.GetFontSize());
-  source->AddInteger(base::StrCat({prefix, "Weight"}),
-                     static_cast<int>(font.GetFontWeight()));
 }
 
 void WebUIToolbarUI::PopulateLocalResourceLoaderConfig(

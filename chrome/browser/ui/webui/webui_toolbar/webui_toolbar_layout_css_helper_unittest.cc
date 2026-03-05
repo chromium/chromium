@@ -7,16 +7,38 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/style/typography.h"
+#include "ui/views/test/test_layout_provider.h"
 
-TEST(WebUIToolbarLayoutCssHelperTest, GenerateLayoutConstantsCss) {
+class WebUIToolbarLayoutCssHelperTest : public testing::Test {
+ protected:
+  WebUIToolbarLayoutCssHelperTest() {
+    layout_provider_.SetFontDetails(
+        CONTEXT_OMNIBOX_PRIMARY, views::style::STYLE_PRIMARY,
+        ui::ResourceBundle::FontDetails("Globe Old Greek", /*size_delta=*/0,
+                                        /*weight=*/gfx::Font::Weight::NORMAL));
+  }
+
+  views::test::TestLayoutProvider layout_provider_;
+};
+
+TEST_F(WebUIToolbarLayoutCssHelperTest, GenerateLayoutConstantsCss) {
   std::string css = WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss();
   EXPECT_FALSE(css.empty());
   EXPECT_TRUE(css.find("--toolbar-button-icon-size:") != std::string::npos);
+
+  // We can't actually test the font family (since the platform will substitute
+  // something real), and size isn't controlled here, but weight is at least
+  // predictable.
+  EXPECT_TRUE(css.find("--omnibox-primary-font-family:") != std::string::npos);
+  EXPECT_TRUE(css.find("--omnibox-primary-font-weight:400;") !=
+              std::string::npos);
 }
 
-TEST(WebUIToolbarLayoutCssHelperTest, ShouldHandleRequest) {
+TEST_F(WebUIToolbarLayoutCssHelperTest, ShouldHandleRequest) {
   EXPECT_FALSE(WebUIToolbarLayoutCssHelper::ShouldHandleRequest("lc.css"));
   EXPECT_FALSE(WebUIToolbarLayoutCssHelper::ShouldHandleRequest(""));
   EXPECT_TRUE(
@@ -35,7 +57,7 @@ TEST(WebUIToolbarLayoutCssHelperTest, ShouldHandleRequest) {
       "layout_constants.cssilly"));
 }
 
-TEST(WebUIToolbarLayoutCssHelperTest, HandleRequest) {
+TEST_F(WebUIToolbarLayoutCssHelperTest, HandleRequest) {
   base::test::TestFuture<scoped_refptr<base::RefCountedMemory>> future;
   WebUIToolbarLayoutCssHelper::HandleRequest("ignored", future.GetCallback());
   auto result = future.Get();
@@ -47,7 +69,7 @@ TEST(WebUIToolbarLayoutCssHelperTest, HandleRequest) {
               std::string::npos);
 }
 
-TEST(WebUIToolbarLayoutCssHelperTest, PopulateLocalResourceLoaderConfig) {
+TEST_F(WebUIToolbarLayoutCssHelperTest, PopulateLocalResourceLoaderConfig) {
   blink::mojom::LocalResourceLoaderConfigPtr local_config =
       blink::mojom::LocalResourceLoaderConfig::New();
   WebUIToolbarLayoutCssHelper::PopulateLocalResourceLoaderConfig(
@@ -65,4 +87,14 @@ TEST(WebUIToolbarLayoutCssHelperTest, PopulateLocalResourceLoaderConfig) {
   ASSERT_TRUE(it2->second->is_response_body());
   EXPECT_EQ(WebUIToolbarLayoutCssHelper::GenerateLayoutConstantsCss(),
             it2->second->get_response_body());
+}
+
+TEST_F(WebUIToolbarLayoutCssHelperTest, EscapeCssFontName) {
+  EXPECT_EQ("Greek", WebUIToolbarLayoutCssHelper::EscapeCssFontName("Greek"));
+  EXPECT_EQ("Gr\\\\eek",
+            WebUIToolbarLayoutCssHelper::EscapeCssFontName("Gr\\eek"));
+  EXPECT_EQ("\\\"Greek",
+            WebUIToolbarLayoutCssHelper::EscapeCssFontName("\"Greek"));
+  EXPECT_EQ("\\0A \\0C ",
+            WebUIToolbarLayoutCssHelper::EscapeCssFontName("\n\f"));
 }
