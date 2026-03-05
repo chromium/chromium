@@ -107,6 +107,13 @@ namespace {
 
 constexpr int kPixelsPerTick = 120;
 
+// Some libei APIs, such as ei_device_get_name(), return a const char* but
+// do not document that the returned pointer will always be non-null. This
+// helper is useful for safely logging these strings.
+const char* NullToLiteral(const char* ptr) {
+  return ptr ? ptr : "null";
+}
+
 // This functionality is copied from fractional_input_filter.cc to maintain
 // an equivalent functionality for now.
 // TODO(rkjnsn): Once we are sure the client calculations indeed generate a 1.0
@@ -190,7 +197,7 @@ void EiSenderSession::InjectAbsolutePointerMove(std::string_view region_id,
 
   auto [first_equal, first_greater] = absolute_pointers_.equal_range(region_id);
   if (first_equal == first_greater) {
-    LOG(ERROR) << "No absolute pointer for the requested region";
+    LOG(ERROR) << "No absolute pointer for the requested region: " << region_id;
     return;
   }
 
@@ -403,6 +410,7 @@ void EiSenderSession::OnDisconnected(bool shutting_down) {
 }
 
 void EiSenderSession::OnSeatAdded(EiSeatPtr seat) {
+  HOST_LOG << "EI seat added: " << NullToLiteral(ei_seat_get_name(seat.get()));
   if (default_seat_.get()) {
     HOST_LOG << "Ignoring additional seat";
     return;
@@ -432,44 +440,59 @@ void EiSenderSession::OnSeatAdded(EiSeatPtr seat) {
 }
 
 void EiSenderSession::OnSeatRemoved(EiSeatPtr seat) {
+  HOST_LOG << "EI seat removed: "
+           << NullToLiteral(ei_seat_get_name(seat.get()));
   if (seat == default_seat_) {
     default_seat_.reset();
-    LOG(WARNING) << "EIS seat removed";
+    LOG(WARNING) << "Default seat removed";
   }
 }
 
 void EiSenderSession::OnDeviceAdded(EiDevicePtr device) {
+  HOST_LOG << "EI device added: "
+           << NullToLiteral(ei_device_get_name(device.get()));
   AllocDeviceState(device);
   // The compositor might provide a device with multiple capabilities, in which
   // case it will be inserted in multiple lists.
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_KEYBOARD)) {
-    keyboards_.push_back(
-        std::make_tuple(device, std::make_unique<EiKeymap>(device)));
+    HOST_LOG << ".. adding to keyboard devices";
+    keyboards_.emplace_back(device, std::make_unique<EiKeymap>(device));
     std::get<1>(keyboards_.back())
         ->Load(base::BindOnce(&EiSenderSession::OnKeymapLoaded, GetWeakPtr(),
                               device));
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
+    HOST_LOG << ".. adding to relative pointers";
     relative_pointers_.push_back({device});
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_BUTTON)) {
+    HOST_LOG << ".. adding to button devices";
     button_devices_.push_back({device});
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_SCROLL)) {
+    HOST_LOG << ".. adding to scroll devices";
     scroll_devices_.push_back({device});
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER_ABSOLUTE)) {
+    HOST_LOG << ".. adding to absolute pointers";
     AddDeviceRegions(absolute_pointers_, {device});
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_TOUCH)) {
+    HOST_LOG << ".. adding to touch devices";
     AddDeviceRegions(touch_devices_, {device});
   }
 }
 
 void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
+  HOST_LOG << "EI device removed: "
+           << NullToLiteral(ei_device_get_name(device.get()));
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_KEYBOARD)) {
+    HOST_LOG << ".. removing from keyboard devices";
     bool is_current =
         (!keyboards_.empty() && std::get<0>(keyboards_.back()) == device);
+    if (is_current) {
+      LOG(WARNING) << "The current keyboard device was removed.";
+    }
     std::erase_if(keyboards_, [&device](auto& item) {
       return std::get<0>(item) == device;
     });
@@ -479,10 +502,15 @@ void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
     }
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER)) {
+    HOST_LOG << ".. removing from relative pointers";
+    if (!relative_pointers_.empty() && relative_pointers_.front() == device) {
+      LOG(WARNING) << "The current relative pointer was removed.";
+    }
     std::erase_if(relative_pointers_,
                   [&device](auto& item) { return item == device; });
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_BUTTON)) {
+    HOST_LOG << ".. removing from button devices";
     if (!button_devices_.empty() && button_devices_.front() == device) {
       LOG(WARNING) << "The first button device was removed. This may cause "
                       "issues with button or scroll injection.";
@@ -491,15 +519,18 @@ void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
                   [&device](auto& item) { return item == device; });
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_SCROLL)) {
+    HOST_LOG << ".. removing from scroll devices";
     std::erase_if(scroll_devices_,
                   [&device](auto& item) { return item == device; });
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_POINTER_ABSOLUTE)) {
+    HOST_LOG << ".. removing from absolute pointers";
     std::erase_if(absolute_pointers_, [&device](auto& item) {
       return item.second.second == device;
     });
   }
   if (ei_device_has_capability(device.get(), EI_DEVICE_CAP_TOUCH)) {
+    HOST_LOG << ".. removing from touch devices";
     std::erase_if(touch_devices_, [&device](auto& item) {
       return item.second.second == device;
     });
@@ -508,10 +539,14 @@ void EiSenderSession::OnDeviceRemoved(EiDevicePtr device) {
 }
 
 void EiSenderSession::OnDevicePaused(EiDevicePtr device) {
+  HOST_LOG << "EI device paused: "
+           << NullToLiteral(ei_device_get_name(device.get()));
   GetDeviceState(device).resumed = false;
 }
 
 void EiSenderSession::OnDeviceResumed(EiDevicePtr device) {
+  HOST_LOG << "EI device resumed: "
+           << NullToLiteral(ei_device_get_name(device.get()));
   GetDeviceState(device).resumed = true;
   // TODO(rkjnsn): Only call this on devices we expect to use.
   // TODO(rkjnsn): In the future, we'll want the host to keep the session open
@@ -588,6 +623,8 @@ void EiSenderSession::AddDeviceRegions(
                   std::pair<EiRegionPtr, EiDevicePtr>,
                   std::less<>>& map,
     EiDevicePtr device) {
+  HOST_LOG << "Adding regions from device: "
+           << NullToLiteral(ei_device_get_name(device.get()));
   for (size_t i = 0; ei_region* region = ei_device_get_region(device.get(), i);
        ++i) {
     const char* mapping_id = ei_region_get_mapping_id(region);
@@ -595,9 +632,12 @@ void EiSenderSession::AddDeviceRegions(
     // InjectAbsolutePointerMove().
     std::string_view mapping_id_view =
         mapping_id ? mapping_id : std::string_view{};
-    if (mapping_id_view.empty()) {
-      HOST_LOG << "Region found without mapping id";
-    }
+    HOST_LOG << "  region " << i << " '" << mapping_id_view
+             << "' x=" << ei_region_get_x(region)
+             << " y=" << ei_region_get_y(region)
+             << " w=" << ei_region_get_width(region)
+             << " h=" << ei_region_get_height(region)
+             << " scale=" << ei_region_get_physical_scale(region);
     map.emplace(std::piecewise_construct, std::tuple(mapping_id_view),
                 std::forward_as_tuple(EiRegionPtr::Ref(region), device));
   }
