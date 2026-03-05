@@ -5,24 +5,22 @@
 #ifndef CHROME_BROWSER_UI_TEST_TEST_BROWSER_CLOSED_WAITER_H_
 #define CHROME_BROWSER_UI_TEST_TEST_BROWSER_CLOSED_WAITER_H_
 
-#include "base/memory/raw_ptr.h"
-#include "base/test/test_future.h"
-#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/test/base/ui_test_utils.h"
+
+class BrowserWindowInterface;
 
 // A helper class to wait for a particular browser to be closed.
-class TestBrowserClosedWaiter : public BrowserListObserver {
+// DEPRECATED: Use ui_test_utils::BrowserDestroyedObserver directly.
+class TestBrowserClosedWaiter {
  public:
-  explicit TestBrowserClosedWaiter(Browser* browser);
+  explicit TestBrowserClosedWaiter(BrowserWindowInterface* browser);
 
-  ~TestBrowserClosedWaiter() override;
+  ~TestBrowserClosedWaiter();
 
   [[nodiscard]] bool WaitUntilClosed();
 
  private:
-  void OnBrowserRemoved(Browser* browser) override;
-
-  raw_ptr<Browser> browser_ = nullptr;
-  base::test::TestFuture<void> future_;
+  ui_test_utils::BrowserDestroyedObserver observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_TEST_TEST_BROWSER_CLOSED_WAITER_H_
