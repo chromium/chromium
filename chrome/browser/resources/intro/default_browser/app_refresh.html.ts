@@ -18,7 +18,7 @@ export function getHtml(this: AppRefreshElement) {
 
   <div class="content-child" id="showcase-description">
     <div id="stepper-placeholder">
-      <img id="keep-icon" src="images/keep_icon.svg" alt="">
+      <img id="product-logo" src="images/product-logo.svg" alt="">
     </div>
     <div id="showcase-text">
       <h1 class="title">$i18n{refreshDefaultBrowserTitle}</h1>

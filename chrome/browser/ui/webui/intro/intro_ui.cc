@@ -122,6 +122,16 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
           ? IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_REFRESH_HTML
           : IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_HTML);
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  source->AddResourcePath(
+      "images/refresh_showcase_illustration.png",
+      IDR_DEFAULT_BROWSER_SHOWCASE_CHROME);
+#else
+  source->AddResourcePath(
+      "images/refresh_showcase_illustration.png",
+      IDR_INTRO_IMAGES_REFRESH_SHOWCASE_ILLUSTRATION_CHROMIUM_PNG);
+#endif
+
   source->AddResourcePath("images/product-logo.svg", IDR_PRODUCT_LOGO_SVG);
   source->AddResourcePath("images/product-logo-animation.svg",
                           IDR_PRODUCT_LOGO_ANIMATION_SVG);

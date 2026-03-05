@@ -9,7 +9,12 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --text-max-width: 350px;
+  --showcase-text-gap: 1.5rem;
+  --showcase-text-padding-top: 1.5rem;
+  --subtitle-font-size: 1rem;
+  --text-max-width: 21.875rem;
+  --title-font-size: 1.5rem;
+  --title-height: 4rem;
   color: var(--cr-primary-text-color);
   display: flex;
   flex-direction: column;
@@ -17,8 +22,13 @@
 }
 
 #header {
-  height: 52px;
-  padding: 0 24px 24px 16px;
+  height: 3.25rem;
+  padding: 0 1.5rem 1.5rem 1rem;
+}
+
+#product-logo {
+  height: 2.5rem;
+  width: 2.5rem;
 }
 
 #content-div {
@@ -26,15 +36,29 @@
   display: flex;
   flex: 1;
   flex-direction: row;
-  gap: 40px;
+  gap: 1.5rem;
   justify-content: center;
+  margin: 0 1rem 0;
+}
+
+@media screen and ((max-width: 780px) or (max-height: 600px)) {
+  :host {
+    --showcase-text-gap: 0.75rem;
+    --showcase-text-padding-top: 0.75rem;
+    --subtitle-font-size: 0.875rem;
+    --text-max-width: 18.125rem;
+    --title-font-size: 1.25rem;
+  }
 }
 
 .content-child {
   align-items: center;
   display: flex;
   flex: 1;
-  height: 500px;
+  height: 60%;
+  max-height: 31.25rem;
+  max-width: 31.25rem;
+  width: 60%;
 }
 
 #showcase-illustration {
@@ -44,13 +68,12 @@
 }
 
 #illustration {
-  border-radius: 24px;
+  border-radius: 1.5rem;
   content: url(images/refresh_showcase_illustration.png);
-  height: 100%;
-  max-height: 500px;
-  max-width: 500px;
+  max-height: 100%;
+  max-width: 100%;
   object-fit: contain;
-  width: 100%;
+  object-position: right center;
 }
 
 #showcase-description {
@@ -60,32 +83,39 @@
 }
 
 #showcase-text {
-  padding-top: 48px;
-  gap: 24px;
   display: flex;
   flex-direction: column;
+  gap: var(--showcase-text-gap);
+  padding-top: var(--showcase-text-padding-top);
 }
 
 .title {
   font-weight: 500;
-  height: 64px;
+  height: var(--title-height);
   letter-spacing: 0;
-  line-height: 32px;
+  line-height: 2rem;
+  font-size: var(--title-font-size);
   max-width: var(--text-max-width);
   margin: 0;
 }
 
 .subtitle {
-  font-size: 16px;
+  font-size: var(--subtitle-font-size);
   font-weight: 400;
-  line-height: 24px;
+  line-height: 1.5rem;
   margin: 0;
   max-width: var(--text-max-width);
 }
 
 #button-container {
   display: flex;
+<if expr="not is_win">
+  flex-direction: row-reverse;
+  justify-content: flex-end;
+</if>
+<if expr="is_win">
   flex-direction: row;
-  gap: 8px;
   justify-content: flex-start;
+</if>
+  gap: 0.5rem;
 }

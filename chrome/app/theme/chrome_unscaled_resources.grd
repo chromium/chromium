@@ -46,6 +46,7 @@
           </if>
           <include name="IDR_CHROME_PASSWORD_MANAGER_LOGO" file="${branding_path_component}/google_password_manager_logo.svg" type="BINDATA" />
           <include name="IDR_CHROME_PASSWORD_MANAGER_PWA_ICON" file="${branding_path_component}/google_password_manager_pwa_icon.svg" type="BINDATA" />
+          <include name="IDR_DEFAULT_BROWSER_SHOWCASE_CHROME" file="${branding_path_component}/default_browser_showcase_chrome.png" type="BINDATA" />
           <include name="IDR_PRODUCT_LOGO_128PX_SVG" file="${branding_path_component}/chrome_128px.svg" type="BINDATA" />
           <include name="IDR_GSHIELD_ICON_SVG" file="${branding_path_component}/gshield.svg" type="BINDATA" />
           <if expr="is_chromeos">

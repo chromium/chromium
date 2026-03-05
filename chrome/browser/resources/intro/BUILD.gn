@@ -15,8 +15,7 @@ build_webui("build") {
     "default_browser/default_browser_refresh.html",
     "images/default_browser_frame.svg",
     "images/default_browser_frame_dark.svg",
-    "images/keep_icon.svg",
-    "images/refresh_showcase_illustration.png",
+    "images/refresh_showcase_illustration_chromium.png",
     "intro.html",
     "intro_refresh.html",
   ]
