@@ -15,8 +15,9 @@ enum class MediaState {
   kNone = 0,
   kMuted = 1,
   kAudible = 2,
-  kRecording = 3,
-  kSharing = 4,
+  kPictureInPicture = 3,
+  kRecording = 4,
+  kSharing = 5,
   kMaxValue = kSharing,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/tab/enums.xml:AndroidTabMediaState)

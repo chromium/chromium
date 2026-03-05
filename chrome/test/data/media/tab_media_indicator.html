@@ -10,6 +10,9 @@
    <br>
   <button id="mute">Mute</button>
   <button id="unmute">Unmute</button>
+  <br>
+  <button id="request-pip">Request PiP</button>
+  <button id="exit-pip">Exit PiP</button>
    <br>
   <button id="request-mic">Request Mic</button>
   <button id="stop-mic">Stop Mic</button>
@@ -24,23 +27,45 @@
     const video = document.getElementById('video');
     document.getElementById('mute').onclick = () => video.muted = true;
     document.getElementById('unmute').onclick = () => video.muted = false;
+    document.getElementById('request-pip').onclick = () => video.requestPictureInPicture();
+    document.getElementById('exit-pip').onclick = () => document.exitPictureInPicture();
 
-    var stream;
+    var micStream;
+    var camStream;
+    var tabCaptureStream;
 
     function requestMic() {
       navigator.mediaDevices.getUserMedia({audio: true})
         .then(stream => {
+          micStream = stream;
           console.log('Mic access granted');
         })
         .catch(err => console.error('Mic access denied', err));
     }
 
+    function stopMic() {
+      if (micStream) {
+        micStream.getTracks().forEach(track => track.stop());
+        micStream = null;
+        console.log('Mic stopped');
+      }
+    }
+
     function requestCam() {
       navigator.mediaDevices.getUserMedia({video: true})
         .then(stream => {
+          camStream = stream;
           console.log('Cam access granted');
         })
         .catch(err => console.error('Cam access denied', err));
+    }
+
+    function stopCam() {
+      if (camStream) {
+        camStream.getTracks().forEach(track => track.stop());
+        camStream = null;
+        console.log('Cam stopped');
+      }
     }
 
     function requestTabCapture() {
@@ -49,7 +74,7 @@
         preferCurrentTab: true
       })
       .then(s => {
-        stream = s;
+        tabCaptureStream = s;
         document.title = 'stream_ready';
         console.log('Tab capture access granted');
       })
@@ -60,23 +85,25 @@
     }
 
     function stopTabCapture() {
-      if (stream) {
-        stream.getTracks().forEach(track => track.stop());
-        stream = null;
+      if (tabCaptureStream) {
+        tabCaptureStream.getTracks().forEach(track => track.stop());
+        tabCaptureStream = null;
         document.title = 'stopped_successfully';
         console.log('Tab capture stopped');
       }
     }
 
     function monitorStreamEnd() {
-      if (stream && stream.getVideoTracks().length > 0) {
-        stream.getVideoTracks()[0].onended = () => { document.title = 'ended'; };
+      if (tabCaptureStream && tabCaptureStream.getVideoTracks().length > 0) {
+        tabCaptureStream.getVideoTracks()[0].onended = () => { document.title = 'ended'; };
         document.title = 'listener_attached';
       }
     }
 
     document.getElementById('request-mic').onclick = requestMic;
+    document.getElementById('stop-mic').onclick = stopMic;
     document.getElementById('request-cam').onclick = requestCam;
+    document.getElementById('stop-cam').onclick = stopCam;
     document.getElementById('request-tab-capture').onclick = requestTabCapture;
     document.getElementById('stop-tab-capture').onclick = stopTabCapture;
   </script>

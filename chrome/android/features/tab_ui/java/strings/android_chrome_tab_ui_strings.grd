@@ -1187,6 +1187,9 @@
       <message name="IDS_ACCESSIBILITY_TAB_GROUP_SHARING" desc="Accessibility description for a tab group that contains a tab that is sharing its screen.">
         Sharing tab screen
       </message>
+      <message name="IDS_ACCESSIBILITY_TAB_GROUP_PICTURE_IN_PICTURE" desc="Accessibility description for a tab group that contains a tab that is in picture-in-picture mode.">
+        Picture-in-picture
+      </message>
     </messages>
   </release>
 </grit>

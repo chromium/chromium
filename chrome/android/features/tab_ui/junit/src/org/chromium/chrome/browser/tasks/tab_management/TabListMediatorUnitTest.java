@@ -5491,6 +5491,17 @@ public class TabListMediatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
+    public void testMediaState_TabPiP() {
+        assertEquals(MediaState.NONE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+
+        updateTabMediaState(mTab1, MediaState.PICTURE_IN_PICTURE);
+        assertEquals(
+                MediaState.PICTURE_IN_PICTURE,
+                mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
     public void testMediaState_TabGroup() {
         when(mTab1.getMediaState()).thenReturn(MediaState.MUTED);
         when(mTab2.getMediaState()).thenReturn(MediaState.AUDIBLE);
@@ -5514,9 +5525,15 @@ public class TabListMediatorUnitTest {
         updateTabMediaState(mTab1, MediaState.NONE);
         assertEquals(MediaState.MUTED, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
 
-        // RECORDING has priority over AUDIBLE.
-        updateTabMediaState(mTab1, MediaState.RECORDING);
+        // PiP has priority over AUDIBLE but less than RECORDING.
+        updateTabMediaState(mTab1, MediaState.PICTURE_IN_PICTURE);
         updateTabMediaState(mTab2, MediaState.AUDIBLE);
+        assertEquals(
+                MediaState.PICTURE_IN_PICTURE,
+                mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
+
+        // RECORDING has priority over PiP.
+        updateTabMediaState(mTab2, MediaState.RECORDING);
         assertEquals(
                 MediaState.RECORDING, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
     }

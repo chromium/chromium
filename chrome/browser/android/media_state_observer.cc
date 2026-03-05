@@ -73,6 +73,15 @@ void MediaStateObserver::OnIsBeingMirroredChanged(
   UpdateMediaState();
 }
 
+void MediaStateObserver::MediaPictureInPictureChanged(
+    bool is_in_picture_in_picture) {
+  if (is_in_pip_ == is_in_picture_in_picture) {
+    return;
+  }
+  is_in_pip_ = is_in_picture_in_picture;
+  UpdateMediaState();
+}
+
 base::CallbackListSubscription
 MediaStateObserver::MaybeSubscribeToRecentlyAudible() {
   if (base::FeatureList::IsEnabled(media::kEnableAudioMonitoringOnAndroid)) {
@@ -103,6 +112,8 @@ void MediaStateObserver::UpdateMediaState() {
     new_state = tabs::MediaState::kSharing;
   } else if (is_capturing_video_ || is_capturing_audio_) {
     new_state = tabs::MediaState::kRecording;
+  } else if (is_in_pip_) {
+    new_state = tabs::MediaState::kPictureInPicture;
   } else if (is_audible_) {
     new_state =
         is_audio_muted_ ? tabs::MediaState::kMuted : tabs::MediaState::kAudible;

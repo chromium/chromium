@@ -48,6 +48,8 @@ class MediaStateObserver
   // Called when the mirroring state of the WebContents has changed.
   void OnIsBeingMirroredChanged(content::WebContents* web_contents,
                                 bool is_being_mirrored) override;
+  // Called when the picture in picture state has changed.
+  void MediaPictureInPictureChanged(bool is_in_picture_in_picture) override;
 
  private:
   friend class content::WebContentsUserData<MediaStateObserver>;
@@ -70,6 +72,7 @@ class MediaStateObserver
   bool is_capturing_audio_ = false;
   bool is_audio_muted_ = false;
   bool is_audible_ = false;
+  bool is_in_pip_ = false;
 
   tabs::MediaState media_state_ = tabs::MediaState::kNone;
 

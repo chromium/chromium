@@ -1937,6 +1937,8 @@ public class StripLayoutHelperManager
             return mContext.getColor(R.color.tab_recording_media_color);
         } else if (mediaState == MediaState.SHARING) {
             return mContext.getColor(R.color.tab_sharing_media_color);
+        } else if (mediaState == MediaState.PICTURE_IN_PICTURE) {
+            return mContext.getColor(R.color.tab_pip_media_color);
         }
         return defaultTint;
     }

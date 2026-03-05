@@ -87,4 +87,5 @@ found in the LICENSE file.
     <!-- Tab strip media indicators-->
     <color name="tab_recording_media_color">@color/google_red_600</color>
     <color name="tab_sharing_media_color">@color/tab_group_color_picker_blue_dark</color>
+    <color name="tab_pip_media_color">@color/tab_group_color_picker_blue_dark</color>
 </resources>

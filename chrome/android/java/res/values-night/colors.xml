@@ -24,4 +24,5 @@ found in the LICENSE file.
     <!-- Tab strip media indicators-->
     <color name="tab_recording_media_color">@color/google_red_300</color>
     <color name="tab_sharing_media_color">@color/baseline_primary_80</color>
+    <color name="tab_pip_media_color">@color/baseline_primary_80</color>
 </resources>

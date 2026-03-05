@@ -10,6 +10,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+import static org.junit.Assume.assumeTrue;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
@@ -18,6 +19,7 @@ import android.app.Activity;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.view.View;
 
 import androidx.test.espresso.ViewInteraction;
@@ -39,6 +41,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Restriction;
@@ -46,6 +49,7 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCapturePickerDelegate;
 import org.chromium.chrome.browser.media.MediaCapturePickerManager;
+import org.chromium.chrome.browser.media.PictureInPicture;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabRemover;
@@ -63,6 +67,7 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.common.ContentSwitches;
 import org.chromium.media.MediaSwitches;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.test.util.DeviceRestriction;
 
 import java.util.List;
 import java.util.concurrent.TimeoutException;
@@ -254,6 +259,29 @@ public class TabMediaIndicatorTest {
 
     @Test
     @SmallTest
+    // PictureInPicture#isEnabled() is true on Android 11+.
+    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.R)
+    // PiP is not supported for automotive.
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
+    public void testMediaStatePictureInPicture() throws TimeoutException {
+        assumeTrue("PiP is not enabled", isPiPEnabled());
+        assertEquals(MediaState.NONE, mTab.getMediaState());
+
+        DOMUtils.playMedia(mTab.getWebContents(), VIDEO_ID);
+        DOMUtils.waitForMediaPlay(mTab.getWebContents(), VIDEO_ID);
+        waitForMediaState(mTab, MediaState.AUDIBLE);
+
+        // Enter Picture-in-Picture
+        enterPictureInPicture();
+        waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
+
+        // Exit Picture-in-Picture
+        exitPictureInPicture();
+        waitForMediaState(mTab, MediaState.AUDIBLE);
+    }
+
+    @Test
+    @SmallTest
     public void testMediaStatePriority() throws Exception {
         assertEquals(MediaState.NONE, mTab.getMediaState());
 
@@ -270,6 +298,21 @@ public class TabMediaIndicatorTest {
         // RECORDING
         requestRecording(REQUEST_MIC_ID);
         waitForMediaState(mTab, MediaState.RECORDING);
+
+        if (isPiPEnabled()) {
+            // PICTURE_IN_PICTURE
+            // Indicator should stay RECORDING as it has higher priority.
+            enterPictureInPicture();
+            waitForMediaState(mTab, MediaState.RECORDING);
+
+            // Stop recording, indicator should drop to PiP.
+            DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "stop-mic");
+            waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
+
+            // Exit PiP, indicator should drop to AUDIBLE.
+            exitPictureInPicture();
+            waitForMediaState(mTab, MediaState.AUDIBLE);
+        }
     }
 
     @Test
@@ -456,6 +499,26 @@ public class TabMediaIndicatorTest {
         requestRecording(REQUEST_MIC_ID);
         waitForMediaState(mTab, MediaState.RECORDING);
         watcher.assertExpected();
+
+        if (isPiPEnabled()) {
+            // Expect PICTURE_IN_PICTURE
+            watcher =
+                    HistogramWatcher.newSingleRecordWatcher(
+                            "Tab.Android.MediaState", MediaState.PICTURE_IN_PICTURE);
+            enterPictureInPicture();
+            // Remove the mic recording so we can drop down to PiP priority.
+            DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "stop-mic");
+            waitForMediaState(mTab, MediaState.PICTURE_IN_PICTURE);
+            watcher.assertExpected();
+        }
+    }
+
+    private void enterPictureInPicture() {
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "request-pip");
+    }
+
+    private void exitPictureInPicture() {
+        DOMUtils.clickNodeWithJavaScript(mTab.getWebContents(), "exit-pip");
     }
 
     private void requestRecording(String id) throws InterruptedException {
@@ -562,5 +625,9 @@ public class TabMediaIndicatorTest {
                 () -> {
                     mTabModel.setIndex(mTabModel.indexOf(tab), TabSelectionType.FROM_USER);
                 });
+    }
+
+    private boolean isPiPEnabled() {
+        return PictureInPicture.isEnabled(mActivityTestRule.getActivity());
     }
 }

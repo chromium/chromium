@@ -242,6 +242,7 @@ public class TabGridView extends SelectableItemViewBase<TabListEditorItemSelecti
             case MediaState.MUTED:
             case MediaState.RECORDING:
             case MediaState.SHARING:
+            case MediaState.PICTURE_IN_PICTURE:
                 marginResId = R.dimen.tab_grid_card_title_end_margin_media_indicator;
                 mediaIndicatorVisibility = View.VISIBLE;
                 break;

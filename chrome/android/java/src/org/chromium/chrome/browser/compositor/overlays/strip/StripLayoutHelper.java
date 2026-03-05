@@ -5692,13 +5692,17 @@ public class StripLayoutHelper
                             R.string.accessibility_tabstrip_tab_multiselected_pinned_recording,
                             R.string.accessibility_tabstrip_tab_multiselected_pinned_sharing,
                             R.string
+                                    .accessibility_tabstrip_tab_multiselected_pinned_picture_in_picture,
+                            R.string
                                     .accessibility_tabstrip_tab_multiselected_pinned_audible_incognito,
                             R.string
                                     .accessibility_tabstrip_tab_multiselected_pinned_muted_incognito,
                             R.string
                                     .accessibility_tabstrip_tab_multiselected_pinned_recording_incognito,
                             R.string
-                                    .accessibility_tabstrip_tab_multiselected_pinned_sharing_incognito);
+                                    .accessibility_tabstrip_tab_multiselected_pinned_sharing_incognito,
+                            R.string
+                                    .accessibility_tabstrip_tab_multiselected_pinned_picture_in_picture_incognito);
                 } else {
                     return getMediaAccessibilityString(
                             mediaState,
@@ -5707,10 +5711,13 @@ public class StripLayoutHelper
                             R.string.accessibility_tabstrip_tab_pinned_muted,
                             R.string.accessibility_tabstrip_tab_pinned_recording,
                             R.string.accessibility_tabstrip_tab_pinned_sharing,
+                            R.string.accessibility_tabstrip_tab_pinned_picture_in_picture,
                             R.string.accessibility_tabstrip_tab_pinned_audible_incognito,
                             R.string.accessibility_tabstrip_tab_pinned_muted_incognito,
                             R.string.accessibility_tabstrip_tab_pinned_recording_incognito,
-                            R.string.accessibility_tabstrip_tab_pinned_sharing_incognito);
+                            R.string.accessibility_tabstrip_tab_pinned_sharing_incognito,
+                            R.string
+                                    .accessibility_tabstrip_tab_pinned_picture_in_picture_incognito);
                 }
             } else {
                 if (isMultiSelected) {
@@ -5721,10 +5728,13 @@ public class StripLayoutHelper
                             R.string.accessibility_tabstrip_tab_multiselected_muted,
                             R.string.accessibility_tabstrip_tab_multiselected_recording,
                             R.string.accessibility_tabstrip_tab_multiselected_sharing,
+                            R.string.accessibility_tabstrip_tab_multiselected_picture_in_picture,
                             R.string.accessibility_tabstrip_tab_multiselected_audible_incognito,
                             R.string.accessibility_tabstrip_tab_multiselected_muted_incognito,
                             R.string.accessibility_tabstrip_tab_multiselected_recording_incognito,
-                            R.string.accessibility_tabstrip_tab_multiselected_sharing_incognito);
+                            R.string.accessibility_tabstrip_tab_multiselected_sharing_incognito,
+                            R.string
+                                    .accessibility_tabstrip_tab_multiselected_picture_in_picture_incognito);
                 } else {
                     return getMediaAccessibilityString(
                             mediaState,
@@ -5733,10 +5743,12 @@ public class StripLayoutHelper
                             R.string.accessibility_tabstrip_tab_muted,
                             R.string.accessibility_tabstrip_tab_recording,
                             R.string.accessibility_tabstrip_tab_sharing,
+                            R.string.accessibility_tabstrip_tab_picture_in_picture,
                             R.string.accessibility_tabstrip_tab_audible_incognito,
                             R.string.accessibility_tabstrip_tab_muted_incognito,
                             R.string.accessibility_tabstrip_tab_recording_incognito,
-                            R.string.accessibility_tabstrip_tab_sharing_incognito);
+                            R.string.accessibility_tabstrip_tab_sharing_incognito,
+                            R.string.accessibility_tabstrip_tab_picture_in_picture_incognito);
                 }
             }
         } else {
@@ -5748,10 +5760,13 @@ public class StripLayoutHelper
                         R.string.accessibility_tabstrip_tab_selected_pinned_muted,
                         R.string.accessibility_tabstrip_tab_selected_pinned_recording,
                         R.string.accessibility_tabstrip_tab_selected_pinned_sharing,
+                        R.string.accessibility_tabstrip_tab_selected_pinned_picture_in_picture,
                         R.string.accessibility_tabstrip_tab_selected_pinned_audible_incognito,
                         R.string.accessibility_tabstrip_tab_selected_pinned_muted_incognito,
                         R.string.accessibility_tabstrip_tab_selected_pinned_recording_incognito,
-                        R.string.accessibility_tabstrip_tab_selected_pinned_sharing_incognito);
+                        R.string.accessibility_tabstrip_tab_selected_pinned_sharing_incognito,
+                        R.string
+                                .accessibility_tabstrip_tab_selected_pinned_picture_in_picture_incognito);
             } else {
                 return getMediaAccessibilityString(
                         mediaState,
@@ -5760,10 +5775,12 @@ public class StripLayoutHelper
                         R.string.accessibility_tabstrip_tab_selected_muted,
                         R.string.accessibility_tabstrip_tab_selected_recording,
                         R.string.accessibility_tabstrip_tab_selected_sharing,
+                        R.string.accessibility_tabstrip_tab_selected_picture_in_picture,
                         R.string.accessibility_tabstrip_tab_selected_audible_incognito,
                         R.string.accessibility_tabstrip_tab_selected_muted_incognito,
                         R.string.accessibility_tabstrip_tab_selected_recording_incognito,
-                        R.string.accessibility_tabstrip_tab_selected_sharing_incognito);
+                        R.string.accessibility_tabstrip_tab_selected_sharing_incognito,
+                        R.string.accessibility_tabstrip_tab_selected_picture_in_picture_incognito);
             }
         }
     }
@@ -5835,10 +5852,12 @@ public class StripLayoutHelper
             @StringRes int muted,
             @StringRes int recording,
             @StringRes int sharing,
+            @StringRes int pictureInPicture,
             @StringRes int audibleIncognito,
             @StringRes int mutedIncognito,
             @StringRes int recordingIncognito,
-            @StringRes int sharingIncognito) {
+            @StringRes int sharingIncognito,
+            @StringRes int pictureInPictureIncognito) {
         if (isIncognito) {
             switch (mediaState) {
                 case MediaState.AUDIBLE:
@@ -5849,6 +5868,8 @@ public class StripLayoutHelper
                     return recordingIncognito;
                 case MediaState.SHARING:
                     return sharingIncognito;
+                case MediaState.PICTURE_IN_PICTURE:
+                    return pictureInPictureIncognito;
                 default:
                     assert false : "Invalid media state: " + mediaState;
                     return 0;
@@ -5863,6 +5884,8 @@ public class StripLayoutHelper
                     return recording;
                 case MediaState.SHARING:
                     return sharing;
+                case MediaState.PICTURE_IN_PICTURE:
+                    return pictureInPicture;
                 default:
                     assert false : "Invalid media state: " + mediaState;
                     return 0;

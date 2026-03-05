@@ -41,11 +41,12 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="None"/>
   <int value="1" label="Muted"/>
   <int value="2" label="Audible"/>
-  <int value="3" label="Recording"/>
-  <int value="4" label="Sharing"/>
+  <int value="3" label="PictureInPicture"/>
+  <int value="4" label="Recording"/>
+  <int value="5" label="Sharing"/>
 </enum>
 
-<!-- LINT.ThenChange(//chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/Tab.java:AndroidTabMediaState) -->
+<!-- LINT.ThenChange(//chrome/browser/tab/media_state.h:AndroidTabMediaState) -->
 
 <!-- LINT.IfChange(AnimationFreezeCheckerState) -->
 

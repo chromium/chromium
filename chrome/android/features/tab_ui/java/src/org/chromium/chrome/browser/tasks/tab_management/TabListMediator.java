@@ -3508,6 +3508,8 @@ class TabListMediator implements TabListNotificationHandler {
                 return res.getString(R.string.accessibility_tab_group_recording);
             case MediaState.SHARING:
                 return res.getString(R.string.accessibility_tab_group_sharing);
+            case MediaState.PICTURE_IN_PICTURE:
+                return res.getString(R.string.accessibility_tab_group_picture_in_picture);
             default:
                 return "";
         }

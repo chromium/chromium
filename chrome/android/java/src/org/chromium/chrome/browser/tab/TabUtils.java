@@ -310,6 +310,7 @@ public class TabUtils {
             case MediaState.MUTED -> R.drawable.volume_off_24dp;
             case MediaState.RECORDING -> R.drawable.radio_button_checked_24dp;
             case MediaState.SHARING -> R.drawable.capture_24dp;
+            case MediaState.PICTURE_IN_PICTURE -> R.drawable.ic_picture_in_picture_alt_24dp;
             default -> Resources.ID_NULL;
         };
     }
