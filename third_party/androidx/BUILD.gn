@@ -3397,6 +3397,7 @@ if (!limit_android_deps) {
       ":androidx_compose_runtime_runtime_saveable_java",
       ":androidx_compose_ui_ui_java",
       ":androidx_lifecycle_lifecycle_common_java",
+      ":androidx_lifecycle_lifecycle_runtime_compose_java",
       ":androidx_lifecycle_lifecycle_viewmodel_java",
       ":androidx_lifecycle_lifecycle_viewmodel_savedstate_java",
       "//third_party/android_deps:org_jetbrains_kotlinx_kotlinx_serialization_core_java",
@@ -3439,6 +3440,7 @@ if (!limit_android_deps) {
     ]
     deps = [
       ":androidx_annotation_annotation_java",
+      ":androidx_collection_collection_java",
       ":androidx_core_core_ktx_java",
       ":androidx_lifecycle_lifecycle_common_java",
       ":androidx_lifecycle_lifecycle_livedata_core_java",
