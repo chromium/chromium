@@ -287,6 +287,10 @@ class ReadAnythingUntrustedPageHandler :
   void SendNextLanguageRequest();
   void OnInstallPackResponse(const PackResult& pack_result);
 #endif
+  // Callback for when the tab's web contents are discarded.
+  void OnTabDiscarded(tabs::TabInterface* tab,
+                      content::WebContents* old_contents,
+                      content::WebContents* new_contents);
 
   // ui::AXActionHandlerObserver:
   void TreeRemoved(ui::AXTreeID ax_tree_id) override;
@@ -427,6 +431,9 @@ class ReadAnythingUntrustedPageHandler :
   // itself has not necessarily loaded in yet, so wait for that frame before
   // notifying of the new tree using the info from the pdf frame itself.
   bool is_waiting_for_pdf_frame_ = false;
+
+  // Subscription for tab discard events.
+  base::CallbackListSubscription tab_discard_subscription_;
 
   // This manages the life cycle of the pinned toolbar observer. We observe
   // the pinned toolbar to ensure capture user pin changes in the toolbar ui.

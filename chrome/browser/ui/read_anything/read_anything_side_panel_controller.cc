@@ -73,9 +73,10 @@ ReadAnythingSidePanelControllerGlue::ReadAnythingSidePanelControllerGlue(
 
 ReadAnythingSidePanelController::ReadAnythingSidePanelController(
     tabs::TabInterface* tab,
-    SidePanelRegistry* side_panel_registry,
-    content::WebContents* web_contents)
-    : tab_(tab), side_panel_registry_(side_panel_registry) {
+    SidePanelRegistry* side_panel_registry)
+    : tabs::ContentsObservingTabFeature(*tab),
+      tab_(tab),
+      side_panel_registry_(side_panel_registry) {
   CHECK(!side_panel_registry_->GetEntryForKey(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything)));
 
@@ -95,7 +96,6 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
   tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ReadAnythingSidePanelController::TabForegrounded,
                           weak_factory_.GetWeakPtr())));
-  Observe(web_contents);
 
   // We do not know if the current tab is in the process of loading a page.
   // Assume that a page just finished loading to populate initial state.
@@ -124,14 +124,6 @@ ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
 
   // Inform observers when |this| is destroyed so they can do their own cleanup.
   observers_.Notify(&Observer::OnDestroyed);
-}
-
-void ReadAnythingSidePanelController::ResetForTabDiscard() {
-  auto* current_entry = side_panel_registry_->GetEntryForKey(
-      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
-  current_entry->RemoveObserver(this);
-  side_panel_registry_->Deregister(
-      SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything));
 }
 
 void ReadAnythingSidePanelController::RemoveReadAnythingControllerGlue() {

@@ -439,7 +439,7 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
     // ownership of this controller is migrated to ReadAnythingController.
     read_anything_side_panel_controller_ =
         std::make_unique<ReadAnythingSidePanelController>(
-            &tab, side_panel_registry_.get(), tab.GetContents());
+            &tab, side_panel_registry_.get());
   }
 
   // Create the HttpAuthCacheStatus to start observing resource load
@@ -593,15 +593,6 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
 
   Profile* profile = tab->GetBrowserWindowInterface()->GetProfile();
 
-  if (!features::IsImmersiveReadAnythingEnabled()) {
-    // This method is transiently used to reset features that do not handle tab
-    // discarding themselves.
-    read_anything_side_panel_controller_->ResetForTabDiscard();
-    read_anything_side_panel_controller_.reset();
-    read_anything_side_panel_controller_ =
-        std::make_unique<ReadAnythingSidePanelController>(
-            tab, side_panel_registry_.get(), new_contents);
-  }
   // Deregister side-panel entries that are web-contents scoped rather than tab
   // scoped.
   side_panel_registry_->Deregister(

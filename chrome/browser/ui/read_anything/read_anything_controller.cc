@@ -102,8 +102,7 @@ ReadAnythingController::ReadAnythingController(
       read_anything_side_panel_controller_(
           std::make_unique<ReadAnythingSidePanelController>(
               tab,
-              side_panel_registry,
-              tab->GetContents())),
+              side_panel_registry)),
       distillation_state_locked_for_testing_(freeze_distillation_for_testing_) {
   // This controller should only be instantiated if
   // IsImmersiveReadAnythingEnabled is enabled
@@ -245,9 +244,9 @@ void ReadAnythingController::TabWillDetach(
 // Returns the SidePanelUI for the active tab if the tab is active and has a
 // browser window interface. Returns nullptr otherwise.
 SidePanelUI* ReadAnythingController::GetSidePanelUI() {
-  CHECK(tab_);
-  CHECK(tab_->IsActivated());
-  CHECK(tab_->GetBrowserWindowInterface());
+  if (!tab_ || !tab_->IsActivated() || !tab_->GetBrowserWindowInterface()) {
+    return nullptr;
+  }
 
   return tab_->GetBrowserWindowInterface()->GetFeatures().side_panel_ui();
 }
@@ -350,11 +349,11 @@ void ReadAnythingController::ShowImmersiveUI(ReadAnythingOpenTrigger trigger) {
 
   if (GetPresentationState() == PresentationState::kInSidePanel) {
     is_presentation_transitioning_ = true;
-    SidePanelUI* side_panel_ui = GetSidePanelUI();
-    CHECK(side_panel_ui);
-    side_panel_ui->Close(SidePanelEntry::PanelType::kContent,
-                         SidePanelEntryHideReason::kSidePanelClosed,
-                         /*suppress_animations=*/true);
+    if (SidePanelUI* side_panel_ui = GetSidePanelUI()) {
+      side_panel_ui->Close(SidePanelEntry::PanelType::kContent,
+                           SidePanelEntryHideReason::kSidePanelClosed,
+                           /*suppress_animations=*/true);
+    }
     // Ensure we got the web_ui_wrapper_ back from the Side Panel if one ever
     // existed.
     CHECK(!has_shown_ui_ || web_ui_wrapper_);
@@ -451,27 +450,6 @@ void ReadAnythingController::SetPresentationState(PresentationState new_state) {
   }
   presentation_state_ = new_state;
   observers_.Notify(&Observer::OnReadingModePresenterChanged);
-}
-
-void ReadAnythingController::OnDiscardContents(
-    tabs::TabInterface* tab,
-    content::WebContents* old_contents,
-    content::WebContents* new_contents) {
-  tabs::ContentsObservingTabFeature::OnDiscardContents(tab, old_contents,
-                                                       new_contents);
-
-  // OnDiscardContents shouldn't be called when tab is active, which means
-  // Reading Mode shouldn't be active.
-  CHECK(GetPresentationState() == PresentationState::kUndefined ||
-        GetPresentationState() == PresentationState::kInactive);
-
-  web_ui_wrapper_.reset();
-  ra_web_ui_observer_.reset();
-
-  read_anything_side_panel_controller_->ResetForTabDiscard();
-  read_anything_side_panel_controller_ =
-      std::make_unique<ReadAnythingSidePanelController>(
-          tab_, side_panel_registry_, new_contents);
 }
 
 void ReadAnythingController::PrimaryPageChanged(content::Page& page) {

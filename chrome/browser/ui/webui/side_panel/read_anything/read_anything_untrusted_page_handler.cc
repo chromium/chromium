@@ -367,6 +367,10 @@ ReadAnythingUntrustedPageHandler::ReadAnythingUntrustedPageHandler(
     tab_ = side_panel_controller_->tab();
   }
 
+  tab_discard_subscription_ = tab_->RegisterWillDiscardContents(
+      base::BindRepeating(&ReadAnythingUntrustedPageHandler::OnTabDiscarded,
+                          weak_factory_.GetWeakPtr()));
+
   PrefService* prefs = profile_->GetPrefs();
   base::DictValue voices = base::DictValue();
   voices = prefs->GetDict(prefs::kAccessibilityReadAnythingVoiceName).Clone();
@@ -1131,6 +1135,16 @@ void ReadAnythingUntrustedPageHandler::OnReadingModeHiddenAckTimeout() {
 
 void ReadAnythingUntrustedPageHandler::OnReadingModePresenterChanged() {
   OnGetPresentationState();
+}
+
+void ReadAnythingUntrustedPageHandler::OnTabDiscarded(
+    tabs::TabInterface* tab,
+    content::WebContents* old_contents,
+    content::WebContents* new_contents) {
+  main_observer_ = std::make_unique<ReadAnythingWebContentsObserver>(
+      weak_factory_.GetSafeRef(), new_contents, kReadAnythingAXMode);
+  SetUpPdfObserver();
+  OnActiveAXTreeIDChanged();
 }
 
 void ReadAnythingUntrustedPageHandler::OnDestroyed() {

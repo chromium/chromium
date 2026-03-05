@@ -197,11 +197,6 @@ class ReadAnythingController : public tabs::ContentsObservingTabFeature {
   }
 
  private:
-  // tabs::ContentsObservingTabFeature:
-  void OnDiscardContents(tabs::TabInterface* tab,
-                         content::WebContents* old_contents,
-                         content::WebContents* new_contents) override;
-
   // Called when the tab will detach.
   void TabWillDetach(tabs::TabInterface* tab,
                      tabs::TabInterface::DetachReason reason);
