@@ -882,6 +882,68 @@ TEST_F(FlexLayoutAlgorithmTest, GapDecorationsContentDistributionGaps) {
   VerifyCrossGaps(expected_column_gaps, column_gaps);
 }
 
+TEST_F(FlexLayoutAlgorithmTest,
+       GapDecorationsContentDistributionGapsBetweenLines) {
+  ScopedCSSGapDecorationForTest scoped_gap_decoration(true);
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    body {
+        margin: 0px;
+    }
+
+    #flexbox {
+        width: 140px;
+        background-color: #fff;
+        display: flex;
+        flex-wrap: wrap;
+        row-rule: 5px solid gold;
+        height: 120px;
+    }
+
+    .item {
+        width: 70px;
+        height: 50px;
+        background-color: #007bff;
+        color: white;
+        display: flex;
+    }
+</style>
+<div id="flexbox">
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+    <div class="item"></div>
+</div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("flexbox"));
+
+  ConstraintSpace space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(200)),
+      /* stretch_inline_size_if_auto */ true,
+      /* is_new_formatting_context */ true);
+
+  FragmentGeometry fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /* break_token */
+                                       nullptr);
+
+  FlexLayoutAlgorithm algorithm({node, fragment_geometry, space});
+
+  algorithm.Layout();
+
+  const GapGeometry* gap_geometry = algorithm.GetGapGeometry();
+
+  const Vector<MainGap> expected_row_gaps = {MainGap(LayoutUnit(60))};
+
+  const Vector<MainGap>& row_gaps = gap_geometry->GetMainGaps();
+  EXPECT_EQ(row_gaps.size(), 1);
+
+  EXPECT_EQ(gap_geometry->GetBlockGapSize(), LayoutUnit(0));
+
+  VerifyMainGaps(expected_row_gaps, gap_geometry->GetMainGaps());
+}
+
 TEST_F(FlexLayoutAlgorithmTest, DevtoolsBasic) {
   const DevtoolsFlexInfo* devtools = LayoutForDevtools(R"HTML(
     <div style="display:flex; width: 100px;" id=flexbox>

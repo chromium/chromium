@@ -45,6 +45,8 @@ class LayoutUnitDiffuser {
   }
   LayoutUnitDiffuser() : LayoutUnitDiffuser(LayoutUnit(), 0, 0) {}
 
+  LayoutUnit BaseSize() const { return base_; }
+
   LayoutUnit Next() {
     constexpr LayoutUnit kEpsilon(LayoutUnit::Epsilon());
 

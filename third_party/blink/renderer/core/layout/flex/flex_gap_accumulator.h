@@ -123,14 +123,14 @@ struct FlexLine;
 class CORE_EXPORT FlexGapAccumulator {
  public:
   explicit FlexGapAccumulator(LayoutUnit gap_between_items,
-                              LayoutUnit gap_between_lines,
+                              LayoutUnit effective_gap_between_lines,
                               wtf_size_t num_lines,
                               wtf_size_t num_flex_items,
                               bool is_column,
                               LayoutUnit border_scrollbar_padding_block_start,
                               LayoutUnit border_scrollbar_padding_inline_start)
       : gap_between_items_(gap_between_items),
-        gap_between_lines_(gap_between_lines),
+        effective_gap_between_lines_(effective_gap_between_lines),
         is_column_(is_column),
         border_scrollbar_padding_block_start_(
             border_scrollbar_padding_block_start),
@@ -229,6 +229,14 @@ class CORE_EXPORT FlexGapAccumulator {
     first_flex_line_processed_index_ = index;
   }
 
+  void SetEffectiveGapBetweenLines(LayoutUnit effective_gap) {
+    effective_gap_between_lines_ = effective_gap;
+  }
+
+  LayoutUnit EffectiveGapBetweenLines() const {
+    return effective_gap_between_lines_;
+  }
+
   const Vector<MainGap>& MainGaps() const { return main_gaps_; }
 
   // In the flex algorithm, there are some cases where we need to suppress a row
@@ -250,7 +258,12 @@ class CORE_EXPORT FlexGapAccumulator {
                                       LayoutUnit line_cross_start);
 
   LayoutUnit gap_between_items_;
-  LayoutUnit gap_between_lines_;
+
+  // The effective gap between lines includes the base `gap` property plus any
+  // additional space from cross-axis content distribution (e.g., space-between,
+  // stretch).
+  LayoutUnit effective_gap_between_lines_;
+
   bool is_column_ = false;
 
   Vector<MainGap> main_gaps_;
@@ -269,7 +282,7 @@ class CORE_EXPORT FlexGapAccumulator {
   Vector<LayoutUnit> cross_gap_sizes_;
   LayoutUnit content_main_end_;
 
-  // Tracks the index of the first flex line procesesed within the current
+  // Tracks the index of the first flex line processed within the current
   // fragment.
   wtf_size_t first_flex_line_processed_index_ = kNotFound;
 };

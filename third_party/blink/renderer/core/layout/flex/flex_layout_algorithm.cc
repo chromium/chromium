@@ -1242,6 +1242,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
   FlexBreakTokenData::FlexBreakBeforeRow break_before_row =
       FlexBreakTokenData::kNotBreakBeforeRow;
   LayoutUnit total_intrinsic_block_size;
+  LayoutUnit effective_gap_between_lines = gap_between_lines_;
 
   ClearCollectionScope<FlexLineVector> scope(&flex_lines);
 
@@ -1253,6 +1254,7 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     row_break_between_outputs = flex_data->row_break_between;
     break_before_row = flex_data->break_before_row;
     oof_children = flex_data->oof_children;
+    effective_gap_between_lines = flex_data->effective_gap_between_lines;
   } else {
     PlaceFlexItems(Phase::kLayout, &flex_lines, &oof_children,
                    &total_intrinsic_block_size);
@@ -1279,6 +1281,9 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     if (status != LayoutResult::kSuccess) {
       return container_builder_.Abort(status);
     }
+    if (gap_accumulator) {
+      effective_gap_between_lines = gap_accumulator->EffectiveGapBetweenLines();
+    }
   }
 
   LayoutUnit previously_consumed_block_size;
@@ -1296,6 +1301,12 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
           (total_intrinsic_block_size - BorderScrollbarPadding().block_end -
            previously_consumed_block_size)
               .ClampNegativeToZero();
+    }
+
+    // For continuation fragments, set the effective gap from the break token.
+    // The first fragment computes it in GiveItemsFinalPositionAndSize.
+    if (IsBreakInside(GetBreakToken()) && gap_accumulator) {
+      gap_accumulator->SetEffectiveGapBetweenLines(effective_gap_between_lines);
     }
 
     LayoutResult::EStatus status =
@@ -1364,7 +1375,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
     container_builder_.SetBreakTokenData(
         MakeGarbageCollected<FlexBreakTokenData>(
             flex_lines, row_break_between_outputs, oof_children,
-            total_intrinsic_block_size, break_before_row));
+            total_intrinsic_block_size, break_before_row,
+            effective_gap_between_lines));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
@@ -1738,6 +1750,15 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
 
   LayoutUnitDiffuser space_between_lines =
       ContentDistributionSpace(align_content, cross_axis_free_space, num_lines);
+
+  // Update the gap accumulator with the effective gap between lines. Per the
+  // CSS Gap Decorations spec, alignment space inserted into gutters
+  // contributes to the gap size, so effective_gap = gap + distribution space.
+  if (gap_accumulator) {
+    gap_accumulator->SetEffectiveGapBetweenLines(
+        gap_between_lines_ + space_between_lines.BaseSize());
+  }
+
   LayoutUnit line_cross_axis_offset =
       (is_column_ ? BorderScrollbarPadding().inline_start
                   : BorderScrollbarPadding().block_start) +

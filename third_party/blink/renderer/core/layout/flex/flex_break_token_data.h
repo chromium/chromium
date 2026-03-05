@@ -29,13 +29,15 @@ struct FlexBreakTokenData final : BreakTokenAlgorithmData {
                      const Vector<EBreakBetween>& row_break_between,
                      const HeapVector<Member<LayoutBox>>& oof_children,
                      LayoutUnit intrinsic_block_size,
-                     FlexBreakBeforeRow break_before_row)
+                     FlexBreakBeforeRow break_before_row,
+                     LayoutUnit effective_gap_between_lines)
       : BreakTokenAlgorithmData(kFlexData),
         flex_lines(flex_lines),
         row_break_between(row_break_between),
         oof_children(oof_children),
         intrinsic_block_size(intrinsic_block_size),
-        break_before_row(break_before_row) {}
+        break_before_row(break_before_row),
+        effective_gap_between_lines(effective_gap_between_lines) {}
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(flex_lines);
@@ -58,6 +60,17 @@ struct FlexBreakTokenData final : BreakTokenAlgorithmData {
   // first, or if we are past the first break before row (as distinguished by
   // the kAtStartOfBreakBeforeRow and kPastStartOfBreakBeforeRow values).
   FlexBreakBeforeRow break_before_row = kNotBreakBeforeRow;
+
+  // The effective gap between lines includes both the base CSS gap
+  // value and any additional spacing from content distribution (e.g.,
+  // space-between, space-around). This is computed once in the first fragment
+  // inside `GiveItemsFinalPositionAndSize()`.
+  //
+  // The effective gap between lines is used for gap decorations placement,
+  // and for the purposes of gap decorations, it is the same across all
+  // fragments, so the effective gap must be carried forward here for gap
+  // decoration placement and gap suppression during fragmentation.
+  LayoutUnit effective_gap_between_lines;
 };
 
 template <>

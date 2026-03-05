@@ -6,7 +6,9 @@
 
 #include "third_party/blink/renderer/core/layout/box_fragment_builder.h"
 #include "third_party/blink/renderer/core/layout/flex/flex_line.h"
+#include "third_party/blink/renderer/core/layout/gap/cross_gap.h"
 #include "third_party/blink/renderer/core/layout/gap/gap_geometry.h"
+#include "third_party/blink/renderer/core/layout/gap/main_gap.h"
 
 namespace blink {
 
@@ -27,12 +29,12 @@ const GapGeometry* FlexGapAccumulator::BuildGapGeometry(
   if (is_column_) {
     // In a column flex container, the main axis gaps become the "columns" and
     // the cross axis gaps become the "rows".
-      gap_geometry->SetInlineGapSize(gap_between_lines_);
-      gap_geometry->SetBlockGapSize(gap_between_items_);
-      gap_geometry->SetMainDirection(kForColumns);
+    gap_geometry->SetInlineGapSize(effective_gap_between_lines_);
+    gap_geometry->SetBlockGapSize(gap_between_items_);
+    gap_geometry->SetMainDirection(kForColumns);
   } else {
-      gap_geometry->SetBlockGapSize(gap_between_lines_);
-      gap_geometry->SetInlineGapSize(gap_between_items_);
+    gap_geometry->SetBlockGapSize(effective_gap_between_lines_);
+    gap_geometry->SetInlineGapSize(gap_between_items_);
   }
 
   // TODO(crbug.com/440123087): Risky since they could in theory be used after
@@ -146,7 +148,7 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
 }
 
 void FlexGapAccumulator::PopulateMainGapForFirstItem(LayoutUnit cross_end) {
-  LayoutUnit gap_offset = cross_end + (gap_between_lines_ / 2);
+  LayoutUnit gap_offset = cross_end + (effective_gap_between_lines_ / 2);
   main_gaps_.emplace_back(gap_offset);
 }
 
@@ -202,14 +204,14 @@ void FlexGapAccumulator::PopulateCrossGapForCurrentItem(
   } else if (is_last_line) {
     // If there is more than one flex line, and the current line is the last
     // line, the cross offset will be the cross axis offset of the line
-    // minus half of the gap size.
-    cross_intersection_offset -= gap_between_lines_ / 2;
+    // minus half of the effective gap size.
+    cross_intersection_offset -= effective_gap_between_lines_ / 2;
     edge_state = CrossGap::EdgeIntersectionState::kEnd;
   } else {
     // Middle line, so the cross gap will start at midpoint between the start
     // of this line and the end of the previous line.
     cross_intersection_offset =
-        flex_line.cross_axis_offset - (gap_between_lines_ / 2);
+        flex_line.cross_axis_offset - (effective_gap_between_lines_ / 2);
   }
 
   LogicalOffset logical_offset(
@@ -249,10 +251,8 @@ void FlexGapAccumulator::SuppressLastMainGap(
           : kNotFound;
   // Since we are removing the last `MainGap`, we must update the
   // `content_cross_end_` to be just before the last `MainGap`.
-  content_cross_end_ =
-      new_cross_end.has_value()
-          ? new_cross_end.value()
-          : main_gaps_.back().GetGapOffset() - (gap_between_lines_ / 2);
+  content_cross_end_ = new_cross_end.value_or(main_gaps_.back().GetGapOffset() -
+                                              effective_gap_between_lines_ / 2);
 
   main_gaps_.pop_back();
 
