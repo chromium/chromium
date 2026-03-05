@@ -75,7 +75,7 @@ public class ClipboardImpl extends Clipboard
     private static final String PNG_MIME_TYPE = "image/png";
 
     // LINT.IfChange(kMimeTypeDataTransferCustomData)
-    private static final String CHROME_WEB_CUSTOM_DATA_MIME_TYPE = "chromium/x-web-custom-data";
+    public static final String CHROME_WEB_CUSTOM_DATA_MIME_TYPE = "chromium/x-web-custom-data";
     // LINT.ThenChange(/ui/base/clipboard/clipboard_constants.h:kMimeTypeDataTransferCustomData)
 
     private static @Nullable Boolean sSkipImageMimeTypeCheckForTesting;

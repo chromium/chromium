@@ -21,6 +21,7 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Build;
+import android.os.PersistableBundle;
 import android.text.SpannableString;
 import android.text.style.RelativeSizeSpan;
 import android.widget.TextView;
@@ -43,6 +44,9 @@ import org.chromium.ui.R;
 import org.chromium.ui.widget.ToastManager;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /** Tests logic in the Clipboard class. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -203,6 +207,69 @@ public class ClipboardTest {
         assertEquals(2, clipCaptor.getValue().getItemCount());
         assertEquals(file1, clipCaptor.getValue().getItemAt(0).getUri().toString());
         assertEquals(file2, clipCaptor.getValue().getItemAt(1).getUri().toString());
+    }
+
+    @Test
+    public void testSetClipboardTextWithCustomData() {
+        ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
+        ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
+        clipboard.overrideClipboardManagerForTesting(clipboardManager);
+
+        Map<String, String> textData = new HashMap<>();
+        textData.put(ClipDescription.MIMETYPE_TEXT_PLAIN, PLAIN_TEXT);
+        textData.put(ClipDescription.MIMETYPE_TEXT_HTML, HTML_TEXT);
+        final String customDataMimeType = ClipboardImpl.CHROME_WEB_CUSTOM_DATA_MIME_TYPE;
+        final String customDataValue = "custom data";
+        textData.put(customDataMimeType, customDataValue);
+
+        clipboard.setClipboardText(textData);
+
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        ClipData clipData = clipCaptor.getValue();
+        assertNotNull(clipData);
+
+        ClipDescription description = clipData.getDescription();
+        PersistableBundle extras = description.getExtras();
+
+        assertTrue(
+                "Missing HTML MIME type",
+                description.hasMimeType(ClipDescription.MIMETYPE_TEXT_HTML));
+        assertTrue(
+                "Missing custom MIME type: " + customDataMimeType,
+                description.hasMimeType(customDataMimeType));
+
+        assertEquals(PLAIN_TEXT, clipData.getItemAt(0).getText().toString());
+        assertEquals(HTML_TEXT, clipData.getItemAt(0).getHtmlText());
+
+        assertEquals(2, clipData.getItemCount());
+        assertEquals("", clipData.getItemAt(1).getText().toString());
+        assertNotNull(extras);
+        assertEquals(customDataValue, extras.getString(customDataMimeType));
+
+        when(clipboardManager.getPrimaryClip()).thenReturn(clipData);
+        when(clipboardManager.getPrimaryClipDescription()).thenReturn(description);
+        assertEquals(customDataValue, clipboard.getCustomClipData(customDataMimeType));
+    }
+
+    @Test
+    public void testSetClipboardTextPlainTextData() {
+        ClipboardImpl clipboard = (ClipboardImpl) Clipboard.getInstance();
+        ClipboardManager clipboardManager = Mockito.mock(ClipboardManager.class);
+        clipboard.overrideClipboardManagerForTesting(clipboardManager);
+
+        Map<String, String> textData = new HashMap<>();
+        textData.put(ClipDescription.MIMETYPE_TEXT_PLAIN, PLAIN_TEXT);
+
+        clipboard.setClipboardText(textData);
+
+        ArgumentCaptor<ClipData> clipCaptor = ArgumentCaptor.forClass(ClipData.class);
+        verify(clipboardManager).setPrimaryClip(clipCaptor.capture());
+        ClipData clipData = clipCaptor.getValue();
+
+        assertEquals(1, clipData.getItemCount());
+        assertEquals(PLAIN_TEXT, clipData.getItemAt(0).getText().toString());
+        assertNull(clipData.getItemAt(0).getHtmlText());
     }
 
     @Test
