@@ -60,8 +60,8 @@ class IqSenderTest : public testing::Test {
     message.message_id = kStanzaId;
     message.SetPayload(SessionTerminate());
 
-    EXPECT_CALL(signal_strategy_, SendMessage(SignalingAddress(kRemoteUser), _))
-        .WillOnce([&](const SignalingAddress&, SignalingMessage&& message_arg) {
+    EXPECT_CALL(signal_strategy_, SendMessage(_))
+        .WillOnce([&](SignalingMessage&& message_arg) {
           auto* sent_jingle_message = std::get_if<JingleMessage>(&message_arg);
           EXPECT_TRUE(sent_jingle_message);
           if (!sent_jingle_message) {

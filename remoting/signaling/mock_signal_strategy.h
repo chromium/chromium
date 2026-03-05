@@ -27,9 +27,7 @@ class MockSignalStrategy : public SignalStrategy {
   MOCK_METHOD1(AddListener, void(Listener* listener));
   MOCK_METHOD1(RemoveListener, void(Listener* listener));
   MOCK_METHOD0(GetNextId, std::string());
-  MOCK_METHOD2(SendMessage,
-               bool(const SignalingAddress& destination_address,
-                    SignalingMessage&& message));
+  MOCK_METHOD1(SendMessage, bool(SignalingMessage&& message));
   MOCK_METHOD2(SendFtlMessage,
                bool(const SignalingAddress& destination_address,
                     ftl::ChromotingMessage&& message));

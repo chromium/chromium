@@ -46,8 +46,7 @@ class FtlSignalStrategy::Core {
   const SignalingAddress& GetLocalAddress() const;
   void AddListener(Listener* listener);
   void RemoveListener(Listener* listener);
-  bool SendMessage(const SignalingAddress& destination_address,
-                   SignalingMessage&& message);
+  bool SendMessage(SignalingMessage&& message);
   bool SendFtlMessage(const SignalingAddress& destination_address,
                       ftl::ChromotingMessage&& message);
   void OnMessageReceived(const SignalingAddress& sender_address,
@@ -183,9 +182,7 @@ void FtlSignalStrategy::Core::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FtlSignalStrategy::Core::SendMessage(
-    const SignalingAddress& destination_address,
-    SignalingMessage&& message) {
+bool FtlSignalStrategy::Core::SendMessage(SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (GetState() != CONNECTED) {
@@ -195,14 +192,17 @@ bool FtlSignalStrategy::Core::SendMessage(
 
   std::string message_id;
   ftl::ChromotingMessage crd_message;
+  SignalingAddress destination_address;
   if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
     // Synthesizing the from attribute in the message.
     jingle_message->from = local_address_;
+    destination_address = jingle_message->to;
 
     message_id = jingle_message->message_id;
     crd_message.mutable_xmpp()->set_stanza(jingle_message->ToSerializedXml());
   } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
     jingle_reply->from = local_address_;
+    destination_address = jingle_reply->to;
 
     message_id = jingle_reply->message_id;
     crd_message.mutable_xmpp()->set_stanza(jingle_reply->ToSerializedXml());
@@ -532,9 +532,8 @@ void FtlSignalStrategy::RemoveListener(Listener* listener) {
   core_->RemoveListener(listener);
 }
 
-bool FtlSignalStrategy::SendMessage(const SignalingAddress& destination_address,
-                                    SignalingMessage&& message) {
-  return core_->SendMessage(destination_address, std::move(message));
+bool FtlSignalStrategy::SendMessage(SignalingMessage&& message) {
+  return core_->SendMessage(std::move(message));
 }
 
 bool FtlSignalStrategy::SendFtlMessage(

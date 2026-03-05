@@ -161,10 +161,7 @@ void JingleSessionManager::SendReply(
   }
   reply.message_id = original_message.message_id;
   reply.to = original_message.from;
-  // TODO: joedow - Add overload for SendMessage which accepts a JingleMessage
-  // or JingleMessageReply since those types contain the to address.
-  signal_strategy_->SendMessage(original_message.from,
-                                SignalingMessage(std::move(reply)));
+  signal_strategy_->SendMessage(SignalingMessage(std::move(reply)));
 }
 
 void JingleSessionManager::SessionDestroyed(JingleSession* session) {

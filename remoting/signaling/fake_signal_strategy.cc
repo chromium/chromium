@@ -149,9 +149,7 @@ void FakeSignalStrategy::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FakeSignalStrategy::SendMessage(
-    const SignalingAddress& destination_address,
-    SignalingMessage&& message) {
+bool FakeSignalStrategy::SendMessage(SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {

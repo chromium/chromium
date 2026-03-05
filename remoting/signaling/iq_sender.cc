@@ -31,8 +31,6 @@ IqSender::~IqSender() {
 std::unique_ptr<IqRequest> IqSender::SendIq(const JingleMessage& message,
                                             ReplyCallback callback) {
   std::string id = message.message_id;
-  // TODO: joedow - Update SendMessage to grab the 'to' JID from the message.
-  auto destination = message.to;
   if (id.empty()) {
     // message_id is not const, but message is. We need a mutable copy or
     // handle this differently.
@@ -40,12 +38,11 @@ std::unique_ptr<IqRequest> IqSender::SendIq(const JingleMessage& message,
     id = signal_strategy_->GetNextId();
     message_copy.message_id = id;
     if (!signal_strategy_->SendMessage(
-            destination, SignalingMessage(std::move(message_copy)))) {
+            SignalingMessage(std::move(message_copy)))) {
       return nullptr;
     }
   } else {
-    if (!signal_strategy_->SendMessage(destination,
-                                       SignalingMessage(message))) {
+    if (!signal_strategy_->SendMessage(SignalingMessage(message))) {
       return nullptr;
     }
   }

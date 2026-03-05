@@ -100,8 +100,7 @@ class SignalStrategy {
   virtual void RemoveListener(Listener* listener) = 0;
 
   // Sends a message. Returns false if the message couldn't be sent.
-  virtual bool SendMessage(const SignalingAddress& destination_address,
-                           SignalingMessage&& message) = 0;
+  virtual bool SendMessage(SignalingMessage&& message) = 0;
 
   // Sends an FTL message. Returns false if the message couldn't be sent.
   virtual bool SendFtlMessage(const SignalingAddress& destination_address,

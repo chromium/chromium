@@ -45,15 +45,20 @@ MATCHER_P2(SignalingMessageMatches, to, from, "") {
   if (!arg.has_xmpp()) {
     return false;
   }
+
   std::string stanza = arg.xmpp().stanza();
-  // Check if it's a Jingle stanza or a plain message.
-  if (stanza.find("to=\"") != std::string::npos) {
-    return stanza.find("to=\"" + std::string(to) + "\"") != std::string::npos &&
-           stanza.find("from=\"" + std::string(from) + "\"") !=
-               std::string::npos;
+  auto parsed_xml = base::WrapUnique(jingle_xmpp::XmlElement::ForStr(stanza));
+  if (!parsed_xml) {
+    return false;
   }
-  // For non-XMPP stanzas, just check for the payload.
-  return stanza.find(std::string(to)) != std::string::npos;
+
+  return parsed_xml->Attr(kQNameTo) == std::string(to) &&
+         parsed_xml->Attr(kQNameFrom) == std::string(from);
+}
+
+MATCHER_P(SignalingMessageMatches, to, "") {
+  return arg.has_xmpp() &&
+         arg.xmpp().stanza().find(std::string(to)) != std::string::npos;
 }
 
 constexpr char kFakeOAuthToken[] = "fake_oauth_token";
@@ -426,8 +431,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_Success) {
                     FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(HttpStatus::OK());
       });
-  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
-                                SignalingMessage{std::move(jingle_message)});
+  signal_strategy_->SendMessage(SignalingMessage{std::move(jingle_message)});
 }
 
 TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
@@ -452,8 +456,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
-  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
-                                SignalingMessage{std::move(jingle_message)});
+  signal_strategy_->SendMessage(SignalingMessage{std::move(jingle_message)});
 
   ASSERT_EQ(3u, state_history_.size());
   ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
@@ -486,8 +489,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_NetworkError) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
-  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
-                                SignalingMessage{std::move(jingle_message)});
+  signal_strategy_->SendMessage(SignalingMessage{std::move(jingle_message)});
 
   ASSERT_EQ(1u, received_messages_.size());
   auto& error_message = received_messages_[0];
@@ -515,14 +517,10 @@ TEST_F(FtlSignalStrategyTest, ReceiveStanza_Success) {
                                message);
 
   ASSERT_EQ(1u, received_messages_.size());
-  // The attribute order may change during XML conversion.
-  std::string received_stanza_string = received_messages_[0]->Str();
-  EXPECT_THAT(
-      received_stanza_string,
-      testing::HasSubstr("to=\"" + std::string(kFakeLocalFtlId) + "\""));
-  EXPECT_THAT(
-      received_stanza_string,
-      testing::HasSubstr("from=\"" + std::string(kFakeRemoteFtlId) + "\""));
+  EXPECT_EQ(std::string(kFakeLocalFtlId),
+            received_messages_[0]->Attr(kQNameTo));
+  EXPECT_EQ(std::string(kFakeRemoteFtlId),
+            received_messages_[0]->Attr(kQNameFrom));
 }
 
 TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
@@ -548,14 +546,9 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
             std::get_if<JingleMessage>(&received_message);
         EXPECT_TRUE(jingle_message);
         if (jingle_message) {
-          std::string received_stanza_string =
-              JingleMessageToXml(*jingle_message)->Str();
-          EXPECT_THAT(received_stanza_string,
-                      testing::HasSubstr("to=\"" +
-                                         std::string(kFakeLocalFtlId) + "\""));
-          EXPECT_THAT(received_stanza_string,
-                      testing::HasSubstr("from=\"" +
-                                         std::string(kFakeRemoteFtlId) + "\""));
+          auto xml = JingleMessageToXml(*jingle_message);
+          EXPECT_EQ(std::string(kFakeLocalFtlId), xml->Attr(kQNameTo));
+          EXPECT_EQ(std::string(kFakeRemoteFtlId), xml->Attr(kQNameFrom));
         }
         return true;
       });
@@ -605,7 +598,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
                            SignalingAddress::CreateFtlSignalingAddress(
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
-                  SignalingMessageMatches(message_payload, ""), _))
+                  SignalingMessageMatches(message_payload), _))
       .WillOnce([](const SignalingAddress&, ftl::ChromotingMessage&&,
                    FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(HttpStatus::OK());

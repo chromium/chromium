@@ -48,8 +48,7 @@ class CorpSignalStrategy::Core {
   const SignalingAddress& GetLocalAddress() const;
   void AddListener(Listener* listener);
   void RemoveListener(Listener* listener);
-  bool SendMessage(const SignalingAddress& destination_address,
-                   SignalingMessage&& message);
+  bool SendMessage(SignalingMessage&& message);
   std::string GetNextId();
   bool IsSignInError() const;
 
@@ -150,9 +149,7 @@ void CorpSignalStrategy::Core::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool CorpSignalStrategy::Core::SendMessage(
-    const SignalingAddress& destination_address,
-    SignalingMessage&& message) {
+bool CorpSignalStrategy::Core::SendMessage(SignalingMessage&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (GetState() != CONNECTED) {
@@ -175,10 +172,8 @@ bool CorpSignalStrategy::Core::SendMessage(
 
   internal::IqStanzaStruct iq_stanza;
   if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
-    jingle_message->to = destination_address;
     iq_stanza.xml = jingle_message->ToSerializedXml();
   } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
-    jingle_reply->to = destination_address;
     iq_stanza.xml = jingle_reply->ToSerializedXml();
   } else {
     NOTREACHED() << "Unsupported message type.";
@@ -332,10 +327,8 @@ void CorpSignalStrategy::RemoveListener(Listener* listener) {
   core_->RemoveListener(listener);
 }
 
-bool CorpSignalStrategy::SendMessage(
-    const SignalingAddress& destination_address,
-    SignalingMessage&& message) {
-  return core_->SendMessage(destination_address, std::move(message));
+bool CorpSignalStrategy::SendMessage(SignalingMessage&& message) {
+  return core_->SendMessage(std::move(message));
 }
 
 std::string CorpSignalStrategy::GetNextId() {

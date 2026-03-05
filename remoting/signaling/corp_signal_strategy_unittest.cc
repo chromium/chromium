@@ -269,8 +269,7 @@ TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_Success) {
         std::move(on_done).Run(HttpStatus::OK());
       });
 
-  signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteCorpId),
-                                SignalingMessage(std::move(jingle_message)));
+  signal_strategy_->SendMessage(SignalingMessage(std::move(jingle_message)));
 }
 
 TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_NotConnected) {
@@ -282,7 +281,6 @@ TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_NotConnected) {
   ASSERT_TRUE(JingleMessageFromXml(stanza.get(), &jingle_message, &error));
 
   ASSERT_FALSE(signal_strategy_->SendMessage(
-      SignalingAddress(kFakeRemoteCorpId),
       SignalingMessage(std::move(jingle_message))));
 }
 

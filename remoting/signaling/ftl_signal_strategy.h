@@ -54,8 +54,7 @@ class FtlSignalStrategy : public SignalStrategy {
   const SignalingAddress& GetLocalAddress() const override;
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
-  bool SendMessage(const SignalingAddress& destination_address,
-                   SignalingMessage&& message) override;
+  bool SendMessage(SignalingMessage&& message) override;
   bool SendFtlMessage(const SignalingAddress& destination_address,
                       ftl::ChromotingMessage&& message) override;
   std::string GetNextId() override;
