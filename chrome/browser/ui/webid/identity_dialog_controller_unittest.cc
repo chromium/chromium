@@ -1086,4 +1086,6 @@ TEST_F(IdentityDialogControllerTestWithOptimizationDisabled, NoCrash) {
   EXPECT_TRUE(prompt_factory->is_visible());
 
   Accept(manager);
+
+  EXPECT_FALSE(prompt_factory->is_visible());
 }

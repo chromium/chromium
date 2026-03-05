@@ -9,6 +9,8 @@ source_set("delegate") {
     "actor_login_delegate_impl.h",
     "actor_login_federated_credentials_fetcher.cc",
     "actor_login_federated_credentials_fetcher.h",
+    "actor_login_metrics_helper.cc",
+    "actor_login_metrics_helper.h",
     "actor_login_siwg_controller.cc",
     "actor_login_siwg_controller.h",
     "siwg_button_finder.cc",
@@ -37,6 +39,7 @@ source_set("delegate") {
     "//components/url_formatter",
     "//content/public/browser",
     "//content/public/common",
+    "//services/metrics/public/cpp:ukm_builders",
     "//third_party/re2",
   ]
 }

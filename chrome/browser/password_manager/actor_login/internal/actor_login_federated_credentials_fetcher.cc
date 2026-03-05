@@ -51,11 +51,22 @@ void ActorLoginFederatedCredentialsFetcher::Fetch(
     return;
   }
 
+  if (metrics_helper_) {
+    metrics_helper_->RecordFederatedHangingFedCmRequestExists(
+        source->HasPendingRequest());
+  }
+
   std::vector<GURL> supported_idps = {GURL(kSupportedIdentityProvider)};
+
   source->GetIdentityCredentialSuggestions(
       supported_idps, base::BindOnce(&ActorLoginFederatedCredentialsFetcher::
                                          OnGetIdentityCredentialSuggestions,
                                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ActorLoginFederatedCredentialsFetcher::SetMetricsHelper(
+    ActorLoginMetricsHelper* metrics_helper) {
+  metrics_helper_ = metrics_helper;
 }
 
 void ActorLoginFederatedCredentialsFetcher::OnGetIdentityCredentialSuggestions(

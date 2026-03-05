@@ -600,6 +600,72 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Actor.Login">
+  <owner>npm@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Metrics recorded for an actor login request. Recorded once per request when
+    it completes or reaches a significant milestone.
+  </summary>
+  <metric name="AccountAutoSelected">
+    <summary>
+      Recorded when the account used to login is automatically selected due to a
+      previous user choice to always allow logging in with that account.
+    </summary>
+  </metric>
+  <metric name="AccountTypesShown">
+    <summary>
+      An enum of the result from a query to get credentials.
+    </summary>
+  </metric>
+  <metric name="FederatedContinuationShown">
+    <summary>
+      Recorded when the FedCM continuation API is invoked during an actor
+      autologin flow.
+    </summary>
+  </metric>
+  <metric name="FederatedHangingFedCmRequestExists">
+    <summary>
+      Recorded when there is a hanging FedCM request during an actor login
+      request.
+    </summary>
+  </metric>
+  <metric name="FederatedLoginResult">
+    <summary>
+      An enum with the final result from a federated actor login request.
+    </summary>
+  </metric>
+  <metric name="FederatedLoginStatus">
+    <summary>
+      Enum recorded when there is an identity provider requested by the
+      embedder.
+    </summary>
+  </metric>
+  <metric name="GetCredentialsCompletedToAccountChosen">
+    <summary>
+      Returns the time (ms) from when a &quot;get credentials&quot; request
+      completes until an account is chosen.
+    </summary>
+  </metric>
+  <metric name="GetCredentialsLatency">
+    <summary>
+      Returns the time (ms) from actor login request to when the &quot;get
+      credentials&quot; request is completed.
+    </summary>
+  </metric>
+  <metric name="NumAccountsShown">
+    <summary>
+      The number of accounts shown to the user during an actor login request.
+    </summary>
+  </metric>
+  <metric name="SelectedAccountType">
+    <summary>
+      An enum of the type of account chosen by the user to login during an actor
+      login request.
+    </summary>
+  </metric>
+</event>
+
 <event name="AdFrameLoad">
   <owner>johnidel@chromium.org</owner>
   <owner>jkarlin@chromium.org</owner>

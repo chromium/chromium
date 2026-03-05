@@ -128,6 +128,44 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/common/actor.mojom:ActionResultCode) -->
 
+<!-- LINT.IfChange(ActorLoginAccountTypes) -->
+
+<enum name="ActorLoginAccountTypes">
+  <int value="0" label="None"/>
+  <int value="1" label="Password"/>
+  <int value="2" label="Federated"/>
+  <int value="3" label="Password and Federated"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:ActorLoginAccountTypes) -->
+
+<!-- LINT.IfChange(ActorLoginFederatedLoginResult) -->
+
+<enum name="ActorLoginFederatedLoginResult">
+  <int value="0" label="Success"/>
+  <int value="2" label="AccountNotLoggedIn"/>
+  <int value="3" label="AccountIsSignUp"/>
+  <int value="4" label="AccountNotAvailable"/>
+  <int value="5" label="IdpReturnedError"/>
+  <int value="6" label="IdpNetworkError"/>
+  <int value="7" label="TokenRequestAborted"/>
+  <int value="8" label="FrameNotActive"/>
+  <int value="9" label="ExpectedAccountNotPresent"/>
+  <int value="10" label="Timeout"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:ActorLoginFederatedLoginResult) -->
+
+<!-- LINT.IfChange(ActorLoginSelectedAccountType) -->
+
+<enum name="ActorLoginSelectedAccountType">
+  <int value="0" label="None"/>
+  <int value="1" label="Password"/>
+  <int value="2" label="Federated"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h:ActorLoginSelectedAccountType) -->
+
 <!-- LINT.IfChange(ActorObservationOutcome) -->
 
 <enum name="ActorObservationOutcome">

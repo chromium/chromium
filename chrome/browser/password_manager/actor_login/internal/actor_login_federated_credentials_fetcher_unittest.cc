@@ -48,6 +48,7 @@ class MockIdentityCredentialSource
        const std::string&,
        base::RepeatingCallback<void(content::webid::FederatedLoginResult)>),
       (override));
+  MOCK_METHOD(bool, HasPendingRequest, (), (override));
 };
 
 scoped_refptr<content::IdentityRequestAccount> CreateTestIdentityRequestAccount(

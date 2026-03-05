@@ -129,6 +129,11 @@ void IdentityCredentialSourceImpl::GetIdentityCredentialSuggestions(
       /*filter_accounts_callback=*/base::DoNothing());
 }
 
+bool IdentityCredentialSourceImpl::HasPendingRequest() {
+  RequestPageData* page_data = GetPageData(render_frame_host().GetPage());
+  return page_data && page_data->PendingWebIdentityRequest();
+}
+
 bool IdentityCredentialSourceImpl::SelectAccount(
     const url::Origin& idp_origin,
     const std::string& account_id) {

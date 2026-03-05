@@ -22,6 +22,7 @@ namespace actor_login {
 
 class ActorLoginCredentialFiller;
 class ActorLoginGetCredentialsHelper;
+class ActorLoginMetricsHelper;
 
 // Delegate implementation, scoped to `WebContents` as its functionality is
 // intrinsically tied to a specific browser tab.
@@ -84,6 +85,11 @@ class ActorLoginDelegateImpl
   void OnAttemptLoginCompleted(
       base::expected<LoginStatusResult, ActorLoginError> result);
 
+  // Helper methods for recording metrics.
+  void RecordGetCredentialsMetricsAndResetHelper(
+      const CredentialsOrError& result);
+  void RecordAttemptLoginMetrics(const Credential& credential);
+
   // Store the pending callback. A non-null callback indicates an active
   // request.
   LoginStatusResultOrErrorReply pending_attempt_login_callback_;
@@ -96,6 +102,13 @@ class ActorLoginDelegateImpl
   PasswordDriverSupplierForPrimaryMainFrame driver_supplier_;
 
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Helper for recording Actor.Login metrics. The helper is created at the
+  // beginning of a `GetCredentials` or `AttemptLogin` request, and it's
+  // reset (recording metrics) when the request is completed. If credentials
+  // are found, it's kept alive until an `AttemptLogin` request is made or
+  // until the flow is considered finished.
+  std::unique_ptr<ActorLoginMetricsHelper> metrics_helper_;
 
   // Fills credentials into a form. Scoped to one `AttemptLogin` request.
   std::unique_ptr<ActorLoginCredentialFiller> credential_filler_;

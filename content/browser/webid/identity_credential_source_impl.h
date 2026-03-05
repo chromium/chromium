@@ -39,6 +39,8 @@ class CONTENT_EXPORT IdentityCredentialSourceImpl
       const std::vector<GURL>& embedder_requested_idps,
       GetIdentityCredentialSuggestionsCallback callback) override;
 
+  bool HasPendingRequest() override;
+
   bool SelectAccount(const url::Origin& idp_origin,
                      const std::string& account_id) override;
 

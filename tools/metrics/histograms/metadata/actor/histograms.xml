@@ -191,6 +191,121 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Login.AccountAutoSelected" enum="Boolean"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded when the account used to login is automatically selected due to a
+    previous user choice to always allow logging in with that account. Recorded
+    once per actor login request, when the login attempt starts and the account
+    already had a permanent permission granted.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.AccountTypesShown" enum="ActorLoginAccountTypes"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    An enum of the result from a query to get credentials. Recorded once per
+    actor login request, after fetching the accounts from all sources is
+    completed.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.Federated.ContinuationShown" enum="Boolean"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded when the FedCM continuation API is invoked during an actor
+    autologin flow. Recorded when the actor is notified that the user must take
+    over due to the continuation API. This is only ever recorded when the user
+    selects the federated account to login.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.Federated.HangingFedCmRequestExists"
+    enum="Boolean" expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded when there is a hanging FedCM request during an actor login
+    request. Recorded at most once per actor login request.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.Federated.LoginResult"
+    enum="ActorLoginFederatedLoginResult" expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    An enum with the final result from a federated actor login request. Recorded
+    when the login flow completes (successfully or otherwise).
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.GetCredentialsCompletedToAccountChosen" units="ms"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Returns the time from when a &quot;get credentials&quot; request completes
+    until an account is chosen. Recorded at most once per actor login request.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.GetCredentialsLatency" units="ms"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Returns the time from actor login request to when the &quot;get
+    credentials&quot; request is completed. Recorded once per actor login
+    request.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.NumAccountsShown" units="count"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    The number of accounts shown to the user during an actor login request.
+    Possible values: 0, 1, 2, 3+. Recorded once per actor login request, when
+    accounts are shown to the user.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Login.SelectedAccountType"
+    enum="ActorLoginSelectedAccountType" expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    An enum of the type of account chosen by the user to login during an actor
+    login request. Recorded once per actor login request.
+  </summary>
+</histogram>
+
 <histogram name="Actor.MayOriginGatePageTransition" enum="Boolean"
     expires_after="2026-07-26">
   <owner>dylancutler@google.com</owner>

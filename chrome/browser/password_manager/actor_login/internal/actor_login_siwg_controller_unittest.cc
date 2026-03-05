@@ -12,11 +12,14 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/autofill/mock_autofill_agent.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -140,6 +143,7 @@ class ActorLoginSiwgControllerTest : public ChromeRenderViewHostTestHarness {
   void TearDown() override { ChromeRenderViewHostTestHarness::TearDown(); }
 
  protected:
+  base::HistogramTester histogram_tester_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
   autofill::TestAutofillDriverInjector<autofill::ContentAutofillDriver>
@@ -160,11 +164,17 @@ TEST_F(ActorLoginSiwgControllerTest, ButtonFound_ClickSucceeded) {
   base::RunLoop run_loop;
   base::MockCallback<LoginStatusResultOrErrorReply> finished_callback;
   optimization_guide::OnAIPageContentDone page_content_callback;
+
+  auto metrics_helper_owned =
+      std::make_unique<ActorLoginMetricsHelper>(ukm::kInvalidSourceId);
+
   ActorLoginSiwgController controller(
       web_contents(),
       base::BindRepeating(&ActorLoginSiwgControllerTest::SaveCallback,
                           &page_content_callback),
       finished_callback.Get());
+
+  controller.SetMetricsHelper(metrics_helper_owned.get());
 
   Credential credential;
   credential.federation_detail = FederationDetail();

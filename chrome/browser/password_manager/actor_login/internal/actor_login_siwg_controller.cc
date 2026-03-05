@@ -104,6 +104,10 @@ void ActorLoginSiwgController::StartFederatedLogin(
 
   // There may be an existing FedCM dialog; if so, select an account in that
   // dialog instead of clicking the signin button.
+  if (metrics_helper_) {
+    metrics_helper_->RecordFederatedHangingFedCmRequestExists(
+        source->HasPendingRequest());
+  }
   if (!source->SelectAccount(credential.federation_detail->idp_origin,
                              credential.federation_detail->account_id)) {
     ClickSiwgButton();
@@ -119,8 +123,21 @@ void ActorLoginSiwgController::ClickSiwgButton() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ActorLoginSiwgController::SetMetricsHelper(
+    ActorLoginMetricsHelper* metrics_helper) {
+  metrics_helper_ = metrics_helper;
+}
+
 void ActorLoginSiwgController::OnFederatedLoginResultReceived(
     content::webid::FederatedLoginResult result) {
+  if (metrics_helper_) {
+    if (result == content::webid::FederatedLoginResult::kContinuation) {
+      metrics_helper_->RecordFederatedContinuationShown();
+    } else {
+      metrics_helper_->RecordFederatedLoginResult(result);
+    }
+  }
+
   if (!on_finished_callback_) {
     return;
   }

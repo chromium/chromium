@@ -17,6 +17,7 @@
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_federated_credentials_fetcher.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/password_manager/actor_login/internal/actor_login_siwg_controller.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
@@ -115,6 +116,10 @@ void ActorLoginDelegateImpl::GetCredentials(
     return;
   }
 
+  metrics_helper_ = std::make_unique<ActorLoginMetricsHelper>(
+      GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
+  metrics_helper_->OnGetCredentialsStarted();
+
   PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
   CHECK(driver);
 
@@ -128,18 +133,21 @@ void ActorLoginDelegateImpl::GetCredentials(
   fetchers.push_back(std::make_unique<ActorLoginPasswordCredentialsFetcher>(
       request_origin, client_, driver->GetPasswordManager(), mqls_logger));
 
-  fetchers.push_back(std::make_unique<ActorLoginFederatedCredentialsFetcher>(
-      request_origin,
-      base::BindRepeating(
-          [](base::WeakPtr<content::WebContents> web_contents)
-              -> content::webid::IdentityCredentialSource* {
-            if (!web_contents) {
-              return nullptr;
-            }
-            return content::webid::IdentityCredentialSource::FromPage(
-                web_contents->GetPrimaryPage());
-          },
-          GetWebContents().GetWeakPtr())));
+  auto federated_fetcher =
+      std::make_unique<ActorLoginFederatedCredentialsFetcher>(
+          request_origin,
+          base::BindRepeating(
+              [](base::WeakPtr<content::WebContents> web_contents)
+                  -> content::webid::IdentityCredentialSource* {
+                if (!web_contents) {
+                  return nullptr;
+                }
+                return content::webid::IdentityCredentialSource::FromPage(
+                    web_contents->GetPrimaryPage());
+              },
+              GetWebContents().GetWeakPtr()));
+  federated_fetcher->SetMetricsHelper(metrics_helper_.get());
+  fetchers.push_back(std::move(federated_fetcher));
 
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
       std::move(fetchers),
@@ -186,11 +194,19 @@ void ActorLoginDelegateImpl::AttemptLogin(
   mqls_logger->SetDomainAndLanguage(
       ChromeTranslateClient::GetManagerFromWebContents(&GetWebContents()),
       origin.GetURL());
+
+  if (!metrics_helper_) {
+    metrics_helper_ = std::make_unique<ActorLoginMetricsHelper>(
+        GetWebContents().GetPrimaryMainFrame()->GetPageUkmSourceId());
+  }
+  RecordAttemptLoginMetrics(credential);
+
   if (credential.type == CredentialType::kFederated) {
     siwg_controller_ = std::make_unique<ActorLoginSiwgController>(
         &GetWebContents(), base::BindPostTaskToCurrentDefault(base::BindOnce(
                                &ActorLoginDelegateImpl::OnAttemptLoginCompleted,
                                weak_ptr_factory_.GetWeakPtr())));
+    siwg_controller_->SetMetricsHelper(metrics_helper_.get());
     siwg_controller_->StartFederatedLogin(credential);
     return;
   }
@@ -249,6 +265,9 @@ void ActorLoginDelegateImpl::OnGetCredentialsCompleted(
     CredentialsOrErrorReply callback,
     CredentialsOrError result) {
   get_credentials_helper_.reset();
+
+  RecordGetCredentialsMetricsAndResetHelper(result);
+
   std::move(callback).Run(std::move(result));
 }
 
@@ -258,7 +277,59 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   CHECK(pending_attempt_login_callback_);
   credential_filler_.reset();
   siwg_controller_.reset();
+
+  // Record metrics by resetting the metrics helper.
+  metrics_helper_.reset();
+
   std::move(pending_attempt_login_callback_).Run(std::move(result));
+}
+
+void ActorLoginDelegateImpl::RecordGetCredentialsMetricsAndResetHelper(
+    const CredentialsOrError& result) {
+  if (!metrics_helper_) {
+    return;
+  }
+
+  metrics_helper_->OnGetCredentialsCompleted();
+  if (result.has_value()) {
+    bool has_password = false;
+    bool has_federated = false;
+    for (const auto& credential : result.value()) {
+      if (credential.type == CredentialType::kPassword) {
+        has_password = true;
+      } else if (credential.type == CredentialType::kFederated) {
+        has_federated = true;
+      }
+    }
+    ActorLoginAccountTypes types = ActorLoginAccountTypes::kNone;
+    if (has_password && has_federated) {
+      types = ActorLoginAccountTypes::kPasswordAndFederated;
+    } else if (has_password) {
+      types = ActorLoginAccountTypes::kPassword;
+    } else if (has_federated) {
+      types = ActorLoginAccountTypes::kFederated;
+    }
+    metrics_helper_->RecordAccountTypesShown(types);
+    metrics_helper_->RecordNumAccountsShown(result.value().size());
+  } else {
+    metrics_helper_->RecordAccountTypesShown(ActorLoginAccountTypes::kNone);
+  }
+
+  if (!result.has_value() || result.value().empty()) {
+    metrics_helper_.reset();
+  }
+}
+
+void ActorLoginDelegateImpl::RecordAttemptLoginMetrics(
+    const Credential& credential) {
+  CHECK(metrics_helper_);
+  metrics_helper_->OnAccountChosen();
+  metrics_helper_->RecordSelectedAccountType(
+      credential.type == CredentialType::kFederated
+          ? ActorLoginSelectedAccountType::kFederated
+          : ActorLoginSelectedAccountType::kPassword);
+  metrics_helper_->RecordAccountAutoSelected(
+      credential.has_persistent_permission);
 }
 
 }  // namespace actor_login

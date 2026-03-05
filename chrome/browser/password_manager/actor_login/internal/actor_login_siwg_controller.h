@@ -11,6 +11,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/password_manager/actor_login/internal/actor_login_metrics_helper.h"
 #include "chrome/browser/password_manager/actor_login/internal/siwg_button_finder.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
@@ -69,6 +70,8 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   // clicks the first one found.
   void ClickSiwgButton();
 
+  void SetMetricsHelper(ActorLoginMetricsHelper* metrics_helper);
+
  private:
   void OnPageContentReceived(
       optimization_guide::AIPageContentResultOrError content);
@@ -97,6 +100,9 @@ class ActorLoginSiwgController : public content::WebContentsObserver {
   GetPageContentProvider get_page_content_provider_;
   std::unique_ptr<SiwgButtonFinder> siwg_finder_;
   LoginStatusResultOrErrorReply on_finished_callback_;
+
+  // Owned by ActorLoginDelegateImpl.
+  raw_ptr<ActorLoginMetricsHelper> metrics_helper_ = nullptr;
 
   // Remote for the `ChromeRenderFrame` in the local root of the frame where the
   // SiwG button was found. Keeps the remote alive for the duration of the click
