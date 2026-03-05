@@ -1029,6 +1029,8 @@ bool CSSPropertyEquality::PropertiesEqual(const PropertyHandle& property,
       return a.ComputedWordSpacing() == b.ComputedWordSpacing();
     case CSSPropertyID::kD:
       return base::ValuesEquivalent(a.D(), b.D());
+    case CSSPropertyID::kPathLength:
+      return a.PathLength() == b.PathLength();
     case CSSPropertyID::kCx:
       return a.Cx() == b.Cx();
     case CSSPropertyID::kCy:

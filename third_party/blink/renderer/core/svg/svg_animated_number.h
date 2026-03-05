@@ -55,12 +55,13 @@ class SVGAnimatedNumber : public ScriptWrappable,
 
   SVGAnimatedNumber(SVGElement* context_element,
                     const QualifiedName& attribute_name,
-                    SVGNumber* initial_value)
+                    SVGNumber* initial_value,
+                    CSSPropertyID css_property_id = CSSPropertyID::kInvalid)
       : SVGAnimatedProperty<SVGNumber>(
             context_element,
             attribute_name,
             initial_value,
-            CSSPropertyID::kInvalid,
+            css_property_id,
             static_cast<unsigned>(initial_value->Value())),
         parent_number_optional_number_(nullptr) {}
 

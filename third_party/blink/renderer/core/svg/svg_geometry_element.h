@@ -76,6 +76,8 @@ class SVGGeometryElement : public SVGGraphicsElement {
   void GeometryAttributeChanged();
   void GeometryPresentationAttributeChanged(const SVGAnimatedPropertyBase&);
 
+  void CollectExtraStyleForPresentationAttribute(
+      HeapVector<CSSPropertyValue, 8>& style) override;
   SVGAnimatedPropertyBase* PropertyFromAttribute(
       const QualifiedName& attribute_name) const override;
   void SynchronizeAllSVGAttributes() const override;

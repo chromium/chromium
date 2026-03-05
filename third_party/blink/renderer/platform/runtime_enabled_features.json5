@@ -5441,6 +5441,10 @@
       status: "stable",
     },
     {
+      name: "SvgPathLengthCssProperty",
+      status: "experimental",
+    },
+    {
       name: "SvgScriptElementAsyncAttribute",
       status: "stable",
     },

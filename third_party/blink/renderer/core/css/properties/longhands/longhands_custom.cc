@@ -3895,6 +3895,31 @@ const CSSValue* Cy::CSSValueFromComputedStyleInternal(
   return ComputedStyleUtils::ZoomAdjustedPixelValueForLength(style.Cy(), style);
 }
 
+const CSSValue* PathLength::ParseSingleValue(
+    CSSParserTokenStream& stream,
+    const CSSParserContext& context,
+    CSSParserLocalContext& local_context) const {
+  if (stream.Peek().Id() == CSSValueID::kNone) {
+    return css_parsing_utils::ConsumeIdent(stream);
+  }
+  return css_parsing_utils::ConsumeNumber(
+      stream, context, local_context,
+      CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
+const CSSValue* PathLength::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject*,
+    bool allow_visited_style,
+    CSSValuePhase value_phase) const {
+  float path_length = style.PathLength();
+  if (path_length < 0) {
+    return CSSIdentifierValue::Create(CSSValueID::kNone);
+  }
+  return CSSNumericLiteralValue::Create(path_length,
+                                        CSSPrimitiveValue::UnitType::kNumber);
+}
+
 const CSSValue* D::ParseSingleValue(CSSParserTokenStream& stream,
                                     const CSSParserContext&,
                                     CSSParserLocalContext&) const {

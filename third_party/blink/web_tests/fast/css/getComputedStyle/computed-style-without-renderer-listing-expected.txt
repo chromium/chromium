@@ -334,6 +334,7 @@ padding-left: 0px
 padding-right: 0px
 padding-top: 0px
 paint-order: normal
+path-length: none
 perspective: none
 perspective-origin: 50% 50%
 pointer-events: auto

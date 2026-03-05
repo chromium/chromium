@@ -253,6 +253,7 @@ class StyleBuilderConverter {
   static TabSize ConvertLengthOrTabSpaces(StyleResolverState&, const CSSValue&);
   static Length ConvertLineHeight(StyleResolverState&, const CSSValue&);
   static float ConvertNumberOrPercentage(StyleResolverState&, const CSSValue&);
+  static float ConvertPathLength(StyleResolverState&, const CSSValue&);
   static int ConvertInteger(StyleResolverState&, const CSSValue&);
   template <int NoneValue = 0>
   static int ConvertIntegerOrNone(StyleResolverState&, const CSSValue&);
