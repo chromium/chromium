@@ -60,8 +60,8 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
                     ExceptionState& exception_state);
   void unregisterTool(const String& name, ExceptionState& exception_state);
 
-  void SetScriptToolDeclaration(const String& name,
-                                ScriptToolDeclaration* tool_declaration) const;
+  std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
+      const String& name) const;
 
   void provideContext(ScriptState* state,
                       const ModelContextOptions* options,

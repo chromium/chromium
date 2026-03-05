@@ -439,14 +439,14 @@ std::optional<uint32_t> WebDocument::ExecuteScriptTool(
   if (auto* model_context = ModelContextSupplement::modelContext(
           *Unwrap<Document>()->domWindow()->navigator())) {
     auto web_tool_declaration = std::make_unique<WebScriptToolDeclaration>();
-    ScriptToolDeclaration script_tool_declaration;
-    model_context->SetScriptToolDeclaration(name, &script_tool_declaration);
-    web_tool_declaration->description =
-        WebString(script_tool_declaration.description);
-    web_tool_declaration->input_schema =
-        WebString(script_tool_declaration.input_schema);
-    web_tool_declaration->read_only = script_tool_declaration.read_only;
-
+    if (auto script_tool_declaration =
+            model_context->GetScriptToolDeclaration(name)) {
+      web_tool_declaration->description =
+          WebString(script_tool_declaration->description);
+      web_tool_declaration->input_schema =
+          WebString(script_tool_declaration->input_schema);
+      web_tool_declaration->read_only = script_tool_declaration->read_only;
+    }
     // TODO(481899636): PLUMB SIGNAL TO THE BROWSER SIDE!
     return model_context->ExecuteTool(
         name, input_arguments,

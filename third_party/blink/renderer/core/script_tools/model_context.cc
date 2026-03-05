@@ -201,18 +201,20 @@ void ModelContext::unregisterTool(const String& tool_name,
   OnToolsChanged();
 }
 
-void ModelContext::SetScriptToolDeclaration(
-    const String& name,
-    ScriptToolDeclaration* tool_declaration) const {
+std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
+    const String& name) const {
   auto it = tool_map_.find(name);
-  if (it != tool_map_.end()) {
-    const mojom::blink::ScriptTool& script_tool = it->value->ScriptTool();
-    tool_declaration->description = script_tool.description;
-    tool_declaration->input_schema = script_tool.input_schema;
-    if (script_tool.annotations) {
-      tool_declaration->read_only = script_tool.annotations->read_only;
-    }
+  if (it == tool_map_.end()) {
+    return std::nullopt;
   }
+  ScriptToolDeclaration declaration;
+  const mojom::blink::ScriptTool& script_tool = it->value->ScriptTool();
+  declaration.description = script_tool.description;
+  declaration.input_schema = script_tool.input_schema;
+  if (script_tool.annotations) {
+    declaration.read_only = script_tool.annotations->read_only;
+  }
+  return declaration;
 }
 
 void ModelContext::provideContext(ScriptState* script_state,
