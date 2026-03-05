@@ -36,6 +36,9 @@
 // The text for the secondary action. Must be set before the view is loaded.
 @property(nonatomic, copy) NSString* secondaryActionString;
 
+// The text for the tertiary action. Must be set before the view is loaded.
+@property(nonatomic, copy) NSString* tertiaryActionString;
+
 // The name of the animation resource to be used in light mode. Must be set
 // before the view is loaded.
 @property(nonatomic, copy) NSString* animationName;
@@ -65,6 +68,17 @@
 
 // Custom animation view used in the full-screen promo.
 @property(nonatomic, strong) id<LottieAnimation> animationViewWrapper;
+
+// Custom animation view used in the full-screen promo in dark mode (legacy
+// mode only). Only available after the view is loaded.
+@property(nonatomic, strong, readonly) id<LottieAnimation>
+    animationViewWrapperDarkMode;
+
+// The offset from center Y to place the divider between the animation and the
+// confirmation alert screen. Subclasses can override this to customize the
+// split position. Default returns -24pt on devices with a tab strip, 0
+// otherwise.
+- (CGFloat)centerYOffset;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

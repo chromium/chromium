@@ -36,8 +36,6 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
 @end
 
 @implementation AnimatedPromoViewController {
-  // Custom animation view used in the full-screen promo in dark mode.
-  id<LottieAnimation> _animationViewWrapperDarkMode;
 
   // Child view controller used to display the alert screen for the promo.
   ConfirmationAlertViewController* _alertScreen;
@@ -64,6 +62,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   alertScreen.subtitleString = _subtitleString;
   alertScreen.configuration.primaryActionString = _primaryActionString;
   alertScreen.configuration.secondaryActionString = _secondaryActionString;
+  alertScreen.configuration.tertiaryActionString = _tertiaryActionString;
   [alertScreen reloadConfiguration];
   alertScreen.actionHandler = _actionHandler;
   alertScreen.shouldFillInformationStack = YES;
@@ -281,7 +280,7 @@ constexpr CGFloat kCustomTopOffsetForRegularSizeClass = -24;
   [self updateAlertScreenTopAnchorConstraint];
 }
 
-// Updates the animations for the styl used (light/dark mode).
+// Updates the animations for the style used (light/dark mode).
 - (void)updateForDarkMode {
   if (self.useLegacyDarkMode) {
     [self updateUIForSizeClass];
