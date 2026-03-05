@@ -83,8 +83,19 @@ std::optional<uint64_t> SingleFileTarReader::ReadOctalNumber(
 
   for (size_t i = 0; i < length; ++i) {
     const char as_char = static_cast<char>(buffer[i]);
-    if (as_char == '\0')
+    // POSIX requires numeric fields to be terminated with either a space or a
+    // NUL. Stop reading when either is encountered.
+    // See "POSIX ustar Archives" section at:
+    // https://man.freebsd.org/cgi/man.cgi?query=tar&sektion=5
+    if (as_char == '\0' || as_char == ' ') {
       break;
+    }
+    // Ensure the character is a valid octal digit. If it is not, parsing would
+    // result in an invalid number, or potentially a negative value underflow
+    // if the character is not ASCII.
+    if (as_char < '0' || as_char > '7') {
+      return std::nullopt;
+    }
     num *= 8;
     num += as_char - '0';
   }

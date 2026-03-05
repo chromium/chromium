@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
 
+#include <limits>
 #include <utility>
 
 #include "base/files/file.h"
@@ -63,6 +64,11 @@ void XzExtractor::OnProgress(uint64_t total_bytes, uint64_t progress_bytes) {
   // Avoid division by zero in the progress callback handler by not reporting
   // progress for 0-byte files.
   if (total_bytes == 0) {
+    return;
+  }
+  if (total_bytes > std::numeric_limits<int64_t>::max() ||
+      progress_bytes > total_bytes) {
+    listener_.ReportBadMessage("invalid extraction progress values");
     return;
   }
   properties_.progress_callback.Run(total_bytes, progress_bytes);

@@ -212,7 +212,16 @@ class Operation : public base::RefCountedThreadSafe<Operation> {
 
   // Callbacks for Extractor.
   void OnExtractOpenComplete(const base::FilePath& image_path);
+
+  // Note: `total_bytes` and `progress_bytes` are signed `int64_t `because
+  // `ZipExtractor` and `zip::ZipReader` deal in `int64_t` size values.
+  // TODO(crbug.com/489798713): Consider refactoring ZipReader to use unsigned
+  // values if possible.
+  // Extractors that provide `uint64_t` values (like `TarExtractor`) must
+  // validate they do not exceed `INT64_MAX` before passing them here to prevent
+  // overflow.
   void OnExtractProgress(int64_t total_bytes, int64_t progress_bytes);
+
   void OnExtractFailure(const std::string& error);
 
   // Runs all cleanup functions.
