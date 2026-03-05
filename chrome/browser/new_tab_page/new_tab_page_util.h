@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/values.h"
 #include "components/ntp_tiles/tile_type.h"
 
 class Profile;
@@ -69,5 +70,14 @@ void DisableModuleAutoRemoval(Profile* profile, const std::string& module_id);
 // Sets the kNtpModulesAutoRemovalDisabledDict pref to true for the modules.
 void DisableModuleListAutoRemoval(Profile* profile,
                                   const std::vector<std::string>& module_ids);
+
+// Logs the auto-removal metrics for the module, including:
+// (1) The reason the module was not auto-removed
+// (2) The new staleness count for the module if applicable
+void LogModuleAutoRemovalMetrics(
+    Profile* profile,
+    const base::DictValue& auto_removal_disabled_dict,
+    const std::string& module_id,
+    const int prev_count);
 
 #endif  // CHROME_BROWSER_NEW_TAB_PAGE_NEW_TAB_PAGE_UTIL_H_

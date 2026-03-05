@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "base/hash/hash.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -546,6 +548,9 @@ class NewTabPageUtilStalenessUpdateBrowserTest
 
   static Time Now() { return current_time_; }
 
+ protected:
+  base::HistogramTester histogram_tester_;
+
  private:
   static Time current_time_;
   std::vector<std::string> loaded_modules;
@@ -619,6 +624,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
   const int expected_staleness_count = is_above_update_threshold ? 1 : 0;
   const int expected_dict_size =
       is_above_update_threshold ? GetModules().size() : 0;
+  const int expected_histogram_count = is_above_update_threshold ? 1 : 0;
 
   // Act.
   FastForwardBy(time_delta);
@@ -635,6 +641,9 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
   for (const auto& module_id : GetModules()) {
     std::optional<int> updated_count = updated_dict.FindInt(module_id);
     EXPECT_EQ(updated_count.value_or(0), expected_staleness_count);
+    histogram_tester_.ExpectBucketCount(
+        "NewTabPage.Modules.AutoRemovalSkipped.StaleDaysCount",
+        base::PersistentHash(module_id), expected_histogram_count);
   }
 }
 
@@ -662,6 +671,7 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
   const int expected_staleness_count = is_force_disabled_all_modules ? 0 : 1;
   const int expected_dict_size =
       is_force_disabled_all_modules ? 0 : GetModules().size();
+  const int expected_histogram_count = is_force_disabled_all_modules ? 1 : 0;
 
   // Act.
   FastForwardBy(time_delta);
@@ -678,6 +688,9 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
   for (const auto& module_id : GetModules()) {
     std::optional<int> updated_count = updated_dict.FindInt(module_id);
     EXPECT_EQ(updated_count.value_or(0), expected_staleness_count);
+    histogram_tester_.ExpectBucketCount(
+        "NewTabPage.Modules.AutoRemovalSkipped.DisabledAllModules",
+        base::PersistentHash(module_id), expected_histogram_count);
   }
 }
 
@@ -705,6 +718,8 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
       is_force_disabled_google_calendar ? 0 : 1;
   const int expected_dict_size =
       is_force_disabled_google_calendar ? 1 : GetModules().size();
+  const int expected_histogram_count =
+      is_force_disabled_google_calendar ? 1 : 0;
 
   // Act.
   FastForwardBy(time_delta);
@@ -727,6 +742,95 @@ IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
   std::optional<int> updated_outlook_calendar_staleness_count =
       updated_dict.FindInt(ntp_modules::kOutlookCalendarModuleId);
   EXPECT_EQ(updated_outlook_calendar_staleness_count.value_or(0), 1);
+
+  histogram_tester_.ExpectBucketCount(
+      "NewTabPage.Modules.AutoRemovalSkipped.Disabled",
+      base::PersistentHash(ntp_modules::kGoogleCalendarModuleId),
+      expected_histogram_count);
+}
+
+// Parameterized to test for modules with managed preferences.
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
+                       ShouldUpdateModuleStalenessWithManagedPreference) {
+  // Arrange.
+  InitMockPrefs();
+  InitMockModules();
+  const bool is_managed_preference = GetParam();
+  if (is_managed_preference) {
+    policy::PolicyMap policies;
+    policies.Set(policy::key::kNTPCardsVisible, policy::POLICY_LEVEL_MANDATORY,
+                 policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_PLATFORM,
+                 base::Value(true), nullptr);
+    policy_provider().UpdateChromePolicy(policies);
+  }
+
+  const TimeDelta staleness_threshold =
+      ntp_features::kModuleMinStalenessUpdateTimeInterval.Get();
+  const TimeDelta time_delta = staleness_threshold + base::Seconds(1);
+  const Time initial_time = GetProfile()->GetPrefs()->GetTime(
+      ntp_prefs::kNtpLastModuleStalenessUpdate);
+
+  const Time expected_time = initial_time + time_delta;
+  const int expected_histogram_count = is_managed_preference ? 1 : 0;
+
+  // Act.
+  FastForwardBy(time_delta);
+  UpdateModulesStaleness(GetProfile(), GetModules());
+
+  // Assert.
+  const Time updated_time = GetProfile()->GetPrefs()->GetTime(
+      ntp_prefs::kNtpLastModuleStalenessUpdate);
+  EXPECT_EQ(updated_time, expected_time);
+
+  for (const auto& module_id : GetModules()) {
+    histogram_tester_.ExpectBucketCount(
+        "NewTabPage.Modules.AutoRemovalSkipped.ManagedPreference",
+        base::PersistentHash(module_id), expected_histogram_count);
+  }
+}
+
+// Parameterized to test for logging the module staleness count metric.
+// In either case, the module staleness count is always logged.
+IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
+                       ShouldLogModuleStalenessCountMetric) {
+  // Arrange.
+  InitMockPrefs();
+  InitMockModules();
+  const bool is_above_staleness_count = GetParam();
+  const int google_calendar_staleness_count = is_above_staleness_count ? 10 : 0;
+  const int outlook_calendar_staleness_count = is_above_staleness_count ? 5 : 0;
+  if (is_above_staleness_count) {
+    ScopedDictPrefUpdate update(GetProfile()->GetPrefs(),
+                                ntp_prefs::kNtpModuleStalenessCountDict);
+    update->Set(ntp_modules::kGoogleCalendarModuleId,
+                google_calendar_staleness_count);
+    update->Set(ntp_modules::kOutlookCalendarModuleId,
+                outlook_calendar_staleness_count);
+  }
+
+  const TimeDelta staleness_threshold =
+      ntp_features::kModuleMinStalenessUpdateTimeInterval.Get();
+  const TimeDelta time_delta = staleness_threshold + base::Seconds(1);
+  const Time initial_time = GetProfile()->GetPrefs()->GetTime(
+      ntp_prefs::kNtpLastModuleStalenessUpdate);
+
+  const Time expected_time = initial_time + time_delta;
+
+  // Act.
+  FastForwardBy(time_delta);
+  UpdateModulesStaleness(GetProfile(), GetModules());
+
+  // Assert.
+  const Time updated_time = GetProfile()->GetPrefs()->GetTime(
+      ntp_prefs::kNtpLastModuleStalenessUpdate);
+  EXPECT_EQ(updated_time, expected_time);
+
+  histogram_tester_.ExpectUniqueSample(
+      "NewTabPage.Modules.AutoRemovalStaleDays.google_calendar",
+      google_calendar_staleness_count, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "NewTabPage.Modules.AutoRemovalStaleDays.outlook_calendar",
+      outlook_calendar_staleness_count, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(NewTabPageUtilStalenessUpdateBrowserTest,
