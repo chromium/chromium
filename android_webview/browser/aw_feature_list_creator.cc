@@ -70,6 +70,7 @@ bool g_signature_verification_enabled = true;
 // A list of Finch study names that should use the nonembedded low entropy
 // source.
 const char* const kNonembeddedLowEntropySourceAllowlist[] = {
+    "DefaultPassthroughCommandDecoder",
     "WebViewTestNonembeddedLowEntropySource",
 };
 

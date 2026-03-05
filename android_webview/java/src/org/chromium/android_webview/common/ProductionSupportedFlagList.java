@@ -748,9 +748,10 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 BaseFeatures.POST_GET_MY_MEMORY_STATE_TO_BACKGROUND,
                 "If enabled, getMyMemoryState IPC will be posted to background."),
-        Flag.baseFeature(BaseFeatures.USE_HIGH_PRIORITY_THREAD_GROUP,
-                "Enables high priority thread groups (presentation and audio " +
-                "processing thread types)."),
+        Flag.baseFeature(
+                BaseFeatures.USE_HIGH_PRIORITY_THREAD_GROUP,
+                "Enables high priority thread groups (presentation and audio "
+                        + "processing thread types)."),
         Flag.baseFeature(
                 "MojoChannelAssociatedSendUsesRunOrPostTask",
                 "Enables optimization for sending messages on channel-associated interfaces"),
@@ -948,8 +949,9 @@ public final class ProductionSupportedFlagList {
                 "Enables the use of a Surface (ANativeWindow) as the input for the "
                         + "NdkVideoEncodeAccelerator on Android."),
         Flag.baseFeature(BlinkFeatures.FETCH_LATER_API, "Enables FetchLater API."),
-        Flag.baseFeature(ContentFeatures.IO_THREAD_INTERACTIVE_THREAD_TYPE,
-                        "Enables use of audio processing priority for IO threads."),
+        Flag.baseFeature(
+                ContentFeatures.IO_THREAD_INTERACTIVE_THREAD_TYPE,
+                "Enables use of audio processing priority for IO threads."),
         Flag.baseFeature(
                 ContentFeatures.WEB_PAYMENTS,
                 "Enable the JavaScript PaymentRequest API for launching payment apps through"
@@ -1321,6 +1323,10 @@ public final class ProductionSupportedFlagList {
                 AwFeatures.WEBVIEW_USE_NONEMBEDDED_LOW_ENTROPY_SOURCE,
                 "When enabled, WebView uses the low entropy source provided by the "
                         + "nonembedded WebView service."),
+        Flag.baseFeature(
+                AwFeatures.WEBVIEW_TEST_NONEMBEDDED_LOW_ENTROPY_SOURCE,
+                "No-op experiment to verify WebView uses low entropy source provided by the"
+                        + " nonembedded WebView services work."),
         Flag.baseFeature(
                 PaymentFeatureList.PAYMENT_REQUEST_USE_RENDERER_URL_LOADER,
                 "When enabled, the PaymentRequest will use the URL loader from the renderer instead"
