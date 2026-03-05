@@ -934,8 +934,8 @@
   },
   {
     "name": "autofill-enable-vcn-3ds-authentication",
-    "owners": ["vinnypersky@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 145
+    "owners": ["vinnypersky@google.com", "hdhandapani@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 149
   },
   {
     "name": "autofill-enable-wallet-branding",
