@@ -73,7 +73,7 @@ def parse_args():
     parser.add_argument(
         '--profile-target',
         choices=['agsa', 'gma', 'combined'],
-        default='combined',
+        default='agsa',
         help='The target app to profile (AGSA, GMA, or both Combined).')
     parser.add_argument(
         '--webview-build-target',
@@ -194,14 +194,38 @@ def clear_remote_profiles(device, device_profiles_dir):
             "missing.")
 
 
-def launch_agsa():
-    # TODO(ziadyoussef): Use Crossbench instead and set command line args.
+def launch_agsa(args: OptionsNamespace):
     _LOGGER.info("Launching AGSA search results page...")
+    arch = 'arm64'
+    driver_path_arg = [
+        f'--driver-path={os.path.join(args.builddir, "clang_x64", "chromedriver")}'
+    ]
+    wpr_bin_path = os.path.join(_SRC_PATH, 'third_party', 'webpagereplay',
+                                'cipd', 'bin', 'linux', 'x86_64', 'wpr')
+    wpr_bin_path_arg_fragment = f',"wpr_go_bin":"{wpr_bin_path}"'
+    adb_bin_path = os.path.join(_SRC_PATH, 'third_party', 'android_sdk',
+                                'public', 'platform-tools', 'adb')
+    adb_bin_path_arg_fragment = f',"adb_bin":"{adb_bin_path}"'
+    disable_features = [
+        'SpareRendererForSitePerProcess',
+        'AndroidWarmUpSpareRendererWithTimeout',
+        'WebViewPrefetchNativeLibrary',
+    ]
+
     cmd = [
-        'adb', 'shell', 'am', 'start', '-a',
-        'android.intent.action.WEB_SEARCH', '-e', 'query', 'weather', '-n',
-        'com.google.android.googlequicksearchbox/'
-        'com.google.android.search.core.google.GoogleSearch'
+        'tools/perf/cb',
+        'embedder',
+        f'--browser={{browser:"clank/android_webview/tools/crossbench_config/cipd/{arch}/Velvet_{arch}.apk",driver:{{type:"Android"'
+        + adb_bin_path_arg_fragment + '}}',
+    ] + driver_path_arg + [
+        '--splashscreen=skip',
+        '--cuj-config=third_party/crossbench/config/team/woa/embedder_cuj_config.hjson',
+        '--network={"type":"wpr","path":"tools/perf/page_sets/data/crossbench_android_embedder_000.wprgo"'
+        + wpr_bin_path_arg_fragment +
+        ',"skip_deterministic_script_injection":true}',
+        '--embedder-process-name=googleapp',
+        '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
+        f'--disable-features={",".join(disable_features)}',
     ]
     subprocess.check_call(cmd)
 
@@ -230,7 +254,7 @@ def run_target(device, target: str, args: OptionsNamespace):
     if target == 'agsa':
         package = 'com.google.android.googlequicksearchbox'
         process_name = f'{package}:googleapp'
-        launch_func = launch_agsa
+        launch_func = lambda: launch_agsa(args)
     else:
         package = (
             'com.google.android.libraries.ads.mobile.maitier.testapps.webview')
@@ -300,13 +324,14 @@ def run_webview_benchmarks(device, args: OptionsNamespace):
     # 1- Run the benchmarks
     # 2- Trigger the PGO dump
     # 3- Pull profdata into {profiledir}
-    targets = []
     if args.profile_target == 'agsa':
         targets = ['agsa']
     elif args.profile_target == 'gma':
         targets = ['gma']
-    else:
+    elif args.profile_target == 'combined':
         targets = ['agsa', 'gma']
+    else:
+        raise ValueError(f'Unsupported profile target: {args.profile_target}')
 
     for target in targets:
         run_target(device, target, args)
