@@ -125,6 +125,12 @@ suite('Composebox voice search', () => {
 
     windowProxy = installMock(WindowProxy);
     windowProxy.setResultFor('setTimeout', 0);
+    windowProxy.setResultMapperFor('matchMedia', () => ({
+                                                   addListener() {},
+                                                   addEventListener() {},
+                                                   removeListener() {},
+                                                   removeEventListener() {},
+                                                 }));
 
     composeboxElement = document.createElement('cr-composebox');
     document.body.appendChild(composeboxElement);
