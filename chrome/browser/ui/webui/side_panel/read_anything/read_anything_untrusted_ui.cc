@@ -137,6 +137,7 @@ ReadAnythingUntrustedUI::ReadAnythingUntrustedUI(content::WebUI* web_ui)
       {"readingModeLanguageMenu", IDS_READING_MODE_LANGUAGE_MENU},
       {"readingModeLanguageMenuTitle", IDS_READING_MODE_LANGUAGE_MENU_TITLE},
       {"readingModeLanguageMenuClose", IDS_READING_MODE_LANGUAGE_MENU_CLOSE},
+      {"readingModeClose", IDS_READING_MODE_CLOSE},
       {"readingModeLanguageMenuSearchLabel",
        IDS_READING_MODE_LANGUAGE_MENU_SEARCH_LABEL},
       {"readingModeLanguageMenuSearchClear",

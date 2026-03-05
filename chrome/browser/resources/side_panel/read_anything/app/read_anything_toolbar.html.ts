@@ -127,8 +127,8 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     ${this.isImmersiveMode ? html`
       <cr-icon-button id="close" tabindex="-1"
           class="toolbar-button"
-          aria-label="$i18n{readingModeLanguageMenuClose}"
-          title="$i18n{readingModeLanguageMenuClose}"
+          aria-label="$i18n{readingModeClose}"
+          title="$i18n{readingModeClose}"
           iron-icon="cr:close"
           @click="${this.onCloseClick_}">
       </cr-icon-button>
