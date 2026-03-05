@@ -430,8 +430,13 @@
 // Returns the matcher for the quick delete browsing data button.
 + (id<GREYMatcher>)browsingDataButtonMatcher;
 
-// Returns the matcher for the quick delete browsing data button.
+// TODO(crbug.com/487269108): Delete the BrowsingDataConfirmButtonMatcher()
+// once the feature flag `kPasswordRemovalFromDeleteBrowsingData` is enabled.
+// Returns the matcher for the quick delete browsing data confirm button.
 + (id<GREYMatcher>)browsingDataConfirmButtonMatcher;
+
+// Returns the matcher for the quick delete browsing data done button.
++ (id<GREYMatcher>)browsingDataDoneButtonMatcher;
 
 // Returns matcher for the clear browsing history cell on the clear browsing
 // data panel.

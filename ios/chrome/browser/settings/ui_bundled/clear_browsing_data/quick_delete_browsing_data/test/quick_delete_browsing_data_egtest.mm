@@ -29,7 +29,11 @@
 
 using browsing_data::DeleteBrowsingDataDialogAction;
 using chrome_test_util::BrowsingDataButtonMatcher;
+// TODO(crbug.com/487269108): Modify comments and method names for the `Confirm`
+// button to the `Done` button in this file once the feature flag
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled.
 using chrome_test_util::BrowsingDataConfirmButtonMatcher;
+using chrome_test_util::BrowsingDataDoneButtonMatcher;
 using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ClearAutofillButton;
 using chrome_test_util::ClearBrowsingDataView;
@@ -55,6 +59,15 @@ id<GREYMatcher> QuickDeleteBrowsingDataPageTitleMatcher() {
 id<GREYMatcher> QuickDeleteOtherDataPageTitleMatcher() {
   return chrome_test_util::NavigationBarTitleWithAccessibilityLabelId(
       IDS_SETTINGS_OTHER_GOOGLE_DATA_TITLE);
+}
+
+// Returns the matcher for the browsing data confirmation button. The button
+// title is "Done" when the password removal feature is enabled, and "Confirm"
+// otherwise.
+id<GREYMatcher> BrowsingDataConfirmationButtonMatcher(
+    bool passwordRemovalEnabled) {
+  return passwordRemovalEnabled ? BrowsingDataDoneButtonMatcher()
+                                : BrowsingDataConfirmButtonMatcher();
 }
 
 // Returns matcher for an element with or without the
@@ -228,6 +241,7 @@ void NoDeleteBrowsingDataDialogHistogram(
                       QuickDeleteBrowsingDataPageTitleMatcher()];
 }
 
+// Signs in the user with a predefined fake identity for testing.
 - (void)signIn {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -278,7 +292,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [self openQuickDeleteBrowsingDataPage];
 
   // Tap confirm button.
-  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:BrowsingDataConfirmationButtonMatcher(
+                                   [self shouldEnablePasswordRemovalFeature])]
       performAction:grey_tap()];
 
   // Ensure the page is closed while quick delete bottom sheet is still open.
@@ -313,7 +329,9 @@ void NoDeleteBrowsingDataDialogHistogram(
   [self openQuickDeleteBrowsingDataPage];
 
   // Check that the confirm button is disabled.
-  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:BrowsingDataConfirmationButtonMatcher(
+                                   [self shouldEnablePasswordRemovalFeature])]
       assertWithMatcher:grey_not(grey_enabled())];
 
   // Select a browsing data type.
@@ -321,7 +339,9 @@ void NoDeleteBrowsingDataDialogHistogram(
       performAction:grey_tap()];
 
   // Check that the confirm button is enabled.
-  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:BrowsingDataConfirmationButtonMatcher(
+                                   [self shouldEnablePasswordRemovalFeature])]
       assertWithMatcher:grey_enabled()];
 }
 
@@ -513,7 +533,9 @@ void NoDeleteBrowsingDataDialogHistogram(
       assertWithMatcher:ElementIsSelectedMatcher(true)];
 
   // Tap confirm button.
-  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:BrowsingDataConfirmationButtonMatcher(
+                                   [self shouldEnablePasswordRemovalFeature])]
       performAction:grey_tap()];
 
   // Ensure the Quick Delete Browsing Data page is closed while quick delete
@@ -695,7 +717,9 @@ void NoDeleteBrowsingDataDialogHistogram(
                                                         WindowWithNumber(0)];
 
   // Tap confirm button on the first window where the history cell is selected.
-  [[EarlGrey selectElementWithMatcher:BrowsingDataConfirmButtonMatcher()]
+  [[EarlGrey
+      selectElementWithMatcher:BrowsingDataConfirmationButtonMatcher(
+                                   [self shouldEnablePasswordRemovalFeature])]
       performAction:grey_tap()];
 
   // Focus the second window for the subsequent interactions.

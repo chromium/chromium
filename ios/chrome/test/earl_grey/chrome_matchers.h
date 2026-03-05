@@ -439,6 +439,9 @@ id<GREYMatcher> BrowsingDataButtonMatcher();
 // Returns the matcher for the quick delete browsing data confirmation button.
 id<GREYMatcher> BrowsingDataConfirmButtonMatcher();
 
+// Returns the matcher for the quick delete browsing data done button.
+id<GREYMatcher> BrowsingDataDoneButtonMatcher();
+
 // Returns a matcher for the clear browsing history cell on the clear browsing
 // data panel.
 id<GREYMatcher> ClearBrowsingHistoryButton();

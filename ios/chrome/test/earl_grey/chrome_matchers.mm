@@ -543,8 +543,14 @@ id<GREYMatcher> BrowsingDataButtonMatcher() {
   return [ChromeMatchersAppInterface browsingDataButtonMatcher];
 }
 
+// TODO(crbug.com/487269108): Delete the BrowsingDataConfirmButtonMatcher()
+// once the feature flag `kPasswordRemovalFromDeleteBrowsingData` is enabled.
 id<GREYMatcher> BrowsingDataConfirmButtonMatcher() {
   return [ChromeMatchersAppInterface browsingDataConfirmButtonMatcher];
+}
+
+id<GREYMatcher> BrowsingDataDoneButtonMatcher() {
+  return [ChromeMatchersAppInterface browsingDataDoneButtonMatcher];
 }
 
 id<GREYMatcher> ClearBrowsingHistoryButton() {

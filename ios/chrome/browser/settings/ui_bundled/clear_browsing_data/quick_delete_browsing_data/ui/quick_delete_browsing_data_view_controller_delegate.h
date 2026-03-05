@@ -9,8 +9,10 @@
 // page.
 @protocol QuickDeleteBrowsingDataViewControllerDelegate
 
-// Method invoked when the user wants to dismiss browsing data page either via
-// the 'Confirm', 'Cancel' buttons or by dragging the view down.
+// TODO(crbug.com/487269108): Modify comment for the `Confirm` button to the
+// `Done` button once the feature flag `kPasswordRemovalFromDeleteBrowsingData`
+// is enabled. Method invoked when the user wants to dismiss browsing data page
+// either via the 'Confirm', 'Cancel' buttons or by dragging the view down.
 - (void)dismissBrowsingDataPage;
 
 // Method invoked when the user taps on the "Manage other data" cell to open a

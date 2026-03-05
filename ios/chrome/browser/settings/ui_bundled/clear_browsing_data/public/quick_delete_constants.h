@@ -19,9 +19,14 @@ extern NSString* const kQuickDeleteBrowsingDataButtonIdentifier;
 // The accessibility identifier for the footer string.
 extern NSString* const kQuickDeleteFooterIdentifier;
 
-// The accessibility identifier for the confirm button in the quick delete
-// browsing data page.
+// TODO(crbug.com/487269108): Delete the constant below once the feature flag
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled. The accessibility
+// identifier for the `Confirm` button in the quick delete browsing data page.
 extern NSString* const kQuickDeleteBrowsingDataConfirmButtonIdentifier;
+
+// The accessibility identifier for the done button in the quick delete browsing
+// data page.
+extern NSString* const kQuickDeleteBrowsingDataDoneButtonIdentifier;
 
 // The accessibility identifier for the history cell in the quick delete
 // browsing data page.

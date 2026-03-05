@@ -1090,6 +1090,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   return grey_accessibilityID(kQuickDeleteBrowsingDataConfirmButtonIdentifier);
 }
 
++ (id<GREYMatcher>)browsingDataDoneButtonMatcher {
+  return grey_accessibilityID(kQuickDeleteBrowsingDataDoneButtonIdentifier);
+}
+
 + (id<GREYMatcher>)clearBrowsingHistoryButton {
   // Needs to use grey_sufficientlyVisible() to make the difference between a
   // cell used by the tableview and a invisible recycled cell.

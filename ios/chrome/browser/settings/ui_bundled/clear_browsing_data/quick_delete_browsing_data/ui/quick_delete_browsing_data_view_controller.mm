@@ -364,15 +364,29 @@ NSArray<NSNumber*>* BrowsingDataItemIdentifiers() {
   return cancelButton;
 }
 
-// Returns the confirm button on the navigation bar.
+// TODO(crbug.com/487269108): Modify comments and method names from `Confirm`
+// button to the `Done` button in this file once the feature flag
+// `kPasswordRemovalFromDeleteBrowsingData` is enabled. Returns the confirm
+// button on the navigation bar.
 - (UIBarButtonItem*)confirmButton {
-  UIBarButtonItem* confirmButton = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_DELETE_BROWSING_DATA_CONFIRM)
-              style:UIBarButtonItemStyleDone
-             target:self
-             action:@selector(onConfirm:)];
-  confirmButton.accessibilityIdentifier =
-      kQuickDeleteBrowsingDataConfirmButtonIdentifier;
+  UIBarButtonItem* confirmButton;
+  if (IsPasswordRemovalFromDeleteBrowsingDataEnabled()) {
+    confirmButton = [[UIBarButtonItem alloc]
+        initWithBarButtonSystemItem:UIBarButtonSystemItemDone
+                             target:self
+                             action:@selector(onConfirm:)];
+    confirmButton.accessibilityIdentifier =
+        kQuickDeleteBrowsingDataDoneButtonIdentifier;
+  } else {
+    confirmButton = [[UIBarButtonItem alloc]
+        initWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_DELETE_BROWSING_DATA_CONFIRM)
+                style:UIBarButtonItemStyleDone
+               target:self
+               action:@selector(onConfirm:)];
+    confirmButton.accessibilityIdentifier =
+        kQuickDeleteBrowsingDataConfirmButtonIdentifier;
+  }
   return confirmButton;
 }
 
