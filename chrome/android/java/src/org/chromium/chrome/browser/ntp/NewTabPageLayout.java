@@ -27,7 +27,6 @@ import androidx.core.widget.ImageViewCompat;
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.Log;
-import org.chromium.base.MathUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
@@ -157,7 +156,6 @@ public class NewTabPageLayout extends LinearLayout
     private FeedSurfaceScrollDelegate mScrollDelegate;
 
     private boolean mMvtContentFits;
-    private float mTransitionEndOffset;
     private boolean mIsTablet;
     private @Nullable Supplier<Integer> mTabStripHeightSupplier;
     // This variable is only valid when the NTP surface is in tablet mode.
@@ -298,14 +296,9 @@ public class NewTabPageLayout extends LinearLayout
             mUiConfig.updateDisplayStyle();
         }
 
-        mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this);
+        mSearchBoxCoordinator = new SearchBoxCoordinator(getContext(), this, mIsTablet);
         mSearchBoxCoordinator.initialize(
                 lifecycleDispatcher, mProfile.isOffTheRecord(), mWindowAndroid);
-        mTransitionEndOffset =
-                !mIsTablet
-                        ? getResources()
-                                .getDimensionPixelSize(R.dimen.ntp_search_box_transition_end_offset)
-                        : 0;
 
         updateSearchBoxTwoSideMargin();
         initializeLogoCoordinator();
@@ -719,44 +712,10 @@ public class NewTabPageLayout extends LinearLayout
      * @return the transition percentage
      */
     float getToolbarTransitionPercentage() {
-        // During startup the view may not be fully initialized.
-        if (!mScrollDelegate.isScrollViewInitialized() || getSearchBoxView() == null) return 0f;
-
-        if (isSearchBoxOffscreen()) {
-            // getVerticalScrollOffset is valid only for the scroll view if the first item is
-            // visible. If the search box view is offscreen, we must have scrolled quite far and we
-            // know the toolbar transition should be 100%. This might be the initial scroll position
-            // due to the scroll restore feature, so the search box will not have been laid out yet.
-            return 1f;
-        }
-
-        // During startup the view may not be fully initialized, so we only calculate the current
-        // percentage if some basic view properties (position of the search box) are sane.
-        int searchBoxTop = getSearchBoxView().getTop();
-        if (searchBoxTop == 0) return 0f;
-
-        // For all other calculations, add the search box padding, because it defines where the
-        // visible "border" of the search box is.
-        searchBoxTop += getSearchBoxView().getPaddingTop();
-
-        final int scrollY = mScrollDelegate.getVerticalScrollOffset();
-        // Use int pixel size instead of float dimension to avoid precision error on the percentage.
-        final float transitionLength =
-                mCurrentNtpFakeSearchBoxTransitionStartOffset + mTransitionEndOffset;
-        // Tab strip height is zero on phones, and may vary on tablets.
-        int tabStripHeight = mTabStripHeightSupplier != null ? mTabStripHeightSupplier.get() : 0;
-
-        // When scrollY equals searchBoxTop + tabStripHeight -transitionStartOffset, it marks the
-        // start point of the transition. When scrollY equals searchBoxTop plus transitionEndOffset
-        // plus tabStripHeight, it marks the end point of the transition.
-        return MathUtils.clamp(
-                (scrollY
-                                - (searchBoxTop + mTransitionEndOffset)
-                                + tabStripHeight
-                                + transitionLength)
-                        / transitionLength,
-                0f,
-                1f);
+        return mSearchBoxCoordinator.getToolbarTransitionPercentage(
+                mScrollDelegate,
+                mTabStripHeightSupplier,
+                mCurrentNtpFakeSearchBoxTransitionStartOffset);
     }
 
     private void initializeSiteSectionView() {
@@ -976,16 +935,6 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     /**
-     * Sets whether this view is currently moving within its parent view. When the view is moving
-     * certain animations will be disabled or prevented.
-     *
-     * @param isViewMoving Whether this view is currently moving.
-     */
-    void setIsViewMoving(boolean isViewMoving) {
-        mIsViewMoving = isViewMoving;
-    }
-
-    /**
      * Updates the opacity of the search box when scrolling.
      *
      * @param alpha opacity (alpha) value to use.
@@ -1012,39 +961,8 @@ public class NewTabPageLayout extends LinearLayout
      * @param parentView The top level parent view used to translate search box bounds.
      */
     void getSearchBoxBounds(Rect bounds, Point translation, View parentView) {
-        int searchBoxX = (int) getSearchBoxView().getX();
-        int searchBoxY = (int) getSearchBoxView().getY();
-        bounds.set(
-                searchBoxX,
-                searchBoxY,
-                searchBoxX + getSearchBoxView().getWidth(),
-                searchBoxY + getSearchBoxView().getHeight());
-
-        translation.set(0, 0);
-
-        if (isSearchBoxOffscreen()) {
-            translation.y = Integer.MIN_VALUE;
-        } else {
-            View view = getSearchBoxView();
-            while (true) {
-                view = (View) view.getParent();
-                if (view == null) {
-                    // The |mSearchBoxView| is not a child of this view. This can happen if the
-                    // RecyclerView detaches the NewTabPageLayout after it has been scrolled out of
-                    // view. Set the translation to the minimum Y value as an approximation.
-                    translation.y = Integer.MIN_VALUE;
-                    break;
-                }
-                translation.offset(-view.getScrollX(), -view.getScrollY());
-                if (view == parentView) break;
-                translation.offset((int) view.getX(), (int) view.getY());
-            }
-        }
-
-        bounds.offset(translation.x, translation.y);
-        if (translation.y != Integer.MIN_VALUE) {
-            bounds.inset(0, mSearchBoxBoundsVerticalInset);
-        }
+        mSearchBoxCoordinator.getSearchBoxBounds(
+                bounds, translation, parentView, mScrollDelegate, mSearchBoxBoundsVerticalInset);
     }
 
     /** Returns the fake search box's transition start offset on NTP. */
@@ -1091,17 +1009,6 @@ public class NewTabPageLayout extends LinearLayout
         }
 
         return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_top);
-    }
-
-    /**
-     * @return Whether the search box view is scrolled off the screen.
-     */
-    private boolean isSearchBoxOffscreen() {
-        if (!mScrollDelegate.isScrollViewInitialized()) return false;
-
-        return !mScrollDelegate.isChildVisibleAtPosition(0)
-                || mScrollDelegate.getVerticalScrollOffset()
-                        > getSearchBoxView().getTop() + mTransitionEndOffset;
     }
 
     /**

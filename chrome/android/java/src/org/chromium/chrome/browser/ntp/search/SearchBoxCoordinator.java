@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.ntp.search;
 
 import android.content.Context;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -17,11 +19,14 @@ import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feed.FeedSurfaceScrollDelegate;
 import org.chromium.chrome.browser.lens.LensEntryPoint;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+
+import java.util.function.Supplier;
 
 /**
  * This class is responsible for reacting to events from the outside world, interacting with other
@@ -37,10 +42,10 @@ public class SearchBoxCoordinator {
     private WindowAndroid mWindowAndroid;
 
     /** Constructor. */
-    public SearchBoxCoordinator(Context context, ViewGroup parent) {
+    public SearchBoxCoordinator(Context context, ViewGroup parent, boolean isTablet) {
         mModel = new PropertyModel(SearchBoxProperties.ALL_KEYS);
         mView = parent.findViewById(R.id.search_box);
-        mMediator = new SearchBoxMediator(context, mModel, mView);
+        mMediator = new SearchBoxMediator(context, mModel, mView, isTablet);
     }
 
     @Initializer
@@ -148,5 +153,43 @@ public class SearchBoxCoordinator {
 
     public void applyWhiteBackgroundWithShadow(boolean apply) {
         mMediator.applyWhiteBackgroundWithShadow(apply);
+    }
+
+    /**
+     * Calculates the percentage (between 0 and 1) of the transition from the search box to the
+     * omnibox at the top of the New Tab Page, which is determined by the amount of scrolling and
+     * the position of the search box.
+     *
+     * @return the transition percentage
+     */
+    public float getToolbarTransitionPercentage(
+            FeedSurfaceScrollDelegate scrollDelegate,
+            @Nullable Supplier<Integer> tabStripHeightSupplier,
+            int currentNtpFakeSearchBoxTransitionStartOffset) {
+        return mMediator.getToolbarTransitionPercentage(
+                scrollDelegate,
+                tabStripHeightSupplier,
+                currentNtpFakeSearchBoxTransitionStartOffset);
+    }
+
+    /**
+     * Get the bounds of the search box in relation to the top level {@code parentView}.
+     *
+     * @param bounds The current drawing location of the search box.
+     * @param translation The translation applied to the search box by the parent view hierarchy up
+     *     to the {@code parentView}.
+     * @param parentView The top level parent view used to translate search box bounds.
+     * @param scrollDelegate The scroll delegate for NTP.
+     * @param searchBoxBoundsVerticalInset Vertical inset to add to the top and bottom of the search
+     *     box bounds. May be 0 if no inset should be applied.
+     */
+    public void getSearchBoxBounds(
+            Rect bounds,
+            Point translation,
+            View parentView,
+            FeedSurfaceScrollDelegate scrollDelegate,
+            int searchBoxBoundsVerticalInset) {
+        mMediator.getSearchBoxBounds(
+                bounds, translation, parentView, scrollDelegate, searchBoxBoundsVerticalInset);
     }
 }
