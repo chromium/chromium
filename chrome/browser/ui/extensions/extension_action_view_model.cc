@@ -266,6 +266,13 @@ std::u16string ExtensionActionViewModel::GetAccessibleName(
 
 std::u16string ExtensionActionViewModel::GetTooltip(
     content::WebContents* web_contents) const {
+  // On Android, `web_contents` might be null for native pages, e.g. new tab.
+  // TODO(crbug.com/448420873): Remove this workaround once we ensure that
+  // `web_contents` is always non-null for all tabs.
+  if (!web_contents) {
+    return GetActionName();
+  }
+
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
     std::u16string action_title = GetActionTitle(web_contents);
