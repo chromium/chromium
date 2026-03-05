@@ -6,6 +6,8 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("webrtc") {
   sources = [
+    "rtc.cc",
+    "rtc.h",
     "webrtc_audio_device_impl.cc",
     "webrtc_audio_device_impl.h",
     "webrtc_audio_device_not_impl.cc",

@@ -635,6 +635,7 @@ source_set("unit_tests") {
     "webaudio/script_processor_node_test.cc",
     "webaudio/stereo_panner_node_test.cc",
     "webaudio/testing/mock_web_audio_device.h",
+    "webrtc/rtc_test.cc",
     "webrtc/webrtc_audio_device_impl_test.cc",
     "webshare/navigator_share_test.cc",
     "websockets/dom_websocket_test.cc",

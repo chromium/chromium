@@ -6591,6 +6591,7 @@ interface Navigator
     getter preferences
     getter product
     getter productSub
+    getter rtc
     getter scheduling
     getter serviceWorker
     getter storage
@@ -7432,6 +7433,12 @@ interface QuotaExceededError : DOMException
     getter quota
     getter requested
     method constructor
+interface RTC : EventTarget
+    attribute @@toStringTag
+    method cancelDiagnosticLogging
+    method constructor
+    method finishDiagnosticLogging
+    method startDiagnosticLogging
 interface RTCCertificate
     attribute @@toStringTag
     getter expires

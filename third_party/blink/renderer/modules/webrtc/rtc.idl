@@ -1,0 +1,14 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// TODO(https://crbug.com/481412281): Add spec link when available.
+
+[
+    Exposed=Window, SecureContext, RuntimeEnabled=RTCDiagnosticLogging
+] interface RTC : EventTarget {
+    [CallWith=ScriptState] Promise<DOMString> startDiagnosticLogging(optional RTCDiagnosticLoggingOptions options = {});
+    [CallWith=ScriptState] Promise<undefined> finishDiagnosticLogging();
+    [CallWith=ScriptState] Promise<undefined> cancelDiagnosticLogging();
+
+};

@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>RTC Logging API</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+promise_test(async t => {
+  assert_true('rtc' in navigator, 'navigator.rtc should exist');
+  const rtc = navigator.rtc;
+
+  // Verify startDiagnosticLogging returns a UUID string.
+  const uuid = await rtc.startDiagnosticLogging();
+  assert_equals(typeof uuid, 'string', 'startDiagnosticLogging should return a uuid string');
+  assert_regexp_match(uuid, /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/, 'uuid should be a valid v4 UUID');
+
+  // Verify finishDiagnosticLogging (StopLogging) resolves.
+  await rtc.finishDiagnosticLogging();
+
+  // Verify cancelDiagnosticLogging resolves.
+  await rtc.cancelDiagnosticLogging();
+}, 'RTC Logging API basic functionality (start, finish, cancel)');
+
+promise_test(async t => {
+  // The API is intentionally not reporting any errors to avoid revealing
+  // information about the system.
+  // Verify that calling finish or cancel without start also resolves.
+  await navigator.rtc.finishDiagnosticLogging();
+  await navigator.rtc.cancelDiagnosticLogging();
+}, 'RTC Logging API resolves even when not logging');
+
+</script>
