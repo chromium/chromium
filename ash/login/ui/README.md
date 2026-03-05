@@ -22,7 +22,7 @@ authentication UI elements:
         `PublicAccountWarningDialog`
       * Allows to actually sign in to the public account
   * Also owns/refers to following optional UI elements:
-      * `LockScreenMediaControlsView`
+      * `LockScreenMediaView`
       * `NoteActionLaunchButton`
       * UI that shows information about system.
       * Various bubbles and indicators

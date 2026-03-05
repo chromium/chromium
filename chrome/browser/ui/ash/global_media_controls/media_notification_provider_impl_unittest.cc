@@ -144,9 +144,17 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
     observer_ = std::make_unique<MockMediaNotificationProviderObserver>();
     provider_->AddObserver(observer_.get());
     layout_provider_ = std::make_unique<ChromeLayoutProvider>();
+
+    profile_ = testing_profile_manager_.CreateTestingProfile("Profile");
+    provider_->set_profile_for_testing(profile_);
   }
 
   void TearDown() override {
+    profile_ = nullptr;
+    // This is needed for avoiding a DCHECK failure caused by
+    // TestNetworkConnectionTracker having an observer when it's destroyed.
+    media_router::DnsSdRegistry::GetInstance()->ResetForTest();
+
     provider_->RemoveObserver(observer_.get());
     observer_.reset();
     ChromeAshTestBase::TearDown();
@@ -204,6 +212,7 @@ class MediaNotificationProviderImplTest : public ChromeAshTestBase {
   raw_ptr<MediaTestShellDelegate, DanglingUntriaged> shell_delegate_ = nullptr;
   TestingProfileManager testing_profile_manager_{
       TestingBrowserProcess::GetGlobal()};
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 TEST_F(MediaNotificationProviderImplTest, NotificationListTest) {
@@ -266,47 +275,8 @@ TEST_F(MediaNotificationProviderImplTest, RefreshMediaItem) {
   EXPECT_EQ(notification_list_view->items_for_testing().size(), 1u);
 }
 
-// Tests the `kGlobalMediaControlsCastStartStop` feature.
-// TODO(crbug.com/1407071): Merge this test class into
-// MediaNotificationProviderImplTest once the feature is enabled by default on
-// Chrome OS.
-class CastStartStopMediaNotificationProviderImplTest
-    : public MediaNotificationProviderImplTest {
- public:
-  void SetUp() override {
-    // This must be called before MediaNotificationProviderImplTest::SetUp()
-    // starts the GPU service thread.
-    MediaNotificationProviderImplTest::SetUp();
-
-    profile_ = testing_profile_manager_.CreateTestingProfile("Profile");
-    InitProvider();
-  }
-
-  void TearDown() override {
-    profile_ = nullptr;
-    // This is needed for avoiding a DCHECK failure caused by
-    // TestNetworkConnectionTracker having an observer when it's destroyed.
-    media_router::DnsSdRegistry::GetInstance()->ResetForTest();
-
-    MediaNotificationProviderImplTest::TearDown();
-  }
-
- protected:
-  void InitProvider() {
-    provider_->set_profile_for_testing(profile_);
-    // We must initialize the list view before we can show individual media
-    // items.
-    list_view_ = provider_->GetMediaNotificationListView(
-        1, /*should_clip_height=*/true,
-        global_media_controls::GlobalMediaControlsEntryPoint::kSystemTray,
-        /*show_devices_for_item_id=*/"");
-  }
-
-  raw_ptr<Profile> profile_ = nullptr;
-  std::unique_ptr<views::View> list_view_;
-};
-
-TEST_F(CastStartStopMediaNotificationProviderImplTest, ShowCastFooterView) {
+TEST_F(MediaNotificationProviderImplTest, ShowCastFooterView) {
+  auto notification_list_view = CreateNotificationListView();
   MockCastMediaNotificationItem item{
       media_router::MediaRoute{}, provider_->GetMediaItemManager(), profile_};
   auto* media_item_ui_view =
@@ -327,7 +297,8 @@ TEST_F(CastStartStopMediaNotificationProviderImplTest, ShowCastFooterView) {
           ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON, 0));
 }
 
-TEST_F(CastStartStopMediaNotificationProviderImplTest, ShowDeviceSelectorView) {
+TEST_F(MediaNotificationProviderImplTest, ShowDeviceSelectorView) {
+  auto notification_list_view = CreateNotificationListView();
   MockDeviceService device_service;
   TestMediaNotificationItem item;
   provider_->set_device_service_for_testing(&device_service);

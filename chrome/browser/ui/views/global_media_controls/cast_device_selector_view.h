@@ -50,8 +50,7 @@ class IssueHoverButton : public HoverButton {
 
 // CastDeviceSelectorView holds a list of devices available for casting the
 // given media session. This is used within MediaDialogView on non-CrOS desktop
-// platforms and replaces MediaItemUIDeviceSelectorView when the
-// media::kGlobalMediaControlsUpdatedUI flag is enabled.
+// platforms.
 class CastDeviceSelectorView
     : public global_media_controls::MediaItemUIDeviceSelector,
       public global_media_controls::mojom::DeviceListClient {
