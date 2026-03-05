@@ -120,6 +120,8 @@ constexpr char kInvalidWindowTypeError[] = "Invalid value for type";
 constexpr char kNoHighlightedTabError[] = "No highlighted tab";
 constexpr char kTabIndexNotFoundError[] = "No tab at index: *.";
 constexpr char kCannotFindTabToDiscard[] = "Cannot find a tab to discard.";
+constexpr char kCannotUnhighlightAllTabsError[] =
+    "Cannot unhighlight all tabs.";
 
 #if !BUILDFLAG(IS_ANDROID)
 constexpr char kWindowCreateSupportsOnlySingleIwaUrlError[] =
@@ -2518,11 +2520,10 @@ bool TabsUpdateFunction::UpdateHighlightedTab(
     }
   }
 
-  if (selected_tabs.size() == 0) {
+  if (selected_tabs.empty()) {
     // We don't allow no tabs to be selected.
-    // TODO(devlin): Should this be an error? It's historically been silently
-    // swallowed.
-    return true;
+    error = kCannotUnhighlightAllTabsError;
+    return false;
   }
 
   // Determine the new active tab. This is the currently-active tab, unless that

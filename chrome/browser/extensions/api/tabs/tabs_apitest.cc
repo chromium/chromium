@@ -331,6 +331,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTabTest, UpdateHighlighted) {
         chrome.test.assertEq(1, highlightedTabs.length);
         chrome.test.assertEq(tabs[2].id, highlightedTabs[0].id);
 
+        // Try to unhighlight the last remaining highlighted tab (tabs[2]).
+        // This should fail.
+        await chrome.test.assertPromiseRejects(
+            chrome.tabs.update(tabs[2].id, {highlighted: false}),
+            'Error: Cannot unhighlight all tabs.');
+
         chrome.test.succeed();
       }
     ]);
