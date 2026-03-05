@@ -2469,7 +2469,7 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    @MinAndroidSdkLevel(33) // TODO(twellington): Replace with version code when available.
+    @MinAndroidSdkLevel(Build.VERSION_CODES.TIRAMISU)
     public void testFileAccessHtml_AndroidT() {
         String fileUrl = "file:///sdcard/Downloads/test.html";
 
