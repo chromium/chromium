@@ -90,8 +90,8 @@ cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-ico
   top: 14px;
 }
 
-cr-composebox::part(text-container) {
-  height: 44px;
+cr-composebox::part(input) {
+  min-height: 44px;
 }
 
 cr-composebox[searchbox-layout-mode='TallBottomContext']::part(context-menu-and-tools) {
