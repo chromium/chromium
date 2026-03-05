@@ -152,6 +152,14 @@ class CORE_EXPORT GridLayoutData {
     }
   }
 
+  // Returns true if any existing axis has an indefinite set. Handles the case
+  // where one axis may not have a track collection (e.g., the stacking axis in
+  // grid-lanes).
+  bool HasIndefiniteSet() const {
+    return (columns_ && Columns().HasIndefiniteSet()) ||
+           (rows_ && Rows().HasIndefiniteSet());
+  }
+
  private:
   std::unique_ptr<GridLayoutTrackCollection> columns_;
   std::unique_ptr<GridLayoutTrackCollection> rows_;
@@ -170,8 +178,7 @@ class GridLayoutTree : public RefCounted<GridLayoutTree> {
  public:
   struct GridTreeNode {
     GridTreeNode(const GridLayoutData& layout_data, wtf_size_t subtree_size)
-        : has_unresolved_geometry(layout_data.Columns().HasIndefiniteSet() ||
-                                  layout_data.Rows().HasIndefiniteSet()),
+        : has_unresolved_geometry(layout_data.HasIndefiniteSet()),
           layout_data(layout_data),
           subtree_size(subtree_size) {}
 
