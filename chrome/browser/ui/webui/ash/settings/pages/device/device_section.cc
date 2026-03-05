@@ -943,9 +943,6 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "enableF11AndF12KeyShortcuts",
       base::FeatureList::IsEnabled(::features::kSupportF11AndF12KeyShortcuts));
 
-  html_source->AddBoolean("enableWelcomeExperience",
-                          ash::features::IsWelcomeExperienceEnabled());
-
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);
   AddCustomizeButtonsPageStrings(html_source);

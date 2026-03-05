@@ -583,49 +583,41 @@ void InputDeviceSettingsProvider::OnCustomizableTabletButtonPressed(
 
 void InputDeviceSettingsProvider::OnKeyboardBatteryInfoChanged(
     const ::ash::mojom::Keyboard& keyboard) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyKeyboardsUpdated();
 }
 
 void InputDeviceSettingsProvider::OnGraphicsTabletBatteryInfoChanged(
     const ::ash::mojom::GraphicsTablet& graphics_tablet) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyGraphicsTabletUpdated();
 }
 
 void InputDeviceSettingsProvider::OnMouseBatteryInfoChanged(
     const ::ash::mojom::Mouse& mouse) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyMiceUpdated();
 }
 
 void InputDeviceSettingsProvider::OnTouchpadBatteryInfoChanged(
     const ::ash::mojom::Touchpad& touchpad) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyTouchpadsUpdated();
 }
 
 void InputDeviceSettingsProvider::OnMouseCompanionAppInfoChanged(
     const ::ash::mojom::Mouse& mouse) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyMiceUpdated();
 }
 
 void InputDeviceSettingsProvider::OnKeyboardCompanionAppInfoChanged(
     const ::ash::mojom::Keyboard& keyboard) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyKeyboardsUpdated();
 }
 
 void InputDeviceSettingsProvider::OnTouchpadCompanionAppInfoChanged(
     const ::ash::mojom::Touchpad& touchpad) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyTouchpadsUpdated();
 }
 
 void InputDeviceSettingsProvider::OnGraphicsTabletCompanionAppInfoChanged(
     const ::ash::mojom::GraphicsTablet& graphics_tablet) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   NotifyGraphicsTabletUpdated();
 }
 
@@ -780,7 +772,6 @@ void InputDeviceSettingsProvider::OnReceiveDeviceImage(
 void InputDeviceSettingsProvider::GetDeviceIconImage(
     const std::string& device_key,
     GetDeviceIconImageCallback callback) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   CHECK(InputDeviceSettingsController::Get());
   InputDeviceSettingsController::Get()->GetDeviceImageDataUrl(
       device_key,
@@ -790,7 +781,6 @@ void InputDeviceSettingsProvider::GetDeviceIconImage(
 
 void InputDeviceSettingsProvider::LaunchCompanionApp(
     const std::string& package_id_str) {
-  CHECK(features::IsWelcomeExperienceEnabled());
   auto* profile = ProfileManager::GetActiveUserProfile();
   auto package_id = apps::PackageId::FromString(package_id_str);
   CHECK(package_id.has_value());

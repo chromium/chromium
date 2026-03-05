@@ -173,14 +173,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
       currentMouseChanged: {
         type: Boolean,
       },
-
-      isWelcomeExperienceEnabled: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableWelcomeExperience');
-        },
-        readOnly: true,
-      },
     };
   }
 
@@ -226,8 +218,6 @@ export class SettingsPerDeviceMouseSubsectionElement extends
 
     this.currentMouseChanged = false;
   }
-
-  isWelcomeExperienceEnabled: boolean;
 
   // DeepLinkingMixin override
   override supportedSettingIds = new Set<Setting>([

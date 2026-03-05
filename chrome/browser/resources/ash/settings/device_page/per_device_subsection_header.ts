@@ -4,11 +4,9 @@
 
 /**
  * @fileoverview
- * 'per-device-subsection-header' displays information about a device, with
- * conditional layout based on the 'isWelcomeExperienceEnabled' flag.
- * - When enabled: Shows device image (if available), name, and optional battery
- * info.
- * - When disabled: Shows device name only.
+ * 'per-device-subsection-header' displays key information for a specific
+ * device. The layout includes the device image (when available), the device
+ * name, and optional battery status information.
  */
 
 import './input_device_settings_shared.css.js';
@@ -20,7 +18,6 @@ import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
 
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import type {BluetoothDeviceProperties} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import type {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -51,14 +48,6 @@ export class PerDeviceSubsectionHeaderElement extends
 
   static get properties(): PolymerElementProperties {
     return {
-      isWelcomeExperienceEnabled: {
-        type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('enableWelcomeExperience');
-        },
-        readOnly: true,
-      },
-
       deviceImageDataUrl: {
         type: String,
         value: '',
@@ -92,7 +81,6 @@ export class PerDeviceSubsectionHeaderElement extends
     };
   }
 
-  isWelcomeExperienceEnabled: boolean;
   deviceImageDataUrl: string|null = null;
   deviceKey: string;
   deviceDisplayState: DeviceDisplayState;
@@ -127,16 +115,14 @@ export class PerDeviceSubsectionHeaderElement extends
   }
 
   async handleDeviceKeyChange(): Promise<void> {
-    if (this.isWelcomeExperienceEnabled) {
-      this.deviceDisplayState = DeviceDisplayState.FETCHING_IMAGE;
-      this.deviceImageDataUrl =
-          (await this.inputDeviceSettingsProvider.getDeviceIconImage(
-               this.deviceKey))
-              ?.dataUrl;
-      this.deviceDisplayState = this.deviceImageDataUrl ?
-          DeviceDisplayState.IMAGE_AVAILABLE :
-          DeviceDisplayState.IMAGE_UNAVAILABLE;
-    }
+    this.deviceDisplayState = DeviceDisplayState.FETCHING_IMAGE;
+    this.deviceImageDataUrl =
+        (await this.inputDeviceSettingsProvider.getDeviceIconImage(
+             this.deviceKey))
+            ?.dataUrl;
+    this.deviceDisplayState = this.deviceImageDataUrl ?
+        DeviceDisplayState.IMAGE_AVAILABLE :
+        DeviceDisplayState.IMAGE_UNAVAILABLE;
   }
 
   shouldShowPlaceholder(): boolean {

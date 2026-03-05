@@ -25,7 +25,6 @@ suite('<settings-per-device-mouse-subsection>', function() {
 
   setup(() => {
     setPeripheralCustomizationEnabled(true);
-    setWelcomeExperienceEnabled(true);
   });
 
   teardown(() => {
@@ -56,12 +55,6 @@ suite('<settings-per-device-mouse-subsection>', function() {
   function setPeripheralCustomizationEnabled(isEnabled: boolean): void {
     loadTimeData.overrideValues({
       enablePeripheralCustomization: isEnabled,
-    });
-  }
-
-  function setWelcomeExperienceEnabled(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableWelcomeExperience: isEnabled,
     });
   }
 

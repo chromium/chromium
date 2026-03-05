@@ -7,7 +7,6 @@ import 'chrome://os-settings/lazy_load.js';
 import {PerDeviceSubsectionHeaderElement} from 'chrome://os-settings/lazy_load.js';
 import type {BatteryInfo} from 'chrome://os-settings/os_settings.js';
 import {FakeInputDeviceSettingsProvider, fakeMice, setInputDeviceSettingsProviderForTesting} from 'chrome://os-settings/os_settings.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -33,29 +32,13 @@ suite(PerDeviceSubsectionHeaderElement.is, () => {
     return flushTasks();
   }
 
-  function setWelcomeExperienceFeatureState(isEnabled: boolean): void {
-    loadTimeData.overrideValues({
-      enableWelcomeExperience: isEnabled,
-    });
-  }
-
   test('Header is visible', async () => {
-    setWelcomeExperienceFeatureState(false);
     await createHeaderElement(fakeMice[0]!.batteryInfo);
-    assertTrue(
-        isVisible(subsectionHeader.shadowRoot!.querySelector('#deviceName')));
-  });
-
-  test('Battery info and image hidden when flag is disabled', async () => {
-    setWelcomeExperienceFeatureState(false);
-    await createHeaderElement(fakeMice[0]!.batteryInfo);
-    const batteryInfo =
-        subsectionHeader.shadowRoot!.querySelector('#batteryIcon');
-    assertFalse(isVisible(batteryInfo));
+    assertTrue(isVisible(
+        subsectionHeader.shadowRoot!.querySelector('#deviceInfoName')));
   });
 
   test('Battery info hidden when battery info is missing', async () => {
-    setWelcomeExperienceFeatureState(false);
     await createHeaderElement(fakeMice[1]!.batteryInfo);
     const batteryInfo =
         subsectionHeader.shadowRoot!.querySelector('#batteryIcon');
@@ -63,18 +46,16 @@ suite(PerDeviceSubsectionHeaderElement.is, () => {
   });
 
   test('Battery info and image available', async () => {
-    setWelcomeExperienceFeatureState(true);
     await createHeaderElement(
         fakeMice[0]!.batteryInfo, /*dataUrl=*/ 'data:image/png;base64,gg==');
     const batteryInfo =
-        subsectionHeader.shadowRoot!.querySelector('#batteryIcon');
+        subsectionHeader!.shadowRoot!.querySelector('#batteryIcon');
     assertTrue(isVisible(batteryInfo));
-    assertTrue(isVisible(
-        subsectionHeader!.shadowRoot!.querySelector('.device-image')));
+    assertTrue(
+        isVisible(subsectionHeader.shadowRoot!.querySelector('.device-image')));
   });
 
   test('Device icon displayed when image is unavailable', async () => {
-    setWelcomeExperienceFeatureState(true);
     await createHeaderElement(fakeMice[0]!.batteryInfo, /*dataUrl=*/ '');
     const deviceIcon =
         subsectionHeader.shadowRoot!.querySelector('#deviceIcon');
