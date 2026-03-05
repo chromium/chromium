@@ -40,7 +40,6 @@ class PrefService;
 // The `sceneHandler` is used to transition between the tab and
 // tab switcher.
 - (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
-                        sceneHandler:(id<SceneCommands>)sceneHandler
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -156,8 +156,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInitNilObserver) {
     id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
     id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-        initWithReauthModule:[[ReauthenticationModule alloc] init]
-                sceneHandler:mock_scene_handler];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]];
     [scene_state() addAgent:reauth_agent];
     BrowserLifecycleManager* wrangler =
         [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -196,8 +195,7 @@ TEST_F(BrowserLifecycleManagerTest, TestBrowserList) {
   id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
   id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]
-              sceneHandler:mock_scene_handler];
+      initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -269,8 +267,7 @@ TEST_F(BrowserLifecycleManagerTest, TestInactiveInterface) {
   id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
   id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]
-              sceneHandler:mock_scene_handler];
+      initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()
@@ -301,8 +298,7 @@ TEST_F(BrowserLifecycleManagerTest, TestSessionRestorationLogic) {
   id mock_scene_handler = OCMProtocolMock(@protocol(SceneCommands));
   id mock_settings_handler = OCMProtocolMock(@protocol(SettingsCommands));
   IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-      initWithReauthModule:[[ReauthenticationModule alloc] init]
-              sceneHandler:mock_scene_handler];
+      initWithReauthModule:[[ReauthenticationModule alloc] init]];
   [scene_state() addAgent:reauth_agent];
   BrowserLifecycleManager* wrangler =
       [[BrowserLifecycleManager alloc] initWithProfile:profile()

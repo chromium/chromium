@@ -152,8 +152,7 @@ class TabGridCoordinatorTest : public BlockCleanupTest {
 
     id mockSceneHandler = OCMProtocolMock(@protocol(SceneCommands));
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-        initWithReauthModule:[[ReauthenticationModule alloc] init]
-                sceneHandler:mockSceneHandler];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]];
     [scene_state_ addAgent:reauth_agent];
 
     coordinator_ = [[TabGridCoordinator alloc]

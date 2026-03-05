@@ -150,8 +150,7 @@ class SceneControllerTest : public PlatformTest {
                              forProtocol:@protocol(SettingsCommands)];
 
     IncognitoReauthSceneAgent* reauth_agent = [[IncognitoReauthSceneAgent alloc]
-        initWithReauthModule:[[ReauthenticationModule alloc] init]
-                sceneHandler:mock_scene_handler_];
+        initWithReauthModule:[[ReauthenticationModule alloc] init]];
     [scene_state_ addAgent:reauth_agent];
 
     scene_controller_.browserLifecycleManager = [[BrowserLifecycleManager alloc]

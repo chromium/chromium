@@ -213,4 +213,33 @@ using chrome_test_util::TabGroupCreationView;
       assertWithMatcher:grey_nil()];
 }
 
+// Tests that the user can swipe to the regular tab grid when the incognito
+// panel is blocked by the reauth UI.
+- (void)testToolbarVisibilityWhileBlockedRightAfterColdLaunch {
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    // TODO(crbug.com/490032870): Re-enable after fixing iPad behavior.
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+  }
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self displayBlockingUI];
+  // Verify blocking UI is displaying and bottom toolbar buttons are disabled.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
+                            grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_not(grey_enabled())];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      assertWithMatcher:grey_notVisible()];
+  // Verify that the regular tab grid is still accessible.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::RegularTabGrid()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 @end

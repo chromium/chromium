@@ -71,8 +71,6 @@
   std::unique_ptr<PrefObserverBridge> _prefObserverBridge;
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
-  // Handler for scene commands, used to change active surfaces.
-  id<SceneCommands> _sceneHandler;
   // Tracks whether the lock surface was switched during the current foreground
   // session.
   BOOL _switchedToIncognitoGrid;
@@ -101,13 +99,12 @@
 
 #pragma mark - public
 
-- (instancetype)initWithReauthModule:(id<ReauthenticationProtocol>)reauthModule
-                        sceneHandler:(id<SceneCommands>)sceneHandler {
+- (instancetype)initWithReauthModule:
+    (id<ReauthenticationProtocol>)reauthModule {
   self = [super init];
   if (self) {
     DCHECK(reauthModule);
     _reauthModule = reauthModule;
-    _sceneHandler = sceneHandler;
     _observers = [IncognitoReauthObserverList
         observersWithProtocol:@protocol(IncognitoReauthObserver)];
     [[NSNotificationCenter defaultCenter]
@@ -347,7 +344,11 @@
     _switchedToIncognitoGrid = YES;
     // TODO(crbug.com/417621249): Add callback that allows specifying animation
     // type.
-    [_sceneHandler displayTabGridInMode:TabGridOpeningMode::kIncognito];
+    Browser* browser = self.sceneState.browserProviderInterface
+                           .incognitoBrowserProvider.browser;
+    id<SceneCommands> sceneHandler =
+        HandlerForProtocol(browser->GetCommandDispatcher(), SceneCommands);
+    [sceneHandler displayTabGridInMode:TabGridOpeningMode::kIncognito];
   }
 }
 

@@ -72,8 +72,7 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
         tab_grid_commands_handler_mock_(
             OCMProtocolMock(@protocol(TabGridCommands))),
         agent_([[IncognitoReauthSceneAgent alloc]
-            initWithReauthModule:stub_reauth_module_
-                    sceneHandler:scene_handler_mock_]) {
+            initWithReauthModule:stub_reauth_module_]) {
     scene_state_.controller = scene_controller_;
     // Set UIEnabled here as this would trigger a callback in the agent, and we
     // usually test the behavior when foregrounding. When testing the UIEnabled
@@ -117,6 +116,8 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     CommandDispatcher* dispatcher = test_browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:tab_grid_commands_handler_mock_
                              forProtocol:@protocol(TabGridCommands)];
+    [dispatcher startDispatchingToTarget:scene_handler_mock_
+                             forProtocol:@protocol(SceneCommands)];
 
     [IncognitoReauthSceneAgent registerLocalState:pref_service_.registry()];
     agent_.localState = &pref_service_;
