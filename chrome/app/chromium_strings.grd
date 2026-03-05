@@ -791,7 +791,7 @@ Chromium is unable to recover your settings.
           Get easy access to the features you know, love, and trust by setting Chromium as your default browser. Chromium will be pinned to your taskbar for quick access.
         </message>
         <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_TITLE" desc="Title of the dialog prompting the user to set Chromium as the default browser.">
-          Use recommended browser settings
+          Set Chromium as your default browser
         </message>
         <message name="IDS_DEFAULT_BROWSER_BUBBLE_DIALOG_BODY" desc="Main explanatory text in the default browser dialog.">
           Get easy access to the features you know, love, and trust by setting Chromium as your default browser.
