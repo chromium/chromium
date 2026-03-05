@@ -6367,8 +6367,8 @@ class RenderFrameHostManagerDefaultProcessTest
 // https://crbug.com/838348.)
 // All navigations should use the default process, and we should not crash.
 // See https://crbug.com/977956.
-// TODO(crbug.com/390571607, yangsharon): Enable this test when default
-// SiteInstanceGroups is implemented.
+// TODO(crbug.com/390571607): Enable this test when default SiteInstanceGroups
+// is implemented.
 IN_PROC_BROWSER_TEST_P(
     RenderFrameHostManagerDefaultProcessTest,
     DISABLED_NavigationRacesWithSitelessCommitInDefaultProcess) {

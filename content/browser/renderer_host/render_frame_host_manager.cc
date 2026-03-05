@@ -4196,8 +4196,8 @@ RenderFrameHostManager::CreateRenderFrameHost(
 
   // Check to see if a speculative RenderViewHost is needed. It is needed for
   // cross-page same-SiteInstanceGroup navigations when the feature is enabled.
-  // TODO(yangsharon, rakina, crbug.com/1336305): Handle the
-  // cross-SiteInstanceGroup and crashed frame cases.
+  // TODO(rakina, crbug.com/40228869): Handle the cross-SiteInstanceGroup and
+  // crashed frame cases.
   CreateRenderViewHostCase create_rvh_case =
       (render_frame_host_ &&
        create_frame_case == CreateFrameCase::kCreateSpeculative &&
@@ -4345,9 +4345,9 @@ bool RenderFrameHostManager::CreateSpeculativeRenderFrameHost(
       // BrowsingContextState.
       browsing_context_state = render_frame_host_->browsing_context_state();
     } else {
-      // TODO(crbug.com/936696, rakina, yangsharon): Once RenderDocument is
-      // implemented, there will never be an existing RenderViewHost, so getting
-      // the RenderViewHost and checking if there's a value can be removed.
+      // TODO(crbug.com/40615943, rakina): Once RenderDocument is implemented,
+      // there will never be an existing RenderViewHost, so getting the
+      // RenderViewHost and checking if there's a value can be removed.
       scoped_refptr<RenderViewHostImpl> render_view_host =
           frame_tree_node_->frame_tree().GetRenderViewHost(
               new_instance->group());

@@ -1329,8 +1329,8 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   if (ShouldCreateSiteInstanceForDataUrls()) {
     // Site A and Site C are in the same SiteInstanceGroup, so there are no
     // proxies for each other.
-    // TODO(crbug.com/341741267, yangsharon): Update output to show that A and C
-    // are in the same SiteInstanceGroup.
+    // TODO(crbug.com/341741267): Update output to show that A and C are in the
+    // same SiteInstanceGroup.
     EXPECT_EQ(
         " Site A\n"
         "   |--Site C\n"

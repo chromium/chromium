@@ -333,8 +333,8 @@ IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest, SubframeProxies) {
 
 // Crash a page, then navigate to a same-site URL. The new navigation should use
 // a new RenderFrameHost and speculative RenderViewHost.
-// TODO(crbug.com/1336305, yangsharon): This navigation is not using a
-// speculative RenderViewHost, when it should be. Fix and enable this test.
+// TODO(crbug.com/40228869): This navigation is not using a speculative
+// RenderViewHost, when it should be. Fix and enable this test.
 IN_PROC_BROWSER_TEST_P(SpeculativeRenderViewHostTest,
                        DISABLED_CrashedRenderFrameHost) {
   // Disable BFCache because otherwise the BrowsingInstances will be proactively

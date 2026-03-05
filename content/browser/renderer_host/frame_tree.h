@@ -676,9 +676,9 @@ class CONTENT_EXPORT FrameTree {
   // RenderFrameHost has an associated RenderViewHost, but it cannot be put in
   // `render_view_host_map_` when it is created, as the existing RenderViewHost
   // will be incorrectly overwritten.
-  // TODO(yangsharon, crbug.com/1336305): Expand support to include
-  // cross-SiteInstanceGroup main-frame navigations, so all main-frame
-  // navigations use speculative RenderViewHost.
+  // TODO(crbug.com/40228869): Expand support to include cross-SiteInstanceGroup
+  // main-frame navigations, so all main-frame navigations use speculative
+  // RenderViewHost.
   base::WeakPtr<RenderViewHostImpl> speculative_render_view_host_;
 
   // Indicates type of frame tree.
