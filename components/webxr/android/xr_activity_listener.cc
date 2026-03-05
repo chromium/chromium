@@ -9,6 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/logging.h"
 #include "components/webxr/android/webxr_utils.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id_util.h"
 #include "device/vr/android/xr_activity_state_handler.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -22,21 +24,21 @@ namespace webxr {
 XrActivityListenerFactory::XrActivityListenerFactory() = default;
 XrActivityListenerFactory::~XrActivityListenerFactory() = default;
 std::unique_ptr<device::XrActivityStateHandler>
-XrActivityListenerFactory::Create(int render_process_id, int render_frame_id) {
-  return std::make_unique<XrActivityListener>(render_process_id,
-                                              render_frame_id);
+XrActivityListenerFactory::Create(network::RendererProcessId render_process_id,
+                                  int render_frame_id) {
+  return std::make_unique<XrActivityListener>(content::GlobalRenderFrameHostId(
+      content::ToChildProcessId(render_process_id), render_frame_id));
 }
 
-XrActivityListener::XrActivityListener(int render_process_id,
-                                       int render_frame_id) {
+XrActivityListener::XrActivityListener(
+    const content::GlobalRenderFrameHostId& frame_id) {
   JNIEnv* env = AttachCurrentThread();
   if (!env) {
     return;
   }
   ScopedJavaLocalRef<jobject> j_xr_activity_listener =
-      Java_XrActivityListener_Constructor(
-          env, (int64_t)this,
-          webxr::GetJavaWebContents(render_process_id, render_frame_id));
+      Java_XrActivityListener_Constructor(env, (int64_t)this,
+                                          webxr::GetJavaWebContents(frame_id));
   if (j_xr_activity_listener.is_null()) {
     return;
   }

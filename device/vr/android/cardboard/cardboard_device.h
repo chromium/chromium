@@ -46,9 +46,10 @@ class COMPONENT_EXPORT(VR_CARDBOARD) CardboardDevice : public VRDeviceBase {
   void ShutdownSession(mojom::XRRuntime::ShutdownSessionCallback) override;
 
  private:
-  void OnCardboardParametersAcquired(mojom::XRRuntimeSessionOptionsPtr options,
-                                     int render_process_id,
-                                     int render_frame_id);
+  void OnCardboardParametersAcquired(
+      mojom::XRRuntimeSessionOptionsPtr options,
+      network::RendererProcessId render_process_id,
+      int render_frame_id);
 
   // OnDrawingSurface* methods are used as callbacks from XrJavaCoordinator and
   // notify us of the state of things on the Java side of things.

@@ -35,7 +35,9 @@
 namespace device {
 
 namespace {
-std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory(int32_t, int32_t) {
+std::unique_ptr<XrFrameSinkClient> FrameSinkClientFactory(
+    network::RendererProcessId,
+    int32_t) {
   return nullptr;
 }
 }  // namespace

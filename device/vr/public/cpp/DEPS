@@ -1,3 +1,4 @@
 include_rules = [
+  "+services/network/public/cpp/renderer_process_id.h",
   "+services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h",
-  ]
+]

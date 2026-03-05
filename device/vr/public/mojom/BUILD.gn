@@ -82,11 +82,11 @@ mojom_component("isolated_xr_service") {
     "//gpu/ipc/common:interfaces",
     "//mojo/public/mojom/base",
     "//sandbox/policy/mojom",
+    "//services/network/public/mojom",
+    "//services/viz/public/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
-
-  deps = [ "//services/viz/public/mojom" ]
 }
 
 component("vr_public_typemaps") {

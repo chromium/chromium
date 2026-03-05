@@ -23,11 +23,10 @@
 #endif
 
 namespace content {
-XrFrameSinkClientImpl::XrFrameSinkClientImpl(int32_t render_process_id,
-                                             int32_t render_frame_id)
+XrFrameSinkClientImpl::XrFrameSinkClientImpl(
+    const content::GlobalRenderFrameHostId& global_frame_id)
     : ui_thread_task_runner_(GetUIThreadTaskRunner({})),
-      render_process_id_(render_process_id),
-      render_frame_id_(render_frame_id) {
+      global_frame_id_(global_frame_id) {
   DCHECK(IsOnUiThread())
       << "XrFrameSinkClientImpl must be constructed on the UI thread.";
 }
@@ -114,10 +113,9 @@ void XrFrameSinkClientImpl::ConfigureDOMOverlay() {
   base::AutoLock lock(dom_surface_lock_);
 
   // This is left outside of the OS_ANDROID ifdef to prevent warnings about the
-  // render_process_id and render_frame_id from being unused. Since we check
-  // the render_frame_host for an early return, it is in fact used.
-  RenderFrameHostImpl* render_frame_host =
-      RenderFrameHostImpl::FromID(render_process_id_, render_frame_id_);
+  // global_frame_id_ from being unused. Since we check the render_frame_host
+  // for an early return, it is in fact used.
+  auto* render_frame_host = RenderFrameHostImpl::FromID(global_frame_id_);
   if (!render_frame_host)
     return;
 

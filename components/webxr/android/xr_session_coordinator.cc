@@ -9,6 +9,8 @@
 
 #include "base/android/jni_string.h"
 #include "components/webxr/android/webxr_utils.h"
+#include "content/public/browser/global_routing_id.h"
+#include "content/public/common/child_process_id_util.h"
 #include "device/vr/android/compositor_delegate_provider.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
@@ -48,7 +50,7 @@ XrSessionCoordinator::~XrSessionCoordinator() {
 }
 
 void XrSessionCoordinator::RequestArSession(
-    int render_process_id,
+    network::RendererProcessId render_process_id,
     int render_frame_id,
     bool use_overlay,
     bool can_render_dom_content,
@@ -66,12 +68,13 @@ void XrSessionCoordinator::RequestArSession(
   Java_XrSessionCoordinator_startArSession(
       env, j_xr_session_coordinator_,
       compositor_delegate_provider.GetJavaObject(),
-      webxr::GetJavaWebContents(render_process_id, render_frame_id),
+      webxr::GetJavaWebContents(content::GlobalRenderFrameHostId(
+          content::ToChildProcessId(render_process_id), render_frame_id)),
       use_overlay, can_render_dom_content);
 }
 
 void XrSessionCoordinator::RequestVrSession(
-    int render_process_id,
+    network::RendererProcessId render_process_id,
     int render_frame_id,
     const device::CompositorDelegateProvider& compositor_delegate_provider,
     device::SurfaceReadyCallback ready_callback,
@@ -89,11 +92,12 @@ void XrSessionCoordinator::RequestVrSession(
   Java_XrSessionCoordinator_startVrSession(
       env, j_xr_session_coordinator_,
       compositor_delegate_provider.GetJavaObject(),
-      webxr::GetJavaWebContents(render_process_id, render_frame_id));
+      webxr::GetJavaWebContents(content::GlobalRenderFrameHostId(
+          content::ToChildProcessId(render_process_id), render_frame_id)));
 }
 
 void XrSessionCoordinator::RequestXrSession(
-    int render_process_id,
+    network::RendererProcessId render_process_id,
     int render_frame_id,
     bool needs_separate_activity,
     ActivityReadyCallback ready_callback,
@@ -107,7 +111,8 @@ void XrSessionCoordinator::RequestXrSession(
 
   Java_XrSessionCoordinator_startXrSession(
       env, j_xr_session_coordinator_,
-      webxr::GetJavaWebContents(render_process_id, render_frame_id),
+      webxr::GetJavaWebContents(content::GlobalRenderFrameHostId(
+          content::ToChildProcessId(render_process_id), render_frame_id)),
       needs_separate_activity);
 }
 
@@ -219,10 +224,10 @@ ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetCurrentActivityContext() {
 }
 
 ScopedJavaLocalRef<jobject> XrSessionCoordinator::GetActivityFrom(
-    int render_process_id,
+    network::RendererProcessId render_process_id,
     int render_frame_id) {
-  return GetActivity(
-      webxr::GetJavaWebContents(render_process_id, render_frame_id));
+  return GetActivity(webxr::GetJavaWebContents(content::GlobalRenderFrameHostId(
+      content::ToChildProcessId(render_process_id), render_frame_id)));
 }
 
 // static

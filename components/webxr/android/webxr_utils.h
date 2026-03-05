@@ -8,20 +8,20 @@
 #include "base/android/jni_android.h"
 
 namespace content {
+struct GlobalRenderFrameHostId;
 class WebContents;
-}
+}  // namespace content
 
 // Functions in this file are currently GVR/ArCore specific functions. If other
 // platforms need the same function here, please move it to
 // components/webxr/*util.cc|h
 namespace webxr {
 
-content::WebContents* GetWebContents(int render_process_id,
-                                     int render_frame_id);
+content::WebContents* GetWebContents(
+    const content::GlobalRenderFrameHostId& frame_id);
 
 base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
-    int render_process_id,
-    int render_frame_id);
+    const content::GlobalRenderFrameHostId& frame_id);
 
 }  // namespace webxr
 

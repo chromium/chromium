@@ -45,16 +45,16 @@ class ArCoreInstallHelper : public content::XrInstallHelper {
 
   // content::XrInstallHelper implementation.
   void EnsureInstalled(
-      int render_process_id,
-      int render_frame_id,
+      const content::GlobalRenderFrameHostId& frame_id,
       base::OnceCallback<void(bool)> install_callback) override;
 
   // Called from Java end.
   void OnRequestInstallSupportedArCoreResult(JNIEnv* env, bool success);
 
  private:
-  void ShowMessage(int render_process_id, int render_frame_id);
-  void HandleMessagePrimaryAction(int render_process_id, int render_frame_id);
+  void ShowMessage(const content::GlobalRenderFrameHostId& frame_id);
+  void HandleMessagePrimaryAction(
+      const content::GlobalRenderFrameHostId& frame_id);
   void HandleMessageDismissed(messages::DismissReason dismiss_reason);
   void RunInstallFinishedCallback(bool succeeded);
 

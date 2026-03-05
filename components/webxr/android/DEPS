@@ -4,6 +4,7 @@ include_rules = [
   "+components/resources/android/theme_resources.h",
   "+components/strings/grit/components_strings.h",
   "+content/public/android/java/src/org/chromium/content_public",
+  "+content/public/common/child_process_id_util.h",
   "+device/vr/android",
   "+device/vr/buildflags",
   "+mojo/public/cpp/bindings",

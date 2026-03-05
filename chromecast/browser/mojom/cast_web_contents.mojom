@@ -7,6 +7,7 @@ module chromecast.mojom;
 import "chromecast/bindings/public/mojom/api_bindings.mojom";
 import "chromecast/mojo/mojom/remote_interfaces.mojom";
 import "components/url_rewrite/mojom/url_request_rewrite.mojom";
+import "services/network/public/mojom/originating_process_id.mojom";
 import "mojo/public/mojom/base/values.mojom";
 import "url/mojom/url.mojom";
 
@@ -42,7 +43,7 @@ interface CastWebContentsObserver {
   // A new RenderFrame was created for the WebContents. |settings_manager| is
   // provided by the frame.
   RenderFrameCreated(
-      int32 render_process_id,
+      network.mojom.RendererProcessId render_process_id,
       int32 render_frame_id);
 
   // A navigation has finished in the WebContents' main frame.

@@ -139,8 +139,12 @@ void OpenXrDevice::RequestSession(
   request_session_callback_ = std::move(callback);
 
   OpenXrCreateInfo create_info;
-  create_info.render_process_id = options->render_process_id;
-  create_info.render_frame_id = options->render_frame_id;
+  if (options->renderer_information) {
+    create_info.render_process_id =
+        options->renderer_information->render_process_id;
+    create_info.render_frame_id =
+        options->renderer_information->render_frame_id;
+  }
   create_info.needs_separate_activity =
       OpenXrApiWrapper::NeedsSeparateActivity();
   platform_helper_->CreateInstanceWithCreateInfo(

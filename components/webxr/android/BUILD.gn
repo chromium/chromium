@@ -83,6 +83,7 @@ source_set("android") {
       "//components/strings",
       "//components/webxr",
       "//content/public/browser",
+      "//content/public/common",
       "//device/vr/android:vr_android",
       "//ui/android",
       "//ui/base",

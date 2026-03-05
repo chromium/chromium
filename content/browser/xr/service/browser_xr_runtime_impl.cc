@@ -403,8 +403,7 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
 }
 
 void BrowserXRRuntimeImpl::EnsureInstalled(
-    int render_process_id,
-    int render_frame_id,
+    const content::GlobalRenderFrameHostId& frame_id,
     base::OnceCallback<void(bool)> install_callback) {
   DVLOG(2) << __func__;
 
@@ -429,9 +428,8 @@ void BrowserXRRuntimeImpl::EnsureInstalled(
     return;
 
   install_helper_->EnsureInstalled(
-      render_process_id, render_frame_id,
-      base::BindOnce(&BrowserXRRuntimeImpl::OnInstallFinished,
-                     weak_ptr_factory_.GetWeakPtr()));
+      frame_id, base::BindOnce(&BrowserXRRuntimeImpl::OnInstallFinished,
+                               weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BrowserXRRuntimeImpl::OnInstallFinished(bool succeeded) {

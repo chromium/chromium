@@ -16,6 +16,7 @@
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/host/host_frame_sink_client.h"
+#include "content/public/browser/global_routing_id.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom-forward.h"
 
@@ -30,7 +31,8 @@ namespace content {
 class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
                               viz::HostFrameSinkClient {
  public:
-  XrFrameSinkClientImpl(int32_t render_process_id, int32_t render_frame_id);
+  explicit XrFrameSinkClientImpl(
+      const content::GlobalRenderFrameHostId& global_frame_id);
   ~XrFrameSinkClientImpl() override;
 
   // device::XrFrameSinkClient:
@@ -58,8 +60,7 @@ class XrFrameSinkClientImpl : public device::XrFrameSinkClient,
                            base::TimeTicks activation_time) override {}
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
-  int32_t render_process_id_;
-  int32_t render_frame_id_;
+  content::GlobalRenderFrameHostId global_frame_id_;
 
   viz::FrameSinkId root_frame_sink_id_;
   bool initialized_ = false;

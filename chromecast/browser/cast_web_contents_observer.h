@@ -51,8 +51,8 @@ class CastWebContentsObserver : public mojom::CastWebContentsObserver {
 
   // A new RenderFrame was created for the WebContents. |settings_manager| is
   // provided by the frame.
-  void RenderFrameCreated(int render_process_id, int render_frame_id) override {
-  }
+  void RenderFrameCreated(network::RendererProcessId render_process_id,
+                          int render_frame_id) override {}
 
   // A navigation has finished in the WebContents' main frame.
   void MainFrameFinishedNavigation() override {}

@@ -31,7 +31,7 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
 
   // XrJavaCoordinator:
   void RequestArSession(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id,
       bool use_overlay,
       bool can_render_dom_content,
@@ -40,7 +40,7 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
       device::SurfaceTouchCallback touch_callback,
       device::JavaShutdownCallback destroyed_callback) override;
   void RequestVrSession(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id,
       const device::CompositorDelegateProvider& compositor_delegate_provider,
       device::SurfaceReadyCallback ready_callback,
@@ -53,10 +53,10 @@ class XrSessionCoordinator : public device::XrJavaCoordinator {
   base::android::ScopedJavaLocalRef<jobject> GetCurrentActivityContext()
       override;
   base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id) override;
 
-  void RequestXrSession(int render_process_id,
+  void RequestXrSession(network::RendererProcessId render_process_id,
                         int render_frame_id,
                         bool needs_separate_activity,
                         ActivityReadyCallback ready_callback,

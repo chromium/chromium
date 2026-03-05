@@ -12,6 +12,7 @@ import "device/vr/public/mojom/xr_session.mojom";
 import "gpu/ipc/common/luid.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
+import "services/network/public/mojom/originating_process_id.mojom";
 import "services/viz/public/mojom/compositing/frame_sink_id.mojom";
 import "services/viz/public/mojom/gpu.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
@@ -40,6 +41,11 @@ interface XRRuntimeEventListener {
   OnExitPresent();
 };
 
+struct RendererInformation {
+  network.mojom.RendererProcessId render_process_id;
+  int32 render_frame_id;
+};
+
 struct XRRuntimeSessionOptions {
   // Represents the type of session that is being requested.
   XRSessionMode mode;
@@ -54,8 +60,7 @@ struct XRRuntimeSessionOptions {
   // TODO(crbug.com/41395699): Remove these fields, and do permission checks,
   // show module install UI in the browser process before calling out to
   // devices.
-  int32 render_process_id;
-  int32 render_frame_id;
+  RendererInformation? renderer_information;
 
   array<XRTrackedImage> tracked_images;
 

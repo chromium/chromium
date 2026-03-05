@@ -83,7 +83,7 @@ class COMPONENT_EXPORT(VR_ARCORE) ArCoreDevice : public VRDeviceBase {
 
   // Called once the GL thread is started. At this point, it doesn't
   // have a valid GL context yet.
-  void OnGlThreadReady(int render_process_id,
+  void OnGlThreadReady(network::RendererProcessId render_process_id,
                        int render_frame_id,
                        bool use_overlay);
 

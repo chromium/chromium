@@ -8,6 +8,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/functional/callback.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "services/network/public/cpp/renderer_process_id.h"
 #include "ui/display/display.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
@@ -57,10 +58,10 @@ class XrJavaCoordinator {
   virtual base::android::ScopedJavaLocalRef<jobject>
   GetCurrentActivityContext() = 0;
   virtual base::android::ScopedJavaLocalRef<jobject> GetActivityFrom(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id) = 0;
   virtual void RequestArSession(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id,
       bool use_overlay,
       bool can_render_dom_content,
@@ -69,7 +70,7 @@ class XrJavaCoordinator {
       SurfaceTouchCallback touch_callback,
       JavaShutdownCallback destroyed_callback) = 0;
   virtual void RequestVrSession(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id,
       const CompositorDelegateProvider& compositor_delegate_provider,
       SurfaceReadyCallback ready_callback,

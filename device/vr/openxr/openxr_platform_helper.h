@@ -14,6 +14,8 @@
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/vr_export.h"
+#include "ipc/constants.mojom-forward.h"
+#include "services/network/public/cpp/renderer_process_id.h"
 
 namespace device {
 class OpenXrGraphicsBinding;
@@ -24,8 +26,8 @@ class OpenXrGraphicsBinding;
 // Activity that this session should be associated with, and this value is
 // unused on Windows.
 struct OpenXrCreateInfo {
-  int render_process_id;
-  int render_frame_id;
+  network::RendererProcessId render_process_id;
+  int render_frame_id = IPC::mojom::kRoutingIdNone;
   bool needs_separate_activity = true;
 };
 

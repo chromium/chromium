@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
+#include "services/network/public/cpp/renderer_process_id.h"
 
 namespace device {
 
@@ -28,7 +29,7 @@ class XrActivityStateHandlerFactory {
  public:
   virtual ~XrActivityStateHandlerFactory() = default;
   virtual std::unique_ptr<XrActivityStateHandler> Create(
-      int render_process_id,
+      network::RendererProcessId render_process_id,
       int render_frame_id) = 0;
 };
 

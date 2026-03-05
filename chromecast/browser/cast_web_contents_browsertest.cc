@@ -109,7 +109,8 @@ class MockCastWebContentsObserver : public CastWebContentsObserver {
   MOCK_METHOD1(PageStateChanged, void(PageState page_state));
   MOCK_METHOD2(PageStopped, void(PageState page_state, int error_code));
   MOCK_METHOD2(RenderFrameCreated,
-               void(int render_process_id, int render_frame_id));
+               void(network::RendererProcessId render_process_id,
+                    int render_frame_id));
   MOCK_METHOD0(ResourceLoadFailed, void());
   MOCK_METHOD1(UpdateTitle, void(const std::string& title));
 };

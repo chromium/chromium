@@ -27,9 +27,11 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/gpu_utils.h"
 #include "content/public/browser/xr_runtime_manager.h"
+#include "content/public/common/child_process_id_util.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "device/vr/buildflags/buildflags.h"
@@ -110,16 +112,16 @@ std::optional<device::mojom::XRDeviceId> GetForcedRuntime(
 }
 
 std::unique_ptr<device::XrFrameSinkClient> FrameSinkClientFactory(
-    int32_t render_process_id,
-    int32_t render_frame_id) {
+    network::RendererProcessId render_process_id,
+    int render_frame_id) {
   // The XrFrameSinkClientImpl needs to be constructed (and destructed) on the
   // main thread. Currently, the only runtime that uses this is ArCore, which
   // runs on the browser main thread (which per comments in
   // content/public/browser/browser_thread.h is also the UI thread).
   DCHECK(GetUIThreadTaskRunner({})->BelongsToCurrentThread())
       << "Must construct XrFrameSinkClient from UI thread";
-  return std::make_unique<XrFrameSinkClientImpl>(render_process_id,
-                                                 render_frame_id);
+  return std::make_unique<XrFrameSinkClientImpl>(GlobalRenderFrameHostId(
+      content::ToChildProcessId(render_process_id), render_frame_id));
 }
 
 }  // namespace

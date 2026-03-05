@@ -73,8 +73,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
       device::mojom::XRRuntimeSessionOptionsPtr options,
       device::mojom::XRRuntime::RequestSessionCallback callback);
 
-  void EnsureInstalled(int render_process_id,
-                       int render_frame_id,
+  void EnsureInstalled(const content::GlobalRenderFrameHostId& frame_id,
                        base::OnceCallback<void(bool)> install_callback);
   VRServiceImpl* GetServiceWithActiveImmersiveSession() {
     return presenting_service_;

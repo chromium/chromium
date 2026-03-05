@@ -9,10 +9,10 @@
 
 namespace webxr {
 
-content::WebContents* GetWebContents(int render_process_id,
-                                     int render_frame_id) {
+content::WebContents* GetWebContents(
+    const content::GlobalRenderFrameHostId& frame_id) {
   content::RenderFrameHost* render_frame_host =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
+      content::RenderFrameHost::FromID(frame_id);
   DCHECK(render_frame_host);
 
   content::WebContents* web_contents =
@@ -23,10 +23,8 @@ content::WebContents* GetWebContents(int render_process_id,
 }
 
 base::android::ScopedJavaLocalRef<jobject> GetJavaWebContents(
-    int render_process_id,
-    int render_frame_id) {
-  return GetWebContents(render_process_id, render_frame_id)
-      ->GetJavaWebContents();
+    const content::GlobalRenderFrameHostId& frame_id) {
+  return GetWebContents(frame_id)->GetJavaWebContents();
 }
 
 }  // namespace webxr
