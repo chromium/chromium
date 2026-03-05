@@ -7501,23 +7501,30 @@ IN_PROC_BROWSER_TEST_F(PrerenderTargetHintBrowserTest,
 }
 
 enum class SSLPrerenderTestErrorBlockType { kClientCertRequested, kCertError };
+enum class TriggerType {
+  kSpeculationRules,
+  kEmbedderWithoutPrefetchAheadOfPrerender
+};
 
 std::string SSLPrerenderTestErrorBlockTypeToString(
     const testing::TestParamInfo<
-        std::tuple<SSLPrerenderTestErrorBlockType, bool>>& info) {
+        std::tuple<SSLPrerenderTestErrorBlockType, TriggerType, bool>>& info) {
   return base::StringPrintf(
-      "%s_%s",
+      "%s_%s_%s",
       std::get<0>(info.param) ==
               SSLPrerenderTestErrorBlockType::kClientCertRequested
           ? "ClientCertRequested"
           : "CertError",
-      std::get<1>(info.param) ? "FallbackEnabled" : "FallbackDisabled");
+      std::get<1>(info.param) == TriggerType::kSpeculationRules
+          ? "SpeculationRules"
+          : "EmbedderWithoutPrefetchAheadOfPrerender",
+      std::get<2>(info.param) ? "FallbackEnabled" : "FallbackDisabled");
 }
 
 class SSLPrerenderBrowserTest
     : public PrerenderBrowserTest,
       public testing::WithParamInterface<
-          std::tuple<SSLPrerenderTestErrorBlockType, bool>> {
+          std::tuple<SSLPrerenderTestErrorBlockType, TriggerType, bool>> {
  public:
   SSLPrerenderBrowserTest() {
     if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
@@ -7549,14 +7556,36 @@ class SSLPrerenderBrowserTest
     }
   }
 
+  SSLPrerenderTestErrorBlockType GetSSLPrerenderTestErrorBlockType() const {
+    return std::get<0>(GetParam());
+  }
+
+  TriggerType GetTriggerType() const { return std::get<1>(GetParam()); }
+
   bool IsPrerender2FallbackPrefetchSpecRulesEnabled() const {
-    return std::get<1>(GetParam());
+    return std::get<2>(GetParam());
+  }
+
+  bool IsPrefetchAheadOfPrerenderTriggered() const {
+    return GetTriggerType() == TriggerType::kSpeculationRules &&
+           IsPrerender2FallbackPrefetchSpecRulesEnabled();
+  }
+
+  [[nodiscard]]
+  std::unique_ptr<PrerenderHandle> TriggerPrerender(const GURL& url) {
+    switch (GetTriggerType()) {
+      case TriggerType::kSpeculationRules:
+        prerender_helper()->AddPrerenderAsync(url);
+        return nullptr;
+      case TriggerType::kEmbedderWithoutPrefetchAheadOfPrerender:
+        return AddEmbedderTriggeredPrerenderAsync(url);
+    }
   }
 
  protected:
   void RequireClientCertsOrSendExpiredCerts() {
     net::SSLServerConfig ssl_config;
-    switch (std::get<0>(GetParam())) {
+    switch (GetSSLPrerenderTestErrorBlockType()) {
       case SSLPrerenderTestErrorBlockType::kClientCertRequested:
         ssl_config.client_cert_type =
             net::SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT;
@@ -7570,7 +7599,7 @@ class SSLPrerenderBrowserTest
     }
   }
   PrerenderFinalStatus GetExpectedFinalStatus() {
-    switch (std::get<0>(GetParam())) {
+    switch (GetSSLPrerenderTestErrorBlockType()) {
       case SSLPrerenderTestErrorBlockType::kClientCertRequested:
         return PrerenderFinalStatus::kClientCertRequested;
       case SSLPrerenderTestErrorBlockType::kCertError:
@@ -7578,7 +7607,7 @@ class SSLPrerenderBrowserTest
     }
   }
   int GetExpectedNetError() {
-    switch (std::get<0>(GetParam())) {
+    switch (GetSSLPrerenderTestErrorBlockType()) {
       case SSLPrerenderTestErrorBlockType::kClientCertRequested:
         return net::ERR_SSL_CLIENT_AUTH_CERT_NEEDED;
       case SSLPrerenderTestErrorBlockType::kCertError:
@@ -7596,6 +7625,8 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(
         testing::Values(SSLPrerenderTestErrorBlockType::kClientCertRequested,
                         SSLPrerenderTestErrorBlockType::kCertError),
+        testing::Values(TriggerType::kSpeculationRules,
+                        TriggerType::kEmbedderWithoutPrefetchAheadOfPrerender),
         testing::Bool()),
     SSLPrerenderTestErrorBlockTypeToString);
 
@@ -7604,11 +7635,6 @@ INSTANTIATE_TEST_SUITE_P(
 // prernedering should be canceled.
 IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
                        CertificateValidation_Navigation) {
-  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
-    // TODO(crbug.com/375330756): Test enabled case.
-    GTEST_SKIP();
-  }
-
   // Navigate to an initial page.
   const GURL kInitialUrl = GetUrl("/empty.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7620,12 +7646,37 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
-  prerender_helper()->AddPrerenderAsync(kPrerenderingUrl);
+  auto handle = TriggerPrerender(kPrerenderingUrl);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
   EXPECT_TRUE(prerender_helper()->GetHostForUrl(kPrerenderingUrl).is_null());
-  ExpectFinalStatusForSpeculationRule(GetExpectedFinalStatus());
+
+  PrerenderFinalStatus final_status = [&]() {
+    if (IsPrefetchAheadOfPrerenderTriggered()) {
+      return PrerenderFinalStatus::kPrerenderFailedDuringPrefetch;
+    } else {
+      switch (GetSSLPrerenderTestErrorBlockType()) {
+        case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+          return PrerenderFinalStatus::kClientCertRequested;
+        case SSLPrerenderTestErrorBlockType::kCertError:
+          return PrerenderFinalStatus::kSslCertificateError;
+      }
+    }
+  }();
+  switch (GetTriggerType()) {
+    case TriggerType::kSpeculationRules:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+          final_status, 1);
+      break;
+    case TriggerType::kEmbedderWithoutPrefetchAheadOfPrerender:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+          "EmbedderSuffixForTest",
+          final_status, 1);
+      break;
+  }
 }
 
 // For a prerendering subresource request, if the server requires a client
@@ -7639,7 +7690,11 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
 
   // Start prerendering `kPrerenderingUrl`.
   const GURL kPrerenderingUrl = GetUrl("/title1.html");
-  PrerenderHostId host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  auto handle = TriggerPrerender(kPrerenderingUrl);
+  prerender_helper()->WaitForPrerenderLoadCompletion(*web_contents(),
+                                                     kPrerenderingUrl);
+  PrerenderHostId host_id =
+      prerender_helper()->GetHostForUrl(*web_contents(), kPrerenderingUrl);
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
 
   // Reset the server's config.
@@ -7659,7 +7714,28 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
   EXPECT_TRUE(prerender_helper()->GetHostForUrl(kPrerenderingUrl).is_null());
-  ExpectFinalStatusForSpeculationRule(GetExpectedFinalStatus());
+
+  PrerenderFinalStatus final_status = [&]() {
+    switch (GetSSLPrerenderTestErrorBlockType()) {
+      case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+        return PrerenderFinalStatus::kClientCertRequested;
+      case SSLPrerenderTestErrorBlockType::kCertError:
+        return PrerenderFinalStatus::kSslCertificateError;
+    }
+  }();
+  switch (GetTriggerType()) {
+    case TriggerType::kSpeculationRules:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+          final_status, 1);
+      break;
+    case TriggerType::kEmbedderWithoutPrefetchAheadOfPrerender:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+          "EmbedderSuffixForTest",
+          final_status, 1);
+      break;
+  }
 }
 
 // Tests that prerendering will be cancelled if the server asks for client
@@ -7667,11 +7743,6 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
 // resource request is intercepted and sent by a service worker.
 IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
                        CertificateValidation_SWMainResource) {
-  if (IsPrerender2FallbackPrefetchSpecRulesEnabled()) {
-    // TODO(crbug.com/375330756): Test enabled case.
-    GTEST_SKIP();
-  }
-
   // Register a service worker that intercepts resource requests.
   const GURL kInitialUrl = GetUrl("/workers/service_worker_setup.html");
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
@@ -7681,8 +7752,10 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   RequireClientCertsOrSendExpiredCerts();
 
   const GURL kPrerenderingUrl = GetUrl("/workers/simple.html?intercept");
+
+  // Start prerendering `kPrerenderingUrl`.
   test::PrerenderHostObserver host_observer(*web_contents(), kPrerenderingUrl);
-  prerender_helper()->AddPrerenderAsync(kPrerenderingUrl);
+  auto handle = TriggerPrerender(kPrerenderingUrl);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
@@ -7692,11 +7765,31 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // WebContents. So, the certificate error does not cause any UI changes; it
   // just cancels the url request, and leads to the cancellation of
   // prerendering with kNavigationRequestNetworkError.
-  ExpectFinalStatusForSpeculationRule(
-      std::get<0>(GetParam()) ==
-              SSLPrerenderTestErrorBlockType::kClientCertRequested
-          ? PrerenderFinalStatus::kClientCertRequested
-          : PrerenderFinalStatus::kNavigationRequestNetworkError);
+  PrerenderFinalStatus final_status = [&]() {
+    if (IsPrefetchAheadOfPrerenderTriggered()) {
+      return PrerenderFinalStatus::kPrerenderFailedDuringPrefetch;
+    } else {
+      switch (GetSSLPrerenderTestErrorBlockType()) {
+        case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+          return PrerenderFinalStatus::kClientCertRequested;
+        case SSLPrerenderTestErrorBlockType::kCertError:
+          return PrerenderFinalStatus::kNavigationRequestNetworkError;
+      }
+    }
+  }();
+  switch (GetTriggerType()) {
+    case TriggerType::kSpeculationRules:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+          final_status, 1);
+      break;
+    case TriggerType::kEmbedderWithoutPrefetchAheadOfPrerender:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+          "EmbedderSuffixForTest",
+          final_status, 1);
+      break;
+  }
 }
 
 // Tests that prerendering will be cancelled if the server asks for client
@@ -7707,7 +7800,8 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // Skip the test when the block type is kCertError. With the type, this test
   // times out due to https://crbug.com/1311887.
   // TODO(crbug.com/40220378): Enable the test with kCertError.
-  if (std::get<0>(GetParam()) == SSLPrerenderTestErrorBlockType::kCertError) {
+  if (GetSSLPrerenderTestErrorBlockType() ==
+      SSLPrerenderTestErrorBlockType::kCertError) {
     return;
   }
 
@@ -7719,7 +7813,11 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
 
   // Prerender a page.
   const GURL kPrerenderingUrl = GetUrl("/workers/empty.html");
-  PrerenderHostId host_id = prerender_helper()->AddPrerender(kPrerenderingUrl);
+  auto handle = TriggerPrerender(kPrerenderingUrl);
+  prerender_helper()->WaitForPrerenderLoadCompletion(*web_contents(),
+                                                     kPrerenderingUrl);
+  PrerenderHostId host_id =
+      prerender_helper()->GetHostForUrl(*web_contents(), kPrerenderingUrl);
   test::PrerenderHostObserver host_observer(*web_contents(), host_id);
   RequireClientCertsOrSendExpiredCerts();
 
@@ -7733,7 +7831,28 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // Check the prerender was destroyed.
   host_observer.WaitForDestroyed();
   EXPECT_TRUE(prerender_helper()->GetHostForUrl(kPrerenderingUrl).is_null());
-  ExpectFinalStatusForSpeculationRule(GetExpectedFinalStatus());
+
+  PrerenderFinalStatus final_status = [&]() {
+    switch (GetSSLPrerenderTestErrorBlockType()) {
+      case SSLPrerenderTestErrorBlockType::kClientCertRequested:
+        return PrerenderFinalStatus::kClientCertRequested;
+      case SSLPrerenderTestErrorBlockType::kCertError:
+        return PrerenderFinalStatus::kSslCertificateError;
+    }
+  }();
+  switch (GetTriggerType()) {
+    case TriggerType::kSpeculationRules:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.SpeculationRule",
+          final_status, 1);
+      break;
+    case TriggerType::kEmbedderWithoutPrefetchAheadOfPrerender:
+      histogram_tester().ExpectUniqueSample(
+          "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_"
+          "EmbedderSuffixForTest",
+          final_status, 1);
+      break;
+  }
 }
 
 // Prefetch requests should be canceled upon cert validation errors.
