@@ -6444,7 +6444,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.Compatibility" enum="RemotingCompatibility"
-    expires_after="2026-03-12">
+    expires_after="2026-09-12">
   <owner>muyaoxu@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
@@ -6610,7 +6610,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Remoting.VideoPixelRateSupport"
-    enum="RemotingVideoPixelRateSupport" expires_after="2026-03-12">
+    enum="RemotingVideoPixelRateSupport" expires_after="2026-09-12">
   <owner>muyaoxu@google.com</owner>
   <owner>jophba@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
