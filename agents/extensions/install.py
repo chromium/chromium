@@ -135,9 +135,8 @@ def _print_extensions_table(data: dict[str, ExtensionInfo]) -> None:
         print(col_sep.join(row))
 
 
-def get_installed_extensions() -> dict[str, ExtensionInfo]:
+def get_installed_extensions(gemini_cmd: str) -> dict[str, ExtensionInfo]:
     """Returns a dictionary of installed extensions."""
-    gemini_cmd = gemini_helpers.get_gemini_executable()
     result = subprocess.run([gemini_cmd, 'extensions', 'list'],
                             capture_output=True,
                             text=True,
@@ -145,13 +144,16 @@ def get_installed_extensions() -> dict[str, ExtensionInfo]:
     return _parse_installed_extensions_output(result.stdout + result.stderr)
 
 
-def _handle_list_command(project_root: Path | None,
-                         extra_extensions_dirs: list[Path]) -> None:
+def _handle_list_command(
+    gemini_cmd: str,
+    project_root: Path | None,
+    extra_extensions_dirs: list[Path],
+) -> None:
     """Shows all available and installed extensions."""
     all_data = get_available_extensions(project_root, extra_extensions_dirs)
 
     # Get installed extensions
-    installed_data = get_installed_extensions()
+    installed_data = get_installed_extensions(gemini_cmd)
 
     for name, data in installed_data.items():
         if name not in all_data:
@@ -244,7 +246,7 @@ def _run_command(command: list[str], skip_prompt: bool = False) -> None:
         raise
 
 
-def fix_extensions(project_root: Path | None) -> None:
+def fix_extensions(gemini_cmd: str, project_root: Path | None) -> None:
     """Migrates deprecated project-level extensions to the new user model.
 
     This is a one-time migration tool to move from the old model of
@@ -277,7 +279,6 @@ def fix_extensions(project_root: Path | None) -> None:
     user_extensions_dir = get_global_extension_dir()
     source_dirs = get_extensions_dirs(project_root)
 
-    gemini_cmd = gemini_helpers.get_gemini_executable()
     print('Found project-level extensions. Converting to the new model...')
     for extension in extensions:
         if (user_extensions_dir / extension).exists():
@@ -344,7 +345,8 @@ def check_gemini_version() -> None:
                     f'>={".".join(map(str, required_version))} is required.')
 
 
-def process_extensions(command: str,
+def process_extensions(gemini_cmd: str,
+                       command: str,
                        extensions: list[str],
                        project_root: Path | None = None,
                        extra_extensions_dirs: list[Path] | None = None,
@@ -354,8 +356,6 @@ def process_extensions(command: str,
     """Processes extension actions (add, update, remove, enable, disable)."""
     if not project_root:
         project_root = get_project_root()
-
-    gemini_cmd = gemini_helpers.get_gemini_executable()
 
     if not extensions and command == 'update':
         _run_command([gemini_cmd, 'extensions', 'update', '--all'])
@@ -402,6 +402,7 @@ def main() -> None:
     """Installs and manages extension."""
     try:
         check_gemini_version()
+        gemini_cmd = gemini_helpers.get_gemini_executable()
         project_root = get_project_root()
         _check_for_workspace_extensions(project_root)
 
@@ -501,14 +502,18 @@ def main() -> None:
             sys.exit(1)
 
         if args.command == 'list':
-            _handle_list_command(project_root, args.extra_extensions_dir)
+            _handle_list_command(
+                gemini_cmd,
+                project_root,
+                args.extra_extensions_dir,
+            )
             return
 
         if args.command == 'fix':
-            fix_extensions(project_root)
+            fix_extensions(gemini_cmd, project_root)
             return
-
-        process_extensions(command=args.command,
+        process_extensions(gemini_cmd=gemini_cmd,
+                           command=args.command,
                            extensions=args.extensions,
                            project_root=project_root,
                            extra_extensions_dirs=args.extra_extensions_dir,
