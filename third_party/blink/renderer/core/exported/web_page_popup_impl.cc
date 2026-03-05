@@ -170,7 +170,13 @@ class PagePopupChromeClient final : public EmptyChromeClient {
  public:
   explicit PagePopupChromeClient(WebPagePopupImpl* popup) : popup_(popup) {}
 
+  void ChromeDestroyed() override {
+    // `popup_` is about to get deleted.
+    popup_ = nullptr;
+  }
+
   void SetWindowRect(const gfx::Rect& rect, LocalFrame&) override {
+    CHECK(popup_);
     popup_->SetWindowRect(rect);
   }
 
@@ -183,12 +189,14 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
  private:
   void CloseWindow() override {
+    CHECK(popup_);
     // This skips past the PopupClient by calling ClosePopup() instead of
     // Cancel().
     popup_->ClosePopup();
   }
 
   gfx::Rect RootWindowRect(LocalFrame&) override {
+    CHECK(popup_);
     // There is only one frame/widget in a WebPagePopup, so we can ignore the
     // param.
     return popup_->WindowRectInScreen();
@@ -196,6 +204,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   gfx::Rect LocalRootToScreenDIPs(const gfx::Rect& rect_in_local_root,
                                   const LocalFrameView* view) const override {
+    CHECK(popup_);
     DCHECK(view);
     DCHECK_EQ(view->GetChromeClient(), this);
 
@@ -208,6 +217,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   float WindowToViewportScalar(LocalFrame*,
                                const float scalar_value) const override {
+    CHECK(popup_);
     return popup_->widget_base_->DIPsToBlinkSpace(scalar_value);
   }
 
@@ -227,6 +237,11 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   void ScheduleAnimation(const LocalFrameView*,
                          base::TimeDelta delay = base::TimeDelta(),
                          bool urgent = false) override {
+    if (!popup_) {
+      // Script can reach this function even after ChromeDestroyed(),
+      // see crbug.com/483589078.
+      return;
+    }
     // Destroying/removing the popup's content can be seen as a mutation that
     // ends up calling ScheduleAnimation(). Since the popup is going away, we
     // do not wish to actually do anything.
@@ -252,20 +267,24 @@ class PagePopupChromeClient final : public EmptyChromeClient {
   }
 
   cc::AnimationHost* GetCompositorAnimationHost(LocalFrame&) const override {
+    CHECK(popup_);
     return popup_->widget_base_->AnimationHost();
   }
 
   cc::AnimationTimeline* GetScrollAnimationTimeline(
       LocalFrame&) const override {
+    CHECK(popup_);
     return popup_->widget_base_->ScrollAnimationTimeline();
   }
 
   const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
     // LocalFrame is ignored since there is only 1 frame in a popup.
+    CHECK(popup_);
     return popup_->GetScreenInfo();
   }
 
   const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override {
+    CHECK(popup_);
     // LocalFrame is ignored since there is only 1 frame in a popup.
     return popup_->GetScreenInfos();
   }
@@ -292,12 +311,14 @@ class PagePopupChromeClient final : public EmptyChromeClient {
 
   void AttachRootLayer(scoped_refptr<cc::Layer> layer,
                        LocalFrame* local_root) override {
+    CHECK(popup_);
     popup_->SetRootLayer(layer.get());
   }
 
   void UpdateTooltipUnderCursor(LocalFrame&,
                                 const String& tooltip_text,
                                 TextDirection dir) override {
+    CHECK(popup_);
     popup_->widget_base_->UpdateTooltipUnderCursor(tooltip_text, dir);
   }
 
@@ -305,10 +326,12 @@ class PagePopupChromeClient final : public EmptyChromeClient {
                                  const String& tooltip_text,
                                  TextDirection dir,
                                  const gfx::Rect& bounds) override {
+    CHECK(popup_);
     popup_->widget_base_->UpdateTooltipFromKeyboard(tooltip_text, dir, bounds);
   }
 
   void ClearKeyboardTriggeredTooltip(LocalFrame&) override {
+    CHECK(popup_);
     popup_->widget_base_->ClearKeyboardTriggeredTooltip();
   }
 
@@ -318,6 +341,7 @@ class PagePopupChromeClient final : public EmptyChromeClient {
       ui::ScrollGranularity granularity,
       cc::ElementId scrollable_area_element_id,
       WebInputEvent::Type injected_type) override {
+    CHECK(popup_);
     popup_->InjectScrollbarGestureScroll(
         delta, granularity, scrollable_area_element_id, injected_type);
   }
