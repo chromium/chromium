@@ -847,6 +847,21 @@ TEST_F(
             GetWebstoreExtensionInstallStatus(kExtensionId, profile()));
 }
 
+// Themes do not require approval for supervised users.
+TEST_F(SupervisedUserExtensionInstallStatusTest,
+       NewThemeDoesNotRequireCustodianApprovalForInstallation) {
+  profile()->SetIsSupervisedProfile(true);
+  // The supervised user requires parent approval to install extensions but
+  // themes are always allowed.
+  supervised_user_test_util::SetSkipParentApprovalToInstallExtensionsPref(
+      profile(), false);
+
+  EXPECT_EQ(ExtensionInstallStatus::kInstallable,
+            GetInstallStatusSynchronously(
+                kExtensionId, profile(), base::Version(),
+                Manifest::Type::TYPE_THEME, PermissionSet()));
+}
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // A test suite to toggle the behavior of the MV2 deprecation experiment.
 class ExtensionInstallStatusTestWithMV2Deprecation

@@ -109,7 +109,8 @@ ExtensionInstallStatus PerformSynchronousChecks(
           profile) &&
       !profile->GetPrefs()
            ->GetDict(prefs::kSupervisedUserApprovedExtensions)
-           .contains(extension_id)) {
+           .contains(extension_id) &&
+      manifest_type != Manifest::Type::TYPE_THEME) {
     return kCustodianApprovalRequiredForInstallation;
   }
   // Check if parent approval is needed for a supervised user to enable
