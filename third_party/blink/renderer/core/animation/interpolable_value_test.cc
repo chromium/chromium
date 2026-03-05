@@ -196,7 +196,7 @@ TEST_F(AnimationInterpolableValueTest, InterpolableNumberAsExpression) {
     CSSParserTokenStream stream(test_case.input);
 
     CSSParserLocalContext local_context =
-        CSSParserLocalContext::CreateWithoutPropertyForAnimations();
+        CSSParserLocalContext::CreateWithoutPropertyForTest();
     // Test expression evaluation.
     const CSSMathExpressionNode* expression =
         CSSMathExpressionNode::ParseMathFunction(
