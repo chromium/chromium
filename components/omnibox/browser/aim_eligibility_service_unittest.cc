@@ -42,7 +42,8 @@ class AimEligibilityServiceFriend {
       AimEligibilityService* service,
       const omnibox::AimEligibilityResponse& response) {
     service->UpdateMostRecentResponse(
-        response, AimEligibilityService::EligibilityResponseSource::kUser);
+        response, AimEligibilityService::EligibilityResponseSource::kUser,
+        AimEligibilityService::AuthenticationMethod::kNone);
   }
 };
 

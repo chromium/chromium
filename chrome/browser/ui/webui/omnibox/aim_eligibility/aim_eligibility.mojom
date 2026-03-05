@@ -24,6 +24,8 @@ struct EligibilityState {
   string eligibility_response_base64_encoded;
   // Source of the eligibility response, e.g., "Server", "Prefs".
   string eligibility_response_source;
+  // Auth type of the eligibility response, e.g., "OAuth" or "Cookie".
+  string? eligibility_response_auth_type;
   // Base64url encoded searchbox config proto. Populated if server
   // eligibility checking is enabled.
   string searchbox_config_base64_url_encoded;

@@ -180,6 +180,16 @@ class AimEligibilityService
   // Returns the source of the most recent eligibility response.
   EligibilityResponseSource GetMostRecentResponseSource() const;
 
+  // Tracks the authentication method used for the eligibility response.
+  enum class AuthenticationMethod {
+    kNone = 0,
+    kOauth = 1,
+    kCookie = 2,
+  };
+
+  // Returns the authentication method of the most recent eligibility response.
+  AuthenticationMethod GetMostRecentResponseAuthMethod() const;
+
   // Returns the `SearchboxConfig` from the AIMEligibilityResponse.
   virtual const omnibox::SearchboxConfig* GetSearchboxConfig() const;
 
@@ -278,7 +288,8 @@ class AimEligibilityService
   // Updates `most_recent_response_` and the prefs with `response_proto`.
   void UpdateMostRecentResponse(
       const omnibox::AimEligibilityResponse& response_proto,
-      EligibilityResponseSource response_source);
+      EligibilityResponseSource response_source,
+      AuthenticationMethod auth_method);
 
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
@@ -336,16 +347,21 @@ class AimEligibilityService
       RequestSource request_source,
       const std::string& locale,
       GaiaId pending_request_account,
-      std::unique_ptr<network::ResourceRequest> request);
+      std::unique_ptr<network::ResourceRequest> request,
+      AuthenticationMethod auth_method);
+
   void OnServerEligibilityResponse(RequestSource request_source,
                                    GaiaId pending_request_account,
+                                   AuthenticationMethod auth_method,
                                    std::optional<std::string> response_string);
+
   void ProcessServerEligibilityResponse(
       RequestSource request_source,
       GaiaId pending_request_account,
       int response_code,
       EligibilityRequestStatus request_status,
       int num_retries,
+      AuthenticationMethod auth_method,
       std::optional<std::string> response_string);
 
   // Returns the given histogram name sliced by the given request source.
@@ -421,6 +437,8 @@ class AimEligibilityService
   omnibox::AimEligibilityResponse most_recent_response_;
   EligibilityResponseSource most_recent_response_source_ =
       EligibilityResponseSource::kDefault;
+  AuthenticationMethod most_recent_response_auth_method_ =
+      AuthenticationMethod::kNone;
 
   // The account associated with the most recent response.
   GaiaId most_recent_response_account_;

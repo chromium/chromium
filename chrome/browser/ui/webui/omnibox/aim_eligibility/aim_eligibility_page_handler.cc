@@ -76,6 +76,16 @@ AimEligibilityPageHandler::QueryEligibilityState() {
     state->eligibility_response_source =
         AimEligibilityService::EligibilityResponseSourceToString(
             aim_eligibility_service_->GetMostRecentResponseSource());
+    switch (aim_eligibility_service_->GetMostRecentResponseAuthMethod()) {
+      case AimEligibilityService::AuthenticationMethod::kOauth:
+        state->eligibility_response_auth_type = "OAuth";
+        break;
+      case AimEligibilityService::AuthenticationMethod::kCookie:
+        state->eligibility_response_auth_type = "Cookie";
+        break;
+      case AimEligibilityService::AuthenticationMethod::kNone:
+        break;
+    }
     if (response.has_searchbox_config()) {
       std::string config_string;
       response.searchbox_config().SerializeToString(&config_string);

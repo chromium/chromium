@@ -47,6 +47,14 @@ export function getHtml(this: AimEligibilityAppElement) {
             ${this.eligibilityState_.eligibilityResponseSource}
           </span>
         </div>
+        ${this.eligibilityState_.eligibilityResponseAuthType ? html`
+          <div class="check-label">Auth Type:</div>
+          <div class="check-item">
+            <span class="check-value">
+              ${this.eligibilityState_.eligibilityResponseAuthType}
+            </span>
+          </div>
+        ` : ''}
         <div class="check-label">Eligibility Response:</div>
         <div class="check-item">
           <input class="response-input ${this.inputState_}"
