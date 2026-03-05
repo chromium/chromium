@@ -1701,6 +1701,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Platform.MicrocodeVersion" enum="MicrocodeVersion"
+    expires_after="2026-12-31">
+  <owner>hikalium@chromium.org</owner>
+  <owner>chromeos-kernel-stability@google.com</owner>
+  <summary>
+    The microcode version for the CPU 0 at program start time. If this
+    information is not available on the system (including on errors), the value
+    logged will be -1 (0xffffffff).
+  </summary>
+</histogram>
+
 <histogram name="Platform.MiniDiag.Launch" units="launches"
     expires_after="2025-06-03">
   <owner>roccochen@chromium.org</owner>

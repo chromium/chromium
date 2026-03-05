@@ -86,6 +86,7 @@
 #include <gnu/libc-version.h>
 #endif  // defined(__GLIBC__)
 
+#include "base/files/file_util.h"
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -111,6 +112,8 @@
 #endif  // BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "base/files/file_util.h"
+#include "base/strings/string_util.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "components/user_manager/user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
@@ -377,6 +380,37 @@ void RecordMicroArchitectureStats() {
                                 base::CPU::MAX_INTEL_MICRO_ARCHITECTURE);
 #endif  // defined(ARCH_CPU_X86_FAMILY)
 }
+
+#if defined(ARCH_CPU_X86_FAMILY) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+// Reads the microcode version from the kernel via sysfs.
+// This function returns -1 on failure.
+int GetMicrocodeVersion() {
+  constexpr base::FilePath::CharType kMicrocodeVersionPath[] =
+      FILE_PATH_LITERAL("/sys/bus/cpu/devices/cpu0/microcode/version");
+  std::string version_string;
+  if (!base::ReadFileToString(base::FilePath(kMicrocodeVersionPath),
+                              &version_string)) {
+    return -1;
+  }
+
+  base::TrimWhitespaceASCII(version_string, base::TRIM_ALL, &version_string);
+  uint32_t version = 0;
+  if (!base::HexStringToUInt(version_string, &version)) {
+    return -1;
+  }
+  return static_cast<int>(version);
+}
+// As of 2026, microcode updates are typically only implemented on x86 CPUs.
+// However, this is not guaranteed to be the case in the future, so we abstract
+// the CPU-specific details away and record the results in a CPU-agnostic
+// histogram.
+// This function is called on a background thread, with low priority to avoid
+// slowing down the startup by accessing the filesystem.
+void RecordMicrocodeVersionStats() {
+  base::UmaHistogramSparse("Platform.MicrocodeVersion", GetMicrocodeVersion());
+}
+#endif
 
 #if BUILDFLAG(IS_LINUX)
 void RecordLinuxDistroSpecific(const std::string& version_string,
@@ -1080,6 +1114,12 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         base::Seconds(45));
   }
 #endif  // BUILDFLAG(IS_WIN)
+
+#if defined(ARCH_CPU_X86_FAMILY) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
+  base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
+                             base::BindOnce(&RecordMicrocodeVersionStats));
+#endif
 
   auto* screen = display::Screen::Get();
   display_count_ = screen->GetNumDisplays();

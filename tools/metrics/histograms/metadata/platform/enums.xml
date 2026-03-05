@@ -743,6 +743,11 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="2" label="Outpainting"/>
 </enum>
 
+<enum name="MicrocodeVersion">
+  <summary>Enum for sparse histogram of CPU microcode version</summary>
+  <int value="-1" label="Not Available (0xffffffff)"/>
+</enum>
+
 <enum name="MiniDiagResultType">
   <int value="0" label="Passed"/>
   <int value="1" label="Error"/>
