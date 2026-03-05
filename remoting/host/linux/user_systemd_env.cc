@@ -18,6 +18,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
@@ -113,13 +114,12 @@ class UserSystemdEnvManager {
 
     base::EnvironmentMap env_map;
     for (const std::string& env_str : result.value()) {
-      // Can't use SplitString since some environment variables have `=`.
-      auto eq_pos = env_str.find('=');
-      if (eq_pos == std::string::npos || eq_pos == 0) {
+      auto split_result = base::SplitStringOnce(env_str, '=');
+      if (!split_result.has_value() || split_result->first.empty()) {
         LOG(WARNING) << "Invalid line in systemctl output: " << env_str;
         continue;
       }
-      env_map[env_str.substr(0, eq_pos)] = env_str.substr(eq_pos + 1);
+      env_map[std::string(split_result->first)] = split_result->second;
     }
 
     // The compositor isn't immediately ready after the session is created, so
@@ -185,7 +185,7 @@ int UserSystemdEnvMain() {
     return EXIT_FAILURE;
   }
   if (setuid(user_info->uid) != 0) {
-    PLOG(ERROR) << "Failed to setuid" << user_info->uid;
+    PLOG(ERROR) << "Failed to setuid: " << user_info->uid;
     return EXIT_FAILURE;
   }
 
