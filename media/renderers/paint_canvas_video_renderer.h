@@ -216,7 +216,8 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       scoped_refptr<VideoFrame> video_frame,
       scoped_refptr<gpu::ClientSharedImage> dest_shared_image,
       const gpu::SyncToken& dest_sync_token,
-      bool use_visible_rect);
+      bool use_visible_rect,
+      VideoFrameSharedImageCache* shared_image_cache = nullptr);
 
   // Check whether video frame can be uploaded through
   // CopyVideoFrameToSharedImage(). The limitation comes from

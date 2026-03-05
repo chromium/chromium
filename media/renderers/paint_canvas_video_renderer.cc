@@ -1602,11 +1602,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
   // On the source Raster context, do the YUV->RGB conversion.
   // Pass the rgb sync token here to be waited upon before performing raster
   // tasks.
-  gpu::SyncToken post_conversion_sync_token =
-      internals::ConvertYuvVideoFrameToRgbSharedImage(
-          video_frame.get(), raster_context_provider, rgb_shared_image,
-          rgb_sync_token, /*use_visible_rect=*/false,
-          yuv_shared_image_cache_.get());
+  gpu::SyncToken post_conversion_sync_token = CopyVideoFrameToSharedImage(
+      raster_context_provider, video_frame, rgb_shared_image, rgb_sync_token,
+      /*use_visible_rect=*/false, yuv_shared_image_cache_.get());
 
   // On the destination GL context, do a copy (with cropping) into the
   // destination texture.
@@ -1813,7 +1811,8 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     scoped_refptr<VideoFrame> video_frame,
     scoped_refptr<gpu::ClientSharedImage> dest_shared_image,
     const gpu::SyncToken& dest_sync_token,
-    bool use_visible_rect) {
+    bool use_visible_rect,
+    VideoFrameSharedImageCache* shared_image_cache /*=nullptr*/) {
   auto* ri = raster_context_provider->RasterInterface();
 
   gpu::SyncToken sync_token;
@@ -1840,10 +1839,9 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
                               raster_context_provider->ContextSupport(),
                               std::move(src_ri_access));
   } else {
-    // TODO(vasilyt): Add caching support
     sync_token = internals::ConvertYuvVideoFrameToRgbSharedImage(
         video_frame.get(), raster_context_provider, dest_shared_image,
-        dest_sync_token, use_visible_rect, /*shared_image_cache=*/nullptr);
+        dest_sync_token, use_visible_rect, shared_image_cache);
   }
 
   return sync_token;
