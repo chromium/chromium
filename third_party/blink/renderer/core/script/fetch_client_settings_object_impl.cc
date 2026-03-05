@@ -7,6 +7,7 @@
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
+#include "third_party/blink/renderer/core/frame/policy_container.h"
 
 namespace blink {
 
@@ -31,10 +32,10 @@ const SecurityOrigin* FetchClientSettingsObjectImpl::GetSecurityOrigin() const {
   return execution_context_->GetSecurityOrigin();
 }
 
-network::mojom::ReferrerPolicy
-FetchClientSettingsObjectImpl::GetReferrerPolicy() const {
+const mojom::blink::PolicyContainerPolicies&
+FetchClientSettingsObjectImpl::GetPolicyContainerPolicies() const {
   DCHECK(execution_context_->IsContextThread());
-  return execution_context_->GetReferrerPolicy();
+  return execution_context_->GetPolicyContainer()->GetPolicies();
 }
 
 const String FetchClientSettingsObjectImpl::GetOutgoingReferrer() const {

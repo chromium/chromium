@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/loader/fetch/memory_cache.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -321,7 +322,7 @@ void PageTestBase::NavigateTo(const KURL& url,
            network::mojom::blink::ContentSecurityPolicyType::kEnforce,
            network::mojom::blink::ContentSecurityPolicySource::kHTTP, url)) {
     params->policy_container->policies.content_security_policies.emplace_back(
-        ConvertToPublic(std::move(csp)));
+        ToWebContentSecurityPolicy(*csp));
   }
 
   GetFrame().Loader().CommitNavigation(std::move(params),

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/null_resource_fetcher_properties.h"
 
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
@@ -21,7 +22,12 @@ NullResourceFetcherProperties::NullResourceFetcherProperties()
               NullUrl(),
               NullUrl(),
               nullptr /* security_origin */,
-              network::mojom::ReferrerPolicy::kDefault,
+              []() {
+                auto policies = mojom::blink::PolicyContainerPolicies::New();
+                policies->referrer_policy =
+                    network::mojom::ReferrerPolicy::kDefault;
+                return policies;
+              }(),
               String(),
               HttpsState::kNone,
               AllowedByNosniff::MimeTypeCheck::kStrict,

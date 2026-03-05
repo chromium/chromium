@@ -598,7 +598,7 @@ class WebEmbeddedWorkerImplTest : public testing::Test {
   std::unique_ptr<WebEmbeddedWorkerStartData> CreateStartData() {
     const WebURL script_url = url_test_helpers::ToKURL(kTimedOutURL);
     WebFetchClientSettingsObject outside_settings_object(
-        network::mojom::ReferrerPolicy::kDefault,
+        WebPolicyContainerPolicies(),
         /*outgoing_referrer=*/script_url,
         blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade);
     auto start_data = std::make_unique<WebEmbeddedWorkerStartData>(

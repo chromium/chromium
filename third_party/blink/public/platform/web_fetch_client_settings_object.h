@@ -7,12 +7,14 @@
 
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-shared.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/platform/web_policy_container.h"
 #include "third_party/blink/public/platform/web_url.h"
 
 #if INSIDE_BLINK
 #include "third_party/blink/public/common/security_context/insecure_request_policy.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"  // nogncheck
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"  // nogncheck
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"  // nogncheck
 #endif
 
@@ -23,8 +25,7 @@ namespace blink {
 // Onion Soup is done.
 // Keep this struct consistent with mojom::FetchClientSettingsObject.
 struct WebFetchClientSettingsObject {
-  network::mojom::ReferrerPolicy referrer_policy =
-      network::mojom::ReferrerPolicy::kDefault;
+  WebPolicyContainerPolicies policy_container_policies;
   // outgoing_referrer must be either invalid (!IsValid()) or a valid, non-empty
   // WebURL (IsValid() && !IsEmpty()).
   // See https://crbug.com/1047612.
@@ -33,10 +34,10 @@ struct WebFetchClientSettingsObject {
       blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade;
 
   WebFetchClientSettingsObject(
-      network::mojom::ReferrerPolicy referrer_policy,
+      WebPolicyContainerPolicies policy_container_policies,
       WebURL outgoing_referrer,
       mojom::InsecureRequestsPolicy insecure_requests_policy)
-      : referrer_policy(referrer_policy),
+      : policy_container_policies(std::move(policy_container_policies)),
         // As per the comment on the |outgoing_referrer| member, it cannot be
         // set to a valid, empty WebURL. But the given |outgoing_referrer| may
         // be a valid, empty WebURL, for example, due to conversion from
@@ -49,7 +50,8 @@ struct WebFetchClientSettingsObject {
 #if INSIDE_BLINK
   explicit WebFetchClientSettingsObject(
       const FetchClientSettingsObject& settings_object)
-      : referrer_policy(settings_object.GetReferrerPolicy()),
+      : policy_container_policies(ToWebPolicyContainerPolicies(
+            settings_object.GetPolicyContainerPolicies())),
         // As per the comment on the |outgoing_referrer| member, it cannot be
         // set to a valid, empty WebURL. But the given |outgoing_referrer| may
         // be a non-null empty String since the caller may pass one.

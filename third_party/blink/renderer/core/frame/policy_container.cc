@@ -8,7 +8,7 @@
 
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/integrity_policy.mojom-blink.h"
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 
 namespace blink {
 
@@ -34,25 +34,10 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateFromWebPolicyContainer(
     std::unique_ptr<WebPolicyContainer> container) {
   if (!container)
     return nullptr;
-  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
-  cross_origin_embedder_policy.value =
-      container->policies.cross_origin_embedder_policy;
-  mojom::blink::PolicyContainerPoliciesPtr policies =
-      mojom::blink::PolicyContainerPolicies::New(
-          container->policies.connection_allowlists,
-          cross_origin_embedder_policy, container->policies.integrity_policy,
-          container->policies.integrity_policy_report_only,
-          container->policies.referrer_policy,
-          ConvertToMojoBlink(
-              std::move(container->policies.content_security_policies)),
-          container->policies.is_credentialless,
-          container->policies.sandbox_flags,
-          container->policies.ip_address_space,
-          container->policies.can_navigate_top_without_user_gesture,
-          container->policies.cross_origin_isolation_enabled_by_dip);
 
-  return std::make_unique<PolicyContainer>(std::move(container->remote),
-                                           std::move(policies));
+  return std::make_unique<PolicyContainer>(
+      std::move(container->remote),
+      FromWebPolicyContainerPolicies(container->policies));
 }
 
 network::mojom::blink::ReferrerPolicy PolicyContainer::GetReferrerPolicy()

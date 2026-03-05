@@ -74,9 +74,6 @@ class TestCSPDelegate final : public GarbageCollected<TestCSPDelegate>,
   Vector<std::pair<String, ConsoleMessage::Level>> console_messages_;
 };
 
-WebContentSecurityPolicy ConvertToPublic(
-    network::mojom::blink::ContentSecurityPolicyPtr policy);
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_TEST_UTIL_H_

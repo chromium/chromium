@@ -11,9 +11,11 @@
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "services/network/public/cpp/features.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/mixed_content.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/request_context_frame_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
@@ -339,6 +341,11 @@ TEST(MixedContentCheckerTest, LNABypassTest) {
 
 class TestFetchClientSettingsObject : public FetchClientSettingsObject {
  public:
+  TestFetchClientSettingsObject()
+      : policies_(mojom::blink::PolicyContainerPolicies::New()) {
+    policies_->referrer_policy = network::mojom::ReferrerPolicy::kAlways;
+  }
+
   const KURL& GlobalObjectUrl() const override { return url; }
   HttpsState GetHttpsState() const override { return HttpsState::kModern; }
   mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
@@ -352,8 +359,9 @@ class TestFetchClientSettingsObject : public FetchClientSettingsObject {
   const SecurityOrigin* GetSecurityOrigin() const override {
     return origin_.get();
   }
-  network::mojom::ReferrerPolicy GetReferrerPolicy() const override {
-    return network::mojom::ReferrerPolicy::kAlways;
+  const mojom::blink::PolicyContainerPolicies& GetPolicyContainerPolicies()
+      const override {
+    return *policies_;
   }
   const String GetOutgoingReferrer() const override { return ""; }
   AllowedByNosniff::MimeTypeCheck MimeTypeCheckForClassicWorkerScript()
@@ -377,6 +385,7 @@ class TestFetchClientSettingsObject : public FetchClientSettingsObject {
   const KURL url = KURL("https://example.test");
   const InsecureNavigationsSet set;
   scoped_refptr<SecurityOrigin> origin_;
+  mojom::blink::PolicyContainerPoliciesPtr policies_;
 };
 
 TEST(MixedContentCheckerTest,

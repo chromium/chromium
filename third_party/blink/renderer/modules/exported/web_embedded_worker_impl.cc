@@ -62,6 +62,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_installed_scripts_manager.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_thread.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -324,7 +325,9 @@ WebEmbeddedWorkerImpl::CreateFetchClientSettingsObjectData(
 
   return std::make_unique<CrossThreadFetchClientSettingsObjectData>(
       script_url /* global_object_url */, script_url /* base_url */,
-      security_origin->IsolatedCopy(), passed_settings_object.referrer_policy,
+      security_origin->IsolatedCopy(),
+      FromWebPolicyContainerPolicies(
+          passed_settings_object.policy_container_policies),
       KURL(passed_settings_object.outgoing_referrer.GetString()), https_state,
       AllowedByNosniff::MimeTypeCheck::kLaxForWorker, insecure_requests_policy,
       FetchClientSettingsObject::InsecureNavigationsSet());

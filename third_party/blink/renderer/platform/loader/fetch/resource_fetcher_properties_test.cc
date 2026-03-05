@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher_properties.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
@@ -22,7 +23,11 @@ class DetachableResourceFetcherPropertiesTest : public testing::Test {
         KURL("https://example.com/foo.html"),
         KURL("https://example.com/foo.html"),
         SecurityOrigin::Create(KURL("https://example.com/")),
-        network::mojom::ReferrerPolicy::kDefault,
+        []() {
+          auto policies = mojom::blink::PolicyContainerPolicies::New();
+          policies->referrer_policy = network::mojom::ReferrerPolicy::kDefault;
+          return policies;
+        }(),
         "https://example.com/foo.html", HttpsState::kModern,
         AllowedByNosniff::MimeTypeCheck::kStrict,
         mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,

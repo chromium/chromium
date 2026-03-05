@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 
 #include <algorithm>
 
 #include "base/strings/string_util.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
-#include "third_party/blink/renderer/core/frame/csp/test_util.h"
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/testing/blink_fuzzer_test_support.h"
@@ -66,7 +65,8 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   if (parsed_policies.size() > 0) {
     network::mojom::blink::ContentSecurityPolicyPtr converted_csp =
-        ConvertToMojoBlink(ConvertToPublic(parsed_policies[0]->Clone()));
+        FromWebContentSecurityPolicy(
+            ToWebContentSecurityPolicy(*parsed_policies[0]));
     CHECK(converted_csp->Equals(*parsed_policies[0]));
   }
 

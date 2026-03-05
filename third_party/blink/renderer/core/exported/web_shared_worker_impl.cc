@@ -55,7 +55,6 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/message_event.h"
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/script/script.h"
@@ -68,6 +67,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
@@ -244,7 +244,8 @@ void WebSharedWorkerImpl::StartWorkerContext(
       MakeGarbageCollected<FetchClientSettingsObjectSnapshot>(
           /*global_object_url=*/script_request_url,
           /*base_url=*/script_request_url, constructor_origin,
-          outside_fetch_client_settings_object.referrer_policy,
+          FromWebPolicyContainerPolicies(
+              outside_fetch_client_settings_object.policy_container_policies),
           outside_fetch_client_settings_object.outgoing_referrer.GetString(),
           CalculateHttpsState(constructor_origin.Get()),
           AllowedByNosniff::MimeTypeCheck::kLaxForWorker,
@@ -268,7 +269,7 @@ void WebSharedWorkerImpl::StartWorkerContext(
   auto creation_params = std::make_unique<GlobalScopeCreationParams>(
       script_request_url, script_type, name, user_agent, ua_metadata,
       std::move(web_worker_fetch_context),
-      ConvertToMojoBlink(content_security_policies),
+      ToVector(content_security_policies, FromWebContentSecurityPolicy),
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       outside_settings_object->GetReferrerPolicy(),
       DocumentPolicy::DocumentPolicyBundle{},

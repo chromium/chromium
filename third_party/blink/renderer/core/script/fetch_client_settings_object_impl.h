@@ -35,7 +35,8 @@ class CORE_EXPORT FetchClientSettingsObjectImpl final
   const KURL& GlobalObjectUrl() const override;
   const KURL& BaseUrl() const override;
   const SecurityOrigin* GetSecurityOrigin() const override;
-  network::mojom::ReferrerPolicy GetReferrerPolicy() const override;
+  const mojom::blink::PolicyContainerPolicies& GetPolicyContainerPolicies()
+      const override;
 
   const String GetOutgoingReferrer() const override;
 

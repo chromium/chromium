@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CLIENT_SETTINGS_OBJECT_SNAPSHOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CLIENT_SETTINGS_OBJECT_SNAPSHOT_H_
 
-#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -33,7 +33,7 @@ struct CrossThreadFetchClientSettingsObjectData {
       KURL global_object_url,
       KURL base_url,
       scoped_refptr<const SecurityOrigin> security_origin,
-      network::mojom::ReferrerPolicy referrer_policy,
+      mojom::blink::PolicyContainerPoliciesPtr policy_container_policies,
       String outgoing_referrer,
       HttpsState https_state,
       AllowedByNosniff::MimeTypeCheck mime_type_check_for_classic_worker_script,
@@ -43,7 +43,7 @@ struct CrossThreadFetchClientSettingsObjectData {
       : global_object_url(std::move(global_object_url)),
         base_url(std::move(base_url)),
         security_origin(std::move(security_origin)),
-        referrer_policy(referrer_policy),
+        policy_container_policies(std::move(policy_container_policies)),
         outgoing_referrer(std::move(outgoing_referrer)),
         https_state(https_state),
         mime_type_check_for_classic_worker_script(
@@ -58,7 +58,7 @@ struct CrossThreadFetchClientSettingsObjectData {
   const KURL global_object_url;
   const KURL base_url;
   const scoped_refptr<const SecurityOrigin> security_origin;
-  const network::mojom::ReferrerPolicy referrer_policy;
+  const mojom::blink::PolicyContainerPoliciesPtr policy_container_policies;
   const String outgoing_referrer;
   const HttpsState https_state;
   const AllowedByNosniff::MimeTypeCheck
@@ -88,7 +88,7 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
       const KURL& global_object_url,
       const KURL& base_url,
       const scoped_refptr<const SecurityOrigin> security_origin,
-      network::mojom::ReferrerPolicy referrer_policy,
+      mojom::blink::PolicyContainerPoliciesPtr policy_container_policies,
       const String& outgoing_referrer,
       HttpsState https_state,
       AllowedByNosniff::MimeTypeCheck,
@@ -102,9 +102,11 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   const SecurityOrigin* GetSecurityOrigin() const override {
     return security_origin_.get();
   }
-  network::mojom::ReferrerPolicy GetReferrerPolicy() const override {
-    return referrer_policy_;
+  const mojom::blink::PolicyContainerPolicies& GetPolicyContainerPolicies()
+      const override {
+    return *policy_container_policies_;
   }
+
   const String GetOutgoingReferrer() const override {
     return outgoing_referrer_;
   }
@@ -129,7 +131,7 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   std::unique_ptr<CrossThreadFetchClientSettingsObjectData> CopyData() const {
     return std::make_unique<CrossThreadFetchClientSettingsObjectData>(
         global_object_url_, base_url_, security_origin_->IsolatedCopy(),
-        referrer_policy_, outgoing_referrer_, https_state_,
+        policy_container_policies_.Clone(), outgoing_referrer_, https_state_,
         mime_type_check_for_classic_worker_script_, insecure_requests_policy_,
         insecure_navigations_set_);
   }
@@ -138,7 +140,7 @@ class PLATFORM_EXPORT FetchClientSettingsObjectSnapshot final
   const KURL global_object_url_;
   const KURL base_url_;
   const scoped_refptr<const SecurityOrigin> security_origin_;
-  const network::mojom::ReferrerPolicy referrer_policy_;
+  const mojom::blink::PolicyContainerPoliciesPtr policy_container_policies_;
   const String outgoing_referrer_;
   const HttpsState https_state_;
   const AllowedByNosniff::MimeTypeCheck

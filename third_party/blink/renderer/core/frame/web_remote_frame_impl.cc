@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/execution_context/remote_security_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/exported/web_view_impl.h"
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client_impl.h"

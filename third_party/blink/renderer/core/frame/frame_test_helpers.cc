@@ -81,6 +81,7 @@
 #include "third_party/blink/renderer/core/testing/fake_web_plugin.h"
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/main_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -284,7 +285,7 @@ void FillNavigationParamsResponse(WebNavigationParams* params) {
            params->response.ResponseUrl())) {
     params->policy_container->policies.sandbox_flags |= csp->sandbox;
     params->policy_container->policies.content_security_policies.emplace_back(
-        ConvertToPublic(std::move(csp)));
+        ToWebContentSecurityPolicy(*csp));
   }
 }
 

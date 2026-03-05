@@ -2,18 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
+#include "third_party/blink/renderer/platform/loader/fetch/policy_container_utils.h"
 
+#include "services/network/public/cpp/connection_allowlist.h"
 #include "services/network/public/cpp/integrity_metadata.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
+#include "services/network/public/mojom/connection_allowlist.mojom-shared.h"
 #include "services/network/public/mojom/content_security_policy.mojom-blink.h"
+#include "services/network/public/mojom/cross_origin_embedder_policy.mojom-blink.h"
 #include "services/network/public/mojom/integrity_algorithm.mojom-blink.h"
+#include "services/network/public/mojom/integrity_policy.mojom.h"
+#include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/core/frame/csp/test_util.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom-blink.h"
 
 namespace blink {
 
-TEST(ContentSecurityPolicyConversionUtilTest, BackAndForthConversion) {
+TEST(PolicyContainerUtilsTest, ContentSecurityPolicyBackAndForthConversion) {
   using network::mojom::blink::ContentSecurityPolicy;
   using network::mojom::blink::ContentSecurityPolicyHeader;
   using network::mojom::blink::CSPDirectiveName;
@@ -90,12 +96,13 @@ TEST(ContentSecurityPolicyConversionUtilTest, BackAndForthConversion) {
   for (const auto& modify_csp : test_cases) {
     auto test_csp = basic_csp.Clone();
     (*modify_csp)(*test_csp);
-    EXPECT_EQ(ConvertToMojoBlink(ConvertToPublic(test_csp.Clone())), test_csp);
+    EXPECT_EQ(
+        FromWebContentSecurityPolicy(ToWebContentSecurityPolicy(*test_csp)),
+        test_csp);
   }
 }
 
-TEST(ContentSecurityPolicyConversionUtilTest,
-     BackAndForthConversionForCSPSourceList) {
+TEST(PolicyContainerUtilsTest, BackAndForthConversionForCSPSourceList) {
   using network::mojom::blink::ContentSecurityPolicy;
   using network::mojom::blink::CSPDirectiveName;
   using network::mojom::blink::CSPSource;
@@ -170,7 +177,87 @@ TEST(ContentSecurityPolicyConversionUtilTest,
     (*modify_csp)(*script_src);
     test_csp->directives.insert(CSPDirectiveName::ScriptSrc,
                                 std::move(script_src));
-    EXPECT_EQ(ConvertToMojoBlink(ConvertToPublic(test_csp.Clone())), test_csp);
+    EXPECT_EQ(
+        FromWebContentSecurityPolicy(ToWebContentSecurityPolicy(*test_csp)),
+        test_csp);
+  }
+}
+
+TEST(PolicyContainerUtilsTest, PolicyContainerPoliciesBackAndForthConversion) {
+  auto policies = mojom::blink::PolicyContainerPolicies::New();
+  policies->referrer_policy = network::mojom::blink::ReferrerPolicy::kAlways;
+  policies->ip_address_space = network::mojom::blink::IPAddressSpace::kPublic;
+  policies->sandbox_flags = network::mojom::blink::WebSandboxFlags::kForms;
+
+  using ModifyPolicies = void(mojom::blink::PolicyContainerPolicies&);
+  ModifyPolicies* test_cases[] = {
+      [](mojom::blink::PolicyContainerPolicies& p) {},
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        network::ConnectionAllowlist enforced_allowlist;
+        enforced_allowlist.allowlist = {"https://a.test", "https://b.test"};
+        enforced_allowlist.reporting_endpoint = "https://reporting.test";
+        enforced_allowlist.issues = {
+            network::mojom::ConnectionAllowlistIssue::kInvalidHeader,
+            network::mojom::ConnectionAllowlistIssue::
+                kReportingEndpointNotToken};
+        network::ConnectionAllowlist report_only_allowlist;
+        report_only_allowlist.allowlist = {"https://x.test", "https://y.test"};
+        report_only_allowlist.reporting_endpoint = "https://reporting2.test";
+        report_only_allowlist.issues = {
+            network::mojom::ConnectionAllowlistIssue::kMoreThanOneList,
+            network::mojom::ConnectionAllowlistIssue::kInvalidUrlPattern};
+
+        p.connection_allowlists.enforced = enforced_allowlist;
+        p.connection_allowlists.report_only = report_only_allowlist;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.integrity_policy.blocked_destinations = {
+            network::mojom::IntegrityPolicy::Destination::kScript};
+        p.integrity_policy.sources = {
+            network::mojom::IntegrityPolicy::Source::kInline};
+        p.integrity_policy.endpoints = {"https://a.test", "https://b.test"};
+        p.integrity_policy.parsing_errors = {"some_error", "some other error"};
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.integrity_policy_report_only.blocked_destinations = {
+            network::mojom::IntegrityPolicy::Destination::kScript};
+        p.integrity_policy_report_only.sources = {
+            network::mojom::IntegrityPolicy::Source::kInline};
+        p.integrity_policy_report_only.endpoints = {"https://a.test",
+                                                    "https://b.test"};
+        p.integrity_policy_report_only.parsing_errors = {"some_error",
+                                                         "some other error"};
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.referrer_policy = network::mojom::blink::ReferrerPolicy::kNever;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.ip_address_space = network::mojom::blink::IPAddressSpace::kLocal;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.sandbox_flags = network::mojom::blink::WebSandboxFlags::kScripts;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.is_credentialless = true;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.can_navigate_top_without_user_gesture = false;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.cross_origin_isolation_enabled_by_dip = true;
+      },
+      [](mojom::blink::PolicyContainerPolicies& p) {
+        p.cross_origin_embedder_policy.value =
+            network::mojom::blink::CrossOriginEmbedderPolicyValue::kRequireCorp;
+      },
+  };
+
+  for (const auto& modify_policies : test_cases) {
+    auto test_policies = policies.Clone();
+    (*modify_policies)(*test_policies);
+    EXPECT_EQ(FromWebPolicyContainerPolicies(
+                  ToWebPolicyContainerPolicies(*test_policies)),
+              test_policies);
   }
 }
 
