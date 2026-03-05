@@ -113,6 +113,8 @@ public class PictureInPictureActivityTest {
 
     @Before
     public void setUp() {
+        // Some of the tests may finish the activity using moveTaskToBack.
+        PictureInPictureActivity.interceptMoveTaskToBackForTesting();
         mActivityTestRule.startOnBlankPage();
         mTab = mActivityTestRule.getActivityTab();
         PictureInPictureActivityJni.setInstanceForTesting(mNativeMock);
