@@ -4051,7 +4051,7 @@ void AdjustDisplayKeywords(DisplayValidationResult& result) {
         } else if (inside == CSSValueID::kGrid) {
           new_id = CSSValueID::kInlineGrid;
         } else if (inside == CSSValueID::kGridLanes) {
-          new_id = CSSValueID::kInlineGrid;
+          new_id = CSSValueID::kInlineGridLanes;
         } else if (inside == CSSValueID::kTable) {
           new_id = CSSValueID::kInlineTable;
         }
