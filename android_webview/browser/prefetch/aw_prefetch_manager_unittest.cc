@@ -37,11 +37,12 @@ TEST_F(AwPrefetchManagerTest, UpdateCacheConfig) {
   prefetch_manager.SetMaxPrefetches(base::android::AttachCurrentThread(),
                                     /* max_prefetches=*/5);
 
-  EXPECT_EQ(prefetch_manager.GetTtlInSec(base::android::AttachCurrentThread()),
+  EXPECT_EQ(prefetch_manager.GetTtlInSecForTesting(
+                base::android::AttachCurrentThread()),
             60 * 10);
-  EXPECT_EQ(
-      prefetch_manager.GetMaxPrefetches(base::android::AttachCurrentThread()),
-      5);
+  EXPECT_EQ(prefetch_manager.GetMaxPrefetchesForTesting(
+                base::android::AttachCurrentThread()),
+            5);
 }
 
 TEST_F(AwPrefetchManagerTest, MaxPrefetchReachesLimit) {

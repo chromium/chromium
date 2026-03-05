@@ -119,10 +119,12 @@ class AwPrefetchManager {
   }
 
   // Returns the Time-to-Live (TTL) for prefetched content in seconds.
-  int32_t GetTtlInSec(JNIEnv* env) const { return ttl_in_sec_; }
+  int32_t GetTtlInSecForTesting(JNIEnv* env) const { return ttl_in_sec_; }
 
   // Returns the maximum number of allowed prefetches in cache.
-  int32_t GetMaxPrefetches(JNIEnv* env) const { return max_prefetches_; }
+  int32_t GetMaxPrefetchesForTesting(JNIEnv* env) const {
+    return max_prefetches_;
+  }
 
   // Returns the key associated with the prefetch handle inside of
   // `all_prefetches_map_`.
