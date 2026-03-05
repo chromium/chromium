@@ -1891,6 +1891,14 @@
       status: "test",
     },
     {
+      // https://crbug.com/488305665: Support :user-valid/:user-invalid for radio buttons.
+      // This lands in M147, and the flag can be removed in M149.
+      //
+      // https://drafts.csswg.org/selectors-4/#user-valid-pseudo
+      name: "CSSUserValidAndUserInvalidForRadio",
+      status: "stable",
+    },
+    {
       name: "CSSVideoDynamicRangeMediaQueries",
       status: "experimental",
     },

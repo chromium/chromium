@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/keywords.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 
 namespace blink {
@@ -291,6 +292,12 @@ void RadioInputType::RunInputActivationBehavior(
       checked_radio_button->SetChecked(true);
     }
   } else if (state.checked != GetElement().Checked()) {
+    // https://crbug.com/488305665
+    if (RuntimeEnabledFeatures::CSSUserValidAndUserInvalidForRadioEnabled() &&
+        event.isTrusted()) {
+      // This is needed in order to match :user-valid/:user-invalid
+      GetElement().SetUserHasEditedTheField();
+    }
     // https://html.spec.whatwg.org/C#radio-button-state-(type=radio):input-activation-behavior.
     //
     // The input activation behavior is to run the following steps:
