@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/ui/webui/ash/print_preview_cros/print_preview_cros_dialog.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -78,7 +79,8 @@ class PrintPreviewDialogControllerCrosTest : public BrowserWithTestWindowTest {
   ~PrintPreviewDialogControllerCrosTest() override = default;
 
   void SetUp() override {
-    dialog_controller_ = std::make_unique<PrintPreviewDialogControllerCros>();
+    dialog_controller_ =
+        base::WrapUnique(new PrintPreviewDialogControllerCros());
     BrowserWithTestWindowTest::SetUp();
   }
 

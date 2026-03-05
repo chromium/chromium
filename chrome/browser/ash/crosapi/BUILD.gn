@@ -77,7 +77,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/printing/history:print_job_info_proto",
     "//chrome/browser/ash/printing/oauth2",
     "//chrome/browser/ash/printing/print_management",
-    "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/privacy_hub",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/ash/remote_apps",
@@ -86,7 +85,6 @@ static_library("crosapi") {
     "//chrome/browser/ash/system",
     "//chrome/browser/ash/system_web_apps",
     "//chrome/browser/ash/system_web_apps/apps",
-    "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/extensions",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/media/webrtc",
@@ -227,7 +225,6 @@ static_library("crosapi") {
   ]
 
   allow_circular_includes_from = [
-    "//chrome/browser/chromeos/printing/print_preview",
     "//chrome/browser/extensions",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/ui",
@@ -348,10 +345,7 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [
-    "power_ash_apitest.cc",
-    "print_preview_ash_browsertest.cc",
-  ]
+  sources = [ "power_ash_apitest.cc" ]
 
   deps = [
     ":crosapi",
@@ -365,9 +359,7 @@ source_set("browser_tests") {
     "//chrome/browser/apps/app_service",
     "//chrome/browser/apps/app_service:app_registry_cache_waiter",
     "//chrome/browser/ash/fileapi",
-    "//chrome/browser/ash/printing/print_preview",
     "//chrome/browser/ash/system_web_apps/test_support:test_support_ui",
-    "//chrome/browser/chromeos/printing/print_preview:interfaces",
     "//chrome/browser/ui",
     "//chrome/common",
     "//chrome/test:test_support",

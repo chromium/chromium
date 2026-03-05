@@ -8,7 +8,6 @@
 
 #include "base/unguessable_token.h"
 #include "chrome/browser/chromeos/printing/print_preview/print_preview_ui_wrapper.h"
-#include "chrome/browser/chromeos/printing/print_preview/print_preview_webcontents_manager.h"
 #include "components/printing/common/print.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -23,7 +22,10 @@ namespace chromeos {
 PrintViewManagerCros::PrintViewManagerCros(content::WebContents* web_contents)
     : PrintViewManagerCrosBase(web_contents),
       content::WebContentsUserData<PrintViewManagerCros>(*web_contents),
-      token_(base::UnguessableToken::Create()) {}
+      token_(base::UnguessableToken::Create()) {
+  dialog_controller_observation_.Observe(
+      ash::PrintPreviewDialogControllerCros::GetInstance());
+}
 
 PrintViewManagerCros::~PrintViewManagerCros() {
   if (ui_wrapper_) {
@@ -60,8 +62,8 @@ void PrintViewManagerCros::ShowScriptedPrintPreview(bool source_is_modifiable) {
 
 void PrintViewManagerCros::RequestPrintPreview(
     ::printing::mojom::RequestPrintPreviewParamsPtr params) {
-  PrintPreviewWebcontentsManager::Get()->RequestPrintPreview(
-      token_, web_contents(), std::move(params));
+  ash::PrintPreviewDialogControllerCros::GetInstance()
+      ->GetOrCreatePrintPreviewDialog(token_, *params);
 }
 
 void PrintViewManagerCros::CheckForCancel(int32_t preview_ui_id,
@@ -108,8 +110,15 @@ bool PrintViewManagerCros::PrintPreviewNow(content::RenderFrameHost* rfh,
 }
 
 void PrintViewManagerCros::PrintPreviewDone() {
-  PrintPreviewWebcontentsManager::Get()->PrintPreviewDone(token_);
-  HandlePrintPreviewRemoved();
+  auto* dialog_controller =
+      ash::PrintPreviewDialogControllerCros::GetInstance();
+  if (dialog_controller->HasDialogForToken(token_)) {
+    // This synchronously triggers OnDialogClosed() on this instance,
+    // which handles the rest of the cleanup.
+    dialog_controller->OnDialogClosed(token_);
+  } else if (render_frame_host_) {
+    HandlePrintPreviewRemoved();
+  }
 }
 
 void PrintViewManagerCros::HandlePrintPreviewRemoved() {
@@ -123,6 +132,12 @@ void PrintViewManagerCros::HandlePrintPreviewRemoved() {
 
   if (ui_wrapper_) {
     ui_wrapper_->Reset();
+  }
+}
+
+void PrintViewManagerCros::OnDialogClosed(const base::UnguessableToken& token) {
+  if (token == token_ && render_frame_host_) {
+    HandlePrintPreviewRemoved();
   }
 }
 

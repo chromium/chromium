@@ -11,8 +11,6 @@ static_library("print_preview") {
   sources = [
     "print_preview_dialog_controller_cros.cc",
     "print_preview_dialog_controller_cros.h",
-    "print_preview_webcontents_adapter_ash.cc",
-    "print_preview_webcontents_adapter_ash.h",
   ]
 
   deps = [ "//components/device_event_log" ]
@@ -21,7 +19,6 @@ static_library("print_preview") {
     "//ash/public/cpp",
     "//base",
     "//chrome/browser:browser_public_dependencies",
-    "//chrome/browser/chromeos/printing/print_preview:interfaces",
     "//chrome/browser/ui/webui/ash/print_preview_cros",
     "//components/printing/common:mojo_interfaces",
     "//mojo/public/cpp/bindings",

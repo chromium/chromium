@@ -16,7 +16,6 @@
 #include "chrome/browser/ash/crosapi/document_scan_ash.h"
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
-#include "chrome/browser/ash/printing/print_preview/print_preview_webcontents_adapter_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -79,10 +78,7 @@ CrosapiAsh::CrosapiAsh()
           std::make_unique<ash::TelemetryDiagnosticsRoutineServiceAsh>()),
       telemetry_management_service_ash_(
           std::make_unique<ash::TelemetryManagementServiceAsh>()),
-      probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
-      print_preview_webcontents_adapter_ash_(
-          std::make_unique<
-              ash::printing::PrintPreviewWebcontentsAdapterAsh>()) {
+      probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()) {
   receiver_set_.set_disconnect_handler(base::BindRepeating(
       &CrosapiAsh::OnDisconnected, weak_factory_.GetWeakPtr()));
 }

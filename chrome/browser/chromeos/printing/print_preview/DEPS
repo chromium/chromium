@@ -13,7 +13,6 @@ include_rules = [
   # refactor chromeos codes in //chrome to break these dependencies; see
   # b/332804822. Whenever possible, avoid adding new //chrome dependencies to
   # this list.
-  "+chrome/browser/ash/crosapi",
   "+chrome/browser/ash/printing/print_preview",
   "+chrome/browser/printing",
   "+chrome/browser/ui/browser_commands.h",
