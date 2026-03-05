@@ -446,6 +446,7 @@ robolectric_library("junit") {
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/DeferredIMEWindowInsetApplicationCallbackTest.java",
+    "java/src/org/chromium/chrome/browser/omnibox/FuseboxSessionStateUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/GlifStrokeDrawableTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/KeyboardHideHelperUnitTest.java",
     "java/src/org/chromium/chrome/browser/omnibox/LocationBarBackgroundDrawableUnitTest.java",

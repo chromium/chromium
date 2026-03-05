@@ -14,6 +14,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.fusebox.ComposeboxQueryControllerBridge;
 import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList;
+import org.chromium.chrome.browser.omnibox.fusebox.FuseboxAttachmentModelList.FuseboxAttachmentChangeListener;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
@@ -28,6 +29,14 @@ import org.chromium.components.omnibox.OmniboxFeatures;
  */
 @NullMarked
 public class FuseboxSessionState implements UserData {
+    private final FuseboxAttachmentChangeListener mFuseboxAttachmentChangeListener =
+            new FuseboxAttachmentChangeListener() {
+                @Override
+                public void onAttachmentListChanged() {
+                    FuseboxSessionState.this.onAttachmentListChanged();
+                }
+            };
+
     /**
      * Details about the user input in the Omnibox. Retained to allow session reconstruction, for
      * example when the user switches tabs.
@@ -63,7 +72,7 @@ public class FuseboxSessionState implements UserData {
     /**
      * Returns session state for the supplied tab.
      *
-     * @param tab The tab to retrieve the session state for.
+     * @param userDataHost The tab to retrieve the session state for.
      * @return FuseboxSessionState for the supplied UserDataHost.
      */
     private static FuseboxSessionState getSessionForTab(UserDataHost userDataHost) {
@@ -183,6 +192,8 @@ public class FuseboxSessionState implements UserData {
             mFuseboxAttachmentModelList = new FuseboxAttachmentModelList();
             mFuseboxAttachmentModelList.setComposeboxQueryControllerBridge(
                     mComposeBoxQueryControllerBridge);
+            mFuseboxAttachmentModelList.addAttachmentChangeListener(
+                    mFuseboxAttachmentChangeListener);
         }
 
         if (onFullyActivated != null) onFullyActivated.run();
@@ -191,6 +202,8 @@ public class FuseboxSessionState implements UserData {
     /** Tear down session controllers. */
     private void tearDownSessionControllers() {
         if (mFuseboxAttachmentModelList != null) {
+            mFuseboxAttachmentModelList.removeAttachmentChangeListener(
+                    mFuseboxAttachmentChangeListener);
             mFuseboxAttachmentModelList.destroy();
             mFuseboxAttachmentModelList = null;
         }
@@ -201,6 +214,14 @@ public class FuseboxSessionState implements UserData {
         }
 
         mProfile = null;
+    }
+
+    private void onAttachmentListChanged() {
+        // TODO(https://crbug.com/474616308): Check if possible to combine input and attachments as
+        // FuseboxInput and remove.
+        boolean hasAttachments =
+                mFuseboxAttachmentModelList != null && !mFuseboxAttachmentModelList.isEmpty();
+        mAutocompleteInput.setHasAttachments(hasAttachments);
     }
 
     /**

@@ -1649,7 +1649,6 @@ class AutocompleteMediator
     @Override
     public void onAttachmentListChanged() {
         if (!isInInputSession()) return;
-        mAutocompleteInput.setHasAttachments(hasAttachments());
         // Re-request ZPS in the event of attachments being removed/replaced.
         onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
     }
