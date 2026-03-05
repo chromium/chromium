@@ -438,6 +438,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       base::FeatureList::IsEnabled(
           autofill::features::kYourSavedInfoBrandingInSettings));
 
+  html_source->AddBoolean(
+      "enableYourSavedInfoPolicyAndExtentionToggleIndicators",
+      base::FeatureList::IsEnabled(
+          autofill::features::
+              kYourSavedInfoPolicyAndExtentionToggleIndicators));
+
   AddSettingsPageUIHandler(std::make_unique<AboutHandler>(profile));
   AddSettingsPageUIHandler(std::make_unique<ResetSettingsHandler>(profile));
 
