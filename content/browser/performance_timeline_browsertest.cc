@@ -1010,8 +1010,14 @@ IN_PROC_BROWSER_TEST_F(LongAnimationFrameStyleDurationBrowserTest,
 
 // Test that forced layout during script execution is properly captured in
 // forcedLayoutDuration, separate from the entry's layoutDuration.
+// TODO(crbug.com/490039788): Disabled due to flakiness on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ForcedLayoutSeparation DISABLED_ForcedLayoutSeparation
+#else
+#define MAYBE_ForcedLayoutSeparation ForcedLayoutSeparation
+#endif
 IN_PROC_BROWSER_TEST_F(LongAnimationFrameStyleDurationBrowserTest,
-                       ForcedLayoutSeparation) {
+                       MAYBE_ForcedLayoutSeparation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL(
       "a.com",
