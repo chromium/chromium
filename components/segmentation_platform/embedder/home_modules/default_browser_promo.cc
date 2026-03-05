@@ -6,6 +6,7 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
@@ -17,6 +18,14 @@ namespace {
 // The maximum number of times the default browser promo card can be visible to
 // the user.
 const int kMaxDefaultBrowserCardImpressions = 3;
+
+// Impression counter for the Default Browser promo ephemeral module.
+const char kDefaultBrowserPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.default_browser_promo_counter";
+
+// Interaction counter for the Default Browser promo ephemeral module.
+const char kDefaultBrowserPromoInteractedPref[] =
+    "ephemeral_pref_interacted.default_browser_promo_interacted";
 
 const char kEducationalTipModuleHistogramName[] =
     "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
@@ -31,6 +40,12 @@ namespace segmentation_platform::home_modules {
 
 DefaultBrowserPromo::DefaultBrowserPromo(PrefService* profile_prefs)
     : CardSelectionInfo(kDefaultBrowserPromo), profile_prefs_(profile_prefs) {}
+
+// static
+void DefaultBrowserPromo::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kDefaultBrowserPromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kDefaultBrowserPromoInteractedPref, false);
+}
 
 std::map<SignalKey, FeatureQuery> DefaultBrowserPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
@@ -133,7 +148,8 @@ CardSelectionInfo::ShowResult DefaultBrowserPromo::ComputeCardResult(
   return result;
 }
 
-bool DefaultBrowserPromo::IsEnabled(int impression_count) {
+// static
+bool DefaultBrowserPromo::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -143,11 +159,28 @@ bool DefaultBrowserPromo::IsEnabled(int impression_count) {
     return true;
   }
 
+  int impression_count =
+      profile_prefs->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
+
   if (impression_count >= kMaxDefaultBrowserCardImpressions) {
     return false;
   }
 
   return true;
+}
+
+void DefaultBrowserPromo::OnShow(PrefService* profile_prefs,
+                                 PrefService* local_state) {
+  int freshness_impression_count =
+      profile_prefs->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
+
+  profile_prefs->SetInteger(kDefaultBrowserPromoImpressionCounterPref,
+                            freshness_impression_count + 1);
+}
+
+void DefaultBrowserPromo::OnInteract(PrefService* profile_prefs,
+                                     PrefService* local_state) {
+  profile_prefs->SetBoolean(kDefaultBrowserPromoInteractedPref, true);
 }
 
 }  // namespace segmentation_platform::home_modules

@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_DEFAULT_BROWSER_PROMO_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_DEFAULT_BROWSER_PROMO_H_
 
-#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace segmentation_platform::home_modules {
 
@@ -20,12 +22,17 @@ class DefaultBrowserPromo : public CardSelectionInfo {
   explicit DefaultBrowserPromo(PrefService* profile_prefs);
   ~DefaultBrowserPromo() override = default;
 
-  static bool IsEnabled(int impression_count);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // CardSelectionInfo
+  static bool IsEnabled(PrefService* profile_prefs);
+
+  // `CardSelectionInfo` overrides.
   std::map<SignalKey, FeatureQuery> GetInputs() override;
   ShowResult ComputeCardResult(
       const CardSelectionSignals& signals) const override;
+  void OnShow(PrefService* profile_prefs, PrefService* local_state) override;
+  void OnInteract(PrefService* profile_prefs,
+                  PrefService* local_state) override;
 
  private:
   raw_ptr<PrefService> profile_prefs_;

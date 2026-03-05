@@ -33,10 +33,6 @@ const char kAuxiliarySearchPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.auxiliary_search_promo_counter";
 const char kAuxiliarySearchPromoInteractedPref[] =
     "ephemeral_pref_interacted.auxiliary_search_promo_interacted";
-const char kDefaultBrowserPromoImpressionCounterPref[] =
-    "ephemeral_pref_counter.default_browser_promo_counter";
-const char kDefaultBrowserPromoInteractedPref[] =
-    "ephemeral_pref_interacted.default_browser_promo_interacted";
 const char kTabGroupPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.tab_group_promo_counter";
 const char kTabGroupPromoInteractedPref[] =
@@ -69,9 +65,7 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
   }
 
   // TODO(crbug.com/420897397): Move the forced card check out from each card.
-  int default_browser_promo_count =
-      profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
-  if (DefaultBrowserPromo::IsEnabled(default_browser_promo_count)) {
+  if (DefaultBrowserPromo::IsEnabled(profile_prefs_)) {
     all_cards_by_priority_.push_back(
         std::make_unique<DefaultBrowserPromo>(profile_prefs_));
   }
@@ -125,10 +119,9 @@ void HomeModulesCardRegistryAndroid::RegisterLocalStatePrefs(
 // static
 void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
+  DefaultBrowserPromo::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kAuxiliarySearchPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kAuxiliarySearchPromoInteractedPref, false);
-  registry->RegisterIntegerPref(kDefaultBrowserPromoImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(kDefaultBrowserPromoInteractedPref, false);
   registry->RegisterIntegerPref(kTabGroupPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kTabGroupPromoInteractedPref, false);
   registry->RegisterIntegerPref(kTabGroupSyncPromoImpressionCounterPref, 0);
@@ -154,12 +147,7 @@ void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnShow()` lifecycle hook.
-  if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
-    int freshness_impression_count =
-        profile_prefs_->GetInteger(kDefaultBrowserPromoImpressionCounterPref);
-    profile_prefs_->SetInteger(kDefaultBrowserPromoImpressionCounterPref,
-                               freshness_impression_count + 1);
-  } else if (ShouldNotifyCardShownPerSession(card_name)) {
+  if (ShouldNotifyCardShownPerSession(card_name)) {
     // Educational tip cards, except for the default browser promo card, will
     // send a notification when the card is shown once per session, rather than
     // every time it is displayed.
@@ -210,9 +198,7 @@ void HomeModulesCardRegistryAndroid::NotifyCardInteracted(
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnInteract()` lifecycle hook.
-  if (strcmp(card_name, kDefaultBrowserPromo) == 0) {
-    profile_prefs_->SetBoolean(kDefaultBrowserPromoInteractedPref, true);
-  } else if (strcmp(card_name, kTabGroupPromo) == 0) {
+  if (strcmp(card_name, kTabGroupPromo) == 0) {
     profile_prefs_->SetBoolean(kTabGroupPromoInteractedPref, true);
   } else if (strcmp(card_name, kTabGroupSyncPromo) == 0) {
     profile_prefs_->SetBoolean(kTabGroupSyncPromoInteractedPref, true);

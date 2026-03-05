@@ -20,7 +20,7 @@ class DefaultBrowserPromoTest : public testing::Test {
   ~DefaultBrowserPromoTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    DefaultBrowserPromo::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TearDown() override { Test::TearDown(); }
@@ -33,10 +33,12 @@ class DefaultBrowserPromoTest : public testing::Test {
       float defaultBrowserPromoShownCount,
       float educationalTipShownCount,
       EphemeralHomeModuleRank position) {
-    pref_service_.SetUserPref(
-        kDefaultBrowserPromoInteractedPref,
-        std::make_unique<base::Value>(hasDefaultBrowserPromoInteracted));
     auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
+
+    if (hasDefaultBrowserPromoInteracted) {
+      card->OnInteract(&pref_service_, nullptr);
+    }
+
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {defaultBrowserPromoShownCount, educationalTipShownCount,
                      hasDefaultBrowserPromoShownInOtherSurface, isUserSignedIn,
@@ -164,6 +166,24 @@ TEST_F(
                             /* defaultBrowserPromoShownCount */ 0,
                             /* educationalTipShownCount */ 1,
                             EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(DefaultBrowserPromoTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<DefaultBrowserPromo>(&pref_service_);
+
+  EXPECT_TRUE(DefaultBrowserPromo::IsEnabled(&pref_service_));
+
+  // The max impression count is 3. Loop through and show it 3 times.
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_TRUE(DefaultBrowserPromo::IsEnabled(&pref_service_));
+    card->OnShow(&pref_service_, nullptr);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(DefaultBrowserPromo::IsEnabled(&pref_service_));
 }
 
 }  // namespace segmentation_platform::home_modules

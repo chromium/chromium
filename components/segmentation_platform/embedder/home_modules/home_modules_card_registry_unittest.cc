@@ -25,6 +25,7 @@
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_ios.h"
 #elif BUILDFLAG(IS_ANDROID)
+#include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #endif
 
@@ -210,10 +211,14 @@ TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardEnabled) {
 }
 
 // Tests that the Registry won't register the DefaultBrowserPromo card when it
-// is disabled because of user's interaction history.
+// is disabled because of user's impression history.
 TEST_F(HomeModulesCardRegistryTest, TestDefaultBrowserPromoCardDisabled) {
-  profile_pref_service_.SetUserPref(kDefaultBrowserPromoImpressionCounterPref,
-                                    std::make_unique<base::Value>(4));
+  // Simulate showing the card enough times to reach its maximum limit (3).
+  auto card = std::make_unique<DefaultBrowserPromo>(&profile_pref_service_);
+  for (int i = 0; i < 3; ++i) {
+    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
+  }
+
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 
