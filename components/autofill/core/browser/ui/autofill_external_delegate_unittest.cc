@@ -330,6 +330,15 @@ class MockBrowserAutofillManager : public TestBrowserAutofillManager {
                AutofillTriggerSource),
               (override));
   MOCK_METHOD(void,
+              FillOrPreviewFields,
+              (mojom::ActionPersistence,
+               const FormData&,
+               const FieldGlobalId&,
+               const FillingPayload&,
+               AutofillTriggerSource,
+               const base::flat_set<FieldGlobalId>&),
+              (override));
+  MOCK_METHOD(void,
               FillOrPreviewField,
               (mojom::ActionPersistence,
                mojom::FieldActionType,

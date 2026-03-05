@@ -31,8 +31,10 @@ enum class FieldFillingSkipReason : uint8_t {
   kFieldTypeUnrelated = 15,
   kNoValueToFill = 16,
   kAutofilledValueDidNotChange = 17,
-  kBlockedByOtherFillingProduct = 18,
-  kMaxValue = kBlockedByOtherFillingProduct
+  // The field was blocked by either a different filling operation (which will
+  // fill it) or by another product (e.g., by AutofillAi).
+  kBlockedByOtherFillingOperationOrProduct = 18,
+  kMaxValue = kBlockedByOtherFillingOperationOrProduct,
 };
 
 std::string_view GetSkipFieldFillLogMessage(FieldFillingSkipReason skip_reason);

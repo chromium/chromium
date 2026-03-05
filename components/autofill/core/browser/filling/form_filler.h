@@ -105,7 +105,7 @@ class FormFiller {
   // `type_groups_originally_filled` denotes, in case of a refill, what groups
   // where filled in the initial filling.
   // `blocked_fields` are fields which must not be filled because another
-  // filling product of higher priority claims them.
+  // filling operation or product of higher priority claims them.
   // `filling_product` is the type of filling calling this function.
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
@@ -130,6 +130,8 @@ class FormFiller {
 
   // Given a `form`, returns a map from each field's id to the skip reason for
   // that field. See additional comments in GetFieldFillingSkipReason.
+  // `blocked_fields` are fields which must not be filled because another
+  // filling operation or product of higher priority claims them.
   // TODO(crbug.com/40227496): Keep only one of 'form' and 'form_structure'.
   // TODO(crbug.com/40281552): Make `type_groups_originally_filled` also a
   // FieldTypeSet.
@@ -140,7 +142,8 @@ class FormFiller {
                              const RefillOptions& refill_options,
                              FillingProduct filling_product,
                              AutofillTriggerSource trigger_source,
-                             const AutofillClient& client);
+                             const AutofillClient& client,
+                             base::flat_set<FieldGlobalId> blocked_fields);
 
   // Reverts the last autofill operation on `form` that affected
   // `trigger_field`. `renderer_action` denotes whether this is an actual
@@ -162,6 +165,8 @@ class FormFiller {
                           std::optional<FieldType> field_type_used);
 
   // Fills or previews the data from `filling_payload` into `form`.
+  // `blocked_fields` are fields which must not be filled because another
+  // filling operation or product of higher priority claims them.
   // TODO(crbug.com/40227071): Clean up the API.
   void FillOrPreviewForm(
       mojom::ActionPersistence action_persistence,
@@ -170,7 +175,8 @@ class FormFiller {
       FormStructure& form_structure,
       AutofillField& autofill_field,
       AutofillTriggerSource trigger_source,
-      std::optional<RefillTriggerReason> refill_trigger_reason = std::nullopt);
+      std::optional<RefillTriggerReason> refill_trigger_reason = std::nullopt,
+      const base::flat_set<FieldGlobalId>& blocked_fields = {});
 
   // Prevents any automatic refill of the operation `fill_id`. A renderer may
   // call this when a JavaScript observes the `autofill` event and may therefore

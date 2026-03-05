@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
 #define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_FORM_SECTION_SPLITTER_H_
 
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/common/unique_ids.h"
 
@@ -89,6 +90,13 @@ const AutofillField* RetargetTriggerFieldForSplittingIfNeeded(
     const AutofillField* original_trigger_field,
     SectionSplitPart split_part,
     LogManager* log_manager);
+
+// Determine which fields from a given `form_structure` should be blocked for a
+// given split_part, returning them as a set of global IDs.
+base::flat_set<FieldGlobalId> GetBlockedFieldsForSplit(
+    const FormStructure& form_structure,
+    const FieldGlobalId& trigger_field_id,
+    SectionSplitPart split_part);
 
 }  // namespace actor
 

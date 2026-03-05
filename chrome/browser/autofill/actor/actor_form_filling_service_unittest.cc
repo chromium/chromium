@@ -281,6 +281,19 @@ class TestBrowserAutofillManagerWithTestCCAM
         action_persistence, form, field_id, filling_payload, trigger_source);
   }
 
+  void FillOrPreviewFields(
+      mojom::ActionPersistence action_persistence,
+      const FormData& form,
+      const FieldGlobalId& field_id,
+      const FillingPayload& filling_payload,
+      AutofillTriggerSource trigger_source,
+      const base::flat_set<FieldGlobalId>& blocked_fields) override {
+    last_trigger_field_id_ = field_id;
+    TestBrowserAutofillManager::FillOrPreviewFields(
+        action_persistence, form, field_id, filling_payload, trigger_source,
+        blocked_fields);
+  }
+
   FieldGlobalId last_trigger_field_id() { return last_trigger_field_id_; }
 
  private:
@@ -304,6 +317,8 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
     NavigateAndCommit(GURL("about:blank"));
     client().GetPersonalDataManager().address_data_manager().AddProfile(
         GetProfile1());
+    client().GetPersonalDataManager().address_data_manager().AddProfile(
+        GetProfile2());
 
     ON_CALL(driver(), ApplyFormAction)
         .WillByDefault([&](mojom::FormActionType action_type,
@@ -367,6 +382,7 @@ class ActorFormFillingServiceTest : public ChromeRenderViewHostTestHarness {
 
   // Returns an address that is available in `AddressDataManager`.
   AutofillProfile GetProfile1() { return test::GetFullProfile(); }
+  AutofillProfile GetProfile2() { return test::GetFullProfile2(); }
 
  protected:
   base::test::ScopedFeatureList feature_list_;
@@ -552,7 +568,8 @@ TEST_F(ActorFormFillingServiceTest, ContactInformationRequestOnMixedForm) {
 }
 
 // Tests that a mixed form section (Contact Info + Address) returns only one
-// request if kAutofillActorFormFillingSplitOutContactInfo is disabled.
+// request and fills everything if kAutofillActorFormFillingSplitOutContactInfo
+// is disabled.
 TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Disabled) {
   feature_list_.InitAndDisableFeature(
       features::kAutofillActorFormFillingSplitOutContactInfo);
@@ -567,14 +584,32 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Disabled) {
                            {AddressFillRequest({form.fields()[0].global_id()})},
                            future.GetCallback());
   // Should return exactly one request (ADDRESS).
-  EXPECT_THAT(future.Get(),
-              ValueIs(ElementsAre(IsActorFormFillingRequest(
-                  ActorFormFillingRequest::RequestedData::
-                      FormFillingRequest_RequestedData_ADDRESS))));
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  EXPECT_THAT(requests, ElementsAre(IsActorFormFillingRequest(
+                            ActorFormFillingRequest::RequestedData::
+                                FormFillingRequest_RequestedData_ADDRESS)));
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Everything should be filled.
+  EXPECT_THAT(last_filled_values(),
+              IsSupersetOf(
+                  {std::pair(form.fields()[0].global_id(),
+                             GetFillValue(GetProfile1(), NAME_FULL)),
+                   std::pair(form.fields()[1].global_id(),
+                             GetFillValue(GetProfile1(), EMAIL_ADDRESS)),
+                   std::pair(form.fields()[2].global_id(),
+                             GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1)),
+                   std::pair(form.fields()[3].global_id(),
+                             GetFillValue(GetProfile1(), ADDRESS_HOME_CITY))}));
 }
 
-// Tests that a mixed form section (Contact Info + Address) returns two
-// requests.
+// Tests that a mixed form section (Contact Info + Address) returns two requests
+// and fills selectively when the section splitting feature is enabled.
 TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Enabled) {
   feature_list_.InitAndEnableFeature(
       features::kAutofillActorFormFillingSplitOutContactInfo);
@@ -589,14 +624,40 @@ TEST_F(ActorFormFillingServiceTest, MixedForm_SectionSplitting_Enabled) {
       tab(), {BillingAddressFillRequest({form.fields()[0].global_id()})},
       future.GetCallback());
   // Should return two requests: CONTACT_INFORMATION and BILLING_ADDRESS.
-  EXPECT_THAT(future.Get(),
-              ValueIs(ElementsAre(
-                  IsActorFormFillingRequest(
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+  EXPECT_THAT(
+      requests,
+      ElementsAre(IsActorFormFillingRequest(
                       ActorFormFillingRequest::RequestedData::
                           FormFillingRequest_RequestedData_CONTACT_INFORMATION),
                   IsActorFormFillingRequest(
                       ActorFormFillingRequest::RequestedData::
-                          FormFillingRequest_RequestedData_BILLING_ADDRESS))));
+                          FormFillingRequest_RequestedData_BILLING_ADDRESS)));
+
+  // Mock out the user having selected profile #2 for the contact part, and
+  // profile #1 for the address part.
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(),
+      {ActorFormFillingSelection(requests[0].suggestions[1].id),
+       ActorFormFillingSelection(requests[1].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Verify that fields were filled accordingly; Name and Email with profile
+  // #2, and the address fields with profile #1.
+  EXPECT_THAT(last_filled_values(),
+              Contains(Pair(form.fields()[0].global_id(),
+                            GetFillValue(GetProfile2(), NAME_FULL))));
+  EXPECT_THAT(last_filled_values(),
+              Contains(Pair(form.fields()[1].global_id(),
+                            GetFillValue(GetProfile2(), EMAIL_ADDRESS))));
+  EXPECT_THAT(last_filled_values(),
+              Contains(Pair(form.fields()[2].global_id(),
+                            GetFillValue(GetProfile1(), ADDRESS_HOME_LINE1))));
+  EXPECT_THAT(last_filled_values(),
+              Contains(Pair(form.fields()[3].global_id(),
+                            GetFillValue(GetProfile1(), ADDRESS_HOME_CITY))));
 }
 
 // Tests that if section splitting occurs for a CONTACT_INFORMATION type,

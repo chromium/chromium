@@ -1131,7 +1131,8 @@ AddressSuggestionGenerator::MaybeFetchRegularAddressSuggestionData(
       skip_reasons = FormFiller::GetFieldFillingSkipReasons(
           form.fields(), *form_structure, *trigger_autofill_field,
           FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
-          TriggerSourceFromSuggestionTriggerSource(trigger_source_), client);
+          TriggerSourceFromSuggestionTriggerSource(trigger_source_), client,
+          /*blocked_fields=*/{});
     }
     FieldTypeSet field_types;
     for (size_t i = 0; i < form_structure->field_count(); ++i) {

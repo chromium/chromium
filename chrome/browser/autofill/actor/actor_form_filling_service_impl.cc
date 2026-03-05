@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/extend.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/containers/to_vector.h"
 #include "base/functional/callback.h"
@@ -800,10 +801,14 @@ void ActorFormFillingServiceImpl::FillOrPreviewFormImpl(
       forms_to_fill_.insert(form_structure->global_id());
       std::visit(absl::Overload{
                      [&](const AutofillProfile& autofill_profile) {
-                       autofill_manager.FillOrPreviewForm(
+                       base::flat_set<FieldGlobalId> blocked_fields =
+                           actor::GetBlockedFieldsForSplit(
+                               *form_structure, trigger_field_id,
+                               fill_data->split_part);
+                       autofill_manager.FillOrPreviewFields(
                            action_persistence, form_structure->ToFormData(),
                            trigger_field_id, &autofill_profile,
-                           AutofillTriggerSource::kGlic);
+                           AutofillTriggerSource::kGlic, blocked_fields);
                      },
                      [&](const CreditCard& credit_card) {
                        autofill_manager.FillOrPreviewForm(

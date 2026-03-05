@@ -95,6 +95,98 @@ const AutofillField* GetTriggerFieldForAddressPart(
   return original_trigger_field;
 }
 
+struct SplitFormSectionFieldsResult {
+  base::flat_set<FieldGlobalId> contact_info_fields;
+  base::flat_set<FieldGlobalId> address_fields;
+};
+
+// Computes the set of split form fields (represented via their FieldGlobalIds)
+// for a given form section represented by `trigger_field`.
+SplitFormSectionFieldsResult SplitFormSectionFields(
+    const FormStructure& form_structure,
+    const AutofillField& trigger_field) {
+  SplitFormSectionFieldsResult result;
+  std::vector<FieldGlobalId> floating_names;
+  // Tracks whether the field processing is currently in the preceding "contact
+  // info" part or the subsequent "address" part of the form section. See the
+  // documentation on actor::SectionSplitPart for more details.
+  bool in_contact_info = true;
+
+  auto commit_floating_names = [&]() {
+    if (in_contact_info) {
+      result.contact_info_fields.insert_range(floating_names);
+    } else {
+      result.address_fields.insert_range(floating_names);
+    }
+    floating_names.clear();
+  };
+
+  // Process a field from the form, internally tracking it as either part of the
+  // contact info split or the address split. Each new input field is assumed to
+  // come after all previous fields passed to ProcessField.
+  auto process_field = [&](const AutofillField& field) {
+    const FieldGlobalId field_id = field.global_id();
+
+    if (field.Type().GetGroups().contains(FieldTypeGroup::kName)) {
+      // If we are still in the contact info part and hit a name field, it may
+      // either be in the contact info part, or it may belong to the subsequent
+      // address part (if followed directly by an address field).
+      //
+      // To handle this, name fields "float" until we decide whether they should
+      // definitely be in the contact info part or should be in an immediately
+      // following address part. See documentation on actor::SectionSplitPart
+      // for details.
+      if (in_contact_info) {
+        floating_names.push_back(field_id);
+        return;
+      }
+    }
+
+    // If we have hit an email or phone number and still have any floating
+    // names, they should bind to contact info.
+    if (in_contact_info && HasContactInfoType(field) &&
+        !floating_names.empty()) {
+      commit_floating_names();
+    }
+
+    if (field.Type().GetGroups().contains(FieldTypeGroup::kAddress)) {
+      // Switch to address part.
+      in_contact_info = false;
+
+      // Add any still-floating names to the address part.
+      if (!floating_names.empty()) {
+        commit_floating_names();
+      }
+    }
+
+    if (in_contact_info) {
+      result.contact_info_fields.insert(field_id);
+    } else {
+      result.address_fields.insert(field_id);
+    }
+  };
+
+  for (const std::unique_ptr<AutofillField>& field : form_structure.fields()) {
+    if (field->section() == trigger_field.section()) {
+      process_field(*field);
+    }
+  }
+
+  // Commit any remaining floating names. This shouldn't be necessary if
+  // ShouldSplitOutContactInfo returned true for `trigger_field`, however at
+  // the current time splitting (like suggestion generation) is decided based
+  // only on the first trigger field in possibly multiple trigger fields for a
+  // given FillRequest.
+  //
+  // TODO(crbug.com/455788947): Once we determine how to handle multiple
+  // trigger fields, remove this and replace it with a CHECK that
+  // `floating_names_` is empty, and also DCHECK that ShouldSplitContactInfo
+  // returns true for the `trigger_field`.
+  commit_floating_names();
+
+  return result;
+}
+
 }  // namespace
 
 bool ShouldSplitOutContactInfo(
@@ -164,6 +256,38 @@ const AutofillField* RetargetTriggerFieldForSplittingIfNeeded(
   }
 
   NOTREACHED();
+}
+
+base::flat_set<FieldGlobalId> GetBlockedFieldsForSplit(
+    const FormStructure& form_structure,
+    const FieldGlobalId& trigger_field_id,
+    SectionSplitPart split_part) {
+  if (split_part == SectionSplitPart::kNoSplit) {
+    return {};
+  }
+
+  const AutofillField* trigger_field =
+      form_structure.GetFieldById(trigger_field_id);
+  if (!trigger_field) {
+    return {};
+  }
+
+  SplitFormSectionFieldsResult split_fields =
+      SplitFormSectionFields(form_structure, *trigger_field);
+
+  // Because this function returns a blocklist of fields, we return the
+  // inverse set of fields for the given split part.
+  switch (split_part) {
+    case SectionSplitPart::kContactInfo:
+      // When filling contact info, block address fields.
+      return std::move(split_fields.address_fields);
+    case SectionSplitPart::kAddress:
+      // When filling address info, block contact info fields.
+      return std::move(split_fields.contact_info_fields);
+    case SectionSplitPart::kNoSplit:
+      // Handled above, to avoid parsing the form in the no-split case.
+      NOTREACHED();
+  }
 }
 
 }  // namespace autofill::actor

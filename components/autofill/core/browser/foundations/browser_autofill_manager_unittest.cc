@@ -17,6 +17,7 @@
 #include "base/base64.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -9711,6 +9712,76 @@ TEST_F(BrowserAutofillManagerOtpSuggestionsTest, OtpFilling) {
   ASSERT_EQ(1u, filled_fields.size());
   EXPECT_EQ(form.fields()[0].global_id(), filled_fields[0].global_id());
   EXPECT_EQ(otp_value, filled_fields[0].value());
+}
+
+// Tests that FillOrPreviewForm correctly passes the blocked_fields to the
+// FormFiller.
+TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_BlockedFields) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> blocked_fields = {form.fields()[1].global_id()};
+
+  // We expect ApplyFormAction to be called for only the non-blocked fields.
+  // The second field (index 1) is blocked. All other fields should be filled.
+  absl::flat_hash_map<FieldGlobalId, FieldType> expected_types = {
+      {form.fields()[0].global_id(), NAME_FIRST},
+      {form.fields()[2].global_id(), NAME_LAST},
+      {form.fields()[3].global_id(), ADDRESS_HOME_LINE1},
+      {form.fields()[4].global_id(), ADDRESS_HOME_LINE2},
+      {form.fields()[5].global_id(), ADDRESS_HOME_CITY},
+      {form.fields()[6].global_id(), ADDRESS_HOME_STATE},
+      {form.fields()[7].global_id(), ADDRESS_HOME_ZIP},
+      {form.fields()[8].global_id(), ADDRESS_HOME_COUNTRY},
+      {form.fields()[9].global_id(), PHONE_HOME_CITY_AND_NUMBER},
+      {form.fields()[10].global_id(), EMAIL_ADDRESS}};
+
+  EXPECT_CALL(autofill_driver(),
+              ApplyFormAction(mojom::FormActionType::kFill,
+                              mojom::ActionPersistence::kFill, _, _, _, _,
+                              expected_types, _))
+      .WillOnce(
+          Return(base::flat_set<FieldGlobalId>{form.fields()[0].global_id()}));
+
+  autofill_manager().FillOrPreviewFields(
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
+      &profile, AutofillTriggerSource::kPopup, blocked_fields);
+}
+
+// Tests that blocked_fields are preserved through the asynchronous credit
+// card fetch flow.
+TEST_F(BrowserAutofillManagerTest,
+       FillOrPreviewCreditCardForm_PreservesBlockedFieldsAsync) {
+  FormData form = CreateTestCreditCardFormData(/*is_https=*/true,
+                                               /*use_month_type=*/false);
+  FormsSeen({form});
+
+  CreditCard card = test::GetMaskedServerCard();
+  CreditCard full_card = test::GetFullServerCard();
+  base::flat_set<FieldGlobalId> blocked_fields = {form.fields()[1].global_id()};
+
+  // Mock FetchCreditCard to run the callback with the full card.
+  EXPECT_CALL(cc_access_manager(), FetchCreditCard(&card, _))
+      .WillOnce(base::test::RunOnceCallback<1>(full_card));
+
+  // We expect ApplyFormAction to be called with only the non-blocked fields.
+  // The second field (index 1) is blocked.
+  absl::flat_hash_map<FieldGlobalId, FieldType> expected_types = {
+      {form.fields()[0].global_id(), CREDIT_CARD_NAME_FULL},
+      {form.fields()[2].global_id(), CREDIT_CARD_EXP_MONTH},
+      {form.fields()[3].global_id(), CREDIT_CARD_EXP_4_DIGIT_YEAR}};
+
+  EXPECT_CALL(autofill_driver(),
+              ApplyFormAction(mojom::FormActionType::kFill,
+                              mojom::ActionPersistence::kFill, _, _, _, _,
+                              expected_types, _))
+      .WillOnce(
+          Return(base::flat_set<FieldGlobalId>{form.fields()[0].global_id()}));
+
+  autofill_manager().FillOrPreviewFields(
+      mojom::ActionPersistence::kFill, form, form.fields()[0].global_id(),
+      &card, AutofillTriggerSource::kPopup, blocked_fields);
 }
 
 }  // namespace

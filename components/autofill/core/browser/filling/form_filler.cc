@@ -451,19 +451,21 @@ struct FormFiller::RefillContext {
   // operation.
   RefillContext(const FillId& fill_id,
                 const AutofillField& field,
-                const AugmentedFillingPayload& filling_payload)
+                const AugmentedFillingPayload& filling_payload,
+                base::flat_set<FieldGlobalId> blocked_fields)
       : fill_id(fill_id),
         filled_field_id(field.global_id()),
         filled_field_signature(field.GetFieldSignature()),
         filled_origin(field.origin()),
-        original_fill_time(base::TimeTicks::Now()) {
+        original_fill_time(base::TimeTicks::Now()),
+        blocked_fields(std::move(blocked_fields)) {
     profile_or_credit_card = std::visit(
         absl::Overload{
             // Autofill with AI doesn't support refills.
             [](const AugmentedFillingPayload::EntityPayload&)
                 -> std::variant<CreditCard, AutofillProfile> {
               // Beware that `EntityPayload::second` holds raw_refs to
-              // AutofillFields. These references must no be stored in a
+              // AutofillFields. These references must not be stored in a
               // RefillContext because they would dangle.
               NOTREACHED();
             },
@@ -513,6 +515,14 @@ struct FormFiller::RefillContext {
   // The form filled in the first attempt for filling. Used to check whether
   // a refill should be attempted upon parsing an updated FormData.
   std::optional<FormData> filled_form;
+  // Fields that should not be re-filled because another filling operation or
+  // product of higher priority claims them.
+  //
+  // TODO(crbug.com/489280538): There are cases where the set of FieldGlobalIds
+  // can change between original fill and refill, for example if a field has
+  // been added to the form. A refill will currently fail to block those fields
+  // even if it should.
+  base::flat_set<FieldGlobalId> blocked_fields;
 };
 
 FormFiller::RefillOptions::RefillOptions() = default;
@@ -641,9 +651,10 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
                                                         is_trigger_field),
          FieldFillingSkipReason::kValuePrefilled);
 
-  // Do not fill fields that are blocked by another filling product.
+  // Do not fill fields that are blocked by another filling operation or
+  // product.
   add_if(blocked_fields.contains(field.global_id()),
-         FieldFillingSkipReason::kBlockedByOtherFillingProduct);
+         FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct);
 
   return skip_reasons;
 }
@@ -663,21 +674,23 @@ void FormFiller::Reset() {
 
 // static
 base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>>
-FormFiller::GetFieldFillingSkipReasons(base::span<const FormFieldData> fields,
-                                       const FormStructure& form_structure,
-                                       const AutofillField& trigger_field,
-                                       const RefillOptions& refill_options,
-                                       FillingProduct filling_product,
-                                       AutofillTriggerSource trigger_source,
-                                       const AutofillClient& client) {
+FormFiller::GetFieldFillingSkipReasons(
+    base::span<const FormFieldData> fields,
+    const FormStructure& form_structure,
+    const AutofillField& trigger_field,
+    const RefillOptions& refill_options,
+    FillingProduct filling_product,
+    AutofillTriggerSource trigger_source,
+    const AutofillClient& client,
+    base::flat_set<FieldGlobalId> blocked_fields) {
   // Counts the number of times a type was seen in the section to be filled.
   // This is used to limit the maximum number of fills per value.
   base::flat_map<FieldType, size_t> type_count;
   type_count.reserve(form_structure.field_count());
 
-  base::flat_set<FieldGlobalId> blocked_fields;
   if (filling_product == FillingProduct::kAddress) {
-    blocked_fields = GetFieldsFillableByAutofillAi(form_structure, client);
+    blocked_fields.insert_range(
+        GetFieldsFillableByAutofillAi(form_structure, client));
   }
 
   CHECK_EQ(fields.size(), form_structure.field_count());
@@ -857,7 +870,8 @@ void FormFiller::FillOrPreviewForm(
     FormStructure& form_structure,
     AutofillField& autofill_trigger_field,
     AutofillTriggerSource trigger_source,
-    std::optional<RefillTriggerReason> refill_trigger_reason) {
+    std::optional<RefillTriggerReason> refill_trigger_reason,
+    const base::flat_set<FieldGlobalId>& blocked_fields) {
   const AugmentedFillingPayload augmented_filling_payload =
       AugmentedFillingPayload(filling_payload, form_structure,
                               autofill_trigger_field);
@@ -898,10 +912,10 @@ void FormFiller::FillOrPreviewForm(
       !refill_trigger_reason) {
     form_structure.set_last_filling_timestamp(base::TimeTicks::Now());
     if (augmented_filling_payload.supports_refills()) {
-      SetRefillContext(
-          form_structure.global_id(),
-          std::make_unique<RefillContext>(fill_id, autofill_trigger_field,
-                                          augmented_filling_payload));
+      SetRefillContext(form_structure.global_id(),
+                       std::make_unique<RefillContext>(
+                           fill_id, autofill_trigger_field,
+                           augmented_filling_payload, blocked_fields));
     }
   }
 
@@ -926,10 +940,10 @@ void FormFiller::FillOrPreviewForm(
   // `FormFiller::GetFieldFillingSkipReasons` returns for each field a generic
   // list of reason for skipping each field.
   base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
-      GetFieldFillingSkipReasons(result_fields, form_structure,
-                                 autofill_trigger_field, refill_options,
-                                 augmented_filling_payload.filling_product(),
-                                 trigger_source, manager_->client());
+      GetFieldFillingSkipReasons(
+          result_fields, form_structure, autofill_trigger_field, refill_options,
+          augmented_filling_payload.filling_product(), trigger_source,
+          manager_->client(), blocked_fields);
 
   // This loop sets the values to fill in the `result_fields`. The
   // `result_fields` are sent to the renderer, whereas the very similar
@@ -1335,10 +1349,10 @@ void FormFiller::TriggerRefill(const FormData& form,
   autofill_metrics::LogRefillTriggerReason(refill_trigger_reason);
   std::visit(
       [&](const auto& profile_or_credit_card) {
-        FillOrPreviewForm(mojom::ActionPersistence::kFill, form,
-                          &profile_or_credit_card, *form_structure,
-                          *autofill_field, trigger_source,
-                          refill_trigger_reason);
+        FillOrPreviewForm(
+            mojom::ActionPersistence::kFill, form, &profile_or_credit_card,
+            *form_structure, *autofill_field, trigger_source,
+            refill_trigger_reason, refill_context->blocked_fields);
       },
       refill_context->profile_or_credit_card);
 }

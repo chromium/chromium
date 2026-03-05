@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/feature_list.h"
@@ -62,12 +63,15 @@
 namespace autofill {
 namespace {
 
+using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::Each;
+using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::InSequence;
+using ::testing::Matcher;
 using ::testing::MockFunction;
 using ::testing::NiceMock;
 using ::testing::Not;
@@ -133,6 +137,10 @@ MATCHER_P(AutofilledWithProfile, profile, "") {
   return arg->last_modifier() == FieldModifier::kAutofill &&
          arg->autofill_source_profile_guid() &&
          *arg->autofill_source_profile_guid() == profile.guid();
+}
+
+Matcher<FormFieldData> HasFieldId(const FieldGlobalId& id) {
+  return Property("FormFieldData::global_id", &FormFieldData::global_id, id);
 }
 
 }  // namespace
@@ -1877,6 +1885,94 @@ TEST_F(FormFillerTest, TrackFillingOriginOnEditedField) {
   EXPECT_THAT(form_structure->field(1), AutofilledWithProfile(profile));
 }
 
+// Tests that when a blocked field set is provided, fields in that set are
+// skipped.
+TEST_F(FormFillerTest, FillOrPreviewForm_WithBlockedFields) {
+  FormData form = test::GetFormData(
+      {.fields = {{.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+                  {.role = NAME_LAST, .autocomplete_attribute = "family-name"},
+                  {.role = EMAIL_ADDRESS, .autocomplete_attribute = "email"}}});
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> blocked_fields = {form.fields()[2].global_id()};
+
+  // Only the NAME_FIRST and NAME_LAST fields should reach the driver, as
+  // EMAIL_ADDRESS should be blocked.
+  EXPECT_CALL(
+      autofill_driver(),
+      ApplyFormAction(_, _,
+                      ElementsAre(HasFieldId(form.fields()[0].global_id()),
+                                  HasFieldId(form.fields()[1].global_id())),
+                      _, _, _, _, _))
+      .WillOnce(Return(std::vector<FieldGlobalId>{
+          form.fields()[0].global_id(), form.fields()[1].global_id()}));
+
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *form_structure,
+      *form_structure->field(0), AutofillTriggerSource::kPopup, std::nullopt,
+      blocked_fields);
+
+  // Verify that the skip reasons explicitly included being blocked.
+  base::flat_map<FieldGlobalId, DenseSet<FieldFillingSkipReason>> skip_reasons =
+      FormFiller::GetFieldFillingSkipReasons(
+          form.fields(), *form_structure, *form_structure->field(0),
+          FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
+          AutofillTriggerSource::kPopup, autofill_client(), blocked_fields);
+
+  EXPECT_TRUE(skip_reasons[form.fields()[0].global_id()].empty());
+  EXPECT_TRUE(skip_reasons[form.fields()[1].global_id()].empty());
+  EXPECT_THAT(
+      skip_reasons[form.fields()[2].global_id()],
+      Contains(
+          FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct));
+}
+
+// Tests that refills respect the blocked field set from the initial fill.
+TEST_F(FormFillerTest, Refill_UsesBlockedFields) {
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "given-name"},
+           {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
+  FormsSeen({form});
+  FormStructure* form_structure = GetFormStructure(form);
+
+  AutofillProfile profile = test::GetFullProfile();
+  base::flat_set<FieldGlobalId> blocked_fields = {form.fields()[1].global_id()};
+
+  // Initial fill. This will block the 'family-name' field.
+  EXPECT_CALL(autofill_driver(), ApplyFormAction)
+      .WillOnce(
+          Return(std::vector<FieldGlobalId>{form.fields()[0].global_id()}));
+  form_filler().FillOrPreviewForm(
+      mojom::ActionPersistence::kFill, form, &profile, *form_structure,
+      *form_structure->field(0), AutofillTriggerSource::kPopup, std::nullopt,
+      blocked_fields);
+
+  // Append a new field to the form, which will trigger a refill when the form
+  // is re-parsed.
+  test_api(form).Append(test::CreateTestFormField(
+      "Full Name", "full name", "", FormControlType::kInputText, "name"));
+
+  // TODO(crbug.com/489280538): Currently the refill will always fill the new
+  // field, even if it "shouldn't" (i.e., if the caller that originally set the
+  // blocked fields list would also have blocked the new field).
+  std::vector<FormFieldData> refilled_fields;
+  EXPECT_CALL(
+      autofill_driver(),
+      ApplyFormAction(_, _,
+                      ElementsAre(HasFieldId(form.fields()[0].global_id()),
+                                  HasFieldId(form.fields()[2].global_id())),
+                      _, _, _, _, _))
+      .WillOnce(Return(std::vector<FieldGlobalId>{
+          form.fields()[0].global_id(), form.fields()[2].global_id()}));
+
+  // Trigger the refill. This happens synchronously due to the use of
+  // TestFromFiller.
+  FormsSeen({form});
+}
+
 // Regression test that a field with an unrelated type doesn't cause a crash
 // (crbug.com/324811625).
 TEST_F(FormFillerTest, PreFilledCCFieldInAddressFormDoesNotCauseCrash) {
@@ -2505,7 +2601,8 @@ TEST_F(FormFillerTest, GlicFillingDoeNotSkipSomeUsuallySkippableFields) {
       FormFiller::GetFieldFillingSkipReasons(
           form.fields(), *form_structure, *form_structure->field(0),
           FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
-          AutofillTriggerSource::kPopup, autofill_client());
+          AutofillTriggerSource::kPopup, autofill_client(),
+          /*blocked_fields=*/{});
 
   ASSERT_EQ(skip_reasons[form.fields()[1].global_id()],
             DenseSet<FieldFillingSkipReason>{
@@ -2520,7 +2617,7 @@ TEST_F(FormFillerTest, GlicFillingDoeNotSkipSomeUsuallySkippableFields) {
   skip_reasons = FormFiller::GetFieldFillingSkipReasons(
       form.fields(), *form_structure, *form_structure->field(0),
       FormFiller::RefillOptions::NotRefill(), FillingProduct::kAddress,
-      AutofillTriggerSource::kGlic, autofill_client());
+      AutofillTriggerSource::kGlic, autofill_client(), /*blocked_fields=*/{});
 
   EXPECT_TRUE(skip_reasons[form.fields()[1].global_id()].empty());
   EXPECT_TRUE(skip_reasons[form.fields()[2].global_id()].empty());

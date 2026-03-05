@@ -40,8 +40,8 @@ std::string_view GetSkipFieldFillLogMessage(
       return "Skipped: No value to fill.";
     case FieldFillingSkipReason::kAutofilledValueDidNotChange:
       return "Skipped: Field already autofilled with same value.";
-    case FieldFillingSkipReason::kBlockedByOtherFillingProduct:
-      return "Skipped: Blocked by other filling product.";
+    case FieldFillingSkipReason::kBlockedByOtherFillingOperationOrProduct:
+      return "Skipped: Blocked by other filling operation or product.";
     case FieldFillingSkipReason::kNotSkipped:
       return "Fillable";
     case FieldFillingSkipReason::kUnknown:
