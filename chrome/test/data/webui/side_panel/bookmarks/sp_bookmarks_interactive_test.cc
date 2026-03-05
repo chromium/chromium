@@ -56,7 +56,8 @@ IN_PROC_BROWSER_TEST_F(SidePanelPowerBookmarksTest, Labels) {
 }
 
 using SidePanelBookmarksListTest = SidePanelBookmarksTest;
-IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, General1) {
+// TODO(crbug.com/489813344): Flaky test.
+IN_PROC_BROWSER_TEST_F(SidePanelBookmarksListTest, DISABLED_General1) {
   SidePanelBookmarksTest::RunTest(
       "side_panel/bookmarks/power_bookmarks_list_test.js",
       "runMochaSuite('General Part1');");
