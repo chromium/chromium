@@ -620,7 +620,12 @@ void PopulateChromeWebUIFrameBindersPartsDesktop(
 #endif  // BUILDFLAG(IS_MAC)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
-  if (default_browser::IsDefaultBrowserFrameworkEnabled()) {
+  auto prompt_surface = default_browser::GetDefaultBrowserPromptSurface();
+
+  if (prompt_surface == default_browser::DefaultBrowserPromptSurface::
+                            kModalDialogWithoutSettingsIllustration ||
+      prompt_surface == default_browser::DefaultBrowserPromptSurface::
+                            kModalDialogWithSettingsIllustration) {
     RegisterWebUIControllerInterfaceBinder<
         default_browser_modal::mojom::PageHandlerFactory,
         DefaultBrowserModalUI>(map);
