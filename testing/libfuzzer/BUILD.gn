@@ -180,3 +180,9 @@ source_set("confirm_fuzztest_init") {
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
 }
+
+source_set("libfuzzer_base_wrappers") {
+  testonly = true
+  public = [ "libfuzzer_base_wrappers.h" ]
+  deps = [ "//base:compiler_specific" ]
+}

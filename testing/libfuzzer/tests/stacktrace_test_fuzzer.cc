@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
 #include <stdint.h>
 
 #include <memory>
@@ -11,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_view_util.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
 
 // Tries to use a dangling pointer, triggers a UaF crash under ASAN.
 NOINLINE int TriggerUAF() {
@@ -24,9 +24,7 @@ NOINLINE int TriggerCheck() {
   CHECK(false);
 }
 
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  // SAFETY: libFuzzer and compatible fuzzing engines pass valid data.
-  auto bytes = UNSAFE_BUFFERS(base::span(data, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> bytes) {
   auto str = base::as_string_view(bytes);
 
   if (str == "uaf") {

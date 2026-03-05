@@ -107,6 +107,24 @@ create a new fuzzing test.
   }
   ```
 
+  If the tested function accepts a `base::span<const uint8_t>`, instead of
+  operating on a pointer-and-size pair, you can use a macro that provides you
+  with an argument of that type already:
+
+  ```cpp
+  #include "base/containers/span.h"
+  #include "testing/libfuzzer/libfuzzer_base_wrappers.h"
+
+  DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
+    // Put your fuzzing code here and use |data| as input.
+    return 0;
+  }
+  ```
+
+  That `base::span` can also easily be converted to a `std::string_view` or
+  `base::span<const char>` using `base::as_string_view` or `base::as_chars`,
+  making most usage of unsafe buffers and `reinterpret_cast` unnecessary.
+
 3. In `BUILD.gn` file, define a `fuzzer_test` GN target:
 
   ```python
@@ -116,6 +134,10 @@ create a new fuzzing test.
     deps = [ ... ]
   }
   ```
+
+  If you are using the `DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN` macro, be sure
+  to add `//testing/libfuzzer:libfuzzer_base_wrappers` to the `fuzzer_test`'s
+  `deps`.
 
 *** note
 **Note:** Most of the targets are small. They may perform one or a few API calls

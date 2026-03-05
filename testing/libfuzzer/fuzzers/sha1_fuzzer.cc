@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <stddef.h>
-#include <stdint.h>
-
 #include "base/hash/sha1.h"
 
+#include <stdint.h>
+
+#include "base/containers/span.h"
+#include "testing/libfuzzer/libfuzzer_base_wrappers.h"
+
 // Entry point for LibFuzzer.
-extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data_ptr, size_t size) {
-  // SAFETY: libfuzzer gives a valid pointer and size pair.
-  auto data = UNSAFE_BUFFERS(base::span(data_ptr, size));
+DEFINE_LLVM_FUZZER_TEST_ONE_INPUT_SPAN(base::span<const uint8_t> data) {
   base::SHA1Digest sha1 = base::SHA1Hash(data);
   (void)sha1;
   return 0;

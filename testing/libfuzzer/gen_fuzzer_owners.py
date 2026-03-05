@@ -99,9 +99,10 @@ def GetOwnersForFuzzer(sources):
     with open(full_source_path, 'r') as source_file_handle:
       source_content = source_file_handle.read()
 
-    if SubStringExistsIn(
-        ['FuzzOneInput', 'LLVMFuzzerTestOneInput', 'PROTO_FUZZER'],
-        source_content):
+    if SubStringExistsIn([
+        'FuzzOneInput', 'LLVMFuzzerTestOneInput', 'LLVM_FUZZER_TEST_ONE_INPUT',
+        'PROTO_FUZZER'
+    ], source_content):
       # Found the fuzzer source (and not dependency of fuzzer).
 
       # Try finding the closest OWNERS file first.

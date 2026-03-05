@@ -85,6 +85,7 @@ fuzzer_test("gfx_png_image_fuzzer") {
   sources = [ "gfx_png_image_fuzzer.cc" ]
   deps = [
     "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
     "//ui/base",
     "//ui/gfx",
   ]
@@ -358,12 +359,18 @@ fuzzer_test("angle_translator_fuzzer") {
 
 fuzzer_test("sha1_fuzzer") {
   sources = [ "sha1_fuzzer.cc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 }
 
 fuzzer_test("hash_fuzzer") {
   sources = [ "hash_fuzzer.cc" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//testing/libfuzzer:libfuzzer_base_wrappers",
+  ]
 }
 
 action("gen_javascript_parser_proto") {
