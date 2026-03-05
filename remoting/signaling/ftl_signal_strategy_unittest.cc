@@ -17,11 +17,12 @@
 #include "remoting/base/mock_oauth_token_getter.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/proto/ftl/v1/ftl_messages.pb.h"
+#include "remoting/signaling/ftl_messaging_client.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
-#include "remoting/signaling/messaging_client.h"
 #include "remoting/signaling/registration_manager.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/xmpp_constants.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -41,12 +42,10 @@ constexpr char kFakeRemoteUsername[] = "fake_remote_user@domain.com";
 constexpr char kFakeCorpUsername[] = "user@corp.google.com";
 
 MATCHER_P2(SignalingMessageMatches, to, from, "") {
-  const ftl::ChromotingMessage* ftl_message =
-      std::get_if<ftl::ChromotingMessage>(&arg);
-  if (!ftl_message || !ftl_message->has_xmpp()) {
+  if (!arg.has_xmpp()) {
     return false;
   }
-  std::string stanza = ftl_message->xmpp().stanza();
+  std::string stanza = arg.xmpp().stanza();
   // Check if it's a Jingle stanza or a plain message.
   if (stanza.find("to=\"") != std::string::npos) {
     return stanza.find("to=\"" + std::string(to) + "\"") != std::string::npos &&
@@ -94,8 +93,16 @@ std::unique_ptr<jingle_xmpp::XmlElement> CreateXmlStanza(
   return stanza;
 }
 
-class FakeMessagingClient : public MessagingClient {
+class FakeMessagingClient : public FtlMessagingClient {
  public:
+  FakeMessagingClient()
+      // static_cast is used to disambiguate which c'tor to call.
+      : FtlMessagingClient(static_cast<OAuthTokenGetter*>(nullptr),
+                           nullptr,
+                           static_cast<RegistrationManager*>(nullptr),
+                           nullptr) {}
+  ~FakeMessagingClient() override = default;
+
   base::CallbackListSubscription RegisterMessageCallback(
       const MessageCallback& callback) override {
     return callback_list_.Add(callback);
@@ -112,17 +119,13 @@ class FakeMessagingClient : public MessagingClient {
     is_receiving_messages_ = true;
   }
 
-  void StopReceivingMessages() override {
-    if (!is_receiving_messages_) {
-      return;
-    }
-  }
+  void StopReceivingMessages() override { is_receiving_messages_ = false; }
 
   bool IsReceivingMessages() const override { return is_receiving_messages_; }
 
   MOCK_METHOD(void,
               SendMessage,
-              (const SignalingAddress&, SignalingMessage&&, DoneCallback),
+              (const SignalingAddress&, ftl::ChromotingMessage&&, DoneCallback),
               (override));
 
   void OnMessage(const ftl::Id& sender_id,
@@ -419,12 +422,12 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_Success) {
       SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId),
                   SignalingMessageMatches(kFakeRemoteFtlId, kFakeLocalFtlId),
                   _))
-      .WillOnce([&](const SignalingAddress&, SignalingMessage&&,
-                    MessagingClient::DoneCallback on_done) {
+      .WillOnce([&](const SignalingAddress&, ftl::ChromotingMessage&&,
+                    FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(HttpStatus::OK());
       });
   signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
-                                SignalingMessage(std::move(jingle_message)));
+                                SignalingMessage{std::move(jingle_message)});
 }
 
 TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
@@ -444,13 +447,13 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
   EXPECT_CALL(
       *messaging_client_,
       SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId), _, _))
-      .WillOnce([](const SignalingAddress&, SignalingMessage&&,
-                   MessagingClient::DoneCallback on_done) {
+      .WillOnce([](const SignalingAddress&, ftl::ChromotingMessage&&,
+                   FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
   signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
-                                SignalingMessage(std::move(jingle_message)));
+                                SignalingMessage{std::move(jingle_message)});
 
   ASSERT_EQ(3u, state_history_.size());
   ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
@@ -478,13 +481,13 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_NetworkError) {
   EXPECT_CALL(
       *messaging_client_,
       SendMessage(Property(&SignalingAddress::id, kFakeRemoteFtlId), _, _))
-      .WillOnce([&](const SignalingAddress&, SignalingMessage&&,
-                    MessagingClient::DoneCallback on_done) {
+      .WillOnce([&](const SignalingAddress&, ftl::ChromotingMessage&&,
+                    FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
   signal_strategy_->SendMessage(SignalingAddress(kFakeRemoteFtlId),
-                                SignalingMessage(std::move(jingle_message)));
+                                SignalingMessage{std::move(jingle_message)});
 
   ASSERT_EQ(1u, received_messages_.size());
   auto& error_message = received_messages_[0];
@@ -603,15 +606,15 @@ TEST_F(FtlSignalStrategyTest, SendMessage_Success) {
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
                   SignalingMessageMatches(message_payload, ""), _))
-      .WillOnce([](const SignalingAddress&, SignalingMessage&&,
-                   MessagingClient::DoneCallback on_done) {
+      .WillOnce([](const SignalingAddress&, ftl::ChromotingMessage&&,
+                   FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(HttpStatus::OK());
       });
 
-  signal_strategy_->SendMessage(
+  signal_strategy_->SendFtlMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeRemoteUsername,
                                                   kFakeRemoteRegistrationId),
-      SignalingMessage{message});
+      std::move(message));
 }
 
 TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
@@ -628,17 +631,17 @@ TEST_F(FtlSignalStrategyTest, SendMessage_AuthError) {
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
                   _, _))
-      .WillOnce([](const SignalingAddress&, SignalingMessage&&,
-                   MessagingClient::DoneCallback on_done) {
+      .WillOnce([](const SignalingAddress&, ftl::ChromotingMessage&&,
+                   FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
 
   ftl::ChromotingMessage message;
-  signal_strategy_->SendMessage(
+  signal_strategy_->SendFtlMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeRemoteUsername,
                                                   kFakeRemoteRegistrationId),
-      SignalingMessage{message});
+      std::move(message));
 
   ASSERT_EQ(3u, state_history_.size());
   ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
@@ -666,17 +669,17 @@ TEST_F(FtlSignalStrategyTest, SendMessage_NetworkError) {
                                kFakeRemoteUsername, kFakeRemoteRegistrationId)
                                .id()),
                   _, _))
-      .WillOnce([](const SignalingAddress&, SignalingMessage&&,
-                   MessagingClient::DoneCallback on_done) {
+      .WillOnce([](const SignalingAddress&, ftl::ChromotingMessage&&,
+                   FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
 
   ftl::ChromotingMessage message;
-  signal_strategy_->SendMessage(
+  signal_strategy_->SendFtlMessage(
       SignalingAddress::CreateFtlSignalingAddress(kFakeRemoteUsername,
                                                   kFakeRemoteRegistrationId),
-      SignalingMessage{message});
+      std::move(message));
 
   ASSERT_EQ(0u, received_messages_.size());
   // Remain signed-in for non-auth related error.

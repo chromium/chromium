@@ -5,19 +5,14 @@
 #ifndef REMOTING_SIGNALING_SIGNALING_MESSAGE_H_
 #define REMOTING_SIGNALING_SIGNALING_MESSAGE_H_
 
-#include <memory>
 #include <variant>
 
-#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting {
 
-// TODO: joedow - Move ChromotingMessage out of this type and into the signal
-// strategies which use them.
-using SignalingMessage = std::variant<ftl::ChromotingMessage,
-                                      JingleMessage,
-                                      JingleMessageReply>;
+// TODO: joedow - Consolidate the JingleMessage types.
+using SignalingMessage = std::variant<JingleMessage, JingleMessageReply>;
 
 }  // namespace remoting
 

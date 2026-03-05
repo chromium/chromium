@@ -38,9 +38,9 @@ class FtlHostChangeNotificationListener : public SignalStrategy::Listener {
 
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingMessage(
+  bool OnSignalStrategyIncomingFtlMessage(
       const SignalingAddress& sender_address,
-      const SignalingMessage& message) override;
+      const ftl::ChromotingMessage& message) override;
 
  private:
   void OnHostDeleted();

@@ -34,9 +34,9 @@ class FtlEchoMessageListener : public SignalStrategy::Listener {
 
   // SignalStrategy::Listener interface.
   void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingMessage(
+  bool OnSignalStrategyIncomingFtlMessage(
       const SignalingAddress& sender_address,
-      const SignalingMessage& message) override;
+      const ftl::ChromotingMessage& message) override;
 
  private:
   CheckAccessPermissionCallback check_access_permission_callback_;

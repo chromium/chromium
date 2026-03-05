@@ -34,13 +34,10 @@ FtlEchoMessageListener::~FtlEchoMessageListener() {
 void FtlEchoMessageListener::OnSignalStrategyStateChange(
     SignalStrategy::State state) {}
 
-bool FtlEchoMessageListener::OnSignalStrategyIncomingMessage(
+bool FtlEchoMessageListener::OnSignalStrategyIncomingFtlMessage(
     const SignalingAddress& sender_address,
-    const SignalingMessage& message) {
-  const ftl::ChromotingMessage* request_message =
-      std::get_if<ftl::ChromotingMessage>(&message);
-  if (!request_message || !request_message->has_echo() ||
-      !request_message->echo().has_message()) {
+    const ftl::ChromotingMessage& message) {
+  if (!message.has_echo() || !message.echo().has_message()) {
     return false;
   }
 
@@ -57,7 +54,7 @@ bool FtlEchoMessageListener::OnSignalStrategyIncomingMessage(
     return false;
   }
 
-  std::string request_message_payload(request_message->echo().message());
+  std::string request_message_payload(message.echo().message());
   HOST_LOG << "Handling echo message: '" << request_message_payload << "'";
 
   std::string response_message_payload =
@@ -65,8 +62,7 @@ bool FtlEchoMessageListener::OnSignalStrategyIncomingMessage(
   ftl::ChromotingMessage response_message;
   response_message.mutable_echo()->set_message(response_message_payload);
 
-  signal_strategy_->SendMessage(sender_address,
-                                SignalingMessage{response_message});
+  signal_strategy_->SendFtlMessage(sender_address, std::move(response_message));
 
   return true;
 }

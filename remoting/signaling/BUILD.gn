@@ -42,7 +42,6 @@ static_library("signaling") {
     "message_channel_strategy.h",
     "message_tracker.cc",
     "message_tracker.h",
-    "messaging_client.h",
     "registration_manager.h",
     "session_config.cc",
     "session_config.h",

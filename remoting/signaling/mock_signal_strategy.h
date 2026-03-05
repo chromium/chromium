@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -30,6 +31,9 @@ class MockSignalStrategy : public SignalStrategy {
   MOCK_METHOD2(SendMessage,
                bool(const SignalingAddress& destination_address,
                     SignalingMessage&& message));
+  MOCK_METHOD2(SendFtlMessage,
+               bool(const SignalingAddress& destination_address,
+                    ftl::ChromotingMessage&& message));
 
   const SignalingAddress& GetLocalAddress() const override;
 

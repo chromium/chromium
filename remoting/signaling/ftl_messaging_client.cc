@@ -208,7 +208,7 @@ base::CallbackListSubscription FtlMessagingClient::RegisterMessageCallback(
 
 void FtlMessagingClient::SendMessage(
     const SignalingAddress& destination_address,
-    SignalingMessage&& message,
+    ftl::ChromotingMessage&& message,
     DoneCallback on_done) {
   std::string user_email;
   std::string registration_id;
@@ -217,8 +217,6 @@ void FtlMessagingClient::SendMessage(
                 << destination_address.id();
     return;
   }
-  CHECK(std::holds_alternative<ftl::ChromotingMessage>(message));
-  auto chromoting_message = std::get<ftl::ChromotingMessage>(message);
 
   auto request = std::make_unique<ftl::InboxSendRequest>();
   *request->mutable_header() = FtlServicesContext::CreateRequestHeader(
@@ -228,7 +226,7 @@ void FtlMessagingClient::SendMessage(
       FtlServicesContext::CreateIdFromString(user_email);
 
   std::string serialized_message;
-  bool succeeded = chromoting_message.SerializeToString(&serialized_message);
+  bool succeeded = message.SerializeToString(&serialized_message);
   DCHECK(succeeded);
 
   request->mutable_message()->set_message(serialized_message);

@@ -38,11 +38,11 @@ ACTION_P(RemoveListener, list) {
   list->erase(arg0);
 }
 
-SignalingMessage CreateMessageWithDirectoryState(
+ftl::ChromotingMessage CreateMessageWithDirectoryState(
     ftl::HostStatusChangeMessage_DirectoryState state) {
   ftl::ChromotingMessage message;
   message.mutable_status()->set_directory_state(state);
-  return SignalingMessage{message};
+  return message;
 }
 
 }  // namespace
@@ -96,10 +96,11 @@ TEST_F(FtlHostChangeNotificationListenerTest, ReceiveValidNotification) {
     run_loop.Quit();
   });
   bool is_handled =
-      ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_address_,
-          CreateMessageWithDirectoryState(
-              ftl::HostStatusChangeMessage_DirectoryState_DELETED));
+      ftl_host_change_notification_listener_
+          ->OnSignalStrategyIncomingFtlMessage(
+              system_sender_address_,
+              CreateMessageWithDirectoryState(
+                  ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_TRUE(is_handled);
   run_loop.Run();
 }
@@ -108,10 +109,11 @@ TEST_F(FtlHostChangeNotificationListenerTest,
        ReceiveNotificationThenDeleteObject_CallbackNotCalled) {
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
-      ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_address_,
-          CreateMessageWithDirectoryState(
-              ftl::HostStatusChangeMessage_DirectoryState_DELETED));
+      ftl_host_change_notification_listener_
+          ->OnSignalStrategyIncomingFtlMessage(
+              system_sender_address_,
+              CreateMessageWithDirectoryState(
+                  ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_TRUE(is_handled);
   ftl_host_change_notification_listener_.reset();
   base::RunLoop run_loop;
@@ -124,10 +126,11 @@ TEST_F(FtlHostChangeNotificationListenerTest,
        ReceiveNonSystemNotification_Ignored) {
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
-      ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          peer_sender_address_,
-          CreateMessageWithDirectoryState(
-              ftl::HostStatusChangeMessage_DirectoryState_DELETED));
+      ftl_host_change_notification_listener_
+          ->OnSignalStrategyIncomingFtlMessage(
+              peer_sender_address_,
+              CreateMessageWithDirectoryState(
+                  ftl::HostStatusChangeMessage_DirectoryState_DELETED));
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -138,9 +141,9 @@ TEST_F(FtlHostChangeNotificationListenerTest,
 TEST_F(FtlHostChangeNotificationListenerTest,
        ReceiveUnknownChromotingMessage_Ignored) {
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
-  bool is_handled =
-      ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_address_, SignalingMessage{ftl::ChromotingMessage()});
+  bool is_handled = ftl_host_change_notification_listener_
+                        ->OnSignalStrategyIncomingFtlMessage(
+                            system_sender_address_, ftl::ChromotingMessage());
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -152,10 +155,11 @@ TEST_F(FtlHostChangeNotificationListenerTest,
        ReceiveUnknownDirectoryState_Ignored) {
   EXPECT_CALL(mock_listener_, OnHostDeleted()).Times(0);
   bool is_handled =
-      ftl_host_change_notification_listener_->OnSignalStrategyIncomingMessage(
-          system_sender_address_,
-          CreateMessageWithDirectoryState(
-              ftl::HostStatusChangeMessage_DirectoryState_NOT_SET));
+      ftl_host_change_notification_listener_
+          ->OnSignalStrategyIncomingFtlMessage(
+              system_sender_address_,
+              CreateMessageWithDirectoryState(
+                  ftl::HostStatusChangeMessage_DirectoryState_NOT_SET));
   ASSERT_FALSE(is_handled);
   base::RunLoop run_loop;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(

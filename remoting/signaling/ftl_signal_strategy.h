@@ -17,7 +17,7 @@ class SharedURLLoaderFactory;
 namespace remoting {
 
 class FtlDeviceIdProvider;
-class MessagingClient;
+class FtlMessagingClient;
 class RegistrationManager;
 class SignalingTracker;
 class OAuthTokenGetter;
@@ -55,6 +55,8 @@ class FtlSignalStrategy : public SignalStrategy {
   void RemoveListener(Listener* listener) override;
   bool SendMessage(const SignalingAddress& destination_address,
                    SignalingMessage&& message) override;
+  bool SendFtlMessage(const SignalingAddress& destination_address,
+                      ftl::ChromotingMessage&& message) override;
   std::string GetNextId() override;
   bool IsSignInError() const override;
 
@@ -63,11 +65,11 @@ class FtlSignalStrategy : public SignalStrategy {
 
   FtlSignalStrategy(std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
                     std::unique_ptr<RegistrationManager> registration_manager,
-                    std::unique_ptr<MessagingClient> messaging_client);
+                    std::unique_ptr<FtlMessagingClient> messaging_client);
 
   void CreateCore(std::unique_ptr<OAuthTokenGetter> oauth_token_getter,
                   std::unique_ptr<RegistrationManager> registration_manager,
-                  std::unique_ptr<MessagingClient> messaging_client);
+                  std::unique_ptr<FtlMessagingClient> messaging_client);
 
   // This ensures that even if a Listener deletes the current instance during
   // OnSignalStrategyIncomingMessage(), we can delete |core_| asynchronously.

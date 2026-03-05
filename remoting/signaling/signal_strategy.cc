@@ -69,6 +69,17 @@ bool SignalStrategy::Listener::OnSignalStrategyIncomingMessage(
   return false;
 }
 
+bool SignalStrategy::Listener::OnSignalStrategyIncomingFtlMessage(
+    const SignalingAddress& sender_address,
+    const ftl::ChromotingMessage& message) {
+  return false;
+}
+
+bool SignalStrategy::SendFtlMessage(const SignalingAddress& destination_address,
+                                    ftl::ChromotingMessage&& message) {
+  return false;
+}
+
 bool SignalStrategy::IsSignInError() const {
   return false;
 }

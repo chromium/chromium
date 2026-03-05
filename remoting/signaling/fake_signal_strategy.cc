@@ -204,21 +204,6 @@ void FakeSignalStrategy::NotifyListeners(SignalingMessage message) {
   SignalingAddress from;
   SignalingAddress to;
 
-  std::optional<std::string> xml;
-  if (const auto* ftl =
-          std::get_if<ftl::ChromotingMessage>(&message_to_dispatch)) {
-    if (ftl->has_xmpp() && ftl->xmpp().has_stanza()) {
-      xml = ftl->xmpp().stanza();
-    }
-  }
-
-  if (xml) {
-    auto parsed_message = SignalStrategy::ParseStanzaXml(*xml);
-    if (parsed_message) {
-      message_to_dispatch = std::move(*parsed_message);
-    }
-  }
-
   if (const auto* jm = std::get_if<JingleMessage>(&message_to_dispatch)) {
     from = jm->from;
     to = jm->to;
