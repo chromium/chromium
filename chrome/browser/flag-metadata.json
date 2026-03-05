@@ -2380,8 +2380,8 @@
   },
   {
     "name": "disable-lens-camera",
-    "owners": [ "hujasonx@google.com" ],
-    "expiry_milestone": 130
+    "owners": [ "hujasonx@google.com", "cmyang@google.com" ],
+    "expiry_milestone": 160
   },
   {
     "name": "disable-process-reuse",
@@ -3564,8 +3564,8 @@
   },
   {
     "name": "enable-lens-in-omnibox-copied-image",
-    "owners": [ "schechter@chromium.org", "hujasonx@chromium.org" ],
-    "expiry_milestone": 125
+    "owners": [ "radunitescu@google.com", "hujasonx@chromium.org" ],
+    "expiry_milestone": 160
   },
   {
     "name": "enable-lens-overlay",
