@@ -324,9 +324,7 @@ IN_PROC_BROWSER_TEST_P(AppViewTest, FocusWebViewInAppView) {
     return !!webview_guest;
   })) << "Timeout waiting for webview focus";
 
-  content::SimulateKeyPress(embedder_web_contents,
-                            ui::DomKey::FromCharacter('F'), ui::DomCode::US_F,
-                            ui::VKEY_F, false, false, false, false);
+  content::SimulateCharTyped(embedder_web_contents, 'F');
   EXPECT_TRUE(
       content::ExecJs(webview_guest->GetGuestMainFrame(), "waitForInput();"));
 }

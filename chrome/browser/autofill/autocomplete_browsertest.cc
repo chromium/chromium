@@ -154,11 +154,7 @@ class AutocompleteTest : public InProcessBrowserTest {
     content::SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
 
     for (const char c : value) {
-      ui::DomKey key = ui::DomKey::FromCharacter(c);
-      ui::DomCode code = UsLayoutDomKeyToDomCode(key);
-      ui::KeyboardCode key_code = DomCodeToUsLayoutKeyboardCode(code);
-      content::SimulateKeyPress(web_contents(), key, code, key_code, false,
-                                false, false, false);
+      content::SimulateCharTyped(web_contents(), c);
       ASSERT_TRUE(autofill_manager()->text_field_change_waiter().Wait(1));
     }
 

@@ -14,6 +14,7 @@
 #include "components/send_tab_to_self/send_tab_to_self_model_observer.h"
 #include "components/send_tab_to_self/send_tab_to_self_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
+#include "content/public/browser/web_contents.h"
 
 namespace send_tab_to_self_helper {
 

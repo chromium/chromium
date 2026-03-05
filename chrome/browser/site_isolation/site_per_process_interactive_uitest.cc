@@ -262,16 +262,14 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessInteractiveBrowserTest,
   // Generate a few keyboard events and route them to currently focused frame.
   // We wait for replies to be sent back from the page, since keystrokes may
   // take time to propagate to the renderer's main thread.
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
-                   ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
+  content::SimulateCharTyped(web_contents, 'F');
+
   EXPECT_EQ("F", EvalJs(child, "waitForInput();"));
 
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('O'),
-                   ui::DomCode::US_O, ui::VKEY_O, false, false, false, false);
+  content::SimulateCharTyped(web_contents, 'O');
   EXPECT_EQ("FO", EvalJs(child, "waitForInput();"));
 
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('O'),
-                   ui::DomCode::US_O, ui::VKEY_O, false, false, false, false);
+  content::SimulateCharTyped(web_contents, 'O');
   EXPECT_EQ("FOO", EvalJs(child, "waitForInput();"));
 }
 

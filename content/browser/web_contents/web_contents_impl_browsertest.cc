@@ -5665,10 +5665,8 @@ IN_PROC_BROWSER_TEST_F(
                      "    resolve(true);"
                      "  });"
                      "});"));
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('A'),
-                   ui::DomCode::US_A, ui::VKEY_A, false, false, false, false);
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('B'),
-                   ui::DomCode::US_B, ui::VKEY_B, false, false, false, false);
+  SimulateCharTyped(web_contents, 'A');
+  SimulateCharTyped(web_contents, 'B');
   RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
   EXPECT_TRUE(ExecJs(web_contents,
                      "var inputElement = document.getElementById('input1');"
@@ -5732,10 +5730,8 @@ IN_PROC_BROWSER_TEST_F(
                    ->root_view_receive_additional_mouse_up_);
 
   // Type again in input element, insert text should be left to right.
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('E'),
-                   ui::DomCode::US_E, ui::VKEY_E, false, false, false, false);
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('F'),
-                   ui::DomCode::US_F, ui::VKEY_F, false, false, false, false);
+  SimulateCharTyped(web_contents, 'E');
+  SimulateCharTyped(web_contents, 'F');
   RunUntilInputProcessed(web_contents->GetRenderWidgetHostWithPageFocus());
   EXPECT_TRUE(ExecJs(web_contents,
                      "var inputElement = document.getElementById('input1');"

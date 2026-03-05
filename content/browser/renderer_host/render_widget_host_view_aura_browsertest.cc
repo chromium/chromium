@@ -278,8 +278,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraBrowserTest,
 
   auto* wc = shell()->web_contents();
   ASSERT_TRUE(ExecJs(wc, "focusSelectMenu();"));
-  SimulateKeyPress(wc, ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
-                   ui::VKEY_SPACE, false, false, false, false);
+  SimulateCharTyped(wc, ' ');
 
   // Wait until popup is opened.
   EXPECT_TRUE(base::test::RunUntil([&]() { return HasChildPopup(); }));
@@ -482,8 +481,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDevtoolsBrowserTest,
   SendCommandSync("Debugger.enable");
 
   ASSERT_TRUE(ExecJs(wc, "focusSelectMenu();"));
-  SimulateKeyPress(wc, ui::DomKey::FromCharacter(' '), ui::DomCode::SPACE,
-                   ui::VKEY_SPACE, false, false, false, false);
+  SimulateCharTyped(wc, ' ');
 
   // Wait until popup is opened.
   EXPECT_TRUE(base::test::RunUntil([&]() { return HasChildPopup(); }));

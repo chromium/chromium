@@ -5410,9 +5410,7 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest, FocusAccessibility) {
   // Now keep pressing the Tab key until focus lands on a button.
   while (content::GetFocusedAccessibilityNodeInfo(web_contents).role !=
          ax::mojom::Role::kButton) {
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('\t'),
-                              ui::DomCode::TAB, ui::VKEY_TAB, false, false,
-                              false, false);
+    content::SimulateCharTyped(web_contents, '\t');
     content::WaitForAccessibilityFocusChange();
   }
 
@@ -5448,9 +5446,7 @@ IN_PROC_BROWSER_TEST_P(WebViewAccessibilityTest,
   // state.
   while (content::GetFocusedAccessibilityNodeInfo(web_contents).role !=
          ax::mojom::Role::kTextField) {
-    content::SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('\t'),
-                              ui::DomCode::TAB, ui::VKEY_TAB, false, false,
-                              false, false);
+    content::SimulateCharTyped(web_contents, '\t');
     content::WaitForAccessibilityFocusChange();
   }
 

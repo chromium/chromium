@@ -1855,8 +1855,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     TextInputManagerValueObserver value_observer(web_contents(), "A");
     // 3) Press the "A" key to change the text input value. This should notify
     // the browser that the text input value has changed.
-    SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('A'),
-                     ui::DomCode::US_A, ui::VKEY_A, false, false, false, false);
+    SimulateCharTyped(web_contents(), 'A');
     value_observer.Wait();
 
     EXPECT_EQ(rfh_1, web_contents()->GetFocusedFrame());
@@ -1958,8 +1957,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
     TextInputManagerValueObserver value_observer(web_contents(), "A");
     // 3) Press the "A" key to change the text input value. This should notify
     // the browser that the text input value has changed.
-    SimulateKeyPress(web_contents(), ui::DomKey::FromCharacter('A'),
-                     ui::DomCode::US_A, ui::VKEY_A, false, false, false, false);
+    SimulateCharTyped(web_contents(), 'A');
     value_observer.Wait();
 
     EXPECT_EQ(rfh_subframe_a, web_contents()->GetFocusedFrame());

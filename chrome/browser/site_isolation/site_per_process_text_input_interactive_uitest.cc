@@ -405,8 +405,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   for (const auto& value : values) {
     content::TextInputManagerValueObserver observer(active_contents(), value);
-    SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
+    content::SimulateCharTyped(active_contents(), '\t');
     observer.Wait();
   }
 }
@@ -437,8 +436,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   for (const auto& value : values) {
     content::TextInputManagerValueObserver observer(active_contents(), value);
-    SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
+    content::SimulateCharTyped(active_contents(), '\t');
     observer.Wait();
   }
 
@@ -510,8 +508,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // Press tab key to focus the <input> in the first frame.
   content::TextInputManagerTypeObserver type_observer_text_a(
       active_contents(), ui::TEXT_INPUT_TYPE_TEXT);
-  SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                   ui::VKEY_TAB, false, false, false, false);
+  content::SimulateCharTyped(active_contents(), '\t');
   type_observer_text_a.Wait();
 
   std::string remove_first_iframe_script =
@@ -527,8 +524,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // Press tab to focus the <input> in the second frame.
   content::TextInputManagerTypeObserver type_observer_text_b(
       active_contents(), ui::TEXT_INPUT_TYPE_TEXT);
-  SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                   ui::VKEY_TAB, false, false, false, false);
+  content::SimulateCharTyped(active_contents(), '\t');
   type_observer_text_b.Wait();
 
   // Detach first frame and observe |TextInputState.type| resetting to
@@ -554,8 +550,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // Focus <input> in child frame and verify the |TextInputState.value|.
   content::TextInputManagerValueObserver child_set_state_observer(
       active_contents(), "child");
-  SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                   ui::VKEY_TAB, false, false, false, false);
+  content::SimulateCharTyped(active_contents(), '\t');
   child_set_state_observer.Wait();
 
   // Navigate the child frame to about:blank and verify that TextInputManager
@@ -579,8 +574,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   content::TextInputManagerTypeObserver set_state_observer(
       active_contents(), ui::TEXT_INPUT_TYPE_TEXT);
-  SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                   ui::VKEY_TAB, false, false, false, false);
+  content::SimulateCharTyped(active_contents(), '\t');
   set_state_observer.Wait();
 
   content::TextInputManagerTypeObserver reset_state_observer(
@@ -644,8 +638,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   // Focus the input and wait for state update.
   content::TextInputManagerTypeObserver observer(active_contents(),
                                                  ui::TEXT_INPUT_TYPE_TEXT);
-  SimulateKeyPress(active_contents(), ui::DomKey::TAB, ui::DomCode::TAB,
-                   ui::VKEY_TAB, false, false, false, false);
+  content::SimulateCharTyped(active_contents(), '\t');
   observer.Wait();
 
   // Now destroy the tab. We should exit without crashing.
@@ -676,8 +669,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       [&web_contents](const std::string& expected_value) {
         content::TextInputManagerValueObserver observer(web_contents,
                                                         expected_value);
-        SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
-                         ui::VKEY_TAB, false, false, false, false);
+        content::SimulateCharTyped(web_contents, '\t');
         observer.Wait();
       };
 
@@ -727,8 +719,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       [&web_contents](content::RenderWidgetHostView* view) {
         ViewTextInputTypeObserver type_observer(web_contents, view,
                                                 ui::TEXT_INPUT_TYPE_TEXT);
-        SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
-                         ui::VKEY_TAB, false, false, false, false);
+        content::SimulateCharTyped(web_contents, '\t');
         type_observer.Wait();
 
         ViewCompositionRangeChangedObserver range_observer(web_contents, view);
@@ -773,8 +764,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
 
   auto send_tab_and_wait_for_value = [&web_contents](const std::string& value) {
     content::TextInputManagerValueObserver observer(web_contents, value);
-    SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
-                     ui::VKEY_TAB, false, false, false, false);
+    content::SimulateCharTyped(web_contents, '\t');
     observer.Wait();
   };
 
@@ -782,9 +772,7 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       [&web_contents](content::RenderWidgetHostView* view, size_t count) {
         ViewTextSelectionObserver observer(web_contents, view, count);
         for (size_t i = 0; i < count; ++i) {
-          SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('E'),
-                           ui::DomCode::US_E, ui::VKEY_E, false, false, false,
-                           false);
+          content::SimulateCharTyped(web_contents, 'E');
         }
         observer.Wait();
       };
@@ -882,13 +870,10 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
       [&web_contents](content::RenderWidgetHostView* view) {
         ViewTextInputTypeObserver type_observer(web_contents, view,
                                                 ui::TEXT_INPUT_TYPE_TEXT);
-        SimulateKeyPress(web_contents, ui::DomKey::TAB, ui::DomCode::TAB,
-                         ui::VKEY_TAB, false, false, false, false);
+        content::SimulateCharTyped(web_contents, '\t');
         type_observer.Wait();
         ViewSelectionBoundsChangedObserver bounds_observer(web_contents, view);
-        SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('E'),
-                         ui::DomCode::US_E, ui::VKEY_E, false, false, false,
-                         false);
+        content::SimulateCharTyped(web_contents, 'E');
         bounds_observer.Wait();
       };
 
@@ -1188,11 +1173,11 @@ IN_PROC_BROWSER_TEST_F(SitePerProcessTextInputManagerTest,
   EXPECT_EQ(child, web_contents->GetFocusedFrame());
 
   // Generate a couple of keystrokes, which will be routed to the subframe.
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('1'),
-                   ui::DomCode::DIGIT1, ui::VKEY_1, false, false, false, false);
+  content::SimulateCharTyped(web_contents, '1');
+
   EXPECT_TRUE(ExecJs(child, "waitForInput()"));
-  SimulateKeyPress(web_contents, ui::DomKey::FromCharacter('2'),
-                   ui::DomCode::DIGIT2, ui::VKEY_2, false, false, false, false);
+  content::SimulateCharTyped(web_contents, '2');
+
   EXPECT_TRUE(ExecJs(child, "waitForInput()"));
 
   // Verify that the input field in the subframe received the keystrokes.

@@ -483,12 +483,8 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationInteractiveTest,
 
   // Change username.
   FocusUsernameField();
-  content::SimulateKeyPress(WebContents(), ui::DomKey::FromCharacter('U'),
-                            ui::DomCode::US_U, ui::VKEY_U, false, false, false,
-                            false);
-  content::SimulateKeyPress(WebContents(), ui::DomKey::FromCharacter('N'),
-                            ui::DomCode::US_N, ui::VKEY_N, false, false, false,
-                            false);
+  content::SimulateCharTyped(WebContents(), 'U');
+  content::SimulateCharTyped(WebContents(), 'N');
 
   // Submit form.
   PasswordsNavigationObserver observer(WebContents());

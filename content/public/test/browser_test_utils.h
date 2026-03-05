@@ -588,6 +588,14 @@ void SimulateKeyPress(WebContents* web_contents,
                       bool alt,
                       bool command);
 
+// Sends a key press asynchronously for the given |character|.
+// Figures out the appropriate |key|, |code|, |key_code| and |shift| modifier
+// for the US layout.
+//
+// Note: Input event to a page may not work right after a page load, see
+// `SimulateEndOfPaintHoldingOnPrimaryMainFrame` for a workaround.
+void SimulateCharTyped(WebContents* web_contents, char16_t character);
+
 // Like SimulateKeyPress(), but does not send the char (AKA keypress) event.
 // This is useful for arrow keys and other key presses that do not generate
 // characters.

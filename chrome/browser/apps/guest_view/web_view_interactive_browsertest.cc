@@ -708,9 +708,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest,
 
   // TAB back out to the embedder's input.
   next_step_listener.Reset();
-  content::SimulateKeyPress(embedder_web_contents(), ui::DomKey::TAB,
-                            ui::DomCode::TAB, ui::VKEY_TAB, false, false, false,
-                            false);
+  content::SimulateCharTyped(embedder_web_contents(), '\t');
   ASSERT_TRUE(next_step_listener.WaitUntilSatisfied());
 }
 
@@ -765,9 +763,7 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_AdvanceFocus) {
 
     SimulateRWHMouseClick(guest_rfh->GetRenderWidgetHost(),
                           blink::WebMouseEvent::Button::kLeft, 200, 20);
-    content::SimulateKeyPress(embedder_web_contents, ui::DomKey::TAB,
-                              ui::DomCode::TAB, ui::VKEY_TAB, false, false,
-                              false, false);
+    content::SimulateCharTyped(embedder_web_contents, '\t');
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
 
@@ -776,12 +772,8 @@ IN_PROC_BROWSER_TEST_F(WebViewFocusInteractiveTest, Focus_AdvanceFocus) {
     // move the focus to the next focusable element.
     ExtensionTestMessageListener listener("button1-advance-focus");
     listener.set_failure_message("TEST_FAILED");
-    content::SimulateKeyPress(embedder_web_contents, ui::DomKey::TAB,
-                              ui::DomCode::TAB, ui::VKEY_TAB, false, false,
-                              false, false);
-    content::SimulateKeyPress(embedder_web_contents, ui::DomKey::TAB,
-                              ui::DomCode::TAB, ui::VKEY_TAB, false, false,
-                              false, false);
+    content::SimulateCharTyped(embedder_web_contents, '\t');
+    content::SimulateCharTyped(embedder_web_contents, '\t');
     ASSERT_TRUE(listener.WaitUntilSatisfied());
   }
 }

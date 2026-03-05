@@ -9,8 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/password_manager/passwords_navigation_observer.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/events/keycodes/dom_us_layout_data.h"
-#include "ui/events/keycodes/keyboard_code_conversion.h"
 
 namespace {
 enum ReturnCodes {  // Possible results of the JavaScript code.
@@ -35,20 +33,8 @@ void PasswordManagerInteractiveTestBase::FillElementWithValue(
       RenderFrameHost(),
       base::StringPrintf("document.getElementById('%s').focus();",
                          element_id.c_str())));
-  for (char16_t character : value) {
-    ui::DomKey dom_key = ui::DomKey::FromCharacter(character);
-    const ui::PrintableCodeEntry* code_entry =
-        std::ranges::find_if(ui::kPrintableCodeMap,
-                             [character](const ui::PrintableCodeEntry& entry) {
-                               return entry.character[0] == character ||
-                                      entry.character[1] == character;
-                             });
-    ASSERT_TRUE(code_entry != std::end(ui::kPrintableCodeMap));
-    bool shift = code_entry->character[1] == character;
-    ui::DomCode dom_code = code_entry->dom_code;
-    content::SimulateKeyPress(WebContents(), dom_key, dom_code,
-                              ui::DomCodeToUsLayoutKeyboardCode(dom_code),
-                              false, shift, false, false);
+  for (char character : value) {
+    content::SimulateCharTyped(WebContents(), character);
   }
   // Enforce that the keystroke were processed. It's very important because
   // keystrokes aren't synchronized with JS and they take longer to process. The
@@ -149,9 +135,7 @@ void PasswordManagerInteractiveTestBase::SimulateUserDeletingFieldContent(
   ASSERT_TRUE(content::ExecJs(WebContents(), focus));
   std::string select("document.getElementById('" + field_id + "').select();");
   ASSERT_TRUE(content::ExecJs(WebContents(), select));
-  content::SimulateKeyPress(WebContents(), ui::DomKey::BACKSPACE,
-                            ui::DomCode::BACKSPACE, ui::VKEY_BACK, false, false,
-                            false, false);
+  content::SimulateCharTyped(WebContents(), '\b');
   // A test may rely on empty field value.
   WaitForElementValue(field_id, std::string());
 }
