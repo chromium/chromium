@@ -994,6 +994,8 @@ Called by update_protocol_commands_enum.py.-->
   <int value="102" label="timelineExperimentalInsights"/>
   <int value="103" label="timelineDimUnrelatedEvents"/>
   <int value="104" label="timelineAlternativeNavigation"/>
+  <int value="110" label="durableMessages"/>
+  <int value="111" label="jpegXL"/>
 </enum>
 
 <enum name="DevToolsIssueCreated">
