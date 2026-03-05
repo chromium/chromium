@@ -1145,9 +1145,10 @@ public class SettingsSearchCoordinator
                     public void onInitializeAccessibilityNodeInfo(
                             View host, AccessibilityNodeInfo info) {
                         super.onInitializeAccessibilityNodeInfo(host, info);
-                        String orgText = info.getText() == null ? "" : info.getText().toString();
                         info.setText(
-                                mActivity.getString(R.string.search_in_settings_hint, orgText));
+                                info.getText() == null
+                                        ? mActivity.getString(R.string.search_in_settings_hint)
+                                        : info.getText().toString());
                     }
                 });
     }
