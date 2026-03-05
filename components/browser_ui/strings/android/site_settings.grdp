@@ -920,6 +920,9 @@
   <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_ALLOW" desc="Primary text corresponding to the allow button in the motion sensors permission radio buttons group.">
     Sites can use motion sensors
   </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_ASK" desc="Primary text corresponding to the ask button in the motion sensors permission radio buttons group.">
+    Sites can ask to use motion sensors
+  </message>
   <message name="IDS_WEBSITE_SETTINGS_MOTION_SENSORS_BLOCK" desc="Primary text corresponding to the block button in the motion sensors permission radio buttons group.">
     Don't allow sites to use motion sensors
   </message>
@@ -935,6 +938,9 @@
   </message>
   <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ALLOW" desc="Primary text corresponding to the allow button in the motion sensors permission radio buttons group.">
     Sites can use motion and light sensors
+  </message>
+  <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ASK" desc="Primary text corresponding to the ask button in the motion sensors permission radio buttons group.">
+    Sites can ask to use motion and light sensors
   </message>
   <message name="IDS_WEBSITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCK" desc="Primary text corresponding to the block button in the motion sensors permission radio buttons group.">
     Don't allow sites to use motion or light sensors

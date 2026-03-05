@@ -19,7 +19,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 
-import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
@@ -546,9 +545,7 @@ public class ContentSettingsResources {
 
             case ContentSettingsType.SENSORS:
                 boolean extraSensorClassesEnabled =
-                        FeatureList.isNativeInitialized()
-                                && DeviceFeatureMap.isEnabled(
-                                        DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES);
+                        DeviceFeatureMap.isEnabled(DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES);
                 int sensorsPermissionTitle =
                         extraSensorClassesEnabled
                                 ? R.string.motion_and_light_sensors_permission_title
@@ -1070,12 +1067,26 @@ public class ContentSettingsResources {
      */
     public static int @Nullable [] getTriStateSettingDescriptionIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
-            int[] descriptionIDs = {
+            return new int[] {
                 R.string.website_settings_protected_content_allow,
                 R.string.website_settings_protected_content_ask,
                 R.string.website_settings_protected_content_block
             };
-            return descriptionIDs;
+        } else if (contentType == ContentSettingsType.SENSORS) {
+            if (DeviceFeatureMap.isEnabled(
+                    DeviceFeatureList.SENSORS_ALLOW_ASK_BLOCK_PERMISSION_MODEL)) {
+                return new int[] {
+                    R.string.website_settings_motion_and_light_sensors_allow,
+                    R.string.website_settings_motion_and_light_sensors_ask,
+                    R.string.website_settings_motion_and_light_sensors_block,
+                };
+            } else {
+                return new int[] {
+                    R.string.website_settings_motion_sensors_allow,
+                    R.string.website_settings_motion_sensors_ask,
+                    R.string.website_settings_motion_sensors_block,
+                };
+            }
         }
 
         assert false;
@@ -1091,10 +1102,15 @@ public class ContentSettingsResources {
      */
     public static int @Nullable [] getTriStateSettingIconIDs(int contentType) {
         if (contentType == ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER) {
-            int[] descriptionIDs = {
-                R.drawable.live_tv_24px, R.drawable.tv_24px, R.drawable.tv_off_24px
+            return new int[] {
+                R.drawable.live_tv_24px, R.drawable.tv_24px, R.drawable.tv_off_24px,
             };
-            return descriptionIDs;
+        } else if (contentType == ContentSettingsType.SENSORS) {
+            return new int[] {
+                R.drawable.settings_sensors,
+                R.drawable.settings_sensors,
+                R.drawable.sensors_off_24px
+            };
         }
 
         assert false;

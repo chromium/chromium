@@ -100,6 +100,12 @@
     <message name="IDS_MESSAGE_MISSING_MICROPHONE_CAMERA_PERMISSION_TITLE" desc="Title text shown in a prompt ui to ask whether user agrees to grant Android microphone and camera permission when a website has requested access to microphone and camera, but Chrome is missing the Android microphone and camera permission.">
       Allow 2 permissions?
     </message>
+    <message name="IDS_MOTION_AND_LIGHT_SENSORS_INFOBAR_TEXT" desc="Text requesting permission for a site to access the device's sensors">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to use your motion and light sensors
+    </message>
+    <message name="IDS_MOTION_SENSORS_INFOBAR_TEXT" desc="Text requesting permission for a site to access the device's sensors">
+      <ph name="URL">$1<ex>google.com</ex></ph> wants to use your motion sensors
+    </message>
     <message name="IDS_IDENTITY_PROVIDER_INFOBAR_TEXT" desc="Text requesting permission for a site to register itself as an Federated Identity Provider." translateable="false">
       Would you like to use your <ph name="URL">$1<ex>google.com</ex></ph> accounts to login to websites?
     </message>
@@ -117,6 +123,12 @@
   </if>
   <message name="IDS_GEOLOCATION_INFOBAR_PERMISSION_FRAGMENT" desc="Permission fragment used in the permission bubble, after 'This site wants to:' asking for permission to access the user's physical location.">
     Know your location
+  </message>
+  <message name="IDS_MOTION_AND_LIGHT_SENSORS_PERMISSION_FRAGMENT" desc="Permission fragment used in the permission bubble, after 'This site wants to:' asking for permission to access the device's sensors.">
+    Use your motion and light sensors
+  </message>
+  <message name="IDS_MOTION_SENSORS_PERMISSION_FRAGMENT" desc="Permission fragment used in the permission bubble, after 'This site wants to:' asking for permission to access the device's sensors.">
+    Use your motion sensors
   </message>
   <message name="IDS_NOTIFICATION_PERMISSIONS_FRAGMENT" desc="Permission sentence fragment to show following the prompt 'This site wants to:' in a permissions request">
     Show notifications
@@ -358,6 +370,12 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     <message name="IDS_WEB_APP_INSTALLATION_PERMISSION_CHIP" desc="Chip UI text representing a request from a website to install web apps.">
       Install web apps?
     </message>
+    <message name="IDS_MOTION_AND_LIGHT_SENSORS_PERMISSION_CHIP" desc="Button text representing a request for using motion sensors from a website. When clicked, shows a permission prompt bubble with more information. This string is displayed in a constrained space, so we do not distinguish between motion and light sensors here. The dialog hanging off of this chip will make that distinction.">
+      Use sensors?
+    </message>
+    <message name="IDS_MOTION_SENSORS_PERMISSION_CHIP" desc="Button text representing a request for using motion sensors from a website. When clicked, shows a permission prompt bubble with more information.">
+      Use motion sensors?
+    </message>
 
     <message name="IDS_AR_PERMISSION_CHIP" desc="Button text representing a request for using AR from a website. When clicked, shows a permission prompt bubble with more information.">
       Allow AR?
@@ -496,6 +514,24 @@ This will otherwise be blocked by your privacy settings. This will allow the con
     </message>
     <message name="IDS_PERMISSIONS_WEB_INSTALL_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a web app installation permission requested has been denied.">
       Install web apps not allowed
+    </message>
+    <message name="IDS_PERMISSIONS_MOTION_AND_LIGHT_SENSORS_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a motion sensors permission requested has been granted.">
+      Motion and light sensors allowed
+    </message>
+    <message name="IDS_PERMISSIONS_MOTION_AND_LIGHT_SENSORS_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a motion sensors permission requested has been granted for one time.">
+     Motion and light sensors allowed for now
+    </message>
+    <message name="IDS_PERMISSIONS_MOTION_AND_LIGHT_SENSORS_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a motion sensors permission requested has been denied.">
+     Motion and light sensors not allowed
+    </message>
+    <message name="IDS_PERMISSIONS_MOTION_SENSORS_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a motion sensors permission requested has been granted.">
+      Motion sensors allowed
+    </message>
+    <message name="IDS_PERMISSIONS_MOTION_SENSORS_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a motion sensors permission requested has been granted for one time.">
+     Motion sensors allowed for now
+    </message>
+    <message name="IDS_PERMISSIONS_MOTION_SENSORS_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT" is_accessibility_with_no_ui="true" desc="Announcement to screen readers confirming that a motion sensors permission requested has been denied.">
+     Motion sensors not allowed
     </message>
   </if>
   <if expr="is_chromeos">

@@ -2915,6 +2915,9 @@
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ALLOWED" desc="Label for the enabled option of the motion and light sensors content setting.">
     Sites can use motion and light sensors
   </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ASK" desc="Label for the ask option of the motion and light sensors content setting.">
+    Sites can ask to use motion and light sensors
+  </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCKED" desc="Label for the disabled option of the motion and light sensors content setting.">
     Don't allow sites to use motion or light sensors
   </message>
@@ -2932,6 +2935,9 @@
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED" desc="Label for the enabled option of the motion sensors content setting.">
     Sites can use motion sensors
+  </message>
+  <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ASK" desc="Label for the ask option of the motion sensors content setting.">
+    Sites can ask to use motion sensors
   </message>
   <message name="IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_BLOCKED" desc="Label for the disabled option of the motion sensors content setting.">
     Don't allow sites to use motion sensors

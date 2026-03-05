@@ -23031,6 +23031,7 @@ Called by update_net_error_codes.py.-->
   <int value="42" label="PERMISSION_LOCAL_NETWORK_ACCESS"/>
   <int value="43" label="PERMISSION_LOCAL_NETWORK"/>
   <int value="44" label="PERMISSION_LOOPBACK_NETWORK"/>
+  <int value="45" label="PERMISSION_BUBBLE_PERMISSION_SENSORS"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/permissions/permission_uma_util.h:RequestTypeForUma) -->

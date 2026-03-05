@@ -11,6 +11,7 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.components.content_settings.ContentSetting;
@@ -20,6 +21,8 @@ import org.chromium.components.content_settings.ProviderType;
 import org.chromium.components.content_settings.SessionModel;
 import org.chromium.components.location.LocationUtils;
 import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.device.DeviceFeatureList;
+import org.chromium.device.DeviceFeatureMap;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -319,6 +322,10 @@ public class WebsitePreferenceBridge {
         switch (contentSettingsType) {
             case ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER:
                 return true;
+            case ContentSettingsType.SENSORS:
+                assert FeatureList.isNativeInitialized();
+                return DeviceFeatureMap.isEnabled(
+                        DeviceFeatureList.SENSORS_ALLOW_ASK_BLOCK_PERMISSION_MODEL);
             default:
                 return false;
         }

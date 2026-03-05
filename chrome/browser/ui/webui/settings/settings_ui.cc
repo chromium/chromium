@@ -137,6 +137,7 @@
 #include "crypto/crypto_buildflags.h"
 #include "device/vr/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
@@ -355,6 +356,10 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
 #else
                           false);
 #endif
+
+  html_source->AddBoolean("sensorsAllowAskBlockPermissionModelEnabled",
+                          base::FeatureList::IsEnabled(
+                              features::kSensorsAllowAskBlockPermissionModel));
 
   html_source->AddBoolean("enableHashPrefixRealTimeLookups",
                           safe_browsing::hash_realtime_utils::

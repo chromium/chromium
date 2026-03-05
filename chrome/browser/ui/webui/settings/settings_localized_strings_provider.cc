@@ -3864,6 +3864,10 @@ void AddSiteSettingsStrings(content::WebUIDataSource* html_source,
        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
            ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ALLOWED
            : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ALLOWED},
+      {"siteSettingsSensorsAsk",
+       base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+           ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_ASK
+           : IDS_SETTINGS_SITE_SETTINGS_MOTION_SENSORS_ASK},
       {"siteSettingsSensorsBlocked",
        base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
            ? IDS_SETTINGS_SITE_SETTINGS_MOTION_AND_LIGHT_SENSORS_BLOCKED

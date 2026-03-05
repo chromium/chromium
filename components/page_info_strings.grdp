@@ -361,6 +361,12 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_POINTER_LOCK_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the pointer lock permission is in the ask state and the site can prompt the user to ask if they allow the site to lock and use the input from their mouse pointer.">
       Can ask to lock and use your mouse
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MOTION_AND_LIGHT_SENSORS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the sensors permission is in the ask state and the site can prompt the user to ask if they allow the site to use your motion and light sensors.">
+      Can ask to use your motion and light sensors
+    </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_MOTION_SENSORS_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the motion sensors permission is in the ask state and the site can prompt the user to ask if they allow the site to use your motion sensors.">
+      Can ask to use your motion sensors
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_USB_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the USB permission is in the ask state and the site can prompt the user to ask if they allow the site to connect to USB devices.">
       Can ask to connect to USB devices
     </message>

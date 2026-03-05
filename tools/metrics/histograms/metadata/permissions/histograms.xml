@@ -154,6 +154,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".Quota" summary="Quota permission"/>
   <variant name=".RegisterProtocolHandler"
       summary="registerProtocolHandler permission"/>
+  <variant name=".Sensors" summary="Sensors permission"/>
   <variant name=".SmartCard" summary="Smart card connection permission"/>
   <variant name=".StorageAccess" summary="Storage Access API permission"/>
   <variant name=".TopLevelStorageAccess"

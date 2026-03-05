@@ -20,6 +20,8 @@ namespace features {
 // The features should be documented alongside the definition of their values
 // in the .cc file.
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kGenericSensorExtraClasses);
+DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(
+    kSensorsAllowAskBlockPermissionModel);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kSerialPortConnected);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(kWebUsbBlocklist);
 DEVICE_FEATURES_EXPORT BASE_DECLARE_FEATURE(

@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory.Type;
 import org.chromium.components.permissions.PermissionsAndroidFeatureList;
+import org.chromium.device.DeviceFeatureList;
 
 /** Unit tests for {@link SettingsActivity}. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -39,6 +40,7 @@ public class SiteSettingsUnitTest {
     public void setUp() {
         FeatureOverrides.Builder overrides = FeatureOverrides.newBuilder();
         overrides.enable(PermissionsAndroidFeatureList.APPROXIMATE_GEOLOCATION_PERMISSION);
+        overrides.enable(DeviceFeatureList.GENERIC_SENSOR_EXTRA_CLASSES);
         overrides.apply();
 
         for (@Type int prefCategory = 0; prefCategory < Type.NUM_ENTRIES; prefCategory++) {

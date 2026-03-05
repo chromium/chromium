@@ -209,6 +209,7 @@ void PageInfoControllerAndroid::SetPermissionInfo(
           ContentSettingsType::LOCAL_NETWORK_ACCESS);
     }
   }
+  permissions_to_display.push_back(ContentSettingsType::SENSORS);
 
   std::map<ContentSettingsType, /*allowed*/ bool>
       user_specified_settings_to_display;

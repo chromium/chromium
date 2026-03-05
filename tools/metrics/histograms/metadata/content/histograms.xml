@@ -542,6 +542,7 @@ chromium-metrics-reviews@google.com.
         summary="Request desktop site exceptions"/>
     <variant name="safe-browsing-url-check-data"
         summary="Safe browsing url check data"/>
+    <variant name="sensors" summary="Sensors exceptions"/>
     <variant name="serial-chooser-data" summary="Serial chooser data"/>
     <variant name="site-engagement" summary="Site engagement exceptions"/>
     <variant name="sound" summary="Sound exceptions"/>

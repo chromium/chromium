@@ -61,6 +61,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/cookies/static_cookie_policy.h"
+#include "services/device/public/cpp/device_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
@@ -135,7 +136,10 @@ class MockUserModifiableProvider
 class HostContentSettingsMapTest : public testing::Test {
  public:
   HostContentSettingsMapTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    feature_list_.InitAndEnableFeature(
+        ::features::kSensorsAllowAskBlockPermissionModel);
+  }
 
   void FastForwardTime(base::TimeDelta delta) {
     task_environment_.FastForwardBy(delta);
@@ -2960,8 +2964,8 @@ TEST_F(HostContentSettingsMapTest, RecordDefaultSensorsSetting) {
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
 
-  constexpr ContentSetting kDefaultSettingsToTest[] = {CONTENT_SETTING_ALLOW,
-                                                       CONTENT_SETTING_BLOCK};
+  constexpr ContentSetting kDefaultSettingsToTest[] = {
+      CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK};
 
   for (ContentSetting setting : kDefaultSettingsToTest) {
     base::HistogramTester histogram_tester;

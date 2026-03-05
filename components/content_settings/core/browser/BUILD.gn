@@ -79,6 +79,7 @@ static_library("browser") {
       "//components/policy:generated",
       "//components/policy/core/browser",
       "//components/privacy_sandbox:privacy_sandbox_prefs",
+      "//services/device/public/cpp:device_features",
     ]
   }
 

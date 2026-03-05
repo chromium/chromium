@@ -177,6 +177,10 @@ public class PageInfoDiscoverabilityTest {
                             .value(ContentSettingsType.PROTECTED_MEDIA_IDENTIFIER, true));
             parameters.add(
                     new ParameterSet()
+                            .name("RequestType.kSensors")
+                            .value(ContentSettingsType.SENSORS, true));
+            parameters.add(
+                    new ParameterSet()
                             .name("RequestType.kStorageAccess")
                             .value(ContentSettingsType.STORAGE_ACCESS, true));
             parameters.add(

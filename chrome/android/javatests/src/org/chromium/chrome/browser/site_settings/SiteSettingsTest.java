@@ -151,6 +151,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.device.DeviceFeatureList;
 import org.chromium.device.geolocation.LocationProviderOverrider;
 import org.chromium.device.geolocation.MockLocationProvider;
 import org.chromium.media.MediaFeatures;
@@ -1983,11 +1984,26 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
+    @DisableFeatures(DeviceFeatureList.SENSORS_ALLOW_ASK_BLOCK_PERMISSION_MODEL)
     public void testOnlyExpectedPreferencesSensors() {
         testExpectedPreferences(
                 SiteSettingsCategory.Type.SENSORS,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT,
                 BINARY_RADIO_BUTTON_AND_INFO_TEXT);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @EnableFeatures(DeviceFeatureList.SENSORS_ALLOW_ASK_BLOCK_PERMISSION_MODEL)
+    public void testOnlyExpectedPreferencesSensorsAllowAskBlock() {
+        String[] sensors = new String[] {"info_text", "tri_state_toggle"};
+        setGlobalTriStateToggleForCategory(SiteSettingsCategory.Type.SENSORS, ContentSetting.ALLOW);
+        checkPreferencesForCategory(SiteSettingsCategory.Type.SENSORS, sensors);
+        setGlobalTriStateToggleForCategory(SiteSettingsCategory.Type.SENSORS, ContentSetting.ASK);
+        checkPreferencesForCategory(SiteSettingsCategory.Type.SENSORS, sensors);
+        setGlobalTriStateToggleForCategory(SiteSettingsCategory.Type.SENSORS, ContentSetting.BLOCK);
+        checkPreferencesForCategory(SiteSettingsCategory.Type.SENSORS, sensors);
     }
 
     @Test

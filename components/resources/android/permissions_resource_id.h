@@ -56,6 +56,7 @@ DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PERMISSION_COOKIE,
                     R.drawable.permission_cookie)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER,
                     R.drawable.infobar_protected_media_identifier)
+DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_SENSORS, R.drawable.settings_sensors)
 DECLARE_RESOURCE_ID(IDR_ANDROID_STORAGE_ACCESS, R.drawable.ic_storage_access_24)
 DECLARE_RESOURCE_ID(IDR_ANDROID_INFOBAR_VR_HEADSET,
                     R.drawable.gm_filled_cardboard_24)

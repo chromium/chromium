@@ -88,6 +88,9 @@ class DefaultProvider : public ObservableProvider {
 #if !BUILDFLAG(IS_IOS)
   // Migrate between LOCAL_NETWORK_ACCESS and LOCAL_NETWORK/LOOPBACK_NETWORK
   void MigrateLocalNetworkAccessDefaultValue();
+
+  // Migrate sensors default value between BLOCK and ASK.
+  void MigrateSensorsDefaultValue();
 #endif  // !BUILDFLAG(IS_IOS)
 
   // Record Histograms Metrics.

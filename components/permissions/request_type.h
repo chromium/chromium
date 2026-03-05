@@ -62,6 +62,7 @@ enum class RequestType {
 #if BUILDFLAG(IS_CHROMEOS)
   kSmartCard,
 #endif
+  kSensors,
   kStorageAccess,
   kVrSession,
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

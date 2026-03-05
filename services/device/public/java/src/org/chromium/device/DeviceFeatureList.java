@@ -22,6 +22,8 @@ import org.chromium.build.annotations.NullMarked;
 @NullMarked
 public abstract class DeviceFeatureList {
     public static final String GENERIC_SENSOR_EXTRA_CLASSES = "GenericSensorExtraClasses";
+    public static final String SENSORS_ALLOW_ASK_BLOCK_PERMISSION_MODEL =
+            "SensorsAllowAskBlockPermissionModel";
     public static final String BATTERY_STATUS_MANAGER_BROADCAST_RECEIVER_IN_BACKGROUND =
             "BatteryStatusManagerBroadcastReceiverInBackground";
     public static final String WEBAUTHN_AUTHENTICATOR_PASSWORDS_ONLY_IMMEDIATE_REQUESTS =

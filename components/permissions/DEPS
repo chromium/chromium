@@ -33,6 +33,7 @@ include_rules = [
   "+media/base/media_switches.h",
   "+media/base/android/media_drm_bridge.h",
   "+printing/buildflags/buildflags.h",
+  "+services/device/public/cpp/device_features.h",
   "+services/metrics/public/cpp",
   "+services/network/public/mojom/permissions_policy",
   "+sql",

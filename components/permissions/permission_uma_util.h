@@ -109,6 +109,7 @@ enum class RequestTypeForUma {
   PERMISSION_LOCAL_NETWORK_ACCESS = 42,
   PERMISSION_LOCAL_NETWORK = 43,
   PERMISSION_LOOPBACK_NETWORK = 44,
+  PERMISSION_SENSORS = 45,
   // NUM must be the last value in the enum.
   NUM,
 };

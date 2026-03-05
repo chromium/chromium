@@ -189,6 +189,8 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "LocalNetwork";
     case RequestTypeForUma::PERMISSION_LOOPBACK_NETWORK:
       return "LoopbackNetwork";
+    case RequestTypeForUma::PERMISSION_SENSORS:
+      return "Sensors";
 
     case RequestTypeForUma::UNKNOWN:
     case RequestTypeForUma::NUM:
@@ -658,6 +660,8 @@ std::string GetPermissionStringForUma(
       break;
     case ContentSettingsType::NOTIFICATIONS:
       return "Notifications";
+    case ContentSettingsType::SENSORS:
+      return "Sensors";
     case ContentSettingsType::MIDI_SYSEX:
       return "MidiSysEx";
     case ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER:

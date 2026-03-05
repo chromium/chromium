@@ -13,6 +13,7 @@
 #include "content/public/browser/permission_descriptor_util.h"
 #include "content/public/browser/permission_request_description.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/device/public/mojom/sensor_provider.mojom-shared.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
@@ -78,18 +79,21 @@ void FrameSensorProviderProxy::GetSensor(device::mojom::SensorType type,
     return;
   }
 
-  render_frame_host()
-      .GetBrowserContext()
-      ->GetPermissionController()
-      ->RequestPermissionFromCurrentDocument(
-          &render_frame_host(),
-          PermissionRequestDescription(
-              content::PermissionDescriptorUtil::
-                  CreatePermissionDescriptorForPermissionType(
-                      blink::PermissionType::SENSORS)),
-          base::BindOnce(
-              &FrameSensorProviderProxy::OnPermissionRequestCompleted,
-              weak_factory_.GetWeakPtr(), type, std::move(callback)));
+  auto* permission_controller =
+      render_frame_host().GetBrowserContext()->GetPermissionController();
+  auto permission_descriptor = content::PermissionDescriptorUtil::
+      CreatePermissionDescriptorForPermissionType(
+          blink::PermissionType::SENSORS);
+
+  // TODO(crbug.com/489005547): This triggers permission prompts also when a
+  // website registers an event handler for `deviceorientation` et al. events,
+  // however, only when `kSensorsAllowAskBlockPermissionModel` is enabled,
+  // because otherwise the permission is never in the `ask` state.
+  permission_controller->RequestPermissionFromCurrentDocument(
+      &render_frame_host(),
+      PermissionRequestDescription(std::move(permission_descriptor)),
+      base::BindOnce(&FrameSensorProviderProxy::OnPermissionRequestCompleted,
+                     weak_factory_.GetWeakPtr(), type, std::move(callback)));
 }
 
 void FrameSensorProviderProxy::OnPermissionRequestCompleted(

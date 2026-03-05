@@ -67,6 +67,8 @@ int GetIconIdAndroid(RequestType type) {
       return IDR_ANDROID_INFOBAR_NFC;
     case RequestType::kNotifications:
       return IDR_ANDROID_INFOBAR_NOTIFICATIONS;
+    case RequestType::kSensors:
+      return IDR_ANDROID_INFOBAR_SENSORS;
     case RequestType::kProtectedMediaIdentifier:
       return IDR_ANDROID_INFOBAR_PROTECTED_MEDIA_IDENTIFIER;
     case RequestType::kStorageAccess:
@@ -129,6 +131,8 @@ const gfx::VectorIcon& GetIconIdDesktop(RequestType type) {
 #endif
     case RequestType::kRegisterProtocolHandler:
       return vector_icons::kProtocolHandlerIcon;
+    case RequestType::kSensors:
+      return vector_icons::kSensorsChromeRefreshIcon;
 #if BUILDFLAG(IS_CHROMEOS)
     case RequestType::kSmartCard:
       return vector_icons::kSmartCardReaderIcon;
@@ -181,6 +185,8 @@ const gfx::VectorIcon& GetBlockedIconIdDesktop(RequestType type) {
       return vector_icons::kMicOffChromeRefreshIcon;
     case RequestType::kMidiSysex:
       return vector_icons::kMidiOffChromeRefreshIcon;
+    case RequestType::kSensors:
+      return vector_icons::kSensorsOffChromeRefreshIcon;
     case RequestType::kStorageAccess:
       return vector_icons::kStorageAccessOffIcon;
     case RequestType::kIdentityProvider:
@@ -240,6 +246,8 @@ std::optional<RequestType> ContentSettingsTypeToRequestTypeIfExists(
       return RequestType::kMidiSysex;
     case ContentSettingsType::NOTIFICATIONS:
       return RequestType::kNotifications;
+    case ContentSettingsType::SENSORS:
+      return RequestType::kSensors;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case ContentSettingsType::POINTER_LOCK:
       return RequestType::kPointerLock;
@@ -342,6 +350,8 @@ std::optional<ContentSettingsType> RequestTypeToContentSettingsType(
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     case RequestType::kNotifications:
       return ContentSettingsType::NOTIFICATIONS;
+    case RequestType::kSensors:
+      return ContentSettingsType::SENSORS;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case RequestType::kPointerLock:
       return ContentSettingsType::POINTER_LOCK;
@@ -385,6 +395,7 @@ bool IsConfirmationChipSupported(RequestType for_request_type) {
           RequestType::kGeolocation,
           RequestType::kCameraStream,
           RequestType::kMicStream,
+          RequestType::kSensors,
           // clang-format on
       });
   return kRequestsWithChip.contains(for_request_type);
@@ -463,6 +474,8 @@ const char* PermissionKeyForRequestType(permissions::RequestType request_type) {
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     case permissions::RequestType::kNotifications:
       return "notifications";
+    case permissions::RequestType::kSensors:
+      return "sensors";
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     case permissions::RequestType::kPointerLock:
       return "pointer_lock";

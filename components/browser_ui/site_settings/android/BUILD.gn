@@ -205,6 +205,7 @@ robolectric_library("junit") {
     "//components/permissions/android:core_java",
     "//components/safe_browsing/android:safe_browsing_java",
     "//content/public/android:content_java",
+    "//services/device/public/java:device_feature_list_java",
     "//third_party/jni_zero:jni_zero_java",
     "//third_party/junit",
     "//third_party/mockito:mockito_java",

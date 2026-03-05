@@ -265,6 +265,12 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
     case ContentSettingsType::NOTIFICATIONS:
       message_id = IDS_PAGE_INFO_STATE_TEXT_NOTIFICATIONS_ASK;
       break;
+    case ContentSettingsType::SENSORS:
+      message_id =
+          base::FeatureList::IsEnabled(features::kGenericSensorExtraClasses)
+              ? IDS_PAGE_INFO_STATE_TEXT_MOTION_AND_LIGHT_SENSORS_ASK
+              : IDS_PAGE_INFO_STATE_TEXT_MOTION_SENSORS_ASK;
+      break;
     case ContentSettingsType::MIDI_SYSEX:
       message_id = IDS_PAGE_INFO_STATE_TEXT_MIDI_SYSEX_ASK;
       break;

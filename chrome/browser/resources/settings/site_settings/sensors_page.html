@@ -5,15 +5,30 @@
   <div class="content-settings-header secondary">
     $i18n{siteSettingsSensorsDescription}
   </div>
-  <settings-category-default-radio-group
-      category="[[contentSettingsTypesEnum_.SENSORS]]"
-      allow-option-label="$i18n{siteSettingsSensorsAllowed}"
-      allow-option-icon="privacy:sensors"
-      block-option-label="$i18n{siteSettingsSensorsBlocked}"
-      block-option-sub-label=
-          "$i18n{siteSettingsSensorsBlockedSubLabel}"
-      block-option-icon="privacy:sensors-off">
-  </settings-category-default-radio-group>
+  <template is="dom-if" if="[[isSensorsAllowAskBlockPermissionModelEnabled_]]">
+    <settings-category-default-radio-group
+        category="[[contentSettingsTypesEnum_.SENSORS]]"
+        allow-option-label="$i18n{siteSettingsSensorsAllowed}"
+        allow-option-icon="privacy:sensors"
+        ask-option-label="$i18n{siteSettingsSensorsAsk}"
+        ask-option-icon="privacy:sensors"
+        block-option-label="$i18n{siteSettingsSensorsBlocked}"
+        block-option-sub-label=
+            "$i18n{siteSettingsSensorsBlockedSubLabel}"
+        block-option-icon="privacy:sensors-off">
+    </settings-category-default-radio-group>
+  </template>
+  <template is="dom-if" if="[[!isSensorsAllowAskBlockPermissionModelEnabled_]]">
+    <settings-category-default-radio-group
+        category="[[contentSettingsTypesEnum_.SENSORS]]"
+        allow-option-label="$i18n{siteSettingsSensorsAllowed}"
+        allow-option-icon="privacy:sensors"
+        block-option-label="$i18n{siteSettingsSensorsBlocked}"
+        block-option-sub-label=
+            "$i18n{siteSettingsSensorsBlockedSubLabel}"
+        block-option-icon="privacy:sensors-off">
+    </settings-category-default-radio-group>
+  </template>
   <category-setting-exceptions
       category="[[contentSettingsTypesEnum_.SENSORS]]" read-only-list
       allow-header="$i18n{siteSettingsSensorsAllowedExceptions}"

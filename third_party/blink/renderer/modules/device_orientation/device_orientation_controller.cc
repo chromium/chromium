@@ -194,23 +194,13 @@ ScriptPromise<V8PermissionState> DeviceOrientationController::RequestPermission(
           script_state);
   auto promise = resolver->Promise();
 
-  permission_service_->HasPermission(
+  permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::SENSORS),
+      LocalFrame::HasTransientUserActivation(GetWindow().GetFrame()),
       resolver->WrapCallbackInScriptScope(
           BindOnce([](ScriptPromiseResolver<V8PermissionState>* resolver,
                       mojom::blink::PermissionStatus status) {
-            switch (status) {
-              case mojom::blink::PermissionStatus::GRANTED:
-              case mojom::blink::PermissionStatus::DENIED:
-                resolver->Resolve(ToV8PermissionState(status));
-                break;
-              case mojom::blink::PermissionStatus::ASK:
-                // At the moment, this state is not reachable because there
-                // is no "ask" or "prompt" state in the Chromium
-                // permissions UI for sensors, so HasPermissionStatus() will
-                // always return GRANTED or DENIED.
-                NOTREACHED();
-            }
+            resolver->Resolve(ToV8PermissionState(status));
           })));
 
   return promise;

@@ -11,6 +11,11 @@ namespace features {
 // Enables an extra set of concrete sensors classes based on Generic Sensor API,
 // which expose previously unexposed platform features, e.g. ALS or Magnetometer
 BASE_FEATURE(kGenericSensorExtraClasses, base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables an Allow/Ask/Block set of default permissions for sensors.
+BASE_FEATURE(kSensorsAllowAskBlockPermissionModel,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Expose serial port logical connection state and dispatch connection events
 // for Bluetooth serial ports when the Bluetooth device connection state
 // changes.

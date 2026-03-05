@@ -9,6 +9,7 @@
 #include <variant>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
@@ -20,12 +21,21 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "services/device/public/cpp/device_features.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
 
 namespace permissions {
+
+namespace {
+
+bool AreGenericSensorExtraClassesEnabled() {
+  return base::FeatureList::IsEnabled(::features::kGenericSensorExtraClasses);
+}
+
+}  // namespace
 
 PermissionRequest::PermissionRequest(
     std::unique_ptr<PermissionRequestData> request_data,
@@ -122,6 +132,11 @@ PermissionRequest::GetDialogAnnotatedMessageText(
       break;
     case RequestType::kNotifications:
       message_id = IDS_NOTIFICATIONS_INFOBAR_TEXT;
+      break;
+    case RequestType::kSensors:
+      message_id = AreGenericSensorExtraClassesEnabled()
+                       ? IDS_MOTION_AND_LIGHT_SENSORS_INFOBAR_TEXT
+                       : IDS_MOTION_SENSORS_INFOBAR_TEXT;
       break;
 #if BUILDFLAG(IS_ANDROID)
     case RequestType::kProtectedMediaIdentifier:
@@ -301,6 +316,23 @@ std::optional<std::u16string> PermissionRequest::GetRequestChipText(
          IDS_PERMISSIONS_POINTER_LOCK_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
          IDS_PERMISSIONS_POINTER_LOCK_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
+       {RequestType::kSensors,
+        {AreGenericSensorExtraClassesEnabled()
+             ? IDS_MOTION_AND_LIGHT_SENSORS_PERMISSION_CHIP
+             : IDS_MOTION_SENSORS_PERMISSION_CHIP,
+         -1 /* QUIET_REQUEST not supported */,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_ALLOWED_ONCE_CONFIRMATION,
+         IDS_PERMISSIONS_PERMISSION_NOT_ALLOWED_CONFIRMATION,
+         AreGenericSensorExtraClassesEnabled()
+             ? IDS_PERMISSIONS_MOTION_AND_LIGHT_SENSORS_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT
+             : IDS_PERMISSIONS_MOTION_SENSORS_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         AreGenericSensorExtraClassesEnabled()
+             ? IDS_PERMISSIONS_MOTION_AND_LIGHT_SENSORS_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT
+             : IDS_PERMISSIONS_MOTION_SENSORS_ALLOWED_ONCE_CONFIRMATION_SCREENREADER_ANNOUNCEMENT,
+         AreGenericSensorExtraClassesEnabled()
+             ? IDS_PERMISSIONS_MOTION_AND_LIGHT_SENSORS_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT
+             : IDS_PERMISSIONS_MOTION_SENSORS_NOT_ALLOWED_CONFIRMATION_SCREENREADER_ANNOUNCEMENT}},
        {RequestType::kStorageAccess,
         {IDS_SAA_PERMISSION_CHIP, -1,
          IDS_PERMISSIONS_PERMISSION_ALLOWED_CONFIRMATION, -1,
@@ -391,6 +423,11 @@ std::u16string PermissionRequest::GetMessageTextFragment() const {
       break;
     case RequestType::kNotifications:
       message_id = IDS_NOTIFICATION_PERMISSIONS_FRAGMENT;
+      break;
+    case RequestType::kSensors:
+      message_id = AreGenericSensorExtraClassesEnabled()
+                       ? IDS_MOTION_AND_LIGHT_SENSORS_PERMISSION_FRAGMENT
+                       : IDS_MOTION_SENSORS_PERMISSION_FRAGMENT;
       break;
     case RequestType::kPointerLock:
       message_id = IDS_POINTER_LOCK_PERMISSIONS_FRAGMENT;
