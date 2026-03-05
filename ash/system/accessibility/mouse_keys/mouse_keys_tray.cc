@@ -13,27 +13,17 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
-#include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ash/system/tray/tray_container.h"
-#include "ash/system/tray/tray_utils.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
-#include "ui/color/color_id.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
-#include "ui/views/border.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/metadata/view_factory.h"
 
 namespace ash {
 
 namespace {
-
-// Arbitrary ID for the icon.
-const int kMouseKeysTrayIconID = 11;
-
 ui::ImageModel GetMouseKeysIcon() {
   return ui::ImageModel::FromVectorIcon(
       kSystemTrayMouseKeysIcon,
@@ -44,22 +34,13 @@ ui::ImageModel GetMouseKeysIcon() {
 
 MouseKeysTray::MouseKeysTray(Shelf* shelf,
                              TrayBackgroundViewCatalogName catalog_name)
-    : TrayBackgroundView(shelf, catalog_name) {
+    : ImagedTrayIcon(shelf,
+                     GetMouseKeysIcon(),
+                     l10n_util::GetStringUTF16(
+                         IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE),
+                     catalog_name) {
   SetCallback(
       base::BindRepeating(&MouseKeysTray::OnMouseKeyIconPressed, GetWeakPtr()));
-  const ui::ImageModel image = GetMouseKeysIcon();
-  const int vertical_padding = (kTrayItemSize - image.Size().height()) / 2;
-  const int horizontal_padding = (kTrayItemSize - image.Size().width()) / 2;
-
-  tray_container()->AddChildView(
-      views::Builder<views::ImageView>()
-          .SetID(kMouseKeysTrayIconID)
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_PAUSE))
-          .SetImage(image)
-          .SetBorder(views::CreateEmptyBorder(
-              gfx::Insets::VH(vertical_padding, horizontal_padding)))
-          .Build());
 
   // Observe the accessibility controller state changes to know when mouse keys
   // state is updated or when it is disabled/enabled.
@@ -131,20 +112,15 @@ void MouseKeysTray::SetMouseKeysStatusText(bool is_active) {
                       IDS_ASH_STATUS_TRAY_ACCESSIBILITY_MOUSE_KEYS_RESUME);
 
   GetViewAccessibility().SetName(tooltip_string);
-  GetIcon()->SetTooltipText(tooltip_string);
+  image_view()->SetTooltipText(tooltip_string);
 }
 
 void MouseKeysTray::OnSessionStateChanged(session_manager::SessionState state) {
-  GetIcon()->SetImage(GetMouseKeysIcon());
+  image_view()->SetImage(GetMouseKeysIcon());
 }
 
 base::WeakPtr<MouseKeysTray> MouseKeysTray::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
-}
-
-views::ImageView* MouseKeysTray::GetIcon() {
-  return static_cast<views::ImageView*>(
-      tray_container()->GetViewByID(kMouseKeysTrayIconID));
 }
 
 BEGIN_METADATA(MouseKeysTray);

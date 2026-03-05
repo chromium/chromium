@@ -7,25 +7,19 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
-#include "ash/constants/tray_background_view_catalog.h"
 #include "ash/public/cpp/session/session_observer.h"
-#include "ash/system/tray/tray_background_view.h"
-#include "base/memory/raw_ptr.h"
+#include "ash/system/tray/imaged_tray_icon.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-
-namespace views {
-class ImageView;
-}  // namespace views
 
 namespace ash {
 
 class Shelf;
 
 // A button in the tray that lets users start/stop mouse keys.
-class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
+class ASH_EXPORT MouseKeysTray : public ImagedTrayIcon,
                                  public AccessibilityObserver,
                                  public SessionObserver {
-  METADATA_HEADER(MouseKeysTray, TrayBackgroundView)
+  METADATA_HEADER(MouseKeysTray, ImagedTrayIcon)
 
  public:
   MouseKeysTray(Shelf* shelf, TrayBackgroundViewCatalogName catalog_name);
@@ -35,10 +29,9 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
 
   // TrayBackgroundView:
   void Initialize() override;
+
+  // ImagedTrayIcon:
   void HandleLocaleChange() override;
-  void HideBubbleWithView(const TrayBubbleView* bubble_view) override {}
-  void HideBubble(const TrayBubbleView* bubble_view) override {}
-  void ClickedOutsideBubble(const ui::LocatedEvent& event) override {}
   void UpdateTrayItemColor(bool is_active) override;
 
   // AccessibilityObserver:
@@ -53,8 +46,6 @@ class ASH_EXPORT MouseKeysTray : public TrayBackgroundView,
 
  private:
   friend class MouseKeysTrayTest;
-
-  views::ImageView* GetIcon();
 
   ScopedSessionObserver session_observer_{this};
 

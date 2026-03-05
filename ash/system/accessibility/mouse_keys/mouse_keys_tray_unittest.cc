@@ -56,7 +56,7 @@ class MouseKeysTrayTest : public AshTestBase {
   }
 
   // Gets the current tray image view.
-  views::ImageView* GetImageView() { return GetTray()->GetIcon(); }
+  views::ImageView* GetImageView() { return GetTray()->image_view(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
