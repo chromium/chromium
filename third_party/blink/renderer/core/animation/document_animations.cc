@@ -439,10 +439,6 @@ void DocumentAnimations::RemoveReplacedAnimations(
   }
 }
 
-void DocumentAnimations::UpdateAnimationTriggerAttachments() {
-  ExecuteTriggerAttachmentUpdates();
-}
-
 void DocumentAnimations::AddAnimationTrigger(AnimationTrigger& trigger) {
   triggers_.insert(&trigger);
 }
@@ -459,7 +455,7 @@ void DocumentAnimations::UpdateCompositorAnimationTriggers(
   }
 }
 
-void DocumentAnimations::ExecuteTriggerAttachmentUpdates() {
+void DocumentAnimations::UpdateAnimationTriggerAttachments() {
   HeapHashSet<WeakMember<CSSAnimation>> triggered_animations;
   triggered_animations.swap(triggered_animations_);
 
