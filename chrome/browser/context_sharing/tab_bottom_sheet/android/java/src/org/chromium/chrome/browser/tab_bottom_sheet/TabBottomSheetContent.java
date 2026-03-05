@@ -75,22 +75,17 @@ public class TabBottomSheetContent implements BottomSheetContent {
 
     @Override
     public float getHalfHeightRatio() {
-        return 0.4f;
+        return HeightMode.DISABLED;
     }
 
     @Override
     public float getFullHeightRatio() {
-        return HeightMode.DEFAULT;
+        return 0.7f;
     }
 
     @Override
     public String getSheetContentDescription(Context context) {
         return "";
-    }
-
-    @Override
-    public boolean skipHalfStateOnScrollingDown() {
-        return false;
     }
 
     @Override
