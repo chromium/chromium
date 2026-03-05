@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.ui.extensions.ExtensionActionContextMenuBridg
 import org.chromium.chrome.browser.ui.extensions.ExtensionActionPopupContents;
 import org.chromium.chrome.browser.ui.extensions.ExtensionsToolbarBridge;
 import org.chromium.chrome.browser.ui.toolbar.InvocationSource;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuButton;
@@ -89,6 +90,7 @@ class ExtensionActionListMediator implements Destroyable {
     private final Profile mProfile;
     private final NullableObservableSupplier<Tab> mCurrentTabSupplier;
     private final ExtensionActionListCoordinator.ActionAnchorViewProvider mActionAnchorViewProvider;
+    private final @Nullable ContextMenuPopulatorFactory mContextMenuPopulatorFactory;
 
     private final ExtensionsToolbarBridge mExtensionsToolbarBridge;
     private final ToolbarDelegate mToolbarDelegate = new ToolbarDelegate();
@@ -110,7 +112,8 @@ class ExtensionActionListMediator implements Destroyable {
             Profile profile,
             NullableObservableSupplier<Tab> currentTabSupplier,
             ExtensionActionListCoordinator.ActionAnchorViewProvider actionAnchorViewProvider,
-            ExtensionsToolbarBridge extensionsToolbarBridge) {
+            ExtensionsToolbarBridge extensionsToolbarBridge,
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         mContext = context;
         mWindowAndroid = windowAndroid;
         mModels = models;
@@ -119,6 +122,7 @@ class ExtensionActionListMediator implements Destroyable {
         mCurrentTabSupplier = currentTabSupplier;
         mActionAnchorViewProvider = actionAnchorViewProvider;
         mExtensionsToolbarBridge = extensionsToolbarBridge;
+        mContextMenuPopulatorFactory = contextMenuPopulatorFactory;
 
         mExtensionsToolbarBridge.setDelegate(mToolbarDelegate);
         mExtensionsToolbarBridge.addObserver(mToolbarObserver);
@@ -347,7 +351,13 @@ class ExtensionActionListMediator implements Destroyable {
 
         assert mActionState instanceof ActionState.Idle;
         ExtensionActionPopup popup =
-                new ExtensionActionPopup(activity, mWindowAndroid, buttonView, actionId, contents);
+                new ExtensionActionPopup(
+                        activity,
+                        mWindowAndroid,
+                        buttonView,
+                        actionId,
+                        contents,
+                        mContextMenuPopulatorFactory);
         popup.loadInitialPage();
         popup.addOnDismissListener(this::closePopup);
         mActionState = new ActionState.PopupActive(popup, actionId);

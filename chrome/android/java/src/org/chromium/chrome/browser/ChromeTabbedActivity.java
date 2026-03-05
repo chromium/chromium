@@ -115,6 +115,8 @@ import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromePhone;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChromeTablet;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager.TabModelStartupInfo;
+import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
+import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulatorFactory;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.data_sharing.DataSharingIntentUtils;
@@ -343,6 +345,7 @@ import org.chromium.components.browser_ui.util.ComposedBrowserControlsVisibility
 import org.chromium.components.browser_ui.util.FirstDrawDetector;
 import org.chromium.components.browser_ui.util.motion.MotionEventInfo;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
@@ -1332,6 +1335,12 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
             Profile profile = mTabModelProfileSupplier.get();
             NonNullObservableSupplier<Integer> archivedTabCountSupplier =
                     ArchivedTabModelOrchestrator.getForProfile(profile).getTabCountSupplier();
+            ContextMenuPopulatorFactory contextMenuPopulatorFactory =
+                    new ChromeContextMenuPopulatorFactory(
+                            /* itemDelegate= */ null,
+                            getShareDelegateSupplier(),
+                            ChromeContextMenuPopulator.ContextMenuMode.THIN_WEB_VIEW,
+                            /* customContentActions= */ Collections.emptyList());
             getToolbarManager()
                     .initializeWithNative(
                             mLayoutManager,
@@ -1341,7 +1350,8 @@ public class ChromeTabbedActivity extends ChromeActivity implements PreAttachInt
                             /* customTabsBackClickHandler= */ null,
                             archivedTabCountSupplier,
                             mTabModelNotificationDotManager.getNotificationDotObservableSupplier(),
-                            mUndoBarPopupController);
+                            mUndoBarPopupController,
+                            contextMenuPopulatorFactory);
 
             // TODO(crbug.com/40828084): Fix this assert which is tripping on unrelated
             // tests.

@@ -22,6 +22,7 @@ import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
 import org.chromium.chrome.browser.ui.browser_window.ChromeAndroidTask;
 import org.chromium.chrome.browser.ui.extensions.ExtensionUi;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -49,7 +50,8 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider,
-            ViewGroup rootView) {
+            ViewGroup rootView,
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         // Check if the extension UI is enabled first.
         if (!ExtensionUi.isEnabled(profile)) {
             return null;
@@ -69,7 +71,8 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
                 currentTabSupplier,
                 tabCreator,
                 themeColorProvider,
-                rootView);
+                rootView,
+                contextMenuPopulatorFactory);
         return coordinator;
     }
 
@@ -89,7 +92,8 @@ public interface ExtensionToolbarCoordinator extends Destroyable {
             NullableObservableSupplier<Tab> currentTabSupplier,
             TabCreator tabCreator,
             ThemeColorProvider themeColorProvider,
-            ViewGroup rootView);
+            ViewGroup rootView,
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory);
 
     /**
      * Dispatches the key event to trigger the corresponding extension action if any.

@@ -207,6 +207,7 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler;
 import org.chromium.components.browser_ui.widget.gesture.BackPressHandler.BackPressResult;
 import org.chromium.components.browser_ui.widget.scrim.ScrimManager;
+import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
@@ -2318,6 +2319,7 @@ public class ToolbarManager
      * @param tabModelNotificationDotSupplier Supplies whether the tab switcher button should show a
      *     notification dot.
      * @param undoBarThrottle For suppressing the undo bar.
+     * @param contextMenuPopulatorFactory The {@link ContextMenuPopulatorFactory} to use.
      */
     public void initializeWithNative(
             LayoutManagerImpl layoutManager,
@@ -2327,7 +2329,8 @@ public class ToolbarManager
             @Nullable OnClickListener customTabsBackClickHandler,
             @Nullable NonNullObservableSupplier<Integer> archivedTabCountSupplier,
             NonNullObservableSupplier<TabModelDotInfo> tabModelNotificationDotSupplier,
-            @Nullable UndoBarThrottle undoBarThrottle) {
+            @Nullable UndoBarThrottle undoBarThrottle,
+            @Nullable ContextMenuPopulatorFactory contextMenuPopulatorFactory) {
         TraceEvent.begin("ToolbarManager.initializeWithNative");
         assert !mInitializedWithNative;
         assert mTabModelSelectorSupplier.get() != null;
@@ -2357,7 +2360,8 @@ public class ToolbarManager
                                 mActivityTabProvider.asObservable(),
                                 mTabCreatorManager.getTabCreator(false),
                                 getBrowsingModeThemeColorProvider(),
-                                (ToolbarTablet) mToolbarLayout);
+                                (ToolbarTablet) mToolbarLayout,
+                                contextMenuPopulatorFactory);
                 if (mExtensionToolbarCoordinator != null) {
                     mToolbar.setExtensionToolbarCoordinator(mExtensionToolbarCoordinator);
                 }
