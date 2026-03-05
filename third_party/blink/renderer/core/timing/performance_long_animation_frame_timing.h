@@ -51,6 +51,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   }
   DOMHighResTimeStamp blockingDuration() const { return blocking_duration_; }
   DOMHighResTimeStamp styleDuration() const { return style_duration_; }
+  DOMHighResTimeStamp layoutDuration() const { return layout_duration_; }
 
   const PerformanceScriptVector& scripts() const { return scripts_; }
 
@@ -62,6 +63,7 @@ class PerformanceLongAnimationFrameTiming final : public PerformanceEntry {
   DOMHighResTimeStamp first_ui_event_timestamp_;
   double blocking_duration_;
   double style_duration_;
+  double layout_duration_;
   PerformanceScriptVector scripts_;
 };
 

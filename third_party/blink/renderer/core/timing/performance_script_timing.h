@@ -40,6 +40,7 @@ class PerformanceScriptTiming final : public PerformanceEntry {
   DOMHighResTimeStamp executionStart() const { return execution_start_; }
   DOMHighResTimeStamp forcedStyleAndLayoutDuration() const;
   DOMHighResTimeStamp forcedStyleDuration() const;
+  DOMHighResTimeStamp forcedLayoutDuration() const;
   DOMHighResTimeStamp pauseDuration() const;
   LocalDOMWindow* window() const;
   String sourceURL() const;

@@ -3497,8 +3497,9 @@
       status: "test",
     },
     {
-      // Add styleDuration to PerformanceLongAnimationFrameTiming and
-      // forcedStyleDuration to PerformanceScriptTiming
+      // Add styleDuration and layoutDuration to
+      // PerformanceLongAnimationFrameTiming and forcedStyleDuration and
+      // forcedLayoutDuration to PerformanceScriptTiming
       name: "LongAnimationFrameStyleDuration",
       status: "experimental",
     },

@@ -3834,22 +3834,32 @@ void StyleEngine::UpdateStyleAndLayoutTreeForSizeContainer(
   NthIndexCache nth_index_cache(GetDocument());
 
   UpdateViewportSize();
-  RecalcStyleForSizeContainer(container, change);
 
-  if (container.NeedsReattachLayoutTree()) {
-    ReattachContainerSubtree(container);
-  } else if (NeedsLayoutTreeRebuild()) {
-    if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
-      // Avoid traversing from outside the container root. We know none of the
-      // elements outside the subtree should be marked dirty in this pass, but
-      // we may have fallen back to the document root.
-      layout_tree_rebuild_root_.Clear();
-      layout_tree_rebuild_root_.Update(nullptr, &container);
-    } else {
-      DCHECK(FlatTreeTraversal::ContainsIncludingPseudoElement(
-          container, *layout_tree_rebuild_root_.GetRootNode()));
+  // Emit a probe::RecalculateStyle so that the LoAF API correctly attributes
+  // container query style recalculation to styleDuration rather than
+  // layoutDuration. Without this, style recalc triggered by container queries
+  // during layout would be counted as layout time because it runs inside the
+  // probe::UpdateLayout scope. The AnimationFrameTimingMonitor subtracts style
+  // time that occurs during layout to avoid double-counting.
+  {
+    probe::RecalculateStyle recalculate_style_scope(document_);
+    RecalcStyleForSizeContainer(container, change);
+
+    if (container.NeedsReattachLayoutTree()) {
+      ReattachContainerSubtree(container);
+    } else if (NeedsLayoutTreeRebuild()) {
+      if (layout_tree_rebuild_root_.GetRootNode()->IsDocumentNode()) {
+        // Avoid traversing from outside the container root. We know none of
+        // the elements outside the subtree should be marked dirty in this
+        // pass, but we may have fallen back to the document root.
+        layout_tree_rebuild_root_.Clear();
+        layout_tree_rebuild_root_.Update(nullptr, &container);
+      } else {
+        DCHECK(FlatTreeTraversal::ContainsIncludingPseudoElement(
+            container, *layout_tree_rebuild_root_.GetRootNode()));
+      }
+      RebuildLayoutTree(&container);
     }
-    RebuildLayoutTree(&container);
   }
 
   if (container == GetDocument().documentElement()) {

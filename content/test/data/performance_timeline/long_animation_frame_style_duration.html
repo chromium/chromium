@@ -26,6 +26,23 @@
       while (performance.now() < deadline) {}
     }
 
+    // Poll for LoAF entries via takeRecords until processEntries finds one
+    // (indicated by the hasEntry callback returning true), or until timeout.
+    function pollForLoafEntry(observer, processEntries, hasEntry, timeoutMs = 3000) {
+      return new Promise((resolve) => {
+        const start = performance.now();
+        function poll() {
+          processEntries(observer.takeRecords());
+          if (hasEntry() || performance.now() - start > timeoutMs) {
+            resolve();
+            return;
+          }
+          setTimeout(poll, 100);
+        }
+        requestAnimationFrame(() => setTimeout(poll, 50));
+      });
+    }
+
     // Create many elements to make style recalculation take measurable time
     function createManyElements(count) {
       const elements = [];
@@ -145,18 +162,15 @@
           // Trigger resize - this will cause ResizeObserver to fire
           container.style.width = '200px';
 
-          // Wait for the frame to complete
+          // Wait for the frame to complete, then poll for LoAF entry
           requestAnimationFrame(() => {
             resizeObserver.disconnect();
 
-            setTimeout(() => {
-              // Use takeRecords to get any pending entries before disconnecting
-              processEntries(observer.takeRecords());
+            pollForLoafEntry(observer, processEntries, () => !!loafEntry).then(() => {
               observer.disconnect();
               elements.forEach(el => el.remove());
               resizeObserverTestState = null;
 
-              // Sum up forcedStyleDuration from all scripts in the entry
               let totalForcedStyleDuration = 0;
               if (loafEntry && loafEntry.scripts) {
                 for (const script of loafEntry.scripts) {
@@ -173,7 +187,7 @@
                 resizeObserverFired: resizeObserverFired,
                 error: loafEntry ? null : 'No LoAF entry found'
               });
-            }, 200);
+            });
           });
         });
       });
@@ -302,14 +316,11 @@
             resizeObservers.forEach(ro => ro.disconnect());
             observedElements.forEach(el => el.remove());
 
-            setTimeout(() => {
-              // Use takeRecords to get any pending entries before disconnecting
-              processEntries(observer.takeRecords());
+            pollForLoafEntry(observer, processEntries, () => !!loafEntry).then(() => {
               observer.disconnect();
               elements.forEach(el => el.remove());
               multipleIterationsTestState = null;
 
-              // Sum up forcedStyleDuration from all scripts in the entry
               let totalForcedStyleDuration = 0;
               if (loafEntry && loafEntry.scripts) {
                 for (const script of loafEntry.scripts) {
@@ -327,7 +338,7 @@
                 hasStyleDuration: loafEntry ? loafEntry.styleDuration !== undefined : false,
                 error: loafEntry ? null : 'No LoAF entry found'
               });
-            }, 200);
+            });
           });
         });
       });
@@ -366,6 +377,7 @@
 
         requestAnimationFrame(() => {
           requestAnimationFrame(() => {
+            forcedStyleTestState.prepEndTime = performance.now();
             resolve({ ready: true, elementCount: elements.length });
           });
         });
@@ -380,16 +392,19 @@
           return;
         }
 
-        const { elements } = forcedStyleTestState;
+        const { elements, prepEndTime } = forcedStyleTestState;
         let loafEntry = null;
         let bestScript = null;
         let measuredForcedStyleTime = 0;
 
-        // Helper to process LoAF entries
+        // Helper to process LoAF entries, filtering out entries from the
+        // preparation phase using the timestamp captured at prep end.
         function processEntries(entries) {
           for (const entry of entries) {
+            if (entry.startTime < prepEndTime) {
+              continue;
+            }
             if (entry.entryType === 'long-animation-frame' && entry.scripts) {
-              // Find the script with the highest forcedStyleDuration
               for (const script of entry.scripts) {
                 const currentForcedStyle = script.forcedStyleDuration || 0;
                 const bestForcedStyle = bestScript ? (bestScript.forcedStyleDuration || 0) : 0;
@@ -398,7 +413,6 @@
                   bestScript = script;
                 }
               }
-              // Also keep track of the entry even if no script has forcedStyleDuration
               if (!loafEntry) {
                 loafEntry = entry;
               }
@@ -409,10 +423,11 @@
         const observer = new PerformanceObserver((list) => {
           processEntries(list.getEntries());
         });
-        observer.observe({ type: 'long-animation-frame', buffered: false });
+        observer.observe({ type: 'long-animation-frame', buffered: true });
 
-        setTimeout(() => {
-          busyWait(30);
+        // Use requestAnimationFrame to ensure script is captured properly in LoAF
+        requestAnimationFrame(() => {
+          busyWait(80);
 
           // Invalidate styles
           elements.forEach((el, i) => {
@@ -426,18 +441,14 @@
           });
           measuredForcedStyleTime = performance.now() - forceStart;
 
-          busyWait(30);
+          busyWait(80);
 
-          // Use longer timeout to ensure LoAF entry is reported
-          setTimeout(() => {
-            // Use takeRecords to get any pending entries before disconnecting
-            processEntries(observer.takeRecords());
+          // Poll for LoAF entry to appear
+          pollForLoafEntry(observer, processEntries, () => !!loafEntry).then(() => {
             observer.disconnect();
             elements.forEach(el => el.remove());
             forcedStyleTestState = null;
 
-            // If we didn't find a script with forcedStyleDuration, fall back
-            // to using any script in the LoAF entry
             if (!bestScript && loafEntry && loafEntry.scripts) {
               for (const script of loafEntry.scripts) {
                 if (script.forcedStyleDuration > 0) {
@@ -457,15 +468,14 @@
                 hasForcedStyleDuration: bestScript.forcedStyleDuration !== undefined
               });
             } else {
-              // Return error info instead of rejecting to help debug flaky failures
               resolve({
                 error: 'No LoAF entry with script found',
                 hasLoafEntry: !!loafEntry,
                 scriptCount: loafEntry ? (loafEntry.scripts ? loafEntry.scripts.length : 0) : 0
               });
             }
-          }, 500);
-        }, 0);
+          });
+        });
       });
     };
 
@@ -474,6 +484,577 @@
       await prepareForcedStyleTest();
       return runForcedStyleTest();
     };
+
+    // =========================================================================
+    // Layout Duration Tests
+    // =========================================================================
+
+    // Test 4: ResizeObserver layout recalculation
+    // ResizeObserver callbacks run during the render phase. Layout changes
+    // made in the callback will be recalculated by the browser after
+    // the callback, and this should show up in layoutDuration.
+
+    let resizeObserverLayoutTestState = null;
+
+    // Phase 1: Create elements
+    window.prepareResizeObserverLayoutTest = function() {
+      return new Promise((resolve) => {
+        const container = document.getElementById('container');
+        container.style.width = '100px';
+
+        // Create elements for layout work
+        const elements = createManyElements(500);
+
+        // Force a layout flush to ensure clean state before tracing
+        void document.body.offsetHeight;
+
+        // Store state for the run phase
+        resizeObserverLayoutTestState = {
+          container: container,
+          elements: elements
+        };
+
+        // Wait for next frame to ensure layout is done
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve({ ready: true, elementCount: elements.length });
+          });
+        });
+      });
+    };
+
+    // Phase 2: Run the actual ResizeObserver layout test
+    window.runResizeObserverLayoutTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!resizeObserverLayoutTestState) {
+          reject('Must call prepareResizeObserverLayoutTest first');
+          return;
+        }
+
+        const { container, elements } = resizeObserverLayoutTestState;
+        let loafEntry = null;
+        let resizeObserverFired = false;
+
+        // Helper to process LoAF entries
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.entryType === 'long-animation-frame' && entry.duration > 50) {
+              // Keep the entry with the highest layoutDuration, as that's the one
+              // with the actual layout work we're measuring.
+              if (!loafEntry || (entry.layoutDuration || 0) > (loafEntry.layoutDuration || 0)) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: false });
+
+        // Set up and trigger everything in a single requestAnimationFrame to
+        // ensure the ResizeObserver fires in the same frame as the size change.
+        requestAnimationFrame(() => {
+          const resizeObserver = new ResizeObserver((entries) => {
+            resizeObserverFired = true;
+
+            // Invalidate layout on all elements by changing dimensions
+            // The browser will recalculate layout in the render phase
+            elements.forEach((el, i) => {
+              el.style.width = (50 + (i % 20)) + 'px';
+              el.style.height = (30 + (i % 15)) + 'px';
+            });
+
+            // Busy wait to ensure long frame
+            busyWait(100);
+          });
+          resizeObserver.observe(container);
+
+          // Trigger resize - this will cause ResizeObserver to fire
+          container.style.width = '200px';
+
+          // Wait for the frame to complete, then poll for LoAF entry
+          requestAnimationFrame(() => {
+            resizeObserver.disconnect();
+
+            pollForLoafEntry(observer, processEntries, () => !!loafEntry).then(() => {
+              observer.disconnect();
+              elements.forEach(el => el.remove());
+              resizeObserverLayoutTestState = null;
+
+              let totalForcedLayoutDuration = 0;
+              let totalForcedStyleDuration = 0;
+              let totalForcedStyleAndLayoutDuration = 0;
+              if (loafEntry && loafEntry.scripts) {
+                for (const script of loafEntry.scripts) {
+                  totalForcedLayoutDuration += script.forcedLayoutDuration || 0;
+                  totalForcedStyleDuration += script.forcedStyleDuration || 0;
+                  totalForcedStyleAndLayoutDuration += script.forcedStyleAndLayoutDuration || 0;
+                }
+              }
+
+              resolve({
+                layoutDuration: loafEntry ? loafEntry.layoutDuration : null,
+                styleDuration: loafEntry ? loafEntry.styleDuration : null,
+                totalForcedLayoutDuration: totalForcedLayoutDuration,
+                totalForcedStyleDuration: totalForcedStyleDuration,
+                totalForcedStyleAndLayoutDuration: totalForcedStyleAndLayoutDuration,
+                duration: loafEntry ? loafEntry.duration : null,
+                hasLayoutDuration: loafEntry ? loafEntry.layoutDuration !== undefined : false,
+                resizeObserverFired: resizeObserverFired,
+                error: loafEntry ? null : 'No LoAF entry found'
+              });
+            });
+          });
+        });
+      });
+    };
+
+    // Test 5: Verify forced layout is tracked separately from render-phase layout
+    // Forced layout happens during script execution, render-phase layout happens
+    // during the "update the rendering" phase
+
+    let forcedLayoutTestState = null;
+
+    // Phase 1: Create elements
+    window.prepareForcedLayoutTest = function() {
+      return new Promise((resolve) => {
+        const container = document.getElementById('container');
+        container.style.width = '100px';
+
+        // Create elements for measurable layout work
+        const elements = createManyElements(300);
+
+        // Force layout flush
+        void document.body.offsetHeight;
+
+        forcedLayoutTestState = {
+          container: container,
+          elements: elements
+        };
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            // Capture timestamp after all prep-phase frames have completed.
+            // Any LoAF entries from prep will have startTime < this value.
+            forcedLayoutTestState.prepEndTime = performance.now();
+            resolve({ ready: true, elementCount: elements.length });
+          });
+        });
+      });
+    };
+
+    // Phase 2: Run the actual test
+    window.runForcedLayoutTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!forcedLayoutTestState) {
+          reject('Must call prepareForcedLayoutTest first');
+          return;
+        }
+
+        const { elements, prepEndTime } = forcedLayoutTestState;
+        let loafEntry = null;
+        let bestScript = null;
+        let measuredForcedLayoutTime = 0;
+
+        // Helper to process LoAF entries, filtering out entries from the
+        // preparation phase using the timestamp captured at prep end.
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.startTime < prepEndTime) {
+              continue;
+            }
+            if (entry.entryType === 'long-animation-frame' && entry.scripts) {
+              for (const script of entry.scripts) {
+                const currentForcedLayout = script.forcedLayoutDuration || 0;
+                const bestForcedLayout = bestScript ? (bestScript.forcedLayoutDuration || 0) : 0;
+                if (currentForcedLayout > bestForcedLayout) {
+                  loafEntry = entry;
+                  bestScript = script;
+                }
+              }
+              if (!loafEntry) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: true });
+
+        // Use requestAnimationFrame to ensure script is captured properly in LoAF
+        requestAnimationFrame(() => {
+          busyWait(80);
+
+          // Invalidate layout by changing dimensions
+          elements.forEach((el, i) => {
+            el.style.width = (60 + (i % 30)) + 'px';
+            el.style.height = (40 + (i % 20)) + 'px';
+          });
+
+          // Measure time spent forcing layout recalculation
+          const forceStart = performance.now();
+          elements.forEach(el => {
+            void el.offsetWidth;
+            void el.offsetHeight;
+          });
+          measuredForcedLayoutTime = performance.now() - forceStart;
+
+          busyWait(80);
+
+          // Poll for LoAF entry to appear
+          pollForLoafEntry(observer, processEntries, () => !!loafEntry).then(() => {
+            observer.disconnect();
+            elements.forEach(el => el.remove());
+            forcedLayoutTestState = null;
+
+            if (!bestScript && loafEntry && loafEntry.scripts) {
+              for (const script of loafEntry.scripts) {
+                if (script.forcedLayoutDuration > 0) {
+                  bestScript = script;
+                  break;
+                }
+              }
+            }
+
+            if (loafEntry && bestScript) {
+              let totalScriptsForcedLayout = 0;
+              let scriptCount = 0;
+              if (loafEntry.scripts) {
+                for (const script of loafEntry.scripts) {
+                  totalScriptsForcedLayout += script.forcedLayoutDuration || 0;
+                  scriptCount++;
+                }
+              }
+              resolve({
+                entryLayoutDuration: loafEntry.layoutDuration,
+                scriptForcedLayoutDuration: bestScript.forcedLayoutDuration,
+                scriptForcedStyleDuration: bestScript.forcedStyleDuration,
+                scriptForcedStyleAndLayoutDuration: bestScript.forcedStyleAndLayoutDuration,
+                measuredForcedLayoutTime: measuredForcedLayoutTime,
+                hasLayoutDuration: loafEntry.layoutDuration !== undefined,
+                hasForcedLayoutDuration: bestScript.forcedLayoutDuration !== undefined,
+                scriptCount: scriptCount,
+                totalScriptsForcedLayout: totalScriptsForcedLayout
+              });
+            } else {
+              resolve({
+                error: 'No LoAF entry with script found',
+                hasLoafEntry: !!loafEntry,
+                scriptCount: loafEntry ? (loafEntry.scripts ? loafEntry.scripts.length : 0) : 0
+              });
+            }
+          });
+        });
+      });
+    };
+
+    // =========================================================================
+    // Container Query Tests
+    // =========================================================================
+
+    // Test 6: Container queries cause interleaved style and layout
+    // When a container with container-type: inline-size is resized, the
+    // browser must: (1) lay out the container, (2) evaluate container
+    // queries, (3) re-style children whose styles changed, (4) lay out
+    // children. This interleaving should be reflected in both
+    // styleDuration and layoutDuration.
+
+    let containerQueryTestState = null;
+
+    window.prepareContainerQueryTest = function() {
+      return new Promise((resolve) => {
+        // Add container query styles
+        const style = document.createElement('style');
+        style.id = 'cq-test-style';
+        style.textContent = `
+          .cq-container {
+            container-type: inline-size;
+            width: 200px;
+            display: block;
+          }
+          @container (min-width: 250px) {
+            .cq-child {
+              background-color: red;
+              padding: 15px;
+              margin: 5px;
+              border: 2px solid blue;
+              box-shadow: 0 0 5px rgba(0,0,0,0.3);
+            }
+          }
+        `;
+        document.head.appendChild(style);
+
+        // Create many containers with children to make the work measurable
+        const containers = [];
+        for (let i = 0; i < 200; i++) {
+          const container = document.createElement('div');
+          container.className = 'cq-container';
+          // Each container has multiple children affected by the query
+          for (let j = 0; j < 5; j++) {
+            const child = document.createElement('div');
+            child.className = 'cq-child';
+            child.textContent = 'CQ item ' + i + '-' + j;
+            container.appendChild(child);
+          }
+          document.body.appendChild(container);
+          containers.push(container);
+        }
+
+        // Force layout flush to establish initial state
+        void document.body.offsetHeight;
+
+        containerQueryTestState = {
+          style: style,
+          containers: containers
+        };
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            resolve({ ready: true, containerCount: containers.length });
+          });
+        });
+      });
+    };
+
+    window.runContainerQueryTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!containerQueryTestState) {
+          reject('Must call prepareContainerQueryTest first');
+          return;
+        }
+
+        const { style, containers } = containerQueryTestState;
+        let loafEntry = null;
+
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.entryType === 'long-animation-frame' && entry.duration > 50) {
+              // Keep the entry with the highest combined style+layout duration
+              const entryTotal = (entry.styleDuration || 0) + (entry.layoutDuration || 0);
+              const bestTotal = loafEntry
+                ? ((loafEntry.styleDuration || 0) + (loafEntry.layoutDuration || 0))
+                : 0;
+              if (!loafEntry || entryTotal > bestTotal) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: false });
+
+        requestAnimationFrame(() => {
+          // Resize all containers to trigger container query matches.
+          // This will cause interleaved style+layout passes.
+          containers.forEach(c => {
+            c.style.width = '300px';
+          });
+
+          // Busy wait to ensure long frame
+          busyWait(100);
+
+          requestAnimationFrame(() => {
+            pollForLoafEntry(observer, processEntries, () => !!loafEntry).then(() => {
+              observer.disconnect();
+              containers.forEach(c => c.remove());
+              style.remove();
+              containerQueryTestState = null;
+
+              let totalForcedStyleDuration = 0;
+              let totalForcedLayoutDuration = 0;
+              let totalForcedStyleAndLayoutDuration = 0;
+              if (loafEntry && loafEntry.scripts) {
+                for (const script of loafEntry.scripts) {
+                  totalForcedStyleDuration += script.forcedStyleDuration || 0;
+                  totalForcedLayoutDuration += script.forcedLayoutDuration || 0;
+                  totalForcedStyleAndLayoutDuration += script.forcedStyleAndLayoutDuration || 0;
+                }
+              }
+
+              resolve({
+                styleDuration: loafEntry ? loafEntry.styleDuration : null,
+                layoutDuration: loafEntry ? loafEntry.layoutDuration : null,
+                totalForcedStyleDuration: totalForcedStyleDuration,
+                totalForcedLayoutDuration: totalForcedLayoutDuration,
+                totalForcedStyleAndLayoutDuration: totalForcedStyleAndLayoutDuration,
+                duration: loafEntry ? loafEntry.duration : null,
+                hasStyleDuration: loafEntry ? loafEntry.styleDuration !== undefined : false,
+                hasLayoutDuration: loafEntry ? loafEntry.layoutDuration !== undefined : false,
+                error: loafEntry ? null : 'No LoAF entry found'
+              });
+            });
+          });
+        });
+      });
+    };
+
+    // Test 7: Forced layout with container queries during script execution
+    // This tests the scenario where script resizes a container and then
+    // reads offsetHeight, forcing the browser to synchronously evaluate
+    // container queries, re-style, and re-layout.
+
+    let forcedContainerQueryTestState = null;
+
+    window.prepareForcedContainerQueryTest = function() {
+      return new Promise((resolve) => {
+        const style = document.createElement('style');
+        style.id = 'fcq-test-style';
+        style.textContent = `
+          .fcq-container {
+            container-type: inline-size;
+            width: 200px;
+            display: block;
+          }
+          @container (min-width: 250px) {
+            .fcq-child {
+              background-color: green;
+              padding: 10px;
+              margin: 3px;
+              height: 20px;
+            }
+          }
+        `;
+        document.head.appendChild(style);
+
+        const containers = [];
+        for (let i = 0; i < 100; i++) {
+          const container = document.createElement('div');
+          container.className = 'fcq-container';
+          for (let j = 0; j < 5; j++) {
+            const child = document.createElement('div');
+            child.className = 'fcq-child';
+            child.textContent = 'FCQ ' + i + '-' + j;
+            container.appendChild(child);
+          }
+          document.body.appendChild(container);
+          containers.push(container);
+        }
+
+        // Force initial layout
+        void document.body.offsetHeight;
+
+        forcedContainerQueryTestState = {
+          style: style,
+          containers: containers
+        };
+
+        requestAnimationFrame(() => {
+          requestAnimationFrame(() => {
+            forcedContainerQueryTestState.prepEndTime = performance.now();
+            resolve({ ready: true, containerCount: containers.length });
+          });
+        });
+      });
+    };
+
+    window.runForcedContainerQueryTest = function() {
+      return new Promise((resolve, reject) => {
+        if (!forcedContainerQueryTestState) {
+          reject('Must call prepareForcedContainerQueryTest first');
+          return;
+        }
+
+        const { style, containers, prepEndTime } = forcedContainerQueryTestState;
+        let loafEntry = null;
+        let bestScript = null;
+        let measuredForcedTime = 0;
+
+        function processEntries(entries) {
+          for (const entry of entries) {
+            if (entry.startTime < prepEndTime) continue;
+            if (entry.entryType === 'long-animation-frame' && entry.scripts) {
+              for (const script of entry.scripts) {
+                const currentForced = script.forcedStyleAndLayoutDuration || 0;
+                const bestForced = bestScript
+                  ? (bestScript.forcedStyleAndLayoutDuration || 0)
+                  : 0;
+                if (currentForced > bestForced) {
+                  loafEntry = entry;
+                  bestScript = script;
+                }
+              }
+              // Only fall back to an entry with scripts if we haven't found
+              // one yet. Entries with 0 scripts won't have the data we need.
+              if (!loafEntry && entry.scripts.length > 0) {
+                loafEntry = entry;
+              }
+            }
+          }
+        }
+
+        const observer = new PerformanceObserver((list) => {
+          processEntries(list.getEntries());
+        });
+        observer.observe({ type: 'long-animation-frame', buffered: true });
+
+        requestAnimationFrame(() => {
+          // Busy wait enough to ensure the script exceeds the LoAF script
+          // inclusion threshold (5ms), even on fast bots.
+          busyWait(100);
+
+          // Resize containers and force layout, triggering synchronous
+          // container query evaluation + style + layout.
+          const forceStart = performance.now();
+          containers.forEach((c, i) => {
+            c.style.width = '300px';
+            // Reading offsetHeight forces synchronous style+layout
+            void c.offsetHeight;
+          });
+          measuredForcedTime = performance.now() - forceStart;
+
+          busyWait(100);
+
+          // Wait until we find a LoAF entry with a script that has forced
+          // style+layout data, not just any LoAF entry.
+          pollForLoafEntry(observer, processEntries, () => !!bestScript, 5000).then(() => {
+            observer.disconnect();
+            containers.forEach(c => c.remove());
+            style.remove();
+            forcedContainerQueryTestState = null;
+
+            if (!bestScript && loafEntry && loafEntry.scripts) {
+              for (const script of loafEntry.scripts) {
+                if ((script.forcedStyleAndLayoutDuration || 0) > 0) {
+                  bestScript = script;
+                  break;
+                }
+              }
+            }
+
+            if (loafEntry && bestScript) {
+              resolve({
+                entryStyleDuration: loafEntry.styleDuration,
+                entryLayoutDuration: loafEntry.layoutDuration,
+                scriptForcedStyleDuration: bestScript.forcedStyleDuration,
+                scriptForcedLayoutDuration: bestScript.forcedLayoutDuration,
+                scriptForcedStyleAndLayoutDuration: bestScript.forcedStyleAndLayoutDuration,
+                measuredForcedTime: measuredForcedTime,
+                duration: loafEntry.duration,
+                hasStyleDuration: loafEntry.styleDuration !== undefined,
+                hasLayoutDuration: loafEntry.layoutDuration !== undefined,
+                hasForcedStyleDuration: bestScript.forcedStyleDuration !== undefined,
+                hasForcedLayoutDuration: bestScript.forcedLayoutDuration !== undefined
+              });
+            } else {
+              resolve({
+                error: 'No LoAF entry with script found',
+                hasLoafEntry: !!loafEntry,
+                scriptCount: loafEntry ? (loafEntry.scripts ? loafEntry.scripts.length : 0) : 0
+              });
+            }
+          });
+        });
+      });
+    };
+
   </script>
 </body>
 </html>
