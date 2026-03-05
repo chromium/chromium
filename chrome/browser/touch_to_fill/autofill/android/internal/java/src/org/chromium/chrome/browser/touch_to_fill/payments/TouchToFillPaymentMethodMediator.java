@@ -814,7 +814,7 @@ class TouchToFillPaymentMethodMediator {
                                 R.string
                                         .autofill_pending_dialog_loading_accessibility_description)));
         progressScreenModel.add(
-                buildTermsForBnplSelectionProgress(
+                buildTermsForBnplSelectionAndProgressUi(
                         mContext, /* isInProgress= */ true, this::showPaymentMethodSettings));
 
         mModel.set(SHEET_ITEMS, progressScreenModel);
@@ -861,7 +861,7 @@ class TouchToFillPaymentMethodMediator {
         }
 
         sheetItems.add(
-                buildTermsForBnplSelectionProgress(
+                buildTermsForBnplSelectionAndProgressUi(
                         mContext, /* isInProgress= */ false, this::showPaymentMethodSettings));
 
         mModel.set(
@@ -1525,7 +1525,7 @@ class TouchToFillPaymentMethodMediator {
     }
 
     @VisibleForTesting
-    static ListItem buildTermsForBnplSelectionProgress(
+    static ListItem buildTermsForBnplSelectionAndProgressUi(
             Context context, boolean isInProgress, Runnable onLinkClickCallback) {
         ClickableSpan linkSpan;
         if (isInProgress) {
@@ -1558,9 +1558,16 @@ class TouchToFillPaymentMethodMediator {
             linkSpan = new ChromeClickableSpan(context, (view) -> onLinkClickCallback.run());
         }
 
+        // TODO(crbug.com/482157659): Apply bold style to the AI terms the first time a user sees
+        // the terms.
         CharSequence finalTerms =
                 SpanApplier.applySpans(
-                        context.getString(R.string.autofill_bnpl_issuer_bottom_sheet_terms_label),
+                        context.getString(
+                                ChromeFeatureList.isEnabled(
+                                                AutofillFeatures
+                                                        .AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION)
+                                        ? R.string.autofill_bnpl_issuer_bottom_sheet_ai_terms_label
+                                        : R.string.autofill_bnpl_issuer_bottom_sheet_terms_label),
                         new SpanApplier.SpanInfo("<link>", "</link>", linkSpan));
         return new ListItem(
                 BNPL_SELECTION_PROGRESS_TERMS,
