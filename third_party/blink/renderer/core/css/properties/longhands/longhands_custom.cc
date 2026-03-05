@@ -12917,22 +12917,15 @@ const CSSValue* WillChange::ParseSingleValue(
           *MakeGarbageCollected<CSSCustomIdentValue>(unresolved_property));
       stream.ConsumeIncludingWhitespace();
     } else {
-      switch (stream.Peek().Id()) {
-        case CSSValueID::kNone:
-        case CSSValueID::kAll:
-        case CSSValueID::kAuto:
-        case CSSValueID::kDefault:
-        case CSSValueID::kInitial:
-        case CSSValueID::kInherit:
-        case CSSValueID::kRevert:
-          return nullptr;
-        case CSSValueID::kContents:
-        case CSSValueID::kScrollPosition:
-          values->Append(*css_parsing_utils::ConsumeIdent(stream));
-          break;
-        default:
-          stream.ConsumeIncludingWhitespace();
-          break;
+      CSSValueID id = stream.Peek().Id();
+      if (id == CSSValueID::kContents || id == CSSValueID::kScrollPosition) {
+        values->Append(*css_parsing_utils::ConsumeIdent(stream));
+      } else if (!css_parsing_utils::IsCustomIdent<
+                     CSSValueID::kNone, CSSValueID::kAll, CSSValueID::kAuto>(
+                     id)) {
+        return nullptr;
+      } else {
+        stream.ConsumeIncludingWhitespace();
       }
     }
 
