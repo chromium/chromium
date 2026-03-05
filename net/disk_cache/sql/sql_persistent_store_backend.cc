@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
+#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted.h"
@@ -2612,10 +2613,21 @@ Error SqlPersistentStore::Backend::UpdateStoreStatusAndCommitTransaction(
                          store_status_.total_size);
   }
 
-  // Intentionally DCHECK for performance.
+#if DCHECK_IS_ON()
   // In debug builds, verify consistency by recalculating.
-  DCHECK_EQ(store_status_.entry_count, CalculateResourceEntryCount());
-  DCHECK_EQ(store_status_.total_size, CalculateTotalSize());
+  const int64_t actual_entry_count = CalculateResourceEntryCount();
+  const int64_t actual_total_size = CalculateTotalSize();
+  if (store_status_.entry_count != actual_entry_count ||
+      store_status_.total_size != actual_total_size) {
+    base::debug::DumpWithoutCrashing();
+    store_status_.entry_count = actual_entry_count;
+    meta_table_.SetValue(kSqlBackendMetaTableKeyEntryCount,
+                         store_status_.entry_count);
+    store_status_.total_size = actual_total_size;
+    meta_table_.SetValue(kSqlBackendMetaTableKeyTotalSize,
+                         store_status_.total_size);
+  }
+#endif  // DCHECK_IS_ON()
 
   // Attempt to commit the transaction. If it fails, revert the in-memory
   // store status to its state before the updates.
