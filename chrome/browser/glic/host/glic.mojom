@@ -1594,9 +1594,12 @@ union AdditionalContextPart {
 };
 
 // @generate glic_api
+[Stable, Extensible]
 enum AdditionalContextSource {
+  [Default] kUnknown = 2,
   kShareContextMenu = 0,
   kRegionSelection = 1,
+  kTextSelection = 3,
 };
 
 // An additional context object.

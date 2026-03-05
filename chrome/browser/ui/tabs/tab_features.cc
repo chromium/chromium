@@ -102,9 +102,17 @@
 #include "chrome/browser/wallet/chrome_walletable_pass_client.h"
 #include "chrome/common/record_replay/record_replay_features.h"
 #endif
+#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
+#include "chrome/browser/glic/glic_selection_observer.h"
+#include "chrome/browser/glic/public/features.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
+#include "chrome/browser/glic/selection/selection_overlay_controller.h"
+#include "chrome/browser/glic/service/glic_instance_helper.h"
 #include "chrome/browser/skills/skills_ui_tab_controller.h"
 #include "chrome/browser/ui/contextual_search/tab_contextualization_controller.h"
 #include "chrome/browser/ui/tabs/features.h"
+#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
@@ -121,12 +129,6 @@
 #include "net/base/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/unowned_user_data/user_data_factory.h"
-#include "chrome/browser/glic/browser_ui/glic_tab_indicator_helper.h"
-#include "chrome/browser/glic/public/glic_enabling.h"
-#include "chrome/browser/glic/public/glic_keyed_service.h"
-#include "chrome/browser/glic/selection/selection_overlay_controller.h"
-#include "chrome/browser/glic/service/glic_instance_helper.h"
-#include "chrome/browser/ui/views/side_panel/glic/glic_side_panel_coordinator_impl.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/skills/skills_update_observer.h"
@@ -357,6 +359,11 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
       glic_selection_overlay_controller_ =
           GetUserDataFactory().CreateInstance<glic::SelectionOverlayController>(
               tab, &tab, profile->GetPrefs());
+
+      if (base::FeatureList::IsEnabled(features::kGlicSelectionPrompt)) {
+        glic_selection_observer_ =
+            std::make_unique<glic::GlicSelectionObserver>(tab.GetContents());
+      }
     }
     if (glic::GlicEnabling::IsMultiInstanceEnabled() &&
         glic::GlicKeyedService::Get(profile)) {
@@ -636,6 +643,11 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
     new_tab_page_preload_pipeline_manager_.reset();
     new_tab_page_preload_pipeline_manager_ =
         std::make_unique<NewTabPagePreloadPipelineManager>(new_contents);
+  }
+
+  if (glic_selection_observer_) {
+    glic_selection_observer_ =
+        std::make_unique<glic::GlicSelectionObserver>(new_contents);
   }
 }
 

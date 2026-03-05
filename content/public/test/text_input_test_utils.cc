@@ -61,6 +61,8 @@ class TextInputManagerTester::InternalObserver
       text_input_manager_->RemoveObserver(this);
   }
 
+  using WebContentsObserver::OnTextSelectionChanged;
+
   void set_update_text_input_state_called_callback(
       base::RepeatingClosure callback) {
     update_text_input_state_callback_ = std::move(callback);

@@ -2401,7 +2401,6 @@ export interface ClosedEnums {
   pinTrigger: typeof PinTrigger;
   registerConversationErrorReason: typeof RegisterConversationErrorReason;
   metricUserInputReactionType: typeof MetricUserInputReactionType;
-  additionalContextSource: typeof AdditionalContextSource;
   unpinTrigger: typeof UnpinTrigger;
   responseStopCause: typeof ResponseStopCause;
 }
@@ -2809,8 +2808,10 @@ export enum WebUseCounter {
 ///////////////////////////////////////////////
 // WARNING - GENERATED FROM MOJOM, DO NOT EDIT.
 export enum AdditionalContextSource {
+  UNKNOWN = 2,
   SHARE_CONTEXT_MENU = 0,
   REGION_SELECTION = 1,
+  TEXT_SELECTION = 3,
 }
 
 ///////////////////////////////////////////////

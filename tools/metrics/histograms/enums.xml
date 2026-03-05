@@ -14142,6 +14142,7 @@ from previous Chrome versions.
   <int value="-102387656" label="FillingAcrossAffiliatedWebsites:disabled"/>
   <int value="-102227288" label="PasswordExport:disabled"/>
   <int value="-102008534" label="AppInstallServiceUri:disabled"/>
+  <int value="-101884978" label="GlicSelectionPrompt:enabled"/>
   <int value="-101679300" label="AndroidKeyboardA11y:disabled"/>
   <int value="-100702864" label="PageInfoAboutThisSite:disabled"/>
   <int value="-100148609" label="EvDetailsInPageInfo:disabled"/>
@@ -20731,6 +20732,7 @@ from previous Chrome versions.
   <int value="2120363312" label="QuickDim:enabled"/>
   <int value="2120659210" label="BackForwardCache:enabled"/>
   <int value="2121056855" label="IncreaseInputAudioBufferSize:disabled"/>
+  <int value="2121113685" label="GlicSelectionPrompt:disabled"/>
   <int value="2121386289" label="UseAndroidBufferedInputDispatch:disabled"/>
   <int value="2121550859" label="PreferHtmlOverPlugins:enabled"/>
   <int value="2121634232" label="AutofillEnableNewSaveCardBubbleUi:enabled"/>

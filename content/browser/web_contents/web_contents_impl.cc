@@ -11566,6 +11566,14 @@ void WebContentsImpl::OnTextCopiedToClipboard(
                              render_frame_host, copied_text);
 }
 
+void WebContentsImpl::TextSelectionChanged(
+    RenderFrameHostImpl* render_frame_host,
+    std::u16string_view selected_text) {
+  // Notify observers.
+  observers_.NotifyObservers(&WebContentsObserver::OnTextSelectionChanged,
+                             render_frame_host, selected_text);
+}
+
 void WebContentsImpl::IsClipboardPasteAllowedWrapperCallback(
     IsClipboardPasteAllowedCallback callback,
     std::optional<ClipboardPasteData> clipboard_paste_data) {

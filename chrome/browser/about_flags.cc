@@ -10924,6 +10924,10 @@ const FeatureEntry kFeatureEntries[] = {
                                     kGlicGuestUrlPresetTypes,
                                     "GlicGuestUrlPresets")},
 
+    {"glic-selection-prompt", flag_descriptions::kGlicSelectionPromptName,
+     flag_descriptions::kGlicSelectionPromptDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kGlicSelectionPrompt)},
+
 #if BUILDFLAG(IS_CHROMEOS)
     {"glic-use-non-client", flag_descriptions::kGlicUseNonClientName,
      flag_descriptions::kGlicUseNonClientDescription, kOsCrOS,

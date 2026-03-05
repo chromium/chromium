@@ -891,6 +891,8 @@ class CONTENT_EXPORT WebContentsImpl
       IsClipboardPasteAllowedCallback callback) override;
   void OnTextCopiedToClipboard(RenderFrameHostImpl* render_frame_host,
                                const std::u16string& copied_text) override;
+  void TextSelectionChanged(RenderFrameHostImpl* render_frame_host,
+                            std::u16string_view selected_text) override;
   void IsClipboardPasteAllowedWrapperCallback(
       IsClipboardPasteAllowedCallback callback,
       std::optional<ClipboardPasteData> clipboard_paste_data);

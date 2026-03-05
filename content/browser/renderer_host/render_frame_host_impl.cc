@@ -47,6 +47,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/to_string.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -9246,6 +9247,32 @@ void RenderFrameHostImpl::TextSelectionChanged(const std::u16string& text,
   RecordAction(base::UserMetricsAction("TextSelectionChanged"));
   has_selection_ = !text.empty();
   GetRenderWidgetHost()->SelectionChanged(text, offset, range);
+
+  // The `text` parameter contains the surrounding text of the selection, and
+  // `offset` is the offset of the surrounding text in the full text.
+  // The `range` parameter is the range of the selection in the full text.
+  // To extract the selected text, we adjust the range to be relative to the
+  // `text` string.
+  std::u16string_view selected_text;
+  if (!text.empty() && range.IsValid()) {
+    // Range relative to the full text.
+    uint32_t selection_start = range.start();
+    uint32_t selection_end = range.end();
+
+    // Check if the selection range is within the provided text segment.
+    if (selection_start >= offset && selection_end >= selection_start) {
+      size_t relative_start = selection_start - offset;
+      size_t length = selection_end - selection_start;
+
+      std::u16string_view text_view(text);
+      // Ensure the requested substring is within bounds of the available text.
+      if (relative_start <= text_view.length()) {
+        selected_text = text_view.substr(relative_start, length);
+      }
+    }
+  }
+
+  delegate_->TextSelectionChanged(this, selected_text);
 }
 
 void RenderFrameHostImpl::DidReceiveUserActivation() {

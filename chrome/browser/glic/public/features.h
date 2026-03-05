@@ -20,6 +20,8 @@ BASE_DECLARE_FEATURE(kAutoOpenGlicForPdf);
 
 BASE_DECLARE_FEATURE(kGlicInvoke);
 
+BASE_DECLARE_FEATURE(kGlicSelectionPrompt);
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_GLIC_PUBLIC_FEATURES_H_
