@@ -2783,7 +2783,7 @@ crbug.com/488071544 external/wpt/webrtc/RTCPeerConnection-getStats.https.html?re
 crbug.com/476344902 virtual/webui-browser/external/wpt/html/browsers/windows/nested-browsing-contexts/window-top.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-[ Win ] external/wpt/editing/run/insertparagraph.html?1-1000 [ Pass Timeout ]
+crbug.com/489911002 [ Win ] external/wpt/editing/run/insertparagraph.html?1-1000 [ Pass Timeout ]
 crbug.com/489884878 [ Win ] external/wpt/bluetooth/bidi/adapter/adapter-powered-off-getAvailability.https.window.html [ Failure Timeout ]
 crbug.com/489884878 [ Win ] external/wpt/bluetooth/bidi/device/forget/connect-after-forget.https.window.html [ Failure Timeout ]
 crbug.com/489884878 [ Win ] external/wpt/bluetooth/bidi/service/getCharacteristics/gen-garbage-collection-ran-during-error-with-uuid.https.window.html [ Failure Timeout ]
