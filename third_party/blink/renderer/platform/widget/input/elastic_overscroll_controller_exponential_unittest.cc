@@ -365,32 +365,27 @@ TEST_F(ElasticOverscrollControllerExponentialTest, MomentumAnimate) {
   EXPECT_EQ(1, helper_.animation_finished_count());
 }
 
-// Verify that a momentum scroll event that happens very quickly after a
-// non-momentum event doesn't cause a huge increase in velocity
-// (https://crbug.com/481401705)
+// Verify that that the first momentum scroll event after non-momentum events
+// doesn't affect velocity. macOS can send momentum events very quickly after
+// non-momentum events without a proportional decrease in scroll delta, leading
+// to incredibly high velocities (https://crbug.com/481401705).
 TEST_F(ElasticOverscrollControllerExponentialTest,
        FastNonMomentumToMomentumUpdates) {
-  // A momentum event fired incredibly quickly after a nonmomentum event will
-  // have a smaller magnitude, but will be proportionally much larger than it
-  // should be when considering the time delta between events.
-  Vector2dF nonmomentum_delta(0, 15);
-  Vector2dF momentum_delta(0, 2);
+  Vector2dF delta(0, 15);
 
   helper_.SetScrollOffsetAndMaxScrollOffset(gfx::PointF(0, 10),
                                             gfx::PointF(0, 10));
   SendGestureScrollBegin(NonMomentumPhase);
-  SendGestureScrollUpdate(NonMomentumPhase, nonmomentum_delta,
-                          nonmomentum_delta);
+  SendGestureScrollUpdate(NonMomentumPhase, delta, delta);
   // Simulate a change from nonmomentum to momentum that occurs out-of-band from
   // the screen refresh rate. The time delta being used was pulled from logs
   // recording scroll events on a MacBook trackpad.
-  SendGestureScrollUpdate(MomentumPhase, momentum_delta, momentum_delta,
-                          cc::OverscrollBehavior(), cc::ElementId(),
-                          base::Seconds(0.000034));
+  SendGestureScrollUpdate(MomentumPhase, delta, delta, cc::OverscrollBehavior(),
+                          cc::ElementId(), base::Seconds(0.000034));
   TickCurrentTimeAndAnimate();
 
   // Ensure we haven't stretched further than the original scroll delta.
-  EXPECT_LT(helper_.StretchAmount(cc::ElementId()).y(), nonmomentum_delta.y());
+  EXPECT_LT(helper_.StretchAmount(cc::ElementId()).y(), delta.y());
 }
 
 // Verify that a stretch opposing a scroll is correctly resolved.
