@@ -315,11 +315,14 @@ ExtensionFunction::ResponseAction PdfViewerPrivateGlicSummarizeFunction::Run() {
           contents->GetBrowserContext());
   CHECK(glic_service);
 
-  glic_service->ToggleUI(tab_interface->GetBrowserWindowInterface(),
-                         /*prevent_close=*/true,
-                         glic::mojom::InvocationSource::kPdfSummarizeButton,
-                         /*prompt_suggestion=*/"summarize the pdf",
-                         /*auto_send=*/true);
+  glic::GlicInvokeOptions options{
+      glic::mojom::InvocationSource::kPdfSummarizeButton};
+  options.prompts.push_back("summarize the pdf");
+  options.conversation = glic::NewConversation();
+
+  glic_service->InvokeWithAutoSubmit(
+      glic::InvokeWithAutoSubmitPasskeyProvider::GetPassKey(), tab_interface,
+      std::move(options));
 
   success = true;
   return RespondNow(NoArguments());
