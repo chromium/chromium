@@ -8,12 +8,14 @@
 #include <memory>
 
 #include "base/check.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/tab/collection_storage_observer.h"
 #include "chrome/browser/tab/restore_entity_tracker.h"
 #include "chrome/browser/tab/storage_collection_synchronizer.h"
 #include "chrome/browser/tab/storage_id.h"
 #include "chrome/browser/tab/storage_loaded_data.h"
 #include "chrome/browser/tab/tab_state_storage_service.h"
+#include "chrome/browser/tab/tab_storage_type.h"
 #include "chrome/browser/tab/tab_storage_util.h"
 #include "components/tabs/public/direct_child_walker.h"
 #include "components/tabs/public/pinned_tab_collection.h"
@@ -42,6 +44,46 @@ class CollectionChildSaveCrawler : public DirectChildWalker::Processor {
   raw_ptr<TabStateStorageService> service_;
 };
 
+// Recursively crawls the entire tree and associates or saves changes made prior
+// to restore orchestration. The traversal order is determined by
+// DirectChildWalker.
+class PreRestoreChangesCrawler : public DirectChildWalker::Processor {
+ public:
+  PreRestoreChangesCrawler(RestoreEntityTracker* tracker,
+                           TabStateStorageService* service,
+                           base::PassKey<StorageRestoreOrchestrator> passkey)
+      : tracker_(tracker), service_(service), passkey_(passkey) {}
+
+  void ProcessTab(const TabInterface* tab) override {
+    if (!tracker_->AssociateTab(tab)) {
+      service_->Save(tab);
+      service_->SaveDivergentChildren(tab->GetParentCollection(), passkey_);
+    }
+  }
+
+  void ProcessCollection(const TabCollection* collection) override {
+    if (!tracker_->AssociateCollection(collection) &&
+        ShouldSaveOnRestoreStart(collection)) {
+      service_->Save(collection);
+      service_->SaveDivergentChildren(collection, passkey_);
+      service_->SaveDivergentChildren(collection->GetParentCollection(),
+                                      passkey_);
+    }
+    DirectChildWalker walker(collection, this);
+    walker.Walk();
+  }
+
+  bool ShouldSaveOnRestoreStart(const TabCollection* collection) {
+    TabStorageType type = TabCollectionTypeToTabStorageType(collection->type());
+    return type != TabStorageType::kPinned && type != TabStorageType::kUnpinned;
+  }
+
+ private:
+  raw_ptr<RestoreEntityTracker> tracker_;
+  raw_ptr<TabStateStorageService> service_;
+  base::PassKey<StorageRestoreOrchestrator> passkey_;
+};
+
 // ObserverImpl implementation.
 StorageRestoreOrchestrator::ObserverImpl::ObserverImpl(
     StorageRestoreOrchestrator* orchestrator)
@@ -64,6 +106,7 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
       loaded_data_(loaded_data) {
   loaded_data_->RegisterObserver(&data_observer_);
 
+  auto batch = service_->CreateScopedBatch();
   RestoreEntityTracker* tracker = loaded_data_->GetTracker();
   // This is required to save the unique collections that do not emit observable
   // events on creation.
@@ -72,8 +115,10 @@ StorageRestoreOrchestrator::StorageRestoreOrchestrator(
     synchronizer.FullSave();
   } else {
     tracker->AssociateCollection(collection_);
-    tracker->AssociateCollection(collection_->pinned_collection());
-    tracker->AssociateCollection(collection_->unpinned_collection());
+    PreRestoreChangesCrawler crawler(
+        tracker, service_, base::PassKey<StorageRestoreOrchestrator>());
+    DirectChildWalker walker(collection_, &crawler);
+    walker.Walk();
   }
 }
 
