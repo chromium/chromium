@@ -19,7 +19,8 @@ struct PopupControllerCommon {
   PopupControllerCommon(gfx::RectF element_bounds,
                         base::i18n::TextDirection text_direction,
                         gfx::NativeView container_view,
-                        PopupAnchorType anchor_type = PopupAnchorType::kField);
+                        PopupAnchorType anchor_type = PopupAnchorType::kField,
+                        bool show_tabbed_popup = false);
   PopupControllerCommon(const PopupControllerCommon&);
   PopupControllerCommon(PopupControllerCommon&&);
   PopupControllerCommon& operator=(const PopupControllerCommon&);
@@ -39,6 +40,9 @@ struct PopupControllerCommon {
 
   // The type of the element to anchor the popup on.
   PopupAnchorType anchor_type;
+
+  // True if the popup should contain a tabbed pane.
+  bool show_tabbed_popup;
 };
 
 }  // namespace autofill
