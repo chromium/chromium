@@ -132,7 +132,7 @@ def parse_args():
 
 
 def install_and_set_provider(args: OptionsNamespace):
-    installer_path = f'{args.outputdir}/bin/{args.webview_build_target}'
+    installer_path = f'{args.builddir}/bin/{args.webview_build_target}'
     _LOGGER.info(f"Installing WebView from {installer_path}")
     subprocess.run([installer_path, 'install'], check=True)
     _LOGGER.info("Setting WebView provider")
