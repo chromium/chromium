@@ -15235,21 +15235,6 @@
             ]
         }
     ],
-    "LobsterQueryRewrittenDogfood": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_Dogfood",
-                    "enable_features": [
-                        "LobsterUseRewrittenQuery"
-                    ]
-                }
-            ]
-        }
-    ],
     "LocalNetworkAccessChecks": [
         {
             "platforms": [
