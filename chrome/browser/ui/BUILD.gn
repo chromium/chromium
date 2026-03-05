@@ -1486,6 +1486,7 @@ static_library("ui") {
       "//chrome/browser/ui/browser_window:create_browser_window",
       "//chrome/browser/ui/contextual_search",
       "//chrome/browser/ui/desktop_to_mobile_promos:controller",
+      "//chrome/browser/ui/desktop_to_mobile_promos:service",
       "//chrome/browser/ui/interaction",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/passwords/bubble_controllers",
@@ -1778,6 +1779,7 @@ static_library("ui") {
     allow_circular_includes_from += [
       # TODO(crbug.com/40110173): Resolve circular dependencies.
       "//chrome/browser/media/router",
+      "//chrome/browser/ui/desktop_to_mobile_promos:service",
 
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",

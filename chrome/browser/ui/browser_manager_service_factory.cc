@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/browser_manager_service_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_manager_service.h"
@@ -26,7 +27,9 @@ BrowserManagerServiceFactory* BrowserManagerServiceFactory::GetInstance() {
 BrowserManagerServiceFactory::BrowserManagerServiceFactory()
     : BrowserContextKeyedServiceFactory(
           "BrowserManagerService",
-          BrowserContextDependencyManager::GetInstance()) {}
+          BrowserContextDependencyManager::GetInstance()) {
+  DependsOn(HistoryServiceFactory::GetInstance());
+}
 
 std::unique_ptr<KeyedService>
 BrowserManagerServiceFactory::BuildServiceInstanceForBrowserContext(

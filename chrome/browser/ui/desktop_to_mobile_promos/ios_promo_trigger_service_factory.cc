@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser_manager_service_factory.h"
 #include "chrome/browser/ui/desktop_to_mobile_promos/ios_promo_trigger_service.h"
 #include "components/desktop_to_mobile_promos/features.h"
 
@@ -29,7 +30,9 @@ IOSPromoTriggerServiceFactory::IOSPromoTriggerServiceFactory()
           "IOSPromoTriggerService",
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOwnInstance)
-              .Build()) {}
+              .Build()) {
+  DependsOn(BrowserManagerServiceFactory::GetInstance());
+}
 
 IOSPromoTriggerServiceFactory::~IOSPromoTriggerServiceFactory() = default;
 

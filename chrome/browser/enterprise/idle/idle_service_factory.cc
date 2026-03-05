@@ -5,6 +5,10 @@
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
 
 #include "chrome/browser/profiles/profile.h"
+#if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/browser_manager_service_factory.h"
+#endif
+#include "build/build_config.h"
 #include "components/enterprise/idle/idle_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -27,7 +31,11 @@ IdleServiceFactory::IdleServiceFactory()
     : ProfileKeyedServiceFactory(
           "IdleService",
           // TODO(crbug.com/40222215): Can we support Guest profiles?
-          ProfileSelections::BuildForRegularProfile()) {}
+          ProfileSelections::BuildForRegularProfile()) {
+#if !BUILDFLAG(IS_ANDROID)
+  DependsOn(BrowserManagerServiceFactory::GetInstance());
+#endif
+}
 
 // BrowserContextKeyedServiceFactory:
 std::unique_ptr<KeyedService>
