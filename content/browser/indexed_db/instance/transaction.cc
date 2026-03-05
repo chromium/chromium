@@ -429,16 +429,12 @@ void Transaction::Put(int64_t object_store_id,
                       blink::mojom::IDBPutMode mode,
                       std::vector<IndexedDBIndexKeys> index_keys,
                       blink::mojom::IDBTransaction::PutCallback callback) {
-  if (!IsAcceptingRequests()) {
-    return;
-  }
-
   if (mode_ == blink::mojom::IDBTransactionMode::ReadOnly) {
     receiver_.ReportBadMessage("Attempted to Put on readonly txn.");
     return;
   }
 
-  if (!connection()->IsConnected()) {
+  if (!IsAcceptingRequests() || !connection()->IsConnected()) {
     DatabaseError error(blink::mojom::IDBException::kUnknownError,
                         "Not connected.");
     std::move(callback).Run(
