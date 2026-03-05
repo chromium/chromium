@@ -37,7 +37,7 @@ export function getHtml(this: EventListElement) {
   ` : ''}
 </div>
 <cr-infinite-list class="event-list" .items="${this.events}" item-size="36"
-    chunk-size="100" role="grid" aria-rowcount="${this.events.length}"
+    chunk-size="100" aria-rowcount="${this.events.length}"
     .scrollTarget="${this.scrollTarget}"
     .template="${(item: EventEntry) => html`
       <div>
