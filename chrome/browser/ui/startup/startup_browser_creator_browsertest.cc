@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -1859,9 +1860,8 @@ class StartupBrowserWithListAppsFeature : public StartupBrowserCreatorTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/484997712): Flaky on all platforms.
 IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
-                       DISABLED_ListAppsForAllProfiles) {
+                       ListAppsForAllProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
@@ -1955,9 +1955,29 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithListAppsFeature,
     base::ScopedAllowBlockingForTesting allow_blocking;
     std::string file_contents;
     ASSERT_TRUE(base::ReadFileToString(output_path, &file_contents));
-    // Normalize Windows line endings to Linux line endings used by golden data.
-    base::ReplaceSubstringsAfterOffset(&file_contents, 0, "\r\n", "\n");
-    ASSERT_EQ(expected_info, file_contents);
+    // Parse both expected and actual as JSON and compare structurally to avoid
+    // flakiness from non-deterministic profile ordering.
+    std::optional<base::Value> expected_value =
+        base::JSONReader::Read(expected_info, base::JSON_PARSE_RFC);
+    ASSERT_TRUE(expected_value.has_value()) << "Failed to parse expected JSON";
+    std::optional<base::Value> actual_value =
+        base::JSONReader::Read(file_contents, base::JSON_PARSE_RFC);
+    ASSERT_TRUE(actual_value.has_value()) << "Failed to parse actual JSON";
+    // Sort profile lists by profile_id for order-independent comparison.
+    auto sort_by_profile_id = [](base::Value& root) {
+      for (const char* key : {"installed_web_apps", "open_web_apps"}) {
+        base::ListValue* list = root.GetDict().FindList(key);
+        if (list) {
+          std::ranges::sort(*list, std::ranges::less{},
+                            [](const base::Value& v) {
+                              return *v.GetDict().FindString("profile_id");
+                            });
+        }
+      }
+    };
+    sort_by_profile_id(*expected_value);
+    sort_by_profile_id(*actual_value);
+    EXPECT_EQ(*expected_value, *actual_value);
   }
 }
 
