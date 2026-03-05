@@ -212,6 +212,14 @@ bool ElementAnimations::SetCompositedClipPathStatus(
     CompositedPaintStatus status) {
   if (status == ElementAnimations::CompositedPaintStatus::kNotComposited ||
       status == ElementAnimations::CompositedPaintStatus::kNoAnimation) {
+    if (clip_path_paint_worklet_candidate_ &&
+        clip_path_paint_worklet_candidate_->HasActiveAnimationsOnCompositor()) {
+      // This can some times be called during pre-paint, we need to ensure the
+      // animation is kept in sync!
+      clip_path_paint_worklet_candidate_->SetCompositorPending(
+          Animation::CompositorPendingReason::kPendingDowngrade);
+    }
+
     clip_path_paint_worklet_candidate_ = nullptr;
   }
 

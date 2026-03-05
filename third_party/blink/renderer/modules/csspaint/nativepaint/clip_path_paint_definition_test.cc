@@ -612,7 +612,7 @@ TEST_F(ClipPathPaintDefinitionTest, ClipDelayNotFallback) {
 }
 
 /* ----------------------------------------- */
-/*    ORDINARY ANIMATION FALLBACK TESTS      */
+/*         ANIMATION FALLBACK TESTS          */
 /* For anims that fall back from the value   */
 /* filter or fail standard compositability   */
 /* checks in CheckCanStart*.                 */
@@ -742,6 +742,60 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForCoincidentBackdropFilter) {
   StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
 }
 
+// This is a variation of the above test. The backdrop-filter is added later,
+// rather than immediately. This ensures the animation is still functioning
+// properly in this case.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForLateBackdropFilter) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(30% at 20% 20%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .bdfilter {
+            backdrop-filter: invert(1);
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  // Advance the animation time and add a backdrop-filter.
+  UpdateAndAdvanceTimeTo(1250);
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation bdfilter"));
+
+  // Next main frame should proceed ordinarily
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kComposited, element,
+      UpdatesNeededForNextFrame::kMainThreadPropertyInvalidation);
+
+  // However, the animation will fall back during pre-paint.
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Animation should still producve frames on main as normal
+  UpdateAndAdvanceTimeTo(2001);
+
+  // Main thread should still be producing frames.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
+}
+
 // When clip-path: none exists as part of an animation, we use the cull rect to
 // constrain the animation bounds. This is done for perf reasons. However, with
 // a perspective transform, the CullRectUpdater will early-out as it can't
@@ -780,6 +834,67 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathNoneWithPerspective) {
   element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
 
   StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
+}
+
+// This is a variation of the above test. The perspective transform is added
+// later, rather than immediately. This ensures the animation is still
+// functioning properly in this case.
+TEST_F(ClipPathPaintDefinitionTest,
+       FallbackForClipPathNoneWithDelayedPerspective) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(10% at 30% 30%);
+            }
+            75% {
+                clip-path: circle(30% at 30% 30%);
+            }
+            100% {
+                clip-path: none;
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .perspectivetf {
+            transform: perspective(200px);
+        }
+    </style>
+    <div id="parent">
+        <div id="target" style="width: 100px; height: 100px;">
+        </div>
+    </div>
+  )HTML");
+
+  Element* parent = GetElementById("parent");
+  Element* element = GetElementById("target");
+
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  // Advance the animation time and add the perspective transform to the parent.
+  UpdateAndAdvanceTimeTo(1250);
+  parent->setAttribute(html_names::kClassAttr, AtomicString("perspectivetf"));
+
+  // Next main frame should proceed ordinarily
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kComposited, element,
+      UpdatesNeededForNextFrame::kMainThreadPropertyInvalidation);
+
+  // However, the animation will fall back during pre-paint.
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Animation should still producve frames on main as normal
+  UpdateAndAdvanceTimeTo(2001);
+
+  // Main thread should still be producing frames.
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
 }
 
 // Same as the above - with a descendant transform animation, the
@@ -843,8 +958,124 @@ TEST_F(ClipPathPaintDefinitionTest,
       UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
 }
 
+// This is a variation of the above test. The descendant transform animation is
+// added later, rather than immediately. This ensures the clip-path animation
+// still falls back correctly in this case.
 TEST_F(ClipPathPaintDefinitionTest,
-       DISABLED_FallbackForDelayedWillChangeContents) {
+       FallbackWithNoneKeyframeAndDelayedChildTransformAnimation) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(10% at 30% 30%);
+            }
+            75% {
+                clip-path: circle(30% at 30% 30%);
+            }
+            100% {
+                clip-path: none;
+            }
+        }
+        @keyframes transform {
+            0% {
+                transform: translateX(0px);
+            }
+            100% {
+                transform: translateX(100px);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .child-animation {
+            animation: transform 4s steps(2, jump-end);
+        }
+    </style>
+    <div id="target" style="width: 100px; height: 100px;">
+      <div id="child" style="width: 50px; height: 50px;">
+      </div>
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  Element* child = GetElementById("child");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  Animation* animation = StartAndVerifyEligibleClipPathAnimation(element, 1000);
+
+  // Advance the animation time and add a descendant transform animation.
+  UpdateAndAdvanceTimeTo(1250);
+  child->setAttribute(html_names::kClassAttr, AtomicString("child-animation"));
+
+  // Next main frame should proceed ordinarily.
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kComposited, element,
+      UpdatesNeededForNextFrame::kMainThreadPropertyInvalidation);
+
+  // However, the animation will fall back during pre-paint.
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // So we get no other unexpected updates.
+  StartAllWaitingAnimationsOnCompositor(child, 1250);
+
+  // Main thread should still be producing frames.
+  UpdateAndAdvanceTimeTo(2001);
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kMainThreadAnimationFrame);
+}
+
+// Will-change: contents is a very old disqualifier for composited animations.
+// Setting up the transform/opacity/filter animations requires allocating render
+// surfaces, which is expensive, and we'd like to avoid that work if the
+// contents are just going to change anyway. It's unclear how this work compares
+// to native paint worklet, which without a synthesized clip (something that is
+// only created for effects with render surface reasons), do not create a
+// textures at all. In the future, this may be allowed, depending on perf
+// testing.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForWillChangeContents) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(50% at 50% 50%);
+            }
+            100% {
+                clip-path: circle(30% at 30% 30%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+
+        .willchangecontents {
+            will-change: contents;
+        }
+    </style>
+    <div id ="target" style="width: 100px; height: 100px">
+    </div>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  element->setAttribute(html_names::kClassAttr,
+                        AtomicString("animation willchangecontents"));
+
+  StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
+}
+
+// This is a variation of the above test. will-change: contents is added later,
+// rather than immediately. This ensures the animation is still functioning
+// properly in this case. As implied above - this fallback could in theory be
+// removed, but we keep it around for now to avoid potentially weird situations
+// where will-change contents is added later and then something is done to get
+// the animation to restart on the compositor (maybe a bounds change of a tf
+// anim). In this case, paint status will be COMPOSITED but the failure reasons
+// will not be kNoFailure, causing a stuck animation. In the future, we should
+// explicitly handle this rather than hitting it with a hammer in the pre-paint
+// tree walk.
+TEST_F(ClipPathPaintDefinitionTest, FallbackForDelayedWillChangeContents) {
   SetBodyInnerHTML(R"HTML(
     <style>
         @keyframes clippath {

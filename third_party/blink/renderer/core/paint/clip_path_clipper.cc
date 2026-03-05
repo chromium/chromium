@@ -135,7 +135,21 @@ void SetCompositeClipPathStatus(Node* node, CompositedPaintStatus status) {
   ElementAnimations* element_animations = element->GetElementAnimations();
   DCHECK(element_animations || status == CompositedPaintStatus::kNotComposited);
   if (element_animations) {
-    element_animations->SetCompositedClipPathStatus(status);
+    CompositedPaintStatus prev_status =
+        element_animations->CompositedClipPathStatus();
+
+    if (element_animations->SetCompositedClipPathStatus(status)) {
+      // In very rare cases, this is not done, leaving a stale paint worklet.
+      // This can happen if a descendant composited transform animation
+      // invalidates this animation, but its first keyframe happens to not
+      // actually mutate the transform yet. Most of the time this has no effect.
+      if (prev_status == CompositedPaintStatus::kComposited &&
+          status == CompositedPaintStatus::kNotComposited) {
+        element->GetLayoutObject()
+            ->SetShouldDoFullPaintInvalidationWithoutLayoutChange(
+                PaintInvalidationReason::kStyle);
+      }
+    }
   }
 }
 
