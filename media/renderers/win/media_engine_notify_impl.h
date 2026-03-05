@@ -82,7 +82,9 @@ class MediaEngineNotifyImpl
   // Shutdown is invoked from media stack thread. When this object is shutting
   // down, callbacks should not be called.
   base::Lock lock_;
-  bool has_shutdown_or_error_ GUARDED_BY(lock_) = false;
+  bool has_shutdown_ GUARDED_BY(lock_) = false;
+  bool had_error_ GUARDED_BY(lock_) = false;
+  bool is_subsequent_event_or_error_reported_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace media

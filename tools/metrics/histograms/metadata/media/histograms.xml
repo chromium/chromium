@@ -5229,6 +5229,51 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.MediaFoundation.MediaEngineError.SubsequentError"
+    enum="MediaEngineErrorType" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when any subsequent {MediaEngineErrorType} after the first error
+    has occurred in MediaFoundationRenderer::MediaEngineNotifyImpl.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundation.MediaEngineError.SubsequentError.{MF_MEDIA_ENGINE_ERR}.Hresult"
+    enum="Hresult" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Hresult corresponding to a subsequent {MF_MEDIA_ENGINE_ERR} after the first
+    error has occurred in MediaFoundationRenderer::MediaEngineNotifyImpl.
+    Recorded only when the first subsequent error happens.
+  </summary>
+  <token key="MF_MEDIA_ENGINE_ERR" variants="MF_MEDIA_ENGINE_ERR"/>
+</histogram>
+
+<histogram name="Media.MediaFoundation.MediaEngineError.SubsequentEvent"
+    enum="MediaEngineEventType" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Recorded when any subsequent {MF_MEDIA_ENGINE_EVENT} after the first error
+    has occurred in MediaFoundationRenderer::MediaEngineNotifyImpl.
+  </summary>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundation.MediaEngineError.SubsequentEventOrErrorReported"
+    enum="Boolean" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not any subsequent event or error occurs after the first error
+    has occurred in MediaFoundationRenderer::MediaEngineNotifyImpl. Recorded
+    only when the first subsequent event or error happens.
+  </summary>
+</histogram>
+
 <histogram
     name="Media.MediaFoundation.MediaEngineError.{MF_MEDIA_ENGINE_ERR}.Hresult"
     enum="Hresult" expires_after="2026-12-09">

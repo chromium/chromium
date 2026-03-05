@@ -14,6 +14,13 @@ namespace media {
 
 namespace {
 
+constexpr char kSubsequentErrorUmaName[] =
+    "Media.MediaFoundation.MediaEngineError.SubsequentError";
+constexpr char kSubsequentEventUmaName[] =
+    "Media.MediaFoundation.MediaEngineError.SubsequentEvent";
+constexpr char kSubsequentEventOrErrorReportedUmaName[] =
+    "Media.MediaFoundation.MediaEngineError.SubsequentEventOrErrorReported";
+
 #define ENUM_TO_STRING(enum) \
   case enum:                 \
     return #enum
@@ -102,7 +109,13 @@ PipelineStatus MediaEngineErrorToPipelineStatus(
 }  // namespace
 
 MediaEngineNotifyImpl::MediaEngineNotifyImpl() = default;
-MediaEngineNotifyImpl::~MediaEngineNotifyImpl() = default;
+MediaEngineNotifyImpl::~MediaEngineNotifyImpl() {
+  DVLOG(1) << __func__;
+  base::AutoLock lock(lock_);
+  if (had_error_ && !is_subsequent_event_or_error_reported_) {
+    base::UmaHistogramBoolean(kSubsequentEventOrErrorReportedUmaName, false);
+  }
+}
 
 HRESULT MediaEngineNotifyImpl::RuntimeClassInitialize(
     ErrorCB error_cb,
@@ -144,16 +157,33 @@ HRESULT MediaEngineNotifyImpl::EventNotify(DWORD event_code,
   DVLOG_FUNC(3) << "event=" << MediaEngineEventToString(event);
 
   base::AutoLock lock(lock_);
-  if (has_shutdown_or_error_) {
+  if (had_error_) {
     DVLOG_FUNC(3)
-        << "Shutdown or error already reported, ignore all subsequent events!";
-    // TODO(crbug.com/488401846): Add UMA to check how often this happens.
+        << "Error already reported, ignore all subsequent events or errors!";
+    if (!is_subsequent_event_or_error_reported_) {
+      if (event == MF_MEDIA_ENGINE_EVENT_ERROR) {
+        MF_MEDIA_ENGINE_ERR error = static_cast<MF_MEDIA_ENGINE_ERR>(param1);
+        HRESULT hr = param2;
+        base::UmaHistogramSparse(kSubsequentErrorUmaName, error);
+        base::UmaHistogramSparse(
+            base::StrCat({kSubsequentErrorUmaName, ".",
+                          MediaEngineErrorToString(error), ".Hresult"}),
+            hr);
+      } else {
+        base::UmaHistogramSparse(kSubsequentEventUmaName, event);
+      }
+      base::UmaHistogramBoolean(kSubsequentEventOrErrorReportedUmaName, true);
+      is_subsequent_event_or_error_reported_ = true;
+    }
+    return S_OK;
+  }
+  if (has_shutdown_) {
     return S_OK;
   }
 
   switch (event) {
     case MF_MEDIA_ENGINE_EVENT_ERROR: {
-      has_shutdown_or_error_ = true;
+      had_error_ = true;
 
       // |param1| - A member of the MF_MEDIA_ENGINE_ERR enumeration.
       // |param2| - An HRESULT error code, or zero.
@@ -220,7 +250,7 @@ void MediaEngineNotifyImpl::Shutdown() {
   DVLOG_FUNC(1);
 
   base::AutoLock lock(lock_);
-  has_shutdown_or_error_ = true;
+  has_shutdown_ = true;
 }
 
 }  // namespace media

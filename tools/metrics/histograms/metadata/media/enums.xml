@@ -1450,6 +1450,57 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="CBCS"/>
 </enum>
 
+<enum name="MediaEngineErrorType">
+  <int value="0" label="MF_MEDIA_ENGINE_ERR_NOERROR"/>
+  <int value="1" label="MF_MEDIA_ENGINE_ERR_ABORTED"/>
+  <int value="2" label="MF_MEDIA_ENGINE_ERR_NETWORK"/>
+  <int value="3" label="MF_MEDIA_ENGINE_ERR_DECODE"/>
+  <int value="4" label="MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED"/>
+  <int value="5" label="MF_MEDIA_ENGINE_ERR_ENCRYPTED"/>
+</enum>
+
+<enum name="MediaEngineEventType">
+  <int value="1" label="MF_MEDIA_ENGINE_EVENT_LOADSTART"/>
+  <int value="2" label="MF_MEDIA_ENGINE_EVENT_PROGRESS"/>
+  <int value="3" label="MF_MEDIA_ENGINE_EVENT_SUSPEND"/>
+  <int value="4" label="MF_MEDIA_ENGINE_EVENT_ABORT"/>
+  <int value="5" label="MF_MEDIA_ENGINE_EVENT_ERROR"/>
+  <int value="6" label="MF_MEDIA_ENGINE_EVENT_EMPTIED"/>
+  <int value="7" label="MF_MEDIA_ENGINE_EVENT_STALLED"/>
+  <int value="8" label="MF_MEDIA_ENGINE_EVENT_PLAY"/>
+  <int value="9" label="MF_MEDIA_ENGINE_EVENT_PAUSE"/>
+  <int value="10" label="MF_MEDIA_ENGINE_EVENT_LOADEDMETADATA"/>
+  <int value="11" label="MF_MEDIA_ENGINE_EVENT_LOADEDDATA"/>
+  <int value="12" label="MF_MEDIA_ENGINE_EVENT_WAITING"/>
+  <int value="13" label="MF_MEDIA_ENGINE_EVENT_PLAYING"/>
+  <int value="14" label="MF_MEDIA_ENGINE_EVENT_CANPLAY"/>
+  <int value="15" label="MF_MEDIA_ENGINE_EVENT_CANPLAYTHROUGH"/>
+  <int value="16" label="MF_MEDIA_ENGINE_EVENT_SEEKING"/>
+  <int value="17" label="MF_MEDIA_ENGINE_EVENT_SEEKED"/>
+  <int value="18" label="MF_MEDIA_ENGINE_EVENT_TIMEUPDATE"/>
+  <int value="19" label="MF_MEDIA_ENGINE_EVENT_ENDED"/>
+  <int value="20" label="MF_MEDIA_ENGINE_EVENT_RATECHANGE"/>
+  <int value="21" label="MF_MEDIA_ENGINE_EVENT_DURATIONCHANGE"/>
+  <int value="22" label="MF_MEDIA_ENGINE_EVENT_VOLUMECHANGE"/>
+  <int value="1000" label="MF_MEDIA_ENGINE_EVENT_FORMATCHANGE"/>
+  <int value="1001" label="MF_MEDIA_ENGINE_EVENT_PURGEQUEUEDEVENTS"/>
+  <int value="1002" label="MF_MEDIA_ENGINE_EVENT_TIMELINE_MARKER"/>
+  <int value="1003" label="MF_MEDIA_ENGINE_EVENT_BALANCECHANGE"/>
+  <int value="1004" label="MF_MEDIA_ENGINE_EVENT_DOWNLOADCOMPLETE"/>
+  <int value="1005" label="MF_MEDIA_ENGINE_EVENT_BUFFERINGSTARTED"/>
+  <int value="1006" label="MF_MEDIA_ENGINE_EVENT_BUFFERINGENDED"/>
+  <int value="1007" label="MF_MEDIA_ENGINE_EVENT_FRAMESTEPCOMPLETED"/>
+  <int value="1008" label="MF_MEDIA_ENGINE_EVENT_NOTIFYSTABLESTATE"/>
+  <int value="1009" label="MF_MEDIA_ENGINE_EVENT_FIRSTFRAMEREADY"/>
+  <int value="1010" label="MF_MEDIA_ENGINE_EVENT_TRACKSCHANGE"/>
+  <int value="1011" label="MF_MEDIA_ENGINE_EVENT_OPMINFO"/>
+  <int value="1012" label="MF_MEDIA_ENGINE_EVENT_RESOURCELOST"/>
+  <int value="1013" label="MF_MEDIA_ENGINE_EVENT_DELAYLOADEVENT_CHANGED"/>
+  <int value="1014" label="MF_MEDIA_ENGINE_EVENT_STREAMRENDERINGERROR"/>
+  <int value="1015" label="MF_MEDIA_ENGINE_EVENT_SUPPORTEDRATES_CHANGED"/>
+  <int value="1016" label="MF_MEDIA_ENGINE_EVENT_AUDIOENDPOINTCHANGE"/>
+</enum>
+
 <enum name="MediaFoundationRendererErrorReason">
   <int value="0" label="Unknown"/>
   <int value="1" label="CdmProxyReceivedInInvalidState"/>
