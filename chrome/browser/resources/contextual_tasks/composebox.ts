@@ -142,12 +142,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   protected accessor zeroStateSuggestions_: AutocompleteResult = {
     input: '',
-
     suggestionGroupsMap: {},
-
     matches: Array(5).fill(null).map(() => createGhostMatch()),
-
     smartComposeInlineHint: null,
+    sequenceId: 0,
   };
   /* If suggestions are loading. Set this any time that should hide suggestions
    * while load next set of suggestions (after attaching image, etc.)

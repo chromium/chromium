@@ -541,7 +541,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         SelectionLineState.kFocusedButtonContextEntrypoint) {
       this.popupPageHandler_.showContextMenu({x: 0, y: 0});
     } else if (selectionIsNativelySupported(this.selection_)) {
-      this.pageHandler_.openPopupSelection(this.selection_, disposition);
+      this.pageHandler_.openPopupSelection(
+          this.result_?.sequenceId || 0, this.selection_, disposition);
     } else {
       assertNotReached(
           `openCurrentSelection_ called for unsupported selection: ${

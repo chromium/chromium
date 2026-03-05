@@ -60,6 +60,7 @@ export function createAutocompleteResultForTesting(
     matches: [],
     suggestionGroupsMap: {},
     smartComposeInlineHint: null,
+    sequenceId: 0,
   };
 
   return Object.assign(base, modifiers);

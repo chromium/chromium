@@ -6,6 +6,7 @@
 
 #include "base/base64.h"
 #include "base/base64url.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
@@ -299,6 +300,8 @@ std::string GetBase64UrlVariations(Profile* profile) {
 
   return variations_base64url;
 }
+
+BASE_FEATURE(kDropMismatchedSelections, base::FEATURE_ENABLED_BY_DEFAULT);
 
 }  // namespace
 
@@ -644,7 +647,7 @@ SearchboxHandler::CreateAutocompleteResult(
     const PrefService* prefs,
     const TemplateURLService* turl_service) const {
   return searchbox::mojom::AutocompleteResult::New(
-      input,
+      result.sequence_id(), input,
       CreateSuggestionGroupsMap(result, edit_model, prefs,
                                 result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, edit_model, bookmark_model,
@@ -1045,9 +1048,27 @@ void SearchboxHandler::SetPopupSelection(
 }
 
 void SearchboxHandler::OpenPopupSelection(
+    uint32_t result_sequence_id,
     searchbox::mojom::OmniboxPopupSelectionPtr selection,
     WindowOpenDisposition disposition) {
-  edit_model()->OpenSelection(ConvertSelection(std::move(selection)));
+  const OmniboxPopupSelection native_selection =
+      ConvertSelection(std::move(selection));
+  const bool selection_matched =
+      native_selection == edit_model()->GetPopupSelection();
+  const bool sequence_id_matched =
+      result_sequence_id == autocomplete_controller()->result().sequence_id();
+
+  base::UmaHistogramBoolean("Omnibox.WebUI.SelectionMatched",
+                            selection_matched);
+  base::UmaHistogramBoolean("Omnibox.WebUI.AutocompleteResultSequenceIdMatched",
+                            sequence_id_matched);
+
+  if ((!selection_matched || !sequence_id_matched) &&
+      base::FeatureList::IsEnabled(kDropMismatchedSelections)) {
+    return;
+  }
+
+  edit_model()->OpenSelection(native_selection);
 }
 
 void SearchboxHandler::OnNavigationLikely(

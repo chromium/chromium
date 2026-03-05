@@ -430,6 +430,9 @@ class AutocompleteResult {
     return std::erase_if(matches_, predicate);
   }
 
+  // Read-only access to `sequence_id_` for async use verification.
+  uint32_t sequence_id() const { return sequence_id_; }
+
   // This method implements a stateful stable partition. Matches which are
   // search types, and their submatches regardless of type, are shifted
   // earlier in the range, while non-search types and their submatches
@@ -553,6 +556,10 @@ class AutocompleteResult {
   // autocomplete session to start when the omnibox is focused and to end when
   // the popup closes.
   SessionData session_;
+
+  // A simple mechanism to measure and prevent use of stale data while
+  // interoperating asynchronously with the webui omnibox popup.
+  uint32_t sequence_id_;
 
 #if BUILDFLAG(IS_ANDROID)
   // Corresponding Java object.

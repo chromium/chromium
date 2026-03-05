@@ -200,6 +200,7 @@ struct SuggestionGroup {
 };
 
 struct AutocompleteResult {
+  uint32 sequence_id;
   mojo_base.mojom.String16 input;
   // Map of suggestion group IDs to their respective info.
   map<int32, SuggestionGroup> suggestion_groups_map;
@@ -283,7 +284,8 @@ interface PageHandler {
   SetPopupSelection(OmniboxPopupSelection selection);
 
   // Opens a specified popup selection.
-  OpenPopupSelection(OmniboxPopupSelection selection,
+  OpenPopupSelection(uint32 result_sequence_id,
+                     OmniboxPopupSelection selection,
                      ui.mojom.WindowOpenDisposition disposition);
 
   // Informs the browser that the user has changed the selected suggestion. The

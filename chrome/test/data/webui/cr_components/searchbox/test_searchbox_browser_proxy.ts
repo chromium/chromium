@@ -248,8 +248,10 @@ class FakePageHandler extends TestBrowserProxy implements PageHandlerInterface {
   }
 
   openPopupSelection(
-      selection: OmniboxPopupSelection, disposition: WindowOpenDisposition) {
-    this.methodCalled('openPopupSelection', {selection, disposition});
+      resultSequenceId: number, selection: OmniboxPopupSelection,
+      disposition: WindowOpenDisposition) {
+    this.methodCalled(
+        'openPopupSelection', {resultSequenceId, selection, disposition});
   }
 }
 

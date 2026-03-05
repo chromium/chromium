@@ -4549,6 +4549,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.WebUI.AutocompleteResultSequenceIdMatched"
+    enum="Boolean" expires_after="2026-11-12">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged each time a selection is opened from the WebUI omnibox popup. Records
+    whether or not the AutocompleteResult sequence identifier specified by the
+    page (WebUI popup) matched that of the AutocompleteController's published
+    result. This can be used to determine how often the UI attempts to make use
+    of a result that is not the latest from autocomplete.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.WebUI.CharTypedToRepaintLatency.ToPaint" units="ms"
     expires_after="2026-11-12">
   <owner>mahmadi@chromium.org</owner>
@@ -4575,6 +4588,17 @@ Keep consistent with active providers. Doesn't need to include every provider in
     are multiple calls to OnResultChanged before the results are rendered, logs
     the time since the earliest. This does not take into account the time the
     DOM change task spends in the message loop nor its duration.
+  </summary>
+</histogram>
+
+<histogram name="Omnibox.WebUI.SelectionMatched" enum="Boolean"
+    expires_after="2026-11-12">
+  <owner>orinj@chromium.org</owner>
+  <owner>chrome-desktop-search@google.com</owner>
+  <summary>
+    Logged each time a selection is opened from the WebUI omnibox popup. Records
+    whether or not the selection specified by the page (WebUI popup) matched the
+    current OmniboxEditModel popup selection.
   </summary>
 </histogram>
 
