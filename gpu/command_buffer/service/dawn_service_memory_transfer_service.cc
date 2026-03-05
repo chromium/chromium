@@ -127,6 +127,8 @@ class WriteHandleImpl
 
   uint8_t* GetSourceData() const override { return buffer_data_view_.data(); }
 
+  size_t GetSourceSize() const override { return buffer_data_view_.size(); }
+
  private:
   scoped_refptr<gpu::Buffer> buffer_;
   // Data view to client-visible shared memory owned by buffer_.
