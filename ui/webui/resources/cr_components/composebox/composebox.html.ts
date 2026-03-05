@@ -87,17 +87,25 @@ export function getHtml(this: ComposeboxElement) {
           ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ?
             getContextMenuHtml.bind(this)()
           : ''}
-            <div id="carouselContainer" part="carousel-container">
-            ${this.showFileCarousel_ ? html`
-              <cr-composebox-file-carousel
-                part="cr-composebox-file-carousel"
-                exportparts="thumbnail, thumbnail-title"
-                id="carousel"
-                class="${this.carouselOnTop_ ? 'top' : ''}"
-                .files="${Array.from(this.files_.values())}"
-                ?enable-scrolling="${this.enableCarouselScrolling}"
-                @delete-file="${this.onDeleteFile_}">
-              </cr-composebox-file-carousel> ` : ''}
+          <div id="carouselContainer" part="carousel-container">
+            <div class="carousel-container-inner">
+              ${this.showFileCarousel_ ? html`
+                <cr-composebox-file-carousel
+                  part="cr-composebox-file-carousel"
+                  exportparts="thumbnail, thumbnail-title"
+                  id="carousel"
+                  class="${this.carouselOnTop_ ? 'top' : ''}"
+                  .files="${Array.from(this.files_.values())}"
+                  ?enable-scrolling="${this.enableCarouselScrolling}"
+                  @delete-file="${this.onDeleteFile_}">
+                </cr-composebox-file-carousel> ` : ''}
+                ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ && !this.showDropdown_ ? html`
+                <div class="context-menu-container" id="toolChipsContainer"
+                    part="tool-chips-container">
+                  ${getToolChipsHtml.bind(this)()}
+                </div>
+                ` : ''}
+            </div>
             ${this.shouldShowSubmitButton_ && this.searchboxLayoutMode === 'Compact' ?
               getSubmitButtonHtml.bind(this)() :
               ''}
@@ -123,7 +131,7 @@ export function getHtml(this: ComposeboxElement) {
               ?hidden="${!this.showDropdown_}"
               .lastQueriedInput="${this.lastQueriedInput_}">
           </cr-composebox-dropdown>
-          ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ ? html`
+          ${this.searchboxLayoutMode === 'Compact' && this.inToolMode_ && this.showDropdown_ ? html`
             <div class="context-menu-container" id="toolChipsContainer"
                 part="tool-chips-container">
               ${getToolChipsHtml.bind(this)()}
