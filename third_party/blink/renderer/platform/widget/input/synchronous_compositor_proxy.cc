@@ -44,7 +44,7 @@ SynchronousCompositorProxy::SynchronousCompositorProxy(
 SynchronousCompositorProxy::~SynchronousCompositorProxy() {
   // The LayerTreeFrameSink is destroyed/removed by the compositor before
   // shutting down everything.
-  DCHECK_EQ(layer_tree_frame_sink_, nullptr);
+  CHECK_EQ(layer_tree_frame_sink_, nullptr);
   input_handler_proxy_->SetSynchronousInputHandler(nullptr);
 }
 
