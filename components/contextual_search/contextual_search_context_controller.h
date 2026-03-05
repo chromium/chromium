@@ -80,6 +80,7 @@ class ContextualSearchContextController {
         lens::MimeType mime_type,
         FileUploadStatus file_upload_status,
         const std::optional<FileUploadErrorType>& error_type) = 0;
+
    protected:
     ~FileUploadStatusObserver() override = default;
   };
