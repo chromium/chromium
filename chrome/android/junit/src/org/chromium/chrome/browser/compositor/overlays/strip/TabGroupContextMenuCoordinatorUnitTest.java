@@ -275,6 +275,25 @@ public class TabGroupContextMenuCoordinatorUnitTest {
     }
 
     @Test
+    @Feature("Tab Strip Group Context Menu")
+    @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_Incognito_multipleWindows() {
+        when(mTabModel.isIncognitoBranded()).thenReturn(true);
+        MultiWindowUtils.setInstanceCountForTesting(2);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        mTabGroupContextMenuCoordinator.showMenu(new RectProvider(), TAB_GROUP_ID);
+        ModelList modelList = mTabGroupContextMenuCoordinator.getModelListForTesting();
+
+        // Assert: verify number of items in the model list.
+        assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
+
+        // Assert: verify normal menu items.
+        verifyNormalListItems(modelList, 3, /* isIncognito= */ true);
+    }
+
+    @Test
     @DisableFeatures(ChromeFeatureList.DATA_SHARING)
     @EnableFeatures(SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     @Feature("Tab Strip Group Context Menu")
@@ -644,6 +663,12 @@ public class TabGroupContextMenuCoordinatorUnitTest {
 
     @SuppressWarnings("DirectInvocationOnMock")
     private void verifyNormalListItems(ModelList modelList, int closeGroupPosition) {
+        verifyNormalListItems(modelList, closeGroupPosition, false);
+    }
+
+    @SuppressWarnings("DirectInvocationOnMock")
+    private void verifyNormalListItems(
+            ModelList modelList, int closeGroupPosition, boolean isIncognito) {
         verifyDivider(modelList.get(0));
         assertEquals(
                 R.id.open_new_tab_in_group,
@@ -658,7 +683,8 @@ public class TabGroupContextMenuCoordinatorUnitTest {
                 closeGroupPosition + 1,
                 R.plurals.move_group_to_another_window_context_menu_item,
                 List.of(WINDOW_TITLE_2),
-                mActivity);
+                mActivity,
+                isIncognito);
     }
 
     @SuppressWarnings("DirectInvocationOnMock")

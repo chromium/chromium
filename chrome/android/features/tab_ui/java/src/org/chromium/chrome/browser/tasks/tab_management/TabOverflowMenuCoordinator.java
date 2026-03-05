@@ -484,6 +484,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                 submenuItems.add(
                         new ListItemBuilder()
                                 .withTitle(windowDisplayName)
+                                .withIsIncognito(isIncognito)
                                 .withClickListener((v) -> moveToWindow(instanceInfo, id))
                                 .build());
             }
@@ -492,6 +493,7 @@ public abstract class TabOverflowMenuCoordinator<T>
                 .withTitle(
                         mActivity.getResources().getQuantityString(pluralsRes, 2) // Any # > 1
                         )
+                .withIsIncognito(isIncognito)
                 .withSubmenuItems(submenuItems)
                 .build();
     }

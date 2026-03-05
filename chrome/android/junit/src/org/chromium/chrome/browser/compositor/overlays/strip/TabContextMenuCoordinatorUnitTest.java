@@ -656,6 +656,35 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
+    public void testListMenuItems_incognito_multipleWindows() {
+        setupWithIncognito(/* incognito= */ true);
+        initializeCoordinator();
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
+
+        var modelList = new ModelList();
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(
+                modelList,
+                new AnchorInfo(
+                        TAB_OUTSIDE_OF_GROUP_ID,
+                        Collections.singletonList(TAB_OUTSIDE_OF_GROUP_ID)));
+
+        assertEquals("Number of items in the list menu is incorrect", 7, modelList.size());
+
+        // List item 2
+        StripLayoutContextMenuCoordinatorTestUtils.verifyAddToWindowSubmenu(
+                modelList,
+                1,
+                R.plurals.move_tab_to_another_window,
+                Collections.singletonList(WINDOW_TITLE_2),
+                mActivity,
+                /* isIncognito= */ true);
+    }
+
+    @Test
+    @Feature("Tab Strip Context Menu")
     @EnableFeatures({ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP})
     @SuppressWarnings("DirectInvocationOnMock")
     public void testListMenuItems_tabOutsideOfGroup_multipleWindows_multipleTabs() {
