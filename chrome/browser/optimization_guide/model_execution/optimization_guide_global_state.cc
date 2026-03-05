@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/scoped_observation.h"
@@ -46,6 +47,14 @@ void LaunchService(
           .WithDisplayName("On-Device Model Service")
           .Pass());
 }
+
+void LogFreeDiskSpace(std::optional<base::ByteCount> bytes) {
+  if (bytes.has_value()) {
+    base::UmaHistogramCounts10M("OptimizationGuide.OnDeviceModel.FreeDiskSpace",
+                                bytes->InMiB());
+  }
+}
+
 #endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 base::WeakPtr<OptimizationGuideGlobalState>& GetInstance() {
@@ -129,9 +138,10 @@ ChromePredictionManager::ChromePredictionManager()
 }
 ChromePredictionManager::~ChromePredictionManager() = default;
 
-OptimizationGuideGlobalState::OptimizationGuideGlobalState()
-    : on_device_capability_(
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+OptimizationGuideGlobalState::OptimizationGuideGlobalState(
+    LaunchServiceCallback launch_service_callback)
+    : on_device_capability_(
           *g_browser_process->local_state(),
           prediction_manager_.prediction_manager(),
           component_updater::
@@ -140,37 +150,61 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
           component_updater::
               CreateOptimizationGuideOnDeviceModelComponentDelegate(
                   component_updater::OnDeviceModelType::kClassifierModel),
-          base::BindRepeating(&LaunchService),
-          g_browser_process->component_updater()
-#elif BUILDFLAG(IS_ANDROID)
-          *g_browser_process->local_state(),
-          prediction_manager_.prediction_manager()
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
-      ) {
-#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+          launch_service_callback,
+          g_browser_process->component_updater()) {
   component_state_manager_observer_ =
       std::make_unique<ChromeModelComponentStateManagerObserver>(
           on_device_capability_.component_state_manager().GetWeakPtr());
+
   on_device_capability_.performance_classifier()
       .ListenForPerformanceClassAvailable(
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
+  on_device_capability_.performance_classifier()
+      .ListenForPerformanceClassAvailable(base::BindOnce(
+          &OnDeviceModelComponentStateManager::GetFreeDiskSpaceForLogging,
+          on_device_capability_.component_state_manager().GetWeakPtr(),
+          base::BindOnce(&LogFreeDiskSpace)));
   on_device_capability_.performance_classifier().ScheduleEvaluation();
-#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 }
+#else
+OptimizationGuideGlobalState::OptimizationGuideGlobalState()
+    : on_device_capability_(
+#if BUILDFLAG(IS_ANDROID)
+          *g_browser_process->local_state(),
+          prediction_manager_.prediction_manager()
+#endif  // BUILDFLAG(IS_ANDROID)
+      ) {
+}
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
 
 scoped_refptr<OptimizationGuideGlobalState>
 OptimizationGuideGlobalState::CreateOrGet() {
   base::WeakPtr<OptimizationGuideGlobalState>& instance = GetInstance();
   if (!instance) {
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+    auto new_instance = base::WrapRefCounted(
+        new OptimizationGuideGlobalState(base::BindRepeating(&LaunchService)));
+#else
     auto new_instance =
         base::WrapRefCounted(new OptimizationGuideGlobalState());
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
     instance = new_instance->weak_ptr_factory_.GetWeakPtr();
     return new_instance;
   }
   return scoped_refptr<OptimizationGuideGlobalState>(instance.get());
 }
+
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+// static
+scoped_refptr<OptimizationGuideGlobalState>
+OptimizationGuideGlobalState::CreateForTesting() {
+  return base::WrapRefCounted(
+      new OptimizationGuideGlobalState(base::DoNothing()));
+}
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
 
 OptimizationGuideGlobalFeature::OptimizationGuideGlobalFeature() = default;
 

@@ -92,6 +92,14 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="[Deprecated] Host Model Features"/>
 </enum>
 
+<enum name="InstalledModel">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="XXS"/>
+  <int value="2" label="XS"/>
+  <int value="3" label="v2Nano"/>
+  <int value="4" label="v3Nano"/>
+</enum>
+
 <!-- Use following code to get the hash from the model version.
 import struct
 import hashlib

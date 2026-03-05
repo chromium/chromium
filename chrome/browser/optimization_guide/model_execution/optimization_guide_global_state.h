@@ -28,6 +28,7 @@ namespace optimization_guide {
 
 class ChromeModelComponentStateManagerObserver;
 class OptimizationGuideGlobalFeature;
+class OptimizationGuideGlobalStateTest;
 
 // Constructs and initializes a PredictionManager with it's dependencies.
 class ChromePredictionManager {
@@ -75,12 +76,24 @@ class OptimizationGuideGlobalState final
 
  private:
   friend base::RefCounted<OptimizationGuideGlobalState>;
+  friend OptimizationGuideGlobalStateTest;
 
-  OptimizationGuideGlobalState();
   ~OptimizationGuideGlobalState();
 
-  ChromePredictionManager prediction_manager_;
+#if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+  using LaunchServiceCallback = base::RepeatingCallback<void(
+      mojo::PendingReceiver<on_device_model::mojom::OnDeviceModelService>)>;
 
+  explicit OptimizationGuideGlobalState(
+      LaunchServiceCallback launch_service_callback);
+
+  static scoped_refptr<OptimizationGuideGlobalState> CreateForTesting();
+
+#else
+  OptimizationGuideGlobalState();
+#endif  // BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
+
+  ChromePredictionManager prediction_manager_;
 #if BUILDFLAG(USE_ON_DEVICE_MODEL_SERVICE)
   ModelBrokerState on_device_capability_;
   std::unique_ptr<ChromeModelComponentStateManagerObserver>

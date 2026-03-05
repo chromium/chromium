@@ -61,6 +61,10 @@ class PerformanceClassifier final {
     return weak_ptr_factory_.GetSafeRef();
   }
 
+  base::WeakPtr<PerformanceClassifier> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
   // Ensures the performance class will be up to date and available when
   // `complete` runs.
   void EnsurePerformanceClassAvailable(base::OnceClosure complete);

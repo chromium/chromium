@@ -77,7 +77,6 @@ class OptimizationGuideBridge;
 #endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace optimization_guide
 
-class ChromeBrowserMainExtraPartsOptimizationGuide;
 class GURL;
 class OptimizationGuideLogger;
 class OptimizationGuideNavigationData;
@@ -283,7 +282,6 @@ class OptimizationGuideKeyedService
   GetModelExecutionFeaturesController();
 
  private:
-  friend class ChromeBrowserMainExtraPartsOptimizationGuide;
   friend class ChromeBrowsingDataRemoverDelegate;
   friend class contextual_cueing::ZeroStateSuggestionsPageData;
   friend class glic::GlicPageContextEligibilityObserver;
