@@ -1188,7 +1188,8 @@ void Tab::UpdateIconVisibility() {
 
     const bool is_decluttered =
         base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
-        controller_->GetTabCount() >= TabStyle::kTabStripDeclutterMinTabs;
+        controller_->GetTabCount() >=
+            TabStyle::kTabStripDeclutterMinTabsForCloseHide;
     showing_close_button_ =
 #if BUILDFLAG(IS_CHROMEOS)
         should_show_close_button &&

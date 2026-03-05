@@ -692,14 +692,15 @@ TEST_F(TabTest, CloseButtonVisibilityInDeclutteredState) {
   widget->Activate();
 
   // In non-decluttered state (tab count < min), close button should be visible.
-  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabs - 1);
+  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabsForCloseHide -
+                            1);
   tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_TRUE(close->GetVisible());
 
   // In decluttered state (tab count >= min), close button should be hidden for
   // an inactive, unhovered tab.
-  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabs);
+  controller->set_tab_count(TabStyle::kTabStripDeclutterMinTabsForCloseHide);
   tab->InvalidateLayout();
   LayoutTab(tab);
   EXPECT_FALSE(close->GetVisible());

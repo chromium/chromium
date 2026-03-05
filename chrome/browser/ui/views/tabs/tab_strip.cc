@@ -1275,8 +1275,8 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
   }
 
   if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
-      old_tab_count < TabStyle::kTabStripDeclutterMinTabs &&
-      GetTabCount() >= TabStyle::kTabStripDeclutterMinTabs) {
+      old_tab_count < TabStyle::kTabStripDeclutterMinTabsForSeparatorHide &&
+      GetTabCount() >= TabStyle::kTabStripDeclutterMinTabsForSeparatorHide) {
     tab_container_->SchedulePaint();
   }
 
@@ -1340,8 +1340,8 @@ void TabStrip::RemoveTabAt(content::WebContents* contents,
   }
 
   if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
-      old_tab_count >= TabStyle::kTabStripDeclutterMinTabs &&
-      GetTabCount() < TabStyle::kTabStripDeclutterMinTabs) {
+      old_tab_count >= TabStyle::kTabStripDeclutterMinTabsForSeparatorHide &&
+      GetTabCount() < TabStyle::kTabStripDeclutterMinTabsForSeparatorHide) {
     tab_container_->SchedulePaint();
   }
 }

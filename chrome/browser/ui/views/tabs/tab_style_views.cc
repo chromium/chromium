@@ -729,7 +729,7 @@ float TabStyleViewsImpl::GetSeparatorOpacity(bool for_layout,
   // Do not show separators if the tab strip is in a decluttered state.
   if (base::FeatureList::IsEnabled(features::kDesktopGlowUp) &&
       tab()->controller()->GetTabCount() >=
-          TabStyle::kTabStripDeclutterMinTabs) {
+          TabStyle::kTabStripDeclutterMinTabsForSeparatorHide) {
     return 0.0f;
   }
 

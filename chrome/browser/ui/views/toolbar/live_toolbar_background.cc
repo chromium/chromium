@@ -31,9 +31,9 @@
 
 namespace {
 // Configuration for the mirror effect
-constexpr float kBlurRadius = 15.0f;
-constexpr int kGradientAlphaTop = 255;     // 0-255
-constexpr int kGradientAlphaBottom = 100;  // 0-255
+constexpr float kBlurRadius = 30.0f;
+constexpr int kGradientAlphaTop = 210;     // 0-255
+constexpr int kGradientAlphaBottom = 210;  // 0-255
 
 struct FramePinner {
   base::ReadOnlySharedMemoryMapping mapping;
