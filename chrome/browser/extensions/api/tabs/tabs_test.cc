@@ -2626,13 +2626,26 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_WithOpener) {
   // Execute chrome.windows.create and store the new tab in |new_contents|.
   content::WebContents* new_contents = nullptr;
   {
-    content::WebContentsAddedObserver observer;
+    content::TestNavigationObserver nav_observer(extension_url);
+    nav_observer.StartWatchingNewWebContents();
     std::string script = base::StringPrintf(
         R"( window.name = 'old-contents';
-            chrome.windows.create({url: '%s', setSelfAsOpener: true}); )",
+            new Promise(resolve => {
+              chrome.windows.create(
+                {url: '%s', setSelfAsOpener: true}, (win) => {
+                resolve(win.tabs[0].id);
+              });
+            }); )",
         extension_url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(old_contents, script));
-    new_contents = observer.GetWebContents();
+    // We need to get the tabId from the callback because simply waiting for a
+    // new WebContents via WebContentsAddedObserver is flaky when InitialWebUI
+    // is enabled (which creates multiple WebContents). We also wait for the
+    // specific extension URL to load to avoid races with initial intermediate
+    // page loads.
+    int tab_id = content::EvalJs(old_contents, script).ExtractInt();
+    EXPECT_TRUE(
+        ExtensionTabUtil::GetTabById(tab_id, profile(), true, &new_contents));
+    nav_observer.Wait();
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
   }
 
@@ -2697,13 +2710,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_NoOpener) {
   // Execute chrome.windows.create and store the new tab in |new_contents|.
   content::WebContents* new_contents = nullptr;
   {
-    content::WebContentsAddedObserver observer;
+    content::TestNavigationObserver nav_observer(extension_url);
+    nav_observer.StartWatchingNewWebContents();
     std::string script = base::StringPrintf(
         R"( window.name = 'old-contents';
-            chrome.windows.create({url: '%s'}); )",
+            new Promise(resolve => {
+              chrome.windows.create({url: '%s'}, (win) => {
+                resolve(win.tabs[0].id);
+              });
+            }); )",
         extension_url.spec().c_str());
-    ASSERT_TRUE(content::ExecJs(old_contents, script));
-    new_contents = observer.GetWebContents();
+    // We need to get the tabId from the callback to accept the case where
+    // multiple WebContents are created.
+    int tab_id = content::EvalJs(old_contents, script).ExtractInt();
+    EXPECT_TRUE(
+        ExtensionTabUtil::GetTabById(tab_id, profile(), true, &new_contents));
+    nav_observer.Wait();
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
   }
 
@@ -2768,7 +2790,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_OpenerAndOrigin) {
       {extension_url_str, std::nullopt, extension_origin_str},
   });
 
-  auto run_test_case = [&web_contents](const TestCase& test_case) {
+  Profile* profile = this->profile();
+  auto run_test_case = [&web_contents, profile](const TestCase& test_case) {
     std::string maybe_specify_set_self_as_opener;
     if (test_case.set_self_as_opener) {
       maybe_specify_set_self_as_opener =
@@ -2776,14 +2799,21 @@ IN_PROC_BROWSER_TEST_F(ExtensionTabsTest, WindowsCreate_OpenerAndOrigin) {
                              base::ToString(*test_case.set_self_as_opener));
     }
     std::string script = base::StringPrintf(
-        R"( chrome.windows.create({url: '%s'%s}); )", test_case.url.c_str(),
-        maybe_specify_set_self_as_opener.c_str());
+        R"( new Promise(resolve => {
+              chrome.windows.create({url: '%s'%s}, (win) => {
+                resolve(win.tabs[0].id);
+              });
+            }); )",
+        test_case.url.c_str(), maybe_specify_set_self_as_opener.c_str());
 
     content::WebContents* new_contents = nullptr;
     {
-      content::WebContentsAddedObserver observer;
-      ASSERT_TRUE(content::ExecJs(web_contents, script));
-      new_contents = observer.GetWebContents();
+      content::TestNavigationObserver nav_observer(GURL(test_case.url));
+      nav_observer.StartWatchingNewWebContents();
+      int tab_id = content::EvalJs(web_contents, script).ExtractInt();
+      EXPECT_TRUE(
+          ExtensionTabUtil::GetTabById(tab_id, profile, true, &new_contents));
+      nav_observer.Wait();
     }
     ASSERT_TRUE(new_contents);
     ASSERT_TRUE(content::WaitForLoadStop(new_contents));
