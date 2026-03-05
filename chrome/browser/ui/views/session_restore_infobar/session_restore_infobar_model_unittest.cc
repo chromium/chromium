@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_model.h"
 
+#include <memory>
+
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/chrome_browser_main_extra_parts_profiles.h"

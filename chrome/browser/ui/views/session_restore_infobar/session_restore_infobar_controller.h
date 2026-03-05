@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SESSION_RESTORE_INFOBAR_SESSION_RESTORE_INFOBAR_CONTROLLER_H_
 #define CHROME_BROWSER_UI_VIEWS_SESSION_RESTORE_INFOBAR_SESSION_RESTORE_INFOBAR_CONTROLLER_H_
 
+#include <memory>
+
 #include "chrome/browser/ui/views/session_restore_infobar/session_restore_infobar_delegate.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
