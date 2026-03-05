@@ -132,6 +132,19 @@ const CachedMatchedProperties::Entry* MatchedPropertiesCache::Find(
        it2 != cache_item->entries.rend(); ++it2) {
     CachedMatchedProperties::Entry& entry = *it2;
 
+    // Highlight pseudo resolutions store a non-null
+    // originating_element_computed_style; non-highlight resolutions store
+    // nullptr. If the two resolve to the same hash (e.g., both have an empty
+    // matched-properties list), they must not share cache entries, because
+    // the highlight branch below dereferences
+    // originating_element_computed_style unconditionally.  Allowing mixed
+    // entries would not only crash but also produce the wrong computed
+    // result.
+    if (style_resolver_state.IsForHighlight() !=
+        (entry.originating_element_computed_style != nullptr)) {
+      continue;
+    }
+
     if (style_resolver_state.IsForHighlight()) {
       // For highlight pseudos, inherited _and_ non-inherited data
       // comes from the parent, so both need to match.

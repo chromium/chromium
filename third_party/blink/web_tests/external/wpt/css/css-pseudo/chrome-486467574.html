@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="help" href="https://crbug.com/486467574">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+  <video>
+    <a>
+      <div id="container"></div>
+    </a>
+  </video>
+  <script>
+    test(() => {
+      const container = document.getElementById('container');
+      const obj = document.createElement('div');
+      container.appendChild(obj);
+      const computedStyle = getComputedStyle(obj, '::selection');
+      const computedColor = computedStyle.getPropertyValue('color');
+      assert_equals(computedColor, 'rgb(0, 0, 0)', '::selection color should be blue');
+    }, 'computed ::selection color should follow the configured rule');
+  </script>
+</body>
