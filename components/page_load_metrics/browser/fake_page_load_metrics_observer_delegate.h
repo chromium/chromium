@@ -82,6 +82,7 @@ class FakePageLoadMetricsObserverDelegate
       const override;
   ukm::SourceId GetPageUkmSourceId() const override;
   mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
+  uint64_t GetSoftNavigationCount() const override;
   ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
       base::UnguessableToken same_document_metrics_token) const override;
   bool IsFirstNavigationInWebContents() const override;

@@ -11,12 +11,17 @@ namespace page_load_metrics {
 
 TEST(PageLoadMetricsDebugStringTest, SoftNavigationMetrics) {
   mojom::SoftNavigationMetrics soft_navigation_metrics;
-  soft_navigation_metrics.count = 1;
+  soft_navigation_metrics.soft_navigation_offset = 1;
   soft_navigation_metrics.start_time = base::Milliseconds(123);
+  soft_navigation_metrics.soft_navigation_slicing_time =
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(42);
   soft_navigation_metrics.navigation_type =
       blink::mojom::NavigationTypeForNavigationApi::kReplace;
+
   EXPECT_EQ(DebugString(soft_navigation_metrics),
-            "{count: 1, start_time: 123, navigation_type: kReplace}");
+            "{soft_navigation_offset: 1, start_time: 123, "
+            "soft_navigation_slicing_time: 42, "
+            "navigation_type: kReplace}");
 }
 
 TEST(PageLoadMetricsDebugStringTest, PageLoadTiming) {

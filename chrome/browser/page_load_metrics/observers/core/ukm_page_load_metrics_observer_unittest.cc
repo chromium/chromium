@@ -1854,6 +1854,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, SoftNavigationCount) {
   auto soft_navigation_metrics =
       page_load_metrics::mojom::SoftNavigationMetrics(
           1, base::Milliseconds(12),
+          base::TimeTicks::UnixEpoch() + base::Milliseconds(12),
           blink::mojom::NavigationTypeForNavigationApi::kPush,
           base::UnguessableToken::Create());
 

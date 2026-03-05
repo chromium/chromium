@@ -28,8 +28,9 @@ void FakePageTimingSender::SendTiming(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
-    const mojom::LargestContentfulPaintTimingPtr& soft_largest_contentful_paint,
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        soft_largest_contentful_paint,
     std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
   validator_->UpdateTiming(timing, metadata, new_features, resources,
                            render_data, cpu_timing, event_timings,
@@ -213,14 +214,16 @@ void FakePageTimingSender::PageTimingValidator::UpdateTiming(
     const std::vector<mojom::EventTimingPtr>& event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
-    const mojom::LargestContentfulPaintTimingPtr&
+    const std::vector<mojom::SoftNavigationMetricsPtr>& soft_navigation_metrics,
+    const std::vector<mojom::LargestContentfulPaintTimingPtr>&
         soft_largest_contentful_paint) {
   actual_timings_.push_back(timing.Clone());
-  actual_soft_navigation_metrics_.push_back(soft_navigation_metrics->Clone());
-  actual_soft_largest_contentful_paint_.push_back(
-      soft_largest_contentful_paint.Clone());
-
+  for (const auto& s : soft_navigation_metrics) {
+    actual_soft_navigation_metrics_.push_back(s->Clone());
+  }
+  for (const auto& s : soft_largest_contentful_paint) {
+    actual_soft_largest_contentful_paint_.push_back(s.Clone());
+  }
   if (!cpu_timing->task_time.is_zero()) {
     actual_cpu_timings_.push_back(cpu_timing.Clone());
   }

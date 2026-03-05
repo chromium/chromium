@@ -151,8 +151,9 @@ class PageTimingMetricsSender {
 
   blink::UseCounterFeatureTracker feature_tracker_;
 
-  mojom::SoftNavigationMetricsPtr soft_navigation_metrics_;
-  mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint_;
+  std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics_;
+  std::vector<mojom::LargestContentfulPaintTimingPtr>
+      soft_largest_contentful_paint_;
 
   bool have_sent_ipc_ = false;
 

@@ -208,6 +208,10 @@ FakePageLoadMetricsObserverDelegate::GetSoftNavigationMetrics() const {
   return *mojom::SoftNavigationMetrics::New();
 }
 
+uint64_t FakePageLoadMetricsObserverDelegate::GetSoftNavigationCount() const {
+  return 0;
+}
+
 ukm::SourceId
 FakePageLoadMetricsObserverDelegate::GetUkmSourceIdForSameDocumentNavigation(
     base::UnguessableToken same_document_metrics_token) const {
