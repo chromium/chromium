@@ -104,10 +104,10 @@ TEST_F(AssistantContainerViewControllerTest, SnapsToSingleDetent) {
 
 // Tests that specific limits are respected.
 TEST_F(AssistantContainerViewControllerTest, RespectsLimits) {
-  AssistantContainerDetent* hugeDetent =
+  AssistantContainerDetent* huge_detent =
       AssistantContainerFixedDetent(1000.0, @"huge");
 
-  [view_controller_ setDetents:@[ hugeDetent ]];
+  [view_controller_ setDetents:@[ huge_detent ]];
   [view_controller_ updateHeightConstraint];
 
   // Should clamp to max height.
@@ -118,12 +118,12 @@ TEST_F(AssistantContainerViewControllerTest, RespectsLimits) {
 // Tests that setting detents in an unsorted order properly sorts them,
 // ensuring limits successfully clamp back to valid boundaries.
 TEST_F(AssistantContainerViewControllerTest, SortsDetentsCorrectly) {
-  AssistantContainerDetent* mediumDetent =
+  AssistantContainerDetent* medium_detent =
       AssistantContainerFixedDetent(200.0, @"medium");
 
   // Pass them in shuffled order: large, small, medium.
   [view_controller_
-      setDetents:@[ large_detent_, minimized_detent_, mediumDetent ]];
+      setDetents:@[ large_detent_, minimized_detent_, medium_detent ]];
 
   // Implicitly verify sorting structure by clamping to extremes and seeing if
   // it correctly attaches to exactly 100 or 300, avoiding out-of-order crashes.
