@@ -3887,7 +3887,7 @@
       // for encapsulated content within <textarea> and <input> elements.
       // crbug.com/421421332
       name: "OpaqueRange",
-      status: "test",
+      status: "experimental",
     },
     {
       // Restrict popover invoker lookup to the same TreeScope as the element.

@@ -107,4 +107,16 @@ TEST_F(OpaqueRangeTest, InputElementRange) {
   EXPECT_FALSE(range->collapsed());
 }
 
+TEST_F(OpaqueRangeTest, RemovalClearsOpaqueRanges) {
+  ScopedOpaqueRangeForTest scoped_feature(true);
+  SetBodyContent("<textarea>Hello</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  OpaqueRange::Create(GetDocument(), textarea, 0, 3);
+  OpaqueRange::Create(GetDocument(), textarea, 2, 5);
+  EXPECT_EQ(textarea->opaque_ranges_.size(), 2u);
+  textarea->remove();
+  EXPECT_TRUE(textarea->opaque_ranges_.empty());
+}
+
 }  // namespace blink

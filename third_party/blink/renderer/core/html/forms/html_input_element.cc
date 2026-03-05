@@ -619,6 +619,11 @@ void HTMLInputElement::UpdateType(const AtomicString& type_attribute_value) {
   if (!previously_selectable && now_selectable)
     SetSelectionRange(0, 0, kSelectionHasNoDirection);
 
+  // Disconnect all OpaqueRanges on any type change.
+  if (previously_selectable && RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+    DisconnectAllOpaqueRanges();
+  }
+
   UpdateHasBeenPasswordField(new_type_name);
 
   SetNeedsValidityCheck();

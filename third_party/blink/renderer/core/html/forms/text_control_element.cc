@@ -1320,6 +1320,20 @@ TextOverflowData TextControlElement::ValueForTextOverflow() const {
   return ComputedStyleRef().TextOverflow();
 }
 
+void TextControlElement::DisconnectAllOpaqueRanges() {
+  while (!opaque_ranges_.empty()) {
+    opaque_ranges_.back()->disconnect();
+  }
+}
+
+void TextControlElement::RemovedFrom(ContainerNode& insertion_point) {
+  if (insertion_point.isConnected() &&
+      RuntimeEnabledFeatures::OpaqueRangeEnabled()) {
+    DisconnectAllOpaqueRanges();
+  }
+  HTMLFormControlElementWithState::RemovedFrom(insertion_point);
+}
+
 void TextControlElement::RegisterOpaqueRange(OpaqueRange* range) {
   opaque_ranges_.push_back(range);
 }

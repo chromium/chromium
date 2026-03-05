@@ -234,6 +234,8 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
 
  protected:
   TextControlElement(const QualifiedName&, Document&);
+  void RemovedFrom(ContainerNode&) override;
+  void DisconnectAllOpaqueRanges();
   virtual HTMLElement* UpdatePlaceholderText() = 0;
 
   // Creates the editor if necessary. Implementations that support an editor
@@ -391,6 +393,7 @@ class CORE_EXPORT TextControlElement : public HTMLFormControlElementWithState {
   FRIEND_TEST_ALL_PREFIXES(TextControlElementTest, IndexForPosition);
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, ValueWithHardLineBreaks);
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, ValueWithHardLineBreaksRtl);
+  FRIEND_TEST_ALL_PREFIXES(OpaqueRangeTest, RemovalClearsOpaqueRanges);
 };
 
 inline bool IsTextControl(const Node& node) {
