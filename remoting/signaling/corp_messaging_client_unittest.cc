@@ -44,7 +44,7 @@ constexpr char kFakeAuthzToken[] = "fake_authz_token";
 constexpr char kFakeAuthzTokenBase64[] = "ZmFrZV9hdXRoel90b2tlbg==";
 constexpr char kFakePublicKey[] = "fake_public_key";
 
-using DoneCallback = MessagingClient::DoneCallback;
+using DoneCallback = CorpMessagingClient::DoneCallback;
 
 base::OnceCallback<void(const HttpStatus&)> CheckStatusThenQuitRunLoopCallback(
     const base::Location& from_here,
@@ -76,8 +76,7 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
 
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzTokenBase64},
-      SignalingMessage(std::move(peer_message)),
+      SignalingAddress{kFakeAuthzTokenBase64}, std::move(peer_message),
       CheckStatusThenQuitRunLoopCallback(
           FROM_HERE, HttpStatus::Code::UNAUTHENTICATED, &run_loop));
   test_responder_.AddErrorToMostRecentRequestUrl(
@@ -85,12 +84,11 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_Unauthenticated) {
   run_loop.Run();
 }
 
-TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
+TEST_F(CorpMessagingClientTest, TestSendMessage_SendOnePeerMessage) {
   base::RunLoop run_loop;
   internal::PeerMessageStruct peer_message;
   messaging_client_.SendMessage(
-      SignalingAddress{kFakeAuthzTokenBase64},
-      SignalingMessage(std::move(peer_message)),
+      SignalingAddress{kFakeAuthzTokenBase64}, std::move(peer_message),
       CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
                                          &run_loop));
 
@@ -100,6 +98,29 @@ TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneMessage) {
   // External builds use a DoNothing proto to back the request so we scope the
   // verification to internal builds only.
   ASSERT_EQ(kFakeAuthzToken, request.messaging_authz_token());
+#endif
+
+  test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());
+  run_loop.Run();
+}
+
+TEST_F(CorpMessagingClientTest, TestSendMessage_SendOneJingleMessage) {
+  base::RunLoop run_loop;
+  internal::PeerMessageStruct peer_message;
+  internal::IqStanzaStruct iq_stanza;
+  iq_stanza.xml = "<iq>test</iq>";
+  peer_message.payload = std::move(iq_stanza);
+
+  messaging_client_.SendMessage(
+      SignalingAddress{kFakeAuthzTokenBase64}, std::move(peer_message),
+      CheckStatusThenQuitRunLoopCallback(FROM_HERE, HttpStatus::Code::OK,
+                                         &run_loop));
+
+  HostSendMessageRequest request;
+  ASSERT_TRUE(test_responder_.GetMostRecentRequestMessage(&request));
+#if BUILDFLAG(REMOTING_INTERNAL)
+  // Verify that the Jingle message was wrapped in a PeerMessage.
+  ASSERT_TRUE(request.has_peer_message());
 #endif
 
   test_responder_.AddResponseToMostRecentRequestUrl(HostSendMessageResponse());

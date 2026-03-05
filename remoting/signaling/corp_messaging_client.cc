@@ -12,6 +12,7 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "base/uuid.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -24,7 +25,9 @@
 #include "remoting/base/protobuf_http_stream_request.h"
 #include "remoting/base/service_urls.h"
 #include "remoting/signaling/corp_message_channel_strategy.h"
+#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/message_channel.h"
+#include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -120,24 +123,24 @@ CorpMessagingClient::CorpMessagingClient(
       std::move(channel_strategy), /*signaling_tracker=*/nullptr);
 }
 
+CorpMessagingClient::CorpMessagingClient() = default;
+
 CorpMessagingClient::~CorpMessagingClient() = default;
 
 base::CallbackListSubscription CorpMessagingClient::RegisterMessageCallback(
     const MessageCallback& callback) {
-  return callback_list_.Add(callback);
+  return message_callback_list_.Add(callback);
 }
 
 void CorpMessagingClient::SendMessage(
     const SignalingAddress& destination_address,
-    SignalingMessage&& message,
+    internal::PeerMessageStruct&& message,
     DoneCallback on_done) {
   internal::HostSendMessageRequestStruct request;
   CHECK_EQ(destination_address.channel(), SignalingAddress::Channel::CORP);
   request.messaging_authz_token = destination_address.id();
 
-  CHECK(std::holds_alternative<internal::PeerMessageStruct>(message));
-  request.peer_message =
-      std::get<internal::PeerMessageStruct>(std::move(message));
+  request.peer_message = std::move(message);
   LOG_IF(WARNING, !request.peer_message.message_id.empty())
       << "Overwriting existing message_id value: "
       << request.peer_message.message_id;
@@ -238,15 +241,13 @@ CorpMessagingClient::OpenReceiveMessagesStream(
 
 void CorpMessagingClient::OnMessageReceived(
     const internal::PeerMessageStruct& message) {
-  LOG_IF(WARNING, callback_list_.empty())
-      << "No listener registered to receive signaling message.";
-
   const auto* iq_stanza =
       std::get_if<internal::IqStanzaStruct>(&message.payload);
-  callback_list_.Notify(iq_stanza
-                            ? SignalingAddress(iq_stanza->messaging_authz_token)
-                            : SignalingAddress(),
-                        message);
+  SignalingAddress sender_address =
+      iq_stanza ? SignalingAddress(iq_stanza->messaging_authz_token)
+                : SignalingAddress();
+
+  message_callback_list_.Notify(sender_address, message);
 }
 
 }  // namespace remoting

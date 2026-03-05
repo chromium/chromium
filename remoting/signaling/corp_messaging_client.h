@@ -14,7 +14,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "remoting/base/internal_headers.h"
 #include "remoting/signaling/corp_message_channel_strategy.h"
-#include "remoting/signaling/messaging_client.h"
 
 namespace google::protobuf {
 class MessageLite;
@@ -36,10 +35,18 @@ class HttpStatus;
 class MessageChannel;
 class ProtobufHttpClient;
 class ScopedProtobufHttpRequest;
+class SignalingAddress;
 
 // A class for sending and receiving messages via the Corp messaging API.
-class CorpMessagingClient final : public MessagingClient {
+class CorpMessagingClient {
  public:
+  using MessageCallback =
+      base::RepeatingCallback<void(const SignalingAddress& sender_address,
+                                   const internal::PeerMessageStruct& message)>;
+  using MessageCallbackList =
+      base::RepeatingCallbackList<void(const SignalingAddress&,
+                                       const internal::PeerMessageStruct&)>;
+  using DoneCallback = base::OnceCallback<void(const HttpStatus& status)>;
   using SignalingAddressChangedCallback =
       CorpMessageChannelStrategy::SignalingAddressChangedCallback;
 
@@ -53,18 +60,38 @@ class CorpMessagingClient final : public MessagingClient {
   CorpMessagingClient(const CorpMessagingClient&) = delete;
   CorpMessagingClient& operator=(const CorpMessagingClient&) = delete;
 
-  ~CorpMessagingClient() override;
+  virtual ~CorpMessagingClient();
 
-  // MessagingClient overrides.
-  base::CallbackListSubscription RegisterMessageCallback(
-      const MessageCallback& callback) override;
-  void SendMessage(const SignalingAddress& destination_address,
-                   SignalingMessage&& message,
-                   DoneCallback on_done) override;
-  void StartReceivingMessages(base::OnceClosure on_ready,
-                              DoneCallback on_closed) override;
-  void StopReceivingMessages() override;
-  bool IsReceivingMessages() const override;
+  // Registers a callback which is run for each new message received. Simply
+  // delete the returned subscription object to unregister. The subscription
+  // object must be deleted before |this| is deleted.
+  virtual base::CallbackListSubscription RegisterMessageCallback(
+      const MessageCallback& callback);
+
+  // Sends |message| to |destination_address| and then calls |on_done| with the
+  // result of the operation.
+  virtual void SendMessage(const SignalingAddress& destination_address,
+                           internal::PeerMessageStruct&& message,
+                           DoneCallback on_done);
+
+  // Opens a stream to continuously receive new messages from the server and
+  // calls the registered MessageCallback once a new message is received.
+  // |on_ready| is called once the stream is successfully started.
+  // |on_closed| is called if the stream fails to start, in which case
+  // |on_ready| will not be called, or when the stream is closed or dropped,
+  // in which case it is called after |on_ready| is called.
+  virtual void StartReceivingMessages(base::OnceClosure on_ready,
+                                      DoneCallback on_closed);
+
+  // Stops the stream for continuously receiving new messages. Note that
+  // |on_closed| callback will be silently dropped.
+  virtual void StopReceivingMessages();
+
+  // Returns true if the streaming channel is open.
+  virtual bool IsReceivingMessages() const;
+
+ protected:
+  CorpMessagingClient();
 
  private:
   template <typename CallbackFunctor>
@@ -91,7 +118,7 @@ class CorpMessagingClient final : public MessagingClient {
   std::string public_key_;
   std::unique_ptr<ProtobufHttpClient> client_;
   std::unique_ptr<MessageChannel> message_channel_;
-  MessageCallbackList callback_list_;
+  MessageCallbackList message_callback_list_;
 };
 
 }  // namespace remoting

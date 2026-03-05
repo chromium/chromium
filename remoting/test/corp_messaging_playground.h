@@ -48,7 +48,7 @@ class CorpMessagingPlayground {
   void OnStreamClosed(const HttpStatus& status);
   void OnSignalingAddressChanged(const SignalingAddress& local_address);
   void OnPeerMessageReceived(const SignalingAddress& sender_address,
-                             const SignalingMessage& message);
+                             const internal::PeerMessageStruct& message);
   void OnCharacterInput(char c);
   void SendMessage(int count = 1);
   void StartPingPongRally();

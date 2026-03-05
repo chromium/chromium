@@ -210,12 +210,6 @@ void FakeSignalStrategy::NotifyListeners(SignalingMessage message) {
     if (ftl->has_xmpp() && ftl->xmpp().has_stanza()) {
       xml = ftl->xmpp().stanza();
     }
-  } else if (const auto* corp = std::get_if<internal::PeerMessageStruct>(
-                 &message_to_dispatch)) {
-    if (const auto* iq =
-            std::get_if<internal::IqStanzaStruct>(&corp->payload)) {
-      xml = iq->xml;
-    }
   }
 
   if (xml) {
