@@ -33,6 +33,13 @@ found in the LICENSE file.
         android:summary="@string/settings_glic_permissions_default_tab_access_toggle_sublabel_data_protected"
         app:expandedContentLayout="@layout/glic_default_tab_access" />
 
+    <org.chromium.components.browser_ui.settings.ChromeExpandableSwitchPreference
+        android:key="glic_permissions_auto_browse"
+        android:title="@string/settings_glic_permissions_chrome_web_actuation_toggle"
+        android:summary="@string/settings_glic_permissions_chrome_web_actuation_toggle_sublabel"
+        app:expandedContentLayout="@layout/glic_auto_browse" />
+
+
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="glic_permissions_activity"
         android:title="@string/settings_glic_permissions_activity_button"

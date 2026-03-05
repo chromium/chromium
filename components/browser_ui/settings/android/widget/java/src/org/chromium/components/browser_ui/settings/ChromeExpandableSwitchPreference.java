@@ -25,9 +25,20 @@ import org.chromium.ui.widget.CheckableImageView;
 /** A switch preference that can be expanded to show more details. */
 @NullMarked
 public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
+    /** Interface to be notified when the expanded area is bound. */
+    public interface OnBindExpandedAreaListener {
+        /**
+         * Called when the expanded area is bound to the view holder.
+         *
+         * @param expandedArea The view that was bound (and potentially inflated).
+         */
+        void onBindExpandedArea(View expandedArea);
+    }
+
     private boolean mExpanded;
     @LayoutRes private final int mExpandedContentLayoutResId;
     private @Nullable Drawable mDrawable;
+    private @Nullable OnBindExpandedAreaListener mOnBindExpandedAreaListener;
 
     public ChromeExpandableSwitchPreference(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
@@ -39,6 +50,15 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
                         R.styleable.ChromeExpandableSwitchPreference_expandedContentLayout, 0);
         a.recycle();
         assert mExpandedContentLayoutResId != 0;
+    }
+
+    /**
+     * Sets the listener to be notified when the expanded area is bound.
+     *
+     * @param listener The listener to set.
+     */
+    public void setOnBindExpandedAreaListener(@Nullable OnBindExpandedAreaListener listener) {
+        mOnBindExpandedAreaListener = listener;
     }
 
     @Override
@@ -65,6 +85,9 @@ public class ChromeExpandableSwitchPreference extends ChromeSwitchPreference {
         }
         if (expandedArea != null) {
             expandedArea.setVisibility(mExpanded ? View.VISIBLE : View.GONE);
+            if (mExpanded && mOnBindExpandedAreaListener != null) {
+                mOnBindExpandedAreaListener.onBindExpandedArea(expandedArea);
+            }
             // Catch the click event on the expanded area to prevent it from propagating to the
             // parent view. This prevents the preference from toggling when the user interacts
             // with the expanded content.

@@ -14,6 +14,7 @@ generate_jni("jni_headers") {
 
 android_resources("java_resources") {
   sources = [
+    "java/res/layout/glic_auto_browse.xml",
     "java/res/layout/glic_default_tab_access.xml",
     "java/res/values/dimens.xml",
     "java/res/xml/glic_settings.xml",
@@ -53,6 +54,7 @@ android_library("java") {
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]

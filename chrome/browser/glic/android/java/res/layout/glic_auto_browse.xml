@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+Copyright 2026 The Chromium Authors
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/glic_auto_browse_expanded_container"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/glic_expanded_container_padding_bottom">
+
+    <TextView
+        android:id="@+id/glic_auto_browse_when_on_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_header_top_margin"
+        android:layout_marginBottom="@dimen/glic_expanded_header_bottom_margin"
+        android:lineHeight="@dimen/glic_expanded_content_line_height"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:text="@string/settings_heading_when_on" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_arrow_selector_spark_24dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_web_actuation_toggle_when_on_1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_check_circle_24dp"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_web_actuation_toggle_when_on_2" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/glic_auto_browse_consider_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_header_top_margin"
+        android:layout_marginBottom="@dimen/glic_expanded_header_bottom_margin"
+        android:lineHeight="@dimen/glic_expanded_content_line_height"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
+        android:text="@string/settings_heading_consider" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_screensaver_auto_24dp"/>
+
+        <TextView
+            android:id="@+id/glic_auto_browse_consider_data_sharing_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_web_actuation_toggle_consider_1" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/glic_expanded_row_top_margin"
+        android:gravity="top"
+        android:orientation="horizontal">
+
+        <org.chromium.ui.widget.ChromeImageView
+            android:layout_width="@dimen/glic_expanded_row_icon_size"
+            android:layout_height="@dimen/glic_expanded_row_icon_size"
+            android:layout_marginEnd="@dimen/glic_expanded_row_icon_margin_end"
+            android:src="@drawable/ic_shield_24dp"/>
+
+        <TextView
+            android:id="@+id/glic_auto_browse_consider_user_responsibility_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:lineHeight="@dimen/glic_expanded_content_line_height"
+            android:textAppearance="@style/TextAppearance.TextMedium.Secondary"
+            android:text="@string/settings_glic_permissions_web_actuation_toggle_consider_2" />
+    </LinearLayout>
+
+</LinearLayout>
