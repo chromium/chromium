@@ -182,7 +182,7 @@ void WebAppTabHelper::SetState(std::optional<webapps::AppId> app_id,
 
   if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi) &&
       (previous_window_app_id != window_app_id_)) {
-    MaybeShowBlockedMigrationInfoBar(window_app_id_);
+    MaybeShowBlockedMigrationInfoBar();
   }
 
   if (previous_app_id != app_id_) {
@@ -274,6 +274,7 @@ WebAppTabHelper::WebAppTabHelper(tabs::TabInterface* tab,
       tab->GetBrowserWindowInterface()->GetProfile());
   CHECK(provider_);
   observation_.Observe(&provider_->install_manager());
+  registrar_observation_.Observe(&provider_->registrar_unsafe());
 
   SetState(FindTabAppIdForUrlInScope(provider_->registrar_unsafe(),
                                      contents->GetLastCommittedURL()),
@@ -331,6 +332,18 @@ void WebAppTabHelper::OnWebAppWillBeUninstalled(
 void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
   SetAppId(std::nullopt);
+}
+
+void WebAppTabHelper::OnWebAppPendingMigrationInfoChanged(
+    const webapps::AppId& app_id,
+    bool has_pending_migration) {
+  if (app_id == window_app_id_) {
+    MaybeShowBlockedMigrationInfoBar();
+  }
+}
+
+void WebAppTabHelper::OnAppRegistrarDestroyed() {
+  registrar_observation_.Reset();
 }
 
 void WebAppTabHelper::OnAssociatedAppChanged(
@@ -483,18 +496,23 @@ void WebAppTabHelper::OnManifestSpecifiedOnPrimaryPage(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(WebAppTabHelper);
 
-// TODO(crbug.com/442651045) Append removed logic for this info bar.
-void WebAppTabHelper::MaybeShowBlockedMigrationInfoBar(
-    const std::optional<webapps::AppId>& window_app_id) {
-  if (!window_app_id.has_value()) {
-    return;
+void WebAppTabHelper::MaybeShowBlockedMigrationInfoBar() {
+  bool should_show = false;
+  if (window_app_id_.has_value()) {
+    const WebApp* app =
+        provider_->registrar_unsafe().GetAppById(window_app_id_.value());
+    if (app && app->pending_migration_info().has_value() &&
+        provider_->registrar_unsafe().IsInstalledByPolicy(
+            window_app_id_.value())) {
+      should_show = true;
+    }
   }
-  const WebApp* app =
-      provider_->registrar_unsafe().GetAppById(window_app_id.value());
-  if (app && app->pending_migration_info().has_value() &&
-      provider_->registrar_unsafe().IsInstalledByPolicy(
-          window_app_id.value())) {
+
+  if (should_show) {
     provider_->ui_manager().MaybeCreateWebAppBlockedMigrationInfoBar(
+        web_contents());
+  } else {
+    provider_->ui_manager().MaybeRemoveWebAppBlockedMigrationInfoBar(
         web_contents());
   }
 }

@@ -615,6 +615,11 @@ void WebAppUiManagerImpl::MaybeCreateWebAppBlockedMigrationInfoBar(
   WebAppBlockedMigrationInfoBarDelegate::Create(web_contents);
 }
 
+void WebAppUiManagerImpl::MaybeRemoveWebAppBlockedMigrationInfoBar(
+    content::WebContents* web_contents) {
+  WebAppBlockedMigrationInfoBarDelegate::Remove(web_contents);
+}
+
 void WebAppUiManagerImpl::MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(
     Browser* browser,
     Profile* profile,

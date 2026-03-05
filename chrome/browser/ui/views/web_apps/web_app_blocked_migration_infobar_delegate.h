@@ -19,7 +19,12 @@ class WebAppBlockedMigrationInfoBarDelegate : public ConfirmInfoBarDelegate {
   // Creates and adds the infobar to the given WebContents.
   static void Create(content::WebContents* web_contents);
 
+  // Removes the infobar from the given WebContents if it exists.
+  static void Remove(content::WebContents* web_contents);
+
   ~WebAppBlockedMigrationInfoBarDelegate() override;
+
+  bool ShouldExpire(const NavigationDetails& details) const override;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -29,7 +34,7 @@ class WebAppBlockedMigrationInfoBarDelegate : public ConfirmInfoBarDelegate {
   int GetButtons() const override;
 
  private:
-  explicit WebAppBlockedMigrationInfoBarDelegate();
+  WebAppBlockedMigrationInfoBarDelegate();
 
   const GURL learn_more_url_;
 };

@@ -344,6 +344,10 @@ class WebAppUiManager {
   virtual void MaybeCreateWebAppBlockedMigrationInfoBar(
       content::WebContents* web_contents) = 0;
 
+  // Removes the WebAppBlockedUpdateInfoBar from a Web App window if it exists.
+  virtual void MaybeRemoveWebAppBlockedMigrationInfoBar(
+      content::WebContents* web_contents) = 0;
+
   // Creates the IPH bubble for apps that are launched via link capturing being
   // enabled.
   virtual void MaybeShowIPHPromoForAppsLaunchedViaLinkCapturing(

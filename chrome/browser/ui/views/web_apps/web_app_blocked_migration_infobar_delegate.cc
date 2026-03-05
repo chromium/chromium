@@ -20,10 +20,41 @@ void WebAppBlockedMigrationInfoBarDelegate::Create(
     content::WebContents* web_contents) {
   infobars::ContentInfoBarManager* infobar_manager =
       infobars::ContentInfoBarManager::FromWebContents(web_contents);
-  if (infobar_manager) {
-    infobar_manager->AddInfoBar(CreateConfirmInfoBar(
-        base::WrapUnique(new WebAppBlockedMigrationInfoBarDelegate())));
+  if (!infobar_manager) {
+    return;
   }
+  for (const auto& infobar : infobar_manager->infobars()) {
+    if (infobar->delegate()->GetIdentifier() ==
+        infobars::InfoBarDelegate::
+            WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE) {
+      return;  // Already exists, don't show another one.
+    }
+  }
+  infobar_manager->AddInfoBar(CreateConfirmInfoBar(
+      base::WrapUnique(new WebAppBlockedMigrationInfoBarDelegate())));
+}
+
+// static
+void WebAppBlockedMigrationInfoBarDelegate::Remove(
+    content::WebContents* web_contents) {
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  if (!infobar_manager) {
+    return;
+  }
+  for (const auto& infobar : infobar_manager->infobars()) {
+    if (infobar->delegate()->GetIdentifier() ==
+        infobars::InfoBarDelegate::
+            WEB_APP_BLOCKED_MIGRATION_INFOBAR_DELEGATE) {
+      infobar_manager->RemoveInfoBar(infobar);
+      break;
+    }
+  }
+}
+
+bool WebAppBlockedMigrationInfoBarDelegate::ShouldExpire(
+    const NavigationDetails& details) const {
+  return false;
 }
 
 // TODO(crbug.com/488031001) Find learn more link with more context.

@@ -6,6 +6,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_browsertest_base.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/proto/web_app.pb.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -21,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -75,6 +78,107 @@ IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
     }
   }
   EXPECT_TRUE(found_infobar);
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       KeepInfoBarWhenWebAppNavigateAway) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+
+  const GURL target_app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  ForceInstallWebApp(profile(), target_app_url);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  ASSERT_TRUE(infobar_manager);
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+
+  // Mock navigates to an out-of-scope URL.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(app_browser, GURL("about:blank")));
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       RemoveInfoBarWhenReparentBackToNonAppBrowser) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+
+  const GURL target_app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  ForceInstallWebApp(profile(), target_app_url);
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  ASSERT_TRUE(infobar_manager);
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+
+  // Reparent back to non-app browser
+  Browser* tabbed_browser = chrome::OpenInChrome(app_browser);
+  content::WebContents* tabbed_web_contents =
+      tabbed_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(web_contents, tabbed_web_contents);
+
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppBlockedMigrationInfoBarDelegateBrowserTest,
+                       RemoveInfoBarWhenMigrationIsGone) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_from/suggest.html");
+  webapps::AppId app_id = ForceInstallWebApp(profile(), app_url).value();
+
+  const GURL target_app_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/suggest.html");
+  webapps::AppId target_app_id =
+      ForceInstallWebApp(profile(), target_app_url).value();
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+
+  Browser* app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
+  content::WebContents* web_contents =
+      app_browser->tab_strip_model()->GetActiveWebContents();
+
+  infobars::ContentInfoBarManager* infobar_manager =
+      infobars::ContentInfoBarManager::FromWebContents(web_contents);
+  ASSERT_TRUE(infobar_manager);
+  EXPECT_EQ(1u, infobar_manager->infobars().size());
+
+  const GURL no_migration_url = embedded_test_server()->GetURL(
+      "/web_apps/migration/migrate_to/no_migration.html");
+
+  // Navigate the target app to a page that lacks the migrate_from field in its
+  // manifest using target app browser. This should trigger a manifest update
+  // that removes the pending_migration_info from the source app.
+  Browser* target_app_browser =
+      ::web_app::LaunchWebAppBrowserAndWait(profile(), target_app_id);
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(target_app_browser, no_migration_url));
+
+  test::WaitForLoadCompleteAndMaybeManifestSeen(
+      *target_app_browser->tab_strip_model()->GetActiveWebContents());
+
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_EQ(0u, infobar_manager->infobars().size());
 }
 
 class WebAppBlockedMigrationInfoBarDelegateUiTest
