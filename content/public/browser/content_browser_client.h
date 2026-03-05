@@ -685,12 +685,21 @@ class CONTENT_EXPORT ContentBrowserClient {
   // Must be less than or equal to the total number of RenderProcessHosts.
   virtual size_t GetProcessCountToIgnoreForLimit();
 
-  // Returns the cached permissions policy for the given Isolated Web App
-  // origin. Returns nullopt if the policy is not cached.
-  virtual std::optional<
-      std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(BrowserContext* browser_context,
-                                        const url::Origin& iwa_origin);
+  // Allows the embedder to define a baseline permissions policy for an isolated
+  // app origin; if supported, permissions policies derived from the
+  // Permissions-Policy header of any document will be downscaled to respect the
+  // baseline.
+  //
+  // Say, the returned baseline is equal to { cross-origin-isolated: (self) }.
+  // Then a Permissions-Policy: cross-origin-isolated=(*), direct-sockets=(self)
+  // header will be effectively reduced to cross-origin-isolated=(self).
+  //
+  // It's valid to return false to disable this functionality; in this case the
+  // Permissions-Policy header will not be affected.
+  virtual bool SupportsBaselinePermissionsPolicyForIsolatedApp();
+  virtual std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>
+  GetBaselinePermissionsPolicyForIsolatedApp(BrowserContext* browser_context,
+                                             const url::Origin& app_origin);
 
   // Returns whether a new process should be created or an existing one should
   // be reused based on the URL we want to load. This should return false,

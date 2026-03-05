@@ -6345,16 +6345,6 @@ class IsolatedApplicationContentBrowserClient
     return url.GetHost() == isolated_application_host_;
   }
 
-  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
-      BrowserContext* browser_context,
-      const url::Origin& iwa_origin) override {
-    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policy;
-    policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        "cross-origin-isolated", std::vector<std::string>{"*"}));
-    return policy;
-  }
-
  private:
   std::string isolated_application_host_;
 };
@@ -6458,7 +6448,8 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithRestrictedApis,
                              "/set-header?"
                              "Cross-Origin-Opener-Policy: same-origin&"
                              "Cross-Origin-Embedder-Policy: require-corp&"
-                             "Cross-Origin-Resource-Policy: same-origin");
+                             "Cross-Origin-Resource-Policy: same-origin&"
+                             "Permissions-Policy: cross-origin-isolated%3D(*)");
   Shell* app_shell = shell()->CreateNewWindow(
       web_contents()->GetController().GetBrowserContext(), GURL(),
       /*site_instance=*/nullptr, gfx::Size());

@@ -400,6 +400,7 @@
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/browsing_topics/browsing_topics.mojom.h"
+#include "third_party/blink/public/mojom/navigation/navigation_params.mojom-forward.h"
 #include "third_party/blink/public/mojom/navigation/navigation_params.mojom.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom.h"
 #include "third_party/blink/public/public_buildflags.h"
@@ -2348,26 +2349,35 @@ size_t ChromeContentBrowserClient::GetProcessCountToIgnoreForLimit() {
 #endif
 }
 
-std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
+bool ChromeContentBrowserClient::
+    SupportsBaselinePermissionsPolicyForIsolatedApp() {
+  return true;
+}
+
+std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>
+ChromeContentBrowserClient::GetBaselinePermissionsPolicyForIsolatedApp(
     content::BrowserContext* browser_context,
-    const url::Origin& iwa_origin) {
+    const url::Origin& app_origin) {
 #if !BUILDFLAG(IS_ANDROID)
   Profile* profile = Profile::FromBrowserContext(browser_context);
   web_app::IwaPermissionsPolicyCache* cache =
       web_app::IwaPermissionsPolicyCacheFactory::GetForProfile(profile);
   if (!cache) {
-    return std::nullopt;
+    return {};
   }
 
-  ASSIGN_OR_RETURN(web_app::IwaOrigin origin,
-                   web_app::IwaOrigin::Create(iwa_origin.GetURL()),
-                   [](auto) { return std::nullopt; });
+  ASSIGN_OR_RETURN(
+      web_app::IwaOrigin origin,
+      web_app::IwaOrigin::Create(app_origin.GetURL()), [](auto) {
+        return std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>();
+      });
 
   const web_app::IwaPermissionsPolicyCache::CacheEntry* policy =
       cache->GetPolicy(origin);
   if (!policy) {
-    return std::nullopt;
+    // If we can't calculate a baseline permissions policy for a valid IWA
+    // origin for some reason, use a strict fallback.
+    return {};
   }
 
   return base::ToVector(*policy, [](const auto& entry) {
@@ -2375,7 +2385,7 @@ ChromeContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
         entry.feature, entry.allowed_origins);
   });
 #else
-  return std::nullopt;
+  return {};
 #endif
 }
 

@@ -1952,6 +1952,30 @@ bool ShouldContributePriorityToProcess(
       return false;
   }
 }
+
+bool VerifyHeaderPermissionsPolicyAgainstBaseline(
+    const network::ParsedPermissionsPolicy& header_policy,
+    const std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>&
+        baseline_policy) {
+  const auto features_in_manifest = base::MakeFlatSet<std::string>(
+      baseline_policy, std::less(),
+      [](const auto& entry) { return entry->feature; });
+  const auto& permission_policy_to_feature_map =
+      blink::GetPermissionsPolicyFeatureToNameMap();
+  for (const auto& feature_in_headers : header_policy) {
+    const auto* name_mapping = base::FindOrNull(
+        permission_policy_to_feature_map, feature_in_headers.feature);
+    // Okay state: returned feature is valid (in the mapping) and is
+    // mentioned in the manifest.
+    if (name_mapping && features_in_manifest.contains(*name_mapping)) {
+      continue;
+    }
+    // Bad state: renderer added new permission policies, which means that
+    // it's most likely compromised.
+    return false;
+  }
+  return true;
+}
 }  // namespace
 
 class RenderFrameHostImpl::SubresourceLoaderFactoriesConfig {
@@ -12542,13 +12566,19 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
   AssertBrowserContextShutdownHasntStarted();
 
-  if (IsOutermostMainFrame() && GetSiteInstance()
-                                    ->GetWebExposedIsolationInfo()
-                                    .is_isolated_application()) {
+  if (IsOutermostMainFrame() &&
+      GetSiteInstance()
+          ->GetWebExposedIsolationInfo()
+          .is_isolated_application() &&
+      GetContentClient()
+          ->browser()
+          ->SupportsBaselinePermissionsPolicyForIsolatedApp()) {
     commit_params->isolated_app_policy =
-        GetContentClient()->browser()->GetPermissionsPolicyForIsolatedWebApp(
-            GetBrowserContext(),
-            url::Origin::Create(navigation_request->GetURL()));
+        GetContentClient()
+            ->browser()
+            ->GetBaselinePermissionsPolicyForIsolatedApp(
+                GetBrowserContext(),
+                url::Origin::Create(navigation_request->GetURL()));
   }
 
   bool is_same_document =
@@ -14288,11 +14318,12 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
     return;
   }
 
-  auto isolation_info = GetSiteInstance()->GetWebExposedIsolationInfo();
-
-  if (IsOutermostMainFrame() && isolation_info.is_isolated_application()) {
-    // Isolated Apps start with a base policy as defined by the
-    // permissions_policy field in its Web App Manifest, which is an allowlist,
+  if (IsOutermostMainFrame() && GetSiteInstance()
+                                    ->GetWebExposedIsolationInfo()
+                                    .is_isolated_application()) {
+    // Isolated Apps might be augmented with a baseline permissions policy
+    // depending on the embedder (in //chrome this is defined by the
+    // permissions_policy field in its Web App Manifest, which is an allowlist),
     // and then have headers further restrict the policy if applicable. This
     // needs to be handled differently than the normal permissions policy
     // behavior, which uses a fully permissive policy as its base permissions
@@ -14302,8 +14333,18 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
     // Interpretation of the permission policies and merging is done in the
     // renderer. However, as it is untrusted, we perform a sanity check whether
     // it did not add any new policies which would mean it's been compromised.
-    if (!VerifyIsolatedWebAppPermissionsPolicyIsSubsetOfManifest(
-            header_policy)) {
+    if (!header_policy.empty() &&
+        GetContentClient()
+            ->browser()
+            ->SupportsBaselinePermissionsPolicyForIsolatedApp() &&
+        !VerifyHeaderPermissionsPolicyAgainstBaseline(
+            header_policy,
+            GetContentClient()
+                ->browser()
+                ->GetBaselinePermissionsPolicyForIsolatedApp(
+                    GetBrowserContext(), GetSiteInstance()
+                                             ->GetWebExposedIsolationInfo()
+                                             .origin()))) {
       bad_message::ReceivedBadMessage(
           GetProcess(), bad_message::BadMessageReason::
                             RFH_NEW_ISOLATED_WEB_APP_PERMISSION_POLICIES);
@@ -14323,45 +14364,6 @@ void RenderFrameHostImpl::ResetPermissionsPolicy(
 
   permissions_policy_ = network::PermissionsPolicy::CreateFromParentPolicy(
       parent_policy, header_policy, container_policy, last_committed_origin_);
-}
-
-bool RenderFrameHostImpl::
-    VerifyIsolatedWebAppPermissionsPolicyIsSubsetOfManifest(
-        const network::ParsedPermissionsPolicy& header_policy) {
-  if (header_policy.empty()) {
-    return true;
-  }
-
-  ASSIGN_OR_RETURN(
-      const auto isolated_app_policy,
-      GetContentClient()->browser()->GetPermissionsPolicyForIsolatedWebApp(
-          GetBrowserContext(),
-          GetSiteInstance()->GetWebExposedIsolationInfo().origin()),
-      [] {
-        // The only way this could happen is if the renderer has
-        // been compromised and added new permission policies that
-        // were not in the manifest.
-        return false;
-      });
-
-  const auto features_in_manifest = base::MakeFlatSet<std::string>(
-      isolated_app_policy, std::less(),
-      [](const auto& entry) { return entry->feature; });
-  const auto& permission_policy_to_feature_map =
-      blink::GetPermissionsPolicyFeatureToNameMap();
-  for (const auto& feature_in_headers : header_policy) {
-    const auto* name_mapping = base::FindOrNull(
-        permission_policy_to_feature_map, feature_in_headers.feature);
-    // Okay state: returned feature is valid (in the mapping) and is
-    // mentioned in the manifest.
-    if (name_mapping && features_in_manifest.contains(*name_mapping)) {
-      continue;
-    }
-    // Bad state: renderer added new permission policies, which means that
-    // it's most likely compromised.
-    return false;
-  }
-  return true;
 }
 
 void RenderFrameHostImpl::CreateAudioInputStreamFactory(

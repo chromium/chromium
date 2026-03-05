@@ -1,7 +1,7 @@
 <?php
 header("Cross-Origin-Opener-Policy: same-origin");
 header("Cross-Origin-Embedder-Policy: require-corp");
-header("Permissions-Policy: direct-sockets=(self), direct-sockets-private=(self), direct-sockets-multicast=(self)");
+header("Permissions-Policy: cross-origin-isolated=(self), direct-sockets=(self), direct-sockets-private=(self), direct-sockets-multicast=(self)");
 header("Origin-Agent-Cluster: ?0");
 ?>
 

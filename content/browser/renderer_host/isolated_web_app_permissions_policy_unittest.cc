@@ -32,23 +32,23 @@ class MockIsolatedWebAppContentBrowserClient : public ContentBrowserClient {
     return url.host() == "isolated.app";
   }
 
-  void SetIsolatedAppPolicy(std::optional<std::vector<PolicyEntryPtr>> policy) {
+  void SetIsolatedAppPolicy(std::vector<PolicyEntryPtr> policy) {
     isolated_app_policy_ = std::move(policy);
   }
 
-  std::optional<std::vector<PolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
+  bool SupportsBaselinePermissionsPolicyForIsolatedApp() override {
+    return true;
+  }
+
+  std::vector<PolicyEntryPtr> GetBaselinePermissionsPolicyForIsolatedApp(
       BrowserContext* browser_context,
       const url::Origin& app_origin) override {
-    if (!isolated_app_policy_) {
-      return std::nullopt;
-    }
-    return base::ToVector(*isolated_app_policy_,
+    return base::ToVector(isolated_app_policy_,
                           [](const auto& entry) { return entry.Clone(); });
   }
 
  private:
-  std::optional<std::vector<PolicyEntryPtr>> isolated_app_policy_;
+  std::vector<PolicyEntryPtr> isolated_app_policy_;
 };
 
 class IsolatedWebAppPermissionsPolicyTest : public RenderViewHostTestHarness {
@@ -94,7 +94,7 @@ class IsolatedWebAppPermissionsPolicyTest : public RenderViewHostTestHarness {
     });
   }
 
-  std::vector<PolicyEntryPtr> CreateManifestPolicy(
+  std::vector<PolicyEntryPtr> CreateBaselinePolicy(
       std::initializer_list<std::string> features) {
     return base::ToVector(features, [](const std::string& feature) {
       return blink::mojom::IsolatedAppPermissionPolicyEntry::New(
@@ -123,8 +123,8 @@ TEST_F(IsolatedWebAppPermissionsPolicyTest, CompromisedRendererDetected) {
                   ->GetWebExposedIsolationInfo()
                   .is_isolated_application());
 
-  // Set up "manifest" policy: allow only 'geolocation'.
-  client().SetIsolatedAppPolicy(CreateManifestPolicy({"geolocation"}));
+  // Set up baseline policy: allow only 'geolocation'.
+  client().SetIsolatedAppPolicy(CreateBaselinePolicy({"geolocation"}));
 
   // Simulate renderer sending 'camera' in headers, which is not in manifest.
   auto renderer_simulator =
@@ -140,7 +140,7 @@ TEST_F(IsolatedWebAppPermissionsPolicyTest, ValidRendererPolicyAccepted) {
   const GURL kAppUrl("https://isolated.app");
   CreateBrowserInitiatedSimulator(kAppUrl)->Commit();
 
-  client().SetIsolatedAppPolicy(CreateManifestPolicy({"camera"}));
+  client().SetIsolatedAppPolicy(CreateBaselinePolicy({"camera"}));
 
   auto renderer_simulator =
       CreateRendererInitiatedSimulator(kAppUrl.Resolve("/foo"));
@@ -155,7 +155,7 @@ TEST_F(IsolatedWebAppPermissionsPolicyTest, MultiplePolicies_ValidSubset) {
   const GURL kAppUrl("https://isolated.app");
   CreateBrowserInitiatedSimulator(kAppUrl)->Commit();
 
-  client().SetIsolatedAppPolicy(CreateManifestPolicy({"camera", "microphone"}));
+  client().SetIsolatedAppPolicy(CreateBaselinePolicy({"camera", "microphone"}));
 
   auto renderer_simulator =
       CreateRendererInitiatedSimulator(kAppUrl.Resolve("/foo"));
@@ -170,7 +170,7 @@ TEST_F(IsolatedWebAppPermissionsPolicyTest, MultiplePolicies_InvalidSuperset) {
   const GURL kAppUrl("https://isolated.app");
   CreateBrowserInitiatedSimulator(kAppUrl)->Commit();
 
-  client().SetIsolatedAppPolicy(CreateManifestPolicy({"camera"}));
+  client().SetIsolatedAppPolicy(CreateBaselinePolicy({"camera"}));
 
   auto renderer_simulator =
       CreateRendererInitiatedSimulator(kAppUrl.Resolve("/foo"));
@@ -186,7 +186,7 @@ TEST_F(IsolatedWebAppPermissionsPolicyTest, EmptyRendererPolicyAccepted) {
   const GURL kAppUrl("https://isolated.app");
   CreateBrowserInitiatedSimulator(kAppUrl)->Commit();
 
-  client().SetIsolatedAppPolicy(CreateManifestPolicy({"camera"}));
+  client().SetIsolatedAppPolicy(CreateBaselinePolicy({"camera"}));
 
   auto renderer_simulator =
       CreateRendererInitiatedSimulator(kAppUrl.Resolve("/foo"));
@@ -215,7 +215,7 @@ TEST_F(IsolatedWebAppPermissionsPolicyTest,
   const GURL kAppUrl("https://isolated.app");
   CreateBrowserInitiatedSimulator(kAppUrl)->Commit();
 
-  client().SetIsolatedAppPolicy({});
+  client().SetIsolatedAppPolicy(CreateBaselinePolicy({}));
 
   auto renderer_simulator =
       CreateRendererInitiatedSimulator(kAppUrl.Resolve("/foo"));

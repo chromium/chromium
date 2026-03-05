@@ -7156,13 +7156,10 @@ data/devtools/worker_imported_classic.js
 data/devtools/worker_imported_module.js
 data/devtools/zoom.html
 data/direct_sockets/open.html
-data/direct_sockets/open.html.mock-http-headers
 data/direct_sockets/open.js
 data/direct_sockets/tcp.html
-data/direct_sockets/tcp.html.mock-http-headers
 data/direct_sockets/tcp.js
 data/direct_sockets/udp.html
-data/direct_sockets/udp.html.mock-http-headers
 data/direct_sockets/udp.js
 data/div_with_touch_action_auto.html
 data/div_with_touch_action_none.html

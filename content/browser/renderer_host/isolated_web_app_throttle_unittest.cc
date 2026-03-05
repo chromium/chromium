@@ -98,16 +98,6 @@ class IsolatedWebAppContentBrowserClient : public ContentBrowserClient {
 
   bool AreIsolatedWebAppsEnabled(BrowserContext*) override { return true; }
 
-  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& iwa_origin) override {
-    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
-    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        "cross-origin-isolated", std::vector<std::string>{"*"}));
-    return policies;
-  }
-
  private:
   unsigned int external_protocol_call_count_ = 0;
   unsigned int open_url_call_count_ = 0;

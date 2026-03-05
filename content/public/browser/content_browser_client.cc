@@ -320,11 +320,15 @@ size_t ContentBrowserClient::GetProcessCountToIgnoreForLimit() {
   return 0;
 }
 
-std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-ContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
+bool ContentBrowserClient::SupportsBaselinePermissionsPolicyForIsolatedApp() {
+  return false;
+}
+
+std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>
+ContentBrowserClient::GetBaselinePermissionsPolicyForIsolatedApp(
     BrowserContext* browser_context,
-    const url::Origin& iwa_origin) {
-  return std::nullopt;
+    const url::Origin& app_origin) {
+  return {};
 }
 
 bool ContentBrowserClient::ShouldTryToUseExistingProcessHost(

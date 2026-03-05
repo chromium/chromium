@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/strings/stringprintf.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/browser/prerender_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -13,14 +15,14 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_mock_cert_verifier.h"
-#include "content/public/test/test_navigation_observer.h"
-#include "content/public/browser/preloading_trigger_type.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
-#include "ui/base/page_transition_types.h"
 #include "net/base/net_errors.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -79,7 +81,7 @@ class HttpsBrowserTest : public ContentBrowserTest {
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
-    https_server()->ServeFilesFromSourceDirectory(GetTestDataFilePath());
+    net::test_server::RegisterDefaultHandlers(https_server());
     ASSERT_TRUE(https_server()->Start());
   }
 
@@ -106,12 +108,27 @@ class IsolatedWebAppThrottleBrowserTest : public HttpsBrowserTest {
   }
 
  protected:
-  GURL GetAppURL(const std::string& path) {
-    return https_server()->GetURL(kAppHost, path);
+  GURL GetAppURL() {
+    return https_server()->GetURL(
+        kAppHost,
+        base::StrCat({"/set-header?",
+                      "Cross-Origin-Opener-Policy: same-origin&"
+                      "Cross-Origin-Embedder-Policy: require-corp&"
+                      "Cross-Origin-Resource-Policy: same-origin&"
+                      "Permissions-Policy: cross-origin-isolated%3D(*)"}));
   }
 
-  GURL GetNonAppURL(const std::string& path) {
-    return https_server()->GetURL(kNonAppHost, path);
+  GURL GetNonAppURL(bool cross_origin_isolated) {
+    if (cross_origin_isolated) {
+      return https_server()->GetURL(
+          kNonAppHost,
+          base::StrCat({"/set-header?",
+                        "Cross-Origin-Opener-Policy: same-origin&"
+                        "Cross-Origin-Embedder-Policy: require-corp&"
+                        "Cross-Origin-Resource-Policy: cross-origin"}));
+    } else {
+      return https_server()->GetURL(kNonAppHost, "/set-header");
+    }
   }
 
   RenderFrameHost* CreateChildIframe(RenderFrameHost* parent_rfh,
@@ -171,11 +188,12 @@ class IsolatedWebAppThrottleBrowserTest : public HttpsBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        BlockMainFrameNavigationIntoApp) {
-  EXPECT_TRUE(NavigateToURL(web_contents(), GetNonAppURL("/simple_page.html")));
+  EXPECT_TRUE(NavigateToURL(web_contents(),
+                            GetNonAppURL(/*cross_origin_isolated=*/false)));
   EXPECT_EQ(kNotIsolated, main_rfh()->GetWebExposedIsolationLevel());
 
   TestNavigationObserver navigation_observer(web_contents());
-  shell()->LoadURL(GetAppURL("/cross-origin-isolated.html"));
+  shell()->LoadURL(GetAppURL());
   navigation_observer.Wait();
   EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(net::ERR_BLOCKED_BY_CLIENT,
@@ -184,12 +202,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        CancelCrossOriginNavigationInApp) {
-  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  GURL app_url = GetAppURL();
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
   EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
 
   TestNavigationObserver navigation_observer(web_contents());
-  shell()->LoadURL(GetNonAppURL("/simple_page.html"));
+  shell()->LoadURL(GetNonAppURL(/*cross_origin_isolated=*/false));
   navigation_observer.Wait();
   EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
   EXPECT_EQ(app_url, main_rfh()->GetLastCommittedURL());
@@ -197,12 +215,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        IframeInitiatedIframeNavigationIntoAppBlocked) {
-  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  GURL app_url = GetAppURL();
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
   EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
 
-  RenderFrameHost* iframe =
-      CreateChildIframe(main_rfh(), GetNonAppURL("/corp-cross-origin.html"));
+  RenderFrameHost* iframe = CreateChildIframe(
+      main_rfh(), GetNonAppURL(/*cross_origin_isolated=*/true));
   const blink::LocalFrameToken iframe_token = iframe->GetFrameToken();
 
   std::unique_ptr<TestNavigationObserver> navigation_observer =
@@ -216,12 +234,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        AppInitiatedIframeNavigationIntoAppAllowed) {
-  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  GURL app_url = GetAppURL();
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
   EXPECT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
 
-  RenderFrameHost* iframe =
-      CreateChildIframe(main_rfh(), GetNonAppURL("/corp-cross-origin.html"));
+  RenderFrameHost* iframe = CreateChildIframe(
+      main_rfh(), GetNonAppURL(/*cross_origin_isolated=*/true));
 
   std::unique_ptr<TestNavigationObserver> navigation_observer =
       NavigateIframeToUrlFromParent(iframe, app_url);
@@ -233,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleBrowserTest,
                        ExternalLinkClickOpensInNewTab) {
-  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  GURL app_url = GetAppURL();
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
   ASSERT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
 
@@ -298,7 +316,7 @@ class IsolatedWebAppThrottleWithPrerenderBrowserTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleWithPrerenderBrowserTest,
                        CrossOriginPrerenderInAppIsCancelled) {
-  GURL app_url = GetAppURL("/cross-origin-isolated.html");
+  GURL app_url = GetAppURL();
   EXPECT_TRUE(NavigateToURL(web_contents(), app_url));
   ASSERT_EQ(kIsolatedApplication, main_rfh()->GetWebExposedIsolationLevel());
 
@@ -307,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppThrottleWithPrerenderBrowserTest,
   // A cross-origin prerender trigger via AddEmbedderTriggeredPrerenderAsync
   // will be succeeded, but its navigation will be blocked. So, the page count
   // should still be 1.
-  GURL prerender_url = GetNonAppURL("/simple_page.html");
+  GURL prerender_url = GetNonAppURL(/*cross_origin_isolated=*/false);
   std::unique_ptr<content::PrerenderHandle> handle =
       prerender_helper().AddEmbedderTriggeredPrerenderAsync(
           prerender_url, content::PreloadingTriggerType::kEmbedder,

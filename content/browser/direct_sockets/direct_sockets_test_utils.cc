@@ -8,12 +8,17 @@
 
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
+#include "base/strings/escape.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/test_future.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "net/base/url_util.h"
 #include "net/dns/host_resolver.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
 #include "services/network/public/mojom/clear_data_filter.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
@@ -162,6 +167,52 @@ std::string AsyncJsRunner::MakeScriptSendResultToDomQueue(
       script.c_str(), token_.ToString().c_str()));
 }
 
+SetHeaderWithFileUrlBuilder::SetHeaderWithFileUrlBuilder(std::string_view path)
+    : path_(path) {}
+
+SetHeaderWithFileUrlBuilder::~SetHeaderWithFileUrlBuilder() = default;
+
+SetHeaderWithFileUrlBuilder& SetHeaderWithFileUrlBuilder::WithCOIHeaders() {
+  headers_.push_back("Cross-Origin-Opener-Policy: same-origin");
+  headers_.push_back("Cross-Origin-Embedder-Policy: require-corp");
+  return *this;
+}
+
+SetHeaderWithFileUrlBuilder& SetHeaderWithFileUrlBuilder::WithPermissionsPolicy(
+    std::string_view feature,
+    std::string_view value) {
+  permissions_policy_[std::string(feature)].emplace_back(value);
+  return *this;
+}
+
+GURL SetHeaderWithFileUrlBuilder::Build(net::EmbeddedTestServer* server) const {
+  std::vector<std::string> all_headers = headers_;
+  if (!permissions_policy_.empty()) {
+    std::vector<std::string> features;
+    for (const auto& [feature, values] : permissions_policy_) {
+      features.push_back(base::StringPrintf(
+          "%s=%s", feature.c_str(), base::JoinString(values, " ").c_str()));
+    }
+    all_headers.push_back(base::StrCat(
+        {"Permissions-Policy: ", base::JoinString(features, ", ")}));
+  }
+
+  std::string query;
+  for (const auto& header : all_headers) {
+    if (!query.empty()) {
+      query += "&";
+    }
+    query += base::EscapeQueryParamValue(header, /*use_plus=*/false);
+  }
+
+  return server->GetURL(base::StrCat(
+      {"/set-header-with-file/content/test/data", path_, "?", query}));
+}
+
+SetHeaderWithFileUrlBuilder FileWithHeaders(std::string_view path) {
+  return SetHeaderWithFileUrlBuilder{path};
+}
+
 IsolatedWebAppContentBrowserClient::IsolatedWebAppContentBrowserClient(
     const url::Origin& isolated_app_origin)
     : isolated_app_origin_(isolated_app_origin) {}
@@ -170,22 +221,6 @@ bool IsolatedWebAppContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url) {
   return isolated_app_origin_ == url::Origin::Create(url);
-}
-
-std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-IsolatedWebAppContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
-    const url::Origin& app_origin) {
-  std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
-  policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "cross-origin-isolated", std::vector<std::string>{"*"}));
-  policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "direct-sockets", std::vector<std::string>{"'self'"}));
-  policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "direct-sockets-private", std::vector<std::string>{"'self'"}));
-  policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "direct-sockets-multicast", std::vector<std::string>{"'self'"}));
-  return policies;
 }
 
 // misc

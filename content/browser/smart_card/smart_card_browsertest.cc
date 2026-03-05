@@ -232,10 +232,6 @@ class SmartCardTestContentBrowserClient
   SmartCardDelegate* GetSmartCardDelegate() override;
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override;
-  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
 
  private:
   std::unique_ptr<SmartCardDelegate> delegate_;
@@ -243,12 +239,22 @@ class SmartCardTestContentBrowserClient
 
 class SmartCardTest : public ContentBrowserTest {
  public:
-  GURL GetIsolatedContextUrl() {
-    return embedded_https_test_server().GetURL(
-        "a.com",
-        "/set-header?Cross-Origin-Opener-Policy: same-origin&"
-        "Cross-Origin-Embedder-Policy: require-corp&"
-        "Permissions-Policy: smart-card%3D(self)");
+  GURL GetIsolatedContextUrl(bool include_coi_pp = true) {
+    if (include_coi_pp) {
+      return embedded_https_test_server().GetURL(
+          "a.com",
+          "/set-header?Cross-Origin-Opener-Policy: same-origin&"
+          "Cross-Origin-Embedder-Policy: require-corp&"
+          "Permissions-Policy: smart-card%3D(self), "
+          "cross-origin-isolated%3D(self)");
+    } else {
+      return embedded_https_test_server().GetURL(
+          "a.com",
+          "/set-header?Cross-Origin-Opener-Policy: same-origin&"
+          "Cross-Origin-Embedder-Policy: require-corp&"
+          "Permissions-Policy: smart-card%3D(self), "
+          "cross-origin-isolated%3D()");
+    }
   }
 
   FakeSmartCardDelegate& GetFakeSmartCardDelegate() {
@@ -364,18 +370,6 @@ bool SmartCardTestContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
     const GURL& url) {
   return true;
-}
-
-std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-SmartCardTestContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
-    const url::Origin& app_origin) {
-  std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
-  policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "cross-origin-isolated", std::vector<std::string>{"*"}));
-  policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "smart-card", std::vector<std::string>{"'self'"}));
-  return policies;
 }
 
 mojo::PendingRemote<device::mojom::SmartCardContextFactory>
@@ -1855,28 +1849,12 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, ContextDiesConnectionStays) {
     })())"));
 }
 
-// A ContentBrowserClient that grants Isolated Web Apps the "smart-card"
-// permission, but not "cross-origin-isolated", which should result in Smart
-// Cards being disabled.
-class NoCoiPermissionSmartCardTestContentBrowserClient
-    : public SmartCardTestContentBrowserClient {
- public:
-  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override {
-    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
-    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        "smart-card", std::vector<std::string>{app_origin.Serialize()}));
-    return policies;
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(SmartCardTest, NoCoiPermission) {
-  NoCoiPermissionSmartCardTestContentBrowserClient client;
+  SmartCardTestContentBrowserClient client;
   client.SetSmartCardDelegate(std::make_unique<FakeSmartCardDelegate>());
 
-  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+  ASSERT_TRUE(
+      NavigateToURL(shell(), GetIsolatedContextUrl(/*include_coi_pp=*/false)));
 
   EXPECT_EQ(false, EvalJs(shell(), "self.crossOriginIsolated"));
   EXPECT_THAT(EvalJs(shell(), "navigator.smartCard.establishContext()"),

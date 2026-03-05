@@ -92,6 +92,8 @@
 #include "ui/base/ui_base_switches.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+#include "url/url_canon.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
@@ -481,12 +483,15 @@ ShellContentBrowserClient::GetWebContentsViewDelegate(
   return CreateShellWebContentsViewDelegate(web_contents);
 }
 
-bool ShellContentBrowserClient::IsIsolatedContextAllowedForUrl(
+bool ShellContentBrowserClient::ShouldUrlUseApplicationIsolationLevel(
     BrowserContext* browser_context,
-    const GURL& lock_url) {
-  static base::flat_set<url::Origin> isolated_context_origins =
-      GetIsolatedContextOriginSetFromFlag();
-  return isolated_context_origins.contains(url::Origin::Create(lock_url));
+    const GURL& url) {
+  static auto kIsolatedContextOrigins = GetIsolatedContextOriginSetFromFlag();
+
+  GURL::Replacements replacements;
+  replacements.ClearPort();
+  return kIsolatedContextOrigins.contains(
+      url::Origin::Create(url.ReplaceComponents(replacements)));
 }
 
 bool ShellContentBrowserClient::IsSharedStorageAllowed(
@@ -853,18 +858,6 @@ void ShellContentBrowserClient::OnWebContentsCreated(
 void ShellContentBrowserClient::CreateFeatureListAndFieldTrials() {
   GetSharedState().local_state = CreateLocalState();
   SetupFieldTrials();
-}
-
-std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-ShellContentBrowserClient::GetPermissionsPolicyForIsolatedWebApp(
-    content::BrowserContext* browser_context,
-    const url::Origin& app_origin) {
-  std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policy;
-  policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "cross-origin-isolated", std::vector<std::string>{"*"}));
-  policy.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-      "direct-sockets", std::vector<std::string>{"'self'"}));
-  return policy;
 }
 
 // Tests may install their own ShellContentBrowserClient, track the list here.

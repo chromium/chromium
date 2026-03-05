@@ -4,6 +4,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -56,8 +57,14 @@ constexpr char kLocalhostAddress[] = "127.0.0.1";
 
 class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
  public:
-  GURL GetTestPageURL() {
-    return embedded_test_server()->GetURL("/direct_sockets/udp.html");
+  virtual GURL GetTestPageURL() {
+    return test::FileWithHeaders("/direct_sockets/udp.html")
+        .WithCOIHeaders()
+        .WithPermissionsPolicy("cross-origin-isolated", "(self)")
+        .WithPermissionsPolicy("direct-sockets", "(self)")
+        .WithPermissionsPolicy("direct-sockets-private", "(self)")
+        .WithPermissionsPolicy("direct-sockets-multicast", "(self)")
+        .Build(embedded_test_server());
   }
 
   network::mojom::NetworkContext* GetNetworkContext() {
@@ -92,7 +99,7 @@ class DirectSocketsUdpBrowserTest : public ContentBrowserTest {
   }
 
   void SetUp() override {
-    embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
+    embedded_test_server()->AddDefaultHandlers();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ContentBrowserTest::SetUp();
@@ -562,38 +569,23 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsUdpBrowserTest, UdpMessageConfigurations) {
   }
 }
 
-// A ContentBrowserClient that does not grant direct-sockets-multicast
-// permission policy.
-class NoMulticastPermissionIsolatedWebAppContentBrowserClient
-    : public test::IsolatedWebAppContentBrowserClient {
- public:
-  explicit NoMulticastPermissionIsolatedWebAppContentBrowserClient(
-      const url::Origin& isolated_app_origin)
-      : IsolatedWebAppContentBrowserClient(isolated_app_origin) {}
-
-  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override {
-    std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr> policies;
-    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        "cross-origin-isolated", std::vector<std::string>{"*"}));
-    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        "direct-sockets", std::vector<std::string>{"'self'"}));
-    policies.push_back(blink::mojom::IsolatedAppPermissionPolicyEntry::New(
-        "direct-sockets-private", std::vector<std::string>{"'self'"}));
-    return policies;
-  }
-};
-
 class DirectSocketsUdpNoMulticastPolicyBrowserTest
     : public DirectSocketsUdpBrowserTest {
  protected:
   std::unique_ptr<test::IsolatedWebAppContentBrowserClient>
   CreateContentBrowserClient() override {
-    return std::make_unique<
-        NoMulticastPermissionIsolatedWebAppContentBrowserClient>(
+    return std::make_unique<test::IsolatedWebAppContentBrowserClient>(
         url::Origin::Create(GetTestPageURL()));
+  }
+
+  GURL GetTestPageURL() override {
+    return test::FileWithHeaders("/direct_sockets/udp.html")
+        .WithCOIHeaders()
+        .WithPermissionsPolicy("cross-origin-isolated", "(self)")
+        .WithPermissionsPolicy("direct-sockets", "(self)")
+        .WithPermissionsPolicy("direct-sockets-private", "(self)")
+        .WithPermissionsPolicy("direct-sockets-multicast", "()")
+        .Build(embedded_test_server());
   }
 };
 

@@ -169,7 +169,11 @@ MockOpenNetworkContext::CreateMockUDPSocket(
 class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
  public:
   GURL GetTestOpenPageURL() {
-    return embedded_test_server()->GetURL("/direct_sockets/open.html");
+    return test::FileWithHeaders("/direct_sockets/open.html")
+        .WithCOIHeaders()
+        .WithPermissionsPolicy("cross-origin-isolated", "(self)")
+        .WithPermissionsPolicy("direct-sockets", "(self)")
+        .Build(embedded_test_server());
   }
 
  protected:
@@ -183,7 +187,7 @@ class DirectSocketsOpenBrowserTest : public ContentBrowserTest {
   }
 
   void SetUp() override {
-    embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
+    embedded_test_server()->AddDefaultHandlers();
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ContentBrowserTest::SetUp();

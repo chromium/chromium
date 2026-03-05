@@ -63,8 +63,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   std::string GetDefaultDownloadName() override;
   std::unique_ptr<WebContentsViewDelegate> GetWebContentsViewDelegate(
       WebContents* web_contents) override;
-  bool IsIsolatedContextAllowedForUrl(BrowserContext* browser_context,
-                                      const GURL& lock_url) override;
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override;
   bool IsSharedStorageAllowed(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* rfh,
@@ -166,13 +166,6 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
   void OnWebContentsCreated(WebContents* web_contents) override;
-
-  // Turns on features via permissions policy for Isolated App
-  // Web Platform Tests.
-  std::optional<std::vector<blink::mojom::IsolatedAppPermissionPolicyEntryPtr>>
-  GetPermissionsPolicyForIsolatedWebApp(
-      content::BrowserContext* browser_context,
-      const url::Origin& app_origin) override;
 
   void CreateFeatureListAndFieldTrials();
 
