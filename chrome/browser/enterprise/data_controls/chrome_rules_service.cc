@@ -7,7 +7,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/prefs/pref_service.h"
 
 namespace data_controls {
@@ -38,18 +37,6 @@ Verdict ChromeRulesService::GetPasteVerdict(
                         .source = GetAsActionSource(source),
                         .destination = GetAsActionDestination(destination),
                     });
-}
-
-bool ChromeRulesService::BlockScreenshots(const GURL& url) const {
-  return GetVerdict(Rule::Restriction::kScreenshot,
-                    {
-                        .source =
-                            {
-                                .url = url,
-                                .incognito = incognito_profile(),
-                            },
-                    })
-             .level() == Rule::Level::kBlock;
 }
 
 bool ChromeRulesService::incognito_profile() const {

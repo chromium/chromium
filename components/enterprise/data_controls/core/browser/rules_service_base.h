@@ -9,6 +9,7 @@
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "url/gurl.h"
 
 class PrefService;
 
@@ -37,6 +38,11 @@ class RulesServiceBase : public KeyedService {
 
   // Returns a verdict to be applied to a specific file download.
   virtual Verdict GetDownloadVerdict(const GURL& download_url) const;
+
+  // Returns true if rules indicate screenshots should be blocked. Only the
+  // "block" level is supported, a "warn" screenshot rule will not make this
+  // function return true.
+  virtual bool BlockScreenshots(const GURL& url) const;
 
  protected:
   // Returns a `Verdict` corresponding to all triggered Data Control rules given

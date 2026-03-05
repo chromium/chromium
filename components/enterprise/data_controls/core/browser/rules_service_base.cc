@@ -60,6 +60,18 @@ Verdict RulesServiceBase::GetDownloadVerdict(const GURL& download_url) const {
                     });
 }
 
+bool RulesServiceBase::BlockScreenshots(const GURL& url) const {
+  return GetVerdict(Rule::Restriction::kScreenshot,
+                    {
+                        .source =
+                            {
+                                .url = url,
+                                .incognito = incognito_profile(),
+                            },
+                    })
+             .level() == Rule::Level::kBlock;
+}
+
 Verdict RulesServiceBase::GetVerdict(Rule::Restriction restriction,
                                      const ActionContext& context) const {
   Rule::Level max_level = Rule::Level::kNotSet;

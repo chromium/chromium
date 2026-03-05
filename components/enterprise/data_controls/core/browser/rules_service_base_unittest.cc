@@ -280,4 +280,71 @@ TEST_F(RulesServiceBaseTest, RuleWithoutRestrictionsForCopy) {
       incognito_service_->GetCopyToOSClipboardVerdict(google_url()));
 }
 
+TEST_F(RulesServiceBaseTest, BlockScreenshots_NoRules) {
+  EXPECT_FALSE(service_->BlockScreenshots(google_url()));
+  EXPECT_FALSE(incognito_service_->BlockScreenshots(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, BlockScreenshots_BlockedBySourceUrl) {
+  SetDataControls(&prefs_, {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "SCREENSHOT", "level": "BLOCK"}
+                    ]
+                  })"});
+  EXPECT_TRUE(service_->BlockScreenshots(google_url()));
+  EXPECT_TRUE(incognito_service_->BlockScreenshots(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, BlockScreenshots_NotBlockedByWarn) {
+  // Only BLOCK level is supported for screenshots in
+  // RulesServiceBase::BlockScreenshots
+  SetDataControls(&prefs_, {R"({
+                    "name": "warn",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "SCREENSHOT", "level": "WARN"}
+                    ]
+                  })"});
+  EXPECT_FALSE(service_->BlockScreenshots(google_url()));
+  EXPECT_FALSE(incognito_service_->BlockScreenshots(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, BlockScreenshots_Allowed) {
+  SetDataControls(&prefs_, {R"({
+                    "name": "allow",
+                    "rule_id": "1234",
+                    "sources": {
+                      "urls": ["google.com"]
+                    },
+                    "restrictions": [
+                      {"class": "SCREENSHOT", "level": "ALLOW"}
+                    ]
+                  })"});
+  EXPECT_FALSE(service_->BlockScreenshots(google_url()));
+  EXPECT_FALSE(incognito_service_->BlockScreenshots(google_url()));
+}
+
+TEST_F(RulesServiceBaseTest, BlockScreenshots_BlockedByIncognito) {
+  SetDataControls(&prefs_, {R"({
+                    "name": "block",
+                    "rule_id": "1234",
+                    "sources": {
+                      "incognito": true
+                    },
+                    "restrictions": [
+                      {"class": "SCREENSHOT", "level": "BLOCK"}
+                    ]
+                  })"});
+  EXPECT_FALSE(service_->BlockScreenshots(google_url()));
+  EXPECT_TRUE(incognito_service_->BlockScreenshots(google_url()));
+}
+
 }  // namespace data_controls

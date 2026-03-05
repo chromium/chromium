@@ -50,6 +50,8 @@ source_set("browser") {
     "verdict.h",
   ]
 
+  public_deps = [ "//url" ]
+
   configs += [
     "//build/config/compiler:wexit_time_destructors",
     "//build/config/compiler:wglobal_constructors",
@@ -68,7 +70,6 @@ source_set("browser") {
     "//components/url_matcher",
     "//ui/base/clipboard",
     "//ui/base/clipboard:clipboard_types",
-    "//url",
   ]
 
   if (is_chromeos) {
