@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -29,6 +30,7 @@
 #include "ui/actions/action_id.h"
 #include "ui/actions/actions.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/test/views_test_base.h"
 
 class ProjectsPanelViewTest : public ChromeViewsTestBase {
@@ -184,4 +186,52 @@ TEST_F(ProjectsPanelViewTest, ThreadsContainerHiddenWhenNoThreads) {
   EXPECT_FALSE(
       projects_panel_view()->threads_container_for_testing()->GetVisible());
   EXPECT_FALSE(projects_panel_view()->separator_for_testing()->GetVisible());
+}
+
+class ProjectsPanelViewRTLTest : public ProjectsPanelViewTest {
+ public:
+  void SetUp() override {
+    original_locale_ = base::i18n::GetConfiguredLocale();
+    base::i18n::SetICUDefaultLocale("ar");
+    ProjectsPanelViewTest::SetUp();
+  }
+
+  void TearDown() override {
+    ProjectsPanelViewTest::TearDown();
+    base::i18n::SetICUDefaultLocale(original_locale_);
+  }
+
+ private:
+  std::string original_locale_;
+};
+
+TEST_F(ProjectsPanelViewRTLTest, RoundedCornersInRTL) {
+  ASSERT_TRUE(base::i18n::IsRTL());
+  CreateView();
+  projects_panel_view()->SetIsElevated(true);
+
+  auto radii = projects_panel_view()
+                   ->content_container_for_testing()
+                   ->layer()
+                   ->rounded_corner_radii();
+
+  // In RTL, we expect the left corners to be rounded.
+  EXPECT_GT(radii.upper_left(), 0);
+  EXPECT_GT(radii.lower_left(), 0);
+  EXPECT_EQ(radii.upper_right(), 0);
+  EXPECT_EQ(radii.lower_right(), 0);
+}
+
+TEST_F(ProjectsPanelViewRTLTest, ClipRectInRTL) {
+  ASSERT_TRUE(base::i18n::IsRTL());
+  CreateView();
+
+  // Set some width to trigger layout.
+  projects_panel_view()->SetBounds(0, 0, 100, 600);
+  projects_panel_view()->SetTargetWidth(300);
+
+  auto clip_rect = projects_panel_view()->layer()->clip_rect();
+
+  // In RTL, we expect the clip rect to extend to the left to allow the shadow.
+  EXPECT_LT(clip_rect.x(), 0);
 }

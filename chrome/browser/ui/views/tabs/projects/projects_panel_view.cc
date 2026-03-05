@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/i18n/rtl.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
@@ -54,7 +55,7 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
-constexpr int kClipRectRightMarginForShadow = 32;
+constexpr int kClipRectMarginForShadow = 32;
 constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr int kShadowElevation = 2;
 constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(10, 8);
@@ -308,11 +309,16 @@ void ProjectsPanelView::SetIsElevated(bool elevated) {
   content_shadow_->shadow()->SetElevation(elevation);
 
   const int corner_radius = elevated_ ? kProjectPanelRightCornerRadius : 0;
-  content_container_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(0, corner_radius, corner_radius, 0));
+  gfx::RoundedCornersF radii;
+  if (base::i18n::IsRTL()) {
+    radii = gfx::RoundedCornersF(corner_radius, 0, 0, corner_radius);
+  } else {
+    radii = gfx::RoundedCornersF(0, corner_radius, corner_radius, 0);
+  }
+
+  content_container_->layer()->SetRoundedCornerRadius(radii);
   content_container_->SetBackground(views::CreateRoundedRectBackground(
-      projects_panel::kProjectsPanelBackgroundColor,
-      gfx::RoundedCornersF(0, corner_radius, corner_radius, 0)));
+      projects_panel::kProjectsPanelBackgroundColor, radii));
 
   InvalidateLayout();
 }
@@ -322,12 +328,17 @@ void ProjectsPanelView::Layout(PassKey) {
   content_container_->SetBounds(-(target_width_ - visible_width), 0,
                                 target_width_, height());
 
-  // The content_container_ slides in from the left and should be clipped to the
-  // left edge of the panel. However, we still want the shadow to be visible on
-  // the right, so we set a clip rect that starts at x=0 but extends slightly
-  // beyond the right edge.
-  layer()->SetClipRect(
-      gfx::Rect(0, 0, target_width_ + kClipRectRightMarginForShadow, height()));
+  // The content_container_ slides in from the edge of the window. In LTR this
+  // is the left edge, and it should be clipped to that edge. However, we still
+  // want the shadow to be visible on the opposite side, so we set a clip rect
+  // that extends slightly beyond that edge.
+  gfx::Rect clip_rect(0, 0, target_width_, height());
+  if (base::i18n::IsRTL()) {
+    clip_rect.Inset(gfx::Insets::TLBR(0, -kClipRectMarginForShadow, 0, 0));
+  } else {
+    clip_rect.Inset(gfx::Insets::TLBR(0, 0, 0, -kClipRectMarginForShadow));
+  }
+  layer()->SetClipRect(clip_rect);
 }
 
 bool ProjectsPanelView::AcceleratorPressed(const ui::Accelerator& accelerator) {
