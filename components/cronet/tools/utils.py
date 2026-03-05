@@ -12,12 +12,22 @@ import shlex
 import subprocess
 import os
 import re
+import sys
 import pathlib
 import difflib
 from typing import Set, List
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
+
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
+from util import build_utils  # pylint: disable=wrong-import-position
+
+JAR_PATH = os.path.abspath(os.path.join(build_utils.JAVA_HOME, 'bin', 'jar'))
+JAVAC_PATH = os.path.abspath(
+    os.path.join(build_utils.JAVA_HOME, 'bin', 'javac'))
+JAVAP_PATH = os.path.abspath(
+    os.path.join(build_utils.JAVA_HOME, 'bin', 'javap'))
 
 _MB_PATH = os.path.join(REPOSITORY_ROOT, 'tools/mb/mb.py')
 GN_PATH = os.path.join(REPOSITORY_ROOT, 'buildtools/linux64/gn')
@@ -52,7 +62,7 @@ def build_targets_list_chunking(out_path: str, targets: List[str]) -> None:
         build_all(out_path, chunk)
 
 
-def run(command, **kwargs):
+def run(command, verbose=True, **kwargs):
     """See the official documentation for subprocess.check_call.
 
   Args:
@@ -62,11 +72,12 @@ def run(command, **kwargs):
         quoted_cmd = command
     else:
         quoted_cmd = ' '.join(shlex.quote(arg) for arg in command)
-    print('Executing: ' + quoted_cmd)
+    if verbose:
+        print('Executing: ' + quoted_cmd)
     subprocess.check_call(command, **kwargs)
 
 
-def run_and_get_stdout(command, **kwargs):
+def run_and_get_stdout(command, verbose=True, **kwargs):
     """See the official documentation for subprocess.run.
 
   Args:
@@ -75,7 +86,8 @@ def run_and_get_stdout(command, **kwargs):
   Returns:
     str: stdout for the executed command
   """
-    print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
+    if verbose:
+        print('Executing: ' + ' '.join(shlex.quote(arg) for arg in command))
     return subprocess.run(command, capture_output=True, check=True,
                           **kwargs).stdout.decode('utf-8').strip()
 

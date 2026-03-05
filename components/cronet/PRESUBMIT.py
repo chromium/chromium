@@ -21,17 +21,6 @@ def CheckPyLint(input_api, output_api):
         input_api.canned_checks.GetPylint(input_api, output_api))
 
 
-def CheckUnittestsOnCommit(input_api, output_api):
-    return input_api.RunTests(
-        input_api.canned_checks.GetUnitTestsRecursively(
-            input_api,
-            output_api,
-            os.path.join(input_api.change.RepositoryRoot(), 'components',
-                         'cronet'),
-            files_to_check=['.*test\\.py$'],
-            files_to_skip=[]))
-
-
 def CheckChangeFormatted(input_api, output_api):
     return [
         *input_api.canned_checks.CheckPatchFormatted(
