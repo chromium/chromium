@@ -54,14 +54,17 @@ class AudioDataTest : public testing::Test {
     return CreateCustomData(kChannels, kFrames);
   }
 
+  float GetCustomValue(int index, int frame, int channels) {
+    return static_cast<float>((index + frame * channels) * kIncrement);
+  }
+
   AllowSharedBufferSource* CreateCustomData(int channels, int frames) {
     auto* buffer = DOMArrayBuffer::Create(channels * frames, sizeof(float));
     for (int ch = 0; ch < channels; ++ch) {
       float* plane_start =
           UNSAFE_TODO(reinterpret_cast<float*>(buffer->Data()) + ch * frames);
       for (int i = 0; i < frames; ++i) {
-        UNSAFE_TODO(plane_start[i]) =
-            static_cast<float>((i + ch * frames) * kIncrement);
+        UNSAFE_TODO(plane_start[i]) = GetCustomValue(i, frames, ch);
       }
     }
     return MakeGarbageCollected<AllowSharedBufferSource>(buffer);
@@ -359,6 +362,46 @@ TEST_F(AudioDataTest, FailToTransferUnAlignedBuffer) {
   // Even though we copied the data, the buffer still needs to be aligned.
   EXPECT_TRUE(buffer->IsDetached());
   EXPECT_EQ(allocations_size, frames * sizeof(int32_t));
+}
+
+TEST_F(AudioDataTest, CopyTo_UnalignedConversion) {
+  V8TestingScope scope;
+
+  // Create F32Planar AudioData.
+  auto* frame =
+      CreateDefaultAudioData(scope.GetScriptState(), scope.GetExceptionState());
+
+  // Copy to S16 interleaved format. Needs conversion (F32 -> S16).
+  auto* options = AudioDataCopyToOptions::Create();
+  options->setFormat(V8AudioSampleFormat::Enum::kS16);
+
+  const uint32_t total_samples = kChannels * kFrames;
+  const uint32_t dest_size_bytes = total_samples * sizeof(int16_t);
+
+  // Unaligned destination for S16 (2 bytes). Offset of 1 byte is enough.
+  DOMArrayBuffer* buffer = DOMArrayBuffer::Create(dest_size_bytes + 1, 1);
+  auto* view = DOMDataView::Create(buffer, 1, dest_size_bytes);
+  auto* dest = MakeGarbageCollected<AllowSharedBufferSource>(
+      MaybeShared<DOMArrayBufferView>(view));
+
+  frame->copyTo(dest, options, scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException())
+      << scope.GetExceptionState().Message();
+
+  // Verify the data.
+  std::vector<int16_t> actual_data(total_samples);
+  base::as_writable_byte_span(actual_data)
+      .copy_from_nonoverlapping(AsSpan<uint8_t>(dest));
+
+  for (int i = 0; i < kFrames; ++i) {
+    for (int ch = 0; ch < kChannels; ++ch) {
+      float original_value = GetCustomValue(i, kFrames, ch);
+      int16_t expected_value =
+          media::SignedInt16SampleTypeTraits::FromFloat(original_value);
+      EXPECT_EQ(actual_data[i * kChannels + ch], expected_value)
+          << "i=" << i << ", ch=" << ch;
+    }
+  }
 }
 
 TEST_F(AudioDataTest, CopyTo_Offset) {

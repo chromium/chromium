@@ -183,6 +183,39 @@ media::SampleFormat RemovePlanar(media::SampleFormat format) {
   }
 }
 
+template <typename T>
+bool IsSpanAligned(base::span<const uint8_t> span) {
+  if constexpr (std::is_same_v<T, uint8_t>) {
+    return true;
+  } else {
+    return base::IsAligned(span.data(), sizeof(T));
+  }
+}
+
+template <typename SampleTypeTraits>
+void ConvertToInterleaved(media::AudioBus* source,
+                          size_t source_offset,
+                          base::span<uint8_t> dest) {
+  using SampleType = typename SampleTypeTraits::ValueType;
+
+  if (IsSpanAligned<SampleType>(dest)) {
+    source->ToInterleavedBytesPartial<SampleTypeTraits>(source_offset, dest);
+    return;
+  }
+
+  // `dest` is not aligned. De-interleave into a temporary aligned destination
+  // and copy it it over after.
+  std::vector<SampleType> temp_dest;
+  temp_dest.resize(dest.size() / sizeof(SampleType));
+  source->ToInterleavedPartial<SampleTypeTraits>(source_offset, temp_dest);
+  if constexpr (std::is_same_v<SampleType, float>) {
+    dest.copy_from_nonoverlapping(
+        base::as_byte_span(base::allow_nonunique_obj, temp_dest));
+  } else {
+    dest.copy_from_nonoverlapping(base::as_byte_span(temp_dest));
+  }
+}
+
 class ArrayBufferContentsAsAudioExternalMemory
     : public media::AudioBuffer::ExternalMemory {
  public:
@@ -596,34 +629,29 @@ void AudioData::CopyConvert(base::span<uint8_t> dest,
   if (media::IsInterleaved(dest_format)) {
     CHECK_EQ(0u, copy_to_options->planeIndex());
 
+    auto partial_dest = dest.first(
+        sample_count * media::SampleFormatToBytesPerChannel(dest_format));
+
     switch (dest_format) {
-      case media::kSampleFormatU8: {
-        data_as_f32_bus_
-            ->ToInterleavedPartial<media::UnsignedInt8SampleTypeTraits>(
-                offset, dest.first(sample_count));
+      case media::kSampleFormatU8:
+        ConvertToInterleaved<media::UnsignedInt8SampleTypeTraits>(
+            data_as_f32_bus_.get(), offset, partial_dest);
         return;
-      }
 
-      case media::kSampleFormatS16: {
-        data_as_f32_bus_
-            ->ToInterleavedBytesPartial<media::SignedInt16SampleTypeTraits>(
-                offset, dest.first(sample_count * sizeof(int16_t)));
+      case media::kSampleFormatS16:
+        ConvertToInterleaved<media::SignedInt16SampleTypeTraits>(
+            data_as_f32_bus_.get(), offset, partial_dest);
         return;
-      }
 
-      case media::kSampleFormatS32: {
-        data_as_f32_bus_
-            ->ToInterleavedBytesPartial<media::SignedInt32SampleTypeTraits>(
-                offset, dest.first(sample_count * sizeof(int32_t)));
+      case media::kSampleFormatS32:
+        ConvertToInterleaved<media::SignedInt32SampleTypeTraits>(
+            data_as_f32_bus_.get(), offset, partial_dest);
         return;
-      }
 
-      case media::kSampleFormatF32: {
-        data_as_f32_bus_
-            ->ToInterleavedBytesPartial<media::Float32SampleTypeTraits>(
-                offset, dest.first(sample_count * sizeof(float)));
+      case media::kSampleFormatF32:
+        ConvertToInterleaved<media::Float32SampleTypeTraits>(
+            data_as_f32_bus_.get(), offset, partial_dest);
         return;
-      }
 
       default:
         NOTREACHED();
