@@ -5,45 +5,56 @@ Use of this source code is governed by a BSD-style license that can be
 found in the LICENSE file.
 -->
 
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-  <!-- State order is critical: most specific states must come first. -->
-
-  <!-- 1. State: Mouse-click on a hovered button. -->
-  <item android:state_hovered="true" android:state_pressed="true">
-    <ripple android:color="@color/color_on_surface_with_alpha_16">
-      <item>
-        <shape android:shape="oval">
-          <solid android:color="@color/color_on_surface_with_alpha_12" />
-        </shape>
-      </item>
-    </ripple>
-  </item>
-
-  <!-- 2. State: Hovered (but not pressed). -->
-  <item android:state_hovered="true">
-    <shape android:shape="oval">
-      <solid android:color="@color/color_on_surface_with_alpha_12" />
-    </shape>
-  </item>
-
-  <!-- 3. State: Focused (but not pressed): Show outline. -->
-  <item android:state_focused="true" android:state_pressed="false">
-    <shape android:shape="oval">
-      <stroke
-        android:color="@macro/default_control_color_active"
-        android:width="@dimen/focused_outline_stroke_width" />
-    </shape>
-  </item>
-
-  <!-- 4. Default, including pressed. -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- Layer 0: Background Fill & Ripple -->
   <item>
-    <ripple android:color="@color/color_on_surface_with_alpha_16">
-      <!-- Item is transparent, so mask is needed for ripple to be visible. -->
-      <item android:id="@android:id/mask">
+    <selector>
+      <!-- State: Hovered. Ripple is shown if also pressed. -->
+      <item android:state_hovered="true">
+        <ripple android:color="@color/color_on_surface_with_alpha_16">
+          <item>
+            <shape android:shape="oval">
+              <solid android:color="@color/color_on_surface_with_alpha_12" />
+            </shape>
+          </item>
+        </ripple>
+      </item>
+
+      <!-- State: Focused (but not pressed or hovered). -->
+      <!-- We explicitly use a transparent shape here so focus doesn't fall through -->
+      <!-- to the default <ripple>, which automatically draws a grey highlight. -->
+      <item android:state_focused="true" android:state_pressed="false">
         <shape android:shape="oval">
-          <solid android:color="@android:color/white" />
+          <solid android:color="@android:color/transparent" />
         </shape>
       </item>
-    </ripple>
+
+      <!-- Default, including pressed. -->
+      <item>
+        <ripple android:color="@color/color_on_surface_with_alpha_16">
+          <!-- Item is transparent, so mask is needed for ripple to be visible. -->
+          <item android:id="@android:id/mask">
+            <shape android:shape="oval">
+              <solid android:color="@android:color/white" />
+            </shape>
+          </item>
+        </ripple>
+      </item>
+    </selector>
   </item>
-</selector>
+
+  <!-- Layer 1: Focus Ring (Drawn on top if focused) -->
+  <item>
+    <selector>
+      <item android:state_focused="true">
+        <shape android:shape="oval">
+          <solid android:color="@android:color/transparent" />
+          <stroke
+            android:color="@macro/default_control_color_active"
+            android:width="@dimen/focused_outline_stroke_width" />
+        </shape>
+      </item>
+      <item android:drawable="@android:color/transparent" />
+    </selector>
+  </item>
+</layer-list>
