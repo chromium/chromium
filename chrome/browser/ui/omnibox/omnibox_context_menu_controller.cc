@@ -836,8 +836,7 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
         omnibox_popup_ui ? omnibox_popup_ui->composebox_handler() : nullptr;
 
     bool use_input_state_model =
-        base::FeatureList::IsEnabled(omnibox::kAimUsePecApi) &&
-        composebox_handler;
+        base::FeatureList::IsEnabled(omnibox::kAimUsePecApi);
 
     bool is_file_upload_command = id == IDC_OMNIBOX_CONTEXT_ADD_IMAGE ||
                                   id == IDC_OMNIBOX_CONTEXT_ADD_FILE;
@@ -882,7 +881,9 @@ void OmniboxContextMenuController::ExecuteCommand(int id, int event_flags) {
 
       if (auto it = model_for_command_id_.find(id);
           it != model_for_command_id_.end()) {
-        composebox_handler->SetActiveModelMode(it->second);
+        if (composebox_handler) {
+          composebox_handler->SetActiveModelMode(it->second);
+        }
         base::UmaHistogramEnumeration(sliced_prefix,
                                       CommandIdToEnum(it->first));
         GetEditModel()->OpenAiMode(/*via_keyboard=*/false,
