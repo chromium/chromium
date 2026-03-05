@@ -316,16 +316,15 @@ void GlicKeyedService::Shutdown() {
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
                                 mojom::InvocationSource source,
-                                std::optional<std::string> prompt_suggestion,
-                                bool auto_send) {
+                                std::optional<std::string> prompt_suggestion) {
   ToggleUIInternal(bwi, prevent_close, source, std::move(prompt_suggestion),
-                   auto_send, std::nullopt);
+                   false, std::nullopt);
 }
 
 void GlicKeyedService::ToggleUI(BrowserWindowInterface* bwi,
                                 bool prevent_close,
                                 mojom::InvocationSource source) {
-  ToggleUI(bwi, prevent_close, source, std::nullopt, false);
+  ToggleUI(bwi, prevent_close, source, std::nullopt);
 }
 
 #pragma clang diagnostic push

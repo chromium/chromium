@@ -86,8 +86,7 @@ class MockGlicKeyedService : public GlicKeyedService {
               (BrowserWindowInterface*,
                bool,
                mojom::InvocationSource,
-               std::optional<std::string>,
-               bool),
+               std::optional<std::string>),
               (override));
 
   bool IsWindowDetached() const override { return detached_; }
@@ -609,7 +608,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
   if (IsTrustFREOnboardingEnabled()) {
     EXPECT_CALL(*service, ToggleUI(testing::NotNull(), true,
                                    mojom::InvocationSource::kProfilePicker,
-                                   testing::Eq(std::nullopt), testing::_));
+                                   testing::Eq(std::nullopt)));
   } else {
     EXPECT_CALL(*service,
                 OpenFreDialogInNewTab(testing::NotNull(),
@@ -637,7 +636,7 @@ IN_PROC_BROWSER_TEST_P(GlicProfileManagerDidSelectProfileTest,
 
   EXPECT_CALL(*service, ToggleUI(testing::IsNull(), true,
                                  mojom::InvocationSource::kProfilePicker,
-                                 testing::Eq(std::nullopt), testing::_));
+                                 testing::Eq(std::nullopt)));
 
   GlicProfileManager::GetInstance()->DidSelectProfile(profile);
 }

@@ -130,8 +130,7 @@ class GlicKeyedService : public KeyedService,
   virtual void ToggleUI(BrowserWindowInterface* bwi,
                         bool prevent_close,
                         mojom::InvocationSource source,
-                        std::optional<std::string> prompt_suggestion,
-                        bool auto_send = false);
+                        std::optional<std::string> prompt_suggestion);
   void ToggleUI(BrowserWindowInterface* bwi,
                 bool prevent_close,
                 mojom::InvocationSource source);

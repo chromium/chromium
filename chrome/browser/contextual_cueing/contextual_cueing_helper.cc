@@ -427,11 +427,6 @@ void ContextualCueingHelper::OnCueingDecision(
     auto* glic_service =
         glic::GlicKeyedServiceFactory::GetGlicKeyedService(profile);
     if (glic_service && browser_window_interface) {
-      const bool auto_send_prompt =
-          decision_result->auto_send_params.has_value() &&
-          decision_result->auto_send_params->auto_send_eligible &&
-          !prompt_suggestion.empty();
-
       glic::mojom::InvocationSource invocation_source =
           glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
       if (is_auto_open_pdf_side_panel_cue) {
@@ -442,8 +437,7 @@ void ContextualCueingHelper::OnCueingDecision(
                              /*prevent_close=*/true, invocation_source,
                              prompt_suggestion.empty()
                                  ? std::nullopt
-                                 : std::make_optional(prompt_suggestion),
-                             auto_send_prompt);
+                                 : std::make_optional(prompt_suggestion));
       return;
     }
     // Fall through to nudge if side panel open fails.
