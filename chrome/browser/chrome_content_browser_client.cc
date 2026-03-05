@@ -395,6 +395,7 @@
 #include "services/network/public/mojom/web_transport.mojom.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
+#include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/switches.h"
@@ -4945,6 +4946,17 @@ bool ChromeContentBrowserClient::OverrideWebPreferencesAfterNavigation(
     prefs_changed |=
         (web_prefs->force_dark_mode_enabled != force_dark_mode_new_state);
     web_prefs->force_dark_mode_enabled = force_dark_mode_new_state;
+  }
+  if (blink::IsSupportedImageMimeType(web_contents->GetContentsMimeType())) {
+    // Ensure images can zoom out and will scale to fit the viewport width.
+    prefs_changed |= (web_prefs->default_minimum_page_scale_factor !=
+                      WebPreferences::kDefaultMinimumPageScaleFactor);
+    web_prefs->default_minimum_page_scale_factor =
+        WebPreferences::kDefaultMinimumPageScaleFactor;
+    prefs_changed |= (web_prefs->shrinks_viewport_contents_to_fit !=
+                      WebPreferences::kShrinksViewportContentsToFit);
+    web_prefs->shrinks_viewport_contents_to_fit =
+        WebPreferences::kShrinksViewportContentsToFit;
   }
 #endif
 

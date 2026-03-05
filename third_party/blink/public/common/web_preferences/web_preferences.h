@@ -42,6 +42,11 @@ BLINK_COMMON_EXPORT extern const char kCommonScript[];
 // browser/profiles/profile.cc, and
 // content/public/common/common_param_traits_macros.h
 struct BLINK_COMMON_EXPORT WebPreferences {
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  static constexpr float kDefaultMinimumPageScaleFactor = 0.25f;
+  static constexpr bool kShrinksViewportContentsToFit = true;
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+
   ScriptFontFamilyMap standard_font_family_map;
   // The value for Osaka font should be "Osaka", not "Osaka-Mono".
   ScriptFontFamilyMap fixed_font_family_map;
@@ -160,8 +165,11 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // If true - Blink will clamp the minimum scale factor to the content width,
   // preventing zoom beyond the visible content. This is really only needed if
   // `viewport_enabled` is on.
-  bool shrinks_viewport_contents_to_fit =
-      BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS);
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  bool shrinks_viewport_contents_to_fit = kShrinksViewportContentsToFit;
+#else
+  bool shrinks_viewport_contents_to_fit = false;
+#endif
 
   blink::mojom::ViewportStyle viewport_style =
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
@@ -306,7 +314,7 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // scale limits. These are set directly on the WebView so there's no analogue
   // in WebSettings.
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  float default_minimum_page_scale_factor = 0.25f;
+  float default_minimum_page_scale_factor = kDefaultMinimumPageScaleFactor;
   float default_maximum_page_scale_factor = 5.f;
 #elif BUILDFLAG(IS_MAC)
   float default_minimum_page_scale_factor = 1.f;
