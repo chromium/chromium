@@ -102,10 +102,6 @@ class PLATFORM_EXPORT DynamicsCompressor final {
   std::array<float, kParamLast> parameters_;
 
   float sample_rate_;
-
-  std::unique_ptr<const float*[]> source_channels_;
-  std::unique_ptr<float*[]> destination_channels_;
-
   float detector_average_;
   float compressor_gain_;
 

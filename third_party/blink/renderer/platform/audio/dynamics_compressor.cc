@@ -32,6 +32,7 @@
 #include <cmath>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
@@ -116,8 +117,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   // Though number_of_channels is retrieved from destination_bus, we still name
   // it number_of_channels instead of number_of_destination_channels.  It's
   // because we internally match source_channels's size to destination_bus by
-  // channel up/down mix. Thus we need number_of_channels to do the loop work
-  // for both source_channels_ and destination_channels_.
+  // channel up/down mix. Thus we need number_of_channels to do the loop work.
 
   const unsigned number_of_channels = destination_bus->NumberOfChannels();
   const unsigned number_of_source_channels = source_bus->NumberOfChannels();
@@ -125,28 +125,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   DCHECK_EQ(number_of_channels, number_of_channels_);
   DCHECK(number_of_source_channels);
 
-  switch (number_of_channels) {
-    case 2:  // stereo
-      source_channels_[0] = source_bus->Channel(0)->Data();
-
-      if (number_of_source_channels > 1) {
-        UNSAFE_TODO(source_channels_[1]) = source_bus->Channel(1)->Data();
-      } else {
-        // Simply duplicate mono channel input data to right channel for stereo
-        // processing.
-        UNSAFE_TODO(source_channels_[1]) = source_channels_[0];
-      }
-
-      break;
-    default:
-      // FIXME : support other number of channels.
-      NOTREACHED();
-  }
-
-  for (unsigned i = 0; i < number_of_channels; ++i) {
-    UNSAFE_TODO(destination_channels_[i]) =
-        destination_bus->Channel(i)->MutableData();
-  }
+  // FIXME : support other number of channels.
+  CHECK_EQ(number_of_channels, 2u);
 
   const float db_threshold = ParameterValue(kParamThreshold);
   const float db_knee = ParameterValue(kParamKnee);
@@ -155,9 +135,6 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   const float release_time = ParameterValue(kParamRelease);
 
   // Apply compression to the source signal.
-  const float** source_channels = source_channels_.get();
-  float** destination_channels = destination_channels_.get();
-
   DCHECK_EQ(pre_delay_buffers_.size(), number_of_channels);
 
   const float sample_rate = SampleRate();
@@ -290,10 +267,13 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
       // Predelay signal, computing compression amount from un-delayed
       // version.
       for (unsigned j = 0; j < number_of_channels; ++j) {
-        float* const delay_buffer = pre_delay_buffers_[j]->Data();
+        // Simply duplicate mono channel input data to right channel for stereo
+        // processing.
         const float undelayed_source =
-            UNSAFE_TODO(source_channels[j][frame_index]);
-        UNSAFE_TODO(delay_buffer[pre_delay_write_index]) = undelayed_source;
+            (number_of_source_channels > j
+                 ? source_bus->Channel(j)->Span()
+                 : source_bus->Channel(0)->Span())[frame_index];
+        pre_delay_buffers_[j]->at(pre_delay_write_index) = undelayed_source;
 
         const float abs_undelayed_source =
             undelayed_source > 0 ? undelayed_source : -undelayed_source;
@@ -364,9 +344,8 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
 
       // Apply final gain.
       for (unsigned j = 0; j < number_of_channels; ++j) {
-        const float* const delay_buffer = pre_delay_buffers_[j]->Data();
-        UNSAFE_TODO(destination_channels[j][frame_index]) =
-            UNSAFE_TODO(delay_buffer[pre_delay_read_index]) * total_gain;
+        destination_bus->Channel(j)->MutableSpan()[frame_index] =
+            pre_delay_buffers_[j]->at(pre_delay_read_index) * total_gain;
       }
 
       frame_index++;
@@ -406,9 +385,6 @@ void DynamicsCompressor::Reset() {
 }
 
 void DynamicsCompressor::SetNumberOfChannels(unsigned number_of_channels) {
-  source_channels_ = std::make_unique<const float*[]>(number_of_channels);
-  destination_channels_ = std::make_unique<float*[]>(number_of_channels);
-
   if (pre_delay_buffers_.size() == number_of_channels) {
     return;
   }
