@@ -771,9 +771,9 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   base::DictValue initial_config =
       DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
 
-  const base::DictValue* initial_durable_messages =
-      initial_config.FindDict("devToolsEnableDurableMessages");
-  ASSERT_FALSE(initial_durable_messages);
+  const base::DictValue* initial_green_dev =
+      initial_config.FindDict("devToolsGreenDevUi");
+  ASSERT_FALSE(initial_green_dev);
 
   const base::DictValue* initial_protocol_monitor =
       initial_config.FindDict("devToolsProtocolMonitor");
@@ -788,18 +788,17 @@ TEST_F(DevToolsUIBindingsHostConfigTest, GetHostConfigWithFeatures) {
   // Enable features.
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
-      {::features::kDevToolsEnableDurableMessages,
-       ::features::kDevToolsProtocolMonitor, ::features::kDevToolsFreestyler},
+      {::features::kDevToolsGreenDevUi, ::features::kDevToolsProtocolMonitor,
+       ::features::kDevToolsFreestyler},
       {});
 
   // Verify state of features after enabling them.
   base::DictValue result =
       DevToolsUIBindings::GetHostConfigDictionary(profile_.get());
 
-  const base::DictValue* durable_messages =
-      result.FindDict("devToolsEnableDurableMessages");
-  ASSERT_TRUE(durable_messages);
-  EXPECT_TRUE(durable_messages->FindBool("enabled").value_or(false));
+  const base::DictValue* green_dev = result.FindDict("devToolsGreenDevUi");
+  ASSERT_TRUE(green_dev);
+  EXPECT_TRUE(green_dev->FindBool("enabled").value_or(false));
 
   const base::DictValue* protocol_monitor =
       result.FindDict("devToolsProtocolMonitor");

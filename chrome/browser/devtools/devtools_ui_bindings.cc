@@ -1944,15 +1944,12 @@ base::DictValue DevToolsUIBindings::GetHostConfigDictionary(Profile* profile) {
                       std::move(ai_code_completion_styles_dict));
   }
 
-  if (base::FeatureList::IsEnabled(
-          ::features::kDevToolsEnableDurableMessages)) {
-    base::DictValue devtools_durable_message_dict;
-    devtools_durable_message_dict.Set(
-        "enabled",
-        base::FeatureList::IsEnabled(features::kDevToolsEnableDurableMessages));
-    response_dict.Set("devToolsEnableDurableMessages",
-                      std::move(devtools_durable_message_dict));
-  }
+  response_dict.Set(
+      "devToolsEnableDurableMessages",
+      base::DictValue().Set(
+          "enabled",
+          GetFeatureStateForDevTools(::features::kDevToolsEnableDurableMessages,
+                                     enabled_by_flags, disabled_by_flags)));
 
   base::DictValue devtools_well_known_dict;
   devtools_well_known_dict.Set(
