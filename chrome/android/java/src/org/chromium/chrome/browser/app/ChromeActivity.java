@@ -1371,8 +1371,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         }
     }
 
-    protected FullscreenVideoPictureInPictureController
+    protected @Nullable FullscreenVideoPictureInPictureController
             ensureFullscreenVideoPictureInPictureController() {
+        if (!ChromeFeatureList.sFullscreenVideoPictureInPicture.isEnabled()) {
+            return null;
+        }
         if (mFullscreenVideoPictureInPictureController == null) {
             mFullscreenVideoPictureInPictureController =
                     new FullscreenVideoPictureInPictureController(
@@ -1408,8 +1411,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return;
         }
 
-        ensureFullscreenVideoPictureInPictureController();
-        mFullscreenVideoPictureInPictureController.attemptPictureInPicture();
+        FullscreenVideoPictureInPictureController controller =
+                ensureFullscreenVideoPictureInPictureController();
+        if (controller != null) {
+            controller.attemptPictureInPicture();
+        }
         // The attempt might not be successful.  If it is, then `onPictureInPictureModeChanged` will
         // let us know later.  Note that the activity might report that it is in PictureInPicture
         // mode at any point after this, which might be before we finish setup after receiving
@@ -1421,7 +1427,11 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
         super.onPictureInPictureUiStateChanged(pipState);
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
         if (isActivityFinishingOrDestroyed()) return;
-        ensureFullscreenVideoPictureInPictureController().onStashReported(pipState.isStashed());
+        FullscreenVideoPictureInPictureController controller =
+                ensureFullscreenVideoPictureInPictureController();
+        if (controller != null) {
+            controller.onStashReported(pipState.isStashed());
+        }
     }
 
     /**
@@ -1437,12 +1447,15 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
                 " custom tabs: " + wasInPictureInPictureForMinimizedCustomTabs());
         if (wasInPictureInPictureForMinimizedCustomTabs()) return;
         if (inPicture) {
-            maybeCreateActorPipController();
-            if (mActorPipController == null || !mActorPipController.shouldEnterPip()) {
-                ensureFullscreenVideoPictureInPictureController();
-                mFullscreenVideoPictureInPictureController.onEnteredPictureInPictureMode();
-            }
             mLastPictureInPictureModeForTesting = true;
+            maybeCreateActorPipController();
+            if (mActorPipController != null && mActorPipController.shouldEnterPip()) return;
+
+            FullscreenVideoPictureInPictureController controller =
+                    ensureFullscreenVideoPictureInPictureController();
+            if (controller != null) {
+                controller.onEnteredPictureInPictureMode();
+            }
         } else {
             if (mActorPipController != null) {
                 mActorPipController.onFrameworkExitedPictureInPicture();

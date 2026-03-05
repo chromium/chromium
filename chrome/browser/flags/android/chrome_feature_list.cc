@@ -464,6 +464,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &media::kAutoDocPiPPermissionPromptAndroid,
     &media::kAutoPictureInPictureAndroid,
     &media::kContextMenuPictureInPictureAndroid,
+    &media::kFullscreenVideoPictureInPicture,
     &net::features::kVerifyQWACs,
     &network::features::kLocalNetworkAccessChecks,
     &network::features::kLocalNetworkAccessChecksSplitPermissions,
