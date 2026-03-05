@@ -1,5 +1,4 @@
 include_rules = [
-  "+ash/strings",
   "+ash/style",
   "+ash/system",
 

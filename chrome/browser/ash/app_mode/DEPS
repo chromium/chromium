@@ -68,6 +68,7 @@ include_rules = [
   "+chrome/common/chrome_switches.h",
   "+chrome/common/initialize_extensions_client.h",
   "+chrome/common/pref_names.h",
+  "+chrome/grit",
 ]
 
 specific_include_rules = {
