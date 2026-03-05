@@ -24,11 +24,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {assertStyle, installMock, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
-
-const ADD_TAB_CONTEXT_FN = 'addTabContext';
-const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
-const FAKE_TOKEN_STRING_2 = '00000000000000001234567890ABCDFF';
+import {ADD_TAB_CONTEXT_FN, assertStyle, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, installMock, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
 
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
@@ -245,7 +241,10 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
   });
 
   test('LensButtonTriggersOverlay', async () => {
-    contextualTasksApp.$.composebox.isSidePanel = true;
+    testProxy.handler.setIsShownInTab(false);
+
+    testProxy.callbackRouterRemote.onSidePanelStateChanged();
+    await testProxy.callbackRouterRemote.$.flushForTesting();
     await microtasksFinished();
 
     assertTrue(composebox.lensButtonTriggersOverlay);
@@ -259,7 +258,6 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await mockComposeboxPageHandler.whenCalled('handleLensButtonClick');
     assertEquals(
         1, mockComposeboxPageHandler.getCallCount('handleLensButtonClick'));
-
 
     // A second click should still trigger the same handler and the button
     // should still be disabled.
@@ -277,8 +275,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         const threadFrame = contextualTasksApp.$.threadFrame;
         const flexCenterContainer = contextualTasksApp.$.flexCenterContainer;
 
-        (contextualTasksApp as any).isAiPage_ = false;
-        (contextualTasksApp as any).isNavigatingFromAiPage_ = false;
+        testProxy.handler.setIsAiPage(false);
+        contextualTasksApp.setIsNavigatingFromAiPageForTesting(false);
 
         testProxy.callbackRouterRemote.hideInput();
         await testProxy.callbackRouterRemote.$.flushForTesting();
@@ -331,8 +329,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         const contextualComposebox = contextualTasksApp.$.composebox;
         const header = contextualTasksApp.$.composeboxHeaderWrapper;
 
-        (contextualTasksApp as any).isAiPage_ = false;
-        (contextualTasksApp as any).isNavigatingFromAiPage_ = false;
+        testProxy.handler.setIsAiPage(false);
+        contextualTasksApp.setIsNavigatingFromAiPageForTesting(false);
 
         testProxy.callbackRouterRemote.hideInput();
         await testProxy.callbackRouterRemote.$.flushForTesting();

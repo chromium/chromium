@@ -433,6 +433,10 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.$.composebox.clearAutocompleteMatches();
   }
 
+  setIsLoadingForTesting(isLoading: boolean) {
+    this.isLoading_ = isLoading;
+  }
+
   async startExpandAnimation() {
     const composebox = this.$.composebox;
     composebox.animationState = GlowAnimationState.NONE;

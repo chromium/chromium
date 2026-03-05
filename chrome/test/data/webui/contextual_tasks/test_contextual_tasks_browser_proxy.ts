@@ -153,6 +153,8 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
   private page_: MockPage;
   private isAiPageResult_: boolean = false;
   private isPendingErrorPageMap_: {[key: string]: boolean} = {};
+  private isInZeroState_: boolean = false;
+
 
   constructor(url: string, page: MockPage) {
     super([
@@ -226,9 +228,13 @@ class TestContextualTasksPageHandler extends TestBrowserProxy implements
     return Promise.resolve({isInTab: this.isInTab_});
   }
 
+  setIsZeroState(isZeroState: boolean) {
+    this.isInZeroState_ = isZeroState;
+  }
+
   isZeroState(url: Url) {
     this.methodCalled('isZeroState', url);
-    return Promise.resolve({isZeroState: false});
+    return Promise.resolve({isZeroState: this.isInZeroState_});
   }
 
   setIsAiPage(isAiPage: boolean) {

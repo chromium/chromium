@@ -25,19 +25,11 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {assertStyle, installMock, mockInputState} from './test_utils.js';
-
-const ADD_FILE_CONTEXT_FN = 'addFileContext';
-
-type MockContextualTasksAppElement =
-    Omit<ContextualTasksAppElement,|'isZeroState_'|'isShownInTab_'>&{
-      isZeroState_: boolean,
-      isShownInTab_: boolean,
-    };
+import {ADD_FILE_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, installMock, mockInputState} from './test_utils.js';
 
 // Checks if suggestions container is rendered yet.
 function checkIfCanFindSuggestionsContainer(
-    contextualTasksApp: MockContextualTasksAppElement, canFind: boolean) {
+    contextualTasksApp: ContextualTasksAppElement, canFind: boolean) {
   const suggestions = contextualTasksApp.$.composebox.shadowRoot.querySelector(
       '#contextualTasksSuggestionsContainer');
 
@@ -166,7 +158,7 @@ function disableAnimationsRecursively(element: Element) {
 }
 
 suite('ContextualTasksComposeboxMiscInputsTest', () => {
-  let contextualTasksApp: MockContextualTasksAppElement;
+  let contextualTasksApp: ContextualTasksAppElement;
   let composebox: any;
   let testProxy: TestContextualTasksBrowserProxy;
   let mockComposeboxPageHandler: TestMock<ComposeboxPageHandlerRemote>;
@@ -204,8 +196,7 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
         mockComposeboxPageHandler as any, new ComposeboxPageCallbackRouter(),
         mockSearchboxPageHandler as any, searchboxCallbackRouter));
 
-    contextualTasksApp = document.createElement('contextual-tasks-app') as
-        unknown as MockContextualTasksAppElement;
+    contextualTasksApp = document.createElement('contextual-tasks-app');
     await customElements.whenDefined('contextual-tasks-app');
     document.body.appendChild(contextualTasksApp);
 
@@ -675,12 +666,16 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
   test(
       'suggestions show correctly in side panel zero state based on loading',
       async () => {
-        contextualTasksApp.isShownInTab_ = false;
-        contextualTasksApp.isZeroState_ = true;
+        testProxy.handler.setIsShownInTab(false);
+
+        testProxy.callbackRouterRemote.onZeroStateChange(true);
+        testProxy.callbackRouterRemote.onSidePanelStateChanged();
+
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
 
         contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(false);
 
-        await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
 
@@ -691,14 +686,14 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
         contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(true);
 
-        await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
 
-        assertStyle(contextualTasksApp.$.composebox, 'bottom', '30px');
+        assertStyle(
+            contextualTasksApp.$.composebox, 'bottom', '30px',
+            'bottom should be 30px');
 
-        (contextualTasksApp.$.composebox as any).isLoading_ = true;
-        await contextualTasksApp.updateComplete;
+        contextualTasksApp.$.composebox.setIsLoadingForTesting(true);
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
         checkIfCanFindSuggestionsContainer(
@@ -715,11 +710,8 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'When in loading side panel but in zero-state, suggestions\
                 should be in loading state');
 
-        (contextualTasksApp.$.composebox as any).isLoading_ = false;
-        await contextualTasksApp.updateComplete;
+        contextualTasksApp.$.composebox.setIsLoadingForTesting(false);
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$
-            .contextualTasksSuggestionsContainer.updateComplete;
         await firstMatch.updateComplete;
         await microtasksFinished();
 
@@ -728,25 +720,32 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'When not in loading side panel zero-state,\
                 suggestions should be normal');
 
-        contextualTasksApp.isZeroState_ = false;
-        await contextualTasksApp.updateComplete;
+        testProxy.callbackRouterRemote.onZeroStateChange(false);
+
+        await testProxy.callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
+
         assertTrue(
             contextualTasksApp.$.composebox.$
                 .contextualTasksSuggestionsContainer.hidden,
-            'Dropdown should be hidden when NOT in zero state');
+            'Dropdown should be hidden when NOT in zero state',
+        );
       });
 
   test(
       'suggestions show correctly in full tab zero state based on loading',
       async () => {
-        contextualTasksApp.isShownInTab_ = true;
-        contextualTasksApp.isZeroState_ = true;
+        testProxy.handler.setIsShownInTab(true);
+
+        testProxy.callbackRouterRemote.onZeroStateChange(true);
+        testProxy.callbackRouterRemote.onSidePanelStateChanged();
+
+        await testProxy.callbackRouterRemote.$.flushForTesting();
+        await microtasksFinished();
 
         contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(false);
 
-        await contextualTasksApp.updateComplete;
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
 
@@ -755,19 +754,20 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
 
         contextualTasksApp.setEnableNativeZeroStateSuggestionsForTesting(true);
 
+        await contextualTasksApp.$.composebox.updateComplete;
+        await microtasksFinished();
 
-        await contextualTasksApp.updateComplete;
+        checkIfCanFindSuggestionsContainer(
+            contextualTasksApp, /*canFind=*/ true);
+        assertStyle(
+            contextualTasksApp.$.flexCenterContainer, 'top', '88px',
+            'top should be 88px');
+
+        contextualTasksApp.$.composebox.setIsLoadingForTesting(true);
         await contextualTasksApp.$.composebox.updateComplete;
         await microtasksFinished();
         checkIfCanFindSuggestionsContainer(
             contextualTasksApp, /*canFind=*/ true);
-        assertStyle(contextualTasksApp.$.flexCenterContainer, 'top', '88px');
-
-        (contextualTasksApp.$.composebox as any).isLoading_ = true;
-        await contextualTasksApp.updateComplete;
-        await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$
-            .contextualTasksSuggestionsContainer.updateComplete;
         const firstMatch: any =
             contextualTasksApp.$.composebox.$
                 .contextualTasksSuggestionsContainer.shadowRoot.querySelector(
@@ -782,11 +782,8 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             firstMatch.$.textContainer, 'animation-duration', '2s',
             'When in loading full tab zero-state,\
                 suggestions should be in loading state');
-        (contextualTasksApp.$.composebox as any).isLoading_ = false;
-        await contextualTasksApp.updateComplete;
+        contextualTasksApp.$.composebox.setIsLoadingForTesting(false);
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$
-            .contextualTasksSuggestionsContainer.updateComplete;
         await firstMatch.updateComplete;
         await microtasksFinished();
 
@@ -795,15 +792,12 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
             'When not in loading full tab but in zero-state,\
                 suggestions should be normal');
 
-        contextualTasksApp.isZeroState_ = false;
+        testProxy.callbackRouterRemote.onZeroStateChange(false);
 
-        await contextualTasksApp.updateComplete;
+        await testProxy.callbackRouterRemote.$.flushForTesting();
         await contextualTasksApp.$.composebox.updateComplete;
-        await contextualTasksApp.$.composebox.$
-            .contextualTasksSuggestionsContainer.updateComplete;
-        await firstMatch.updateComplete;
-
         await microtasksFinished();
+
         assertTrue(
             contextualTasksApp.$.composebox.$
                 .contextualTasksSuggestionsContainer.hidden,
@@ -1158,5 +1152,152 @@ suite('ContextualTasksComposeboxMiscInputsTest', () => {
     assertFalse(
         !!composebox.getResultForTesting(),
         'Autocomplete result should be cleared');
+  });
+
+  test('Injected input can be added, then deleted from AIM', async () => {
+    composebox.injectInput('title', 'thumbnail.jpg', FAKE_TOKEN_STRING);
+    await composebox.updateComplete;
+    await microtasksFinished();
+
+    // Avoid using $.carousel since may be cached.
+    const carousel = composebox.shadowRoot.querySelector('#carousel');
+    assertTrue(!!carousel, 'Carousel should be in the DOM');
+    const files = carousel.files;
+    assertEquals(1, files.length);
+
+    composebox.deleteFile(FAKE_TOKEN_STRING);
+    await composebox.updateComplete;
+    await microtasksFinished();
+    assertFalse(
+        !!composebox.shadowRoot.querySelector('#carousel'),
+        'Carousel should be removed from the DOM');
+  });
+
+  test(
+      'Injected input with icon can be added, then deleted from AIM',
+      async () => {
+        composebox.injectInput('title', '', FAKE_TOKEN_STRING, 'quoteFilled');
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        // Avoid using $.carousel since may be cached.
+        const carousel = composebox.shadowRoot.querySelector('#carousel');
+        assertTrue(!!carousel, 'Carousel should be in the DOM');
+        const files = carousel.files;
+        assertEquals(1, files.length);
+
+        composebox.deleteFile(FAKE_TOKEN_STRING);
+        await composebox.updateComplete;
+        await microtasksFinished();
+        assertFalse(
+            !!composebox.shadowRoot.querySelector('#carousel'),
+            'Carousel should be removed from the DOM');
+      });
+  test(
+      'Injected input can be added, then deleted from composebox', async () => {
+        composebox.injectInput('title', 'thumbnail.jpg', FAKE_TOKEN_STRING);
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        // Avoid using $.carousel since may be cached.
+        const carousel = composebox.shadowRoot.querySelector('#carousel');
+        assertTrue(!!carousel, 'Carousel should be in the DOM');
+        const files = carousel.files;
+        assertEquals(1, files.length);
+
+        await deleteLastFile(composebox);
+        await composebox.updateComplete;
+        await microtasksFinished();
+
+        assertFalse(
+            !!composebox.shadowRoot.querySelector('#carousel'),
+            'Carousel should be removed from the DOM');
+      });
+
+  test('Multiple files updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token1 = {high: 0n, low: 1n} as any;
+    const token2 = {high: 0n, low: 2n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'image/png', uuid: token1} as ComposeboxFile);
+    innerComposebox.addFileContextForTesting(
+        {type: 'application/pdf', uuid: token2} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about these', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single tab file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'tab', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about this tab', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single image file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'image/png', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single pdf file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'application/pdf', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertEquals('Ask about this doc', innerComposebox.$.input.placeholder);
+  });
+
+  test('Single unknown file updates placeholder', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'unknown/type', uuid: token} as ComposeboxFile);
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    assertFalse(innerComposebox.$.input.placeholder.includes('Ask about'));
+  });
+
+  test('Overlay hint text overridden by file hint', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const innerComposebox = contextualComposebox.$.composebox;
+
+    // Set overlay hint text to true.
+    contextualComposebox.maybeShowOverlayHintText = true;
+
+    // Add an image file.
+    const token = {high: 0n, low: 1n} as any;
+    innerComposebox.addFileContextForTesting(
+        {type: 'image/png', uuid: token} as ComposeboxFile);
+
+    await contextualComposebox.updateComplete;
+    await innerComposebox.updateComplete;
+
+    // File hint should take precedence over overlay hint.
+    assertEquals('Ask about this image', innerComposebox.$.input.placeholder);
   });
 });

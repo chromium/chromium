@@ -16,10 +16,14 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 export const HANDSHAKE_REQUEST_MESSAGE_BASE64 = 'AQID';
 
 export const ADD_FILE_CONTEXT_FN = 'addFileContext';
+export const ADD_TAB_CONTEXT_FN = 'addTabContext';
 
 // Byte array of a typical handshake response from the webview.
 // Equivalent to base64 decoding 'CgIIAA=='
 export const HANDSHAKE_RESPONSE_BYTES = new Uint8Array([10, 2, 8, 0]);
+
+export const FAKE_TOKEN_STRING = '00000000000000001234567890ABCDEF';
+export const FAKE_TOKEN_STRING_2 = '00000000000000001234567890ABCDFF';
 
 export function assertHTMLElement(element: Element|null|undefined):
     asserts element is HTMLElement {
@@ -187,4 +191,17 @@ export async function verifyFileCarouselMatchesUploaded(
   const [fileInfo, fileData] = allCalls[allCalls.length - 1];
   assertEquals(fileInfo.fileName, file.name);
   assertDeepEquals(fileData.bytes, fileArray);
+}
+
+export async function deleteLastFile(composebox: any) {
+  const files = composebox.$.carousel.files;
+  const deletedId = files[files.length - 1]!.uuid;
+  composebox.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
+    detail: {
+      uuid: deletedId,
+    },
+    bubbles: true,
+    composed: true,
+  }));
+  await microtasksFinished();
 }

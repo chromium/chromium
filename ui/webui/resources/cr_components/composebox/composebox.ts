@@ -714,6 +714,10 @@ export class ComposeboxElement extends I18nMixinLit
     return this.files_.size > 0;
   }
 
+  getSelectedMatchIndexForTesting() {
+    return this.selectedMatchIndex_;
+  }
+
   protected async initializeState_(
       text: string = '', files: ContextualUpload[] = [],
       mode: ComposeboxToolMode = ComposeboxToolMode.kUnspecified,

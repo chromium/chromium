@@ -558,7 +558,6 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private async playZeroStateAnimations_() {
     await this.updateComplete;
-
     const restartAnimations = (element: HTMLElement) => {
       element.getAnimations().forEach(animation => {
         animation.cancel();
@@ -979,6 +978,13 @@ export class ContextualTasksAppElement extends CrLitElement {
   setMockPostMessageHandlerForTesting(
       mockPostMessageHandler: PostMessageHandler) {
     this.postMessageHandler_ = mockPostMessageHandler;
+  }
+
+  // Since this is a derivative state, this is one of the only protected
+  // or private members that should have testing setter method.
+  // The rest should be changed through testProxy routerRemote.
+  setIsNavigatingFromAiPageForTesting(isNavigatingForTesting: boolean) {
+    this.isNavigatingFromAiPage_ = isNavigatingForTesting;
   }
 
   isNavigatingForTesting() {
