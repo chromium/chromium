@@ -359,23 +359,22 @@ void TranslationManagerImpl::CreateTranslator(
         std::move(options->observer_remote));
   }
 
-  GetServiceController().CreateTranslator(
-      source_language, target_language,
+  GetServiceManager().CreateTranslator(
+      origin_, source_language, target_language,
       base::BindOnce(&TranslationManagerImpl::CreateTranslatorImpl,
                      weak_ptr_factory_.GetWeakPtr(), std::move(client),
                      source_language, target_language,
                      std::move(model_download_progress_manager)));
 }
 
-OnDeviceTranslationServiceController&
-TranslationManagerImpl::GetServiceController() {
-  if (!service_controller_) {
+ServiceControllerManager& TranslationManagerImpl::GetServiceManager() {
+  if (!manager_) {
     ServiceControllerManager* manager =
         ServiceControllerManagerFactory::GetInstance()->Get(browser_context());
     CHECK(manager);
-    service_controller_ = manager->GetServiceControllerForOrigin(origin_);
+    manager_ = manager;
   }
-  return *service_controller_;
+  return *manager_;
 }
 
 void TranslationManagerImpl::TranslationAvailable(
@@ -423,8 +422,8 @@ void TranslationManagerImpl::TranslationAvailable(
       !HasInitializedTranslator(source_language, target_language) &&
       !are_source_and_target_accept_or_english;
 
-  GetServiceController().CanTranslate(
-      std::move(source_language), std::move(target_language),
+  GetServiceManager().CanTranslate(
+      origin_, std::move(source_language), std::move(target_language),
       base::BindOnce(&RunTranslationAvailableCallbackWithMasking,
                      mask_readily_result, std::move(callback)));
 }

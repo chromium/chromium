@@ -19,10 +19,6 @@
 #include "third_party/blink/public/mojom/on_device_translation/translation_manager.mojom.h"
 #include "url/origin.h"
 
-namespace on_device_translation {
-class ServiceControllerManager;
-}  // namespace on_device_translation
-
 namespace captions {
 
 class TranslationDispatcherOnDevice : public TranslationDispatcher {
@@ -33,7 +29,8 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
   TranslationDispatcherOnDevice& operator=(
       const TranslationDispatcherOnDevice&) = delete;
   explicit TranslationDispatcherOnDevice(
-      on_device_translation::ServiceControllerManager* manager);
+      std::unique_ptr<on_device_translation::OnDeviceTranslationController>
+          translation_controller);
 
   void GetTranslation(absl::string_view result,
                       absl::string_view source_language,
@@ -70,8 +67,8 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
 
   const url::Origin origin_;
 
-  scoped_refptr<on_device_translation::OnDeviceTranslationServiceController>
-      service_controller_;
+  std::unique_ptr<on_device_translation::OnDeviceTranslationController>
+      translation_controller_;
   mojo::Remote<on_device_translation::mojom::Translator> translator_;
   bool creation_in_progress_ = false;
   std::vector<std::pair<std::string, TranslateEventCallback>>

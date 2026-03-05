@@ -13,16 +13,15 @@
 
 namespace captions {
 
-using blink::mojom::CanCreateTranslatorResult;
+using ::blink::mojom::CanCreateTranslatorResult;
+using ::on_device_translation::OnDeviceTranslationController;
 
 TranslationDispatcherOnDevice::TranslationDispatcherOnDevice() = default;
 
 TranslationDispatcherOnDevice::TranslationDispatcherOnDevice(
-    on_device_translation::ServiceControllerManager* manager)
-    : origin_(url::Origin()) {
-  CHECK(manager);
-  service_controller_ = manager->GetServiceControllerForOrigin(origin_);
-}
+    std::unique_ptr<OnDeviceTranslationController> translation_controller)
+    : origin_(url::Origin()),
+      translation_controller_(std::move(translation_controller)) {}
 
 TranslationDispatcherOnDevice::~TranslationDispatcherOnDevice() = default;
 
@@ -53,7 +52,7 @@ void TranslationDispatcherOnDevice::GetTranslation(
   translator_.reset();
   creation_in_progress_ = true;
 
-  service_controller_->CanTranslate(
+  translation_controller_->CanTranslate(
       base_source_language, base_target_language,
       base::BindOnce(&TranslationDispatcherOnDevice::OnCanTranslate,
                      weak_factory_.GetWeakPtr(), base_source_language,
@@ -83,7 +82,7 @@ void TranslationDispatcherOnDevice::OnCanTranslate(
     case CanCreateTranslatorResult::
         kAfterDownloadLibraryAndLanguagePackNotReady:
     case CanCreateTranslatorResult::kAfterDownloadTranslatorCreationRequired:
-      service_controller_->CreateTranslator(
+      translation_controller_->CreateTranslator(
           source_language, target_language,
           base::BindOnce(&TranslationDispatcherOnDevice::OnTranslationCreated,
                          weak_factory_.GetWeakPtr(), source_language,

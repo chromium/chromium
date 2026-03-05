@@ -7,10 +7,12 @@
 
 #include <map>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/types/pass_key.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/on_device_translation/service_controller.h"
 #include "url/origin.h"
 
 namespace content {
@@ -44,25 +46,42 @@ class ServiceControllerManager : public KeyedService {
   ServiceControllerManager(const ServiceControllerManager&) = delete;
   ServiceControllerManager& operator=(const ServiceControllerManager&) = delete;
 
-  virtual scoped_refptr<OnDeviceTranslationServiceController>
-  GetServiceControllerForOrigin(const url::Origin& origin);
+  // Creates a translator class that implements `mojom::Translator` for the
+  // given language pair.
+  virtual void CreateTranslator(
+      const url::Origin& origin,
+      const std::string& source_lang,
+      const std::string& target_lang,
+      OnDeviceTranslationController::CreateTranslatorCallback callback);
 
-  // Returns true if a new service can be started.
-  virtual bool CanStartNewService() const;
+  // Checks if the translate service can do translation from `source_lang` to
+  // `target_lang`.
+  virtual void CanTranslate(
+      const url::Origin& origin,
+      const std::string& source_lang,
+      const std::string& target_lang,
+      OnDeviceTranslationController::CanTranslateCallback callback);
 
-  // Sets the service controller deleted observer for testing.
-  void set_service_controller_deleted_observer_for_testing(
-      base::OnceClosure observer) {
-    service_controller_deleted_observer_for_testing_ = std::move(observer);
-  }
+  bool IsServiceRunning(const url::Origin& origin) const;
+
+  // Sets the service idle timeout for testing. This must be called before the
+  // service is started.
+  void SetServiceIdleTimeoutForTesting(const url::Origin& origin,
+                                       base::TimeDelta service_idle_timeout);
 
  private:
-  // Called when a service controller is deleted.
-  void OnServiceControllerDeleted(const url::Origin& origin);
+  // It can also return a nullptr in case we cannot add a new controller.
+  OnDeviceTranslationController* GetOrCreateController(
+      const url::Origin& origin);
 
-  std::map<url::Origin, raw_ptr<OnDeviceTranslationServiceController>>
+  // This LRU cache maintains at most K service controllers in it. We assume
+  // that all of them have services running. Whenever a new controller needs to
+  // be created, the cache will remove the least used one and consequently stop
+  // its service that could be running. To be able to do this, we do not expose
+  // the controller directly, rather we expose its methods `CreateTranslator`
+  // and `CanTranslate` here.
+  base::LRUCache<url::Origin, std::unique_ptr<OnDeviceTranslationController>>
       service_controllers_;
-  base::OnceClosure service_controller_deleted_observer_for_testing_;
   // Safe because BrowserProcess::local_state() outlives the Profile.
   raw_ptr<PrefService> local_state_;
   base::WeakPtrFactory<ServiceControllerManager> weak_ptr_factory_{this};

@@ -216,12 +216,8 @@ OnDeviceTranslationServiceController::PendingTask::operator=(PendingTask&&) =
 
 OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
     PrefService* local_state,
-    base::RepeatingCallback<bool()> can_start_service_check,
-    base::OnceClosure on_deleted_callback,
-    const std::string& service_display_name_suffix)
-    : can_start_service_check_(std::move(can_start_service_check)),
-      on_deleted_callback_(std::move(on_deleted_callback)),
-      service_display_name_suffix_(service_display_name_suffix),
+    std::string service_display_name_suffix)
+    : service_display_name_suffix_(service_display_name_suffix),
       service_idle_timeout_(kTranslationAPIServiceIdleTimeout.Get()),
       file_operation_proxy_(nullptr, base::OnTaskRunnerDeleter(nullptr)),
       language_packs_from_command_line_(GetLanguagePackInfoFromCommandLine()) {
@@ -229,9 +225,6 @@ OnDeviceTranslationServiceController::OnDeviceTranslationServiceController(
 }
 
 OnDeviceTranslationServiceController::~OnDeviceTranslationServiceController() {
-  if (on_deleted_callback_) {
-    std::move(on_deleted_callback_).Run();
-  }
   OnDeviceTranslationInstaller::GetInstance()->RemoveObserver(this);
 }
 
@@ -388,12 +381,6 @@ OnDeviceTranslationServiceController::CanTranslateImpl(
   LanguagePackRequirements language_pack_requirements =
       GetLanguagePackRequirements(source_lang, target_lang);
 
-  if (!service_remote_ && !can_start_service_check_.Run()) {
-    // If the service can't be started, returns
-    // `kNoExceedsServiceCountLimitation`.
-    return CanCreateTranslatorResult::kNoExceedsServiceCountLimitation;
-  }
-
   if (language_pack_requirements.required_packs.empty()) {
     // Empty `required_packs` means that the transltion for the specified
     // language pair is not supported.
@@ -461,14 +448,14 @@ void OnDeviceTranslationServiceController::MaybeRunPendingTasks() {
     }
   }
 }
+// Returns true if the service is running.
+bool OnDeviceTranslationServiceController::IsServiceRunning() const {
+  return !!service_remote_;
+}
 
 bool OnDeviceTranslationServiceController::MaybeStartService() {
   if (service_remote_) {
     return true;
-  }
-
-  if (!can_start_service_check_.Run()) {
-    return false;
   }
 
   auto receiver = service_remote_.BindNewPipeAndPassReceiver();

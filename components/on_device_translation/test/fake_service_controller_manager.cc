@@ -15,47 +15,22 @@ FakeServiceControllerManager::FakeServiceControllerManager(
     : ServiceControllerManager(local_state), local_state_(local_state) {}
 
 FakeServiceControllerManager::~FakeServiceControllerManager() = default;
-
-scoped_refptr<OnDeviceTranslationServiceController>
-FakeServiceControllerManager::GetServiceControllerForOrigin(
-    const url::Origin& origin) {
-  auto it = service_controllers_.find(origin);
-  if (it != service_controllers_.end()) {
-    return it->second;
-  }
-
-  if (!service_controllers_.empty()) {
-    return service_controllers_.begin()->second;
-  }
-
-  auto can_start_service_check = base::BindRepeating(
-      [](base::WeakPtr<FakeServiceControllerManager> manager) {
-        return manager && manager->CanStartNewService();
-      },
-      weak_ptr_factory_.GetWeakPtr());
-  auto on_deleted_callback =
-      base::BindOnce(&FakeServiceControllerManager::OnServiceControllerDeleted,
-                     weak_ptr_factory_.GetWeakPtr(), origin);
-
-  auto service_controller =
-      base::MakeRefCounted<OnDeviceTranslationServiceController>(
-          local_state_, std::move(can_start_service_check),
-          std::move(on_deleted_callback), origin.Serialize());
-  service_controllers_[origin] = service_controller;
-  return service_controller;
+void FakeServiceControllerManager::CreateTranslator(
+    const url::Origin& origin,
+    const std::string& source_lang,
+    const std::string& target_lang,
+    OnDeviceTranslationController::CreateTranslatorCallback callback) {
+  service_controllers_.at(origin)->CreateTranslator(source_lang, target_lang,
+                                                    std::move(callback));
 }
 
-bool FakeServiceControllerManager::CanStartNewService() const {
-  return can_start_new_service_;
-}
-
-void FakeServiceControllerManager::OnServiceControllerDeleted(
-    const url::Origin& origin) {
-  service_controllers_.erase(origin);
-}
-
-void FakeServiceControllerManager::SetCanStartNewService(bool can_start) {
-  can_start_new_service_ = can_start;
+void FakeServiceControllerManager::CanTranslate(
+    const url::Origin& origin,
+    const std::string& source_lang,
+    const std::string& target_lang,
+    OnDeviceTranslationController::CanTranslateCallback callback) {
+  service_controllers_.at(origin)->CanTranslate(source_lang, target_lang,
+                                                std::move(callback));
 }
 
 size_t FakeServiceControllerManager::GetControllerCount() const {
@@ -64,8 +39,8 @@ size_t FakeServiceControllerManager::GetControllerCount() const {
 
 void FakeServiceControllerManager::SetServiceControllerForTest(
     const url::Origin& origin,
-    scoped_refptr<OnDeviceTranslationServiceController> service_controller) {
-  service_controllers_[origin] = service_controller;
+    std::unique_ptr<OnDeviceTranslationController> service_controller) {
+  service_controllers_[origin] = std::move(service_controller);
 }
 
 }  // namespace on_device_translation

@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -1452,13 +1453,10 @@ IN_PROC_BROWSER_TEST_F(
 
   NavigateToEmptyPage();
 
-  auto service_controller = ServiceControllerManagerFactory::GetInstance()
-                                ->Get(browser()->profile())
-                                ->GetServiceControllerForOrigin(
-                                    embedded_https_test_server().GetOrigin());
-
-  // Set the idle timeout to be 100 microseconds.
-  service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
+  url::Origin origin = embedded_https_test_server().GetOrigin();
+  auto* manager =
+      ServiceControllerManagerFactory::GetInstance()->Get(browser()->profile());
+  manager->SetServiceIdleTimeoutForTesting(origin, base::Microseconds(100));
 
   // Test that Translator API works.
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -1470,7 +1468,7 @@ IN_PROC_BROWSER_TEST_F(
     )"),
             "en to ja: hello");
   // Check that the service is still running.
-  EXPECT_TRUE(service_controller->IsServiceRunning());
+  EXPECT_TRUE(manager->IsServiceRunning(origin));
   // Wait for 200 microseconds.
   EXPECT_EQ(EvalJsCatchingError(R"(
       await new Promise(resolve => { setTimeout(resolve, 200); });
@@ -1479,7 +1477,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is still running, because the translator is still
   // available.
-  EXPECT_TRUE(service_controller->IsServiceRunning());
+  EXPECT_TRUE(manager->IsServiceRunning(origin));
   // Destroy the translator. And wait for 200 microseconds. (Note: wait more
   // than the idle timeout 100 microseconds to avoid flakiness.)
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -1490,7 +1488,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is not running, because the translator was
   // destroyed, and the idle timeout was reached.
-  EXPECT_FALSE(service_controller->IsServiceRunning());
+  EXPECT_FALSE(manager->IsServiceRunning(origin));
 }
 
 // Tests that the service is terminated when the idle timeout is reached after
@@ -1504,14 +1502,11 @@ IN_PROC_BROWSER_TEST_F(
       {LanguagePackKey::kEn_Ja});
 
   NavigateToEmptyPage();
+  url::Origin origin = embedded_https_test_server().GetOrigin();
 
-  auto service_controller = ServiceControllerManagerFactory::GetInstance()
-                                ->Get(browser()->profile())
-                                ->GetServiceControllerForOrigin(
-                                    embedded_https_test_server().GetOrigin());
-  // Set the idle timeout to be 100 microseconds.
-  service_controller->SetServiceIdleTimeoutForTesting(base::Microseconds(100));
-
+  auto* manager =
+      ServiceControllerManagerFactory::GetInstance()->Get(browser()->profile());
+  manager->SetServiceIdleTimeoutForTesting(origin, base::Microseconds(100));
   content::RenderFrameHost* iframe = CreateIframe();
 
   // Test that Translator API on an iframe works.
@@ -1527,7 +1522,7 @@ IN_PROC_BROWSER_TEST_F(
     )"),
             "en to ja: hello");
   // Check that the service is still running.
-  EXPECT_TRUE(service_controller->IsServiceRunning());
+  EXPECT_TRUE(manager->IsServiceRunning(origin));
   // Wait for 200 microseconds.
   EXPECT_EQ(EvalJsCatchingError(R"(
       await new Promise(resolve => { setTimeout(resolve, 200); });
@@ -1536,7 +1531,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is still running, because the ifame is still
   // available.
-  EXPECT_TRUE(service_controller->IsServiceRunning());
+  EXPECT_TRUE(manager->IsServiceRunning(origin));
   // Remove the iframe and wait for 200 microseconds. (Note: wait more than the
   // idle timeout 100 microseconds to avoid flakiness.)
   EXPECT_EQ(EvalJsCatchingError(R"(
@@ -1547,7 +1542,7 @@ IN_PROC_BROWSER_TEST_F(
             "OK");
   // Check that the service is not running, because the iframe was removed, and
   // the idle timeout was reached.
-  EXPECT_FALSE(service_controller->IsServiceRunning());
+  EXPECT_FALSE(manager->IsServiceRunning(origin));
 }
 
 // Test the behavior of availability() when the language pack is ready.
@@ -1933,16 +1928,16 @@ class OnDeviceTranslationCrossOriginBrowserTest
   // Removes the iframe and waits for the service deletion.
   void RemoveIframeAndWaitForServiceDeletion(size_t index,
                                              Browser* target_browser) {
-    base::RunLoop run_loop;
-    ServiceControllerManagerFactory::GetInstance()
-        ->Get(target_browser->profile())
-        ->set_service_controller_deleted_observer_for_testing(
-            run_loop.QuitClosure());
+    auto* manager = ServiceControllerManagerFactory::GetInstance()->Get(
+        target_browser->profile());
+    url::Origin origin = url::Origin::Create(CreateCrossOriginIframeUrl(index));
+
     EXPECT_EQ(EvalJsCatchingError(JsReplace("return removeIframe($1);",
                                             CreateCrossOriginIframeUrl(index)),
                                   target_browser),
               "removed");
-    run_loop.Run();
+    EXPECT_TRUE(base::test::RunUntil(
+        [&]() { return !manager->IsServiceRunning(origin); }));
   }
 
   // Creates a translator and translates in the iframe. Returns successful

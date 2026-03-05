@@ -15,8 +15,6 @@ class PrefService;
 
 namespace on_device_translation {
 
-class OnDeviceTranslationServiceController;
-
 class FakeServiceControllerManager : public ServiceControllerManager {
  public:
   explicit FakeServiceControllerManager(PrefService* local_state);
@@ -25,25 +23,33 @@ class FakeServiceControllerManager : public ServiceControllerManager {
   FakeServiceControllerManager(const FakeServiceControllerManager&) = delete;
   FakeServiceControllerManager& operator=(const FakeServiceControllerManager&) =
       delete;
+  // Creates a translator class that implements `mojom::Translator` for the
+  // given language pair.
+  void CreateTranslator(const url::Origin& origin,
+                        const std::string& source_lang,
+                        const std::string& target_lang,
+                        OnDeviceTranslationController::CreateTranslatorCallback
+                            callback) override;
 
-  // ServiceControllerManager:
-  scoped_refptr<OnDeviceTranslationServiceController>
-  GetServiceControllerForOrigin(const url::Origin& origin) override;
-  bool CanStartNewService() const override;
+  // Checks if the translate service can do translation from `source_lang` to
+  // `target_lang`.
+  void CanTranslate(
+      const url::Origin& origin,
+      const std::string& source_lang,
+      const std::string& target_lang,
+      OnDeviceTranslationController::CanTranslateCallback callback) override;
 
   // Test-only methods:
-  void SetCanStartNewService(bool can_start);
   size_t GetControllerCount() const;
   void SetServiceControllerForTest(
       const url::Origin& origin,
-      scoped_refptr<OnDeviceTranslationServiceController> service_controller);
+      std::unique_ptr<OnDeviceTranslationController> service_controller);
 
  private:
   void OnServiceControllerDeleted(const url::Origin& origin);
 
   raw_ptr<PrefService> local_state_;
-  bool can_start_new_service_ = true;
-  std::map<url::Origin, scoped_refptr<OnDeviceTranslationServiceController>>
+  std::map<url::Origin, std::unique_ptr<OnDeviceTranslationController>>
       service_controllers_;
   base::WeakPtrFactory<FakeServiceControllerManager> weak_ptr_factory_{this};
 };

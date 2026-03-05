@@ -20,6 +20,7 @@ namespace captions {
 namespace {
 
 using ::on_device_translation::FakeOnDeviceTranslationInstaller;
+using ::on_device_translation::OnDeviceTranslationController;
 using ::testing::_;
 
 using CreateTranslatorCallback = base::OnceCallback<void(
@@ -28,16 +29,9 @@ using CreateTranslatorCallback = base::OnceCallback<void(
         blink::mojom::CreateTranslatorError>)>;
 
 class MockOnDeviceTranslationServiceController
-    : public on_device_translation::OnDeviceTranslationServiceController {
+    : public OnDeviceTranslationController {
  public:
-  MockOnDeviceTranslationServiceController(
-      PrefService* local_state,
-      base::RepeatingCallback<bool()> can_start_service_check,
-      base::OnceClosure on_deleted_callback)
-      : OnDeviceTranslationServiceController(local_state,
-                                             std::move(can_start_service_check),
-                                             std::move(on_deleted_callback),
-                                             url::Origin().Serialize()) {}
+  ~MockOnDeviceTranslationServiceController() override = default;
   MOCK_METHOD(void,
               CreateTranslator,
               (const std::string& source_lang,
@@ -51,9 +45,7 @@ class MockOnDeviceTranslationServiceController
                base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
                    callback),
               (override));
-
- protected:
-  ~MockOnDeviceTranslationServiceController() override = default;
+  bool IsServiceRunning() const override { return true; }
 };
 
 class TranslationDispatcherOnDeviceTest : public testing::Test {
@@ -61,24 +53,12 @@ class TranslationDispatcherOnDeviceTest : public testing::Test {
   void SetUp() override {
     fake_installer_ =
         std::make_unique<FakeOnDeviceTranslationInstaller>(base::FilePath());
-    service_controller_manager_ =
-        std::make_unique<on_device_translation::FakeServiceControllerManager>(
-            &local_state_);
-    mock_service_controller_ =
-        base::MakeRefCounted<MockOnDeviceTranslationServiceController>(
-            &local_state_, base::BindRepeating([]() { return true; }),
-            base::OnceClosure());
-    service_controller_manager_->SetServiceControllerForTest(
-        url::Origin(), mock_service_controller_);
-    translation_dispatcher_on_device_ =
-        std::make_unique<TranslationDispatcherOnDevice>(
-            service_controller_manager_.get());
   }
 
-  void TearDown() override {
-    translation_dispatcher_on_device_.reset();
-    mock_service_controller_.reset();
-    service_controller_manager_.reset();
+  std::unique_ptr<TranslationDispatcherOnDevice> CreateTranslationDispatcher(
+      std::unique_ptr<OnDeviceTranslationController> translation_controller) {
+    return std::make_unique<TranslationDispatcherOnDevice>(
+        std::move(translation_controller));
   }
 
   void OnTranslated(const TranslateEvent& result) {
@@ -90,12 +70,6 @@ class TranslationDispatcherOnDeviceTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
-  std::unique_ptr<on_device_translation::FakeServiceControllerManager>
-      service_controller_manager_;
-  scoped_refptr<MockOnDeviceTranslationServiceController>
-      mock_service_controller_;
-  std::unique_ptr<TranslationDispatcherOnDevice>
-      translation_dispatcher_on_device_;
   std::string translated_text_;
   std::unique_ptr<on_device_translation::FakeTranslator> fake_translator_;
   std::unique_ptr<FakeOnDeviceTranslationInstaller> fake_installer_;
@@ -105,7 +79,9 @@ class TranslationDispatcherOnDeviceTest : public testing::Test {
 
 TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_service_controller_, CanTranslate("en", "es", _))
+  auto mock_service_controller =
+      std::make_unique<MockOnDeviceTranslationServiceController>();
+  EXPECT_CALL(*mock_service_controller, CanTranslate("en", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
@@ -113,7 +89,7 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
             std::move(callback).Run(
                 blink::mojom::CanCreateTranslatorResult::kReadily);
           });
-  EXPECT_CALL(*mock_service_controller_, CreateTranslator("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CreateTranslator("en", "es", _))
       .WillOnce([&](const std::string& source_lang,
                     const std::string& target_lang,
                     CreateTranslatorCallback callback) {
@@ -124,9 +100,11 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
                 std::move(receiver));
         std::move(callback).Run(std::move(remote));
       });
+  std::unique_ptr<TranslationDispatcherOnDevice> dispatcher =
+      CreateTranslationDispatcher(std::move(mock_service_controller));
   TranslateEventCallback on_translated_cb = base::BindOnce(
       &TranslationDispatcherOnDeviceTest::OnTranslated, base::Unretained(this));
-  translation_dispatcher_on_device_->GetTranslation(
+  dispatcher->GetTranslation(
       "Hello world", "en-US", "es",
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();
@@ -135,7 +113,9 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationSuccess) {
 
 TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_service_controller_, CanTranslate("en", "es", _))
+  auto mock_service_controller =
+      std::make_unique<MockOnDeviceTranslationServiceController>();
+  EXPECT_CALL(*mock_service_controller, CanTranslate("en", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
@@ -143,16 +123,18 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
             std::move(callback).Run(
                 blink::mojom::CanCreateTranslatorResult::kReadily);
           });
-  EXPECT_CALL(*mock_service_controller_, CreateTranslator("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CreateTranslator("en", "es", _))
       .WillOnce([](const std::string& source_lang,
                    const std::string& target_lang,
                    CreateTranslatorCallback callback) {
         std::move(callback).Run(base::unexpected(
             blink::mojom::CreateTranslatorError::kFailedToInitialize));
       });
+  std::unique_ptr<TranslationDispatcherOnDevice> dispatcher =
+      CreateTranslationDispatcher(std::move(mock_service_controller));
   TranslateEventCallback on_translated_cb = base::BindOnce(
       &TranslationDispatcherOnDeviceTest::OnTranslated, base::Unretained(this));
-  translation_dispatcher_on_device_->GetTranslation(
+  dispatcher->GetTranslation(
       "Hello world", "en-US", "es",
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();
@@ -161,7 +143,9 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailure) {
 
 TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
   base::RunLoop run_loop;
-  EXPECT_CALL(*mock_service_controller_, CanTranslate("en", "es", _))
+  auto mock_service_controller =
+      std::make_unique<MockOnDeviceTranslationServiceController>();
+  EXPECT_CALL(*mock_service_controller, CanTranslate("en", "es", _))
       .WillOnce(
           [](const std::string& source_lang, const std::string& target_lang,
              base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
@@ -169,11 +153,13 @@ TEST_F(TranslationDispatcherOnDeviceTest, GetTranslationFailureOnCanTranslate) {
             std::move(callback).Run(
                 blink::mojom::CanCreateTranslatorResult::kNoServiceCrashed);
           });
-  EXPECT_CALL(*mock_service_controller_, CreateTranslator("en", "es", _))
+  EXPECT_CALL(*mock_service_controller, CreateTranslator("en", "es", _))
       .Times(0);
+  std::unique_ptr<TranslationDispatcherOnDevice> dispatcher =
+      CreateTranslationDispatcher(std::move(mock_service_controller));
   TranslateEventCallback on_translated_cb = base::BindOnce(
       &TranslationDispatcherOnDeviceTest::OnTranslated, base::Unretained(this));
-  translation_dispatcher_on_device_->GetTranslation(
+  dispatcher->GetTranslation(
       "Hello world", "en-US", "es",
       std::move(on_translated_cb).Then(run_loop.QuitClosure()));
   run_loop.Run();

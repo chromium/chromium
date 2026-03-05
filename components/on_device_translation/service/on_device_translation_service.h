@@ -50,6 +50,10 @@ class OnDeviceTranslationService : public mojom::OnDeviceTranslationService {
                     CanTranslateCallback can_translate_callback) override;
 
  private:
+  // This method is called whenever a Translator receiver gets disconnected. If
+  // there aren't any translators connected to this service, we reset it.
+  void OnDisconnect();
+
   mojo::Receiver<mojom::OnDeviceTranslationService> receiver_;
   std::unique_ptr<TranslateKitClient> owning_client_for_testing_;
   raw_ptr<TranslateKitClient> client_;

@@ -12,6 +12,7 @@
 #include "components/live_caption/google_api_translation_dispatcher.h"
 #include "components/live_caption/live_translate_controller.h"
 #include "components/live_caption/translation_dispatcher_on_device.h"
+#include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/service_controller_manager.h"
 #include "google_apis/google_api_keys.h"
 
@@ -60,10 +61,10 @@ LiveTranslateControllerFactory::BuildServiceInstanceForBrowserContext(
   // Use the correct dispatcher based on the feature flag
   if (base::FeatureList::IsEnabled(
           live_caption::kLiveCaptionOnDeviceTranslation)) {
-    auto* manager =
-        on_device_translation::ServiceControllerManagerFactory::GetInstance()
-            ->Get(context);
-    dispatcher = std::make_unique<TranslationDispatcherOnDevice>(manager);
+    dispatcher = std::make_unique<TranslationDispatcherOnDevice>(
+        std::make_unique<
+            on_device_translation::OnDeviceTranslationServiceController>(
+            profile->GetPrefs(), ""));
   } else {
     dispatcher = std::make_unique<GoogleApiTranslationDispatcher>(
         google_apis::GetAPIKey(), context);
