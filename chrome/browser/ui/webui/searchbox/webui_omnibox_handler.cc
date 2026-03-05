@@ -437,8 +437,8 @@ WebuiOmniboxHandler::CreateAutocompleteMatch(
 std::string WebuiOmniboxHandler::AutocompleteIconToResourceName(
     const gfx::VectorIcon& icon) const {
   // The default icon for contextual suggestions is the subdirectory arrow right
-  // icon. If there is no header enabled (which is when the lens chip is not
-  // showing), use the search loupe instead.
+  // icon. If there is a header enabled (which is when the lens chip is
+  // showing), use the search spark loupe instead.
   const auto& input = autocomplete_controller()->input();
   bool has_toolbelt_lens_action =
       autocomplete_controller()->contextual_search_provider() &&
@@ -450,9 +450,9 @@ std::string WebuiOmniboxHandler::AutocompleteIconToResourceName(
   bool has_lens_search_chip =
       client->IsOmniboxNextLensSearchChipEnabled() &&
       ContextualSearchProvider::LensEntrypointEligible(input, client);
-  if (!(has_toolbelt_lens_action || has_lens_search_chip) &&
+  if ((has_toolbelt_lens_action || has_lens_search_chip) &&
       icon.name == omnibox::kSubdirectoryArrowRightIcon.name) {
-    return searchbox_internal::kSearchIconResourceName;
+    return searchbox_internal::kSearchSparkIconResourceName;
   }
 
   return SearchboxHandler::AutocompleteIconToResourceName(icon);
