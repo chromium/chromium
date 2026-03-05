@@ -878,4 +878,25 @@ IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
   EXPECT_EQ(error_future.Get(), GlicInvokeError::kInvalidConversationId);
 }
 
+IN_PROC_BROWSER_TEST_F(GlicInstanceCoordinatorBrowserTest,
+                       InvokeWhileInvokeInProgress) {
+  tabs::TabInterface* tab = GetTabListInterface()->GetActiveTab();
+
+  base::test::TestFuture<GlicInvokeError> error_future1;
+  GlicInvokeOptions options1(mojom::InvocationSource::kOsButton);
+
+  coordinator().Invoke(tab, std::move(options1));
+
+  base::test::TestFuture<GlicInvokeError> error_future2;
+  GlicInvokeOptions options2(mojom::InvocationSource::kOsButton);
+  options2.on_error = error_future2.GetCallback();
+
+  // Try to invoke again while the first one is still in progress for the same
+  // instance.
+  coordinator().Invoke(tab, std::move(options2));
+
+  // The second invoke should fail synchronously.
+  EXPECT_EQ(error_future2.Get(), GlicInvokeError::kInvokeInProgress);
+}
+
 }  // namespace glic
