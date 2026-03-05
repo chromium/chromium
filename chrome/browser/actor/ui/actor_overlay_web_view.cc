@@ -40,8 +40,8 @@ void ActorOverlayWebView::ShowUI(tabs::TabInterface* tab,
   }
   // Disable mouse, keyboard, and a11y input events to underlying tab
   // contents.
-  scoped_ignore_input_events_ = tab->GetContents()->IgnoreInputEvents(
-      std::nullopt, /*should_ignore_a11y_input=*/true);
+  scoped_ignore_input_events_ =
+      tab->GetContents()->IgnoreInputEvents(std::nullopt);
   // Set the tab interface
   webui::SetTabInterface(web_contents(), tab);
 
