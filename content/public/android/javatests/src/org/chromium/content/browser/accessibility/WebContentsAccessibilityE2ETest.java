@@ -169,7 +169,6 @@ public class WebContentsAccessibilityE2ETest {
                                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
                                 "",
                                 "",
-                                0,
                                 EVENT_TIMEOUT_MS);
         Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
     }
@@ -190,7 +189,6 @@ public class WebContentsAccessibilityE2ETest {
                                 AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
                                 "",
                                 "",
-                                0,
                                 EVENT_TIMEOUT_MS);
         Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
 
@@ -201,129 +199,7 @@ public class WebContentsAccessibilityE2ETest {
                                 AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED,
                                 "android.widget.EditText",
                                 url,
-                                0,
                                 EVENT_TIMEOUT_MS);
         Assert.assertTrue("Service did not receive TEXT_SELECTION_CHANGED", tscReceived);
     }
-
-    @Test
-    @SmallTest
-    public void testAccessibilityServiceReceivesContentChangedEvent() throws Throwable {
-        // Load a page.
-        String url = UrlUtils.encodeHtmlDataUri("<p>hello</p>");
-        mActivityTestRule.launchContentShellWithUrl(url);
-
-        // Wait for the window to appear.
-        boolean wscReceived =
-                getAccessibilityHelperService()
-                        .waitForEvent(
-                                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                                "",
-                                "",
-                                0,
-                                EVENT_TIMEOUT_MS);
-        Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
-
-        // Execute JS to change the content.
-        mActivityTestRule.executeJS("document.querySelector('p').innerText = 'world';");
-
-        // Wait for the content changed event.
-        boolean ccReceived =
-                getAccessibilityHelperService()
-                        .waitForEvent(
-                                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-                                "",
-                                "",
-                                AccessibilityEvent.CONTENT_CHANGE_TYPE_TEXT,
-                                EVENT_TIMEOUT_MS);
-        Assert.assertTrue("Service did not receive WINDOW_CONTENT_CHANGED", ccReceived);
-    }
-
-    @Test
-    @SmallTest
-    public void testAccessibilityServiceReceivesSubtreeChangedEvent() throws Throwable {
-        // Load a page with a button that changes the DOM structure.
-        String html =
-                "<!DOCTYPE html>\n"
-                        + "<html>\n"
-                        + "<head>\n"
-                        + "<title>Test for many content changes</title>\n"
-                        + "<style>\n"
-                        + "  #innermost_div p {\n"
-                        + "    position: relative;\n"
-                        + "    width: 200px;\n"
-                        + "    height: 20px;\n"
-                        + "    border: 1px solid black;\n"
-                        + "    margin: 5px;\n"
-                        + "  }\n"
-                        + "</style>\n"
-                        + "</head>\n"
-                        + "<body>\n"
-                        + "  <button id=\"change_text_button\">Change Text</button>\n"
-                        + "  <div id=\"container\" aria-live=\"polite\">\n"
-                        + "    <p id=\"a\">Initial text for a</p>\n"
-                        + "    <div>\n"
-                        + "      <p id=\"b\">Initial text for b</p>\n"
-                        + "      <div>\n"
-                        + "        <p id=\"c\">Initial text for c</p>\n"
-                        + "        <div>\n"
-                        + "          <p id=\"d\">Initial text for d</p>\n"
-                        + "            <div>\n"
-                        + "              <p id=\"e\">Initial text for e</p>\n"
-                        + "            </div>\n"
-                        + "        </div>\n"
-                        + "      </div>\n"
-                        + "    </div>\n"
-                        + "  </div>\n"
-                        + "\n"
-                        + "  <script>\n"
-                        + "    let textChangeCounter = 0;\n"
-                        + "    const changeTextButton ="
-                        + " document.getElementById('change_text_button');\n"
-                        + "\n"
-                        + "    function changeText() {\n"
-                        + "      textChangeCounter++;\n"
-                        + "\n"
-                        + "      const p = document.getElementById('v');\n"
-                        + "      p.textContent = 'Update ' + textChangeCounter;\n"
-                        + "    }\n"
-                        + "\n"
-                        + "    changeTextButton.addEventListener('click', changeText);\n"
-                        + "  </script>\n"
-                        + "</body>\n"
-                        + "</html>";
-
-        String url = UrlUtils.encodeHtmlDataUri(html);
-        mActivityTestRule.launchContentShellWithUrl(url);
-
-        // Wait for the window to appear.
-        boolean wscReceived =
-                getAccessibilityHelperService()
-                        .waitForEvent(
-                                AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED,
-                                "",
-                                "",
-                                0,
-                                EVENT_TIMEOUT_MS);
-        Assert.assertTrue("Service did not receive WINDOW_STATE_CHANGED", wscReceived);
-
-        // Click the button.
-        mActivityTestRule.executeJS("document.getElementById('change_text_button').click();");
-
-        // Wait for the SUBTREE changed event.
-        boolean ccReceived =
-                getAccessibilityHelperService()
-                        .waitForEvent(
-                                AccessibilityEvent.TYPE_WINDOW_CONTENT_CHANGED,
-                                "",
-                                "",
-                                AccessibilityEvent.CONTENT_CHANGE_TYPE_SUBTREE,
-                                EVENT_TIMEOUT_MS);
-        Assert.assertTrue(
-                "Service did not receive WINDOW_CONTENT_CHANGED with SUBTREE", ccReceived);
-    }
-
-    // TODO(gmarcoesau): Add a test same as last but with feature
-    // AccessibilityRequestScopedContentChangedEvents enabled to make sure we don't get a subtree
-    // change event.
 }
