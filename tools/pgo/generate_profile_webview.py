@@ -227,7 +227,7 @@ def launch_agsa(args: OptionsNamespace):
         '--embedder-setup-command-config=clank/android_webview/tools/crossbench_config/agsa_setup_config.hjson',
         f'--disable-features={",".join(disable_features)}',
     ]
-    subprocess.check_call(cmd)
+    subprocess.check_call(cmd, cwd=_SRC_PATH)
 
 
 def launch_gma():
