@@ -135,6 +135,8 @@ TEST(PaymentRequestTest, SecurePaymentConfirmationCapabilities) {
   Vector<std::pair<String, bool>> want_spc_capabilities = {
       {"capability_a", false}, {"capability_b", true}, {"capability_c", false}};
   EXPECT_EQ(got_spc_capabilities, want_spc_capabilities);
+  EXPECT_TRUE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestGetSecurePaymentConfirmationCapabilities));
 }
 
 TEST(PaymentRequestTest,
@@ -158,6 +160,8 @@ TEST(PaymentRequestTest,
       scope.GetScriptState()->GetIsolate(), tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "NotSupportedError");
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestGetSecurePaymentConfirmationCapabilities));
 }
 
 TEST(PaymentRequestTest,
@@ -190,6 +194,8 @@ TEST(PaymentRequestTest,
       scope.GetScriptState()->GetIsolate(), tester.Value().V8Value());
   ASSERT_TRUE(exception);
   EXPECT_EQ(exception->name(), "NotAllowedError");
+  EXPECT_FALSE(scope.GetDocument().IsUseCounted(
+      WebFeature::kPaymentRequestGetSecurePaymentConfirmationCapabilities));
 }
 
 }  // namespace

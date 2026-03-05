@@ -5,7 +5,10 @@
 #include "components/payments/content/browser_binding/browser_bound_key_store_android.h"
 
 #include "base/android/scoped_java_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/strcat.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/payments/content/browser_binding/browser_bound_key_android.h"
 #include "device/fido/public/public_key_credential_params.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -15,6 +18,10 @@
 
 namespace payments {
 namespace {
+
+constexpr char kDeviceSupportsHardwareKeysLatencyHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation."
+    "BrowserBoundKeyStore.DeviceSupportsHardwareKeysLatency";
 
 jni_zero::ScopedJavaLocalRef<jobject>
 ConvertToListOfPublicKeyCredentialParameters(
@@ -58,9 +65,18 @@ void BrowserBoundKeyStoreAndroid::DeleteBrowserBoundKey(
 
 bool BrowserBoundKeyStoreAndroid::GetDeviceSupportsHardwareKeys() {
   if (!device_supports_hardware_keys_.has_value()) {
+    base::ElapsedTimer timer;
+
     JNIEnv* env = jni_zero::AttachCurrentThread();
     device_supports_hardware_keys_ =
         Java_BrowserBoundKeyStore_getDeviceSupportsHardwareKeys(env);
+
+    base::UmaHistogramTimes(
+        base::StrCat({kDeviceSupportsHardwareKeysLatencyHistogramName,
+                      device_supports_hardware_keys_.value()
+                          ? ".Supported"
+                          : ".NotSupported"}),
+        timer.Elapsed());
   }
 
   return device_supports_hardware_keys_.value();

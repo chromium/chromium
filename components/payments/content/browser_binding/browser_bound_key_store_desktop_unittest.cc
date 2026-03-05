@@ -270,4 +270,60 @@ TEST_F(BrowserBoundKeyStoreDesktopTest,
       /*expected_count=*/0);
 }
 
+TEST_F(BrowserBoundKeyStoreDesktopTest, Metrics_GetDeviceSupportsHardwareKeys) {
+  base::HistogramTester histogram_tester;
+
+#if BUILDFLAG(IS_MAC)
+  EXPECT_TRUE(key_store()->GetDeviceSupportsHardwareKeys());
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "DeviceSupportsHardwareKeysLatency.Supported",
+      base::Microseconds(0),
+      /*expected_bucket_count=*/1);
+#elif BUILDFLAG(IS_WIN)
+  base::TimeDelta latency = base::Microseconds(24);
+  EXPECT_CALL(*key_provider(), SelectAlgorithm(_))
+      .WillOnce(
+          DoAll([this, &latency] { task_environment_.FastForwardBy(latency); },
+                Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256)));
+  EXPECT_TRUE(key_store()->GetDeviceSupportsHardwareKeys());
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "DeviceSupportsHardwareKeysLatency.Supported",
+      latency,
+      /*expected_bucket_count=*/1);
+#else  // !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
+  EXPECT_FALSE(key_store()->GetDeviceSupportsHardwareKeys());
+  histogram_tester.ExpectUniqueTimeSample(
+      "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+      "DeviceSupportsHardwareKeysLatency.NotSupported",
+      base::Microseconds(0),
+      /*expected_bucket_count=*/1);
+#endif
+}
+
+TEST_F(BrowserBoundKeyStoreDesktopTest,
+       Metrics_GetDeviceSupportsHardwareKeys_MultipleCalls) {
+  base::HistogramTester histogram_tester;
+
+  ON_CALL(*key_provider(), SelectAlgorithm(_))
+      .WillByDefault(
+          Return(SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256));
+
+  // There shouldn't be any recorded metrics before the first call.
+  ASSERT_EQ(histogram_tester.GetTotalCountForPrefix(
+                "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+                "DeviceSupportsHardwareKeysLatency"),
+            0);
+
+  // The first call to GetDeviceSupportsHardwareKeys() should be recorded.
+  key_store()->GetDeviceSupportsHardwareKeys();
+  EXPECT_EQ(histogram_tester.GetTotalCountForPrefix("PaymentRequest"), 1);
+
+  // Subsequent calls should not be recorded, as the result should be
+  // cached.
+  key_store()->GetDeviceSupportsHardwareKeys();
+  EXPECT_EQ(histogram_tester.GetTotalCountForPrefix("PaymentRequest"), 1);
+}
+
 }  // namespace payments

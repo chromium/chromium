@@ -22,6 +22,9 @@ constexpr char kGetKeyLatencyHistogramName[] =
 constexpr char kCreateKeyLatencyHistogramName[] =
     "PaymentRequest.SecurePaymentConfirmation."
     "BrowserBoundKeyStore.CreateKeyLatency";
+constexpr char kDeviceSupportsHardwareKeysLatencyHistogramName[] =
+    "PaymentRequest.SecurePaymentConfirmation."
+    "BrowserBoundKeyStore.DeviceSupportsHardwareKeysLatency";
 
 #if BUILDFLAG(IS_MAC)
 constexpr char kApplicationTag[] = "secure-payment-confirmation";
@@ -112,6 +115,9 @@ void BrowserBoundKeyStoreDesktop::DeleteBrowserBoundKey(
 
 bool BrowserBoundKeyStoreDesktop::GetDeviceSupportsHardwareKeys() {
   if (!device_supports_hardware_keys_.has_value()) {
+    // We only care about the latency when the value is not cached.
+    base::ElapsedTimer timer;
+
 #if BUILDFLAG(IS_MAC)
     device_supports_hardware_keys_ = key_provider_ != nullptr;
 #elif BUILDFLAG(IS_WIN)
@@ -128,6 +134,13 @@ bool BrowserBoundKeyStoreDesktop::GetDeviceSupportsHardwareKeys() {
   // Hardware based browser bound keys are not supported on Linux or ChromeOS.
   device_supports_hardware_keys_ = false;
 #endif
+
+    base::UmaHistogramTimes(
+        base::StrCat({kDeviceSupportsHardwareKeysLatencyHistogramName,
+                      device_supports_hardware_keys_.value()
+                          ? ".Supported"
+                          : ".NotSupported"}),
+        timer.Elapsed());
   }
 
   return device_supports_hardware_keys_.value();

@@ -10,6 +10,8 @@
 
 #include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/strcat.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_android.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
@@ -87,6 +89,52 @@ TEST_F(BrowserBoundKeyStoreAndroidTest, DoesNotGetBbkWhenNoStrongBoxSupport) {
           std::move(bbk_id), base::ToVector(kEs256Allowed));
 
   EXPECT_EQ(bbk, nullptr);
+}
+
+TEST_F(BrowserBoundKeyStoreAndroidTest, Metrics_GetDeviceSupportsHardwareKeys) {
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<BrowserBoundKeyStore> bbk_store =
+      GetBrowserBoundKeyStoreInstance();
+  ASSERT_TRUE(bbk_store);
+
+  bool supported = bbk_store->GetDeviceSupportsHardwareKeys();
+
+  histogram_tester.ExpectTotalCount(
+      base::StrCat(
+          {"PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+           "DeviceSupportsHardwareKeysLatency",
+           supported ? ".Supported" : ".NotSupported"}),
+      /*expected_count=*/1);
+}
+
+TEST_F(BrowserBoundKeyStoreAndroidTest,
+       Metrics_GetDeviceSupportsHardwareKeys_MultipleCalls) {
+  base::HistogramTester histogram_tester;
+
+  scoped_refptr<BrowserBoundKeyStore> bbk_store =
+      GetBrowserBoundKeyStoreInstance();
+  ASSERT_TRUE(bbk_store);
+
+  // There shouldn't be any recorded metrics before the first call.
+  ASSERT_EQ(histogram_tester.GetTotalCountForPrefix(
+                "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+                "DeviceSupportsHardwareKeysLatency"),
+            0);
+
+  // The first call to GetDeviceSupportsHardwareKeys() should be recorded.
+  bbk_store->GetDeviceSupportsHardwareKeys();
+  EXPECT_EQ(histogram_tester.GetTotalCountForPrefix(
+                "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+                "DeviceSupportsHardwareKeysLatency"),
+            1);
+
+  // Subsequent calls should not be recorded, as the result should be cached.
+  bbk_store->GetDeviceSupportsHardwareKeys();
+  EXPECT_EQ(histogram_tester.GetTotalCountForPrefix(
+                "PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore."
+                "DeviceSupportsHardwareKeysLatency"),
+            1);
 }
 
 }  // namespace

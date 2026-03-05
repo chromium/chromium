@@ -70,6 +70,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="PaymentRequest.GetSecurePaymentConfirmationCapabilities.BrowserBoundKeyHardware"
+    enum="Boolean" expires_after="2027-03-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Whether a hardware backed browser bound key is available for use when
+    getSecurePaymentConfirmationCapabilities() is called. Recorded at the end of
+    IsBrowserBoundKeyHardwareSupported() before it is returned and collected
+    into a map of capabilities that is returned to the caller. Note that this
+    does not record how often developers want to know if hardware backed browser
+    bound keys are available as this will always be called when
+    getSecurePaymentConfirmationCapabilities() is called. In addition, the
+    results of this metric can also be biased as this may be called multiple
+    times on the same client/device.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.HasEnrolledInstrument.CallAllowedByPref"
     enum="Boolean" expires_after="2026-10-06">
   <owner>smcgruer@chromium.org</owner>
@@ -298,6 +316,26 @@ chromium-metrics-reviews@google.com.
     measured from the moment a key is about to be created to when the key is
     returned.
   </summary>
+</histogram>
+
+<histogram
+    name="PaymentRequest.SecurePaymentConfirmation.BrowserBoundKeyStore.DeviceSupportsHardwareKeysLatency.{DeviceSupportsHardwareKeysResult}"
+    units="ms" expires_after="2027-03-01">
+  <owner>darwinyang@google.com</owner>
+  <owner>chrome-payments-eng@google.com</owner>
+  <summary>
+    Records the latency of fetching whether the device has support for hardware
+    backed browser bound keys. This latency is measured from the moment the
+    check is started in the browser bound key store to when the result is
+    returned. Note that this is only recorded when the value is not cached,
+    which means that it is only recorded on the first check and is not recorded
+    at all if the value was already cached by the time the check is made.
+  </summary>
+  <token key="DeviceSupportsHardwareKeysResult">
+    <variant name="NotSupported"
+        summary="Labeled device does not support hardware keys"/>
+    <variant name="Supported" summary="Labeled device supports hardware keys"/>
+  </token>
 </histogram>
 
 <histogram

@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -248,6 +249,7 @@ TEST_F(
     SecurePaymentConfirmationServiceTest,
     GetSecurePaymentConfirmationCapabilities_BrowserBoundKeyHardwareSupported) {
   base::RunLoop run_loop;
+  base::HistogramTester histogram_tester;
 
   // Set up the SPC service in the test as otherwise, the RenderFrameHost
   // prematurely closes during run_loop.Run() when there are multiple threads.
@@ -288,6 +290,11 @@ TEST_F(
                          spc_capabilities::kBrowserBoundKeyHardware),
           testing::Field(&mojom::SecurePaymentConfirmationCapability::supported,
                          true)))));
+  histogram_tester.ExpectUniqueSample(
+      "PaymentRequest.GetSecurePaymentConfirmationCapabilities."
+      "BrowserBoundKeyHardware",
+      /*sample=*/true,
+      /*expected_bucket_count=*/1);
 }
 
 #if !BUILDFLAG(IS_IOS)

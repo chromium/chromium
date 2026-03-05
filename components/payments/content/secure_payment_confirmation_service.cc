@@ -11,7 +11,9 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/thread_pool.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/web_payments_web_data_service.h"
@@ -30,6 +32,10 @@
 namespace payments {
 
 namespace {
+
+constexpr char kIsBbkHardwareSupportedHistogramName[] =
+    "PaymentRequest.GetSecurePaymentConfirmationCapabilities."
+    "BrowserBoundKeyHardware";
 
 void OnIsUserVerifyingPlatformAuthenticatorAvailable(
     SecurePaymentConfirmationService::
@@ -322,8 +328,14 @@ void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&BrowserBoundKeyStore::GetDeviceSupportsHardwareKeys,
                      bbk_store),
-      std::move(callback));
-#endif
+      base::BindOnce(
+          [](base::OnceCallback<void(bool)> callback, bool supported) {
+            base::UmaHistogramBoolean(kIsBbkHardwareSupportedHistogramName,
+                                      supported);
+            std::move(callback).Run(supported);
+          },
+          std::move(callback)));
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 bool SecurePaymentConfirmationService::IsCurrentStateValid() const {
