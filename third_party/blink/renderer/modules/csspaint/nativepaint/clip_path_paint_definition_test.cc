@@ -35,21 +35,46 @@ class AnimationEvents : public MutatorEvents {};
 
 namespace blink {
 
+// Enum for various updates that can occur during a document lifecycle run. Each
+// bit represents an independent bit of state that could change relevant to a
+// running clip-path animation/transition.
 enum UpdatesNeededForNextFrame {
   kNoMainFrameUpdates = 0,
+
+  // Means that status before pre-paint will be kNeedsRepaint. At the moment,
+  // this does not necessarily verify that RecalcCompositedStatus was actually
+  // called, only that the state is marked for repainting.
   kPaintStatusReset = 1 << 0,
   kNeedsPaintPropertyUpdate = 1 << 2,
+
+  // Checks whether ChromeClient::ScheduleAnimation is called. This is used to
+  // determined whether an animation is causing new main frames or not.
   kScheduledAnimationUpdate = 1 << 3,
 
+  // When true, checks for !DisplayItemClient::IsValid(). When that check is
+  // true, the animation's owning PaintLayer will also be marked for repaint
+  // (not explicitly checked), and so will the cached paint result of the
+  // ClipPathMask. This should always be good enough to ensure a new
+  // PaintWorkletDeferredImage is actually painted, though this is not
+  // explicitly checked.
   kPaintInvalidated = 1 << 4,
 
+  // Used in the case where an animation is running on main thread but does not
+  // result in style mutation (e.g., because the two nearest keyfranes are
+  // equal, the animation is discrete, or because the animation is using a step
+  // timing function)
   kMainThreadAnimationFrameNoInvalidation = kScheduledAnimationUpdate,
 
+  // The above, but the animation *did* mutate style.
   kMainThreadAnimationFrame = kMainThreadAnimationFrameNoInvalidation |
                               kNeedsPaintPropertyUpdate | kPaintInvalidated,
 
+  // When a clip path animation is set pending, we expect a 'full-fat' update
+  // where everything is dirtied.
   kAllUpdates = kMainThreadAnimationFrame | kPaintStatusReset,
 
+  // Used in the case where there's a paint property change on a running cc
+  // animation.
   kMainThreadPropertyInvalidation =
       kNeedsPaintPropertyUpdate | kPaintInvalidated
 };
@@ -116,6 +141,14 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     return nullptr;
   }
 
+  // The next 4 methods are easy short-cuts for checking various cc clip path
+  // invariants are held throughout the lifecycle, to make this file a bit more
+  // readable at the cost of problem location in the test being 2-3 frames down
+  // from the top of a stack trace. Right now, we check for animation updates,
+  // composited paint status updates (naive checking for kNeedsRepaint), paint
+  // property updates, and paint updates. View the code of these methods for a
+  // description of what those invariants are and why they are enforced.
+
   void EnsureCCClipPathInvariantsHoldStyleAndLayout(
       CompositedPaintStatus status,
       Element* element,
@@ -125,10 +158,26 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
 
     LayoutObject* lo = element->GetLayoutObject();
 
-    // Changes to a compositable animation should set NeedsPaintPropertyUpdate.
+    // Changes to a compositable clip-path animation should set
+    // NeedsPaintPropertyUpdate. This is because we force a switch from
+    // ClipPathClip (ordinary clipping) to ClipPathMask with its associated
+    // ClipPathMaskEffect (SVG clipping). If this is not done, bad things
+    // happen.
     EXPECT_EQ(lo->NeedsPaintPropertyUpdate(),
               !!(updates & kNeedsPaintPropertyUpdate));
-    // Changes to a compositable animation should set kNeedsRepaint.
+
+    // Changes to a compositable animation should set kNeedsRepaint. This is
+    // because for clip-path animations, the status value is cached to avoid
+    // repeatedly calling the heavy check CheckCanStartAnimationOnCompositor in
+    // the pre-paint tree walk, which can be very frequent and will occur during
+    // hit tests. Note that this behavior, like the above, is not universal for
+    // NPW animations. background-color will recompute its status at paint time
+    // and this is not necessarily an issue because full paint invalidation on
+    // an animated element should be fairly infrequent. Note that the composited
+    // paint status can even be checked during the pre-paint tree walk even if
+    // NeedsPaintPropertyUpdate is value, because InitPaintProperties checks the
+    // status to ensure paint properties are populated for cc clip paths even
+    // when they wouldn't ordinarily be needed.
     EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
               (!(updates & kPaintStatusReset) ||
                status == CompositedPaintStatus::kNoAnimation)
@@ -157,7 +206,8 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     EXPECT_EQ(static_cast<DisplayItemClient*>(lo)->IsValid(),
               !(updates & kPaintInvalidated));
 
-    // Composited paint status should be resolved by this point.
+    // Composited paint status should be resolved by this point. If it hasn't
+    // been, that means paint properties haven't been updated.
     EXPECT_EQ(element->GetElementAnimations()->CompositedClipPathStatus(),
               status);
 
@@ -171,16 +221,21 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
     switch (status) {
       case CompositedPaintStatus::kNoAnimation:
       case CompositedPaintStatus::kNotComposited:
-        // GetAnimationIfCompositable should return nothing in this
-        // circumstance.
+        // For a fallback, the cached clip path animation candidate should be
+        // cleared so we don't hold on to stale references. This also means that
+        // the presence of a valid aniamtion in paint is a guarantee that we're
+        // in the composited path.
         EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo), nullptr);
         // If a clip path is non-composited or non-existent, then the clip path
-        // mask should not be set. If it is, it can cause a crash.
+        // mask should not be set. If it is, it can cause a crash. Note that
+        // this is not necessarily true, SVG clips can set this without a cc
+        // clip path animation, which is not tested here.
         EXPECT_TRUE(!lo->FirstFragment().PaintProperties() ||
                     !lo->FirstFragment().PaintProperties()->ClipPathMask());
         // Non-composited animations SHOULD still be causing animation updates.
         // Additionally, style/layout code seems to trigger animation update for
-        // the first frame after an animation cancel.
+        // the first frame after an animation cancel. Too few updates means a
+        // fallback may not have been done properly (ie, paint is stuck.)
         EXPECT_EQ(!!(updates & kScheduledAnimationUpdate),
                   Client()->HasScheduledAnimation());
         // If the animation is still running on cc, it means that something went
@@ -189,13 +244,20 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
         EXPECT_FALSE(animation->HasActiveAnimationsOnCompositor());
         break;
       case CompositedPaintStatus::kComposited:
-        // GetAnimationIfCompositable should return the given animation, if it
-        // is compositable.
+        // A compositable animation should always be cached in
+        // ElementAnimations. We do this primarily because finding it every time
+        // is an unnecessary expense. It requires walking through all keyframe
+        // effects associated with an element until an animation that mutates
+        // clip-paths is found.
         EXPECT_EQ(ClipPathClipper::GetClipPathAnimation(*lo), animation);
         // Composited clip-path animations depend on ClipPathMask() being set.
+        // If this is not true, the animation will have no output (no
+        // PaintWorkletDeferredImage for CC to update).
         EXPECT_TRUE(lo->FirstFragment().PaintProperties()->ClipPathMask());
         // Composited clip-path animations shouldn't cause further animation
-        // updates after the first paint.
+        // updates after the first paint. Too many animation updates
+        // mean that we're causing too many unnecessary main frames, undermining
+        // perf.
         EXPECT_EQ(!!(updates & kScheduledAnimationUpdate),
                   Client()->HasScheduledAnimation());
         // The animation should be have been set up for compositing during
@@ -218,19 +280,23 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
   Animation* StartAndVerifyEligibleClipPathAnimation(
       Element* element,
       int time_to_first_style_change_ms) {
+    // Set up timing + PAC so that animation servicing works as expected.
     InitPaintArtifactCompositor();
     UpdateAndAdvanceTimeTo(0);
 
+    // A CSS animation object won't be created until the lifecycle runs for the
+    // first time. Because we need the animation object to verify invariants, we
+    // run only style and layout first.
     EnsureCCClipPathInvariantsHoldStyleAndLayout(
         CompositedPaintStatus::kComposited, element,
         UpdatesNeededForNextFrame::kAllUpdates);
 
+    // With the animation object created, we can then run paint and verify
+    // animation-specific invariants, such as HasActiveAnimationsOnCompositor.
     Animation* animation = GetFirstAnimation(element);
-
     EnsureCCClipPathInvariantsHoldThroughoutPainting(
         CompositedPaintStatus::kComposited, element, animation,
         UpdatesNeededForNextFrame::kAllUpdates);
-
     StartAllWaitingAnimationsOnCompositor(element, 0);
 
     // Tick the animation before the first style change first. In cases of
@@ -385,6 +451,11 @@ class ClipPathPaintDefinitionTest : public PageTestBase {
   Persistent<MockChromeClientWithAnimationHost> chrome_client_;
   std::unique_ptr<LayerTreeHostEmbedder> layer_tree_;
 };
+
+/* -------------------------------------------- */
+/*   1. ELIGIBLE COMPOSITABLE ANIMATION TESTS   */
+/* Regression tests for known-good cases        */
+/* -------------------------------------------- */
 
 // Test the case where there is a clip-path animation with two simple
 // keyframes that will not fall back to main.
@@ -640,7 +711,8 @@ TEST_F(ClipPathPaintDefinitionTest, SimpleClipPathAnimationFallbackOnBR) {
 // mask tiles on cc). Though I envision a better way to handle that case.
 
 // TODO(crbug.com/449152897): Backdrop-filter and clip path paint worklet
-// images are not rasterized correctly.
+// images are not rasterized correctly. We fall back in this case to prevent
+// broken painting.
 TEST_F(ClipPathPaintDefinitionTest, FallbackForCoincidentBackdropFilter) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -670,8 +742,11 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForCoincidentBackdropFilter) {
   StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
 }
 
-// Clip-path: none requires the cull rect, but perspective makes the cull rect
-// infinite, as a result, we must fall back in this case.
+// When clip-path: none exists as part of an animation, we use the cull rect to
+// constrain the animation bounds. This is done for perf reasons. However, with
+// a perspective transform, the CullRectUpdater will early-out as it can't
+// estimate the maximum painting bounds. Because of this, we have to fall back -
+// and we have to do it before the CullRectUpdater even runs.
 TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathNoneWithPerspective) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -707,8 +782,12 @@ TEST_F(ClipPathPaintDefinitionTest, FallbackForClipPathNoneWithPerspective) {
   StartAndVerifyNonEligibleClipPathAnimation(element, 1000);
 }
 
-// Clip-path animations with descendant transform animations must fall back to
-// main thread due to difficulty determining animation bounds.
+// Same as the above - with a descendant transform animation, the
+// CullRectUpdater can't estimate bounds, since the paint area will be updated
+// on the compositor thread (in theory - you could calculate the maximum
+// transformations of any given tf anim and then propagate those changes, but
+// that would be extremely complex and this is not done for that reason).
+// Because of this, we fall back for the same reasons.
 TEST_F(ClipPathPaintDefinitionTest,
        FallbackWithNoneKeyframeAndChildTransformAnimation) {
   SetBodyInnerHTML(R"HTML(
