@@ -373,6 +373,22 @@ suite('SettingsMenuElement', () => {
     assertTrue(previous.classList.contains('separator'));
   });
 
+  test('menu items have correct aria-haspopup attribute', () => {
+    const actionMenu = settingsMenu.$.lazyMenu.get();
+    const menuItems =
+        Array.from(actionMenu.querySelectorAll<HTMLButtonElement>('.menu-row'));
+
+    // The font menu item should have aria-haspopup="menu"
+    const fontItem = menuItems.find(item => item.id === SettingsOption.FONT);
+    assertTrue(!!fontItem);
+    assertEquals('menu', fontItem.getAttribute('aria-haspopup'));
+
+    // Links toggle should have aria-haspopup="false"
+    const linksItem = menuItems.find(item => item.id === SettingsOption.LINKS);
+    assertTrue(!!linksItem);
+    assertEquals('false', linksItem.getAttribute('aria-haspopup'));
+  });
+
   test('pinned toggle has separator when links and images hidden', async () => {
     chrome.readingMode.isReadabilityEnabled = true;
     chrome.readingMode.isReadabilityWithLinksEnabled = false;
