@@ -457,6 +457,11 @@ public class AutofillProfilesFragment extends ChromeBaseSettingsFragment
                 pref.setKey(entity.getGuid());
                 pref.setOnPreferenceClickListener(
                         preference -> {
+                            if (entity.isStoredInWallet()) {
+                                AutofillFallbackSurfaceLauncher.openGoogleWalletPassesPage(
+                                        getActivity());
+                                return true;
+                            }
                             EntityInstance entityInstance =
                                     entityDataManager.getEntityInstance(preference.getKey());
                             if (entityInstance != null) {

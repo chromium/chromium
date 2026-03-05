@@ -78,6 +78,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.autofill.AndroidAutofillAvailabilityStatus;
 import org.chromium.chrome.browser.autofill.AutofillClientProviderUtils;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
+import org.chromium.chrome.browser.autofill.GoogleWalletLauncher;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManager.EntityDataManagerObserver;
 import org.chromium.chrome.browser.autofill.autofill_ai.EntityDataManagerFactory;
@@ -1365,6 +1366,51 @@ public class AutofillProfilesFragmentTest {
         ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
 
         onView(withText("Edit Vehicle")).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Preferences"})
+    public void testAutofillAiEntities_opensWalletOnClick() throws Exception {
+        EntityType vehicleType = TestUtils.getVehicleEntityType();
+
+        EntityInstanceWithLabels entity1 =
+                new EntityInstanceWithLabels(
+                        "guid1",
+                        vehicleType,
+                        /* entityInstanceLabel= */ "Vehicle",
+                        /* entityInstanceSubLabel= */ "Mercedez",
+                        /* storedInWallet= */ true);
+
+        LinkedHashMap<EntityType, List<EntityInstanceWithLabels>> instancesMap =
+                new LinkedHashMap<>();
+        instancesMap.put(vehicleType, Arrays.asList(entity1));
+
+        when(sEntityDataManager.getInstancesToList()).thenReturn(instancesMap);
+        EntityDataManagerFactory.setInstanceForTesting(sEntityDataManager);
+
+        // Trigger a rebuild of the profile list to pick up the new mock entities.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> sSettingsActivityTestRule.getFragment().onPersonalDataChanged());
+
+        Preference vehicleEntity =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> sSettingsActivityTestRule.getFragment().findPreference("guid1"));
+        assertNotNull(vehicleEntity);
+
+        // Mock the intent that should be fired.
+        Instrumentation.ActivityResult result =
+                new Instrumentation.ActivityResult(Activity.RESULT_OK, null);
+        // Since we don't have Google Wallet installed in tests, it will fallback to CCT.
+        var intentMatcher =
+                allOf(
+                        hasAction(Intent.ACTION_VIEW),
+                        hasData(Uri.parse(GoogleWalletLauncher.GOOGLE_WALLET_PASSES_URL)));
+        intending(intentMatcher).respondWith(result);
+
+        ThreadUtils.runOnUiThreadBlocking(vehicleEntity::performClick);
+
+        intended(intentMatcher);
     }
 
     @Test
