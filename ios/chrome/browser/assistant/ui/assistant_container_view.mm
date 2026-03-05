@@ -27,13 +27,6 @@ constexpr CGFloat kGrabberAlpha = 0.24;
 // Content styling.
 constexpr CGFloat kContentTopMargin = 16.0;
 
-// Returns the background color for the container.
-constexpr CGFloat kContainerBackgroundAlpha = 0.5;
-UIColor* ContainerBackgroundColor() {
-  return [[UIColor colorNamed:kSecondaryBackgroundColor]
-      colorWithAlphaComponent:kContainerBackgroundAlpha];
-}
-
 }  // namespace
 
 @implementation AssistantContainerView {
@@ -67,34 +60,15 @@ UIColor* ContainerBackgroundColor() {
 #pragma mark - Private
 
 // Configures the visual styling of the container.
-// TODO(crbug.com/390204874): Update the container styling to perfectly match
-// the design.
 - (void)configureContainerStyling {
-  // Container for visual effects (Blur + Tint) that clips to corners.
-  UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemMaterial];
-  UIVisualEffectView* blurView =
-      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-  blurView.translatesAutoresizingMaskIntoConstraints = NO;
-  blurView.layer.cornerRadius = kCornerRadius;
-  blurView.clipsToBounds = YES;
-  [self insertSubview:blurView atIndex:0];
-
-  AddSameConstraints(blurView, self);
-
-  // Tint view overlaying the blur effect to provide the background color.
-  UIView* tintView = [[UIView alloc] init];
-  tintView.translatesAutoresizingMaskIntoConstraints = NO;
-  tintView.backgroundColor = ContainerBackgroundColor();
-  [blurView.contentView
-      addSubview:tintView];  // Add to visual effect contentView.
-
-  AddSameConstraints(tintView, blurView);
+  self.backgroundColor = [UIColor colorNamed:kPrimaryBackgroundColor];
+  self.clipsToBounds = YES;
 
   self.layer.shadowColor = [UIColor blackColor].CGColor;
   self.layer.shadowOpacity = kShadowOpacity;
   self.layer.shadowOffset = kShadowOffset;
   self.layer.shadowRadius = kShadowRadius;
+  self.layer.cornerRadius = kCornerRadius;
 }
 
 // Sets up the view hierarchy by creating and adding subviews.
