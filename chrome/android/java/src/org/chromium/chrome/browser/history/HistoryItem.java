@@ -4,17 +4,19 @@
 
 package org.chromium.chrome.browser.history;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.text.TextUtils;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.widget.DateDividedAdapter.TimedItem;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
 import org.chromium.url.GURL;
 
 import java.util.Arrays;
+import java.util.List;
 
 /** Contains information about a single browsing history item. */
 @NullMarked
@@ -28,6 +30,10 @@ public class HistoryItem extends TimedItem {
     private final long mMostRecentJavaTimestamp;
     private final long[] mNativeTimestampList;
     private @Nullable Long mStableId;
+    private final @Nullable List<HistoryItem> mSubItems;
+    private final boolean mIsExpanded;
+    private final boolean mIsClusterHead;
+    private final @Nullable Long mClusterId;
 
     private @Nullable HistoryContentManager mManager;
 
@@ -63,6 +69,10 @@ public class HistoryItem extends TimedItem {
         mNativeTimestampList = Arrays.copyOf(nativeTimestamps, nativeTimestamps.length);
         mWasBlockedVisit = blockedVisit;
         mIsActorVisit = isActorVisit;
+        mSubItems = null;
+        mIsExpanded = false;
+        mIsClusterHead = false;
+        mClusterId = null;
     }
 
     /** @return The url for this item. */
@@ -116,9 +126,17 @@ public class HistoryItem extends TimedItem {
     @Override
     public long getStableId() {
         if (mStableId == null) {
-            // Generate a stable ID that combines the timestamp and the URL.
-            mStableId = (long) mUrl.hashCode();
-            mStableId = (mStableId << 32) + (getTimestamp() & 0x0FFFFFFFF);
+            if (isClusterHead()) {
+                // For cluster heads, the stable ID is derived directly and purely from its unique
+                // cluster ID, making it entirely invariant to the addition/removal of sub-items.
+                assert mClusterId != null : "Cluster heads must have a cluster ID.";
+                assumeNonNull(mClusterId);
+                mStableId = mClusterId;
+            } else {
+                // Generate a stable ID that combines the timestamp and the URL.
+                mStableId = (long) mUrl.hashCode();
+                mStableId = (mStableId << 32) + (getTimestamp() & 0x0FFFFFFFF);
+            }
         }
         return mStableId;
     }
@@ -154,5 +172,121 @@ public class HistoryItem extends TimedItem {
         if (mManager == null || mManager.getLargeIconBridge() == null) return;
 
         mManager.getLargeIconBridge().getLargeIconForUrl(getUrl(), desiredSizePx, callback);
+    }
+
+    /**
+     * @return The ID of the cluster this item belongs to.
+     */
+    public @Nullable Long getClusterId() {
+        return mClusterId;
+    }
+
+    /**
+     * @return The list of sub-items for this clustered item.
+     */
+    public @Nullable List<HistoryItem> getSubItems() {
+        return mSubItems;
+    }
+
+    /**
+     * @return Whether the clustered item is expanded.
+     */
+    public boolean isExpanded() {
+        return mIsExpanded;
+    }
+
+    /**
+     * @return Whether this item is a cluster head.
+     */
+    public boolean isClusterHead() {
+        return mIsClusterHead;
+    }
+
+    /**
+     * @return A Builder to create a new mutated HistoryItem from this one.
+     */
+    public Builder toBuilder() {
+        return new Builder(this);
+    }
+
+    /** Builder class to support final fields for clustered items. */
+    public static class Builder {
+        private final GURL mUrl;
+        private final String mDomain;
+        private final @Nullable String mAppId;
+        private final long mMostRecentJavaTimestamp;
+        private final long[] mNativeTimestampList;
+        private final boolean mWasBlockedVisit;
+        private final boolean mIsActorVisit;
+        private final @Nullable HistoryContentManager mManager;
+
+        private String mTitle;
+        private boolean mIsExpanded;
+        private boolean mIsClusterHead;
+        private @Nullable Long mClusterId;
+        private @Nullable List<HistoryItem> mSubItems;
+
+        private Builder(HistoryItem item) {
+            mUrl = item.getUrl();
+            mDomain = item.getDomain();
+            mTitle = item.getTitle();
+            mAppId = item.getAppId();
+            mMostRecentJavaTimestamp = item.getTimestamp();
+            mNativeTimestampList = item.getNativeTimestamps();
+            mWasBlockedVisit = item.wasBlockedVisit();
+            mIsActorVisit = item.isActorVisit();
+            mManager = item.mManager;
+
+            mIsExpanded = item.isExpanded();
+            mIsClusterHead = item.isClusterHead();
+            mClusterId = item.getClusterId();
+            mSubItems = item.getSubItems();
+        }
+
+        public Builder setTitle(String title) {
+            mTitle = title;
+            return this;
+        }
+
+        public Builder setIsExpanded(boolean isExpanded) {
+            mIsExpanded = isExpanded;
+            return this;
+        }
+
+        public Builder setIsClusterHead(boolean isClusterHead) {
+            mIsClusterHead = isClusterHead;
+            return this;
+        }
+
+        public Builder setClusterId(@Nullable Long clusterId) {
+            mClusterId = clusterId;
+            return this;
+        }
+
+        public Builder setSubItems(@Nullable List<HistoryItem> subItems) {
+            mSubItems = subItems;
+            return this;
+        }
+
+        public HistoryItem build() {
+            return new HistoryItem(this);
+        }
+    }
+
+    private HistoryItem(Builder builder) {
+        mUrl = builder.mUrl;
+        mDomain = builder.mDomain;
+        mTitle = builder.mTitle;
+        mAppId = builder.mAppId;
+        mMostRecentJavaTimestamp = builder.mMostRecentJavaTimestamp;
+        mNativeTimestampList = builder.mNativeTimestampList;
+        mWasBlockedVisit = builder.mWasBlockedVisit;
+        mIsActorVisit = builder.mIsActorVisit;
+        mManager = builder.mManager;
+
+        mIsExpanded = builder.mIsExpanded;
+        mIsClusterHead = builder.mIsClusterHead;
+        mClusterId = builder.mClusterId;
+        mSubItems = builder.mSubItems;
     }
 }

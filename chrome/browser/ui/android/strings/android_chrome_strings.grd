@@ -1293,6 +1293,17 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_ANDROID_HISTORY_BLOCKED_SITE" desc="The text displayed in the history page indicating that a visit to a web site was blocked due to an administrator policy.">
         Blocked site
       </message>
+      <message name="IDS_HISTORY_CLUSTERS_ITEM_COUNT" desc="Text showing the number of items in a history cluster.">
+        {COUNT, plural,
+          =1 {1 item}
+          other {# items}}
+      </message>
+      <message name="IDS_ACCESSIBILITY_COLLAPSE_SECTION" desc="Content description for the button to collapse a cluster in history.">
+        Collapse section
+      </message>
+      <message name="IDS_ACCESSIBILITY_EXPAND_SECTION" desc="Content description for the button to expand a cluster in history.">
+        Expand section
+      </message>
 
       <!-- Privacy Guide -->
       <message name="IDS_PRIVACY_GUIDE_PREF_TITLE" desc="The title of the privacy guide menu item.">
