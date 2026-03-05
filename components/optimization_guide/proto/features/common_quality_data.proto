@@ -2333,6 +2333,23 @@ enum RedactionDecision {
   // Is a non-empty field that autofill recognized as a sensitive payment field
   // type and so must be redacted.
   REDACTION_DECISION_REDACTED_IS_SENSITIVE_PAYMENT_FIELD = 4;
+
+  // Empty inputs which have been classified as password-like by heuristic
+  // redaction (e.g. `-webkit-text-security`). These are not redacted since they
+  // contain no sensitive content, but the classification is preserved.
+  REDACTION_DECISION_UNREDACTED_EMPTY_CUSTOM_PASSWORD = 5;
+
+  // Is a password-like input detected by heuristic redaction based on CSS
+  // masking (e.g. `-webkit-text-security` set to a masking value, not `none`).
+  REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_CSS = 6;
+
+  // Is a password-like input detected by heuristic redaction based on a
+  // JavaScript-masked value (e.g. mostly bullet-like masking characters).
+  REDACTION_DECISION_REDACTED_CUSTOM_PASSWORD_JS = 7;
+
+  // Is a non-empty field that autofill recognized as an OTP field and so must
+  // be redacted.
+  REDACTION_DECISION_REDACTED_IS_OTP = 8;
 }
 
 // The type of data that can be autofilled into a form.

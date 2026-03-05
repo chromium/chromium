@@ -31,7 +31,7 @@ message ZeroStateSuggestionsLoggingData {
   ModelExecutionInfo model_execution_info = 3 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 7
+// Next ID: 8
 message ZeroStateSuggestionsRequest {
   oneof request {
     // The context of the page to generate suggestions for. This is used when
@@ -58,6 +58,9 @@ message ZeroStateSuggestionsRequest {
 
   // The Chrome platform that the request is from.
   ChromePlatform chrome_platform = 6 [features = { field_presence: EXPLICIT }];
+
+  // Whether the request is for a managed account.
+  bool is_account_managed = 7 [features = { field_presence: EXPLICIT }];
 }
 
 message ZeroStatePageContextList {
