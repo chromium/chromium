@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_SEARCH_INTEGRITY_SEARCH_INTEGRITY_H_
 #define CHROME_BROWSER_SEARCH_INTEGRITY_SEARCH_INTEGRITY_H_
 
+#include <optional>
+
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -14,11 +16,27 @@ class TemplateURLService;
 
 namespace search_integrity {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(SearchReferralParam)
+enum class SearchReferralParam {
+  kPC = 0,
+  kClid = 1,
+  kClient = 2,
+  kFr = 3,
+  kGp = 4,
+  kSourceid = 5,
+  kT = 6,
+  kTt = 7,
+  kMaxValue = kTt,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/search/enums.xml:SearchReferralParam)
+
 // A struct to hold the results of the search integrity check.
 struct SearchIntegrityReport {
   bool has_custom_option = false;
   bool is_default_custom = false;
-  std::string referral_id;
+  std::optional<SearchReferralParam> referral_param_found;
   bool is_default_custom_with_matching_policy_engine = false;
 };
 

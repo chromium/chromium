@@ -75,7 +75,7 @@ class SearchIntegrityTest : public testing::Test {
   std::unique_ptr<SearchIntegrity> search_integrity_;
 };
 
-TEST_F(SearchIntegrityTest, CheckCustomSearchEngines_ExtractsReferralId) {
+TEST_F(SearchIntegrityTest, CheckCustomSearchEngines_ExtractsReferralParam) {
   TemplateURL* turl =
       AddSearchEngine(u"Referral Engine", "http://custom.com?fr=test_ref");
   SetDefaultSearchProvider(turl);
@@ -83,7 +83,18 @@ TEST_F(SearchIntegrityTest, CheckCustomSearchEngines_ExtractsReferralId) {
   SearchIntegrityReport report = CheckSearchEnginesReport();
 
   EXPECT_TRUE(report.has_custom_option);
-  EXPECT_EQ(report.referral_id, "test_ref");
+  EXPECT_EQ(report.referral_param_found, SearchReferralParam::kFr);
+}
+
+TEST_F(SearchIntegrityTest, CheckCustomSearchEngines_ExtractsNoReferralParam) {
+  TemplateURL* turl =
+      AddSearchEngine(u"No Referral Engine", "http://custom.com");
+  SetDefaultSearchProvider(turl);
+  TriggerAllowlistInitialized();
+  SearchIntegrityReport report = CheckSearchEnginesReport();
+
+  EXPECT_TRUE(report.has_custom_option);
+  EXPECT_FALSE(report.referral_param_found.has_value());
 }
 
 TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsCustom) {
@@ -242,6 +253,8 @@ TEST_F(SearchIntegrityTest, Histograms_LoggedCorrectly) {
       "Search.Integrity.IsDefaultSearchEngineCustom", true, 1);
   histogram_tester.ExpectUniqueSample(
       "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine", true, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Search.Integrity.Referral.ParameterFound", SearchReferralParam::kFr, 1);
 }
 
 TEST_F(SearchIntegrityTest, CheckDefaultSearchEngine_DefaultIsStarterPack) {

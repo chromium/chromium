@@ -4,6 +4,7 @@
 
 #include "chrome/browser/search_integrity/search_integrity.h"
 
+#include <map>
 #include <set>
 #include <string>
 #include <string_view>
@@ -14,6 +15,7 @@
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -147,6 +149,10 @@ void SearchIntegrity::OnAllowlistInitialized(
   base::UmaHistogramBoolean(
       "Search.Integrity.IsDefaultCustomWithMatchingPolicyEngine",
       report.is_default_custom_with_matching_policy_engine);
+  if (report.referral_param_found.has_value()) {
+    base::UmaHistogramEnumeration("Search.Integrity.Referral.ParameterFound",
+                                  report.referral_param_found.value());
+  }
 }
 
 SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
@@ -154,6 +160,20 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
 
   // Retrieve the list of all installed search engines.
   auto template_urls = template_url_service_->GetTemplateURLs();
+
+  // A map of referral parameter keys to their corresponding enum values.
+  static const base::NoDestructor<
+      std::map<std::string_view, SearchReferralParam>>
+      kReferralParameterMap({
+          {"PC", SearchReferralParam::kPC},
+          {"clid", SearchReferralParam::kClid},
+          {"client", SearchReferralParam::kClient},
+          {"fr", SearchReferralParam::kFr},
+          {"gp", SearchReferralParam::kGp},
+          {"sourceid", SearchReferralParam::kSourceid},
+          {"t", SearchReferralParam::kT},
+          {"tt", SearchReferralParam::kTt},
+      });
 
   // Iterate through all installed search engines to check if any of them are
   // not in the allowlist.
@@ -168,8 +188,9 @@ SearchIntegrityReport SearchIntegrity::CheckSearchEnginesReport() {
 
       GURL url(template_url->url());
       for (net::QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-        if (it.GetKey() == "fr") {
-          report.referral_id = it.GetUnescapedValue();
+        auto iter = kReferralParameterMap->find(it.GetKey());
+        if (iter != kReferralParameterMap->end()) {
+          report.referral_param_found = iter->second;
           break;
         }
       }

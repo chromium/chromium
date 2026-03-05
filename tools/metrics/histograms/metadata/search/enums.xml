@@ -591,6 +591,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kPrefHasValidUrls"/>
 </enum>
 
+<enum name="SearchReferralParam">
+  <int value="0" label="PC"/>
+  <int value="1" label="clid"/>
+  <int value="2" label="client"/>
+  <int value="3" label="fr"/>
+  <int value="4" label="gp"/>
+  <int value="5" label="sourceid"/>
+  <int value="6" label="t"/>
+  <int value="7" label="tt"/>
+</enum>
+
 <enum name="SearchWidgetUseInfo">
   <int value="0" label="defunct Present in partnership device"/>
   <int value="1" label="defunct Not present in partnership device"/>

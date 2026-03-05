@@ -1149,6 +1149,19 @@ https://chromium.googlesource.com/chromium/src/tools/+/HEAD/metrics/histograms/R
   </summary>
 </histogram>
 
+<histogram name="Search.Integrity.Referral.ParameterFound"
+    enum="SearchReferralParam" expires_after="2026-10-20">
+  <owner>musalmaan@chromium.org</owner>
+  <owner>iclelland@chromium.org</owner>
+  <owner>chrome-desktop-ui-waterloo@google.com</owner>
+  <summary>
+    Records which referral parameter is found in the URL of a custom search
+    engine that is not on the allowlist. This helps identify common sources of
+    custom search engines. Recorded once per profile at startup if a custom
+    search engine with a referral ID is present.
+  </summary>
+</histogram>
+
 <histogram name="Search.iOS.SelectDefaultSearchEngine"
     enum="OmniboxSearchEngineType" expires_after="2026-07-19">
   <owner>sczs@chromium.org</owner>
