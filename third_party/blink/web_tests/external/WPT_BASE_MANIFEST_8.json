@@ -21775,6 +21775,15 @@
       }
      },
      "editing-0": {
+      "autocorrection": {
+       "autocorrect-off-touch-keyboard-manual.html": [
+        "ae98fbe9f41f42bc8807cbb47af1385c0b3c70a1",
+        [
+         null,
+         {}
+        ]
+       ]
+      },
       "contenteditable": {
        "spellcheck-insertReplacementText-input-event-manual.html": [
         "61736269634fc7135a09529f364de9457b6d9c11",
@@ -339810,6 +339819,45 @@
       ]
      },
      "distance": {
+      "path-length-css-overrides-presentation-attribute.tentative.svg": [
+       "5cade4adc9e3c0a396fe7d17ad7f370e87909137",
+       [
+        null,
+        [
+         [
+          "/svg/path/distance/path-length-css-property-ref.tentative.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "path-length-css-property.tentative.svg": [
+       "d659e86519c37c351605b19bfa6085aad2496f24",
+       [
+        null,
+        [
+         [
+          "/svg/path/distance/path-length-css-property-ref.tentative.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "path-length-css-zero.tentative.svg": [
+       "09271a70b38ed97fa179b50220757f1afbf17135",
+       [
+        null,
+        [
+         [
+          "/svg/path/distance/path-length-css-zero-ref.tentative.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "pathLength-positive-percentage.svg": [
        "d8e28b0889deada10772eb08384be75eb103a85d",
        [
@@ -342908,6 +342956,19 @@
         [
          [
           "/svg/text/reftests/textpath-path-attr-ref.svg",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "textpath-pathlength-css-display-none.tentative.svg": [
+       "e4866750ac2cc5a5180f8e8a1d2289ad145047cf",
+       [
+        null,
+        [
+         [
+          "/svg/text/reftests/textpath-pathlength-css-display-none-ref.tentative.svg",
           "=="
          ]
         ],
@@ -410762,11 +410823,11 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "b3b5ce1ff6f9aa55c58cf5110b9074b486ce8917",
+      "68969fe17aa639f132e2cd8655f2f37b9c340f8c",
       []
      ],
      "getComputedStyle-pseudo-picker-expected.txt": [
-      "f2169b288819743ba7c9a66c20a17757e646ce6e",
+      "69b519579f127c2950df98e75e1cbe1ce3fedf67",
       []
      ],
      "getComputedStyle-resolved-min-size-auto-expected.txt": [
@@ -451839,6 +451900,10 @@
      []
     ],
     "resources": {
+     "blank.html": [
+      "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+      []
+     ],
      "delegate-request-subframe.sub.html": [
       "aeda1f00d4feb5cc34cbbcd253dc905dd00e9318",
       []
@@ -463538,6 +463603,14 @@
       ]
      },
      "distance": {
+      "path-length-css-property-ref.tentative.svg": [
+       "c1a7cc56e1c8bd2829acbb825f9570c4d9d020b4",
+       []
+      ],
+      "path-length-css-zero-ref.tentative.svg": [
+       "7b50b52583b0845afd678b57354c988f2d646807",
+       []
+      ],
       "pathLength-positive-ref.svg": [
        "9a9a1a8d4734272fda877cb12ae2a2e68ca632d2",
        []
@@ -464298,6 +464371,10 @@
       ],
       "textpath-path-attr-ref.svg": [
        "51a780cbd1d02303b54781b8f0d6b298d59c13fe",
+       []
+      ],
+      "textpath-pathlength-css-display-none-ref.tentative.svg": [
+       "c0025ccb30154160b27fc98b4aac5e1382710b2d",
        []
       ],
       "textpath-shape-001-ref.svg": [
@@ -468207,7 +468284,7 @@
        []
       ],
       "property-list.js": [
-       "51a2ff3cfd0773c540bed68a96917e2002a50692",
+       "788d3706a6f905724bf5b4d3bb9b6162f3f753da",
        []
       ],
       "property-types.js": [
@@ -505997,6 +506074,31 @@
       ]
      ]
     },
+    "normalize-algorithm-name.https.any.js": [
+     "5f9779c9dba1684ad7fbaaa1ab410b8bbec9eb27",
+     [
+      "WebCryptoAPI/normalize-algorithm-name.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCryptoAPI: Algorithm normalization matches names ASCII case-insensitively"
+        ]
+       ]
+      }
+     ],
+     [
+      "WebCryptoAPI/normalize-algorithm-name.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "WebCryptoAPI: Algorithm normalization matches names ASCII case-insensitively"
+        ]
+       ]
+      }
+     ]
+    ],
     "randomUUID.https.any.js": [
      "600a9728f0b1474c4443f5d0406af5aad4b43d52",
      [
@@ -582421,7 +582523,7 @@
       ]
      ],
      "user-invalid.html": [
-      "c57e764831290886de7651735bda731ed4819e35",
+      "56f7239e164cb97f84595fba64a641bd93b27b85",
       [
        null,
        {
@@ -582439,7 +582541,7 @@
       ]
      ],
      "user-valid.html": [
-      "402003ba5e63266071a9c3aa474f017ddb131049",
+      "8f30fd9b82f860a3eb3daa2f8fb3223355b75b99",
       [
        null,
        {
@@ -715393,7 +715495,7 @@
      ]
     ],
     "broken-image-icon.html": [
-     "60496a91cfd2f55be0258da566af6605b9f91b83",
+     "8ca55b41e6b125453d7e2cf409a0cd904c64a672",
      [
       null,
       {}
@@ -717232,6 +717334,15 @@
       }
      ]
     ],
+    "loaf-container-queries.html": [
+     "d4818479f680348f1da86d9d5f8cbd60b30e6c95",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "loaf-event-blocking-duration.html": [
      "34ea08a81e342f533aec8634696331ae9106ec8f",
      [
@@ -717257,6 +717368,15 @@
       null,
       {
        "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
+    "loaf-forced-layout-duration.html": [
+     "80a04430bbebe5b9bb702bb6746508f78a6293dd",
+     [
+      null,
+      {
        "timeout": "long"
       }
      ]
@@ -717299,6 +717419,15 @@
     ],
     "loaf-iframe-self.html": [
      "7511ff1072ab41c0f28851c0ffb443df15ffed62",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
+    "loaf-layout-duration.html": [
+     "f5014b2cea29146f79e5dbde31e50410a746f72f",
      [
       null,
       {
@@ -717471,7 +717600,7 @@
      ]
     ],
     "loaf-toJSON.html": [
-     "24a2866bb5caf150d0e045cb138e10a500acbe5b",
+     "4723ad7ebd7ba66167c1688b17073282173f4b99",
      [
       null,
       {}
@@ -729324,7 +729453,7 @@
      ]
     ],
     "payment-request-abort-method.https.html": [
-     "32b87970b4df49d2eef4945e3869f4abfcaa537a",
+     "1978a09ff3913e68016461e3c5a7eaecb1127dab",
      [
       null,
       {
@@ -729333,7 +729462,7 @@
      ]
     ],
     "payment-request-canmakepayment-method.https.html": [
-     "f02474de12e5b4141742c31bbeb38d66667ea363",
+     "d9aac3af482e4dcfefa3411fd78400df84d4497e",
      [
       null,
       {
@@ -729390,7 +729519,7 @@
      ]
     ],
     "payment-request-hasenrolledinstrument-method.tentative.https.html": [
-     "4f6b7e9239b67e4317c325af651ab685f0c63c44",
+     "d17f9dded6c13739e56aacf88f19cb1f05e7e941",
      [
       null,
       {
@@ -729455,7 +729584,7 @@
      ]
     ],
     "payment-request-show-method.https.html": [
-     "d3385b5468b8fc6cfd954df4e77c5959f8ceb32f",
+     "0fd97f96140e6ac915b0daf286d4f0e0a6d691a0",
      [
       null,
       {
@@ -780983,6 +781112,13 @@
        {}
       ]
      ],
+     "animate-pathLength.tentative.html": [
+      "ff074a9dce95bf6dc95b799f5474452b477b7452",
+      [
+       null,
+       {}
+      ]
+     ],
      "animate-reset-freeze.html": [
       "0b0d90003dcabbc2bf3dc255c30c4b8b5d535e5b",
       [
@@ -783604,6 +783740,15 @@
      }
     },
     "path": {
+     "animations": {
+      "path-length-interpolation.tentative.html": [
+       "c33d601a8ee60f64ad84f06c9f08f8afa83ebfe3",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "error-handling": {
       "bounding.svg": [
        "85c089b25baa814e563e136bcba819e4bd80b2b1",
@@ -783623,6 +783768,29 @@
       ],
       "SVGPathSegment.svg": [
        "d0f8034d50e152624ac4f327dd871680ba62b5bb",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
+     "parsing": {
+      "path-length-computed.tentative.svg": [
+       "dba3edcdacabcc84b540ff6cb4a77f6ba3ee5522",
+       [
+        null,
+        {}
+       ]
+      ],
+      "path-length-invalid.tentative.svg": [
+       "4f1d1a7c50ebb5c5591b178c13590b4c79d234f1",
+       [
+        null,
+        {}
+       ]
+      ],
+      "path-length-valid.tentative.svg": [
+       "f0a26aaf30515aaa0b5a78ee6d9c41b1fbd095c0",
        [
         null,
         {}
@@ -783653,6 +783821,13 @@
       ],
       "getComputedStyle.svg": [
        "400f92ec84179ec140ecd2314ceae3341cd415ba",
+       [
+        null,
+        {}
+       ]
+      ],
+      "inheritance.tentative.svg": [
+       "f14cc11f471756d5b2f18b8749cc7a68bfd860b1",
        [
         null,
         {}
