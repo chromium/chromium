@@ -1849,11 +1849,18 @@ void ChromeContentBrowserClient::OnRendererProcessLockedStateUpdated(
   if (!base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
     return;
   }
-  chrome::mojom::StaticParamsPtr params = chrome::mojom::StaticParams::New();
   Profile* profile = Profile::FromBrowserContext(host->GetBrowserContext());
-  if (search::ShouldAssignURLToInstantRenderer(site_url, profile)) {
-    params->is_instant_process = true;
+  const bool is_instant_process =
+      search::ShouldAssignURLToInstantRenderer(site_url, profile);
+  if (is_instant_process) {
+    // Grant commit scheme access to chrome-search for instant processes.
+    // Browser-side enforcement ensures non-instant processes cannot access
+    // chrome-search URLs.
+    content::ChildProcessSecurityPolicy::GetInstance()->GrantCommitScheme(
+        host->GetDeprecatedID(), chrome::kChromeSearchScheme);
   }
+  chrome::mojom::StaticParamsPtr params = chrome::mojom::StaticParams::New();
+  params->is_instant_process = is_instant_process;
   auto renderer_configuration = GetRendererConfiguration(host);
   renderer_configuration->SetConfigurationOnProcessLockUpdate(
       std::move(params));

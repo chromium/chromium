@@ -8,6 +8,7 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 source_set("search") {
   sources = [
+    "chrome_search_navigation_throttle.h",
     "instant_controller.h",
     "new_tab_page_navigation_throttle.h",
     "ntp_user_data_logger.h",
@@ -35,6 +36,7 @@ source_set("search") {
 
 source_set("impl") {
   sources = [
+    "chrome_search_navigation_throttle.cc",
     "instant_controller.cc",
     "new_tab_page_navigation_throttle.cc",
     "search_ipc_router.cc",
@@ -161,10 +163,12 @@ source_set("test_support_ui") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "chrome_search_navigation_throttle_unittest.cc",
     "ntp_user_data_logger_unittest.cc",
     "search_ipc_router_unittest.cc",
   ]
   deps = [
+    ":impl",
     ":search",
     "//base",
     "//base/test:test_support",
@@ -184,6 +188,7 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//ipc",
     "//ipc:message_support",
+    "//net",
     "//ui/base:types",
     "//url",
   ]

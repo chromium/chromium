@@ -87,15 +87,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
   };
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-  // Returns whether the renderer process has completed security settings
-  // initialization. A process is considered "ready" when all security
-  // configurations have been applied.See
-  // ChromeContentRendererClient::WaitForProcessReady() for usage.
-  bool IsProcessReady();
-  bool WaitForProcessReady(base::TimeDelta timeout);
-#endif
-
   ChromeRenderThreadObserver();
 
   ChromeRenderThreadObserver(const ChromeRenderThreadObserver&) = delete;
@@ -149,7 +140,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
 #if !BUILDFLAG(IS_ANDROID)
   void SetConfigurationOnProcessLockUpdate(
       chrome::mojom::StaticParamsPtr params) override;
-  void OnProcessReady();
 #endif  // !BUILDFLAG(IS_ANDROID)
   void OnRendererConfigurationAssociatedRequest(
       mojo::PendingAssociatedReceiver<chrome::mojom::RendererConfiguration>
@@ -169,8 +159,6 @@ class ChromeRenderThreadObserver : public content::RenderThreadObserver,
 
 #if !BUILDFLAG(IS_ANDROID)
   bool static_renderer_params_set_ = false;
-
-  base::WaitableEvent process_ready_event_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS)

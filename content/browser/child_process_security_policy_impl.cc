@@ -1410,6 +1410,18 @@ void ChildProcessSecurityPolicyImpl::GrantRequestOrigin(
   }
 }
 
+void ChildProcessSecurityPolicyImpl::GrantCommitScheme(
+    int child_id,
+    const std::string& scheme) {
+  base::AutoLock lock(lock_);
+
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
+  if (auto* state = security_states_.GetSecurityStateForMutation(
+          ChildProcessId::FromUnsafeValue(child_id))) {
+    state->GrantCommitScheme(scheme);
+  }
+}
+
 void ChildProcessSecurityPolicyImpl::GrantRequestScheme(
     int child_id,
     const std::string& scheme) {

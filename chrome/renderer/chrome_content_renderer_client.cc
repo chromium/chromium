@@ -523,6 +523,10 @@ void ChromeContentRendererClient::RenderThreadStarted() {
   // processes can't display it or read it. (see http://crbug.com/40309067 for
   // more context on why chrome-search scheme registration is skipped for the
   // instant process).
+  // TODO(crbug.com/40309067): When kInstantUsesSpareRenderer is shipped, the
+  // kInstantProcess command-line switch and all code that depends on it will be
+  // removed. Remove this display-isolation policy block as part of that
+  // cleanup.
   bool should_restrict_chrome_search_scheme =
       !command_line->HasSwitch(switches::kInstantProcess);
 
@@ -1231,44 +1235,6 @@ ChromeContentRendererClient::GetProtocolHandlerSecurityLevel(
 #else
   return blink::ProtocolHandlerSecurityLevel::kStrict;
 #endif
-}
-
-void ChromeContentRendererClient::WaitForProcessReady() {
-#if !BUILDFLAG(IS_ANDROID)
-  if (!base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
-    return;
-  }
-
-  bool process_was_ready = chrome_observer_->IsProcessReady();
-  bool is_extension = IsStandaloneContentExtensionProcess();
-  base::UmaHistogramBoolean(
-      is_extension ? "Renderer.ProcessReadyWaitRequired.ExtensionProcess"
-                   : "Renderer.ProcessReadyWaitRequired.RegularProcess",
-      !process_was_ready);
-  if (process_was_ready) {
-    return;
-  }
-
-  base::TimeTicks start_time = base::TimeTicks::Now();
-  base::ScopedAllowBaseSyncPrimitivesOutsideBlockingScope allow_wait;
-  bool ready_within_timeout =
-      chrome_observer_->WaitForProcessReady(base::Seconds(5));
-  // Add DumpWithoutCrashing() if the process did not become ready after 5
-  // seconds. After the timeout, the wait is skipped and execution continues.
-  // TODO(http://crbug.com/434977609): Determine whether a crash should be
-  // triggered after a timeout, as this may pose a security risk.
-  if (!ready_within_timeout) {
-    SCOPED_CRASH_KEY_BOOL("WaitForProcessReady", "IsExtensionProcess",
-                          is_extension);
-    base::debug::DumpWithoutCrashing();
-  }
-
-  base::TimeDelta wait_duration = base::TimeTicks::Now() - start_time;
-  base::UmaHistogramTimes(
-      is_extension ? "Renderer.WaitTimeForProcessReady.ExtensionProcess"
-                   : "Renderer.WaitTimeForProcessReady.RegularProcess",
-      wait_duration);
-#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void ChromeContentRendererClient::WillSendRequest(

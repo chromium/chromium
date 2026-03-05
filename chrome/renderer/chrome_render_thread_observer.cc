@@ -82,20 +82,6 @@ scoped_refptr<base::SequencedTaskRunner> GetCallbackGroupTaskRunner() {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if !BUILDFLAG(IS_ANDROID)
-void MaybeRegisterChromeSearchSchemeDisplayIsolated() {
-  // The Instant process can only display the content but not read it. Other
-  // processes can't display it or read it. (see http://crbug.com/40309067 for
-  // more context on why chrome-search scheme registration is skipped for the
-  // instant process).
-  if (!process_state::IsInstantProcess()) {
-    WebString chrome_search_scheme(
-        WebString::FromASCII(chrome::kChromeSearchScheme));
-    WebSecurityPolicy::RegisterURLSchemeAsDisplayIsolated(chrome_search_scheme);
-  }
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 }  // namespace
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -237,20 +223,6 @@ void ChromeRenderThreadObserver::SetConfigurationOnProcessLockUpdate(
   CHECK(!static_renderer_params_set_);
   static_renderer_params_set_ = true;
   process_state::SetIsInstantProcess(params->is_instant_process);
-  MaybeRegisterChromeSearchSchemeDisplayIsolated();
-  OnProcessReady();
-}
-
-void ChromeRenderThreadObserver::OnProcessReady() {
-  process_ready_event_.Signal();
-}
-
-bool ChromeRenderThreadObserver::IsProcessReady() {
-  return process_ready_event_.IsSignaled();
-}
-
-bool ChromeRenderThreadObserver::WaitForProcessReady(base::TimeDelta timeout) {
-  return process_ready_event_.TimedWait(timeout);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 

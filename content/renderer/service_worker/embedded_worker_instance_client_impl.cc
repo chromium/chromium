@@ -140,9 +140,6 @@ void EmbeddedWorkerInstanceClientImpl::StartWorker(
             std::move(params->installed_scripts_info->manager_host_remote));
   }
 
-  // Wait for the process has processed the security settings before starting
-  // the worker thread.
-  GetContentClient()->renderer()->WaitForProcessReady();
   auto worker =
       blink::WebEmbeddedWorker::Create(service_worker_context_client_.get());
   service_worker_context_client_->StartWorkerContextOnInitiatorThread(

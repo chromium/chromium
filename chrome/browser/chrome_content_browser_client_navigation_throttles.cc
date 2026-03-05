@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/passwords/password_manager_navigation_throttle.h"
 #include "chrome/browser/ui/passwords/well_known_change_password_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/navigation_capturing_redirection_throttle.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "components/captive_portal/content/captive_portal_service.h"
@@ -96,6 +97,7 @@
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/lens/lens_overlay_side_panel_navigation_throttle.h"
 #include "chrome/browser/ui/read_anything/read_anything_side_panel_navigation_throttle.h"
+#include "chrome/browser/ui/search/chrome_search_navigation_throttle.h"
 #include "chrome/browser/ui/search/new_tab_page_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/tabbed_web_app_navigation_throttle.h"
 #include "chrome/browser/ui/web_applications/webui_web_app_navigation_throttle.h"
@@ -470,6 +472,10 @@ void CreateAndAddChromeThrottlesForNavigation(
   }
 
   DevToolsWindow::MaybeCreateAndAddNavigationThrottle(registry);
+
+  if (base::FeatureList::IsEnabled(features::kInstantUsesSpareRenderer)) {
+    ChromeSearchNavigationThrottle::MaybeCreateAndAdd(registry);
+  }
 
   NewTabPageNavigationThrottle::MaybeCreateAndAdd(registry);
 

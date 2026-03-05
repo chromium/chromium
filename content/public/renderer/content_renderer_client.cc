@@ -158,8 +158,6 @@ void ContentRendererClient::WillSendRequest(
     const url::Origin* initiator_origin,
     GURL* new_url) {}
 
-void ContentRendererClient::WaitForProcessReady() {}
-
 bool ContentRendererClient::IsPrefetchOnly(RenderFrame* render_frame) {
   return false;
 }

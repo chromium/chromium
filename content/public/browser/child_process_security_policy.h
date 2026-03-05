@@ -174,6 +174,10 @@ class ChildProcessSecurityPolicy {
   // origin.
   virtual void GrantRequestOrigin(int child_id, const url::Origin& origin) = 0;
 
+  // Grants the child process the capability to commit URLs of the provided
+  // scheme.
+  virtual void GrantCommitScheme(int child_id, const std::string& scheme) = 0;
+
   // Grants the child process the capability to request URLs of the provided
   // scheme.
   virtual void GrantRequestScheme(int child_id, const std::string& scheme) = 0;

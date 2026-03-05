@@ -135,7 +135,6 @@ class ChromeContentRendererClient
       v8::Local<v8::Context> context) override;
   blink::ProtocolHandlerSecurityLevel GetProtocolHandlerSecurityLevel(
       const url::Origin& origin) override;
-  void WaitForProcessReady() override;
   void WillSendRequest(blink::WebLocalFrame* frame,
                        ui::PageTransition transition_type,
                        const blink::WebURL& upstream_url,
