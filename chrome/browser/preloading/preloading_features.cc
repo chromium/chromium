@@ -19,6 +19,11 @@ BASE_FEATURE_PARAM(bool,
                    "user_interaction_trigger",
                    false);
 BASE_FEATURE_PARAM(bool,
+                   kPrewarmThrottlePrefetch,
+                   &kPrewarm,
+                   "throttle_prefetch",
+                   false);
+BASE_FEATURE_PARAM(bool,
                    kForceEnableWithDevTools,
                    &kPrewarm,
                    "force_enable_with_devtools",

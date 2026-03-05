@@ -173,6 +173,9 @@ class SearchPrefetchRequest {
   void SetPrefetchAttemptTriggeringOutcome(
       content::PreloadingTriggeringOutcome outcome);
 
+  // Callback for resuming the prefetch.
+  void OnSearchPrewarmFinished();
+
   // Whether the request has received a servable response. See
   // `CanServePrefetchRequest` in ./streaming_search_prefetch_url_loader.cc for
   // the definition of servable response.
@@ -224,6 +227,18 @@ class SearchPrefetchRequest {
   // passed to log various metrics. We store WeakPtr as prerender can be deleted
   // before we receive a prefetch response or the prerender is not created.
   base::WeakPtr<content::PreloadingAttempt> prerender_preloading_attempt_;
+
+  // Used to store the arguments if the request is throttled.
+  struct PendingRequest {
+    PendingRequest(Profile* profile, content::WebContents* web_contents);
+    ~PendingRequest();
+
+    raw_ptr<Profile> profile;
+    base::WeakPtr<content::WebContents> web_contents;
+  };
+  std::optional<PendingRequest> pending_request_;
+
+  base::WeakPtrFactory<SearchPrefetchRequest> weak_factory_{this};
 };
 
 // Used when DCHECK_STATE_TRANSITION triggers.

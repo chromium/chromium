@@ -27,8 +27,11 @@
 #include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/field_trial_settings.h"
 #include "chrome/browser/preloading/prefetch/search_prefetch/streaming_search_prefetch_url_loader.h"
+#include "chrome/browser/preloading/preloading_features.h"
 #include "chrome/browser/preloading/prerender/prerender_manager.h"
 #include "chrome/browser/preloading/prerender/prerender_utils.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service.h"
+#include "chrome/browser/preloading/prerender/search_prewarm_progress_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -181,6 +184,24 @@ SearchPrefetchRequest::~SearchPrefetchRequest() {
   // In this case, there is no StreamingSearchPrefetchURLLoader instance that
   // would be needed.
   streaming_url_loader_.reset();
+}
+
+SearchPrefetchRequest::PendingRequest::PendingRequest(
+    Profile* profile,
+    content::WebContents* web_contents)
+    : profile(profile), web_contents(web_contents->GetWeakPtr()) {}
+
+SearchPrefetchRequest::PendingRequest::~PendingRequest() = default;
+
+void SearchPrefetchRequest::OnSearchPrewarmFinished() {
+  if (!pending_request_) {
+    return;
+  }
+  if (pending_request_->web_contents) {
+    StartPrefetchRequest(pending_request_->profile,
+                         *pending_request_->web_contents);
+  }
+  pending_request_.reset();
 }
 
 // static
@@ -342,6 +363,23 @@ bool SearchPrefetchRequest::StartPrefetchRequest(
           cancel_or_pause_delegate.cancelled()) {
         return false;
       }
+    }
+  }
+
+  if (base::FeatureList::IsEnabled(features::kPrewarm) &&
+      features::kPrewarmThrottlePrefetch.Get()) {
+    auto* service = SearchPrewarmProgressServiceFactory::GetForProfile(profile);
+    if (service && service->HasOnGoingSearchPrewarm()) {
+      CHECK(!pending_request_);
+      pending_request_.emplace(profile, &web_contents);
+      service->AddSearchPrewarmFinishedCallback(
+          base::BindOnce(&SearchPrefetchRequest::OnSearchPrewarmFinished,
+                         weak_factory_.GetWeakPtr()));
+      // Return true to indicate that the request is accepted and ownership is
+      // transferred to SearchPrefetchService (which puts it in `prefetches_`).
+      // The actual network request is deferred until OnSearchPrewarmFinished is
+      // called.
+      return true;
     }
   }
 
