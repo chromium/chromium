@@ -1877,6 +1877,8 @@ public abstract class ChromeFeatureList {
 
     public static final MutableBooleanParamWithSafeDefault sTabBottomSheetDontShowFusebox =
             sTabBottomSheet.newBooleanParam("dont_show_fusebox", false);
+    public static final MutableBooleanParamWithSafeDefault sTabBottomSheetResizeWebview =
+            sTabBottomSheet.newBooleanParam("resize_webview", false);
 
     public static final MutableBooleanParamWithSafeDefault sRobustWindowManagementBulkClose =
             sRobustWindowManagement.newBooleanParam("bulk_close", false);

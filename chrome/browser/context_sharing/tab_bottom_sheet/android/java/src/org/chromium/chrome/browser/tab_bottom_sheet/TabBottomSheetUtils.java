@@ -23,6 +23,10 @@ public final class TabBottomSheetUtils {
         return ChromeFeatureList.sTabBottomSheet.isEnabled();
     }
 
+    public static boolean canResizeWebView() {
+        return ChromeFeatureList.sTabBottomSheetResizeWebview.getValue();
+    }
+
     public static boolean shouldShowFusebox() {
         return !ChromeFeatureList.sTabBottomSheetDontShowFusebox.getValue();
     }

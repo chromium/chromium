@@ -119,6 +119,8 @@ public class TabBottomSheetCoordinator {
         return new EmptyBottomSheetObserver() {
             @Override
             public void onSheetOffsetChanged(float heightFraction, float offsetPx) {
+                if (!TabBottomSheetUtils.canResizeWebView()) return;
+
                 mMediator.onSheetOffsetChanged(offsetPx);
             }
         };
