@@ -2203,7 +2203,6 @@ crbug.com/1467328 virtual/forced-high-contrast-colors/fast/css/forced-colors-mod
 crbug.com/1467692 virtual/forced-high-contrast-colors/fast/css/forced-colors-mode/forced-colors-mode-16.html [ Failure ]
 
 # external/wpt/css/css-borders/
-crbug.com/451531616 external/wpt/css/css-borders/outline-offset-rounding.tentative.html [ Failure ]
 crbug.com/330758166 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-001.html [ Failure ]
 crbug.com/330758166 external/wpt/css/css-borders/tentative/border-radius-side-shorthands/border-radius-side-shorthands-002.html [ Failure ]
 

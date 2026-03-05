@@ -1995,6 +1995,19 @@ int StyleBuilderConverter::ConvertBorderWidth(const StyleResolverState& state,
   return ClampTo<int>(floor(result), 0, LayoutUnit::Max().ToInt());
 }
 
+int StyleBuilderConverter::ConvertOutlineOffset(const StyleResolverState& state,
+                                                const CSSValue& value) {
+  double result = To<CSSPrimitiveValue>(value).ComputeLength<double>(
+      state.CssToLengthConversionData());
+  double abs_result = std::abs(result);
+  if (abs_result > 0.0 && abs_result < 1.0) {
+    return result > 0.0 ? 1 : -1;
+  }
+  int int_result =
+      ClampTo<int>(std::floor(abs_result), 0, LayoutUnit::Max().ToInt());
+  return result < 0.0 ? -int_result : int_result;
+}
+
 Superellipse StyleBuilderConverter::ConvertCornerShape(
     const StyleResolverState& state,
     const CSSValue& value) {
