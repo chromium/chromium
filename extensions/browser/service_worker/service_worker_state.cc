@@ -178,7 +178,11 @@ void ServiceWorkerState::RendererDidInitializeServiceWorkerContext(
     return;
   }
 
-  DCHECK_EQ(RendererState::kNotActive, renderer_state());
+  if (renderer_state() == RendererState::kActive) {
+    // We already received `RendererDidStartServiceWorkerContext` and know that
+    // this worker instance is already active.
+    return;
+  }
 
   SetWorkerId(worker_id);
   SetRendererState(RendererState::kInitialized);
@@ -193,9 +197,6 @@ void ServiceWorkerState::RendererDidStartServiceWorkerContext(
     // Drop the IPC message. It is from a stale worker instance.
     return;
   }
-
-  DCHECK_EQ(RendererState::kInitialized, renderer_state());
-  CHECK_EQ(worker_id, *worker_id_);
 
   SetRendererState(RendererState::kActive);
   NotifyObserversIfReady(context_id);
