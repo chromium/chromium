@@ -143,7 +143,13 @@ class SharedWorkerHostTest : public testing::Test {
     TestContentBrowserClient client;
     host->Start(std::move(factory),
                 blink::mojom::FetchClientSettingsObject::New(
-                    network::mojom::ReferrerPolicy::kDefault,
+                    []() {
+                      auto policies =
+                          blink::mojom::PolicyContainerPolicies::New();
+                      policies->referrer_policy =
+                          network::mojom::ReferrerPolicy::kDefault;
+                      return policies;
+                    }(),
                     /*outgoing_referrer=*/GURL(),
                     blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
                 &client,

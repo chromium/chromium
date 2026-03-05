@@ -5,7 +5,7 @@
 module blink.mojom;
 
 import "url/mojom/url.mojom";
-import "services/network/public/mojom/referrer_policy.mojom";
+import "third_party/blink/public/mojom/frame/policy_container.mojom";
 
 // https://w3c.github.io/webappsec-upgrade-insecure-requests/#insecure-requests-policy
 enum InsecureRequestsPolicy {
@@ -22,7 +22,7 @@ enum InsecureRequestsPolicy {
 //
 // Also keep this struct consistent with blink::WebFetchClientSettingsObject.
 struct FetchClientSettingsObject {
-  network.mojom.ReferrerPolicy referrer_policy;
+  PolicyContainerPolicies policy_container_policies;
   url.mojom.Url outgoing_referrer;
   InsecureRequestsPolicy insecure_requests_policy;
 };

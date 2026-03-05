@@ -155,7 +155,13 @@ class ServiceWorkerSingleScriptUpdateCheckerTest : public testing::Test {
       std::optional<CheckResult>* out_check_result) {
     auto fetch_client_settings_object =
         blink::mojom::FetchClientSettingsObject::New(
-            network::mojom::ReferrerPolicy::kDefault, GURL(main_script_url),
+            []() {
+              auto policies = blink::mojom::PolicyContainerPolicies::New();
+              policies->referrer_policy =
+                  network::mojom::ReferrerPolicy::kDefault;
+              return policies;
+            }(),
+            GURL(main_script_url),
             blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade);
     return std::make_unique<ServiceWorkerSingleScriptUpdateChecker>(
         GURL(url), url == main_script_url, GURL(main_script_url), scope,

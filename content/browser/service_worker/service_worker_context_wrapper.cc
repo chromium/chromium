@@ -75,6 +75,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
 namespace content {
@@ -611,7 +612,12 @@ void ServiceWorkerContextWrapper::RegisterServiceWorker(
   context()->RegisterServiceWorker(
       net::SimplifyUrlForRequest(script_url), key, options_to_pass,
       blink::mojom::FetchClientSettingsObject::New(
-          network::mojom::ReferrerPolicy::kDefault,
+          []() {
+            auto policies = blink::mojom::PolicyContainerPolicies::New();
+            policies->referrer_policy =
+                network::mojom::ReferrerPolicy::kDefault;
+            return policies;
+          }(),
           /*outgoing_referrer=*/script_url,
           blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       base::BindOnce(

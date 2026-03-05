@@ -144,8 +144,9 @@ void WebEmbeddedWorkerImpl::StartWorkerContext(
 }
 
 void WebEmbeddedWorkerImpl::TerminateWorkerContext() {
-  if (asked_to_terminate_)
+  if (asked_to_terminate_) {
     return;
+  }
   asked_to_terminate_ = true;
   // StartWorkerThread() must be called before.
   DCHECK(worker_thread_);
@@ -211,30 +212,36 @@ void WebEmbeddedWorkerImpl::StartWorkerThread(
       worker_start_data->script_url, worker_start_data->script_type,
       global_scope_name, worker_start_data->user_agent,
       worker_start_data->ua_metadata, std::move(web_worker_fetch_context),
-      Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+      /*outside_content_security_policies=*/
+      ToVector(worker_start_data->outside_fetch_client_settings_object
+                   .policy_container_policies.content_security_policies,
+               FromWebContentSecurityPolicy),
+      /*response_content_security_policies=*/
       Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
       network::mojom::ReferrerPolicy::kDefault,
       DocumentPolicy::DocumentPolicyBundle{}, starter_origin.get(),
-      starter_secure_context, starter_https_state, nullptr /* worker_clients */,
-      std::move(content_settings_proxy), nullptr /* inherited_trial_features */,
+      starter_secure_context, starter_https_state,
+      /*worker_clients=*/nullptr, std::move(content_settings_proxy),
+      /*inherited_trial_features=*/nullptr,
       worker_start_data->devtools_worker_token, std::move(worker_settings),
       // Generate the full code cache in the first execution of the script.
+      /*v8_cache_options=*/
       mojom::blink::V8CacheOptions::kFullCodeWithoutHeatCheck,
-      nullptr /* worklet_module_respones_map */,
-      std::move(browser_interface_broker),
-      mojo::NullRemote() /* code_cache_host_interface */,
-      mojo::NullRemote() /* blob_url_store */, BeginFrameProviderParams(),
-      nullptr /* parent_permissions_policy */,
-      base::UnguessableToken() /* agent_cluster_id */,
-      worker_start_data->ukm_source_id, std::nullopt, /* parent_context_token */
+      /*module_responses_map=*/nullptr, std::move(browser_interface_broker),
+      /*code_cache_host_interface=*/mojo::NullRemote(),
+      /*blob_url_store=*/mojo::NullRemote(), BeginFrameProviderParams(),
+      /*parent_permissions_policy=*/nullptr,
+      /*agent_cluster_id=*/base::UnguessableToken(),
+      worker_start_data->ukm_source_id,
+      /*parent_context_token=*/std::nullopt,
+      /*cross_origin_isolated_capability=*/
       worker_start_data->is_cross_origin_isolated,
-      false, /* parent_is_isolated_context */
-      interface_registry,
-      nullptr /* agent_group_scheduler_compositor_task_runner */,
-      nullptr /* top_level_frame_security_origin */,
-      net::StorageAccessApiStatus::kNone,
-      false /* require_cross_site_request_for_cookies */,
-      nullptr /* origin_to_use */, std::move(coep_reporting_observer),
+      /*parent_is_isolated_context=*/false, interface_registry,
+      /*agent_group_scheduler_compositor_task_runner=*/nullptr,
+      /*top_level_frame_security_origin=*/nullptr,
+      /*parent_storage_access_api_status=*/net::StorageAccessApiStatus::kNone,
+      /*require_cross_site_request_for_cookies=*/false,
+      /*origin_to_use=*/nullptr, std::move(coep_reporting_observer),
       std::move(dip_reporting_observer));
 
   worker_thread_ = std::make_unique<ServiceWorkerThread>(

@@ -78,8 +78,9 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       requesting_frame_id_(requesting_frame_id),
       ancestor_frame_type_(ancestor_frame_type),
       creator_policy_container_policies_(std::move(policy_container_policies)) {
-  DCHECK(context_);
-  DCHECK(outside_fetch_client_settings_object_);
+  CHECK(context_);
+  CHECK(outside_fetch_client_settings_object_);
+  CHECK(outside_fetch_client_settings_object_->policy_container_policies);
 }
 
 ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
@@ -103,8 +104,9 @@ ServiceWorkerRegisterJob::ServiceWorkerRegisterJob(
       skip_script_comparison_(skip_script_comparison),
       promise_resolved_status_(blink::ServiceWorkerStatusCode::kOk),
       ancestor_frame_type_(registration->ancestor_frame_type()) {
-  DCHECK(context_);
-  DCHECK(outside_fetch_client_settings_object_);
+  CHECK(context_);
+  CHECK(outside_fetch_client_settings_object_);
+  CHECK(outside_fetch_client_settings_object_->policy_container_policies);
   internal_.registration = registration;
 
   ServiceWorkerVersion* version = registration->GetNewestVersion();

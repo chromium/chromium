@@ -120,7 +120,8 @@ void SharedWorkerClientHolder::Connect(
                       ->GetContentSecurityPolicy()
                       ->GetParsedPolicies()),
       mojom::blink::FetchClientSettingsObject::New(
-          outside_fetch_client_settings_object->GetReferrerPolicy(),
+          outside_fetch_client_settings_object->GetPolicyContainerPolicies()
+              .Clone(),
           KURL(outside_fetch_client_settings_object->GetOutgoingReferrer()),
           insecure_requests_policy),
       same_site_cookies, extended_lifetime);

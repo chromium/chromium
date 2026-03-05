@@ -201,9 +201,13 @@ void BackgroundSyncServiceImplTestHarness::CreateServiceWorkerRegistration() {
   options.scope = GURL(kServiceWorkerScope);
   const blink::StorageKey key =
       blink::StorageKey::CreateFromStringForTesting(kServiceWorkerScope);
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   embedded_worker_helper_->context()->RegisterServiceWorker(
       GURL(kServiceWorkerScript), key, options,
-      blink::mojom::FetchClientSettingsObject::New(),
+      std::move(fetch_client_settings_object),
       base::BindOnce(&RegisterServiceWorkerCallback, &called,
                      &sw_registration_id_),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),

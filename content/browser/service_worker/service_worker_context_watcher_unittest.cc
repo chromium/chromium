@@ -157,9 +157,12 @@ class ServiceWorkerContextWatcherTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope;
     int64_t registration_id = blink::mojom::kInvalidServiceWorkerRegistrationId;
+    auto fetch_client_settings_object =
+        blink::mojom::FetchClientSettingsObject::New();
+    fetch_client_settings_object->policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
     context()->RegisterServiceWorker(
-        script_url, key, options,
-        blink::mojom::FetchClientSettingsObject::New(),
+        script_url, key, options, std::move(fetch_client_settings_object),
         base::BindOnce(&DidRegisterServiceWorker, &registration_id),
         /*requesting_frame_id=*/GlobalRenderFrameHostId(),
         PolicyContainerPolicies());

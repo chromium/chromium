@@ -27,7 +27,9 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/completion_once_callback.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom-forward.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 
@@ -46,6 +48,10 @@ class ServiceWorkerHost;
 class ServiceWorkerRegistration;
 class ServiceWorkerRegistry;
 class ServiceWorkerVersion;
+
+blink::mojom::FetchClientSettingsObjectPtr CreateFetchClientSettingsObject(
+    network::mojom::ReferrerPolicy referrer_policy =
+        network::mojom::ReferrerPolicy::kMinValue);
 
 base::OnceCallback<void(blink::ServiceWorkerStatusCode)>
 ReceiveServiceWorkerStatus(std::optional<blink::ServiceWorkerStatusCode>* out,

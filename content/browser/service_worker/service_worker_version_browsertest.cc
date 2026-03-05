@@ -62,6 +62,7 @@
 #include "third_party/blink/public/common/service_worker/service_worker_type_converters.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/origin.h"
 
@@ -532,10 +533,14 @@ class ServiceWorkerVersionBrowserTest : public ContentBrowserTest {
     scoped_refptr<ServiceWorkerRegistration> registration =
         wrapper()->context()->GetLiveRegistration(registration_id);
     ASSERT_TRUE(registration);
+    auto fetch_client_settings_object =
+        blink::mojom::FetchClientSettingsObject::New();
+    fetch_client_settings_object->policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
     wrapper()->context()->UpdateServiceWorker(
         registration.get(), false /* force_bypass_cache */,
         false /* skip_script_comparison */,
-        blink::mojom::FetchClientSettingsObject::New(),
+        std::move(fetch_client_settings_object),
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status,
                                        const std::string& message,
                                        int64_t registration_id) {

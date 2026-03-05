@@ -606,7 +606,12 @@ void EmbeddedWorkerInstance::SendStartWorker(
   if (!params->outside_fetch_client_settings_object) {
     params->outside_fetch_client_settings_object =
         blink::mojom::FetchClientSettingsObject::New(
-            network::mojom::ReferrerPolicy::kDefault,
+            []() {
+              auto policies = blink::mojom::PolicyContainerPolicies::New();
+              policies->referrer_policy =
+                  network::mojom::ReferrerPolicy::kDefault;
+              return policies;
+            }(),
             /*outgoing_referrer=*/params->script_url,
             blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade);
   }

@@ -62,8 +62,13 @@ void ConnectToSharedWorker(
       url, std::move(options),
       std::vector<network::mojom::ContentSecurityPolicyPtr>(),
       blink::mojom::FetchClientSettingsObject::New(
-          network::mojom::ReferrerPolicy::kDefault, GURL(),
-          blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
+          []() {
+            auto policies = blink::mojom::PolicyContainerPolicies::New();
+            policies->referrer_policy =
+                network::mojom::ReferrerPolicy::kDefault;
+            return policies;
+          }(),
+          GURL(), blink::mojom::InsecureRequestsPolicy::kDoNotUpgrade),
       blink::mojom::SharedWorkerSameSiteCookies::kAll,
       /*extended_lifetime=*/false));
 

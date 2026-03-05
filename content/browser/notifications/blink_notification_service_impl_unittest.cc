@@ -168,10 +168,14 @@ class BlinkNotificationServiceImplTest : public ::testing::Test {
     options.scope = GURL(kTestOrigin);
 
     {
+      auto fetch_client_settings_object =
+          blink::mojom::FetchClientSettingsObject::New();
+      fetch_client_settings_object->policy_container_policies =
+          blink::mojom::PolicyContainerPolicies::New();
       base::RunLoop run_loop;
       embedded_worker_helper_->context()->RegisterServiceWorker(
           GURL(kTestServiceWorkerUrl), storage_key_, options,
-          blink::mojom::FetchClientSettingsObject::New(),
+          std::move(fetch_client_settings_object),
           base::BindOnce(
               &BlinkNotificationServiceImplTest::DidRegisterServiceWorker,
               base::Unretained(this), &service_worker_registration_id,

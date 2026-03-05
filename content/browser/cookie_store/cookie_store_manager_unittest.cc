@@ -223,9 +223,12 @@ class CookieStoreManagerTest
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GURL(scope);
     base::RunLoop run_loop;
+    auto fetch_client_settings_object =
+        blink::mojom::FetchClientSettingsObject::New();
+    fetch_client_settings_object->policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
     worker_test_helper_->context()->RegisterServiceWorker(
-        GURL(script_url), key, options,
-        blink::mojom::FetchClientSettingsObject::New(),
+        GURL(script_url), key, options, std::move(fetch_client_settings_object),
         base::BindLambdaForTesting([&](blink::ServiceWorkerStatusCode status,
                                        const std::string& status_message,
                                        int64_t service_worker_registration_id) {

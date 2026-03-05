@@ -299,11 +299,12 @@ network::ResourceRequest CreateRequestForServiceWorkerScript(
                             network::kDefaultAcceptHeaderValue);
 
   request.referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
-      fetch_client_settings_object.referrer_policy);
+      fetch_client_settings_object.policy_container_policies->referrer_policy);
   request.referrer =
       Referrer::SanitizeForRequest(
           script_url, Referrer(fetch_client_settings_object.outgoing_referrer,
-                               fetch_client_settings_object.referrer_policy))
+                               fetch_client_settings_object
+                                   .policy_container_policies->referrer_policy))
           .url;
   request.upgrade_if_insecure =
       fetch_client_settings_object.insecure_requests_policy ==

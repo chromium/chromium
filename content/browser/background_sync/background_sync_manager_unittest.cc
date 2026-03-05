@@ -51,6 +51,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/permissions/permission_utils.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -191,17 +192,19 @@ class BackgroundSyncManagerTest
     options2.scope = GURL(kScope2);
     const blink::StorageKey key2 =
         blink::StorageKey::CreateFirstParty(url::Origin::Create(GURL(kScope2)));
+    auto fetch_client_settings_object =
+        blink::mojom::FetchClientSettingsObject::New();
+    fetch_client_settings_object->policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
     helper_->context()->RegisterServiceWorker(
-        GURL(kScript1), key1, options1,
-        blink::mojom::FetchClientSettingsObject::New(),
+        GURL(kScript1), key1, options1, fetch_client_settings_object.Clone(),
         base::BindOnce(&RegisterServiceWorkerCallback, &called_1,
                        &sw_registration_id_1_),
         /*requesting_frame_id=*/GlobalRenderFrameHostId(),
         PolicyContainerPolicies());
 
     helper_->context()->RegisterServiceWorker(
-        GURL(kScript2), key2, options2,
-        blink::mojom::FetchClientSettingsObject::New(),
+        GURL(kScript2), key2, options2, fetch_client_settings_object.Clone(),
         base::BindOnce(&RegisterServiceWorkerCallback, &called_2,
                        &sw_registration_id_2_),
         /*requesting_frame_id=*/GlobalRenderFrameHostId(),

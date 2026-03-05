@@ -47,10 +47,12 @@
 #include "net/http/http_response_info.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #include "third_party/blink/public/common/loader/throttling_url_loader.h"
 #include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/back_forward_cache_not_restored_reasons.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 #include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -236,6 +238,17 @@ void OnWriteToDiskCacheFinished(
 }
 
 }  // namespace
+
+blink::mojom::FetchClientSettingsObjectPtr CreateFetchClientSettingsObject(
+    network::mojom::ReferrerPolicy referrer_policy) {
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
+  fetch_client_settings_object->policy_container_policies->referrer_policy =
+      referrer_policy;
+  return fetch_client_settings_object;
+}
 
 CommittedServiceWorkerClient::CommittedServiceWorkerClient(
     CommittedServiceWorkerClient&& other) = default;

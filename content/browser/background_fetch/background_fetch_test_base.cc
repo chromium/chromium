@@ -26,6 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 #include "url/gurl.h"
 
@@ -113,12 +114,15 @@ int64_t BackgroundFetchTestBase::RegisterServiceWorkerForOrigin(
   const blink::StorageKey key = blink::StorageKey::CreateFirstParty(origin);
 
   {
+    auto fetch_client_settings_object =
+        blink::mojom::FetchClientSettingsObject::New();
+    fetch_client_settings_object->policy_container_policies =
+        blink::mojom::PolicyContainerPolicies::New();
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = GetScopeForId(origin.GetURL().spec(), next_pattern_id_++);
     base::RunLoop run_loop;
     embedded_worker_test_helper_.context()->RegisterServiceWorker(
-        script_url, key, options,
-        blink::mojom::FetchClientSettingsObject::New(),
+        script_url, key, options, std::move(fetch_client_settings_object),
         base::BindOnce(&DidRegisterServiceWorker,
                        &service_worker_registration_id, run_loop.QuitClosure()),
         /*requesting_frame_id=*/GlobalRenderFrameHostId(),

@@ -68,11 +68,15 @@ TEST_F(ServiceWorkerNewScriptFetcherTest, Basic) {
   FakeNetworkURLLoaderFactory fake_factory{
       "HTTP/1.1 200 OK\nContent-Type: text/javascript\n\n", kBody,
       /*network_accessed=*/true, net::OK};
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   auto fetcher = std::make_unique<ServiceWorkerNewScriptFetcher>(
       *context(), version,
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
           &fake_factory),
-      blink::mojom::FetchClientSettingsObject::New(),
+      std::move(fetch_client_settings_object),
       /*requesting_frame_id=*/GlobalRenderFrameHostId());
 
   // Start a fetcher and wait to get the result. The script loaded from

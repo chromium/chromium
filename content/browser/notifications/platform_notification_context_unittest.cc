@@ -614,8 +614,13 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
   // Register a Service Worker to get a valid registration id.
   blink::mojom::ServiceWorkerRegistrationOptions options;
   options.scope = origin;
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   embedded_worker_test_helper->context()->RegisterServiceWorker(
-      script_url, key, options, blink::mojom::FetchClientSettingsObject::New(),
+      script_url, key, options, std::move(fetch_client_settings_object),
+
       base::BindOnce(&PlatformNotificationContextTest::DidRegisterServiceWorker,
                      base::Unretained(this), &service_worker_registration_id),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),

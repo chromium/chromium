@@ -204,9 +204,13 @@ PaymentAppContentUnitTestBase::CreateUninitializedPaymentManager(
   registration_opt.scope = scope_url;
   const blink::StorageKey key =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(scope_url));
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   worker_helper_->context()->RegisterServiceWorker(
       sw_script_url, key, registration_opt,
-      blink::mojom::FetchClientSettingsObject::New(),
+      std::move(fetch_client_settings_object),
       base::BindOnce(&RegisterServiceWorkerCallback, &called, &registration_id),
       /*requesting_frame_id=*/GlobalRenderFrameHostId(),
       PolicyContainerPolicies());

@@ -309,7 +309,8 @@ void WorkerScriptFetcher::CreateAndStart(
   Referrer sanitized_referrer = Referrer::SanitizeForRequest(
       initial_request_url,
       Referrer(outside_fetch_client_settings_object->outgoing_referrer,
-               outside_fetch_client_settings_object->referrer_policy));
+               outside_fetch_client_settings_object->policy_container_policies
+                   ->referrer_policy));
 
   resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = initial_request_url;
@@ -317,7 +318,8 @@ void WorkerScriptFetcher::CreateAndStart(
   resource_request->request_initiator = request_initiator;
   resource_request->referrer = sanitized_referrer.url,
   resource_request->referrer_policy = Referrer::ReferrerPolicyForUrlRequest(
-      outside_fetch_client_settings_object->referrer_policy);
+      outside_fetch_client_settings_object->policy_container_policies
+          ->referrer_policy);
   resource_request->destination = request_destination;
   resource_request->credentials_mode = credentials_mode;
   // To be used for the first party context check.

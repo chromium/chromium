@@ -59,6 +59,8 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/embedded_worker_status.h"
 #include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
+#include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
+#include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -581,9 +583,13 @@ void ServiceWorkerContextCore::UpdateServiceWorkerWithoutExecutionContext(
     bool force_bypass_cache) {
   // Use an empty fetch client settings object because this method is for
   // browser-initiated update and there is no associated execution context.
+  auto fetch_client_settings_object =
+      blink::mojom::FetchClientSettingsObject::New();
+  fetch_client_settings_object->policy_container_policies =
+      blink::mojom::PolicyContainerPolicies::New();
   UpdateServiceWorkerImpl(
       registration, force_bypass_cache, /*skip_script_comparison=*/false,
-      blink::mojom::FetchClientSettingsObject::New(), base::NullCallback());
+      std::move(fetch_client_settings_object), base::NullCallback());
 }
 
 void ServiceWorkerContextCore::UpdateServiceWorker(

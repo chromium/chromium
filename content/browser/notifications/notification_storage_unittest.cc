@@ -71,9 +71,12 @@ class NotificationStorageTest : public ::testing::Test {
       blink::mojom::ServiceWorkerRegistrationOptions options;
       options.scope = url_;
       base::RunLoop run_loop;
+      auto fetch_client_settings_object =
+          blink::mojom::FetchClientSettingsObject::New();
+      fetch_client_settings_object->policy_container_policies =
+          blink::mojom::PolicyContainerPolicies::New();
       helper_->context()->RegisterServiceWorker(
-          script_url, key, options,
-          blink::mojom::FetchClientSettingsObject::New(),
+          script_url, key, options, std::move(fetch_client_settings_object),
           base::BindOnce(&NotificationStorageTest::DidRegisterServiceWorker,
                          base::Unretained(this), run_loop.QuitClosure()),
           /*requesting_frame_id=*/GlobalRenderFrameHostId(),
