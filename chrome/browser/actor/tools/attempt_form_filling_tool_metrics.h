@@ -9,6 +9,16 @@
 
 namespace actor::actor_metrics {
 
+// LINT.IfChange(AutofillAttentionCardEvent)
+enum class AutofillAttentionCardEvent {
+  // A card dialog was presented to the user.
+  kPresented = 0,
+  // A card dialog was accepted by the user.
+  kAccepted = 1,
+  kMaxValue = kAccepted
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAttentionCardEvent)
+
 // Records metrics when an autofill suggestion form is presented in the dialog.
 void RecordOnSuggestionPresentedMetrics(
     int form_index,

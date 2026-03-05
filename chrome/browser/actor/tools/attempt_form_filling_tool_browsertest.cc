@@ -15,6 +15,7 @@
 #include "chrome/browser/actor/actor_switches.h"
 #include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/tools/attempt_form_filling_tool_metrics.h"
 #include "chrome/browser/actor/tools/attempt_form_filling_tool_request.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/tools_test_util.h"
@@ -46,6 +47,8 @@ using ::testing::SaveArg;
 namespace actor {
 
 namespace {
+
+using RequestedData = AttemptFormFillingToolRequest::RequestedData;
 
 // Helper function that returns a composed matcher for ActorSuggestion.
 auto EqActorSuggestion(const autofill::ActorSuggestion& expected) {
@@ -83,16 +86,24 @@ autofill::ActorFormFillingSelection MakeActorFormFillingSelection(
 
 std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
     const tabs::TabInterface& tab,
-    std::vector<PageTarget> trigger_fields,
-    AttemptFormFillingToolRequest::RequestedData requested_data =
-        AttemptFormFillingToolRequest::RequestedData::kAddress) {
-  std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests;
-  AttemptFormFillingToolRequest::FormFillingRequest request;
-  request.requested_data = requested_data;
-  request.trigger_fields = std::move(trigger_fields);
-  requests.emplace_back(std::move(request));
-  return std::make_unique<AttemptFormFillingToolRequest>(tab.GetHandle(),
-                                                         std::move(requests));
+    std::vector<std::pair<std::vector<PageTarget>, RequestedData>>
+        requests_in) {
+  std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests_out;
+  for (auto& [trigger_fields, request_data] : requests_in) {
+    AttemptFormFillingToolRequest::FormFillingRequest request;
+    request.trigger_fields = std::move(trigger_fields);
+    request.requested_data = request_data;
+    requests_out.emplace_back(request);
+  }
+  return std::make_unique<AttemptFormFillingToolRequest>(
+      tab.GetHandle(), std::move(requests_out));
+}
+
+std::unique_ptr<ToolRequest> MakeAttemptFormFillingRequest(
+    const tabs::TabInterface& tab,
+    std::vector<PageTarget> trigger_fields) {
+  return MakeAttemptFormFillingRequest(
+      tab, {std::pair{std::move(trigger_fields), RequestedData::kUnknown}});
 }
 
 // Gets the dom node or returns nullopt when the node id or document token
@@ -295,14 +306,22 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
   std::optional<DomNode> address_home_line1 =
       GetDomNodeOnPage(*main_frame(), "#ADDRESS_HOME_LINE1");
   ASSERT_TRUE(address_home_line1);
+  std::optional<DomNode> phone_number =
+      GetDomNodeOnPage(*main_frame(), "#PHONE_HOME_WHOLE_NUMBER");
+  ASSERT_TRUE(phone_number);
 
-  autofill::ActorFormFillingRequest request;
-  autofill::ActorSuggestion suggestion;
-  suggestion.id = autofill::ActorSuggestionId(123);
-  request.suggestions.push_back(suggestion);
+  autofill::ActorFormFillingRequest request1;
+  autofill::ActorSuggestion suggestion1;
+  suggestion1.id = autofill::ActorSuggestionId(123);
+  request1.suggestions.push_back(suggestion1);
+
+  autofill::ActorFormFillingRequest request2;
+  autofill::ActorSuggestion suggestion2;
+  suggestion2.id = autofill::ActorSuggestionId(234);
+  request2.suggestions.push_back(suggestion2);
 
   EXPECT_CALL(mock_form_filling_service(), GetSuggestions)
-      .WillOnce(RunOnceCallback<2>(std::vector{request}));
+      .WillOnce(RunOnceCallback<2>(std::vector{request1, request2}));
 
   TestFuture<base::WeakPtr<AutofillSelectionDialogEventHandler>> handler_future;
   ToolDelegate::AutofillSuggestionSelectedCallback captured_callback;
@@ -314,29 +333,56 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
       });
 
   std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
-      *active_tab(), {PageTarget(*address_home_line1)},
-      AttemptFormFillingToolRequest::RequestedData::kHomeAddress);
+      *active_tab(), {std::pair{std::vector{PageTarget(*address_home_line1)},
+                                RequestedData::kHomeAddress},
+                      std::pair{std::vector{PageTarget(*phone_number)},
+                                RequestedData::kContactInformation}});
   actor_task().Act(ToRequestList(action), result.GetCallback());
 
   base::WeakPtr<AutofillSelectionDialogEventHandler> captured_handler =
       handler_future.Take();
   ASSERT_TRUE(captured_handler);
 
-  // Expect that OnFormPresented calls ScrollToForm
+  // Expect that OnFormPresented calls ScrollToForm for the request.
   EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 0));
   EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/0)));
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "Autofill.Actor.AutofillSuggestionPresented.RecordType",
       AttemptFormFillingToolRequest::RequestedData::kHomeAddress, 1);
-  EXPECT_FALSE(captured_handler->OnFormPresented(
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillSuggestionPresented.RecordType",
+      RequestedData::kContactInformation, 0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillAttentionCardEvent",
+      actor_metrics::AutofillAttentionCardEvent::kPresented, 1);
+
+  // Expect that OnFormPresented calls ScrollToForm for the request.
+  EXPECT_CALL(mock_form_filling_service(), ScrollToForm(Ref(*active_tab()), 1));
+  EXPECT_TRUE(captured_handler->OnFormPresented(
       webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
           /*form_filling_request_index=*/1)));
 
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillSuggestionPresented.RecordType",
+      RequestedData::kHomeAddress, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillSuggestionPresented.RecordType",
+      RequestedData::kContactInformation, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillAttentionCardEvent",
+      actor_metrics::AutofillAttentionCardEvent::kPresented, 1);
+
+  // Expect that OnFormPresented doesn't call ScrollToForm and returns false for
+  // non-existent request.
+  EXPECT_FALSE(captured_handler->OnFormPresented(
+      webui::mojom::AutofillSuggestionDialogOnFormPresentedParams::New(
+          /*form_filling_request_index=*/2)));
+
   // Expect that OnFormPreviewChanged (with response) calls PreviewForm
   EXPECT_CALL(mock_form_filling_service(),
-              PreviewForm(Ref(*active_tab()), 20, suggestion.id));
+              PreviewForm(Ref(*active_tab()), 20, suggestion1.id));
   captured_handler->OnFormPreviewChanged(
       webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParams::New(
           /*form_filling_request_index=*/20,
@@ -350,23 +396,60 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest, DialogEventsForwarding) {
       webui::mojom::AutofillSuggestionDialogOnFormPreviewChangedParams::New(
           /*form_filling_request_index=*/30, /*response=*/nullptr));
 
-  // Expect that OnFormConfirmed calls FillForm
+  // Expect that OnFormConfirmed calls FillForm for existing request and
+  // suggestion.
   EXPECT_CALL(mock_form_filling_service(),
               FillForm(Ref(*active_tab()), 0,
-                       MakeActorFormFillingSelection(suggestion.id)));
+                       MakeActorFormFillingSelection(suggestion1.id)));
   EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
           /*form_filling_request_index=*/0,
           webui::mojom::FormFillingResponse::New(
               /*suggestion_id=*/"123"))));
-  histogram_tester.ExpectUniqueSample(
+  histogram_tester.ExpectBucketCount(
       "Autofill.Actor.AutofillSuggestionAccepted.RecordType",
-      AttemptFormFillingToolRequest::RequestedData::kHomeAddress, 1);
-  EXPECT_FALSE(captured_handler->OnFormConfirmed(
+      RequestedData::kHomeAddress, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillSuggestionAccepted.RecordType",
+      RequestedData::kContactInformation, 0);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillAttentionCardEvent",
+      actor_metrics::AutofillAttentionCardEvent::kAccepted, 1);
+
+  // Expect that OnFormConfirmed calls FillForm for existing request and
+  // suggestion.
+  EXPECT_CALL(mock_form_filling_service(),
+              FillForm(Ref(*active_tab()), 1,
+                       MakeActorFormFillingSelection(suggestion2.id)));
+  EXPECT_TRUE(captured_handler->OnFormConfirmed(
       webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
           /*form_filling_request_index=*/1,
           webui::mojom::FormFillingResponse::New(
+              /*suggestion_id=*/"234"))));
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillSuggestionAccepted.RecordType",
+      RequestedData::kHomeAddress, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillSuggestionAccepted.RecordType",
+      RequestedData::kContactInformation, 1);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.AutofillAttentionCardEvent",
+      actor_metrics::AutofillAttentionCardEvent::kAccepted, 1);
+
+  // Expect that OnFormConfirmed doesn't call FillForm for non-existent request.
+  EXPECT_FALSE(captured_handler->OnFormConfirmed(
+      webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
+          /*form_filling_request_index=*/2,
+          webui::mojom::FormFillingResponse::New(
               /*suggestion_id=*/"123"))));
+
+  // Expect that OnFormConfirmed doesn't call FillForm for non-integer
+  // suggestion.
+  EXPECT_FALSE(captured_handler->OnFormConfirmed(
+      webui::mojom::AutofillSuggestionDialogOnFormConfirmedParams::New(
+          /*form_filling_request_index=*/0,
+          webui::mojom::FormFillingResponse::New(
+              /*suggestion_id=*/"abc"))));
 
   std::move(captured_callback).Run(MakeAutofillSuggestionsErrorResponse());
   ExpectErrorResult(result, mojom::ActionResultCode::kFormFillingDialogError);
@@ -598,32 +681,16 @@ IN_PROC_BROWSER_TEST_F(AttemptFormFillingToolTest,
       .WillOnce(RunOnceCallback<2>(
           base::unexpected(autofill::ActorFormFillingError::kNoSuggestions)));
 
-  std::vector<AttemptFormFillingToolRequest::FormFillingRequest> requests;
-  AttemptFormFillingToolRequest::FormFillingRequest request1;
-  request1.requested_data =
-      AttemptFormFillingToolRequest::RequestedData::kShippingAddress;
-  request1.trigger_fields = {PageTarget(*address_home_line1)};
-  requests.push_back(std::move(request1));
-
-  AttemptFormFillingToolRequest::FormFillingRequest request2;
-  request2.requested_data =
-      AttemptFormFillingToolRequest::RequestedData::kCreditCard;
-  request2.trigger_fields = {PageTarget(*address_home_line1)};
-  requests.push_back(std::move(request2));
-
-  AttemptFormFillingToolRequest::FormFillingRequest request3;
-  request3.requested_data =
-      AttemptFormFillingToolRequest::RequestedData::kContactInformation;
-  request3.trigger_fields = {PageTarget(*address_home_line1)};
-  requests.push_back(std::move(request3));
-
-  auto action = std::make_unique<AttemptFormFillingToolRequest>(
-      active_tab()->GetHandle(), std::move(requests));
+  std::unique_ptr<ToolRequest> action = MakeAttemptFormFillingRequest(
+      *active_tab(), {std::pair{std::vector{PageTarget(*address_home_line1)},
+                                RequestedData::kShippingAddress},
+                      std::pair{std::vector{PageTarget(*address_home_line1)},
+                                RequestedData::kCreditCard},
+                      std::pair{std::vector{PageTarget(*address_home_line1)},
+                                RequestedData::kContactInformation}});
 
   ActResultFuture result;
-  actor_task().Act(
-      ToRequestList(std::unique_ptr<ToolRequest>(std::move(action))),
-      result.GetCallback());
+  actor_task().Act(ToRequestList(std::move(action)), result.GetCallback());
   ExpectErrorResult(
       result, mojom::ActionResultCode::kFormFillingNoSuggestionsAvailable);
 }

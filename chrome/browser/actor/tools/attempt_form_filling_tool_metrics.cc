@@ -13,6 +13,12 @@ void RecordOnSuggestionPresentedMetrics(
     AttemptFormFillingToolRequest::RequestedData requested_data) {
   base::UmaHistogramEnumeration(
       "Autofill.Actor.AutofillSuggestionPresented.RecordType", requested_data);
+  // Only record `AutofillAttentionCardEvent` for the first form of
+  // a card, as it's a card granularity metric.
+  if (form_index == 0) {
+    base::UmaHistogramEnumeration("Autofill.Actor.AutofillAttentionCardEvent",
+                                  AutofillAttentionCardEvent::kPresented);
+  }
 }
 
 void RecordOnSuggestionConfirmedMetrics(
@@ -20,6 +26,12 @@ void RecordOnSuggestionConfirmedMetrics(
     AttemptFormFillingToolRequest::RequestedData requested_data) {
   base::UmaHistogramEnumeration(
       "Autofill.Actor.AutofillSuggestionAccepted.RecordType", requested_data);
+  // Only record `AutofillAttentionCardEvent` for the first form of
+  // a card, as it's a card granularity metric.
+  if (form_index == 0) {
+    base::UmaHistogramEnumeration("Autofill.Actor.AutofillAttentionCardEvent",
+                                  AutofillAttentionCardEvent::kAccepted);
+  }
 }
 
 }  // namespace actor::actor_metrics

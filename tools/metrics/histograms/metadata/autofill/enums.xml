@@ -267,6 +267,15 @@ Called by update_autofill_enums.py.-->
   <int value="2" label="Other"/>
 </enum>
 
+<!--  LINT.IfChange(AutofillAttentionCardEvent) -->
+
+<enum name="AutofillAttentionCardEvent">
+  <int value="0" label="Autofill Attention Card presented to the user"/>
+  <int value="1" label="Autofill Attention Card accepted by the user"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/actor/tools/attempt_form_filling_tool_metrics.h:AutofillAttentionCardEvent) -->
+
 <enum name="AutofillAutocompleteState">
   <int value="0" label="None"/>
   <int value="1" label="Valid"/>
