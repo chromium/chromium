@@ -13,7 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "content/public/common/child_process_id.h"
-#include "ipc/constants.mojom.h"
+#include "ipc/constants.mojom-forward.h"
 
 class Profile;
 

@@ -21,7 +21,7 @@
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/buildflags/buildflags.h"
-#include "ipc/constants.mojom.h"
+#include "ipc/constants.mojom-forward.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
 #include "net/ssl/ssl_info.h"

@@ -8,7 +8,7 @@
 #include <string>
 
 #include "content/common/content_export.h"
-#include "ipc/constants.mojom.h"
+#include "ipc/constants.mojom-forward.h"
 
 namespace content {
 

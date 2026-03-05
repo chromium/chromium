@@ -11,7 +11,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/file_system_access_permission_context.h"
 #include "content/public/browser/global_routing_id.h"
-#include "ipc/constants.mojom.h"
+#include "ipc/constants.mojom-forward.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom-forward.h"

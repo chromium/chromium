@@ -18,7 +18,7 @@
 
 #include "base/files/file_path.h"
 #include "content/common/content_export.h"
-#include "ipc/constants.mojom.h"
+#include "ipc/constants.mojom-forward.h"
 #include "services/network/public/mojom/referrer_policy.mojom.h"
 #include "ui/base/clipboard/clipboard_url_info.h"
 #include "ui/base/clipboard/file_info.h"

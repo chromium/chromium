@@ -26,7 +26,7 @@ include_rules = [
   "+crypto/hash.h",
   "+crypto/obsolete/md5.h",
   "+crypto/sha2.h",
-  "+ipc/constants.mojom.h",
+  "+ipc/constants.mojom-forward.h",
   "+ipc/ipc_channel_proxy.h",
   "+net/cookies",
   "+net/extras",

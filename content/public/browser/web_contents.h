@@ -40,7 +40,7 @@
 #include "content/public/browser/web_contents_capability_type.h"
 #include "content/public/common/buildflags.h"
 #include "content/public/common/stop_find_action.h"
-#include "ipc/constants.mojom.h"
+#include "ipc/constants.mojom-forward.h"
 #include "net/base/network_handle.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom-forward.h"
