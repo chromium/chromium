@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/startup/profile_launch_observer.h"
 
+#include "base/functional/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/global_features.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/browser_window/public/global_browser_collection.h"
+#include "chrome/browser/ui/waap/initial_web_ui_manager.h"
 #include "content/public/browser/browser_thread.h"
 
 ProfileLaunchObserver::ProfileLaunchObserver() {
@@ -115,6 +117,14 @@ void ProfileLaunchObserver::MaybeActivateProfile() {
   auto i = launched_profiles_.begin();
   for (; i != launched_profiles_.end(); ++i) {
     if (opened_profiles_.find(*i) == opened_profiles_.end()) {
+      return;
+    }
+    Browser* browser = chrome::FindBrowserWithProfile(*i);
+    // Defer the profile activation if the initial WebUI is pending.
+    if (browser && InitialWebUIManager::From(browser) &&
+        InitialWebUIManager::From(browser)->RequestDeferShow(
+            base::BindOnce(&ProfileLaunchObserver::MaybeActivateProfile,
+                           weak_ptr_factory_.GetWeakPtr()))) {
       return;
     }
   }

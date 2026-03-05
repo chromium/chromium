@@ -78,6 +78,7 @@ class ProfileLaunchObserver : public ProfileObserver,
       observed_profiles_{this};
   base::ScopedObservation<GlobalBrowserCollection, BrowserCollectionObserver>
       browser_collection_observation_{this};
+  base::WeakPtrFactory<ProfileLaunchObserver> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_PROFILE_LAUNCH_OBSERVER_H_
