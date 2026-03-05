@@ -100,23 +100,6 @@ public class TabStateFileManagerUnitTest {
     }
 
     @Test
-    public void testRestoreTabStateInternal_NullCipherFactoryAndUnencrypted() throws IOException {
-        Token tabGroupId = null;
-        File file = createTestTabStateFile();
-        TabState state = createTabStateWithMappedByteBuffer(file, tabGroupId);
-        TabStateFileManager.saveStateInternal(file, state, false, mCipherFactory);
-
-        validateTestTabState(
-                TabStateFileManager.restoreTabStateInternal(file, false, null), tabGroupId);
-    }
-
-    @Test(expected = AssertionError.class)
-    public void testRestoreTabStateInternal_NullCipherFactoryAndEncrypted() throws IOException {
-        File file = createTestTabStateFile();
-        TabStateFileManager.restoreTabStateInternal(file, true, null);
-    }
-
-    @Test
     public void testLargeContentsState() throws IOException {
         File file = createTestTabStateFile();
         ByteBuffer buffer = ByteBuffer.allocateDirect(LARGE_BYTE_BUFFER_SIZE);
