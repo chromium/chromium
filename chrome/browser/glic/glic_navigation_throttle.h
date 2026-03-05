@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_GLIC_GLIC_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_GLIC_GLIC_NAVIGATION_THROTTLE_H_
 
+#include "chrome/browser/glic/glic_enums.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -28,6 +30,10 @@ class GlicNavigationThrottle : public content::NavigationThrottle {
   // content::NavigationThrottle implementation:
   ThrottleCheckResult WillStartRequest() override;
   const char* GetNameForLogging() override;
+
+ private:
+  void LogCaptureResult(bool is_glic_enabled,
+                        glic::GeminiNavigationCaptureResult result);
 };
 
 }  // namespace glic
