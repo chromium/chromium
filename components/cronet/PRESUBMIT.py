@@ -17,8 +17,8 @@ PRESUBMIT_VERSION = '2.0.0'
 
 
 def CheckPyLint(input_api, output_api):
-    pylint_checks = input_api.canned_checks.GetPylint(input_api, output_api)
-    return input_api.RunTests(pylint_checks)
+    return input_api.RunTests(
+        input_api.canned_checks.GetPylint(input_api, output_api))
 
 
 def CheckUnittestsOnCommit(input_api, output_api):
@@ -32,7 +32,7 @@ def CheckUnittestsOnCommit(input_api, output_api):
             files_to_skip=[]))
 
 
-def CheckChangeOnCommit(input_api, output_api):
+def CheckChangeFormatted(input_api, output_api):
     return [
         *input_api.canned_checks.CheckPatchFormatted(
             input_api,
