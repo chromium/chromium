@@ -307,6 +307,7 @@ void SecurePaymentConfirmationService::OnCreateUnboundKey(
 
 void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
     base::OnceCallback<void(bool)> callback) {
+#if !BUILDFLAG(IS_IOS)
   scoped_refptr<BrowserBoundKeyStore> bbk_store =
       test_browser_bound_key_store_
           ? test_browser_bound_key_store_
@@ -322,6 +323,7 @@ void SecurePaymentConfirmationService::IsBrowserBoundKeyHardwareSupported(
       base::BindOnce(&BrowserBoundKeyStore::GetDeviceSupportsHardwareKeys,
                      bbk_store),
       std::move(callback));
+#endif
 }
 
 bool SecurePaymentConfirmationService::IsCurrentStateValid() const {
