@@ -357,6 +357,21 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
   const base::Time now_time =
       syncer::ProtoTimeToTime(syncer::TimeToProtoTime(clock_->Now()));
 
+  // Handle going from SUGGESTED_FROM_MIGRATION to any other state. This
+  // ensures that the apps under migration can have their state overridden by
+  // flows that are allowed to do so, like a sync install.
+  // In such cases we do want to overwrite as much state as possible, even if
+  // that wasn't initially specified in `options_`.
+  if (web_app->install_state() ==
+          proto::InstallState::SUGGESTED_FROM_MIGRATION &&
+      options_.install_state != proto::InstallState::SUGGESTED_FROM_MIGRATION) {
+    web_app->SetInstallState(options_.install_state);
+    options_.overwrite_existing_manifest_fields = true;
+    if (web_app_info_.user_display_mode.has_value()) {
+      web_app->SetUserDisplayMode(*web_app_info_.user_display_mode);
+    }
+  }
+
   // The UI may initiate a full install to overwrite the existing
   // non-locally-installed app. Therefore, `install_state` can be
   // promoted to `INSTALLED_WITH_OS_INTEGRATION`, but not vice versa.
@@ -381,15 +396,6 @@ void FinalizeInstallJob::OnOriginAssociationValidated(
           proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION) {
     web_app->SetInstallState(
         proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION);
-  }
-
-  // Handle going from SUGGESTED_FROM_MIGRATION to any other state. This
-  // ensures that the apps under migration can have their state overridden by
-  // flows that are allowed to do so, like a sync install.
-  if (web_app->install_state() ==
-          proto::InstallState::SUGGESTED_FROM_MIGRATION &&
-      options_.install_state != proto::InstallState::SUGGESTED_FROM_MIGRATION) {
-    web_app->SetInstallState(options_.install_state);
   }
 
   // If the app install state is explicitly set to be suggested from migration,

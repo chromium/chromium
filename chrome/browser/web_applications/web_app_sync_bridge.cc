@@ -453,7 +453,8 @@ void WebAppSyncBridge::UpdateRegistrar(
 
   for (std::unique_ptr<WebApp>& web_app : update_data->apps_to_create) {
     webapps::AppId app_id = web_app->app_id();
-    DCHECK(!registrar_->GetAppById(app_id));
+    DCHECK(!registrar_->GetAppById(app_id,
+                                   WebAppFilter::IsAppSurfaceableToUser()));
     registrar_->registry().emplace(std::move(app_id), std::move(web_app));
   }
 
@@ -600,7 +601,8 @@ ManifestIdParseResult WebAppSyncBridge::PrepareLocalUpdateFromSyncChange(
   // app_id is storage key.
   const webapps::AppId& app_id = change.storage_key();
 
-  const WebApp* existing_web_app = registrar_->GetAppById(app_id);
+  const WebApp* existing_web_app =
+      registrar_->GetAppById(app_id, WebAppFilter::IsAppSurfaceableToUser());
 
   // Handle deletion first.
   if (change.type() == syncer::EntityChange::ACTION_DELETE) {
