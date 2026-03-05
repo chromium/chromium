@@ -25,8 +25,10 @@
 #include "chrome/browser/ui/views/interaction/browser_elements_views.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_close_button.h"
 #include "chrome/browser/ui/views/tabs/tab/tab_icon.h"
+#include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/root_tab_collection_node.h"
 #include "chrome/browser/ui/views/tabs/vertical/tab_collection_node.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -564,6 +566,72 @@ IN_PROC_BROWSER_TEST_F(VerticalTabViewTest, LogsTabCloseMetrics_SplitView) {
 
   EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_NoAlertIndicator"), 1);
   EXPECT_EQ(user_action_tester.GetActionCount("CloseTab_EndTabInSplit"), 1);
+}
+
+// Mouse over split tab. Check the content matches the hover card.
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
+                       HoverCardAnchorToSplitViewParentContainer) {
+  AppendSplitTab();
+
+  // Get the view for both tabs in the split.
+  // Note: tab at index 0 is a normal tab.
+  tabs::TabInterface* tab_1 = tab_strip_model()->GetTabAtIndex(1);
+  tabs::TabInterface* tab_2 = tab_strip_model()->GetTabAtIndex(2);
+
+  TabCollectionNode* split_tab_node =
+      unpinned_collection_node()->GetChildNodeOfType(
+          TabCollectionNode::Type::SPLIT);
+  VerticalSplitTabView* split_tab_view =
+      views::AsViewClass<VerticalSplitTabView>(split_tab_node->view());
+
+  VerticalTabView* tab_1_view = views::AsViewClass<VerticalTabView>(
+      split_tab_node->GetNodeForHandle(tab_1->GetHandle())->view());
+  ASSERT_EQ(tab_1_view->GetAnchorView(), split_tab_view);
+
+  VerticalTabView* tab_2_view = views::AsViewClass<VerticalTabView>(
+      split_tab_node->GetNodeForHandle(tab_2->GetHandle())->view());
+  ASSERT_EQ(tab_2_view->GetAnchorView(), split_tab_view);
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabViewTest,
+                       HoverCardControllerSetsCorrectAnchorTarget) {
+  AppendSplitTab();
+  // Get the view for the non split tab, and both tabs in the split.
+  // Tab at 0 is the ordinary non-split tab.
+  tabs::TabInterface* tab_0 = tab_strip_model()->GetTabAtIndex(0);
+  tabs::TabInterface* tab_1 = tab_strip_model()->GetTabAtIndex(1);
+  tabs::TabInterface* tab_2 = tab_strip_model()->GetTabAtIndex(2);
+
+  VerticalTabView* tab_0_target = AsViewClass<VerticalTabView>(
+      unpinned_collection_node()->GetNodeForHandle(tab_0->GetHandle())->view());
+
+  TabCollectionNode* split_tab_node =
+      unpinned_collection_node()->GetChildNodeOfType(
+          TabCollectionNode::Type::SPLIT);
+
+  VerticalTabView* tab_1_target = AsViewClass<VerticalTabView>(
+      split_tab_node->GetNodeForHandle(tab_1->GetHandle())->view());
+
+  VerticalTabView* tab_2_target = AsViewClass<VerticalTabView>(
+      split_tab_node->GetNodeForHandle(tab_2->GetHandle())->view());
+
+  // Show hover card for each tab and then check that we set the
+  // target tab is set correctly.
+  hover_card_controller()->UpdateHoverCard(
+      tab_0_target, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_EQ(tab_0_target, hover_card_controller()->target_tab());
+
+  hover_card_controller()->UpdateHoverCard(
+      tab_1_target, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_EQ(tab_1_target, hover_card_controller()->target_tab());
+
+  hover_card_controller()->UpdateHoverCard(
+      tab_2_target, TabSlotController::HoverCardUpdateType::kHover);
+  EXPECT_EQ(tab_2_target, hover_card_controller()->target_tab());
+
+  hover_card_controller()->UpdateHoverCard(
+      nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
+  EXPECT_EQ(nullptr, hover_card_controller()->target_tab());
 }
 
 class VerticalTabViewDataSharingEnabledTest : public VerticalTabViewTest {

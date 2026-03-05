@@ -18,6 +18,8 @@
 #include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
+#include "chrome/browser/ui/views/tabs/tab_slot_controller.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
@@ -49,8 +51,15 @@ class TabHoverCardControllerTest : public InProcessBrowserTest {
   }
 
   HoverCardAnchorTarget* GetHoverCardAnchorTargetAt(int index) {
-    return HoverCardAnchorTarget::FromAnchorView(
-        GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(index));
+    bool is_vertical = GetBrowserView()->ShouldDrawVerticalTabStrip();
+    views::View* tab_view =
+        GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(index);
+
+    if (is_vertical) {
+      return AsViewClass<VerticalTabView>(tab_view);
+    } else {
+      return AsViewClass<Tab>(tab_view);
+    }
   }
 
   TabHoverCardController* controller() { return controller_.get(); }
@@ -173,8 +182,9 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardControllerTest, ShowPreviewsForCrashedTab) {
   TestThumbnailImageDelegate delegate;
   auto image = base::MakeRefCounted<ThumbnailImage>(&delegate);
   data.thumbnail = image;
-  static_cast<Tab*>(target_tab)->SetData(std::move(data));
-  controller()->target_tab_ = target_tab;
+  views::View* tab_view =
+      GetBrowserView()->tab_strip_view()->GetTabAnchorViewAt(1);
+  AsViewClass<Tab>(tab_view)->SetData(std::move(data));
 
   controller()->CreateHoverCard(target_tab);
   controller()->UpdateCardContent(target_tab);

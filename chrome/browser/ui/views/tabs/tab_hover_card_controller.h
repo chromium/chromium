@@ -47,6 +47,8 @@ class TabHoverCardController : public views::ViewObserver,
                        TabSlotController::HoverCardUpdateType update_type);
   void PreventImmediateReshow();
 
+  const HoverCardAnchorTarget* target_tab() const { return target_tab_.get(); }
+
   TabHoverCardBubbleView* hover_card_for_testing() { return hover_card_.get(); }
 
   size_t hover_cards_seen_count_for_testing() const {
@@ -156,6 +158,8 @@ class TabHoverCardController : public views::ViewObserver,
 
   //  Resets controller state associated with a HoverCard widget.
   void OnCardClosing();
+
+  bool start_hover_card_fade_ = false;
 
   // Timestamp of the last time the hover card is hidden by the mouse leaving
   // the tab strip. This is used for reshowing the hover card without delay if

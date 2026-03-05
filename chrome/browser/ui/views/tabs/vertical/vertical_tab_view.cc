@@ -789,12 +789,18 @@ views::BubbleBorder::Arrow VerticalTabView::GetAnchorPosition() const {
   return views::BubbleBorder::Arrow::LEFT_TOP;
 }
 
+const views::View* VerticalTabView::GetAnchorView() const {
+  if (split_ && !collapsed_) {
+    return parent();
+  }
+  return HoverCardAnchorTarget::GetAnchorView();
+}
+
 void VerticalTabView::ResetCollectionNode() {
   CHECK(collection_node_);
   TabHoverCardController* hover_card_controller =
       collection_node_->GetController()->GetHoverCardController();
-  if (hover_card_controller &&
-      hover_card_controller->IsHoverCardShowingForTab(this)) {
+  if (hover_card_controller && hover_card_controller->target_tab() == this) {
     hover_card_controller->UpdateHoverCard(
         nullptr, TabSlotController::HoverCardUpdateType::kTabRemoved);
   }

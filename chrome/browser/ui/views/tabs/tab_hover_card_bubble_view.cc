@@ -206,6 +206,7 @@ class TabHoverCardBubbleView::ThumbnailView
     // with anyway, so bail out.
     const auto* const color_provider = GetColorProvider();
     if (!color_provider) {
+      init_placeholder_image_ = type == ImageType::kPlaceholder;
       return;
     }
 
@@ -277,6 +278,13 @@ class TabHoverCardBubbleView::ThumbnailView
     return bubble_view_->tab_style_->GetPreviewImageSize();
   }
 
+  void AddedToWidget() override {
+    if (init_placeholder_image_) {
+      SetPlaceholderImage();
+      init_placeholder_image_ = false;
+    }
+  }
+
   // views::AnimationDelegateViews:
   void AnimationProgressed(const gfx::Animation* animation) override {
     image_fading_out_->layer()->SetOpacity(1.0 - animation->GetCurrentValue());
@@ -344,6 +352,8 @@ class TabHoverCardBubbleView::ThumbnailView
   const raw_ptr<TabHoverCardBubbleView> bubble_view_;
 
   bool animation_enabled_ = true;
+
+  bool init_placeholder_image_ = false;
 
   // Displays the image that we are trying to display for the target/current
   // tab. Placed under `image_fading_out_` so that it is revealed as the
@@ -469,6 +479,23 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(
   }
 
   SetProperty(views::kElementIdentifierKey, kHoverCardBubbleElementId);
+
+  bool valid_thumbnail = anchor_target && anchor_target->data().thumbnail &&
+                         anchor_target->data().thumbnail->has_data() &&
+                         anchor_target->IsActive();
+
+  if (thumbnail_view_ && !valid_thumbnail) {
+    // Placeholder image should be used when there is no image data for the
+    // given tab. Otherwise don't flash the placeholder while we wait for the
+    // existing thumbnail to be decompressed.
+    //
+    // We tell the ThumbnailView to initialize with a place holder image when
+    // it is added to the widget. Note that the ThumbnailView has to set the
+    // placeholder image after CreateBubble() below, since setting up the
+    // placeholder image and background color require a ColorProvider,
+    // which is only available once this View has been added to its widget.
+    thumbnail_view_->SetPlaceholderImage();
+  }
 
   // Create the widget from the view. Additional setup happens in
   // `AddedToWidget()`.
@@ -687,23 +714,6 @@ void TabHoverCardBubbleView::AddedToWidget() {
   GetBubbleFrameView()->set_hit_test_transparent(true);
 
   GetBubbleFrameView()->SetRoundedCorners(gfx::RoundedCornersF(corner_radius_));
-
-  // Placeholder image should be used when there is no image data for the
-  // given tab. Otherwise don't flash the placeholder while we wait for the
-  // existing thumbnail to be decompressed.
-  //
-  // Note that this code has to go after CreateBubble() above, since setting up
-  // the placeholder image and background color require a ColorProvider, which
-  // is only available once this View has been added to its widget.
-
-  HoverCardAnchorTarget* anchor_target =
-      HoverCardAnchorTarget::FromAnchorView(GetAnchorView());
-  bool valid_thumbnail = anchor_target && anchor_target->data().thumbnail &&
-                         anchor_target->data().thumbnail->has_data() &&
-                         anchor_target->IsActive();
-  if (thumbnail_view_ && !valid_thumbnail) {
-    thumbnail_view_->SetPlaceholderImage();
-  }
 
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible. For TBD reasons, this needs to be done after the

@@ -88,6 +88,7 @@ class VerticalTabView : public views::View,
   bool IsValid() const override;
   const TabRendererData& data() const override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
+  const views::View* GetAnchorView() const override;
 
  private:
   // views::View

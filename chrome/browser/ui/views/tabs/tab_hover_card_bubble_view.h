@@ -35,9 +35,9 @@ namespace tabs {
 enum class TabAlert;
 }
 
-class HoverCardAnchorTarget;
 class TabStyle;
 class FadeLabelView;
+class HoverCardAnchorTarget;
 struct TabRendererData;
 
 // Dialog that displays an informational hover card containing page information.

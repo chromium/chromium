@@ -66,6 +66,14 @@ class VerticalTabsBrowserTestMixin : public T {
     return region_view ? region_view->GetVerticalTabStripController() : nullptr;
   }
 
+  TabHoverCardController* hover_card_controller() {
+    if (VerticalTabStripController* controller =
+            vertical_tab_strip_controller()) {
+      return controller->GetHoverCardController();
+    }
+    return nullptr;
+  }
+
   void EnterVerticalTabsMode() {
     vertical_tab_strip_state_controller()->SetVerticalTabsEnabled(true);
     T::RunScheduledLayouts();

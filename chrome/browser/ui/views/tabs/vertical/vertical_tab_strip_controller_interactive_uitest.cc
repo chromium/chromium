@@ -541,21 +541,4 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
       MoveMouseTo(kFirstTabName),
       WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId));
 }
-
-IN_PROC_BROWSER_TEST_F(VerticalTabStripControllerInteractiveUiTest,
-                       DISABLED_VerticalTabHoverCardSplitView) {
-  TabStripModel* model = browser()->tab_strip_model();
-  chrome::NewTab(browser());
-  model->ActivateTabAt(0);
-  model->AddToNewSplit({1}, {},
-                       split_tabs::SplitTabCreatedSource::kTabContextMenu);
-  RunTestSequence(
-      WaitForShow(kVerticalTabStripBottomContainerElementId),
-      NameDescendantViewByType<VerticalTabView>(kBrowserViewElementId,
-                                                kFirstTabName, 0),
-      MoveMouseTo(kVerticalTabStripBottomContainerElementId),
-      MoveMouseTo(kFirstTabName),
-      WaitForShow(TabHoverCardBubbleView::kHoverCardBubbleElementId));
-}
-
 }  // namespace
