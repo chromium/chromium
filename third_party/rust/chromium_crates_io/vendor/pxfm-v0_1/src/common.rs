@@ -26,8 +26,6 @@
  * // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-use num_traits::MulAdd;
-use std::ops::{Add, Mul};
 
 #[inline(always)]
 pub(crate) fn is_integerf(x: f32) -> bool {
@@ -148,38 +146,6 @@ pub(crate) fn is_odd_integer(x: f64) -> bool {
         const UNIT_EXPONENT: u64 = E_BIAS + 52;
         x_e + lsb as u64 == UNIT_EXPONENT
     }
-}
-
-#[cfg(any(
-    all(
-        any(target_arch = "x86", target_arch = "x86_64"),
-        target_feature = "fma"
-    ),
-    target_arch = "aarch64"
-))]
-#[inline(always)]
-pub(crate) fn mlaf<T: Copy + Mul<T, Output = T> + Add<T, Output = T> + MulAdd<T, Output = T>>(
-    acc: T,
-    a: T,
-    b: T,
-) -> T {
-    MulAdd::mul_add(a, b, acc)
-}
-
-#[inline(always)]
-#[cfg(not(any(
-    all(
-        any(target_arch = "x86", target_arch = "x86_64"),
-        target_feature = "fma"
-    ),
-    target_arch = "aarch64"
-)))]
-pub(crate) fn mlaf<T: Copy + Mul<T, Output = T> + Add<T, Output = T> + MulAdd<T, Output = T>>(
-    acc: T,
-    a: T,
-    b: T,
-) -> T {
-    acc + a * b
 }
 
 #[inline]
@@ -328,16 +294,6 @@ pub(crate) fn dd_fmlaf(a: f32, b: f32, c: f32) -> f32 {
     {
         (a as f64 * b as f64 + c as f64) as f32
     }
-}
-
-#[allow(dead_code)]
-#[inline(always)]
-pub(crate) fn c_mlaf<T: Copy + Mul<T, Output = T> + Add<T, Output = T> + MulAdd<T, Output = T>>(
-    a: T,
-    b: T,
-    c: T,
-) -> T {
-    mlaf(c, a, b)
 }
 
 /// Copies sign from `y` to `x`

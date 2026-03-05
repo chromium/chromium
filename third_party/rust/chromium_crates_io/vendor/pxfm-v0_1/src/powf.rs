@@ -413,6 +413,7 @@ fn powf_dd<B: PowfBackend>(
 }
 
 #[inline(always)]
+#[allow(clippy::manual_clamp)]
 fn powf_gen<B: PowfBackend>(x: f32, y: f32, backend: B) -> f32 {
     let mut x_u = x.to_bits();
     let x_abs = x_u & 0x7fff_ffff;

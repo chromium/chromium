@@ -2,7 +2,7 @@ workspace = { members = ["app"], exclude = [ "bessel", "fuzz"] }
 
 [package]
 name = "pxfm"
-version = "0.1.27"
+version = "0.1.28"
 edition = "2024"
 documentation = "https://github.com/awxkee/pxfm"
 keywords = ["libm", "math"]
@@ -14,9 +14,6 @@ rust-version = "1.85"
 categories = ["mathematics"]
 description = "Fast and accurate math"
 include = ["/src/", "/README.md", "/LICENSE.md", "/LICENSE-APACHE.md"]
-
-[dependencies]
-num-traits = "0.2.3"
 
 [profile.dev.package]
 bessel.opt-level = 3

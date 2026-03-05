@@ -32,7 +32,7 @@ use crate::tangent::tanpi::tanpi_eval;
 use crate::tangent::tanpi_table::TANPI_K_PI_OVER_64;
 
 #[cold]
-fn cotpi_hard(x: f64, tan_k: DoubleDouble) -> DoubleDouble {
+fn cotpi_hard<B: SinCosPiBackend>(x: f64, tan_k: DoubleDouble, backend: &B) -> DoubleDouble {
     const C: [(u64, u64); 6] = [
         (0x3ca1a62632712fc8, 0x400921fb54442d18),
         (0xbcc052338fbb4528, 0x4024abbce625be53),
@@ -41,24 +41,24 @@ fn cotpi_hard(x: f64, tan_k: DoubleDouble) -> DoubleDouble {
         (0x3d205970eff53274, 0x40845f46e96c3a0b),
         (0xbd3589489ad24fc4, 0x40a4630551cd123d),
     ];
-    let x2 = DoubleDouble::from_exact_mult(x, x);
-    let mut tan_y = DoubleDouble::quick_mul_add(
+    let x2 = backend.exact_mult(x, x);
+    let mut tan_y = backend.quick_mul_add(
         x2,
         DoubleDouble::from_bit_pair(C[5]),
         DoubleDouble::from_bit_pair(C[4]),
     );
-    tan_y = DoubleDouble::quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[3]));
-    tan_y = DoubleDouble::quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[2]));
-    tan_y = DoubleDouble::quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[1]));
-    tan_y = DoubleDouble::quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[0]));
-    tan_y = DoubleDouble::quick_mult_f64(tan_y, x);
+    tan_y = backend.quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[3]));
+    tan_y = backend.quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[2]));
+    tan_y = backend.quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[1]));
+    tan_y = backend.quick_mul_add(x2, tan_y, DoubleDouble::from_bit_pair(C[0]));
+    tan_y = backend.quick_mult_f64(tan_y, x);
 
     // num = tan(y*pi/64) + tan(k*pi/64)
     let num = DoubleDouble::full_dd_add(tan_y, tan_k);
     // den = 1 - tan(y*pi/64)*tan(k*pi/64)
-    let den = DoubleDouble::mul_add_f64(tan_y, -tan_k, 1.);
+    let den = backend.mul_add_f64(tan_y, -tan_k, 1.);
     // cot = den / num
-    DoubleDouble::div(den, num)
+    backend.div(den, num)
 }
 
 #[inline(always)]
@@ -151,7 +151,7 @@ fn cotpi_gen_impl<B: SinCosPiBackend>(x: f64, backend: B) -> f64 {
     if ub == lb {
         return tan_value.to_f64();
     }
-    cotpi_hard(y, tan_k).to_f64()
+    cotpi_hard(y, tan_k, &backend).to_f64()
 }
 
 #[cfg(any(target_arch = "x86", target_arch = "x86_64"))]

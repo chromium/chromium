@@ -1082,11 +1082,8 @@ dependencies = [
 
 [[package]]
 name = "pxfm"
-version = "0.1.27"
+version = "0.1.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-dependencies = [
- "num-traits",
-]
 
 [[package]]
 name = "qr_code"

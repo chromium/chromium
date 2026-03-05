@@ -13,7 +13,7 @@
 edition = "2024"
 rust-version = "1.85"
 name = "pxfm"
-version = "0.1.27"
+version = "0.1.28"
 authors = ["Radzivon Bartoshyk"]
 build = false
 include = [
@@ -48,9 +48,6 @@ rustdoc-args = [
 [lib]
 name = "pxfm"
 path = "src/lib.rs"
-
-[dependencies.num-traits]
-version = "0.2.3"
 
 [profile.dev.package.bessel]
 opt-level = 3

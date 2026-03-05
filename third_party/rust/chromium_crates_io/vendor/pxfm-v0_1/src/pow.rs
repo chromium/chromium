@@ -216,7 +216,8 @@ pub fn f_pow(x: f64, y: f64) -> f64 {
                     return if y_sign { 0. } else { f64::INFINITY };
                 }
                 // not enough precision to make 0.5 ULP for subnormals
-                if x_e.abs() < 70 {
+                let a_xe = x_e & 0x7fff_ffff_ffff_ffff;
+                if a_xe < 70 {
                     let x_sqr = DoubleDouble::from_exact_mult(x, x);
                     return if y_sign {
                         let recip = x_sqr.recip();

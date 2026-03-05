@@ -283,11 +283,9 @@ cargo_crate("lib") {
   cargo_pkg_name = "pxfm"
   cargo_pkg_description = "Fast and accurate math"
   cargo_pkg_repository = "https://github.com/awxkee/pxfm"
-  cargo_pkg_version = "0.1.27"
+  cargo_pkg_version = "0.1.28"
 
   allow_unsafe = true
-
-  deps = [ "//third_party/rust/num_traits/v0_2:lib" ]
 
   # Only for usage from third-party crates. Add the crate to
   # //third_party/rust/chromium_crates_io/Cargo.toml to use
