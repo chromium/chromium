@@ -13,12 +13,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/win/taskbar_manager.h"
-#include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/shell_util.h"
-#endif
-
 DefaultBrowserSurfaceManager::DefaultBrowserSurfaceManager() = default;
 
 DefaultBrowserSurfaceManager::~DefaultBrowserSurfaceManager() {
@@ -76,24 +70,9 @@ void DefaultBrowserSurfaceManager::OnBrowserClosed(
   CloseForBrowser(browser);
 }
 
-void DefaultBrowserSurfaceManager::HandleAccept() { 
+void DefaultBrowserSurfaceManager::HandleAccept() {
   if (!controller_) {
     return;
-  }
-
-  if (can_pin_to_taskbar()) {
-#if BUILDFLAG(IS_WIN)
-    // Attempt the pin to taskbar in parallel with bringing up the Windows
-    // settings UI. Serializing the operations is an option, but since the user
-    // might not complete the first operation, serializing would probably make
-    // the second operation less likely to happen.
-    browser_util::PinAppToTaskbar(
-        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
-        base::DoNothing());
-#else
-    NOTREACHED();
-#endif  // BUILDFLAG(IS_WIN)
   }
 
   controller_->OnAccepted(base::DoNothingWithBoundArgs(std::move(controller_)));
