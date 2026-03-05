@@ -7,8 +7,10 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details on the presubmit API built into gcl.
 """
 
+import os
 import sys
 from pathlib import Path
+from typing import Iterable
 
 # PRESUBMIT infrastructure doesn't guarantee that the cwd() will be on
 # path requiring manual path manipulation to call setup_modules.
@@ -23,6 +25,7 @@ sys.path.remove('.')
 import chromium_src.tools.metrics.python_support.tests_helpers as tests_helpers
 import chromium_src.tools.metrics.python_support.mypy_helpers as mypy_helpers
 import chromium_src.tools.metrics.python_support.script_checker as script_checker
+import chromium_src.tools.metrics.python_support.dependency_solver as dependency_solver
 
 UKM_XML = 'ukm.xml'
 ENUMS_XML = 'enums.xml'
@@ -35,6 +38,27 @@ Please add the missing files to BUILD.gn:
 {missing_files_list}
 """
 
+
+def _ThisDirPath(input_api) -> Path:
+  return Path(input_api.PresubmitLocalPath())
+
+
+def _ChromiumSrcPath(input_api) -> Path:
+  return _ThisDirPath(input_api).joinpath('..').joinpath('..').resolve()
+
+
+def _RunSelectedTests(input_api, output_api,
+                      test_scripts: Iterable[tests_helpers.TestableScript]):
+  """Executes the tests_scripts using typ"""
+  test_to_run_list = "\n * ".join([''] +
+                                  [str(t.file_path) for t in test_scripts])
+  print(f"Executing following tests in tools/metrics: {test_to_run_list}")
+  return input_api.RunTests([
+      input_api.Command(name=t.file_path,
+                        cmd=t.cmd,
+                        kwargs={'cwd': _ChromiumSrcPath(input_api)},
+                        message=output_api.PresubmitError) for t in test_scripts
+  ])
 
 def CheckChange(input_api, output_api):
   """Checks that ukm/ukm.xml is validated on changes to histograms/enums.xml"""
@@ -68,18 +92,24 @@ def CheckChange(input_api, output_api):
         input_api.PresubmitLocalPath())
     problems.extend(output_api.PresubmitError(i) for i in my_py_issues)
 
+  deps_graph = dependency_solver.scan_directory_dependencies(
+      input_api.PresubmitLocalPath(),
+      report_relative_to=_ChromiumSrcPath(input_api))
   scripts_to_test = tests_helpers.get_affected_testable_scripts(
-      Path(p) for p in absolute_paths_of_affected_files)
+      set(Path(p) for p in absolute_paths_of_affected_files), deps_graph)
   if scripts_to_test:
     print(f"Running {len(scripts_to_test)} affected scripts to check them.")
     commands_failed = script_checker.check_scripts(
-        scripts_to_test,
-        input_api.os_path.dirname(
-            input_api.os_path.dirname(input_api.PresubmitLocalPath())))
+        scripts_to_test, cwd=_ChromiumSrcPath(input_api))
     problems.extend([
-        output_api.PresubmitError(f"Failed to run {name} (code: {code})")
-        for name, code in commands_failed
+        output_api.PresubmitError(res.error_message())
+        for res in commands_failed
     ])
+
+  tests_to_run = tests_helpers.get_affected_tests(
+      [Path(p) for p in absolute_paths_of_affected_files], deps_graph)
+  if tests_to_run:
+    problems.extend(_RunSelectedTests(input_api, output_api, tests_to_run))
 
   # Early return if the ukm file is changed, then the presubmit script in the
   # ukm directory would run and report the errors.

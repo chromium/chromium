@@ -140,16 +140,25 @@ def _dependencies_of(root_path: str, relative_path: str) -> List[str]:
   return dependencies
 
 
-def scan_directory_dependencies(root_path: str) -> Dict[str, List[str]]:
+def _as_path_relative_to(path, root, reporting_root) -> str:
+  return os.path.relpath(os.path.join(root, path), reporting_root)
+
+
+def scan_directory_dependencies(
+    root_path: str,
+    report_relative_to: Optional[str] = None) -> Dict[str, List[str]]:
   """Scans the directory for .py files and builds a dependency map.
 
   Returns:
     Dict[str, List[str]]: Keys are relative file paths, values
     are lists of dependencies as relative file paths.
   """
+  reporting_root = report_relative_to if report_relative_to else root_path
   return {
-      os.path.relpath(path, root_path):
-      _dependencies_of(root_path, os.path.relpath(path, root_path))
+      _as_path_relative_to(path, root_path, reporting_root): [
+          _as_path_relative_to(path, root_path, reporting_root)
+          for path in _dependencies_of(root_path, path)
+      ]
       for path in _get_py_files_recursive(root_path)
   }
 

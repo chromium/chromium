@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from typing import List, Tuple
+from dataclasses import dataclass
+from typing import List
 import sys
+import tempfile
 import time
 import subprocess
 
@@ -12,9 +14,33 @@ import setup_modules
 from chromium_src.tools.metrics.python_support.tests_helpers import TestableScript
 
 
+@dataclass(frozen=True)
+class FailedScriptResult:
+  command: str
+  status_code: int
+  stdout: str
+  stderr: str
+
+  def error_message(self) -> str:
+    return f"""
+################################################################################
+### Failed to run {self.command} (code: {self.status_code})
+################################################################################
+--------------------------------------------------------------------------------
+--- stdout ({self.command})
+--------------------------------------------------------------------------------
+{self.stdout}
+--------------------------------------------------------------------------------
+--- stderr ({self.command})
+--------------------------------------------------------------------------------
+{self.stderr}
+################################################################################
+    """
+
+
 def check_scripts(commands_to_check: List[TestableScript],
                   cwd: str,
-                  display_progressbar: bool = True) -> List[Tuple[str, int]]:
+                  display_progressbar: bool = True) -> List[FailedScriptResult]:
   """Checks if the provided python scripts finish successfully.
 
   Args:
@@ -23,7 +49,7 @@ def check_scripts(commands_to_check: List[TestableScript],
     display_progressbar - if True, the progressbar will be printed to stdout.
 
   Returns:
-    A list of name of commands that failed with their status code
+    A list of FailedScriptResult containing info about the commands that failed.
   """
   running_processes = []
   failed_commands = []
@@ -34,22 +60,40 @@ def check_scripts(commands_to_check: List[TestableScript],
   for testable_script in commands_to_check:
     cmd_debug_str = " ".join(testable_script.cmd)
     print(f"Running: {cmd_debug_str}")
+
+    out_f = tempfile.TemporaryFile(mode='w+',
+                                   encoding='utf-8',
+                                   errors='replace')
+    err_f = tempfile.TemporaryFile(mode='w+',
+                                   encoding='utf-8',
+                                   errors='replace')
+
     proc = subprocess.Popen(testable_script.cmd,
-                            stdout=subprocess.DEVNULL,
-                            stderr=subprocess.DEVNULL,
+                            stdout=out_f,
+                            stderr=err_f,
                             cwd=cwd)
-    running_processes.append((testable_script, proc))
+    running_processes.append((testable_script, proc, out_f, err_f))
 
   while running_processes:
-    # Iterating backwards to safely remove items form list
+    # Iterating backwards to safely remove items from list
     for i in range(len(running_processes) - 1, -1, -1):
-      testable_script, proc = running_processes[i]
+      testable_script, proc, out_f, err_f = running_processes[i]
 
       exit_code = proc.poll()
 
       if exit_code is not None:
         if exit_code != 0:
-          failed_commands.append((testable_script.identifiable_name, exit_code))
+          out_f.seek(0)
+          err_f.seek(0)
+
+          failed_commands.append(
+              FailedScriptResult(command=testable_script.identifiable_name,
+                                 status_code=exit_code,
+                                 stdout=out_f.read(),
+                                 stderr=err_f.read()))
+
+        out_f.close()
+        err_f.close()
 
         completed_count += 1
         del running_processes[i]

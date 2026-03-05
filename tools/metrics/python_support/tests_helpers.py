@@ -5,10 +5,9 @@
 import os
 import re
 from pathlib import Path
-from typing import Iterable, List, Set, Self, Dict
+from typing import Iterable, List, Set, Dict
 from dataclasses import dataclass
 import tempfile
-import platform
 
 import setup_modules
 import chromium_src.tools.metrics.python_support.dependency_solver as dependency_solver
@@ -65,8 +64,7 @@ class TestableScript:
     Returns:
       TestableScript object set up to run using vpython3
     """
-    return TestableScript(identifiable_name=str(
-        file_path.relative_to(_TOOLS_METRICS_RELATIVE_PATH)),
+    return TestableScript(identifiable_name=str(file_path),
                           file_path=file_path,
                           cmd=['vpython3', str(file_path), *flags])
 
@@ -112,14 +110,10 @@ _TESTABLE_SCRIPTS: List[TestableScript] = [
     # TestableScript.CreatePythonScript(
     #   file_path='tools/metrics/histograms/histogram_ownership.py'
     # ),
+    # TODO(crbug.com/482274154): Fix the unmapped histograms.
+    # TestableScript.CreatePythonScript(file_path=Path(
+    #      'tools/metrics/histograms/find_unmapped_histograms.py')),
 ]
-
-# TODO(crbug.com/482274154): Fix this script on windows.
-if platform.system() != 'Windows':
-  _TESTABLE_SCRIPTS.append(
-      TestableScript.CreatePythonScript(file_path=Path(
-          'tools/metrics/histograms/find_unmapped_histograms.py')))
-
 
 def _is_test_file(file_path: str) -> bool:
   return any(
@@ -165,7 +159,9 @@ def validate_gn_sources(target_group: str) -> set[str]:
         f"Error: Could not find group '{target_group}' in {gn_path}")
   relevant_groups = [g for g in matched_groups if g[0] == target_group]
 
-  assert len(relevant_groups) == 1
+  if len(relevant_groups) != 1:
+    raise ValueError(
+        f"Error: Could not find group '{target_group}' in {gn_path}")
 
   group_content = relevant_groups[0][1]
 
@@ -194,29 +190,45 @@ def validate_gn_sources(target_group: str) -> set[str]:
 def _is_script_affected_by(testable_script: TestableScript,
                            modified_files: Set[Path],
                            deps_graph: Dict[str, List[str]]) -> bool:
+  modified_files = set(
+      [p.relative_to(_CHROMIUM_SRC_DIR) for p in modified_files])
   if testable_script.file_path in modified_files:
     return True
   all_dependencies = dependency_solver.get_all_dependencies(
-      deps_graph,
-      str(testable_script.file_path.relative_to(_TOOLS_METRICS_RELATIVE_PATH)))
-  return any(
-      str(file.relative_to(_TOOLS_METRICS_RELATIVE_PATH)) in all_dependencies
-      for file in modified_files)
+      deps_graph, str(testable_script.file_path))
+  return any(file in all_dependencies for file in modified_files)
 
 
 def get_affected_testable_scripts(
-    modified_files: Set[Path]) -> List[TestableScript]:
-  """Returns testable scripts that are affected by changes in modified_files
+    modified_files: Set[Path],
+    deps_graph: Dict[str, List[str]]) -> List[TestableScript]:
+  """Returns testable scripts that are affected by changes in modified_files.
 
   Args:
-    modified_files - list of modified files as absolute paths that can
-      affects _TESTABLE_SCRIPTS
+    modified_files: list of modified files as absolute paths that can
+      affects _TESTABLE_SCRIPTS.
   """
-  modified_files_src_base = set(
-      p.relative_to(_CHROMIUM_SRC_DIR) for p in modified_files)
-  deps_graph = dependency_solver.scan_directory_dependencies(_TOOLS_METRICS_DIR)
   return [
       testable_script
       for testable_script in _TESTABLE_SCRIPTS if _is_script_affected_by(
-          testable_script, modified_files_src_base, deps_graph)
+          testable_script, set(modified_files), deps_graph)
   ]
+
+
+def get_affected_tests(
+    modified_files: Set[Path],
+    deps_graph: Dict[str, List[str]]) -> Iterable[TestableScript]:
+  """Finds all python tests that could be affected by the changes."""
+  all_tests = [
+      TestableScript.CreatePythonScript(Path(t).relative_to(_CHROMIUM_SRC_DIR))
+      for t in find_all_tests()
+      # We cannot detect dependencies for tools outside of tools/metrics
+      # at the moment.
+      if Path(t).resolve().is_relative_to(_TOOLS_METRICS_DIR)
+  ]
+
+  affected_tests = [
+      test_script for test_script in all_tests
+      if _is_script_affected_by(test_script, set(modified_files), deps_graph)
+  ]
+  return affected_tests

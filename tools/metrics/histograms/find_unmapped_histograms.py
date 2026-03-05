@@ -192,6 +192,14 @@ HISTOGRAM_FUNCTION_SUFFIXES = frozenset([
 ])
 
 
+def _git_cmd_available(command: list[str]) -> bool:
+  """Checks if the specific git command is present in the current env"""
+  cmd = ['git', '--no-pager']
+  cmd.extend(command)
+  proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+  return proc.wait() == 0
+
+
 def _run_git(command: list[str]) -> str:
   """Run a git subcommand, returning its output."""
   # On Windows, use shell=True to get PATH interpretation.
@@ -482,7 +490,6 @@ def _output_csv(unmapped_histograms: list[str],
     print('%s,%s,%s,%s' %
           (filename, line_number, histogram, _hash_histogram_name(histogram)))
 
-
 def _output_log(unmapped_histograms: list[str], location_map: dict[str, str],
                 verbose: bool) -> None:
   if not unmapped_histograms:
@@ -548,6 +555,11 @@ def main() -> None:
   except EnvironmentError as e:
     logging.error('Could not change to root directory: %s', e)
     sys.exit(1)
+
+  if not _git_cmd_available(['gs', 'fake_search_term']):
+    logging.error("`git gs` is not available in this environment.")
+    sys.exit(1)
+
   location_map = _read_chromium_histograms()
   chromium_histograms = set(location_map.keys())
   xml_histograms = _read_all_xml_histograms()
@@ -567,7 +579,7 @@ def main() -> None:
   else:
     _output_log(unmapped_histograms, location_map, options.verbose)
 
-  sys.exit(len(unmapped_histograms) == 0)
+  sys.exit(len(unmapped_histograms))
 
 
 if __name__ == '__main__':

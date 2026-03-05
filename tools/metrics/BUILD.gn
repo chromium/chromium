@@ -169,6 +169,7 @@ group("metrics_python_tests") {
     "//tools/metrics/histograms/split_xml_unittest.py",
     "//tools/metrics/python_support/setup_modules_lib_test.py",
     "//tools/metrics/python_support/dependency_solver_test.py",
+    "//tools/metrics/python_support/tests_helpers_test.py",
   ]
 
   data += JSON_TO_STRUCT_FILES + JSON_TO_STRUCT_TEST_FILES
