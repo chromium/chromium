@@ -60,7 +60,7 @@ be included:
   3. User personalization
 
 **Do not** include filepath syntax in the output, such as:
-`// filepath: ...\.github\instructions\haystack.instructions.md`
+`// filepath: ...\.github\instructions\chromium.instructions.md`
 
 ### Default Chromium or Embedder Instructions
 The default instructions should be a copy of one of the following files at the top
