@@ -75,27 +75,24 @@ JNI_SelectionPopupControllerImpl_IsMagnifierWithSurfaceControlSupported(
 
 static int64_t JNI_SelectionPopupControllerImpl_Init(
     JNIEnv* env,
-    const JavaRef<jobject>& obj,
-    const JavaRef<jobject>& jweb_contents) {
-  WebContents* web_contents = WebContents::FromJavaWebContents(jweb_contents);
+    WebContents* web_contents) {
   DCHECK(web_contents);
 
   // Owns itself and gets destroyed when |WebContentsDestroyed| is called.
-  auto* controller = new SelectionPopupController(env, obj, web_contents);
+  auto* controller = new SelectionPopupController(web_contents);
   controller->Initialize();
   return reinterpret_cast<intptr_t>(controller);
 }
 
 SelectionPopupController* SelectionPopupController::FromWebContents(
     WebContents& web_contents) {
-  ScopedJavaLocalRef<jobject> jweb_contents = web_contents.GetJavaWebContents();
   JNIEnv* env = AttachCurrentThread();
   // Call the Java-side fromWebContents method. This gets the Java
   // SelectionPopupController if it already exists. Otherwise, this will
   // instantiate the Java SelectionPopupController and store it in the web
   // contents.
   ScopedJavaLocalRef<jobject> jselection_popup_controller =
-      Java_SelectionPopupControllerImpl_fromWebContents(env, jweb_contents);
+      Java_SelectionPopupControllerImpl_fromWebContents(env, &web_contents);
   // Then get the native pointer from the newly-created
   // SelectionPopupController. The Java SelectionPopupController owns the C++
   // SelectionPopupController.
@@ -106,30 +103,42 @@ SelectionPopupController* SelectionPopupController::FromWebContents(
       selection_popup_controller);
 }
 
-SelectionPopupController::SelectionPopupController(JNIEnv* env,
-                                                   const JavaRef<jobject>& obj,
-                                                   WebContents* web_contents)
-    : RenderWidgetHostConnector(web_contents) {
-  java_obj_ = JavaObjectWeakGlobalRef(env, obj);
-}
+SelectionPopupController::SelectionPopupController(WebContents* web_contents)
+    : RenderWidgetHostConnector(web_contents), web_contents_(web_contents) {}
 
 SelectionPopupController::~SelectionPopupController() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (!obj.is_null()) {
     Java_SelectionPopupControllerImpl_nativeSelectionPopupControllerDestroyed(
         env, obj);
   }
 }
 
-ScopedJavaLocalRef<jobject> SelectionPopupController::GetContext() const {
-  JNIEnv* env = AttachCurrentThread();
-
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+ScopedJavaLocalRef<jobject> SelectionPopupController::GetContext(
+    JNIEnv* env) const {
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return nullptr;
+  }
 
   return Java_SelectionPopupControllerImpl_getContext(env, obj);
+}
+
+ScopedJavaLocalRef<jobject> SelectionPopupController::GetJavaObject(
+    JNIEnv* env) const {
+  WebContents* contents = web_contents_.get();
+  CHECK(contents);
+
+  // In some tests the Java WebContents might not be instantiated. Early out if
+  // this happens.
+  auto jcontents = contents->GetJavaWebContents();
+  if (!jcontents) {
+    return ScopedJavaLocalRef<jobject>();
+  }
+
+  return Java_SelectionPopupControllerImpl_fromWebContentsNoCreate(env,
+                                                                   jcontents);
 }
 
 void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
@@ -142,8 +151,9 @@ void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(
 
 void SelectionPopupController::SetTextHandlesTemporarilyHidden(JNIEnv* env,
                                                                bool hidden) {
-  if (rwhva_)
+  if (rwhva_) {
     rwhva_->SetTextHandlesTemporarilyHidden(hidden);
+  }
 }
 
 ScopedJavaLocalRef<jobjectArray> SelectionPopupController::GetTouchHandleRects(
@@ -173,7 +183,8 @@ std::unique_ptr<ui::TouchHandleDrawable>
 SelectionPopupController::CreateTouchHandleDrawable(
     gfx::NativeView parent_native_view,
     cc::slim::Layer* parent_layer) {
-  ScopedJavaLocalRef<jobject> activityContext = GetContext();
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> activityContext = GetContext(env);
   // If activityContext is null then Application context is used instead on
   // the java side in CompositedTouchHandleDrawable.
   return std::make_unique<CompositedTouchHandleDrawable>(
@@ -217,7 +228,7 @@ void SelectionPopupController::UpdateRenderProcessConnection(
     return;
   }
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null()) {
     return;
   }
@@ -229,9 +240,10 @@ void SelectionPopupController::OnSelectionEvent(
     ui::SelectionEventType event,
     const gfx::RectF& selection_rect) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return;
+  }
 
   Java_SelectionPopupControllerImpl_onSelectionEvent(
       env, obj, event, selection_rect.x(), selection_rect.y(),
@@ -242,9 +254,10 @@ void SelectionPopupController::OnDragUpdate(
     const ui::TouchSelectionDraggable::Type type,
     const gfx::PointF& position) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return;
+  }
 
   Java_SelectionPopupControllerImpl_onDragUpdate(
       env, obj, static_cast<int>(type), position.x(), position.y());
@@ -252,9 +265,10 @@ void SelectionPopupController::OnDragUpdate(
 
 void SelectionPopupController::OnSelectionChanged(const std::string& text) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return;
+  }
   ScopedJavaLocalRef<jstring> jtext = ConvertUTF8ToJavaString(env, text);
   Java_SelectionPopupControllerImpl_onSelectionChanged(env, obj, jtext);
 }
@@ -264,9 +278,10 @@ bool SelectionPopupController::ShowSelectionMenu(
     const ContextMenuParams& params,
     int handle_height) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return false;
+  }
 
   // Display paste pop-up only when selection is empty and editable.
   const bool from_touch =
@@ -331,7 +346,7 @@ void SelectionPopupController::OnSelectAroundCaretAck(
     int surroundingTextLength,
     blink::mojom::SelectAroundCaretResultPtr result) {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null()) {
     return;
   }
@@ -348,9 +363,10 @@ void SelectionPopupController::OnSelectAroundCaretAck(
 
 void SelectionPopupController::HidePopupsAndPreserveSelection() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return;
+  }
 
   menu_model_bridge_.reset();
   extra_items_menu_model_.reset();
@@ -359,15 +375,16 @@ void SelectionPopupController::HidePopupsAndPreserveSelection() {
 
 void SelectionPopupController::RestoreSelectionPopupsIfNecessary() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
-  if (obj.is_null())
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
+  if (obj.is_null()) {
     return;
+  }
   Java_SelectionPopupControllerImpl_restoreSelectionPopupsIfNecessary(env, obj);
 }
 
 void SelectionPopupController::ChildLocalSurfaceIdChanged() {
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> obj = java_obj_.get(env);
+  ScopedJavaLocalRef<jobject> obj = GetJavaObject(env);
   if (obj.is_null()) {
     return;
   }
