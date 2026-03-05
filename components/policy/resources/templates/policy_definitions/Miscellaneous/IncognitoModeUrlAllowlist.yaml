@@ -22,11 +22,11 @@ example_value:
 - file://*
 - custom_scheme:*
 - '*'
-future_on:
-- chrome.*
-- chrome_os
-- ios
-- android
+supported_on:
+- chrome.*:147-
+- chrome_os:147-
+- ios:147-
+- android:147-
 owners:
 - file://components/policy/OWNERS
 - mwalachowski@google.com
