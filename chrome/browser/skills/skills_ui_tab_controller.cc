@@ -162,6 +162,16 @@ void SkillsUiTabController::OnSkillSaved(const std::string& skill_id) {
   }
 }
 
+void SkillsUiTabController::OnSkillDeleted() {
+  if (auto* window_interface = tab_->GetBrowserWindowInterface()) {
+    // Delegate the global toast action to the Window Controller.
+    auto* window_controller = SkillsUiWindowController::From(window_interface);
+    if (window_controller) {
+      window_controller->OnSkillDeleted();
+    }
+  }
+}
+
 bool SkillsUiTabController::IsShowing() const {
   return dialog_widget_ != nullptr;
 }

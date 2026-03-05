@@ -6,15 +6,20 @@
 
 #include <optional>
 
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/types/expected.h"
 #include "chrome/browser/optimization_guide/mock_optimization_guide_keyed_service.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/skills/skills_service_factory.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_delegate.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/skills/mocks/mock_skills_service.h"
 #include "components/skills/public/skill.mojom.h"
 #include "components/skills/public/skills_metrics.h"
+#include "components/skills/public/skills_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -34,6 +39,7 @@ class MockSkillsDialogDelegate : public SkillsDialogDelegate {
  public:
   MOCK_METHOD(void, CloseDialog, (), (override));
   MOCK_METHOD(void, OnSkillSaved, (const std::string&), (override));
+  MOCK_METHOD(void, OnSkillDeleted, (), (override));
 
   base::WeakPtr<MockSkillsDialogDelegate> GetWeakPtr() {
     return weak_factory_.GetWeakPtr();
@@ -58,9 +64,16 @@ class TestSkillsDialogHandler : public SkillsDialogHandler {
     return &fake_saved_skill_;
   }
 };
+
 class SkillsDialogHandlerTest : public testing::Test {
  public:
   void SetUp() override {
+    SkillsServiceFactory::GetInstance()->SetTestingFactory(
+        &profile_,
+        base::BindLambdaForTesting([](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          return std::make_unique<NiceMock<MockSkillsService>>();
+        }));
     web_contents_ = content::WebContents::Create(
         content::WebContents::CreateParams(&profile_));
     web_ui_.set_web_contents(web_contents_.get());
@@ -262,6 +275,19 @@ TEST_F(SkillsDialogHandlerTest, SubmitSkill_LogsUiContextLostWhenDialogClosed) {
   // Assert that it safely bailed out and logged the error.
   histogram_tester_.ExpectUniqueSample(
       "Skills.Save.Result", skills::SkillsSaveResult::kUiContextLost, 1);
+}
+
+TEST_F(SkillsDialogHandlerTest, DeleteSkill_LogsDeleted) {
+  auto* mock_service = static_cast<MockSkillsService*>(
+      SkillsServiceFactory::GetForProfile(&profile_));
+  EXPECT_CALL(*mock_service, DeleteSkill("test_id", _)).Times(1);
+  EXPECT_CALL(mock_delegate_, OnSkillDeleted()).Times(1);
+  EXPECT_CALL(mock_delegate_, CloseDialog()).Times(1);
+
+  handler_->DeleteSkill("test_id");
+
+  histogram_tester_.ExpectBucketCount("Skills.Dialog.Edit.Action",
+                                      SkillsDialogAction::kDeleted, 1);
 }
 
 // Tests that GetInitialSkill returns the skill passed in during construction.

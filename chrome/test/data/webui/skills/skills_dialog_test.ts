@@ -306,6 +306,29 @@ suite('SkillsDialogAppPage', function() {
     assertFalse(skillsDialogApp.$.saveErrorContainer.hidden);
   });
 
+  test('HidesDeleteButtonForAddingSkill', function() {
+    assertTrue(skillsDialogApp.$.deleteButton.hidden);
+  });
+
+  test('DeleteSkill', async function() {
+    const testSkill: Skill = {
+      id: '123',
+      sourceSkillId: '',
+      name: 'test skill',
+      icon: '',
+      prompt: 'test prompt',
+      description: 'test description',
+      source: SkillSource.kUserCreated,
+      creationTime: {internalValue: 0n},
+      lastUpdateTime: {internalValue: 0n},
+    };
+    await setupDialogWithSkill(testSkill);
+
+    assertFalse(skillsDialogApp.$.deleteButton.hidden);
+
+    skillsDialogApp.$.deleteButton.click();
+    assertEquals(1, dialogHandler.getCallCount('deleteSkill'));
+  });
 
   test('EmojiZeroStateVisibility', async function() {
     // 1. Setup with empty icon

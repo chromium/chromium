@@ -187,6 +187,16 @@ textarea::placeholder {
   justify-content: flex-end;
 }
 
+.buttons-group cr-button:first-child {
+  margin-right: auto;
+}
+
+#deleteButton {
+  --cr-button-background-color: transparent;
+  --cr-button-border-color: var(--color-sys-tonal-outline);
+  --cr-button-text-color: var(--color-sys-primary);
+}
+
 .cancel-button {
   --cr-button-background-color: var(--color-sys-tonal-container);
   --cr-button-border-color: transparent;

@@ -69,6 +69,7 @@ export interface SkillsDialogAppElement {
   $: {
     accountEmail: HTMLElement,
     cancelButton: HTMLElement,
+    deleteButton: CrButtonElement,
     dialog: CrDialogElement,
     emojiTrigger: HTMLInputElement,
     emojiZeroStateIcon: CrIconElement,
@@ -157,6 +158,12 @@ export class SkillsDialogAppElement extends CrLitElement {
     return this.promptError_ !== PromptError.NONE;
   }
 
+  // TODO(crbug.com/489076508): Update to passing in dialogType from dialog
+  // creation.
+  protected isAddDialog_(): boolean {
+    return !this.skill_.id || this.skill_.source === SkillSource.kFirstParty;
+  }
+
   /** Initializes dialog. */
   override connectedCallback() {
     super.connectedCallback();
@@ -166,9 +173,7 @@ export class SkillsDialogAppElement extends CrLitElement {
           if (skill) {
             this.skill_ = skill;
             this.skill_.source = skill.source || SkillSource.kUserCreated;
-            // TODO(marissashen): Update to passing in dialogType from dialog
-            // creation
-            if (!skill.id || skill.source === SkillSource.kFirstParty) {
+            if (this.isAddDialog_()) {
               // Creating a new skill or remixing a first party skill.
               this.dialogTitle_ = loadTimeData.getString('addSkillHeader');
               this.autoPopulateNameAndIcon_();
@@ -442,6 +447,11 @@ export class SkillsDialogAppElement extends CrLitElement {
 
   protected onClose_(e: Event) {
     this.cancel_(e);
+  }
+
+  /** Deletes skill and closes the dialog. */
+  protected deleteSkill_() {
+    SkillsDialogBrowserProxy.getInstance().handler.deleteSkill(this.skill_.id);
   }
 
   /** Click listener for the cancel button and closing dialog. */

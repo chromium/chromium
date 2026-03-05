@@ -11,6 +11,9 @@
 #include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/skills/skills_ui_tab_controller_interface.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/toasts/api/toast_id.h"
+#include "chrome/browser/ui/toasts/toast_controller.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/webui/skills/skills_dialog_view.h"
 #include "chrome/browser/ui/webui/skills/skills_ui.h"
@@ -436,6 +439,22 @@ IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
     })()
   )");
   glic::GlicEnabling::SetBypassEnablementChecksForTesting(false);
+}
+
+// Verify that OnSkillDeleted triggers the deleted toast.
+IN_PROC_BROWSER_TEST_F(SkillsUiTabControllerBrowserTest,
+                       OnSkillDeletedTriggersToast) {
+  // Ensure no toast is initially showing.
+  const auto* toast_controller =
+      browser()->browser_window_features()->toast_controller();
+  EXPECT_FALSE(toast_controller->IsShowingToast());
+
+  // Trigger the deletion notification on the Tab Controller.
+  skills_ui_tab_controller()->OnSkillDeleted();
+
+  // Verify that the toast is now showing and has the correct ID.
+  EXPECT_TRUE(toast_controller->IsShowingToast());
+  EXPECT_EQ(toast_controller->GetCurrentToastId(), ToastId::kSkillDeleted);
 }
 
 }  // namespace skills

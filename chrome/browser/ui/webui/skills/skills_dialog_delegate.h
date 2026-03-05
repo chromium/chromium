@@ -19,6 +19,9 @@ class SkillsDialogDelegate {
   // Called by the WebUI when a skill is successfully saved.
   virtual void OnSkillSaved(const std::string& skill_id) = 0;
 
+  // Called by the WebUI when a skill is deleted.
+  virtual void OnSkillDeleted() = 0;
+
  protected:
   virtual ~SkillsDialogDelegate() = default;
 };

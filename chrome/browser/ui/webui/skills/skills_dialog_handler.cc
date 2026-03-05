@@ -107,6 +107,21 @@ void SkillsDialogHandler::SubmitSkill(
   std::move(wrapped_callback).Run(true);
 }
 
+void SkillsDialogHandler::DeleteSkill(const std::string& skill_id) {
+  auto* service =
+      SkillsServiceFactory::GetForProfile(base::to_address(profile_));
+  if (!delegate_ || !service) {
+    return;
+  }
+  // TODO(crbug.com/488408730): Remove once we have undo functionality.
+  service->DeleteSkill(skill_id, SkillsService::UpdateSource::kLocal);
+  // Triggers toast
+  delegate_->OnSkillDeleted();
+  delegate_->CloseDialog();
+  RecordSkillsDialogAction(SkillsDialogAction::kDeleted, entrypoint_,
+                           /*is_edit_mode=*/true);
+}
+
 void SkillsDialogHandler::CloseDialog() {
   // TODO(crbug.com/477385216): Update to use an enum for creation mode.
   RecordSkillsDialogAction(SkillsDialogAction::kCancelled, entrypoint_,

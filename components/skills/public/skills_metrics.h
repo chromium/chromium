@@ -19,7 +19,8 @@ enum class SkillsDialogAction {
   kSaved = 1,
   kCancelled = 2,
   kRefined = 3,
-  kMaxValue = kRefined,
+  kDeleted = 4,
+  kMaxValue = kDeleted,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/skills/enums.xml:SkillsDialogAction)
 
