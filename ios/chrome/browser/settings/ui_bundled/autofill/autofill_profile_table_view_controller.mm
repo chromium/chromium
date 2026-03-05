@@ -40,13 +40,13 @@
 #import "ios/chrome/browser/autofill/ui_bundled/address_editor/autofill_edit_profile_coordinator.h"
 #import "ios/chrome/browser/autofill/ui_bundled/bottom_sheet/settings_autofill_edit_profile_bottom_sheet_handler.h"
 #import "ios/chrome/browser/net/model/crurl.h"
+#import "ios/chrome/browser/settings/autofill/autofill_ai/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/autofill/utils/autofill_settings_ui_util.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_settings_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_address_profile_record_type.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/cells/autofill_profile_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/autofill/enhanced_autofill_table_view_controller.h"
-#import "ios/chrome/browser/settings/ui_bundled/autofill/ui/autofill_ai_entity_item.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/settings_root_table_view_controller+toolbar_add.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -394,7 +394,7 @@ bool CanDeleteItemType(NSInteger itemType) {
                       (const autofill::EntityInstance&)instance
                               withLabel:(const autofill::EntityLabel&)label
                                    type:(ItemType)type {
-  AutofillAiEntityItem* item = [[AutofillAiEntityItem alloc] initWithType:type];
+  AutofillAIEntityItem* item = [[AutofillAIEntityItem alloc] initWithType:type];
   item.name = base::SysUTF16ToNSString(
       base::JoinString(label, autofill::kLabelSeparator));
   item.typeDescription =
@@ -801,9 +801,9 @@ bool CanDeleteItemType(NSInteger itemType) {
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
            editingStyleForRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
-    AutofillAiEntityItem* aiItem =
-        base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+    AutofillAIEntityItem* aiItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
     return aiItem.isServerWalletItem ? UITableViewCellEditingStyleNone
                                      : UITableViewCellEditingStyleDelete;
   }
@@ -813,9 +813,9 @@ bool CanDeleteItemType(NSInteger itemType) {
 - (BOOL)tableView:(UITableView*)tableView
     shouldIndentWhileEditingRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
-    AutofillAiEntityItem* aiItem =
-        base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+    AutofillAIEntityItem* aiItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
     return !aiItem.isServerWalletItem;
   }
   return YES;
@@ -981,9 +981,9 @@ bool CanDeleteItemType(NSInteger itemType) {
   }
 
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
-    AutofillAiEntityItem* aiItem =
-        base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+  if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+    AutofillAIEntityItem* aiItem =
+        base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
     return !aiItem.isServerWalletItem;
   }
 
@@ -1257,9 +1257,9 @@ bool CanDeleteItemType(NSInteger itemType) {
           base::apple::ObjCCastStrict<AutofillProfileItem>(item);
       _personalDataManager->address_data_manager().RemoveProfile(
           [profileItem GUID]);
-    } else if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
-      AutofillAiEntityItem* aiItem =
-          base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+    } else if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+      AutofillAIEntityItem* aiItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
       if (_entityDataManager) {
         _entityDataManager->RemoveEntityInstance(aiItem.guid);
       }
@@ -1365,9 +1365,9 @@ bool CanDeleteItemType(NSInteger itemType) {
           hasNameEmailProfile = YES;
           break;
       }
-    } else if ([item isKindOfClass:[AutofillAiEntityItem class]]) {
-      AutofillAiEntityItem* aiItem =
-          base::apple::ObjCCastStrict<AutofillAiEntityItem>(item);
+    } else if ([item isKindOfClass:[AutofillAIEntityItem class]]) {
+      AutofillAIEntityItem* aiItem =
+          base::apple::ObjCCastStrict<AutofillAIEntityItem>(item);
       // Only local entities can be deleted. Server wallet items should not be
       // selected for deletion.
       if (!aiItem.isServerWalletItem) {

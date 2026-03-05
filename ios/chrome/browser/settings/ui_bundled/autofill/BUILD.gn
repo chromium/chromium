@@ -38,8 +38,6 @@ source_set("autofill") {
     "autofill_settings_util.mm",
     "enhanced_autofill_table_view_controller.h",
     "enhanced_autofill_table_view_controller.mm",
-    "ui/autofill_ai_entity_item.h",
-    "ui/autofill_ai_entity_item.mm",
   ]
   deps = [
     ":constants",
@@ -69,6 +67,7 @@ source_set("autofill") {
     "//ios/chrome/browser/autofill/ui_bundled/bottom_sheet",
     "//ios/chrome/browser/autofill/ui_bundled/cells",
     "//ios/chrome/browser/net/model:crurl",
+    "//ios/chrome/browser/settings/autofill/autofill_ai/ui",
     "//ios/chrome/browser/settings/autofill/utils:autofill_settings_ui_util",
     "//ios/chrome/browser/settings/ui_bundled:settings_root",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_categories",
