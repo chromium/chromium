@@ -439,7 +439,7 @@ Se la policy viene disattivata o se non viene configurata, gli elementi da avvia
 <translation id="13356285923490863">Nome policy</translation>
 <translation id="1338603603553894503">Consente di specificare se il selettore profilo è attivato, disattivato o forzato all'avvio del browser.
 
-      Per impostazione predefinita, il selettore profilo non viene mostrato quando il browser si avvia in modalità ospite o di navigazione in incognito, quando una directory e/o gli URL del profilo sono specificati da una riga di comando, quando è richiesta esplicitamente l'apertura di un'app, quando il browser è stato lanciato da una notifica nativa, quando c'è un solo profilo disponibile o quando la policy ForceBrowserSignin è impostata su True.
+      Per impostazione predefinita, il selettore profilo non viene mostrato quando il browser si avvia in modalità ospite o Incognito, quando una directory e/o gli URL del profilo sono specificati da una riga di comando, quando è richiesta esplicitamente l'apertura di un'app, quando il browser è stato lanciato da una notifica nativa, quando c'è un solo profilo disponibile o quando la policy ForceBrowserSignin è impostata su True.
 
       Se è selezionata l'opzione "Attivato" (0) o se la policy non viene impostata, il selettore profilo verrà mostrato all'avvio per impostazione predefinita, ma gli utenti potranno attivarlo/disattivarlo.
 
@@ -546,7 +546,7 @@ Se questa policy viene disattivata o se non viene impostata, dopo l'accesso a un
 
 Questa policy non ha effetto se viene impostata a livello di macchina.
 
-Questa policy non viene applicata né funziona in modalità di navigazione in incognito.</translation>
+Questa policy non viene applicata né funziona in modalità Incognito.</translation>
 <translation id="1417888712677507140">Blocca le finestre di dialogo JavaScript attivate da un diverso frame secondario di origine.</translation>
 <translation id="1418387035898607074">Salta i controlli di Navigazione sicura per i file scaricati da fonti attendibili</translation>
 <translation id="1419020637569060510">Aggiungi limitazioni all'utilizzo di un account gestito come account secondario su ChromeOS</translation>
@@ -798,11 +798,11 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
 Se questa policy non viene configurata, gli utenti potranno aggiungere eccezioni per consentire contenuti misti bloccabili e disattivare gli upgrade automatici dei contenuti misti bloccabili facoltativi.</translation>
 <translation id="1574258262373444557">Non usare <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti</translation>
 <translation id="1575015449587326319">Policy di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
-<translation id="1575714464739424740">Una policy per stabilire se i tuoi utenti possono attivare o disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla protezione dal fingerprinting in modalità di navigazione in incognito.
+<translation id="1575714464739424740">Una policy per stabilire se i tuoi utenti possono attivare o disattivare l'impostazione di <ph name="PRIVACY_SANDBOX_NAME" /> relativa alla protezione dal fingerprinting in modalità Incognito.
 
 Se imposti questa policy su Disattivata, l'impostazione della funzionalità di protezione dal fingerprinting verrà disattivata per i tuoi utenti.
-Se imposti questa policy su Attivata, l'impostazione della funzionalità di protezione dal fingerprinting verrà attivata per i tuoi utenti in modalità di navigazione in incognito.
-Se la policy non viene configurata, gli utenti potranno attivare o disattivare la funzionalità di protezione dal fingerprinting in modalità di navigazione in incognito tramite le impostazioni della UI. Lo stato predefinito sarà False o Disattivata, il che significa che la funzionalità di protezione dal fingerprinting verrà disattivata.</translation>
+Se imposti questa policy su Attivata, l'impostazione della funzionalità di protezione dal fingerprinting verrà attivata per i tuoi utenti in modalità Incognito.
+Se la policy non viene configurata, gli utenti potranno attivare o disattivare la funzionalità di protezione dal fingerprinting in modalità Incognito tramite le impostazioni della UI. Lo stato predefinito sarà False o Disattivata, il che significa che la funzionalità di protezione dal fingerprinting verrà disattivata.</translation>
 <translation id="1576797364335927541">Disattiva <ph name="ALR_FEATURE_NAME" /></translation>
 <translation id="1578495851351913403">Se configuri questa policy, viene mostrata una nuova opzione di attivazione/disattivazione dell'interfaccia utente sotto ogni display nelle impostazioni di visualizzazione. La normale modalità di mirroring trasforma tutti i display in un unico display, ma la nuova opzione consente agli utenti di escludere un display dal mirroring e di visualizzarlo come display esteso.
 
@@ -973,7 +973,7 @@ Se la policy non viene configurata, <ph name="PRODUCT_OS_NAME" /> può seleziona
 <translation id="1659406551862245683">Il comportamento predefinito di ridimensionamento della tastiera virtuale viene modificato per ridimensionare l'area visibile del layout</translation>
 <translation id="166427968280387991">Server proxy</translation>
 <translation id="1664527497245747318">Imposta la posizione in cui salvare le foto dell'app Fotocamera.</translation>
-<translation id="1665033825018489686">Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> abiliterà gli accessi come ospite. Gli accessi come ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono nella modalità di navigazione in incognito.
+<translation id="1665033825018489686">Se questa policy viene attivata o se non viene configurata, <ph name="PRODUCT_NAME" /> abiliterà gli accessi come ospite. Gli accessi come ospite sono profili <ph name="PRODUCT_NAME" /> in cui tutte le finestre sono nella modalità Incognito.
 
 Se questa policy viene disattivata, <ph name="PRODUCT_NAME" /> non consentirà l'avvio dei profili ospite.</translation>
 <translation id="1666001345366986837">Impostazioni per la funzionalità Sfondo AI generativa per videoconferenze</translation>
@@ -1354,7 +1354,7 @@ Lasciare la policy non impostata significa che nessuna estensione è esente dall
 <translation id="1962864958436828230">Imposta le dimensioni minime dei dati per la limitazione relativa agli appunti, al fine di impedire la fuga di dati</translation>
 <translation id="1963986268950915756">Abilita l'installazione di app web da parte dell'utente dal browser</translation>
 <translation id="1964191545419036999">Galleria (supportata dalla versione 117)</translation>
-<translation id="1964634611280150550">Modalità di navigazione in incognito non attiva</translation>
+<translation id="1964634611280150550">Modalità Incognito non attiva</translation>
 <translation id="1964802606569741174">Questa norma non ha effetto sull'app YouTube per Android. Se è necessario applicare la modalità di protezione di YouTube, l'installazione dell'app YouTube per Android non deve essere consentita.</translation>
 <translation id="1964985353230379667">Consente di specificare la configurazione <ph name="KRB5_CONFIG" /> suggerita per i nuovi ticket creati manualmente.
 
@@ -1516,7 +1516,7 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
 <translation id="2061123930713023976">Consenti acquisizioni di pacchetti di rete di debug</translation>
 <translation id="2061810934846663491">Configura i nomi di dominio richiesti per gli host di accesso remoto</translation>
 <translation id="2062632109797189011">Riattiva l'API window.webkitStorageInfo</translation>
-<translation id="2069350366303315077">Se la policy viene impostata su Attivata, <ph name="PRODUCT_NAME" /> applica le sessioni ospite e impedisce gli accessi ai profili. Gli accessi ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità di navigazione in incognito.
+<translation id="2069350366303315077">Se la policy viene impostata su Attivata, <ph name="PRODUCT_NAME" /> applica le sessioni ospite e impedisce gli accessi ai profili. Gli accessi ospite sono profili di <ph name="PRODUCT_NAME" /> in cui le finestre sono nella modalità Incognito.
 
       Se la policy viene impostata su Disattivata, se non viene configurata o se la modalità ospite del browser viene disattivata (tramite la policy <ph name="BROWSER_GUEST_MODE_ENABLED_POLICY_NAME" />), è possibile utilizzare profili nuovi ed esistenti.</translation>
 <translation id="2070744136203607632">Non eseguire controlli dell'intercettazione DNS</translation>
@@ -2621,7 +2621,7 @@ Questa policy per i dispositivi è equivalente alla policy per gli utenti <ph na
       Nota: la policy si applica a tutte le uscite audio (non solo al microfono integrato).</translation>
 <translation id="2823164704578322622">Le impostazioni di Inizio/Fine usano la scorciatoia che contiene il tasto di modifica Alt</translation>
 <translation id="2823870601012066791">Posizione del Registro di sistema di Windows per client <ph name="PRODUCT_OS_NAME" />:</translation>
-<translation id="2824715612115726353">Attiva modalità di navigazione in incognito</translation>
+<translation id="2824715612115726353">Attiva modalità Incognito</translation>
 <translation id="282870810415075521">Consenti a JavaScript di utilizzare JIT su questi siti</translation>
 <translation id="2834965199373338033">Attiva la modalità in background</translation>
 <translation id="2835686964326214400">Impostare una programmazione personalizzata per il riavvio dei dispositivi</translation>
@@ -3212,7 +3212,7 @@ Se questa policy viene attivata, verrà utilizzato il nuovo comportamento.
 Se viene disattivata, verrà utilizzato il comportamento precedente.
 
 Se non viene configurata, verrà utilizzato il nuovo comportamento, esattamente come avviene per gli altri utenti di Chromium.</translation>
-<translation id="3219421230122020860">Modalità di navigazione in incognito disponibile</translation>
+<translation id="3219421230122020860">Modalità Incognito disponibile</translation>
 <translation id="3220624000494482595">Se l'app kiosk è un'app Android, non avrà controllo sulla versione di <ph name="PRODUCT_OS_NAME" />, anche se la norma viene impostata su <ph name="TRUE" />.</translation>
 <translation id="3222088741899353813">Il pulsante sinistro è il principale nella schermata di accesso</translation>
 <translation id="322359555555487980">Determina la disponibilità delle varianti su <ph name="PRODUCT_OS_NAME" /></translation>
@@ -3966,7 +3966,7 @@ Per il corretto funzionamento dell'app Trasferimento dei contenuti, è necessari
       Se queste norme non vengono impostate, gli utenti possono scegliere autonomamente le impostazioni del proxy.</translation>
 <translation id="3758249152301468420">Disabilita Strumenti per sviluppatori</translation>
 <translation id="3758910737665387561">Consenti ai dispositivi di utilizzare PluginVm</translation>
-<translation id="3759342194253299115">Consenti agli utenti di attivare o disattivare l'impostazione relativa alla protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito sul proprio dispositivo.</translation>
+<translation id="3759342194253299115">Consenti agli utenti di attivare o disattivare l'impostazione relativa alla protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità Incognito sul proprio dispositivo.</translation>
 <translation id="3759650373178711405">A meno che la policy <ph name="RESTORE_ON_STARTUP_POLICY_NAME" /> non sia impostata per ripristinare in modo permanente gli URL delle sessioni precedenti, l'impostazione di <ph name="COOKIES_SESSION_ONLY_FOR_URLS_POLICY_NAME" /> ti consente di creare un elenco di pattern URL che specificano i siti che possono o meno impostare i cookie per una sessione.
 
       Se la policy non viene configurata, viene usata <ph name="DEFAULT_COOKIES_SETTINGS_POLICY_NAME" /> per tutti i siti, se impostata. In caso contrario, viene applicata l'impostazione personale dell'utente. In caso di URL non interessati dai pattern specificati, vengono applicate le impostazioni predefinite.
@@ -4156,7 +4156,7 @@ Tieni presente che questa policy non ha alcun effetto se <ph name="ENTERPRISE_PR
 
       Se la norma non viene impostata, il protocollo SPDY sarà disponibile.</translation>
 <translation id="3885896818093825047">Consenti la configurazione di <ph name="MICROSOFT_ONE_DRIVE_NAME" /></translation>
-<translation id="388940400023402072">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
+<translation id="388940400023402072">Attiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità Incognito.</translation>
 <translation id="3889458462150559611">Consenti ai siti web di effettuare richieste a qualsiasi endpoint di rete in modo non sicuro.</translation>
 <translation id="388999630001435491">Consenti a <ph name="PRODUCT_NAME" /> di connettersi solo a dispositivi su indirizzi IP privati</translation>
 <translation id="3891175633496805812">Disattiva il controller DTC (Diagnostics and Telemetry Controller) wilco</translation>
@@ -4432,7 +4432,7 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
 <translation id="4087778345310035432">Se per la policy <ph name="DEVICE_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene selezionata l'opzione <ph name="PRINTERS_WHITELIST" />, la configurazione della policy <ph name="DEVICE_NATIVE_PRINTERS_WHITELIST_POLICY_NAME" /> consente di specificare le stampanti che possono essere utilizzate dagli utenti. Soltanto le stampanti con ID corrispondenti ai valori specificati in questa policy saranno a disposizione degli utenti. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="DEVICE_PRINTERS_POLICY_NAME" />.
 
       Questa policy è deprecata. Usa la policy <ph name="DEVICE_PRINTERS_ALLOWLIST_POLICY_NAME" />.</translation>
-<translation id="4088589230932595924">Modalità di navigazione in incognito forzata</translation>
+<translation id="4088589230932595924">Modalità Incognito forzata</translation>
 <translation id="4089849819635523136">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'impostazione della policy <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> consente di specificare la parola chiave o la scorciatoia utilizzata nella barra degli indirizzi per attivare la ricerca per questo provider.
 
       Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> non viene configurata, il provider di ricerca non viene attivato da alcuna parola chiave.</translation>
@@ -5062,7 +5062,7 @@ Questa policy non ha effetto se viene attivata, lasciata vuota o se non viene co
       Il valore della policy deve essere specificato in giorni.</translation>
 <translation id="4523997900743255417">Una policy per controllare se la funzionalità <ph name="IP_PROTECTION_NAME" /> di <ph name="PRIVACY_SANDBOX_NAME" /> deve essere attivata o meno.
 
-<ph name="IP_PROTECTION_NAME" /> è una funzionalità che limita la disponibilità dell'indirizzo IP originale di un utente per determinate richieste di rete di terze parti effettuate durante la navigazione in modalità di navigazione in incognito, migliorando le protezioni contro il monitoraggio tra siti durante le sessioni di navigazione in incognito.
+<ph name="IP_PROTECTION_NAME" /> è una funzionalità che limita la disponibilità dell'indirizzo IP originale di un utente per determinate richieste di rete di terze parti effettuate durante la navigazione in modalità Incognito, migliorando le protezioni contro il monitoraggio tra siti durante le sessioni Incognito.
 
 Se la policy viene disattivata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà disattivata e gli utenti non potranno attivarla tramite le impostazioni della UI.
 Se la policy viene attivata, la funzionalità <ph name="IP_PROTECTION_NAME" /> verrà attivata e gli utenti non potranno disattivarla tramite le impostazioni della UI.
@@ -5072,9 +5072,9 @@ Alcune considerazioni sul fatto che le aziende debbano o meno disattivare <ph na
 
 - Le ricerche DNS non verranno eseguite per le richieste trasferite al proxy, il che potrebbe influire sul monitoraggio o sul filtro basato su DNS.
 
-- Le applicazioni aziendali potrebbero non funzionare correttamente se usate in modalità di navigazione in incognito, in quanto si basano su richieste a domini (o a sottodomini di questi) in Masked Domain List (<ph name="MASKED_DOMAIN_LIST_URL" />) e richiedono che queste richieste provengano da intervalli di indirizzi IP specifici.
+- Le applicazioni aziendali potrebbero non funzionare correttamente se usate in modalità Incognito, in quanto si basano su richieste a domini (o a sottodomini di questi) in Masked Domain List (<ph name="MASKED_DOMAIN_LIST_URL" />) e richiedono che queste richieste provengano da intervalli di indirizzi IP specifici.
 
-- Il traffico potrebbe non essere trasferito al proxy in modalità di navigazione in incognito in determinate condizioni, ad esempio quando gli utenti avviano la modalità di navigazione in incognito da un profilo Chrome a cui non hanno eseguito l'accesso. In generale, la funzionalità richiede che l'utente abbia eseguito l'accesso a Chrome con un Account Google personale quando avvia la modalità di navigazione in incognito.
+- Il traffico potrebbe non essere trasferito al proxy in modalità Incognito in determinate condizioni, ad esempio quando gli utenti avviano la modalità Incognito da un profilo Chrome a cui non hanno eseguito l'accesso. In generale, la funzionalità richiede che l'utente abbia eseguito l'accesso a Chrome con un Account Google personale quando avvia la modalità Incognito.
 
 - L'elenco dei domini in Masked Domain List può cambiare nel tempo e le nuove versioni vengono automaticamente trasferite agli utenti. Per maggiori informazioni su Masked Domain List, consulta: <ph name="MASKED_DOMAIN_LIST_CRITERIA_URL" />.
 
@@ -5223,7 +5223,7 @@ Se l'impostazione viene disattivata o se non viene configurata, il servizio di p
 Su <ph name="MS_WIN_NAME" />, questa policy è disponibile soltanto per le istanze che sono aggiunte a un dominio <ph name="MS_AD_NAME" />, aggiunte a <ph name="MS_AAD_NAME" /> o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
 Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istanze che sono gestite tramite MDM, aggiunte a un dominio tramite MCX o registrate in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.</translation>
-<translation id="4607499333275488034">Disattiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
+<translation id="4607499333275488034">Disattiva la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità Incognito.</translation>
 <translation id="4611983465824842867">Non mostrare avvisi o non disattivare la compilazione automatica sui moduli non sicuri</translation>
 <translation id="4615003180013429835">Modalità di analisi degli elenchi dei siti</translation>
 <translation id="4615436471607987736">A partire da M131, questa policy è deprecata. Consente di disattivare temporaneamente due correzioni correlate al comportamento della finestra di dialogo di conferma mostrata dall'evento beforeunload.
@@ -6375,7 +6375,7 @@ Nota: questa policy non viene applicata agli upgrade a HSTS.</translation>
 
       Se la policy non viene configurata, gli utenti che usano lo sblocco rapido devono inserire la password nella schermata di blocco ogni giorno.</translation>
 <translation id="5306186200045823863">Considera attendibile l'infrastruttura PKI precedente di Symantec Corporation</translation>
-<translation id="5307432759655324440">Disponibilità della modalità di navigazione in incognito</translation>
+<translation id="5307432759655324440">Disponibilità della modalità Incognito</translation>
 <translation id="5308551343115571396">Dopo la disattivazione di <ph name="LACROS_NAME" />, tentiamo di conservare il maggior numero possibile di dati utente, rimuovendo tutti i dati del browser.</translation>
 <translation id="53086358353377307">Consente di impostare un elenco di pattern URL che specificano i siti nei quali è consentito impostare i cookie.
 
@@ -6653,13 +6653,13 @@ Questa policy non impedisce agli utenti di salvare file su <ph name="GOOGLE_DRIV
 
 Se la policy viene impostata su false, non è consentito utilizzare gli identificatori di contenuti protetti.</translation>
 <translation id="5492713303272131731">Tutti gli altri processi possono essere pianificati sullo stesso core della CPU quando il processo di rendering è in esecuzione.</translation>
-<translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
+<translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità Incognito in <ph name="PRODUCT_NAME" />.
 
-      Se viene selezionata l'opzione "Enabled" o se la policy non viene impostata, è possibile aprire le pagine in modalità di navigazione in incognito.
+      Se viene selezionata l'opzione "Enabled" o se la policy non viene impostata, è possibile aprire le pagine in modalità Incognito.
 
-      Se viene selezionata l'opzione "Disabled", non è possibile aprire le pagine in modalità di navigazione in incognito.
+      Se viene selezionata l'opzione "Disabled", non è possibile aprire le pagine in modalità Incognito.
 
-      Se viene selezionata l'opzione "Forced", è possibile aprire le pagine SOLTANTO in modalità di navigazione in incognito. Tieni presente che l'opzione "Forced" non funziona per Android-on-Chrome.
+      Se viene selezionata l'opzione "Forced", è possibile aprire le pagine SOLTANTO in modalità Incognito. Tieni presente che l'opzione "Forced" non funziona per Android-on-Chrome.
 
       Nota: su iOS, se la policy viene modificata durante una sessione, avrà effetto solamente al riavvio.</translation>
 <translation id="549471902631700911">Disattiva la ricezione di sondaggi di Navigazione sicura</translation>
@@ -6789,7 +6789,7 @@ Se questa policy viene impostata su 0 (<ph name="POLICY_VALUE_DISABLED" />) o se
 
 Questa funzionalità è disponibile a partire da <ph name="WIN_NAME" /> 10.
 
-Nota: questa policy non viene applicata alle modalità ospite o di navigazione in incognito.</translation>
+Nota: questa policy non viene applicata alle modalità ospite o Incognito.</translation>
 <translation id="5572971233886879856">Consente di specificare il sottoinsieme di server di stampa a cui verranno inviate query sulle stampanti. Si applica solo alla policy <ph name="DEVICE_EXTERNAL_PRINT_SERVERS_POLICY" />.
 
       Se viene utilizzata questa policy, soltanto le stampanti con ID corrispondenti ai valori specificati in questa policy saranno disponibili all'utente tramite le policy relative ai dispositivi.
@@ -7360,7 +7360,7 @@ Su <ph name="MAC_OS_NAME" />, questa policy è disponibile soltanto per le istan
       I pattern URL non devono essere in conflitto con <ph name="FILE_SYSTEM_READ_BLOCKED_FOR_URLS_POLICY_NAME" />. Nessuna policy ha la precedenza se un URL presenta corrispondenze con entrambe.
 
       Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita la pagina https://chromeenterprise.google/policies/url-patterns. <ph name="WILDCARD_VALUE" /> non è un valore accettato per questa policy.</translation>
-<translation id="5908808391744484238">Se viene attivata o se non viene configurata, il filtro del parametro URL potrebbe rimuovere alcuni parametri quando un utente seleziona "Apri link in finestra di navigazione in incognito" dal menu contestuale.
+<translation id="5908808391744484238">Se viene attivata o se non viene configurata, il filtro del parametro URL potrebbe rimuovere alcuni parametri quando un utente seleziona "Apri link in finestra Incognito" dal menu contestuale.
       Se viene disattivata, non viene applicato alcun filtro.
       Questa policy è temporanea e potrebbe essere rimossa in una release futura.</translation>
 <translation id="5910810837616572201">Se per la policy <ph name="BULK_PRINTERS_ACCESS_MODE_POLICY_NAME" /> viene scelta l'opzione <ph name="PRINTERS_BLACKLIST" />, la configurazione della policy <ph name="NATIVE_PRINTERS_BULK_BLACKLIST_POLICY_NAME" /> consente di specificare le stampanti che gli utenti non possono usare. L'utente avrà a disposizione tutte le stampanti, tranne quelle i cui ID sono elencati in questa policy. Gli ID devono corrispondere ai campi <ph name="ID_FIELD" /> o <ph name="GUID_FIELD" /> del file specificato nella policy <ph name="BULK_PRINTERS_POLICY_NAME" />.
@@ -8616,7 +8616,7 @@ Questa configurazione verrà applicata solo ai domini di primo livello (ad es. e
 sottodomini (ad es. sub.example.com).
 
 Questa policy verrà rimossa in futuro.</translation>
-<translation id="6669244130218275293">Scegli se attivare la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità di navigazione in incognito.</translation>
+<translation id="6669244130218275293">Scegli se attivare la funzionalità di protezione dal fingerprinting di <ph name="PRIVACY_SANDBOX_NAME" /> in modalità Incognito.</translation>
 <translation id="6669691206059842248">Configurare URL di reindirizzamento OAuth aggiuntivi per estensione</translation>
 <translation id="6669700740683748046">Questa funzionalità consente la visualizzazione dell'URL completo nella barra degli indirizzi.
       Se questa policy viene impostata su True, l'URL completo viene visualizzato nella barra degli indirizzi, inclusi gli schemi e i sottodomini.
@@ -8822,11 +8822,11 @@ In questo modo la policy <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_NAME
 <translation id="6802412020718145539">Il visualizzatore PDF utilizza l'architettura OOPIF.</translation>
 <translation id="68031099365512050">Viene segnalato lo stato dell'audio</translation>
 <translation id="680356860463873420">Non consentire agli utenti di utilizzare PluginVm</translation>
-<translation id="6807707420322335446">Se la policy è impostata su Attivata, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se la policy è impostata su Disattivata, tali elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
+<translation id="6807707420322335446">Se la policy è impostata su Attivata, gli elementi della pagina web che non provengono dal dominio presente nella barra degli indirizzi del browser non possono impostare i cookie. Se la policy è impostata su Disattivata, questi elementi possono impostare i cookie e gli utenti non possono modificare l'impostazione.
 
       Se la policy non viene impostata, i cookie di terze parti sono consentiti, ma gli utenti possono modificare l'impostazione.
 
-      Nota: questa policy non viene applicata alla modalità di navigazione in incognito, in cui i cookie di terze parti sono bloccati e possono essere consentiti solo a livello di sito. Per consentire i cookie a livello di sito, utilizza la policy <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
+      Nota: questa policy non viene applicata alla modalità Incognito, in cui i cookie di terze parti sono bloccati e possono essere consentiti solo a livello di sito. Per consentire i cookie a livello di sito, utilizza la policy <ph name="COOKIES_ALLOWED_FOR_URLS_POLICY_NAME" />.</translation>
 <translation id="6810445994095397827">Blocca JavaScript in questi siti</translation>
 <translation id="6813263547126514821">Alimentazione e spegnimento</translation>
 <translation id="681446116407619279">Schemi di autenticazione supportati</translation>
@@ -8868,11 +8868,11 @@ NOTA: le modifiche apportate a questa policy verranno applicate soltanto ai proc
 <translation id="6835883744948188639">Mostra all'utente un messaggio ricorrente che indica che è consigliato eseguire un riavvio</translation>
 <translation id="683688607121170501">Questa impostazione consente agli utenti di passare da un Account Google a un altro all'interno dell'area dei contenuti della finestra del browser e nelle applicazioni Android, dopo avere eseguito l'accesso al dispositivo <ph name="PRODUCT_OS_NAME" />.
 
-      Se questa policy viene impostata su false, non sarà consentito l'accesso a un altro Account Google dall'area dei contenuti del browser in modalità non in incognito e dalle applicazioni Android.
+      Se questa policy viene impostata su false, non sarà consentito l'accesso a un altro Account Google dall'area dei contenuti del browser non in Incognito e dalle applicazioni Android.
 
-      Se questa policy non viene impostata o viene impostata su true, verrà usato il comportamento predefinito: sarà possibile accedere a un altro Account Google dall'area dei contenuti del browser e dalle applicazioni Android, ad eccezione degli account di minori, per i quali l'accesso non sarà consentito dall'area dei contenuti in modalità non in incognito.
+      Se questa policy non viene impostata o viene impostata su true, verrà usato il comportamento predefinito: sarà possibile accedere a un altro Account Google dall'area dei contenuti del browser e dalle applicazioni Android, ad eccezione degli account di minori, per i quali l'accesso non sarà consentito dall'area dei contenuti non in Incognito.
 
-      Qualora l'accesso a un altro account non debba essere consentito tramite la modalità di navigazione in incognito, potresti bloccare tale modalità usando la policy IncognitoModeAvailability.
+      Qualora l'accesso a un altro account non debba essere consentito tramite la modalità Incognito, potresti bloccare questa modalità usando la policy IncognitoModeAvailability.
 
       Tieni presente che gli utenti potranno accedere ai servizi Google in uno stato non autenticato bloccando i loro cookie.</translation>
 <translation id="6841254611279513739">La configurazione della policy consente di impostare solo la stampa a colori, solo la stampa monocromatica oppure nessuna limitazione per la modalità a colori. Se la policy non viene configurata non vengono applicate limitazioni.</translation>
@@ -10880,7 +10880,7 @@ Se questa policy non viene impostata, la Schermata sulla privacy viene inizialme
 
       In questa modalità, i dati del profilo rimangono memorizzati su disco soltanto per la durata della sessione utente. Funzionalità quali cronologia del browser, estensioni e relativi dati, dati web quali cookie e database web non rimangono memorizzati alla chiusura del browser. L'utente può comunque scaricare i dati su disco manualmente, salvare pagine o stamparle.
 
-      Se l'utente ha attivato la sincronizzazione, tutti i dati rimangono memorizzati nel suo profilo sincronizzato così come avviene per i profili normali. È disponibile anche la modalità di navigazione in incognito se non è disattivata esplicitamente dalla norma.
+      Se l'utente ha attivato la sincronizzazione, tutti i dati rimangono memorizzati nel suo profilo sincronizzato così come avviene per i profili normali. È disponibile anche la modalità Incognito se non è disattivata esplicitamente dalla norma.
 
       Se la norma viene disattivata o non viene impostata, l'accesso rimanda a profili normali.</translation>
 <translation id="8151299379693359769">Consente di attivare un controllo sicurezza aggiuntivo in base all'attestazione da remoto (facoltativo, valore predefinito: Vero).</translation>
@@ -10962,13 +10962,13 @@ Se questa policy non viene impostata, verrà applicato il comportamento predefin
           Se l'azione è la sospensione, è possibile configurare separatamente <ph name="PRODUCT_OS_NAME" /> in modo che blocchi o meno lo schermo prima della sospensione.</translation>
 <translation id="8214600119442850823">Consente di configurare Gestione password.</translation>
 <translation id="8217664958939773083">Se questa policy viene impostata su <ph name="ENABLED" /> o se non viene configurata, è possibile usare la modalità headless. Se questa policy viene impostata su <ph name="DISABLED" />, non è possibile usare la modalità headless.</translation>
-<translation id="8217837574199617401">Questa policy consente agli amministratori di configurare un elenco di ID estensione richiesti per la modalità di navigazione in incognito.
+<translation id="8217837574199617401">Questa policy consente agli amministratori di configurare un elenco di ID estensione richiesti per la modalità Incognito.
 
-L'utente deve consentire esplicitamente l'esecuzione in modalità di navigazione in incognito di tutte le estensioni presenti in questo elenco, altrimenti la navigazione in questa modalità non è consentita.
+L'utente deve consentire esplicitamente l'esecuzione in modalità Incognito di tutte le estensioni presenti in questo elenco, altrimenti la navigazione in questa modalità non è consentita.
 
 Se un'estensione specificata in questa policy non viene installata, la navigazione in incognito viene bloccata.
 
-Questa policy viene applicata alla modalità di navigazione in incognito. Ciò significa che la modalità deve essere attivata nel browser. Se la modalità di navigazione in incognito viene disattivata tramite la policy <ph name="INCOGNITO_MODE_AVAILABILITY" />, questa policy non ha effetto.</translation>
+Questa policy viene applicata alla modalità Incognito. Ciò significa che la modalità deve essere attivata nel browser. Se la modalità Incognito viene disattivata tramite la policy <ph name="INCOGNITO_MODE_AVAILABILITY" />, questa policy non ha effetto.</translation>
 <translation id="8218485948330739485">Abilita TLS 1.3 Early Data</translation>
 <translation id="8219813789911069300">Blocca download dannosi (opzione consigliata).</translation>
 <translation id="8220023426952118761">La velocità di download desiderata, in kbit/s.</translation>
@@ -11072,7 +11072,7 @@ Sulle istanze di <ph name="MS_WIN_NAME" /> è possibile forzare l'installazione 
 
 Sulle istanze di <ph name="MAC_OS_NAME" /> è possibile forzare l'installazione di app ed estensioni che non fanno parte del Chrome Web Store soltanto se l'istanza è gestita tramite MDM, aggiunta a un dominio tramite MCX o registrata in <ph name="CHROME_ENTERPRISE_CORE_NAME" />.
 
-Nota: questa policy non viene applicata alla modalità di navigazione in incognito. Leggi maggiori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
+Nota: questa policy non viene applicata alla modalità Incognito. Leggi maggiori informazioni sull'hosting delle estensioni (https://developer.chrome.com/extensions/hosting).</translation>
 <translation id="8270320981823560179">Drive</translation>
 <translation id="827054846390793641">Attiva l'interfaccia utente relativa alla connessione sul computer desktop host quando è attiva una connessione</translation>
 <translation id="8272422063636310696">Consente di controllare se una pagina che utilizza tecnologie precedenti verrà inclusa nel report in base al relativo URL.
@@ -11894,7 +11894,7 @@ Questa policy è stata ritirata a partire dalla versione 144 di <ph name="PRODUC
 <translation id="8801680448782904838">Invia a un utente una notifica che comunica che è consigliato o necessario eseguire un riavvio del browser o del dispositivo
 </translation>
 <translation id="8802800226877198994">Attiva il supporto delle GIF.</translation>
-<translation id="8804685015028424497">Viene disattivata la modalità di navigazione in incognito</translation>
+<translation id="8804685015028424497">Viene disattivata la modalità Incognito</translation>
 <translation id="8806417793261941339">Questa policy è deprecata. Usa la policy <ph name="SAFE_BROWSING_ALLOWLIST_DOMAINS_POLICY_NAME" />.
 
       Se la policy viene attivata, Navigazione sicura considera attendibili i domini indicati. Non esegue alcun controllo su questi domini per risorse pericolose come phishing, malware o software indesiderato. Il servizio di protezione dei download di Navigazione sicura non esegue alcun controllo sui download ospitati su questi domini. Il servizio di protezione tramite password di Navigazione sicura non esegue alcun controllo per il riutilizzo delle password.
@@ -12430,7 +12430,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="9148720248753722892">Non consentire i certificati con firma SHA-1</translation>
 <translation id="9149075762533142978">La funzionalità Generatore codice QR è attiva.</translation>
 <translation id="9149678135092892302">Disattiva la generazione di report sulle informazioni di versione</translation>
-<translation id="9150416707757015439">Questa norma è obsoleta. Utilizza IncognitoModeAvailability. Consente di attivare la modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />. Se questa impostazione viene attivata o non viene configurata, gli utenti potranno aprire le pagine web in modalità di navigazione in incognito. Se l'impostazione viene disattivata, gli utenti non potranno aprire le pagine web in modalità di navigazione in incognito. Se questa norma non viene impostata, l'impostazione verrà attivata e gli utenti potranno utilizzare la modalità di navigazione in incognito.</translation>
+<translation id="9150416707757015439">Questa norma è obsoleta. Utilizza IncognitoModeAvailability. Consente di attivare la modalità Incognito in <ph name="PRODUCT_NAME" />. Se questa impostazione viene attivata o non viene configurata, gli utenti potranno aprire le pagine web in modalità Incognito. Se l'impostazione viene disattivata, gli utenti non potranno aprire le pagine web in modalità Incognito. Se questa norma non viene impostata, l'impostazione verrà attivata e gli utenti potranno utilizzare la modalità Incognito.</translation>
 <translation id="9151267823917882070">Origini consentite per le richieste WebAuthn tramite proxy da applicazioni Remote Desktop.</translation>
 <translation id="9152473318295429890">Attiva i suggerimenti contestuali delle pagine web correlate</translation>
 <translation id="9155218447258425310">Durata della notifica alla rimozione della smart card per <ph name="PRODUCT_OS_NAME" /></translation>

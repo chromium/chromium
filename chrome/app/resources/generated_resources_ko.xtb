@@ -3848,7 +3848,7 @@
 <translation id="3590194807845837023">프로필 잠금 해제 및 다시 시작</translation>
 <translation id="3590295622232282437">관리 세션을 시작합니다.</translation>
 <translation id="3591057288287063271"><ph name="FILE_NAME" /> 유지</translation>
-<translation id="3591519988492877237">{NUM_TASKS,plural, =1{할 일 확인}other{할 일 확인}}</translation>
+<translation id="3591519988492877237">{NUM_TASKS,plural, =1{작업 확인하기}other{작업 확인하기}}</translation>
 <translation id="359177822697434450">USB 기기 정보</translation>
 <translation id="3592260987370335752">자세히 알아보기(&amp;L)</translation>
 <translation id="3592344177526089979"><ph name="DEVICE_NAME" /> 기기로 탭 전송 중</translation>
@@ -6406,7 +6406,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5333896723098573627">앱을 삭제하려면 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
 <translation id="5334113802138581043">마이크 액세스</translation>
 <translation id="5334142896108694079">스크립트 캐시</translation>
-<translation id="5335370353987155592">Gemini를 신중하고 <ph name="BEGIN_LINK1" />안전하게<ph name="LINK_END1" /> 사용하세요. 작업을 수행하는 동안 Gemini의 작업에 대한 책임은 사용자에게 있으며, 여기에는 실수 및 <ph name="BEGIN_LINK2" />예상치 못한 결과<ph name="LINK_END2" />(예: 구매)가 포함됩니다.</translation>
+<translation id="5335370353987155592">Gemini를 신중하고 <ph name="BEGIN_LINK1" />안전하게<ph name="LINK_END1" /> 사용하세요. 실수 및 <ph name="BEGIN_LINK2" />예상치 못한 결과<ph name="LINK_END2" />(예: 구매)를 포함해 작업을 수행하는 동안 Gemini의 동작에 대한 책임은 사용자에게 있습니다.</translation>
 <translation id="5336688142483283574">이 페이지도 방문 기록 및 <ph name="SEARCH_ENGINE" /> 활동에서 삭제됩니다.</translation>
 <translation id="5336689872433667741">커서 및 터치패드</translation>
 <translation id="5337035808300170502">실제 크기</translation>
@@ -7655,7 +7655,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6206199626856438589">열려 있는 탭을 포함하여 표시된 사이트에서 로그아웃됩니다.</translation>
 <translation id="6206311232642889873">이미지 복사(&amp;Y)</translation>
 <translation id="6207200176136643843">기본 확대/축소 수준으로 재설정</translation>
-<translation id="6207795130974856324">도움을 기다리는 중</translation>
+<translation id="6207795130974856324">작업을 확인해 주세요</translation>
 <translation id="6207937957461833379">국가/지역</translation>
 <translation id="6208521041562685716">모바일 데이터가 활성화됨</translation>
 <translation id="6208725777148613371"><ph name="WEB_DRIVE" />에 저장할 수 없음(<ph name="INTERRUPT_REASON" />)</translation>
@@ -7868,7 +7868,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6350821834561350243">가능한 경우 문제를 명확하게 설명하고 문제를 재현하기 위한 단계를 제공합니다.</translation>
 <translation id="6351178441572658285">앱 언어</translation>
 <translation id="6354918092619878358">SECG 타원 곡선 secp256r1(또는 ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355632359041940003">작업 인계 받기</translation>
+<translation id="6355632359041940003">작업 인계받기</translation>
 <translation id="635609604405270300">기기를 계속 켜두세요.</translation>
 <translation id="6356537493253478650">고요하게</translation>
 <translation id="63566973648609420">암호를 아는 사람만 암호화된 데이터를 읽을 수 있습니다. 암호는 Google로 전송되거나 Google에 저장되지 않습니다. 암호가 기억나지 않거나 이 설정을 변경하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />해야 합니다.</translation>

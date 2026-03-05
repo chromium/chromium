@@ -833,7 +833,7 @@
 <translation id="1561331397460162942">这将允许具有位置信息权限的应用和网站以及系统服务使用位置信息</translation>
 <translation id="1562119309884184621">如果您添加了此联系人，当他/她下次分享内容时，系统会识别出此联系人</translation>
 <translation id="1562585387501039294">您的组织 (<ph name="ACCOUNT_MANAGER" />) 要求使用受管资料，并且能够查看某些信息，包括</translation>
-<translation id="156345786953026804">Gemini 在执行任务期间使用的网页内容和网址将分享给 Google。</translation>
+<translation id="156345786953026804">Gemini 在执行任务期间使用的网页内容和网址会分享给 Google。</translation>
 <translation id="1566049601598938765">网站</translation>
 <translation id="15662109988763471">所选打印机无法使用或未正确安装。请检查打印机，或尝试选择其他打印机。</translation>
 <translation id="1566329594234563241">处于闲置状态且接通电源时</translation>
@@ -9792,7 +9792,7 @@
 <translation id="7697109152153663933">点击“密码和自动填充”</translation>
 <translation id="769824636077131955">此文档太大，无法进行安全检查。您只能打印不超过 50 MB 的文档。</translation>
 <translation id="7698507637739331665">某些内容已被屏蔽</translation>
-<translation id="7700176975240938448">使用 <ph name="FOCUS_TOGGLE_HOTKEY" /> 轻松打开</translation>
+<translation id="7700176975240938448">按下 <ph name="FOCUS_TOGGLE_HOTKEY" /> 即可轻松打开</translation>
 <translation id="7700516433658473670">打印机和扫描仪</translation>
 <translation id="7700873336634517379">否，继续将此资料用作学校资料</translation>
 <translation id="7701040980221191251">无</translation>
