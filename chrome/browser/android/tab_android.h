@@ -31,6 +31,7 @@
 
 class GURL;
 class TabAndroidDataProvider;
+class TabInterfaceAndroid;
 class Profile;
 
 namespace cc::slim {
@@ -175,6 +176,8 @@ class TabAndroid : public tabs::TabInterface,
   // Set the media state of the tab. This is called by MediaStateObserver.
   void SetMediaState(int media_state);
 
+  void ResetParentCollection(base::PassKey<TabInterfaceAndroid>);
+
   // Observers -----------------------------------------------------------------
 
   // Adds/Removes an Observer.
@@ -225,6 +228,8 @@ class TabAndroid : public tabs::TabInterface,
   scoped_refptr<content::DevToolsAgentHost> GetDevToolsAgentHost();
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
+
+  tabs::TabCollection* GetRootCollection() const;
 
   base::WeakPtr<TabAndroid> GetTabAndroidWeakPtr();
 

@@ -33,6 +33,7 @@ import org.chromium.components.content_settings.ContentSetting;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.tab_groups.TabGroupColorId;
+import org.chromium.components.tabs.TabStripCollection;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -685,6 +686,11 @@ public abstract class TabModelJniBridge implements TabModelInternal {
                 .getActivityTypeForTesting( // IN-TEST
                         mNativeTabModelJniBridge);
     }
+
+    @CalledByNative
+    @Override
+    public abstract @Nullable @JniType("tabs::TabStripCollection*") TabStripCollection
+            getTabStripCollection();
 
     @CalledByNative
     private static boolean isTabLaunchedInForeground(
