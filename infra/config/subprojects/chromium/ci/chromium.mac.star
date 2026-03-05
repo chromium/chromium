@@ -272,6 +272,7 @@ ci.builder(
                 # This is necessary due to child builders running the
                 # telemetry_perf_unittests suite.
                 "chromium_with_telemetry_dependencies",
+                "use_clang_coverage",
             ],
         ),
         chromium_config = builder_config.chromium_config(
@@ -296,9 +297,19 @@ ci.builder(
         ],
     ),
     targets = targets.bundle(
+        targets = [
+            "chromium_mac_scripts",
+        ],
         additional_compile_targets = [
             "all",
         ],
+        per_test_modifications = {
+            "check_static_initializers": targets.mixin(
+                args = [
+                    "--allow-coverage-initializer",
+                ],
+            ),
+        },
     ),
     os = os.MAC_DEFAULT,
     cpu = cpu.ARM64,
