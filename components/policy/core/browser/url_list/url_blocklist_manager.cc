@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/policy/core/browser/url_list/url_blocklist_policy_handler.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -64,10 +65,13 @@ constexpr const char* kBypassBlocklistWildcardForSchemes[] = {
     "chrome-search",
 };
 
+// TODO(crbug.com/487922969): Move this to the list above once the feature is
+// launched.
+constexpr char kChromeScheme[] = "chrome";
+
 #if BUILDFLAG(IS_IOS)
 // The two schemes used on iOS for the NTP.
 constexpr char kIosNtpAboutScheme[] = "about";
-constexpr char kIosNtpChromeScheme[] = "chrome";
 // The host string used on iOS for the NTP.
 constexpr char kIosNtpHost[] = "newtab";
 #endif
@@ -107,10 +111,16 @@ bool BypassBlocklistWildcardForURL(const GURL& url) {
       return true;
     }
   }
+
+  if (base::FeatureList::IsEnabled(
+          features::kBypassURLBlocklistWildcardForInternalChromeUrls) &&
+      scheme == kChromeScheme) {
+    return true;
+  }
 #if BUILDFLAG(IS_IOS)
   // Compare the chrome scheme and host against the chrome://newtab version of
   // the NTP URL.
-  if (scheme == kIosNtpChromeScheme && url.host() == kIosNtpHost) {
+  if (scheme == kChromeScheme && url.host() == kIosNtpHost) {
     return true;
   }
   // Compare the URL scheme and path to the about:newtab version of the NTP URL.

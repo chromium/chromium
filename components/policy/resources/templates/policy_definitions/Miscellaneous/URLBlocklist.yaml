@@ -9,6 +9,8 @@ desc: |-
 
   From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 92, this policy is also supported in the headless mode.
 
+  From <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 147, the wildcard * on its own does not apply to internal chrome:// URLs. To block these, you must explicitly use the chrome://* pattern.
+
   Note: Blocking internal chrome://* and chrome-untrusted://* URLs can lead to unexpected errors or can be circumvented in some cases. Instead of blocking certain internal URLs, see if there are more specific policies available. For example:
 
   - Instead of blocking chrome://settings/certificates, use <ph name="CA_CERTIFICATE_MANAGEMENT_ALLOWED_POLICY_NAME">CACertificateManagementAllowed</ph>.

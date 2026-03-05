@@ -15,10 +15,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
+#include "components/policy/core/common/features.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -552,6 +554,70 @@ TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
   EXPECT_FALSE(
       blocklist.IsURLBlocked(GURL("chrome-search://most-visited/title.html")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome-native://ntp")));
+}
+
+// TODO(crbug.com/487922969): Move these test cases to
+// DefaultBlocklistExceptions once the feature flag is cleaned up and the bypass
+// is enabled by default.
+TEST_F(URLBlocklistManagerTest, BypassBlocklistWildcardForInternalChromeUrls) {
+  // Test that the "*" in the blocklist is bypassed for internal chrome:// URLs
+  // when the feature flag is enabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      policy::features::kBypassURLBlocklistWildcardForInternalChromeUrls);
+
+  URLBlocklist blocklist;
+  base::ListValue blocked;
+  blocked.Append("*");
+  blocklist.Block(blocked);
+  EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://newtab")));
+  EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://settings")));
+  EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://print")));
+  EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://settings/privacy")));
+  EXPECT_FALSE(
+      blocklist.IsURLBlocked(GURL("chrome://omnibox-popup.top-chrome")));
+
+  // chrome://* URLs can still be blocked explicitly.
+  blocked.Append("chrome://*");
+  blocklist.Block(blocked);
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://new-tab-page")));
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://settings")));
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://settings/privacy")));
+
+  // chrome://* URLs can still be allowed explicitly.
+  base::ListValue allowed;
+  allowed.Append("chrome://settings");
+  blocklist.Allow(allowed);
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://new-tab-page")));
+  EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://settings")));
+  EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome://settings/privacy")));
+}
+
+// TODO(crbug.com/487922969): Remove this test case once the feature flag is
+// cleaned up and the bypass is enabled by default.
+TEST_F(URLBlocklistManagerTest,
+       BypassBlocklistWildcardForInternalChromeUrlsDisabled) {
+  // Test that the "*" in the blocklist is not bypassed for internal chrome://
+  // URLs when the feature flag is disabled.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      policy::features::kBypassURLBlocklistWildcardForInternalChromeUrls);
+
+  URLBlocklist blocklist;
+  base::ListValue blocked;
+  blocked.Append("*");
+  blocklist.Block(blocked);
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://settings")));
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://print")));
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://settings/privacy")));
+  EXPECT_TRUE(
+      blocklist.IsURLBlocked(GURL("chrome://omnibox-popup.top-chrome")));
+  // The NTP on iOS was an exception to the wildcard blocklist before the
+  // feature flag was introduced. It remains an exception even when the
+  // flag is disabled.
+#if !BUILDFLAG(IS_IOS)
+  EXPECT_TRUE(blocklist.IsURLBlocked(GURL("chrome://newtab")));
+#endif
 }
 
 TEST_F(URLBlocklistManagerTest, BlocklistBasicCoverage) {
