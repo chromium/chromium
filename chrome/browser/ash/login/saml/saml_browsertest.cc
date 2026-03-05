@@ -19,6 +19,7 @@
 #include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
 #include "chrome/browser/ash/login/saml/saml_test_utils.h"
+#include "chrome/browser/ash/login/screens/osauth/cryptohome_recovery_setup_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/test/auth_ui_utils.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
@@ -60,6 +62,7 @@
 #include "chrome/browser/ash/login/test/user_auth_config.h"
 #include "chrome/browser/ash/login/users/test_users.h"
 #include "chrome/browser/ash/login/wizard_context.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/ash/net/delay_network_call.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_test_helper.h"
@@ -73,6 +76,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/webui/ash/login/cryptohome_recovery_setup_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/password_selection_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/saml_challenge_key_handler.h"
@@ -2781,10 +2785,32 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
         WizardContext::AuthChangeFlow::kReauthentication;
   }
 
-  void SetAllowPostLoginScreens() {
+  void SetSkipPostLoginScreens(bool skip) {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
-        ->skip_post_login_screens_for_tests = false;
+        ->skip_post_login_screens_for_tests = skip;
+  }
+
+  void SetupRecoverySetupScreenCallbacks() {
+    recovery_original_callback_ =
+        GetRecoverySetupScreen()->get_exit_callback_for_testing();
+
+    GetRecoverySetupScreen()->set_exit_callback_for_testing(
+        recovery_setup_result_test_future_.GetRepeatingCallback());
+  }
+
+  void WaitForPasswordSelectionScreen() {
+    // Wait for the RecoverySetupScreen exit.
+    auto exit_result = recovery_setup_result_test_future_.Take();
+
+    // Stop skipping post login screens, as we want to wait for the password
+    // selection screen.
+    SetSkipPostLoginScreens(/*skip=*/false);
+    recovery_original_callback_.Run(exit_result);
+    GetRecoverySetupScreen()->set_exit_callback_for_testing(
+        recovery_original_callback_);
+
+    OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
   }
 
   void SetLocalPassword(std::string email, GaiaId::Literal gaia_id) {
@@ -2807,16 +2833,27 @@ class SamlTestWithManagedLocalPinAndPassword : public SAMLPolicyTest {
   }
 
  private:
+  CryptohomeRecoverySetupScreen* GetRecoverySetupScreen() {
+    return static_cast<CryptohomeRecoverySetupScreen*>(
+        WizardController::default_controller()->screen_manager()->GetScreen(
+            CryptohomeRecoverySetupScreenView::kScreenId));
+  }
+
+  CryptohomeRecoverySetupScreen::ScreenExitCallback recovery_original_callback_;
+  base::test::TestFuture<CryptohomeRecoverySetupScreen::Result>
+      recovery_setup_result_test_future_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TODO(crbug.com/487601425): Disabled due to consistent test failures.
 IN_PROC_BROWSER_TEST_F(SamlTestWithManagedLocalPinAndPassword,
-                       DISABLED_SkipsSamlConfirmPasswordScreenOnPolicySet) {
+                       SkipsSamlConfirmPasswordScreenOnPolicySet) {
   SetLocalPasswordAsAllowedAuthFactorsPolicy();
 
   ShowGAIALoginForm();
-  SetAllowPostLoginScreens();
+  // Setup the recovery setup screen callbacks, this allows us to wait for the
+  // recovery setup screen (the screen right before the PasswordSelectionScreen)
+  // even if the post login screens are skipped for tests.
+  SetupRecoverySetupScreenCallbacks();
   LogInWithSAMLUsingTemplate(saml_test_users::kFirstUserCorpExampleComEmail,
                              kFirstSAMLUserGaiaId, kTestAuthSIDCookie1,
                              kTestAuthLSIDCookie1, kSamlLoginNoPasswordTemplate,
@@ -2824,7 +2861,7 @@ IN_PROC_BROWSER_TEST_F(SamlTestWithManagedLocalPinAndPassword,
 
   // Wait for the Password selection screen, as the saml confirm password screen
   // will be skipped if local auth factors are enabled.
-  OobeScreenWaiter(PasswordSelectionScreenView::kScreenId).Wait();
+  WaitForPasswordSelectionScreen();
 }
 
 IN_PROC_BROWSER_TEST_F(SamlTestWithManagedLocalPinAndPassword,
