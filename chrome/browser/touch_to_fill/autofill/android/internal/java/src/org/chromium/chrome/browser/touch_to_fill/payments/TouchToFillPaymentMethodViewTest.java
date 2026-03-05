@@ -116,6 +116,7 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 import android.graphics.Rect;
 import android.text.SpannableString;
 import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -2029,11 +2030,8 @@ public class TouchToFillPaymentMethodViewTest {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
-                                    TouchToFillPaymentMethodMediator
-                                            .buildTermsForBnplSelectionAndProgressUi(
-                                                    mActivityTestRule.getActivity(),
-                                                    /* isInProgress= */ true,
-                                                    actionCallback));
+                                    TouchToFillPaymentMethodMediator.buildTermsForBnplProgressUi(
+                                            mActivityTestRule.getActivity(), actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2060,11 +2058,8 @@ public class TouchToFillPaymentMethodViewTest {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
-                                    TouchToFillPaymentMethodMediator
-                                            .buildTermsForBnplSelectionAndProgressUi(
-                                                    mActivityTestRule.getActivity(),
-                                                    /* isInProgress= */ true,
-                                                    actionCallback));
+                                    TouchToFillPaymentMethodMediator.buildTermsForBnplProgressUi(
+                                            mActivityTestRule.getActivity(), actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2091,11 +2086,10 @@ public class TouchToFillPaymentMethodViewTest {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
-                                    TouchToFillPaymentMethodMediator
-                                            .buildTermsForBnplSelectionAndProgressUi(
-                                                    mActivityTestRule.getActivity(),
-                                                    /* isInProgress= */ false,
-                                                    actionCallback));
+                                    TouchToFillPaymentMethodMediator.buildTermsForBnplSelectionUi(
+                                            mActivityTestRule.getActivity(),
+                                            /* hasSeenAiTerms= */ true,
+                                            actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
@@ -2114,6 +2108,41 @@ public class TouchToFillPaymentMethodViewTest {
 
     @Test
     @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
+    public void testBnplSelectionTerms_AiBasedAmountExtractionEnabled_HasNotSeenAiTerms() {
+        Runnable actionCallback = mock(Runnable.class);
+        runOnUiThreadBlocking(
+                () -> {
+                    mTouchToFillPaymentMethodModel
+                            .get(SHEET_ITEMS)
+                            .add(
+                                    TouchToFillPaymentMethodMediator.buildTermsForBnplSelectionUi(
+                                            mActivityTestRule.getActivity(),
+                                            /* hasSeenAiTerms= */ false,
+                                            actionCallback));
+                    mTouchToFillPaymentMethodModel.set(VISIBLE, true);
+                });
+        BottomSheetTestSupport.waitForOpen(mBottomSheetController);
+
+        TextView termsLabel =
+                mTouchToFillPaymentMethodView.getContentView().findViewById(R.id.bnpl_terms_label);
+        assertThat(termsLabel.getText().toString(), is(BNPL_AI_TERMS));
+        assertNotNull(termsLabel.getMovementMethod());
+        SpannableString spannableString = (SpannableString) termsLabel.getText();
+
+        ClickableSpan[] clickableSpans =
+                spannableString.getSpans(0, spannableString.length(), ClickableSpan.class);
+        assertEquals("There should be exactly one clickable span", 1, clickableSpans.length);
+        clickableSpans[0].onClick(termsLabel);
+        waitForEvent(actionCallback).run();
+
+        StyleSpan[] styleSpans =
+                spannableString.getSpans(0, spannableString.length(), StyleSpan.class);
+        assertEquals("There should be exactly one style span", 1, styleSpans.length);
+    }
+
+    @Test
+    @MediumTest
     @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
     public void testBnplSelectionTerms_AiBasedAmountExtractionDisabled() {
         Runnable actionCallback = mock(Runnable.class);
@@ -2122,11 +2151,10 @@ public class TouchToFillPaymentMethodViewTest {
                     mTouchToFillPaymentMethodModel
                             .get(SHEET_ITEMS)
                             .add(
-                                    TouchToFillPaymentMethodMediator
-                                            .buildTermsForBnplSelectionAndProgressUi(
-                                                    mActivityTestRule.getActivity(),
-                                                    /* isInProgress= */ false,
-                                                    actionCallback));
+                                    TouchToFillPaymentMethodMediator.buildTermsForBnplSelectionUi(
+                                            mActivityTestRule.getActivity(),
+                                            /* hasSeenAiTerms= */ true,
+                                            actionCallback));
                     mTouchToFillPaymentMethodModel.set(VISIBLE, true);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);

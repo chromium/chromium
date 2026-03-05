@@ -56,6 +56,8 @@ void AndroidBnplUiDelegate::ShowSelectBnplIssuerUi(
         selected_issuer_callback,
     base::OnceClosure cancel_callback,
     bool has_seen_ai_terms) {
+  // `has_seen_ai_terms` is a no-op on Android. Instead this preference is read
+  // directly on the Java layer in the TouchToFillPaymentMethodMediator.
   client_->ShowTouchToFillBnplIssuers(bnpl_issuer_context, app_locale,
                                       std::move(selected_issuer_callback),
                                       std::move(cancel_callback));

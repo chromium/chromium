@@ -142,10 +142,12 @@ import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillPaym
 
 import android.app.Activity;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.text.SpannableString;
 import android.text.TextPaint;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.text.style.StyleSpan;
 import android.view.View;
 
 import androidx.annotation.IdRes;
@@ -543,6 +545,8 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
             "Payment plans are subject to eligibility. Content from the checkout page is shared"
                 + " with Google to offer these options. To hide pay later options, go to payment"
                 + " settings";
+    private static final String BNPL_AI_TERMS_BOLDED_TEXT =
+            "Content from the checkout page is shared with Google to offer these options.";
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -1261,7 +1265,10 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
 
     @Test
     @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
-    public void testBnplSelectionScreenTerms_AiBasedAmountExtractionEnabled() {
+    public void testBnplSelectionScreenTerms_AiBasedAmountExtractionEnabled_HasSeenAiTerms() {
+        when(mPersonalDataManager.isAutofillAmountExtractionAiTermsSeenPrefEnabled())
+                .thenReturn(true);
+
         mCoordinator
                 .getMediatorForTesting()
                 .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
@@ -1284,6 +1291,53 @@ public class TouchToFillPaymentMethodControllerRobolectricTest {
         ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
         assertEquals("There should be exactly one clickable span", 1, spans.length);
         assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ false);
+
+        // Verify no bold span for AI terms.
+        StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
+        assertEquals(0, styleSpans.length);
+    }
+
+    @Test
+    @EnableFeatures({AutofillFeatures.AUTOFILL_ENABLE_AI_BASED_AMOUNT_EXTRACTION})
+    public void testBnplSelectionScreenTerms_AiBasedAmountExtractionEnabled_HasNotSeenAiTerms() {
+        when(mPersonalDataManager.isAutofillAmountExtractionAiTermsSeenPrefEnabled())
+                .thenReturn(false);
+
+        mCoordinator
+                .getMediatorForTesting()
+                .showBnplIssuers(List.of(BNPL_ISSUER_CONTEXT_AFFIRM_LINKED));
+
+        assertThat(
+                mTouchToFillPaymentMethodModel.get(CURRENT_SCREEN),
+                is(BNPL_ISSUER_SELECTION_SCREEN));
+
+        Optional<PropertyModel> termsModel =
+                getBnplSelectionProgressTermsModel(mTouchToFillPaymentMethodModel.get(SHEET_ITEMS));
+        assertTrue(termsModel.isPresent());
+
+        // Verify the expecteed terms text.
+        CharSequence termsText = termsModel.get().get(TERMS_TEXT);
+        assertThat(termsText.toString(), is(BNPL_AI_TERMS));
+
+        // Verify the expecteed terms is SpannableString type.
+        assertTrue("Terms text should be a SpannableString", termsText instanceof SpannableString);
+        SpannableString spannable = (SpannableString) termsText;
+        ClickableSpan[] spans = spannable.getSpans(0, spannable.length(), ClickableSpan.class);
+        assertEquals("There should be exactly one clickable span", 1, spans.length);
+        assertExpectedBnplTermsLink(spans[0], /* isInProgress= */ false);
+
+        // Verify the bold span for AI terms.
+        StyleSpan[] styleSpans = spannable.getSpans(0, spannable.length(), StyleSpan.class);
+        assertEquals(1, styleSpans.length);
+        StyleSpan boldTextSpan = styleSpans[0];
+        assertTrue(boldTextSpan.getStyle() == Typeface.BOLD);
+        assertEquals(
+                BNPL_AI_TERMS_BOLDED_TEXT,
+                spannable
+                        .toString()
+                        .substring(
+                                spannable.getSpanStart(boldTextSpan),
+                                spannable.getSpanEnd(boldTextSpan)));
     }
 
     @Test
