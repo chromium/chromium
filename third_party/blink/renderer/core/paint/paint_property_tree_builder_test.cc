@@ -5590,6 +5590,30 @@ TEST_P(PaintPropertyTreeBuilderTest, ImageBorderRadius) {
       border_radius_clip);
 }
 
+TEST_P(PaintPropertyTreeBuilderTest, BackdropFilterWhenPrinting) {
+  SetBodyInnerHTML(R"HTML(
+    <div id="target" style="backdrop-filter: blur(5px)"></div>
+  )HTML");
+
+  // When printing backdrop filter should be ignored.
+  gfx::SizeF page_size(100, 100);
+  GetFrame().StartPrinting(WebPrintParams(page_size));
+  GetDocument().View()->UpdateLifecyclePhasesForPrinting();
+
+  auto* properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_FALSE(properties->Effect()->BackdropFilter());
+
+  GetFrame().EndPrinting();
+  UpdateAllLifecyclePhasesForTest();
+
+  properties = PaintPropertiesForElement("target");
+  ASSERT_TRUE(properties);
+  ASSERT_TRUE(properties->Effect());
+  EXPECT_TRUE(properties->Effect()->BackdropFilter());
+}
+
 TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {
   SetBodyInnerHTML("<iframe></iframe>");
   SetChildFrameHTML("");

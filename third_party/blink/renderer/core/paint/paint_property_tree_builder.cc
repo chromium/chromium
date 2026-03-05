@@ -3890,6 +3890,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateLayoutShiftRootChanged(
 void FragmentPaintPropertyTreeBuilder::PopulateBackdropFilterIfNeeded(
     EffectPaintPropertyNode::State& state,
     CompositorElementId mask_compositor_element_id) const {
+  // Backdrop filter is not supported in printing.
+  if (object_.GetDocument().Printing()) {
+    return;
+  }
   CompositorFilterOperations operations;
   SkPath bounds;
   if (object_.IsBoxModelObject()) {
