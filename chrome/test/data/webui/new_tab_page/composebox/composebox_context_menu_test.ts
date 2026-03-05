@@ -262,6 +262,7 @@ suite('NewTabPageComposeboxContextMenuTest', () => {
           dataUrl: null,
           url: null,
           tabId: null,
+          iconName: null,
         });
         await microtasksFinished();
 

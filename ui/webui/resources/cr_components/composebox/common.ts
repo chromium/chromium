@@ -38,6 +38,7 @@ export interface ComposeboxFile {
   url: Url|null;
   tabId: number|null;
   isDeletable: boolean;
+  iconName: string|null;
 }
 
 export interface FileUpload {

@@ -334,6 +334,7 @@ suite('ComposeboxDragAndDrop', () => {
       dataUrl: null,
       url: null,
       tabId: null,
+      iconName: null,
     };
     composeboxElement.addFileContextForTesting(mockAddedFile);
     await microtasksFinished();
@@ -405,6 +406,7 @@ suite('ComposeboxDragAndDrop', () => {
       dataUrl: null,
       url: null,
       tabId: null,
+      iconName: null,
     };
     composeboxElement.addFileContextForTesting(mockAddedFile);
     await microtasksFinished();

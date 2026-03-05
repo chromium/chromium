@@ -186,6 +186,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
       dataUrl: null,
       url: null,
       tabId: null,
+      iconName: null,
     });
     testProxy.element.addFileContextForTesting({
       uuid: FAKE_TOKEN_STRING + '2',
@@ -197,6 +198,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
       dataUrl: null,
       url: null,
       tabId: null,
+      iconName: null,
     });
     await microtasksFinished();
     assertTrue(composeboxDropdown!.hidden);
@@ -358,6 +360,7 @@ suite('NewTabPageComposeboxAutocompleteTest', () => {
       dataUrl: null,
       url: null,
       tabId: null,
+      iconName: null,
     });
     await microtasksFinished();
     assertTrue(composeboxDropdown!.hidden);
