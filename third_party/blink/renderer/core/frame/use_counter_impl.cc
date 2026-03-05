@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/frame/webdx_feature_tracing.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -220,6 +221,8 @@ void UseCounterImpl::Count(const UseCounterFeature& feature,
     if (ReportMeasurement(feature, source_frame))
       TraceMeasurement(feature);
   }
+
+  MaybeEmitWebDXFeatureTraceEvent(feature, source_frame);
 }
 
 void UseCounterImpl::Count(CSSPropertyID property,
