@@ -15,7 +15,6 @@
   --cr-composebox-cancel-button-top: 5px;
   --cr-composebox-custom-font-size: var(--omnibox-font-size);
   --cr-composebox-expanded-border-radius: 16px;
-  --cr-composebox-input-bottom-spacing: 8px;
   --cr-composebox-input-placeholder-font-size: var(--omnibox-font-size);
   --cr-composebox-match-height: 40px;
   --cr-composebox-match-icon-container-padding-inline-start: 20px;
@@ -95,12 +94,23 @@ cr-composebox::part(text-container) {
   height: 44px;
 }
 
+cr-composebox[searchbox-layout-mode='TallBottomContext']::part(context-menu-and-tools) {
+  height: 40px;
+}
+
+cr-composebox[searchbox-layout-mode='TallBottomContext']::part(submit) {
+  bottom: 10px;
+}
+
 cr-composebox::part(voice-icon) {
   --cr-icon-button-fill-color: var(--cr-composebox-voice-icon-fill-color);
 }
 
-cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon),
-cr-composebox[submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
+cr-composebox[searchbox-layout-mode='TallBottomContext']::part(voice-icon) {
+  bottom: 11px;
+}
+
+cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomContext']:not([show-dropdown_])::part(submit) {
   bottom: 6px;
 }
 
@@ -115,10 +125,6 @@ cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallBottomCo
 
 cr-composebox[show-submit_][submit-enabled_][searchbox-layout-mode='TallTopContext']::part(voice-icon) {
   margin-inline-end: -2px;
-}
-
-cr-composebox[searchbox-layout-mode='TallBottomContext'][show-dropdown_]::part(voice-icon) {
-  bottom: 9px;
 }
 
 :host-context([dir='rtl']) cr-composebox[searchbox-layout-mode='Compact']::part(context-menu-entrypoint-icon) {
