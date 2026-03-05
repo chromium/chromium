@@ -28,29 +28,21 @@ IqSender::~IqSender() {
   signal_strategy_->RemoveListener(this);
 }
 
-std::unique_ptr<IqRequest> IqSender::SendIq(const JingleMessage& message,
+std::unique_ptr<IqRequest> IqSender::SendIq(JingleMessage&& message,
                                             ReplyCallback callback) {
+  if (message.message_id.empty()) {
+    message.message_id = signal_strategy_->GetNextId();
+  }
   std::string id = message.message_id;
-  if (id.empty()) {
-    // message_id is not const, but message is. We need a mutable copy or
-    // handle this differently.
-    JingleMessage message_copy = message;
-    id = signal_strategy_->GetNextId();
-    message_copy.message_id = id;
-    if (!signal_strategy_->SendMessage(
-            SignalingMessage(std::move(message_copy)))) {
-      return nullptr;
-    }
-  } else {
-    if (!signal_strategy_->SendMessage(SignalingMessage(message))) {
-      return nullptr;
-    }
+  std::string to = message.to.id();
+
+  if (!signal_strategy_->SendMessage(SignalingMessage(std::move(message)))) {
+    return nullptr;
   }
 
   DCHECK(requests_.find(id) == requests_.end());
   bool callback_exists = !callback.is_null();
-  auto request =
-      std::make_unique<IqRequest>(this, std::move(callback), message.to.id());
+  auto request = std::make_unique<IqRequest>(this, std::move(callback), to);
   if (callback_exists) {
     requests_[id] = request.get();
   }

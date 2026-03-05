@@ -384,8 +384,9 @@ void JingleSession::SendTransportInfo(
   AddPluginAttachments(message.get());
 
   auto request = session_manager_->iq_sender()->SendIq(
-      *message, base::BindOnce(&JingleSession::OnTransportInfoResponse,
-                               base::Unretained(this)));
+      std::move(*message),
+      base::BindOnce(&JingleSession::OnTransportInfoResponse,
+                     base::Unretained(this)));
   if (request) {
     request->SetTimeout(base::Seconds(kTransportInfoTimeout));
     transport_info_requests_.push_back(std::move(request));
@@ -484,8 +485,8 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
 
   JingleMessage::ActionType action = message->action();
   auto request = session_manager_->iq_sender()->SendIq(
-      *message, base::BindOnce(&JingleSession::OnMessageResponse,
-                               base::Unretained(this), action));
+      std::move(*message), base::BindOnce(&JingleSession::OnMessageResponse,
+                                          base::Unretained(this), action));
 
   int timeout = kDefaultMessageTimeout;
   if (action == JingleMessage::ActionType::kSessionInitiate ||
