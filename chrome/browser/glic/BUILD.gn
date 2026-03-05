@@ -384,6 +384,7 @@ source_set("impl") {
     "//components/sessions",
     "//components/skills:features",
     "//components/skills/public",
+    "//components/url_formatter",
     "//components/variations/service",
     "//components/webui/chrome_urls",
     "//third_party/metrics_proto",

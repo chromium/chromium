@@ -570,6 +570,7 @@ export function selectAutofillSuggestionsDialogRequestToClient(
         r => ({
           ...r,
           requestedData: Number(r.requestedData),
+          formattedRequestOrigin: r.formattedRequestOrigin,
           suggestions: r.suggestions.map(
               s => ({
                 ...s,

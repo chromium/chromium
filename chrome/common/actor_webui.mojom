@@ -113,6 +113,8 @@ struct AutofillSuggestion {
 struct FormFillingRequest {
   // See the FormFillingRequest.RequestedData enum in actions_data.proto.
   int64 requested_data;
+  // The origin formatted without a scheme for security display only.
+  string formatted_request_origin;
   // The list of suggestions to show for this request.
   array<AutofillSuggestion> suggestions;
 };

@@ -101,6 +101,7 @@
 #include "components/skills/public/skills_metrics.h"
 #include "components/sync/protocol/skill_specifics.pb.h"
 #include "components/tabs/public/tab_interface.h"
+#include "components/url_formatter/elide_url.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
@@ -2354,6 +2355,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
       auto mojo_request = actor::webui::mojom::FormFillingRequest::New();
       mojo_request->requested_data =
           static_cast<int64_t>(request.requested_data);
+      mojo_request->formatted_request_origin =
+          base::UTF16ToUTF8(url_formatter::FormatOriginForSecurityDisplay(
+              request.request_origin,
+              url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS));
       for (const auto& suggestion : request.suggestions) {
         auto mojo_suggestion = actor::webui::mojom::AutofillSuggestion::New();
         mojo_suggestion->id = base::NumberToString(suggestion.id.value());

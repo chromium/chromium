@@ -2301,6 +2301,11 @@ export declare interface FormFillingRequest {
    */
   requestedData: number;
   /**
+   * The origin formatted without a scheme for security display only. This
+   * property may be undefined in older hosts.
+   */
+  formattedRequestOrigin?: string;
+  /**
    * The list of suggestions for this form. The web client shows a selector with
    * these suggestions.
    */
