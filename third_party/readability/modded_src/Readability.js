@@ -2001,7 +2001,7 @@ Readability.prototype = {
     // Penalize element that has a lot of text.
     const textContent = el.textContent.trim();
     if (textContent.length > 300) {
-      score -= 50;
+      score -= 0.25 * (textContent.length - 300);
     }
     return {score, bestImg};
   },
@@ -2052,15 +2052,15 @@ Readability.prototype = {
    *     contain this data, or null if no suitable lead image is found.
    */
   _getLeadImageData(topCandidate) {
-    const NUM_SIBLINGS_TO_SCAN = 4;
-    const MIN_LEAD_IMAGE_SCORE = 40;
+    const PREVIOUS_SCAN_COUNT = 10;
+    const MIN_LEAD_IMAGE_SCORE = 30;
     const leadCandidates =
-        this._getPreviousElements(topCandidate, NUM_SIBLINGS_TO_SCAN);
+        this._getPreviousElements(topCandidate, PREVIOUS_SCAN_COUNT);
     if (leadCandidates.length === 0) {
       return null;
     }
 
-    // First pass: Find the best image.
+    // First pass: Find the best lead image.
     const imageRatings = leadCandidates.map((el) => this._rateLeadImageIn(el));
     const [bestImageRating, bestImageRatingIndex] =
         this._argmax(imageRatings, (rating) => rating?.score ?? -1);
