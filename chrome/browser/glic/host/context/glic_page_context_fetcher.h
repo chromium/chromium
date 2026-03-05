@@ -21,7 +21,10 @@ void FetchPageContext(
     base::OnceCallback<void(
         base::expected<glic::mojom::GetContextResultPtr,
                        page_content_annotations::FetchPageContextErrorDetails>)>
-        callback);
+        callback,
+    std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+        progress_listener,
+    bool is_screenshot_annotated);
 
 }  // namespace glic
 

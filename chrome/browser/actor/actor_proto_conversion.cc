@@ -689,6 +689,9 @@ class ActorJournalFetchPageProgressListener
     }
   }
 
+  void ScreenshotCaptured(const SkBitmap& bitmap) override {}
+  void ScreenshotRedacted(const SkBitmap& bitmap) override {}
+
   void BeginAPC() override {
     apc_entry_ = journal_->CreatePendingAsyncEntry(
         url_, task_id_, journal_->AllocateDynamicTrackUUID(), "GrabAPC", {});

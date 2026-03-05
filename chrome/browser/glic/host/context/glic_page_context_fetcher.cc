@@ -51,6 +51,59 @@ class GlicPageContextFetcher {
 
 namespace {
 
+class ChainedProgressListener
+    : public page_content_annotations::FetchPageProgressListener {
+ public:
+  ChainedProgressListener() = default;
+
+  void AddListener(
+      std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+          listener) {
+    listeners_.push_back(std::move(listener));
+  }
+
+  void BeginScreenshot() override {
+    for (auto& listener : listeners_) {
+      listener->BeginScreenshot();
+    }
+  }
+
+  void ScreenshotCaptured(const SkBitmap& bitmap) override {
+    for (auto& listener : listeners_) {
+      listener->ScreenshotCaptured(bitmap);
+    }
+  }
+
+  void ScreenshotRedacted(const SkBitmap& bitmap) override {
+    for (auto& listener : listeners_) {
+      listener->ScreenshotRedacted(bitmap);
+    }
+  }
+
+  void EndScreenshot(std::optional<std::string> error) override {
+    for (auto& listener : listeners_) {
+      listener->EndScreenshot(error);
+    }
+  }
+
+  void BeginAPC() override {
+    for (auto& listener : listeners_) {
+      listener->BeginAPC();
+    }
+  }
+
+  void EndAPC(std::optional<std::string> error) override {
+    for (auto& listener : listeners_) {
+      listener->EndAPC(error);
+    }
+  }
+
+ private:
+  std::vector<
+      std::unique_ptr<page_content_annotations::FetchPageProgressListener>>
+      listeners_;
+};
+
 void HandleFetchPageResult(
     base::WeakPtr<tabs::TabInterface> tab,
     glic::mojom::TabDataPtr tab_data,
@@ -61,6 +114,7 @@ void HandleFetchPageResult(
                        page_content_annotations::FetchPageContextErrorDetails>)>
         callback,
     std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry,
+    bool is_screenshot_annotated,
     base::expected<
         std::unique_ptr<page_content_annotations::FetchPageContextResult>,
         page_content_annotations::FetchPageContextErrorDetails> fetch_result) {
@@ -153,6 +207,14 @@ void HandleFetchPageResult(
       }
     }
 
+    // If the screenshot is going to be annotated mark the APC as such.
+    if (is_screenshot_annotated) {
+      page_context.annotated_page_content_result->proto
+          .mutable_gemini_in_chrome_page_metadata()
+          ->mutable_screenshot_info()
+          ->set_has_selection_region_in_screenshot(true);
+    }
+
     annotated_page_data->annotated_page_content = mojo_base::ProtoWrapper(
         page_context.annotated_page_content_result->proto);
 
@@ -177,15 +239,16 @@ void FetchPageContext(
     base::OnceCallback<void(
         base::expected<glic::mojom::GetContextResultPtr,
                        page_content_annotations::FetchPageContextErrorDetails>)>
-        callback) {
+        callback,
+    std::unique_ptr<page_content_annotations::FetchPageProgressListener>
+        progress_listener,
+    bool is_screenshot_annotated) {
   CHECK(tab);
   CHECK(callback);
 
   auto* web_contents = tab->GetContents();
 
   std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry;
-  std::unique_ptr<page_content_annotations::FetchPageProgressListener>
-      progress_listener;
 #if !BUILDFLAG(IS_ANDROID)  // NEEDS_ANDROID_IMPL
   if (auto* actor_keyed_service =
           actor::ActorKeyedService::Get(web_contents->GetBrowserContext())) {
@@ -193,8 +256,18 @@ void FetchPageContext(
     journal_entry = actor_keyed_service->GetJournal().CreatePendingAsyncEntry(
         url, actor::TaskId(), actor::kGlobalTrackUUID, "GlicFetchPageContext",
         {});
-    progress_listener = actor::CreateActorJournalFetchPageProgressListener(
+
+    auto journal_listener = actor::CreateActorJournalFetchPageProgressListener(
         actor_keyed_service->GetJournal().GetSafeRef(), url, actor::TaskId());
+    if (progress_listener) {
+      std::unique_ptr<ChainedProgressListener> chained_listener =
+          std::make_unique<ChainedProgressListener>();
+      chained_listener->AddListener(std::move(journal_listener));
+      chained_listener->AddListener(std::move(progress_listener));
+      progress_listener = std::move(chained_listener);
+    } else {
+      progress_listener = std::move(journal_listener);
+    }
   }
 #endif
 
@@ -244,7 +317,7 @@ void FetchPageContext(
           &HandleFetchPageResult, tab->GetWeakPtr(), CreateTabData(tab),
           web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin(),
           std::move(media_root_node), std::move(callback),
-          std::move(journal_entry)));
+          std::move(journal_entry), is_screenshot_annotated));
 }
 
 }  // namespace glic

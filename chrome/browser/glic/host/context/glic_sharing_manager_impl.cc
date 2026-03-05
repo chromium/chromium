@@ -332,7 +332,9 @@ void GlicSharingManagerImpl::GetContextFromTabImpl(
     base::OnceCallback<void(GlicGetContextResult)> callback) {
   FetchPageContext(
       tab, options,
-      base::BindOnce(&TransformFetcherResult).Then(std::move(callback)));
+      base::BindOnce(&TransformFetcherResult).Then(std::move(callback)),
+      /*progress_listener=*/nullptr,
+      /*is_screenshot_annotated=*/false);
 }
 
 }  // namespace glic

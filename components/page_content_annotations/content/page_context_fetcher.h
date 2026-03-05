@@ -267,12 +267,12 @@ extern const base::FeatureParam<base::TimeDelta> kScreenshotTimeout;
 class FetchPageProgressListener {
  public:
   virtual ~FetchPageProgressListener() = default;
-  virtual void BeginScreenshot() {}
-  virtual void ScreenshotCaptured(const SkBitmap& bitmap) {}
-  virtual void ScreenshotRedacted(const SkBitmap& bitmap) {}
-  virtual void EndScreenshot(std::optional<std::string> error) {}
-  virtual void BeginAPC() {}
-  virtual void EndAPC(std::optional<std::string> error) {}
+  virtual void BeginScreenshot() = 0;
+  virtual void ScreenshotCaptured(const SkBitmap& bitmap) = 0;
+  virtual void ScreenshotRedacted(const SkBitmap& bitmap) = 0;
+  virtual void EndScreenshot(std::optional<std::string> error) = 0;
+  virtual void BeginAPC() = 0;
+  virtual void EndAPC(std::optional<std::string> error) = 0;
 };
 
 using FetchPageContextResultCallback =

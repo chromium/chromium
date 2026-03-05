@@ -6,6 +6,8 @@
 
 #include "base/strings/to_string.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
+#include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -18,6 +20,7 @@
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
 #include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 // TODO(http://b/485358530): Consider `OverlayBaseController::State` to the
@@ -72,6 +75,11 @@ class SelectionOverlayFetchPageProgressListener
   }
 
   ~SelectionOverlayFetchPageProgressListener() override = default;
+
+  void BeginScreenshot() override {}
+  void EndScreenshot(std::optional<std::string> error) override {}
+  void BeginAPC() override {}
+  void EndAPC(std::optional<std::string> error) override {}
 
   void ScreenshotCaptured(const SkBitmap& bitmap) override {
     std::move(screenshot_ready_callback_).Run(bitmap);
@@ -153,24 +161,21 @@ void SelectionOverlayController::InitializeOverlay() {
 }
 
 void SelectionOverlayController::StartScreenshotFlow() {
-  page_content_annotations::FetchPageContextOptions options;
-  options.screenshot_options =
-      page_content_annotations::ScreenshotOptions::ViewportOnly(
-          /*paint_preview_options=*/std::nullopt,
-          /*screenshot_collection_options=*/std::nullopt);
-  options.annotated_page_content_options =
-      optimization_guide::DefaultAIPageContentOptions(
-          /*on_critical_path=*/true);
+  auto options = mojom::GetTabContextOptions::New();
+  options->include_viewport_screenshot = true;
+  options->include_annotated_page_content = true;
+
   auto progress_listener =
       std::make_unique<SelectionOverlayFetchPageProgressListener>(
           base::BindOnce(&SelectionOverlayController::OnScreenshotTaken,
                          weak_factory_.GetWeakPtr()),
           base::BindOnce(&SelectionOverlayController::OnScreenshotRedacted,
                          weak_factory_.GetWeakPtr()));
-  page_content_annotations::FetchPageContext(
-      *tab_->GetContents(), options, std::move(progress_listener),
-      base::BindOnce(&SelectionOverlayController::PageAnnotationReady,
-                     weak_factory_.GetWeakPtr()));
+  FetchPageContext(tab_, *options,
+                   base::BindOnce(&SelectionOverlayController::PageContextReady,
+                                  weak_factory_.GetWeakPtr()),
+                   std::move(progress_listener),
+                   /*is_screenshot_annotated=*/true);
 }
 
 void SelectionOverlayController::NotifyOverlayClosing() {}
@@ -185,29 +190,21 @@ void SelectionOverlayController::OnScreenshotRedacted(const SkBitmap& bitmap) {
   redacted_screenshot_ = bitmap;
 }
 
-void SelectionOverlayController::PageAnnotationReady(
-    page_content_annotations::FetchPageContextResultCallbackArg fetch_result) {
-  if (!fetch_result.has_value()) {
+void SelectionOverlayController::PageContextReady(
+    base::expected<glic::mojom::GetContextResultPtr,
+                   page_content_annotations::FetchPageContextErrorDetails>
+        fetch_result) {
+  if (!fetch_result.has_value() || !fetch_result.value()->is_tab_context()) {
     RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
 
-  page_content_annotations::FetchPageContextResult& page_context =
-      **fetch_result;
-
-  if (!page_context.annotated_page_content_result.has_value() ||
-      !page_context.screenshot_result.has_value()) {
+  tab_context_ = std::move(fetch_result.value()->get_tab_context());
+  if (!tab_context_->annotated_page_data ||
+      !tab_context_->viewport_screenshot) {
     RequestSyncClose(DismissalSource::kErrorScreenshotCreationFailed);
     return;
   }
-
-  page_context.annotated_page_content_result->proto
-      .mutable_gemini_in_chrome_page_metadata()
-      ->mutable_screenshot_info()
-      ->set_has_selection_region_in_screenshot(true);
-
-  ai_page_content_ =
-      std::move(page_context.annotated_page_content_result->proto);
 }
 
 void SelectionOverlayController::SetScreenshot(const SkBitmap& screenshot,
@@ -307,6 +304,7 @@ void SelectionOverlayController::Reset() {
   screenshot_available_ = false;
   encoded_.reset();
   selected_regions_.clear();
+  tab_context_.reset();
 }
 
 void SelectionOverlayController::RenderRegions() {
@@ -315,17 +313,20 @@ void SelectionOverlayController::RenderRegions() {
   }
 
   std::vector<SkRect> regions;
+  std::vector<gfx::Rect> gfx_regions;
   std::vector<selection::SelectedRegionPtr> regions_mojo;
   // TODO(http://b/452032491): Reconsider what happens if the regions overlap.
   // TODO(http://b/452032491): Currently this class is only used once per
   // selection and only one region is supported, so it is fine to always loop
   // through all the regions. Revisit once we expand the selections.
   for (const auto& [id, region] : selected_regions_) {
-    SkRect rect_on_canvas = gfx::RectFToSkRect(
-        GetRectForRegion(redacted_screenshot_, region->region));
+    gfx::RectF gfx_rect_on_canvas =
+        GetRectForRegion(redacted_screenshot_, region->region);
+    SkRect rect_on_canvas = gfx::RectFToSkRect(gfx_rect_on_canvas);
     if (!rect_on_canvas.isEmpty() &&
         redacted_screenshot_.bounds().contains(rect_on_canvas)) {
       regions.push_back(rect_on_canvas);
+      gfx_regions.push_back(gfx::ToEnclosingRect(gfx_rect_on_canvas));
       regions_mojo.push_back(region.Clone());
     } else {
       // TODO(http://b/485358530): Record proper histograms for the error case.
@@ -334,6 +335,13 @@ void SelectionOverlayController::RenderRegions() {
   }
 
   page_->SetPostRegionSelections(std::move(regions_mojo));
+
+  mojom::AdditionalContextPtr additional_context =
+      CreateAdditionalContext(gfx_regions);
+  GlicKeyedService* service =
+      GlicKeyedService::Get(tab_->GetBrowserWindowInterface()->GetProfile());
+  service->SendAdditionalContext(tab_->GetHandle(),
+                                 std::move(additional_context));
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
@@ -372,6 +380,24 @@ void SelectionOverlayController::RenderRegions() {
           redacted_screenshot_, std::move(regions)),
       base::BindOnce(&SelectionOverlayController::RegionsRendererd,
                      weak_factory_.GetWeakPtr()));
+}
+
+glic::mojom::AdditionalContextPtr
+SelectionOverlayController::CreateAdditionalContext(
+    const std::vector<gfx::Rect>& regions) {
+  auto context = glic::mojom::AdditionalContext::New();
+  std::vector<glic::mojom::AdditionalContextPartPtr> parts;
+  mojom::TabContextPtr tab_context = tab_context_.Clone();
+  parts.push_back(glic::mojom::AdditionalContextPart::NewTabContext(
+      std::move(tab_context)));
+  for (const auto& region : regions) {
+    parts.push_back(glic::mojom::AdditionalContextPart::NewRegion(
+        glic::mojom::CapturedRegion::NewRect(region)));
+  }
+  context->source = glic::mojom::AdditionalContextSource::kRegionSelection;
+  context->tab_id = tab_->GetHandle().raw_value();
+  context->parts = std::move(parts);
+  return context;
 }
 
 void SelectionOverlayController::RegionsRendererd(

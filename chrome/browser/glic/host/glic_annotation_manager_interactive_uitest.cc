@@ -193,7 +193,9 @@ class GlicAnnotationManagerUiTestBase : public InteractiveGlicTest {
                         .As<optimization_guide::proto::AnnotatedPageContent>()
                         .value());
                 run_loop.Quit();
-              }));
+              }),
+          /*progress_listener=*/nullptr,
+          /*is_screenshot_annotated=*/false);
 
       run_loop.Run();
     }));
