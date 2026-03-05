@@ -11,23 +11,26 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/feature_list.h"
+#include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/stringprintf.h"
 #include "components/private_ai/attestation/server_evidence.h"
 #include "components/private_ai/attestation/server_verification_key.h"
 #include "components/private_ai/attestation/verification_key_utils.h"
-#include "components/private_ai/features.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "crypto/signature_verifier.h"
 #include "third_party/boringssl/src/include/openssl/err.h"
 
 namespace private_ai {
 
-AttestationHandlerImpl::AttestationHandlerImpl()
-    : verification_keys_(LoadVerificationKeys(GetServerVerificationKey())) {}
+AttestationHandlerImpl::AttestationHandlerImpl(PrivateAiLogger* logger)
+    : logger_(logger),
+      verification_keys_(LoadVerificationKeys(GetServerVerificationKey())) {}
 
 AttestationHandlerImpl::AttestationHandlerImpl(
+    PrivateAiLogger* logger,
     std::map<uint32_t, VerificationKey> verification_keys)
-    : verification_keys_(std::move(verification_keys)) {}
+    : logger_(logger), verification_keys_(std::move(verification_keys)) {}
 
 AttestationHandlerImpl::~AttestationHandlerImpl() = default;
 
@@ -39,30 +42,28 @@ AttestationHandlerImpl::GetAttestationRequest() {
 
 bool AttestationHandlerImpl::VerifyAttestationResponse(
     const AttestationEvidence& evidence) {
-  if (!base::FeatureList::IsEnabled(kPrivateAiServerAttestation)) {
-    return true;
-  }
-
   if (verification_keys_.empty()) {
-    LOG(ERROR) << "No valid verification keys loaded.";
+    logger_->LogError(FROM_HERE, "No valid verification keys loaded.");
     return false;
   }
 
   if (evidence.endorsed_evidence.empty()) {
-    LOG(ERROR) << "No endorsed evidence found.";
+    logger_->LogError(FROM_HERE, "No endorsed evidence found.");
     return false;
   }
 
   for (const auto& [id, endorsed_evidence] : evidence.endorsed_evidence) {
     if (endorsed_evidence.endorsements.empty()) {
-      LOG(ERROR) << "No endorsements found for id: " << id;
+      logger_->LogError(
+          FROM_HERE,
+          base::StringPrintf("No endorsements found for id: %s", id.c_str()));
       return false;
     }
 
     for (const auto& endorsement : endorsed_evidence.endorsements) {
       auto parsed_signature = ParseTinkSignature(endorsement.signature);
       if (!parsed_signature) {
-        LOG(ERROR) << "Failed to parse Tink signature.";
+        logger_->LogError(FROM_HERE, "Failed to parse Tink signature.");
         return false;
       }
 
@@ -70,7 +71,10 @@ bool AttestationHandlerImpl::VerifyAttestationResponse(
 
       auto key_it = verification_keys_.find(key_id);
       if (key_it == verification_keys_.end()) {
-        LOG(ERROR) << "Verification key not found for key ID: " << key_id;
+        logger_->LogError(
+            FROM_HERE,
+            base::StringPrintf("Verification key not found for key ID: %u",
+                               key_id));
         return false;
       }
 
@@ -82,12 +86,14 @@ bool AttestationHandlerImpl::VerifyAttestationResponse(
       if (!verifier.VerifyInit(
               verification_key.algorithm, raw_signature,
               base::as_bytes(base::span(verification_key.public_key)))) {
-        LOG(ERROR) << "SignatureVerifier::VerifyInit failed.";
+        logger_->LogError(FROM_HERE, "SignatureVerifier::VerifyInit failed.");
         uint32_t err = ERR_get_error();  // Get the most recent error.
         if (err != 0) {
           char buf[256];
           ERR_error_string_n(err, buf, sizeof(buf));
-          LOG(ERROR) << "VerifyInit BoringSSL error: " << buf;
+          logger_->LogError(
+              FROM_HERE,
+              base::StringPrintf("VerifyInit BoringSSL error: %s", buf));
         }
         return false;
       }
@@ -103,7 +109,10 @@ bool AttestationHandlerImpl::VerifyAttestationResponse(
       }
 
       if (!verifier.VerifyFinal()) {
-        LOG(ERROR) << "Signature verification failed for key ID: " << key_id;
+        logger_->LogError(
+            FROM_HERE,
+            base::StringPrintf("Signature verification failed for key ID: %u",
+                               key_id));
         return false;
       }
     }

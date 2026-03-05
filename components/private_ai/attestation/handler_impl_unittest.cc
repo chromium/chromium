@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/private_ai/attestation/server_verification_key.h"
+#include "components/private_ai/common/private_ai_logger.h"
 #include "components/private_ai/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +19,8 @@ namespace private_ai {
 namespace {
 
 TEST(AttestationHandlerImplTest, GetAttestationRequest) {
-  AttestationHandlerImpl attestation_handler;
+  PrivateAiLogger logger;
+  AttestationHandlerImpl attestation_handler(&logger);
   auto request = attestation_handler.GetAttestationRequest();
   ASSERT_TRUE(request.has_value());
   EXPECT_TRUE(request->assertions().empty());
@@ -41,15 +43,15 @@ const char kTestSignatureHex[] =
 class VerifyAttestationResponseTest : public ::testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
+  PrivateAiLogger logger_;
 };
 
 TEST_F(VerifyAttestationResponseTest, Success) {
   base::FieldTrialParams params;
   params["url"] = "staging-private-ai.corp.google.com";
-  feature_list_.InitWithFeaturesAndParameters(
-      {{kPrivateAi, params}, {kPrivateAiServerAttestation, {}}}, {});
+  feature_list_.InitAndEnableFeatureWithParameters(kPrivateAi, params);
 
-  AttestationHandlerImpl attestation_handler;
+  AttestationHandlerImpl attestation_handler(&logger_);
 
   AttestationEvidence evidence;
   {
@@ -65,30 +67,17 @@ TEST_F(VerifyAttestationResponseTest, Success) {
   EXPECT_TRUE(attestation_handler.VerifyAttestationResponse(evidence));
 }
 
-TEST_F(VerifyAttestationResponseTest, ServerAttestationDisabled) {
-  feature_list_.InitAndDisableFeature(kPrivateAiServerAttestation);
-
-  AttestationHandlerImpl attestation_handler;
-
-  // With the feature disabled, verification should be skipped and return true,
-  // even with empty evidence.
-  AttestationEvidence evidence;
-  EXPECT_TRUE(attestation_handler.VerifyAttestationResponse(evidence));
-}
-
 TEST_F(VerifyAttestationResponseTest, EmptyEvidence) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   AttestationHandlerImpl attestation_handler(
-      LoadVerificationKeys(GetStagingKeysForTesting()));
+      &logger_, LoadVerificationKeys(GetStagingKeysForTesting()));
 
   AttestationEvidence evidence;
   EXPECT_FALSE(attestation_handler.VerifyAttestationResponse(evidence));
 }
 
 TEST_F(VerifyAttestationResponseTest, EmptyEndorsements) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   AttestationHandlerImpl attestation_handler(
-      LoadVerificationKeys(GetStagingKeysForTesting()));
+      &logger_, LoadVerificationKeys(GetStagingKeysForTesting()));
 
   AttestationEvidence evidence;
   evidence.endorsed_evidence["123"] = EndorsedEvidence();
@@ -96,9 +85,8 @@ TEST_F(VerifyAttestationResponseTest, EmptyEndorsements) {
 }
 
 TEST_F(VerifyAttestationResponseTest, MalformedSignature) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   AttestationHandlerImpl attestation_handler(
-      LoadVerificationKeys(GetStagingKeysForTesting()));
+      &logger_, LoadVerificationKeys(GetStagingKeysForTesting()));
 
   AttestationEvidence evidence;
   {
@@ -115,10 +103,9 @@ TEST_F(VerifyAttestationResponseTest, MalformedSignature) {
 }
 
 TEST_F(VerifyAttestationResponseTest, VerificationKeysEmpty) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   // Pass in an empty vector of keys.
   std::map<uint32_t, VerificationKey> empty_keys;
-  AttestationHandlerImpl attestation_handler(std::move(empty_keys));
+  AttestationHandlerImpl attestation_handler(&logger_, std::move(empty_keys));
 
   // Even with valid evidence, the response should be rejected because the
   // keys are empty.
@@ -137,9 +124,8 @@ TEST_F(VerifyAttestationResponseTest, VerificationKeysEmpty) {
 }
 
 TEST_F(VerifyAttestationResponseTest, KeyNotFound) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   AttestationHandlerImpl attestation_handler(
-      LoadVerificationKeys(GetStagingKeysForTesting()));
+      &logger_, LoadVerificationKeys(GetStagingKeysForTesting()));
 
   AttestationEvidence evidence;
   {
@@ -159,10 +145,8 @@ TEST_F(VerifyAttestationResponseTest, KeyNotFound) {
 TEST_F(VerifyAttestationResponseTest, WrongSignature) {
   base::FieldTrialParams params;
   params["url"] = "staging-private-ai.corp.google.com";
-  feature_list_.InitWithFeaturesAndParameters(
-      {{kPrivateAi, params}, {kPrivateAiServerAttestation, {}}}, {});
 
-  AttestationHandlerImpl attestation_handler;
+  AttestationHandlerImpl attestation_handler(&logger_);
 
   AttestationEvidence evidence;
   {
@@ -182,7 +166,6 @@ TEST_F(VerifyAttestationResponseTest, WrongSignature) {
 
 // Test to cover the VerifyInit failure.
 TEST_F(VerifyAttestationResponseTest, VerifyInitFails) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   std::map<uint32_t, VerificationKey> keys =
       LoadVerificationKeys(GetStagingKeysForTesting());
   ASSERT_FALSE(keys.empty());
@@ -196,7 +179,7 @@ TEST_F(VerifyAttestationResponseTest, VerifyInitFails) {
   // fail inside VerifyInit.
   corrupted_key.public_key.clear();
 
-  AttestationHandlerImpl attestation_handler(std::move(keys));
+  AttestationHandlerImpl attestation_handler(&logger_, std::move(keys));
 
   AttestationEvidence evidence;
   {
@@ -222,7 +205,6 @@ TEST_F(VerifyAttestationResponseTest, VerifyInitFails) {
 
 // Test to ensure the non-LEGACY key type path is taken in VerifyUpdate.
 TEST_F(VerifyAttestationResponseTest, ForcedNonLegacyKeyType) {
-  feature_list_.InitAndEnableFeature(kPrivateAiServerAttestation);
   base::span<const ProcessedKey> original_keys = GetStagingKeysForTesting();
   ASSERT_FALSE(original_keys.empty());
 
@@ -231,7 +213,7 @@ TEST_F(VerifyAttestationResponseTest, ForcedNonLegacyKeyType) {
 
   std::vector<ProcessedKey> key_vector = {modified_processed_key};
   std::map<uint32_t, VerificationKey> keys = LoadVerificationKeys(key_vector);
-  AttestationHandlerImpl attestation_handler(std::move(keys));
+  AttestationHandlerImpl attestation_handler(&logger_, std::move(keys));
 
   AttestationEvidence evidence;
   {

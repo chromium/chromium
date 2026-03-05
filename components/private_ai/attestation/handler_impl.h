@@ -8,21 +8,24 @@
 #include <map>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/attestation/server_verification_key.h"
 #include "components/private_ai/attestation/verification_key_utils.h"
 
 namespace private_ai {
 
+class PrivateAiLogger;
+
 class AttestationHandlerImpl : public AttestationHandler {
  public:
   // Default constructor: Loads verification keys based on the environment.
-  AttestationHandlerImpl();
+  explicit AttestationHandlerImpl(PrivateAiLogger* logger);
 
   // Constructor for testing purposes, allowing injection of a pre-loaded
   // map of verification keys.
-  explicit AttestationHandlerImpl(
-      std::map<uint32_t, VerificationKey> verification_keys);
+  AttestationHandlerImpl(PrivateAiLogger* logger,
+                         std::map<uint32_t, VerificationKey> verification_keys);
 
   ~AttestationHandlerImpl() override;
 
@@ -35,6 +38,7 @@ class AttestationHandlerImpl : public AttestationHandler {
   bool VerifyAttestationResponse(const AttestationEvidence& evidence) override;
 
  private:
+  raw_ptr<PrivateAiLogger> logger_;
   std::map<uint32_t, VerificationKey> verification_keys_;
 };
 

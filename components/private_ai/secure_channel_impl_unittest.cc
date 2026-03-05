@@ -11,10 +11,12 @@
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/attestation/server_evidence.h"
+#include "components/private_ai/features.h"
 #include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/secure_session.h"
 #include "components/private_ai/transport.h"
@@ -221,6 +223,7 @@ class SecureChannelImplTest : public ::testing::Test {
 
   void SetUpHandshake();
 
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
 
@@ -793,6 +796,39 @@ TEST_F(SecureChannelImplTest, WriteInClosedState) {
   // Write fail immediately when channel is closed.
   EXPECT_FALSE(secure_channel_->Write(StringToBytes("secret request")));
   EXPECT_FALSE(future.Get().has_value());
+}
+
+// Tests that attestation verification is skipped if the feature is disabled.
+TEST_F(SecureChannelImplTest, AttestationDisabledSkipsVerification) {
+  feature_list_.InitAndDisableFeature(kPrivateAiServerAttestation);
+
+  oak::session::v1::SessionRequest expected_attestation_request;
+  expected_attestation_request.mutable_attest_request();
+  oak::session::v1::SessionResponse attestation_session_response;
+  attestation_session_response.mutable_attest_response();
+
+  EXPECT_CALL(*attestation_handler_, GetAttestationRequest())
+      .WillOnce(Return(expected_attestation_request.attest_request()));
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_attestation_request)))
+      .WillOnce(
+          [&]() { response_callback_.Run(attestation_session_response); });
+
+  // Verification should NOT be called.
+  EXPECT_CALL(*attestation_handler_, VerifyAttestationResponse(_)).Times(0);
+
+  // The state machine should proceed to the handshake phase.
+  oak::session::v1::SessionRequest expected_handshake_request;
+  expected_handshake_request.mutable_handshake_request();
+  base::RunLoop run_loop;
+  EXPECT_CALL(*transport_,
+              Send(EqualsSessionRequest(expected_handshake_request)))
+      .WillOnce([&]() { run_loop.Quit(); });
+
+  base::test::TestFuture<base::expected<Response, ErrorCode>> future;
+  CreateSecureChannel(future.GetRepeatingCallback());
+  EXPECT_TRUE(secure_channel_->Write(StringToBytes("secret request")));
+  run_loop.Run();
 }
 
 }  // namespace

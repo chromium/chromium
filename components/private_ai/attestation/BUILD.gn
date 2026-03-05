@@ -18,6 +18,7 @@ source_set("attestation") {
   deps = [
     "//base",
     "//components/private_ai:features",
+    "//components/private_ai/common",
     "//crypto",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",
@@ -35,6 +36,7 @@ source_set("unit_tests") {
     ":attestation",
     "//base/test:test_support",
     "//components/private_ai:features",
+    "//components/private_ai/common",
     "//testing/gtest",
     "//third_party/oak:oak_proto",
     "//third_party/oak:oak_proto_extras",

@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -19,6 +20,7 @@
 #include "base/types/expected.h"
 #include "components/private_ai/attestation/handler.h"
 #include "components/private_ai/attestation/handler_impl.h"
+#include "components/private_ai/features.h"
 #include "components/private_ai/private_ai_common.h"
 #include "components/private_ai/proto/private_ai.pb.h"
 #include "components/private_ai/proto_utils/attestation_evidence_utils.h"
@@ -45,7 +47,7 @@ std::unique_ptr<SecureChannel> SecureChannelImpl::FactoryImpl::Create(
   auto transport =
       std::make_unique<WebSocketClient>(url_, network_context_, logger_);
   auto secure_session = std::make_unique<SecureSessionAsyncImpl>();
-  auto attestation_handler = std::make_unique<AttestationHandlerImpl>();
+  auto attestation_handler = std::make_unique<AttestationHandlerImpl>(logger_);
 
   return std::make_unique<SecureChannelImpl>(
       std::move(callback), std::move(transport), std::move(secure_session),
@@ -216,20 +218,25 @@ void SecureChannelImpl::OnAttestationResponse(
     return;
   }
 
-  if (!attestation_handler_->VerifyAttestationResponse(*attestation_evidence)) {
-    logger_->LogError(FROM_HERE, "Attestation verification failed.");
+  if (base::FeatureList::IsEnabled(kPrivateAiServerAttestation)) {
+    if (!attestation_handler_->VerifyAttestationResponse(
+            *attestation_evidence)) {
+      logger_->LogError(FROM_HERE, "Attestation verification failed.");
+      base::UmaHistogramMediumTimes(
+          "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error",
+          base::TimeTicks::Now() -
+              state_entry_times_[State::kPerformingAttestation]);
+      FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
+      return;
+    }
+    logger_->LogInfo(FROM_HERE, "Attestation verified successfully.");
     base::UmaHistogramMediumTimes(
-        "PrivateAi.SecureChannel.SendAttestationRequestLatency.Error",
+        "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success",
         base::TimeTicks::Now() -
             state_entry_times_[State::kPerformingAttestation]);
-    FailAllRequestsAndClose(ErrorCode::kAttestationFailed);
-    return;
+  } else {
+    logger_->LogInfo(FROM_HERE, "Server attestation disabled!");
   }
-  logger_->LogInfo(FROM_HERE, "Attestation verified successfully.");
-  base::UmaHistogramMediumTimes(
-      "PrivateAi.SecureChannel.SendAttestationRequestLatency.Success",
-      base::TimeTicks::Now() -
-          state_entry_times_[State::kPerformingAttestation]);
 
   state_ = SecureChannelImpl::State::kWaitingHandshakeMessage;
   state_entry_times_[state_] = base::TimeTicks::Now();
