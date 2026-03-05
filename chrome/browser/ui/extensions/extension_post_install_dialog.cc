@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
@@ -68,6 +69,13 @@ void ConfigurePostInstallDialogModel(
     dialog_model_builder.AddParagraph(ui::DialogModelLabel(
         l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_MANAGE_INFO)));
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  dialog_model_builder.AddOkButton(
+      base::DoNothing(),
+      ui::DialogModel::Button::Params().SetLabel(
+          l10n_util::GetStringUTF16(IDS_EXTENSION_INSTALLED_OK_BUTTON)));
+#endif
 }
 
 void OpenExtensionsShortcutsPage(
@@ -130,8 +138,8 @@ void ShowExtensionPostInstallDialog(
       base::BindRepeating(&ExtensionPostInstallDialog::LinkClicked,
                           base::Unretained(weak_delegate));
 
-  extensions::ConfigurePostInstallDialogModel(
-      dialog_model_builder, weak_delegate->model(), manage_shortcuts_callback);
+  ConfigurePostInstallDialogModel(dialog_model_builder, weak_delegate->model(),
+                                  manage_shortcuts_callback);
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   // Add a sync or sign in promo in the footer if it should be shown.

@@ -5927,6 +5927,13 @@ are declared in tools/grit/grit_args.gni.
             Manage your extensions by clicking Extensions in the Window menu.
           </message>
         </if>
+
+        <if expr="is_android">
+          <message name="IDS_EXTENSION_INSTALLED_OK_BUTTON" desc="The text for the ok button in the post install dialog.">
+            Got it
+          </message>
+        </if>
+
         <message name="IDS_EXTENSION_INSTALLED_MANAGE_SHORTCUTS" desc="Text for a link in the extension installed dialog that opens the page for managing extension shortcuts (chrome://extensions/configureCommands).">
           <ph name="MANAGE_SHORTCUTS_LINK">$1<ex>Manage shortcuts</ex></ph>
         </message>
