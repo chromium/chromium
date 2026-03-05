@@ -27,6 +27,7 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
+#include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/base/deletion_origin.h"
 #include "components/sync/model/data_type_local_change_processor.h"
@@ -364,6 +365,10 @@ const SendTabToSelfEntry* SendTabToSelfBridge::AddEntry(
   auto entry = std::make_unique<SendTabToSelfEntry>(
       guid, url, trimmed_title, shared_time, GetLocalFullName(),
       target_device_cache_guid, context);
+
+  // The size is recorded before potential truncation (dropping) of the context
+  // due to the per-entity size limit.
+  RecordPageContextSize(PageContextToProto(context).ByteSizeLong());
 
   std::unique_ptr<DataTypeStore::WriteBatch> batch = store_->CreateWriteBatch();
   // This entry is new. Add it to the store and model.

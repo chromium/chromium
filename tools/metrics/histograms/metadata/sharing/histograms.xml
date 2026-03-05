@@ -396,6 +396,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Sharing.SendTabToSelf.PageContextSize" units="bytes"
+    expires_after="2027-03-04">
+  <owner>mtatarski@google.com</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the serialized size in bytes of the PageContext proto when a user
+    sends a tab to themselves. Recorded when the entry is successfully added to
+    the SendTabToSelf model on the sending device. This size represents the
+    pre-truncation size, before it potentially gets dropped if it exceeds the
+    limit.
+  </summary>
+</histogram>
+
 <histogram name="Sharing.SendTabToSelf.ScrollPosition.GenerationOutcome"
     enum="SendTabToSelfScrollPositionGenerationOutcome"
     expires_after="2026-10-01">

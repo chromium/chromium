@@ -11,6 +11,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/history/core/browser/history_service.h"
@@ -19,6 +20,7 @@
 #include "components/send_tab_to_self/page_context.h"
 #include "components/send_tab_to_self/pref_names.h"
 #include "components/send_tab_to_self/proto/send_tab_to_self.pb.h"
+#include "components/send_tab_to_self/proto_conversions.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -1391,6 +1393,44 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_UsesFullName) {
 
   ASSERT_NE(nullptr, result);
   EXPECT_EQ(full_name, result->GetDeviceName());
+}
+
+TEST_F(SendTabToSelfBridgeTest, AddEntry_RecordsPageContextSize) {
+  InitializeBridge();
+
+  base::HistogramTester histogram_tester;
+
+  PageContext context;
+  context.scroll_position.text_fragment.text_start = "fragment";
+
+  bridge()->AddEntry(GURL("http://www.example.com/"), "title",
+                     kLocalDeviceCacheGuid, context);
+
+  histogram_tester.ExpectUniqueSample(
+      "Sharing.SendTabToSelf.PageContextSize",
+      PageContextToProto(context).ByteSizeLong(), 1);
+}
+
+TEST_F(SendTabToSelfBridgeTest, AddEntry_RecordsPageContextSize_ExceedsLimit) {
+  InitializeBridge();
+
+  base::HistogramTester histogram_tester;
+
+  PageContext context;
+  // Create a context that exceeds kMaxPageContextSizeBytes (4096 bytes).
+  constexpr size_t kLargeSize = 5000;
+  static_assert(kLargeSize > kMaxPageContextSizeBytes);
+  context.scroll_position.text_fragment.text_start =
+      std::string(kLargeSize, 'a');
+
+  bridge()->AddEntry(GURL("http://www.example.com/"), "title",
+                     kLocalDeviceCacheGuid, context);
+
+  size_t size = PageContextToProto(context).ByteSizeLong();
+  ASSERT_GT(size, kMaxPageContextSizeBytes);
+
+  histogram_tester.ExpectUniqueSample("Sharing.SendTabToSelf.PageContextSize",
+                                      size, 1);
 }
 
 }  // namespace

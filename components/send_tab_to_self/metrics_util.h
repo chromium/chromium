@@ -68,6 +68,10 @@ void RecordScrollPositionSelectorLength(size_t length);
 // Records whether an opened STTS notification contained a scroll position.
 void RecordHasScrollPositionOnOpened(bool has_scroll_position);
 
+// Records the size of the PageContext proto when sending a tab, before
+// truncation.
+void RecordPageContextSize(size_t size);
+
 }  // namespace send_tab_to_self
 
 #endif  // COMPONENTS_SEND_TAB_TO_SELF_METRICS_UTIL_H_

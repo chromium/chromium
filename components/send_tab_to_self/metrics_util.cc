@@ -80,4 +80,8 @@ void RecordHasScrollPositionOnOpened(bool has_scroll_position) {
       has_scroll_position);
 }
 
+void RecordPageContextSize(size_t size) {
+  base::UmaHistogramCounts10000("Sharing.SendTabToSelf.PageContextSize", size);
+}
+
 }  // namespace send_tab_to_self
