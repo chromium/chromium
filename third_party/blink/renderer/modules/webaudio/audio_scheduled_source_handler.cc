@@ -119,8 +119,8 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
   // start time in the middle of the quantum.
   if (quantum_frame_offset) {
     for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-      UNSAFE_TODO(memset(output_bus->Channel(i)->MutableData(), 0,
-                         sizeof(float) * quantum_frame_offset));
+      std::ranges::fill(
+          output_bus->Channel(i)->MutableSpan().first(quantum_frame_offset), 0);
     }
   }
 
@@ -147,9 +147,9 @@ AudioScheduledSourceHandler::UpdateSchedulingInfo(size_t quantum_frame_size,
       }
 
       for (unsigned i = 0; i < output_bus->NumberOfChannels(); ++i) {
-        UNSAFE_TODO(
-            memset(output_bus->Channel(i)->MutableData() + zero_start_frame, 0,
-                   sizeof(float) * frames_to_zero));
+        std::ranges::fill(output_bus->Channel(i)->MutableSpan().subspan(
+                              zero_start_frame, frames_to_zero),
+                          0);
       }
     }
 
