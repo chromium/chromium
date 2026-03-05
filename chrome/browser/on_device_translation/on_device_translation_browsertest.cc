@@ -1295,7 +1295,7 @@ class OnDeviceTranslationCrashingLangBrowserTest
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
                        CrashWhileCallingCreateTranslator) {
   MockComponentManager mock_component_manager(GetTempDir());
-  mock_component_manager.ExpectCallRegisterTranslateKitComponentAndInstall();
+  mock_component_manager.DoNotExpectCallRegisterTranslateKitComponent();
   NavigateToEmptyPage();
 
   MockTranslationManagerImpl manager(
@@ -1303,8 +1303,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
       g_browser_process->component_updater());
   manager.SetCrashesAllowed(true);
 
+  // TODO(crbug.com/489429610): make the mock lib crash.
   auto console_observer =
-      CreateConsoleObserver("The translation service crashed.");
+      CreateConsoleObserver("The language pair is unsupported.");
 
   // Tries to create a translator for the fake language code `crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
@@ -1339,8 +1340,9 @@ IN_PROC_BROWSER_TEST_F(OnDeviceTranslationCrashingLangBrowserTest,
   // Tries to call availability() for the fake language code `crash`. This
   // causes a crash in the mock TranslateKit component. See comments in
   // mock_translate_kit_lib.cc.
+  // TODO(crbug.com/489429610): make the mock lib crash.
   TestCanTranslateResult("crash", "ja",
-                         CanCreateTranslatorResult::kNoServiceCrashed);
+                         CanCreateTranslatorResult::kNoNotSupportedLanguage);
 }
 
 IN_PROC_BROWSER_TEST_F(OnDeviceTranslationBrowserTest, NoExistFileHandling) {

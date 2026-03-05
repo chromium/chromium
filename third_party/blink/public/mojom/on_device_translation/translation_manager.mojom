@@ -92,6 +92,9 @@ enum CreateTranslatorError {
   // The translator cannot be created, because the API was accessed from an invalid
   // storage partition.
   kInvalidStoragePartition = 10,
+
+  // The translator cannot be created, because a requested language is not supported.
+  kNotSupportedLanguage = 11,
 };
 
 // The result of TranslationManager's CreateTranslator IPC.

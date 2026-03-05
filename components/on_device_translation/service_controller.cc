@@ -5,6 +5,7 @@
 #include "components/on_device_translation/service_controller.h"
 
 #include <algorithm>
+#include <string>
 
 #include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
@@ -32,6 +33,7 @@
 #include "components/on_device_translation/public/mojom/on_device_translation_service.mojom.h"
 #include "components/on_device_translation/public/mojom/translator.mojom.h"
 #include "components/on_device_translation/public/pref_names.h"
+#include "components/on_device_translation/translation_manager_util.h"
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_host_passkeys.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -72,7 +74,25 @@ const char kTranslateKitPackagePaths[] = "translate-kit-packages";
 const char kOnDeviceTranslationServiceDisplayNamePrefix[] =
     "On-device Translation Service: ";
 
-std::string ToString(base::FilePath path) {
+// TODO(crbug.com/419848973): This is a workaround until the "he" language code
+// is fully supported.
+std::string SwitchLanguageCodeToIwIfHe(std::string_view language_code) {
+  auto split = base::SplitStringOnce(language_code, "-");
+  if (!split || split->first != "he") {
+    return std::string(language_code);
+  }
+
+  return base::StrCat({"iw-", split->second});
+}
+
+std::optional<std::string> GetBestFitLanguageCode(
+    std::string_view language_code) {
+  std::string best_fit = SwitchLanguageCodeToIwIfHe(language_code);
+  return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
+                                       std::move(best_fit));
+}
+
+std::string ToString(const base::FilePath& path) {
 #if BUILDFLAG(IS_WIN)
   // TODO(crbug.com/362123222): Get rid of conditional decoding.
   return path.AsUTF8Unsafe();
@@ -234,13 +254,23 @@ void OnDeviceTranslationServiceController::CreateTranslator(
     base::OnceCallback<
         void(base::expected<mojo::PendingRemote<mojom::Translator>,
                             CreateTranslatorError>)> callback) {
-  LanguagePackRequirements language_pack_requirements;
+  std::optional<std::string> best_fit_source_language =
+      GetBestFitLanguageCode(source_lang);
+  std::optional<std::string> best_fit_target_language =
+      GetBestFitLanguageCode(target_lang);
+  if (!best_fit_source_language.has_value() ||
+      !best_fit_target_language.has_value()) {
+    std::move(callback).Run(
+        base::unexpected(CreateTranslatorError::kNotSupportedLanguage));
+    return;
+  }
 
+  LanguagePackRequirements language_pack_requirements;
   // If the language packs are set by the command line, we don't need to check
   // the installed language packs.
   if (!language_packs_from_command_line_.has_value()) {
-    language_pack_requirements =
-        GetLanguagePackRequirements(source_lang, target_lang);
+    language_pack_requirements = GetLanguagePackRequirements(
+        *best_fit_source_language, *best_fit_target_language);
     std::vector<LanguagePackKey> to_be_registered_packs =
         language_pack_requirements.to_be_registered_packs;
     if (!to_be_registered_packs.empty()) {
@@ -278,11 +308,12 @@ void OnDeviceTranslationServiceController::CreateTranslator(
         language_pack_requirements.required_packs,
         base::BindOnce(
             &OnDeviceTranslationServiceController::CreateTranslatorImpl,
-            base::Unretained(this), source_lang, target_lang,
-            std::move(callback)));
+            base::Unretained(this), *best_fit_source_language,
+            *best_fit_target_language, std::move(callback)));
     return;
   }
-  CreateTranslatorImpl(source_lang, target_lang, std::move(callback));
+  CreateTranslatorImpl(*best_fit_source_language, *best_fit_target_language,
+                       std::move(callback));
 }
 
 void OnDeviceTranslationServiceController::CreateTranslatorImpl(
@@ -326,15 +357,28 @@ void OnDeviceTranslationServiceController::CreateTranslatorImpl(
 }
 
 void OnDeviceTranslationServiceController::CanTranslate(
-    const std::string& source_lang,
-    const std::string& target_lang,
+    const std::string& source_lang_arg,
+    const std::string& target_lang_arg,
     base::OnceCallback<void(CanCreateTranslatorResult)> callback) {
+  std::optional<std::string> best_fit_source_language =
+      GetBestFitLanguageCode(source_lang_arg);
+  std::optional<std::string> best_fit_target_language =
+      GetBestFitLanguageCode(target_lang_arg);
+  if (!best_fit_source_language.has_value() ||
+      !best_fit_target_language.has_value()) {
+    std::move(callback).Run(CanCreateTranslatorResult::kNoNotSupportedLanguage);
+    return;
+  }
+
+  std::string source_lang = std::move(*best_fit_source_language);
+  std::string target_lang = std::move(*best_fit_target_language);
   if (!language_packs_from_command_line_.has_value()) {
     // If the language packs are not set by the command line, returns the result
     // of CanTranslateImpl().
     std::move(callback).Run(CanTranslateImpl(source_lang, target_lang));
     return;
   }
+
   // Otherwise, checks the availability of the library and ask the on device
   // translation service.
   if (!OnDeviceTranslationInstaller::GetInstance()->IsInit()) {

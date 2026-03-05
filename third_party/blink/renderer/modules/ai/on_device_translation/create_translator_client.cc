@@ -45,6 +45,9 @@ String ConvertCreateTranslatorErrorToDebugString(CreateTranslatorError error) {
     case CreateTranslatorError::kInvalidStoragePartition:
       return "The Translator API is only accessible from a valid storage "
              "partition.";
+    case CreateTranslatorError::kNotSupportedLanguage:
+      return "Unable to create translator for the given source and target "
+             "language, because one or both languages are not supported.";
   }
 }
 

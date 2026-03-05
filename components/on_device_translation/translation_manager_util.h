@@ -34,17 +34,17 @@ bool IsTranslatorAllowed(content::BrowserContext* browser_context);
 template <typename SetType>
 std::optional<std::string> LookupMatchingLocaleByBestFit(
     const SetType& available_languages,
-    std::string requested_language) {
-  std::string prefix = std::move(requested_language);
+    std::string_view requested_language) {
+  std::string_view prefix = requested_language;
   while (prefix != "") {
     if (available_languages.contains(prefix)) {
-      return prefix;
+      return std::string(prefix);
     }
     int pos = prefix.rfind('-');
     if (pos == -1) {
       break;
     }
-    prefix.resize(pos);
+    prefix = prefix.substr(0, pos);
   }
   return std::nullopt;
 }

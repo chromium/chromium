@@ -35,8 +35,9 @@ TEST_F(TranslationManagerUtilTest,
   for (const auto& variant : en_variations) {
     EXPECT_EQ(LookupMatchingLocaleByBestFit(kSupportedLanguageCodes, variant),
               "en");
-    EXPECT_EQ(LookupMatchingLocaleByBestFit(std::set<std::string>(), variant),
-              std::nullopt);
+    EXPECT_EQ(
+        LookupMatchingLocaleByBestFit(std::set<std::string_view>(), variant),
+        std::nullopt);
   }
 
   std::vector<std::string> es_variations{
@@ -48,8 +49,9 @@ TEST_F(TranslationManagerUtilTest,
   for (const auto& variant : es_variations) {
     EXPECT_EQ(LookupMatchingLocaleByBestFit(kSupportedLanguageCodes, variant),
               "es");
-    EXPECT_EQ(LookupMatchingLocaleByBestFit(std::set<std::string>(), variant),
-              std::nullopt);
+    EXPECT_EQ(
+        LookupMatchingLocaleByBestFit(std::set<std::string_view>(), variant),
+        std::nullopt);
   }
 }
 

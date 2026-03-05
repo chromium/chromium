@@ -235,8 +235,7 @@ std::optional<std::string> TranslationManagerImpl::GetBestFitLanguageCode(
   }
   std::string best_fit =
       SwitchLanguageCodeToIwIfHe(std::move(requested_language));
-  return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes,
-                                       std::move(best_fit));
+  return LookupMatchingLocaleByBestFit(kSupportedLanguageCodes, best_fit);
 }
 
 bool TranslationManagerImpl::CrashesAllowed() {
