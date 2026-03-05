@@ -110,6 +110,7 @@ bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
 void RemoveVariationsHeaderIfNeeded(
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
+    InIncognito incognito,
     std::vector<std::string>* to_be_removed_headers);
 
 // Creates a SimpleURLLoader that will include the variations header for
@@ -146,9 +147,8 @@ bool GetVariationsHeader(const network::ResourceRequest& request,
                          std::string* out);
 
 // Calls the internal ShouldAppendVariationsHeader() for testing.
-bool ShouldAppendVariationsHeaderForTesting(
-    const GURL& url,
-    const std::string& histogram_suffix);
+bool ShouldAppendVariationsHeaderForTesting(const GURL& url,
+                                            InIncognito incognito);
 
 // Updates |cors_exempt_header_list| field of the given |param| to register the
 // variation headers.

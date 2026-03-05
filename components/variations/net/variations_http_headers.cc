@@ -116,16 +116,6 @@ URLValidationResult GetUrlValidationResult(const GURL& url) {
   return URLValidationResult::kShouldAppend;
 }
 
-// Returns true if the request to |url| should include a variations header.
-// Also, logs the result of validating |url| in histograms, one of which ends in
-// |suffix|.
-bool ShouldAppendVariationsHeader(const GURL& url, const std::string& suffix) {
-  URLValidationResult result = GetUrlValidationResult(url);
-  base::UmaHistogramEnumeration(
-      "Variations.Headers.URLValidationResult." + suffix, result);
-  return result == URLValidationResult::kShouldAppend;
-}
-
 // Returns true if the request to `url` on the given `incognito` mode should
 // include a variations header.
 //
@@ -142,7 +132,7 @@ bool ShouldAppendVariationsHeader(const GURL& url, InIncognito incognito) {
   //         international TLD domains *.google.<TLD> or *.youtube.<TLD>.
   // 2. Only transmit for non-Incognito profiles.
   return incognito == InIncognito::kNo &&
-         ShouldAppendVariationsHeader(url, "Append");
+         GetUrlValidationResult(url) == URLValidationResult::kShouldAppend;
 }
 
 // Returns non-empty `std::string` if `variations_headers` has a header value
@@ -313,8 +303,9 @@ bool AppendVariationsHeaderUnknownSignedIn(const GURL& url,
 void RemoveVariationsHeaderIfNeeded(
     const net::RedirectInfo& redirect_info,
     const network::mojom::URLResponseHead& response_head,
+    InIncognito incognito,
     std::vector<std::string>* to_be_removed_headers) {
-  if (!ShouldAppendVariationsHeader(redirect_info.new_url, "Remove")) {
+  if (!ShouldAppendVariationsHeader(redirect_info.new_url, incognito)) {
     to_be_removed_headers->push_back(kClientDataHeader);
   }
 }
@@ -331,13 +322,14 @@ CreateSimpleURLLoaderWithVariationsHeader(
       network::SimpleURLLoader::Create(std::move(request), annotation_tag);
   if (variations_headers_added) {
     simple_url_loader->SetOnRedirectCallback(base::BindRepeating(
-        [](const GURL& url_before_redirect,
+        [](InIncognito incognito, const GURL& url_before_redirect,
            const net::RedirectInfo& redirect_info,
            const network::mojom::URLResponseHead& response_head,
            std::vector<std::string>* to_be_removed_headers) {
           RemoveVariationsHeaderIfNeeded(redirect_info, response_head,
-                                         to_be_removed_headers);
-        }));
+                                         incognito, to_be_removed_headers);
+        },
+        incognito));
   }
   return simple_url_loader;
 }
@@ -366,10 +358,9 @@ bool GetVariationsHeader(const network::ResourceRequest& request,
   return header_value.has_value();
 }
 
-bool ShouldAppendVariationsHeaderForTesting(
-    const GURL& url,
-    const std::string& histogram_suffix) {
-  return ShouldAppendVariationsHeader(url, histogram_suffix);
+bool ShouldAppendVariationsHeaderForTesting(const GURL& url,  // IN-TEST
+                                            InIncognito incognito) {
+  return ShouldAppendVariationsHeader(url, incognito);
 }
 
 void UpdateCorsExemptHeaderForVariations(

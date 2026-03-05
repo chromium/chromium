@@ -214,7 +214,7 @@ TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeader) {
   for (const auto& c : cases) {
     const GURL url(c.url);
     EXPECT_EQ(c.should_append_headers,
-              ShouldAppendVariationsHeaderForTesting(url, "Append"))
+              ShouldAppendVariationsHeaderForTesting(url, InIncognito::kNo))
         << url;
   }
 }
@@ -237,7 +237,7 @@ TEST(VariationsHttpHeadersTest, ShouldAppendVariationsHeaderLocalhost) {
   for (const auto& c : cases) {
     const GURL url(c.url);
     EXPECT_EQ(c.should_append_headers,
-              ShouldAppendVariationsHeaderForTesting(url, "Append"))
+              ShouldAppendVariationsHeaderForTesting(url, InIncognito::kNo))
         << url;
   }
 }
@@ -294,43 +294,6 @@ const PopulateRequestContextHistogramData
          "kGoogleSubFrameOnNonGooglePageInitiated without TrustedParams"},
         // Bucket 8, kNonGooglePageInitiatedFromFrameOrigin, is deprecated.
 };
-
-TEST(VariationsHttpHeadersTest, PopulateUrlValidationResultHistograms) {
-  const GURL invalid_url("invalid");
-  const GURL not_google("https://heavnlydonuts.com/");
-  const GURL should_append("https://youtube.com");
-  const GURL wrong_scheme("ftp://foo.com/");
-  const GURL google_not_https("http://google.com/");
-
-  const std::string append = "Append";
-  const std::string remove = "Remove";
-  base::HistogramTester tester;
-
-  ASSERT_FALSE(ShouldAppendVariationsHeaderForTesting(invalid_url, append));
-  ASSERT_FALSE(ShouldAppendVariationsHeaderForTesting(not_google, append));
-  ASSERT_TRUE(ShouldAppendVariationsHeaderForTesting(should_append, append));
-
-  ASSERT_FALSE(ShouldAppendVariationsHeaderForTesting(wrong_scheme, remove));
-  ASSERT_FALSE(
-      ShouldAppendVariationsHeaderForTesting(google_not_https, remove));
-
-  // Verify that the Append suffixed histogram has a sample corresponding to
-  // the validation result for the three URLs validated for appending.
-  const std::string append_histogram =
-      "Variations.Headers.URLValidationResult.Append";
-  tester.ExpectTotalCount(append_histogram, 3);
-  EXPECT_THAT(tester.GetAllSamples(append_histogram),
-              testing::ElementsAre(base::Bucket(0, 1), base::Bucket(2, 1),
-                                   base::Bucket(3, 1)));
-
-  // Verify that the Remove suffixed histogram has a sample corresponding to
-  // the validation result for the two URLs validated for removal.
-  const std::string remove_histogram =
-      "Variations.Headers.URLValidationResult.Remove";
-  tester.ExpectTotalCount(remove_histogram, 2);
-  EXPECT_THAT(tester.GetAllSamples(remove_histogram),
-              testing::ElementsAre(base::Bucket(4, 1), base::Bucket(5, 1)));
-}
 
 TEST(VariationsHttpHeadersTest, PopulateDomainOwnerHistogram) {
   const GURL destination("https://fonts.googleapis.com/foo");

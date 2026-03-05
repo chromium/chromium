@@ -82,8 +82,10 @@ void VariationsURLLoaderThrottle::WillRedirectRequest(
     std::vector<std::string>* to_be_removed_headers,
     net::HttpRequestHeaders* modified_headers,
     net::HttpRequestHeaders* modified_cors_exempt_headers) {
-  variations::RemoveVariationsHeaderIfNeeded(*redirect_info, response_head,
-                                             to_be_removed_headers);
+  // InIncognito::kNo is passed because this throttle is never created in
+  // incognito mode.
+  variations::RemoveVariationsHeaderIfNeeded(
+      *redirect_info, response_head, InIncognito::kNo, to_be_removed_headers);
 }
 
 }  // namespace variations
