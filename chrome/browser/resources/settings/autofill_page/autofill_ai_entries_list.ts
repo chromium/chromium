@@ -455,6 +455,8 @@ export class SettingsAutofillAiEntriesListElement extends
     // controls server model calls and MQLS logging. Therefore not whether the
     // user can use Autofill AI.
     if (this.autofillAiAvailableByDefault_) {
+      this.allowEditing_ =
+          this.isEditingAllowedByPref_ && this.canEnableOrDisableAutofillAi_;
       return;
     }
     const optedIn = await this.entityDataManager_.getOptInStatus();
