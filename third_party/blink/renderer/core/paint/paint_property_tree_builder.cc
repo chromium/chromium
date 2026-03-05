@@ -2457,8 +2457,7 @@ static std::optional<FloatRoundedRect> PathToRRect(const Path& path) {
 }
 
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
-  if (NeedsPaintPropertyUpdate() ||
-      !ClipPathClipper::ClipPathStatusResolved(object_)) {
+  if (NeedsPaintPropertyUpdate()) {
     DCHECK(!precise_clip_path_rect_.has_value());
     if (NeedsClipPathClipOrMask(object_,
                                 /*fully_resolve_composited_state=*/true)) {
@@ -4139,7 +4138,7 @@ void PaintPropertyTreeBuilder::UpdateForSelf() {
       IsA<LayoutBox>(object_) &&
       (To<LayoutBox>(object_).PhysicalFragmentCount() > 1);
   ClipPathClipper::FallbackClipPathAnimationIfNecessary(
-      object_, is_in_fragment_container);
+      object_, /* should_force_fallback = */ is_in_fragment_container);
 
   UpdatePaintingLayer();
   UpdateFragmentData();

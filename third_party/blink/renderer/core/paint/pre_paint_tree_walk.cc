@@ -623,6 +623,13 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     if (!pre_paint_info->fragment_data)
       return;
   } else if (object.IsFragmentLessBox()) {
+    // CC Clip-path animations expect paint property updates to go through to
+    // update the composited paint status. However, because this box doesn't
+    // paint, we can safely mark the animation as non-composited. This is done
+    // for correctness and should have no material impact, at least until off-
+    // -screen / non-visible animations are handled more appropriately.
+    ClipPathClipper::FallbackClipPathAnimationIfNecessary(
+        object, /* should_force_fallback = */ true);
     return;
   }
 

@@ -193,16 +193,7 @@ void PaintWorkletBasedClip(GraphicsContext& context,
 
 // TODO(crbug.com/454365238): Fallback point for cc clip-path animations, should
 // be annotated with a histogram.
-bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object,
-                                     bool is_in_block_fragmentation) {
-  // If not all the fragments of this layout object have been populated yet, it
-  // will be impossible to tell if a composited clip path animation is possible
-  // or not based only on the layout object. Exclude the possibility if we're
-  // fragmented.
-  if (is_in_block_fragmentation) {
-    return true;
-  }
-
+bool ClipPathAnimationShouldFallback(const LayoutObject& layout_object) {
   // We also shouldn't composite in the case of will-change: contents.
   if (layout_object.StyleRef().SubtreeWillChangeContents()) {
     return true;
@@ -347,7 +338,7 @@ bool ClipPathClipper::ClipPathStatusResolved(
 }
 void ClipPathClipper::FallbackClipPathAnimationIfNecessary(
     const LayoutObject& layout_object,
-    bool is_in_block_fragmentation) {
+    bool should_force_fallback) {
   if (!RuntimeEnabledFeatures::CompositeClipPathAnimationEnabled()) {
     return;
   }
@@ -359,8 +350,7 @@ void ClipPathClipper::FallbackClipPathAnimationIfNecessary(
     base::debug::DumpWithoutCrashing();
   }
 
-  if (ClipPathAnimationShouldFallback(layout_object,
-                                      is_in_block_fragmentation)) {
+  if (should_force_fallback || ClipPathAnimationShouldFallback(layout_object)) {
     SetCompositeClipPathStatus(layout_object.GetNode(),
                                CompositedPaintStatus::kNotComposited);
   }

@@ -1413,4 +1413,140 @@ TEST_F(ClipPathPaintDefinitionTest, BoundingRectCorrectForExtrapolation) {
   EXPECT_TRUE(generator_bounds->Contains(expected_bounds));
 }
 
+// Fragmentless boxes do not get the paint property updates that clip-path
+// animations depend on, however, since there is nothing to animation in
+// this case, there is no issue. This test and AnimationOnTableCol mainly
+// check that no status (D)CHECKs.
+TEST_F(ClipPathPaintDefinitionTest, AnimationOnTableColGroup) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(20% at 20% 20%);
+            }
+            100% {
+                clip-path: circle(20% at 70% 70%);
+            }
+        }
+        .animation {
+            /* We explicitly don't go past the first step here, because
+               changes in the clip-path property keep the layout object
+               marked for a paint property update */
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .invalidatepaint {
+            background-color: red;
+        }
+    </style>
+    <table>
+      <colgroup id="target">
+        <col>
+        <col>
+      </colgroup>
+      <tr>
+        <td id="incidental"></td>
+        <td></td>
+      </tr>
+    </table>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  Element* incidental = GetElementById("incidental");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  // Init clock.
+  UpdateAndAdvanceTimeTo(0);
+
+  // Fallback should occur in pre-paint, rather than leaving a persistent
+  // kNeedsRepaint. Currently, this requires all updates, but in the future,
+  // animations like this may be made to not tick as they can't possibly
+  // have a visual output. If that''s the case, UpdatesNeededForNextFrame
+  // may need to be adjusted.
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kNotComposited, element,
+      UpdatesNeededForNextFrame::kAllUpdates);
+  Animation* animation = GetFirstAnimation(element);
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  // Init clock.
+  UpdateAndAdvanceTimeTo(50);
+
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+
+  incidental->setAttribute(html_names::kClassAttr,
+                           AtomicString("invalidatepaint"));
+  UpdateAndAdvanceTimeTo(100);
+
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+}
+
+// See AnimationOnTableColGroup for a description of what this tests for.
+TEST_F(ClipPathPaintDefinitionTest, AnimationOnTableCol) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+        @keyframes clippath {
+            0% {
+                clip-path: circle(20% at 20% 20%);
+            }
+            100% {
+                clip-path: circle(20% at 70% 70%);
+            }
+        }
+        .animation {
+            animation: clippath 4s steps(4, jump-end);
+        }
+        .invalidatepaint {
+            background-color: red;
+        }
+    </style>
+    <table>
+      <colgroup id="parent">
+        <col id="target">
+        <col>
+      </colgroup>
+      <tr>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  )HTML");
+
+  Element* element = GetElementById("target");
+  Element* parent = GetElementById("parent");
+  element->setAttribute(html_names::kClassAttr, AtomicString("animation"));
+
+  UpdateAndAdvanceTimeTo(0);
+
+  EnsureCCClipPathInvariantsHoldStyleAndLayout(
+      CompositedPaintStatus::kNotComposited, element,
+      UpdatesNeededForNextFrame::kAllUpdates);
+  Animation* animation = GetFirstAnimation(element);
+  EnsureCCClipPathInvariantsHoldThroughoutPainting(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kAllUpdates);
+
+  UpdateAllLifecyclePhasesForTest();
+
+  UpdateAndAdvanceTimeTo(50);
+
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+
+  // Invaidate the group so that the pre-paint tree walk will reach the actual
+  // col.
+  parent->setAttribute(html_names::kClassAttr, AtomicString("invalidatepaint"));
+  UpdateAndAdvanceTimeTo(100);
+
+  EnsureCCClipPathInvariantsHoldThroughoutLifecycle(
+      CompositedPaintStatus::kNotComposited, element, animation,
+      UpdatesNeededForNextFrame::kScheduledAnimationUpdate);
+}
+
 }  // namespace blink
