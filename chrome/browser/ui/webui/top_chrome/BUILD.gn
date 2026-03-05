@@ -72,12 +72,16 @@ source_set("impl") {
 source_set("test_support") {
   testonly = true
   sources = [
+    "top_chrome_web_ui_controller_test_support.cc",
+    "top_chrome_web_ui_controller_test_support.h",
     "webui_contents_preload_manager_test_api.cc",
     "webui_contents_preload_manager_test_api.h",
   ]
 
   deps = [
     ":top_chrome",
+    "//ui/base",
+    "//ui/gfx/geometry",
     "//url",
   ]
 }

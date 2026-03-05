@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
 #include "chrome/browser/ui/webui/omnibox_popup/omnibox_popup_ui.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller_test_support.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/test/test_web_ui.h"
@@ -50,37 +51,6 @@ class MockOmniboxPopupAimPage : public omnibox_popup_aim::mojom::Page {
 
  private:
   mojo::Receiver<omnibox_popup_aim::mojom::Page> receiver_{this};
-};
-
-class TestEmbedder final : public TopChromeWebUIController::Embedder {
- public:
-  TestEmbedder() = default;
-  ~TestEmbedder() = default;
-
-  void ShowUI() override {}
-  void CloseUI() override { ui_closed_ = true; }
-  void HideContextMenu() override {}
-
-  void ShowContextMenu(gfx::Point point,
-                       std::unique_ptr<ui::MenuModel> menu_model) override {
-    context_menu_shown_ = true;
-    last_point_ = point;
-  }
-
-  bool context_menu_shown() const { return context_menu_shown_; }
-  bool ui_closed() const { return ui_closed_; }
-  gfx::Point last_point() const { return last_point_; }
-
-  base::WeakPtr<TestEmbedder> GetWeakPtr() {
-    return weak_factory_.GetWeakPtr();
-  }
-
- private:
-  bool context_menu_shown_ = false;
-  bool ui_closed_ = false;
-  gfx::Point last_point_;
-
-  base::WeakPtrFactory<TestEmbedder> weak_factory_{this};
 };
 
 class TestOmniboxPopupAimHandler : public OmniboxPopupAimHandler {
@@ -129,7 +99,7 @@ TEST_F(OmniboxPopupAimHandlerTest, ShowContextMenu) {
   gfx::Point point(10, 20);
   handler_->ShowContextMenu(point);
   EXPECT_TRUE(embedder_->context_menu_shown());
-  EXPECT_EQ(point, embedder_->last_point());
+  EXPECT_EQ(point, *embedder_->last_context_menu_point());
 }
 
 TEST_F(OmniboxPopupAimHandlerTest, RequestClose) {

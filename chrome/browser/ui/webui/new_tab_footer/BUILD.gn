@@ -79,6 +79,7 @@ source_set("browser_tests") {
   deps = [
     ":test_support",
     "//chrome/browser/ui/webui:webui_util",
+    "//chrome/browser/ui/webui/top_chrome:test_support",
   ]
 }
 
