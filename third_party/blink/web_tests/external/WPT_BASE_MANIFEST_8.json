@@ -899,6 +899,13 @@
        {}
       ]
      ],
+     "long-anchor-chain-crash.html": [
+      "c6a6f8edab5761a02536b4154de59f84d525eac3",
+      [
+       null,
+       {}
+      ]
+     ],
      "position-try-display-none-hang-crash.html": [
       "f2354dcbdeec7728a9c3f13cff0a0e7bab0c22b2",
       [
@@ -8946,6 +8953,13 @@
     "semantics": {
      "document-metadata": {
       "the-link-element": {
+       "link-href-attribute-crash.html": [
+        "ea581b86fb66c6f7cce23fe0fe514c45bd3418ff",
+        [
+         null,
+         {}
+        ]
+       ],
        "link-type-attribute-crash.html": [
         "e25d8356c859ac8517da740095af6732a5916ad3",
         [
@@ -11451,6 +11465,13 @@
      ],
      "firefox-bug-1980267.html": [
       "f1eb82a24f4fa1dd0bdc703974b2790235de8c4c",
+      [
+       null,
+       {}
+      ]
+     ],
+     "firefox-bug-2018671.html": [
+      "8894659b6cb829f4ede5625de21d5797da06e61f",
       [
        null,
        {}
@@ -22998,7 +23019,7 @@
       ]
      ],
      "rejects_if_not_active-manual.https.html": [
-      "6f2e9e95d41d9fcdd3640e7cb43892b53c1f832a",
+      "af33bc0f74fdc784e144764ac75af7776513ba7f",
       [
        null,
        {}
@@ -84501,7 +84522,7 @@
       ]
      ],
      "background-repeat-space-2.html": [
-      "ac9664482c576dd22243ba29fd7e5e1b28934e3f",
+      "753f0e45b461ae7227b9c4bdff853748cd7b1d11",
       [
        null,
        [
@@ -84510,7 +84531,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            10
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "background-repeat-space-3.html": [
@@ -91971,6 +92008,586 @@
        {}
       ]
      ],
+     "border-shape": {
+      "border-shape-clips-background.html": [
+       "78d8902ca7e19ea1206dbb1156c9b0d01f8ea11b",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-clips-background-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-combined-shadow.html": [
+       "7130cdcde720cccf4571c12144b9975534de22b7",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-combined-shadow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-double-shape-default.html": [
+       "08e2228d9e05891f44fd347199d2b0298cf4f5e0",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-double-shape-default-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-geometry-box.html": [
+       "bcf3e3d667c9aebd449275aacf0842075642b1b9",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-geometry-box-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-half-border-box-default.html": [
+       "f47096fff4992cd86ddfb8f3920a80238f01fb58",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-half-border-box-default-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-inner-outer.html": [
+       "21c0f5c5f927d8100995439b87b92c047e05e5f5",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-inner-outer-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             170
+            ],
+            [
+             0,
+             150
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-inset-shadow-blur.html": [
+       "417c886025c308366ec14e4d85f9de443960f265",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-inset-shadow-blur-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-inset-shadow-negative-spread.html": [
+       "7082737a8f807fe96abb2732f7e1aa84ed94e1bf",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-inset-shadow-negative-spread-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-inset-shadow.html": [
+       "a80014a081a08d14b0927b35a657d83661f26ffa",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-inset-shadow-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-outline-double-path.html": [
+       "73aade72bc8533603555e588ddabab45bb28e863",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-double-path-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             170
+            ],
+            [
+             0,
+             5000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-outline-double.html": [
+       "0ddd3b54b70b5287b5e1b25d5acdd1d45f94fbe3",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-double-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             100
+            ],
+            [
+             0,
+             3000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-outline-offset.html": [
+       "a2d66d4a48265e3e9297c10dd3883f6b0b8eb949",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-offset-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             100
+            ],
+            [
+             0,
+             3000
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-outline.html": [
+       "e41b08996ea6b024d636183ac50ca0afb1f7208d",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-outline-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             50
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow-child-clip.html": [
+       "cb5a6fd8e0507ca4245cf657c3d8a7a6758b4107",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-child-clip-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             70
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow-replaced-canvas.html": [
+       "6e919107580f5dd4977d48895565f63fe9b4f957",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-replaced-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             70
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow-replaced-iframe.html": [
+       "198ce40855e3b0a8187cf60ba9a9936261412736",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-replaced-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             110
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow-replaced-img.html": [
+       "9cc7f9daedd7e78bb4602ef0433f5045d9b92d23",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-replaced-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             70
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow-replaced-self.html": [
+       "8fb0d63435a21aa6523328961765fc34a5d31f10",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-replaced-self-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             70
+            ],
+            [
+             0,
+             400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow-solid-background.html": [
+       "56ca775cef93401a2882ddd0a0ed2c56d649ec97",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-solid-background-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             200
+            ],
+            [
+             0,
+             360
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-overflow.html": [
+       "7d733c30d8766068e27550c07860484996fc71c1",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-overflow-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             96
+            ],
+            [
+             0,
+             256
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-shadow-negative-spread.html": [
+       "66e554e48cedc6a1e2915f57b43e0bd0d39b8e71",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-negative-spread-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-shadow-semitransparent.html": [
+       "ef616535d58dd677135ab1ff71bf85bc64de3ffe",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-semitransparent-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-shadow.html": [
+       "a2d999019d2240e6a2f6c8dccc943c3d788b2803",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-shadow-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             80
+            ],
+            [
+             0,
+             600
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-stroke-from-border.html": [
+       "07ed859e04e47616b095be5735a6755959b657b5",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-stroke-from-border-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             70
+            ],
+            [
+             0,
+             3500
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "border-shape-stroke-invalidation.html": [
+       "53b47c3ca59f63ca226214c975ce73bc42ea0e0d",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-stroke-invalidation-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "border-shape-two-shapes-shadow.html": [
+       "044b7127f4b0deccc8f7e085c0a9f5cebb98f411",
+       [
+        null,
+        [
+         [
+          "/css/css-borders/border-shape/border-shape-two-shapes-shadow-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             110
+            ],
+            [
+             0,
+             1400
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ]
+     },
      "border-shape-absolute-coords-shape.tentative.html": [
       "a071466148c6e5b0193afec01429b2a329304833",
       [
@@ -93656,470 +94273,6 @@
           ]
          ],
          {}
-        ]
-       ]
-      },
-      "border-shape": {
-       "border-shape-clips-background.html": [
-        "78d8902ca7e19ea1206dbb1156c9b0d01f8ea11b",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-clips-background-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-combined-shadow.html": [
-        "7130cdcde720cccf4571c12144b9975534de22b7",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-combined-shadow-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-double-shape-default.html": [
-        "08e2228d9e05891f44fd347199d2b0298cf4f5e0",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-double-shape-default-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-geometry-box.html": [
-        "bcf3e3d667c9aebd449275aacf0842075642b1b9",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-geometry-box-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-half-border-box-default.html": [
-        "f47096fff4992cd86ddfb8f3920a80238f01fb58",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-half-border-box-default-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-inner-outer.html": [
-        "d9a677df19f55e727ffef81854b77169ccc5d5b0",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-inner-outer-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              170
-             ],
-             [
-              0,
-              130
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-inset-shadow-blur.html": [
-        "417c886025c308366ec14e4d85f9de443960f265",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-inset-shadow-blur-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-inset-shadow-negative-spread.html": [
-        "7082737a8f807fe96abb2732f7e1aa84ed94e1bf",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-inset-shadow-negative-spread-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-inset-shadow.html": [
-        "a80014a081a08d14b0927b35a657d83661f26ffa",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-inset-shadow-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-outline-double-path.tentative.html": [
-        "aeab10d36bd8298f7b686042f3bf3bc1fab8b5d3",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-outline-double-path-ref.tentative.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              170
-             ],
-             [
-              0,
-              5000
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-outline-double.tentative.html": [
-        "fe78b151f5629546f27028f6baf792c0b8b55429",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-outline-double-ref.tentative.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              100
-             ],
-             [
-              0,
-              3000
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-outline-offset.tentative.html": [
-        "18dac6899b6854b7ea1ddc106bcb1f43833280e9",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-outline-offset-ref.tentative.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              100
-             ],
-             [
-              0,
-              3000
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-outline.tentative.html": [
-        "9e1f5a013d73597602e30ce402287c286250f33b",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-outline-ref.tentative.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              50
-             ],
-             [
-              0,
-              400
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-overflow-child-clip.html": [
-        "cb5a6fd8e0507ca4245cf657c3d8a7a6758b4107",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-overflow-child-clip-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              70
-             ],
-             [
-              0,
-              400
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-overflow-solid-background.html": [
-        "56ca775cef93401a2882ddd0a0ed2c56d649ec97",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-overflow-solid-background-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              200
-             ],
-             [
-              0,
-              360
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-overflow.html": [
-        "7d733c30d8766068e27550c07860484996fc71c1",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-overflow-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              96
-             ],
-             [
-              0,
-              256
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-shadow-negative-spread.html": [
-        "66e554e48cedc6a1e2915f57b43e0bd0d39b8e71",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-shadow-negative-spread-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-shadow-semitransparent.html": [
-        "ef616535d58dd677135ab1ff71bf85bc64de3ffe",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-shadow-semitransparent-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-shadow.html": [
-        "a2d999019d2240e6a2f6c8dccc943c3d788b2803",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-shadow-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              80
-             ],
-             [
-              0,
-              600
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-stroke-from-border.html": [
-        "07ed859e04e47616b095be5735a6755959b657b5",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-stroke-from-border-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              70
-             ],
-             [
-              0,
-              3500
-             ]
-            ]
-           ]
-          ]
-         }
-        ]
-       ],
-       "border-shape-stroke-invalidation.html": [
-        "53b47c3ca59f63ca226214c975ce73bc42ea0e0d",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-stroke-invalidation-ref.html",
-           "=="
-          ]
-         ],
-         {}
-        ]
-       ],
-       "border-shape-two-shapes-shadow.html": [
-        "044b7127f4b0deccc8f7e085c0a9f5cebb98f411",
-        [
-         null,
-         [
-          [
-           "/css/css-borders/tentative/border-shape/border-shape-two-shapes-shadow-ref.html",
-           "=="
-          ]
-         ],
-         {
-          "fuzzy": [
-           [
-            null,
-            [
-             [
-              0,
-              110
-             ],
-             [
-              0,
-              1400
-             ]
-            ]
-           ]
-          ]
-         }
         ]
        ]
       }
@@ -107811,6 +107964,19 @@
       ]
      ],
      "animation": {
+      "contrast-color-interpolation.html": [
+       "31328aab96314a430a78c3091918f10c55ee0a72",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "opacity-animation-ending-correctly-001.html": [
        "1fb36cd366ff260f073c7de6d8062d9fceff5340",
        [
@@ -142067,6 +142233,19 @@
      ]
     },
     "css-forms": {
+     "checkbox-checkmark-animation-002.html": [
+      "404273e9a9dc5c8f94bff64e17034e9ef37a67fa",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "datetime-stacking-context.html": [
       "4754cacf09d6cc1c9aaccbb760e32ca8991e6502",
       [
@@ -142080,6 +142259,19 @@
        {}
       ]
      ],
+     "input-color-base-appearance-rendering.tentative.html": [
+      "c124b6e2b69f6a9b12a380955d50ebbc11f90f36",
+      [
+       null,
+       [
+        [
+         "/css/css-forms/input-color-base-appearance-rendering-ref.tentative.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "input-text-base-appearance-rendering.html": [
       "db92f906897556e915e5411978af9a55de327797",
       [
@@ -142087,6 +142279,19 @@
        [
         [
          "/css/css-forms/input-text-base-appearance-rendering-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "radio-checkmark-animation-002.html": [
+      "6dce124bc937d1ffd8fac2159b182dbbe04244e6",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
          "=="
         ]
        ],
@@ -142664,6 +142869,84 @@
         [
          [
           "/css/css-gaps/flex/flex-gap-decorations-044-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-050.html": [
+       "9b07bd5027672312dcd07b5dd366722c2d80bf86",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-050-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-051.html": [
+       "ed79cbb2d671e8de3a15f1517b7cdcaa7c97b0cf",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-051-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-052.html": [
+       "22cd3ae70d68ccc1a2d1cf45941c49d572372bac",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-052-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-053.html": [
+       "160653e0707268b96aa547de385ffedbe310017a",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-053-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-054.html": [
+       "cf76e0d128b637ce12b4b4c0a967bdbc24cedd07",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-054-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-gap-decorations-055.html": [
+       "5e61cd5eb185f0c974a86abb384d3450397bd3a9",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/flex/flex-gap-decorations-055-ref.html",
           "=="
          ]
         ],
@@ -145003,6 +145286,19 @@
         [
          [
           "/css/css-gaps/multicol/multicol-gap-decorations-032-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "multicol-gap-decorations-repaint-on-content-resize.html": [
+       "71ee23316379f86bb1c5d9f9dad36555d58ceb59",
+       [
+        null,
+        [
+         [
+          "/css/css-gaps/multicol/multicol-gap-decorations-repaint-on-content-resize-ref.html",
           "=="
          ]
         ],
@@ -152197,13 +152493,39 @@
           {}
          ]
         ],
-        "column-grid-lanes-container-baseline-006.html": [
-         "d572b83d210249781690a4c462fd7bd723e07c90",
+        "column-grid-lanes-container-baseline-006a.html": [
+         "6ba0470c846610832bf612fd3f574b00e278a5ee",
          [
           null,
           [
            [
-            "/css/css-grid/grid-lanes/tentative/baseline/column-grid-lanes-container-baseline-006-ref.html",
+            "/css/css-grid/grid-lanes/tentative/baseline/column-grid-lanes-container-baseline-006a-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-grid-lanes-container-baseline-006b.html": [
+         "86ce630fcf0d88e38ed9e48bb7a5f3ae6f4cc958",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/baseline/column-grid-lanes-container-baseline-006b-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-grid-lanes-container-baseline-006c.html": [
+         "7a7b377f4addff52f9b73252adf19592d1600b34",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/baseline/column-grid-lanes-container-baseline-006c-ref.html",
             "=="
            ]
           ],
@@ -152237,7 +152559,7 @@
          ]
         ],
         "column-grid-lanes-container-baseline-008.html": [
-         "81361de2c9edfd9d386f995f7a70aca38e4bb6e8",
+         "587eafe7896a9a2d57df4efc006cd115b4d695dd",
          [
           null,
           [
@@ -153206,6 +153528,32 @@
           {}
          ]
         ],
+        "grid-lanes-intrinsic-size-dynamic-block-size-column.html": [
+         "211a596d454903feadecb36acd197aba60d7269a",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-intrinsic-size-dynamic-block-size-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "grid-lanes-intrinsic-size-dynamic-block-size-row.html": [
+         "8d1e8cded5e257e0d063b99c3ba0fdca90534f03",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/intrinsic-sizing/grid-lanes-intrinsic-size-dynamic-block-size-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "grid-lanes-intrinsic-sizing-cols-001-auto.html": [
          "74b1f44744a447eb5893de58209045dec77a0ad3",
          [
@@ -153800,6 +154148,19 @@
           [
            [
             "/css/css-grid/grid-lanes/tentative/item-placement/column-negative-margin-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "column-negative-margin-004.html": [
+         "40e75c567f7ba0b9435f92dbd9ef118b04fbae60",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/item-placement/column-negative-margin-004-ref.html",
             "=="
            ]
           ],
@@ -154675,6 +155036,19 @@
           [
            [
             "/css/css-grid/grid-lanes/tentative/item-placement/row-negative-margin-003-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "row-negative-margin-004.html": [
+         "8c0e3cda351b9f45c8b3a6edb894b760197e8721",
+         [
+          null,
+          [
+           [
+            "/css/css-grid/grid-lanes/tentative/item-placement/row-negative-margin-004-ref.html",
             "=="
            ]
           ],
@@ -162086,6 +162460,45 @@
      ]
     },
     "css-images": {
+     "color-stop-color-mix-currentcolor-invalidation.html": [
+      "a074780beb60e061a937957ebe5ea4a03ae36fdb",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-stop-contrast-color-currentcolor-invalidation.html": [
+      "a091bb413c4c35b3bd8c4a2ec896b1e72d61e4a3",
+      [
+       null,
+       [
+        [
+         "/css/reference/pass_if_square_96px_black.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-stop-currentcolor-invalidation.html": [
+      "0f114d4077148be5388110272aae65bee9547bb9",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "color-stop-currentcolor.html": [
       "e3074e398fe80446e9537c445c1e1e073a0cb1bb",
       [
@@ -162093,6 +162506,32 @@
        [
         [
          "/css/css-images/color-stop-currentcolor-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-stop-light-dark-currentcolor-invalidation.html": [
+      "7e8bbc4cb7a807e1f7a516a542d5e1db12a93a35",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-stop-relative-color-currentcolor-invalidation.html": [
+      "ee9e1ab41b30b65bf4b63f0b9bfd785254a564ef",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
          "=="
         ]
        ],
@@ -164009,7 +164448,7 @@
        ]
       ],
       "gradient-to-transparent.html": [
-       "ad70ae3a65ec1a83b0abcbc2c76ed91696880dc1",
+       "8bd0e0c4b06e693c35f14bc669f6f64f4fcf6598",
        [
         null,
         [
@@ -164018,7 +164457,23 @@
           "=="
          ]
         ],
-        {}
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             1
+            ],
+            [
+             0,
+             200
+            ]
+           ]
+          ]
+         ]
+        }
        ]
       ],
       "legacy-color-gradient.html": [
@@ -164226,7 +164681,7 @@
       ]
      },
      "gradient-border-box.html": [
-      "2938c5ea99e1e41c64c1d58e69806270318bccf9",
+      "d12968a40b7ef77dd80674c4a6cf673fd718a461",
       [
        null,
        [
@@ -164235,7 +164690,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            2500
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "gradient-button.html": [
@@ -191939,6 +192410,84 @@
         [
          [
           "/css/css-overflow/line-clamp/reference/line-clamp-auto-041-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-042.html": [
+       "6e01e29a19be0d098ca49714a07f39dfbafc2dcf",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/webkit-line-clamp-005-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-043.html": [
+       "a02463fb2eada85937841240ffbbba27a077307e",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-043-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-044.html": [
+       "5e8f7d14ccb2838be057f974822468feff3a4483",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-044-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-045.html": [
+       "23c39c181dbf8dd02e30c85ef54171fcf1316932",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-045-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-046.html": [
+       "56eab2d033e8bec0afa2e9e312b405dce44aad62",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-046-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "line-clamp-auto-047.html": [
+       "0b2f38e5303f9bba4084001a064dcd880bfd9e5c",
+       [
+        null,
+        [
+         [
+          "/css/css-overflow/line-clamp/reference/line-clamp-auto-047-ref.html",
           "=="
          ]
         ],
@@ -221548,6 +222097,45 @@
         {}
        ]
       ],
+      "hanging-punctuation-allow-end-basic.html": [
+       "e4ee4419d78fe25916f084a60d017e74e2df65a5",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-allow-end-basic-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-allow-end-inlines.html": [
+       "17e6de283087e7331b7288c74f1a8c20b934314c",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-allow-end-inlines-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-allow-end.html": [
+       "5a295b8e8976badcbc14d2d30289c05c444e443a",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-allow-end-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "hanging-punctuation-block-bound-001.html": [
        "ff2b61dd81cae5a9278fe28c3a3286c364296a3f",
        [
@@ -221562,7 +222150,7 @@
        ]
       ],
       "hanging-punctuation-first-001.xht": [
-       "1dd5f2ef97ef2b406adf4046fcf7a2011a778bb0",
+       "a79f1c1ba3f5707460161b5adf6de079fa14a4e6",
        [
         null,
         [
@@ -221581,6 +222169,71 @@
         [
          [
           "/css/css-text/hanging-punctuation/reference/hanging-punctuation-first-002-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-first-and-last-together.html": [
+       "c4c7666cac7ceae6c0249679dff6c959d26214b2",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-first-and-last-together-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-first-ascii-quote.html": [
+       "e81622f418be9e705a78a2be628740ec40a5237c",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-first-ascii-quote-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-first-rtl.html": [
+       "e88fcb5c495251aee96b1117d290dc5d75cb0cb6",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-first-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-first-whitespace.html": [
+       "728a7f7f28bfb4d8aad6e0bfa42db26d0b5396e5",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-first-whitespace-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-first.html": [
+       "8a1cb69adf7ea90e9f9f160bd6e46413c2f7e352",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-first-ref.html",
           "=="
          ]
         ],
@@ -221633,6 +222286,84 @@
         [
          [
           "/css/css-text/hanging-punctuation/reference/hanging-punctuation-last-001-ref.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-last-ascii-quote.html": [
+       "e66c96e9246cfc2de1608307b08efc82866caaaf",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-last-ascii-quote-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-last-rtl.html": [
+       "13bc200ebc42907b1fe74ce4f688ff704fa87577",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-last-rtl-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-last-whitespace.html": [
+       "43a20b75d4e8f5acb302f15f1a509ee44b7f1f6e",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-last-whitespace-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-last.html": [
+       "125fa139c16290af9eb5776737e6011962899b6f",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-last-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-variable-font-size.html": [
+       "650d751c9a8ab91984b5665e12bf9736b01c172b",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-variable-font-size-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "hanging-punctuation-with-bidi.html": [
+       "65f79ea6d39c54138913100cec73fa7f3f02a695",
+       [
+        null,
+        [
+         [
+          "/css/css-text/hanging-punctuation/reference/hanging-punctuation-with-bidi-ref.html",
           "=="
          ]
         ],
@@ -280040,6 +280771,19 @@
         }
        ]
       ],
+      "auto-nesting.html": [
+       "7135efb1dd905567ab68c49241a2df239407969a",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/scoped/auto-nesting-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "box-decoration-painting.html": [
        "2c3a831a3e56dada305b9c0f3fdf70086f1ec71d",
        [
@@ -280235,7 +280979,7 @@
        ]
       ],
       "nested-scope.html": [
-       "24ff3adda17fa4de9dfdf1570ca9fd2c3aa858bb",
+       "99875786435279395e926230e3b881e159bed9d1",
        [
         null,
         [
@@ -280355,7 +281099,7 @@
        ]
       ],
       "scope-during-transition-2.html": [
-       "7a708c8f35c423c7e16007dd8255ac0f92a14a9d",
+       "897fa8e64bff11d78be544825cb234b1f6795208",
        [
         null,
         [
@@ -325313,6 +326057,36 @@
           }
          ]
         ],
+        "checkmark-animation-002.html": [
+         "cdfe79081d2cab461fd3c5788f49e47f5974007b",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/checkmark-animation-002-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               5
+              ]
+             ]
+            ]
+           ],
+           "testdriver": true
+          }
+         ]
+        ],
         "closed-listbox-rendering.html": [
          "4d46aba2281a057405a534e747a6e736be7b5719",
          [
@@ -325391,6 +326165,35 @@
               [
                0,
                6
+              ]
+             ]
+            ]
+           ]
+          }
+         ]
+        ],
+        "picker-icon-animation-002.html": [
+         "52986ae8ea49a3d024e65ef4cd51c74b583d7245",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/picker-icon-animation-002-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "fuzzy": [
+            [
+             null,
+             [
+              [
+               0,
+               8
+              ],
+              [
+               0,
+               5
               ]
              ]
             ]
@@ -326432,6 +327235,58 @@
             ]
            ]
           }
+         ]
+        ],
+        "standalone-optgroup-no-shadow-tree-after-select.html": [
+         "2e5846dedf778d1711fb4c0255e382ce65411b7c",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "standalone-optgroup-no-shadow-tree.html": [
+         "33eb2a03991d0c228969606d812146c5d7862a26",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "standalone-option-no-shadow-tree-after-select.html": [
+         "3eb389c3430052d67e08f6b4fb6d44afef4bbc8e",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
+        "standalone-option-no-shadow-tree.html": [
+         "ef6f61931321e53166c80c4cdfb5d5f12ea0f72d",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-ref.html",
+            "=="
+           ]
+          ],
+          {}
          ]
         ],
         "uses-label-dynamic.html": [
@@ -328429,6 +329284,19 @@
          [
           [
            "/html/semantics/permission-element/permission-icon/standard-camera-usermedia-element-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
+       "icon-slotted-pseudo-element.html": [
+        "9df736d8f4cf57a7927fdde6a842df0b2cdbaf4c",
+        [
+         null,
+         [
+          [
+           "/html/semantics/permission-element/permission-icon/icon-slotted-pseudo-element-ref.html",
            "=="
           ]
          ],
@@ -350480,7 +351348,15 @@
    ],
    "connection-allowlist": {
     "tentative": {
+     "dedicated-worker-redirect.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
      "dedicated-worker.sub.window.js.headers": [
+      "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
+      []
+     ],
+     "fetch-redirect.sub.window.js.headers": [
       "b1a058fbd86f5ae20404906c2e512dc6e3037e90",
       []
      ],
@@ -351744,6 +352620,10 @@
      ]
     },
     "inheritance": {
+     "inheritance-from-initiator.sub_scheme=blob-expected.txt": [
+      "f3980484943879dbca279dee30fc775de5379719",
+      []
+     ],
      "sandboxed-blob-scheme.html.sub.headers": [
       "adc398d890fda1c5e11143f9e5aad5e9f6ac0932",
       []
@@ -351758,7 +352638,7 @@
        []
       ],
       "iframe-do.sub.html": [
-       "effc1adcdde2b0c85eee53d2a83cc2219eeb05b2",
+       "9b4810e8a234e592c9c63e774412f88e31d48353",
        []
       ],
       "javascript-url-srcdoc-cross-origin-iframe-inheritance-helper.sub.html": [
@@ -352118,6 +352998,10 @@
      }
     },
     "reporting-api": {
+     "report-to-directive-allowed-in-meta.https.sub-expected.txt": [
+      "03a267029b9f5cad6e18ddb7629c066be9d96798",
+      []
+     ],
      "report-to-directive-allowed-in-meta.https.sub.html.sub.headers": [
       "6f3ff61a0358111bc6ea2d4d5144fbe757e391f3",
       []
@@ -352142,8 +353026,16 @@
       "87dfcf878955358752bf9e5e044072e800864c79",
       []
      ],
+     "reporting-api-sends-reports-on-violation-2.https.sub-expected.txt": [
+      "620acf9730fd91ac9db734085b169ac7e36d3d82",
+      []
+     ],
+     "reporting-api-sends-reports-on-violation-2.https.sub.html.sub.headers": [
+      "b2ebe76007ea296bcd408a644bcfe5ccafd4aa09",
+      []
+     ],
      "reporting-api-sends-reports-on-violation.https.sub-expected.txt": [
-      "7013e852dd71383cf61afaf4ed5a65067f0cf49c",
+      "4467a39084534f1b643bb1cc593e2408c9465419",
       []
      ],
      "reporting-api-sends-reports-on-violation.https.sub.html.sub.headers": [
@@ -352940,6 +353832,12 @@
      ],
      "webrtc.js": [
       "a4075557add82baadf088fbbf17a8bfbcca04f35",
+      []
+     ]
+    },
+    "worker-src": {
+     "service-worker-static-import-blocked.https.sub-expected.txt": [
+      "1442bb0336a366a0a748c3156353558fe817cfa8",
       []
      ]
     },
@@ -361592,10 +362490,6 @@
        []
       ]
      },
-     "display-none-dont-cancel-pseudo.tentative-expected.txt": [
-      "15da503f1d8cfe9aafcb002f63534147b48f312c",
-      []
-     ],
      "event-dispatch.tentative-expected.txt": [
       "95050d6ebffae9d67b961c6e834898161c3bbaf8",
       []
@@ -363950,6 +364844,110 @@
       "96f4098ba62c4e898f57ef1f28e854b8f2b71838",
       []
      ],
+     "border-shape": {
+      "border-shape-clips-background-ref.html": [
+       "7a19ae7ac3c62d4b0ae8aa098a1f1a32a5edb446",
+       []
+      ],
+      "border-shape-combined-shadow-ref.html": [
+       "f4d7a567a09954c0bc692466d61573d89c69454f",
+       []
+      ],
+      "border-shape-double-shape-default-ref.html": [
+       "36c2c059515a096fbcd480c5e01126ff62680b30",
+       []
+      ],
+      "border-shape-geometry-box-ref.html": [
+       "6fdcbc59a0854fcc49c7b15ac49a6ecf2752096e",
+       []
+      ],
+      "border-shape-half-border-box-default-ref.html": [
+       "b9d5f4c05eb13befb3527e9a9274bf731bf01b48",
+       []
+      ],
+      "border-shape-inner-outer-ref.html": [
+       "76b36749d8627d0b9e49349ecc4e6390678efb74",
+       []
+      ],
+      "border-shape-inset-shadow-blur-ref.html": [
+       "f89009550000b652ad7ddc3b893edd9adbb26013",
+       []
+      ],
+      "border-shape-inset-shadow-negative-spread-ref.html": [
+       "5f8dacedcc7fa86cda0e3c488dab6404f924c066",
+       []
+      ],
+      "border-shape-inset-shadow-ref.html": [
+       "2b5704bc2ccc56991be0d4b5ab9abe26220bbcf2",
+       []
+      ],
+      "border-shape-outline-double-path-ref.html": [
+       "25eb00128981791293de0e3b11c6a9402ecd256a",
+       []
+      ],
+      "border-shape-outline-double-ref.html": [
+       "10e8b449eb05cddd7298e672eca76b7c7369cf62",
+       []
+      ],
+      "border-shape-outline-offset-ref.html": [
+       "685473672470385739dc4ba2145d81e682ed80f9",
+       []
+      ],
+      "border-shape-outline-ref.html": [
+       "50d5e4f99ba3dec4d933979aa5f4b771581adb67",
+       []
+      ],
+      "border-shape-overflow-child-clip-ref.html": [
+       "09972ae3fad255b35a95e1eca3adbeb466c13ff7",
+       []
+      ],
+      "border-shape-overflow-ref.html": [
+       "1d746f899aa2b3634394c5201654edfaababde66",
+       []
+      ],
+      "border-shape-overflow-replaced-ref.html": [
+       "b3094d640684a3ad6653d3143477ff1ab9f9b0d2",
+       []
+      ],
+      "border-shape-overflow-replaced-self-ref.html": [
+       "e45cdc859628feed5b4621bfcf1d16c64df5ff37",
+       []
+      ],
+      "border-shape-overflow-solid-background-ref.html": [
+       "cc482e344e2a0716b4a527f273115a0d19d2d4b8",
+       []
+      ],
+      "border-shape-shadow-negative-spread-ref.html": [
+       "8e25bc3a7eba34c36cf6a12a1f2565a92a626b8c",
+       []
+      ],
+      "border-shape-shadow-ref.html": [
+       "42a35e4c237744d7719fbde44e94aca5f704688b",
+       []
+      ],
+      "border-shape-shadow-semitransparent-ref.html": [
+       "c044533aee3c5f6048a87b03323a797321850b2e",
+       []
+      ],
+      "border-shape-stroke-from-border-ref.html": [
+       "c88b30e8ba472bfdb1e1dc2c0b928ec223cf81c9",
+       []
+      ],
+      "border-shape-stroke-invalidation-ref.html": [
+       "2a16aeebf7d654dc4f21fd252ae922082a1f693c",
+       []
+      ],
+      "border-shape-two-shapes-shadow-ref.html": [
+       "8c71bd17734103138cbc7d5752c6de0cb30332c5",
+       []
+      ],
+      "resources": {
+       "stroke-variants.css": [
+        "1a056ef66e15bbd0fc197b98a4baab2ad4a8211a",
+        []
+       ]
+      }
+     },
      "border-shape-absolute-coords-shape-ref.tentative.html": [
       "a0d1ecb12c62d77dabccdbb2c4c7e3836a879e92",
       []
@@ -364062,102 +365060,6 @@
         "1d522f46721eb26879c7cf4e47cd11f83513e5a0",
         []
        ]
-      },
-      "border-shape": {
-       "border-shape-clips-background-ref.html": [
-        "7a19ae7ac3c62d4b0ae8aa098a1f1a32a5edb446",
-        []
-       ],
-       "border-shape-combined-shadow-ref.html": [
-        "f4d7a567a09954c0bc692466d61573d89c69454f",
-        []
-       ],
-       "border-shape-double-shape-default-ref.html": [
-        "36c2c059515a096fbcd480c5e01126ff62680b30",
-        []
-       ],
-       "border-shape-geometry-box-ref.html": [
-        "6fdcbc59a0854fcc49c7b15ac49a6ecf2752096e",
-        []
-       ],
-       "border-shape-half-border-box-default-ref.html": [
-        "b9d5f4c05eb13befb3527e9a9274bf731bf01b48",
-        []
-       ],
-       "border-shape-inner-outer-ref.html": [
-        "76b36749d8627d0b9e49349ecc4e6390678efb74",
-        []
-       ],
-       "border-shape-inset-shadow-blur-ref.html": [
-        "f89009550000b652ad7ddc3b893edd9adbb26013",
-        []
-       ],
-       "border-shape-inset-shadow-negative-spread-ref.html": [
-        "5f8dacedcc7fa86cda0e3c488dab6404f924c066",
-        []
-       ],
-       "border-shape-inset-shadow-ref.html": [
-        "2b5704bc2ccc56991be0d4b5ab9abe26220bbcf2",
-        []
-       ],
-       "border-shape-outline-double-path-ref.tentative.html": [
-        "25eb00128981791293de0e3b11c6a9402ecd256a",
-        []
-       ],
-       "border-shape-outline-double-ref.tentative.html": [
-        "10e8b449eb05cddd7298e672eca76b7c7369cf62",
-        []
-       ],
-       "border-shape-outline-offset-ref.tentative.html": [
-        "685473672470385739dc4ba2145d81e682ed80f9",
-        []
-       ],
-       "border-shape-outline-ref.tentative.html": [
-        "50d5e4f99ba3dec4d933979aa5f4b771581adb67",
-        []
-       ],
-       "border-shape-overflow-child-clip-ref.html": [
-        "09972ae3fad255b35a95e1eca3adbeb466c13ff7",
-        []
-       ],
-       "border-shape-overflow-ref.html": [
-        "1d746f899aa2b3634394c5201654edfaababde66",
-        []
-       ],
-       "border-shape-overflow-solid-background-ref.html": [
-        "cc482e344e2a0716b4a527f273115a0d19d2d4b8",
-        []
-       ],
-       "border-shape-shadow-negative-spread-ref.html": [
-        "8e25bc3a7eba34c36cf6a12a1f2565a92a626b8c",
-        []
-       ],
-       "border-shape-shadow-ref.html": [
-        "42a35e4c237744d7719fbde44e94aca5f704688b",
-        []
-       ],
-       "border-shape-shadow-semitransparent-ref.html": [
-        "c044533aee3c5f6048a87b03323a797321850b2e",
-        []
-       ],
-       "border-shape-stroke-from-border-ref.html": [
-        "c88b30e8ba472bfdb1e1dc2c0b928ec223cf81c9",
-        []
-       ],
-       "border-shape-stroke-invalidation-ref.html": [
-        "2a16aeebf7d654dc4f21fd252ae922082a1f693c",
-        []
-       ],
-       "border-shape-two-shapes-shadow-ref.html": [
-        "8c71bd17734103138cbc7d5752c6de0cb30332c5",
-        []
-       ],
-       "resources": {
-        "stroke-variants.css": [
-         "1a056ef66e15bbd0fc197b98a4baab2ad4a8211a",
-         []
-        ]
-       }
       },
       "parsing": {
        "WEB_FEATURES.yml": [
@@ -365393,7 +366295,7 @@
       []
      ],
      "WEB_FEATURES.yml": [
-      "1a7a8ae995e6ee31c89202c8b0f7ab8c0deec667",
+      "9b2999c284e3a227a432edc3edd20799bf9c414d",
       []
      ],
      "a98rgb-003-ref.html": [
@@ -365704,7 +366606,7 @@
      ],
      "parsing": {
       "WEB_FEATURES.yml": [
-       "fa5d933e6f9eafd2f45478013414e33f28dbfb18",
+       "2ed0d9b960034469c02bf30d4800b75e955b47b3",
        []
       ],
       "color-valid-color-function-expected.txt": [
@@ -366284,7 +367186,7 @@
        []
       ],
       "size-query-with-var-expected.txt": [
-       "274eb4e67dcfa1495d2c751d258926c100e632e1",
+       "a458b1c3bb2e8a4a58378ad1da61e2debff1288d",
        []
       ],
       "style-negation-with-container-name-ref.html": [
@@ -378998,6 +379900,10 @@
       "95bee383d2117d1c054e4706abfd130149d31fc8",
       []
      ],
+     "input-color-base-appearance-rendering-ref.tentative.html": [
+      "41b2062071ea5ece9b5f4f1abb3194c1f8d4bcb0",
+      []
+     ],
      "input-text-base-appearance-rendering-ref.html": [
       "a26cba52dd97f26cb1e1699cb13f731c5f003d27",
       []
@@ -379185,6 +380091,30 @@
       ],
       "flex-gap-decorations-044-ref.html": [
        "5b8620baab074031819c7e71f7b3a4768f71f1f7",
+       []
+      ],
+      "flex-gap-decorations-050-ref.html": [
+       "1b118ce25266e64ae63db5c5ccca9855f39ef9c7",
+       []
+      ],
+      "flex-gap-decorations-051-ref.html": [
+       "f7a37aa1cbd35809e9b19391ebad82c3ef4a22ef",
+       []
+      ],
+      "flex-gap-decorations-052-ref.html": [
+       "ddfa5568e3366a92503bbfc86fa6d2a283b2a0f7",
+       []
+      ],
+      "flex-gap-decorations-053-ref.html": [
+       "dfc9bdaf6340f722224691213a52cef43e0dd8e9",
+       []
+      ],
+      "flex-gap-decorations-054-ref.html": [
+       "81ce5bd724ed278ede436720920dea842f0ec660",
+       []
+      ],
+      "flex-gap-decorations-055-ref.html": [
+       "7601fb8541d2ce72d34ae231efcce5e7f2e2af96",
        []
       ],
       "flex-gap-decorations-repaint-on-child-resize-ref.html": [
@@ -379761,6 +380691,10 @@
       ],
       "multicol-gap-decorations-032-ref.html": [
        "d0c22d2be15bd02eebbb8eb7c323661ecb216155",
+       []
+      ],
+      "multicol-gap-decorations-repaint-on-content-resize-ref.html": [
+       "766bd2f4ac5dc3670f42873c579d6773ad3e2aa1",
        []
       ]
      }
@@ -380931,8 +381865,16 @@
          "27582dfb556b3e1941b83d0774ceac130b5e1a88",
          []
         ],
-        "column-grid-lanes-container-baseline-006-ref.html": [
+        "column-grid-lanes-container-baseline-006a-ref.html": [
          "fbb89cc41dc8e59ca1a798087eea5fdbac33476f",
+         []
+        ],
+        "column-grid-lanes-container-baseline-006b-ref.html": [
+         "46bcb5ae26447015db9c5f5036f12ea054333747",
+         []
+        ],
+        "column-grid-lanes-container-baseline-006c-ref.html": [
+         "aee3cdce33a79e4129736372227f72037315ed28",
          []
         ],
         "column-grid-lanes-container-baseline-007a-ref.html": [
@@ -380944,7 +381886,7 @@
          []
         ],
         "column-grid-lanes-container-baseline-008-ref.html": [
-         "59b17d75822cb8d77826dbb25eb25c49d8b09cde",
+         "d8d8d4c1a22f6ff009aeb005dd7f892fa2ee6594",
          []
         ],
         "column-grid-lanes-item-baseline-001-ref.html": [
@@ -381191,6 +382133,10 @@
          "5ce6eb09484042cca230518e11dcb7afcb20953c",
          []
         ],
+        "grid-lanes-intrinsic-size-dynamic-block-size-ref.html": [
+         "dcc8486bcce8b9a687c2d943718e6dc62a9cd4fa",
+         []
+        ],
         "grid-lanes-intrinsic-sizing-cols-001-auto-ref.html": [
          "764da6e0d803ecc3eccbedef49a3221b3e49569a",
          []
@@ -381373,6 +382319,10 @@
         ],
         "column-negative-margin-003-ref.html": [
          "6ec70e6abfc371a35595c346022ee6fb58035cc6",
+         []
+        ],
+        "column-negative-margin-004-ref.html": [
+         "2ea680467e39425a021b648e375d36268c7f7178",
          []
         ],
         "column-reverse-001-ref.html": [
@@ -381645,6 +382595,10 @@
         ],
         "row-negative-margin-003-ref.html": [
          "c224dec73267d84643857c2b577b92e4fa6c4679",
+         []
+        ],
+        "row-negative-margin-004-ref.html": [
+         "c755fece1becd52b73696c60bbe27951e60a041a",
          []
         ],
         "row-reverse-001-ref.html": [
@@ -388644,6 +389598,26 @@
         "5a8eb1571f9fa186c6a523c7bbf27c68c9dc7266",
         []
        ],
+       "line-clamp-auto-043-ref.html": [
+        "885f931e544ba375623c03d3edd3a6ef44385333",
+        []
+       ],
+       "line-clamp-auto-044-ref.html": [
+        "746cf6446785809691b1ea54d2d68e66011c5b39",
+        []
+       ],
+       "line-clamp-auto-045-ref.html": [
+        "9b4fd5625fa7b872f2a8588b3f60ce0e7e872959",
+        []
+       ],
+       "line-clamp-auto-046-ref.html": [
+        "705f2b0e3e52b65b8d6138c469abbd83e69c62f6",
+        []
+       ],
+       "line-clamp-auto-047-ref.html": [
+        "b934b7e6d2d3caaa8cf189a3fd4f659d08a42918",
+        []
+       ],
        "line-clamp-auto-with-ruby-001-ref.html": [
         "03d12b9c722c8c160830cc01997baa3ee4cf88c3",
         []
@@ -391879,7 +392853,7 @@
       []
      ],
      "idlharness-expected.txt": [
-      "f011d5da4e5bd24a3c411ccc088776f6646f6685",
+      "e352ec419dfed3b5debbdbda39cc99b453ddea3c",
       []
      ],
      "input-element-pseudo-open-click.optional-expected.txt": [
@@ -394841,7 +395815,7 @@
         []
        ],
        "iframe-contents-400x200root.html": [
-        "9244bf5a79a990124755b0d2efbe07032d5d158c",
+        "45741f4bf1a22cc89606986690d377195d4bf5f5",
         []
        ],
        "iframe-contents-dom-content-loaded.html": [
@@ -395310,10 +396284,6 @@
        ]
       }
      },
-     "input-preprocessing-expected.txt": [
-      "e37a0a1e2c9e4c4a55ad4354a12058ad0443569e",
-      []
-     ],
      "missing-semicolon-ref.html": [
       "ef8251e9e11b32c1fd016d240df76c7fd91b82f5",
       []
@@ -395830,16 +396800,48 @@
         "48be1d980687d319bbdeedea9f3a9ac78e69a367",
         []
        ],
+       "hanging-punctuation-allow-end-basic-ref.html": [
+        "cc5fd98c8282e36c659490cb23709b6acc5c00bf",
+        []
+       ],
+       "hanging-punctuation-allow-end-inlines-ref.html": [
+        "df02eb4007bbabe766d59f1474b896ebd686fee8",
+        []
+       ],
+       "hanging-punctuation-allow-end-ref.html": [
+        "590174cf4319c34dcc63d9bf69cfd644a4a741ad",
+        []
+       ],
        "hanging-punctuation-block-bound-001-ref.html": [
         "31f39ea163108859aec502b4332fdfb3b074faa1",
         []
        ],
        "hanging-punctuation-first-001-ref.xht": [
-        "1949939eb8b854e6ffdc8d21121f4f5f05e0e9ad",
+        "e42ed6bdcd7307f77baba81c9eb92ca75480a82b",
         []
        ],
        "hanging-punctuation-first-002-ref.html": [
         "5f2070fdf5007fb08ad92f07524c8ea3a1624a52",
+        []
+       ],
+       "hanging-punctuation-first-and-last-together-ref.html": [
+        "b196a090e60ea3affd71b3decbf1f59d1deddf51",
+        []
+       ],
+       "hanging-punctuation-first-ascii-quote-ref.html": [
+        "07a6387a1567afdb52186fa7be735e3df84b9377",
+        []
+       ],
+       "hanging-punctuation-first-ref.html": [
+        "118cb58ea49713ba2df6cd41b14a578e3045395d",
+        []
+       ],
+       "hanging-punctuation-first-rtl-ref.html": [
+        "a244681926547d4cdc3bc4be4ed7e67595c5cf66",
+        []
+       ],
+       "hanging-punctuation-first-whitespace-ref.html": [
+        "118cb58ea49713ba2df6cd41b14a578e3045395d",
         []
        ],
        "hanging-punctuation-force-end-001-ref.xht": [
@@ -395856,6 +396858,30 @@
        ],
        "hanging-punctuation-last-001-ref.xht": [
         "1f8aa4a57bb653409c5211b186f0e8b6214525ac",
+        []
+       ],
+       "hanging-punctuation-last-ascii-quote-ref.html": [
+        "f0dc398f7e71fab1385c1d22ae4e76e84b4844c3",
+        []
+       ],
+       "hanging-punctuation-last-ref.html": [
+        "7359a19700384b0541cdc7feaed1539dfb97ff5d",
+        []
+       ],
+       "hanging-punctuation-last-rtl-ref.html": [
+        "43baca81e2db163d8dd40031095aa655b4f25844",
+        []
+       ],
+       "hanging-punctuation-last-whitespace-ref.html": [
+        "7359a19700384b0541cdc7feaed1539dfb97ff5d",
+        []
+       ],
+       "hanging-punctuation-variable-font-size-ref.html": [
+        "8d69b0e87ae7989ddbf5ef36992e948cb8a08fb3",
+        []
+       ],
+       "hanging-punctuation-with-bidi-ref.html": [
+        "7ed1fdd823abfa3dc3e339cfdd92c2954d0efda8",
         []
        ],
        "hanging-scrollable-001-ref.html": [
@@ -397610,7 +398636,7 @@
        []
       ],
       "hanging-punctuation-valid-expected.txt": [
-       "da6ecb32455878c26d4bcd307bf3c651c3d5b065",
+       "30a789b43deedf9a76903939aa83c89ba8d15d3f",
        []
       ],
       "hyphenate-limit-chars-computed-expected.txt": [
@@ -402635,7 +403661,7 @@
       []
      ],
      "KeyframeEffect-getKeyframes.tentative-expected.txt": [
-      "4e9561af0a18acb95174f81dbd18b8ffcde39aa4",
+      "e836d3c29d75b7a0aede054b696def9c31a79f11",
       []
      ],
      "META.yml": [
@@ -402666,10 +403692,6 @@
        []
       ]
      },
-     "custom-property-and-allow-discrete-expected.txt": [
-      "c7a2837faf664628af3f67032994b5d0b802ac48",
-      []
-     ],
      "event-dispatch.tentative-expected.txt": [
       "4b3289954cfbdd779c2bc37f681db7866b550188",
       []
@@ -403137,7 +404159,7 @@
         []
        ],
        "font-weight-expected.txt": [
-        "761f60a081cf97e09f76565924475970ecb4a7b2",
+        "b413ed327b2cd7c61ff6e3efaaf8652a25fdee49",
         []
        ],
        "gap-expected.txt": [
@@ -404887,7 +405909,7 @@
       []
      ],
      "attr-all-types-expected.txt": [
-      "06be4f775b1a84c4c79917fff6699000bccc27ac",
+      "17f5c21a3312c3bcadff1e57a86ff2ea8ba41493",
       []
      ],
      "attr-in-slotted-ref.html": [
@@ -406469,6 +407491,10 @@
      "scoped": {
       "ancestor-display-change-ref.html": [
        "53fce0c4f17f37c8a306e79c396d3d715eb3f945",
+       []
+      ],
+      "auto-nesting-ref.html": [
+       "da17258224b89bf7db35653ec1fe3571d97789d1",
        []
       ],
       "box-decoration-painting-ref.html": [
@@ -409663,11 +410689,15 @@
       []
      ],
      "caretRangeFromPoint-replace-document.tentative-expected.txt": [
-      "ac812d0c9cc3197dee73ad966bf2f3108faf8d42",
+      "afbb7afc54975f913c51b726a6cc36f59045dd69",
       []
      ],
      "caretRangeFromPoint-textarea-transform.tentative-expected.txt": [
       "14a59560f724c803c074e0c5ef3fad2a611054f7",
+      []
+     ],
+     "caretRangeFromPoint.tentative-expected.txt": [
+      "2adda34a792a1d55e8191181e5f86d7b0e2d5cda",
       []
      ],
      "cssom-fontfacerule-constructors-expected.txt": [
@@ -409715,11 +410745,11 @@
       []
      ],
      "getComputedStyle-pseudo-expected.txt": [
-      "a89291ec12164e3904a5a46bb0e53ccf073ab0c2",
+      "b3b5ce1ff6f9aa55c58cf5110b9074b486ce8917",
       []
      ],
      "getComputedStyle-pseudo-picker-expected.txt": [
-      "b84cf836814ea1f2a30b8f7fc61a44890dc29e46",
+      "f2169b288819743ba7c9a66c20a17757e646ce6e",
       []
      ],
      "getComputedStyle-resolved-min-size-auto-expected.txt": [
@@ -413042,14 +414072,6 @@
      ],
      "initial-about-blank.window-expected.txt": [
       "a2e37cf7e79f235071ce8e582819c85dd5a34f32",
-      []
-     ],
-     "scoped-custom-element-registry-customelementregistry-attribute-expected.txt": [
-      "adb196258344d5c00418a014a7afd4c605073c73",
-      []
-     ],
-     "scoped-custom-element-registry-customelementregistry-attribute-in-xhtml-expected.txt": [
-      "0b3cada5373c33cc3a406625e3fdf3ca7d479ba1",
       []
      ]
     },
@@ -419188,22 +420210,6 @@
        []
       ]
      },
-     "idlharness.https.any-expected.txt": [
-      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
-      []
-     ],
-     "idlharness.https.any.serviceworker-expected.txt": [
-      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
-      []
-     ],
-     "idlharness.https.any.sharedworker-expected.txt": [
-      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
-      []
-     ],
-     "idlharness.https.any.worker-expected.txt": [
-      "a6d9009716f5cb19ee68d269cb17a28c59ca3cba",
-      []
-     ],
      "policies": {
       "WEB_FEATURES.yml": [
        "399d8c1669be60e62384869539abc4d4d2eb7117",
@@ -419495,26 +420501,6 @@
        "19d59c9abe04b1806cb6ba868364cb9fcf31ee6f",
        []
       ],
-      "request-reset-attributes.https-expected.txt": [
-       "ad037194b011447a8948744a1fbb175271bb0902",
-       []
-      ],
-      "request-structure.any-expected.txt": [
-       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
-       []
-      ],
-      "request-structure.any.serviceworker-expected.txt": [
-       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
-       []
-      ],
-      "request-structure.any.sharedworker-expected.txt": [
-       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
-       []
-      ],
-      "request-structure.any.worker-expected.txt": [
-       "e2c9250a9bdce3acf5b9324eb834fc80841c00ee",
-       []
-      ],
       "resources": {
        "cache.py": [
         "ca0bd644b4f798c4fa64d1041b628a3740bc0bac",
@@ -419770,7 +420756,7 @@
        []
       ],
       "compressed-data.py": [
-       "bb9d7fe8466887a2233d760b18ac4e6af0b1e732",
+       "e40f41c53ac7bb4765e4b5dee6b0bda93c49e03e",
        []
       ],
       "compression-dictionary-util.sub.js": [
@@ -420485,6 +421471,14 @@
       []
      ],
      "resources": {
+      "dedicated-worker.html": [
+       "063f43cffa691bed9ce2f7d6da4d4ecfef00d198",
+       []
+      ],
+      "dedicated-worker.js": [
+       "c4c2a5b7ed0cbd9e8e1bf2f64c5eaa1d1945e346",
+       []
+      ],
       "fetch-local-http.html": [
        "6514a0861b3f664f66ef61bafa8e3e3cad358f35",
        []
@@ -420498,7 +421492,7 @@
        []
       ],
       "iframer.html": [
-       "c61f897702c29fd3599fe294666c2a77fff2abed",
+       "12d75be4a13eda6eda37d449f1561e7924a6ed91",
        []
       ],
       "navigate.html": [
@@ -420510,11 +421504,19 @@
        []
       ],
       "support.sub.js": [
-       "99cd98954e16ba73ceec2c4d66889faf11b1c3aa",
+       "3e0c3cc4ec15bb5b55570e0dbc96e96ab4e5ba9e",
        []
       ],
       "target.py": [
        "eabcdd47517c8938d12cd08a0d66f0db2e518456",
+       []
+      ],
+      "websocket.html": [
+       "76d8e6464f40df1d305ef5581712148e4f7a4fa1",
+       []
+      ],
+      "webtransport.html": [
+       "ba1e5c4d1ca70b53c2fbfc0548c49661ec921b8c",
        []
       ]
      }
@@ -438197,6 +439199,10 @@
          "2ecb3a06bfe85b43ac411ca58a08ef68919aba27",
          []
         ],
+        "checkmark-animation-002-ref.html": [
+         "bf129e3b245e59efb48942d9ee2d52971057eb58",
+         []
+        ],
         "closed-listbox-rendering-ref.html": [
          "d1a1f1bb61ff377679eac4c19efe0f8c4071a4ba",
          []
@@ -438215,6 +439221,10 @@
         ],
         "picker-icon-and-slotted-ref.html": [
          "579320887f97aa3a96b40f8ca97ffb1cfb131af0",
+         []
+        ],
+        "picker-icon-animation-002-ref.html": [
+         "0393b862952e69e87e5a6ace9b651819a9277885",
          []
         ],
         "resources": {
@@ -438363,20 +439373,12 @@
          "b351c80c273940c8422db8f66da959fb36e962cb",
          []
         ],
-        "select-mousedown-slot-mutation.optional-expected.txt": [
-         "607b44ea6c6672f31dabfb73d1cc40ca131d539b",
-         []
-        ],
         "select-only-picker-opt-in-ref.html": [
          "6ff543d9a1394ae0caa1c6cea604c438d2412ce5",
          []
         ],
         "select-open-invalidation-ref.html": [
          "73833127a03ad6791751c557f9ef80858877d347",
-         []
-        ],
-        "select-option-hover-styles-expected.txt": [
-         "81e995576827eaa2ebcf6d841af11aa1be88750d",
          []
         ],
         "select-option-images-ref.html": [
@@ -438403,12 +439405,16 @@
          "154fbad9ca3a4ace9655cfd8fb377f895fff3d81",
          []
         ],
-        "select-vertical-writing-mode-navigation.optional-expected.txt": [
-         "27adf205a4429b35377eb379b1f12adf1791824c",
-         []
-        ],
         "selectedcontent-color-ref.html": [
          "1a62a995c7e229251a7415ff209781d3747e04c5",
+         []
+        ],
+        "standalone-optgroup-no-shadow-tree-ref.html": [
+         "4532cc2b8d2cb4c3f63cf97c27c856a9bc5542c8",
+         []
+        ],
+        "standalone-option-no-shadow-tree-ref.html": [
+         "ddec690e8f89cb7c05a7992e3fca493b818c4095",
          []
         ],
         "uses-label-dynamic-ref.html": [
@@ -439266,6 +440272,10 @@
        ],
        "icon-css-property-stroke-width-reftest-ref.html": [
         "ec13d73db7c62cc58fd05d291f04ec61617a370f",
+        []
+       ],
+       "icon-slotted-pseudo-element-ref.html": [
+        "54b1daee1efa4021087a85ce9d060c9fd2db9e06",
         []
        ],
        "standard-camera-usermedia-element-ref.html": [
@@ -443070,12 +444080,28 @@
         "4eecc6d7a1accaef6d984a65632c84df250bc32b",
         []
        ],
+       "event-handler-attributes-body-alt-expected.txt": [
+        "4d1562a7310c9cac242173919f7171cb4f86f7a3",
+        []
+       ],
        "event-handler-attributes-body-window-expected.txt": [
-        "83b3e2abd262ce644e506ac4832d6e467b642354",
+        "b4af36d3dea875ae5b70db55d0251417a3620472",
+        []
+       ],
+       "event-handler-attributes-frameset-alt-expected.txt": [
+        "66863ee1a2d727c1ed4bd96de59924be587f1b5a",
         []
        ],
        "event-handler-attributes-frameset-window-expected.txt": [
-        "1b8cae0f631b5ecbc87bb97116b9cfb4f632812a",
+        "7f4bf021d558946dba4b1c7c878dbd728f5cf142",
+        []
+       ],
+       "event-handler-attributes-window-expected.txt": [
+        "d0e1a0d1df9072a838d7a4f4e84a84f803d62e91",
+        []
+       ],
+       "event-handler-attributes-window-frameset-expected.txt": [
+        "d0e1a0d1df9072a838d7a4f4e84a84f803d62e91",
         []
        ],
        "event-handler-attributes-windowless-body-expected.txt": [
@@ -443108,7 +444134,7 @@
          []
         ],
         "event-handler-body.js": [
-         "38aede1ce474f1239754e8a3a4c0269171c7c2ac",
+         "ae2f5409a37888f1366e5deaa51f40f9a4fc9507",
          []
         ],
         "open-window.html": [
@@ -445222,7 +446248,7 @@
      []
     ],
     "css-pseudo.idl": [
-     "dbe4c5461f6ae2199968bb77c81d32570f55f1c7",
+     "38743a543343d03a033b37ab8e910f51fcb924e8",
      []
     ],
     "css-regions.idl": [
@@ -445418,7 +446444,7 @@
      []
     ],
     "html.idl": [
-     "8f38511b5520c40dde3692964eb2989610f822e5",
+     "ecec2bd4f366001d578a502dd823e7fd513f3a69",
      []
     ],
     "idle-detection.idl": [
@@ -445630,7 +446656,7 @@
      []
     ],
     "performance-timeline.idl": [
-     "6ef84b6cbb8e6018fffac853c0070bf5515c1802",
+     "f06ed9adb6c649124284b8485191fccb7d9947e4",
      []
     ],
     "periodic-background-sync.idl": [
@@ -445778,7 +446804,7 @@
      []
     ],
     "secure-payment-confirmation.idl": [
-     "3847651c1f3a06721a1a76c69bf4125ae51cd746",
+     "2b7958238f7a982580cd42f1ebae4fe88d10d95d",
      []
     ],
     "selection-api.idl": [
@@ -446142,7 +447168,7 @@
      []
     ],
     "writing-assistance-apis.idl": [
-     "82acfdb48e2d3a051ae0e43d6d34355cf8259ae3",
+     "536aa09e950d71fe347b56dc229c761bba8332be",
      []
     ],
     "xhr.idl": [
@@ -450714,7 +451740,7 @@
      []
     ],
     "META.yml": [
-     "1dbe3e5d7edbe4b27d1f7cfbae55bcfd6499a71e",
+     "3985039a4291daa119090ef9e4cf6951f529c8b2",
      []
     ],
     "OWNERS": [
@@ -450772,7 +451798,7 @@
      ]
     },
     "rejects_if_not_active.https-expected.txt": [
-     "c8471bb06867ea191450e9ebb22b35281d9f6d54",
+     "d612b974c9547e99a5f729256b0212f4ce7c612a",
      []
     ],
     "resources": {
@@ -451942,7 +452968,7 @@
      []
     ],
     "pointerevent_support.js": [
-     "07e0311b596a3dbf3ad61cda6268e47d27f18a7d",
+     "0b2998609d110b34639e390fc81dab2a7a13f3f1",
      []
     ],
     "pointerlock": {
@@ -452093,10 +453119,6 @@
     ],
     "preload-time-to-fetch.https-expected.txt": [
      "18765a96a0ef1f6a12e135ca2da4d2ce8e3ba4a7",
-     []
-    ],
-    "preload-with-type-expected.txt": [
-     "315151bf17da9906d4580a2aed1a8ede2e941199",
      []
     ],
     "reflected-as-value-expected.txt": [
@@ -456908,10 +457930,6 @@
       "0af8c3eebfeffb8eab2b33e1b78083f3fa9f1031",
       []
      ],
-     "cache-keys-attributes-for-service-worker.https-expected.txt": [
-      "c0b00dd1f2e40ee8ee23a189cb758f075c01bce6",
-      []
-     ],
      "cache-keys.https.any-expected.txt": [
       "6130b0d3d5b413468ddda470bc14b1824e190a6d",
       []
@@ -457142,10 +458160,6 @@
      ],
      "fetch-event-redirect.https-expected.txt": [
       "24711712e129415cb016af6c5f24dc3475f2efed",
-      []
-     ],
-     "fetch-event.https-expected.txt": [
-      "a18880f971792cab5ba60e504a6261743bf72756",
       []
      ],
      "fetch-request-xhr-sync-error.https.window-expected.txt": [
@@ -460095,7 +461109,7 @@
       ]
      },
      "soft-navigation-helper.js": [
-      "8f936a767dc3e451fcf93f3b166fadc1006b01aa",
+      "43a50749bacdd9c7ee464b685783c8d54122b42b",
       []
      ],
      "soft-navigation-test-helper.js": [
@@ -462806,12 +463820,6 @@
      }
     },
     "struct": {
-     "UnknownElement": {
-      "interface-expected.txt": [
-       "14a7b407cf773e77cc182d56519547db90c65b93",
-       []
-      ]
-     },
      "WEB_FEATURES.yml": [
       "188b55d9d4e58d962a70f614bba692fb9e59b96c",
       []
@@ -463703,7 +464711,7 @@
       []
      ],
      "script-messages.js": [
-      "ad4138be25b9120ea7879438a437aa869cc2d309",
+      "92c27c9f13032ade0d672b6d9ba4f15abadc19c9",
       []
      ],
      "send-plain-string-to-trusted-type-sink.html": [
@@ -470183,6 +471191,10 @@
        "__init__.py": [
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
         []
+       ],
+       "conftest.py": [
+        "7a4df425e07b9aaa443dd593c7afe911bcefb453",
+        []
        ]
       },
       "get_active_element": {
@@ -470326,6 +471338,10 @@
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
         []
        ],
+       "conftest.py": [
+        "3f93eea78e6c27054f9b1cdf6125c92d12841b94",
+        []
+       ],
        "user_prompts-expected.txt": [
         "a699de00ab79988bd2631cf7eb6d3453c72b2477",
         []
@@ -470334,6 +471350,10 @@
       "minimize_window": {
        "__init__.py": [
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        []
+       ],
+       "conftest.py": [
+        "c32c0e8cbb621d2b39b1daf7a226d7a9bd50ebd5",
         []
        ]
       },
@@ -470456,6 +471476,10 @@
       "set_window_rect": {
        "__init__.py": [
         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+        []
+       ],
+       "conftest.py": [
+        "438f73d2bfaa4ddfcdd0fcaa7ca24552079c5e61",
         []
        ]
       },
@@ -471584,7 +472608,7 @@
      []
     ],
     "helper.js": [
-     "d4cec39ffce0f58b76da653c78dc384f22ffa43d",
+     "58b69c54de36bb16e9608a4d3f9b313b7eb2eb36",
      []
     ],
     "routines.js": [
@@ -471666,6 +472690,10 @@
      ],
      "RTCPeerConnection-worker-transform.js": [
       "36e3949e4d584019a0d921858cc75ee7f6bd25c1",
+      []
+     ],
+     "helper.js": [
+      "d4cec39ffce0f58b76da653c78dc384f22ffa43d",
       []
      ],
      "resources": {
@@ -506553,6 +507581,37 @@
         "timeout": "long"
        }
       ]
+     ],
+     "language-model-tool-use.tentative.https.window.js": [
+      "ed82bcc67021b0025ac4921606fbbcebcfb98da9",
+      [
+       "ai/language-model/language-model-tool-use.tentative.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "title",
+          "Language Model Tool Use (Open Loop)"
+         ],
+         [
+          "script",
+          "/resources/testdriver.js"
+         ],
+         [
+          "script",
+          "/resources/testdriver-vendor.js"
+         ],
+         [
+          "script",
+          "../resources/util.js"
+         ],
+         [
+          "timeout",
+          "long"
+         ]
+        ],
+        "timeout": "long"
+       }
+      ]
      ]
     },
     "language_detection": {
@@ -521428,10 +522487,38 @@
    },
    "connection-allowlist": {
     "tentative": {
+     "dedicated-worker-redirect.sub.window.js": [
+      "5978c5aee35057e41fbef7d2ff68710e6bc95e20",
+      [
+       "connection-allowlist/tentative/dedicated-worker-redirect.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "dedicated-worker.sub.window.js": [
       "22c2f094dc34a9ea2a7787cba2552029aabf25c3",
       [
        "connection-allowlist/tentative/dedicated-worker.sub.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/get-host-info.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "fetch-redirect.sub.window.js": [
+      "96637fed424b3e2460b456f055d73428a755677a",
+      [
+       "connection-allowlist/tentative/fetch-redirect.sub.window.html",
        {
         "script_metadata": [
          [
@@ -526443,9 +527530,17 @@
       ]
      ],
      "inheritance-from-initiator.sub.html": [
-      "4621c57d45cf1938db812da5d88f7b1cf8f4ea83",
+      "1774c427194336c7e524db19066c228964a419df",
       [
-       null,
+       "content-security-policy/inheritance/inheritance-from-initiator.sub.html?scheme=blob",
+       {}
+      ],
+      [
+       "content-security-policy/inheritance/inheritance-from-initiator.sub.html?scheme=data",
+       {}
+      ],
+      [
+       "content-security-policy/inheritance/inheritance-from-initiator.sub.html?scheme=javascript",
        {}
       ]
      ],
@@ -527254,7 +528349,7 @@
       ]
      ],
      "report-to-directive-allowed-in-meta.https.sub.html": [
-      "ffdebe0eb3e9a5434e8a2f87decaba65951512e9",
+      "363c7ef1da63eb8857ced56d90b25bdc42417936",
       [
        null,
        {}
@@ -527297,8 +528392,15 @@
        }
       ]
      ],
+     "reporting-api-sends-reports-on-violation-2.https.sub.html": [
+      "9c468467916e744ed1fda4f8ef34b4ed735bd322",
+      [
+       null,
+       {}
+      ]
+     ],
      "reporting-api-sends-reports-on-violation.https.sub.html": [
-      "46f386c844829bfe14fad5f4054ed0300ec56669",
+      "4e5cee4a9e0f42a25f4610dd9e5cd66c187bfbc0",
       [
        null,
        {}
@@ -529439,6 +530541,13 @@
      ],
      "service-worker-src-self-fallback.https.sub.html": [
       "575911207e07c15b0ece5b370778bf0f0352f7fd",
+      [
+       null,
+       {}
+      ]
+     ],
+     "service-worker-static-import-blocked.https.sub.html": [
+      "2c403b27830723c45aff69f275b52b4363a16ad2",
       [
        null,
        {}
@@ -536694,6 +537803,13 @@
         {}
        ]
       ],
+      "border-width-transition-with-style-change.html": [
+       "c4eeb69716f5b9916ab71a4a2d0352de32bf6b03",
+       [
+        null,
+        {}
+       ]
+      ],
       "box-shadow-composition.html": [
        "7cc1ba299231a29276dba6bdf041e3ce9e654b09",
        [
@@ -537343,6 +538459,83 @@
        {}
       ]
      ],
+     "border-shape": {
+      "border-shape-animation.html": [
+       "f5e1bf39609e7fc64e219f670d78dda03f1e2849",
+       [
+        null,
+        {}
+       ]
+      ],
+      "border-shape-circle-hit-test-overflow-clip-margin.html": [
+       "a4e00c994f431f87774a2ae1f856b016e03976cd",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "border-shape-circle-hit-test-overflow-clip.html": [
+       "3c538ada5014705098e7849baf454b168db42a75",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "border-shape-circle-hit-test-siblings.html": [
+       "f55874d3cc3bdaf13b430a7af1dbc8d100e9474d",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "border-shape-circle-hit-test.html": [
+       "4001d761a7e5c077815228aad57e967545b5da96",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "border-shape-hit-test-overflow.html": [
+       "b25e68b38f5b368105f11768ca4ad5ceb3a05245",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
+      "border-shape-overflow-clip-margin-hit-test-ref-boxes.html": [
+       "53140f4d44d0d1fe3be7f7e00b8306c56ac6f80d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "border-shape-overflow-clip-margin-hit-test.html": [
+       "49e1f643939780439f80aece34f40d7264b1760f",
+       [
+        null,
+        {}
+       ]
+      ],
+      "border-shape-stacking-context-hit-test.html": [
+       "716fe0ef6527f3d943b1d9d71de9f32d0594cca6",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ]
+     },
      "border-width-rounding.tentative.html": [
       "bc71b40b1c1dd38d04e0b9ce92cf2308d82fe3fe",
       [
@@ -537430,74 +538623,6 @@
       ]
      ],
      "tentative": {
-      "border-shape": {
-       "border-shape-animation.tentative.html": [
-        "f5e1bf39609e7fc64e219f670d78dda03f1e2849",
-        [
-         null,
-         {}
-        ]
-       ],
-       "border-shape-circle-hit-test-overflow-clip-margin.html": [
-        "a4e00c994f431f87774a2ae1f856b016e03976cd",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "border-shape-circle-hit-test-overflow-clip.html": [
-        "3c538ada5014705098e7849baf454b168db42a75",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "border-shape-circle-hit-test-siblings.html": [
-        "f55874d3cc3bdaf13b430a7af1dbc8d100e9474d",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "border-shape-circle-hit-test.html": [
-        "4001d761a7e5c077815228aad57e967545b5da96",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "border-shape-hit-test-overflow.html": [
-        "b25e68b38f5b368105f11768ca4ad5ceb3a05245",
-        [
-         null,
-         {
-          "testdriver": true
-         }
-        ]
-       ],
-       "border-shape-overflow-clip-margin-hit-test-ref-boxes.html": [
-        "53140f4d44d0d1fe3be7f7e00b8306c56ac6f80d",
-        [
-         null,
-         {}
-        ]
-       ],
-       "border-shape-overflow-clip-margin-hit-test.html": [
-        "49e1f643939780439f80aece34f40d7264b1760f",
-        [
-         null,
-         {}
-        ]
-       ]
-      },
       "parsing": {
        "border-block-end-radius-computed.html": [
         "fd096fa17c7de36d62661c67949f7e21479e7bcc",
@@ -541072,7 +542197,7 @@
        ]
       ],
       "size-query-with-var.html": [
-       "9ffb5fa5d83fcfd7b2fd13e199a4cd33f25efa93",
+       "d938b7e1426cf57a6d0d1314b6a90375af803a8d",
        [
         null,
         {}
@@ -546304,6 +547429,13 @@
      }
     },
     "css-forms": {
+     "checkbox-checkmark-animation.html": [
+      "717ca7496849e0d9d9fb776c6a9ae914fede3d86",
+      [
+       null,
+       {}
+      ]
+     ],
      "input-text-base-appearance-computed-style.html": [
       "e5f065ebdf78cc25507667468013fdf850797b5f",
       [
@@ -546326,7 +547458,14 @@
         {}
        ]
       ]
-     }
+     },
+     "radio-checkmark-animation.html": [
+      "7df307c72f494c8d20bfbbd64ba4363e116ed5bd",
+      [
+       null,
+       {}
+      ]
+     ]
     },
     "css-gaps": {
      "animation": {
@@ -554342,6 +555481,13 @@
        {}
       ]
      ],
+     "mixed-declarations-rules.html": [
+      "1107381273d8418d662152b57ba26c93fde85f9a",
+      [
+       null,
+       {}
+      ]
+     ],
      "nested-declarations-cssom-whitespace.html": [
       "51febe3149dd3558f50466ed3a71efcafa9f7d5e",
       [
@@ -556783,6 +557929,13 @@
       ],
       "position-sticky-single-axis-nested.html": [
        "2c66bcfed88be5cd1ccc22de995533dfdbc7f247",
+       [
+        null,
+        {}
+       ]
+      ],
+      "position-sticky-table-cell-scrollIntoView.html": [
+       "0af92629f113e4bdb43093810800d14e055192df",
        [
         null,
         {}
@@ -565598,14 +566751,14 @@
      },
      "parsing": {
       "hanging-punctuation-invalid.html": [
-       "50ed22f1b745bb334b75533692851e63aba0a541",
+       "0c784b70795139115c77d55911df290fe560a6ed",
        [
         null,
         {}
        ]
       ],
       "hanging-punctuation-valid.html": [
-       "3523a791b847b1b0bad9e655afc0ecafe5d860cf",
+       "7b6a16679054db80a831a14ce55a65377a83f632",
        [
         null,
         {}
@@ -567852,7 +569005,7 @@
       ]
      ],
      "custom-property-and-allow-discrete.html": [
-      "509b939cce269063a198902287fb4611ed4a991a",
+      "6ba315676fc0ea992ced3eeb9cc8792d4f6ac309",
       [
        null,
        {}
@@ -569995,7 +571148,7 @@
         ]
        ],
        "font-weight.html": [
-        "7230cfb721c05482af9246f71af22d5001a8e073",
+        "6cddfbf2bc0ffe59ba9f3cdc0b6d7186af7c5733",
         [
          null,
          {}
@@ -571822,7 +572975,7 @@
       ]
      ],
      "attr-all-types.html": [
-      "54078e6e68ee373aadd74c07b8c24d5660dc5895",
+      "aaad6457e058ff0ba3d57b715bee5a6e141973fb",
       [
        null,
        {}
@@ -571879,6 +573032,13 @@
      ],
      "attr-security.html": [
       "8d7a2af6f9df1a0faec075187b3e23a96244ef17",
+      [
+       null,
+       {}
+      ]
+     ],
+     "attr-serialization.html": [
+      "306299e67516a11de0dcecd0b553b51170ce2709",
       [
        null,
        {}
@@ -574509,7 +575669,7 @@
        ]
       ],
       "callback-order.tentative.html": [
-       "441472db7c7c0288780336780f1ec48271fd9dcb",
+       "fbc1ba28377b64b342df272e138ebd122dcbfe8b",
        [
         null,
         {}
@@ -574602,7 +575762,7 @@
        ]
       ],
       "scope-during-transition-1.html": [
-       "4342038757d6a354504a5b39ce50df39512bc611",
+       "1cd785b00f6f380982b8bb53aa158806c1587bb9",
        [
         null,
         {}
@@ -574616,21 +575776,21 @@
        ]
       ],
       "view-transition-scope-added-during-callback.html": [
-       "b762d09cef9d6793e8832c531bd0a5ba399563b5",
+       "558996da8fe5e97aeb463b76d982c48c7f02edae",
        [
         null,
         {}
        ]
       ],
       "view-transition-scope-display-contents.html": [
-       "c44f400e8a3571cb62f40d835d40a6e3c640360b",
+       "a71dc46b073914a72c6e5b481f9aa3af4d13ee26",
        [
         null,
         {}
        ]
       ],
       "view-transition-scope-name-discovery.html": [
-       "439f49cbcbe8f193860b42cf14e3f8879be7b624",
+       "3b4e849ab22b3c4baccee87c79e0e672f52af450",
        [
         null,
         {}
@@ -575841,21 +577001,21 @@
       ]
      ],
      "caretRangeFromPoint-replace-document.tentative.html": [
-      "75ceb06cb5da5581fcb7626fb7047f29b866554f",
+      "54acb806b60384f8dc8875ca4c80c57d9be47be3",
       [
        null,
        {}
       ]
      ],
      "caretRangeFromPoint-textarea-transform.tentative.html": [
-      "9b7f2cf36587c95cba6bf409248914853a0709c2",
+      "84895b76eccfd873a18e665080d644ce2caf4db3",
       [
        null,
        {}
       ]
      ],
      "caretRangeFromPoint.tentative.html": [
-      "fe626c8da61925ed501e8276dac2076f475801ed",
+      "ab6ddf1ef67c12a29e22d765d108a3ce3c3c91d6",
       [
        null,
        {}
@@ -579964,6 +581124,13 @@
      ],
      "has-specificity.html": [
       "69fcb5b1fbe5b1256192d70e7d3262baa03661e5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "hash-collision-cssom.html": [
+      "d7084ecfa106ed4ef2c8ad30047b97fd6032b254",
       [
        null,
        {}
@@ -624192,6 +625359,15 @@
      ]
     },
     "local-network-access": {
+     "dedicated-worker.tentative.https.html": [
+      "e09e060d6b5397f5bf987e5d742d8f4d9bea66bd",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "fetch.tentative.https.html": [
       "b783269207b8906c2739f9b720f2bf517b1e437e",
       [
@@ -624767,6 +625943,24 @@
          ]
         ],
         "timeout": "long"
+       }
+      ]
+     ],
+     "websocket.tentative.https.html": [
+      "fb26525687885c1ee639c24d81760751a5fda8c4",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
+     "webtransport.tentative.https.html": [
+      "49caf8d28243d2818cd5afe932a91d47865a2d6f",
+      [
+       null,
+       {
+        "testdriver": true
        }
       ]
      ]
@@ -685946,7 +687140,7 @@
           ]
          ],
          "nested-focusgroup-is-item-of-parent.html": [
-          "25912f34d410624496e17e256e4c2193576b0185",
+          "b1269b6b696d8896d438d1c508c592939fcf3cfc",
           [
            null,
            {
@@ -686317,7 +687511,7 @@
           ]
          ],
          "arrow-key-handler-tab-escape.html": [
-          "fbe52722328e5387bb1957a30a345bffb61d7891",
+          "1e4beb3fe923baa60605b8c9a23f7cf96fe14dff",
           [
            null,
            {
@@ -686344,7 +687538,7 @@
           ]
          ],
          "basic-tab-behavior.html": [
-          "e090232618781ccdc0ef0a90df180f8a1ae924fe",
+          "f53054652b279b1833164757bdb28d608582b4ac",
           [
            null,
            {
@@ -686353,7 +687547,7 @@
           ]
          ],
          "dynamic-changes.html": [
-          "77b92f5002589094b60dea686fe56f979721c4a3",
+          "c5b17847d778b2d8f91b268c1ce29bb0dbd861ce",
           [
            null,
            {
@@ -686371,7 +687565,7 @@
           ]
          ],
          "focusgroup-segments.html": [
-          "c34aa9dc33c3e5630db03455cb58ddecad2dfd49",
+          "b72196cafd3a0d20a9a5c97b33af0dd08bf7e23a",
           [
            null,
            {
@@ -686380,7 +687574,7 @@
           ]
          ],
          "guaranteed-tab-stop-priority.html": [
-          "2bbf50ee0ba19a2ee39c648c9e557f238d79e699",
+          "5bc85e639174230ecaf820a7bba365305b311825",
           [
            null,
            {
@@ -686389,7 +687583,7 @@
           ]
          ],
          "memory-behavior.html": [
-          "d04706e94b45b93adc34627280211225105fa10c",
+          "269afcef98cd4152980ded369a52b876ef38ef89",
           [
            null,
            {
@@ -686398,7 +687592,7 @@
           ]
          ],
          "nested-focusgroups.html": [
-          "15ea05eda65803a02d11c3ed6250543c731ae079",
+          "6ca62a35e57747ed9d19eb2999e7e124f1dad00c",
           [
            null,
            {
@@ -687629,6 +688823,13 @@
        ],
        "iframe-frameborder.html": [
         "3df33aede8dd07045d39344a1521395167c873de",
+        [
+         null,
+         {}
+        ]
+       ],
+       "video-stacking-hit-test.html": [
+        "26fb86fabef41d2b38937d5329f6eefb102f71dd",
         [
          null,
          {}
@@ -693295,7 +694496,7 @@
         ]
        ],
        "img.complete.html": [
-        "d8d5a84eb7998044fb24847cc0ac5a1185b82bb6",
+        "e5f533dc9dc9f857e1d49221ea9c4fe98df87ffc",
         [
          null,
          {}
@@ -694144,6 +695345,15 @@
         [
          null,
          {}
+        ]
+       ],
+       "customizable-combobox-filtered-pseudo.tentative.html": [
+        "5947e7082424432b4e832f94c019407c4f511871",
+        [
+         null,
+         {
+          "testdriver": true
+         }
         ]
        ],
        "customizable-combobox-keyboard-behavior.tentative.html": [
@@ -695241,6 +696451,13 @@
          {}
         ]
        ],
+       "datetime-local-valueasdate.html": [
+        "153a386869bc9844e16456050f48f8f714eabdf6",
+        [
+         null,
+         {}
+        ]
+       ],
        "datetime-local.html": [
         "2fe24d7e8ab514d8101c1209bb66f34e13c57cfc",
         [
@@ -696232,6 +697449,15 @@
           }
          ]
         ],
+        "checkmark-animation.html": [
+         "6d30f27a4d25d5806bdfa15e3ea5009049c9b73d",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "nested-options.html": [
          "e80b09f77788617c86cf6e923b670e2be2f65b0e",
          [
@@ -696271,6 +697497,13 @@
         ],
         "option-list.html": [
          "d0b2a0c56645e70f1ce6f101b44e168365d73de8",
+         [
+          null,
+          {}
+         ]
+        ],
+        "picker-icon-animation.html": [
+         "47a84c331ae24982e70e2d4ed85a40c56a2abc06",
          [
           null,
           {}
@@ -696422,7 +697655,7 @@
          ]
         ],
         "select-keyboard-behavior.optional.html": [
-         "f59b20dd9c41a4e48c98c389ffa6cf1546cc234a",
+         "1fd5685311a53c30d4515cf950c5037963d96849",
          [
           null,
           {
@@ -696452,7 +697685,7 @@
          ]
         ],
         "select-mousedown-slot-mutation.optional.html": [
-         "b4cf2db1d9ede6b0956fb165c27a2f729e70306e",
+         "028d94a980c54db7b1f0852826f391c7f75d7192",
          [
           null,
           {
@@ -696625,7 +697858,7 @@
          ]
         ],
         "select-vertical-writing-mode-navigation.optional.html": [
-         "b461d875b1ba27af9dae952dae577e1d611527a9",
+         "46ddd6f759fb2067606a18ffe66a049de2acb37a",
          [
           null,
           {
@@ -696743,6 +697976,15 @@
         ]
        },
        "filterable-select": {
+        "filterable-select-filtered-pseudo.tentative.html": [
+         "457c679ceb1b6575003fafad2798492022d130ff",
+         [
+          null,
+          {
+           "testdriver": true
+          }
+         ]
+        ],
         "filterable-select-keyboard-behavior.tentative.html": [
          "69c639cc63c92e1d98584511e66c4155bed1ef97",
          [
@@ -708751,15 +709993,43 @@
          {}
         ]
        ],
+       "event-handler-attributes-body-alt.html": [
+        "44453b5a064fe126f4c60936c5cb4e050427b6d9",
+        [
+         null,
+         {}
+        ]
+       ],
        "event-handler-attributes-body-window.html": [
-        "8c3f3f7633cf1145495ee3f477513ce23bffc62a",
+        "c7d10afd1d255bcdae5541a30c94db7c28365f88",
+        [
+         null,
+         {}
+        ]
+       ],
+       "event-handler-attributes-frameset-alt.html": [
+        "05b09ff74790afd174820e79db7b3d5a25f3549f",
         [
          null,
          {}
         ]
        ],
        "event-handler-attributes-frameset-window.html": [
-        "b583eca52da2b9b5e58fb25e73b3766452b7c472",
+        "1b2e0b03d1cf0421f54dfa339c32d3d5664531b5",
+        [
+         null,
+         {}
+        ]
+       ],
+       "event-handler-attributes-window-frameset.html": [
+        "e399a7a6d42f98421c1379db69e3cfe885d07468",
+        [
+         null,
+         {}
+        ]
+       ],
+       "event-handler-attributes-window.html": [
+        "559cd0ecffbb9584d1e7c388ef29bc1855b3559b",
         [
          null,
          {}
@@ -710696,7 +711966,7 @@
       ]
      ],
      "resolution-consistency-in-module-tree.html": [
-      "2dc223a10579e3d2bd6e95bbea94f278021f0d78",
+      "fe003bc4b22d34e5a50cb9c426e4df1808929f04",
       [
        null,
        {}
@@ -714049,7 +715319,7 @@
      ]
     ],
     "broken-image-icon.html": [
-     "be27e34e6ac9274276b26f239e7f69a168d2e849",
+     "60496a91cfd2f55be0258da566af6605b9f91b83",
      [
       null,
       {}
@@ -727587,7 +728857,7 @@
       ]
      ],
      "fcp-whitespace.html": [
-      "71c72b018a482872484121a0840f8071fcdfad01",
+      "e152a5b51f963ba6ac6979b43811ab7fc14f1b72",
       [
        null,
        {}
@@ -727970,7 +729240,7 @@
      ]
     ],
     "payment-is-showing.https.html": [
-     "a30029458f5f2fced7aee25b6cd718a1c4cc4605",
+     "c97473cc6f122bf592269dc6e11aaa72f93a4b8f",
      [
       null,
       {
@@ -728129,7 +729399,7 @@
      ]
     },
     "rejects_if_not_active.https.html": [
-     "32feccb2655f34581899ec8fb7e01d74c7bb85da",
+     "0233aca9d053b6886b8396f221dce6f10bb4f3d6",
      [
       null,
       {
@@ -733804,7 +735074,7 @@
      ]
     ],
     "preload-with-type.html": [
-     "7f92606cb7954cab45f28495499fbd84c3446459",
+     "99b1d4c22333f441f2d63613ebfc94c58eb47f38",
      [
       null,
       {
@@ -748238,6 +749508,15 @@
       {}
      ]
     ],
+    "encoded-body-size-cached.https.html": [
+     "200d8a01ad1c7cbdeb7ff1079247d2574addbcf3",
+     [
+      null,
+      {
+       "timeout": "long"
+      }
+     ]
+    ],
     "entries-for-network-errors.sub.https.html": [
      "ebc2247babcd4ab94d1fdd826d17d8c968189d79",
      [
@@ -753740,6 +755019,15 @@
       }
      ]
     ],
+    "drag-selection-extend-to-user-select-none.html": [
+     "a3b26f7c706fa07003e1429d5e8db418821fe21c",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "extend-00.html": [
      "8943524878fb4fd063ba0b863987457514b24ef2",
      [
@@ -756482,7 +757770,7 @@
       ]
      ],
      "fetch-event.https.html": [
-      "ce53f3c9bff3f7b4bc1377891adfdfd6a322f2d5",
+      "2edb5b0e032a05ec507fda660483631676f0873f",
       [
        null,
        {
@@ -761512,6 +762800,33 @@
       }
      ]
     ],
+    "largest-painted-element-multiple-paints-before-url.tentative.html": [
+     "976c9644f0d383758fdecad6bfa2ffb5c1505f3c",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "largest-painted-element-paint-first.tentative.html": [
+     "23696451f49cc9a576acc37ded823cb9af8a3ebe",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "largest-painted-element-url-first.tentative.html": [
+     "3de86689535704bc83d3f6f4fa45b74d6a5a3c66",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
     "lcp": {
      "tentative": {
       "background-image-set-image.html": [
@@ -761569,7 +762884,7 @@
        ]
       ],
       "first-paint-equals-lcp-text.html": [
-       "be1357c35314df5faf1f92a3af29c6e153532a06",
+       "08f4fc02433e79c53effc22187282c828fdd3dac",
        [
         null,
         {
@@ -761671,7 +762986,7 @@
      ]
     ],
     "navigation-api-precommit.tentative.html": [
-     "b5d6077e13d7ef56ccdb9559d446c64e5a3edd02",
+     "723dc2fdf8e62b51cdc8e0b7563b47fdb11162e7",
      [
       null,
       {
@@ -761817,7 +763132,7 @@
        ]
       ],
       "lcp-unbuffered.html": [
-       "243e3fc5769a8e782c1773657e8f34f9b512c466",
+       "7d9caf8930367eaf85c137948ed3128ef9e2a9cc",
        [
         null,
         {
@@ -761916,7 +763231,7 @@
      ]
     ],
     "softnav-after-lcp-paint-larger-than-viewport.tentative.html": [
-     "04d7a76a1f2e0c04a0375d22f09785cfce358511",
+     "8c852b4d7f6e37dc8b8fd992d478a8f610d93a9d",
      [
       null,
       {
@@ -761925,7 +763240,7 @@
      ]
     ],
     "softnav-after-lcp-paint.tentative.html": [
-     "bcae0ca24369f6b969a6a129dbaf7ebfb87534e1",
+     "61cfe2fbf2a0ccdb3630d33d746eb8f2fd3a7fb4",
      [
       null,
       {
@@ -761961,7 +763276,7 @@
      ]
     ],
     "text-lcp-followed-by-text-softnav-lcp.tentative.html": [
-     "8738b7f2fe5fb29a7b47d4b9a6a1195666ed3e04",
+     "a63d7da62912b6605164fc42aa17568d9f97b117",
      [
       null,
       {
@@ -777208,7 +778523,7 @@
      ],
      "crashtests": {
       "garbage-collection.any.js": [
-       "a3796881c9fb544a0b446db39af233b3866ae2b9",
+       "9f64e9b7a8ac7b03009d066b91a667ecb4eb57c0",
        [
         "streams/writable-streams/crashtests/garbage-collection.any.html",
         {
@@ -779629,6 +780944,55 @@
        {}
       ]
      ],
+     "animateMotion-calcMode-discrete-accumulate.html": [
+      "aac23f172784579e32516e64d4e925665ed7b501",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animateMotion-calcMode-discrete-from-to.html": [
+      "ae0bbd207a7be01bd3a1cdf5d37f001ddbdb75f9",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animateMotion-calcMode-discrete-keyPoints.html": [
+      "a063df5311fff357f02c756652aa3b5a8e06e3e5",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animateMotion-calcMode-discrete-keyTimes.html": [
+      "21648db2080ebf2c176cea6f964ba3b6d10b4c6f",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animateMotion-calcMode-discrete-path-curves.html": [
+      "68676f69bf57266c28e7c6e603ffc617e23754c0",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animateMotion-calcMode-discrete-path.html": [
+      "89e6a87771238103d2689e70f45c713b6679319a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "animateMotion-calcMode-discrete-values.html": [
+      "8431c5a74af527b27d68004a4c9cc495b7625509",
+      [
+       null,
+       {}
+      ]
+     ],
      "animateMotion-circle.html": [
       "42b3fae3f6a5bcd38f0609a6d7de89d52e250734",
       [
@@ -781279,7 +782643,7 @@
      ]
     },
     "historical.html": [
-     "ed455ae2480ea48dc4511a75e95210d1ee8bcabd",
+     "dc060a6dca21187b96beab8366e82753fb707303",
      [
       null,
       {}
@@ -782447,15 +783811,6 @@
      ]
     ],
     "struct": {
-     "UnknownElement": {
-      "interface.svg": [
-       "987f20c5e4c0589e159f044c57b6e552d2ef987e",
-       [
-        null,
-        {}
-       ]
-      ]
-     },
      "scripted": {
       "autofocus-attribute.svg": [
        "13d779d758badc7fe40e475af5e1e7be8162179d",
@@ -784647,28 +786002,28 @@
      ]
     ],
     "script-enforcement-006.html": [
-     "7673a686f4ec70376a50406f2f2518f51259962d",
+     "c5742bf4f17dccb9cee196922b0f75ceb8715e9f",
      [
       null,
       {}
      ]
     ],
     "script-enforcement-007.html": [
-     "34d3831ab74006f7529e3a82855708db2b612187",
+     "145a392113eea8779fe10746575949fc943753d1",
      [
       null,
       {}
      ]
     ],
     "script-enforcement-008.https.html": [
-     "86d9ec6985a5a248816a2b8c6e315e1cfcee732b",
+     "cc4003888d757323be9e7370072f07cfecc80430",
      [
       null,
       {}
      ]
     ],
     "script-enforcement-009.https.html": [
-     "45f21b41eda59e913c01606a09e404ced613ec17",
+     "b00eb0e0d1d2ce9c82a75adb8e012a95dc31c9a4",
      [
       null,
       {}
@@ -785992,7 +787347,14 @@
        }
       ]
      ]
-    }
+    },
+    "ui_event_pseudo_target.html": [
+     "16002b147811338d1c2654ed86c17eb463a2b3a9",
+     [
+      null,
+      {}
+     ]
+    ]
    },
    "upgrade-insecure-requests": {
     "gen": {
@@ -803205,6 +804567,13 @@
      }
     },
     "responsive": {
+     "animation-on-pseudo-to-display-none.html": [
+      "cf5cfefc24fa50f044db07d600100772a9876eb0",
+      [
+       null,
+       {}
+      ]
+     ],
      "assorted-lengths.html": [
       "50e01f766ce0b63d2e4077223f87ede7b593abf7",
       [
@@ -853745,6 +855114,16 @@
     ]
    },
    "webrtc-encoded-transform": {
+    "RTCEncodedFrame-copy-construction.https.html": [
+     "9d756378c44258814312e4c61951f6965c7075c6",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "RTCRtpScriptTransform-bad-chunk.https.html": [
      "a837f627f25edf709115407fcc7bce70dcd4f078",
      [
@@ -853763,7 +855142,7 @@
      ]
     ],
     "RTCRtpScriptTransform-sender-worker-single-frame.https.html": [
-     "d76d1e536c394f3f059ab6b7652b8ca0b438b953",
+     "025073e4ba8a8af860b6c493700643cab1f57122",
      [
       null,
       {
@@ -853773,7 +855152,7 @@
      ]
     ],
     "idlharness.https.window.js": [
-     "a3f7683e9eb038860442f499bc09999bae9cd9e3",
+     "4ae5b36d7e99995ac21ae8add13f296b90cd72e8",
      [
       "webrtc-encoded-transform/idlharness.https.window.html?exclude=(SFrameDecrypterStream|SFrameEncrypterStream|SFrameSenderTransform|SFrameReceiverTransform|SFrameTransform.*)",
       {
@@ -853800,9 +855179,18 @@
         ],
         [
          "script",
-         "./RTCPeerConnection-helper.js"
+         "../webrtc/RTCPeerConnection-helper.js"
+        ],
+        [
+         "script",
+         "helper.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ],
      [
@@ -853831,9 +855219,18 @@
         ],
         [
          "script",
-         "./RTCPeerConnection-helper.js"
+         "../webrtc/RTCPeerConnection-helper.js"
+        ],
+        [
+         "script",
+         "helper.js"
+        ],
+        [
+         "timeout",
+         "long"
         ]
-       ]
+       ],
+       "timeout": "long"
       }
      ]
     ],
@@ -853964,7 +855361,7 @@
     ],
     "tentative": {
      "RTCEncodedAudioFrame-audiolevel.html": [
-      "14b76efb575513237911af4c628590433b9d0529",
+      "3b423d60cfc23dac5b3232e432c87bb646ee1de3",
       [
        null,
        {}
@@ -854046,7 +855443,7 @@
       ]
      ],
      "RTCEncodedVideoFrame-metadata.https.html": [
-      "77e1ed118f21c5a47aaff1c1548e73e06dcf9666",
+      "741674bde2a248491ad1e5869304d925cbbb1a99",
       [
        null,
        {
@@ -854109,7 +855506,7 @@
       ]
      ],
      "RTCPeerConnection-insertable-streams-worker.https.html": [
-      "94943f8b6960e474b28c27afc5c9e779c67ef08e",
+      "65e673f7aa7344d4fccb1816adb3697a832f87f9",
       [
        null,
        {
@@ -876075,6 +877472,31 @@
       {}
      ]
     ],
+    "abort-progress-events.any.js": [
+     "73ff76c492869ed8a3297ed511a42ac4255836cc",
+     [
+      "xhr/abort-progress-events.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "XMLHttpRequest: abort() and progress timer race condition"
+        ]
+       ]
+      }
+     ],
+     [
+      "xhr/abort-progress-events.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "XMLHttpRequest: abort() and progress timer race condition"
+        ]
+       ]
+      }
+     ]
+    ],
     "abort-upload-event-abort.any.js": [
      "3c85a5554bdb67b714ce9765712eac617e54ed8c",
      [
@@ -890756,15 +892178,6 @@
       ]
      ]
     },
-    "css-nesting": {
-     "mixed-declarations-rules.html": [
-      "fbc9b54717c91d74b20d5739e746e2287871c92b",
-      [
-       null,
-       {}
-      ]
-     ]
-    },
     "css-overflow": {
      "overflow-alignment-block-001.html": [
       "20192eb2f10ab73a4107b3ddb78efed55f4a127c",
@@ -896522,7 +897935,7 @@
         ]
        ],
        "get.py": [
-        "5819804f23eb87fffc4e76f8d59a41db774c9ea7",
+        "b10c6dd2183296470e99ad99cbc924ccd35f2447",
         [
          null,
          {}
@@ -897438,7 +898851,7 @@
         ]
        ],
        "screenshot.py": [
-        "2650cc7f25ab80b18d76bb16ce19cd99a2c4ef3a",
+        "ecb6d4eb3be11c2357a9803c7b803d503f8f7ebf",
         [
          null,
          {}

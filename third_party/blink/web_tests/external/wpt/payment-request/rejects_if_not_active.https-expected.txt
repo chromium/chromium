@@ -1,5 +1,9 @@
 This is a testharness.js-based test.
 [FAIL] PaymentRequest.show() aborts if the document is not active.
-  promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'abort' on 'PaymentRequest': No show() or retry() in progress, so nothing to abort"
+  promise_rejects_dom: Inactive document, so must throw InvalidStateError function "function() { throw e; }" threw object "AbortError: Failed to execute 'show' on 'PaymentRequest': Cannot show the payment request" that is not a DOMException InvalidStateError: property "code" is equal to 20, expected 11
+[FAIL] PaymentRequest.show() aborts if the document is active, but not fully active.
+  promise_rejects_dom: Active, but not fully active, so must throw InvalidStateError function "function() { throw e; }" threw object "AbortError: Failed to execute 'show' on 'PaymentRequest': Cannot show the payment request" that is not a DOMException InvalidStateError: property "code" is equal to 20, expected 11
+[FAIL] PaymentRequest.canMakePayment() rejects if the document is not active.
+  promise_test: Unhandled rejection with value: object "UnknownError: Renderer process could not establish or lost IPC connection to the PaymentRequest service in the browser process."
 Harness: the test ran to completion.
 

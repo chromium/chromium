@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] Select user-select:text content and then extend selection to user-select:none content.
+  assert_equals: Anchor node:  expected Text node " dolor sit" but got Text node " First: Lorem ipsum "
+Harness: the test ran to completion.
+

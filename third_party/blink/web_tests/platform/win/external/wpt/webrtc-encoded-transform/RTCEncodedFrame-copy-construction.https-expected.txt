@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] RTCEncodedVideoFrame copy construction metadata override on main thread.
+  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to construct 'RTCEncodedVideoFrame': Cannot create a new VideoFrame: new metadata has member(s) missing."
+[FAIL] RTCEncodedAudioFrame copy construction metadata override on main thread.
+  promise_test: Unhandled rejection with value: object "InvalidModificationError: Failed to construct 'RTCEncodedAudioFrame': Cannot create a new AudioFrame: Invalid modification of RTCEncodedAudioFrameMetadata. Bad synchronizationSource"
+Harness: the test ran to completion.
+

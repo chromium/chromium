@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] document.caretRangeFromPoint() on an input should return a Range pointing at input with offset 0
+  assert_equals: expected Element node <input id="input" value="aaaaaaaaaaaaaaaaaaaaaaaaaaa"></i... but got Element node <body><div id="div">abc</div>\n<div id="shadow"></div>\n\n<c...
+Harness: the test ran to completion.
+
