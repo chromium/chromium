@@ -245,6 +245,7 @@ void ServiceWorkerSyntheticResponseManager::InitiateRequest(
       ServiceWorkerClient::CreateNetworkURLLoaderFactoryType::
           kSyntheticNetworkRequest,
       storage_partition, request);
+  is_initiated_by_prefetch_ = service_worker_client->is_initiated_by_prefetch();
 
   StartRequest(
       GlobalRequestID::MakeBrowserInitiated().request_id,
@@ -600,6 +601,8 @@ void ServiceWorkerSyntheticResponseManager::NotifyReloading(
                           did_start_synthetic_response_);
     SCOPED_CRASH_KEY_BOOL("SWSR", "is_network_service_mode",
                           IsServiceWorkerSyntheticResponseNetworkService());
+    SCOPED_CRASH_KEY_BOOL("SWSR", "is_initiated_by_prefetch",
+                          is_initiated_by_prefetch_);
     base::debug::DumpWithoutCrashing();
     if (auto callback = std::exchange(stream_callback_, {})) {
       callback->OnAborted();

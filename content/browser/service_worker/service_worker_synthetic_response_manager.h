@@ -159,6 +159,7 @@ class CONTENT_EXPORT ServiceWorkerSyntheticResponseManager {
   std::optional<ServiceWorkerSyntheticResponseDataPipeConnector>
       data_pipe_connector_;
   bool did_start_synthetic_response_ = false;
+  bool is_initiated_by_prefetch_ = false;
 
   base::TimeTicks request_start_time_;
   base::TimeTicks response_received_time_;
