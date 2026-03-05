@@ -15,11 +15,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
+import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,11 +123,7 @@ public class WebServer implements AutoCloseable {
             }
             if (mBody != null) {
                 builder.append("\r\n");
-                try {
-                    builder.append(new String(mBody, "UTF-8"));
-                } catch (UnsupportedEncodingException e) {
-                    builder.append("<binary body, length=").append(mBody.length).append(">\r\n");
-                }
+                builder.append(new String(mBody, StandardCharsets.UTF_8));
             }
             return builder.toString();
         }
@@ -205,11 +201,7 @@ public class WebServer implements AutoCloseable {
                     int next = stream.read();
                     if (next == '\n') {
                         String lineString;
-                        try {
-                            lineString = new String(line.toByteArray(), "UTF-8");
-                        } catch (UnsupportedEncodingException e) {
-                            throw new InvalidRequest();
-                        }
+                        lineString = new String(line.toByteArray(), StandardCharsets.UTF_8);
                         line.reset();
                         if (firstLine) {
                             String[] parts = lineString.split(" ", 3);
