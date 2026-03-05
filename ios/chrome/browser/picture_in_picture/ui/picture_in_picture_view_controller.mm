@@ -21,6 +21,9 @@
 namespace {
 // Key path for time control status.
 NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
+// Delay to wait before checking if the app was restored from picture in
+// picture or manually (App switcher, App icon...).
+constexpr base::TimeDelta kAppRestoreDelay = base::Milliseconds(50);
 }  // namespace
 
 @interface PictureInPictureViewController () <
@@ -95,14 +98,15 @@ NSString* const kKeyPathTimeControlStatus = @"timeControlStatus";
 - (void)dismissIfNotPipRestore {
   __weak __typeof(self) weakSelf = self;
   _appWasRestored = YES;
-  // Defer execution to allow
+  // Delay execution by `kAppRestoreDelay` to allow
   // `restoreUserInterfaceForPictureInPictureStopWithCompletionHandler` to fire
   // first. This lets us distinguish a manual launch (which dismisses
   // everything) from a PiP restore (which preserves the UI).
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(^{
         [weakSelf handleAppRestore];
-      }));
+      }),
+      kAppRestoreDelay);
 }
 
 #pragma mark - Private
