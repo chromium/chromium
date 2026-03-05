@@ -12210,6 +12210,7 @@ from previous Chrome versions.
   <int value="-760729135"
       label="AutofillEnableCardArtServerSideStretching:disabled"/>
   <int value="-760520941" label="signature-based-sri:disabled"/>
+  <int value="-760069913" label="FirstRunDesktopChoiceScreenRefresh:enabled"/>
   <int value="-759830869" label="enable-tab-discarding"/>
   <int value="-758999727" label="ContentIndexingNTP:disabled"/>
   <int value="-758917191" label="AccountIdMigration:enabled"/>
@@ -17133,6 +17134,7 @@ from previous Chrome versions.
   <int value="911256399" label="GlobalMediaControlsModernUI:enabled"/>
   <int value="911991932" label="OnDeviceModelLitertLmBackend:enabled"/>
   <int value="912119426" label="InfiniteSessionRestore:disabled"/>
+  <int value="912145170" label="FirstRunDesktopChoiceScreenRefresh:disabled"/>
   <int value="913138924" label="RecurrentInterstitialFeature:disabled"/>
   <int value="913855453" label="VirtualKeyboardFloatingResizable:disabled"/>
   <int value="914708297" label="CCTResizableAllowResizeByUserGesture:enabled"/>

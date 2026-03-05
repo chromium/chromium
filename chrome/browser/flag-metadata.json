@@ -4840,6 +4840,11 @@
     "expiry_milestone": 140
   },
   {
+    "name": "first-run-desktop-choice-screen-refresh",
+    "owners": [ "kbajkiewicz@google.com", "saskekun@google.com", "ernn@google.com", "chrome-signin-team@google.com" ],
+    "expiry_milestone": 152
+  },
+  {
     "name": "first-run-desktop-refresh",
     "owners": [ "kbajkiewicz@google.com", "saskekun@google.com", "ernn@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 150

@@ -2281,10 +2281,21 @@ inline constexpr char kFillOnAccountSelectDescription[] =
     "Filling of passwords when an account is explicitly selected by the user "
     "rather than autofilling credentials on page load.";
 
+inline constexpr char kFirstRunDesktopChoiceScreenRefreshName[] =
+    "First Run Desktop Choice Screen Refresh";
+inline constexpr char kFirstRunDesktopChoiceScreenRefreshDescription[] =
+    "Enables the visually refreshed first run and profile creation flows, "
+    "including the choice screen (FRE and dialog versions), for "
+    "users in search engine choice screen regions. It is no-op if "
+    "`first-run-desktop-refresh` is disabled.";
+
 inline constexpr char kFirstRunDesktopRefreshName[] =
     "First Run Desktop Refresh";
 inline constexpr char kFirstRunDesktopRefreshDescription[] =
-    "Enables the visually refreshed first run flow on desktop.";
+    "Enables the visually refreshed first run and profile creation flows in "
+    "users outside of search engine choice screen regions. To enable the "
+    "refresh in search engine choice screen regions, enable "
+    "`first-run-desktop-choice-screen-refresh` as well.";
 
 inline constexpr char kFirstRunDesktopRevampName[] = "First Run Desktop Revamp";
 inline constexpr char kFirstRunDesktopRevampDescription[] =

@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/ui/webui/intro/intro_handler.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -18,6 +20,7 @@
 #include "chrome/grit/intro_resources.h"
 #include "chrome/grit/intro_resources_map.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_branded_strings.h"
@@ -32,11 +35,17 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
       profile, chrome::kChromeUIIntroHost);
 
-  webui::SetupWebUIDataSource(
-      source, kIntroResources,
-      base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
-          ? IDR_INTRO_INTRO_REFRESH_HTML
-          : IDR_INTRO_INTRO_HTML);
+  const bool is_in_search_engine_choice_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile))
+          .IsInSearchEngineChoiceScreenRegion();
+  const bool is_first_run_desktop_refresh_enabled =
+      switches::IsFirstRunDesktopRefreshEnabled(
+          is_in_search_engine_choice_region);
+  webui::SetupWebUIDataSource(source, kIntroResources,
+                              is_first_run_desktop_refresh_enabled
+                                  ? IDR_INTRO_INTRO_REFRESH_HTML
+                                  : IDR_INTRO_INTRO_HTML);
 
   int title_id = IDS_FRE_SIGN_IN_TITLE_0;
 
@@ -109,7 +118,7 @@ IntroUI::IntroUI(content::WebUI* web_ui) : content::WebUIController(web_ui) {
   // Setup chrome://intro/default-browser UI.
   source->AddResourcePath(
       chrome::kChromeUIIntroDefaultBrowserSubPage,
-      base::FeatureList::IsEnabled(switches::kFirstRunDesktopRefresh)
+      is_first_run_desktop_refresh_enabled
           ? IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_REFRESH_HTML
           : IDR_INTRO_DEFAULT_BROWSER_DEFAULT_BROWSER_HTML);
 

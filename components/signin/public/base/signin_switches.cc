@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_pref_names.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -396,6 +397,15 @@ const base::FeatureParam<base::TimeDelta>
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kFirstRunDesktopRefresh, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kFirstRunDesktopChoiceScreenRefresh,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+bool IsFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region) {
+  if (is_in_search_engine_choice_region &&
+      !base::FeatureList::IsEnabled(kFirstRunDesktopChoiceScreenRefresh)) {
+    return false;
+  }
+  return base::FeatureList::IsEnabled(kFirstRunDesktopRefresh);
+}
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

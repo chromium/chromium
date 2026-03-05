@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/signin/profile_customization_ui.h"
 
+#include "base/check_deref.h"
 #include "base/feature_list.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
@@ -12,6 +13,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/regional_capabilities/regional_capabilities_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/ui/webui/cr_components/theme_color_picker/theme_color_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/profile_customization_handler.h"
@@ -20,6 +22,7 @@
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "components/regional_capabilities/regional_capabilities_service.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
@@ -117,8 +120,12 @@ ProfileCustomizationUI::ProfileCustomizationUI(content::WebUI* web_ui)
           switches::
               kProfileCreationFrictionReductionExperimentPrefillNameRequirement));
 
-  source->AddBoolean("isRefreshedUI", base::FeatureList::IsEnabled(
-                                          switches::kFirstRunDesktopRefresh));
+  const bool is_in_search_engine_choice_region =
+      CHECK_DEREF(regional_capabilities::RegionalCapabilitiesServiceFactory::
+                      GetForProfile(profile))
+          .IsInSearchEngineChoiceScreenRegion();
+  source->AddBoolean("isRefreshedUI", switches::IsFirstRunDesktopRefreshEnabled(
+                                          is_in_search_engine_choice_region));
 
   if (url.GetQuery() == "debug") {
     // Not intended to be hooked to anything. The bubble will not initialize it

@@ -6258,6 +6258,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kFillOnAccountSelect)},
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+    {"first-run-desktop-choice-screen-refresh",
+     flag_descriptions::kFirstRunDesktopChoiceScreenRefreshName,
+     flag_descriptions::kFirstRunDesktopChoiceScreenRefreshDescription,
+     kOsMac | kOsWin | kOsLinux,
+     FEATURE_VALUE_TYPE(switches::kFirstRunDesktopChoiceScreenRefresh)},
     {"first-run-desktop-refresh",
      flag_descriptions::kFirstRunDesktopRefreshName,
      flag_descriptions::kFirstRunDesktopRefreshDescription,

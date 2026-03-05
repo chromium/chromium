@@ -312,9 +312,30 @@ extern const base::FeatureParam<base::TimeDelta>
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // This feature controls running visually refreshed first run and profile
-// creation flows.
+// creation flows for users outside of the search engine choice regions. To
+// enable the refresh in search engine choice screen regions,
+// `kFirstRunDesktopChoiceScreenRefresh` needs to be enabled as well.
+//
+// Clients should never use this feature directly to determine if the
+// refresh is enabled, they should use `IsFirstRunDesktopRefreshEnabled()`
+// instead.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kFirstRunDesktopRefresh);
+// This feature controls running visually refreshed first run and profile
+// creation flows, including the choice screen, for users in search engine
+// choice screen regions. This feature is no-op if `kFirstRunDesktopRefresh` is
+// disabled.
+//
+// Clients should never use this feature directly to determine if the
+// refresh is enabled, they should use `IsFirstRunDesktopRefreshEnabled()`
+// instead.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kFirstRunDesktopChoiceScreenRefresh);
+// A helper function to determine if the first run desktop refresh is enabled
+// (see `kFirstRunDesktopRefresh` and `kFirstRunDesktopChoiceScreenRefresh`
+// flags).
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
