@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/strings/grit/ash_strings.h"
 #include "base/check.h"
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
 #include "chrome/browser/ash/notifications/kiosk_external_update_notification.h"
-#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/ash/components/disks/disk_mount_manager.h"
 #include "content/public/browser/browser_thread.h"
