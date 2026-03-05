@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef BASE_MEMORY_AVAILABLE_PHYSICAL_MEMORY_MONITOR_H_
-#define BASE_MEMORY_AVAILABLE_PHYSICAL_MEMORY_MONITOR_H_
+#ifndef BASE_MEMORY_AVAILABLE_MEMORY_MONITOR_H_
+#define BASE_MEMORY_AVAILABLE_MEMORY_MONITOR_H_
 
-#include <cstdint>
 #include <optional>
 
 #include "base/base_export.h"
@@ -15,23 +14,38 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "build/build_config.h"
 
 namespace base {
 
-// A singleton monitor that periodically polls the system for available physical
-// memory.
+// A singleton monitor that periodically polls the system for available memory.
 //
 // This class optimizes resource usage by only running the polling timer when
 // there are active observers.
 //
 // Threading: This class is not thread-safe. It must be accessed and used
 // exclusively on the main thread.
-class BASE_EXPORT AvailablePhysicalMemoryMonitor {
+class BASE_EXPORT AvailableMemoryMonitor {
  public:
   // Represents a snapshot of system memory state at a specific point in time.
   struct MemorySample {
     base::TimeTicks timestamp;
-    base::ByteSize available_bytes;
+    base::ByteSize available_physical_bytes;
+
+#if BUILDFLAG(IS_WIN)
+    // The following commit metrics are retrieved via the Windows MEMORYSTATUSEX
+    // API. For details on the underlying fields, see:
+    // https://learn.microsoft.com/en-us/windows/win32/api/sysinfoapi/ns-sysinfoapi-memorystatusex
+
+    // The maximum amount of memory the current process can commit. This is
+    // usually the system-wide available commit space, but can be smaller if
+    // the process is subject to a Job object quota (ullAvailPageFile).
+    base::ByteSize available_commit_bytes;
+
+    // The current committed memory limit for the system or the current process,
+    // whichever is smaller (ullTotalPageFile).
+    base::ByteSize total_commit_bytes;
+#endif
   };
 
   class Observer : public base::CheckedObserver {
@@ -41,12 +55,10 @@ class BASE_EXPORT AvailablePhysicalMemoryMonitor {
   };
 
   // Returns the singleton instance.
-  static AvailablePhysicalMemoryMonitor* Get();
+  static AvailableMemoryMonitor* Get();
 
-  AvailablePhysicalMemoryMonitor(const AvailablePhysicalMemoryMonitor&) =
-      delete;
-  AvailablePhysicalMemoryMonitor& operator=(
-      const AvailablePhysicalMemoryMonitor&) = delete;
+  AvailableMemoryMonitor(const AvailableMemoryMonitor&) = delete;
+  AvailableMemoryMonitor& operator=(const AvailableMemoryMonitor&) = delete;
 
   // Adds an observer to the monitor. Starts the polling timer if it is not
   // currently running.
@@ -66,18 +78,18 @@ class BASE_EXPORT AvailablePhysicalMemoryMonitor {
 
  protected:
   // Protected for testing.
-  AvailablePhysicalMemoryMonitor();
-  virtual ~AvailablePhysicalMemoryMonitor();
+  AvailableMemoryMonitor();
+  virtual ~AvailableMemoryMonitor();
 
   // Called periodically by |timer_| to update the cached memory state.
   virtual void OnMemoryCheckTimer();
 
-  // Performs the actual system call to retrieve available physical memory.
+  // Performs the actual system call to retrieve available memory.
   // Virtual for testing.
-  virtual std::optional<base::ByteSize> ComputeAvailableMemory();
+  virtual std::optional<MemorySample> ComputeAvailableMemory();
 
  private:
-  friend class base::NoDestructor<AvailablePhysicalMemoryMonitor>;
+  friend class base::NoDestructor<AvailableMemoryMonitor>;
 
   void StartPolling();
   void StopPolling();
@@ -93,4 +105,4 @@ class BASE_EXPORT AvailablePhysicalMemoryMonitor {
 
 }  // namespace base
 
-#endif  // BASE_MEMORY_AVAILABLE_PHYSICAL_MEMORY_MONITOR_H_
+#endif  // BASE_MEMORY_AVAILABLE_MEMORY_MONITOR_H_
