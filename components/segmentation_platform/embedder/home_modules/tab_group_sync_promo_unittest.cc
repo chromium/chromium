@@ -20,7 +20,7 @@ class TabGroupSyncPromoTest : public testing::Test {
   ~TabGroupSyncPromoTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    TabGroupSyncPromo::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TearDown() override { Test::TearDown(); }
@@ -30,10 +30,12 @@ class TabGroupSyncPromoTest : public testing::Test {
                                  float tabGroupSyncPromoShownCount,
                                  float educationalTipShownCount,
                                  EphemeralHomeModuleRank position) {
-    pref_service_.SetUserPref(
-        kTabGroupSyncPromoInteractedPref,
-        std::make_unique<base::Value>(hasTabGroupSyncPromoInteracted));
     auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
+
+    if (hasTabGroupSyncPromoInteracted) {
+      card->OnInteract(&pref_service_, nullptr);
+    }
+
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {educationalTipShownCount, syncedTabGroupExists,
                      tabGroupSyncPromoShownCount});
@@ -112,10 +114,29 @@ TEST_F(
     TabGroupSyncPromoTest,
     TestComputeCardResultWithCardDisabledForEducationalTipCardHasReachedSessionLimit) {
   TestComputeCardResultImpl(
-      /* hasTabGroupSyncPromoInteracted */ true,
+      /* hasTabGroupSyncPromoInteracted */ false,
       /* syncedTabGroupExists */ 1,
       /* tabGroupSyncPromoShownCount */ 0,
       /* educationalTipShownCount */ 1, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(TabGroupSyncPromoTest, IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
+
+  EXPECT_TRUE(TabGroupSyncPromo::IsEnabled(&pref_service_));
+
+  // Recreate the card each iteration to simulate separate sessions, as
+  // impressions are counted once per card lifetime.
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto session_card = std::make_unique<TabGroupSyncPromo>(&pref_service_);
+    EXPECT_TRUE(TabGroupSyncPromo::IsEnabled(&pref_service_));
+    session_card->OnShow(&pref_service_, nullptr);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(TabGroupSyncPromo::IsEnabled(&pref_service_));
 }
 
 }  // namespace segmentation_platform::home_modules

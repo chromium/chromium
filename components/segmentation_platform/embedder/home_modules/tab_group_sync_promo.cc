@@ -6,13 +6,22 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
-#include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
 namespace {
+
+// Impression counter for the Tab Group Sync promo ephemeral module.
+const char kTabGroupSyncPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.tab_group_sync_promo_counter";
+
+// Interaction counter for the Tab Group Sync promo ephemeral module.
+const char kTabGroupSyncPromoInteractedPref[] =
+    "ephemeral_pref_interacted.tab_group_sync_promo_interacted";
 
 const char kEducationalTipModuleHistogramName[] =
     "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
@@ -27,6 +36,12 @@ namespace segmentation_platform::home_modules {
 
 TabGroupSyncPromo::TabGroupSyncPromo(PrefService* profile_prefs)
     : CardSelectionInfo(kTabGroupSyncPromo), profile_prefs_(profile_prefs) {}
+
+// static
+void TabGroupSyncPromo::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kTabGroupSyncPromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kTabGroupSyncPromoInteractedPref, false);
+}
 
 std::map<SignalKey, FeatureQuery> TabGroupSyncPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
@@ -108,7 +123,8 @@ CardSelectionInfo::ShowResult TabGroupSyncPromo::ComputeCardResult(
   return result;
 }
 
-bool TabGroupSyncPromo::IsEnabled(int impression_count) {
+// static
+bool TabGroupSyncPromo::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -118,11 +134,35 @@ bool TabGroupSyncPromo::IsEnabled(int impression_count) {
     return true;
   }
 
+  int impression_count =
+      profile_prefs->GetInteger(kTabGroupSyncPromoImpressionCounterPref);
+
   if (impression_count >= kSingleEphemeralCardMaxImpressions) {
     return false;
   }
 
   return true;
+}
+
+void TabGroupSyncPromo::OnShow(PrefService* profile_prefs,
+                               PrefService* local_state) {
+  // Only record an impression once per session.
+  if (has_been_shown_this_session_) {
+    return;
+  }
+
+  has_been_shown_this_session_ = true;
+
+  int freshness_impression_count =
+      profile_prefs->GetInteger(kTabGroupSyncPromoImpressionCounterPref);
+
+  profile_prefs->SetInteger(kTabGroupSyncPromoImpressionCounterPref,
+                            freshness_impression_count + 1);
+}
+
+void TabGroupSyncPromo::OnInteract(PrefService* profile_prefs,
+                                   PrefService* local_state) {
+  profile_prefs->SetBoolean(kTabGroupSyncPromoInteractedPref, true);
 }
 
 }  // namespace segmentation_platform::home_modules
