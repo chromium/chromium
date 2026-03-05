@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -575,6 +576,30 @@ TEST(CallbackListTest, ReentrantNotify) {
   EXPECT_EQ(2, b.total());
   EXPECT_EQ(2, c.total());
   EXPECT_EQ(1, d.total());
+}
+
+// Regression test for crbug.com/489381399: Verifies Notify() can be called
+// reentrantly for OnceCallbackList even if a callback is canceled during the
+// reentrant notification.
+TEST(CallbackListTest, OnceCallbackListCancelDuringReentrantNotify) {
+  OnceClosureList cb_reg;
+  CallbackListSubscription sub_a, sub_b;
+
+  auto cb_a = base::BindLambdaForTesting([&]() {
+    // Re-entrant notification.
+    cb_reg.Notify();
+    // After re-entrant notification returns, sub_b has been run. Destroying it
+    // now should be a no-op.
+    sub_b = {};
+  });
+
+  auto cb_b = base::DoNothing();
+
+  sub_a = cb_reg.Add(std::move(cb_a));
+  sub_b = cb_reg.Add(std::move(cb_b));
+
+  // This should not crash.
+  cb_reg.Notify();
 }
 
 TEST(CallbackListTest, ClearPreventsInvocation) {
