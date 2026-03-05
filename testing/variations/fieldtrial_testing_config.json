@@ -17036,7 +17036,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "MostlyLaunched",
                     "enable_features": [
                         "OfferPinToTaskbarInfoBar"
                     ]
