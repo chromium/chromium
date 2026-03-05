@@ -970,6 +970,27 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     [menuElements addObject:divider];
   }
 
+  if (base::FeatureList::IsEnabled(kHideToolbarsInOverflowMenu)) {
+    UIImage* image =
+        DefaultSymbolWithPointSize(kExpandSymbol, kSymbolActionPointSize);
+
+    UIAction* hideAddressBarAction =
+        [UIAction actionWithTitle:l10n_util::GetNSString(
+                                      IDS_IOS_OVERFLOW_MENU_HIDE_TOOLBARS)
+                            image:image
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakSelf hideToolbars];
+                          }];
+
+    UIMenu* divider = [UIMenu menuWithTitle:@""
+                                      image:nil
+                                 identifier:nil
+                                    options:UIMenuOptionsDisplayInline
+                                   children:@[ hideAddressBarAction ]];
+    [menuElements addObject:divider];
+  }
+
   return [UIMenu menuWithTitle:@"" children:menuElements];
 }
 
@@ -1098,6 +1119,10 @@ const CGFloat kShareIconBalancingHeightPadding = 1;
     RecordAction(
         UserMetricsAction("Mobile.OmniboxContextMenu.MoveAddressBarToBottom"));
   }
+}
+
+- (void)hideToolbars {
+  [self.delegate locationBarHideToolbarTapped];
 }
 
 - (void)handleLensEntrypointPressed {

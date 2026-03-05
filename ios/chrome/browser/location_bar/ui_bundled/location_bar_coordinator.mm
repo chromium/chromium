@@ -704,6 +704,13 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
       feature_engagement::kIPHiOSAIHubNewBadge);
 }
 
+- (void)locationBarHideToolbarTapped {
+  FullscreenController* fullscreenController =
+      FullscreenController::FromBrowser(self.browser);
+  fullscreenController->EnterForceFullscreenMode(
+      /* insets_update_enabled */ true);
+}
+
 #pragma mark - LocationBarBadgeCommands
 
 - (void)updateBadgeConfig:(LocationBarBadgeConfiguration*)config {

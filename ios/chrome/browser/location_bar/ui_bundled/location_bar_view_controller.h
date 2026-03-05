@@ -78,6 +78,9 @@ class Tracker;
 // Decides if AI Hub new badge should show.
 - (BOOL)shouldShowAIHubNewFeatureBadge;
 
+// Notifies the delegate about a tap on the Hide Toolbar context menu action.
+- (void)locationBarHideToolbarTapped;
+
 @end
 
 // The view controller displaying the location bar. Manages the two states of

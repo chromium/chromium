@@ -2756,7 +2756,8 @@ const char kChromeAppStoreUrl[] =
 }
 
 - (void)forceFullscreenMode {
-  _fullscreenController->EnterForceFullscreenMode(YES);
+  _fullscreenController->EnterForceFullscreenMode(
+      /* insets_update_enabled */ true);
 }
 
 - (void)showAddAccountWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
