@@ -45,6 +45,9 @@
 
 namespace {
 constexpr gfx::Insets kNoTabsInteriorMargins = gfx::Insets::VH(0, 8);
+constexpr int kCreateNewTabGroupIconSize = 20;
+constexpr gfx::Insets kCreateNewTabGroupIconMargins =
+    gfx::Insets::TLBR(0, 4, 0, 0);
 
 class ProjectsPanelNewTabGroupButton : public views::Button {
   METADATA_HEADER(ProjectsPanelNewTabGroupButton, views::Button)
@@ -58,10 +61,10 @@ class ProjectsPanelNewTabGroupButton : public views::Button {
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
     auto* icon = AddChildView(std::make_unique<views::ImageView>());
-    icon->SetProperty(views::kMarginsKey, projects_panel::kTabGroupIconMargins);
-    icon->SetImage(ui::ImageModel::FromVectorIcon(
-        kCreateNewTabGroupIcon, kColorProjectsPanelButtonIcon,
-        projects_panel::kTabGroupIconSize));
+    icon->SetProperty(views::kMarginsKey, kCreateNewTabGroupIconMargins);
+    icon->SetImage(ui::ImageModel::FromVectorIcon(kCreateNewTabGroupIcon,
+                                                  kColorProjectsPanelButtonIcon,
+                                                  kCreateNewTabGroupIconSize));
 
     auto* title = AddChildView(std::make_unique<views::Label>(
         l10n_util::GetStringUTF16(IDS_CREATE_NEW_TAB_GROUP)));
