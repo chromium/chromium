@@ -996,11 +996,9 @@ void DatabaseConnection::CloseDatabase(
   }
 
   if (should_attempt_recovery) {
-    // `RecoverIfPossible` will no-op for several reasons including if the error
-    // is thought to be transient.
-    std::ignore = sql::Recovery::RecoverIfPossible(
-        db.get(), db->GetErrorCode(),
-        sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
+    // This falls back to deleting the database on failure.
+    std::ignore = sql::Recovery::RecoverDatabase(
+        db.get(), sql::Recovery::Strategy::kRecoverWithMetaVersionOrRaze);
     return;
   }
 
@@ -1101,19 +1099,20 @@ base::OnceClosure DatabaseConnection::GetCleanupTask(bool force_closing) && {
     // point recovery will be attempted if appropriate.
 #if BUILDFLAG(IS_FUCHSIA)
     // Recovery is not supported with WAL mode DBs in Fuchsia.
-    if (had_sql_error && db_->is_open() &&
-        sql::IsErrorCatastrophic(db_->GetErrorCode())) {
+    if (had_sql_error && sql::IsErrorCatastrophic(db_->GetErrorCode())) {
       should_delete_db = true;
     }
 #else
     // Don't attempt recovery if we're force closing. Note that this should be
     // rare since a database error should lead to only this database being
     // closed, not the whole backing store.
-    should_attempt_recovery = !force_closing && had_sql_error;
+    should_attempt_recovery =
+        !force_closing && had_sql_error &&
+        sql::Recovery::ShouldAttemptRecovery(db_.get(), db_->GetErrorCode());
 #endif
 
     // Determine whether to vacuum.
-    if (!had_sql_error && !should_delete_db && !should_attempt_recovery) {
+    if (!had_sql_error && !should_delete_db) {
       unsigned int freelist_percentage =
           base::ClampDiv(GetFreelistCount(*db_) * 100, GetPageCount(*db_));
       base::UmaHistogramPercentage("IndexedDB.SQLite.FreelistPercentageAtClose",
