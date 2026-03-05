@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/commerce/core/shopping_bookmark_model_observer.h"
+
 #include <memory>
 
 #include "base/run_loop.h"
@@ -16,10 +18,11 @@
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/price_tracking_utils.h"
-#include "components/commerce/core/shopping_bookmark_model_observer.h"
 #include "components/commerce/core/subscriptions/mock_subscriptions_manager.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/power_bookmarks/core/power_bookmark_utils.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/sync/base/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -27,13 +30,42 @@
 namespace commerce {
 namespace {
 
-class ShoppingBookmarkModelObserverTest : public testing::Test {
+enum class TestSyncConfig {
+  kFullSync,
+  kTransportMode,
+};
+
+class ShoppingBookmarkModelObserverTest
+    : public testing::TestWithParam<TestSyncConfig> {
  protected:
   void SetUp() override {
     auto client = std::make_unique<bookmarks::TestBookmarkClient>();
-    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+
+    switch (GetParam()) {
+      case TestSyncConfig::kTransportMode:
+        test_features_.InitWithFeatures(
+            /*enabled_features=*/{switches::kSyncEnableBookmarksInTransportMode,
+                                  syncer::kReplaceSyncPromosWithSignInPromos},
+            /*disabled_features=*/{});
+        client->SetIsSyncFeatureEnabledIncludingBookmarks(false);
+        break;
+      case TestSyncConfig::kFullSync:
+        test_features_.InitWithFeatures(
+            /*enabled_features=*/{},
+            /*disabled_features=*/{
+                switches::kSyncEnableBookmarksInTransportMode,
+                syncer::kReplaceSyncPromosWithSignInPromos});
+        client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+        break;
+    }
+
     bookmark_model_ =
         bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+
+    if (GetParam() == TestSyncConfig::kTransportMode) {
+      bookmark_model_->CreateAccountPermanentFolders();
+    }
+
     shopping_service_ = std::make_unique<MockShoppingService>();
     subscriptions_manager_ = std::make_unique<MockSubscriptionsManager>();
 
@@ -47,6 +79,16 @@ class ShoppingBookmarkModelObserverTest : public testing::Test {
     observer_.reset();
   }
 
+  const bookmarks::BookmarkPermanentNode* getOtherNodeForSyncConfig() {
+    switch (GetParam()) {
+      case TestSyncConfig::kFullSync:
+        return bookmark_model_->other_node();
+      case TestSyncConfig::kTransportMode:
+        return bookmark_model_->account_other_node();
+    }
+    NOTREACHED();
+  }
+
   base::test::ScopedFeatureList test_features_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<ShoppingBookmarkModelObserver> observer_;
@@ -57,7 +99,7 @@ class ShoppingBookmarkModelObserverTest : public testing::Test {
 
 // Ensure a subscription is removed if the owning bookmark is deleted and the
 // relationship is 1:1.
-TEST_F(ShoppingBookmarkModelObserverTest, TestUnsubscribeOnBookmarkDeletion) {
+TEST_P(ShoppingBookmarkModelObserverTest, TestUnsubscribeOnBookmarkDeletion) {
   uint64_t cluster_id = 12345L;
 
   const bookmarks::BookmarkNode* node = AddProductBookmark(
@@ -76,7 +118,7 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestUnsubscribeOnBookmarkDeletion) {
 
 // If there are multiple bookmarks with the same product ID, don't remove the
 // subscription.
-TEST_F(ShoppingBookmarkModelObserverTest,
+TEST_P(ShoppingBookmarkModelObserverTest,
        TestUnsubscribeOnBookmarkDeletion_MultipleBookmarks) {
   uint64_t cluster_id = 12345L;
 
@@ -94,13 +136,13 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 
 // Make sure that when a folder is deleted, the products that it contains are
 // unsubscribed.
-TEST_F(ShoppingBookmarkModelObserverTest,
+TEST_P(ShoppingBookmarkModelObserverTest,
        TestUnsubscribeOnBookmarkFolderDeletion) {
   uint64_t cluster_id = 12345L;
 
   const bookmarks::BookmarkNode* folder = bookmark_model_->AddFolder(
-      bookmark_model_->other_node(),
-      bookmark_model_->other_node()->children().size(), u"folder");
+      getOtherNodeForSyncConfig(),
+      getOtherNodeForSyncConfig()->children().size(), u"folder");
 
   bookmark_model_->Move(
       AddProductBookmark(bookmark_model_.get(), u"title 1",
@@ -116,13 +158,13 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 
 // Make sure that when a folder is deleted and contains duplicate products in
 // the subtree, it is correctly unsubscribed.
-TEST_F(ShoppingBookmarkModelObserverTest,
+TEST_P(ShoppingBookmarkModelObserverTest,
        TestUnsubscribeOnBookmarkFolderDeletion_SameProduct_SameFolder) {
   uint64_t cluster_id = 12345L;
 
   const bookmarks::BookmarkNode* folder = bookmark_model_->AddFolder(
-      bookmark_model_->other_node(),
-      bookmark_model_->other_node()->children().size(), u"folder");
+      getOtherNodeForSyncConfig(),
+      getOtherNodeForSyncConfig()->children().size(), u"folder");
 
   bookmark_model_->Move(
       AddProductBookmark(bookmark_model_.get(), u"title 1",
@@ -142,16 +184,16 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 
 // If there are duplicate products but they exist in different subtrees, make
 // sure the product remains subscribed.
-TEST_F(ShoppingBookmarkModelObserverTest,
+TEST_P(ShoppingBookmarkModelObserverTest,
        TestUnsubscribeOnBookmarkFolderDeletion_SameProduct_DifferentFolder) {
   uint64_t cluster_id = 12345L;
 
   const bookmarks::BookmarkNode* folder1 = bookmark_model_->AddFolder(
-      bookmark_model_->other_node(),
-      bookmark_model_->other_node()->children().size(), u"folder 1");
+      getOtherNodeForSyncConfig(),
+      getOtherNodeForSyncConfig()->children().size(), u"folder 1");
   const bookmarks::BookmarkNode* folder2 = bookmark_model_->AddFolder(
-      bookmark_model_->other_node(),
-      bookmark_model_->other_node()->children().size(), u"folder 2");
+      getOtherNodeForSyncConfig(),
+      getOtherNodeForSyncConfig()->children().size(), u"folder 2");
 
   bookmark_model_->Move(
       AddProductBookmark(bookmark_model_.get(), u"title 1",
@@ -171,7 +213,7 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 
 // If the URL of a bookmark changes, we don't know if it still points to a valid
 // product. The subscription and meta should be removed.
-TEST_F(ShoppingBookmarkModelObserverTest,
+TEST_P(ShoppingBookmarkModelObserverTest,
        TestMetaRemovalAndUnsubscribeOnURLChange) {
   uint64_t cluster_id = 12345L;
 
@@ -196,7 +238,7 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 
 // Same test as above, but we shouldn't unsubscribe if there were multiple
 // product bookmarks with the same cluster ID.
-TEST_F(ShoppingBookmarkModelObserverTest,
+TEST_P(ShoppingBookmarkModelObserverTest,
        TestMetaRemovalAndUnsubscribeOnURLChange_MultipleBookmarks) {
   uint64_t cluster_id = 12345L;
 
@@ -219,7 +261,7 @@ TEST_F(ShoppingBookmarkModelObserverTest,
 
 // Ensure a subscription is automatically tracked if that flag is enabled.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-TEST_F(ShoppingBookmarkModelObserverTest, TestAutomaticTrackingOnAdd) {
+TEST_P(ShoppingBookmarkModelObserverTest, TestAutomaticTrackingOnAdd) {
   uint64_t cluster_id = 12345L;
   ProductInfo info;
   info.product_cluster_id.emplace(cluster_id);
@@ -240,7 +282,7 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestAutomaticTrackingOnAdd) {
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 // Ensure a subscription is automatically tracked if that flag is enabled.
-TEST_F(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {
+TEST_P(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {
   base::UserActionTester user_action_tester;
 
   ASSERT_EQ(user_action_tester.GetActionCount(
@@ -272,8 +314,8 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {
             1);
 
   const bookmarks::BookmarkNode* subfolder = bookmark_model_->AddFolder(
-      bookmark_model_->other_node(),
-      bookmark_model_->other_node()->children().size() - 1, u"subfolder");
+      getOtherNodeForSyncConfig(),
+      getOtherNodeForSyncConfig()->children().size() - 1, u"subfolder");
 
   bookmark_model_->Move(collection, subfolder, 0);
 
@@ -288,6 +330,20 @@ TEST_F(ShoppingBookmarkModelObserverTest, TestShoppingCollectionChangeMetrics) {
                 "Commerce.PriceTracking.ShoppingCollection.Deleted"),
             1);
 }
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    ShoppingBookmarkModelObserverTest,
+    testing::Values(TestSyncConfig::kTransportMode, TestSyncConfig::kFullSync),
+    [](const testing::TestParamInfo<TestSyncConfig>& info) {
+      switch (info.param) {
+        case TestSyncConfig::kTransportMode:
+          return "TransportMode";
+        case TestSyncConfig::kFullSync:
+          return "FullSync";
+      }
+      NOTREACHED();
+    });
 
 }  // namespace
 }  // namespace commerce
