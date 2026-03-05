@@ -177,16 +177,6 @@ class PageInfo : private content_settings::CookieControlsObserver,
   // clicked.
   void OnThirdPartyToggleClicked(bool block_third_party_cookies);
 
-  // Checks whether this permission is currently the factory default, as set by
-  // Chrome. Specifically, that the following three conditions are true:
-  //   - The current active setting comes from the default or pref provider.
-  //   - The setting is the factory default setting (as opposed to a global
-  //     default setting set by the user).
-  //   - The setting is a wildcard setting applying to all origins (which can
-  //     only be set from the default provider).
-  static bool IsPermissionFactoryDefault(const PermissionInfo& info,
-                                         bool is_incognito);
-
   // Returns whether this page info is for an internal page.
   static bool IsFileOrInternalPage(const GURL& url);
 

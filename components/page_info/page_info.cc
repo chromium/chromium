@@ -75,6 +75,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cipher_suite_names.h"
 #include "net/ssl/ssl_connection_status_flags.h"
+#include "services/device/public/cpp/device_features.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
@@ -283,6 +284,36 @@ void LogTimeOpenHistogram(const std::string& name, base::TimeTicks start_time) {
                                 base::Milliseconds(1), base::Hours(1), 100);
 }
 
+bool HasSiteSpecificDecision(const PageInfo::PermissionInfo& permission,
+                             bool is_incognito) {
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      permission.type);
+
+  const PermissionSetting factory_default_setting =
+      content_settings::PermissionSettingsRegistry::GetInstance()
+          ->Get(permission.type)
+          ->GetInitialDefaultSetting();
+
+  // Settings that are granted in regular mode get reduced to ASK in incognito
+  // mode. In this case, the site should trigger a permission prompt if/when
+  // appropriate to change the setting, and until then, the capability cannot be
+  // used, so no need to show it in page info.
+  const bool is_incognito_default =
+      is_incognito && permission.setting &&
+      info->delegate().IsUndecided(*permission.setting) &&
+      info->delegate().IsUndecided(factory_default_setting);
+
+  return permission.setting && !is_incognito_default;
+}
+
+bool IsDefaultSameAsFactoryDefault(const PageInfo::PermissionInfo& permission) {
+  const PermissionSetting factory_default_setting =
+      content_settings::PermissionSettingsRegistry::GetInstance()
+          ->Get(permission.type)
+          ->GetInitialDefaultSetting();
+  return factory_default_setting == permission.default_setting;
+}
+
 // Time open histogram prefixes.
 const char kPageInfoTimePrefix[] = "Security.PageInfo.TimeOpen";
 const char kPageInfoTimeActionPrefix[] = "Security.PageInfo.TimeOpen.Action";
@@ -414,29 +445,6 @@ void PageInfo::OnThirdPartyToggleClicked(bool block_third_party_cookies) {
                            : page_info::PAGE_INFO_COOKIES_ALLOWED_FOR_SITE);
   cookie_controller_->OnCookieBlockingEnabledForSite(block_third_party_cookies);
   show_info_bar_ = true;
-}
-
-// static
-bool PageInfo::IsPermissionFactoryDefault(const PermissionInfo& permission,
-                                          bool is_incognito) {
-  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
-      permission.type);
-
-  const PermissionSetting factory_default_setting =
-      content_settings::PermissionSettingsRegistry::GetInstance()
-          ->Get(permission.type)
-          ->GetInitialDefaultSetting();
-
-  // Settings that are granted in regular mode get reduced to ASK in incognito
-  // mode. These settings should not be displayed either.
-  const bool is_incognito_default =
-      is_incognito && permission.setting &&
-      info->delegate().IsUndecided(*permission.setting) &&
-      info->delegate().IsUndecided(factory_default_setting);
-
-  return permission.source == content_settings::SettingSource::kUser &&
-         factory_default_setting == permission.default_setting &&
-         (!permission.setting || is_incognito_default);
 }
 
 // static
@@ -1370,11 +1378,9 @@ void PageInfo::PopulatePermissionInfo(PermissionInfo& permission_info,
 
 // Determines whether to show permission |type| in the Page Info UI. Only
 // applies to permissions listed in |kPermissionType|.
-// By default permissions are shown if they have a non-default value that is
-// verified via `IsPermissionFactoryDefault`. `IsPermissionFactoryDefault`
-// should be kept as the last check in this function. Additionally, permissions
-// can be shown if a user changed the permission via Page Info, it is verified
-// via `HasContentSettingChangedViaPageInfo(type)`.
+//
+// In the first section of this method are some type-specific exceptions, in the
+// second section, the default behavior used when no per-type exception applies.
 bool PageInfo::ShouldShowPermission(
     const PageInfo::PermissionInfo& info) const {
   // For the Clapper experiment Chrome should display NOTIFICATIONS
@@ -1509,6 +1515,10 @@ bool PageInfo::ShouldShowPermission(
   // TODO(crbug.com/40064079): Filter out FPS related STORAGE_ACCESS
   // permissions.
 
+  // ---
+  // Note: Put type-specific extra checks above this line.
+  // ---
+
   // Show the content setting if it has been changed by the user since the last
   // page load. E.g. if the user has reset the permission via Page Info, the
   // permission should still be shown despite its state is default.
@@ -1516,19 +1526,24 @@ bool PageInfo::ShouldShowPermission(
     return true;
   }
 
-  // Show the Bluetooth guard permission if the new permissions backend is
-  // enabled.
-  if (info.type == ContentSettingsType::BLUETOOTH_GUARD &&
-      base::FeatureList::IsEnabled(
-          features::kWebBluetoothNewPermissionsBackend) &&
-      !PageInfo::IsPermissionFactoryDefault(info, is_incognito)) {
+  // Show the page info entry for a type if the effective setting is different
+  // from the factory default, specifically, in the follow three cases:
+  //   (1) There is a site-specific ALLOW/BLOCK setting.
+  //   (2) The setting is non-user controlled (e.g. policy or extension).
+  //   (3) The default setting for this type is changed away from the factory
+  //   default to a setting that prevents sites from prompting, so users must
+  //   resort to making per-site decisions using page info.
+
+  if (HasSiteSpecificDecision(info, is_incognito)) {
     return true;
   }
 
-  // Attention: Keep this check at the end of the function!
-  //
-  // Show the content setting when it has a non-default value.
-  if (!PageInfo::IsPermissionFactoryDefault(info, is_incognito)) {
+  if (info.source != content_settings::SettingSource::kUser) {
+    return true;
+  }
+
+  if (!IsDefaultSameAsFactoryDefault(info) &&
+      info.default_setting != PermissionSetting(CONTENT_SETTING_ASK)) {
     return true;
   }
 
