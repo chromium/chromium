@@ -5,6 +5,7 @@
 #include "base/containers/adapters.h"
 
 #include <array>
+#include <forward_list>
 #include <ranges>
 #include <utility>
 #include <vector>
@@ -99,6 +100,20 @@ class UnsizedVector {
     static_assert(
         !std::ranges::sized_range<decltype(base::Reversed(make_vector()))>);
     static_assert(!std::ranges::borrowed_range<decltype(make_vector())>);
+  }
+
+  {
+    std::vector<int> v;
+    static_assert(std::ranges::bidirectional_range<decltype(v)>);
+    static_assert(std::ranges::bidirectional_range<
+                  decltype(base::RangeAsRvalues(std::move(v)))>);
+  }
+
+  {
+    std::forward_list<int> l;
+    static_assert(!std::ranges::bidirectional_range<decltype(l)>);
+    static_assert(!std::ranges::bidirectional_range<
+                  decltype(base::RangeAsRvalues(std::move(l)))>);
   }
 }
 

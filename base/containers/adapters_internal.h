@@ -52,6 +52,17 @@ class RangeOfRvaluesAdapter {
   auto begin() { return std::make_move_iterator(std::ranges::begin(range_)); }
   auto end() { return std::make_move_iterator(std::ranges::end(range_)); }
 
+  auto rbegin()
+    requires std::ranges::bidirectional_range<Range>
+  {
+    return std::make_move_iterator(std::ranges::rbegin(range_));
+  }
+  auto rend()
+    requires std::ranges::bidirectional_range<Range>
+  {
+    return std::make_move_iterator(std::ranges::rend(range_));
+  }
+
  private:
   // RAW_PTR_EXCLUSION: References a STACK_ALLOCATED class. It is only used
   // inside for loops. Ideally, the container being iterated over should be the
