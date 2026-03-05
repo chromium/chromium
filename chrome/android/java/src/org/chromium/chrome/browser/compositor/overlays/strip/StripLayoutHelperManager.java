@@ -196,7 +196,7 @@ public class StripLayoutHelperManager
     private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
     private static final float GLIC_BUTTON_CLICK_SLOP_DP =
             (BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
-    static final float GLIC_MSB_BUTTON_PADDING_DP = 12.f;
+    static final float GLIC_MSB_BUTTON_PADDING_DP = 18.f;
     private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
     private static final float GLIC_ICON_WIDTH_DP = 16.f;
     private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
@@ -771,8 +771,9 @@ public class StripLayoutHelperManager
         mGlicButton.setDrawY(GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP);
         mGlicButton.setVisible(false);
 
-        // TODO(crbug.com/480736011): Add proper colors and styling
-        @ColorInt int backgroundDefaultColor = context.getColor(R.color.modern_white);
+        @ColorInt
+        int backgroundDefaultColor =
+                TabUiThemeUtil.getTabStripSelectedTabColor(context, /* isIncognito= */ false);
 
         @ColorInt
         int apsBackgroundHoveredColor =
@@ -1342,19 +1343,16 @@ public class StripLayoutHelperManager
         boolean hasIncognitoTabs = incognitoTabModel != null && incognitoTabModel.getCount() > 0;
         boolean shouldShowMsb = !IncognitoUtils.shouldOpenIncognitoAsWindow() && hasIncognitoTabs;
 
-        // Tablet: 344 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) +
-        // [optional] glicButton(48) + [optional] modelSelectorButton(48) + [optional]
-        // GLIC_MSB_BUTTON_PADDING_DP(12).
-        // Desktop: 232 = 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) +
-        // [optional] glicButton(32) + [optional] modelSelectorButton(32) + [optional]
-        // GLIC_MSB_BUTTON_PADDING_DP(12).
+        // Tablet: 332 = 2 * minTabWidth(108) - tabOverlap(28) + newTabButton (48) +
+        // [optional] glicButton(48) + [optional] modelSelectorButton(48)
+        // Desktop: 220 = 2 * minTabWidth(76) - tabOverlap(28) + newTabButton (32) +
+        // [optional] glicButton(32) + [optional] modelSelectorButton(32)
         float thresholdDp =
                 (2 * MIN_TAB_WIDTH_DP)
                         - TAB_OVERLAP_WIDTH_DP
                         + BUTTON_TOUCH_TARGET_SIZE_DP
                         + (shouldShowGlic ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f)
-                        + (shouldShowMsb ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f)
-                        + (shouldShowGlic && shouldShowMsb ? GLIC_MSB_BUTTON_PADDING_DP : 0);
+                        + (shouldShowMsb ? BUTTON_TOUCH_TARGET_SIZE_DP : 0f);
         return Math.round(thresholdDp);
     }
 

@@ -1145,23 +1145,17 @@ public class StripLayoutHelper
      * @param msbTouchTargetSize The touch target size for the model selector button.
      */
     // TODO(crbug.com/483119043): Fading assets only support 2 buttons (NTB and MSB)
-    // TODO(crbug.com/483140976): Align NTB, Glic, MSB when all 3 are showing
     public void updateEndMarginForStripButtons(
             float glicTouchTargetSize, float msbTouchTargetSize) {
         // There are two additional tab strip buttons: Glic & MSB
         // When both buttons are not visible we add strip end padding here.
-        // When either is visible, the strip end padding will be included in the visible button
-        // margin, so just add padding between NTB and visible button here. When both are visible,
-        // add additional padding between Glic and MSB.
+        // When either is visible, the strip end padding will be included in the visible button(s)
+        // touch target, so just add padding between NTB and visible button(s) here.
         float stripButtonsTouchTargetSize = glicTouchTargetSize + msbTouchTargetSize;
         float padding =
                 stripButtonsTouchTargetSize > 0
                         ? NEW_TAB_BUTTON_WITH_STRIP_BUTTON_PADDING
                         : mFixedEndPadding;
-        padding +=
-                glicTouchTargetSize > 0 && msbTouchTargetSize > 0
-                        ? StripLayoutHelperManager.GLIC_MSB_BUTTON_PADDING_DP
-                        : 0;
         mReservedEndMargin = stripButtonsTouchTargetSize + mNewTabButtonWidth + padding;
         updateMargins(true);
     }
