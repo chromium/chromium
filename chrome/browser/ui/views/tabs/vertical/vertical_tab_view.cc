@@ -577,6 +577,8 @@ void VerticalTabView::OnFocus() {
     collection_node_->GetController()->TabKeyboardFocusChangedTo(
         GetTabInterface());
   }
+
+  UpdateHoverCard(this, TabSlotController::HoverCardUpdateType::kFocus);
 }
 
 void VerticalTabView::OnBlur() {
