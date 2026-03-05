@@ -665,6 +665,20 @@ dawn_win_builderless_builder(
     ),
 )
 
+# This will be moved into win11-arm64-dawn-rel once the tests have been
+# confirmed to be stable enough.
+dawn_win_builderless_builder(
+    name = "dawn-try-win11-arm64-snapdragon-x-elite-rel",
+    mirrors = [
+        "ci/Dawn Win11 arm64 Builder",
+        "ci/Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)",
+    ],
+    gn_args = "ci/Dawn Win11 arm64 Builder",
+    test_presentation = resultdb.test_presentation(
+        grouping_keys = ["status", "v.test_suite", "v.gpu"],
+    ),
+)
+
 dawn_win_builderless_builder(
     name = "dawn-try-win-x64-intel-exp",
     mirrors = [

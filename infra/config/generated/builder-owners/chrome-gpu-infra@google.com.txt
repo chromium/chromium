@@ -67,6 +67,7 @@ ci/Dawn Win10 x86 Release (NVIDIA)
 ci/Dawn Win11 arm64 Builder
 ci/Dawn Win11 arm64 DEPS Builder
 ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)
+ci/Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)
 ci/GPU FYI Android arm Builder
 ci/GPU FYI Android arm64 Builder
 ci/GPU FYI Linux Builder
@@ -186,6 +187,7 @@ try/dawn-try-win10-x64-intel-asan
 try/dawn-try-win10-x64-nvidia-asan
 try/dawn-try-win10-x86-rel
 try/dawn-try-win11-arm64-snapdragon-x-elite-deps-rel
+try/dawn-try-win11-arm64-snapdragon-x-elite-rel
 try/dawn-win10-x64-deps-rel
 try/dawn-win10-x86-deps-rel
 try/dawn-win11-arm64-deps-rel

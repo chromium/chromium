@@ -1,9 +1,6 @@
 {
   "$build/chromium_tests_builder_config": {
     "builder_config": {
-      "additional_exclusions": [
-        "infra/config/generated/builders/ci/Dawn Win11 arm64 Builder/gn-args.json"
-      ],
       "builder_db": {
         "entries": [
           {
@@ -67,13 +64,6 @@
       "builder_ids": [
         {
           "bucket": "ci",
-          "builder": "Dawn Win11 arm64 Builder",
-          "project": "chromium"
-        }
-      ],
-      "builder_ids_in_scope_for_testing": [
-        {
-          "bucket": "ci",
           "builder": "Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)",
           "project": "chromium"
         }
@@ -82,25 +72,10 @@
         {
           "builder": "dawn-try-win11-arm64-snapdragon-x-elite-rel",
           "group": "tryserver.chromium.dawn"
-        },
-        {
-          "builder": "win11-arm64-dawn-rel",
-          "group": "tryserver.chromium.dawn"
         }
       ],
-      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Win11 arm64 Builder/targets"
+      "targets_spec_directory": "infra/config/generated/builders/ci/Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)/targets"
     }
-  },
-  "$build/siso": {
-    "configs": [
-      "builder"
-    ],
-    "enable_cloud_monitoring": true,
-    "enable_cloud_trace": true,
-    "experiments": [],
-    "profile_mode": "cloud",
-    "project": "rbe-chromium-trusted",
-    "remote_jobs": 250
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

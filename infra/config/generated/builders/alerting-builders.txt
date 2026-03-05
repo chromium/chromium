@@ -81,6 +81,7 @@ ci/Dawn Win10 x86 Release (NVIDIA)
 ci/Dawn Win11 arm64 Builder
 ci/Dawn Win11 arm64 DEPS Builder
 ci/Dawn Win11 arm64 DEPS Release (Qualcomm Snapdragon X Elite)
+ci/Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)
 ci/Deterministic Android
 ci/Deterministic Android (dbg)
 ci/Deterministic Fuchsia (dbg)

@@ -2422,6 +2422,64 @@ ci.thin_tester(
     ),
 )
 
+ci.thin_tester(
+    name = "Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)",
+    description_html = "Runs ToT Dawn tests on stable Windows 11/Qualcomm Snapdragon X Elite configs (Dell Latitude 7455)",
+    parent = "ci/Dawn Win11 arm64 Builder",
+    builder_spec = builder_config.builder_spec(
+        execution_mode = builder_config.execution_mode.TEST,
+        gclient_config = builder_config.gclient_config(
+            config = "chromium",
+        ),
+        chromium_config = builder_config.chromium_config(
+            config = "chromium",
+            apply_configs = [
+                "mb",
+            ],
+            build_config = builder_config.build_config.RELEASE,
+            target_bits = 64,
+            target_platform = builder_config.target_platform.WIN,
+        ),
+        run_tests_serially = True,
+    ),
+    targets = targets.bundle(
+        targets = [
+            "dawn_chromium_isolated_scripts",
+            "gpu_common_gtests_passthrough",
+            "gpu_dawn_telemetry_win_x64_tests",
+        ],
+        mixins = [
+            "win11_qualcomm_snapdragon_x_elite_stable",
+        ],
+        per_test_modifications = {
+            "gl_tests_passthrough": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_tests_passthrough.filter",
+                ],
+            ),
+            "gl_unittests": targets.mixin(
+                args = [
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/win.qualcomm.snapdragon_x_elite.gl_unittests.filter",
+                ],
+            ),
+            "webgpu_cts_fxc_tests": targets.remove(
+                reason = "WebGPU is only enabled on Qualcomm Windows devices where DXC is available. See crbug.com/475891205",
+            ),
+            "webgpu_cts_fxc_with_validation_tests": targets.remove(
+                reason = "WebGPU is only enabled on Qualcomm Windows devices where DXC is available. See crbug.com/475891205",
+            ),
+        },
+    ),
+    targets_settings = targets.settings(
+        browser_config = targets.browser_config.RELEASE,
+        os_type = targets.os_type.WINDOWS,
+    ),
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Windows|arm64|Qualcomm",
+        short_name = "sdx",
+    ),
+)
+
 # Note that the Win testers are all thin Linux VMs, triggering jobs on the
 # physical Win hardware in the Swarming pool, which is why they run on linux
 ci.thin_tester(

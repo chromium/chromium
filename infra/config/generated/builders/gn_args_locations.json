@@ -734,6 +734,7 @@
     "dawn-try-win10-x64-nvidia-asan": "try/dawn-try-win10-x64-nvidia-asan/gn-args.json",
     "dawn-try-win10-x86-rel": "try/dawn-try-win10-x86-rel/gn-args.json",
     "dawn-try-win11-arm64-snapdragon-x-elite-deps-rel": "try/dawn-try-win11-arm64-snapdragon-x-elite-deps-rel/gn-args.json",
+    "dawn-try-win11-arm64-snapdragon-x-elite-rel": "try/dawn-try-win11-arm64-snapdragon-x-elite-rel/gn-args.json",
     "dawn-win10-x64-deps-rel": "try/dawn-win10-x64-deps-rel/gn-args.json",
     "dawn-win10-x86-deps-rel": "try/dawn-win10-x86-deps-rel/gn-args.json",
     "dawn-win11-arm64-deps-rel": "try/dawn-win11-arm64-deps-rel/gn-args.json",

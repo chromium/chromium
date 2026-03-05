@@ -2013,6 +2013,27 @@
           }
         ]
       },
+      "Dawn Win11 arm64 Release (Qualcomm Snapdragon X Elite)": {
+        "contact_team_email": "chrome-gpu-infra@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "Deterministic Android": {
         "contact_team_email": "clank-engprod@google.com",
         "problem_specs": [
