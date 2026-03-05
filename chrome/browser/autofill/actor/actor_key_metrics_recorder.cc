@@ -55,7 +55,56 @@ void ActorKeyMetricsRecorder::OnFormsRemoved(
 void ActorKeyMetricsRecorder::RecordKeyMetrics(
     AutofillManager& manager,
     const FormStructure& form_structure) {
-  // TODO(crbug.com/487534942): Add key metrics recording.
+  DenseSet<FormType> form_types =
+      form_structure.GetFormTypes(GetAcUnrecognizedBehavior(manager.client()));
+
+  auto record_product_metrics = [&](FillingProduct product, bool is_fillable) {
+    if (product != FillingProduct::kAddress &&
+        product != FillingProduct::kCreditCard) {
+      return;
+    }
+    ProductState& state = states_[std::to_underlying(product)];
+    if (state.recorded_forms.contains(form_structure.global_id())) {
+      return;
+    }
+    state.recorded_forms.insert(form_structure.global_id());
+
+    // TODO(crbug.com/487534942): Add more key metrics.
+    const std::string_view product_str =
+        product == FillingProduct::kAddress ? "Address" : "CreditCard";
+    if (is_fillable) {
+      RecordFillingAssistance(form_structure, state, product_str);
+    }
+  };
+
+  if (form_types.contains(FormType::kAddressForm)) {
+    record_product_metrics(FillingProduct::kAddress,
+                           !manager.client()
+                                .GetPersonalDataManager()
+                                .address_data_manager()
+                                .GetProfiles()
+                                .empty());
+  }
+
+  if (form_types.contains(FormType::kCreditCardForm)) {
+    record_product_metrics(FillingProduct::kCreditCard,
+                           !manager.client()
+                                .GetPersonalDataManager()
+                                .payments_data_manager()
+                                .GetCreditCards()
+                                .empty());
+  }
+}
+
+void ActorKeyMetricsRecorder::RecordFillingAssistance(
+    const FormStructure& form_structure,
+    const ProductState& state,
+    std::string_view product_str) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Autofill.Actor.KeyMetrics.FillingAssistance.", product_str}),
+      state.actor_filled_fields.find(form_structure.global_id()) !=
+          state.actor_filled_fields.end());
 }
 
 }  // namespace autofill

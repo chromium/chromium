@@ -1048,6 +1048,22 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
+<histogram name="Autofill.Actor.KeyMetrics.FillingAssistance.{FormType}"
+    enum="BooleanAutofillFillingAssistance" expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, at form submission, whether the actor was used to fill the form or
+    not. Only recorded if the user has data available to fill the form.
+  </summary>
+  <token key="FormType">
+    <variant name="Address" summary="Address form"/>
+    <variant name="CreditCard" summary="Credit card form"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.AddedNewAddress"
     enum="AutofillManuallyAddedAddressSurface" expires_after="2026-06-07">
   <owner>brunobraga@google.com</owner>

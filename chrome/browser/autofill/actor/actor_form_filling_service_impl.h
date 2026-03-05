@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "chrome/browser/autofill/actor/actor_form_filling_service.h"
 #include "chrome/browser/autofill/actor/actor_form_section_splitter.h"
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"

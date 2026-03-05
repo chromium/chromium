@@ -1176,6 +1176,129 @@ TEST_F(ActorFormFillingServiceTest, ScrollToForm) {
   service().ScrollToForm(tab(), /*form_index=*/1);
 }
 
+// Tests that FillingAssistance metrics are correctly recorded when the actor
+// fills an address form.
+TEST_F(ActorFormFillingServiceTest, FillingAssistanceMetrics_AddressFilled) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.Address", true, 1);
+}
+
+// Tests that FillingAssistance metrics are correctly recorded as false when the
+// actor does not fill an address form that the user was capable of filling.
+TEST_F(ActorFormFillingServiceTest, FillingAssistanceMetrics_AddressNotFilled) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  // Trigger suggestions to ensure the manager is observed.
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(), HasValue());
+
+  // Do NOT fill.
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.Address", false, 1);
+}
+
+// Tests that FillingAssistance metrics are correctly recorded when the actor
+// fills a credit card form.
+TEST_F(ActorFormFillingServiceTest, FillingAssistanceMetrics_CreditCardFilled) {
+  base::HistogramTester histogram_tester;
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.CreditCard", true, 1);
+}
+
+// Tests that the state for recorded forms is cleared when the forms are
+// removed (e.g. on navigation).
+TEST_F(ActorFormFillingServiceTest,
+       FillingAssistanceMetrics_StateClearedOnNavigation) {
+  base::HistogramTester histogram_tester;
+  // Use stable IDs so that the form has the same GlobalId when re-added.
+  test::FormDescription form_desc = {
+      .fields = {{.role = NAME_FULL, .renderer_id = FieldRendererId(1)},
+                 {.role = ADDRESS_HOME_LINE1,
+                  .renderer_id = FieldRendererId(2)}},
+      .host_frame = driver().GetFrameToken(),
+      .renderer_id = FormRendererId(1)};
+  FormData form = SeeForm(form_desc);
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.Address", true, 1);
+
+  // Now "navigate" away, which removes forms.
+  manager().OnFormsSeen(/*updated_forms=*/{},
+                        /*removed_forms=*/{form.global_id()});
+
+  // Re-add the same form (simulating coming back to the page).
+  FormData form2 = SeeForm(form_desc);
+  ASSERT_EQ(form.global_id(), form2.global_id());
+
+  // Record at submission. Should record false now because it's a new session
+  // and it wasn't filled by actor in this session.
+  manager().OnFormSubmitted(form2, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectBucketCount(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.Address", false, 1);
+  histogram_tester.ExpectTotalCount(
+      "Autofill.Actor.KeyMetrics.FillingAssistance.Address", 2);
+}
+
 }  // namespace
 
 }  // namespace autofill

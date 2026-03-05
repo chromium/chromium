@@ -535,8 +535,8 @@ void ActorFormFillingServiceImpl::GetSuggestions(
           return;
         }
 
-        if (actor::ShouldSplitOutContactInfo(trigger_fields,
-                                             autofill_manager, log_manager)) {
+        if (actor::ShouldSplitOutContactInfo(trigger_fields, autofill_manager,
+                                             log_manager)) {
           sub_requests.push_back(
               {FormFillingRequest_RequestedData_CONTACT_INFORMATION,
                actor::SectionSplitPart::kContactInfo});
