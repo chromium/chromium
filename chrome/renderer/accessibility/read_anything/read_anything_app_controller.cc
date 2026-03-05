@@ -1965,8 +1965,8 @@ std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() {
 
 std::string ReadAnythingAppController::GetValidatedFontName(
     const std::string& font) const {
-  if (!std::ranges::contains(GetAllFonts(), font)) {
-    return GetAllFonts().front();
+  if (!std::ranges::contains(model_.supported_fonts(), font)) {
+    return model_.supported_fonts().front();
   }
   if (font == "Serif" || font == "Sans-serif") {
     return base::ToLowerASCII(font);

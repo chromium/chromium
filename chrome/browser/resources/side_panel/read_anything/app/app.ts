@@ -736,6 +736,8 @@ export class AppElement extends AppElementBase implements SpeechListener,
   languageChanged() {
     this.pageLanguage_ = chrome.readingMode.baseLanguageForSpeech;
     this.voiceLanguageController_.onPageLanguageChanged();
+    // Update the font to ensure the font is valid for the page language.
+    this.styleUpdater_.setFont();
     TextSegmenter.getInstance().updateLanguage(this.pageLanguage_);
   }
 
