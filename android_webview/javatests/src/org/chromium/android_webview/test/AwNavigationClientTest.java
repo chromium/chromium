@@ -264,13 +264,17 @@ public class AwNavigationClientTest extends AwParameterizedTest {
                 mContentsClient.getOnPageFinishedHelper(),
                 testPage);
 
+        // First, wait for the native callbacks to ensure they are all processed.
+        int expectedNumMarks = 3;
+        // We expect 3 callbacks from performance.mark() calls, plus one for the FCP event.
+        mCallbackHelper.waitForCallback(0, expectedNumMarks + 1);
+
         // Wait for performance marks data to be returned via postmessage
         TestWebMessageListener.Data data = listener.waitForOnPostMessage();
         JSONArray jsPerformanceMarks = new JSONArray(data.getAsString());
         List<TestAwNavigationListener.PerformanceMark> listenerPerformanceMarks =
                 mNavigationListener.getPerformanceMarks();
 
-        int expectedNumMarks = 3;
         Assert.assertEquals(
                 "Number of marks observered via js is incorrect",
                 expectedNumMarks,

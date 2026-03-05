@@ -1335,6 +1335,11 @@ public final class ProductionSupportedFlagList {
         Flag.baseFeature(
                 "NoSequenceForLevelDBCleanupTasks",
                 "When enabled, LevelDB cleanup tasks are run concurrently instead of in sequence."),
+        Flag.baseFeature(
+                "ThrottleSendingCustomUserTimings",
+                "Throttle sending custom user timing events via performance.mark() from the"
+                    + " renderer to the browser process, to reduce the number of IPCs to record"
+                    + " page load metrics."),
 
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
