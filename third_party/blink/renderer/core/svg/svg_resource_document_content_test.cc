@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/svg/svg_document_resource_tracker.h"
 #include "third_party/blink/renderer/core/svg/svg_resource_document_observer.h"
+#include "third_party/blink/renderer/core/svg/svg_resource_scheduler_registry.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
@@ -201,6 +202,13 @@ class SVGResourceDocumentContentTest : public PageTestBase {
  public:
   SVGResourceDocumentContentTest()
       : PageTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  ~SVGResourceDocumentContentTest() override {
+    // Explicitly clear the SVG resource scheduler registry to dispose of any
+    // remaining trackers and their resources, to avoid leaks and potential
+    // cross-test pollution. (crbug.com/488270272)
+    SVGResourceSchedulerRegistry::ClearRegistryForTesting();
+  }
 };
 
 TEST_F(SVGResourceDocumentContentTest, EmptyDataUrl) {

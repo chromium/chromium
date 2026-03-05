@@ -30,6 +30,7 @@ class CORE_EXPORT SVGResourceSchedulerRegistry final {
   // Returns the tracker for the given scheduler, creating one if the tracker
   // doesn't exist.
   static SVGDocumentResourceTracker* GetTracker(AgentGroupScheduler& scheduler);
+  static void ClearRegistryForTesting();
 };
 
 }  // namespace blink

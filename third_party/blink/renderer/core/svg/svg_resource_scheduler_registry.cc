@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/svg/svg_resource_scheduler_registry.h"
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/uuid.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -72,6 +73,17 @@ SVGDocumentResourceTracker* SVGResourceSchedulerRegistry::GetTracker(
       scheduler.DefaultTaskRunner(), GenerateCacheIdentifier());
   map.Set(&scheduler, tracker);
   return tracker;
+}
+
+void SVGResourceSchedulerRegistry::ClearRegistryForTesting() {
+  CHECK_IS_TEST();
+  MapType& map = GetTrackerMap();
+
+  for (const auto& pair : map) {
+    pair.value->Dispose();
+  }
+
+  map.clear();
 }
 
 }  // namespace blink
