@@ -155,8 +155,7 @@ void AutoPipSettingOverlayView::OnWidgetDestroying(views::Widget*) {
 
 void AutoPipSettingOverlayView::IgnoreInputEvents(
     content::WebContents* web_contents) {
-  scoped_ignore_input_events_ = web_contents->IgnoreInputEvents(
-      std::nullopt, /*should_ignore_a11y_input=*/true);
+  scoped_ignore_input_events_ = web_contents->IgnoreInputEvents(std::nullopt);
 }
 
 BEGIN_METADATA(AutoPipSettingOverlayView)
