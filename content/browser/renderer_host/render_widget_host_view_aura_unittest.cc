@@ -5087,8 +5087,8 @@ TEST_F(RenderWidgetHostViewAuraTest, KeyEventsHandled) {
 #if BUILDFLAG(IS_WIN)
 // Arabic keyboard layouts on Windows do not natively support Arabic-Indic
 // digit input. This is worked around for web page input scenarios by
-// forwarding NativeWebKeyboardEvents with Arabic-Indic digit in InsertChar
-// upon receipt of a KeyEvent containing an ASCII digit.
+// forwarding NativeWebKeyboardEvents with Arabic-Indic digits in OnKeyEvent
+// upon receipt of a top-row digit KeyEvent while AltGr is held.
 // This test verifies that behavior.
 TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputRightAlt) {
   ResetArabicIndicDigitInputStateForTesting();
@@ -5113,13 +5113,19 @@ TEST_F(RenderWidgetHostViewAuraTest, ArabicIndicDigitInputRightAlt) {
   keyboard_state[VK_RMENU] = kKeyDown;
   ASSERT_TRUE(SetKeyboardState(keyboard_state));
   for (int i = 0; i < 10; ++i) {
-    ui::KeyEvent key_event = ui::KeyEvent::FromCharacter(
-        i + u'0', static_cast<ui::KeyboardCode>(ui::VKEY_0 + i),
-        ui::DomCode::NONE, ui::EF_ALT_DOWN);
-    view_->InsertChar(key_event);
+    ui::KeyEvent key_event(ui::EventType::kKeyPressed,
+                           static_cast<ui::KeyboardCode>(ui::VKEY_0 + i),
+                           ui::DomCode::NONE, ui::EF_ALT_DOWN);
+    view_->OnKeyEvent(&key_event);
     const input::NativeWebKeyboardEvent* event =
         delegates_.back()->last_event();
     ASSERT_TRUE(event);
+
+    // InsertChar should no-op for right alt + digit key. On Windows versions
+    // where Arabic 101 does not implement AltGr, this generates WM_SYSCHAR
+    // which invokes InsertChar.
+    view_->InsertChar(key_event);
+    EXPECT_EQ(event, delegates_.back()->last_event()) << "Digit index: " << i;
 
     char16_t expected = static_cast<char16_t>(i + kArabicIndicZero);
     EXPECT_EQ(expected, event->windows_key_code) << "Digit index: " << i;
