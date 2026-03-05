@@ -12,19 +12,16 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-namespace org1::jni_zero1 {
-
-class _JSampleModule;
+#ifndef _JNI_ZERO_org_jni_zero_JSampleModule_DEFINED
+namespace org::jni_zero {
+class _JSampleModule : public _jobject {};
 using JSampleModule = _JSampleModule*;
+}  // namespace org::jni_zero
+#define _JNI_ZERO_org_jni_zero_JSampleModule_DEFINED
+#endif
 
-class _JSampleModule : public _jobject {
-  public:
-};
-
-}  // namespace org1::jni_zero1
-
-using JSampleModule = org1::jni_zero1::JSampleModule;
-using JSampleModuleClass = org1::jni_zero1::_JSampleModule;
+using JSampleModule = ::org::jni_zero::JSampleModule;
+using JSampleModuleClass = ::jni_zero::internal::_CalledByNatives<JSampleModule>;
 
 
 

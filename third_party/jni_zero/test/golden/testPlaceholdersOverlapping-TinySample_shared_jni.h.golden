@@ -12,19 +12,16 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-namespace org1::jni_zero1 {
-
-class _JTinySample;
+#ifndef _JNI_ZERO_org_jni_zero_JTinySample_DEFINED
+namespace org::jni_zero {
+class _JTinySample : public _jobject {};
 using JTinySample = _JTinySample*;
+}  // namespace org::jni_zero
+#define _JNI_ZERO_org_jni_zero_JTinySample_DEFINED
+#endif
 
-class _JTinySample : public _jobject {
-  public:
-};
-
-}  // namespace org1::jni_zero1
-
-using JTinySample = org1::jni_zero1::JTinySample;
-using JTinySampleClass = org1::jni_zero1::_JTinySample;
+using JTinySample = ::org::jni_zero::JTinySample;
+using JTinySampleClass = ::jni_zero::internal::_CalledByNatives<JTinySample>;
 
 
 

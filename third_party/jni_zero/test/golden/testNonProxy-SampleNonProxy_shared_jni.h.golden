@@ -12,19 +12,16 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-namespace org1::jni_zero1 {
-
-class _JSampleNonProxy;
+#ifndef _JNI_ZERO_org_jni_zero_JSampleNonProxy_DEFINED
+namespace org::jni_zero {
+class _JSampleNonProxy : public _jobject {};
 using JSampleNonProxy = _JSampleNonProxy*;
+}  // namespace org::jni_zero
+#define _JNI_ZERO_org_jni_zero_JSampleNonProxy_DEFINED
+#endif
 
-class _JSampleNonProxy : public _jobject {
-  public:
-};
-
-}  // namespace org1::jni_zero1
-
-using JSampleNonProxy = org1::jni_zero1::JSampleNonProxy;
-using JSampleNonProxyClass = org1::jni_zero1::_JSampleNonProxy;
+using JSampleNonProxy = ::org::jni_zero::JSampleNonProxy;
+using JSampleNonProxyClass = ::jni_zero::internal::_CalledByNatives<JSampleNonProxy>;
 
 
 

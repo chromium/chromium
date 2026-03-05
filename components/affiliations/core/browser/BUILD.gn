@@ -64,8 +64,8 @@ source_set("affiliations") {
     "//net",
     "//services/network/public/cpp",
     "//sql",
-    "//url",
   ]
+  public_deps = [ "//url" ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

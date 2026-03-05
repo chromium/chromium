@@ -316,6 +316,15 @@ class JniObject:
 
     return sorted(classes)
 
+  def GetClassesToBeLazilyDefined(self):
+    classes = set()
+    for n in self.called_by_natives:
+      for t in list(n.signature.param_types) + [n.return_type]:
+        if not t.enable_mirror():
+          continue
+        classes.add(t.java_class)
+    return sorted(classes)
+
   def RemoveTestOnlyNatives(self):
     self.natives = [n for n in self.natives if not n.is_test_only]
 
@@ -394,14 +403,9 @@ def _generate_headers(jni_mode,
 
   by_java_class = _GroupByJavaClass(jni_obj)
   with shared_sb.section('C++ classes that mirror the Java classes:'):
-    if jni_obj.jni_namespace:
-      shared_sb('// Declare the namespace so that it can be used by '
-                '"using namespace"\n')
-      shared_sb(f'namespace {jni_obj.jni_namespace} {{}}\n')
-      shared_sb('\n')
-    for java_class, cbns in by_java_class.items():
-      called_by_native_header.mirrored_cpp_class_declaration(
-          shared_sb, java_class, cbns, jni_obj.jni_namespace)
+    for java_class in by_java_class:
+      called_by_native_header.mirrored_cpp_class_lazy_definition(
+          shared_sb, java_class, True, jni_obj.jni_namespace)
 
   if add_natives_macro_definition:
     natives_header.natives_macro_definition(
@@ -461,11 +465,27 @@ def _generate_headers(jni_mode,
             called_by_native_header.field_definition(unshared_sb,
                                                      jni_obj.java_class, field)
 
-  if jni_obj.called_by_natives:
-    with unshared_sb.section('C++ classes that mirror the Java classes:'):
-      for _, cbns in by_java_class.items():
-        called_by_native_header.mirrored_cpp_class_definition(
-            unshared_sb, cbns, jni_obj.jni_namespace)
+  with unshared_sb.section('Lazy definition of C++ classes JMyClass:'):
+    lazily_defined_classes = jni_obj.GetClassesToBeLazilyDefined()
+    for lazily_defined_class in lazily_defined_classes:
+      if lazily_defined_class in by_java_class:
+        continue
+      called_by_native_header.mirrored_cpp_class_lazy_definition(
+          unshared_sb, lazily_defined_class)
+
+  with unshared_sb.section('Actual implementations of C++ classes JMyClass:'):
+    if jni_obj.jni_namespace:
+      unshared_sb('// Declare the namespace so that it can be used by '
+                  '"using namespace"\n')
+      unshared_sb(f'namespace {jni_obj.jni_namespace} {{}}\n')
+      unshared_sb('\n')
+    with unshared_sb.namespace('jni_zero::internal'):
+      if jni_obj.jni_namespace:
+        unshared_sb(f'using namespace {jni_obj.jni_namespace};\n')
+        unshared_sb('\n')
+      for java_class, cbns in by_java_class.items():
+        called_by_native_header.mirrored_cpp_class_actual_implementation(
+            unshared_sb, java_class, cbns)
 
   shared_sb(shared_epilogue)
   unshared_sb(unshared_epilogue)

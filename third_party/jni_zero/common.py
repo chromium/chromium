@@ -107,17 +107,21 @@ class StringBuilder:
     self('\n')
 
   @contextlib.contextmanager
-  def namespace(self, namespace_name):
+  def namespace(self, namespace_name, skip_newline=False):
     if namespace_name is None:
       yield
       return
     value = f' {namespace_name}' if namespace_name else ''
-    self(f'namespace{value} {{\n\n')
+    self(f'namespace{value} {{\n')
+    if not skip_newline:
+      self('\n')
     yield
+    if not skip_newline:
+      self('\n')
     if self._in_cpp_macro:
-      self(f'\n}}  /* namespace{value} */\n')
+      self(f'}}  /* namespace{value} */\n')
     else:
-      self(f'\n}}  // namespace{value}\n')
+      self(f'}}  // namespace{value}\n')
 
   @contextlib.contextmanager
   def block(self, *, indent=2, after=None, no_trailing_newline=False):

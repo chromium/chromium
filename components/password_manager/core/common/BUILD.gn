@@ -29,12 +29,12 @@ static_library("common") {
     "//components/autofill/core/common:autofill_regex",
     "//components/autofill/core/common/mojom:mojo_types",
     "//sql",
-    "//url",
   ]
 
   public_deps = [
     ":constants",
     ":features",
+    "//url",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

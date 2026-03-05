@@ -12,21 +12,16 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-namespace org1::jni_zero1 {
-
-class _JSampleUniqueAnnotations;
+#ifndef _JNI_ZERO_org_jni_zero_JSampleUniqueAnnotations_DEFINED
+namespace org::jni_zero {
+class _JSampleUniqueAnnotations : public _jobject {};
 using JSampleUniqueAnnotations = _JSampleUniqueAnnotations*;
+}  // namespace org::jni_zero
+#define _JNI_ZERO_org_jni_zero_JSampleUniqueAnnotations_DEFINED
+#endif
 
-class _JSampleUniqueAnnotations : public _jobject {
-  public:
-  static void useBar1(JNIEnv* env, const jni_zero::JavaRef<jobject>& inner);
-
-};
-
-}  // namespace org1::jni_zero1
-
-using JSampleUniqueAnnotations = org1::jni_zero1::JSampleUniqueAnnotations;
-using JSampleUniqueAnnotationsClass = org1::jni_zero1::_JSampleUniqueAnnotations;
+using JSampleUniqueAnnotations = ::org::jni_zero::JSampleUniqueAnnotations;
+using JSampleUniqueAnnotationsClass = ::jni_zero::internal::_CalledByNatives<JSampleUniqueAnnotations>;
 
 
 

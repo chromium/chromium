@@ -33,6 +33,7 @@
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/bookmarks/android/bookmark_bridge.h"
+#include "chrome/browser/optimization_guide/android/jni_headers/OptimizationGuideBridge_shared_jni.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
@@ -111,7 +112,9 @@ class OptimizationGuideKeyedService
   ~OptimizationGuideKeyedService() override;
 
 #if BUILDFLAG(IS_ANDROID)
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  base::android::ScopedJavaLocalRef<
+      optimization_guide::android::JOptimizationGuideBridge>
+  GetJavaObject();
 #endif
 
   // Constructs a ModelBrokerClient with remote fallback capability.

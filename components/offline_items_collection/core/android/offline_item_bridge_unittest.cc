@@ -36,7 +36,10 @@ TEST_F(OfflineItemBridgeTest, CreateOfflineItem) {
   OfflineItem item;
   auto* env = AttachCurrentThread();
   auto j_offline_item = OfflineItemBridge::CreateOfflineItem(env, item);
-  j_test()->testCreateDefaultOfflineItem(env, j_offline_item);
+  auto j_offline_item_converted = jni_zero::Cast<
+      org::chromium::components::offline_items_collection::JOfflineItem>(
+      env, std::move(j_offline_item));
+  j_test()->testCreateDefaultOfflineItem(env, j_offline_item_converted);
 }
 
 }  // namespace

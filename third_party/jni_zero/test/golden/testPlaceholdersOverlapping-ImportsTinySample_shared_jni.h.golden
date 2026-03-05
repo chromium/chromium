@@ -12,19 +12,16 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-namespace org1::jni_zero1::extrapackage1 {
-
-class _JImportsTinySample;
+#ifndef _JNI_ZERO_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
+namespace org::jni_zero::extrapackage {
+class _JImportsTinySample : public _jobject {};
 using JImportsTinySample = _JImportsTinySample*;
+}  // namespace org::jni_zero::extrapackage
+#define _JNI_ZERO_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
+#endif
 
-class _JImportsTinySample : public _jobject {
-  public:
-};
-
-}  // namespace org1::jni_zero1::extrapackage1
-
-using JImportsTinySample = org1::jni_zero1::extrapackage1::JImportsTinySample;
-using JImportsTinySampleClass = org1::jni_zero1::extrapackage1::_JImportsTinySample;
+using JImportsTinySample = ::org::jni_zero::extrapackage::JImportsTinySample;
+using JImportsTinySampleClass = ::jni_zero::internal::_CalledByNatives<JImportsTinySample>;
 
 
 

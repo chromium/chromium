@@ -70,12 +70,13 @@ component("url") {
   public_deps = [
     "//base",
     "//build:robolectric_buildflags",
+    "//net:cronet_buildflags",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
   if (is_android || is_robolectric) {
-    deps += [ ":url_jni_headers" ]
+    public_deps += [ ":url_jni_headers" ]
     if (!is_cronet_build) {
       sources += [
         "android/gurl_android.cc",

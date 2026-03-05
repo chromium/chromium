@@ -30,8 +30,9 @@ source_set("public") {
   deps = [
     "//base",
     "//components/password_manager/core/browser",
-    "//url",
   ]
+
+  public_deps = [ "//url" ]
 
   sources = [ "touch_to_fill_view.h" ]
 }

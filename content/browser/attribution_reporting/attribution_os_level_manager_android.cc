@@ -184,7 +184,9 @@ void AttributionOsLevelManagerAndroid::Register(
   std::vector<ScopedJavaLocalRef<jobject>> registration_urls = base::ToVector(
       registration.registration_items,
       [env](const attribution_reporting::OsRegistrationItem& item) {
-        return url::GURLAndroid::FromNativeGURL(env, item.url);
+        ScopedJavaLocalRef<jobject> ret =
+            url::GURLAndroid::FromNativeGURL(env, item.url);
+        return ret;
       });
   auto top_level_origin = url::GURLAndroid::FromNativeGURL(
       env, registration.top_level_origin.GetURL());
@@ -282,7 +284,9 @@ void AttributionOsLevelManagerAndroid::ClearData(
 
   std::vector<ScopedJavaLocalRef<jobject>> j_origins =
       base::ToVector(origins, [env](const url::Origin& origin) {
-        return url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
+        ScopedJavaLocalRef<jobject> ret =
+            url::GURLAndroid::FromNativeGURL(env, origin.GetURL());
+        return ret;
       });
 
   int request_id = next_callback_id_++;

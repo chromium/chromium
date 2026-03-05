@@ -12,56 +12,18 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-// Declare the namespace so that it can be used by "using namespace"
-namespace JNI_JavapClass {}
-
-namespace org1::jni_zero1 {
-
-using namespace JNI_JavapClass;
-
-class _JJavapClass;
+#ifndef _JNI_ZERO_org_jni_zero_JJavapClass_DEFINED
+namespace org::jni_zero {
+class _JJavapClass : public _jobject {};
 using JJavapClass = _JJavapClass*;
-
-class _JJavapClass : public _jobject {
-  public:
-  static jni_zero::ScopedJavaLocalRef<JJavapClass> Constructor(JNIEnv* env);
-
-  static jni_zero::ScopedJavaLocalRef<JJavapClass> Constructor__boolean(JNIEnv* env, jboolean p0);
-
-  static jni_zero::ScopedJavaLocalRef<JJavapClass> Constructor__int(JNIEnv* env, JniIntWrapper p0);
-
-  jint intMethod(JNIEnv* env, const jni_zero::JavaRef<jstring>& p0);
-
-  static void needsMangling__int(JNIEnv* env, JniIntWrapper p0);
-
-  static void needsMangling__String(JNIEnv* env, const jni_zero::JavaRef<jstring>& p0);
-
-  static void needsMangling__java_util_ArrayList(
-      JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& p0);
-
-  jni_zero::ScopedJavaLocalRef<jclass> objTest(
-      JNIEnv* env,
-      const jni_zero::JavaRef<jobject>& p0,
-      const jni_zero::JavaRef<jobjectArray>& p1);
-
-  static jint staticIntMethod(
-      JNIEnv* env,
-      const jni_zero::JavaRef<jstring>& p0,
-      const jni_zero::JavaRef<jobject>& p1);
-
-  static jni_zero::ScopedJavaLocalRef<jobjectArray> staticIntMethod(
-      JNIEnv* env,
-      const jni_zero::JavaRef<jstring>& p0);
-
-};
-
-}  // namespace org1::jni_zero1
+}  // namespace org::jni_zero
+#define _JNI_ZERO_org_jni_zero_JJavapClass_DEFINED
+#endif
 
 namespace JNI_JavapClass {
 
-using JJavapClass = org1::jni_zero1::JJavapClass;
-using JJavapClassClass = org1::jni_zero1::_JJavapClass;
+using JJavapClass = ::org::jni_zero::JJavapClass;
+using JJavapClassClass = ::jni_zero::internal::_CalledByNatives<JJavapClass>;
 
 }  // namespace JNI_JavapClass
 

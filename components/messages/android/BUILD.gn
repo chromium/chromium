@@ -91,12 +91,12 @@ static_library("android") {
   deps = [
     ":jni_headers",
     "//content/public/browser",
-    "//ui/android",
   ]
 
   public_deps = [
     "//base",
     "//skia",
+    "//ui/android",
   ]
 }
 

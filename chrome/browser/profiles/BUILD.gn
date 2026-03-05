@@ -74,7 +74,10 @@ source_set("profile") {
     "refcounted_profile_keyed_service_factory.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//components/media_router/common",
+  ]
 
   # Cannot depend on //chrome/browser:browser.
   deps = [
@@ -85,7 +88,6 @@ source_set("profile") {
     "//components/keyed_service/content",
     "//components/language/core/browser",
     "//components/live_caption:constants",
-    "//components/media_router/common",
     "//components/pref_registry",
     "//components/prefs",
     "//components/profile_metrics",

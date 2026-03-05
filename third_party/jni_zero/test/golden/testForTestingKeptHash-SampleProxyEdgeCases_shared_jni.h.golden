@@ -12,19 +12,16 @@
 #include "extra_include.h"
 
 // C++ classes that mirror the Java classes:
-namespace org1::jni_zero1 {
-
-class _JSampleProxyEdgeCases;
+#ifndef _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_DEFINED
+namespace org::jni_zero {
+class _JSampleProxyEdgeCases : public _jobject {};
 using JSampleProxyEdgeCases = _JSampleProxyEdgeCases*;
+}  // namespace org::jni_zero
+#define _JNI_ZERO_org_jni_zero_JSampleProxyEdgeCases_DEFINED
+#endif
 
-class _JSampleProxyEdgeCases : public _jobject {
-  public:
-};
-
-}  // namespace org1::jni_zero1
-
-using JSampleProxyEdgeCases = org1::jni_zero1::JSampleProxyEdgeCases;
-using JSampleProxyEdgeCasesClass = org1::jni_zero1::_JSampleProxyEdgeCases;
+using JSampleProxyEdgeCases = ::org::jni_zero::JSampleProxyEdgeCases;
+using JSampleProxyEdgeCasesClass = ::jni_zero::internal::_CalledByNatives<JSampleProxyEdgeCases>;
 
 
 

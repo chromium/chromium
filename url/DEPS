@@ -3,6 +3,7 @@ include_rules = [
   "-base/i18n",
   "-third_party/icu",
   "+third_party/jni_zero",
+  "+net/base/cronet_buildflags.h",
 ]
 
 specific_include_rules = {

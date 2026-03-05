@@ -27,9 +27,10 @@ source_set("browser") {
   deps = [
     "//base",
     "//components/crash/core/app",
-    "//content/public/browser",
     "//content/public/common",
   ]
+
+  public_deps = [ "//content/public/browser" ]
 
   if (is_castos || is_android) {
     sources += [

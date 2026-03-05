@@ -374,5 +374,18 @@ JNI_ZERO_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleProxyEdgeCases_nativeStat
 }
 
 
+// Lazy definition of C++ classes JMyClass:
+
+// Actual implementations of C++ classes JMyClass:
+namespace jni_zero::internal {
+
+template<>
+class _CalledByNatives<JSampleProxyEdgeCases> {
+  public:
+};
+
+
+}  // namespace jni_zero::internal
+
 
 #endif  // org_jni_1zero_SampleProxyEdgeCases_JNI

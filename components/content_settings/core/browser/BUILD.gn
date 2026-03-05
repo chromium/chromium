@@ -53,7 +53,11 @@ static_library("browser") {
     "website_settings_registry.h",
   ]
 
-  public_deps = [ "//base" ]
+  public_deps = [
+    "//base",
+    "//url",
+  ]
+
   deps = [
     "//build:blink_buildflags",
     "//components/content_settings/core/common",
@@ -68,7 +72,6 @@ static_library("browser") {
     "//services/network/public/mojom",
     "//services/preferences/public/cpp",
     "//services/tracing/public/cpp",
-    "//url",
   ]
 
   if (use_blink) {

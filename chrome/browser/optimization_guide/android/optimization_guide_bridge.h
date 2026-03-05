@@ -12,6 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/optimization_guide/android/jni_headers/OptimizationGuideBridge_shared_jni.h"
 #include "components/optimization_guide/proto/hints.pb.h"
 #include "components/optimization_guide/proto/push_notification.pb.h"
 #include "third_party/jni_zero/jni_zero.h"
@@ -42,7 +43,7 @@ class OptimizationGuideBridge {
   OptimizationGuideBridge& operator=(const OptimizationGuideBridge&) = delete;
   ~OptimizationGuideBridge();
 
-  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+  base::android::ScopedJavaLocalRef<JOptimizationGuideBridge> GetJavaObject();
 
   void RegisterOptimizationTypes(
       JNIEnv* env,
@@ -70,7 +71,7 @@ class OptimizationGuideBridge {
 
  private:
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_;
-  base::android::ScopedJavaGlobalRef<jobject> java_ref_;
+  base::android::ScopedJavaGlobalRef<JOptimizationGuideBridge> java_ref_;
 };
 
 }  // namespace android

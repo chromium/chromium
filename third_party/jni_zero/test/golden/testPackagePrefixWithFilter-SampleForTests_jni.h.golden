@@ -1122,176 +1122,237 @@ static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
 
 }  // namespace jni_zero::tests
 
-// C++ classes that mirror the Java classes:
-namespace this1::is1::a1::package1::prefix1::org1::jni_zero1 {
+// Lazy definition of C++ classes JMyClass:
+#ifndef _JNI_ZERO_java_util_JLinkedList_DEFINED
+namespace java::util {
+class _JLinkedList : public _jobject {};
+using JLinkedList = _JLinkedList*;
+}  // namespace java::util
+#define _JNI_ZERO_java_util_JLinkedList_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_java_util_JMap_DEFINED
+namespace java::util {
+class _JMap : public _jobject {};
+using JMap = _JMap*;
+}  // namespace java::util
+#define _JNI_ZERO_java_util_JMap_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerEnum_DEFINED
+namespace this::is::a::package::prefix::org::jni_zero {
+class _JInnerEnum : public _jobject {};
+using JInnerEnum = _JInnerEnum*;
+}  // namespace this::is::a::package::prefix::org::jni_zero
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerEnum_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerInterface_DEFINED
+namespace this::is::a::package::prefix::org::jni_zero {
+class _JInnerInterface : public _jobject {};
+using JInnerInterface = _JInnerInterface*;
+}  // namespace this::is::a::package::prefix::org::jni_zero
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_JInnerInterface_DEFINED
+#endif
+
+#ifndef _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
+namespace this::is::a::package::prefix::org::jni_zero::extrapackage {
+class _JImportsTinySample : public _jobject {};
+using JImportsTinySample = _JImportsTinySample*;
+}  // namespace this::is::a::package::prefix::org::jni_zero::extrapackage
+#define _JNI_ZERO_this_is_a_package_prefix_org_jni_zero_extrapackage_JImportsTinySample_DEFINED
+#endif
+
+
+// Actual implementations of C++ classes JMyClass:
+// Declare the namespace so that it can be used by "using namespace"
+namespace jni_zero::tests {}
+
+namespace jni_zero::internal {
 
 using namespace jni_zero::tests;
 
-inline jni_zero::ScopedJavaLocalRef<JSampleForTests> _JSampleForTests::Constructor(
-    JNIEnv* env,
-    JniIntWrapper foo,
-    JniIntWrapper bar) {
-  return Java_SampleForTests_Constructor(env, foo, bar);
-}
+template<>
+class _CalledByNatives<JSampleForTests> {
+  public:
+  static jni_zero::ScopedJavaLocalRef<JSampleForTests> Constructor(
+      JNIEnv* env,
+      JniIntWrapper foo,
+      JniIntWrapper bar) {
+    return Java_SampleForTests_Constructor(env, foo, bar);
+  }
 
-inline jni_zero::ScopedJavaLocalRef<jobject> _JSampleForTests::addStructA(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& a,
-    const jni_zero::JavaRef<jobject>& b) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_addStructA(env, this_obj, a, b);
-}
+  jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerStructA> addStructA(
+      JNIEnv* env,
+      const jni_zero::JavaRef<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>& a,
+      const jni_zero::JavaRef<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>& b) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    auto ret = Java_SampleForTests_addStructA(env, *this_obj, a, b);
+    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::JInnerStructA>(env, std::move(ret));
+  }
 
-inline jni_zero::ScopedJavaLocalRef<jclass> _JSampleForTests::getClass(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jclass>& arg0) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_getClass(env, this_obj, arg0);
-}
+  jni_zero::ScopedJavaLocalRef<jclass> getClass(
+      JNIEnv* env,
+      const jni_zero::JavaRef<jclass>& arg0) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_getClass(env, *this_obj, arg0);
+  }
 
-inline std::string _JSampleForTests::getFirstString(
-    JNIEnv* env,
-    std::vector<const char*> const& array,
-    const char* const& finalArg) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_getFirstString(env, this_obj, std::move(array), std::move(finalArg));
-}
+  std::string getFirstString(
+      JNIEnv* env,
+      std::vector<const char*> const& array,
+      const char* const& finalArg) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_getFirstString(
+        env,
+        *this_obj,
+        std::move(array),
+        std::move(finalArg));
+  }
 
-inline jni_zero::ScopedJavaLocalRef<jobject> _JSampleForTests::getInnerEnum(JNIEnv* env) {
-  return Java_SampleForTests_getInnerEnum(env);
-}
+  static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerEnum> getInnerEnum(
+      JNIEnv* env) {
+    auto ret = Java_SampleForTests_getInnerEnum(env);
+    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::JInnerEnum>(env, std::move(ret));
+  }
 
-inline jni_zero::ScopedJavaLocalRef<jobject> _JSampleForTests::getInnerEnum(
-    JNIEnv* env,
-    JniIntWrapper a) {
-  return Java_SampleForTests_getInnerEnum(env, a);
-}
+  static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample> getInnerEnum(
+      JNIEnv* env,
+      JniIntWrapper a) {
+    auto ret = Java_SampleForTests_getInnerEnum(env, a);
+    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::extrapackage::JImportsTinySample>(env, std::move(ret));
+  }
 
-inline jni_zero::ScopedJavaLocalRef<jobject> _JSampleForTests::getInnerInterface(JNIEnv* env) {
-  return Java_SampleForTests_getInnerInterface(env);
-}
+  static jni_zero::ScopedJavaLocalRef<::this::is::a::package::prefix::org::jni_zero::JInnerInterface> getInnerInterface(
+      JNIEnv* env) {
+    auto ret = Java_SampleForTests_getInnerInterface(env);
+    return jni_zero::Cast<::this::is::a::package::prefix::org::jni_zero::JInnerInterface>(env, std::move(ret));
+  }
 
-inline jni_zero::ScopedJavaLocalRef<jthrowable> _JSampleForTests::getThrowable(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jthrowable>& arg0) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_getThrowable(env, this_obj, arg0);
-}
+  jni_zero::ScopedJavaLocalRef<jthrowable> getThrowable(
+      JNIEnv* env,
+      const jni_zero::JavaRef<jthrowable>& arg0) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_getThrowable(env, *this_obj, arg0);
+  }
 
-inline void _JSampleForTests::iterateAndDoSomething(JNIEnv* env) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_iterateAndDoSomething(env, this_obj);
-}
+  void iterateAndDoSomething(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_iterateAndDoSomething(env, *this_obj);
+  }
 
-inline jint _JSampleForTests::javaMethod(JNIEnv* env, JniIntWrapper _jcaller, JniIntWrapper ret) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_javaMethod(env, this_obj, _jcaller, ret);
-}
+  jint javaMethod(JNIEnv* env, JniIntWrapper _jcaller, JniIntWrapper ret) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_javaMethod(env, *this_obj, _jcaller, ret);
+  }
 
-inline std::vector<int32_t> _JSampleForTests::jniTypesAndAnnotations(
-    JNIEnv* env,
-    MyEnum foo,
-    std::vector<int32_t> const& bar,
-    JniIntWrapper baz,
-    long bat) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_jniTypesAndAnnotations(env, this_obj, foo, std::move(bar), baz, bat);
-}
+  std::vector<int32_t> jniTypesAndAnnotations(
+      JNIEnv* env,
+      MyEnum foo,
+      std::vector<int32_t> const& bar,
+      JniIntWrapper baz,
+      long bat) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_jniTypesAndAnnotations(
+        env,
+        *this_obj,
+        foo,
+        std::move(bar),
+        baz,
+        bat);
+  }
 
-inline std::vector<jni_zero::ScopedJavaLocalRef<jobject>> _JSampleForTests::listTest1(
-    JNIEnv* env,
-    std::vector<std::string> const& items) {
-  return Java_SampleForTests_listTest1(env, std::move(items));
-}
+  static std::vector<jni_zero::ScopedJavaLocalRef<jobject>> listTest1(
+      JNIEnv* env,
+      std::vector<std::string> const& items) {
+    return Java_SampleForTests_listTest1(env, std::move(items));
+  }
 
-inline std::map<std::string, std::string> _JSampleForTests::mapTest1(
-    JNIEnv* env,
-    std::map<std::string, std::string> const& arg0) {
-  return Java_SampleForTests_mapTest1(env, std::move(arg0));
-}
+  static std::map<std::string, std::string> mapTest1(
+      JNIEnv* env,
+      std::map<std::string, std::string> const& arg0) {
+    return Java_SampleForTests_mapTest1(env, std::move(arg0));
+  }
 
-inline void _JSampleForTests::methodThatThrowsException(JNIEnv* env) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_methodThatThrowsException(env, this_obj);
-}
+  void methodThatThrowsException(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_methodThatThrowsException(env, *this_obj);
+  }
 
-inline jboolean _JSampleForTests::methodWithAnnotationParamAssignment(JNIEnv* env) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_methodWithAnnotationParamAssignment(env, this_obj);
-}
+  jboolean methodWithAnnotationParamAssignment(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_methodWithAnnotationParamAssignment(env, *this_obj);
+  }
 
-inline void _JSampleForTests::methodWithGenericParams(
-    JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& _env,
-    const jni_zero::JavaRef<jobject>& bar) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_methodWithGenericParams(env, this_obj, _env, bar);
-}
+  void methodWithGenericParams(
+      JNIEnv* env,
+      const jni_zero::JavaRef<::java::util::JMap>& _env,
+      const jni_zero::JavaRef<::java::util::JLinkedList>& bar) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_methodWithGenericParams(env, *this_obj, _env, bar);
+  }
 
-inline void _JSampleForTests::packagePrivateJavaMethod(JNIEnv* env) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JSampleForTests>(this);
-  return Java_SampleForTests_packagePrivateJavaMethod(env, this_obj);
-}
+  void packagePrivateJavaMethod(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JSampleForTests>*>(this);
+    return Java_SampleForTests_packagePrivateJavaMethod(env, *this_obj);
+  }
 
-inline std::vector<bool> _JSampleForTests::primitiveArrays(
-    JNIEnv* env,
-    std::vector<uint8_t> const& b,
-    std::vector<uint16_t> const& c,
-    std::vector<int16_t> const& s,
-    std::vector<int32_t> const& i,
-    std::vector<int64_t> const& l,
-    std::vector<float> const& f,
-    std::vector<double> const& d) {
-  return Java_SampleForTests_primitiveArrays(
-      env,
-      std::move(b),
-      std::move(c),
-      std::move(s),
-      std::move(i),
-      std::move(l),
-      std::move(f),
-      std::move(d));
-}
+  static std::vector<bool> primitiveArrays(
+      JNIEnv* env,
+      std::vector<uint8_t> const& b,
+      std::vector<uint16_t> const& c,
+      std::vector<int16_t> const& s,
+      std::vector<int32_t> const& i,
+      std::vector<int64_t> const& l,
+      std::vector<float> const& f,
+      std::vector<double> const& d) {
+    return Java_SampleForTests_primitiveArrays(
+        env,
+        std::move(b),
+        std::move(c),
+        std::move(s),
+        std::move(i),
+        std::move(l),
+        std::move(f),
+        std::move(d));
+  }
 
-inline jboolean _JSampleForTests::staticJavaMethod(JNIEnv* env) {
-  return Java_SampleForTests_staticJavaMethod(env);
-}
+  static jboolean staticJavaMethod(JNIEnv* env) {
+    return Java_SampleForTests_staticJavaMethod(env);
+  }
 
+};
 
-}  // namespace this1::is1::a1::package1::prefix1::org1::jni_zero1
+template<>
+class _CalledByNatives<JInnerStructA> {
+  public:
+  static jni_zero::ScopedJavaLocalRef<JInnerStructA> create(
+      JNIEnv* env,
+      jlong l,
+      JniIntWrapper i,
+      const jni_zero::JavaRef<jstring>& s) {
+    return Java_InnerStructA_create(env, l, i, s);
+  }
 
-namespace this1::is1::a1::package1::prefix1::org1::jni_zero1 {
+};
 
-using namespace jni_zero::tests;
+template<>
+class _CalledByNatives<JInnerStructB> {
+  public:
+  jlong getKey(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JInnerStructB>*>(this);
+    return Java_InnerStructB_getKey(env, *this_obj);
+  }
 
-inline jni_zero::ScopedJavaLocalRef<JInnerStructA> _JInnerStructA::create(
-    JNIEnv* env,
-    jlong l,
-    JniIntWrapper i,
-    const jni_zero::JavaRef<jstring>& s) {
-  return Java_InnerStructA_create(env, l, i, s);
-}
+  jni_zero::ScopedJavaLocalRef<jstring> getValue(JNIEnv* env) const {
+    auto this_obj = reinterpret_cast<const JavaRef<JInnerStructB>*>(this);
+    return Java_InnerStructB_getValue(env, *this_obj);
+  }
 
-
-}  // namespace this1::is1::a1::package1::prefix1::org1::jni_zero1
-
-namespace this1::is1::a1::package1::prefix1::org1::jni_zero1 {
-
-using namespace jni_zero::tests;
-
-inline jlong _JInnerStructB::getKey(JNIEnv* env) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JInnerStructB>(this);
-  return Java_InnerStructB_getKey(env, this_obj);
-}
-
-inline jni_zero::ScopedJavaLocalRef<jstring> _JInnerStructB::getValue(JNIEnv* env) {
-  auto this_obj = jni_zero::internal::AsJavaRef<JInnerStructB>(this);
-  return Java_InnerStructB_getValue(env, this_obj);
-}
+};
 
 
-}  // namespace this1::is1::a1::package1::prefix1::org1::jni_zero1
-
+}  // namespace jni_zero::internal
 
 
 #endif  // this_is_a_package_prefix_org_jni_1zero_SampleForTests_JNI

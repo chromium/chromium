@@ -43,13 +43,13 @@ component("app_types") {
   public_deps = [
     "//base",
     "//components/services/app_service/public/protos",
+    "//url",
   ]
 
   deps = [
     ":macros",
     "//third_party/abseil-cpp:absl",
     "//ui/gfx",
-    "//url",
   ]
 }
 

@@ -41,7 +41,10 @@ source_set("optimization_guide") {
     "//ui/webui",
   ]
   if (is_android) {
-    public_deps += [ "//chrome/browser/bookmarks/android" ]
+    public_deps += [
+      "//chrome/browser/bookmarks/android",
+      "//chrome/browser/optimization_guide/android:jni_headers",
+    ]
   } else {
     sources += [ "private_ai_model_execution_fetcher.h" ]
     public_deps += [ "//components/private_ai" ]

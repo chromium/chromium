@@ -62,9 +62,9 @@ GURL GURLAndroid::ToNativeGURL(JNIEnv* env,
 }
 
 // static
-ScopedJavaLocalRef<jobject> GURLAndroid::FromNativeGURL(JNIEnv* env,
-                                                        const GURL& gurl) {
-  ScopedJavaLocalRef<jobject> j_gurl = Java_GURL_Constructor(env);
+ScopedJavaLocalRef<JGURL> GURLAndroid::FromNativeGURL(JNIEnv* env,
+                                                      const GURL& gurl) {
+  ScopedJavaLocalRef<JGURL> j_gurl = Java_GURL_Constructor(env);
   InitFromGURL(env, gurl, j_gurl);
   return j_gurl;
 }

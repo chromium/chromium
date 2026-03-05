@@ -92,6 +92,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/price_tracking/android/price_tracking_notification_bridge.h"
+#include "chrome/browser/optimization_guide/android/jni_headers/OptimizationGuideBridge_shared_jni.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_bridge.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
 #else
@@ -260,7 +261,8 @@ OptimizationGuideKeyedService::CreateModelBrokerClient() {
 }
 
 #if BUILDFLAG(IS_ANDROID)
-base::android::ScopedJavaLocalRef<jobject>
+base::android::ScopedJavaLocalRef<
+    optimization_guide::android::JOptimizationGuideBridge>
 OptimizationGuideKeyedService::GetJavaObject() {
   if (!android_bridge_) {
     android_bridge_ =

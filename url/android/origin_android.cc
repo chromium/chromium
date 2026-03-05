@@ -25,7 +25,7 @@ Origin CreateOpaqueOriginForAndroid(const std::string& scheme,
       scheme, host, port, Origin::Nonce(nonce_token));
 }
 
-base::android::ScopedJavaLocalRef<jobject> Origin::ToJavaObject(
+base::android::ScopedJavaLocalRef<JOrigin> Origin::ToJavaObject(
     JNIEnv* env) const {
   const base::UnguessableToken* token = GetNonceForSerialization();
   return Java_Origin_Constructor(env, tuple_.scheme(), tuple_.host(),

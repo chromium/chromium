@@ -39,9 +39,9 @@ DigitalIdentitySafetyInterstitialBridgeAndroid::ShowInterstitial(
         callback) {
   callback_ = std::move(callback);
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobject> j_origin = origin.ToJavaObject(env);
+  ScopedJavaLocalRef<url::JOrigin> j_origin = origin.ToJavaObject(env);
 
-  base::android::ScopedJavaLocalRef<jobject> j_window = nullptr;
+  base::android::ScopedJavaLocalRef<ui::JWindowAndroid> j_window = nullptr;
   if (web_contents.GetTopLevelNativeWindow()) {
     j_window = web_contents.GetTopLevelNativeWindow()->GetJavaObject();
   }

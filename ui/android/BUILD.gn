@@ -92,7 +92,6 @@ component("android") {
   deps = [
     ":buildflags",
     ":java_enums_srcjar",
-    ":ui_android_jni_headers",
     "//base",
     "//cc/slim",
     "//components/viz/client",
@@ -123,6 +122,8 @@ component("android") {
   if (enable_new_texture_compressor) {
     deps += [ ":texture_compressor" ]
   }
+
+  public_deps = [ ":ui_android_jni_headers" ]
 }
 
 java_cpp_features("java_features_srcjar") {

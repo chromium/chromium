@@ -39,8 +39,8 @@ WindowAndroid::ScopedSelectionHandles::ScopedSelectionHandles(
     : window_(window) {
   if (++window_->selection_handles_active_count_ == 1) {
     JNIEnv* env = AttachCurrentThread();
-    Java_WindowAndroid_onSelectionHandlesStateChanged(
-        env, window_->GetJavaObject(), true /* active */);
+    window_->java_window_->onSelectionHandlesStateChanged(env,
+                                                          true /* active */);
   }
 }
 
@@ -49,8 +49,8 @@ WindowAndroid::ScopedSelectionHandles::~ScopedSelectionHandles() {
 
   if (--window_->selection_handles_active_count_ == 0) {
     JNIEnv* env = AttachCurrentThread();
-    Java_WindowAndroid_onSelectionHandlesStateChanged(
-        env, window_->GetJavaObject(), false /* active */);
+    window_->java_window_->onSelectionHandlesStateChanged(env,
+                                                          false /* active */);
   }
 }
 
@@ -60,7 +60,7 @@ WindowAndroid::ScopedWindowAndroidForTesting::ScopedWindowAndroidForTesting(
 
 WindowAndroid::ScopedWindowAndroidForTesting::~ScopedWindowAndroidForTesting() {
   JNIEnv* env = AttachCurrentThread();
-  Java_WindowAndroid_destroy(env, window_->GetJavaObject());
+  window_->java_window_->destroy(env);
 }
 
 void WindowAndroid::ScopedWindowAndroidForTesting::SetModalDialogManager(
@@ -89,7 +89,7 @@ WindowAndroid* WindowAndroid::FromJavaWindowAndroid(
 }
 
 WindowAndroid::WindowAndroid(JNIEnv* env,
-                             const base::android::JavaRef<jobject>& obj,
+                             const base::android::JavaRef<JWindowAndroid>& obj,
                              int display_id,
                              float scroll_factor,
                              bool window_is_wide_color_gamut)
@@ -106,8 +106,8 @@ void WindowAndroid::Destroy(JNIEnv* env) {
   delete this;
 }
 
-ScopedJavaLocalRef<jobject> WindowAndroid::GetJavaObject() {
-  return base::android::ScopedJavaLocalRef<jobject>(java_window_);
+ScopedJavaLocalRef<JWindowAndroid> WindowAndroid::GetJavaObject() {
+  return base::android::ScopedJavaLocalRef<JWindowAndroid>(java_window_);
 }
 
 WindowAndroid::~WindowAndroid() {
@@ -115,13 +115,13 @@ WindowAndroid::~WindowAndroid() {
   DCHECK(!compositor_);
   RemoveAllChildren(true);
   DCHECK(!pointer_locking_view_);
-  Java_WindowAndroid_clearNativePointer(AttachCurrentThread(), GetJavaObject());
+  java_window_->clearNativePointer(AttachCurrentThread());
 }
 
 std::unique_ptr<WindowAndroid::ScopedWindowAndroidForTesting>
 WindowAndroid::CreateForTesting() {
   JNIEnv* env = AttachCurrentThread();
-  long native_pointer = Java_WindowAndroid_createForTesting(env);
+  long native_pointer = JWindowAndroidClass::createForTesting(env);
   return std::make_unique<ScopedWindowAndroidForTesting>(
       reinterpret_cast<WindowAndroid*>(native_pointer));
 }
@@ -151,13 +151,13 @@ void WindowAndroid::DetachCompositor() {
 
 float WindowAndroid::GetRefreshRate() {
   JNIEnv* env = AttachCurrentThread();
-  return Java_WindowAndroid_getRefreshRate(env, GetJavaObject());
+  return java_window_->getRefreshRate(env);
 }
 
 gfx::OverlayTransform WindowAndroid::GetOverlayTransform() {
   JNIEnv* env = AttachCurrentThread();
   return static_cast<gfx::OverlayTransform>(
-      Java_WindowAndroid_getOverlayTransform(env, GetJavaObject()));
+      java_window_->getOverlayTransform(env));
 }
 
 std::vector<float> WindowAndroid::GetSupportedRefreshRates() {
@@ -166,7 +166,7 @@ std::vector<float> WindowAndroid::GetSupportedRefreshRates() {
 
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jfloatArray> j_supported_refresh_rates =
-      Java_WindowAndroid_getSupportedRefreshRates(env, GetJavaObject());
+      java_window_->getSupportedRefreshRates(env);
   std::vector<float> supported_refresh_rates;
   if (j_supported_refresh_rates) {
     base::android::JavaFloatArrayToFloatVector(env, j_supported_refresh_rates,
@@ -182,8 +182,7 @@ void WindowAndroid::SetPreferredRefreshRate(float refresh_rate) {
   }
 
   JNIEnv* env = AttachCurrentThread();
-  Java_WindowAndroid_setPreferredRefreshRate(env, GetJavaObject(),
-                                             refresh_rate);
+  java_window_->setPreferredRefreshRate(env, refresh_rate);
 }
 
 void WindowAndroid::SetNeedsAnimate() {
@@ -265,8 +264,7 @@ ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
   JNIEnv* env = AttachCurrentThread();
   std::vector<int> values;
   base::android::JavaIntArrayToIntVector(
-      env, Java_WindowAndroid_getProgressBarConfig(env, GetJavaObject()),
-      &values);
+      env, java_window_->getProgressBarConfig(env), &values);
 
   ProgressBarConfig config;
   config.background_color =
@@ -282,8 +280,7 @@ ProgressBarConfig WindowAndroid::GetProgressBarConfig() {
 ModalDialogManagerBridge* WindowAndroid::GetModalDialogManagerBridge() {
   JNIEnv* env = AttachCurrentThread();
   return reinterpret_cast<ModalDialogManagerBridge*>(
-      Java_WindowAndroid_getNativeModalDialogManagerBridge(env,
-                                                           GetJavaObject()));
+      java_window_->getNativeModalDialogManagerBridge(env));
 }
 
 void WindowAndroid::SetModalDialogManagerForTesting(
@@ -295,27 +292,25 @@ void WindowAndroid::SetModalDialogManagerForTesting(
 
 void WindowAndroid::ShowToast(const std::string text) {
   JNIEnv* env = AttachCurrentThread();
-  ui::Java_WindowAndroid_showToast(
-      env, GetJavaObject(), base::android::ConvertUTF8ToJavaString(env, text));
+  java_window_->showToast(env,
+                          base::android::ConvertUTF8ToJavaString(env, text));
 }
 
 void WindowAndroid::SetWideColorEnabled(bool enabled) {
   JNIEnv* env = AttachCurrentThread();
-  Java_WindowAndroid_setWideColorEnabled(env, GetJavaObject(), enabled);
+  java_window_->setWideColorEnabled(env, enabled);
 }
 
 bool WindowAndroid::HasPermission(const std::string& permission) {
   JNIEnv* env = AttachCurrentThread();
-  return Java_WindowAndroid_hasPermission(
-      env, GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, permission));
+  return java_window_->hasPermission(
+      env, base::android::ConvertUTF8ToJavaString(env, permission));
 }
 
 bool WindowAndroid::CanRequestPermission(const std::string& permission) {
   JNIEnv* env = AttachCurrentThread();
-  return Java_WindowAndroid_canRequestPermission(
-      env, GetJavaObject(),
-      base::android::ConvertUTF8ToJavaString(env, permission));
+  return java_window_->canRequestPermission(
+      env, base::android::ConvertUTF8ToJavaString(env, permission));
 }
 
 WindowAndroid* WindowAndroid::GetWindowAndroid() const {
@@ -378,8 +373,7 @@ void WindowAndroid::OnWindowPositionChanged(JNIEnv* env) {
 
 bool WindowAndroid::SetHasKeyboardCapture(bool keyboard_capture) {
   JNIEnv* env = AttachCurrentThread();
-  return Java_WindowAndroid_setHasKeyboardCapture(env, GetJavaObject(),
-                                                  keyboard_capture);
+  return java_window_->setHasKeyboardCapture(env, keyboard_capture);
 }
 
 std::optional<gfx::Rect> WindowAndroid::GetBoundsInScreenCoordinates() {
@@ -388,7 +382,7 @@ std::optional<gfx::Rect> WindowAndroid::GetBoundsInScreenCoordinates() {
 
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jintArray> j_bounds_array =
-      Java_WindowAndroid_getBoundsInScreenCoordinates(env, GetJavaObject());
+      java_window_->getBoundsInScreenCoordinates(env);
   if (!j_bounds_array) {
     return std::nullopt;
   }
@@ -423,7 +417,7 @@ void WindowAndroid::SetTestHooks(TestHooks* hooks) {
 // ----------------------------------------------------------------------------
 
 static int64_t JNI_WindowAndroid_Init(JNIEnv* env,
-                                      const JavaRef<jobject>& obj,
+                                      const JavaRef<JWindowAndroid>& obj,
                                       int32_t sdk_display_id,
                                       float scroll_factor,
                                       bool window_is_wide_color_gamut) {
