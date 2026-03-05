@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="1076643793026027628">Chrome apre automaticamente i link di YouTube in incognito in modalità di navigazione in incognito.</translation>
+<translation id="1076643793026027628">Chrome apre automaticamente i link di YouTube in incognito in modalità Incognito.</translation>
 <translation id="1086486568852410168">Cerca con Google Lens</translation>
 <translation id="1088490543924960890">Inizia a salvare le passkey con Gestore delle password di Google</translation>
 <translation id="1143896152279775643">La tua password verrà salvata in Gestore delle password di Google per <ph name="EMAIL" />.</translation>
@@ -35,7 +35,7 @@ Aspetti da considerare:
   • Se sincronizzi la cronologia con il tuo Account Google, le metriche potrebbero includere anche informazioni relative agli URL che visiti.<ph name="END_INDENT" /></translation>
 <translation id="1554731936187952550">Disponi della misura di sicurezza più efficace di Chrome contro siti web pericolosi</translation>
 <translation id="155816064895200734">Imposta Chrome come browser predefinito</translation>
-<translation id="1580570086594302477">Apre una nuova scheda di navigazione in incognito di Chrome.</translation>
+<translation id="1580570086594302477">Apre una nuova scheda Incognito di Chrome.</translation>
 <translation id="1646463005043273333">Apre l'impostazione di Chrome per impostare Chrome come browser predefinito.</translation>
 <translation id="1670609221633730681">Suggerimento per Chrome: scegli la posizione della barra degli indirizzi</translation>
 <translation id="1683863426423719967">Per ricevere promemoria delle schede da Chrome, attiva le notifiche nelle Impostazioni di iOS.</translation>
@@ -44,7 +44,7 @@ Aspetti da considerare:
 <translation id="1790080846677398234">Aggiunge gli URL inseriti ai preferiti in Chrome.</translation>
 <translation id="1799920918471566157">Suggerimenti per Chrome</translation>
 <translation id="1830634592642484976">Al momento questo indirizzo è salvato su Chrome. Per usarlo su tutti i prodotti Google, salvalo nel tuo Account Google <ph name="USER_EMAIL" />.</translation>
-<translation id="1891812034154776216">Nascondi le schede di navigazione in incognito aperte quando esci da Chrome</translation>
+<translation id="1891812034154776216">Nascondi le schede Incognito aperte quando esci da Chrome</translation>
 <translation id="1894434821386148799">Puoi trovare le impostazioni di Chrome e altro ancora qui</translation>
 <translation id="1917964099031477364">Questo account e gli eventuali dati non salvati verranno rimossi da Chrome e da altre app Google su questo dispositivo.</translation>
 <translation id="1919130412786645364">Consenti l'accesso a Chrome</translation>
@@ -86,7 +86,7 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="2876628302275096482">Scopri di più su <ph name="BEGIN_LINK" />come Chrome mantiene privati i tuoi dati<ph name="END_LINK" /></translation>
 <translation id="2922914028977213693">Tocca qui per usare al meglio Chrome sul tuo iPad.</translation>
 <translation id="292371311537977079">Impostazioni di Chrome</translation>
-<translation id="2923827943290349720">Blocca le schede di navigazione in incognito quando chiudi Chrome</translation>
+<translation id="2923827943290349720">Blocca le schede Incognito quando chiudi Chrome</translation>
 <translation id="2940565985148833945">Suggerimento per Chrome: Cerca con Lens</translation>
 <translation id="2957447865124070833">Seleziona <ph name="BEGIN_BOLD" />Chrome<ph name="END_BOLD" /></translation>
 <translation id="2986402782150919988">Aggiungi preferiti a Chrome</translation>
@@ -138,11 +138,11 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="447252321002412580">Contribuisci a migliorare le funzionalità e le prestazioni di Chrome</translation>
 <translation id="4523886039239821078">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Disinstallali.</translation>
 <translation id="4568024439284012497">Accedi più velocemente a Chrome dalla schermata Home del tuo iPhone.</translation>
-<translation id="4574806550936185355">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome"</translation>
+<translation id="4574806550936185355">Attiva l'opzione "Blocca le schede Incognito quando chiudi Chrome"</translation>
 <translation id="4633328489441962921">Chrome non può controllare la disponibilità di aggiornamenti</translation>
 <translation id="4636900170638246267">Accedi a questo sito e a Chrome.</translation>
 <translation id="4647910807533196601">Apri La mia scheda più recente in Chrome.</translation>
-<translation id="4693084815234024320">Stai usando la modalità di navigazione in incognito di Chrome</translation>
+<translation id="4693084815234024320">Stai usando la modalità Incognito di Chrome</translation>
 <translation id="4708857722625759026">Accedi più velocemente a Chrome dal dock del tuo iPad.</translation>
 <translation id="4713740144985377441">Torna a Chrome per caricare il file</translation>
 <translation id="4713907610796204963">Scopri le nozioni di base utili su Chrome per iniziare</translation>
@@ -197,7 +197,7 @@ Prova ad attendere qualche minuto prima di uscire. Se esci ora, questi dati verr
 <translation id="5752489513673657785">Un feed personalizzato creato da Google per te</translation>
 <translation id="5772407442571703917">Scarica Chrome qui.</translation>
 <translation id="5777468213129569553">Apri Chrome</translation>
-<translation id="5779767936254214055">Blocca le schede di navigazione in incognito quando esci da Chrome o passi a un'altra app.</translation>
+<translation id="5779767936254214055">Blocca le schede Incognito quando esci da Chrome o passi a un'altra app.</translation>
 <translation id="5808435672482059465">Visualizza la tua cronologia di Chrome</translation>
 <translation id="5833027901704861726">Alcuni dati di Chrome non sono ancora stati salvati sull'account <ph name="EMAIL" />.
 Prova ad attendere qualche minuto prima di cambiare account. Se cambi account ora, questi dati verranno eliminati.</translation>
@@ -215,7 +215,7 @@ Prova ad attendere qualche minuto prima di cambiare account. Se cambi account or
   1. Apri le Impostazioni.
   2. Tocca App browser predefinita.
   3. Seleziona Chrome.</translation>
-<translation id="6238746320622508509">Consenti a Chrome di bloccare le schede di navigazione in incognito.</translation>
+<translation id="6238746320622508509">Consenti a Chrome di bloccare le schede Incognito.</translation>
 <translation id="6247557882553405851">Gestore delle password di Google</translation>
 <translation id="6272822675004864999">Per ricevere notifiche da Chrome, attiva le notifiche nelle Impostazioni di iOS.</translation>
 <translation id="6299253454218177732">Suggerimento di Chrome: recupera le tue password</translation>
@@ -263,7 +263,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="7175129790242719365">Suggerimento per Chrome: accedi a Chrome</translation>
 <translation id="7187993566681480880">Ti protegge su Chrome e potrebbe essere utilizzata per migliorare la sicurezza su altre app Google se esegui l'accesso.</translation>
 <translation id="7200524487407690471">Chrome esegue automaticamente il controllo di sicurezza ogni giorno per proteggerti da violazioni dei dati, siti web non sicuri e altro ancora. Puoi trovare ulteriori informazioni sul controllo di sicurezza nelle Impostazioni.</translation>
-<translation id="7214019116829172458">Apri la scheda di navigazione in incognito Chrome</translation>
+<translation id="7214019116829172458">Apri la scheda Incognito Chrome</translation>
 <translation id="722167379782941918">Chrome consiglia la Protezione avanzata</translation>
 <translation id="723787869754590019">Utilizza Chrome per la compilazione automatica</translation>
 <translation id="7261678641327190792">Chrome non può controllare le tue password</translation>
@@ -326,7 +326,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8371138994040262994">Apre le impostazioni in Chrome.</translation>
 <translation id="8375378038757507658">Usa Chrome con facilità ogni volta che tocchi i link nei messaggi e in altre app.</translation>
 <translation id="8387459386171870978">Continua a utilizzare Chrome</translation>
-<translation id="8392023217086447677">Aperto nella modalità di navigazione in incognito di Chrome</translation>
+<translation id="8392023217086447677">Aperto nella modalità Incognito di Chrome</translation>
 <translation id="840168496893712993">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chrome. Prova a disinstallarli.</translation>
 <translation id="8413500425974960807">Suggerimento per Chrome: sposta Chrome nel dock</translation>
 <translation id="8413795581997394485">Protegge da siti, download ed estensioni noti per essere pericolosi. Quando visiti un sito, Chrome invia una parte offuscata dell'URL a Google tramite un server di tutela della privacy che nasconde il tuo indirizzo IP. Se un sito effettua attività sospette, vengono inviati anche URL completi e frammenti dei contenuti delle pagine.</translation>
@@ -340,9 +340,9 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="8558480467877843976">Ora puoi usare Chrome ogni volta che navighi o tocchi link in messaggi, documenti e altre app.</translation>
 <translation id="8603022514504485810">Gestore delle password di Google non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>
 <translation id="8610372330814566250">Usa le password, la cronologia, i preferiti e le carte di credito di Safari in Chrome</translation>
-<translation id="8630122478628016441">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome".</translation>
+<translation id="8630122478628016441">Attiva l'opzione "Blocca le schede Incognito quando chiudi Chrome".</translation>
 <translation id="8673726683583791503">Acquista con Google Lens</translation>
-<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito</translation>
+<translation id="8765470054473112089">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chrome invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità Incognito</translation>
 <translation id="8772179140489533211">Mostra le richieste di accesso a Chrome.</translation>
 <translation id="8788269841521769222">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password di Google per <ph name="EMAIL" /></translation>
 <translation id="8796490717897731471"><ph name="EMAIL" />. Chrome è gestito.</translation>

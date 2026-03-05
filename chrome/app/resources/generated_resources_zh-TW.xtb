@@ -832,7 +832,7 @@
 <translation id="1561331397460162942">系統服務和具有位置存取權的應用程式、網站將可存取位置資訊</translation>
 <translation id="1562119309884184621">新增這位聯絡人後，下次該聯絡人分享內容時，系統將可辨識出該聯絡人</translation>
 <translation id="1562585387501039294">貴機構 (<ph name="ACCOUNT_MANAGER" />) 要求使用受管理設定檔，而且將可查看部分資訊，包括：</translation>
-<translation id="156345786953026804">系統會將 Gemini 執行工作時，使用的網頁內容和網址提供給 Google。</translation>
+<translation id="156345786953026804">Google 會取得 Gemini 執行工作時用到的網頁內容和網址。</translation>
 <translation id="1566049601598938765">網站</translation>
 <translation id="15662109988763471">選取的印表機無法使用或未正確安裝。請檢查你的印表機，或改選其他印表機。</translation>
 <translation id="1566329594234563241">處於閒置狀態並接上電源時</translation>
@@ -6333,7 +6333,7 @@
 <translation id="5333896723098573627">如要移除應用程式，請依序前往「設定」&gt;「應用程式」&gt;「Google Play 商店」&gt;「管理 Android 偏好設定」&gt;「應用程式」或「應用程式管理員」，然後輕觸要解除安裝的應用程式 (您可能需要向左或向右滑動才能找出應用程式)。接著，輕觸「解除安裝」或「停用」。</translation>
 <translation id="5334113802138581043">麥克風存取權</translation>
 <translation id="5334142896108694079">指令碼快取</translation>
-<translation id="5335370353987155592">請以<ph name="BEGIN_LINK1" />安全方式<ph name="LINK_END1" />謹慎使用 Gemini。Gemini 在工作中執行的動作可能會出錯，或是產生<ph name="BEGIN_LINK2" />不符預期的結果<ph name="LINK_END2" /> (例如購物)，你必須自行承擔責任。</translation>
+<translation id="5335370353987155592">請以<ph name="BEGIN_LINK1" />安全的方式<ph name="LINK_END1" />謹慎使用 Gemini。Gemini 執行工作時可能會出錯，或是產生<ph name="BEGIN_LINK2" />不符預期的結果<ph name="LINK_END2" /> (例如購物)，你必須自行承擔責任。</translation>
 <translation id="5336688142483283574">這個頁面也會從你的歷史記錄和 <ph name="SEARCH_ENGINE" /> 活動中移除。</translation>
 <translation id="5336689872433667741">游標和觸控板</translation>
 <translation id="5337207153202941678">關閉醒目顯示功能</translation>
@@ -10715,7 +10715,7 @@
 <translation id="8356409598322585307">你已註冊這部裝置，因此不必再次註冊。</translation>
 <translation id="8357388086258943206">安裝 Linux 時發生錯誤</translation>
 <translation id="8358685469073206162">你要還原網頁嗎？</translation>
-<translation id="835927394551949760">向 Google 提問</translation>
+<translation id="835927394551949760">問問 Google</translation>
 <translation id="835951711479681002">儲存在 Google 帳戶中</translation>
 <translation id="8360140320636871023">打造個人化的螢幕主題</translation>
 <translation id="8360267485906769442">提供意見按鈕</translation>

@@ -369,7 +369,7 @@
 <translation id="3223701887221307104">Tab "<ph name="NAME" />"</translation>
 <translation id="3223779237381380437">Nicht durchgestrichen</translation>
 <translation id="3226035351387556942">chk</translation>
-<translation id="3232388865800379423">Eine Pop-up-Schaltfläche</translation>
+<translation id="3232388865800379423">Ein Pop-up-Button</translation>
 <translation id="3241052487511142956">Vorheriger besuchter Link</translation>
 <translation id="3241638166094654466">Zellen in jeder Zeile:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
@@ -493,7 +493,7 @@
 <translation id="4053520724192563562">Gelbgrün</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Eine Seite wird aufgebaut</translation>
-<translation id="4065205963140826639">Verwende jetzt Suche + Rechtspfeil, um die Schaltfläche „Weiter“ zu finden, und drücke dann Suche + Leertaste, um auf die Schaltfläche zu klicken.</translation>
+<translation id="4065205963140826639">Verwende jetzt Suche + Rechtspfeil, um den Button „Weiter“ zu finden, und drücke dann Suche + Leertaste, um auf den Button zu klicken.</translation>
 <translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{Caret-Zeichen}} *{{{$$COUNT} Caret-Zeichen}}</translation>
 <translation id="409334809956508737">Vorheriges Objekt</translation>
 <translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{Pluszeichen}} *{{{$$COUNT} Pluszeichen}}</translation>
@@ -508,7 +508,7 @@
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4187322598335821254">Wische nach oben oder unten, um dich von Zeile zu Zeile zu bewegen</translation>
 <translation id="4188530942454211480">Vorheriger Satz</translation>
-<translation id="4191918948604314587">Eine Schaltfläche</translation>
+<translation id="4191918948604314587">Ein Button</translation>
 <translation id="419265409837491189">Zur vorherigen Spalte</translation>
 <translation id="4202186506458631436">Nach rechts</translation>
 <translation id="4204126831294769023">Azurblau</translation>

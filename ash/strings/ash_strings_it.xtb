@@ -268,7 +268,7 @@
 <translation id="1867566089293859645">Le modifiche verranno applicate al prossimo accesso. Aggiorna in qualsiasi momento in Impostazioni &gt; Preferenze di sistema &gt; Avvio.</translation>
 <translation id="1871023081802165724">Riproduci i contenuti multimediali</translation>
 <translation id="1871915835366697861">Non disponibile per questo gioco</translation>
-<translation id="1879018240766558464">Al momento le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
+<translation id="1879018240766558464">Al momento le finestre Incognito non sono supportate. Le altre app verranno salvate.</translation>
 <translation id="1882814835921407042">Nessuna rete mobile</translation>
 <translation id="1882897271359938046">Mirroring su <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Sblocca con l'impronta digitale</translation>
@@ -1331,7 +1331,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5414198321558177633">Aggiornamento dell'elenco di profili in corso. Questa operazione può richiedere alcuni minuti.</translation>
 <translation id="5426063383988017631">Menu Impostazioni chiuso</translation>
 <translation id="5428899915242071344">Inizia la selezione</translation>
-<translation id="5429993543155113935">Al momento le finestre di navigazione in incognito non sono supportate</translation>
+<translation id="5429993543155113935">Al momento le finestre Incognito non sono supportate</translation>
 <translation id="5431318178759467895">A colori</translation>
 <translation id="5433020815079095860">Ingresso audio</translation>
 <translation id="543584294741034249">Puoi collegare fino a <ph name="DISPLAY_LIMIT" /> display esterni.</translation>
@@ -1368,7 +1368,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="5558091555391176027">Attiva/disattiva alta visibilità di Condivisione nelle vicinanze</translation>
 <translation id="5558314826121965174">Creatività</translation>
 <translation id="556042886152191864">Pulsante</translation>
-<translation id="5570122939431135380">Apri nuova scheda in nuova finestra di navigazione in incognito</translation>
+<translation id="5570122939431135380">Apri nuova scheda in nuova finestra Incognito</translation>
 <translation id="5571066253365925590">Bluetooth attivo</translation>
 <translation id="5572632238877308040">Essenziali</translation>
 <translation id="557563299383177668">Paragrafo successivo</translation>
@@ -1602,7 +1602,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6288235558961782912">L'indirizzo <ph name="USER_EMAIL_ADDRESS" /> potrà essere aggiunto di nuovo in un secondo momento con l'autorizzazione di un genitore.</translation>
 <translation id="6291221004442998378">Non in carica</translation>
 <translation id="6298183524022479114">Personalizza questo dispositivo nell'app</translation>
-<translation id="6304076460080088478">Chiudi o riduci a icona le finestre di navigazione in incognito per cercare sullo schermo con Google Lens</translation>
+<translation id="6304076460080088478">Chiudi o riduci a icona le finestre Incognito per cercare sullo schermo con Google Lens</translation>
 <translation id="6309219492973062892">Tocca o fai clic sulle icone 1-8 nella barra delle app</translation>
 <translation id="6315170314923504164">Voce</translation>
 <translation id="6319058840130157106">Spostati indietro tra l'angolo in basso a destra, Avvio app, la barra degli indirizzi, la barra dei preferiti, il sito web aperto e i download</translation>
@@ -1641,7 +1641,7 @@ Nessun dispositivo connesso.</translation>
 <translation id="6445915701151710649">cpu</translation>
 <translation id="6447111710783417522"><ph name="DATE" />, <ph name="NUMBER" /> evento</translation>
 <translation id="6448529022565414427">Ricarica in sospeso</translation>
-<translation id="6449483711453944360">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate</translation>
+<translation id="6449483711453944360">Al momento le app Linux e le finestre Incognito non sono supportate</translation>
 <translation id="6450245544201845082">La scorciatoia per fare clic con il tasto destro del mouse è attualmente disattivata</translation>
 <translation id="6452181791372256707">Rifiuto</translation>
 <translation id="6453179446719226835">La lingua è stata modificata</translation>
@@ -1961,7 +1961,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="7534543072325030705">L'opzione Mi piace invia un feedback che indica che ti piace questo gruppo suggerito</translation>
 <translation id="7536035074519304529">Indirizzo IP: <ph name="ADDRESS" /></translation>
 <translation id="7536832381700852123">Aggiorna la finestra sinistra</translation>
-<translation id="7543399541175347147">Al momento le app Linux e le finestre di navigazione in incognito non sono supportate. Le altre app verranno salvate.</translation>
+<translation id="7543399541175347147">Al momento le app Linux e le finestre Incognito non sono supportate. Le altre app verranno salvate.</translation>
 <translation id="7544300628205093162">La retroilluminazione della tastiera è attiva</translation>
 <translation id="7548434653388805669">È ora di andare a letto</translation>
 <translation id="7551643184018910560">Blocca sulla barra delle app</translation>

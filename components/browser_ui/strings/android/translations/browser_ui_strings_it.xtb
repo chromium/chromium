@@ -235,7 +235,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="3523447078673133727">Non consentire ai siti di monitorare le tue mani</translation>
 <translation id="3536227077203206203">Consentito questa volta</translation>
 <translation id="3538390592868664640">Impedisci ai siti di creare una mappa 3D dell'ambiente circostante o di monitorare la posizione della fotocamera</translation>
-<translation id="3544058026430919413">Una società può definire un gruppo di siti che possono utilizzare i cookie per condividere la tua attività nel gruppo. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
+<translation id="3544058026430919413">Una società può definire un gruppo di siti che possono utilizzare i cookie per condividere la tua attività nel gruppo. Questa opzione è disattivata nella modalità Incognito.</translation>
 <translation id="3551268116566418498">Uscire da modalità in incognito?</translation>
 <translation id="3586500876634962664">Uso di videocamera e microfono</translation>
 <translation id="358794129225322306">Consenti a un sito di scaricare automaticamente più file.</translation>
@@ -376,7 +376,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5039804452771397117">Consenti</translation>
 <translation id="5048398596102334565">Consenti ai siti di accedere ai sensori di movimento (opzione consigliata)</translation>
 <translation id="5048841907079026162">Gestisci dati di navigazione</translation>
-<translation id="5050380848339752099">Questo sito sta per condividere informazioni con un'app esterna alla modalità di navigazione in incognito.</translation>
+<translation id="5050380848339752099">Questo sito sta per condividere informazioni con un'app esterna alla modalità Incognito.</translation>
 <translation id="5063480226653192405">Utilizzo</translation>
 <translation id="5068293087784369013">Personalizza la pagina Nuova scheda</translation>
 <translation id="5091013926750941408">Sito mobile</translation>
@@ -385,7 +385,7 @@ La protezione avanzata controlla queste impostazioni di Chrome:
 <translation id="5099358668261120049">Verranno eliminati tutti i dati e i cookie memorizzati dal sito <ph name="ORIGIN" /> o dalla relativa app nella schermata Home.</translation>
 <translation id="5100237604440890931">Compresso. Fai clic per espandere.</translation>
 <translation id="5116239826668864748">Puoi usare Chrome ogni volta che tocchi link in messaggi, documenti e altre app</translation>
-<translation id="5123685120097942451">Scheda di navigazione in incognito</translation>
+<translation id="5123685120097942451">Scheda Incognito</translation>
 <translation id="512938610812707830">Riquadro inferiore di Raccolte di temi per l'aspetto della pagina Nuova scheda aperto a schermo intero</translation>
 <translation id="5137460097045297858">Riquadro inferiore del Feed personalizzato aperto nella parte inferiore dello schermo</translation>
 <translation id="5139253256813381453">{PRICE_DROP_COUNT,plural, =1{Calo di prezzo nelle schede aperte}other{Cali di prezzo nelle schede aperte}}</translation>

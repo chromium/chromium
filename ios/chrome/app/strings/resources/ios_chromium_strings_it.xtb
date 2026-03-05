@@ -15,8 +15,8 @@
 <translation id="1361748954329991663">Chromium non è aggiornato. Se non sono disponibili aggiornamenti nell'<ph name="BEGIN_LINK" />App Store<ph name="END_LINK" />, è possibile che il dispositivo non supporti più le nuove versioni di Chromium.</translation>
 <translation id="1383876407941801731">Cerca</translation>
 <translation id="1423007117030725713">Avvia una ricerca in una nuova scheda di Chromium.</translation>
-<translation id="1431818719585918472">Consenti a Chromium di bloccare le schede di navigazione in incognito.</translation>
-<translation id="1451665391191990528">Nascondi le schede di navigazione in incognito aperte quando esci da Chromium</translation>
+<translation id="1431818719585918472">Consenti a Chromium di bloccare le schede Incognito.</translation>
+<translation id="1451665391191990528">Nascondi le schede Incognito aperte quando esci da Chromium</translation>
 <translation id="146407871188825689">Usa Chromium sull'iPad per impostazione predefinita</translation>
 <translation id="1471084500615228555">Elimina dati di navigazione in Chromium</translation>
 <translation id="1472013873724362412">Il tuo account non funziona su Chromium. Contatta l'amministratore di dominio o utilizza un normale Account Google per accedere.</translation>
@@ -60,7 +60,7 @@
 <translation id="2245694534483711162">Gemini potrebbe usare la tua posizione esatta, a seconda dell'autorizzazione che hai già concesso a Chromium</translation>
 <translation id="2270466829363945454">Acquista</translation>
 <translation id="2313870531055795960">Controlla gli URL confrontandoli con un elenco di siti non sicuri memorizzato in Chromium. Se un sito cerca di rubare la tua password o se scarichi un file dannoso, Chromium potrebbe anche inviare gli URL, inclusi frammenti dei contenuti delle pagine, a Navigazione sicura.</translation>
-<translation id="2314220608288760290">Chromium apre automaticamente i link di YouTube in incognito in modalità di navigazione in incognito.</translation>
+<translation id="2314220608288760290">Chromium apre automaticamente i link di YouTube in incognito in modalità Incognito.</translation>
 <translation id="231828342043114302">Accedi a Chromium per ricevere contenuti personalizzati in base ai tuoi interessi.</translation>
 <translation id="2326738825692478496">Alcuni dati di Chromium non sono ancora stati salvati nel tuo Account Google.
 
@@ -99,7 +99,7 @@ Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza co
 <translation id="3044857325852340337">Dati di Chromium eliminati</translation>
 <translation id="3054480780637153380">Apri le impostazioni di Chromium in iOS, quindi tocca "App browser predefinita" e seleziona Chromium.</translation>
 <translation id="3115956258722352278">Vuoi imposta Chromium come browser predefinito?</translation>
-<translation id="3180939591219927904">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chromium"</translation>
+<translation id="3180939591219927904">Attiva l'opzione "Blocca le schede Incognito quando chiudi Chromium"</translation>
 <translation id="328933489847748230">{count,plural, =1{Visualizzazione di 1 finestra di Chromium}other{Visualizzazione di {count} finestre di Chromium}}</translation>
 <translation id="3344973607274501920">Chromium non ha potuto controllare le tue password. Verifica la tua connessione a Internet.</translation>
 <translation id="3366305173356742781">Dati di Chromium nel tuo account</translation>
@@ -111,7 +111,7 @@ Prova ad attendere qualche minuto prima di cambiare account. Se cambi account or
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="347967311580159871">Per altre impostazioni che utilizzano i dati per migliorare la tua esperienza con Chromium, vai alle impostazioni dei <ph name="BEGIN_LINK" />servizi Google<ph name="END_LINK" />.</translation>
 <translation id="3512168799938877162">La tua password non è stata condivisa. Controlla la connessione a internet e assicurati di aver eseguito l'accesso a Chromium. Quindi riprova.</translation>
-<translation id="3529798650269984835">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chromium".</translation>
+<translation id="3529798650269984835">Attiva l'opzione "Blocca le schede Incognito quando chiudi Chromium".</translation>
 <translation id="3541247799006476453">Accedi facilmente a password e passkey con Chromium per la compilazione automatica</translation>
 <translation id="3567399274263440288">Accedi con il tuo Account Google a Chromium per usare al meglio questo browser.</translation>
 <translation id="3581385059720151202">Cerca immagini in Chromium</translation>
@@ -163,7 +163,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="4633738821577273991">Attiva la funzionalità Navigazione sicura avanzata anche per questo profilo Chromium</translation>
 <translation id="4654936625574199632">Per contribuire a migliorare l'app, Chromium invia a Google dati sull'utilizzo e sugli arresti anomali. <ph name="BEGIN_LINK" />Gestisci<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Attiva lo scanner di Chromium</translation>
-<translation id="4685611756167369067">Apri scheda di navigazione in incognito di Chromium</translation>
+<translation id="4685611756167369067">Apri scheda Incognito di Chromium</translation>
 <translation id="4736424910885271643">Il tuo account è gestito da <ph name="HOSTED_DOMAIN" />, pertanto i tuoi dati di Chromium verranno cancellati da questo dispositivo</translation>
 <translation id="4790638144988730920">Continua a usare i dati di Chromium nel tuo Account Google.</translation>
 <translation id="4828317641996116749">Chromium non ha potuto controllare tutte le password. Riprova più tardi.</translation>
@@ -256,7 +256,7 @@ Aspetti da considerare:
 <translation id="6574750762636192517">Gestisci le password in Chromium</translation>
 <translation id="6590232959690355435">Apre la pagina Cronologia in Chromium.</translation>
 <translation id="6649269674808477353">Apri Chromium più velocemente quando vuoi navigare sul tuo iPhone.</translation>
-<translation id="6674470628873622334">Apre una nuova scheda di navigazione in incognito di Chromium.</translation>
+<translation id="6674470628873622334">Apre una nuova scheda Incognito di Chromium.</translation>
 <translation id="6680609900732453726">Mantieni privata la tua navigazione con l'autenticazione del dispositivo quando chiudi Chromium</translation>
 <translation id="6752854822223394465">La tua organizzazione sta configurando Chromium…</translation>
 <translation id="6794054469102824109">Apre il gioco Dino di Chromium.</translation>
@@ -294,12 +294,12 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="7685160423563372998">Crea immagine con Gemini in Chromium</translation>
 <translation id="7733418656985455268">Suggerimento per Chromium: Cerca con Lens</translation>
 <translation id="7747820849741499258">Cerca in Chromium</translation>
-<translation id="7753923083404296545">Aperto nella modalità di navigazione in incognito di Chrome</translation>
-<translation id="7762622637388462191">Blocca le schede di navigazione in incognito quando esci da Chromium o passi a un'altra app.</translation>
+<translation id="7753923083404296545">Aperto nella modalità Incognito di Chrome</translation>
+<translation id="7762622637388462191">Blocca le schede Incognito quando esci da Chromium o passi a un'altra app.</translation>
 <translation id="7763454117143368771">Usa Chromium come browser predefinito per proteggerti da siti pericolosi e tenere al sicuro le tue password</translation>
-<translation id="7784950022329154821">Blocca le schede di navigazione in incognito quando chiudi Chromium</translation>
+<translation id="7784950022329154821">Blocca le schede Incognito quando chiudi Chromium</translation>
 <translation id="78025249032851484">Chromium non è aggiornato.</translation>
-<translation id="7859018312476869945">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chromium invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità di navigazione in incognito.</translation>
+<translation id="7859018312476869945">Quando digiti nella barra degli indirizzi o nella casella di ricerca, Chromium invia ciò che digiti al tuo motore di ricerca predefinito per ricevere suggerimenti migliori. Questa opzione è disattivata nella modalità Incognito.</translation>
 <translation id="7890287942691234100">Inizia a usare lo scanner di Chromium</translation>
 <translation id="7905064834449738336">Quando utilizzi una password, Chromium ti avvisa se è stata pubblicata online. Durante questa operazione, le tue password e i tuoi nomi utente vengono criptati, quindi non possono essere letti da nessuno, Google compresa.</translation>
 <translation id="7928628054454574139">Apri Chromium ogni volta che tocchi link in altre app</translation>
@@ -319,7 +319,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="8197822717502700527">Ora potrai usare al meglio Chromium sul tuo dispositivo.</translation>
 <translation id="8236210361418193126">Importa nel Gestore delle password</translation>
 <translation id="8254729934443216898">Esplora le nuove funzionalità che ti aiutano a usare al meglio Chromium.</translation>
-<translation id="8293572045658095405">Stai utilizzando la modalità di navigazione in incognito di Chromium</translation>
+<translation id="8293572045658095405">Stai utilizzando la modalità Incognito di Chromium</translation>
 <translation id="830951810931292870">Apre gli URL inseriti in Chromium in incognito.</translation>
 <translation id="8385503371191508165">Inizia a salvare le passkey con Gestore delle password</translation>
 <translation id="8390323835464055390">Accedi con le tue password e passkey salvate da qualsiasi app utilizzando Chromium per la compilazione automatica</translation>

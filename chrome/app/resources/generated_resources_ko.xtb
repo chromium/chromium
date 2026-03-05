@@ -6356,7 +6356,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5333896723098573627">앱을 삭제하려면 설정 &gt; 앱 &gt; Google Play 스토어 &gt; Android 환경설정 관리 &gt; 앱 또는 애플리케이션 관리자로 이동합니다. 그런 다음 제거하려는 앱을 탭합니다(앱을 찾으려면 오른쪽이나 왼쪽으로 스와이프해야 할 수 있음). 그런 다음 제거 또는 사용 중지를 탭합니다.</translation>
 <translation id="5334113802138581043">마이크 액세스</translation>
 <translation id="5334142896108694079">스크립트 캐시</translation>
-<translation id="5335370353987155592">Gemini를 신중하고 <ph name="BEGIN_LINK1" />안전하게<ph name="LINK_END1" /> 사용하세요. 작업을 수행하는 동안 Gemini의 작업에 대한 책임은 사용자에게 있으며, 여기에는 실수 및 <ph name="BEGIN_LINK2" />예상치 못한 결과<ph name="LINK_END2" />(예: 구매)가 포함됩니다.</translation>
+<translation id="5335370353987155592">Gemini를 신중하고 <ph name="BEGIN_LINK1" />안전하게<ph name="LINK_END1" /> 사용하세요. 실수 및 <ph name="BEGIN_LINK2" />예상치 못한 결과<ph name="LINK_END2" />(예: 구매)를 포함해 작업을 수행하는 동안 Gemini의 동작에 대한 책임은 사용자에게 있습니다.</translation>
 <translation id="5336688142483283574">이 페이지도 방문 기록 및 <ph name="SEARCH_ENGINE" /> 활동에서 삭제됩니다.</translation>
 <translation id="5336689872433667741">커서 및 터치패드</translation>
 <translation id="5337207153202941678">강조 표시 사용 중지</translation>

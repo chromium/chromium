@@ -17,7 +17,7 @@
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_ONE" /> scheda, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}other{Espandi il gruppo di schede condiviso <ph name="TITLE_OF_GROUP" /> con <ph name="TABS_COUNT_MANY" /> schede, colore <ph name="COLOR_NAME" />, con etichetta <ph name="CARD_LABEL" />.}}</translation>
 <translation id="1486715732399361704">Qui troverai tutti i tuoi gruppi di schede</translation>
 <translation id="149054111719651807">{NUM_MINS,plural, =1{Creato <ph name="NUM_MINS_ONE" /> minuto fa}other{Creato <ph name="NUM_MINS_MANY" /> minuti fa}}</translation>
-<translation id="1499635324672558517">Chiudere tutte le schede di navigazione in incognito?</translation>
+<translation id="1499635324672558517">Chiudere tutte le schede Incognito?</translation>
 <translation id="1501480321619201731">Elimina gruppo</translation>
 <translation id="1553638665176794706">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> elemento non attivo}other{<ph name="TABS_COUNT_MANY" /> elementi non attivi}}</translation>
 <translation id="1645759014353344461"><ph name="TABS_COUNT_MANY" /> schede raggruppate</translation>
@@ -37,7 +37,7 @@
 <translation id="2055057176188061528">Seleziona un gruppo di schede o creane uno nuovo</translation>
 <translation id="2074527029802029717">Sblocca scheda</translation>
 <translation id="2118649612461486615">Informazioni sul negozio</translation>
-<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda di navigazione in incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede di navigazione in incognito non saranno disponibili.}}</translation>
+<translation id="2123073051266141035">{INCOGNITO_TABS_COUNT,plural, =1{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. La scheda Incognito non sarà disponibile.}other{Le schede e i gruppi chiusi possono essere riaperti dalle sezioni Schede recenti e Gruppi di schede. # schede Incognito non saranno disponibili.}}</translation>
 <translation id="2153899164605463849">{TAB_COUNT,plural, =1{Riattiva l'audio del sito}other{Riattiva l'audio dei siti}}</translation>
 <translation id="2162620598375156287">Ora a <ph name="CURRENT_PRICE" /> su <ph name="SOURCE_WEBSITE" /></translation>
 <translation id="22623456902492423">{TABS_COUNT,plural, =1{Separa scheda}other{Separa schede}}</translation>
@@ -227,7 +227,7 @@
 <translation id="8712637175834984815">Ok</translation>
 <translation id="8714939927607906138">Prezzo più basso</translation>
 <translation id="8730621377337864115">Fine</translation>
-<translation id="8730999928494395583">La tua attività in queste schede di navigazione in incognito verrà rimossa da questo dispositivo</translation>
+<translation id="8730999928494395583">La tua attività in queste schede Incognito verrà rimossa da questo dispositivo</translation>
 <translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creato <ph name="NUM_MONTHS_ONE" /> mese fa}other{Creato <ph name="NUM_MONTHS_MANY" /> mesi fa}}</translation>
 <translation id="8813708480179818649">Rimuovi scheda dal gruppo</translation>
 <translation id="8820741577754260431">Visualizza i cali di prezzo nelle tue schede</translation>
