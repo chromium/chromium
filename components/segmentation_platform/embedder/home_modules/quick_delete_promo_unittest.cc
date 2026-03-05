@@ -20,7 +20,7 @@ class QuickDeletePromoTest : public testing::Test {
   ~QuickDeletePromoTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    QuickDeletePromo::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TearDown() override { Test::TearDown(); }
@@ -33,10 +33,12 @@ class QuickDeletePromoTest : public testing::Test {
       float isUserSignedIn,
       float educationalTipShownCount,
       EphemeralHomeModuleRank position) {
-    pref_service_.SetUserPref(
-        kQuickDeletePromoInteractedPref,
-        std::make_unique<base::Value>(hasQuickDeletePromoInteracted));
     auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
+
+    if (hasQuickDeletePromoInteracted) {
+      card->OnInteract(&pref_service_, nullptr);
+    }
+
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(),
         {countOfClearingBrowsingData,
@@ -158,6 +160,27 @@ TEST_F(
       /* countOfClearingBrowsingDataThroughQuickDelete */ 0,
       /* quickDeletePromoShownCount */ 0, /* isUserSignedIn */ 1,
       /* educationalTipShownCount */ 1, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(QuickDeletePromoTest, IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<QuickDeletePromo>(&pref_service_);
+
+  EXPECT_TRUE(QuickDeletePromo::IsEnabled(&pref_service_));
+
+  int max_impressions = kSingleEphemeralCardMaxImpressions;
+
+  // Recreate the card each iteration to simulate separate sessions, as
+  // impressions are counted once per card lifetime.
+  for (int i = 0; i < max_impressions; ++i) {
+    auto session_card = std::make_unique<QuickDeletePromo>(&pref_service_);
+    EXPECT_TRUE(QuickDeletePromo::IsEnabled(&pref_service_));
+    session_card->OnShow(&pref_service_, nullptr);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(QuickDeletePromo::IsEnabled(&pref_service_));
 }
 
 }  // namespace segmentation_platform::home_modules
