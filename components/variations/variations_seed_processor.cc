@@ -109,8 +109,8 @@ std::optional<IDCollectionKey> GetKeyForWebExperiment(
       experiment.has_google_web_trigger_experiment_id();
 
   // An experiment cannot have both |google_web_experiment_id| and
-  // |google_trigger_web_experiment_id|. This is enforced by the variations
-  // server before generating a variations seed.
+  // |google_trigger_web_experiment_id|. This is enforced by
+  // ValidateAndComputeTotalProbability() in processed_study.cc.
   CHECK(!(has_web_experiment_id && has_web_trigger_experiment_id));
 
   Study::GoogleWebVisibility visibility = experiment.google_web_visibility();
