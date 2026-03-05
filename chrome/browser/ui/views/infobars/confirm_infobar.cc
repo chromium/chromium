@@ -4,9 +4,11 @@
 
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <utility>
+#include <vector>
 
 #include "base/functional/bind.h"
 #include "build/build_config.h"

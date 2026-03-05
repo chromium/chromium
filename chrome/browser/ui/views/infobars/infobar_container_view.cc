@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/infobars/infobar_container_view.h"
 
+#include <algorithm>
 #include <numeric>
 
 #include "cc/paint/paint_flags.h"
