@@ -2051,10 +2051,11 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
     // OnReadabilityDistillationStateChanged should only be called on non-pdfs.
     // Previously we were calling it in step 2 above, but we know it's a pdf at
     // that point, so we shouldn't be. Hence this check that's it's called
-    // only once.
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(1);
+    // only 2 times (once in OnActiveAXTreeIDChanged, once in
+    // RequestDomDistillerDistillation).
+    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(2);
   } else {
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(3);
+    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(4);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2233,6 +2234,9 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerAutomationTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
+                         read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationInProgress));
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
                          read_anything::mojom::ReadAnythingDistillationState::
                              kDistillationEmpty));
