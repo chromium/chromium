@@ -116,7 +116,8 @@ class MockRenderProcessHost : public RenderProcessHost {
                               bool skip_unload_handlers,
                               bool ignore_workers,
                               bool ignore_keep_alive,
-                              bool ignore_pending_reuse) override;
+                              bool ignore_pending_reuse,
+                              bool use_outermost_main_frame_check) override;
   bool FastShutdownStarted() override;
   const base::Process& GetProcess() override;
   bool IsReady() override;

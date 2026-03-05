@@ -279,6 +279,11 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // non-zero |page_count| value is provided, then a fast shutdown will only
   // happen if the count matches the active view count. Returns true if it was
   // able to do fast shutdown.
+  // If `use_outermost_main_frame_check` is true `page_count` will check
+  // resident counts of outermost main frames, instead of resident
+  // RenderWidgetHosts.
+  // TODO(crbug.com/463513005): Make this behavior default and remove
+  // `page_count`.
   // If |skip_unload_handlers| is false and this renderer has any RenderViews
   // with unload handlers, then this function does nothing. Otherwise, the
   // function will ignore checking for those handlers.
@@ -292,11 +297,13 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Listener,
   // If |ignore_pending_reuse| is false and this renderer has any pending reuse
   // ref counts, then this function does nothing. Otherwise, the function will
   // ignore checking for pending reuse references.
-  virtual bool FastShutdownIfPossible(size_t page_count = 0,
-                                      bool skip_unload_handlers = false,
-                                      bool ignore_workers = false,
-                                      bool ignore_keep_alive = false,
-                                      bool ignore_pending_reuse = false) = 0;
+  virtual bool FastShutdownIfPossible(
+      size_t page_count = 0,
+      bool skip_unload_handlers = false,
+      bool ignore_workers = false,
+      bool ignore_keep_alive = false,
+      bool ignore_pending_reuse = false,
+      bool use_outermost_main_frame_check = false) = 0;
 
   // Returns true if fast shutdown was started for the renderer.
   virtual bool FastShutdownStarted() = 0;
