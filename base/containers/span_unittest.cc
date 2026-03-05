@@ -3515,3 +3515,98 @@ TEST(SpanTest, ToStdSpan) {
 
   // no as_byte_span() in std::span.
 }
+
+TEST(SpanTest, ReinterpretSpan) {
+  // Basic usage:
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 1, 2, 3, 4, 5, 6, 7};
+    auto s = base::span(kAlignedArray);
+    auto rs = base::subtle::reinterpret_span<uint32_t>(s);
+    static_assert(
+        std::is_same_v<typename decltype(rs)::element_type, uint32_t>);
+    EXPECT_EQ(rs.size(), 2u);
+  }
+
+  // Fixed extent:
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 1, 2, 3, 4, 5, 6, 7};
+    auto s = base::span<uint8_t, 8u>(kAlignedArray);
+    auto rs = base::subtle::reinterpret_span<uint32_t>(s);
+    static_assert(
+        std::is_same_v<typename decltype(rs)::element_type, uint32_t>);
+    static_assert(decltype(rs)::extent == 2u);
+    EXPECT_EQ(rs.size(), 2u);
+  }
+
+  // Const => Const.
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 1, 2, 3, 4, 5, 6, 7};
+    auto s = base::span<const uint8_t>(kAlignedArray);
+    auto rs = base::subtle::reinterpret_span<const uint32_t>(s);
+    static_assert(
+        std::is_same_v<typename decltype(rs)::element_type, const uint32_t>);
+    EXPECT_EQ(rs.size(), 2u);
+  }
+
+  // Mutable => Const
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 1, 2, 3, 4, 5, 6, 7};
+    auto s = base::span<uint8_t>(kAlignedArray);
+    auto rs = base::subtle::reinterpret_span<const uint32_t>(s);
+    static_assert(
+        std::is_same_v<typename decltype(rs)::element_type, const uint32_t>);
+    EXPECT_EQ(rs.size(), 2u);
+  }
+
+  // Empty span.
+  {
+    auto s = base::span<uint8_t>();
+    auto rs = base::subtle::reinterpret_span<uint32_t>(s);
+    CHECK_EQ(s.size(), 0u);
+    CHECK_EQ(s.data(), nullptr);
+    static_assert(
+        std::is_same_v<typename decltype(rs)::element_type, uint32_t>);
+    EXPECT_EQ(rs.size(), 0u);
+  }
+
+  // Check unaligned empty span.
+  // Empty slice (e.g. data() != nullptr, but size() == 0).
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 1, 2, 3};
+    auto s = base::span(kAlignedArray).subspan(1u, 0u);
+    CHECK_EQ(s.size(), 0u);
+    CHECK_NE(s.data(), nullptr);  // Unaligned, but valid pointer.
+    EXPECT_CHECK_DEATH({
+      [[maybe_unused]] auto rs = base::subtle::reinterpret_span<uint32_t>(s);
+    });
+  }
+
+  // Alignment check fails:
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 0, 0, 0, 0, 0, 0, 0, 0};
+    auto s = base::span(kAlignedArray).subspan(1u, 4u);
+    if (alignof(uint32_t) > 1) {
+      EXPECT_CHECK_DEATH({
+        [[maybe_unused]] auto r = base::subtle::reinterpret_span<uint32_t>(s);
+      });
+    }
+  }
+
+  // Size check fails:
+  {
+    alignas(uint32_t) uint8_t kAlignedArray[] = {0, 0, 0, 0, 0, 0, 0, 0};
+    auto s = base::span(kAlignedArray).first(7u);
+    EXPECT_CHECK_DEATH({
+      [[maybe_unused]] auto r = base::subtle::reinterpret_span<uint32_t>(s);
+    });
+  }
+
+  // Data integrity after round-trip.
+  {
+    uint32_t data[] = {0x12345678, 0x9ABCDEF0};
+    auto bytes = base::as_byte_span(data);
+    auto reconstructed = base::subtle::reinterpret_span<const uint32_t>(bytes);
+    EXPECT_EQ(reconstructed[0], data[0]);
+    EXPECT_EQ(reconstructed[1], data[1]);
+  }
+}

@@ -19,6 +19,7 @@
 #include <iterator>
 #include <limits>
 #include <memory>
+#include <new>
 #include <optional>
 #include <ranges>
 #include <span>
@@ -1733,6 +1734,102 @@ constexpr auto as_writable_byte_span(
     ElementType (&arr LIFETIME_BOUND)[Extent]) {
   return as_writable_bytes(allow_nonunique_obj, span<ElementType, Extent>(arr));
 }
+
+namespace subtle {
+// Reinterprets a span of bytes (uint8_t) as a span of another type
+// `ElementType`.
+//
+// Please use sparingly. Prefer structured serialization/deserialization methods
+// when possible, for instance with SpanReader.
+//
+// This is useful when handling buffers (e.g. IPC messages, shared memory) where
+// the type of the data is known but the buffer is typed as generic bytes.
+//
+// This is conceptually the inverse of `as_byte_span()`.
+//
+// The source span must be strictly `uint8_t` (const or mutable).
+//
+// Please do not use as_byte_span() followed by reinterpret_span() as a way to
+// cast between two arbitrary types. This would violate strict aliasing rules
+// and result in undefined behavior. Only use reinterpret_span() on spans that
+// were originally byte spans.
+template <typename ElementType,
+          typename ByteType,
+          size_t Count,
+          typename InternalPtrType>
+  requires(
+      // In standard C++, pointers of different types are assumed not to alias
+      // (the strict aliasing rule). While Chromium disables strict aliasing
+      // (-fno-strict-aliasing), it doesn't hurt to follow the rule in this
+      // function, since it is intended to be a safe alternative to raw pointer
+      // casts. By restricting `ByteType` to be `uint8_t` (or `const uint8_t`),
+      // we ensure that the function is only used for its intended purpose of
+      // reinterpreting byte spans, and not for arbitrary type punning.
+      std::same_as<std::remove_cv_t<ByteType>, uint8_t> &&
+
+      // This function effectively "creates" objects by overlaying a type onto
+      // raw bytes, bypassing constructors. Such an operation is only safe for
+      // objects that do not maintain internal invariant. Therefore, we restrict
+      // this function to trivially copyable types.
+      std::is_trivially_copyable_v<ElementType> &&
+
+      // Ensure we are not casting away constness.
+      (!std::is_const_v<ByteType> || std::is_const_v<ElementType>) &&
+
+      // Ensure the size of the byte span is a multiple of the target type size.
+      // This is checked at compile time for fixed-size spans, and at runtime
+      // for dynamic-size spans.
+      (Count == dynamic_extent || Count % sizeof(ElementType) == 0))
+[[nodiscard]] constexpr auto reinterpret_span(
+    span<ByteType, Count, InternalPtrType> s) {
+  // Check for proper alignment of the target type.
+  // This remains a runtime CHECK because alignment is a property of the
+  // pointer value, not the type system.
+  CHECK(reinterpret_cast<uintptr_t>(s.data()) % alignof(ElementType) == 0u);
+
+  // Runtime check for dynamic spans ensures size is a multiple of ElementType.
+  if constexpr (Count == dynamic_extent) {
+    CHECK(s.size_bytes() % sizeof(ElementType) == 0u);
+  }
+
+  // In C++, one cannot simply reinterpret a span of bytes as a span of
+  // `ElementType` and dereference it, unless an object of type `ElementType`
+  // actually exists at that memory location.
+  //
+  // Per [intro.object], casting a pointer does not start the lifetime of an
+  // object. Even if the bytes represent a valid object representation, strict
+  // adherence to the standard requires explicit object creation. Dereferencing
+  // a pointer to an object that hasn't been created is undefined behavior.
+  //
+  // The proper solution is C++23's `std::start_lifetime_as_array`
+  // (see [obj.lifetime]), which explicitly blesses the memory as containing
+  // objects of type `ElementType`.
+  //
+  // [intro.object]: https://eel.is/c++draft/intro.object
+  // [obj.lifetime] https://eel.is/c++draft/obj.lifetime
+  //
+  // TODO(arthursonzogni): use std::start_lifetime_as_array.
+  //
+  // std::start_lifetime_as_array is part of C++23, but not yet implemented by
+  // CLang as of January 2026. `std::launder` helps with pointer provenance
+  // issues, but does not by itself start the lifetime of the object. However,
+  // in practice, most compilers implicitly treat this pattern as valid de
+  // facto, but it is technically not standard-compliant.
+  auto* ptr = std::launder(reinterpret_cast<ElementType*>(s.data()));
+
+  if constexpr (Count == dynamic_extent) {
+    // SAFETY: We checked for proper alignment, size, strict aliasing rules, and
+    // started the lifetime of the array.
+    return UNSAFE_BUFFERS(span<ElementType, dynamic_extent>(
+        ptr, s.size_bytes() / sizeof(ElementType)));
+  } else {
+    // SAFETY: We checked for proper alignment, size, strict aliasing rules, and
+    // started the lifetime of the array.
+    constexpr size_t NewCount = Count / sizeof(ElementType);
+    return UNSAFE_BUFFERS(span<ElementType, NewCount>(ptr, NewCount));
+  }
+}
+}  // namespace subtle
 
 }  // namespace base
 

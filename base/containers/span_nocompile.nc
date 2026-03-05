@@ -372,4 +372,33 @@ void SpanFromCstrings() {
   byte_span_with_nul_from_cstring(no_null);  // expected-error@*:* {{no matching function for call to 'byte_span_with_nul_from_cstring'}}
 }
 
+void ReinterpretSpanNonByteSource() {
+  int arr[] = {1, 2, 3};
+  span s(arr);
+  span r = subtle::reinterpret_span<uint32_t>(s);  // expected-error {{no matching function for call to 'reinterpret_span'}}
+}
+
+void ReinterpretSpanCastAwayConst() {
+  const uint8_t arr[] = {0, 0, 0, 0};
+  span s(arr);
+  span r = subtle::reinterpret_span<uint32_t>(s);  // expected-error {{no matching function for call to 'reinterpret_span'}}
+}
+
+void ReinterpretSpanNonTriviallyCopyable() {
+  struct S {
+    S() {}
+    ~S() {}
+    int i;
+  };
+  uint8_t arr[] = {0, 0, 0, 0};
+  span s(arr);
+  span r = subtle::reinterpret_span<S>(s);  // expected-error {{no matching function for call to 'reinterpret_span'}}
+}
+
+void ReinterpretSpanFixedSizeMismatch() {
+  uint8_t arr[] = {0, 0, 0, 0, 0};
+  span<uint8_t, 5u> s(arr);
+  span r = subtle::reinterpret_span<uint32_t>(s);  // expected-error {{no matching function for call to 'reinterpret_span'}}
+}
+
 }  // namespace base
