@@ -582,6 +582,10 @@ bool IsInPrunableHiddenContainerInclusive(const Node& node,
     // Objects inside a <script> are true.
     if (IsA<HTMLScriptElement>(ancestor))
       return true;
+    // Objects inside <noframes> are not rendered.
+    if (ancestor->HasTagName(html_names::kNoframesTag)) {
+      return true;
+    }
     // Elements inside of a frame/iframe are true unless inside a document
     // that is a child of the frame. In the case where descendants are allowed,
     // they will be in a different document, and therefore this loop will not
