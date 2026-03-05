@@ -464,9 +464,16 @@ UIEdgeInsets TopContentInset(UIScrollView* scrollView, CGFloat topInset) {
   // positive while scrolling the main content, resetting the insets causes
   // after scrolling is done seems wrong.
 #if !BUILDFLAG(USE_BLINK)
+  // When the user lets go of the overscroll, a `_dpLink` is created to animate
+  // the bounce back. Checking `isBounceAnimationRunning` prevents prematurely
+  // resetting the content inset, allowing the overscroll to gracefully ease
+  // back.
+  BOOL isBounceAnimationRunning = (_dpLink != nil);
+
   if (contentOffset.y >= 0 ||
       self.overscrollState == OverscrollState::NO_PULL_STARTED ||
-      self.overscrollActionView.selectedAction == OverscrollAction::NONE) {
+      (!isBounceAnimationRunning &&
+       self.overscrollActionView.selectedAction == OverscrollAction::NONE)) {
     [self resetScrollViewTopContentInset];
   }
 #endif
