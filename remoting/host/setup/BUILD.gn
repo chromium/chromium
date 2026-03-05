@@ -142,7 +142,6 @@ source_set("start_host_main") {
     "//remoting/proto/google/remoting/cloud/v1:messages",
     "//services/network:network_service",
     "//services/network/public/cpp",
-    "//third_party/libjingle_xmpp:rtc_xmllite",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 

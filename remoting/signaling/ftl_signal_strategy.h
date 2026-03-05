@@ -6,6 +6,7 @@
 #define REMOTING_SIGNALING_FTL_SIGNAL_STRATEGY_H_
 
 #include <memory>
+#include <string>
 
 #include "base/memory/scoped_refptr.h"
 #include "remoting/signaling/signal_strategy.h"

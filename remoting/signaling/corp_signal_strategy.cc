@@ -63,8 +63,6 @@ class CorpSignalStrategy::Core {
   void OnSignalingAddressChanged(const SignalingAddress& address);
   void OnChannelClosed(const HttpStatus& status);
   void SetState(State state);
-  void OnStanza(const SignalingAddress& sender_address,
-                std::unique_ptr<jingle_xmpp::XmlElement> stanza);
 
   std::unique_ptr<CorpMessagingClient> messaging_client_;
   base::ObserverList<Listener, true> listeners_;

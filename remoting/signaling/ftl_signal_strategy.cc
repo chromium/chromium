@@ -77,9 +77,6 @@ class FtlSignalStrategy::Core {
   void HandleHttpStatusError(const base::Location& location,
                              const HttpStatus& status);
 
-  void OnStanza(const SignalingAddress& sender_address,
-                std::unique_ptr<jingle_xmpp::XmlElement> stanza);
-
   std::unique_ptr<OAuthTokenGetter> oauth_token_getter_;
 
   std::unique_ptr<RegistrationManager> registration_manager_;

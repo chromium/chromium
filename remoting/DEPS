@@ -17,7 +17,6 @@ include_rules = [
   "+third_party/webrtc/p2p",
   "+third_party/webrtc/modules/desktop_capture",
   "+third_party/webrtc_overrides",
-  "+third_party/libjingle_xmpp/xmllite",
   "+ui/base/keycodes",
   "+ui/base/l10n",
   "+ui/base/resource",
