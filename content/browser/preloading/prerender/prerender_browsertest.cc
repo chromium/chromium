@@ -1115,7 +1115,8 @@ INSTANTIATE_TEST_SUITE_P(
 //    as it is not testable.
 // - `PrerenderInBackground_*`: Ditto.
 // - `PreloadingTriggeringOutcomeForStartingPrerenderBeforeDestruction`: See the
-// test.
+//   test.
+// - `CancelAllPrerenderUponActivationRequestArrival`: See the test.
 class PrerenderBrowserTestFallbackDisabled : public PrerenderBrowserTest {
  public:
   PrerenderBrowserTestFallbackDisabled()
@@ -9120,7 +9121,12 @@ IN_PROC_BROWSER_TEST_F(
 // Test that all the prerender hosts except the one to be activated are
 // cancelled regardless of their status right after the PrerenderHostRegistry
 // receives the activation request.
-IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
+//
+// Rationale for `PrerenderBrowserTestFallbackDisabled`: This test triggers
+// multiple prerenders. It's hard to control both prefetch/prerender states, as
+// they progress asynchronously. The aspect to be tested is unrelated to
+// prefetch ahead of prerender.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTestFallbackDisabled,
                        CancelAllPrerenderUponActivationRequestArrival) {
   net::test_server::ControllableHttpResponse response3(
       embedded_test_server(), "/empty.html?prerender3");
