@@ -336,8 +336,7 @@ void TabDialogManager::ShowDialog(views::Widget* widget,
           constrained_window::kConstrainedWindowWidgetIdentifier));
   if (params_->disable_input) {
     scoped_ignore_input_events_ =
-        tab_interface_->GetContents()->IgnoreInputEvents(
-            std::nullopt, /*should_ignore_a11y_input=*/true);
+        tab_interface_->GetContents()->IgnoreInputEvents(std::nullopt);
     tab_interface_->GetBrowserWindowInterface()
         ->capabilities()
         ->SetWebContentsBlocked(tab_interface_->GetContents(),
