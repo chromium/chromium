@@ -82,6 +82,9 @@ bool AppendReferencedFilesFromDocumentState(
   //
   // For reference, see FormController::formStatesFromStateVector in
   // third_party/WebKit/Source/core/html/forms/FormController.cpp.
+  //
+  // Support for PageState version 14 was added to allow validation of the file
+  // list.
 
   size_t index = 0;
 
@@ -116,11 +119,37 @@ bool AppendReferencedFilesFromDocumentState(
       return false;
 
     if (type && base::EqualsASCII(*type, "file")) {
-      if (value_size != 2)
+      // `value_size` is expected to be either:
+      // - 0 for an empty file form field
+      // - 2 for legacy PageState versions that only contain file path and
+      //   display name.
+      // - A multiple of 3 for modern PageStates, which contain a list of
+      //   (file path, name, relative path) triples within a single item.
+      //   (See File::AppendToControlState.)
+      //
+      // Extract the file path(s) for sizes 2 and 3, and continue with
+      // validation for the zero-size empty file case. Any other values of
+      // `value_size` should be considered invalid.
+      if (value_size == 2) {
+        // PageState version < 14.
+        referenced_files->emplace_back(document_state[index++]);
+        index++;  // Skip over display name.
+      } else if (value_size > 2 && value_size % 3 == 0) {
+        // PageState version >= 14.
+        // Add the file path from each group of three.
+        for (size_t i = 0; i < value_size / 3; ++i) {
+          // Double-check bounds for the 3 elements we will look at.
+          if (index + 2 >= document_state.size()) {
+            return false;
+          }
+          referenced_files->emplace_back(document_state[index++]);
+          index++;  // Skip over name.
+          index++;  // Skip over relative path.
+        }
+      } else if (value_size != 0) {
         return false;
-
-      referenced_files->emplace_back(document_state[index++]);
-      index++;  // Skip over display name.
+      }
+      // If value_size is 0, the file form field is empty, so continue.
     } else {
       index += value_size;
     }
@@ -1031,6 +1060,37 @@ void LegacyEncodePageStateForTesting(const ExplodedPageState& exploded,
   obj.version = version;
   WriteLegacyPageState(exploded, &obj);
   *encoded = obj.GetAsString();
+}
+
+bool GetAllFilesInPageState(const std::string& encoded,
+                            std::vector<base::FilePath>* files) {
+  ExplodedPageState exploded;
+  if (!DecodePageState(encoded, &exploded)) {
+    // If the PageState can't be decoded at all, then there are no usable files
+    // in it and it is safe to leave the `files` set empty and return true.
+    return true;
+  }
+
+  // TODO(crbug.com/40241973): Refactor to avoid sending PageState objects to
+  // the browser process, so that this use of RecursivelyAppendReferencedFiles
+  // is not needed.
+  std::vector<std::optional<std::u16string>> referenced_files;
+  if (!RecursivelyAppendReferencedFiles(exploded.top, &referenced_files)) {
+    // If the PageState can be decoded but this function failed due to an issue
+    // parsing the DocumentState, it is important to return false to indicate
+    // that the PageState is not safe to use. Some files could otherwise be
+    // present and usable without showing up in the list.
+    return false;
+  }
+
+  // Copy all of the files found into the output parameter.
+  files->reserve(referenced_files.size());
+  for (const auto& file : referenced_files) {
+    if (file) {
+      files->push_back(base::FilePath::FromUTF16Unsafe(*file));
+    }
+  }
+  return true;
 }
 
 #if BUILDFLAG(IS_ANDROID)
