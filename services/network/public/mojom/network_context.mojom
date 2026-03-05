@@ -691,7 +691,7 @@ struct SharedDictionaryInfo {
   SHA256HashValue hash;
 };
 
-// An opaque handle that keeps preloaded the preloaded shared dictionaries.
+// An opaque handle that keeps the preloaded shared dictionaries.
 interface PreloadedSharedDictionaryInfoHandle {};
 
 // Represents a signed exchange report.
