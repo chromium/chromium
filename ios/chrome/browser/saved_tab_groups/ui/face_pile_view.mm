@@ -76,8 +76,8 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
   CGFloat _membersCount;
   // View to display when the face pile is empty.
   UIButton* _shareViewContainer;
-  // The background of the non-avatar.
-  UIView* _nonAvatarBackground;
+  // The button used as a background for the non-avatar element.
+  UIButton* _nonAvatarBackgroundButton;
 }
 
 - (instancetype)init {
@@ -161,6 +161,11 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
       _shareViewContainer.configuration;
   shareViewContainerConfig.background.backgroundColor = backgroundColor;
   _shareViewContainer.configuration = shareViewContainerConfig;
+
+  UIButtonConfiguration* nonAvatarBackgroundConfig =
+      _nonAvatarBackgroundButton.configuration;
+  nonAvatarBackgroundConfig.background.backgroundColor = backgroundColor;
+  _nonAvatarBackgroundButton.configuration = nonAvatarBackgroundConfig;
 }
 
 #pragma mark - Private
@@ -168,7 +173,7 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
 // Updates colors after UITrait collection update.
 - (void)updateColors {
   if (_facePileBackgroundColor) {
-    [_nonAvatarBackground removeFromSuperview];
+    [_nonAvatarBackgroundButton removeFromSuperview];
     _nonAvatarContainer.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     _plusXLabel.textColor = [UIColor colorNamed:kSolidWhiteColor];
     _nonAvatarContainer.backgroundColor = [[UIColor colorNamed:kSolidBlackColor]
@@ -230,7 +235,7 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
       setContentCompressionResistancePriority:UILayoutPriorityRequired
                                       forAxis:UILayoutConstraintAxisHorizontal];
 
-  _nonAvatarBackground = [self createNonAvatarBackground];
+  _nonAvatarBackgroundButton = [self createNonAvatarBackgroundButton];
 
   // Configure a container in order to add an inner horizontal margin around the
   // label.
@@ -238,10 +243,10 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
   plusXLabelContainer.translatesAutoresizingMaskIntoConstraints = NO;
   plusXLabelContainer.layer.cornerRadius = _avatarSize / 2.0;
   plusXLabelContainer.layer.masksToBounds = YES;
-  [plusXLabelContainer addSubview:_nonAvatarBackground];
+  [plusXLabelContainer addSubview:_nonAvatarBackgroundButton];
   [plusXLabelContainer addSubview:plusXLabel];
 
-  AddSameConstraints(plusXLabelContainer, _nonAvatarBackground);
+  AddSameConstraints(plusXLabelContainer, _nonAvatarBackgroundButton);
 
   [NSLayoutConstraint activateConstraints:@[
     [plusXLabel.leadingAnchor
@@ -260,15 +265,15 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
   return _nonAvatarContainer;
 }
 
-// Creates the background view for the non-avatar.
-- (UIView*)createNonAvatarBackground {
+// Creates the background button for the non-avatar.
+- (UIButton*)createNonAvatarBackgroundButton {
   // Use a button to ensure to have the same configuration as the others.
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.background = BackgroundConfiguration();
 
-  UIView* background = [UIButton buttonWithConfiguration:configuration
-                                           primaryAction:nil];
+  UIButton* background = [UIButton buttonWithConfiguration:configuration
+                                             primaryAction:nil];
   background.userInteractionEnabled = NO;
 
   background.translatesAutoresizingMaskIntoConstraints = NO;
@@ -378,7 +383,7 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
       [containerView.heightAnchor constraintEqualToConstant:containerSize]
     ]];
 
-    _nonAvatarBackground = [self createNonAvatarBackground];
+    _nonAvatarBackgroundButton = [self createNonAvatarBackgroundButton];
 
     _nonAvatarContainer = [[UIView alloc] init];
     _nonAvatarContainer.translatesAutoresizingMaskIntoConstraints = NO;
@@ -389,8 +394,8 @@ UIBackgroundConfiguration* BackgroundConfiguration() {
       [_nonAvatarContainer.heightAnchor constraintEqualToConstant:_avatarSize]
     ]];
 
-    [_nonAvatarContainer addSubview:_nonAvatarBackground];
-    AddSameConstraints(_nonAvatarContainer, _nonAvatarBackground);
+    [_nonAvatarContainer addSubview:_nonAvatarBackgroundButton];
+    AddSameConstraints(_nonAvatarContainer, _nonAvatarBackgroundButton);
 
     [containerView addSubview:_nonAvatarContainer];
     AddSameCenterConstraints(_nonAvatarContainer, containerView);
