@@ -145,6 +145,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   }
 
   bool HasKnownInteractionID() const;
+  bool IsKnownToBeAnInteraction() const {
+    return interaction_id_.has_value() &&
+           interaction_id_ != PerformanceTimelineEntryIdInfo::kNone;
+  }
 
   const AtomicString& targetSelector() const;
 

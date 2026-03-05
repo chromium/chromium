@@ -17,6 +17,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_navigation_type.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/focused_element_change_observer.h"
+#include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/navigation_api/navigation_api.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
@@ -24,6 +25,7 @@
 #include "third_party/blink/renderer/platform/scheduler/public/post_cancellable_task.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -171,6 +173,13 @@ class NavigateEvent final : public Event,
   TaskHandle delayed_load_start_task_handle_;
   HeapMojoRemote<mojom::blink::NavigationResumeDeferredCommitListener>
       resume_after_deferred_commit_;
+};
+
+template <>
+struct DowncastTraits<NavigateEvent> {
+  static bool AllowFrom(const Event& event) {
+    return event.InterfaceName() == event_interface_names::kNavigateEvent;
+  }
 };
 
 }  // namespace blink

@@ -2593,6 +2593,9 @@ message EventTiming {
     DRAG_LEAVE_EVENT = 35;
     DRAG_OVER_EVENT = 36;
     DROP_EVENT = 37;
+    NAVIGATE_EVENT = 38;
+    POPSTATE_EVENT = 39;
+    HASHCHANGE_EVENT = 40;
   }
   optional EventType type = 9;
 }

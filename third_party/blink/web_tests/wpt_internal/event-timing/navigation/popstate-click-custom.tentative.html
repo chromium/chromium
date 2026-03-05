@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8>
+<title>Event Timing: popstate event from click-initiated script.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=/event-timing/resources/event-timing-test-utils.js></script>
+<body>
+  <button id="button">Click me</button>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported');
+    const isEnabled = window.internals && internals.runtimeFlags.navigationEventTimingEnabled;
+    const entries = [];
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        entries.push(entry);
+      }
+    });
+    observer.observe({ type: 'event', durationThreshold: 0 });
+
+    const getEventCount = name => performance.eventCounts.get(name) || 0;
+    assert_equals(performance.interactionCount, 0, 'Initial interactionCount should be 0');
+    assert_equals(getEventCount('popstate'), 0, 'Initial popstate count should be 0');
+
+    window.addEventListener('popstate', (event) => {
+      mainThreadBusy(50);
+    });
+
+    button.addEventListener('click', (e) => {
+      if (e.isTrusted) {
+        location.hash = '#script-' + Math.random();
+      }
+    });
+
+    assert_false(entries.some(e => e.name === 'popstate'), 'Popstate entry should not be reported before click');
+
+    const initialInteractionCount = performance.interactionCount;
+    const initialPopstateCount = getEventCount('popstate');
+
+    // Simulate a button press.
+    if (test_driver) {
+      await test_driver.click(button);
+    }
+
+    const verifyNotMeasured = async () => {
+      await new Promise(resolve => t.step_timeout(resolve, 500));
+      assert_false(entries.some(e => e.name === 'popstate'), 'Popstate entry should NOT be reported');
+
+      assert_equals(performance.interactionCount, initialInteractionCount + 1, 'Interaction count should increase by 1');
+      assert_equals(getEventCount('popstate'), initialPopstateCount, 'Popstate event count should NOT increase');
+    };
+
+    if (isEnabled) {
+      await verifyNotMeasured();
+    } else {
+      await verifyNotMeasured();
+    }
+  }, "Verify that popstate event from click-initiated script is NOT measured.");
+</script>
+</body>
+</html>

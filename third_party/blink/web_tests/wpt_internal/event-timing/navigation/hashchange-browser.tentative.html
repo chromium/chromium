@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8>
+<title>Event Timing: hashchange event from browser back.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=/event-timing/resources/event-timing-test-utils.js></script>
+<body>
+  <button id="navigateBack">Go Back!</button>
+<script>
+  navigateBack.onclick = () => {
+    if (testRunner) {
+      testRunner.goToOffset(-1);
+    }
+  };
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported');
+    assert_true(!!window.testRunner, 'testRunner is required');
+    const isEnabled = window.internals && internals.runtimeFlags.navigationEventTimingEnabled;
+    const entries = [];
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        entries.push(entry);
+      }
+    });
+    observer.observe({ type: 'event', durationThreshold: 0 });
+
+    const getEventCount = name => performance.eventCounts.get(name) || 0;
+    assert_equals(performance.interactionCount, 0, 'Initial interactionCount should be 0');
+    assert_equals(getEventCount('hashchange'), 0, 'Initial hashchange count should be 0');
+
+    window.addEventListener('hashchange', (event) => {
+      mainThreadBusy(50);
+    });
+
+    // Stuff our history stack first.
+    history.pushState({}, undefined, "#first");
+    history.pushState({}, undefined, "#second");
+
+    // The events so far have been non-user initiated and should not have
+    // generated event timings.
+    assert_false(entries.some(e => e.name === 'hashchange'));
+    assert_equals(performance.interactionCount, 0, 'interactionCount should be 0 after non-user-initiated hashchange');
+    assert_equals(getEventCount('hashchange'), 0, 'hashchange count should be 0 after non-user-initiated hashchange');
+
+    const initialInteractionCount = performance.interactionCount;
+    const initialHashchangeCount = getEventCount('hashchange');
+
+    // Simulate a back button press.
+    if (test_driver) {
+      await test_driver.click(navigateBack);
+    }
+
+    const verifyMeasured = async () => {
+      await t.step_wait(() => entries.some(e => e.name === 'hashchange'), 'Wait for hashchange entry');
+
+      const hashchangeEntries = entries.filter(e => e.name === 'hashchange');
+      assert_equals(hashchangeEntries.length, 1, 'Should have exactly one hashchange entry');
+      assert_greater_than(hashchangeEntries[0].interactionId, 0, 'Hashchange entry should have a non-zero interactionId');
+
+      assert_equals(performance.interactionCount, initialInteractionCount + 2, 'Interaction count should increase by 2');
+      assert_equals(getEventCount('hashchange'), initialHashchangeCount + 1, 'Hashchange event count should increase by 1');
+    };
+
+    const verifyNotMeasured = async () => {
+      await new Promise(resolve => t.step_timeout(resolve, 500));
+      assert_false(entries.some(e => e.name === 'hashchange'), 'Hashchange entry should NOT be reported');
+
+      assert_equals(performance.interactionCount, initialInteractionCount + 1, 'Interaction count should increase by 1');
+      assert_equals(getEventCount('hashchange'), initialHashchangeCount, 'Hashchange event count should NOT increase');
+    };
+
+    if (isEnabled) {
+      await verifyMeasured();
+    } else {
+      await verifyNotMeasured();
+    }
+  }, "Verify that hashchange event has a non-zero interactionId when triggered by browser back button.");
+</script>
+</body>
+</html>

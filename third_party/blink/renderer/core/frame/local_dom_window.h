@@ -454,9 +454,12 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   void EnqueueWindowEvent(Event&, TaskType);
   void EnqueueDocumentEvent(Event&, TaskType);
   void EnqueueNonPersistedPageshowEvent();
-  void EnqueueHashchangeEvent(const String& old_url, const String& new_url);
+  void EnqueueHashchangeEvent(const String& old_url,
+                              const String& new_url,
+                              UserNavigationInvolvement involvement);
   void DispatchPopstateEvent(scoped_refptr<SerializedScriptValue>,
-                             bool has_ua_visual_transition);
+                             bool has_ua_visual_transition,
+                             UserNavigationInvolvement involvement);
   void DispatchWindowLoadEvent();
   void DocumentWasClosed();
 

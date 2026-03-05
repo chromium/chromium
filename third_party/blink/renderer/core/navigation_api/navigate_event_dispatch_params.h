@@ -21,9 +21,6 @@ class Element;
 class HistoryItem;
 class SerializedScriptValue;
 
-// TODO(japhet): This should probably move to frame_loader_types.h and possibly
-// be used more broadly once it is in the HTML spec.
-enum class UserNavigationInvolvement { kBrowserUI, kActivation, kNone };
 enum class NavigateEventType {
   kFragment,
   kHistoryApi,

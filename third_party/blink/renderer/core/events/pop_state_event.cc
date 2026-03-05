@@ -46,9 +46,11 @@ PopStateEvent* PopStateEvent::Create(ScriptState* script_state,
 PopStateEvent* PopStateEvent::Create(
     scoped_refptr<SerializedScriptValue> serialized_state,
     History* history,
-    bool has_ua_visual_transition) {
+    bool has_ua_visual_transition,
+    UserNavigationInvolvement involvement) {
   return MakeGarbageCollected<PopStateEvent>(std::move(serialized_state),
-                                             history, has_ua_visual_transition);
+                                             history, has_ua_visual_transition,
+                                             involvement);
 }
 
 PopStateEvent::PopStateEvent(ScriptState* script_state,
@@ -67,11 +69,13 @@ PopStateEvent::PopStateEvent(ScriptState* script_state,
 PopStateEvent::PopStateEvent(
     scoped_refptr<SerializedScriptValue> serialized_state,
     History* history,
-    bool has_ua_visual_transition)
+    bool has_ua_visual_transition,
+    UserNavigationInvolvement involvement)
     : Event(event_type_names::kPopstate, Bubbles::kNo, Cancelable::kNo),
       serialized_state_(std::move(serialized_state)),
       history_(history),
-      has_ua_visual_transition_(has_ua_visual_transition) {}
+      has_ua_visual_transition_(has_ua_visual_transition),
+      user_navigation_involvement_(involvement) {}
 
 ScriptValue PopStateEvent::state(ScriptState* script_state,
                                  ExceptionState& exception_state) {

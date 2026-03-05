@@ -67,6 +67,7 @@ class CORE_EXPORT ResponsivenessMetrics
   // Categorical handlers for different interaction types.
   void HandleKeyboardInteraction(PerformanceEventTiming* entry);
   void HandlePointerInteraction(PerformanceEventTiming* entry);
+  void HandleNavigationInteraction(PerformanceEventTiming* entry);
   void HandleCompositionInteraction(PerformanceEventTiming* entry);
 
   // ID Management
@@ -80,6 +81,9 @@ class CORE_EXPORT ResponsivenessMetrics
   // associated maps. Returns the new ID.
   PerformanceTimelineEntryIdInfo AssignNewPointerInteractionId(
       PointerId pointer_id);
+  // Assigns a new interaction ID for a navigation interaction and updates the
+  // associated maps. Returns the new ID.
+  PerformanceTimelineEntryIdInfo AssignNewNavigationInteractionId();
 
   void CommitAllPendingPointerdowns();
 
@@ -134,6 +138,11 @@ class CORE_EXPORT ResponsivenessMetrics
   // recent keydown.
   std::optional<PerformanceTimelineEntryIdInfo> last_keydown_interaction_id_;
 
+  // Popstate and hashchange events can reuse the most recent navigate
+  // interaction ID.
+  PerformanceTimelineEntryIdInfo last_navigate_interaction_id_ =
+      PerformanceTimelineEntryIdInfo::kNone;
+
   // Ideally this type would be `PointerID` type, but that is signed value and
   // might take on -1 (for |kReservedNonPointerId|) or
   // std::numeric_limits<int>::max() (for |kMousePointerId|), so we cannot use
@@ -162,6 +171,8 @@ class CORE_EXPORT ResponsivenessMetrics
   base::TimeTicks current_interaction_event_queued_timestamp_;
 
   PerformanceTimelineEntryIdGenerator interaction_id_generator_;
+
+  uint32_t navigation_interaction_count_ = 0;
 
   // Whether to perform UKM sampling.
   bool sampling_ = true;

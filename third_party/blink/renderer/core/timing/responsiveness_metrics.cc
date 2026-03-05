@@ -116,7 +116,10 @@ bool IsEventTypeForInteractionId(const AtomicString& type) {
          type == event_type_names::kCompositionstart ||
          type == event_type_names::kCompositionupdate ||
          type == event_type_names::kCompositionend ||
-         type == event_type_names::kInput;
+         type == event_type_names::kInput ||
+         type == event_type_names::kNavigate ||
+         type == event_type_names::kPopstate ||
+         type == event_type_names::kHashchange;
 }
 
 }  // namespace
@@ -165,6 +168,14 @@ void ResponsivenessMetrics::TryAssignInteractionId(
   if (reporting_info.pointer_id.has_value() ||
       event_type == event_type_names::kClick) {
     HandlePointerInteraction(new_entry);
+    return;
+  }
+
+  // 4. Navigate, Popstate, and Hashchange events use the navigate handler.
+  if (event_type == event_type_names::kNavigate ||
+      event_type == event_type_names::kPopstate ||
+      event_type == event_type_names::kHashchange) {
+    HandleNavigationInteraction(new_entry);
     return;
   }
 
@@ -223,6 +234,61 @@ void ResponsivenessMetrics::HandleKeyboardInteraction(
   NOTREACHED(base::NotFatalUntil::M151);
 
   SetInteractionId(new_entry, PerformanceTimelineEntryIdInfo::kNone);
+}
+
+void ResponsivenessMetrics::HandleNavigationInteraction(
+    PerformanceEventTiming* new_entry) {
+  CHECK(new_entry);
+  const AtomicString& event_type = new_entry->name();
+
+  if (event_type == event_type_names::kNavigate) {
+    // If this navigation related event is perfectly nested inside an
+    // interaction we simply reuse its interactionId.  This helps map click
+    // event with a link default action to navigate.  Otherwise, create a new
+    // interaction.
+    if (auto* scoped_entry = window_performance_->GetTopMostEventTimingEntry();
+        scoped_entry && scoped_entry->IsKnownToBeAnInteraction()) {
+      SetInteractionId(new_entry, *scoped_entry->GetInteractionIdInfo());
+    } else {
+      SetInteractionId(new_entry, AssignNewNavigationInteractionId());
+    }
+    last_navigate_interaction_id_ = *new_entry->GetInteractionIdInfo();
+    return;
+  }
+
+  if (event_type == event_type_names::kPopstate ||
+      event_type == event_type_names::kHashchange) {
+    // These events *usually* come immediately after a navigate event, and so
+    // will just re-use the last navigation interaction id.  However, they may
+    // not (e.g. because the Navigation API is disabled in the document, like an
+    // initial empty document or opaque origin). See
+    // NavigationApi::HasEntriesAndEventsDisabled().
+    if (last_navigate_interaction_id_ ==
+        PerformanceTimelineEntryIdInfo::kNone) {
+      // If we don't have a navigation id, check if we are perfectly nested
+      // within another interaction event, in case this is triggered by a click.
+      if (auto* scoped_entry =
+              window_performance_->GetTopMostEventTimingEntry();
+          scoped_entry && scoped_entry->IsKnownToBeAnInteraction()) {
+        last_navigate_interaction_id_ = *scoped_entry->GetInteractionIdInfo();
+      }
+      // Rare: Otherwise, we leave the last navigate interaction id |kNone|.
+      // We don't need to report these events in this trailing cases.
+    }
+    SetInteractionId(new_entry, last_navigate_interaction_id_);
+    return;
+  }
+
+  NOTREACHED(base::NotFatalUntil::M151);
+
+  // This fallback just ensures the Event Timing queue doesn't get stuck.
+  SetInteractionId(new_entry, last_navigate_interaction_id_);
+}
+
+PerformanceTimelineEntryIdInfo
+ResponsivenessMetrics::AssignNewNavigationInteractionId() {
+  navigation_interaction_count_++;
+  return interaction_id_generator_.IncrementId();
 }
 
 void ResponsivenessMetrics::HandleCompositionInteraction(
@@ -592,12 +658,17 @@ void ResponsivenessMetrics::FlushAllEvents() {
   keycode_to_interactionid_.clear();
   pointerid_to_interactionid_.clear();
   last_keydown_interaction_id_ = std::nullopt;
+  last_navigate_interaction_id_ = PerformanceTimelineEntryIdInfo::kNone;
   reported_interactions_in_frame_.clear();
   last_recorded_frame_index_ = std::nullopt;
 }
 
 uint32_t ResponsivenessMetrics::GetInteractionCount() const {
-  return interaction_id_generator_.GetValue().offset;
+  auto interaction_count = interaction_id_generator_.GetValue().offset;
+  if (!RuntimeEnabledFeatures::NavigationEventTimingEnabled()) {
+    interaction_count -= navigation_interaction_count_;
+  }
+  return interaction_count;
 }
 
 void ResponsivenessMetrics::SetCurrentInteractionEventQueuedTimestamp(

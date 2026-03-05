@@ -199,7 +199,7 @@ DispatchEventResult EventDispatcher::Dispatch() {
     window = frame->DomWindow();
   }
 
-  EventTiming event_timing(frame, *event_, event_->RawTarget());
+  UIEventTiming event_timing(frame, *event_, event_->RawTarget());
 
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
       view_) {

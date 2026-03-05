@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<meta charset=utf-8>
+<title>Event Timing: hashchange event from click-initiated script.</title>
+<script src=/resources/testharness.js></script>
+<script src=/resources/testharnessreport.js></script>
+<script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-vendor.js></script>
+<script src=/event-timing/resources/event-timing-test-utils.js></script>
+<body>
+  <button id="button">Click me</button>
+<script>
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, 'Event Timing is not supported');
+    const isEnabled = window.internals && internals.runtimeFlags.navigationEventTimingEnabled;
+    const entries = [];
+    const observer = new PerformanceObserver((list) => {
+      for (const entry of list.getEntries()) {
+        entries.push(entry);
+      }
+    });
+    observer.observe({ type: 'event', durationThreshold: 0 });
+
+    const getEventCount = name => performance.eventCounts.get(name) || 0;
+    assert_equals(performance.interactionCount, 0, 'Initial interactionCount should be 0');
+    assert_equals(getEventCount('hashchange'), 0, 'Initial hashchange count should be 0');
+
+    window.addEventListener('hashchange', (event) => {
+      mainThreadBusy(50);
+    });
+
+    button.addEventListener('click', (e) => {
+      if (e.isTrusted) {
+        location.hash = '#script-' + Math.random();
+      }
+    });
+
+    assert_false(entries.some(e => e.name === 'hashchange'), 'Hashchange entry should not be reported before click');
+
+    const initialInteractionCount = performance.interactionCount;
+    const initialHashchangeCount = getEventCount('hashchange');
+
+    // Simulate a button press.
+    if (test_driver) {
+      await test_driver.click(button);
+    }
+
+    const verifyNotMeasured = async () => {
+      await new Promise(resolve => t.step_timeout(resolve, 500));
+      assert_false(entries.some(e => e.name === 'hashchange'), 'Hashchange entry should NOT be reported');
+
+      assert_equals(performance.interactionCount, initialInteractionCount + 1, 'Interaction count should increase by 1');
+      assert_equals(getEventCount('hashchange'), initialHashchangeCount, 'Hashchange event count should NOT increase');
+    };
+
+    // Regardless of flag, we expect unmeasured
+    await verifyNotMeasured();
+  }, "Verify that hashchange event from click-initiated script is NOT measured.");
+</script>
+</body>
+</html>

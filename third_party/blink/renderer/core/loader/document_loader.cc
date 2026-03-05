@@ -1000,6 +1000,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
     WebFrameLoadType type,
     FirePopstate fire_popstate,
     bool should_skip_screenshot,
+    UserNavigationInvolvement involvement,
     bool is_browser_initiated,
     bool is_synchronously_committed) {
   // We use the security origin of this frame since callers of this method must
@@ -1011,7 +1012,7 @@ void DocumentLoader::RunURLAndHistoryUpdateSteps(
       new_url, history_item, same_document_navigation_type, std::move(data),
       type, fire_popstate, frame_->DomWindow()->GetSecurityOrigin(),
       is_browser_initiated, is_synchronously_committed,
-      LocalFrame::HasTransientUserActivation(frame_),
+      LocalFrame::HasTransientUserActivation(frame_), involvement,
       /*has_ua_visual_transition*/ false, should_skip_screenshot);
 }
 
@@ -1026,6 +1027,7 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     bool is_browser_initiated,
     bool is_synchronously_committed,
     bool has_transient_user_activation,
+    UserNavigationInvolvement involvement,
     bool has_ua_visual_transition,
     bool should_skip_screenshot) {
   CHECK_EQ(IsBackForwardOrRestore(type), !!history_item);
@@ -1155,8 +1157,8 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
       scoped_refptr<SerializedScriptValue> state_object =
           history_item ? history_item->StateObject()
                        : SerializedScriptValue::NullValue();
-      frame_->DomWindow()->DispatchPopstateEvent(std::move(state_object),
-                                                 has_ua_visual_transition);
+      frame_->DomWindow()->DispatchPopstateEvent(
+          std::move(state_object), has_ua_visual_transition, involvement);
     }
   }
 
@@ -1625,6 +1627,14 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
   if (Page* page = frame_->GetPage())
     page->HistoryNavigationVirtualTimePauser().UnpauseVirtualTime();
 
+  UserNavigationInvolvement involvement = UserNavigationInvolvement::kNone;
+  if (is_browser_initiated) {
+    involvement = UserNavigationInvolvement::kBrowserUI;
+  } else if (triggering_event_info ==
+             mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
+    involvement = UserNavigationInvolvement::kActivation;
+  }
+
   if (frame_->GetDocument()->IsFrameSet()) {
     // Navigations in a frameset are always cross-document. Renderer-initiated
     // navigations in a frameset will be deferred to the browser, and all
@@ -1701,12 +1711,7 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
   if (!same_item_sequence_number) {
     auto* params = MakeGarbageCollected<NavigateEventDispatchParams>(
         url, NavigateEventType::kFragment, frame_load_type);
-    if (is_browser_initiated) {
-      params->involvement = UserNavigationInvolvement::kBrowserUI;
-    } else if (triggering_event_info ==
-               mojom::blink::TriggeringEventInfo::kFromTrustedEvent) {
-      params->involvement = UserNavigationInvolvement::kActivation;
-    }
+    params->involvement = involvement;
     params->source_element = source_element;
     params->destination_item = history_item;
     params->is_browser_initiated = is_browser_initiated;
@@ -1741,14 +1746,14 @@ mojom::CommitResult DocumentLoader::CommitSameDocumentNavigation(
                 WrapPersistent(history_item), same_document_navigation_type,
                 client_redirect_policy, has_transient_user_activation,
                 blink::RetainedRef(initiator_origin), is_browser_initiated,
-                is_synchronously_committed, triggering_event_info,
+                is_synchronously_committed, triggering_event_info, involvement,
                 has_ua_visual_transition, should_skip_screenshot));
   } else {
     CommitSameDocumentNavigationInternal(
         url, frame_load_type, history_item, same_document_navigation_type,
         client_redirect_policy, has_transient_user_activation, initiator_origin,
         is_browser_initiated, is_synchronously_committed, triggering_event_info,
-        has_ua_visual_transition, should_skip_screenshot);
+        involvement, has_ua_visual_transition, should_skip_screenshot);
   }
   return mojom::CommitResult::Ok;
 }
@@ -1764,6 +1769,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     bool is_browser_initiated,
     bool is_synchronously_committed,
     mojom::blink::TriggeringEventInfo triggering_event_info,
+    UserNavigationInvolvement involvement,
     bool has_ua_visual_transition,
     bool should_skip_screenshot) {
   // If this function was scheduled to run asynchronously, this DocumentLoader
@@ -1798,7 +1804,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
     // If we were in the autoscroll/middleClickAutoscroll mode we want to stop
     // it before following the link to the anchor
     frame_->GetEventHandler().StopAutoscroll();
-    frame_->DomWindow()->EnqueueHashchangeEvent(old_url, url);
+    frame_->DomWindow()->EnqueueHashchangeEvent(old_url, url, involvement);
   }
   is_client_redirect_ =
       client_redirect == ClientRedirectPolicy::kClientRedirect;
@@ -1817,7 +1823,7 @@ void DocumentLoader::CommitSameDocumentNavigationInternal(
       url, history_item, same_document_navigation_type, nullptr,
       frame_load_type, FirePopstate::kYes, initiator_origin,
       is_browser_initiated, is_synchronously_committed,
-      has_transient_user_activation, has_ua_visual_transition,
+      has_transient_user_activation, involvement, has_ua_visual_transition,
       should_skip_screenshot);
   if (!frame_)
     return;

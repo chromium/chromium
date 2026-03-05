@@ -141,6 +141,7 @@
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_type_policy_factory.h"
@@ -1011,21 +1012,25 @@ void LocalDOMWindow::DispatchPagehideEvent(
       document_.Get());
 }
 
-void LocalDOMWindow::EnqueueHashchangeEvent(const String& old_url,
-                                            const String& new_url) {
+void LocalDOMWindow::EnqueueHashchangeEvent(
+    const String& old_url,
+    const String& new_url,
+    UserNavigationInvolvement involvement) {
   // https://html.spec.whatwg.org/C/#history-traversal
-  EnqueueWindowEvent(*HashChangeEvent::Create(old_url, new_url),
+  EnqueueWindowEvent(*HashChangeEvent::Create(old_url, new_url, involvement),
                      TaskType::kDOMManipulation);
 }
 
 void LocalDOMWindow::DispatchPopstateEvent(
     scoped_refptr<SerializedScriptValue> state_object,
-    bool has_ua_visual_transition) {
+    bool has_ua_visual_transition,
+    UserNavigationInvolvement involvement) {
   DCHECK(GetFrame());
-  DispatchEvent(*PopStateEvent::Create(std::move(state_object), history(),
-                                       has_ua_visual_transition));
+  auto* event = PopStateEvent::Create(std::move(state_object), history(),
+                                      has_ua_visual_transition, involvement);
+  NavigationEventTiming event_timing_scope(GetFrame(), *event, this);
+  DispatchEvent(*event);
 }
-
 LocalDOMWindow::~LocalDOMWindow() = default;
 
 void LocalDOMWindow::Dispose() {

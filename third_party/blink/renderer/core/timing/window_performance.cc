@@ -451,6 +451,7 @@ void WindowPerformance::BuildJSONValue(V8ObjectBuilder& builder) const {
 void WindowPerformance::Trace(Visitor* visitor) const {
   visitor->Trace(event_timing_entries_);
   visitor->Trace(entries_waiting_for_interaction_id_for_issue328902994_);
+  visitor->Trace(active_event_timing_entries_);
   visitor->Trace(first_pointer_down_event_timing_);
   visitor->Trace(event_counts_);
   visitor->Trace(navigation_);
@@ -583,7 +584,8 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
       .enqueued_to_main_thread_time =
           responsiveness_metrics_->CurrentInteractionEventQueuedTimestamp(),
       .processing_start_time = processing_start,
-      .is_processing_fully_nested_in_another_event = (event_nesting_level_ > 0),
+      .is_processing_fully_nested_in_another_event =
+          !active_event_timing_entries_.empty(),
   };
 
   if (pointer_event) {
@@ -629,7 +631,7 @@ PerformanceEventTiming* WindowPerformance::EventTimingProcessingStart(
   event_timing_entries_.push_back(entry);
 
   current_event_ = &event;
-  event_nesting_level_++;
+  active_event_timing_entries_.push_back(entry);
 
   responsiveness_metrics_->TryAssignInteractionId(entry);
 
@@ -645,8 +647,8 @@ void WindowPerformance::EventTimingProcessingEnd(
   CHECK(!processing_end.is_null());
 
   CHECK(entry);
-  CHECK_GT(event_nesting_level_, 0u);
-  event_nesting_level_--;
+  CHECK(!active_event_timing_entries_.empty());
+  active_event_timing_entries_.pop_back();
 
   const AtomicString& event_type = entry->name();
 
@@ -1116,6 +1118,14 @@ void WindowPerformance::FlushEventTiming(
     InteractiveDetector* interactive_detector,
     Member<PerformanceEventTiming> entry) {
   CHECK(entry);
+
+  // Some events (like `navigate` or `popstate`) are gated on a feature flag.
+  // We always measure them, but don't always report them to metrics/tracing/
+  // perf timeline. `eventCounts()` has a map of supported event types.
+  if (!eventCounts()->IsSupportedEventType(entry->name())) {
+    return;
+  }
+
   if (base::FeatureList::IsEnabled(kEventTimingReportingInStrictOrderOnly)) {
     CHECK(entry->IsReadyForReporting());
   } else {

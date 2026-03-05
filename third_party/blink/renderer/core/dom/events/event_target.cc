@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/pointer_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
@@ -1154,6 +1155,12 @@ void EventTarget::DispatchEnqueuedEvent(
   std::optional<scheduler::TaskAttributionTracker::TaskScope> task_scope(
       SetCurrentTaskStateIfTopLevel(task_state, GetExecutionContext(),
                                     TaskScopeType::kMiscEvent));
+  // Wrap enqueued events in NavigationEventTiming. This is needed for
+  // hashchange (and has no effect for other enqueued events that are not
+  // navigation events).
+  NavigationEventTiming event_timing_scope(
+      ExecutingWindow() ? ExecutingWindow()->GetFrame() : nullptr, *event,
+      this);
   DispatchEvent(*event);
 }
 

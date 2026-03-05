@@ -32,10 +32,14 @@ void FragmentDirectiveUtils::RemoveSelectorsFromUrl(LocalFrame* frame) {
   // fragment shown in the URL matches the state of the highlight on the page.
   // This is equivalent to history.replaceState in javascript.
   // Won't need to screenshot because this is a replace navigation.
+  // TODO(crbug.com/489832281): This seems like it will fire popstate but not
+  // the navigate event, which prevents us from setting a
+  // `UserNavigationInvolvement::kActivation` here.
   frame->DomWindow()->document()->Loader()->RunURLAndHistoryUpdateSteps(
       url, nullptr, mojom::blink::SameDocumentNavigationType::kFragment,
       /*data=*/nullptr, WebFrameLoadType::kReplaceCurrentItem,
-      FirePopstate::kYes, /*should_skip_screenshot=*/true);
+      FirePopstate::kYes, /*should_skip_screenshot=*/true,
+      UserNavigationInvolvement::kNone);
 }
 
 }  // namespace blink

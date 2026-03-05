@@ -396,7 +396,8 @@ void History::StateObjectAdded(scoped_refptr<SerializedScriptValue> data,
   constexpr bool should_skip_screenshot = false;
   window->document()->Loader()->RunURLAndHistoryUpdateSteps(
       full_url, nullptr, mojom::blink::SameDocumentNavigationType::kHistoryApi,
-      std::move(data), type, FirePopstate::kNo, should_skip_screenshot);
+      std::move(data), type, FirePopstate::kNo, should_skip_screenshot,
+      params->involvement);
 }
 
 }  // namespace blink

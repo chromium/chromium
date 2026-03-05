@@ -966,6 +966,16 @@
     "expires": "Dec 1, 2026"
   },
   {
+    "prefix": "event-timing-navigation-events",
+    "owners": ["mmocny@chromium.org"],
+    "platforms": ["Linux", "Mac", "Win"],
+    "bases": [
+      "wpt_internal/event-timing/navigation"
+    ],
+    "args": ["--enable-blink-features=NavigationEventTiming"],
+    "expires": "Dec 1, 2026"
+  },
+  {
     "prefix": "exotic-color-space",
     "owners": [
       "ccameron@chromium.org"

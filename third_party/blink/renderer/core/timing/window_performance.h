@@ -215,6 +215,13 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   const Event* GetCurrentEventTimingEvent() { return current_event_.Get(); }
 
+  PerformanceEventTiming* GetTopMostEventTimingEntry() const {
+    if (active_event_timing_entries_.empty()) {
+      return nullptr;
+    }
+    return active_event_timing_entries_.front();
+  }
+
   void CreateNavigationTimingInstance(
       mojom::blink::ResourceTimingInfoPtr navigation_resource_timing);
 
@@ -296,6 +303,8 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   HeapVector<Member<PerformanceEventTiming>>
       entries_waiting_for_interaction_id_for_issue328902994_;
 
+  HeapVector<Member<PerformanceEventTiming>> active_event_timing_entries_;
+
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;
@@ -326,8 +335,6 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   // Calculate responsiveness metrics and record UKM for them.
   Member<ResponsivenessMetrics> responsiveness_metrics_;
-
-  uint32_t event_nesting_level_ = 0;
 
   // The event we are currently processing.
   WeakMember<const Event> current_event_;

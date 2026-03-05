@@ -47,6 +47,7 @@
 #include "third_party/blink/renderer/core/navigation_api/navigation_type_util.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/route_matching/route_map.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/platform/bindings/exception_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -852,7 +853,11 @@ NavigationApi::DispatchResult NavigationApi::DispatchNavigateEvent(
   }
 
   has_dropped_navigation_ = false;
-  DispatchEvent(*navigate_event);
+  {
+    NavigationEventTiming event_timing_scope(window_->GetFrame(),
+                                             *navigate_event, this);
+    DispatchEvent(*navigate_event);
+  }
 
   if (navigate_event->defaultPrevented()) {
     if (IsBackForwardOrRestore(params->frame_load_type) &&

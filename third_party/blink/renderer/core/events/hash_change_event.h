@@ -25,6 +25,8 @@
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/core/loader/frame_loader_types.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -36,8 +38,10 @@ class HashChangeEvent final : public Event {
     return MakeGarbageCollected<HashChangeEvent>();
   }
 
-  static HashChangeEvent* Create(const String& old_url, const String& new_url) {
-    return MakeGarbageCollected<HashChangeEvent>(old_url, new_url);
+  static HashChangeEvent* Create(const String& old_url,
+                                 const String& new_url,
+                                 UserNavigationInvolvement involvement) {
+    return MakeGarbageCollected<HashChangeEvent>(old_url, new_url, involvement);
   }
 
   static HashChangeEvent* Create(const AtomicString& type,
@@ -46,10 +50,13 @@ class HashChangeEvent final : public Event {
   }
 
   HashChangeEvent() = default;
-  HashChangeEvent(const String& old_url, const String& new_url)
+  HashChangeEvent(const String& old_url,
+                  const String& new_url,
+                  UserNavigationInvolvement involvement)
       : Event(event_type_names::kHashchange, Bubbles::kNo, Cancelable::kNo),
         old_url_(old_url),
-        new_url_(new_url) {}
+        new_url_(new_url),
+        user_navigation_involvement_(involvement) {}
   HashChangeEvent(const AtomicString& type,
                   const HashChangeEventInit* initializer)
       : Event(type, initializer) {
@@ -62,6 +69,10 @@ class HashChangeEvent final : public Event {
   const String& oldURL() const { return old_url_; }
   const String& newURL() const { return new_url_; }
 
+  bool IsUserInitiated() const {
+    return user_navigation_involvement_ != UserNavigationInvolvement::kNone;
+  }
+
   const AtomicString& InterfaceName() const override {
     return event_interface_names::kHashChangeEvent;
   }
@@ -71,6 +82,15 @@ class HashChangeEvent final : public Event {
  private:
   String old_url_;
   String new_url_;
+  const UserNavigationInvolvement user_navigation_involvement_ =
+      UserNavigationInvolvement::kNone;
+};
+
+template <>
+struct DowncastTraits<HashChangeEvent> {
+  static bool AllowFrom(const Event& event) {
+    return event.InterfaceName() == event_interface_names::kHashChangeEvent;
+  }
 };
 
 }  // namespace blink

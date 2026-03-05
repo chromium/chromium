@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/timing/event_counts.h"
 
 #include "third_party/blink/renderer/core/event_type_names.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
@@ -41,7 +42,9 @@ class EventCountsIterationSource final
 
 void EventCounts::Add(const AtomicString& event_type) {
   auto iterator = event_count_map_.find(event_type);
-  CHECK_NE(iterator, event_count_map_.end());
+  if (iterator == event_count_map_.end()) {
+    return;
+  }
   iterator->value++;
 }
 
@@ -90,6 +93,11 @@ EventCounts::EventCounts() {
         event_type_names::kDragover, event_type_names::kDrop}));
   for (const auto& type : event_types) {
     event_count_map_.insert(type, 0u);
+  }
+  if (RuntimeEnabledFeatures::NavigationEventTimingEnabled()) {
+    event_count_map_.insert(event_type_names::kNavigate, 0u);
+    event_count_map_.insert(event_type_names::kPopstate, 0u);
+    event_count_map_.insert(event_type_names::kHashchange, 0u);
   }
 }
 

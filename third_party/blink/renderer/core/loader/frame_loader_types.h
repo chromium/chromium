@@ -69,6 +69,16 @@ enum class CancelNavigationReason {
   kOther
 };
 
+enum class UserNavigationInvolvement {
+  // Triggered by interaction with browser UI, i.e. back/forward buttons.
+  kBrowserUI,
+  // Triggered by interaction with Renderer with trusted input that triggered
+  // default actions, i.e. link click.
+  kActivation,
+  // Triggered without direct user involvement, i.e. script.
+  kNone
+};
+
 enum class CommitReason {
   // Committing initial empty document.
   kInitialization,

@@ -248,24 +248,25 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
                                    WebFrameLoadType,
                                    FirePopstate,
                                    bool should_skip_screenshot,
+                                   UserNavigationInvolvement involvement,
                                    bool is_browser_initiated = false,
                                    bool is_synchronously_committed = true);
 
   // |is_synchronously_committed| is described in comment for
   // CommitSameDocumentNavigation.
-  void UpdateForSameDocumentNavigation(
-      const KURL&,
-      HistoryItem*,
-      mojom::blink::SameDocumentNavigationType,
-      scoped_refptr<SerializedScriptValue>,
-      WebFrameLoadType,
-      FirePopstate,
-      const SecurityOrigin* initiator_origin,
-      bool is_browser_initiated,
-      bool is_synchronously_committed,
-      bool has_transient_user_activation,
-      bool has_ua_visual_transition,
-      bool should_skip_screenshot);
+  void UpdateForSameDocumentNavigation(const KURL&,
+                                       HistoryItem*,
+                                       mojom::blink::SameDocumentNavigationType,
+                                       scoped_refptr<SerializedScriptValue>,
+                                       WebFrameLoadType,
+                                       FirePopstate,
+                                       const SecurityOrigin* initiator_origin,
+                                       bool is_browser_initiated,
+                                       bool is_synchronously_committed,
+                                       bool has_transient_user_activation,
+                                       UserNavigationInvolvement involvement,
+                                       bool has_ua_visual_transition,
+                                       bool should_skip_screenshot);
 
   const ResourceResponse& GetResponse() const { return response_; }
 
@@ -552,6 +553,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
       bool is_browser_initiated,
       bool is_synchronously_committed,
       mojom::blink::TriggeringEventInfo,
+      UserNavigationInvolvement involvement,
       bool has_ua_visual_transition,
       bool should_skip_screenshot);
 
