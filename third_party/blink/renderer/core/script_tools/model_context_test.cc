@@ -67,11 +67,10 @@ class ModelContextTest : public SimTest {
   }
 
   String EvalJsString(const char* script) {
-    return ToCoreString(Window().GetIsolate(),
-                        MainFrame()
-                            .ExecuteScriptAndReturnValue(
-                                WebScriptSource(WebString::FromUTF8(script)))
-                            .As<v8::String>());
+    return ToCoreStringWithUndefinedOrNullCheck(
+        Window().GetIsolate(),
+        MainFrame().ExecuteScriptAndReturnValue(
+            WebScriptSource(WebString::FromUTF8(script))));
   }
 
  private:

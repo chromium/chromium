@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/public/mojom/file/file_utilities.mojom-blink.h"
+#include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
@@ -2778,6 +2782,75 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_FormAssociatedCustom) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
+namespace {
+
+class MockFileUtilitiesHost : public mojom::blink::FileUtilitiesHost {
+ public:
+  explicit MockFileUtilitiesHost() = default;
+
+  void Bind(mojo::ScopedMessagePipeHandle pipe) {
+    receivers_.Add(this, mojo::PendingReceiver<mojom::blink::FileUtilitiesHost>(
+                             std::move(pipe)));
+  }
+
+  // Synchronous version
+  bool GetFileInfo(const base::FilePath& path,
+                   std::optional<base::File::Info>* out_result) override {
+    if (granted_paths_.Contains(FilePathToString(path))) {
+      base::File::Info info;
+      info.size = 123;
+      info.is_directory = false;
+      info.last_modified = base::Time::Now();
+      *out_result = info;
+    } else {
+      *out_result = std::nullopt;
+    }
+    return true;
+  }
+
+  // Asynchronous version
+  void GetFileInfo(const base::FilePath& path,
+                   GetFileInfoCallback callback) override {
+    std::optional<base::File::Info> result;
+    GetFileInfo(path, &result);
+    std::move(callback).Run(result);
+  }
+
+  void grant_path(const String& path) { granted_paths_.insert(path); }
+
+ private:
+  mojo::ReceiverSet<mojom::blink::FileUtilitiesHost> receivers_;
+  HashSet<String> granted_paths_;
+};
+
+class HTMLFormMcpToolFileInputTest : public HTMLFormMcpToolTest {
+ public:
+  void SetUp() override {
+    HTMLFormMcpToolTest::SetUp();
+    GetDocument()
+        .GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .SetBinderForTesting(
+            mojom::blink::FileUtilitiesHost::Name_,
+            base::BindRepeating(&MockFileUtilitiesHost::Bind,
+                                base::Unretained(&mock_file_host_)));
+  }
+
+  void TearDown() override {
+    GetDocument()
+        .GetExecutionContext()
+        ->GetBrowserInterfaceBroker()
+        .SetBinderForTesting(mojom::blink::FileUtilitiesHost::Name_,
+                             base::NullCallback());
+    HTMLFormMcpToolTest::TearDown();
+  }
+
+ protected:
+  MockFileUtilitiesHost mock_file_host_;
+};
+
+}  // namespace
+
 TEST_F(HTMLFormMcpToolTest, ParameterSchema_FileInput) {
   SetBodyInnerHTML(
       R"HTML(
@@ -2812,7 +2885,7 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_FileInput) {
   EXPECT_EQ(expected_json->ToJSONString(), actual);
 }
 
-TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput) {
+TEST_F(HTMLFormMcpToolFileInputTest, FillFormControls_FileInput) {
   SetBodyInnerHTML(
       R"HTML(
     <form id=form toolname="mytool" tooldescription="perform task">
@@ -2824,21 +2897,17 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput) {
   ASSERT_TRUE(form_element);
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
-  String json_string =
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
-      R"JSON(
-        {
-          "file1": "C:\\Users\\johndoe\\avatar.png"
-        }
-      )JSON"
+  String path = "C:\\Users\\johndoe\\avatar.png";
 #else
-      R"JSON(
-        {
-          "file1": "/home/johndoe/avatar.png"
-        }
-      )JSON"
+  String path = "/home/johndoe/avatar.png";
 #endif
-      ;
+
+  mock_file_host_.grant_path(path);
+
+  auto json_obj = std::make_unique<JSONObject>();
+  json_obj->SetString("file1", path);
+  String json_string = json_obj->ToJSONString();
 
   EXPECT_TRUE(FillFormControls(*form_element, json_string));
 
@@ -2847,14 +2916,10 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput) {
   FileList* file_list = file1->files();
   ASSERT_TRUE(file_list);
   ASSERT_EQ(file_list->length(), 1);
-#if defined(FILE_PATH_USES_DRIVE_LETTERS)
-  EXPECT_EQ(file_list->item(0)->GetPath(), "C:\\Users\\johndoe\\avatar.png");
-#else
-  EXPECT_EQ(file_list->item(0)->GetPath(), "/home/johndoe/avatar.png");
-#endif
+  EXPECT_EQ(file_list->item(0)->GetPath(), path);
 }
 
-TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
+TEST_F(HTMLFormMcpToolFileInputTest, FillFormControls_FileInput_Multiple) {
   SetBodyInnerHTML(
       R"HTML(
     <form id=form toolname="mytool" tooldescription="perform task">
@@ -2866,23 +2931,23 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
   ASSERT_TRUE(form_element);
   ASSERT_TRUE(IsValidWebMCPForm(*form_element));
 
-  String json_string =
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
-      R"JSON(
-        {
-          "file1": [ "C:\\Users\\johndoe\\avatar.png",
-                     "C:\\Users\\johndoe\\avatar_old.png" ]
-        }
-      )JSON"
+  String path1 = "C:\\Users\\johndoe\\avatar.png";
+  String path2 = "C:\\Users\\johndoe\\avatar_old.png";
 #else
-      R"JSON(
-        {
-          "file1": [ "/home/johndoe/avatar.png",
-                     "/home/johndoe/avatar_old.png" ]
-        }
-      )JSON"
+  String path1 = "/home/johndoe/avatar.png";
+  String path2 = "/home/johndoe/avatar_old.png";
 #endif
-      ;
+
+  mock_file_host_.grant_path(path1);
+  mock_file_host_.grant_path(path2);
+
+  auto json_obj = std::make_unique<JSONObject>();
+  auto array = std::make_unique<JSONArray>();
+  array->PushString(path1);
+  array->PushString(path2);
+  json_obj->SetArray("file1", std::move(array));
+  String json_string = json_obj->ToJSONString();
 
   EXPECT_TRUE(FillFormControls(*form_element, json_string));
 
@@ -2891,17 +2956,11 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Multiple) {
   FileList* file_list = file1->files();
   ASSERT_TRUE(file_list);
   ASSERT_EQ(file_list->length(), 2);
-#if defined(FILE_PATH_USES_DRIVE_LETTERS)
-  EXPECT_EQ(file_list->item(0)->GetPath(), "C:\\Users\\johndoe\\avatar.png");
-  EXPECT_EQ(file_list->item(1)->GetPath(),
-            "C:\\Users\\johndoe\\avatar_old.png");
-#else
-  EXPECT_EQ(file_list->item(0)->GetPath(), "/home/johndoe/avatar.png");
-  EXPECT_EQ(file_list->item(1)->GetPath(), "/home/johndoe/avatar_old.png");
-#endif
+  EXPECT_EQ(file_list->item(0)->GetPath(), path1);
+  EXPECT_EQ(file_list->item(1)->GetPath(), path2);
 }
 
-TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Invalid) {
+TEST_F(HTMLFormMcpToolFileInputTest, FillFormControls_FileInput_Invalid) {
   SetBodyInnerHTML(
       R"HTML(
     <form id=form toolname="mytool" tooldescription="perform task">
@@ -2921,6 +2980,32 @@ TEST_F(HTMLFormMcpToolTest, FillFormControls_FileInput_Invalid) {
       )JSON";
 
   // A relative path is not allowed
+  EXPECT_FALSE(FillFormControls(*form_element, json_string));
+}
+
+TEST_F(HTMLFormMcpToolFileInputTest, FillFormControls_FileInput_NotGranted) {
+  SetBodyInnerHTML(
+      R"HTML(
+    <form id=form toolname="mytool" tooldescription="perform task">
+      <input id=file1 name=file1 type=file>
+    </form>
+  )HTML");
+
+  HTMLFormElement* form_element = GetFormElement("form");
+  ASSERT_TRUE(form_element);
+  ASSERT_TRUE(IsValidWebMCPForm(*form_element));
+
+#if defined(FILE_PATH_USES_DRIVE_LETTERS)
+  String path = "C:\\Users\\johndoe\\avatar.png";
+#else
+  String path = "/home/johndoe/avatar.png";
+#endif
+
+  // valid absolute path, but not granted.
+  auto json_obj = std::make_unique<JSONObject>();
+  json_obj->SetString("file1", path);
+  String json_string = json_obj->ToJSONString();
+
   EXPECT_FALSE(FillFormControls(*form_element, json_string));
 }
 

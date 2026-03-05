@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/live_node_list.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
@@ -27,6 +28,7 @@
 #include "third_party/blink/renderer/core/html/forms/step_range.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
+#include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -78,6 +80,25 @@ bool ToBoolean(const JSONValue& value, bool& out) {
       out = false;
       return true;
     }
+  }
+  return false;
+}
+
+bool IsAccessibleFile(const JSONValue& value, HTMLFormElement& form) {
+  CHECK(RuntimeEnabledFeatures::WebMCPDeclarativeFileInputEnabled());
+  ExecutionContext* execution_context =
+      form.GetDocument().GetExecutionContext();
+  if (!execution_context) {
+    return false;
+  }
+  String path_string;
+  if (ToString(value, path_string)) {
+    base::FilePath path = StringToFilePath(path_string);
+    if (!path.IsAbsolute()) {
+      return false;
+    }
+    FileMetadata metadata;
+    return GetFileMetadata(path_string, *execution_context, metadata);
   }
   return false;
 }
@@ -369,27 +390,17 @@ bool FormMCPSchema::ValidateFileData(const ControlVector& controls_for_name,
   }
   auto& input =
       To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement());
-  auto is_absolute_path_string = [](const JSONValue& value) -> bool {
-    String path_string;
-    if (ToString(value, path_string)) {
-      return StringToFilePath(path_string).IsAbsolute();
-    }
-    return false;
-  };
 
   if (input.Multiple()) {
     const JSONArray* array = JSONArray::Cast(&value);
     if (!array) {
       return false;
     }
-    for (const JSONValue& item : *array) {
-      if (!is_absolute_path_string(item)) {
-        return false;
-      }
-    }
-    return true;
+    return std::all_of(
+        array->begin(), array->end(),
+        [&](const JSONValue& item) { return IsAccessibleFile(item, *form_); });
   }
-  return is_absolute_path_string(value);
+  return IsAccessibleFile(value, *form_);
 }
 
 void FormMCPSchema::FillParameterData(const String& name,
@@ -999,24 +1010,24 @@ void FormMCPSchema::FillFileData(const ControlVector& controls_for_name,
   Vector<String> paths;
   auto& file_input =
       To<HTMLInputElement>(controls_for_name.front()->ToHTMLElement());
+
+  auto add_if_valid = [&](const JSONValue& value) {
+    if (!IsAccessibleFile(value, *form_)) {
+      return;
+    }
+    String path_string;
+    ToString(value, path_string);
+    paths.push_back(path_string);
+  };
+
   if (file_input.Multiple()) {
     const JSONArray* array = JSONArray::Cast(&value);
     if (!array) {
       return;
     }
-    for (const JSONValue& item : *array) {
-      String path;
-      if (!ToString(item, path)) {
-        return;
-      }
-      paths.push_back(path);
-    }
+    std::for_each(array->begin(), array->end(), add_if_valid);
   } else {
-    String path;
-    if (!ToString(value, path)) {
-      return;
-    }
-    paths.push_back(path);
+    add_if_valid(value);
   }
   file_input.SetFilesFromPaths(paths);
 }
