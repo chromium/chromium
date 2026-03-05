@@ -1410,10 +1410,9 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
         std::move(contextual_input_data->viewport_screenshot_bytes.value()),
         std::move(image_options), /*file_name=*/std::nullopt,
         base::BindOnce(
-            &ComposeboxQueryController::
-                AddPageIndexToImageUploadRequestAndContinue,
+            &ComposeboxQueryController::AddPageIndexToUploadRequestAndContinue,
             weak_ptr_factory_.GetWeakPtr(),
-            std::move(contextual_input_data->pdf_current_page),
+            contextual_input_data->pdf_current_page,
             base::BindOnce(
                 &ComposeboxQueryController::
                     AddLensUsageIntentToUploadRequestAndContinue,
@@ -1428,10 +1427,9 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
     ProcessDecodedImageAndContinue(
         GetRequestIdForViewportImage(file_token), image_options.value(),
         base::BindOnce(
-            &ComposeboxQueryController::
-                AddPageIndexToImageUploadRequestAndContinue,
+            &ComposeboxQueryController::AddPageIndexToUploadRequestAndContinue,
             weak_ptr_factory_.GetWeakPtr(),
-            std::move(contextual_input_data->pdf_current_page),
+            contextual_input_data->pdf_current_page,
             base::BindOnce(
                 &ComposeboxQueryController::
                     AddLensUsageIntentToUploadRequestAndContinue,
@@ -1473,15 +1471,19 @@ void ComposeboxQueryController::CreateUploadRequestBodiesAndContinue(
           base::BindOnce(
               &CreateFileUploadRequestProtoWithPayloadAndContinue,
               file_info->request_id.value(), CreateClientContext(),
-
               base::BindOnce(
                   &ComposeboxQueryController::
                       AddLensUsageIntentToUploadRequestAndContinue,
                   weak_ptr_factory_.GetWeakPtr(), has_lens_usage_intent,
                   base::BindOnce(
-                      &ComposeboxQueryController::OnUploadRequestBodyReady,
-                      weak_ptr_factory_.GetWeakPtr(), file_token,
-                      file_info->num_outstanding_network_requests_++))));
+                      &ComposeboxQueryController::
+                          AddPageIndexToUploadRequestAndContinue,
+                      weak_ptr_factory_.GetWeakPtr(),
+                      contextual_input_data->pdf_current_page,
+                      base::BindOnce(
+                          &ComposeboxQueryController::OnUploadRequestBodyReady,
+                          weak_ptr_factory_.GetWeakPtr(), file_token,
+                          file_info->num_outstanding_network_requests_++)))));
       break;
     case lens::MimeType::kImage:
       if (contextual_input_data->context_input.has_value() &&
@@ -1529,7 +1531,7 @@ void ComposeboxQueryController::AddLensUsageIntentToUploadRequestAndContinue(
   std::move(callback).Run(std::move(request), error_type);
 }
 
-void ComposeboxQueryController::AddPageIndexToImageUploadRequestAndContinue(
+void ComposeboxQueryController::AddPageIndexToUploadRequestAndContinue(
     std::optional<size_t> pdf_page_index,
     RequestBodyProtoCreatedCallback callback,
     lens::LensOverlayServerRequest request,
