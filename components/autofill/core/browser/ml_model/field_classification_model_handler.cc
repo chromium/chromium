@@ -408,8 +408,15 @@ void FieldClassificationModelHandler::OnModelUpdated(
   }
   state.encoder = FieldClassificationModelEncoder(
       state.metadata.input_token(), state.metadata.encoding_parameters());
-  // Avoid duplication with the ModelEncoder.
+  // Protobuf's `RepeatedPtrField::Clear()` only resets the size to 0
+  // and does not free the underlying memory. See:
+  // https://source.chromium.org/chromium/chromium/src/+/main:third_party/protobuf/src/google/protobuf/repeated_ptr_field.h;l=715-728;drc=84e9f8cb8ba9621be941c81af04d33df743f7de4
+  // Since `metadata` is kept in memory indefinitely, we forcefully free the
+  // memory by swapping it with an empty array.
   state.metadata.clear_input_token();
+  google::protobuf::RepeatedPtrField<std::string> empty_tokens;
+  state.metadata.mutable_input_token()->Swap(&empty_tokens);
+
   supported_types_.clear();
   for (int type : state.metadata.output_type()) {
     supported_types_.insert(ToSafeFieldType(FieldType(type), NO_SERVER_DATA));
