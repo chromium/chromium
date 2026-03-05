@@ -12,6 +12,7 @@
 #include "base/byte_count.h"
 #include "base/byte_size.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -307,10 +308,12 @@ std::optional<base::ByteCount> CalculateProcessMemoryFootprint(
   constexpr uint32_t kMaxLineSize = 4096;
   char line[kMaxLineSize];
 
-  int n = UNSAFE_TODO(statm_file.ReadAtCurrentPos(line, sizeof(line) - 1));
-  if (n <= 0)
+  std::optional<size_t> n = statm_file.ReadAtCurrentPos(
+      base::as_writable_byte_span(line).first<kMaxLineSize - 1>());
+  if (!n.has_value()) {
     return std::nullopt;
-  UNSAFE_TODO(line[n]) = '\0';
+  }
+  UNSAFE_TODO(line[*n]) = '\0';
 
   int num_scanned =
       UNSAFE_TODO(sscanf(line, "%" SCNu64 " %" SCNu64 " %" SCNu64,
@@ -319,10 +322,12 @@ std::optional<base::ByteCount> CalculateProcessMemoryFootprint(
     return std::nullopt;
 
   // Get swap size from status file. The format is: VmSwap :  10 kB.
-  n = UNSAFE_TODO(status_file.ReadAtCurrentPos(line, sizeof(line) - 1));
-  if (n <= 0)
+  n = status_file.ReadAtCurrentPos(
+      base::as_writable_byte_span(line).first<kMaxLineSize - 1>());
+  if (!n.has_value()) {
     return std::nullopt;
-  UNSAFE_TODO(line[n]) = '\0';
+  }
+  UNSAFE_TODO(line[*n]) = '\0';
 
   char* swap_line = UNSAFE_TODO(strstr(line, "VmSwap"));
   if (!swap_line)

@@ -4688,10 +4688,8 @@ TEST_F(FileUtilTest, ValidContentUriTest) {
   // We should be able to read the file.
   File file(path, File::FLAG_OPEN | File::FLAG_READ);
   EXPECT_TRUE(file.IsValid());
-  auto buffer = std::make_unique<char[]>(image_size.value());
-  // SAFETY: required for test.
-  EXPECT_TRUE(
-      UNSAFE_BUFFERS(file.ReadAtCurrentPos(buffer.get(), image_size.value())));
+  std::vector<uint8_t> buffer(image_size.value());
+  EXPECT_TRUE(file.ReadAtCurrentPos(buffer));
 }
 
 TEST_F(FileUtilTest, WriteContentUri) {

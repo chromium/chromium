@@ -226,9 +226,6 @@ class BASE_EXPORT File {
   std::optional<size_t> Read(int64_t offset, base::span<uint8_t> data);
 
   // Same as above but without seek.
-  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
-  // least `size` valid bytes.
-  UNSAFE_BUFFER_USAGE int ReadAtCurrentPos(char* data, int size);
   std::optional<size_t> ReadAtCurrentPos(base::span<uint8_t> data);
 
   // Reads the given number of bytes (or until EOF is reached) starting with the
@@ -426,6 +423,10 @@ class BASE_EXPORT File {
 
  private:
   friend class FileTracing::ScopedTrace;
+
+  // PRECONDITIONS: `size` must be non-negative and `data` must point to at
+  // least `size` valid bytes.
+  UNSAFE_BUFFER_USAGE int ReadAtCurrentPos(char* data, int size);
 
   // Creates or opens the given file. Only called if |path| has no
   // traversal ('..') components.

@@ -681,31 +681,6 @@ TEST(FileTest, GetInfoForCreationTime) {
             after_creation_time_s);
 }
 
-TEST(FileTest, ReadAtCurrentPosition) {
-  ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
-  FilePath file_path =
-      temp_dir.GetPath().AppendASCII("read_at_current_position");
-  File file(file_path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
-  EXPECT_TRUE(file.IsValid());
-
-  const char kData[] = "test";
-  const size_t kDataSize = sizeof(kData) - 1;
-  EXPECT_EQ(kDataSize, UNSAFE_TODO(file.Write(0, kData, kDataSize)));
-
-  EXPECT_EQ(0, file.Seek(File::FROM_BEGIN, 0));
-
-  std::array<char, kDataSize> buffer;
-  size_t first_chunk_size = kDataSize / 2;
-  EXPECT_EQ(first_chunk_size, UNSAFE_TODO(file.ReadAtCurrentPos(
-                                  buffer.data(), first_chunk_size)));
-  EXPECT_EQ(kDataSize - first_chunk_size,
-            UNSAFE_TODO(file.ReadAtCurrentPos(
-                base::span(buffer).subspan(first_chunk_size).data(),
-                kDataSize - first_chunk_size)));
-  EXPECT_EQ(std::string(base::as_string_view(buffer)), std::string(kData));
-}
-
 TEST(FileTest, ReadAtCurrentPositionSpans) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
