@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_type.h"
@@ -159,6 +160,8 @@ class DesktopProcessTest : public testing::Test {
           pending_remote);
 
  protected:
+  raw_ptr<DesktopProcess> desktop_process_;
+
   // The daemon's end of the daemon-to-desktop channel.
   std::unique_ptr<IPC::ChannelProxy> daemon_channel_;
 
@@ -295,12 +298,14 @@ void DesktopProcessTest::RunDesktopProcess() {
 
   DesktopProcess desktop_process(ui_task_runner, io_task_runner_,
                                  io_task_runner_, std::move(pipe.handle1));
+  desktop_process_ = &desktop_process;
   EXPECT_TRUE(desktop_process.Start(std::move(desktop_environment_factory)));
 
   daemon_channel_->GetRemoteAssociatedInterface(&worker_process_control_);
 
   ui_task_runner = nullptr;
   run_loop.Run();
+  desktop_process_ = nullptr;
 }
 
 void DesktopProcessTest::RunDeathTest() {

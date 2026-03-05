@@ -111,6 +111,10 @@ class DesktopSessionWin : public DesktopSession,
   void InjectSecureAttentionSequence() override;
   void CrashNetworkProcess() override;
 
+  // DesktopSession implementation.
+  void ReconnectNetworkChannel(
+      const mojom::DesktopSessionOptions& options) override;
+
   // Requests the desktop process to crash.
   void CrashDesktopProcess(const base::Location& location);
 

@@ -6,6 +6,7 @@
 #define REMOTING_SIGNALING_SIGNALING_ID_UTIL_H_
 
 #include <string>
+#include <string_view>
 
 namespace remoting {
 
@@ -24,13 +25,13 @@ std::string NormalizeSignalingId(const std::string& id);
 std::string GetCanonicalEmail(const std::string& email);
 
 // Splits a signaling ID into a the email and a resource suffix.  Either
-// |full_id|, |resource|, or both may be null.  If |full_id| is already an email
+// |email|, |resource|, or both may be null.  If |full_id| is already an email
 // address, |resource| is set to the empty string.  Returns true if |full_id|
 // has a resource, false if not.
 //
 // e.g. "user@domain/resource" -> "user@domain", "resource", true
 //      "user@domain"          -> "user@domain", "",         false
-bool SplitSignalingIdResource(const std::string& full_id,
+bool SplitSignalingIdResource(std::string_view full_id,
                               std::string* email,
                               std::string* resource);
 

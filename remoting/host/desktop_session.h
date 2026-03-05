@@ -7,6 +7,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "remoting/host/mojom/desktop_session.mojom.h"
 
 namespace remoting {
 
@@ -24,6 +25,12 @@ class DesktopSession {
 
   // Changes the screen resolution of the desktop session.
   virtual void SetScreenResolution(const ScreenResolution& resolution) = 0;
+
+  // Requests the desktop process to reconnect the network channel, i.e.
+  // creating a new DesktopSessionAgent instance and passing a new desktop pipe
+  // to the network process via the daemon process.
+  virtual void ReconnectNetworkChannel(
+      const mojom::DesktopSessionOptions& options) = 0;
 
   int id() const { return id_; }
 

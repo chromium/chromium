@@ -253,12 +253,21 @@ struct DesktopSessionOptions {
 // and the receiver is bound in the high-privilege daemon process.
 interface DesktopSessionManager {
   // Creates a chromoting desktop environment for the session identified by
-  // |terminal_id|. This is done by injecting a desktop agent process and
+  // `terminal_id`. This is done by injecting a desktop agent process and
   // establishing IPC channels between the daemon, desktop, and network
   // processes.
   CreateDesktopSession(int32 terminal_id, DesktopSessionOptions options);
 
-  // Closes the desktop session identified by |terminal_id|. This involves
+  // Request the desktop process to reconnect the network channel, i.e. create
+  // a new DesktopSessionAgent and pass a new desktop pipe to the network
+  // process via the daemon process. `terminal_id` must be the terminal ID of
+  // a previously created desktop session that has been disconnected from the
+  // network process, but not closed by calling CloseDesktopSession(). The
+  // desktop process will look at `options` and may terminate itself if the
+  // session is deemed not reconnectable, e.g. `required_username` has changed.
+  ReconnectDesktopSession(int32 terminal_id, DesktopSessionOptions options);
+
+  // Closes the desktop session identified by `terminal_id`. This involves
   // terminating the desktop agent process and removing any references to the
   // session being closed in the daemon and network processes. Not changes are
   // made at an OS level, meaning the user can reconnect to the same session
@@ -266,7 +275,7 @@ interface DesktopSessionManager {
   CloseDesktopSession(int32 terminal_id);
 
   // Sends the updated screen resolution to the desktop agent running in the
-  // |terminal_id| session.
+  // `terminal_id` session.
   SetScreenResolution(int32 terminal_id, ScreenResolution screen_resolution);
 };
 
@@ -673,4 +682,13 @@ interface DesktopSessionStateHandler {
 interface WorkerProcessControl {
   // Instructs the receiving process to crash itself.
   CrashProcess(string function_name, string file_name, int32 line_number);
+};
+
+// Allows the high-privilege daemon process to control the high-privilege
+// desktop process.
+interface DesktopProcessControl {
+  // Request the desktop process to reconnect the network channel, i.e. create
+  // a new DesktopSessionAgent and pass a new desktop pipe to the network
+  // process via the daemon process.
+  ReconnectNetworkChannel();
 };

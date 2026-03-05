@@ -22,6 +22,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/notimplemented.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -706,6 +707,11 @@ void DesktopSessionWin::InjectSecureAttentionSequence() {
 
 void DesktopSessionWin::CrashNetworkProcess() {
   daemon_process()->CrashNetworkProcess(FROM_HERE);
+}
+
+void DesktopSessionWin::ReconnectNetworkChannel(
+    const mojom::DesktopSessionOptions& options) {
+  NOTIMPLEMENTED();
 }
 
 void DesktopSessionWin::CrashDesktopProcess(const base::Location& location) {

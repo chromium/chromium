@@ -11,6 +11,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ipc/ipc_listener.h"
@@ -35,7 +36,8 @@ class DesktopSessionAgent;
 
 class DesktopProcess : public DesktopSessionAgent::Delegate,
                        public IPC::Listener,
-                       public mojom::WorkerProcessControl {
+                       public mojom::WorkerProcessControl,
+                       public mojom::DesktopProcessControl {
  public:
   DesktopProcess(scoped_refptr<AutoThreadTaskRunner> caller_task_runner,
                  scoped_refptr<AutoThreadTaskRunner> input_task_runner,
@@ -64,6 +66,9 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
                     const std::string& file_name,
                     int line_number) override;
 
+  // mojom::DesktopProcessControl implementation.
+  void ReconnectNetworkChannel() override;
+
   // Injects Secure Attention Sequence.
   void InjectSas();
 
@@ -75,7 +80,18 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
   bool Start(
       std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory);
 
+  // Sets a callback that will be run once the network process has disconnected
+  // for testing purposes.
+  void SetOnNetworkProcessDisconnectedCallbackForTesting(
+      base::OnceClosure callback);
+
+  // Sets a callback that will be run once the desktop agent is created for
+  // testing purposes.
+  void SetOnDesktopAgentCreatedCallbackForTesting(base::OnceClosure callback);
+
  private:
+  mojo::ScopedMessagePipeHandle CreateDesktopAgent();
+
   // Task runner on which public methods of this class should be called.
   scoped_refptr<AutoThreadTaskRunner> caller_task_runner_;
 
@@ -84,6 +100,9 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
 
   // Used for IPC communication with Daemon process.
   scoped_refptr<AutoThreadTaskRunner> io_task_runner_;
+
+  // Used for audio capturing and encoding.
+  scoped_refptr<AutoThreadTaskRunner> audio_task_runner_;
 
   // Factory used to create integration components for use by |desktop_agent_|.
   std::unique_ptr<DesktopEnvironmentFactory> desktop_environment_factory_;
@@ -104,6 +123,11 @@ class DesktopProcess : public DesktopSessionAgent::Delegate,
 
   mojo::AssociatedReceiver<mojom::WorkerProcessControl> worker_process_control_{
       this};
+  mojo::AssociatedReceiver<mojom::DesktopProcessControl>
+      desktop_process_control_{this};
+
+  base::OnceClosure on_network_process_disconnected_callback_;
+  base::OnceClosure on_desktop_agent_created_callback_;
 
   base::WeakPtrFactory<DesktopProcess> weak_factory_{this};
 };

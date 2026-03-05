@@ -23,6 +23,7 @@
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/logging.h"
 #include "remoting/host/base/switches.h"
@@ -68,6 +69,8 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
 
   // DesktopSession implementation.
   void SetScreenResolution(const ScreenResolution& resolution) override;
+  void ReconnectNetworkChannel(
+      const mojom::DesktopSessionOptions& options) override;
 
   // WorkerProcessIpcDelegate implementation.
   void OnChannelConnected(int32_t peer_pid) override;
@@ -107,6 +110,8 @@ class DesktopSessionFactoryLinux::DesktopSessionLinux
   mojo::AssociatedReceiver<mojom::DesktopSessionRequestHandler>
       desktop_session_request_handler_ GUARDED_BY_CONTEXT(sequence_checker_){
           this};
+  mojo::AssociatedRemote<mojom::DesktopProcessControl> desktop_process_control_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   base::WeakPtrFactory<DesktopSessionLinux> weak_ptr_factory_{this};
 };
@@ -186,6 +191,9 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::
       std::make_unique<LinuxWorkerProcessLauncherDelegate>(std::move(options),
                                                            io_task_runner_),
       this);
+  desktop_process_control_.reset();
+  launcher_->GetRemoteAssociatedInterface(
+      desktop_process_control_.BindNewEndpointAndPassReceiver());
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::TerminateSession() {
@@ -203,6 +211,24 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::SetScreenResolution(
   NOTIMPLEMENTED_LOG_ONCE();
 }
 
+void DesktopSessionFactoryLinux::DesktopSessionLinux::ReconnectNetworkChannel(
+    const mojom::DesktopSessionOptions& options) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (options.required_username != required_username_) {
+    LOG(ERROR) << "Required username has changed.";
+    TerminateSession();
+    return;
+  }
+
+  if (desktop_process_control_.is_bound()) {
+    desktop_process_control_->ReconnectNetworkChannel();
+  }
+  // If `desktop_process_control_` is not bound, then it means the desktop
+  // process isn't launched yet. It will send the desktop pipe after it is
+  // launched anyway so we don't need to do anything.
+}
+
 void DesktopSessionFactoryLinux::DesktopSessionLinux::OnChannelConnected(
     int32_t peer_pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -218,6 +244,9 @@ void DesktopSessionFactoryLinux::DesktopSessionLinux::OnPermanentError(
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::OnWorkerProcessStopped() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  desktop_process_control_.reset();
 }
 
 void DesktopSessionFactoryLinux::DesktopSessionLinux::

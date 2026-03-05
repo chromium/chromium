@@ -7,11 +7,11 @@
 
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/circular_deque.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/process.h"
@@ -44,8 +44,8 @@ class DaemonProcess : public ConfigWatcher::Delegate,
                       public HostStatusObserver,
                       public mojom::DesktopSessionManager {
  public:
-  typedef std::list<raw_ptr<DesktopSession, CtnExperimental>>
-      DesktopSessionList;
+  using DesktopSessionList =
+      base::circular_deque<raw_ptr<DesktopSession, CtnExperimental>>;
 
   DaemonProcess(const DaemonProcess&) = delete;
   DaemonProcess& operator=(const DaemonProcess&) = delete;
@@ -78,6 +78,9 @@ class DaemonProcess : public ConfigWatcher::Delegate,
   // mojom::DesktopSessionManager implementation.
   void CreateDesktopSession(int terminal_id,
                             mojom::DesktopSessionOptionsPtr options) override;
+  void ReconnectDesktopSession(
+      int terminal_id,
+      mojom::DesktopSessionOptionsPtr options) override;
   void CloseDesktopSession(int terminal_id) override;
   void SetScreenResolution(int terminal_id,
                            const ScreenResolution& resolution) override;

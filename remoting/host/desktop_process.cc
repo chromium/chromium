@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/notreached.h"
 #include "base/task/current_thread.h"
@@ -60,7 +61,13 @@ DesktopEnvironmentFactory& DesktopProcess::desktop_environment_factory() {
 void DesktopProcess::OnNetworkProcessDisconnected() {
   DCHECK(caller_task_runner_->BelongsToCurrentThread());
 
-  OnChannelError();
+  if (desktop_agent_) {
+    desktop_agent_->Stop();
+    desktop_agent_ = nullptr;
+  }
+  if (on_network_process_disconnected_callback_) {
+    std::move(on_network_process_disconnected_callback_).Run();
+  }
 }
 
 void DesktopProcess::CrashNetworkProcess(const base::Location& location) {
@@ -112,6 +119,7 @@ void DesktopProcess::OnChannelError() {
   caller_task_runner_ = nullptr;
   input_task_runner_ = nullptr;
   io_task_runner_ = nullptr;
+  audio_task_runner_ = nullptr;
   desktop_environment_factory_.reset();
 }
 
@@ -129,6 +137,16 @@ void DesktopProcess::OnAssociatedInterfaceRequest(
     mojo::PendingAssociatedReceiver<mojom::WorkerProcessControl>
         pending_receiver(std::move(handle));
     worker_process_control_.Bind(std::move(pending_receiver));
+  } else if (interface_name == mojom::DesktopProcessControl::Name_) {
+    if (desktop_process_control_.is_bound()) {
+      LOG(ERROR) << "Receiver already bound for associated interface: "
+                 << mojom::DesktopProcessControl::Name_;
+      CrashProcess(__func__, __FILE__, __LINE__);
+    }
+
+    mojo::PendingAssociatedReceiver<mojom::DesktopProcessControl>
+        pending_receiver(std::move(handle));
+    desktop_process_control_.Bind(std::move(pending_receiver));
   } else {
     LOG(ERROR) << "Received unexpected associated interface request: "
                << interface_name;
@@ -145,26 +163,19 @@ bool DesktopProcess::Start(
   desktop_environment_factory_ = std::move(desktop_environment_factory);
 
   // Launch the audio capturing thread.
-  scoped_refptr<AutoThreadTaskRunner> audio_task_runner;
 #if BUILDFLAG(IS_WIN)
   // On Windows the AudioCapturer requires COM, so we run a single-threaded
   // apartment, which requires a UI thread.
-  audio_task_runner = AutoThread::CreateWithLoopAndComInitTypes(
+  audio_task_runner_ = AutoThread::CreateWithLoopAndComInitTypes(
       "ChromotingAudioThread", caller_task_runner_, base::MessagePumpType::UI,
       AutoThread::COM_INIT_STA);
 #else   // !BUILDFLAG(IS_WIN)
-  audio_task_runner = AutoThread::CreateWithType(
+  audio_task_runner_ = AutoThread::CreateWithType(
       "ChromotingAudioThread", caller_task_runner_, base::MessagePumpType::IO);
 #endif  // !BUILDFLAG(IS_WIN)
 
   // Create a desktop agent.
-  desktop_agent_ =
-      new DesktopSessionAgent(audio_task_runner, caller_task_runner_,
-                              input_task_runner_, io_task_runner_);
-
-  // Initialize the agent and create an IPC channel to talk to it.
-  mojo::ScopedMessagePipeHandle desktop_pipe =
-      desktop_agent_->Initialize(weak_factory_.GetWeakPtr());
+  mojo::ScopedMessagePipeHandle desktop_pipe = CreateDesktopAgent();
 
   // Connect to the daemon.
   daemon_channel_ = IPC::ChannelProxy::Create(
@@ -181,11 +192,48 @@ bool DesktopProcess::Start(
   return true;
 }
 
+void DesktopProcess::SetOnNetworkProcessDisconnectedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_network_process_disconnected_callback_ = std::move(callback);
+}
+
+void DesktopProcess::SetOnDesktopAgentCreatedCallbackForTesting(
+    base::OnceClosure callback) {
+  on_desktop_agent_created_callback_ = std::move(callback);
+}
+
 void DesktopProcess::CrashProcess(const std::string& function_name,
                                   const std::string& file_name,
                                   int line_number) {
   // The daemon requested us to crash the process.
   ::remoting::CrashProcess(function_name, file_name, line_number);
+}
+
+void DesktopProcess::ReconnectNetworkChannel() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  if (desktop_agent_) {
+    LOG(ERROR) << "Cannot reconnect the network channel when the "
+               << "DesktopSessionAgent is still active.";
+    CrashProcess(__func__, __FILE__, __LINE__);
+    return;
+  }
+  desktop_session_request_handler_->ConnectDesktopChannel(CreateDesktopAgent());
+}
+
+mojo::ScopedMessagePipeHandle DesktopProcess::CreateDesktopAgent() {
+  DCHECK(caller_task_runner_->BelongsToCurrentThread());
+
+  desktop_agent_ = base::MakeRefCounted<DesktopSessionAgent>(
+      audio_task_runner_, caller_task_runner_, input_task_runner_,
+      io_task_runner_);
+
+  if (on_desktop_agent_created_callback_) {
+    std::move(on_desktop_agent_created_callback_).Run();
+  }
+
+  // Initialize the agent and create an IPC channel to talk to it.
+  return desktop_agent_->Initialize(weak_factory_.GetWeakPtr());
 }
 
 }  // namespace remoting

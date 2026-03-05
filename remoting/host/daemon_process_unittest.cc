@@ -44,6 +44,8 @@ class FakeDesktopSession : public DesktopSession {
   ~FakeDesktopSession() override;
 
   void SetScreenResolution(const ScreenResolution& resolution) override {}
+  void ReconnectNetworkChannel(
+      const mojom::DesktopSessionOptions& options) override {}
 };
 
 class MockDaemonProcess : public DaemonProcess {

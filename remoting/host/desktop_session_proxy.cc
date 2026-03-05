@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/compiler_specific.h"
@@ -598,6 +599,13 @@ void DesktopSessionProxy::SetUpUrlForwarder(
   }
   set_up_url_forwarder_callback_ = callback;
   desktop_session_control_->SetUpUrlForwarder();
+}
+
+std::string_view DesktopSessionProxy::client_jid() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return client_session_control_ ? client_session_control_->client_jid()
+                                 : std::string_view{};
 }
 
 void DesktopSessionProxy::OnUrlForwarderStateChange(

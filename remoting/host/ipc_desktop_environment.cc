@@ -4,6 +4,7 @@
 
 #include "remoting/host/ipc_desktop_environment.h"
 
+#include <algorithm>
 #include <cstdint>
 #include <memory>
 #include <string>
@@ -41,6 +42,7 @@
 #include "remoting/host/mojom/remoting_host.mojom.h"
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 #include "remoting/protocol/mouse_cursor_monitor.h"
+#include "remoting/signaling/signaling_id_util.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capture_types.h"
 
 namespace remoting {
@@ -183,19 +185,47 @@ void IpcDesktopEnvironmentFactory::ConnectTerminal(
     const ScreenResolution& resolution,
     bool is_curtained) {
   DCHECK(network_task_runner_->BelongsToCurrentThread());
+  DCHECK(desktop_session_proxy);
 
-  int id = next_id_++;
-  bool inserted =
-      active_connections_.insert(std::make_pair(id, desktop_session_proxy))
-          .second;
-  CHECK(inserted);
-
-  VLOG(1) << "Network: registered desktop environment " << id;
+  std::string_view client_jid = desktop_session_proxy->client_jid();
+  if (client_jid.empty()) {
+    LOG(ERROR) << "Cannot connect terminal. Client JID is empty.";
+    return;
+  }
+  std::string client_email;
+  SplitSignalingIdResource(client_jid, &client_email, /*resource=*/nullptr);
 
   mojom::DesktopSessionOptionsPtr options = mojom::DesktopSessionOptions::New();
   options->screen_resolution = resolution;
   options->is_curtained = is_curtained;
   options->required_username = required_username_;
+
+  if (persist_desktop_sessions_) {
+    auto it =
+        std::ranges::find_if(connections_, [&client_email](const auto& pair) {
+          return pair.second.client_email == client_email &&
+                 // Find an unused session.
+                 !pair.second.desktop_session_proxy;
+        });
+    if (it != connections_.end()) {
+      int id = it->first;
+      VLOG(1) << "Network: reconnecting desktop session " << id;
+      it->second.desktop_session_proxy = desktop_session_proxy;
+      desktop_session_manager_->ReconnectDesktopSession(id, std::move(options));
+      return;
+    }
+  }
+
+  int id = next_id_++;
+  bool inserted =
+      connections_
+          .insert(std::make_pair(
+              id, DesktopConnection{desktop_session_proxy, client_email}))
+          .second;
+  CHECK(inserted);
+
+  VLOG(1) << "Network: registered desktop session " << id;
+
   desktop_session_manager_->CreateDesktopSession(id, std::move(options));
 }
 
@@ -203,20 +233,21 @@ void IpcDesktopEnvironmentFactory::DisconnectTerminal(
     DesktopSessionProxy* desktop_session_proxy) {
   DCHECK(network_task_runner_->BelongsToCurrentThread());
 
-  ActiveConnectionsList::iterator i;
-  for (i = active_connections_.begin(); i != active_connections_.end(); ++i) {
-    if (i->second == desktop_session_proxy) {
-      break;
-    }
+  auto it = FindConnection(desktop_session_proxy);
+  if (it == connections_.end()) {
+    return;
   }
 
-  if (i != active_connections_.end()) {
-    int id = i->first;
-    active_connections_.erase(i);
-
-    VLOG(1) << "Network: unregistered desktop environment " << id;
-    desktop_session_manager_->CloseDesktopSession(id);
+  if (persist_desktop_sessions_) {
+    it->second.desktop_session_proxy = nullptr;
+    return;
   }
+
+  int id = it->first;
+  connections_.erase(it);
+
+  VLOG(1) << "Network: unregistered desktop session " << id;
+  desktop_session_manager_->CloseDesktopSession(id);
 }
 
 void IpcDesktopEnvironmentFactory::SetScreenResolution(
@@ -224,15 +255,9 @@ void IpcDesktopEnvironmentFactory::SetScreenResolution(
     const ScreenResolution& resolution) {
   DCHECK(network_task_runner_->BelongsToCurrentThread());
 
-  ActiveConnectionsList::iterator i;
-  for (i = active_connections_.begin(); i != active_connections_.end(); ++i) {
-    if (i->second == desktop_session_proxy) {
-      break;
-    }
-  }
-
-  if (i != active_connections_.end()) {
-    desktop_session_manager_->SetScreenResolution(i->first, resolution);
+  auto it = FindConnection(desktop_session_proxy);
+  if (it != connections_.end()) {
+    desktop_session_manager_->SetScreenResolution(it->first, resolution);
   }
 }
 
@@ -257,7 +282,9 @@ void IpcDesktopEnvironmentFactory::SetRequiredUsername(
     return;
   }
 
-  CHECK(active_connections_.empty())
+  // TODO: yuweih - see if we should just terminate sessions with a mismatched
+  // username.
+  CHECK(connections_.empty())
       << "Cannot change required username when there are active connections.";
 
   required_username_ = std::string(username);
@@ -277,10 +304,16 @@ void IpcDesktopEnvironmentFactory::OnDesktopSessionAgentAttached(
     return;
   }
 
-  auto i = active_connections_.find(terminal_id);
-  if (i != active_connections_.end()) {
-    i->second->DetachFromDesktop();
-    i->second->AttachToDesktop(std::move(desktop_pipe), session_id);
+  auto it = connections_.find(terminal_id);
+  if (it != connections_.end()) {
+    DesktopSessionProxy* proxy = it->second.desktop_session_proxy;
+    if (!proxy) {
+      LOG(ERROR) << "DesktopSessionAgent attached when the client is not "
+                 << "connected to the desktop session";
+      return;
+    }
+    proxy->DetachFromDesktop();
+    proxy->AttachToDesktop(std::move(desktop_pipe), session_id);
   }
 }
 
@@ -293,15 +326,25 @@ void IpcDesktopEnvironmentFactory::OnTerminalDisconnected(int terminal_id) {
     return;
   }
 
-  auto i = active_connections_.find(terminal_id);
-  if (i != active_connections_.end()) {
-    DesktopSessionProxy* desktop_session_proxy = i->second;
-    active_connections_.erase(i);
+  auto it = connections_.find(terminal_id);
+  if (it != connections_.end()) {
+    DesktopSessionProxy* desktop_session_proxy =
+        it->second.desktop_session_proxy;
+    connections_.erase(it);
 
-    // Disconnect the client session.
-    desktop_session_proxy->DisconnectSession(
-        ErrorCode::OK, "Terminal disconnected.", FROM_HERE);
+    if (desktop_session_proxy) {
+      // Disconnect the client session.
+      desktop_session_proxy->DisconnectSession(
+          ErrorCode::OK, "Terminal disconnected.", FROM_HERE);
+    }
   }
+}
+
+IpcDesktopEnvironmentFactory::ConnectionsList::iterator
+IpcDesktopEnvironmentFactory::FindConnection(const DesktopSessionProxy* proxy) {
+  return std::ranges::find_if(connections_, [proxy](const auto& pair) {
+    return pair.second.desktop_session_proxy == proxy;
+  });
 }
 
 }  // namespace remoting

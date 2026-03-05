@@ -55,7 +55,7 @@ std::string GetCanonicalEmail(const std::string& email) {
   return canonical_email;
 }
 
-bool SplitSignalingIdResource(const std::string& full_id,
+bool SplitSignalingIdResource(std::string_view full_id,
                               std::string* email,
                               std::string* resource) {
   size_t slash_index = full_id.find('/');

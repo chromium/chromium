@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -193,6 +194,7 @@ class DesktopSessionProxy
   void SetUpUrlForwarder(
       const UrlForwarderConfigurator::SetUpUrlForwarderCallback& callback);
 
+  std::string_view client_jid() const;
   uint32_t desktop_session_id() const { return desktop_session_id_; }
 
  private:

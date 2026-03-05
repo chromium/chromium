@@ -157,6 +157,10 @@ class MockDesktopSessionManager : public mojom::DesktopSessionManager {
               CreateDesktopSession,
               (int, mojom::DesktopSessionOptionsPtr),
               (override));
+  MOCK_METHOD(void,
+              ReconnectDesktopSession,
+              (int, mojom::DesktopSessionOptionsPtr),
+              (override));
   MOCK_METHOD(void, CloseDesktopSession, (int), (override));
   MOCK_METHOD(void,
               SetScreenResolution,
@@ -191,11 +195,13 @@ class IpcDesktopEnvironmentTest : public testing::Test {
 
   void CreateDesktopSession(int terminal_id,
                             mojom::DesktopSessionOptionsPtr options);
+  void ReconnectDesktopSession(int terminal_id,
+                               mojom::DesktopSessionOptionsPtr options);
   void CloseDesktopSession(int terminal_id);
 
   // Creates a DesktopEnvironment with a fake webrtc::DesktopCapturer, to mock
   // DesktopEnvironmentFactory::Create().
-  void CreateDesktopEnvironment(
+  void OnCreateDesktopEnvironment(
       base::WeakPtr<ClientSessionControl>,
       base::WeakPtr<ClientSessionEvents>,
       const DesktopEnvironmentOptions&,
@@ -205,6 +211,15 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // DesktopEnvironment::CreateInputInjector().
   std::unique_ptr<InputInjector> CreateInputInjector();
 
+  // Creates a new desktop environment and initializes related variables. Must
+  // be called when there are no active desktop environments.
+  void CreateDesktopEnvironment();
+
+  // Deletes the desktop environment. If persistent desktop sessions is false,
+  // this will also destroy the desktop process and delete the
+  // DesktopEnvironmentFactory. If it is true, then you will need to make sure
+  // the test method does both of these, otherwise the test will hang
+  // indefinitely.
   void DeleteDesktopEnvironment();
 
   // Forwards |event| to |clipboard_stub_|.
@@ -220,8 +235,6 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // Creates a new remote URL forwarder configurator for the desktop process.
   void ResetRemoteUrlForwarderConfigurator();
 
-  void OnDisconnectCallback();
-
   // Invoked when ConnectDesktopChannel() is called over IPC.
   void ConnectDesktopChannel(mojo::ScopedMessagePipeHandle desktop_pipe);
 
@@ -232,6 +245,15 @@ class IpcDesktopEnvironmentTest : public testing::Test {
   // Some tests require |setup_run_loop_| to be reset so we need a method which
   // can be bound that will quit the current run loop.
   void QuitSetupRunLoop();
+
+  // Sets whether desktop sessions will be persistent across client connections.
+  // See comments on `IpcDesktopEnvironment::persist_desktop_sessions_`. This
+  // is true by default. It is only safe to call this method when there are no
+  // active desktop sessions.
+  void SetPersistentDesktopSessions(bool persistent);
+
+  // Returns the number of active desktop sessions
+  size_t ActiveDesktopSessionsCount() const;
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -343,6 +365,10 @@ void IpcDesktopEnvironmentTest::SetUp() {
       .Times(AnyNumber())
       .WillRepeatedly(
           Invoke(this, &IpcDesktopEnvironmentTest::CreateDesktopSession));
+  EXPECT_CALL(mock_desktop_session_manager_, ReconnectDesktopSession(_, _))
+      .Times(AnyNumber())
+      .WillRepeatedly(
+          Invoke(this, &IpcDesktopEnvironmentTest::ReconnectDesktopSession));
   EXPECT_CALL(mock_desktop_session_manager_, CloseDesktopSession(_))
       .Times(AnyNumber())
       .WillRepeatedly(
@@ -371,30 +397,14 @@ void IpcDesktopEnvironmentTest::SetUp() {
       remote.BindNewEndpointAndPassReceiver());
   desktop_environment_factory_ = std::make_unique<IpcDesktopEnvironmentFactory>(
       task_runner_, task_runner_, io_task_runner_, std::move(remote));
-  base::test::TestFuture<std::unique_ptr<DesktopEnvironment>>
-      desktop_environment_future;
-  desktop_environment_factory_->Create(
-      client_session_control_factory_.GetWeakPtr(),
-      client_session_events_factory_.GetWeakPtr(), DesktopEnvironmentOptions(),
-      desktop_environment_future.GetCallback());
-  desktop_environment_ = desktop_environment_future.Take();
-
-  screen_controls_ = desktop_environment_->CreateScreenControls();
-
-  // Create the input injector.
-  input_injector_ = desktop_environment_->CreateInputInjector();
-
-  // Create the screen capturer.
-  video_capturer_ = desktop_environment_->CreateVideoCapturer(0);
-
-  desktop_environment_->SetCapabilities(std::string());
-
-  url_forwarder_configurator_ =
-      desktop_environment_->CreateUrlForwarderConfigurator();
-  ResetRemoteUrlForwarderConfigurator();
+  SetPersistentDesktopSessions(false);
+  CreateDesktopEnvironment();
 }
 
 void IpcDesktopEnvironmentTest::TearDown() {
+  // Tests must ensure DestroyDesktopProcess() is called and
+  // `desktop_environment_factory_` is destroyed. Otherwise this will hang
+  // indefinitely.
   RunMainLoopUntilDone();
 }
 
@@ -407,15 +417,24 @@ void IpcDesktopEnvironmentTest::CreateDesktopSession(
   CreateDesktopProcess();
 }
 
+void IpcDesktopEnvironmentTest::ReconnectDesktopSession(
+    int terminal_id,
+    mojom::DesktopSessionOptionsPtr options) {
+  EXPECT_EQ(terminal_id_, terminal_id);
+
+  desktop_process_->ReconnectNetworkChannel();
+}
+
 void IpcDesktopEnvironmentTest::CloseDesktopSession(int terminal_id) {
   EXPECT_EQ(terminal_id_, terminal_id);
 
   // The IPC desktop environment is fully destroyed now. Release the remaining
   // task runners.
   desktop_environment_factory_.reset();
+  DestroyDesktopProcess();
 }
 
-void IpcDesktopEnvironmentTest::CreateDesktopEnvironment(
+void IpcDesktopEnvironmentTest::OnCreateDesktopEnvironment(
     base::WeakPtr<ClientSessionControl>,
     base::WeakPtr<ClientSessionEvents>,
     const DesktopEnvironmentOptions&,
@@ -463,6 +482,30 @@ IpcDesktopEnvironmentTest::CreateInputInjector() {
   return remote_input_injector;
 }
 
+void IpcDesktopEnvironmentTest::CreateDesktopEnvironment() {
+  base::test::TestFuture<std::unique_ptr<DesktopEnvironment>>
+      desktop_environment_future;
+  desktop_environment_factory_->Create(
+      client_session_control_factory_.GetWeakPtr(),
+      client_session_events_factory_.GetWeakPtr(), DesktopEnvironmentOptions(),
+      desktop_environment_future.GetCallback());
+  desktop_environment_ = desktop_environment_future.Take();
+
+  screen_controls_ = desktop_environment_->CreateScreenControls();
+
+  // Create the input injector.
+  input_injector_ = desktop_environment_->CreateInputInjector();
+
+  // Create the screen capturer.
+  video_capturer_ = desktop_environment_->CreateVideoCapturer(0);
+
+  desktop_environment_->SetCapabilities(std::string());
+
+  url_forwarder_configurator_ =
+      desktop_environment_->CreateUrlForwarderConfigurator();
+  ResetRemoteUrlForwarderConfigurator();
+}
+
 void IpcDesktopEnvironmentTest::DeleteDesktopEnvironment() {
   input_injector_.reset();
   screen_controls_.reset();
@@ -502,7 +545,7 @@ void IpcDesktopEnvironmentTest::CreateDesktopProcess() {
   EXPECT_CALL(*desktop_environment_factory, Create(_, _, _, _))
       .Times(AnyNumber())
       .WillRepeatedly(
-          Invoke(this, &IpcDesktopEnvironmentTest::CreateDesktopEnvironment));
+          Invoke(this, &IpcDesktopEnvironmentTest::OnCreateDesktopEnvironment));
   EXPECT_CALL(*desktop_environment_factory, SupportsAudioCapture())
       .Times(AnyNumber())
       .WillRepeatedly(Return(false));
@@ -529,10 +572,6 @@ void IpcDesktopEnvironmentTest::ResetRemoteUrlForwarderConfigurator() {
       .WillByDefault(base::test::RunOnceCallbackRepeatedly<0>(false));
 }
 
-void IpcDesktopEnvironmentTest::OnDisconnectCallback() {
-  DeleteDesktopEnvironment();
-}
-
 void IpcDesktopEnvironmentTest::ConnectDesktopChannel(
     mojo::ScopedMessagePipeHandle desktop_pipe) {
   // Instruct DesktopSessionProxy to connect to the network-to-desktop pipe.
@@ -553,10 +592,18 @@ void IpcDesktopEnvironmentTest::QuitSetupRunLoop() {
   setup_run_loop_->Quit();
 }
 
+void IpcDesktopEnvironmentTest::SetPersistentDesktopSessions(bool persistent) {
+  desktop_environment_factory_->persist_desktop_sessions_ = persistent;
+}
+
+size_t IpcDesktopEnvironmentTest::ActiveDesktopSessionsCount() const {
+  return desktop_environment_factory_->connections_.size();
+}
+
 // Runs until the desktop is attached and exits immediately after that.
-TEST_F(IpcDesktopEnvironmentTest, Basic) {
-  std::unique_ptr<protocol::MockClipboardStub> clipboard_stub(
-      new protocol::MockClipboardStub());
+TEST_F(IpcDesktopEnvironmentTest, BasicEphemeralDesktopSessions) {
+  SetPersistentDesktopSessions(false);
+  auto clipboard_stub = std::make_unique<protocol::MockClipboardStub>();
   EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
 
   // Start the input injector and screen capturer.
@@ -565,8 +612,46 @@ TEST_F(IpcDesktopEnvironmentTest, Basic) {
   // Run the message loop until the desktop is attached.
   setup_run_loop_->Run();
 
-  // Stop the test.
+  // Simulate client disconnection. When session is ephemeral, deletion of the
+  // desktop environment will close the desktop session, which triggers
+  // CloseDesktopSession() and destroys `desktop_environment_factory_` and the
+  // desktop process. If neither of these is true, then TearDown() will hang
+  // indefinitely.
   DeleteDesktopEnvironment();
+}
+
+TEST_F(IpcDesktopEnvironmentTest, PersistentDesktopSession) {
+  SetPersistentDesktopSessions(true);
+  auto clipboard_stub = std::make_unique<protocol::MockClipboardStub>();
+  EXPECT_CALL(*clipboard_stub, InjectClipboardEvent(_)).Times(0);
+  input_injector_->Start(std::move(clipboard_stub));
+  setup_run_loop_->Run();
+
+  base::test::TestFuture<void> on_network_process_disconnected;
+  desktop_process_->SetOnNetworkProcessDisconnectedCallbackForTesting(
+      on_network_process_disconnected.GetCallback());
+
+  // Simulate client disconnection.
+  DeleteDesktopEnvironment();
+  on_network_process_disconnected.Get();
+
+  // Desktop session remains active.
+  ASSERT_EQ(ActiveDesktopSessionsCount(), 1u);
+
+  base::test::TestFuture<void> on_desktop_agent_created;
+  desktop_process_->SetOnDesktopAgentCreatedCallbackForTesting(
+      on_desktop_agent_created.GetCallback());
+
+  // Simulate client reconnection.
+  CreateDesktopEnvironment();
+  on_desktop_agent_created.Get();
+
+  ASSERT_EQ(ActiveDesktopSessionsCount(), 1u);
+
+  // Without these, TearDown() will hang indefinitely.
+  DeleteDesktopEnvironment();
+  DestroyDesktopProcess();
+  desktop_environment_factory_.reset();
 }
 
 // Check touchEvents capability is set when the desktop environment can

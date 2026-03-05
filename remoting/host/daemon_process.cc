@@ -86,6 +86,7 @@ void DaemonProcess::OnPermanentError(int exit_code) {
 void DaemonProcess::OnWorkerProcessStopped() {
   desktop_session_manager_.reset();
   host_status_observer_.reset();
+  DeleteAllDesktopSessions();
 }
 
 void DaemonProcess::OnAssociatedInterfaceRequest(
@@ -210,6 +211,25 @@ void DaemonProcess::CreateDesktopSession(
 
   VLOG(1) << "Daemon: opened desktop session " << terminal_id;
   desktop_sessions_.push_back(session.release());
+}
+
+void DaemonProcess::ReconnectDesktopSession(
+    int terminal_id,
+    mojom::DesktopSessionOptionsPtr options) {
+  DCHECK(caller_task_runner()->BelongsToCurrentThread());
+
+  auto it = std::ranges::find_if(desktop_sessions_,
+                                 [terminal_id](DesktopSession* session) {
+                                   return session->id() == terminal_id;
+                                 });
+
+  if (it == desktop_sessions_.end()) {
+    LOG(ERROR) << "Invalid terminal ID: " << terminal_id;
+    CrashNetworkProcess(FROM_HERE);
+    return;
+  }
+  VLOG(1) << "Daemon: reconnecting desktop session " << terminal_id;
+  (*it)->ReconnectNetworkChannel(*options);
 }
 
 void DaemonProcess::SetScreenResolution(int terminal_id,
