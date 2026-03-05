@@ -3055,7 +3055,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
   {
     void* ptr = allocator.root()->Alloc(kTestAllocSize, type_name);
     MockPartitionStatsDumper mock_stats_dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true,
                                 &mock_stats_dumper);
     EXPECT_TRUE(mock_stats_dumper.IsMemoryAllocationRecorded());
     allocator.root()->Free(ptr);
@@ -3067,8 +3068,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
       void* ptr =
           allocator.root()->Alloc(2048 - ExtraAllocSize(allocator), type_name);
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
       const PartitionBucketMemoryStats* stats = dumper.GetBucketStats(2048);
@@ -3089,8 +3090,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
       const PartitionBucketMemoryStats* stats = dumper.GetBucketStats(2048);
@@ -3115,8 +3116,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
       const PartitionBucketMemoryStats* stats = dumper.GetBucketStats(2048);
@@ -3149,8 +3150,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
       const PartitionBucketMemoryStats* stats =
@@ -3184,8 +3185,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
       const PartitionBucketMemoryStats* stats =
@@ -3238,8 +3239,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
       size_t slot_size = SizeToBucketSize(requested_size);
@@ -3267,8 +3268,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
       size_t slot_size = SizeToBucketSize(requested_size);
@@ -3294,8 +3295,8 @@ TEST_P(PartitionAllocTest, DumpMemoryStats) {
 
     {
       MockPartitionStatsDumper dumper;
-      allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                  &dumper);
+      allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                  /*populate_discardable_bytes=*/true, &dumper);
       EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
       size_t slot_size = SizeToBucketSize(requested_size);
@@ -3330,8 +3331,8 @@ TEST_P(PartitionAllocTest, Purge) {
   allocator.root()->Free(ptr);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats = dumper.GetBucketStats(2048);
@@ -3343,8 +3344,8 @@ TEST_P(PartitionAllocTest, Purge) {
   allocator.root()->PurgeMemory(PurgeFlags::kDecommitEmptySlotSpans);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_FALSE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats = dumper.GetBucketStats(2048);
@@ -3434,8 +3435,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableSecondPage) {
   EXPECT_EQ(2u, slot_span->num_unprovisioned_slots);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =
@@ -3464,8 +3465,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableFirstPage) {
   allocator.root()->Free(ptr1);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =
@@ -3504,8 +3505,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAlloc) {
   allocator.root()->Free(ptr2);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =
@@ -3556,8 +3557,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableNonPageSizedAllocOnSlotBoundary) {
   allocator.root()->Free(ptr1);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =
@@ -3614,8 +3615,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableManyPages) {
   ScopedPageAllocation p(allocator, kSecondAllocPages);
 
   MockPartitionStatsDumper dumper;
-  allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                              &dumper);
+  allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                              /*populate_discardable_bytes=*/true, &dumper);
   EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
   const PartitionBucketMemoryStats* stats =
@@ -3666,8 +3667,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableWithFreeListStraightening) {
 
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =
@@ -3804,8 +3805,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableDoubleTruncateFreeList) {
 
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =
@@ -3851,8 +3852,8 @@ TEST_P(PartitionAllocTest, PurgeDiscardableSmallSlotsWithTruncate) {
   EXPECT_EQ(4u, slot_span->num_unprovisioned_slots);
   {
     MockPartitionStatsDumper dumper;
-    allocator.root()->DumpStats("mock_allocator", false /* detailed dump */,
-                                &dumper);
+    allocator.root()->DumpStats("mock_allocator", /*is_light_dump=*/false,
+                                /*populate_discardable_bytes=*/true, &dumper);
     EXPECT_TRUE(dumper.IsMemoryAllocationRecorded());
 
     const PartitionBucketMemoryStats* stats =

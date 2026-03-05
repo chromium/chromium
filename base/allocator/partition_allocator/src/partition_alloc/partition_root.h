@@ -677,6 +677,7 @@ class alignas(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 
   void DumpStats(const char* partition_name,
                  bool is_light_dump,
+                 bool populate_discardable_bytes,
                  PartitionStatsDumper* partition_stats_dumper);
 
   static void DeleteForTesting(PartitionRoot* partition_root);

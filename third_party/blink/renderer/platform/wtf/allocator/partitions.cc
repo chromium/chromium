@@ -70,6 +70,12 @@ partition_alloc::PartitionRoot* Partitions::buffer_root_ = nullptr;
 
 namespace {
 
+// Whether to populate "discardable bytes" in "light" stats reported via
+// `Partitions::DumpMemoryStats`. This involves traversing the free list which
+// is expensive.
+BASE_FEATURE(kPartitionsDumpPopulateDiscardableBytes,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Reads feature configuration and returns a suitable
 // `PartitionOptions`.
 partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
@@ -200,15 +206,23 @@ void Partitions::DumpMemoryStats(
   // accessed only on the main thread.
   DCHECK(IsMainThread());
 
+  const bool populate_discardable_bytes =
+      !is_light_dump ||
+      base::FeatureList::IsEnabled(kPartitionsDumpPopulateDiscardableBytes);
+
   if (auto* fast_malloc_partition = FastMallocPartition()) {
     fast_malloc_partition->DumpStats("fast_malloc", is_light_dump,
+                                     populate_discardable_bytes,
                                      partition_stats_dumper);
   }
   if (ArrayBufferPartitionInitialized()) {
     ArrayBufferPartition()->DumpStats("array_buffer", is_light_dump,
+                                      populate_discardable_bytes,
                                       partition_stats_dumper);
   }
-  BufferPartition()->DumpStats("buffer", is_light_dump, partition_stats_dumper);
+  BufferPartition()->DumpStats("buffer", is_light_dump,
+                               populate_discardable_bytes,
+                               partition_stats_dumper);
 }
 
 namespace {

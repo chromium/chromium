@@ -1117,7 +1117,8 @@ SHIM_ALWAYS_EXPORT struct mallinfo mallinfo(void) __THROW {
   // TODO(crbug.com/477186304): Dump stats for all alloc tokens, by accumulating
   // the stats or separating reporting stats.
   allocator_shim::Allocator(kDefaultAllocToken)
-      ->DumpStats("malloc", true, &allocator_dumper);
+      ->DumpStats("malloc", /*is_light_dump=*/true,
+                  /*populate_discardable_bytes=*/false, &allocator_dumper);
 
   struct mallinfo info = {};
   info.arena = 0;  // Memory *not* allocated with mmap().
