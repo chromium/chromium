@@ -100,10 +100,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // Adds 'Cancel' and 'Add' buttons to Navigation bar.
   self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-      initWithTitle:l10n_util::GetNSString(IDS_IOS_NAVIGATION_BAR_CANCEL_BUTTON)
-              style:UIBarButtonItemStylePlain
-             target:self
-             action:@selector(handleCancelButton:)];
+      initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
+                           target:self
+                           action:@selector(handleCancelButton:)];
   self.navigationItem.leftBarButtonItem.accessibilityIdentifier =
       kSettingsAddCreditCardCancelButtonID;
 
