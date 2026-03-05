@@ -44,6 +44,7 @@ build_webui("build") {
     "event_list/filter_dialog/filter_dialog.ts",
     "event_list/filter_dialog/filter_dialog_footer.html.ts",
     "event_list/filter_dialog/filter_dialog_footer.ts",
+    "event_list/filter_dialog/keyboard_navigation.ts",
     "event_list/filter_dialog/outcome_dialog.html.ts",
     "event_list/filter_dialog/outcome_dialog.ts",
     "event_list/filter_dialog/scope_dialog.html.ts",

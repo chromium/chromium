@@ -19,7 +19,8 @@ export function getHtml(this: OutcomeDialogElement) {
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(item)}"
         data-outcome="${item}"
-        @checked-changed="${this.onCheckedChanged}">
+        @checked-changed="${this.onCheckedChanged}"
+        @keydown="${this.onKeydown}">
       ${localizeUpdateOutcome(item)}
     </cr-checkbox>
   `)}

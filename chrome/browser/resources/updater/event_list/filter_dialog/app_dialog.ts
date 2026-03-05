@@ -14,6 +14,7 @@ import {getKnownApps} from '../../known_apps.js';
 
 import {getCss} from './app_dialog.css.js';
 import {getHtml} from './app_dialog.html.js';
+import {handleKeyboardNavigation} from './keyboard_navigation.js';
 
 export class AppDialogElement extends CrLitElement {
   static get is() {
@@ -92,6 +93,11 @@ export class AppDialogElement extends CrLitElement {
         this.requestUpdate();
       }
     }
+  }
+
+  protected onKeydown(e: KeyboardEvent) {
+    handleKeyboardNavigation(
+        e, this.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item'));
   }
 
   protected onCheckedChanged(e: Event) {

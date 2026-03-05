@@ -18,6 +18,7 @@ build_webui_tests("build") {
     "event_list/filter_dialog/event_dialog_test.ts",
     "event_list/filter_dialog/filter_dialog_footer_test.ts",
     "event_list/filter_dialog/filter_dialog_test.ts",
+    "event_list/filter_dialog/keyboard_navigation_test.ts",
     "event_list/filter_dialog/outcome_dialog_test.ts",
     "event_list/filter_dialog/scope_dialog_test.ts",
     "event_list/filter_dialog/type_dialog_test.ts",

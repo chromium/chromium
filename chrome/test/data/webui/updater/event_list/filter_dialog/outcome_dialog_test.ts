@@ -69,4 +69,25 @@ suite('OutcomeDialogElement', () => {
         '.filter-menu-item');
     assertEquals(checkbox, filterOutcome.shadowRoot.activeElement);
   });
+
+  test('handles keyboard navigation', async () => {
+    await microtasksFinished();
+    const items = filterOutcome.shadowRoot.querySelectorAll<HTMLElement>(
+        '.filter-menu-item');
+    assertEquals(3, items.length);
+
+    assertEquals(items[0], filterOutcome.shadowRoot.activeElement);
+
+    items[0]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(items[1], filterOutcome.shadowRoot.activeElement);
+
+    items[1]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    assertEquals(items[0], filterOutcome.shadowRoot.activeElement);
+
+    items[0]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'End'}));
+    assertEquals(items[2], filterOutcome.shadowRoot.activeElement);
+
+    items[2]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    assertEquals(items[0], filterOutcome.shadowRoot.activeElement);
+  });
 });

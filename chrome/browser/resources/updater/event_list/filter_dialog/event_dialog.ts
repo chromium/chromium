@@ -16,6 +16,7 @@ import type {EventType} from '../../event_history.js';
 
 import {getCss} from './event_dialog.css.js';
 import {getHtml} from './event_dialog.html.js';
+import {handleKeyboardNavigation} from './keyboard_navigation.js';
 
 export class EventDialogElement extends CrLitElement {
   static get is() {
@@ -53,6 +54,11 @@ export class EventDialogElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.shadowRoot.querySelector<HTMLElement>('.filter-menu-item')?.focus();
+  }
+
+  protected onKeydown(e: KeyboardEvent) {
+    handleKeyboardNavigation(
+        e, this.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item'));
   }
 
   get commonEventTypes(): EventType[] {

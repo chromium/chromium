@@ -106,4 +106,24 @@ suite('AppDialogElement', () => {
         filterApp.shadowRoot.querySelector<HTMLElement>('.filter-menu-input');
     assertEquals(filterApp.shadowRoot.activeElement, input);
   });
+
+  test('handles keyboard navigation', async () => {
+    await microtasksFinished();
+    const items =
+        filterApp.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item');
+    assertEquals(2, items.length);
+
+    items[0]!.focus();
+    items[0]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowDown'}));
+    assertEquals(items[1], filterApp.shadowRoot.activeElement);
+
+    items[1]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowUp'}));
+    assertEquals(items[0], filterApp.shadowRoot.activeElement);
+
+    items[0]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'End'}));
+    assertEquals(items[1], filterApp.shadowRoot.activeElement);
+
+    items[1]!.dispatchEvent(new KeyboardEvent('keydown', {key: 'Home'}));
+    assertEquals(items[0], filterApp.shadowRoot.activeElement);
+  });
 });

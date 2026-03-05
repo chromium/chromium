@@ -12,6 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {CommonUpdateOutcome} from '../../event_history.js';
 
+import {handleKeyboardNavigation} from './keyboard_navigation.js';
 import {getCss} from './outcome_dialog.css.js';
 import {getHtml} from './outcome_dialog.html.js';
 
@@ -51,6 +52,11 @@ export class OutcomeDialogElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.shadowRoot.querySelector<HTMLElement>('.filter-menu-item')?.focus();
+  }
+
+  protected onKeydown(e: KeyboardEvent) {
+    handleKeyboardNavigation(
+        e, this.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item'));
   }
 
   protected onCheckedChanged(e: Event) {

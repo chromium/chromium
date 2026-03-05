@@ -11,6 +11,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {loadTimeData} from '../../i18n_setup.js';
 import {FilterCategory, getFilterCategoryForTarget} from '../filter_bar.js';
 
+import {handleKeyboardNavigation} from './keyboard_navigation.js';
 import {getCss} from './type_dialog.css.js';
 import {getHtml} from './type_dialog.html.js';
 
@@ -62,6 +63,11 @@ export class TypeDialogElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.shadowRoot.querySelector<HTMLElement>('.filter-menu-item')?.focus();
+  }
+
+  protected onKeydown(e: KeyboardEvent) {
+    handleKeyboardNavigation(
+        e, this.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item'));
   }
 
   protected onClick(e: MouseEvent) {

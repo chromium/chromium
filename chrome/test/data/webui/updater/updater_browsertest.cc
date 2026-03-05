@@ -91,6 +91,11 @@ IN_PROC_BROWSER_TEST_F(UpdaterAppTest, FilterDialogTest) {
           "mocha.run();");
 }
 
+IN_PROC_BROWSER_TEST_F(UpdaterAppTest, KeyboardNavigationTest) {
+  RunTest("updater/event_list/filter_dialog/keyboard_navigation_test.js",
+          "mocha.run();");
+}
+
 IN_PROC_BROWSER_TEST_F(UpdaterAppTest, OutcomeDialogTest) {
   RunTest("updater/event_list/filter_dialog/outcome_dialog_test.js",
           "mocha.run();");

@@ -15,7 +15,8 @@ export function getHtml(this: ScopeDialogElement) {
   ${SCOPES.map(scope => html`
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(scope)}"
-        data-scope="${scope}" @checked-changed="${this.onCheckedChanged}">
+        data-scope="${scope}" @checked-changed="${this.onCheckedChanged}"
+        @keydown="${this.onKeydown}">
       ${localizeScope(scope)}
     </cr-checkbox>
   `)}

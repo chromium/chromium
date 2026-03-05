@@ -19,7 +19,8 @@ export function getHtml(this: EventDialogElement) {
   ${this.commonEventTypes.map(item => html`
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(item)}"
-        data-event-type="${item}" @checked-changed="${this.onCheckedChanged}">
+        data-event-type="${item}" @checked-changed="${this.onCheckedChanged}"
+        @keydown="${this.onKeydown}">
       ${localizeEventType(item)}
     </cr-checkbox>
   `)}
@@ -27,7 +28,8 @@ export function getHtml(this: EventDialogElement) {
   ${this.otherEventTypes.map((item: EventType) => html`
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(item)}"
-        data-event-type="${item}" @checked-changed="${this.onCheckedChanged}">
+        data-event-type="${item}" @checked-changed="${this.onCheckedChanged}"
+        @keydown="${this.onKeydown}">
       ${localizeEventType(item)}
     </cr-checkbox>
   `)}

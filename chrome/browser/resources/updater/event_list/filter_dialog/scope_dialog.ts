@@ -12,6 +12,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
 import type {Scope} from '../../event_history.js';
 
+import {handleKeyboardNavigation} from './keyboard_navigation.js';
 import {getCss} from './scope_dialog.css.js';
 import {getHtml} from './scope_dialog.html.js';
 
@@ -51,6 +52,12 @@ export class ScopeDialogElement extends CrLitElement {
   override firstUpdated(changedProperties: PropertyValues<this>) {
     super.firstUpdated(changedProperties);
     this.shadowRoot.querySelector<HTMLElement>('.filter-menu-item')?.focus();
+  }
+
+  protected onKeydown(e: KeyboardEvent) {
+    const items = Array.from(
+        this.shadowRoot.querySelectorAll<HTMLElement>('.filter-menu-item'));
+    handleKeyboardNavigation(e, items);
   }
 
   protected onCheckedChanged(e: Event) {

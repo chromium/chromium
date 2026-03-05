@@ -19,7 +19,8 @@ export function getHtml(this: AppDialogElement) {
   ${this.displayedApps.map(item => html`
     <cr-checkbox class="filter-menu-item"
         ?checked="${this.pendingSelections.has(item)}"
-        data-app-name="${item}" @checked-changed="${this.onCheckedChanged}">
+        data-app-name="${item}" @checked-changed="${this.onCheckedChanged}"
+        @keydown="${this.onKeydown}">
       ${item}
     </cr-checkbox>
   `)}
