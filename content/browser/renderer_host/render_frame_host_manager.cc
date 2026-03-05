@@ -105,6 +105,11 @@ using perfetto::protos::pbzero::ChromeTrackEvent;
 
 namespace {
 
+// Enables swapping BrowsingInstances when a navigation requires different
+// process-level flags (e.g., V8 optimizers, jitless) than the current process.
+BASE_FEATURE(kSwapBrowsingInstancesForDifferentProcessFlags,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kBackForwardCachePageWithFormStorableHistogramName[] =
     "BackForwardCache.PageWithForm.Storable";
 
@@ -157,6 +162,57 @@ bool ShouldSwapBrowsingInstancesForDynamicIsolation(
       future_isolation_context, destination_effective_url_info);
   return site_info_in_future_context.RequiresDedicatedProcess(
       future_isolation_context);
+}
+
+// Helper function to determine whether a navigation from `current_rfh` to
+// `destination_effective_url_info` should swap BrowsingInstances to ensure that
+// process-level flags that are different from those on the current renderer
+// process (like V8 optimizations) are applied whenever possible. Swapping
+// BrowsingInstances in this case is necessary because these flags are tied to
+// the renderer process and if the same process is reused, then the desired
+// flags will not be applied to the new destination. In the common case where
+// `current_rfh` is a main frame, and there are no scripting references to it
+// from other windows, it is safe to swap BrowsingInstances so that the desired
+// flags can be applied to the process that will host the destination. Note:
+// subframe navigations that require new flags will still require being loaded
+// into a new tab before taking effect.
+bool ShouldSwapBrowsingInstancesForDifferentProcessFlags(
+    RenderFrameHostImpl* current_rfh,
+    const UrlInfo& destination_effective_url_info) {
+  if (!base::FeatureList::IsEnabled(
+          kSwapBrowsingInstancesForDifferentProcessFlags)) {
+    return false;
+  }
+
+  // Only main frames are eligible to swap BrowsingInstances. We expect this to
+  // be true because this is currently guaranteed by
+  // `RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation`.
+  CHECK(current_rfh->is_main_frame());
+  // Skip cases when there are other windows that might script this one.
+  SiteInstanceImpl* current_instance = current_rfh->GetSiteInstance();
+  if (current_instance->GetRelatedActiveContentsCount() > 1u) {
+    return false;
+  }
+
+  // Check the process flags that would be computed for
+  // `destination_effective_url_info` in a fresh BrowsingInstance context.
+  IsolationContext future_isolation_context(
+      current_instance->GetBrowserContext());
+  const SiteInfo& site_info_in_future_context = SiteInfo::Create(
+      future_isolation_context, destination_effective_url_info);
+  const SiteInfo& current_site_info = current_instance->GetSiteInfo();
+
+  if (current_site_info.are_v8_optimizations_disabled() !=
+      site_info_in_future_context.are_v8_optimizations_disabled()) {
+    return true;
+  }
+
+  if (current_site_info.is_jit_disabled() !=
+      site_info_in_future_context.is_jit_disabled()) {
+    return true;
+  }
+
+  return false;
 }
 
 // Helper function to determine whether |dest_url_info| should be loaded in the
@@ -2822,6 +2878,16 @@ RenderFrameHostManager::ShouldSwapBrowsingInstancesForNavigation(
   url_info_to_test.url = destination_effective_url;
   if (ShouldSwapBrowsingInstancesForDynamicIsolation(render_frame_host_.get(),
                                                      url_info_to_test)) {
+    return BrowsingContextGroupSwap::CreateSecuritySwap();
+  }
+
+  // If the destination URL would need flags that are different from those that
+  // were applied to the current URL, and no other WebContents can script this
+  // one, then swap to a new BrowsingInstance so that the new settings can be
+  // applied. This ensures that the user's security preferences are applied
+  // without needing to open a new tab.
+  if (ShouldSwapBrowsingInstancesForDifferentProcessFlags(
+          render_frame_host_.get(), url_info_to_test)) {
     return BrowsingContextGroupSwap::CreateSecuritySwap();
   }
 

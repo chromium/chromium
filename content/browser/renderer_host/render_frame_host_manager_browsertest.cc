@@ -54,6 +54,7 @@
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/browser/web_contents.h"
@@ -232,6 +233,46 @@ bool HasErrorPageSiteInfo(SiteInstance* site_instance) {
 bool HasErrorPageProcessLock(SiteInstance* site_instance) {
   return site_instance->GetProcess()->GetProcessLock().is_error_page();
 }
+
+// Simple test content browser client that allows tests to change process flags
+// for specific hosts.
+class ProcessFlagsContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  bool IsJitDisabledForSite(content::BrowserContext* browser_context,
+                            const GURL& site_url) override {
+    return disabled_jit_hosts_.contains(std::string(site_url.host()));
+  }
+
+  void SetJitDisabledForHost(const std::string& host, bool disabled) {
+    if (disabled) {
+      disabled_jit_hosts_.insert(host);
+    } else {
+      disabled_jit_hosts_.erase(host);
+    }
+  }
+
+  bool AreV8OptimizationsEnabledForSite(
+      BrowserContext* browser_context,
+      const std::optional<base::SafeRef<ProcessSelectionUserData>>&
+          process_selection_user_data,
+      const GURL& site_url) override {
+    return !disabled_v8_opt_hosts_.contains(std::string(site_url.host()));
+  }
+
+  void SetV8OptimizationsDisabledForHost(const std::string& host,
+                                         bool disabled) {
+    if (disabled) {
+      disabled_v8_opt_hosts_.insert(host);
+    } else {
+      disabled_v8_opt_hosts_.erase(host);
+    }
+  }
+
+ private:
+  std::set<std::string> disabled_jit_hosts_;
+  std::set<std::string> disabled_v8_opt_hosts_;
+};
 
 }  // anonymous namespace
 
@@ -7385,9 +7426,188 @@ IN_PROC_BROWSER_TEST_P(ResumeNavigationWithSpeculativeRFHProcessGoneTest,
   EXPECT_TRUE(navigation_manager.was_committed());
 }
 
+// Test that a BrowsingInstance swap occurs when the process flags for a site
+// change. Ensure this happens only for main frames and only when there are no
+// related WebContents.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       SwapBrowsingInstanceOnReloadOnProcessFlagChange) {
+  if (!SiteIsolationPolicy::IsSitePerProcessOrStricter()) {
+    // TODO(crbug.com/489441400): Enable this test on Android. It is currently
+    // skipped because it requires site-per-process, which is not the default
+    // on many Android configurations, though the feature itself is functional.
+    GTEST_SKIP() << "Requires at least site-per-process";
+  }
+  StartEmbeddedServer();
+  ProcessFlagsContentBrowserClient client;
+  // The BFCache may proactively swap, even on same-site navigations, so disable
+  // it for this test to ensure we are indeed testing the swap that is caused by
+  // changing process flag values.
+  DisableBackForwardCache(BackForwardCacheImpl::TEST_REQUIRES_NO_CACHING);
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1. Navigate to a.com with optimizations enabled.
+  client.SetV8OptimizationsDisabledForHost("a.com", false);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  scoped_refptr<SiteInstanceImpl> instance1 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+  EXPECT_FALSE(instance1->GetSiteInfo().are_v8_optimizations_disabled());
+
+  // 2. Change flags and reload a.com.
+  client.SetV8OptimizationsDisabledForHost("a.com", true);
+  web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+  scoped_refptr<SiteInstanceImpl> instance2 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+  // Verify v8 optimizations were updated and swap occurred.
+  EXPECT_TRUE(instance2->GetSiteInfo().are_v8_optimizations_disabled());
+  EXPECT_FALSE(instance1->IsRelatedSiteInstance(instance2.get()));
+
+  // 3. Test subframe: subframes should not swap BrowsingInstances.
+  // Start on a.com with an iframe to b.com.
+  GURL url_a_with_b(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  client.SetV8OptimizationsDisabledForHost("b.com", false);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a_with_b));
+  RenderFrameHostImpl* main_rfh = web_contents->GetPrimaryMainFrame();
+  RenderFrameHost* subframe_rfh = content::ChildFrameAt(main_rfh, 0);
+
+  // Verify subframe is in the same BrowsingInstance as its parent, and v8
+  // optimizations are enabled.
+  EXPECT_EQ(main_rfh->GetSiteInstance()->GetBrowsingInstanceId(),
+            subframe_rfh->GetSiteInstance()->GetBrowsingInstanceId());
+  scoped_refptr<SiteInstanceImpl> instance3 =
+      static_cast<SiteInstanceImpl*>(subframe_rfh->GetSiteInstance());
+  EXPECT_FALSE(instance3->GetSiteInfo().are_v8_optimizations_disabled());
+
+  // Now change v8 optimizer state for b.com and navigate the subframe.
+  client.SetV8OptimizationsDisabledForHost("b.com", true);
+  EXPECT_TRUE(NavigateIframeToURL(web_contents, "child-0", url_b));
+
+  // Verify subframe still in same BrowsingInstance despite flag change, and v8
+  // optimizations are still enabled.
+  subframe_rfh = content::ChildFrameAt(main_rfh, 0);
+  EXPECT_TRUE(main_rfh->GetSiteInstance()->IsRelatedSiteInstance(
+      subframe_rfh->GetSiteInstance()));
+  scoped_refptr<SiteInstanceImpl> instance4 =
+      static_cast<SiteInstanceImpl*>(subframe_rfh->GetSiteInstance());
+  EXPECT_FALSE(instance4->GetSiteInfo().are_v8_optimizations_disabled());
+
+  // 4. Test RelatedActiveContents: no swap if there are scripting references.
+  // Start on a.com with v8 optimizations disabled.
+  client.SetV8OptimizationsDisabledForHost("a.com", true);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  scoped_refptr<SiteInstanceImpl> instance5 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+  EXPECT_TRUE(instance5->GetSiteInfo().are_v8_optimizations_disabled());
+
+  // Open a popup to create a related ActiveContent.
+  EXPECT_TRUE(OpenPopup(shell(), url_a, "popup"));
+  EXPECT_EQ(2u, instance5->GetRelatedActiveContentsCount());
+
+  // Change flags and reload main window.
+  client.SetV8OptimizationsDisabledForHost("a.com", false);
+  web_contents->GetController().Reload(content::ReloadType::NORMAL, false);
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  scoped_refptr<SiteInstanceImpl> instance6 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+
+  // Verify no swap occurred and v8 optimizations are still disabled.
+  EXPECT_TRUE(instance5->IsRelatedSiteInstance(instance6.get()));
+  EXPECT_TRUE(instance6->GetSiteInfo().are_v8_optimizations_disabled());
+}
+
+// Test that a BrowsingInstance swap occurs when the jitless setting for a site
+// changes.
+IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
+                       SwapBrowsingInstanceOnReloadOnJitlessStateChange) {
+  if (!SiteIsolationPolicy::IsSitePerProcessOrStricter()) {
+    // TODO(crbug.com/489441400): Enable this test on Android. It is currently
+    // skipped because it requires site-per-process, which is not the default
+    // on many Android configurations, though the feature itself is functional.
+    GTEST_SKIP() << "Requires at least site-per-process";
+  }
+  StartEmbeddedServer();
+  ProcessFlagsContentBrowserClient client;
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1. Navigate to a.com with optimizations enabled.
+  client.SetJitDisabledForHost("a.com", true);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  scoped_refptr<SiteInstanceImpl> instance1 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+  EXPECT_TRUE(instance1->GetSiteInfo().is_jit_disabled());
+
+  // 2. Change flags and navigate to a.com again.
+  client.SetJitDisabledForHost("a.com", false);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  scoped_refptr<SiteInstanceImpl> instance2 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+
+  // Verify swap occurred.
+  EXPECT_FALSE(instance1->IsRelatedSiteInstance(instance2.get()));
+  // Verify updated jitless settings were applied correctly.
+  EXPECT_FALSE(instance2->GetSiteInfo().is_jit_disabled());
+}
+
+class SwapBrowsingInstancesForDifferentProcessFlagsDisabledTest
+    : public RenderFrameHostManagerTest {
+ public:
+  SwapBrowsingInstancesForDifferentProcessFlagsDisabledTest() {
+    feature_list_.InitFromCommandLine(
+        "", "SwapBrowsingInstancesForDifferentProcessFlags");
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that a BrowsingInstance swap does NOT occur when process-level flags
+// change if the kSwapBrowsingInstancesForDifferentProcessFlags feature is
+// disabled.
+IN_PROC_BROWSER_TEST_P(
+    SwapBrowsingInstancesForDifferentProcessFlagsDisabledTest,
+    BrowsingInstanceNotSwappedOnProcessFlagChange) {
+  StartEmbeddedServer();
+  ProcessFlagsContentBrowserClient client;
+
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+
+  // 1. Navigate to a.com with optimizations enabled.
+  client.SetV8OptimizationsDisabledForHost("a.com", false);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  scoped_refptr<SiteInstanceImpl> instance1 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+  EXPECT_FALSE(instance1->GetSiteInfo().are_v8_optimizations_disabled());
+
+  // 2. Change flags and navigate to a.com again.
+  client.SetV8OptimizationsDisabledForHost("a.com", true);
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  scoped_refptr<SiteInstanceImpl> instance2 =
+      static_cast<SiteInstanceImpl*>(web_contents->GetSiteInstance());
+
+  // Verify that NO swap occurred because the feature is disabled.
+  EXPECT_TRUE(instance1->IsRelatedSiteInstance(instance2.get()));
+  // Verify that the toggled flag also did not apply.
+  EXPECT_FALSE(instance2->GetSiteInfo().are_v8_optimizations_disabled());
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SwapBrowsingInstancesForDifferentProcessFlagsDisabledTest,
+    testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderFrameHostManagerUnloadBrowserTest,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
