@@ -5549,8 +5549,10 @@
   },
   {
     "name": "heavy-ad-privacy-mitigations",
-    "owners": [ "johnidel@chromium.org", "jkarlin@chromium.org" ],
-    "expiry_milestone": 127
+    "owners": [ "yaoxia@chromium.org", "jkarlin@chromium.org" ],
+    // A debugging and demo flag to allow testing of heavy ads
+    // interventions by the industry without per-page limitations.
+    "expiry_milestone": -1
   },
   {
     "name": "help-app-app-detail-page",

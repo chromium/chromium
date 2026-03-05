@@ -105,6 +105,7 @@
   "force-update-menu-type",
   "fullscreen-viewport-adjustment-experiment",
   "gesture-properties-dbus-service",
+  "heavy-ad-privacy-mitigations",
   "ignore-gpu-blocklist",
   "ignore-previews-blocklist",
   "in-product-help-demo-mode-choice",
