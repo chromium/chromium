@@ -4,6 +4,8 @@
 
 source_set("coordinator") {
   sources = [
+    "passkey_incognito_interstitial_coordinator.h",
+    "passkey_incognito_interstitial_coordinator.mm",
     "passkey_welcome_screen_coordinator.h",
     "passkey_welcome_screen_coordinator.mm",
   ]
@@ -20,8 +22,25 @@ source_set("coordinator") {
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/webauthn/public",
+    "//ios/chrome/browser/webauthn/ui",
     "//ios/chrome/common/credential_provider/ui",
+    "//ios/chrome/common/ui/confirmation_alert",
     "//ios/chrome/common/ui/elements:branded_navigation_item_title_view",
     "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "passkey_incognito_interstitial_coordinator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/chrome/browser/webauthn/ui",
+    "//ios/chrome/common/ui/confirmation_alert",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
   ]
 }
