@@ -396,8 +396,8 @@ bool URLPattern::IsValidScheme(std::string_view scheme) const {
   }
 
   for (size_t i = 0; i < std::size(kValidSchemes); ++i) {
-    if (scheme == kValidSchemes[i] && (valid_schemes_ & kValidSchemeMasks[i])) {
-      return true;
+    if (scheme == kValidSchemes[i]) {
+      return valid_schemes_ & kValidSchemeMasks[i];
     }
   }
 
