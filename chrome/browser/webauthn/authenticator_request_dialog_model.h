@@ -420,7 +420,12 @@ struct AuthenticatorRequestDialogModel
   void RemoveObserver(AuthenticatorRequestDialogModel::Observer* observer);
 
   // Views and controllers add themselves as observers here to receive events.
-  base::ObserverList<Observer> observers;
+  // TODO(crbug.com/484371187): Investigate if reentrancy can be removed.
+  base::ObserverList<
+      Observer,
+      /*check_empty=*/false,
+      base::ObserverListReentrancyPolicy::kAllowReentrancyUntriaged>
+      observers;
 
   // The primary state of the model is the current `Step`. It's important that
   // this always be changed via `SetStep` so the field isn't exposed directly.

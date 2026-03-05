@@ -486,7 +486,7 @@ class Host : public GlicSharingManagerProvider {
 
   // Null before `Initialize()` and after `Shutdown()`.
   raw_ptr<EmbedderDelegate> delegate_;
-  base::ObserverList<Observer> observers_;
+  base::ReentrantObserverList<Observer> observers_;
 
   // The invocation source if the panel is open. nullopt while the panel is
   // closed.
