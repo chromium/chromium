@@ -5,7 +5,9 @@
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 
 #include "components/variations/net/variations_http_headers.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
@@ -134,6 +136,25 @@ void AddVariationsHeaderForPrefetch(
     cors_exempt_headers.SetHeaderIfMissing(variations::kClientDataHeader,
                                            *value);
   }
+}
+
+mojo::PendingRemote<network::mojom::DevToolsObserver>
+MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(
+    const PrefetchRequest& prefetch_request) {
+  auto* renderer_initiator_info = prefetch_request.GetRendererInitiatorInfo();
+  if (!renderer_initiator_info) {
+    // Don't emit CDP events if the trigger is not speculation rules.
+    return mojo::NullRemote();
+  }
+
+  auto* ftn =
+      FrameTreeNode::From(renderer_initiator_info->GetRenderFrameHost());
+  if (!ftn) {
+    // Don't emit CDP events if the initiator document isn't alive.
+    return mojo::NullRemote();
+  }
+
+  return NetworkServiceDevToolsObserver::MakeSelfOwned(ftn);
 }
 
 }  // namespace content

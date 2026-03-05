@@ -51,6 +51,10 @@ void AddVariationsHeaderForPrefetch(
     const PrefetchRequest& prefetch_request,
     bool is_first_party_context_for_variations);
 
+mojo::PendingRemote<network::mojom::DevToolsObserver>
+MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(
+    const PrefetchRequest& prefetch_request);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_

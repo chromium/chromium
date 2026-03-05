@@ -15,7 +15,6 @@
 #include "components/variations/net/variations_http_headers.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/loader/navigation_url_loader_impl.h"
 #include "content/browser/preloading/prefetch/assert_prefetch_container_observer.h"
@@ -1510,8 +1509,11 @@ void PrefetchContainer::MakeInitialResourceRequest() {
   }();
 
   mojo::PendingRemote<network::mojom::DevToolsObserver>
-      devtools_observer_remote =
-          MaybeMakeSelfOwnedNetworkServiceDevToolsObserver();
+      devtools_observer_remote;
+  if (!IsDecoy()) {
+    devtools_observer_remote =
+        MaybeMakeSelfOwnedNetworkServiceDevToolsObserverForPrefetch(request());
+  }
 
   // If we ever implement prefetching for subframes, this value should be
   // reconsidered, as this causes us to reset the site for cookies on cross-site
@@ -2076,28 +2078,6 @@ void PrefetchContainer::NotifyPrefetchRequestComplete(
 
   devtools_instrumentation::OnPrefetchRequestComplete(
       ftn, GetDevtoolsRequestId(), completion_status);
-}
-
-mojo::PendingRemote<network::mojom::DevToolsObserver>
-PrefetchContainer::MaybeMakeSelfOwnedNetworkServiceDevToolsObserver() {
-  if (IsDecoy()) {
-    return mojo::NullRemote();
-  }
-
-  auto* renderer_initiator_info = request().GetRendererInitiatorInfo();
-  if (!renderer_initiator_info) {
-    // Don't emit CDP events if the trigger is not speculation rules.
-    return mojo::NullRemote();
-  }
-
-  auto* ftn =
-      FrameTreeNode::From(renderer_initiator_info->GetRenderFrameHost());
-  if (!ftn) {
-    // Don't emit CDP events if the initiator document isn't alive.
-    return mojo::NullRemote();
-  }
-
-  return NetworkServiceDevToolsObserver::MakeSelfOwned(ftn);
 }
 
 std::string PrefetchContainer::GetMetricsSuffix() const {
