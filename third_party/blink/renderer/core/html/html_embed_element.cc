@@ -96,7 +96,7 @@ void HTMLEmbedElement::ParseAttribute(
     const AttributeModificationParams& params) {
   if (params.name == html_names::kTypeAttr) {
     SetServiceType(params.new_value.LowerASCII());
-    wtf_size_t pos = service_type_.find(";");
+    wtf_size_t pos = service_type_.find(';');
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
     SetDisposeView();

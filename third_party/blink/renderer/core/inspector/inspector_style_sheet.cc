@@ -152,10 +152,7 @@ String FindMagicComment(const String& content, const String& name) {
                      ? content.Substring(url_pos, closing_comment_pos - url_pos)
                      : content.Substring(url_pos);
 
-  wtf_size_t new_line = match.find("\n");
-  if (new_line != kNotFound) {
-    match = match.Substring(0, new_line);
-  }
+  match = match.substr(0, match.find('\n'));
   match = match.StripWhiteSpace();
 
   const StringView disallowed_chars("\"' \t");

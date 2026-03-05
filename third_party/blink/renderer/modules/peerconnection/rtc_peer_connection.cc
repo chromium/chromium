@@ -423,16 +423,16 @@ bool SdpMismatch(String old_sdp, String new_sdp, String attribute) {
   }
   wtf_size_t old_attribute_end = old_sdp.find("\r\n", old_attribute_pos + 1);
   if (old_attribute_end == kNotFound) {
-    old_attribute_end = old_sdp.find("\n", old_attribute_pos + 1);
+    old_attribute_end = old_sdp.find('\n', old_attribute_pos + 1);
   }
   wtf_size_t new_attribute_end = new_sdp.find("\r\n", new_attribute_pos + 1);
   if (new_attribute_end == kNotFound) {
-    new_attribute_end = new_sdp.find("\n", new_attribute_pos + 1);
+    new_attribute_end = new_sdp.find('\n', new_attribute_pos + 1);
   }
-  return old_sdp.Substring(old_attribute_pos,
-                           old_attribute_end - old_attribute_pos) !=
-         new_sdp.Substring(new_attribute_pos,
-                           new_attribute_end - new_attribute_pos);
+  return old_sdp.substr(old_attribute_pos,
+                        old_attribute_end - old_attribute_pos) !=
+         new_sdp.substr(new_attribute_pos,
+                        new_attribute_end - new_attribute_pos);
 }
 
 bool IceUfragPwdMismatch(String old_sdp, String new_sdp) {
@@ -459,17 +459,17 @@ bool FingerprintMismatch(String old_sdp, String new_sdp) {
   wtf_size_t old_fingerprint_end =
       old_sdp.find("\r\n", old_fingerprint_pos + 1);
   if (old_fingerprint_end == kNotFound) {
-    old_fingerprint_end = old_sdp.find("\n", old_fingerprint_pos + 1);
+    old_fingerprint_end = old_sdp.find('\n', old_fingerprint_pos + 1);
   }
   wtf_size_t new_fingerprint_end =
       new_sdp.find("\r\n", new_fingerprint_pos + 1);
   if (new_fingerprint_end == kNotFound) {
-    new_fingerprint_end = new_sdp.find("\n", new_fingerprint_pos + 1);
+    new_fingerprint_end = new_sdp.find('\n', new_fingerprint_pos + 1);
   }
-  return old_sdp.Substring(old_fingerprint_pos,
-                           old_fingerprint_end - old_fingerprint_pos) !=
-         new_sdp.Substring(new_fingerprint_pos,
-                           new_fingerprint_end - new_fingerprint_pos);
+  return old_sdp.substr(old_fingerprint_pos,
+                        old_fingerprint_end - old_fingerprint_pos) !=
+         new_sdp.substr(new_fingerprint_pos,
+                        new_fingerprint_end - new_fingerprint_pos);
 }
 
 bool ContainsLegacySimulcast(String sdp) {

@@ -101,7 +101,7 @@ void HTMLObjectElement::ParseAttribute(
     FormAttributeChanged();
   } else if (name == html_names::kTypeAttr) {
     SetServiceType(params.new_value.LowerASCII());
-    wtf_size_t pos = service_type_.find(";");
+    wtf_size_t pos = service_type_.find(';');
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
     // TODO(crbug.com/572908): What is the right thing to do here? Should we

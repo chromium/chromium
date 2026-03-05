@@ -129,10 +129,10 @@ class MHTMLArchiveTest : public testing::Test {
       }
 
       line = builder.ToString();
-      wtf_size_t pos = line.find(":");
+      wtf_size_t pos = line.find(':');
       if (pos == kNotFound)
         continue;
-      String key = line.Substring(0, pos);
+      String key = line.substr(0, pos);
       String value = line.Substring(pos + 2);
       mhtml_headers.insert(key, value);
 

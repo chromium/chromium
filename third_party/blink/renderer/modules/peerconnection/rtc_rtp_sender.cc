@@ -481,13 +481,13 @@ ToRtpParameters(ExecutionContext* context,
 webrtc::RtpCodec ToWebrtcRtpCodec(const RTCRtpCodec* codec) {
   webrtc::RtpCodec webrtc_codec;
   std::string mime_type = codec->mimeType().Utf8();
-  auto slash_index = codec->mimeType().find("/");
+  auto slash_index = codec->mimeType().find('/');
   if (slash_index == kNotFound) {
     webrtc_codec.kind = webrtc::MediaType::UNSUPPORTED;
     return webrtc_codec;
   }
-  webrtc_codec.name = codec->mimeType().Substring(slash_index + 1).Utf8();
-  String codec_type = codec->mimeType().Substring(0, slash_index);
+  webrtc_codec.name = codec->mimeType().substr(slash_index + 1).Utf8();
+  String codec_type = codec->mimeType().substr(0, slash_index);
 
   if (codec_type == "video") {
     webrtc_codec.kind = webrtc::MediaType::VIDEO;
