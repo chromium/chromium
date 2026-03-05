@@ -63,7 +63,6 @@ void PreloadPipelineInfoImpl::SetPrefetchStatus(
 }
 
 void PreloadPipelineInfoImpl::MarkPrerenderMatchedWithPrefetch() {
-  CHECK(!is_prerender_matched_with_prefetch_);
   is_prerender_matched_with_prefetch_ = true;
 }
 
