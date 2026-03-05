@@ -841,7 +841,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1561331397460162942">Permite que apps, sites com essa permissão e serviços do sistema acessem a localização</translation>
 <translation id="1562119309884184621">Essa ação fará com que o contato seja lembrado no próximo compartilhamento</translation>
 <translation id="1562585387501039294">Sua organização, <ph name="ACCOUNT_MANAGER" />, exige um perfil gerenciado e poderá ver algumas informações, incluindo</translation>
-<translation id="156345786953026804">O conteúdo da página e os URLs que o Gemini usa durante uma tarefa são compartilhados com o Google.</translation>
+<translation id="156345786953026804">O conteúdo da página e os URLs que o Gemini usa durante uma atividade são compartilhados com o Google.</translation>
 <translation id="1566049601598938765">Website</translation>
 <translation id="15662109988763471">A impressora selecionada não está disponível ou não foi instalada corretamente. Verifique a impressora ou selecione outra.</translation>
 <translation id="1566329594234563241">Enquanto o dispositivo estiver inativo e conectado à energia</translation>
@@ -3857,7 +3857,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3590194807845837023">Desbloquear perfil e reiniciar</translation>
 <translation id="3590295622232282437">Entrando em uma sessão gerenciada.</translation>
 <translation id="3591057288287063271">Manter <ph name="FILE_NAME" /></translation>
-<translation id="3591519988492877237">{NUM_TASKS,plural, =1{Verifique sua tarefa}one{Verifique sua tarefa}other{Verifique suas tarefas}}</translation>
+<translation id="3591519988492877237">{NUM_TASKS,plural, =1{Verifique sua atividade}one{Verifique sua atividade}other{Verifique suas atividades}}</translation>
 <translation id="359177822697434450">Sobre dispositivos USB</translation>
 <translation id="3592260987370335752">&amp;Saiba mais</translation>
 <translation id="3592344177526089979">Transmitindo uma guia para o dispositivo <ph name="DEVICE_NAME" /></translation>
@@ -6433,7 +6433,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5333896723098573627">Para remover apps, acesse "Configurações" &gt; "Apps" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Apps" ou "Gerenciador de aplicativos". Depois, toque no app que você quer desinstalar (talvez seja necessário deslizar para a direita ou esquerda a fim de encontrar o app). Em seguida, toque em "Desinstalar" ou "Desativar".</translation>
 <translation id="5334113802138581043">Acesso ao microfone</translation>
 <translation id="5334142896108694079">Cache de script</translation>
-<translation id="5335370353987155592">Use o Gemini com cuidado e <ph name="BEGIN_LINK1" />segurança<ph name="LINK_END1" />. Você é responsável pelas ações do Gemini durante uma tarefa, incluindo erros e <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como compras.</translation>
+<translation id="5335370353987155592">Use o Gemini com cuidado e <ph name="BEGIN_LINK1" />segurança<ph name="LINK_END1" />. Você é responsável pelas ações do Gemini durante uma atividade, incluindo erros e <ph name="BEGIN_LINK2" />resultados inesperados<ph name="LINK_END2" />, como compras.</translation>
 <translation id="5336688142483283574">Esta página também será removida do seu histórico e da atividade do <ph name="SEARCH_ENGINE" />.</translation>
 <translation id="5336689872433667741">Cursor e touchpad</translation>
 <translation id="5337035808300170502">Tamanho real</translation>
@@ -7895,7 +7895,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6350821834561350243">Forneça uma descrição clara do problema e as etapas necessárias para reproduzi-lo (se possível)</translation>
 <translation id="6351178441572658285">Idiomas do app</translation>
 <translation id="6354918092619878358">Curva elíptica SECG secp256r1 (também conhecida como ANSI X9.62 prime256v1, NIST P-256)</translation>
-<translation id="6355632359041940003">Assumir tarefa</translation>
+<translation id="6355632359041940003">Assumir atividade</translation>
 <translation id="635609604405270300">Mantenha o dispositivo ligado</translation>
 <translation id="6356537493253478650">Tranquilo</translation>
 <translation id="63566973648609420">Somente uma pessoa que tenha sua senha longa pode ler seus dados criptografados. A senha longa não é enviada para o Google ou armazenada por ele. Se você esquecer sua senha longa ou quiser alterar essa configuração, será necessário <ph name="BEGIN_LINK" />redefinir a sincronização<ph name="END_LINK" />.</translation>

@@ -304,7 +304,7 @@
 <translation id="2879867157561757640">Mit drei Fingern nach unten wischen</translation>
 <translation id="288178314850623291">Mit bestimmten Befehlen kannst du verschiedene Elementtypen überspringen. Um zwischen Überschriften vorwärts zu springen, drücke Suche + H, und um rückwärts zu springen Suche + Umschalttaste + H.</translation>
 <translation id="2894654529758326923">Informationen</translation>
-<translation id="2909584066358367921">Keine nächste Schaltfläche</translation>
+<translation id="2909584066358367921">Kein nächster Button</translation>
 <translation id="2911433807131383493">ChromeVox-Anleitung öffnen</translation>
 <translation id="2912405967290226587">Mit drei Fingern nach rechts wischen</translation>
 <translation id="2919107550468490321">Intelligenter fixierter Modus aktiviert</translation>
@@ -369,7 +369,7 @@
 <translation id="3223701887221307104">Tab "<ph name="NAME" />"</translation>
 <translation id="3223779237381380437">Nicht durchgestrichen</translation>
 <translation id="3226035351387556942">chk</translation>
-<translation id="3232388865800379423">Eine Pop-up-Schaltfläche</translation>
+<translation id="3232388865800379423">Ein Pop-up-Button</translation>
 <translation id="3241052487511142956">Vorheriger besuchter Link</translation>
 <translation id="3241638166094654466">Zellen in jeder Zeile:</translation>
 <translation id="3244209481693235975"><ph name="LANGUAGE" />: <ph name="CONTENT" /></translation>
@@ -493,7 +493,7 @@
 <translation id="4053520724192563562">Gelbgrün</translation>
 <translation id="4054936709456751127">sts</translation>
 <translation id="4058278702844053247">Eine Seite wird aufgebaut</translation>
-<translation id="4065205963140826639">Verwende jetzt Suche + Rechtspfeil, um die Schaltfläche „Weiter“ zu finden, und drücke dann Suche + Leertaste, um auf die Schaltfläche zu klicken.</translation>
+<translation id="4065205963140826639">Verwende jetzt Suche + Rechtspfeil, um den Button „Weiter“ zu finden, und drücke dann Suche + Leertaste, um auf den Button zu klicken.</translation>
 <translation id="4079553331137067698">.input {$$COUNT :number} .match $$COUNT 1{{Caret-Zeichen}} *{{{$$COUNT} Caret-Zeichen}}</translation>
 <translation id="409334809956508737">Vorheriges Objekt</translation>
 <translation id="4096952912560611353">.input {$$COUNT :number} .match $$COUNT 1{{Pluszeichen}} *{{{$$COUNT} Pluszeichen}}</translation>
@@ -508,7 +508,7 @@
 <translation id="4176463684765177261">Deaktiviert</translation>
 <translation id="4187322598335821254">Wische nach oben oder unten, um dich von Zeile zu Zeile zu bewegen</translation>
 <translation id="4188530942454211480">Vorheriger Satz</translation>
-<translation id="4191918948604314587">Eine Schaltfläche</translation>
+<translation id="4191918948604314587">Ein Button</translation>
 <translation id="419265409837491189">Zur vorherigen Spalte</translation>
 <translation id="4202186506458631436">Nach rechts</translation>
 <translation id="4204126831294769023">Azurblau</translation>
@@ -628,7 +628,7 @@
 <translation id="4953585991029886728">Text bearbeiten</translation>
 <translation id="4964701498510730546">Textfeld ist leer</translation>
 <translation id="4973717656530883744">Mind. <ph name="X" /></translation>
-<translation id="4974612477719259470">Keine vorherige Schaltfläche</translation>
+<translation id="4974612477719259470">Kein vorheriger Button</translation>
 <translation id="4979404613699303341">Vorheriger Button</translation>
 <translation id="4981239367072766915">nicht erkannte Eingabe</translation>
 <translation id="4982917827052020884">Fangen wir mit ein paar Tasten an, die du regelmäßig verwenden wirst. Mit der Steuerung-Taste kannst du die Sprachausgabe anhalten. Du findest die Steuerung-Taste unten links auf deiner Tastatur. Drücke zum Fortfahren die Steuerung-Taste.</translation>

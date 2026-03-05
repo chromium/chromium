@@ -367,7 +367,7 @@
 <translation id="4987820182225656817">访客使用Chromium不会留下任何痕迹。</translation>
 <translation id="4992938037305302429">设置 Chromium 账号</translation>
 <translation id="4994636714258228724">将您自己添加到Chromium</translation>
-<translation id="5083712646171654472">Chromium 中的 Gemini 会使用自动浏览功能在标签页中运行，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
+<translation id="5083712646171654472">Chromium 中的 Gemini 利用“自动浏览”功能在标签页中操作，完成您交代的各种任务。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="5123973130450702873">Chromium 需要获得权限，才能跟踪您的手部动作</translation>
 <translation id="5141988424377517949">您近期未访问过该网站，因此 Chromium 撤消了该网站的<ph name="PERMISSION_1" />权限、<ph name="PERMISSION_2" />权限和<ph name="PERMISSION_3" />权限。</translation>
 <translation id="5174969993834422967">您通常会屏蔽通知。要允许此网站向您发送通知，请点击位置栏右侧的通知图标。</translation>
