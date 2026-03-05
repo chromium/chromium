@@ -29,11 +29,11 @@ FullscreenControllerImpl::FullscreenControllerImpl(Browser* browser)
       notification_observer_([[FullscreenSystemNotificationObserver alloc]
           initWithController:this
                     mediator:&mediator_]) {
-  DCHECK(broadcaster_);
+  CHECK(broadcaster_);
   web_state_list_observer_.SetWebStateList(browser->GetWebStateList());
-  [broadcaster_ addObserver:bridge_
-                forSelector:@selector(broadcastScrollViewContentSize:)];
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+    [broadcaster_ addObserver:bridge_
+                  forSelector:@selector(broadcastScrollViewContentSize:)];
     [broadcaster_ addObserver:bridge_
                   forSelector:@selector(broadcastScrollViewSize:)];
     [broadcaster_ addObserver:bridge_
@@ -64,9 +64,9 @@ FullscreenControllerImpl::~FullscreenControllerImpl() {
   mediator_.Disconnect();
   web_state_list_observer_.Disconnect();
   [notification_observer_ disconnect];
-  [broadcaster_ removeObserver:bridge_
-                   forSelector:@selector(broadcastScrollViewContentSize:)];
-  if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
+  if (web::features::ShouldUseBroadcasterForSmoothScrolling()) {
+    [broadcaster_ removeObserver:bridge_
+                     forSelector:@selector(broadcastScrollViewContentSize:)];
     [broadcaster_ removeObserver:bridge_
                      forSelector:@selector(broadcastScrollViewSize:)];
     [broadcaster_ removeObserver:bridge_

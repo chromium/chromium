@@ -26,6 +26,7 @@ ChromeBroadcastObserverInterface::~ChromeBroadcastObserverInterface() = default;
 }
 
 - (void)broadcastScrollViewContentSize:(CGSize)contentSize {
+  CHECK(web::features::ShouldUseBroadcasterForSmoothScrolling());
   if (contentSize.width == 0.0 && contentSize.height == 0.0) {
     return;
   }
