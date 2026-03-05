@@ -12,9 +12,8 @@
 
 namespace blink {
 
-V8UnionStringOrTrustedScriptURL* SVGAnimatedString::baseVal() {
-  return MakeGarbageCollected<V8UnionStringOrTrustedScriptURL>(
-      SVGAnimatedProperty<SVGString>::baseVal());
+String SVGAnimatedString::baseVal() {
+  return SVGAnimatedProperty<SVGString>::baseVal();
 }
 
 void SVGAnimatedString::setBaseVal(const V8UnionStringOrTrustedScriptURL* value,

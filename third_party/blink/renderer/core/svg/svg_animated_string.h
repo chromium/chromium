@@ -51,7 +51,7 @@ class SVGAnimatedString : public ScriptWrappable,
                                        attribute_name,
                                        MakeGarbageCollected<SVGString>()) {}
 
-  virtual V8UnionStringOrTrustedScriptURL* baseVal();
+  virtual String baseVal();
   virtual void setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
                           ExceptionState& exception_state);
 

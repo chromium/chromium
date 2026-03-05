@@ -336,9 +336,8 @@ void HTMLObjectElement::RenderFallbackContent(
   ReattachFallbackContent();
 }
 
-V8UnionTrustedScriptURLOrUSVString* HTMLObjectElement::data() {
-  return MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
-      GetURLAttribute(html_names::kDataAttr));
+String HTMLObjectElement::data() {
+  return GetURLAttribute(html_names::kDataAttr);
 }
 
 void HTMLObjectElement::setData(const V8UnionTrustedScriptURLOrUSVString* value,
@@ -353,9 +352,8 @@ void HTMLObjectElement::setData(const V8UnionTrustedScriptURLOrUSVString* value,
                                 AtomicString(compliant_value));
 }
 
-V8UnionTrustedScriptURLOrUSVString* HTMLObjectElement::codeBase() {
-  return MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
-      GetURLAttribute(html_names::kCodebaseAttr));
+String HTMLObjectElement::codeBase() {
+  return GetURLAttribute(html_names::kCodebaseAttr);
 }
 
 void HTMLObjectElement::setCodeBase(

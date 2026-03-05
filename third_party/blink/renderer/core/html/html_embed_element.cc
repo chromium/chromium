@@ -237,9 +237,8 @@ bool HTMLEmbedElement::IsExposed() const {
   return true;
 }
 
-const V8UnionTrustedScriptURLOrUSVString* HTMLEmbedElement::src() {
-  return MakeGarbageCollected<V8UnionTrustedScriptURLOrUSVString>(
-      GetURLAttribute(html_names::kSrcAttr));
+String HTMLEmbedElement::src() {
+  return GetURLAttribute(html_names::kSrcAttr);
 }
 
 void HTMLEmbedElement::setSrc(const V8UnionTrustedScriptURLOrUSVString* value,

@@ -4548,12 +4548,9 @@ bool NavigatorAuction::AuctionHandle::MaybeResolveAuction() {
 
   if (resolve_to_config_.value() == true) {
     auction_resolver_->Resolve(
-        MakeGarbageCollected<V8UnionFencedFrameConfigOrUSVString>(
-            FencedFrameConfig::From(auction_config_.value())));
+        FencedFrameConfig::From(auction_config_.value()));
   } else {
-    auction_resolver_->Resolve(
-        MakeGarbageCollected<V8UnionFencedFrameConfigOrUSVString>(
-            KURL(auction_config_->urn_uuid().value())));
+    auction_resolver_->Resolve(KURL(auction_config_->urn_uuid().value()));
   }
   return true;
 }

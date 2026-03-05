@@ -95,9 +95,9 @@ class CORE_EXPORT HTMLObjectElement final : public HTMLPlugInElement,
   };
   void RenderFallbackContent(ErrorEventPolicy should_dispatch_error_event);
 
-  V8UnionTrustedScriptURLOrUSVString* data();
+  String data();
   void setData(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
-  V8UnionTrustedScriptURLOrUSVString* codeBase();
+  String codeBase();
   void setCodeBase(const V8UnionTrustedScriptURLOrUSVString*, ExceptionState&);
 
  private:

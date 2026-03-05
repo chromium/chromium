@@ -49,7 +49,7 @@ const SVGString* SVGAnimatedHref::CurrentValue() const {
   return BackingString()->SVGAnimatedString::CurrentValue();
 }
 
-V8UnionStringOrTrustedScriptURL* SVGAnimatedHref::baseVal() {
+String SVGAnimatedHref::baseVal() {
   UseCounter::Count(ContextElement()->GetDocument(),
                     WebFeature::kSVGHrefBaseVal);
   return BackingString()->SVGAnimatedString::baseVal();

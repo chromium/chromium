@@ -48,9 +48,13 @@ struct NullTraits<nullptr_t> {
   static constexpr bool IsNull(nullptr_t) { return true; }
 };
 
-template <>
-struct NullTraits<String> {
-  static bool IsNull(const String& str) { return str.IsNull(); }
+template <typename T>
+concept HasIsNull = requires(const T& x) { x.IsNull(); };
+
+template <typename T>
+  requires HasIsNull<T>
+struct NullTraits<T> {
+  static bool IsNull(const T& obj) { return obj.IsNull(); }
 };
 
 }  // namespace internal

@@ -131,7 +131,7 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   String GetInnerHTMLString() const;
   void SetInnerHTMLWithoutTrustedTypes(const String&,
                                        ExceptionState& = ASSERT_NO_EXCEPTION);
-  V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* innerHTML() const;
+  String innerHTML() const;
   void setInnerHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
                     ExceptionState&);
   void setHTMLUnsafe(const V8UnionStringOrTrustedHTML* html, ExceptionState&);

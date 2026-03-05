@@ -26,7 +26,7 @@ class SVGAnimatedHref final : public SVGAnimatedString {
   SVGString* CurrentValue();
   const SVGString* CurrentValue() const;
 
-  V8UnionStringOrTrustedScriptURL* baseVal() override;
+  String baseVal() override;
   void setBaseVal(const V8UnionStringOrTrustedScriptURL* value,
                   ExceptionState& exception_state) override;
   String animVal() override;

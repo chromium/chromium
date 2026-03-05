@@ -1408,8 +1408,8 @@ class CORE_EXPORT Element : public ContainerNode {
   void SetOuterHTMLWithoutTrustedTypes(const String&,
                                        ExceptionState& = ASSERT_NO_EXCEPTION);
   void SetOuterHTMLInternal(const String&, ExceptionState&);
-  V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* innerHTML() const;
-  V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* outerHTML() const;
+  String innerHTML() const;
+  String outerHTML() const;
   void setInnerHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,
                     ExceptionState&);
   void setOuterHTML(const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML*,

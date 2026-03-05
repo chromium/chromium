@@ -153,10 +153,8 @@ String ShadowRoot::GetInnerHTMLString() const {
   return CreateMarkup(this, kChildrenOnly);
 }
 
-V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* ShadowRoot::innerHTML()
-    const {
-  return MakeGarbageCollected<
-      V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetInnerHTMLString());
+String ShadowRoot::innerHTML() const {
+  return GetInnerHTMLString();
 }
 
 void ShadowRoot::SetInnerHTMLWithoutTrustedTypes(

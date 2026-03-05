@@ -722,9 +722,8 @@ void HTMLIFrameElement::NaturalSizingInfoChanged() {
   }
 }
 
-const V8UnionStringOrTrustedHTML* HTMLIFrameElement::srcdoc() const {
-  return MakeGarbageCollected<V8UnionStringOrTrustedHTML>(
-      getAttribute(html_names::kSrcdocAttr));
+String HTMLIFrameElement::srcdoc() const {
+  return getAttribute(html_names::kSrcdocAttr);
 }
 
 void HTMLIFrameElement::setSrcdoc(const V8UnionStringOrTrustedHTML* value,

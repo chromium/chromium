@@ -9190,14 +9190,12 @@ String Element::GetOuterHTMLString() const {
   return CreateMarkup(this);
 }
 
-V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* Element::innerHTML() const {
-  return MakeGarbageCollected<
-      V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetInnerHTMLString());
+String Element::innerHTML() const {
+  return GetInnerHTMLString();
 }
 
-V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* Element::outerHTML() const {
-  return MakeGarbageCollected<
-      V8UnionStringLegacyNullToEmptyStringOrTrustedHTML>(GetOuterHTMLString());
+String Element::outerHTML() const {
+  return GetOuterHTMLString();
 }
 
 namespace {
