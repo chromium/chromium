@@ -6,6 +6,8 @@
 
 #include <limits>
 
+#include "base/check_op.h"
+
 namespace content {
 SchedulerLoopQuarantineTaskObserver::SchedulerLoopQuarantineTaskObserver() {
   // DETACH to allow tests to construct this off the main thread.

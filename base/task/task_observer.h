@@ -6,9 +6,10 @@
 #define BASE_TASK_TASK_OBSERVER_H_
 
 #include "base/base_export.h"
-#include "base/pending_task.h"
 
 namespace base {
+
+struct PendingTask;
 
 // A TaskObserver is an object that receives notifications about tasks being
 // processed on the thread it's associated with.

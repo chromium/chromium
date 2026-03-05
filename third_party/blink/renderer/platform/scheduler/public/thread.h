@@ -32,12 +32,12 @@
 #include "base/notimplemented.h"
 #include "base/task/task_observer.h"
 #include "base/threading/thread.h"
+#include "base/time/time.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_type.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
-class TimeTicks;
 namespace sequence_manager {
 class TaskTimeObserver;
 }

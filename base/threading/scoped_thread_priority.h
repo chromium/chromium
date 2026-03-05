@@ -14,6 +14,7 @@
 #include "base/macros/uniquify.h"
 #include "base/memory/raw_ptr.h"
 #include "base/task/task_observer.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 
