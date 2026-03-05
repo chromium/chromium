@@ -321,8 +321,9 @@ void DiskCacheEntryTest::InternalAsyncIO() {
   if (net::ERR_IO_PENDING == ret)
     expected++;
 
+  auto read_buffer = base::MakeRefCounted<net::IOBufferWithSize>(kSize3);
   ret = entry->ReadData(
-      1, 0, buffer3.get(), kSize3,
+      1, 0, read_buffer.get(), kSize3,
       base::BindOnce(&CallbackTest::Run, base::Unretained(&callback9)));
   EXPECT_TRUE(6500 == ret || net::ERR_IO_PENDING == ret);
   if (net::ERR_IO_PENDING == ret)
