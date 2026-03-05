@@ -13066,6 +13066,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNewTabPageCustomizationThemeSync)},
 #endif
+#if BUILDFLAG(IS_ANDROID)
+    {"your-saved-info-settings-page-android",
+     flag_descriptions::kYourSavedInfoSettingsPageAndroidName,
+     flag_descriptions::kYourSavedInfoSettingsPageAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kYourSavedInfoSettingsPageAndroid)},
+#endif
+
     {"mobile-ntp-promo-on-desktop",
      flag_descriptions::kMobileNTPPromoOnDesktopName,
      flag_descriptions::kMobileNTPPromoOnDesktopDescription, kOsDesktop,

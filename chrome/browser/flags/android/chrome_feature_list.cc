@@ -459,6 +459,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kWebApkMinShellVersion,
     &kWebOtpCrossDeviceSimpleString,
     &kXplatSyncedSetup,
+    &kYourSavedInfoSettingsPageAndroid,
     &language::kCctAutoTranslate,
     &language::kDetailedLanguageSettings,
     &media::kAutoDocPiPPermissionPromptAndroid,
@@ -810,6 +811,7 @@ BASE_FEATURE(kUseLibunwindstackNativeUnwinderAndroid, base::FEATURE_ENABLED_BY_D
 // a descriptive text.
 BASE_FEATURE(kWebOtpCrossDeviceSimpleString, base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kXplatSyncedSetup, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kYourSavedInfoSettingsPageAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
 // go/keep-sorted end
 // BASE_FEATURE_END
 

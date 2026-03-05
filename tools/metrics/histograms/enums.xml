@@ -9182,6 +9182,7 @@ from previous Chrome versions.
   <int value="-1789139269" label="SmbFs:disabled"/>
   <int value="-1789077219"
       label="DownloadNotificationServiceUnifiedAPI:enabled"/>
+  <int value="-1788839946" label="YourSavedInfoSettingsPageAndroid:enabled"/>
   <int value="-1788763369" label="PrintingPpdChannel:disabled"/>
   <int value="-1788662002" label="MainNodeAnnotations:enabled"/>
   <int value="-1787333474" label="FedCmError:disabled"/>
@@ -12054,6 +12055,7 @@ from previous Chrome versions.
   <int value="-814908813" label="OmniboxUrlSuggestionsOnFocus:disabled"/>
   <int value="-814305011" label="BatchFetchRequests:disabled"/>
   <int value="-814097014" label="disable-session-crashed-bubble"/>
+  <int value="-813756799" label="YourSavedInfoSettingsPageAndroid:disabled"/>
   <int value="-813753274" label="VrBrowsing:disabled"/>
   <int value="-813474479" label="site-per-process"/>
   <int value="-813269144" label="SyncPseudoUSSPriorityPreferences:disabled"/>

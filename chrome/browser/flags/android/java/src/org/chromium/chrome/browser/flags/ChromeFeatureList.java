@@ -707,6 +707,8 @@ public abstract class ChromeFeatureList {
     public static final String WEB_OTP_CROSS_DEVICE_SIMPLE_STRING = "WebOtpCrossDeviceSimpleString";
     public static final String XPLAT_SYNCED_SETUP = "XplatSyncedSetup";
     public static final String XSURFACE_METRICS_REPORTING = "XsurfaceMetricsReporting";
+    public static final String YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID =
+            "YourSavedInfoSettingsPageAndroid";
     // keep-sorted end
     // LINT.ThenChange(//chrome/browser/flags/android/chrome_feature_list.cc:FeaturesExposedToJava)
 
