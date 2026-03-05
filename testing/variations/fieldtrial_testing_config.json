@@ -2817,6 +2817,26 @@
             ]
         }
     ],
+    "AutofillIntroduceGlobalEmptyValueRewriterRules": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillIntroduceGlobalEmptyValueRewriterRules"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillModelPredictions": [
         {
             "platforms": [
