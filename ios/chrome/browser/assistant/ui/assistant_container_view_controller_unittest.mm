@@ -115,6 +115,27 @@ TEST_F(AssistantContainerViewControllerTest, RespectsLimits) {
               [view_controller_ absoluteMaxHeight], 0.1);
 }
 
+// Tests that setting detents in an unsorted order properly sorts them,
+// ensuring limits successfully clamp back to valid boundaries.
+TEST_F(AssistantContainerViewControllerTest, SortsDetentsCorrectly) {
+  AssistantContainerDetent* mediumDetent =
+      AssistantContainerFixedDetent(200.0, @"medium");
+
+  // Pass them in shuffled order: large, small, medium.
+  [view_controller_
+      setDetents:@[ large_detent_, minimized_detent_, mediumDetent ]];
+
+  // Implicitly verify sorting structure by clamping to extremes and seeing if
+  // it correctly attaches to exactly 100 or 300, avoiding out-of-order crashes.
+  view_controller_.heightConstraint.constant = 50.0;
+  [view_controller_ updateHeightConstraint];
+  EXPECT_EQ(view_controller_.heightConstraint.constant, 100.0);
+
+  view_controller_.heightConstraint.constant = 400.0;
+  [view_controller_ updateHeightConstraint];
+  EXPECT_EQ(view_controller_.heightConstraint.constant, 300.0);
+}
+
 // Tests that the container cannot be effectively resized if only one detent is
 // provided. When the drag is released, the container should snap back to
 // the single detent.

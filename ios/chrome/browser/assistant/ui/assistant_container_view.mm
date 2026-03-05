@@ -64,18 +64,6 @@ UIColor* ContainerBackgroundColor() {
   [self updateScrollContainerMask];
 }
 
-- (NSInteger)preferredHeight {
-  CGSize targetSize =
-      CGSizeMake(self.bounds.size.width, UILayoutFittingCompressedSize.height);
-  CGFloat contentHeight =
-      [_contentView
-            systemLayoutSizeFittingSize:targetSize
-          withHorizontalFittingPriority:UILayoutPriorityRequired
-                verticalFittingPriority:UILayoutPriorityFittingSizeLevel]
-          .height;
-  return round(kContentTopMargin + contentHeight);
-}
-
 #pragma mark - Private
 
 // Configures the visual styling of the container.

@@ -25,8 +25,6 @@
 // The content view where subviews should be added.
 @property(nonatomic, strong, readonly) UIView* contentView;
 
-// Returns the preferred height of the container based on its content.
-- (NSInteger)preferredHeight;
 
 @end
 

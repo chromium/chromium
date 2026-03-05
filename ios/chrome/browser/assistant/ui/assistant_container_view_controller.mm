@@ -20,7 +20,7 @@ constexpr CGFloat kContainerMargin = 5.0;
 // Used as the fallback height when no detents are provided.
 constexpr CGFloat kMinContainerHeight = 60.0;
 // Constants used for the container resizing animation.
-constexpr CGFloat kRubberBandCoefficient = 8.0;
+constexpr CGFloat kRubberBandCoefficient = 0.55;
 constexpr CGFloat kFlingVelocityThreshold = 1000.0;
 constexpr CGFloat kSpringDuration = 0.3;
 constexpr CGFloat kSpringDamping = 0.85;
@@ -45,8 +45,6 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   UIPanGestureRecognizer* _headerPanGesture;
   // The height of the container when the gesture started.
   CGFloat _initialConstraintHeight;
-  // Whether the user has manually resized the container.
-  BOOL _hasUserResized;
   // Whether the view has appeared.
   BOOL _hasAppeared;
 }
@@ -82,11 +80,8 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
   // Create and activate the height constraint.
   CGFloat initialHeight = kMinContainerHeight;
-  if (self.detents.count == 1) {
+  if (self.detents.count > 0) {
     initialHeight = MAX(self.detents.firstObject.value, kMinContainerHeight);
-  } else {
-    CGFloat preferredHeight = [_assistantContainerView preferredHeight];
-    initialHeight = MAX(preferredHeight, kMinContainerHeight);
   }
   _heightConstraint =
       [self.view.heightAnchor constraintEqualToConstant:initialHeight];
@@ -133,7 +128,6 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
       std::clamp(matchedDetent.value, minHeight, maxHeight);
 
   _heightConstraint.constant = targetHeight;
-  _hasUserResized = YES;
 
   // The shift converts an animation curve to animation options.
   // `UIViewAnimationOptionBeginFromCurrentState` ensures that if an animation
@@ -173,7 +167,17 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 }
 
 - (void)setDetents:(NSArray<AssistantContainerDetent*>*)detents {
-  _detents = [detents copy];
+  _detents =
+      [detents sortedArrayUsingComparator:^NSComparisonResult(
+                   AssistantContainerDetent* a, AssistantContainerDetent* b) {
+        if (a.value < b.value) {
+          return NSOrderedAscending;
+        }
+        if (a.value > b.value) {
+          return NSOrderedDescending;
+        }
+        return NSOrderedSame;
+      }];
   [self updatePanGestureEnabledState];
   [self.view setNeedsLayout];
 }
@@ -272,35 +276,19 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 // Calculates the effective minimum height based on detents.
 - (NSInteger)effectiveMinHeight {
   NSInteger absoluteMax = [self absoluteMaxHeight];
-
   if (self.detents.count == 0) {
     return round(kMinContainerHeight);
   }
-
-  NSInteger minVal = NSIntegerMax;
-  for (AssistantContainerDetent* detent in self.detents) {
-    if (detent.value < minVal) {
-      minVal = detent.value;
-    }
-  }
-  return MIN(minVal, absoluteMax);
+  return MIN(self.detents.firstObject.value, absoluteMax);
 }
 
 // Calculates the effective maximum height based on detents and safe area.
 - (NSInteger)effectiveMaxHeight {
   NSInteger absoluteMax = [self absoluteMaxHeight];
-
   if (self.detents.count == 0) {
     return absoluteMax;
   }
-
-  NSInteger maxVal = 0;
-  for (AssistantContainerDetent* detent in self.detents) {
-    if (detent.value > maxVal) {
-      maxVal = detent.value;
-    }
-  }
-  return MIN(absoluteMax, maxVal);
+  return MIN(self.detents.lastObject.value, absoluteMax);
 }
 
 // Handles the state when the pan gesture changes (drags).
@@ -319,16 +307,18 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   NSInteger minHeight = [self effectiveMinHeight];
 
   // Apply logarithmic decay for a "stiffer" feel beyond limits.
+  CGFloat dimension = MAX(superview.frame.size.height, 1.0);
   if (newHeight < minHeight) {
     CGFloat diff = minHeight - newHeight;
-    newHeight = minHeight - (kRubberBandCoefficient * log(1.0 + diff));
+    newHeight = minHeight - (dimension * kRubberBandCoefficient *
+                             log(1.0 + diff / dimension));
   } else if (newHeight > maxHeight) {
     CGFloat diff = newHeight - maxHeight;
-    newHeight = maxHeight + (kRubberBandCoefficient * log(1.0 + diff));
+    newHeight = maxHeight + (dimension * kRubberBandCoefficient *
+                             log(1.0 + diff / dimension));
   }
 
   _heightConstraint.constant = newHeight;
-  _hasUserResized = YES;
   if ([self.delegate respondsToSelector:@selector(assistantContainer:
                                                      didUpdateHeight:)]) {
     [self.delegate assistantContainer:self didUpdateHeight:newHeight];
@@ -348,7 +338,6 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
                                                      velocity:velocity];
 
   _heightConstraint.constant = targetHeight;
-  _hasUserResized = YES;
 
   // Current height from visual frame (approximate start of animation).
   CGFloat currentFrameHeight = self.view.frame.size.height;
@@ -375,21 +364,6 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
 
   // If detents are available, use them to determine the target height.
   if (self.detents.count > 0) {
-    // Find min and max detent values.
-    NSInteger minDetentValue = minHeight;
-    NSInteger maxDetentValue = maxHeight;
-
-    // Logic for low velocity.
-    // If the user stops dragging with little momentum, and the view is within
-    // the valid range [minDetent, maxDetent], we let it stay there.
-    // If it's outside that range, we snap to the nearest valid detent.
-    if (ABS(velocity.y) <= kFlingVelocityThreshold) {
-      if (currentHeight >= minDetentValue && currentHeight <= maxDetentValue) {
-        return currentHeight;
-      }
-    }
-
-    // High velocity (fling) or out of bounds.
     // Snap to the most appropriate detent.
     NSInteger bestDetentValue = 0;
     NSInteger minDistance = NSIntegerMax;
@@ -446,8 +420,6 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   NSInteger maxHeight = [self effectiveMaxHeight];
   NSInteger minHeight = [self effectiveMinHeight];
 
-  NSInteger preferredHeight = round([_assistantContainerView preferredHeight]);
-
   // If detents are available, use them to determine the target height.
   // We snap to the nearest detent.
   if (self.detents.count > 0) {
@@ -486,17 +458,9 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   CHECK(!self.detents.count);
 
   // Fallback to default logic if no detents.
-  // Use the user's explicit size if available, clamped to new bounds.
-  // Otherwise, default to the preferred height.
-  NSInteger target = 0;
-  if (_hasUserResized) {
-    // Re-clamp current user height with new bounds.
-    // (e.g. content might have grown => minHeight grew => push up user height).
-    NSInteger current = round(_heightConstraint.constant);
-    target = MAX(minHeight, MIN(current, maxHeight));
-  } else {
-    target = MIN(preferredHeight, maxHeight);
-  }
+  // Keep the current height clamped to new bounds, as there are no detents.
+  NSInteger current = round(_heightConstraint.constant);
+  NSInteger target = MAX(minHeight, MIN(current, maxHeight));
 
   // Ensure we never break the min height limit.
   target = MAX(target, minHeight);
@@ -504,7 +468,7 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
   if (round(_heightConstraint.constant) != target) {
     _heightConstraint.constant = target;
     // Animate only if visible, auto-sizing, and idle.
-    if (_hasAppeared && !_hasUserResized && !self.isAnimating) {
+    if (_hasAppeared && !self.isAnimating) {
       [self animateLayoutIfNeededWithInitialVelocity:0];
     }
   }
@@ -551,15 +515,12 @@ constexpr CGFloat kGestureTopAreaHeight = 44.0;
                                          constant:-kContainerMargin]
       .active = YES;
 
-  // Update its value if the user hasn't resized it (e.g. content changed).
-  if (!_hasUserResized) {
-    if (self.detents.count == 1) {
-      _heightConstraint.constant = self.detents.firstObject.value;
-    } else {
-      CGFloat preferredHeight = [_assistantContainerView preferredHeight];
-      CGFloat initialHeight = MAX(preferredHeight, kMinContainerHeight);
-      _heightConstraint.constant = initialHeight;
-    }
+  // Update its value with the initial height based on detents.
+  if (self.detents.count > 0) {
+    _heightConstraint.constant =
+        MAX(self.detents.firstObject.value, kMinContainerHeight);
+  } else {
+    _heightConstraint.constant = kMinContainerHeight;
   }
 }
 
