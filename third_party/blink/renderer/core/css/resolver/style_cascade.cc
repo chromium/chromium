@@ -2076,13 +2076,13 @@ bool StyleCascade::AppendDataWithFallback(CSSVariableData* data,
 CSSParserLocalContext StyleCascade::GetCSSParserLocalContext(
     FunctionContext* function_context,
     const CSSPropertyName* property_name) {
-  // TODO(crbug.com/413385732): Ideally we should always have some parser
+  // TODO(crbug.com/475808971): Ideally we should always have some parser
   // context, but since we currently disallow random() inside if() style()
   // condition, we are using nullptr property_name for that case.
   if (!property_name) {
     return CSSParserLocalContext::CreateWithoutPropertyForAtRules();
   }
-  // TODO(crbug.com/413385732): We might have the same function name between
+  // TODO(crbug.com/489688671): We might have the same function name between
   // different tree scopes, then we need to make CSSParserLocalContext aware of
   // tree scope name.
   const AtomicString& function_name =
@@ -2583,7 +2583,7 @@ const CSSValue* StyleCascade::CoerceIntoNumericValueInternal(
 
   CSSSyntaxDefinition syntax_definition =
       CSSSyntaxDefinition::CreateNumericSyntax();
-  // TODO(crbug.com/413385732): We call this function only for evaluating
+  // TODO(crbug.com/475808971): We call this function only for evaluating
   // style() inside @container query or if() function. Since random() is
   // disallowed outside of an element context (including all at-rules), we use
   // CSSParserLocalContext without a property name for now. Ideally, this

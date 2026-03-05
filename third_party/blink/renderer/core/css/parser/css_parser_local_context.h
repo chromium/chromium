@@ -181,7 +181,7 @@ class CORE_EXPORT CSSParserLocalContext {
   std::optional<CSSPropertyName> unresolved_property_name_;
   HeapVector<CSSValueID> functions_stack_;
 
-  // TODO(crbug.com/413385732): We might have the same function name between
+  // TODO(crbug.com/489688671): We might have the same function name between
   // different tree scopes, then we need to make CSSParserLocalContext aware
   // of tree scope name.
   AtomicString custom_function_name_ = g_null_atom;
