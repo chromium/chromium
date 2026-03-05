@@ -18,7 +18,7 @@ class ContentHash;
 
 // The expected hashes for a single file.
 struct ContentHashData {
-  ContentHashData(int block_size, std::vector<std::string> hashes);
+  ContentHashData(size_t block_size, std::vector<std::string> hashes);
   ~ContentHashData();
 
   ContentHashData(const ContentHashData&) = delete;
@@ -27,7 +27,7 @@ struct ContentHashData {
   ContentHashData(ContentHashData&&);
   ContentHashData& operator=(ContentHashData&&);
 
-  int block_size;
+  size_t block_size;
   std::vector<std::string> hashes;
 };
 

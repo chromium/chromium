@@ -164,7 +164,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   }
 
   static std::string ComputeTreeHashForContent(const std::string& contents,
-                                               int block_size);
+                                               size_t block_size);
 
  private:
   friend class base::RefCountedThreadSafe<ContentHash>;
@@ -275,7 +275,7 @@ class ContentHash : public base::RefCountedThreadSafe<ContentHash> {
   // The block size to use for hashing.
   // TODO(asargent) - use the value from verified_contents.json for each
   // file, instead of using a constant.
-  int block_size_ = extension_misc::kContentVerificationDefaultBlockSize;
+  size_t block_size_ = extension_misc::kContentVerificationDefaultBlockSize;
 };
 
 }  // namespace extensions

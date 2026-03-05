@@ -183,13 +183,13 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   int64_t total_bytes_read_ = 0;
 
   // The index of the block we're currently on.
-  int current_block_ = 0;
+  size_t current_block_ = 0;
 
   // The hash we're building up for the bytes of `current_block_`.
   std::optional<crypto::hash::Hasher> current_hash_;
 
   // The number of bytes we've already input into `current_hash_`.
-  int current_hash_byte_count_ = 0;
+  size_t current_hash_byte_count_ = 0;
 
   // Valid and set after `hashes_ready_` is set to true.
   base::expected<ContentHashData, ContentHashReaderInitStatus> hashes_ =

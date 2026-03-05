@@ -409,11 +409,11 @@ void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
   if (!hashes_.has_value()) {
     return;
   }
-  const int count = data.size();
-  int bytes_added = 0;
+  const size_t count = data.size();
+  size_t bytes_added = 0;
 
   while (bytes_added < count) {
-    if (current_block_ >= static_cast<int>(hashes_->hashes.size())) {
+    if (current_block_ >= hashes_->hashes.size()) {
       return OnHashMismatch();
     }
 
@@ -422,14 +422,11 @@ void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
       current_hash_ = crypto::hash::Hasher(crypto::hash::kSha256);
     }
     // Compute how many bytes we should hash, and add them to the current hash.
-    int bytes_to_hash = std::min(hashes_->block_size - current_hash_byte_count_,
-                                 count - bytes_added);
-    DCHECK_GT(bytes_to_hash, 0);
-    auto bytes_span = base::as_byte_span(data).subspan(
-        // TODO(https://crbug.com/434977723): get rid of these checked casts
-        // when this code uses size_t throughout.
-        base::checked_cast<size_t>(bytes_added),
-        base::checked_cast<size_t>(bytes_to_hash));
+    size_t bytes_to_hash = std::min(
+        hashes_->block_size - current_hash_byte_count_, count - bytes_added);
+    DCHECK_GT(bytes_to_hash, 0u);
+    auto bytes_span =
+        base::as_byte_span(data).subspan(bytes_added, bytes_to_hash);
     current_hash_->Update(bytes_span);
     bytes_added += bytes_to_hash;
     current_hash_byte_count_ += bytes_to_hash;
@@ -449,7 +446,7 @@ bool ContentVerifyJob::FinishBlock() {
   if (current_hash_byte_count_ == 0) {
     if (!done_reading_ ||
         // If we have checked all blocks already, then nothing else to do here.
-        current_block_ == static_cast<int>(hashes_->hashes.size())) {
+        current_block_ == hashes_->hashes.size()) {
       return true;
     }
   }
@@ -463,7 +460,7 @@ bool ContentVerifyJob::FinishBlock() {
   current_hash_.reset();
   current_hash_byte_count_ = 0;
 
-  int block = current_block_++;
+  size_t block = current_block_++;
 
   const std::string& expected_hash = hashes_->hashes[block];
   if (expected_hash != final) {

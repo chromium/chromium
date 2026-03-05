@@ -12,7 +12,7 @@
 
 namespace extensions {
 
-ContentHashData::ContentHashData(int block_size,
+ContentHashData::ContentHashData(size_t block_size,
                                  std::vector<std::string> hashes)
     : block_size(block_size), hashes(std::move(hashes)) {}
 ContentHashData::~ContentHashData() = default;
@@ -38,7 +38,7 @@ base::expected<ContentHashData, ContentHashReaderInitStatus> ReadContentHashes(
   const ComputedHashes& computed_hashes = content_hash->computed_hashes();
   std::optional<std::string> root;
 
-  int block_size;
+  size_t block_size;
   std::vector<std::string> block_hashes;
 
   if (computed_hashes.GetHashes(relative_path, &block_size, &block_hashes) &&

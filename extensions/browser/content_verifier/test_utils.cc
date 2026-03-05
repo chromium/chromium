@@ -381,7 +381,7 @@ void TestExtensionBuilder::AddResource(base::FilePath::StringType relative_path,
 }
 
 void TestExtensionBuilder::WriteComputedHashes() {
-  int block_size = extension_misc::kContentVerificationDefaultBlockSize;
+  size_t block_size = extension_misc::kContentVerificationDefaultBlockSize;
   ComputedHashes::Data computed_hashes_data;
 
   for (const auto& resource : extension_resources_) {
@@ -453,7 +453,7 @@ std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey()
 
 std::unique_ptr<base::Value>
 TestExtensionBuilder::CreateVerifiedContentsPayload() const {
-  int block_size = extension_misc::kContentVerificationDefaultBlockSize;
+  size_t block_size = extension_misc::kContentVerificationDefaultBlockSize;
 
   base::ListValue files;
   for (const auto& resource : extension_resources_) {
@@ -474,11 +474,12 @@ TestExtensionBuilder::CreateVerifiedContentsPayload() const {
           .Set("item_id", extension_id_)
           .Set("item_version", "1.0")
           .Set("content_hashes",
-               base::ListValue().Append(base::DictValue()
-                                            .Set("format", "treehash")
-                                            .Set("block_size", block_size)
-                                            .Set("hash_block_size", block_size)
-                                            .Set("files", std::move(files))));
+               base::ListValue().Append(
+                   base::DictValue()
+                       .Set("format", "treehash")
+                       .Set("block_size", static_cast<int>(block_size))
+                       .Set("hash_block_size", static_cast<int>(block_size))
+                       .Set("files", std::move(files))));
 
   return std::make_unique<base::Value>(std::move(result));
 }

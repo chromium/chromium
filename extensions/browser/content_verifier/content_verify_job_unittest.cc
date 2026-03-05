@@ -64,7 +64,7 @@ void WriteManifest(TestExtensionDir* dir) {
 void WriteComputedHashes(
     const base::FilePath& extension_root,
     const std::map<base::FilePath, std::string>& contents) {
-  int block_size = extension_misc::kContentVerificationDefaultBlockSize;
+  size_t block_size = extension_misc::kContentVerificationDefaultBlockSize;
   ComputedHashes::Data computed_hashes_data;
 
   for (const auto& resource : contents) {
@@ -397,7 +397,7 @@ void WriteIncorrectComputedHashes(const base::FilePath& extension_path,
 
   base::DeleteFile(file_util::GetComputedHashesPath(extension_path));
 
-  int block_size = extension_misc::kContentVerificationDefaultBlockSize;
+  size_t block_size = extension_misc::kContentVerificationDefaultBlockSize;
   ComputedHashes::Data incorrect_computed_hashes_data;
 
   // Write a valid computed_hashes.json with incorrect hash for |resource_path|.

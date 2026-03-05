@@ -44,7 +44,7 @@ ComputedHashes::Data::Data(ComputedHashes::Data&& data) = default;
 ComputedHashes::Data& ComputedHashes::Data::operator=(
     ComputedHashes::Data&& data) = default;
 
-ComputedHashes::Data::HashInfo::HashInfo(int block_size,
+ComputedHashes::Data::HashInfo::HashInfo(size_t block_size,
                                          std::vector<std::string> hashes,
                                          base::FilePath relative_unix_path)
     : block_size(block_size),
@@ -66,7 +66,7 @@ const ComputedHashes::Data::HashInfo* ComputedHashes::Data::GetItem(
 }
 
 void ComputedHashes::Data::Add(const base::FilePath& relative_path,
-                               int block_size,
+                               size_t block_size,
                                std::vector<std::string> hashes) {
   CanonicalRelativePath canonical_path =
       content_verifier_utils::CanonicalizeRelativePath(relative_path);
@@ -180,7 +180,8 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
         return std::nullopt;
       }
     }
-    data.Add(relative_path, *block_size, std::move(hashes));
+    data.Add(relative_path, base::checked_cast<size_t>(*block_size),
+             std::move(hashes));
   }
   *status = Status::SUCCESS;
   return ComputedHashes(std::move(data));
@@ -189,7 +190,7 @@ std::optional<ComputedHashes> ComputedHashes::CreateFromFile(
 // static
 std::optional<ComputedHashes::Data> ComputedHashes::Compute(
     const base::FilePath& extension_root,
-    int block_size,
+    size_t block_size,
     const IsCancelledCallback& is_cancelled,
     const ShouldComputeHashesCallback& should_compute_hashes_for_resource) {
   base::FileEnumerator enumerator(extension_root, /*recursive=*/true,
@@ -234,7 +235,7 @@ std::optional<ComputedHashes::Data> ComputedHashes::Compute(
 }
 
 bool ComputedHashes::GetHashes(const base::FilePath& relative_path,
-                               int* block_size,
+                               size_t* block_size,
                                std::vector<std::string>* hashes) const {
   const Data::HashInfo* hash_info = data_.GetItem(relative_path);
   if (!hash_info) {
@@ -255,7 +256,7 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   base::ListValue file_list;
   for (const auto& resource_info : data_.items()) {
     const Data::HashInfo& hash_info = resource_info.second;
-    int block_size = hash_info.block_size;
+    int block_size = base::checked_cast<int>(hash_info.block_size);
     const std::vector<std::string>& hashes = hash_info.hashes;
 
     base::ListValue block_hashes;
@@ -317,7 +318,7 @@ std::vector<std::string> ComputedHashes::GetHashesForContent(
 // static
 std::optional<std::vector<std::string>>
 ComputedHashes::ComputeAndCheckResourceHash(const base::FilePath& full_path,
-                                            int block_size) {
+                                            size_t block_size) {
   std::string contents;
   if (!base::ReadFileToString(full_path, &contents)) {
     LOG(ERROR) << "Could not read " << full_path.MaybeAsASCII();

@@ -155,7 +155,7 @@ const ComputedHashes& ContentHash::computed_hashes() const {
 
 // static
 std::string ContentHash::ComputeTreeHashForContent(const std::string& contents,
-                                                   int block_size) {
+                                                   size_t block_size) {
   std::vector<std::string> hashes =
       ComputedHashes::GetHashesForContent(contents, block_size);
   return ComputeTreeHashRoot(hashes, block_size / crypto::kSHA256Length);

@@ -24,7 +24,7 @@ constexpr bool kIsFileAccessCaseInsensitive =
 
 struct HashInfo {
   base::FilePath path;
-  int block_size;
+  size_t block_size;
   std::vector<std::string> hashes;
 };
 
@@ -77,8 +77,8 @@ TEST(ComputedHashesTest, ComputedHashes) {
   std::vector<std::string> hashes2 = {
       std::string(base::as_string_view(crypto::hash::Sha256("second"))),
       std::string(base::as_string_view(crypto::hash::Sha256("third")))};
-  const int kBlockSize1 = 4096;
-  const int kBlockSize2 = 2048;
+  const size_t kBlockSize1 = 4096;
+  const size_t kBlockSize2 = 2048;
 
   ComputedHashes computed_hashes{ComputedHashes::Data()};
   ASSERT_TRUE(WriteThenReadComputedHashes(
@@ -89,12 +89,12 @@ TEST(ComputedHashesTest, ComputedHashes) {
   std::vector<std::string> read_hashes1;
   std::vector<std::string> read_hashes2;
 
-  int block_size = 0;
+  size_t block_size = 0;
   EXPECT_TRUE(computed_hashes.GetHashes(path1, &block_size, &read_hashes1));
-  EXPECT_EQ(block_size, 4096);
+  EXPECT_EQ(block_size, 4096u);
   block_size = 0;
   EXPECT_TRUE(computed_hashes.GetHashes(path2, &block_size, &read_hashes2));
-  EXPECT_EQ(block_size, 2048);
+  EXPECT_EQ(block_size, 2048u);
 
   EXPECT_EQ(hashes1, read_hashes1);
   EXPECT_EQ(hashes2, read_hashes2);
@@ -106,7 +106,7 @@ TEST(ComputedHashesTest, ComputedHashes) {
             computed_hashes.GetHashes(path1_badcase, &block_size,
                                       &read_hashes1_badcase));
   if (kIsFileAccessCaseInsensitive) {
-    EXPECT_EQ(4096, block_size);
+    EXPECT_EQ(4096u, block_size);
     EXPECT_EQ(hashes1, read_hashes1_badcase);
   }
 
@@ -130,7 +130,7 @@ TEST(ComputedHashesTest, ComputedHashes) {
 // $ dd if=hello.txt skip=1 bs=4096 count=1 |
 //   openssl dgst -sha256 -binary | base64
 TEST(ComputedHashesTest, GetHashesForContent) {
-  const int block_size = 4096;
+  const size_t block_size = 4096;
 
   // Simple short input.
   std::string content1 = "hello world";
