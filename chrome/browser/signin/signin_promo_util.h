@@ -103,10 +103,11 @@ struct ProfileMenuAvatarButtonPromoInfo {
 };
 
 // Records the show count at which the AvatarButton was showing `promo_type`
-// that lead to the promo being accepted.
+// for `gaia_id` that lead to the promo being accepted. `gaia_id` may be empty
+// which will record the value from the Profile prefs.
 void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type,
-    signin::IdentityManager* identity_manager,
+    const GaiaId& gaia_id,
     PrefService& prefs);
 
 // Access point used to mark the source from the AvatarButton click event for
@@ -148,7 +149,9 @@ class AvatarButtonPromoManager : public signin::IdentityManager::Observer {
 
   bool ShouldShowPromo(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
   void RecordPromoShown(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
-  void RecordPromoUsed(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
+  // Returns the `GaiaId` of the account tied to the promo being used. Might
+  // return an empty `GaiaID` if no account is tied to the promo.
+  GaiaId RecordPromoUsed(ProfileMenuAvatarButtonPromoInfo::Type promo_type);
 
   // signin::IdentityManager::Observer:
   void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;

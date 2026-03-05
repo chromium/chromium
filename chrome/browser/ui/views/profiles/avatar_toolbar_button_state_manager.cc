@@ -900,7 +900,8 @@ class PromoStateProviderCoordinator
                                   before_promo_used_elapsed_timer_->Elapsed());
 
     CHECK(promo_type_.has_value());
-    promo_manager_.RecordPromoUsed(promo_type_.value());
+    last_gaia_id_promo_used_ =
+        promo_manager_.RecordPromoUsed(promo_type_.value());
     Collapse();
   }
 
@@ -978,12 +979,39 @@ class PromoStateProviderCoordinator
     for (signin::ConsentLevel consent_level :
          {signin::ConsentLevel::kSignin, signin::ConsentLevel::kSync}) {
       switch (event_details.GetEventTypeFor(consent_level)) {
-        case signin::PrimaryAccountChangeEvent::Type::kSet:
-        case signin::PrimaryAccountChangeEvent::Type::kCleared:
-          // Setting or clearing any consent level should remove any promo that
-          // is showing.
+        case signin::PrimaryAccountChangeEvent::Type::kSet: {
+          // Setting any consent level should remove any promo that is showing.
           Collapse();
+          if (signed_out_trigger_delay_timer_.IsRunning()) {
+            signed_out_trigger_delay_timer_.Stop();
+          }
 
+          std::optional<signin_metrics::AccessPoint> access_point =
+              event_details.GetSetPrimaryAccountAccessPoint();
+          CHECK(access_point.has_value());
+          if (access_point ==
+              signin_metrics::AccessPoint::kAvatarPillExpandPromo) {
+            CHECK(base::FeatureList::IsEnabled(
+                switches::kSigninPromoOnAvatarPill));
+            // Enabling sync through this access point is not possible - so this
+            // cannot double record. Also
+            // `syncer::kReplaceSyncPromosWithSignInPromos` should be enabled,
+            // which does not allow turning on Sync.
+            CHECK(base::FeatureList::IsEnabled(
+                syncer::kReplaceSyncPromosWithSignInPromos));
+            // We need to use `last_gaia_id_promo_used_` here because since the
+            // user is now signed in, we can no longer differentiate whether the
+            // user was signed out or web signed in at the time of using the
+            // promo.
+            signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
+                signin::ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo,
+                last_gaia_id_promo_used_, *profile_->GetPrefs());
+          }
+          break;
+        }
+        case signin::PrimaryAccountChangeEvent::Type::kCleared:
+          // Clearing any consent level should remove any promo that is showing.
+          Collapse();
           if (signed_out_trigger_delay_timer_.IsRunning()) {
             signed_out_trigger_delay_timer_.Stop();
           }
@@ -1189,6 +1217,7 @@ class PromoStateProviderCoordinator
   bool initialzed_ = false;
   base::OneShotTimer signed_out_trigger_delay_timer_;
   bool waiting_sync_active_for_promo_computation_ = false;
+  GaiaId last_gaia_id_promo_used_;
 
   // Callbacks to be triggered when `promo_type_` changes.
   base::RepeatingCallbackList<void()> promo_type_changed_callbacks_;

@@ -149,7 +149,7 @@ const char* GetAvatarButtonPromoUsedKey(
 // promo counts.
 base::DictValue& GetPromoCountsDictionary(PrefService& pref_service,
                                           SigninPrefs& signin_prefs,
-                                          GaiaId gaia) {
+                                          const GaiaId& gaia) {
   if (gaia.empty()) {
     return ScopedDictPrefUpdate(pref_service,
                                 kAvatarButtonPromoProfileDictionary)
@@ -722,13 +722,8 @@ void RecordSignInPromoShown(signin_metrics::AccessPoint access_point,
 
 void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type,
-    signin::IdentityManager* identity_manager,
+    const GaiaId& gaia_id,
     PrefService& prefs) {
-  GaiaId primary_gaia =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
-          .gaia;
-  CHECK(!primary_gaia.empty());
-
   constexpr char kAvatarPillPromoAcceptedAtShownCountBaseHistogram[] =
       "Signin.AvatarPillPromo.AcceptedAtShownCount.";
 
@@ -760,7 +755,7 @@ void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
 
   SigninPrefs signin_prefs(prefs);
   int promo_shown_count =
-      GetPromoUsageCounts(prefs, signin_prefs, promo_type, primary_gaia).first;
+      GetPromoUsageCounts(prefs, signin_prefs, promo_type, gaia_id).first;
   base::UmaHistogramExactLinear(
       base::StrCat({kAvatarPillPromoAcceptedAtShownCountBaseHistogram,
                     promo_type_suffix}),
@@ -881,7 +876,7 @@ void AvatarButtonPromoManager::RecordPromoShown(
   promo_counts.Set(shown_key, new_conut);
 }
 
-void AvatarButtonPromoManager::RecordPromoUsed(
+GaiaId AvatarButtonPromoManager::RecordPromoUsed(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
   CHECK(pref_service_);
   CHECK(signin_prefs_);
@@ -893,7 +888,7 @@ void AvatarButtonPromoManager::RecordPromoUsed(
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
     CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
     signin_prefs_->IncrementSyncPromoIdentityPillUsedCount(account.gaia);
-    return;
+    return account.gaia;
   }
 
   base::DictValue& promo_counts = GetPromoCountsDictionary(
@@ -901,6 +896,7 @@ void AvatarButtonPromoManager::RecordPromoUsed(
   const char* used_key = GetAvatarButtonPromoUsedKey(promo_type);
   int new_conut = promo_counts.FindInt(used_key).value_or(0) + 1;
   promo_counts.Set(used_key, new_conut);
+  return account.gaia;
 }
 
 bool AvatarButtonPromoManager::ArePromotionsEnabled() const {

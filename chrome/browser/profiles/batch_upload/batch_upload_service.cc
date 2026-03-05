@@ -164,7 +164,7 @@ bool HasLocalDataToShow(
 
 void RecordBatchUploadTriggeredMetrics(
     BatchUploadService::EntryPoint entry_point,
-    signin::IdentityManager& identity_manager,
+    const GaiaId& gaia_id,
     PrefService& prefs) {
   signin::ProfileMenuAvatarButtonPromoInfo::Type promo_type;
   switch (entry_point) {
@@ -198,8 +198,8 @@ void RecordBatchUploadTriggeredMetrics(
       break;
   }
 
-  signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
-      promo_type, &identity_manager, prefs);
+  signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(promo_type, gaia_id,
+                                                           prefs);
 }
 
 }  // namespace
@@ -314,8 +314,11 @@ void BatchUploadService::OnBatchUploadDialogResult(
   // so that it reacts to the state after the migration.
   std::move(state_.dialog_state_->dialog_closed_callback_).Run();
 
+  GaiaId primary_gaia =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+          .gaia;
   RecordBatchUploadTriggeredMetrics(state_.dialog_state_->entry_point_,
-                                    identity_manager_.get(), prefs_.get());
+                                    primary_gaia, prefs_.get());
   ResetDialogState();
 }
 

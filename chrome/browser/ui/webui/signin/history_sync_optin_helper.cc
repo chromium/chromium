@@ -133,7 +133,10 @@ void RecordMetricsForHistorySyncUserChoice(
                           kHistorySyncOptinExpansionPillOnStartup) {
     signin::RecordAvatarButtonPromoAcceptedAtPromoShownCount(
         signin::ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo,
-        IdentityManagerFactory::GetForProfile(profile), *profile->GetPrefs());
+        IdentityManagerFactory::GetForProfile(profile)
+            ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+            .gaia,
+        *profile->GetPrefs());
   }
 }
 
