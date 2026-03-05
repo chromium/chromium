@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.app.tabmodel.AllTabObserver;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 
@@ -102,7 +103,7 @@ public class MediaCapturePickerTabObserver implements AllTabObserver.Observer {
 
     private boolean isTabPickable(Tab tab) {
         // We do not support capture of native pages.
-        if (tab.isNativePage()) return false;
+        if (NativePage.isChromePageUrl(tab.getUrl(), tab.isIncognito())) return false;
 
         // Filter out all tabs that are not this tab for capture this tab.
         if (mParams.captureThisTab && tab.getWebContents() != mParams.webContents) return false;
