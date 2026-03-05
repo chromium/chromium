@@ -40,6 +40,17 @@ void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
 void AddAdditionalHeaders(net::HttpRequestHeaders& request_headers,
                           const PrefetchRequest& prefetch_request);
 
+// Adds "X-Client-Data" header for a prefetch request to `request_url`.
+// `cors_exempt_headers` corresponds to `ResourceRequest::cors_exempt_headers`.
+// Note that `request_url` and `prefetch_request.url` / `resource_request`
+// (that `request_headers` belongs)'s `url` can be different when called from
+// `PrefetchContainer::PrepareUpdateHeaders()`.
+void AddVariationsHeaderForPrefetch(
+    net::HttpRequestHeaders& cors_exempt_headers,
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request,
+    bool is_first_party_context_for_variations);
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_RESOURCE_REQUEST_UTILS_H_

@@ -6,6 +6,7 @@
 #define COMPONENTS_VARIATIONS_NET_VARIATIONS_HTTP_HEADERS_H_
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,7 @@
 namespace net {
 struct NetworkTrafficAnnotationTag;
 struct RedirectInfo;
-}
+}  // namespace net
 
 namespace network {
 struct ResourceRequest;
@@ -50,6 +51,26 @@ enum class InIncognito { kNo, kYes };
 enum class SignedIn { kNo, kYes };
 
 extern const char kClientDataHeader[];
+
+// Returns true if the request is sent from a Google web property, i.e. from a
+// first-party context.
+//
+// The context is determined using |owner| and |resource_request|. |owner| is
+// used for subframe-initiated subresource requests from the renderer. Note that
+// for these kinds of requests, ResourceRequest::TrustedParams is not populated.
+bool IsFirstPartyContext(Owner owner,
+                         const network::ResourceRequest& resource_request);
+
+// Similar to `AppendVariationsHeader()`, but returns a `kClientDataHeader`
+// header value to be added, if any, or otherwise returns `std::nullopt`.
+// The header should be added to `network::ResourceRequest::cors_exempt_headers`
+// rather than `headers`, to be exempted from CORS checks, and to avoid exposing
+// the header to service workers.
+std::optional<std::string> GetVariationsHeaderValueToAppend(
+    const GURL& url,
+    InIncognito incognito,
+    SignedIn signed_in,
+    bool is_first_party_context);
 
 // Adds Chrome experiment and metrics state as custom headers to |request|.
 // The content of the headers will depend on |incognito| and |signed_in|

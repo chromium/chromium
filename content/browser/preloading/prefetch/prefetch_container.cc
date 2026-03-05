@@ -235,6 +235,14 @@ bool CalculateIsLikelyAheadOfPrerender(
   }
 }
 
+bool IsFirstPartyContext(const network::ResourceRequest& resource_request) {
+  // TODO(crbug.com/40135370): Consider passing the Owner if we can get it.
+  // However, we really only care about having the owner for requests initiated
+  // on the renderer side.
+  return variations::IsFirstPartyContext(variations::Owner::kUnknown,
+                                         resource_request);
+}
+
 PrefetchContainer::PrefetchResponseCompletedCallbackForTesting&
 GetPrefetchResponseCompletedCallbackForTesting() {
   static base::NoDestructor<
@@ -882,10 +890,11 @@ void PrefetchContainer::UpdateResourceRequest(
   resource_request_->UpdateOnRedirect(redirect_info);
 
   // Remove `variations::kClientDataHeader` from `resource_request_->headers`,
-  // to keep the existing behavior. While `AddXClientDataHeader()` adds
-  // `variations::kClientDataHeader` to `resource_request->cors_exempt_headers`,
-  // it's also possible that `variations::kClientDataHeader` is added to
-  // `resource_request_->headers` via `request().additional_headers()`.
+  // to keep the existing behavior. While `AddVariationsHeaderForPrefetch()`
+  // adds `variations::kClientDataHeader` to
+  // `resource_request->cors_exempt_headers`, it's also possible that
+  // `variations::kClientDataHeader` is added to `resource_request_->headers`
+  // via `request().additional_headers()`.
   //
   // TODO(crbug.com/467177773): The processing of
   // `variations::kClientDataHeader` is separated from other headers, to keep
@@ -898,7 +907,9 @@ void PrefetchContainer::UpdateResourceRequest(
   // TODO(crbug.com/454082776): Remove `variations::kClientDataHeader` from
   // `resource_request->cors_exempt_headers`.
   resource_request_->headers.RemoveHeader(variations::kClientDataHeader);
-  AddXClientDataHeader(*resource_request_.get());
+  AddVariationsHeaderForPrefetch(resource_request_->cors_exempt_headers,
+                                 resource_request_->url, request(),
+                                 IsFirstPartyContext(*resource_request_));
 }
 
 void PrefetchContainer::AddRedirectHop(const GURL& url) {
@@ -908,19 +919,6 @@ void PrefetchContainer::AddRedirectHop(const GURL& url) {
 
 void PrefetchContainer::MarkCrossSiteContaminated() {
   is_cross_site_contaminated_ = true;
-}
-
-void PrefetchContainer::AddXClientDataHeader(
-    network::ResourceRequest& resource_request) {
-  if (request().browser_context()) {
-    // Add X-Client-Data header with experiment IDs from field trials.
-    variations::AppendVariationsHeader(
-        resource_request.url,
-        request().browser_context()->IsOffTheRecord()
-            ? variations::InIncognito::kYes
-            : variations::InIncognito::kNo,
-        variations::SignedIn::kNo, &resource_request);
-  }
 }
 
 void PrefetchContainer::PauseAllCookieListeners() {
@@ -1576,7 +1574,9 @@ void PrefetchContainer::MakeInitialResourceRequest() {
   // ------------------------------------------------------------------------
   // [2] `X-Client-Data`:
   if (request().should_append_variations_header()) {
-    AddXClientDataHeader(*resource_request.get());
+    AddVariationsHeaderForPrefetch(resource_request->cors_exempt_headers, url,
+                                   request(),
+                                   IsFirstPartyContext(*resource_request));
   }
 
   // ------------------------------------------------------------------------

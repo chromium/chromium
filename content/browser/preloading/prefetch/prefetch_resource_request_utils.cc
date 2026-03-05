@@ -4,7 +4,9 @@
 
 #include "content/browser/preloading/prefetch/prefetch_resource_request_utils.h"
 
+#include "components/variations/net/variations_http_headers.h"
 #include "content/browser/preloading/preload_pipeline_info_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/common/content_features.h"
 #include "third_party/blink/public/common/navigation/preloading_headers.h"
 #include "url/origin.h"
@@ -110,6 +112,27 @@ void AddSpeculationTagsHeader(net::HttpRequestHeaders& request_headers,
     CHECK(serialized_list.has_value());
     request_headers.SetHeader(blink::kSecSpeculationTagsHeaderName,
                               serialized_list.value());
+  }
+}
+
+void AddVariationsHeaderForPrefetch(
+    net::HttpRequestHeaders& cors_exempt_headers,
+    const GURL& request_url,
+    const PrefetchRequest& prefetch_request,
+    bool is_first_party_context_for_variations) {
+  CHECK(prefetch_request.browser_context());
+
+  // Add X-Client-Data header with experiment IDs from field trials.
+  if (std::optional<std::string> value =
+          variations::GetVariationsHeaderValueToAppend(
+              request_url,
+              prefetch_request.browser_context()->IsOffTheRecord()
+                  ? variations::InIncognito::kYes
+                  : variations::InIncognito::kNo,
+              variations::SignedIn::kNo,
+              is_first_party_context_for_variations)) {
+    cors_exempt_headers.SetHeaderIfMissing(variations::kClientDataHeader,
+                                           *value);
   }
 }
 
