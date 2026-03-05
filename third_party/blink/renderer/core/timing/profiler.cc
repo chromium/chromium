@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
+#include "third_party/blink/renderer/core/timing/worker_global_scope_performance.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 
 namespace blink {
@@ -21,17 +22,22 @@ Profiler* Profiler::Create(ScriptState* script_state,
   auto* execution_context = ExecutionContext::From(script_state);
   DCHECK(execution_context);
 
-  Performance* performance = nullptr;
-  bool can_profile = false;
-  if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
-    can_profile = ProfilerGroup::CanProfile(window, &exception_state,
-                                            ReportOptions::kReportOnFailure);
-    performance = DOMWindowPerformance::performance(*window);
-  }
+  CHECK(execution_context->IsWindow() ||
+        (execution_context->IsDedicatedWorkerGlobalScope() &&
+         RuntimeEnabledFeatures::ProfilerAPIForDedicatedWorkerEnabled()));
 
+  bool can_profile = ProfilerGroup::CanProfile(
+      execution_context, &exception_state, ReportOptions::kReportOnFailure);
   if (!can_profile) {
     DCHECK(exception_state.HadException());
     return nullptr;
+  }
+
+  Performance* performance = nullptr;
+  if (LocalDOMWindow* window = DynamicTo<LocalDOMWindow>(execution_context)) {
+    performance = DOMWindowPerformance::performance(*window);
+  } else if (auto* worker = DynamicTo<WorkerGlobalScope>(execution_context)) {
+    performance = WorkerGlobalScopePerformance::performance(*worker);
   }
 
   DCHECK(performance);

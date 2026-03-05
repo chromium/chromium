@@ -14,7 +14,6 @@
 #include "base/test/bind.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
@@ -54,6 +53,7 @@
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
@@ -980,14 +980,8 @@ INSTANTIATE_TEST_SUITE_P(DocumentPolicyFeature,
 
 // Test that Document-Policy is set in DedicatedWorker.
 TEST_P(DedicatedWorkerDocumentPolicyTest, DocumentPolicyInDedicatedWorker) {
-  base::test::ScopedFeatureList feature_list;
-  if (IsFeatureEnabled()) {
-    feature_list.InitAndEnableFeature(
-        blink::features::kDocumentPolicyInDedicatedWorker);
-  } else {
-    feature_list.InitAndDisableFeature(
-        blink::features::kDocumentPolicyInDedicatedWorker);
-  }
+  ScopedDocumentPolicyInDedicatedWorkerForTest scoped_feature(
+      IsFeatureEnabled());
 
   StartWorker();
   WaitUntilWorkerIsRunning();

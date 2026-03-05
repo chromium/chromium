@@ -1,0 +1,3 @@
+This is a testharness.js-based test.
+[FAIL] blob: dedicated worker should inherit js-profiling policy from creator document
+Harness: the test ran to completion.

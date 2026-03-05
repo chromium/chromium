@@ -1729,6 +1729,12 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter time
 [Worker]     method constructor
 [Worker]     method toJSON
+[Worker] interface Profiler : EventTarget
+[Worker]     attribute @@toStringTag
+[Worker]     getter sampleInterval
+[Worker]     getter stopped
+[Worker]     method constructor
+[Worker]     method stop
 [Worker] interface ProgressEvent : Event
 [Worker]     attribute @@toStringTag
 [Worker]     getter lengthComputable

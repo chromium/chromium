@@ -33,14 +33,12 @@
 #include <memory>
 
 #include "base/check_is_test.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_id_helper.h"
 #include "base/trace_event/typed_macros.h"
 #include "base/types/pass_key.h"
 #include "net/storage_access_api/status.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/back_forward_cache_controller.mojom-blink.h"
@@ -59,6 +57,7 @@
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_object_proxy.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_thread.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
@@ -278,8 +277,7 @@ void DedicatedWorkerGlobalScope::Initialize(
   // response headers.
   // TODO(crbug.com/450845903): For local schemes DP is inherited from the
   // owner.
-  if (base::FeatureList::IsEnabled(
-          features::kDocumentPolicyInDedicatedWorker)) {
+  if (RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled()) {
     SecurityContextInit security_init(GetExecutionContext());
     security_init.ApplyDocumentPolicy(
         response_document_policy.policy,
@@ -291,6 +289,12 @@ void DedicatedWorkerGlobalScope::Initialize(
   // DedicatedWorkerGlobalScope inherits the outside's OriginTrialTokens in the
   // constructor instead of the response origin trial tokens.
   ScriptController()->PrepareForEvaluation();
+
+  // If profiling is enabled in dedicated workers, ensure that profiling
+  // metadata is available by tracking the execution context's lifetime.
+  if (RuntimeEnabledFeatures::ProfilerAPIForDedicatedWorkerEnabled()) {
+    ProfilerGroup::InitializeIfEnabled(GetExecutionContext());
+  }
 
   // Step 14.11. "If is shared is false and response's url's scheme is "data",
   // then set worker global scope's cross-origin isolated capability to false."

@@ -2228,6 +2228,11 @@
       name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
       status: "stable",
     },
+    // Enables Document Policy for DedicatedWorkers.
+    {
+      name: "DocumentPolicyInDedicatedWorker",
+      status: "experimental",
+    },
     {
       name: "DocumentPolicyNegotiation",
       origin_trial_feature_name: "DocumentPolicyNegotiation",
@@ -4359,6 +4364,15 @@
       public: true,
       status: "test",
       base_feature: "none",
+    },
+    {
+      name: "ProfilerAPI",
+      status: "stable",
+    },
+    {
+      // When enabled, dedicated workers can use profiler API
+      name: "ProfilerAPIForDedicatedWorker",
+      status: "experimental",
     },
     // Promisify programmatic scroll methods in Element and Window.
     // https://crbug.com/41406914

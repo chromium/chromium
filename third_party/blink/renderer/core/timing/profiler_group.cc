@@ -68,11 +68,22 @@ class ProfilerGroup::ProfilingContextObserver
   Member<ProfilerGroup> profiler_group_;
 };
 
-bool ProfilerGroup::CanProfile(LocalDOMWindow* local_window,
+bool ProfilerGroup::CanProfile(ExecutionContext* execution_context,
                                ExceptionState* exception_state,
                                ReportOptions report_options) {
-  DCHECK(local_window);
-  if (!local_window->IsFeatureEnabled(
+  DCHECK(execution_context);
+
+  if (execution_context->IsDedicatedWorkerGlobalScope() &&
+      !RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled()) {
+    if (exception_state) {
+      exception_state->ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "Document Policy is not enabled for this context.");
+    }
+    return false;
+  }
+
+  if (!execution_context->IsFeatureEnabled(
           mojom::blink::DocumentPolicyFeature::kJSProfiling, report_options)) {
     if (exception_state) {
       exception_state->ThrowDOMException(
@@ -85,10 +96,13 @@ bool ProfilerGroup::CanProfile(LocalDOMWindow* local_window,
   return true;
 }
 
-void ProfilerGroup::InitializeIfEnabled(LocalDOMWindow* local_window) {
-  if (ProfilerGroup::CanProfile(local_window)) {
-    auto* profiler_group = ProfilerGroup::From(local_window->GetIsolate());
-    profiler_group->OnProfilingContextAdded(local_window);
+void ProfilerGroup::InitializeIfEnabled(ExecutionContext* execution_context) {
+  if (ProfilerGroup::CanProfile(execution_context)) {
+    ProfilerGroup* profiler_group =
+        ProfilerGroup::From(execution_context->GetIsolate());
+    if (profiler_group) {
+      profiler_group->OnProfilingContextAdded(execution_context);
+    }
   }
 }
 

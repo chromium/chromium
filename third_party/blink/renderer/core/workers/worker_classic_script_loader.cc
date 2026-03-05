@@ -30,7 +30,6 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
@@ -52,6 +51,7 @@
 #include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/referrer.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -372,8 +372,7 @@ void WorkerClassicScriptLoader::ProcessContentSecurityPolicy(
 
 void WorkerClassicScriptLoader::ProcessDocumentPolicy(
     const ResourceResponse& response) {
-  if (!base::FeatureList::IsEnabled(
-          features::kDocumentPolicyInDedicatedWorker)) {
+  if (!RuntimeEnabledFeatures::DocumentPolicyInDedicatedWorkerEnabled()) {
     return;
   }
 

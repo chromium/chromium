@@ -21,7 +21,6 @@ namespace blink {
 
 class ExceptionState;
 class ExecutionContext;
-class LocalDOMWindow;
 class Profiler;
 class ProfilerInitOptions;
 class ProfilerTrace;
@@ -34,13 +33,13 @@ class CORE_EXPORT ProfilerGroup : public V8PerIsolateData::UserData {
   // Determines whether or not the given frame can profile. Logs an exception
   // in the given ExceptionState (if non-null) if profiling is not permitted,
   // and returns false.
-  static bool CanProfile(LocalDOMWindow*,
+  static bool CanProfile(ExecutionContext*,
                          ExceptionState* = nullptr,
                          ReportOptions = ReportOptions::kDoNotReport);
 
-  // Initializes logging for the given LocalDOMWindow if CanProfile returns
+  // Initializes logging for the given ExecutionContext if CanProfile returns
   // true.
-  static void InitializeIfEnabled(LocalDOMWindow*);
+  static void InitializeIfEnabled(ExecutionContext*);
 
   static ProfilerGroup* From(v8::Isolate*);
 
