@@ -24,10 +24,15 @@
 DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
     : TopChromeWebUIController(web_ui, /*enable_chrome_send=*/false) {
   bool use_settings_illustration = false;
+  bool can_pin_to_taskbar = false;
   std::string value;
   if (net::GetValueForKeyInQuery(web_ui->GetWebContents()->GetVisibleURL(),
                                  "illustration", &value)) {
     use_settings_illustration = value == "true";
+  }
+  if (net::GetValueForKeyInQuery(web_ui->GetWebContents()->GetVisibleURL(),
+                                 "can_pin_to_taskbar", &value)) {
+    can_pin_to_taskbar = value == "true";
   }
 
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
@@ -52,7 +57,11 @@ DefaultBrowserModalUI::DefaultBrowserModalUI(content::WebUI* web_ui)
   source->AddLocalizedString(
       "bodyText",
       use_settings_illustration
-          ? IDS_DEFAULT_BROWSER_MODAL_BODY_WITH_SETTINGS_ILLUSTRATION
+          ? can_pin_to_taskbar
+                ? IDS_DEFAULT_BROWSER_MODAL_BODY_WITH_SETTINGS_ILLUSTRATION_UNPINNED
+                : IDS_DEFAULT_BROWSER_MODAL_BODY_WITH_SETTINGS_ILLUSTRATION
+      : can_pin_to_taskbar
+          ? IDS_DEFAULT_BROWSER_MODAL_BODY_WITHOUT_SETTINGS_ILLUSTRATION_UNPINNED
           : IDS_DEFAULT_BROWSER_MODAL_BODY_WITHOUT_SETTINGS_ILLUSTRATION);
 
   source->AddResourcePath("chrome_logo.svg", IDR_PRODUCT_LOGO_SVG);

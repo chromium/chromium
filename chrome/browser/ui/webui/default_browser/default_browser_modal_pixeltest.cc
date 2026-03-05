@@ -23,11 +23,11 @@ class DefaultBrowserModalPixelTest : public InteractiveBrowserTest {
   DefaultBrowserModalPixelTest() = default;
   ~DefaultBrowserModalPixelTest() override = default;
 
-  void ShowUi(bool use_settings_illustration) {
+  void ShowUi(bool use_settings_illustration, bool can_pin_to_taskbar = false) {
     DefaultBrowserModalDialog::Show(
         browser()->profile(),
         browser()->tab_strip_model()->GetActiveWebContents()->GetNativeView(),
-        use_settings_illustration);
+        use_settings_illustration, can_pin_to_taskbar);
   }
 };
 

@@ -22,14 +22,17 @@ DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(DefaultBrowserModalDialog,
 // static
 views::Widget* DefaultBrowserModalDialog::Show(Profile* profile,
                                                gfx::NativeView parent,
-                                               bool use_settings_illustration) {
+                                               bool use_settings_illustration,
+                                               bool can_pin_to_taskbar) {
   return views::Widget::GetWidgetForNativeWindow(chrome::ShowWebDialog(
       parent, profile,
-      new DefaultBrowserModalDialog(use_settings_illustration)));
+      new DefaultBrowserModalDialog(use_settings_illustration,
+                                    can_pin_to_taskbar)));
 }
 
 DefaultBrowserModalDialog::DefaultBrowserModalDialog(
-    bool use_settings_illustration) {
+    bool use_settings_illustration,
+    bool can_pin_to_taskbar) {
   set_can_resize(false);
   set_can_maximize(false);
   set_can_minimize(false);
@@ -39,6 +42,9 @@ DefaultBrowserModalDialog::DefaultBrowserModalDialog(
   GURL url(chrome::kChromeUIDefaultBrowserModalURL);
   if (use_settings_illustration) {
     url = net::AppendQueryParameter(url, "illustration", "true");
+  }
+  if (can_pin_to_taskbar) {
+    url = net::AppendQueryParameter(url, "can_pin_to_taskbar", "true");
   }
   set_dialog_content_url(url);
 

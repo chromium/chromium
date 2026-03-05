@@ -38,7 +38,8 @@ void DefaultBrowserModalDialogManager::ShowForBrowser(
   }
 
   views::Widget* widget = DefaultBrowserModalDialog::Show(
-      browser->GetProfile(), parent_view, use_settings_illustration_);
+      browser->GetProfile(), parent_view, use_settings_illustration_,
+      can_pin_to_taskbar());
   if (widget) {
     dialog_widgets_[browser] = widget->GetWeakPtr();
   }

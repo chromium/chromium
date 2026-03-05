@@ -32,9 +32,11 @@ class DefaultBrowserModalDialog : public ui::WebDialogDelegate {
   // will display the Windows Settings illustration.
   static views::Widget* Show(Profile* profile,
                              gfx::NativeView parent,
-                             bool use_settings_illustration);
+                             bool use_settings_illustration,
+                             bool can_pin_to_taskbar);
 
-  explicit DefaultBrowserModalDialog(bool use_settings_illustration);
+  explicit DefaultBrowserModalDialog(bool use_settings_illustration,
+                                     bool can_pin_to_taskbar);
   ~DefaultBrowserModalDialog() override;
 
   DefaultBrowserModalDialog(const DefaultBrowserModalDialog&) = delete;
