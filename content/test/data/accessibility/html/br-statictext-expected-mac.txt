@@ -1,0 +1,8 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXHeading AXRoleDescription='heading' AXTitle='Header 1' AXValue=1
+++++AXStaticText AXRoleDescription='text' AXValue='Header 1'
+++AXHeading AXRoleDescription='heading' AXTitle='Header 2' AXValue=2
+++++AXStaticText AXRoleDescription='text' AXValue='Header 2'
+++AXGroup AXRoleDescription='group'
+++++AXStaticText AXRoleDescription='text' AXValue='Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+++++AXStaticText AXRoleDescription='text' AXValue='Sed magna dolor, venenatis.'

@@ -2694,6 +2694,11 @@ const ui::CocoaActionList& GetCocoaActionListForTesting() {
           ax::mojom::NameFrom::kAttributeExplicitlyEmpty) {
     return NO;
   }
+
+  if ([self internalRole] == ax::mojom::Role::kLineBreak) {
+    return NO;
+  }
+
   return YES;
 }
 

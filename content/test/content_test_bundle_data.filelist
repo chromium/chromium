@@ -3469,6 +3469,8 @@ data/accessibility/html/br-expected-fuchsia.txt
 data/accessibility/html/br-expected-mac.txt
 data/accessibility/html/br-expected-uia-win.txt
 data/accessibility/html/br-expected-win.txt
+data/accessibility/html/br-statictext-expected-mac.txt
+data/accessibility/html/br-statictext.html
 data/accessibility/html/br-with-child-expected-blink.txt
 data/accessibility/html/br-with-child.html
 data/accessibility/html/br.html

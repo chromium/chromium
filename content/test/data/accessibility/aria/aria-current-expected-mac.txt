@@ -7,14 +7,12 @@ AXWebArea
 ++AXStaticText AXValue=' '
 ++AXLink AXARIACurrent='location' AXDescription='Section three'
 ++++AXStaticText AXValue='Section three'
-++AXGroup AXTitle='<newline>'
 ++AXHeading AXTitle='Section one heading' AXValue=1
 ++++AXStaticText AXValue='Section one heading'
 ++AXHeading AXTitle='Section two heading' AXValue=1
 ++++AXStaticText AXValue='Section two heading'
 ++AXHeading AXTitle='Section three heading' AXValue=1
 ++++AXStaticText AXValue='Section three heading'
-++AXGroup AXTitle='<newline>'
 ++AXGroup
 ++++AXStaticText AXValue='Span 1'
 ++++AXStaticText AXValue=' '

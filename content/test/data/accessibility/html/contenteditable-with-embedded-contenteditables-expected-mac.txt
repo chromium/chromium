@@ -3,7 +3,6 @@ AXWebArea
 ++++AXGroup
 ++++++AXStaticText AXValue='This is editable.'
 ++++AXStaticText AXValue='This is not editable.'
-++++AXGroup AXTitle='<newline>'
 ++++AXTextArea AXValue='But this one is.'
 ++++++AXStaticText AXValue='But this one is.'
 ++++AXTextArea AXValue='So is this one.'

@@ -51,7 +51,7 @@
 
 @SCRIPT:
   // Select the text after a forced break.
-  text:= ce2.AXChildren[0].AXChildren[2]
+  text:= ce2.AXChildren[0].AXChildren[1]
   text.AXValue
   text_range:= text.AXTextMarkerRangeForUIElement(text)
   marker_0:= text_range.anchor
