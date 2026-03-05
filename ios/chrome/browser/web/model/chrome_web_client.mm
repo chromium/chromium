@@ -650,7 +650,8 @@ void ChromeWebClient::BuildEditMenu(web::WebState* web_state,
 
 bool ChromeWebClient::CanRunOpenPanel(web::WebState* source) const
     API_AVAILABLE(ios(18.4)) {
-  return base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu);
+  return base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu) &&
+         ChooseFileTabHelper::FromWebState(source) != nullptr;
 }
 
 void ChromeWebClient::RunOpenPanel(
@@ -661,9 +662,8 @@ void ChromeWebClient::RunOpenPanel(
     API_AVAILABLE(ios(18.4)) {
   CHECK(base::FeatureList::IsEnabled(kIOSCustomFileUploadMenu));
   ChooseFileTabHelper* tab_helper = ChooseFileTabHelper::FromWebState(source);
-  if (tab_helper) {
-    tab_helper->RunOpenPanel(parameters, frame, std::move(completion));
-  }
+  CHECK(tab_helper);
+  tab_helper->RunOpenPanel(parameters, frame, std::move(completion));
 }
 
 web::JSErrorReportLoggingLevel ChromeWebClient::GetJSErrorReportLoggingLevel(
