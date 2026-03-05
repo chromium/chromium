@@ -11,7 +11,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/search/background/ntp_custom_background_service.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_factory.h"
 #include "chrome/browser/search/background/ntp_custom_background_service_observer.h"
@@ -149,7 +149,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ManualUpdate) {
   ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
   // Force activation of the URL override. The usual observer for
   // extension load isn't created in the unit test.
-  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
       profile(),
       extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
 
@@ -180,7 +180,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ReadyExtension) {
 
   // Force activation of the URL override. The usual observer for
   // extension load isn't created in the unit test.
-  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
       profile(),
       extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
 
@@ -212,7 +212,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, AttachedTabStateUpdated) {
   ASSERT_TRUE(extension);
   // Force activation of the URL override. The usual observer for
   // extension load isn't created in the unit test.
-  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
       profile(),
       extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
   registry()->TriggerOnReady(extension.get());
@@ -245,7 +245,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_DisableByPolicy) {
   ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
   // Force activation of the URL override. The usual observer for
   // extension load isn't created in the unit test.
-  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
       profile(),
       extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
 
@@ -268,7 +268,7 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ReenablePolicy) {
   ASSERT_TRUE(registrar()->IsExtensionEnabled(extension->id()));
   // Force activation of the URL override. The usual observer for
   // extension load isn't created in the unit test.
-  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
       profile(),
       extensions::URLOverrides::GetChromeURLOverrides(extension.get()));
 

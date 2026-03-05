@@ -45,7 +45,8 @@ bool ShouldCloseTabOnExtensionUnload(const Extension* extension,
   if (tuple_or_precursor_tuple.scheme() == extensions::kExtensionScheme &&
       tuple_or_precursor_tuple.host() == extension->id()) {
     // Edge-case: Chrome URL overrides (such as NTP overrides) are handled
-    // differently (reloaded), and managed by ExtensionWebUI. Ignore them.
+    // differently (reloaded), and managed by ExtensionUrlOverrides. Ignore
+    // them.
     if (!web_contents->GetLastCommittedURL().SchemeIs(
             content::kChromeUIScheme)) {
       return true;
@@ -124,7 +125,7 @@ void ExtensionBrowserWindowHelper::CleanUpTabsOnUnload(
         const GURL new_tab_url(chrome::kChromeUINewTabURL);
         // Replace the extension page with default NTP. This behavior is similar
         // to how Chrome URL overrides (such as NTP overrides) are handled by
-        // ExtensionWebUI.
+        // ExtensionUrlOverrides.
         web_contents->GetController().LoadURL(new_tab_url, content::Referrer(),
                                               ui::PAGE_TRANSITION_RELOAD,
                                               std::string());

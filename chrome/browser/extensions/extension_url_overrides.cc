@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 
 #include <stddef.h>
 
@@ -83,9 +83,10 @@ void InitializeOverridesList(base::ListValue& list) {
     std::string entry_name;
     if (val.is_dict()) {
       const std::string* tmp = val.GetDict().FindString(kEntry);
-      if (!tmp)  // See comment about CHECK(success) in
-                 // ForEachOverrideList.
+      if (!tmp) {  // See comment about CHECK(success) in
+                   // ForEachOverrideList.
         continue;
+      }
       entry_name = *tmp;
       new_dict = val.GetDict().Clone();
     } else if (val.is_string()) {
@@ -156,8 +157,9 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
       NOTREACHED();
     }
     GURL override_url(*entry);
-    if (!override_url.is_valid())
+    if (!override_url.is_valid()) {
       continue;
+    }
 
     if (!all_extensions->GetByID(override_url.GetHost())) {
       continue;
@@ -180,8 +182,10 @@ void ValidateOverridesList(const extensions::ExtensionSet* all_extensions,
 void UnregisterAndReplaceOverrideForWebContents(const std::string& page,
                                                 Profile* profile,
                                                 WebContents* web_contents) {
-  if (Profile::FromBrowserContext(web_contents->GetBrowserContext()) != profile)
+  if (Profile::FromBrowserContext(web_contents->GetBrowserContext()) !=
+      profile) {
     return;
+  }
 
   const GURL& url = web_contents->GetLastCommittedURL();
   if (!url.SchemeIs(content::kChromeUIScheme) || url.host() != page) {
@@ -210,13 +214,15 @@ bool UpdateOverridesList(base::ListValue& overrides_list,
                          UpdateBehavior behavior) {
   auto iter = std::ranges::find_if(
       overrides_list, [&override_url](const base::Value& value) {
-        if (!value.is_dict())
+        if (!value.is_dict()) {
           return false;
+        }
         const std::string* entry = value.GetDict().FindString(kEntry);
         return entry && *entry == override_url;
       });
-  if (iter == overrides_list.end())
+  if (iter == overrides_list.end()) {
     return false;
+  }
 
   switch (behavior) {
     case UpdateBehavior::kDeactivate: {
@@ -239,10 +245,12 @@ bool UpdateOverridesList(base::ListValue& overrides_list,
 void UpdateOverridesLists(Profile* profile,
                           const URLOverrides::URLOverrideMap& overrides,
                           UpdateBehavior behavior) {
-  if (overrides.empty())
+  if (overrides.empty()) {
     return;
+  }
   PrefService* prefs = profile->GetPrefs();
-  ScopedDictPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+  ScopedDictPrefUpdate update(prefs,
+                              ExtensionUrlOverrides::kExtensionURLOverrides);
   base::DictValue& all_overrides = update.Get();
   for (const auto& page_override_pair : overrides) {
     base::ListValue* page_overrides =
@@ -319,8 +327,9 @@ const Extension* ValidateOverrideURL(const base::Value* override_url_value,
     override += "#" + source_url.GetRef();
   }
   *override_url = GURL(override);
-  if (!override_url->is_valid())
+  if (!override_url->is_valid()) {
     return nullptr;
+  }
   return extensions.GetByID(override_url->GetHost());
 }
 
@@ -329,7 +338,8 @@ void ForEachOverrideList(
     Profile* profile,
     base::RepeatingCallback<void(base::ListValue&)> callback) {
   PrefService* prefs = profile->GetPrefs();
-  ScopedDictPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+  ScopedDictPrefUpdate update(prefs,
+                              ExtensionUrlOverrides::kExtensionURLOverrides);
   base::DictValue& all_overrides = update.Get();
 
   // We shouldn't modify the list during iteration. Generate the set of keys
@@ -363,12 +373,13 @@ std::vector<GURL> GetOverridesForChromeURL(
   DCHECK(url.SchemeIs(content::kChromeUIScheme));
 
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const base::DictValue& overrides =
-      profile->GetPrefs()->GetDict(ExtensionWebUI::kExtensionURLOverrides);
+  const base::DictValue& overrides = profile->GetPrefs()->GetDict(
+      ExtensionUrlOverrides::kExtensionURLOverrides);
 
   const base::ListValue* url_list = overrides.FindListByDottedPath(url.host());
-  if (!url_list)
+  if (!url_list) {
     return {};  // No overrides present for this host.
+  }
 
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser_context);
@@ -417,8 +428,9 @@ std::vector<GURL> GetOverridesForChromeURL(
     // there are no non-component overrides.
     DCHECK(override_urls.empty());
     // Return the highest-priority component override, if any.
-    if (component_overrides.size() > 1)
+    if (component_overrides.size() > 1) {
       component_overrides.resize(1);
+    }
     return component_overrides;
   }
 
@@ -430,34 +442,37 @@ std::vector<GURL> GetOverridesForChromeURL(
 
 }  // namespace
 
-const char ExtensionWebUI::kExtensionURLOverrides[] =
+const char ExtensionUrlOverrides::kExtensionURLOverrides[] =
     "extensions.chrome_url_overrides";
 
 // static
-void ExtensionWebUI::RegisterProfilePrefs(
+void ExtensionUrlOverrides::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   registry->RegisterDictionaryPref(kExtensionURLOverrides);
 }
 
 // static
-bool ExtensionWebUI::HandleChromeURLOverride(
+bool ExtensionUrlOverrides::HandleChromeURLOverride(
     GURL* url,
     content::BrowserContext* browser_context) {
-  if (!url->SchemeIs(content::kChromeUIScheme))
+  if (!url->SchemeIs(content::kChromeUIScheme)) {
     return false;
+  }
 
   std::vector<GURL> overrides =
       GetOverridesForChromeURL(*url, browser_context, /*get_all=*/false);
-  if (overrides.empty())
+  if (overrides.empty()) {
     return false;
+  }
 
   *url = overrides[0];
   return true;
 }
 
 // static
-bool ExtensionWebUI::HandleChromeURLOverrideReverse(
-    GURL* url, content::BrowserContext* browser_context) {
+bool ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+    GURL* url,
+    content::BrowserContext* browser_context) {
   Profile* profile = Profile::FromBrowserContext(browser_context);
   const base::DictValue& overrides =
       profile->GetPrefs()->GetDict(kExtensionURLOverrides);
@@ -467,15 +482,18 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
   // chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/main.html#1 to
   // chrome://bookmarks/#1 for display in the omnibox.
   for (const auto dict_iter : overrides) {
-    if (!dict_iter.second.is_list())
+    if (!dict_iter.second.is_list()) {
       continue;
+    }
 
     for (const auto& list_iter : dict_iter.second.GetList()) {
       const std::string* override = nullptr;
-      if (list_iter.is_dict())
+      if (list_iter.is_dict()) {
         override = list_iter.GetDict().FindString(kEntry);
-      if (!override)
+      }
+      if (!override) {
         continue;
+      }
       if (base::StartsWith(url->spec(), *override,
                            base::CompareCase::SENSITIVE)) {
         GURL original_url(content::kChromeUIScheme + std::string("://") +
@@ -491,12 +509,13 @@ bool ExtensionWebUI::HandleChromeURLOverrideReverse(
 }
 
 // static
-const extensions::Extension* ExtensionWebUI::GetExtensionControllingURL(
+const extensions::Extension* ExtensionUrlOverrides::GetExtensionControllingURL(
     const GURL& url,
     content::BrowserContext* browser_context) {
   GURL mutable_url(url);
-  if (!HandleChromeURLOverride(&mutable_url, browser_context))
+  if (!HandleChromeURLOverride(&mutable_url, browser_context)) {
     return nullptr;
+  }
 
   DCHECK_NE(url, mutable_url);
   DCHECK(mutable_url.SchemeIs(extensions::kExtensionScheme));
@@ -511,23 +530,24 @@ const extensions::Extension* ExtensionWebUI::GetExtensionControllingURL(
 }
 
 // static
-size_t ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+size_t ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
     const GURL& url,
     content::BrowserContext* browser_context) {
-  if (!url.SchemeIs(content::kChromeUIScheme))
+  if (!url.SchemeIs(content::kChromeUIScheme)) {
     return 0;
+  }
 
   return GetOverridesForChromeURL(url, browser_context, /*get_all=*/true)
       .size();
 }
 
 // static
-void ExtensionWebUI::InitializeChromeURLOverrides(Profile* profile) {
+void ExtensionUrlOverrides::InitializeChromeURLOverrides(Profile* profile) {
   ForEachOverrideList(profile, base::BindRepeating(&InitializeOverridesList));
 }
 
 // static
-void ExtensionWebUI::ValidateChromeURLOverrides(Profile* profile) {
+void ExtensionUrlOverrides::ValidateChromeURLOverrides(Profile* profile) {
   extensions::ExtensionSet all_extensions =
       extensions::ExtensionRegistry::Get(profile)
           ->GenerateInstalledExtensionsSet();
@@ -537,11 +557,12 @@ void ExtensionWebUI::ValidateChromeURLOverrides(Profile* profile) {
 }
 
 // static
-void ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+void ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
     Profile* profile,
     const URLOverrides::URLOverrideMap& overrides) {
-  if (overrides.empty())
+  if (overrides.empty()) {
     return;
+  }
   PrefService* prefs = profile->GetPrefs();
   ScopedDictPrefUpdate update(prefs, kExtensionURLOverrides);
   base::DictValue& all_overrides = update.Get();
@@ -559,21 +580,21 @@ void ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
 }
 
 // static
-void ExtensionWebUI::DeactivateChromeURLOverrides(
+void ExtensionUrlOverrides::DeactivateChromeURLOverrides(
     Profile* profile,
     const URLOverrides::URLOverrideMap& overrides) {
   UpdateOverridesLists(profile, overrides, UpdateBehavior::kDeactivate);
 }
 
 // static
-void ExtensionWebUI::UnregisterChromeURLOverrides(
+void ExtensionUrlOverrides::UnregisterChromeURLOverrides(
     Profile* profile,
     const URLOverrides::URLOverrideMap& overrides) {
   UpdateOverridesLists(profile, overrides, UpdateBehavior::kRemove);
 }
 
 // static
-void ExtensionWebUI::GetFaviconForURL(
+void ExtensionUrlOverrides::GetFaviconForURL(
     Profile* profile,
     const GURL& page_url,
     favicon_base::FaviconResultsCallback callback) {

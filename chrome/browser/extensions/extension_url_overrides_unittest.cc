@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 
 #include <memory>
 
@@ -151,20 +151,19 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
       ext_unpacked->GetResourceURL(kOverrideResource);
   const GURL kBookmarksUrl(chrome::kChromeUIBookmarksURL);
   GURL changed_url = kBookmarksUrl;
-  EXPECT_TRUE(
-      ExtensionWebUI::HandleChromeURLOverride(&changed_url, profile_.get()));
-  EXPECT_EQ(kExpectedUnpackedOverrideUrl, changed_url);
-  EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverrideReverse(&changed_url,
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
                                                              profile_.get()));
+  EXPECT_EQ(kExpectedUnpackedOverrideUrl, changed_url);
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &changed_url, profile_.get()));
   EXPECT_EQ(kBookmarksUrl, changed_url);
 
   GURL url_plus_fragment = kBookmarksUrl.Resolve("#1");
-  EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverride(&url_plus_fragment,
-                                                      profile_.get()));
-  EXPECT_EQ(kExpectedUnpackedOverrideUrl.Resolve("#1"),
-            url_plus_fragment);
-  EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverrideReverse(&url_plus_fragment,
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&url_plus_fragment,
                                                              profile_.get()));
+  EXPECT_EQ(kExpectedUnpackedOverrideUrl.Resolve("#1"), url_plus_fragment);
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &url_plus_fragment, profile_.get()));
   EXPECT_EQ(kBookmarksUrl.Resolve("#1"), url_plus_fragment);
 
   // Register a component extension
@@ -187,37 +186,37 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
   // Despite being registered more recently, the component extension should
   // not take precedence over the non-component extension.
   changed_url = kBookmarksUrl;
-  EXPECT_TRUE(
-      ExtensionWebUI::HandleChromeURLOverride(&changed_url, profile_.get()));
-  EXPECT_EQ(kExpectedUnpackedOverrideUrl, changed_url);
-  EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverrideReverse(&changed_url,
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
                                                              profile_.get()));
+  EXPECT_EQ(kExpectedUnpackedOverrideUrl, changed_url);
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &changed_url, profile_.get()));
   EXPECT_EQ(kBookmarksUrl, changed_url);
 
   GURL kExpectedComponentOverrideUrl =
       ext_component->GetResourceURL(kOverrideResource2);
 
   // Unregister non-component extension. Only component extension remaining.
-  ExtensionWebUI::UnregisterChromeURLOverrides(
+  ExtensionUrlOverrides::UnregisterChromeURLOverrides(
       profile_.get(), URLOverrides::GetChromeURLOverrides(ext_unpacked.get()));
   changed_url = kBookmarksUrl;
-  EXPECT_TRUE(
-      ExtensionWebUI::HandleChromeURLOverride(&changed_url, profile_.get()));
-  EXPECT_EQ(kExpectedComponentOverrideUrl, changed_url);
-  EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverrideReverse(&changed_url,
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
                                                              profile_.get()));
+  EXPECT_EQ(kExpectedComponentOverrideUrl, changed_url);
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &changed_url, profile_.get()));
   EXPECT_EQ(kBookmarksUrl, changed_url);
 
   // This time the non-component extension was registered more recently and
   // should still take precedence.
-  ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+  ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
       profile_.get(), URLOverrides::GetChromeURLOverrides(ext_unpacked.get()));
   changed_url = kBookmarksUrl;
-  EXPECT_TRUE(
-      ExtensionWebUI::HandleChromeURLOverride(&changed_url, profile_.get()));
-  EXPECT_EQ(kExpectedUnpackedOverrideUrl, changed_url);
-  EXPECT_TRUE(ExtensionWebUI::HandleChromeURLOverrideReverse(&changed_url,
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverride(&changed_url,
                                                              profile_.get()));
+  EXPECT_EQ(kExpectedUnpackedOverrideUrl, changed_url);
+  EXPECT_TRUE(ExtensionUrlOverrides::HandleChromeURLOverrideReverse(
+      &changed_url, profile_.get()));
   EXPECT_EQ(kBookmarksUrl, changed_url);
 }
 
@@ -286,7 +285,8 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   PrefService* prefs = profile_->GetPrefs();
   {
     // Add multiple entries for the same extension.
-    ScopedDictPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+    ScopedDictPrefUpdate update(prefs,
+                                ExtensionUrlOverrides::kExtensionURLOverrides);
     base::DictValue& all_overrides = update.Get();
 
     auto newtab_list =
@@ -310,7 +310,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   // Duplicates should be removed (in response to ExtensionSystem::ready()).
   // Only a single entry should remain.
   const base::DictValue& overrides =
-      prefs->GetDict(ExtensionWebUI::kExtensionURLOverrides);
+      prefs->GetDict(ExtensionUrlOverrides::kExtensionURLOverrides);
   const base::ListValue* newtab_overrides = overrides.FindList("newtab");
   ASSERT_TRUE(newtab_overrides);
   ASSERT_EQ(1u, newtab_overrides->size());
@@ -338,7 +338,7 @@ TEST_F(ExtensionWebUITest, TestFaviconAlwaysAvailable) {
       };
 
   base::RunLoop run_loop;
-  ExtensionWebUI::GetFaviconForURL(
+  ExtensionUrlOverrides::GetFaviconForURL(
       profile_.get(), kExtensionManifestURL,
       base::BindOnce(set_favicon_results, &favicon_results,
                      run_loop.QuitClosure()));
@@ -368,7 +368,7 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
             .Build();
 
     registrar()->AddExtension(extension.get());
-    EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
+    EXPECT_EQ(extension, ExtensionUrlOverrides::GetExtensionControllingURL(
                              GURL(chrome::kChromeUINewTabURL), profile_.get()));
 
     return extension.get();
@@ -379,23 +379,23 @@ TEST_F(ExtensionWebUITest, TestNumExtensionsOverridingURL) {
   // Load a series of extensions that override the new tab page.
   const Extension* extension1 = load_extension_overriding_newtab("one");
   ASSERT_TRUE(extension1);
-  EXPECT_EQ(1u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+  EXPECT_EQ(1u, ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 
   const Extension* extension2 = load_extension_overriding_newtab("two");
   ASSERT_TRUE(extension2);
-  EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+  EXPECT_EQ(2u, ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 
   const Extension* extension3 = load_extension_overriding_newtab("three");
   ASSERT_TRUE(extension3);
-  EXPECT_EQ(3u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+  EXPECT_EQ(3u, ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 
   // Disabling an extension should remove it from the override count.
   registrar()->DisableExtension(extension2->id(),
                                 {disable_reason::DISABLE_USER_ACTION});
-  EXPECT_EQ(2u, ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+  EXPECT_EQ(2u, ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
                     ntp_url, profile_.get()));
 }
 
@@ -451,7 +451,7 @@ TEST_F(ExtensionWebUIOverrideURLTest,
   // URLOverrides pref should not be updated for disabled by default extension.
   PrefService* prefs = profile()->GetPrefs();
   const base::DictValue& overrides =
-      prefs->GetDict(ExtensionWebUI::kExtensionURLOverrides);
+      prefs->GetDict(ExtensionUrlOverrides::kExtensionURLOverrides);
   const base::ListValue* newtab_overrides = overrides.FindList("newtab");
   EXPECT_FALSE(newtab_overrides);
 

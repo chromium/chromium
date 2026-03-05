@@ -14,7 +14,7 @@
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #endif
 
 namespace {
@@ -30,7 +30,7 @@ bool HandleAndroidNativePageURL(GURL* url,
   if (base::FeatureList::IsEnabled(
           chrome::android::kChromeNativeUrlOverriding)) {
     // If an extension is overriding this URL, do not redirect it.
-    if (ExtensionWebUI::GetNumberOfExtensionsOverridingURL(
+    if (ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(
             *url, browser_context) > 0) {
       return false;
     }

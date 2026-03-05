@@ -52,8 +52,8 @@ void WebDragBookmarkHandlerMac::OnDragEnter() {
 }
 
 void WebDragBookmarkHandlerMac::OnDrop() {
-  // This is non-null if the web_contents_ is showing an ExtensionWebUI with
-  // support for (at the moment experimental) drag and drop extensions.
+  // This is non-null if the web_contents_ is showing an ExtensionUrlOverrides
+  // with support for (at the moment experimental) drag and drop extensions.
   if (bookmark_tab_helper_) {
     if (bookmark_tab_helper_->bookmark_drag_delegate()) {
       bookmark_tab_helper_->bookmark_drag_delegate()->OnDrop(

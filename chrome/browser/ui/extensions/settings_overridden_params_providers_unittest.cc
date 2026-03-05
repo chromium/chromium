@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -25,8 +25,8 @@ class SettingsOverriddenParamsProvidersUnitTest
     extensions::ExtensionServiceTestBase::SetUp();
     InitializeEmptyExtensionService();
 
-    // The NtpOverriddenDialogController rellies on ExtensionWebUI; ensure one
-    // exists.
+    // The NtpOverriddenDialogController rellies on ExtensionUrlOverrides;
+    // ensure one exists.
     extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
         ->SetTestingFactoryAndUse(
             profile(),
@@ -55,7 +55,7 @@ class SettingsOverriddenParamsProvidersUnitTest
             .Build();
 
     registrar()->AddExtension(extension);
-    EXPECT_EQ(extension, ExtensionWebUI::GetExtensionControllingURL(
+    EXPECT_EQ(extension, ExtensionUrlOverrides::GetExtensionControllingURL(
                              GURL(chrome::kChromeUINewTabURL), profile()));
 
     return extension.get();

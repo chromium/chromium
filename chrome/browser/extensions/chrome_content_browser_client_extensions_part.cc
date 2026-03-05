@@ -75,7 +75,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/component_loader.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "extensions/browser/extension_webkit_preferences.h"
 #endif
 
@@ -872,10 +872,11 @@ void ChromeContentBrowserClientExtensionsPart::OverrideWebPreferences(
 void ChromeContentBrowserClientExtensionsPart::BrowserURLHandlerCreated(
     BrowserURLHandler* handler) {
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
-  handler->AddHandlerPair(&ExtensionWebUI::HandleChromeURLOverride,
+  handler->AddHandlerPair(&ExtensionUrlOverrides::HandleChromeURLOverride,
                           BrowserURLHandler::null_handler());
-  handler->AddHandlerPair(BrowserURLHandler::null_handler(),
-                          &ExtensionWebUI::HandleChromeURLOverrideReverse);
+  handler->AddHandlerPair(
+      BrowserURLHandler::null_handler(),
+      &ExtensionUrlOverrides::HandleChromeURLOverrideReverse);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 }
 

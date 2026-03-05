@@ -11,8 +11,8 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/extension_util.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "components/prefs/pref_service.h"
@@ -48,8 +48,8 @@ class ExtensionOverrideTest : public ExtensionApiTest {
 
   bool CheckHistoryOverridesContainsNoDupes() {
     // There should be no duplicate entries in the preferences.
-    const base::DictValue& overrides =
-        profile()->GetPrefs()->GetDict(ExtensionWebUI::kExtensionURLOverrides);
+    const base::DictValue& overrides = profile()->GetPrefs()->GetDict(
+        ExtensionUrlOverrides::kExtensionURLOverrides);
 
     const base::ListValue* values = overrides.FindList("history");
     if (!values)
@@ -459,7 +459,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldNotCreateDuplicateEntries) {
   // Simulate several LoadExtension() calls happening over the lifetime of
   // a preferences file without corresponding UnloadExtension() calls.
   for (size_t i = 0; i < 3; ++i) {
-    ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
+    ExtensionUrlOverrides::RegisterOrActivateChromeURLOverrides(
         profile(), URLOverrides::GetChromeURLOverrides(extension));
   }
 
@@ -483,13 +483,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, ShouldCleanUpDuplicateEntries) {
 
   {
     ScopedDictPrefUpdate update(profile()->GetPrefs(),
-                                ExtensionWebUI::kExtensionURLOverrides);
+                                ExtensionUrlOverrides::kExtensionURLOverrides);
     update->Set("history", std::move(list));
   }
 
   ASSERT_FALSE(CheckHistoryOverridesContainsNoDupes());
 
-  ExtensionWebUI::InitializeChromeURLOverrides(profile());
+  ExtensionUrlOverrides::InitializeChromeURLOverrides(profile());
 
   ASSERT_TRUE(CheckHistoryOverridesContainsNoDupes());
 }

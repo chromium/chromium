@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_WEB_UI_H_
-#define CHROME_BROWSER_EXTENSIONS_EXTENSION_WEB_UI_H_
+#ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_URL_OVERRIDES_H_
+#define CHROME_BROWSER_EXTENSIONS_EXTENSION_URL_OVERRIDES_H_
 
 #include "components/favicon_base/favicon_callback.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -28,15 +28,15 @@ class PrefRegistrySyncable;
 
 // A collection of methods to handle Chrome URL overrides that are managed by
 // extensions (such as overriding the new tab page).
-// TODO(devlin): Rename this class to ExtensionURLOverrides.
-class ExtensionWebUI {
+class ExtensionUrlOverrides {
  public:
   static const char kExtensionURLOverrides[];
 
   static bool HandleChromeURLOverride(GURL* url,
                                       content::BrowserContext* browser_context);
   static bool HandleChromeURLOverrideReverse(
-      GURL* url, content::BrowserContext* browser_context);
+      GURL* url,
+      content::BrowserContext* browser_context);
 
   // Returns the extension that currently controls the specified `url`, if any.
   static const extensions::Extension* GetExtensionControllingURL(
@@ -86,4 +86,4 @@ class ExtensionWebUI {
                                favicon_base::FaviconResultsCallback callback);
 };
 
-#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_WEB_UI_H_
+#endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_URL_OVERRIDES_H_

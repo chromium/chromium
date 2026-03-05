@@ -16,7 +16,7 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/branding_buildflags.h"
-#include "chrome/browser/extensions/extension_web_ui.h"
+#include "chrome/browser/extensions/extension_url_overrides.h"
 #include "chrome/browser/extensions/settings_api_helpers.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -328,7 +328,7 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
     Profile* profile) {
   const GURL ntp_url(chrome::kChromeUINewTabURL);
   const extensions::Extension* extension =
-      ExtensionWebUI::GetExtensionControllingURL(ntp_url, profile);
+      ExtensionUrlOverrides::GetExtensionControllingURL(ntp_url, profile);
   if (!extension) {
     return std::nullopt;
   }
@@ -359,7 +359,8 @@ std::optional<ExtensionSettingsOverriddenDialog::Params> GetNtpOverriddenParams(
   // included in BrowserURLHandler::GetPossibleRewrites(), which only takes the
   // highest-priority from each source).
   default_ntp_is_secondary &=
-      ExtensionWebUI::GetNumberOfExtensionsOverridingURL(ntp_url, profile) == 1;
+      ExtensionUrlOverrides::GetNumberOfExtensionsOverridingURL(ntp_url,
+                                                                profile) == 1;
 
   // We show different dialogs based on whether the NTP would return to the
   // default Chrome NTP with Google search.
