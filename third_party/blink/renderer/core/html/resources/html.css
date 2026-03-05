@@ -1388,10 +1388,24 @@ background: light-dark(#d83b01, #e98f6d);
 progress {
     appearance: auto;
     box-sizing: border-box;
-    display: inline-block;
-    block-size: 1em;
-    inline-size: 10em;
-    vertical-align: -0.2em;
+
+    @supports not blink-feature(AppearanceBase) {
+        display: inline-block;
+        block-size: 1em;
+        inline-size: 10em;
+        vertical-align: -0.2em;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        display: -internal-auto-base(inline-block, unset);
+        block-size: -internal-auto-base(1em, unset);
+        inline-size: -internal-auto-base(10em, 100%);
+        vertical-align: -internal-auto-base(-0.2em, unset);
+
+        color: -internal-auto-base(unset, inherit);
+        font: -internal-auto-base(unset, inherit);
+        background-color: -internal-auto-base(unset, transparent);
+    }
 }
 
 progress::-webkit-progress-inner-element {
@@ -1399,22 +1413,51 @@ progress::-webkit-progress-inner-element {
     -webkit-user-modify: read-only;
     block-size: 100%;
     inline-size: 100%;
+
+    @supports blink-feature(AppearanceBase) {
+        /** This pseudo element doesn't exist in the standard layout. */
+        display: -internal-auto-base(revert-rule, contents) !important;
+    }
 }
 
 progress::-webkit-progress-bar {
-    background-color: gray;
-    block-size: 100%;
-    inline-size: 100%;
     -webkit-user-modify: read-only !important;
-    box-sizing: border-box;
+
+    @supports not blink-feature(AppearanceBase) {
+        background-color: gray;
+        block-size: 100%;
+        inline-size: 100%;
+        box-sizing: border-box;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for progress::slider-track,
+         * for now use the webkit pseudo elements. */
+        background-color: -internal-auto-base(gray, transparent);
+        block-size: -internal-auto-base(100%, 1em);
+        inline-size: -internal-auto-base(100%, unset);
+        box-sizing: -internal-auto-base(border-box, unset);
+
+        border: -internal-auto-base(unset, 1px solid currentColor);
+    }
 }
 
 progress::-webkit-progress-value {
-    background-color: green;
     block-size: 100%;
     inline-size: 50%; /* should be removed later */
     -webkit-user-modify: read-only !important;
-    box-sizing: border-box;
+
+    @supports not blink-feature(AppearanceBase) {
+        background-color: green;
+        box-sizing: border-box;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        /* TODO(crbug.com/450139531): These styles are for progress::slider-fill,
+         * for now use the webkit pseudo elements. */
+        background-color: -internal-auto-base(green, currentColor);
+        box-sizing: -internal-auto-base(border-box, unset);
+    }
 }
 
 /* inline elements */

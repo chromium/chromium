@@ -48,7 +48,10 @@ HTMLProgressElement* ProgressShadowElement::ProgressElement() const {
 void ProgressShadowElement::AdjustStyle(ComputedStyleBuilder& builder) {
   const ComputedStyle* progress_style = ProgressElement()->GetComputedStyle();
   DCHECK(progress_style);
-  if (progress_style->HasEffectiveAppearance()) {
+  auto appearance = progress_style->EffectiveAppearance();
+  if (appearance != AppearanceValue::kNone &&
+      (!RuntimeEnabledFeatures::AppearanceBaseEnabled() ||
+       appearance != AppearanceValue::kBase)) {
     builder.SetDisplay(EDisplay::kNone);
   }
 }

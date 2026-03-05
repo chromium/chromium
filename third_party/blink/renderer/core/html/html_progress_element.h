@@ -53,6 +53,9 @@ class CORE_EXPORT HTMLProgressElement final : public HTMLElement {
 
   void Trace(Visitor*) const override;
 
+ protected:
+  bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;
+
  private:
   bool ShouldAppearIndeterminate() const override;
   bool IsLabelable() const override { return true; }

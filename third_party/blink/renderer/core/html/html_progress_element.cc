@@ -181,4 +181,12 @@ void HTMLProgressElement::SetInlineSizePercentage(double position) const {
                                  CSSPrimitiveValue::UnitType::kPercentage);
 }
 
+bool HTMLProgressElement::SupportsBaseAppearanceInternal(
+    BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink
