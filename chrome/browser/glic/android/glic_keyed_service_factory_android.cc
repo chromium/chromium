@@ -18,6 +18,10 @@ JNI_GlicKeyedServiceFactory_GetForProfile(JNIEnv* env, Profile* profile) {
   DCHECK(profile);
   GlicKeyedService* service =
       GlicKeyedServiceFactory::GetGlicKeyedService(profile);
+  if (!service) {
+    return nullptr;
+  }
+
   return GlicKeyedService::GetJavaObject(service);
 }
 
