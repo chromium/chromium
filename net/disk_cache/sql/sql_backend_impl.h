@@ -282,6 +282,11 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
 
+  // Flushes the write buffers of all active entries.
+  // This is primarily used to ensure that lazy entry creations and pending
+  // writes are visible to subsequent asynchronous database operations.
+  void FlushActiveEntriesBuffers() const;
+
   // Checks if the cache size has exceeded the high watermark and, if so,
   // schedules an eviction task. This is typically called after operations that
   // might increase the cache size. The eviction itself is run as an exclusive

@@ -3155,6 +3155,76 @@ TEST_F(SqlBackendImplTest, CreateIteratorFlushesBuffers) {
   entry_from_iter->Close();
 }
 
+TEST_F(SqlBackendImplTest, GetEntryCountFlushesBuffers) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  const std::string kKey = "my-key";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+  auto db_handle = static_cast<SqlEntryImpl*>(entry)->db_handle();
+
+  // The entry is in kInitial state and has buffered data.
+  // It is NOT in the DB yet.
+  EXPECT_TRUE(db_handle->IsInitialState());
+  base::test::TestFuture<int32_t> future;
+
+  EXPECT_EQ(backend->GetEntryCount(future.GetCallback()),
+            base::unexpected(net::ERR_IO_PENDING));
+
+  // GetEntryCount should have triggered FlushBuffer(true).
+  // Which starts the creation in DB.
+  EXPECT_TRUE(db_handle->IsCreatingState());
+
+  CHECK_EQ(future.Get(), 1);
+  EXPECT_TRUE(db_handle->IsFinished());
+
+  entry->Close();
+}
+
+TEST_F(SqlBackendImplTest, CalculateSizeOfEntriesBetweenFlushesBuffers) {
+  auto backend = CreateBackendAndInit();
+  EXPECT_TRUE(LoadInMemoryIndex(*backend));
+  const std::string kKey = "my-key";
+  const std::string kData = "data";
+
+  TestEntryResultCompletionCallback cb_create;
+  disk_cache::EntryResult create_result = cb_create.GetResult(
+      backend->CreateEntry(kKey, net::HIGHEST, cb_create.callback()));
+  ASSERT_THAT(create_result.net_error(), IsOk());
+  auto* entry = create_result.ReleaseEntry();
+  ASSERT_TRUE(entry);
+  auto db_handle = static_cast<SqlEntryImpl*>(entry)->db_handle();
+
+  auto buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
+  EXPECT_EQ(entry->WriteData(1, 0, buffer.get(), buffer->size(),
+                             base::DoNothing(), false),
+            static_cast<int>(buffer->size()));
+
+  // The entry is in kInitial state and has buffered data.
+  // It is NOT in the DB yet.
+  EXPECT_TRUE(db_handle->IsInitialState());
+  base::test::TestFuture<int64_t> future;
+
+  EXPECT_EQ(backend->CalculateSizeOfEntriesBetween(
+                base::Time::Min(), base::Time::Max(), future.GetCallback()),
+            net::ERR_IO_PENDING);
+
+  // CalculateSizeOfEntriesBetween should have triggered FlushBuffer(true).
+  // Which starts the creation in DB.
+  EXPECT_TRUE(db_handle->IsCreatingState());
+
+  EXPECT_EQ(future.Get(),
+            kKey.length() + kData.length() + kSqlBackendStaticResourceSize);
+  EXPECT_TRUE(db_handle->IsFinished());
+
+  entry->Close();
+}
+
 // Tests a race condition where Doom runs while a WriteData operation
 // is pending (blocked by another operation) and the entry is in 'Creating'
 // state.

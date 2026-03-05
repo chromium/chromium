@@ -458,6 +458,9 @@ int64_t SqlBackendImpl::MaxFileSize() const {
 
 base::expected<int32_t, net::Error> SqlBackendImpl::GetEntryCount(
     GetEntryCountCallback callback) const {
+  // Flush buffers so that the GetEntryCountAsync call can see entries not yet
+  // written to the DB.
+  FlushActiveEntriesBuffers();
   // The entry count must be retrieved asynchronously to ensure that all
   // pending database operations are reflected in the result.
   store_->GetEntryCountAsync(std::move(callback));
@@ -560,6 +563,12 @@ SqlEntryImpl* SqlBackendImpl::GetActiveEntry(const CacheEntryKey& key) {
     return &it->second.get();
   }
   return nullptr;
+}
+
+void SqlBackendImpl::FlushActiveEntriesBuffers() const {
+  for (const auto& it : active_entries_) {
+    it.second->FlushBuffer(/*force_flush_for_creation=*/true);
+  }
 }
 
 void SqlBackendImpl::DoomActiveEntry(SqlEntryImpl& entry) {
@@ -811,6 +820,10 @@ int64_t SqlBackendImpl::CalculateSizeOfEntriesBetween(
     base::Time initial_time,
     base::Time end_time,
     Int64CompletionOnceCallback callback) {
+  // Flush buffers so that the CalculateSizeOfEntriesBetween call can see
+  // entries not yet written to the DB.
+  FlushActiveEntriesBuffers();
+
   exclusive_operation_coordinator_.PostOrRunExclusiveOperation(base::BindOnce(
       &SqlBackendImpl::HandleCalculateSizeOfEntriesBetweenOperation,
       weak_factory_.GetWeakPtr(), initial_time, end_time, std::move(callback)));
@@ -841,9 +854,7 @@ void SqlBackendImpl::HandleCalculateSizeOfEntriesBetweenOperation(
 std::unique_ptr<Backend::Iterator> SqlBackendImpl::CreateIterator() {
   // Flush buffers so that the Iterator can see entries not yet written to the
   // DB.
-  for (const auto& it : active_entries_) {
-    it.second->FlushBuffer(/*force_flush_for_creation=*/true);
-  }
+  FlushActiveEntriesBuffers();
   return std::make_unique<IteratorImpl>(weak_factory_.GetWeakPtr());
 }
 
