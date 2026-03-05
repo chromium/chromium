@@ -33,7 +33,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 iron-icon="cr:clear"
                 title="${this.file.name}"
                 aria-label="${this.deleteFileButtonTitle_}"
-                @click="${this.deleteFile_}">
+                @click="${this.onRemoveButtonClick_}">
             </cr-icon-button>`: ''}
           </div>
           <div class="chip-overlay"></div>
@@ -62,7 +62,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 iron-icon="cr:clear"
                 title="${this.file.name}"
                 aria-label="${this.deleteFileButtonTitle_}"
-                @click="${this.deleteFile_}">
+                @click="${this.onRemoveButtonClick_}">
             </cr-icon-button>`: ''}
           </div>
           <div class="chip-overlay"></div>
@@ -95,7 +95,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               iron-icon="cr:clear"
               title="${this.file.name}"
               aria-label="${this.deleteFileButtonTitle_}"
-              @click="${this.deleteFile_}">
+              @click="${this.onRemoveButtonClick_}">
               </cr-icon-button>`: ''}
           </div>
           <div class="chip-overlay"></div>
@@ -117,7 +117,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
               iron-icon="cr:clear"
               title="${this.file.name}"
               aria-label="${this.deleteFileButtonTitle_}"
-              @click="${this.deleteFile_}">
+              @click="${this.onRemoveButtonClick_}">
           </cr-icon-button>`: ''}
         </div>` : html`
         <div id="pdfChip" class="chip">
@@ -140,7 +140,7 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
                 iron-icon="cr:clear"
                 title="${this.file.name}"
                 aria-label="${this.deleteFileButtonTitle_}"
-                @click="${this.deleteFile_}">
+                @click="${this.onRemoveButtonClick_}">
             </cr-icon-button>`: ''}
           </div>
           <div class="chip-overlay"></div>

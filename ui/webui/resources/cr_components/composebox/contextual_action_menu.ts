@@ -384,12 +384,12 @@ export class ContextualActionMenuElement extends ContextualActionMenuElementBase
     return this.tabPreviewsEnabled_ && this.tabPreviewUrl_ !== '';
   }
 
-  protected openImageUpload_() {
+  protected onImageUploadClick_() {
     this.fire('open-image-upload');
     this.$.menu.close();
   }
 
-  protected openFileUpload_() {
+  protected onFileUploadClick_() {
     this.fire('open-file-upload');
     this.$.menu.close();
   }

@@ -256,7 +256,7 @@ export class SearchboxMatchElement extends CrLitElement {
   // Event handlers
   //============================================================================
 
-  protected onActivateKeyword_(e: ActionEvent) {
+  protected onKeywordExecuteAction_(e: ActionEvent) {
     // Keyboard activation isn't possible because when the keyword chip is
     // focused, focus is redirected to the omnibox view.
     const event = e.detail.event as PointerEvent;
@@ -324,7 +324,7 @@ export class SearchboxMatchElement extends CrLitElement {
         this.matchIndex, this.match.destinationUrl);
   }
 
-  protected onRemoveButtonMouseDown_(e: Event) {
+  protected onRemoveButtonMousedown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
   }
 

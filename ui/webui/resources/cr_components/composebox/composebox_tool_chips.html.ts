@@ -21,7 +21,7 @@ ${this.activeToolMode_ === ComposeboxToolMode.kDeepSearch ? html`
           'removeToolChipAriaLabel',
           this.getToolChipLabel_(ComposeboxToolMode.kDeepSearch))}"
       ?visible="${true}"
-      @click="${this.handleDeepSearchClick_}">
+      @click="${this.onDeepSearchClick_}">
   </cr-composebox-tool-chip>
 ` : ''}
 ${this.activeToolMode_ === ComposeboxToolMode.kImageGen ? html`
@@ -35,7 +35,7 @@ ${this.activeToolMode_ === ComposeboxToolMode.kImageGen ? html`
           'removeToolChipAriaLabel',
           this.getToolChipLabel_(ComposeboxToolMode.kImageGen))}"
       ?visible="${true}"
-      @click="${this.handleImageGenClick_}">
+      @click="${this.onCreateImageClick_}">
   </cr-composebox-tool-chip>
 ` : ''}
 ${this.activeToolMode_ === ComposeboxToolMode.kCanvas ? html`
@@ -49,7 +49,7 @@ ${this.activeToolMode_ === ComposeboxToolMode.kCanvas ? html`
           'removeToolChipAriaLabel',
           this.getToolChipLabel_(ComposeboxToolMode.kCanvas))}"
       ?visible="${true}"
-      @click="${this.handleCanvasClick_}">
+      @click="${this.onCanvasClick_}">
   </cr-composebox-tool-chip>
 ` : ''}`;
   // clang-format on

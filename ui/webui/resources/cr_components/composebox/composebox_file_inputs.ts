@@ -38,12 +38,12 @@ export class ComposeboxFileInputsElement extends CrLitElement {
   protected accessor imageFileTypes_: string[] =
       loadTimeData.getString('composeboxImageFileTypes').split(',');
 
-  protected openFileUpload_() {
+  protected onOpenFileUpload_() {
     assert(this.$.fileInput);
     this.$.fileInput.click();
   }
 
-  protected openImageUpload_() {
+  protected onOpenImageUpload_() {
     assert(this.$.imageInput);
     this.$.imageInput.click();
   }
@@ -51,7 +51,7 @@ export class ComposeboxFileInputsElement extends CrLitElement {
 
   protected onFileChange_(e: Event) {
     const input = e.target as HTMLInputElement;
-    this.fire('on-file-change', {files: input.files});
+    this.fire('file-change', {files: input.files});
     input.value = '';
   }
 }

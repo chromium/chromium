@@ -99,11 +99,11 @@ export class ContextualEntrypointButtonElement extends
     });
   }
 
-  protected onDescriptionAnimationEnd_(e: AnimationEvent) {
+  protected onDescriptionAnimationend_(e: AnimationEvent) {
     this.onAnimationEnd_(e, 'slide-in');
   }
 
-  protected onAimBackgroundAnimationEnd_(e: AnimationEvent) {
+  protected onAimBackgroundAnimationend_(e: AnimationEvent) {
     if (this.showContextMenuDescription) {
       return;
     }

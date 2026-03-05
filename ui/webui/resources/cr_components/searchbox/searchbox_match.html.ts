@@ -36,7 +36,7 @@ export function getHtml(this: SearchboxMatchElement) {
             hint="${this.match.keywordChipHint}"
             icon-path="//resources/images/icon_search.svg"
             aria-label="${this.match.keywordChipA11y}"
-            @execute-action="${this.onActivateKeyword_}"
+            @execute-action="${this.onKeywordExecuteAction_}"
             tabindex="1">
         </cr-searchbox-action>
       </div>
@@ -64,7 +64,7 @@ export function getHtml(this: SearchboxMatchElement) {
       title="${this.removeButtonTitle_}"
       ?hidden="${!this.match.supportsDeletion}"
       @click="${this.onRemoveButtonClick_}"
-      @mousedown="${this.onRemoveButtonMouseDown_}">
+      @mousedown="${this.onRemoveButtonMousedown_}">
   </cr-icon-button>
 </div>
 <!--_html_template_end_-->`;

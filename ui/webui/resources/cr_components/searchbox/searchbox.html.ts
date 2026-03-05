@@ -50,11 +50,11 @@ export function getHtml(this: SearchboxElement) {
           aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
           aria-description="${this.searchboxAriaDescription}"
           placeholder="${this.computePlaceholderText_(this.placeholderText)}"
-          @copy="${this.onInputCutCopy_}"
-          @cut="${this.onInputCutCopy_}" @focus="${this.onInputFocus_}"
+          @copy="${this.onInputCopy_}"
+          @cut="${this.onInputCut_}" @focus="${this.onInputFocus_}"
           @focusout="${this.onInputFocusout_}"
           @input="${this.onInputInput_}" @keydown="${this.onInputKeydown_}"
-          @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMouseDown_}"
+          @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMousedown_}"
           @paste="${this.onInputPaste_}"></textarea>
     ` : html`
       <input id="input" class="truncate" type="search" autocomplete="off"
@@ -63,11 +63,11 @@ export function getHtml(this: SearchboxElement) {
           aria-expanded="${this.dropdownIsVisible}" aria-controls="matches"
           aria-description="${this.searchboxAriaDescription}"
           placeholder="${this.computePlaceholderText_(this.placeholderText)}"
-          @copy="${this.onInputCutCopy_}"
-          @cut="${this.onInputCutCopy_}" @focus="${this.onInputFocus_}"
+          @copy="${this.onInputCopy_}"
+          @cut="${this.onInputCut_}" @focus="${this.onInputFocus_}"
           @focusout="${this.onInputFocusout_}"
           @input="${this.onInputInput_}" @keydown="${this.onInputKeydown_}"
-          @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMouseDown_}"
+          @keyup="${this.onInputKeyup_}" @mousedown="${this.onInputMousedown_}"
           @paste="${this.onInputPaste_}">
       </input>
     `}
@@ -91,7 +91,7 @@ export function getHtml(this: SearchboxElement) {
     ` : ''}
     ${this.composeButtonEnabled ? html`
       <cr-searchbox-compose-button id="composeButton"
-          @compose-click="${this.onComposeButtonClick_}">
+          @compose-click="${this.onComposeClick_}">
       </cr-searchbox-compose-button>
     ` : ''}
   </div>

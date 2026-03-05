@@ -634,7 +634,15 @@ export class SearchboxElement extends SearchboxElementBase implements
   // Event handlers
   //============================================================================
 
-  protected onInputCutCopy_(e: ClipboardEvent) {
+  protected onInputCut_(e: ClipboardEvent) {
+    this.onInputCutCopy_(e);
+  }
+
+  protected onInputCopy_(e: ClipboardEvent) {
+    this.onInputCutCopy_(e);
+  }
+
+  private onInputCutCopy_(e: ClipboardEvent) {
     // Only handle cut/copy when input has content and it's all selected.
     if (!this.$.input.value || this.$.input.selectionStart !== 0 ||
         this.$.input.selectionEnd !== this.$.input.value.length ||
@@ -758,7 +766,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
   }
 
-  protected onInputMouseDown_(e: MouseEvent|null) {
+  protected onInputMousedown_(e: MouseEvent|null) {
     // Non-main (generally left) mouse clicks are ignored.
     if (e && e.button !== 0) {
       return;
@@ -1073,7 +1081,7 @@ export class SearchboxElement extends SearchboxElementBase implements
         e.detail.files, ComposeboxContextAddedMethod.CONTEXT_MENU);
   }
 
-  protected addTabContext_(e: CustomEvent<{
+  protected onAddTabContext_(e: CustomEvent<{
     id: number,
     title: string,
     url: Url,
@@ -1102,7 +1110,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.tabSuggestions_ = [...tabs];
   }
 
-  protected async getTabPreview_(e: CustomEvent<{
+  protected async onGetTabPreview_(e: CustomEvent<{
     tabId: number,
     onPreviewFetched: (previewDataUrl: string) => void,
   }>) {
@@ -1121,10 +1129,10 @@ export class SearchboxElement extends SearchboxElementBase implements
     }
 
     this.focusInput();
-    this.onInputMouseDown_(null);
+    this.onInputMousedown_(null);
   }
 
-  protected onContextMenuContainerMouseDown_(e: FocusEvent) {
+  protected onContextMenuContainerMousedown_(e: FocusEvent) {
     // Special treatment for the "Tall" layout variants where not clicking on an
     // inner element should be treated as clicking on a non-focusable area.
     if (this.searchboxLayoutMode !== 'Compact' &&
@@ -1145,7 +1153,7 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.refreshTabSuggestions_(/*forceRefresh=*/ true);
   }
 
-  protected onComposeButtonClick_(e: CustomEvent<ClickEventDetail>) {
+  protected onComposeClick_(e: CustomEvent<ClickEventDetail>) {
     // TODO(crbug.com/463667769): Call submitQuery here since RealboxHandler is
     // now a `ContextualSearchboxHandler`.
     this.pageHandler_.activateMetricsFunnel('AiModeButton');
@@ -1204,11 +1212,11 @@ export class SearchboxElement extends SearchboxElementBase implements
     this.openComposebox_([], e.detail.toolMode);
   }
 
-  protected handleDeepSearchClick_() {
+  protected onDeepSearchClick_() {
     this.openComposebox_([], ToolMode.kDeepSearch);
   }
 
-  protected handleImageGenClick_() {
+  protected onCreateImageClick_() {
     this.openComposebox_([], ToolMode.kImageGen);
   }
 

@@ -13,7 +13,7 @@ ${this.computeShowRecentTabChip_() ? html`
   <div id="recentTabChipContainer">
     <composebox-recent-tab-chip class="upload-button contextual-chip"
         .recentTab="${this.recentTabForChip_}"
-        @add-tab-context="${this.addTabContext_}">
+        @add-tab-context="${this.onAddTabContext_}">
     </composebox-recent-tab-chip>
   </div>
 ` : nothing}

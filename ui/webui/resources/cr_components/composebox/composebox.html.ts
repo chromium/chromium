@@ -24,21 +24,21 @@ export function getHtml(this: ComposeboxElement) {
         exportparts="composebox-background">
     </search-animated-glow>
   ` : ''}
-  <ntp-error-scrim id="errorScrim" part="error-scrim"
-    ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
-                     this.files_.size === 0}"
-    .errorMessage="${this.errorMessage_}"
-    @dismiss-error-scrim="${this.onErrorScrimDismissed_}">
-  </ntp-error-scrim>
-  <div id="composebox" part="composebox" ?inert="${this.errorMessage_}"
-      @keydown="${this.onKeydown_}"
-      @focusin="${this.handleComposeboxFocusIn_}"
-      @focusout="${this.handleComposeboxFocusOut_}"
-      @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
-      @dragover="${this.dragAndDropHandler_.handleDragOver}"
-      @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
-      @drop="${this.dragAndDropHandler_.handleDrop}"
-      @paste="${this.onPaste_}">
+    <ntp-error-scrim id="errorScrim" part="error-scrim"
+        ?compact-mode="${this.searchboxLayoutMode === 'Compact' &&
+                         this.files_.size === 0}"
+        .errorMessage="${this.errorMessage_}"
+        @dismiss-error-scrim="${this.onDismissErrorScrim_}">
+    </ntp-error-scrim>
+    <div id="composebox" part="composebox" ?inert="${this.errorMessage_}"
+        @keydown="${this.onKeydown_}"
+        @focusin="${this.onComposeboxFocusin_}"
+        @focusout="${this.onComposeboxFocusout_}"
+        @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
+        @dragover="${this.dragAndDropHandler_.handleDragOver}"
+        @dragleave="${this.dragAndDropHandler_.handleDragLeave}"
+        @drop="${this.dragAndDropHandler_.handleDrop}"
+        @paste="${this.onPaste_}">
     <div id="inputContainer" part="input-container">
       <div id="textContainer" part="text-container">
         <div id="iconContainer" part="icon-container">
@@ -56,11 +56,12 @@ export function getHtml(this: ComposeboxElement) {
             placeholder="${this.inputPlaceholder_}"
             part="input"
             .value="${this.input_}"
-            @click="${this.updateCaret_}"
-            @keyup="${this.updateCaret_}"
-            @input="${this.handleInput_}"
-            @scroll="${this.handleScroll_}"
-            @focusin="${this.handleInputFocusIn_}"></textarea>
+            @click="${this.onInputClick_}"
+            @keyup="${this.onInputKeyup_}"
+            @input="${this.onInputInput_}"
+            @scroll="${this.onInputScroll_}"
+            @focusin="${this.onInputFocusin_}"></textarea>
+          </textarea>
           ${this.shouldShowSmartComposeInlineHint_() ? html`
             <div id="smartCompose" part="smart-compose">
               <!-- Comments in between spans to eliminate spacing between
@@ -88,7 +89,7 @@ export function getHtml(this: ComposeboxElement) {
       <div id="context" part="context-entrypoint"
           class="${this.carouselOnTop_ && this.isCollapsible ? 'icon-fade' : ''}">
         <cr-composebox-file-inputs id="fileInputs"
-            @on-file-change="${this.onFileChange_}"
+            @file-change="${this.onFileChange_}"
             .disableFileInputs="${this.shouldDisableFileInputs_()}">
           ${this.searchboxLayoutMode === 'Compact' && !this.isOmniboxInCompactMode_ ?
             getContextMenuHtml.bind(this)()
@@ -142,7 +143,7 @@ export function getHtml(this: ComposeboxElement) {
           `: ''}
           ${this.shouldShowVoiceSearchAtBottom_() ? html`
             <cr-icon-button id="voiceSearchButton" class="voice-icon" part="voice-icon"
-                iron-icon="cr:mic" @click="${this.openAimVoiceSearch_}"
+                iron-icon="cr:mic" @click="${this.onVoiceSearchButtonClick_}"
                 title="${this.i18n('voiceSearchButtonLabel')}">
             </cr-icon-button>
           ` : ''}
@@ -159,7 +160,7 @@ export function getHtml(this: ComposeboxElement) {
         title="${this.i18n('lensSearchButtonLabel')}"
         @click="${this.onLensClick_}"
         ?disabled="${this.lensButtonDisabled}"
-        @mousedown="${this.onLensIconMouseDown_}">
+        @mousedown="${this.onLensIconMousedown_}">
     </cr-icon-button>` : ''}
     <!-- Elements rendered under the input container. -->
     <!-- TODO: Move the submit button and Lens icon into this slot. -->
@@ -170,7 +171,7 @@ export function getHtml(this: ComposeboxElement) {
     ${!this.searchboxNextEnabled ? getSubmitButtonHtml.bind(this)() : ''}
   </div>
   <cr-composebox-voice-search id="voiceSearch"
-      @voice-search-cancel="${this.onVoiceSearchClose_}"
+      @voice-search-cancel="${this.onVoiceSearchCancel_}"
       @voice-search-final-result="${this.onVoiceSearchFinalResult_}"
       @voice-search-error="${this.onVoiceSearchError_}"
       @transcript-update="${this.onTranscriptUpdate_}"

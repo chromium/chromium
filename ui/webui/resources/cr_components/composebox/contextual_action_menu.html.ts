@@ -52,14 +52,14 @@ export function getHtml(this: ContextualActionMenuElement) {
     `: ''}
     ${this.imageUploadAllowed_ ? html`
       <button id="imageUpload" class="dropdown-item" role="menuitem"
-          @click="${this.openImageUpload_}"
+          @click="${this.onImageUploadClick_}"
           ?disabled="${this.imageUploadDisabled_}">
         <cr-icon icon="composebox:imageUpload"></cr-icon>
         ${this.getInputTypeLabel_(InputType.kLensImage)}
       </button>` : ''}
     ${this.fileUploadAllowed_ ? html`<button id="fileUpload" class="dropdown-item"
         role="menuitem"
-        @click="${this.openFileUpload_}"
+        @click="${this.onFileUploadClick_}"
         ?disabled="${this.fileUploadDisabled_}">
       <cr-icon icon="composebox:fileUpload"></cr-icon>
       ${this.getInputTypeLabel_(InputType.kLensFile)}

@@ -21,7 +21,7 @@ export function getHtml(this: ComposeboxMatchElement) {
     part="match-remove-button"
     aria-label="${this.computeRemoveButtonAriaLabel_()}"
     @click="${this.onRemoveButtonClick_}"
-    @mousedown="${this.onRemoveButtonMouseDown_}"
+    @mousedown="${this.onRemoveButtonMousedown_}"
     title="${this.removeButtonTitle_}"
     ?hidden="${!this.match.supportsDeletion}"
     tabindex="2">

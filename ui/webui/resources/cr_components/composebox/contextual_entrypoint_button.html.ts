@@ -20,7 +20,7 @@ ${this.hasAllowedInputs_() ? html`
           aria-label="${this.i18n('addContextTitle')}">
         <cr-icon id="entrypointIcon" icon="cr:add" slot="prefix-icon"></cr-icon>
         <span id="description"
-            @animationend="${this.onDescriptionAnimationEnd_}">
+            @animationend="${this.onDescriptionAnimationend_}">
           ${this.i18n('addContext')}
         </span>
       </cr-button>
@@ -38,7 +38,7 @@ ${this.hasAllowedInputs_() ? html`
       <div class="aim-gradient-outer-blur aim-c"></div>
       <div class="aim-gradient-solid aim-c"></div>
       <div class="aim-background aim-c"
-          @animationend="${this.onAimBackgroundAnimationEnd_}">
+          @animationend="${this.onAimBackgroundAnimationend_}">
       </div>
     ` : ''}
   </div>`

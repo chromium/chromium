@@ -11,8 +11,8 @@ export function getHtml(this: ComposeboxFileInputsElement) {
   return html`<!--_html_template_start_-->
 ${this.disableFileInputs ? html`<slot></slot>` : html`
   <div id="fileUploadWrapper"
-    @open-image-upload="${this.openImageUpload_}"
-    @open-file-upload="${this.openFileUpload_}">
+    @open-image-upload="${this.onOpenImageUpload_}"
+    @open-file-upload="${this.onOpenFileUpload_}">
     <slot></slot>
   </div>
   <input type="file"

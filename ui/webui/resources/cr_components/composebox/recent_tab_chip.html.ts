@@ -10,7 +10,7 @@ export function getHtml(this: RecentTabChipElement) {
   // clang-format off
   return this.recentTab ? html`<!--_html_template_start_-->
   <cr-button id="recentTabButton"
-      @click="${this.addTabContext_}"
+      @click="${this.onRecentTabButtonClick_}"
       title="${this.recentTabChipTitle_}"
       aria-label="${this.recentTab.showInCurrentTabChip ?
           this.i18n('askAboutThisPageAriaLabel',

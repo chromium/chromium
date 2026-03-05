@@ -210,7 +210,7 @@ export class ComposeboxMatchElement extends CrLitElement {
         this.matchIndex, this.match.destinationUrl);
   }
 
-  protected onRemoveButtonMouseDown_(e: Event) {
+  protected onRemoveButtonMousedown_(e: Event) {
     e.preventDefault();  // Prevents default browser action (focus).
   }
 }

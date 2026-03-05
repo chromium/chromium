@@ -10,19 +10,19 @@ import {getHtml as getRecentTabChipHtml} from './searchbox_recent_tab_chip.html.
 export function getHtml(this: SearchboxElement) {
   // clang-format off
   return html`
-<cr-composebox-file-inputs @on-file-change="${this.onFileChange_}">
+<cr-composebox-file-inputs @file-change="${this.onFileChange_}">
   <div class="context-menu-container" id="contextMenuContainer"
-      @mousedown="${this.onContextMenuContainerMouseDown_}"
+      @mousedown="${this.onContextMenuContainerMousedown_}"
       @click="${this.onContextMenuContainerClick_}">
     <cr-composebox-contextual-entrypoint-and-menu id="context"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button"
-        @add-tab-context="${this.addTabContext_}"
+        @add-tab-context="${this.onAddTabContext_}"
         @tool-click="${this.onToolClick_}"
-        @deep-search-click="${this.handleDeepSearchClick_}"
-        @create-image-click="${this.handleImageGenClick_}"
+        @deep-search-click="${this.onDeepSearchClick_}"
+        @create-image-click="${this.onCreateImageClick_}"
         @model-click="${this.onModelClick_}"
-        @get-tab-preview="${this.getTabPreview_}"
+        @get-tab-preview="${this.onGetTabPreview_}"
         @context-menu-entrypoint-click="${this.onContextMenuEntrypointClick_}"
         @context-menu-closed="${this.onContextMenuClosed_}"
         @context-menu-opened="${this.onContextMenuOpened_}"

@@ -43,7 +43,7 @@ suite('NewTabPageComposeboxFileInputsTest', () => {
         new File(['foo2'], 'foo2.pdf', {type: 'application/pdf'}));
 
     // Act.
-    const whenFileChange = eventToPromise('on-file-change', fileInputsElement);
+    const whenFileChange = eventToPromise('file-change', fileInputsElement);
     const mockFileChange = new Event('change', {bubbles: true});
     Object.defineProperty(mockFileChange, 'target', {
       writable: false,

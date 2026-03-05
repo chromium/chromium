@@ -112,7 +112,11 @@ export class ContextualEntrypointAndMenuElement extends
     this.fire('context-menu-closed');
   }
 
-  protected showMenuAtEntrypoint_() {
+  protected onContextMenuEntrypointClick_() {
+    this.showMenuAtEntrypoint_();
+  }
+
+  private showMenuAtEntrypoint_() {
     this.$.entrypointButton.classList.add('menu-open');
     const entrypoint =
         this.$.entrypointButton.shadowRoot.querySelector<HTMLElement>(

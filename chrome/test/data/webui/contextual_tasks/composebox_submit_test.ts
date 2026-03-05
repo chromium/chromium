@@ -667,15 +667,18 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     };
     mockSearchboxPageHandler.setResultFor(
         ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
-    await composebox.addTabContext_({
-      detail: {
-        id: 0,
-        title: 'test',
-        url: new URL('https://google.com'),
-        delayUpload: false,
-        onContextAdded: callback,
-      },
-    } as CustomEvent);
+
+    const contextEntrypoint =
+        composebox.shadowRoot.querySelector('#contextEntrypoint');
+    assertTrue(!!contextEntrypoint);
+    contextEntrypoint.fire('add-tab-context', {
+      id: 0,
+      title: 'test',
+      url: new URL('https://google.com'),
+      delayUpload: false,
+      onContextAdded: callback,
+    });
+    await microtasksFinished();
 
     searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
@@ -820,15 +823,16 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
 
     mockSearchboxPageHandler.setResultFor(
         ADD_TAB_CONTEXT_FN, Promise.resolve(FAKE_TOKEN_STRING));
-    await composebox.addTabContext_({
-      detail: {
-        id: 0,
-        title: 'test',
-        url: new URL('https://google.com'),
-        delayUpload: true,
-        onContextAdded: callback,
-      },
-    } as CustomEvent);
+    const contextEntrypoint =
+        composebox.shadowRoot.querySelector('#contextEntrypoint');
+    assertTrue(!!contextEntrypoint);
+    contextEntrypoint.fire('add-tab-context', {
+      id: 0,
+      title: 'test',
+      url: new URL('https://google.com'),
+      delayUpload: true,
+      onContextAdded: callback,
+    });
     await microtasksFinished();
     await composebox.updateComplete;
     await composebox.updateComplete;

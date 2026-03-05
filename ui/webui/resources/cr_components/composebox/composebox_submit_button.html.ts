@@ -10,8 +10,8 @@ export function getHtml(this: ComposeboxElement) {
   // clang-format off
   return html`
 <div id="submitContainer" class="icon-fade" part="submit"
-    tabindex="-1" @click="${this.submitQuery_}"
-    @focusin="${this.handleSubmitFocusIn_}">
+    tabindex="-1" @click="${this.onSubmitContainerClick_}"
+    @focusin="${this.onSubmitContainerFocusin_}">
   <div id="submitOverlay" part="submit-overlay"
       title="${this.i18n('composeboxSubmitButtonTitle')}">
   </div>

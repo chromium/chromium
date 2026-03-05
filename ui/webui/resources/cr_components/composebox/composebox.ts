@@ -785,7 +785,7 @@ export class ComposeboxElement extends I18nMixinLit
         this.i18n('composeboxCancelButtonTitle');
   }
 
-  protected onContextMenuContainerMouseDown_(e: FocusEvent) {
+  protected onContextMenuContainerMousedown_(e: FocusEvent) {
     // Special treatment for the "Tall" layout variants where not clicking on an
     // inner element should be treated as clicking on a non-focusable area.
     if (this.searchboxLayoutMode !== 'Compact' &&
@@ -1109,7 +1109,12 @@ export class ComposeboxElement extends I18nMixinLit
     this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
   }
 
-  protected addTabContext_(e: CustomEvent<{
+  protected onDeleteTabContext_(
+      e: CustomEvent<{uuid: UnguessableToken, fromUserAction?: boolean}>) {
+    this.deleteFile(e.detail.uuid, e.detail.fromUserAction);
+  }
+
+  protected onAddTabContext_(e: CustomEvent<{
     id: number,
     title: string,
     url: Url,
@@ -1198,6 +1203,10 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
+  protected onSubmitContainerClick_(e: MouseEvent) {
+    this.submitQuery_(e);
+  }
+
   protected async onContextMenuClosed_() {
     this.contextMenuOpened_ = false;
 
@@ -1218,7 +1227,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.tabSuggestions_ = [...tabs];
   }
 
-  protected async getTabPreview_(e: CustomEvent<{
+  protected async onGetTabPreview_(e: CustomEvent<{
     tabId: number,
     onPreviewFetched: (previewDataUrl: string) => void,
   }>) {
@@ -1258,7 +1267,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected openAimVoiceSearch_() {
+  protected onVoiceSearchButtonClick_() {
     this.inVoiceSearchMode_ = true;
     this.animationState = GlowAnimationState.LISTENING;
     this.fire('voice-search-action', {value: VoiceSearchAction.ACTIVATE});
@@ -1267,7 +1276,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.$.voiceSearch.start();
   }
 
-  protected onVoiceSearchClose_(e: CustomEvent<boolean>) {
+  protected onVoiceSearchCancel_(e: CustomEvent<boolean>) {
     // If closing was the user canceling voice search:
     if (e.detail) {
       // For contextual tasks composebox voice metrics.
@@ -1329,7 +1338,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected onLensIconMouseDown_(e: MouseEvent) {
+  protected onLensIconMousedown_(e: MouseEvent) {
     // Prevent the composebox from expanding due to being focused by capturing
     // the mousedown event. This is needed to allow the Lens icon to be
     // clicked when the composebox does not have focus without expanding the
@@ -1409,15 +1418,15 @@ export class ComposeboxElement extends I18nMixinLit
     this.handleToolClick_(e.detail.toolMode);
   }
 
-  protected handleDeepSearchClick_() {
+  protected onDeepSearchClick_() {
     this.handleToolClick_(ComposeboxToolMode.kDeepSearch);
   }
 
-  protected handleImageGenClick_() {
+  protected onCreateImageClick_() {
     this.handleToolClick_(ComposeboxToolMode.kImageGen);
   }
 
-  protected handleCanvasClick_() {
+  protected onCanvasClick_() {
     this.handleToolClick_(ComposeboxToolMode.kCanvas);
   }
 
@@ -1452,13 +1461,13 @@ export class ComposeboxElement extends I18nMixinLit
     this.updateInputPlaceholder_();
   }
 
-  protected onErrorScrimDismissed_() {
+  protected onDismissErrorScrim_() {
     this.errorMessage_ = '';
   }
 
   // Sets the input property to compute the cancel button title without using
   // "$." syntax  as this is not allowed in WillUpdate().
-  protected handleInput_(e: Event) {
+  protected onInputInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
 
@@ -1518,7 +1527,15 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected updateCaret_() {
+  protected onInputClick_() {
+    this.updateCaret_();
+  }
+
+  protected onInputKeyup_() {
+    this.updateCaret_();
+  }
+
+  private updateCaret_() {
     const caret = this.$.caret;
     const input = this.$.input;
     const mirror = this.$.mirror;
@@ -1697,7 +1714,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected handleInputFocusIn_() {
+  protected onInputFocusin_() {
     // if there's a last queried input, it's guaranteed that at least
     // the verbatim match will exist.
     if (this.lastQueriedInput_) {
@@ -1705,7 +1722,7 @@ export class ComposeboxElement extends I18nMixinLit
     }
   }
 
-  protected handleComposeboxFocusIn_(e: FocusEvent) {
+  protected onComposeboxFocusin_(e: FocusEvent) {
     // Exit early if the focus is still within the composebox.
     if (this.$.composebox.contains(e.relatedTarget as Node)) {
       return;
@@ -1722,7 +1739,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.fire('composebox-focus-in');
   }
 
-  protected handleComposeboxFocusOut_(e: FocusEvent) {
+  protected onComposeboxFocusout_(e: FocusEvent) {
     // Exit early if the focus is still within the composebox.
     if (this.$.composebox.contains(e.relatedTarget as Node)) {
       return;
@@ -1734,7 +1751,7 @@ export class ComposeboxElement extends I18nMixinLit
     this.fire('composebox-focus-out');
   }
 
-  protected handleScroll_() {
+  protected onInputScroll_() {
     const smartCompose =
         this.shadowRoot.querySelector<HTMLElement>('#smartCompose');
     if (!smartCompose) {
@@ -1743,7 +1760,7 @@ export class ComposeboxElement extends I18nMixinLit
     smartCompose.scrollTop = this.$.input.scrollTop;
   }
 
-  protected handleSubmitFocusIn_() {
+  protected onSubmitContainerFocusin_() {
     // Matches should always be greater than 0 due to verbatim match.
     if (this.input_ && !this.selectedMatch_) {
       this.selectFirstMatch();

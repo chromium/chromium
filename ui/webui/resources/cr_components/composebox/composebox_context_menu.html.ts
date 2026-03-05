@@ -14,7 +14,7 @@ export function getHtml(this: ComposeboxElement) {
   return html`
 <div class="context-menu-container" id="contextMenuContainer"
     part="context-menu-and-tools"
-    @mousedown="${this.onContextMenuContainerMouseDown_}"
+    @mousedown="${this.onContextMenuContainerMousedown_}"
     @click="${this.onContextMenuContainerClick_}">
   ${this.showMenuOnClick ? html`
     <cr-composebox-contextual-entrypoint-and-menu
@@ -22,13 +22,13 @@ export function getHtml(this: ComposeboxElement) {
         part="composebox-entrypoint"
         exportparts="context-menu-entrypoint-icon"
         class="upload-button no-overlap"
-        @add-tab-context="${this.addTabContext_}"
-        @delete-tab-context="${this.onDeleteFile_}"
+        @add-tab-context="${this.onAddTabContext_}"
+        @delete-tab-context="${this.onDeleteTabContext_}"
         @tool-click="${this.onToolClick_}"
-        @deep-search-click="${this.handleDeepSearchClick_}"
-        @create-image-click="${this.handleImageGenClick_}"
+        @deep-search-click="${this.onDeepSearchClick_}"
+        @create-image-click="${this.onCreateImageClick_}"
         @model-click="${this.onModelClick_}"
-        @get-tab-preview="${this.getTabPreview_}"
+        @get-tab-preview="${this.onGetTabPreview_}"
         @context-menu-closed="${this.onContextMenuClosed_ }"
         @context-menu-opened="${this.onContextMenuOpened_}"
         .showModelPicker="${this.showModelPicker_}"
@@ -57,7 +57,7 @@ export function getHtml(this: ComposeboxElement) {
   ${this.searchboxLayoutMode === 'Compact' && this.shouldShowVoiceSearch_() ? html`
     <cr-icon-button id="voiceSearchButton" class="voice-icon"
         part="voice-icon" iron-icon="cr:mic"
-        @click="${this.openAimVoiceSearch_}"
+        @click="${this.onVoiceSearchButtonClick_}"
         title="${this.i18n('voiceSearchButtonLabel')}">
     </cr-icon-button>
   ` : ''}
@@ -66,7 +66,7 @@ export function getHtml(this: ComposeboxElement) {
     ${this.shouldShowVoiceSearch_() ? html`
       <cr-icon-button id="voiceSearchButton" class="voice-icon"
           part="voice-icon" iron-icon="cr:mic"
-          @click="${this.openAimVoiceSearch_}"
+          @click="${this.onVoiceSearchButtonClick_}"
           title="${this.i18n('voiceSearchButtonLabel')}">
       </cr-icon-button>
     ` : ''}

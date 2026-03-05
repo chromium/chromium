@@ -73,7 +73,7 @@ export class ComposeboxFileThumbnailElement extends CrLitElement {
     }
   }
 
-  protected deleteFile_() {
+  protected onRemoveButtonClick_() {
     // TODO(crbug.com/422559977): Send call to handler to delete file from
     // cache.
     this.fire('delete-file', {uuid: this.file.uuid, fromUserAction: true});

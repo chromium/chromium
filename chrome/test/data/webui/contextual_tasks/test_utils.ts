@@ -136,7 +136,7 @@ export async function uploadFileAndVerify(
   const dataTransfer = new DataTransfer();
   dataTransfer.items.add(file);
 
-  composebox.$.fileInputs.dispatchEvent(new CustomEvent('on-file-change', {
+  composebox.$.fileInputs.dispatchEvent(new CustomEvent('file-change', {
     detail: {files: dataTransfer.files},
     bubbles: true,
     composed: true,
