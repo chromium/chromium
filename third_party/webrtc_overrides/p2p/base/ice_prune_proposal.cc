@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "third_party/webrtc/api/array_view.h"
+#include "base/containers/span.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/rtc_base/strings/string_builder.h"
 #include "third_party/webrtc_overrides/p2p/base/ice_connection.h"
@@ -11,7 +11,7 @@
 namespace blink {
 
 IcePruneProposal::IcePruneProposal(
-    const webrtc::ArrayView<const webrtc::Connection*> connections_to_prune,
+    base::span<const webrtc::Connection*> connections_to_prune,
     bool reply_expected)
     : IceProposal(reply_expected) {
   for (const webrtc::Connection* conn : connections_to_prune) {

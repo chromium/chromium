@@ -17,7 +17,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/algorithm/container.h"
-#include "third_party/webrtc/api/array_view.h"
 #include "third_party/webrtc/api/rtc_error.h"
 #include "third_party/webrtc/p2p/base/connection.h"
 #include "third_party/webrtc/p2p/base/ice_agent_interface.h"
@@ -593,7 +592,7 @@ webrtc::RTCError BridgeIceController::OnPruneRequested(
 const webrtc::Connection* BridgeIceController::FindConnection(
     uint32_t id) const {
   DCHECK(network_task_runner_->RunsTasksInCurrentSequence());
-  webrtc::ArrayView<const Connection* const> conns =
+  base::span<const Connection* const> conns =
       native_controller_->GetConnections();
   auto it = absl::c_find_if(
       conns, [id](const Connection* c) { return c->id() == id; });

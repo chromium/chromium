@@ -10,7 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "third_party/webrtc/api/array_view.h"
+#include "base/containers/span.h"
 #include "third_party/webrtc/api/candidate.h"
 #include "third_party/webrtc/api/units/timestamp.h"
 #include "third_party/webrtc/p2p/base/connection.h"
@@ -69,9 +69,7 @@ class RTC_EXPORT IceConnection {
   // The number of pings sent.
   int num_pings_sent() const { return num_pings_sent_; }
   // Samples of round trip times.
-  const webrtc::ArrayView<const RttSample> rtt_samples() const {
-    return rtt_samples_;
-  }
+  const base::span<const RttSample> rtt_samples() const { return rtt_samples_; }
 
   std::string ToString() const;
   // Pretty printing for unit test matchers.
