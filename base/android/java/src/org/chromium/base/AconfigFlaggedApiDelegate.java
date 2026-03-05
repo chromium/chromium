@@ -191,13 +191,15 @@ public interface AconfigFlaggedApiDelegate {
     }
 
     /**
-     * Calls the {@link android.view.ViewConfiguration#getTextCursorBlinkIntervalMillis()} method if
-     * an implementation is available, otherwise returns a default value.
-     *
-     * @param viewConfiguration The {@link android.view.ViewConfiguration} instance to use.
+     * Gets the system text cursor blink interval in milliseconds if available, otherwise returns a
+     * default value.
      */
-    default int getTextCursorBlinkInterval(ViewConfiguration viewConfiguration) {
+    default int getTextCursorBlinkInterval() {
         return DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
+    }
+
+    default int getTextCursorBlinkInterval(ViewConfiguration viewConfiguration) {
+        return getTextCursorBlinkInterval();
     }
 
     /**

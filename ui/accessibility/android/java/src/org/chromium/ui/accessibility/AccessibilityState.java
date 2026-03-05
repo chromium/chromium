@@ -26,7 +26,6 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.provider.Settings;
-import android.view.ViewConfiguration;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.autofill.AutofillManager;
@@ -268,6 +267,9 @@ public class AccessibilityState {
     private static @Nullable List<AccessibilityServiceInfo> sServiceInfoListForTesting;
     private static @Nullable String sEnabledServiceStringForTesting;
 
+    // A flag indicating whether the "extra state" values `sDisplayInversionEnabled`,
+    // `sHighContrastEnabled`, `sTextCursorBlinkInterval`, and `sAnimatorDurationScale` have been
+    // read yet from the system settings into these variables.
     private static boolean sExtraStateInitialized;
     private static boolean sDisplayInversionEnabled;
     private static boolean sHighContrastEnabled;
@@ -564,10 +566,8 @@ public class AccessibilityState {
 
         AconfigFlaggedApiDelegate aconfigFlaggedApiDelegate =
                 AconfigFlaggedApiDelegate.getInstance();
-        if (aconfigFlaggedApiDelegate != null && context instanceof Activity) {
-            ViewConfiguration viewConfiguration = ViewConfiguration.get(context);
-            sTextCursorBlinkInterval =
-                    aconfigFlaggedApiDelegate.getTextCursorBlinkInterval(viewConfiguration);
+        if (aconfigFlaggedApiDelegate != null) {
+            sTextCursorBlinkInterval = aconfigFlaggedApiDelegate.getTextCursorBlinkInterval();
         } else {
             sTextCursorBlinkInterval =
                     AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
@@ -1037,13 +1037,15 @@ public class AccessibilityState {
         // This method is called as a deferred task during browser init. If no services are enabled,
         // this will ensure the state is populated for any client queries later. If a service is
         // enabled during startup, the current state may be queried before this method is called,
-        // in which case another update is not needed.
+        // in which case another state update is not needed. In either case, the state should be
+        // propagated to all listeners once during browser init.
         if (!sInitialized) {
             updateAccessibilityServices();
         }
         if (!sExtraStateInitialized) {
             updateExtraState();
         }
+        notifyExtraStateListeners();
 
         // We want to be notified whenever an Activity or Application state changes.
         ApplicationStatus.registerStateListenerForAllActivities(sActivityStateListener);
@@ -1112,6 +1114,11 @@ public class AccessibilityState {
 
     private static void processExtraStateChange() {
         updateExtraState();
+        notifyExtraStateListeners();
+    }
+
+    /** Inform native listeners of changes to the extra state. */
+    private static void notifyExtraStateListeners() {
         AccessibilityStateJni.get().onAnimatorDurationScaleChanged();
         AccessibilityStateJni.get().onDisplayInversionEnabledChanged(isDisplayInversionEnabled());
         AccessibilityStateJni.get().onContrastLevelChanged(isHighContrastEnabled());

@@ -21,9 +21,8 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.R;
 
 /**
- * This class facilitates access to ViewConfiguration-related properties, also
- * providing native-code notifications when such properties have changed.
- *
+ * This class facilitates access to ViewConfiguration-related properties, also providing native-code
+ * notifications when such properties have changed.
  */
 @JNINamespace("gfx")
 @NullMarked
@@ -37,7 +36,7 @@ public class ViewConfigurationHelper {
     private float mDensity;
 
     private ViewConfigurationHelper() {
-        // ViewConfiguration internally accesses WindowManager which triggers vm violations
+        // ViewConfiguration internally accesses WindowManager which triggers VM violations
         // with the Application context.
         try (StrictModeContext ignored = StrictModeContext.allowAllVmPolicies()) {
             mViewConfiguration = ViewConfiguration.get(ContextUtils.getApplicationContext());
@@ -133,7 +132,7 @@ public class ViewConfigurationHelper {
         if (aconfigFlaggedApiDelegate == null) {
             return AconfigFlaggedApiDelegate.DEFAULT_TEXT_CURSOR_BLINK_INTERVAL_MS;
         }
-        return aconfigFlaggedApiDelegate.getTextCursorBlinkInterval(mViewConfiguration);
+        return aconfigFlaggedApiDelegate.getTextCursorBlinkInterval();
     }
 
     private int getScaledMinScalingSpan() {
