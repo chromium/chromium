@@ -2958,7 +2958,7 @@ deps = {
       'dep_type': 'cipd',
   },
 
-  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@2e9659bff433d65f701bfc5a188e79f75ede2f5c',
+  'src/third_party/vulkan-deps': '{chromium_git}/vulkan-deps@d520cf2725efa7660348236b1305bb456f97a114',
   'src/third_party/glslang/src': '{chromium_git}/external/github.com/KhronosGroup/glslang@f1437db5fbf51161b5de0eca18121ef359c5dedd',
   'src/third_party/spirv-cross/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Cross@b8fcf307f1f347089e3c46eb4451d27f32ebc8d3',
   'src/third_party/spirv-headers/src': '{chromium_git}/external/github.com/KhronosGroup/SPIRV-Headers@f88a2d766840fc825af1fc065977953ba1fa4a91',
@@ -2967,7 +2967,7 @@ deps = {
   'src/third_party/vulkan-loader/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Loader@e0e501b0ba42df7b3af023470ad068c48a3ac4de',
   'src/third_party/vulkan-tools/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Tools@7f423e2b242c154e6ace85c804c65462a7d41870',
   'src/third_party/vulkan-utility-libraries/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-Utility-Libraries@6878b60ffdabe0ce79f02163c4430c27d21d1e41',
-  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@d1fa926f76c6f32bd333159b8ff2fc135dd7a851',
+  'src/third_party/vulkan-validation-layers/src': '{chromium_git}/external/github.com/KhronosGroup/Vulkan-ValidationLayers@d4d5664a20552f34cd9882c12bd4de2bc9c1e77b',
 
   'src/third_party/vulkan_memory_allocator':
     Var('chromium_git') + '/external/github.com/GPUOpen-LibrariesAndSDKs/VulkanMemoryAllocator.git' + '@' + 'cb0597213b0fcb999caa9ed08c2f88dc45eb7d50',
