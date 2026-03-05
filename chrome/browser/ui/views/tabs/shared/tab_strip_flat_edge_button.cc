@@ -65,7 +65,7 @@ class TabStripFlatEdgeButtonActionViewInterface
 TabStripFlatEdgeButton::TabStripFlatEdgeButton() {
   ConfigureInkDropForToolbar(
       this, std::make_unique<views::RoundRectHighlightPathGenerator>(
-                GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
+                gfx::Insets(), GetButtonCornerRadii()));
   ConfigureToolbarInkdropForRefresh2023(
       this, kColorTabStripControlButtonInkDrop,
       kColorTabStripControlButtonInkDropRipple);
@@ -142,7 +142,7 @@ void TabStripFlatEdgeButton::SetFlatEdgeFactor(float factor) {
 
   SetProperty(views::kHighlightPathGeneratorKey,
               std::make_unique<views::RoundRectHighlightPathGenerator>(
-                  GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
+                  gfx::Insets(), GetButtonCornerRadii()));
   // The ink drop doesn't automatically pick up on rounded corner changes, so │
   // we need to manually notify it here.
   views::InkDrop::Get(this)->GetInkDrop()->HostSizeChanged(size());
@@ -193,7 +193,7 @@ void TabStripFlatEdgeButton::SetFlatEdge(FlatEdge flat_edge) {
 
   SetProperty(views::kHighlightPathGeneratorKey,
               std::make_unique<views::RoundRectHighlightPathGenerator>(
-                  GetToolbarInkDropInsets(this), GetButtonCornerRadii()));
+                  gfx::Insets(), GetButtonCornerRadii()));
 
   SchedulePaint();
 }
