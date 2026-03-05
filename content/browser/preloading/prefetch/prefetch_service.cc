@@ -1825,8 +1825,7 @@ void PrefetchService::OnDeterminedHead(
 
 void PrefetchService::OnPrefetchCompletedOrFailed(
     const PrefetchContainer& prefetch_container,
-    const network::URLLoaderCompletionStatus& completion_status,
-    const std::optional<int>& response_code) {
+    const network::URLLoaderCompletionStatus& completion_status) {
   TRACE_EVENT("loading", "PrefetchService::OnPrefetchCompletedOrFailed",
               "prefetch_url", prefetch_container.GetURL().spec(),
               "completion_status.error_code", completion_status.error_code);

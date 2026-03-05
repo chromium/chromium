@@ -262,8 +262,7 @@ class CONTENT_EXPORT PrefetchContainer {
     // `PrefetchContainerLoadState::kFailed`.
     virtual void OnPrefetchCompletedOrFailed(
         const PrefetchContainer& prefetch_container,
-        const network::URLLoaderCompletionStatus& completion_status,
-        const std::optional<int>& response_code) = 0;
+        const network::URLLoaderCompletionStatus& completion_status) = 0;
   };
 
   void OnWillBeDestroyed();
@@ -419,6 +418,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // received all redirects are already completed.
   const PrefetchResponseReader* GetNonRedirectResponseReader() const;
   const network::mojom::URLResponseHead* GetNonRedirectHead() const;
+
+  // Returns the HTTP response code of the non-redirect response, if received.
+  // Note that this returns the response code even on failures, e.g. when a
+  // non-2xx response is received, or the prefetch is failed after response is
+  // received. This is for the intentional usage of getting the non-2xxx
+  // response code for failed response.
+  std::optional<int> GetResponseCode() const;
 
   // Clears |streaming_loader_| and cancels its loading, if any of its
   // corresponding `PrefetchResponseReader` does NOT start serving.

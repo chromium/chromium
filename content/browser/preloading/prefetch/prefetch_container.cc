@@ -1008,6 +1008,35 @@ const network::mojom::URLResponseHead* PrefetchContainer::GetNonRedirectHead()
              : nullptr;
 }
 
+std::optional<int> PrefetchContainer::GetResponseCode() const {
+  std::optional<int> response_code;
+  const network::mojom::URLResponseHead* head = GetNonRedirectHead();
+  if (head && head->headers) {
+    response_code = head->headers->response_code();
+  }
+
+  switch (GetLoadState()) {
+    case LoadState::kNotStarted:
+    case LoadState::kEligible:
+    case LoadState::kFailedIneligible:
+    case LoadState::kFailedHeldback:
+    case LoadState::kStarted:
+      CHECK(!response_code);
+      break;
+    case LoadState::kDeterminedHead:
+    case LoadState::kCompleted:
+      CHECK(response_code);
+      break;
+    case LoadState::kFailedDeterminedHead:
+    case LoadState::kFailed:
+      // `response_code` can be non-null (see the comment in the header) or null
+      // here.
+      break;
+  }
+
+  return response_code;
+}
+
 void PrefetchContainer::CancelStreamingURLLoaderIfNotServing() {
   if (!streaming_loader_) {
     return;
@@ -1149,14 +1178,10 @@ void PrefetchContainer::OnPrefetchCompleteInternal(
         case PrefetchStatus::kPrefetchResponseUsed:
           listener->OnPrefetchResponseCompleted();
           break;
-        case PrefetchStatus::kPrefetchFailedNon2XX: {
-          int response_code =
-              GetNonRedirectHead()
-                  ? GetNonRedirectHead()->headers->response_code()
-                  : 0;
-          listener->OnPrefetchResponseServerError(response_code);
+        case PrefetchStatus::kPrefetchFailedNon2XX:
+          listener->OnPrefetchResponseServerError(
+              GetResponseCode().value_or(0));
           break;
-        }
         default:
           listener->OnPrefetchResponseError();
           break;
@@ -1185,15 +1210,7 @@ void PrefetchContainer::OnPrefetchComplete(
   SetLoadState(is_success ? LoadState::kCompleted : LoadState::kFailed);
   OnPrefetchCompleteInternal(completion_status);
 
-  std::optional<int> response_code = std::nullopt;
-  int net_error = completion_status.error_code;
-  if (net_error == net::OK && GetNonRedirectHead() &&
-      GetNonRedirectHead()->headers) {
-    response_code = GetNonRedirectHead()->headers->response_code();
-  }
-
-  NotifyObservers(&Observer::OnPrefetchCompletedOrFailed, completion_status,
-                  response_code);
+  NotifyObservers(&Observer::OnPrefetchCompletedOrFailed, completion_status);
 
   if (GetPrefetchResponseCompletedCallbackForTesting()) {
     GetPrefetchResponseCompletedCallbackForTesting().Run(  // IN-TEST

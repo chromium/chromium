@@ -368,8 +368,7 @@ class CONTENT_EXPORT PrefetchService : public PrefetchContainer::Observer {
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status,
-      const std::optional<int>& response_code) override;
+      const network::URLLoaderCompletionStatus& completion_status) override;
 
   enum class HandlePrefetchContainerResult {
     // No prefetch was available to be used.

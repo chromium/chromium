@@ -66,8 +66,7 @@ class TestPrefetchContainerObserver final : public PrefetchContainer::Observer {
   void OnDeterminedHead(const PrefetchContainer& prefetch_container) override {}
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status,
-      const std::optional<int>& response_code) override {
+      const network::URLLoaderCompletionStatus& completion_status) override {
     on_complete_loop_.Quit();
   }
 
@@ -543,8 +542,7 @@ void TestPrefetchService::PrefetchUrl(
 
 void TestPrefetchService::OnPrefetchCompletedOrFailed(
     const PrefetchContainer& prefetch_container,
-    const network::URLLoaderCompletionStatus& completion_status,
-    const std::optional<int>& response_code) {
+    const network::URLLoaderCompletionStatus& completion_status) {
   // Skip `active_prefetch_` check and related prefetch queue processing in
   // `PrefetchService`, because it's not set/used in `TestPrefetchService`.
 }

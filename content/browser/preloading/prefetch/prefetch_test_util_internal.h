@@ -213,8 +213,7 @@ class TestPrefetchService final : public PrefetchService {
       base::WeakPtr<PrefetchContainer> prefetch_container) override;
   void OnPrefetchCompletedOrFailed(
       const PrefetchContainer& prefetch_container,
-      const network::URLLoaderCompletionStatus& completion_status,
-      const std::optional<int>& response_code) override;
+      const network::URLLoaderCompletionStatus& completion_status) override;
   void EvictPrefetch(size_t index);
 
   std::vector<base::WeakPtr<PrefetchContainer>> prefetches_;
