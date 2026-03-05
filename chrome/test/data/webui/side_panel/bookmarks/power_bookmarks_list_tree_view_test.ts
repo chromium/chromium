@@ -15,7 +15,7 @@ import {PriceTrackingBrowserProxyImpl} from 'chrome://resources/cr_components/co
 import {PageImageServiceBrowserProxy} from 'chrome://resources/cr_components/page_image_service/browser_proxy.js';
 import {PageImageServiceHandlerRemote} from 'chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {assertArrayEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -320,11 +320,12 @@ suite('TreeView', () => {
     await waitAfterNextRender(powerBookmarksList);
 
     // Default sort is kNewest.
-    assertArrayEquals(
-        powerBookmarksList.getKeyboardNavigationServiceforTesting()
-            .getElementsForTesting()
-            .map((el: HTMLElement) => el.id),
-        [
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
           'bookmark-5',
           'bookmark-10',
           'bookmark-21',
@@ -334,17 +335,18 @@ suite('TreeView', () => {
           'bookmark-6',
           'bookmark-4',
           'bookmark-3',
-        ]);
+        ]));
 
     folderRow.activeSortIndex = 4;
     await microtasksFinished();
     await flushTasks();
 
-    assertArrayEquals(
-        powerBookmarksList.getKeyboardNavigationServiceforTesting()
-            .getElementsForTesting()
-            .map((el: HTMLElement) => el.id),
-        [
+    assertEquals(
+        JSON.stringify(
+            powerBookmarksList.getKeyboardNavigationServiceforTesting()
+                .getElementsForTesting()
+                .map((el: HTMLElement) => el.id)),
+        JSON.stringify([
           'bookmark-5',
           'bookmark-10',
           'bookmark-21',
@@ -354,7 +356,7 @@ suite('TreeView', () => {
           'bookmark-6',
           'bookmark-4',
           'bookmark-3',
-        ]);
+        ]));
   });
 
   test('ShowsCorrectFoldersOnTreeView', () => {
@@ -463,10 +465,7 @@ suite('TreeView', () => {
         const folderItem =
             folderRow.shadowRoot.querySelector('power-bookmark-row-item');
         assertTrue(!!folderItem);
-        // The bookmarks list debounces rebuilding navigation elements. Force
-        // rebuild for the test.
-        powerBookmarksList.getKeyboardNavigationServiceforTesting()
-            .rebuildNavigationElements();
+        await flushTasks();
 
         const urlListItem = folderItem.$.crUrlListItem;
         urlListItem.focus();
@@ -488,7 +487,6 @@ suite('TreeView', () => {
         folderRow.dispatchEvent(ARROW_RIGHT_EVENT);
         await flushTasks();
         await waitAfterNextRender(powerBookmarksList);
-        await flushTasks();
 
         assertEquals(
             childRow.id, folderRow.shadowRoot.activeElement!.id,
@@ -517,10 +515,7 @@ suite('TreeView', () => {
     const folderItem =
         folderRow.shadowRoot.querySelector('power-bookmark-row-item');
     assertTrue(!!folderItem);
-    // The bookmarks list debounces rebuilding navigation elements. Force
-    // rebuild for the test.
-    powerBookmarksList.getKeyboardNavigationServiceforTesting()
-        .rebuildNavigationElements();
+    await flushTasks();
 
     const urlListItem = folderItem.$.crUrlListItem;
     urlListItem.focus();
