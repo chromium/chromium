@@ -53,11 +53,11 @@ class BASE_EXPORT MemoryConsumerRegistry {
   virtual ~MemoryConsumerRegistry();
 
   // Adds/Removes an instance of MemoryConsumer with a specific
-  // `consumer_id` and `traits`.
-  void AddMemoryConsumer(std::string_view consumer_id,
+  // `consumer_name` and `traits`.
+  void AddMemoryConsumer(std::string_view consumer_name,
                          std::optional<MemoryConsumerTraits> traits,
                          MemoryConsumer* consumer);
-  void RemoveMemoryConsumer(std::string_view consumer_id,
+  void RemoveMemoryConsumer(std::string_view consumer_name,
                             MemoryConsumer* consumer);
 
   void AddDestructionObserver(
@@ -77,11 +77,12 @@ class BASE_EXPORT MemoryConsumerRegistry {
   // Notifies all registered MemoryConsumerRegistryDestructionObservers.
   void NotifyDestruction();
 
- private:
-  virtual void OnMemoryConsumerAdded(std::string_view consumer_id,
+ protected:
+  virtual void OnMemoryConsumerAdded(uint32_t consumer_id,
+                                     std::string_view consumer_name,
                                      std::optional<MemoryConsumerTraits> traits,
                                      RegisteredMemoryConsumer consumer) = 0;
-  virtual void OnMemoryConsumerRemoved(std::string_view consumer_id,
+  virtual void OnMemoryConsumerRemoved(uint32_t consumer_id,
                                        RegisteredMemoryConsumer consumer) = 0;
 
   SEQUENCE_CHECKER(sequence_checker_);

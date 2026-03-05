@@ -140,7 +140,7 @@ class BASE_EXPORT MemoryConsumerRegistration
   // clients from MemoryPressureListener to MemoryCoordinator. It will be made
   // mandatory in the future.
   MemoryConsumerRegistration(
-      std::string_view consumer_id,
+      std::string_view consumer_name,
       std::optional<MemoryConsumerTraits> traits,
       MemoryConsumer* consumer,
       CheckUnregister check_unregister = CheckUnregister::kEnabled,
@@ -159,7 +159,7 @@ class BASE_EXPORT MemoryConsumerRegistration
  private:
   using PassKey = PassKey<MemoryConsumerRegistration>;
 
-  std::string consumer_id_;
+  std::string consumer_name_;
   raw_ptr<MemoryConsumer> consumer_;
 
   // Indicates if failure to unregister in time should cause a CHECK failure, or

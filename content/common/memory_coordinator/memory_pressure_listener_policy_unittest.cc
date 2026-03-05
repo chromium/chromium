@@ -4,9 +4,11 @@
 
 #include "content/common/memory_coordinator/memory_pressure_listener_policy.h"
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
+#include "base/hash/hash.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_listener_registry.h"
 #include "base/test/task_environment.h"
@@ -49,13 +51,15 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
 
   policy_manager().AddMemoryConsumerGroupHost(kChildId, &host);
 
-  const std::string kConsumerId1 = "consumer1";
-  const std::string kConsumerId2 = "consumer2";
+  const std::string kConsumerName1 = "consumer1";
+  const uint32_t kConsumerId1 = base::PersistentHash(kConsumerName1);
+  const std::string kConsumerName2 = "consumer2";
+  const uint32_t kConsumerId2 = base::PersistentHash(kConsumerName2);
 
-  policy_manager().OnConsumerGroupAdded(kConsumerId1, {}, PROCESS_TYPE_BROWSER,
-                                        kChildId);
-  policy_manager().OnConsumerGroupAdded(kConsumerId2, {}, PROCESS_TYPE_BROWSER,
-                                        kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId1, kConsumerName1, {},
+                                        PROCESS_TYPE_BROWSER, kChildId);
+  policy_manager().OnConsumerGroupAdded(kConsumerId2, kConsumerName2, {},
+                                        PROCESS_TYPE_BROWSER, kChildId);
 
   MemoryPressureListenerPolicy policy(policy_manager());
   policy_manager().AddPolicy(&policy);
@@ -93,10 +97,12 @@ TEST_F(MemoryPressureListenerPolicyTest, ResponseToPressure) {
 TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   MockMemoryConsumerGroupHost host;
   const ChildProcessId kRemoteChildId(1);
+  const std::string kRemoteName = "consumer1";
+  const uint32_t kRemoteId = base::PersistentHash(kRemoteName);
 
   policy_manager().AddMemoryConsumerGroupHost(kRemoteChildId, &host);
-  policy_manager().OnConsumerGroupAdded("remote", {}, PROCESS_TYPE_RENDERER,
-                                        kRemoteChildId);
+  policy_manager().OnConsumerGroupAdded(kRemoteId, kRemoteName, {},
+                                        PROCESS_TYPE_RENDERER, kRemoteChildId);
 
   MemoryPressureListenerPolicy policy(policy_manager());
   policy_manager().AddPolicy(&policy);
@@ -108,7 +114,7 @@ TEST_F(MemoryPressureListenerPolicyTest, IgnoreOtherProcesses) {
   Mock::VerifyAndClearExpectations(&host);
 
   policy_manager().RemovePolicy(&policy);
-  policy_manager().OnConsumerGroupRemoved("remote", kRemoteChildId);
+  policy_manager().OnConsumerGroupRemoved(kRemoteId, kRemoteChildId);
   policy_manager().RemoveMemoryConsumerGroupHost(kRemoteChildId);
 }
 

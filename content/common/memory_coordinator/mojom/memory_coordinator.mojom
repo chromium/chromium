@@ -8,9 +8,8 @@ module content.mojom;
 import "content/common/memory_coordinator/mojom/memory_coordinator_diagnostics.mojom";
 
 // Represents a memory update for a consumer.
-// TODO(pmonette): Hash the consumer ID to avoid serializing so many strings.
 struct MemoryConsumerUpdate {
-  string consumer_id;
+  uint32 consumer_id;
   int32? percentage;
   bool release_memory;
 };
@@ -52,8 +51,9 @@ interface ChildMemoryConsumerRegistryHost {
   BindCoordinator(pending_remote<ChildMemoryCoordinator> coordinator);
 
   // Registers a MemoryConsumer with the browser-side registry.
-  Register(string consumer_id, MemoryConsumerTraits? traits);
+  Register(
+      uint32 consumer_id, string consumer_name, MemoryConsumerTraits? traits);
 
   // Unregisters a MemoryConsumer with the browser-side registry.
-  Unregister(string consumer_id);
+  Unregister(uint32 consumer_id);
 };

@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/hash/hash.h"
 
 namespace base {
 
@@ -62,17 +63,21 @@ MemoryConsumerRegistry::~MemoryConsumerRegistry() {
 }
 
 void MemoryConsumerRegistry::AddMemoryConsumer(
-    std::string_view consumer_id,
+    std::string_view consumer_name,
     std::optional<MemoryConsumerTraits> traits,
     MemoryConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  OnMemoryConsumerAdded(consumer_id, traits,
+
+  uint32_t consumer_id = PersistentHash(consumer_name);
+  OnMemoryConsumerAdded(consumer_id, consumer_name, traits,
                         RegisteredMemoryConsumer(consumer));
 }
 
-void MemoryConsumerRegistry::RemoveMemoryConsumer(std::string_view consumer_id,
-                                                  MemoryConsumer* consumer) {
+void MemoryConsumerRegistry::RemoveMemoryConsumer(
+    std::string_view consumer_name,
+    MemoryConsumer* consumer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  uint32_t consumer_id = PersistentHash(consumer_name);
   OnMemoryConsumerRemoved(consumer_id, RegisteredMemoryConsumer(consumer));
 }
 

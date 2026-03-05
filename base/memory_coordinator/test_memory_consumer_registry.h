@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include <cstddef>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -23,10 +24,11 @@ class TestMemoryConsumerRegistry : public MemoryConsumerRegistry {
   ~TestMemoryConsumerRegistry() override;
 
   // MemoryConsumerRegistry:
-  void OnMemoryConsumerAdded(std::string_view consumer_id,
+  void OnMemoryConsumerAdded(uint32_t consumer_id,
+                             std::string_view consumer_name,
                              std::optional<MemoryConsumerTraits> traits,
                              RegisteredMemoryConsumer consumer) override;
-  void OnMemoryConsumerRemoved(std::string_view consumer_id,
+  void OnMemoryConsumerRemoved(uint32_t consumer_id,
                                RegisteredMemoryConsumer consumer) override;
 
   // Invokes UpdateMemoryLimit(percentage) on all consumers.

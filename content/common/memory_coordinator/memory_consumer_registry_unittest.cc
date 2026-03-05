@@ -4,6 +4,7 @@
 
 #include "content/common/memory_coordinator/memory_consumer_registry.h"
 
+#include <cstddef>
 #include <map>
 #include <optional>
 #include <string>
@@ -11,6 +12,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/memory_coordinator/traits.h"
@@ -29,7 +31,8 @@ using ::testing::Mock;
 using ::testing::Test;
 
 struct ConsumerEntry {
-  std::string consumer_id;
+  uint32_t consumer_id;
+  std::string consumer_name;
   std::optional<base::MemoryConsumerTraits> traits;
   ProcessType process_type;
   ChildProcessId child_process_id;
@@ -62,15 +65,17 @@ class MemoryConsumerRegistryTest : public Test,
     CHECK_EQ(removed, 1u);
   }
 
-  void OnConsumerGroupAdded(std::string_view consumer_id,
+  void OnConsumerGroupAdded(uint32_t consumer_id,
+                            std::string_view consumer_name,
                             std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override {
-    entries_.push_back({std::string(consumer_id), traits, process_type,
-                        child_process_id, hosts_.at(child_process_id)});
+    entries_.push_back({consumer_id, std::string(consumer_name), traits,
+                        process_type, child_process_id,
+                        hosts_.at(child_process_id)});
   }
 
-  void OnConsumerGroupRemoved(std::string_view consumer_id,
+  void OnConsumerGroupRemoved(uint32_t consumer_id,
                               ChildProcessId child_process_id) override {
     std::erase_if(entries_, [&](const auto& entry) {
       return entry.consumer_id == consumer_id &&
@@ -79,7 +84,7 @@ class MemoryConsumerRegistryTest : public Test,
   }
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
-  void OnMemoryLimitChanged(std::string_view consumer_id,
+  void OnMemoryLimitChanged(uint32_t consumer_id,
                             ChildProcessId child_process_id,
                             int memory_limit) override {}
 #endif
@@ -93,22 +98,24 @@ class MemoryConsumerRegistryTest : public Test,
 
 TEST_F(MemoryConsumerRegistryTest, AddRemoveConsumer) {
   base::MockMemoryConsumer consumer;
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
-  registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer);
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
   ASSERT_EQ(registry().size(), 1u);
   ASSERT_EQ(entries().size(), 1u);
 
   // Verify group creation notification
-  EXPECT_EQ(entries().front().consumer_id, "consumer");
+  EXPECT_EQ(entries().front().consumer_name, kConsumerName);
+  EXPECT_EQ(entries().front().consumer_id, kConsumerId);
   EXPECT_EQ(entries().front().process_type, PROCESS_TYPE_BROWSER);
 
   // Release memory propagation
   EXPECT_CALL(consumer, OnReleaseMemory());
-  entries().front().host->UpdateConsumers(
-      {{std::string("consumer"), std::nullopt, true}});
+  entries().front().host->UpdateConsumers({{kConsumerId, std::nullopt, true}});
   Mock::VerifyAndClearExpectations(&consumer);
 
-  registry().RemoveMemoryConsumer("consumer", &consumer);
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
   ASSERT_EQ(registry().size(), 0u);
   ASSERT_EQ(entries().size(), 0u);
 }
@@ -116,22 +123,23 @@ TEST_F(MemoryConsumerRegistryTest, AddRemoveConsumer) {
 TEST_F(MemoryConsumerRegistryTest, InheritMemoryLimit) {
   base::MockMemoryConsumer consumer1;
   base::MockMemoryConsumer consumer2;
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
-  registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer1);
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer1);
 
   const int kNewLimit = 50;
   EXPECT_CALL(consumer1, OnUpdateMemoryLimit());
-  entries().front().host->UpdateConsumers(
-      {{std::string("consumer"), kNewLimit, false}});
+  entries().front().host->UpdateConsumers({{kConsumerId, kNewLimit, false}});
   EXPECT_EQ(consumer1.memory_limit(), kNewLimit);
 
   // New consumer should inherit limit
   EXPECT_CALL(consumer2, OnUpdateMemoryLimit());
-  registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer2);
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer2);
   EXPECT_EQ(consumer2.memory_limit(), kNewLimit);
 
-  registry().RemoveMemoryConsumer("consumer", &consumer1);
-  registry().RemoveMemoryConsumer("consumer", &consumer2);
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer1);
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer2);
 }
 
 }  // namespace content

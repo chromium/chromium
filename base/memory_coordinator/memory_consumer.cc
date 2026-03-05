@@ -31,12 +31,12 @@ void MemoryConsumer::UpdateMemoryLimit(int percentage) {
 // MemoryConsumerRegistration ---------------------------------------
 
 MemoryConsumerRegistration::MemoryConsumerRegistration(
-    std::string_view consumer_id,
+    std::string_view consumer_name,
     std::optional<MemoryConsumerTraits> traits,
     MemoryConsumer* consumer,
     CheckUnregister check_unregister,
     CheckRegistryExists check_registry_exists)
-    : consumer_id_(consumer_id),
+    : consumer_name_(consumer_name),
       consumer_(consumer),
       check_unregister_(check_unregister),
       registry_(MemoryConsumerRegistry::MaybeGet()) {
@@ -48,12 +48,12 @@ MemoryConsumerRegistration::MemoryConsumerRegistration(
   }
 
   registry_->AddDestructionObserver(PassKey(), this);
-  registry_->AddMemoryConsumer(consumer_id, traits, consumer_);
+  registry_->AddMemoryConsumer(consumer_name, traits, consumer_);
 }
 
 MemoryConsumerRegistration::~MemoryConsumerRegistration() {
   if (registry_) {
-    registry_->RemoveMemoryConsumer(consumer_id_, consumer_);
+    registry_->RemoveMemoryConsumer(consumer_name_, consumer_);
     registry_->RemoveDestructionObserver(PassKey(), this);
   }
 }
@@ -65,7 +65,7 @@ void MemoryConsumerRegistration::OnBeforeMemoryConsumerRegistryDestroyed() {
   CHECK_EQ(check_unregister_, CheckUnregister::kDisabled)
       << ". The global MemoryConsumerRegistry was destroyed before this "
          "MemoryConsumerRegistration was destroyed.";
-  registry_->RemoveMemoryConsumer(consumer_id_, consumer_);
+  registry_->RemoveMemoryConsumer(consumer_name_, consumer_);
   registry_->RemoveDestructionObserver(PassKey(), this);
   registry_ = nullptr;
 }

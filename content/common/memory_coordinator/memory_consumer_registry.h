@@ -44,7 +44,8 @@ class CONTENT_EXPORT MemoryConsumerRegistry
   // identically.
   class ConsumerGroup {
    public:
-    explicit ConsumerGroup(std::optional<base::MemoryConsumerTraits> traits);
+    explicit ConsumerGroup(std::optional<base::MemoryConsumerTraits> traits,
+                           std::string_view consumer_name);
 
     ~ConsumerGroup();
 
@@ -54,6 +55,8 @@ class CONTENT_EXPORT MemoryConsumerRegistry
     // Adds/removes a consumer.
     void AddMemoryConsumer(base::RegisteredMemoryConsumer consumer);
     void RemoveMemoryConsumer(base::RegisteredMemoryConsumer consumer);
+
+    const std::string& consumer_name() const { return consumer_name_; }
 
     bool empty() const { return memory_consumers_.empty(); }
 
@@ -65,14 +68,16 @@ class CONTENT_EXPORT MemoryConsumerRegistry
     int memory_limit_ = base::MemoryConsumer::kDefaultMemoryLimit;
 
     std::vector<base::RegisteredMemoryConsumer> memory_consumers_;
+    std::string consumer_name_;
   };
 
   // base::MemoryConsumerRegistry:
-  void OnMemoryConsumerAdded(std::string_view consumer_id,
+  void OnMemoryConsumerAdded(uint32_t consumer_id,
+                             std::string_view consumer_name,
                              std::optional<base::MemoryConsumerTraits> traits,
                              base::RegisteredMemoryConsumer consumer) override;
   void OnMemoryConsumerRemoved(
-      std::string_view consumer_id,
+      uint32_t consumer_id,
       base::RegisteredMemoryConsumer consumer) override;
 
   const ProcessType process_type_;
@@ -80,7 +85,7 @@ class CONTENT_EXPORT MemoryConsumerRegistry
   const raw_ref<MemoryConsumerGroupController> controller_;
 
   // Contains groups of all MemoryConsumers with the same consumer ID.
-  absl::flat_hash_map<std::string, std::unique_ptr<ConsumerGroup>>
+  absl::flat_hash_map<uint32_t, std::unique_ptr<ConsumerGroup>>
       consumer_groups_;
 };
 

@@ -9,6 +9,7 @@
 
 #include "base/check.h"
 #include "base/functional/bind.h"
+#include "base/hash/hash.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "content/common/buildflags.h"
@@ -127,7 +128,8 @@ void ChildMemoryConsumerRegistryHost::BindCoordinator(
 }
 
 void ChildMemoryConsumerRegistryHost::Register(
-    const std::string& consumer_id,
+    uint32_t consumer_id,
+    const std::string& consumer_name,
     std::optional<base::MemoryConsumerTraits> traits) {
   if (!coordinator_remote_.is_bound()) {
     mojo::ReportBadMessage("Register called before BindCoordinator");
@@ -140,12 +142,17 @@ void ChildMemoryConsumerRegistryHost::Register(
     return;
   }
 
-  controller_->OnConsumerGroupAdded(consumer_id, traits, process_type_,
-                                    child_process_id_);
+  if (consumer_id != base::PersistentHash(consumer_name)) {
+    mojo::ReportBadMessage(
+        "consumer_id does not match the hash of consumer_name");
+    return;
+  }
+
+  controller_->OnConsumerGroupAdded(consumer_id, consumer_name, traits,
+                                    process_type_, child_process_id_);
 }
 
-void ChildMemoryConsumerRegistryHost::Unregister(
-    const std::string& consumer_id) {
+void ChildMemoryConsumerRegistryHost::Unregister(uint32_t consumer_id) {
   auto it = consumers_.find(consumer_id);
   if (it == consumers_.end()) {
     mojo::ReportBadMessage("Unregister called for a non-existing consumer_id");
@@ -163,7 +170,7 @@ void ChildMemoryConsumerRegistryHost::UpdateConsumers(
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
 void ChildMemoryConsumerRegistryHost::OnMemoryLimitChanged(
-    const std::string& consumer_id,
+    uint32_t consumer_id,
     int32_t memory_limit) {
   if (memory_limit < 0) {
     mojo::ReportBadMessage("OnMemoryLimitChanged: out of range");

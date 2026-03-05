@@ -4,8 +4,10 @@
 
 #include "base/memory_coordinator/memory_consumer_registry.h"
 
+#include <cstdint>
 #include <optional>
 
+#include "base/hash/hash.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -25,13 +27,14 @@ class MockMemoryConsumerRegistry : public MemoryConsumerRegistry {
 
   MOCK_METHOD(void,
               OnMemoryConsumerAdded,
-              (std::string_view observer_id,
+              (uint32_t observer_id,
+               std::string_view consumer_name,
                std::optional<MemoryConsumerTraits> traits,
                RegisteredMemoryConsumer consumer),
               (override));
   MOCK_METHOD(void,
               OnMemoryConsumerRemoved,
-              (std::string_view observer_id, RegisteredMemoryConsumer consumer),
+              (uint32_t observer_id, RegisteredMemoryConsumer consumer),
               (override));
 };
 
@@ -42,13 +45,15 @@ TEST(MemoryConsumerRegistryTest, AddAndRemoveMemoryConsumer) {
 
   MockMemoryConsumerRegistry registry;
 
-  const char kObserverId[] = "observer";
+  const char kObserverName[] = "observer";
+  const uint32_t kObserverId = PersistentHash(kObserverName);
 
-  EXPECT_CALL(registry, OnMemoryConsumerAdded(kObserverId, _, _));
-  registry.AddMemoryConsumer(kObserverId, std::nullopt, &consumer);
+  EXPECT_CALL(registry,
+              OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
+  registry.AddMemoryConsumer(kObserverName, std::nullopt, &consumer);
 
   EXPECT_CALL(registry, OnMemoryConsumerRemoved(kObserverId, _));
-  registry.RemoveMemoryConsumer(kObserverId, &consumer);
+  registry.RemoveMemoryConsumer(kObserverName, &consumer);
 }
 
 TEST(MemoryConsumerRegistryTest, MemoryConsumerRegistration) {
@@ -58,10 +63,13 @@ TEST(MemoryConsumerRegistryTest, MemoryConsumerRegistration) {
 
   std::optional<MemoryConsumerRegistration> registration;
 
-  const char kObserverId[] = "observer";
+  const char kObserverName[] = "observer";
+  const uint32_t kObserverId = PersistentHash(kObserverName);
 
-  EXPECT_CALL(registry.Get(), OnMemoryConsumerAdded(kObserverId, _, _));
-  registration.emplace(std::string_view(kObserverId), std::nullopt, &consumer);
+  EXPECT_CALL(registry.Get(),
+              OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
+  registration.emplace(std::string_view(kObserverName), std::nullopt,
+                       &consumer);
 
   EXPECT_CALL(registry.Get(), OnMemoryConsumerRemoved(kObserverId, _));
   registration.reset();
@@ -76,10 +84,13 @@ TEST(MemoryConsumerRegistryTest,
 
   std::optional<MemoryConsumerRegistration> registration;
 
-  const char kObserverId[] = "observer";
+  const char kObserverName[] = "observer";
+  const uint32_t kObserverId = PersistentHash(kObserverName);
 
-  EXPECT_CALL(registry->Get(), OnMemoryConsumerAdded(kObserverId, _, _));
-  registration.emplace(std::string_view(kObserverId), std::nullopt, &consumer);
+  EXPECT_CALL(registry->Get(),
+              OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
+  registration.emplace(std::string_view(kObserverName), std::nullopt,
+                       &consumer);
 
   EXPECT_CHECK_DEATH(registry.reset());
 
@@ -93,11 +104,13 @@ TEST(MemoryConsumerRegistryTest,
   auto registry = std::make_optional<
       ScopedMemoryConsumerRegistry<MockMemoryConsumerRegistry>>();
 
-  const char kObserverId[] = "observer";
+  const char kObserverName[] = "observer";
+  const uint32_t kObserverId = PersistentHash(kObserverName);
   std::optional<MemoryConsumerRegistration> registration;
 
-  EXPECT_CALL(registry->Get(), OnMemoryConsumerAdded(kObserverId, _, _));
-  registration.emplace(std::string_view(kObserverId), std::nullopt, &consumer,
+  EXPECT_CALL(registry->Get(),
+              OnMemoryConsumerAdded(kObserverId, kObserverName, _, _));
+  registration.emplace(std::string_view(kObserverName), std::nullopt, &consumer,
                        MemoryConsumerRegistration::CheckUnregister::kDisabled);
 
   EXPECT_CALL(registry->Get(), OnMemoryConsumerRemoved(kObserverId, _));

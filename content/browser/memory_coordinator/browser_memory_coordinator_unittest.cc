@@ -4,6 +4,7 @@
 
 #include "content/browser/memory_coordinator/browser_memory_coordinator.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "base/test/task_environment.h"
@@ -50,7 +51,7 @@ class MockDiagnosticObserver
  public:
   MOCK_METHOD(void,
               OnMemoryLimitChanged,
-              (std::string_view consumer_id,
+              (uint32_t consumer_id,
                ChildProcessId child_process_id,
                int memory_limit),
               (override));

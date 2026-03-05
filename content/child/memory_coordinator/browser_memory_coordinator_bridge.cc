@@ -20,28 +20,30 @@ BrowserMemoryCoordinatorBridge::~BrowserMemoryCoordinatorBridge() {
 }
 
 void BrowserMemoryCoordinatorBridge::OnConsumerGroupAdded(
-    std::string_view consumer_id,
+    uint32_t consumer_id,
+    std::string_view consumer_name,
     std::optional<base::MemoryConsumerTraits> traits,
     ProcessType process_type,
     ChildProcessId child_process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto [it, inserted] = groups_.try_emplace(consumer_id, traits);
+  auto [it, inserted] = groups_.try_emplace(
+      consumer_id, ConsumerDetails{std::string(consumer_name), traits});
   CHECK(inserted);
 
   if (registry_host_) {
-    registry_host_->Register(std::string(consumer_id), traits);
+    registry_host_->Register(consumer_id, std::string(consumer_name), traits);
   }
 }
 
 void BrowserMemoryCoordinatorBridge::OnConsumerGroupRemoved(
-    std::string_view consumer_id,
+    uint32_t consumer_id,
     ChildProcessId child_process_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   size_t removed = groups_.erase(consumer_id);
   CHECK_EQ(removed, 1u);
 
   if (registry_host_) {
-    registry_host_->Unregister(std::string(consumer_id));
+    registry_host_->Unregister(consumer_id);
   }
 }
 
@@ -73,13 +75,12 @@ void BrowserMemoryCoordinatorBridge::EnableDiagnosticsReporting(
 }
 
 void BrowserMemoryCoordinatorBridge::OnMemoryLimitChanged(
-    std::string_view consumer_id,
+    uint32_t consumer_id,
     ChildProcessId child_process_id,
     int memory_limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (diagnostics_host_) {
-    diagnostics_host_->OnMemoryLimitChanged(std::string(consumer_id),
-                                            memory_limit);
+    diagnostics_host_->OnMemoryLimitChanged(consumer_id, memory_limit);
   }
 }
 #endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
@@ -95,8 +96,9 @@ BrowserMemoryCoordinatorBridge::BindAndPassReceiver() {
   registry_host_->BindCoordinator(receiver_.BindNewPipeAndPassRemote());
 
   // Notify the browser for consumers that registered early.
-  for (auto const& [consumer_id, traits] : groups_) {
-    registry_host_->Register(consumer_id, traits);
+  for (auto const& [consumer_id, consumer_details] : groups_) {
+    registry_host_->Register(consumer_id, consumer_details.consumer_name,
+                             consumer_details.traits);
   }
 
   return pending_receiver;

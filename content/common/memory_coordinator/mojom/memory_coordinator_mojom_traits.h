@@ -17,8 +17,7 @@ namespace mojo {
 template <>
 struct StructTraits<content::mojom::MemoryConsumerUpdateDataView,
                     content::MemoryConsumerUpdate> {
-  static const std::string& consumer_id(
-      const content::MemoryConsumerUpdate& input) {
+  static uint32_t consumer_id(const content::MemoryConsumerUpdate& input) {
     return input.consumer_id;
   }
 
@@ -33,10 +32,7 @@ struct StructTraits<content::mojom::MemoryConsumerUpdateDataView,
 
   static bool Read(content::mojom::MemoryConsumerUpdateDataView input,
                    content::MemoryConsumerUpdate* output) {
-    if (!input.ReadConsumerId(&output->consumer_id)) {
-      return false;
-    }
-
+    output->consumer_id = input.consumer_id();
     output->percentage = input.percentage();
     output->release_memory = input.release_memory();
     return true;

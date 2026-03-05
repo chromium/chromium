@@ -31,17 +31,18 @@ class MemoryConsumerGroupController {
 
   // Called when a new consumer group is added/removed to/from the host.
   virtual void OnConsumerGroupAdded(
-      std::string_view consumer_id,
+      uint32_t consumer_id,
+      std::string_view consumer_name,
       std::optional<base::MemoryConsumerTraits> traits,
       ProcessType process_type,
       ChildProcessId child_process_id) = 0;
-  virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
+  virtual void OnConsumerGroupRemoved(uint32_t consumer_id,
                                       ChildProcessId child_process_id) = 0;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // Called when the aggregate memory limit for a consumer group changes in the
   // child process.
-  virtual void OnMemoryLimitChanged(std::string_view consumer_id,
+  virtual void OnMemoryLimitChanged(uint32_t consumer_id,
                                     ChildProcessId child_process_id,
                                     int memory_limit) = 0;
 #endif

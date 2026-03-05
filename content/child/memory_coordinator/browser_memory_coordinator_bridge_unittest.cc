@@ -4,11 +4,13 @@
 
 #include "content/child/memory_coordinator/browser_memory_coordinator_bridge.h"
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/hash/hash.h"
 #include "base/memory_coordinator/mock_memory_consumer.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
@@ -43,20 +45,21 @@ class DummyChildMemoryConsumerRegistryHost
     coordinator_.Bind(std::move(coordinator));
   }
 
-  void Register(const std::string& consumer_id,
+  void Register(const uint32_t consumer_id,
+                const std::string& consumer_name,
                 std::optional<base::MemoryConsumerTraits> traits) override {
     auto [_, inserted] = registered_ids_.insert(consumer_id);
     CHECK(inserted);
   }
 
-  void Unregister(const std::string& consumer_id) override {
+  void Unregister(const uint32_t consumer_id) override {
     size_t removed = registered_ids_.erase(consumer_id);
     CHECK_EQ(removed, 1u);
   }
 
   mojom::ChildMemoryCoordinator* coordinator() { return coordinator_.get(); }
 
-  bool IsRegistered(const std::string& consumer_id) const {
+  bool IsRegistered(const uint32_t consumer_id) const {
     return registered_ids_.find(consumer_id) != registered_ids_.end();
   }
 
@@ -64,7 +67,7 @@ class DummyChildMemoryConsumerRegistryHost
   mojo::Receiver<mojom::ChildMemoryConsumerRegistryHost> receiver_;
 
   mojo::Remote<mojom::ChildMemoryCoordinator> coordinator_;
-  absl::flat_hash_set<std::string> registered_ids_;
+  absl::flat_hash_set<uint32_t> registered_ids_;
 };
 
 const std::optional<base::MemoryConsumerTraits> kTestTraits1 = std::nullopt;
@@ -94,22 +97,24 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest, BindBrowser_Initial) {
   auto registry_host = CreateRegistryHost();
 
   base::MockMemoryConsumer consumer;
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
   // Add the consumer.
-  registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer);
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
   ASSERT_EQ(registry().size(), 1u);
 
   // Wait for the Register call.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return registry_host->IsRegistered("consumer"); }));
+      [&]() { return registry_host->IsRegistered(kConsumerId); }));
 
   // Remove the consumer.
-  registry().RemoveMemoryConsumer("consumer", &consumer);
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
   ASSERT_EQ(registry().size(), 0u);
 
   // Wait for the Unregister call.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !registry_host->IsRegistered("consumer"); }));
+      [&]() { return !registry_host->IsRegistered(kConsumerId); }));
 }
 
 // Tests that a consumer added before the bind to the browser registry is
@@ -117,24 +122,26 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest, BindBrowser_Initial) {
 TEST_F(BrowserMemoryCoordinatorBridgeTest,
        BindBrowser_AfterRegisteredConsumer) {
   base::MockMemoryConsumer consumer;
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
 
   // Add the consumer.
-  registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer);
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
   ASSERT_EQ(registry().size(), 1u);
 
   auto registry_host = CreateRegistryHost();
 
   // Wait for the Register call.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return registry_host->IsRegistered("consumer"); }));
+      [&]() { return registry_host->IsRegistered(kConsumerId); }));
 
   // Remove the consumer.
-  registry().RemoveMemoryConsumer("consumer", &consumer);
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
   ASSERT_EQ(registry().size(), 0u);
 
   // Wait for the Unregister call.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return !registry_host->IsRegistered("consumer"); }));
+      [&]() { return !registry_host->IsRegistered(kConsumerId); }));
 }
 
 // Tests that browser notifications are correctly routed through the bridge to
@@ -143,24 +150,28 @@ TEST_F(BrowserMemoryCoordinatorBridgeTest, BrowserNotification) {
   auto registry_host = CreateRegistryHost();
 
   base::MockMemoryConsumer consumer;
-  registry().AddMemoryConsumer("consumer", kTestTraits1, &consumer);
+  const std::string kConsumerName = "consumer";
+  const uint32_t kConsumerId = base::PersistentHash(kConsumerName);
+
+  // Add the consumer.
+  registry().AddMemoryConsumer(kConsumerName, kTestTraits1, &consumer);
 
   // Wait for the Register call.
   ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return registry_host->IsRegistered("consumer"); }));
+      [&]() { return registry_host->IsRegistered(kConsumerId); }));
 
   // Registry host notifies through the coordinator.
   base::test::TestFuture<void> release_memory_future;
   EXPECT_CALL(consumer, OnReleaseMemory()).WillOnce([&]() {
     release_memory_future.SetValue();
   });
-  registry_host->coordinator()->UpdateConsumers({{"consumer", 100, true}});
+  registry_host->coordinator()->UpdateConsumers({{kConsumerId, 100, true}});
 
   // Wait for the Mojo call to reach the child and trigger the consumer.
   EXPECT_TRUE(release_memory_future.Wait());
 
   // Cleanup.
-  registry().RemoveMemoryConsumer("consumer", &consumer);
+  registry().RemoveMemoryConsumer(kConsumerName, &consumer);
 }
 
 }  // namespace content

@@ -42,11 +42,12 @@ class BrowserMemoryCoordinatorBridge
   ~BrowserMemoryCoordinatorBridge() override;
 
   // MemoryCoordinatorPolicyManager::Observer:
-  void OnConsumerGroupAdded(std::string_view consumer_id,
+  void OnConsumerGroupAdded(uint32_t consumer_id,
+                            std::string_view consumer_name,
                             std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override;
-  void OnConsumerGroupRemoved(std::string_view consumer_id,
+  void OnConsumerGroupRemoved(uint32_t consumer_id,
                               ChildProcessId child_process_id) override;
 
   // mojom::ChildMemoryCoordinator:
@@ -57,7 +58,7 @@ class BrowserMemoryCoordinatorBridge
       override;
 
   // MemoryCoordinatorPolicyManager::DiagnosticObserver:
-  void OnMemoryLimitChanged(std::string_view consumer_id,
+  void OnMemoryLimitChanged(uint32_t consumer_id,
                             ChildProcessId child_process_id,
                             int memory_limit) override;
 #endif  // BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
@@ -83,9 +84,12 @@ class BrowserMemoryCoordinatorBridge
   mojo::Remote<mojom::MemoryCoordinatorDiagnosticsHost> diagnostics_host_;
 #endif
 
+  struct ConsumerDetails {
+    std::string consumer_name;
+    std::optional<base::MemoryConsumerTraits> traits;
+  };
   // Tracks all consumer groups known to this class.
-  absl::flat_hash_map<std::string, std::optional<base::MemoryConsumerTraits>>
-      groups_;
+  absl::flat_hash_map<uint32_t, ConsumerDetails> groups_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

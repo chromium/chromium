@@ -17,7 +17,7 @@ namespace content {
 // `release_memory` is true if the consumer should be notified to release
 // its memory.
 struct CONTENT_EXPORT MemoryConsumerUpdate {
-  std::string consumer_id;
+  uint32_t consumer_id;
   std::optional<int> percentage;
   bool release_memory = false;
 

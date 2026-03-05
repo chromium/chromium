@@ -65,16 +65,17 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   // mojom::ChildMemoryConsumerRegistryHost:
   void BindCoordinator(mojo::PendingRemote<mojom::ChildMemoryCoordinator>
                            coordinator_remote) override;
-  void Register(const std::string& consumer_id,
+  void Register(uint32_t consumer_id,
+                const std::string& consumer_name,
                 std::optional<base::MemoryConsumerTraits> traits) override;
-  void Unregister(const std::string& consumer_id) override;
+  void Unregister(uint32_t consumer_id) override;
 
   // MemoryConsumerGroupHost:
   void UpdateConsumers(std::vector<MemoryConsumerUpdate> updates) override;
 
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
   // mojom::MemoryCoordinatorDiagnosticsHost:
-  void OnMemoryLimitChanged(const std::string& consumer_id,
+  void OnMemoryLimitChanged(uint32_t consumer_id,
                             int32_t memory_limit) override;
 
   // Enables/disables additional diagnostics reported by the child process.
@@ -109,7 +110,7 @@ class CONTENT_EXPORT ChildMemoryConsumerRegistryHost
   base::OnceClosure disconnect_handler_;
 
   // Holds the IDs of consumers living in the child process.
-  absl::flat_hash_set<std::string> consumers_;
+  absl::flat_hash_set<uint32_t> consumers_;
 
   std::unique_ptr<RenderProcessExitedObserver> process_observer_;
 };

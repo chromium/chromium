@@ -32,8 +32,7 @@ void MemoryPressureListenerPolicy::OnMemoryPressure(
 
   manager().UpdateConsumers(
       this,
-      [](std::string_view consumer_id,
-         std::optional<base::MemoryConsumerTraits> traits,
+      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
          ProcessType process_type, ChildProcessId child_process_id) {
         return child_process_id.is_null();
       },

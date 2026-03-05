@@ -60,8 +60,7 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
   // notify consumers that retain references to the v8 heap.
   manager().UpdateConsumers(
       this,
-      [](std::string_view consumer_id,
-         std::optional<base::MemoryConsumerTraits> traits,
+      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
          ProcessType process_type, ChildProcessId child_process_id) {
         return traits.has_value() &&
                traits->release_gc_references ==
@@ -84,8 +83,7 @@ void RendererMemoryCoordinatorPolicy::OnV8HeapLastResortGC() {
 void RendererMemoryCoordinatorPolicy::OnRestoreLimitTimerFired() {
   manager().UpdateConsumers(
       this,
-      [](std::string_view consumer_id,
-         std::optional<base::MemoryConsumerTraits> traits,
+      [](uint32_t consumer_id, std::optional<base::MemoryConsumerTraits> traits,
          ProcessType process_type, ChildProcessId child_process_id) {
         return traits.has_value() &&
                traits->release_gc_references ==

@@ -49,11 +49,12 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
 
     // Called when a new consumer group is added/removed.
     virtual void OnConsumerGroupAdded(
-        std::string_view consumer_id,
+        uint32_t consumer_id,
+        std::string_view consumer_name,
         std::optional<base::MemoryConsumerTraits> traits,
         ProcessType process_type,
         ChildProcessId child_process_id) = 0;
-    virtual void OnConsumerGroupRemoved(std::string_view consumer_id,
+    virtual void OnConsumerGroupRemoved(uint32_t consumer_id,
                                         ChildProcessId child_process_id) = 0;
   };
 
@@ -66,7 +67,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     ~DiagnosticObserver() override = default;
 
     // Called when the aggregate memory limit for a consumer group changes.
-    virtual void OnMemoryLimitChanged(std::string_view consumer_id,
+    virtual void OnMemoryLimitChanged(uint32_t consumer_id,
                                       ChildProcessId child_process_id,
                                       int memory_limit) = 0;
   };
@@ -102,14 +103,15 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
   void AddMemoryConsumerGroupHost(ChildProcessId child_process_id,
                                   MemoryConsumerGroupHost* host) override;
   void RemoveMemoryConsumerGroupHost(ChildProcessId child_process_id) override;
-  void OnConsumerGroupAdded(std::string_view consumer_id,
+  void OnConsumerGroupAdded(uint32_t consumer_id,
+                            std::string_view consumer_name,
                             std::optional<base::MemoryConsumerTraits> traits,
                             ProcessType process_type,
                             ChildProcessId child_process_id) override;
-  void OnConsumerGroupRemoved(std::string_view consumer_id,
+  void OnConsumerGroupRemoved(uint32_t consumer_id,
                               ChildProcessId child_process_id) override;
 #if BUILDFLAG(ENABLE_MEMORY_COORDINATOR_INTERNALS)
-  void OnMemoryLimitChanged(std::string_view consumer_id,
+  void OnMemoryLimitChanged(uint32_t consumer_id,
                             ChildProcessId child_process_id,
                             int memory_limit) override;
 #endif
@@ -125,7 +127,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
                        std::vector<MemoryConsumerUpdate> updates);
 
   using ConsumerFilter =
-      base::FunctionRef<bool(std::string_view consumer_id,
+      base::FunctionRef<bool(uint32_t consumer_id,
                              std::optional<base::MemoryConsumerTraits> traits,
                              ProcessType process_type,
                              ChildProcessId child_process_id)>;
@@ -144,7 +146,8 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
  private:
   class GroupState {
    public:
-    GroupState(std::optional<base::MemoryConsumerTraits> traits,
+    GroupState(std::string_view consumer_name,
+               std::optional<base::MemoryConsumerTraits> traits,
                ProcessType process_type);
     ~GroupState();
 
@@ -158,6 +161,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     std::optional<int> ClearMemoryLimitForPolicy(
         MemoryCoordinatorPolicy* policy);
 
+    const std::string& consumer_name() const { return consumer_name_; }
     std::optional<base::MemoryConsumerTraits> traits() const { return traits_; }
     ProcessType process_type() const { return process_type_; }
     int current_limit() const { return current_limit_; }
@@ -168,6 +172,7 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     // Computes the memory limit based on existing policies.
     int RecomputeMemoryLimit() const;
 
+    const std::string consumer_name_;
     const std::optional<base::MemoryConsumerTraits> traits_;
     const ProcessType process_type_;
 
@@ -183,12 +188,11 @@ class CONTENT_EXPORT MemoryCoordinatorPolicyManager
     ~HostState();
 
     raw_ptr<MemoryConsumerGroupHost> host;
-    absl::flat_hash_map<std::string, std::unique_ptr<GroupState>> groups;
+    absl::flat_hash_map<uint32_t, std::unique_ptr<GroupState>> groups;
   };
 
   HostState& GetHostState(ChildProcessId child_process_id);
-  GroupState& GetGroupState(HostState& host_state,
-                            std::string_view consumer_id);
+  GroupState& GetGroupState(HostState& host_state, uint32_t consumer_id);
 
   void UpdateConsumersForProcess(MemoryCoordinatorPolicy* policy,
                                  ChildProcessId child_process_id,

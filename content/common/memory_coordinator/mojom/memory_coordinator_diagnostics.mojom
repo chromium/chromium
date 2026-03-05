@@ -9,5 +9,5 @@ module content.mojom;
 interface MemoryCoordinatorDiagnosticsHost {
   // Notifies the host when the aggregate memory limit for a consumer group
   // changes in the child process.
-  OnMemoryLimitChanged(string consumer_id, int32 memory_limit);
+  OnMemoryLimitChanged(uint32 consumer_id, int32 memory_limit);
 };
