@@ -404,10 +404,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.keyArrowNavigationService_.startListening();
 
     this.addEventListener(BOOKMARK_ROW_LOAD_EVENT, () => {
-      this.rebuildNavigationElementsDebouncer_ = Debouncer.debounce(
-          this.rebuildNavigationElementsDebouncer_, timeOut.after(1), () => {
-            this.keyArrowNavigationService_.rebuildNavigationElements();
-          });
+      this.rebuildNavigationElements_();
     });
   }
 
@@ -544,9 +541,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     // If the parent folder is visible, notify to ensure its displayed
     // child count is updated.
     this.notifyPathIfVisible_(bookmark.parentId, 'children');
-    afterNextRender(this, () => {
-      this.keyArrowNavigationService_.rebuildNavigationElements();
-    });
+    this.rebuildNavigationElements_();
   }
 
   getTrackedProductInfos(): {[key: string]: BookmarkProductInfo} {
@@ -634,6 +629,12 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
   getDragManagerForTesting() {
     return this.bookmarksDragManager_;
+  }
+
+  flushNavigationElementsDebouncerForTesting() {
+    if (this.rebuildNavigationElementsDebouncer_) {
+      this.rebuildNavigationElementsDebouncer_.flush();
+    }
   }
 
   private notifyPathIfVisible_(id: string, key: string) {
@@ -797,7 +798,6 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
     if (this.recordCountMetricsOnNextUpdate_) {
       this.recordBookmarkCountMetrics_();
-      this.recordCountMetricsOnNextUpdate_ = false;
     }
 
     // After the lists are updated and all children updates are complete,
@@ -812,7 +812,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
 
               // Make sure the keyboard navigation tree is rebuilt whenever the
               // iron-list is updated.
-              this.keyArrowNavigationService_.rebuildNavigationElements();
+              this.rebuildNavigationElements_();
             });
       }
     });
@@ -857,7 +857,28 @@ export class PowerBookmarksListElement extends PolymerElement implements
     this.recordCountMetricsOnNextUpdate_ = true;
   }
 
+  private rebuildNavigationElements_() {
+    this.rebuildNavigationElementsDebouncer_ = Debouncer.debounce(
+        this.rebuildNavigationElementsDebouncer_, timeOut.after(1), () => {
+          this.keyArrowNavigationService_.rebuildNavigationElements();
+          if (this.recordCountMetricsOnNextUpdate_) {
+            this.recordBookmarkCountMetricsInternal_();
+            this.recordCountMetricsOnNextUpdate_ = false;
+          }
+        });
+  }
+
   private recordBookmarkCountMetrics_() {
+    if (this.bookmarksTreeViewEnabled_) {
+      this.recordCountMetricsOnNextUpdate_ = true;
+      this.rebuildNavigationElements_();
+    } else {
+      this.recordBookmarkCountMetricsInternal_();
+      this.recordCountMetricsOnNextUpdate_ = false;
+    }
+  }
+
+  private recordBookmarkCountMetricsInternal_() {
     const count = this.bookmarksTreeViewEnabled_ ?
         this.keyArrowNavigationService_.getElementCount() :
         this.displayLists_.reduce((prev, curr) => prev + curr.length, 0);
@@ -890,7 +911,7 @@ export class PowerBookmarksListElement extends PolymerElement implements
     event: MouseEvent,
   }>) {
     this.notifyBookmarksListResize_();
-    afterNextRender(this, () => this.recordBookmarkCountMetrics_());
+    this.recordBookmarkCountMetrics_();
   }
   /**
    * Invoked when the user clicks a power bookmarks row. This will either
