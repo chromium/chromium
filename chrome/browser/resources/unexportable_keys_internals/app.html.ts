@@ -15,7 +15,7 @@ export function getHtml(this: UnexportableKeysInternalsAppElement) {
       <th class="sort-header"
           data-sort-key="${col.key}"
           @click="${this.onSortClick_}"
-          @keydown="${this.onSortKeydown_}"
+          @keydown="${this.onSortKeyDown_}"
           tabindex="0"
           aria-sort="${this.getSortAttribute_(col.key)}">
         ${col.label}

@@ -423,8 +423,6 @@ class EslintTsTest(unittest.TestCase):
 
     _VARIABLE_DECLARATION_ERROR = "Local (const/let) variable '%(variableName)s' found in the HTML template file. Logic should be delegated to the class definition file"
 
-    _INCORRECT_EVENT_LISTENER_NAME_ERROR = "Incorrect event listener naming found for event '%(eventName)s'. Rename '%(listenerName)s' to follow the '%(suggestedListenerName)s' pattern"
-
     # The following strings *should* appear in the error output.
     errors = [
         _FOR_STATEMENT_ERROR,
@@ -450,11 +448,6 @@ class EslintTsTest(unittest.TestCase):
         _VARIABLE_DECLARATION_ERROR % {
             'variableName': 'messagesToRender'
         },
-        _INCORRECT_EVENT_LISTENER_NAME_ERROR % {
-            'eventName': 'click',
-            'suggestedListenerName': 'on<OptionalContext>Click_',
-            'listenerName': 'click_',
-        },
     ]
     for e in errors:
       self.assertTrue(
@@ -465,11 +458,6 @@ class EslintTsTest(unittest.TestCase):
         # getHtml() declaration is allowed.
         _FUNCTION_DEFINITION_ERROR % {
             'functionName': 'getHtml'
-        },
-        _INCORRECT_EVENT_LISTENER_NAME_ERROR % {
-            'eventName': 'focus',
-            'suggestedListenerName': 'on<OptionalContext>Focus_',
-            'listenerName': 'onFocus_',
         },
     ]
     for e in non_errors:

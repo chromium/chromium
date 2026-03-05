@@ -70,8 +70,6 @@ ${this.loading ? html`
   ${getButtonHtml.bind(this)('Reload', !this.enableReload)}
   ${input}
 `}
-<button @click="${this.click_}">Click</button>
-<button @focus="${this.onFocus_}">Focus</button>
 `;
   // clang-format on
 }
