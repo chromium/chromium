@@ -4,6 +4,7 @@
 
 #include "ash/utility/layer_util.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -16,6 +17,9 @@
 namespace ash {
 namespace {
 
+BASE_FEATURE(kAshAlwaysUseColorSpaceFromSharedImage,
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 void CopyCopyOutputResultToLayer(
     std::unique_ptr<viz::CopyOutputResult> copy_result,
     ui::Layer* target_layer) {
@@ -26,10 +30,14 @@ void CopyCopyOutputResultToLayer(
 
   scoped_refptr<gpu::ClientSharedImage> shared_image =
       copy_result->GetSharedImage();
+  viz::TransferableResource::MetadataOverride overrides;
+  if (!base::FeatureList::IsEnabled(kAshAlwaysUseColorSpaceFromSharedImage)) {
+    overrides.color_space = gfx::ColorSpace();
+  }
   viz::TransferableResource transferable_resource =
       viz::TransferableResource::Make(
           shared_image, viz::TransferableResource::ResourceSource::kUI,
-          gpu::SyncToken(), /*override=*/{.color_space = gfx::ColorSpace()});
+          gpu::SyncToken(), overrides);
   viz::ReleaseCallback release_callback =
       copy_result->TakeSharedImageOwnership();
   DCHECK(release_callback);
