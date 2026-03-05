@@ -4,14 +4,21 @@
 
 package org.chromium.components.browser_ui.util;
 
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import androidx.appcompat.widget.ActionMenuView;
 import androidx.appcompat.widget.Toolbar;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /** A helper class for Toolbars. */
 @NullMarked
@@ -89,4 +96,40 @@ public class ToolbarUtils {
         ImageView imageButton = (ImageView) button;
         return imageButton.getDrawable() == parentMenu.getOverflowIcon();
     }
+
+    /**
+     * Finds the title view of a given {@link Toolbar}. {@link Toolbar#getTitleTextView} cannot be
+     * used since it is package-private. This method makes use of its title text to get the matched
+     * view out of multiple {@link TextView} objects inside the given toolbar.
+     *
+     * @param toolbar {@link Toolbar} object.
+     * @return {@link TextView} that contains the toolbar title.
+     * @see <a
+     *     href="https://github.com/material-components/material-components-android/blob/master/lib/java/com/google/android/material/internal/ToolbarUtils.java#L61">material-components</a>
+     */
+    public static @Nullable TextView getTitleTextView(Toolbar toolbar) {
+        List<TextView> textViews = getTextViewsWithText(toolbar, toolbar.getTitle());
+        return textViews.isEmpty() ? null : Collections.min(textViews, VIEW_TOP_COMPARATOR);
+    }
+
+    private static List<TextView> getTextViewsWithText(Toolbar toolbar, CharSequence text) {
+        List<TextView> textViews = new ArrayList<>();
+        for (int i = 0; i < toolbar.getChildCount(); i++) {
+            View child = toolbar.getChildAt(i);
+            if (child instanceof TextView textView) {
+                if (TextUtils.equals(textView.getText(), text)) {
+                    textViews.add(textView);
+                }
+            }
+        }
+        return textViews;
+    }
+
+    private static final Comparator<View> VIEW_TOP_COMPARATOR =
+            new Comparator<View>() {
+                @Override
+                public int compare(View view1, View view2) {
+                    return view1.getTop() - view2.getTop();
+                }
+            };
 }

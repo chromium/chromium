@@ -64,6 +64,7 @@ import org.chromium.components.browser_ui.settings.search.SettingsIndexData;
 import org.chromium.components.browser_ui.settings.search.SettingsIndexData.SearchResults;
 import org.chromium.components.browser_ui.site_settings.SiteSettings;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
+import org.chromium.components.browser_ui.util.ToolbarUtils;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemController;
 import org.chromium.components.browser_ui.widget.containment.ContainmentItemDecoration;
 import org.chromium.components.browser_ui.widget.containment.ContainmentViewStyler;
@@ -460,6 +461,7 @@ public class SettingsSearchCoordinator
                         enableTalkbackNavigation(f.getView(), enable);
                     }
                 });
+        adjustTalkbackTraversalOrder(searchBox);
     }
 
     private static void enableTalkbackNavigation(View view, boolean enable) {
@@ -467,6 +469,31 @@ public class SettingsSearchCoordinator
             view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         } else {
             view.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS);
+        }
+    }
+
+    private void adjustTalkbackTraversalOrder(View searchUi) {
+        if (mMultiColumnSettings == null) return;
+
+        Toolbar toolbar = mActivity.findViewById(R.id.action_bar);
+        View toolbarTitle = ToolbarUtils.getTitleTextView(toolbar);
+        if (toolbarTitle == null) return;
+
+        if (toolbarTitle.getId() == View.NO_ID) toolbarTitle.setId(View.generateViewId());
+        View headerPane = mActivity.findViewById(R.id.preferences_header);
+
+        // Multi-column mode adjusts the traversal order:
+        // Before: Toolbar(icon > title > search UI > menu) > header pane > detail pane.
+        // After:  Toolbar(icon > title) > header pane > Toolbar(search UI > menu) > detail pane.
+        if (mUseMultiColumn) {
+            headerPane.setAccessibilityTraversalAfter(toolbarTitle.getId());
+            searchUi.setAccessibilityTraversalAfter(headerPane.getId());
+        } else {
+            headerPane.setAccessibilityTraversalAfter(View.NO_ID);
+            View searchBox = mActivity.findViewById(R.id.search_box);
+            View queryContainer = mActivity.findViewById(R.id.search_query_container);
+            searchBox.setAccessibilityTraversalAfter(View.NO_ID);
+            queryContainer.setAccessibilityTraversalAfter(View.NO_ID);
         }
     }
 
@@ -661,6 +688,7 @@ public class SettingsSearchCoordinator
         }
 
         updateHelpMenuVisibility();
+        adjustTalkbackTraversalOrder(queryContainer);
     }
 
     private void showBackArrowInSingleColumnMode(boolean show) {
@@ -706,6 +734,7 @@ public class SettingsSearchCoordinator
         mShowingEmptyFragment = false;
 
         updateHelpMenuVisibility();
+        adjustTalkbackTraversalOrder(searchBox);
     }
 
     /** Update the visibility of the help menu on the toolbar. */
@@ -1017,6 +1046,7 @@ public class SettingsSearchCoordinator
                 lp.gravity = Gravity.END;
                 searchBox.setLayoutParams(lp);
             }
+            adjustTalkbackTraversalOrder(isVisible(query) ? query : searchBox);
         } else {
             // Search bar goes beneath the toolbar (app_bar_layout) in single-column layout.
             ViewGroup appBarLayout = mActivity.findViewById(R.id.app_bar_layout);
@@ -1037,6 +1067,9 @@ public class SettingsSearchCoordinator
             // Query edit UI should be hidden while we're browsing results.
             if (mFragmentState == FS_RESULTS) query.setVisibility(View.GONE);
 
+            // The param is immaterial as we reset the order.
+            adjustTalkbackTraversalOrder(searchBox);
+
             // When switching from 2-column to single-column mode, we may be at non-main
             // settings where search cannot be initiated and search UI should be hidden.
             // For UI consistency, we revert to default state (FS_SETTINGS).
@@ -1055,6 +1088,10 @@ public class SettingsSearchCoordinator
                 }
             }
         }
+    }
+
+    private static boolean isVisible(View view) {
+        return view.getVisibility() == View.VISIBLE;
     }
 
     /**
