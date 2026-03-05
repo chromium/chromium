@@ -94,6 +94,13 @@ class SearchEngineJsTest : public PlatformTest,
     SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(this);
   }
 
+  void TearDown() override {
+    // Clear the delegate to avoid a dangling pointer after the test object is
+    // destroyed, since the feature is a singleton that outlives the test.
+    SearchEngineJavaScriptFeature::GetInstance()->SetDelegate(nullptr);
+    PlatformTest::TearDown();
+  }
+
   void SetSearchableUrl(web::WebState* web_state, GURL url) override {
     ReceivedSearchableUrl state;
     state.web_state = web_state;
