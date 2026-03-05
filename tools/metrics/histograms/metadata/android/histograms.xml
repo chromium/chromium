@@ -6231,6 +6231,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.TabSwitcher.NullContextMenuCoordinatorIsIncognito"
+    enum="Boolean" expires_after="2026-07-05">
+  <owner>shuyng@google.com</owner>
+  <owner>clank-large-form-factors@google.com</owner>
+  <summary>
+    Emitted when the ContextMenuCoordinator is unexpectedly null while
+    attempting to change the context menu's focus state in the Tab Switcher.
+    Records true if the current tab model is Incognito (off-the-record) at the
+    time of the event, and false if it is a regular tab model.
+  </summary>
+</histogram>
+
 <histogram name="Android.TabSwitcher.SetupRecyclerView.Time" units="ms"
     expires_after="2025-12-28">
   <owner>skavuluru@chromium.org</owner>
