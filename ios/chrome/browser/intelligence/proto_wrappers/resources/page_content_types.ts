@@ -267,6 +267,21 @@ export interface PageContentMeta {
   content: string;
 }
 
+// The numbers are aligned with the MediaDataType enum in
+// components/optimization_guide/proto/features/common_quality_data.proto.
+export enum PageContentMediaType {
+  MEDIA_DATA_TYPE_UNKNOWN = 0,
+  MEDIA_DATA_TYPE_VIDEO = 1,
+  MEDIA_DATA_TYPE_AUDIO = 2,
+}
+
+export interface PageContentMediaData {
+  mediaDataType: PageContentMediaType;
+  durationMilliseconds: number;
+  currentPositionMilliseconds: number;
+  isPlaying: boolean;
+}
+
 // Some fields aren't listed here because they are not supported on ios:
 //   - scriptTools
 export interface PageContentFrameData {
@@ -281,6 +296,7 @@ export interface PageContentFrameData {
   // Exclusive to ios which gets the document id from the remote token issued
   // during iframe registration. Just populated for PageContentIframeContent.
   documentId?: string;
+  mediaData?: PageContentMediaData;
 }
 
 // The numbers are aligned with the RedactedFrameMetadata enum in

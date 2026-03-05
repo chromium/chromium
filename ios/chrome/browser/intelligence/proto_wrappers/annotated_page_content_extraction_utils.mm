@@ -87,6 +87,12 @@ constexpr char kIsFocusableKey[] = "isFocusable";
 constexpr char kClickabilityReasonsKey[] = "clickabilityReasons";
 constexpr char kInteractionDisabledReasonsKey[] = "interactionDisabledReasons";
 constexpr char kIsDisabledInteractionKey[] = "isDisabled";
+constexpr char kMediaDataKey[] = "mediaData";
+constexpr char kMediaDataTypeKey[] = "mediaDataType";
+constexpr char kDurationMillisecondsKey[] = "durationMilliseconds";
+constexpr char kCurrentPositionMillisecondsKey[] =
+    "currentPositionMilliseconds";
+constexpr char kIsPlayingKey[] = "isPlaying";
 
 // Reads a JS number (double) from a `dict` stored under `key`.
 std::optional<int> ReadJsNumber(const base::DictValue& dict, const char* key) {
@@ -211,6 +217,36 @@ void PopulateVideoData(
   }
 }
 
+// Populates `destination_frame_data`'s media data from the `media_data`
+// content.
+void PopulateMediaData(
+    const base::DictValue& media_data,
+    optimization_guide::proto::FrameData* destination_frame_data) {
+  optimization_guide::proto::MediaData* media_data_proto =
+      destination_frame_data->mutable_media_data();
+
+  if (std::optional<int> media_type =
+          ReadJsNumber(media_data, kMediaDataTypeKey)) {
+    if (optimization_guide::proto::MediaDataType_IsValid(*media_type)) {
+      media_data_proto->set_media_data_type(
+          static_cast<optimization_guide::proto::MediaDataType>(*media_type));
+    }
+  }
+
+  if (std::optional<int> duration =
+          ReadJsNumber(media_data, kDurationMillisecondsKey)) {
+    media_data_proto->set_duration_milliseconds(*duration);
+  }
+
+  if (std::optional<int> position =
+          ReadJsNumber(media_data, kCurrentPositionMillisecondsKey)) {
+    media_data_proto->set_current_position_milliseconds(*position);
+  }
+
+  media_data_proto->set_is_playing(
+      media_data.FindBool(kIsPlayingKey).value_or(false));
+}
+
 // Populates `destination_frame_data` from the `local_frame_data` content.
 void PopulateFrameData(
     const base::DictValue& local_frame_data,
@@ -275,6 +311,11 @@ void PopulateFrameData(
   if (document_id_ptr && !document_id_ptr->empty()) {
     destination_frame_data->mutable_document_identifier()->set_serialized_token(
         *document_id_ptr);
+  }
+
+  if (const base::DictValue* media_data =
+          local_frame_data.FindDict(kMediaDataKey)) {
+    PopulateMediaData(*media_data, destination_frame_data);
   }
 }
 

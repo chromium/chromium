@@ -3939,6 +3939,133 @@ TEST_P(PageContextWrapperTest, PopulatePageContext_RichExtraction_Video) {
             "https://example.com/video.mp4");
 }
 
+// Tests that media data for video is correctly extracted from the page.
+TEST_P(PageContextWrapperTest, PopulatePageContext_MediaData_Video) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Define the page structure with a video element.
+  // Note: We use a script to set properties because the fake environment
+  // might not load actual media resources or update duration/currentTime.
+  auto page_structure =
+      HtmlPage("Media Page", RawHtml("<video id='test-video' controls>"
+                                     "<source src='movie.mp4' type='video/mp4'>"
+                                     "</video>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Inject JS to mock video state.
+  CallJavascript(R"(
+    (function() {
+      const v = document.getElementById('test-video');
+      if (!v) return "Video not found";
+
+      Object.defineProperty(v, 'duration', { value: 120.5 });
+      Object.defineProperty(v, 'currentTime', { value: 10.0 });
+      Object.defineProperty(v, 'paused', { value: false });
+      Object.defineProperty(v, 'ended', { value: false });
+
+      const props = {
+        paused: v.paused,
+        ended: v.ended,
+        duration: v.duration,
+        currentTime: v.currentTime,
+        tagName: v.tagName
+      };
+      return JSON.stringify(props);
+    })()
+  )");
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(true);
+  builder.SetUseRichExtraction(true);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& main_frame_data =
+      page_context->annotated_page_content().main_frame_data();
+  ASSERT_TRUE(main_frame_data.has_media_data());
+
+  const auto& media_data = main_frame_data.media_data();
+  EXPECT_EQ(media_data.media_data_type(),
+            optimization_guide::proto::MEDIA_DATA_TYPE_VIDEO);
+  EXPECT_EQ(media_data.duration_milliseconds(), 120500);         // 120.5 * 1000
+  EXPECT_EQ(media_data.current_position_milliseconds(), 10000);  // 10.0 * 1000
+  EXPECT_TRUE(media_data.is_playing());
+}
+
+// Tests that media data for audio is correctly extracted from the page.
+TEST_P(PageContextWrapperTest, PopulatePageContext_MediaData_Audio) {
+  if (!IsRefactored()) {
+    return;
+  }
+
+  // Define the page structure with an audio element.
+  auto page_structure = HtmlPage(
+      "Media Page", RawHtml("<audio id='test-audio' controls>"
+                            "<source src='audio.mp3' type='audio/mpeg'>"
+                            "</audio>"));
+
+  std::string main_html = page_helper_->Build(page_structure);
+  web::test::LoadHtml(base::SysUTF8ToNSString(main_html),
+                      test_server_.GetURL(kMainPagePath), web_state());
+
+  // Inject JS to mock audio state.
+  CallJavascript(R"(
+    (function() {
+      const a = document.getElementById('test-audio');
+      if (!a) return "Audio not found";
+
+      Object.defineProperty(a, 'duration', { value: 60.5 });
+      Object.defineProperty(a, 'currentTime', { value: 15.0 });
+      Object.defineProperty(a, 'paused', { value: false });
+      Object.defineProperty(a, 'ended', { value: false });
+
+      return "Audio mocked";
+    })()
+  )");
+
+  PageContextWrapperConfigBuilder builder;
+  builder.SetUseRefactoredExtractor(true);
+  builder.SetUseRichExtraction(true);
+
+  PageContextWrapperCallbackResponse response = RunPageContextWrapperWithConfig(
+      web_state(), builder.Build(), ^(PageContextWrapper* wrapper) {
+        wrapper.shouldGetAnnotatedPageContent = YES;
+      });
+
+  ASSERT_TRUE(response.has_value());
+  std::unique_ptr<optimization_guide::proto::PageContext> page_context =
+      std::move(response.value());
+
+  ASSERT_TRUE(page_context);
+  ASSERT_TRUE(page_context->has_annotated_page_content());
+
+  const auto& main_frame_data =
+      page_context->annotated_page_content().main_frame_data();
+  ASSERT_TRUE(main_frame_data.has_media_data());
+
+  const auto& media_data = main_frame_data.media_data();
+  EXPECT_EQ(media_data.media_data_type(),
+            optimization_guide::proto::MEDIA_DATA_TYPE_AUDIO);
+  EXPECT_EQ(media_data.duration_milliseconds(), 60500);          // 60.5 * 1000
+  EXPECT_EQ(media_data.current_position_milliseconds(), 15000);  // 15.0 * 1000
+  EXPECT_TRUE(media_data.is_playing());
+}
+
 // Tests that attempting to trigger two extractions on one wrapper fails.
 TEST_P(PageContextWrapperTest, EnforcesOneTimeUse_Populate) {
   PageContextWrapper* wrapper =

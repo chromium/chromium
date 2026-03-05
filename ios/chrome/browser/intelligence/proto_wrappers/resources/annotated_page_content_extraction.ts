@@ -4,8 +4,8 @@
 
 import {APC_NODE_DEPTH_COST, getRemoteFrameRemoteToken, NONCE_ATTR} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/common.js';
 import {getNodeId, getOrCreateNodeId} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/dom_node_ids.js';
-import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
-import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import {FormControlType, PageContentAnchorRel, PageContentAnnotatedRole, PageContentAttributeType, PageContentClickabilityReason, PageContentInteractionDisabledReason, PageContentMediaType, PageContentRedactionDecision, PageContentTableRowType, PageContentTextSize} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
+import type {PageContent, PageContentAttributes, PageContentFormControlData, PageContentFormData, PageContentFrameData, PageContentFrameInteractionInfo, PageContentMediaData, PageContentNode, PageContentNodeInteractionInfo, PageContentPageInteractionInfo, PageContentScrollerInfo} from '//ios/chrome/browser/intelligence/proto_wrappers/resources/page_content_types.js';
 
 // Set of DOM Node IDs that are considered interactive (focused, selection
 // start/end). These nodes should be included in the APC tree even if they are
@@ -207,6 +207,9 @@ const STYLE_VALUE_OVERFLOW_SCROLL = 'scroll';
 // Type alias for accessing webkit-specific fullscreen document properties that
 // are not part of the standard Document interface.
 type WebkitDocument = Document&{webkitFullscreenElement?: Element};
+
+// Math constants.
+const SECOND_TO_MS_RATIO = 1000;
 
 /**
  * Maps a tag name to its corresponding PageContentAnnotatedRole.
@@ -756,6 +759,58 @@ function getNodeInteractionInfo(element: HTMLElement, actionableMode: boolean):
 }
 
 /**
+ * Extracts media data from the document.
+ *
+ * @param document The document to extract data from.
+ * @return The populated PageContentMediaData or undefined if no relevant media
+ *     found.
+ */
+function extractMediaData(document: Document): PageContentMediaData|undefined {
+  const mediaElements = Array.from(document.querySelectorAll('video, audio')) as
+      HTMLMediaElement[];
+
+  if (mediaElements.length === 0) {
+    return undefined;
+  }
+
+  // Heuristic: Prefer the first playing media, otherwise the first one with a
+  // valid duration.
+  // TODO(crbug.com/489666605): Improve selection heuristic to match Blink's
+  // WebMediaSessionManager logic if possible.
+  let selectedMedia = mediaElements.find(m => !m.paused && !m.ended);
+  if (!selectedMedia) {
+    selectedMedia =
+        mediaElements.find(m => !isNaN(m.duration) && m.duration > 0);
+  }
+
+  if (!selectedMedia) {
+    return undefined;
+  }
+
+  const durationMilliseconds =
+      Math.floor(selectedMedia.duration * SECOND_TO_MS_RATIO);
+  if (isNaN(durationMilliseconds)) {
+    // Duration is required for proto.
+    return undefined;
+  }
+
+  let mediaDataType = PageContentMediaType.MEDIA_DATA_TYPE_UNKNOWN;
+  if (selectedMedia.tagName === TAG_VIDEO) {
+    mediaDataType = PageContentMediaType.MEDIA_DATA_TYPE_VIDEO;
+  } else if (selectedMedia.tagName === TAG_AUDIO) {
+    mediaDataType = PageContentMediaType.MEDIA_DATA_TYPE_AUDIO;
+  }
+
+  return {
+    mediaDataType,
+    durationMilliseconds,
+    currentPositionMilliseconds:
+        Math.floor(selectedMedia.currentTime * SECOND_TO_MS_RATIO),
+    isPlaying: !selectedMedia.paused && !selectedMedia.ended,
+  };
+}
+
+/**
  * Extracts the frame interaction info (selection).
  *
  * @param document The document to extract data from.
@@ -801,6 +856,7 @@ function extractFrameData(document: Document): PageContentFrameData {
   };
 
   frameData.frameInteractionInfo = extractFrameInteractionInfo(document);
+  frameData.mediaData = extractMediaData(document);
 
   return frameData;
 }
