@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
+#include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_iframe_element.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
@@ -219,7 +220,7 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionSimpleAttribute) {
   ProcessingInstruction* pi = To<ProcessingInstruction>(last);
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=\"n\"", pi->data());
-  EXPECT_EQ("n", pi->GetAttribute("name"));
+  EXPECT_EQ("n", pi->getAttribute(AtomicString("name")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
@@ -238,11 +239,11 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionAttributeChange) {
   ProcessingInstruction* pi = To<ProcessingInstruction>(last);
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=\"n\"", pi->data());
-  EXPECT_EQ("n", pi->GetAttribute("name"));
+  EXPECT_EQ("n", pi->getAttribute(AtomicString("name")));
   pi->setData("name=\"m\" value=v");
   EXPECT_EQ("name=\"m\" value=v", pi->data());
-  EXPECT_EQ("m", pi->GetAttribute("name"));
-  EXPECT_EQ("v", pi->GetAttribute("value"));
+  EXPECT_EQ("m", pi->getAttribute(AtomicString("name")));
+  EXPECT_EQ("v", pi->getAttribute(AtomicString("value")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
@@ -262,8 +263,8 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionGTSign) {
   pi->setData("name=n > value=v");
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=n > value=v", pi->data());
-  EXPECT_EQ("n", pi->GetAttribute("name"));
-  EXPECT_EQ(String(), pi->GetAttribute("value"));
+  EXPECT_EQ("n", pi->getAttribute(AtomicString("name")));
+  EXPECT_EQ(g_null_atom, pi->getAttribute(AtomicString("value")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
@@ -282,7 +283,7 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionEmptyAttribute) {
   ProcessingInstruction* pi = To<ProcessingInstruction>(last);
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=\"\"", pi->data());
-  EXPECT_EQ("", pi->GetAttribute("name"));
+  EXPECT_EQ("", pi->getAttribute(AtomicString("name")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }
@@ -301,7 +302,7 @@ TEST_P(HTMLDocumentParserTest, ProcessingInstructionttributeNoQuotes) {
   ProcessingInstruction* pi = To<ProcessingInstruction>(last);
   EXPECT_EQ("target", pi->target());
   EXPECT_EQ("name=v", pi->data());
-  EXPECT_EQ("v", pi->GetAttribute("name"));
+  EXPECT_EQ("v", pi->getAttribute(AtomicString("name")));
 
   static_cast<DocumentParser*>(parser)->StopParsing();
 }

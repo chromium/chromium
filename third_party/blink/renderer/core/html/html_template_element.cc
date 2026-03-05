@@ -157,6 +157,8 @@ bool HTMLTemplateElement::BeginPatch(ContainerNode& node) {
   CHECK(!insertion_start_marker_);
   CHECK(!insertion_end_marker_);
 
+  DEFINE_STATIC_LOCAL(AtomicString, kNamePseudoAttr, ("name"));
+
   for (Node* child = marker_host->firstChild(); child;
        child = child->nextSibling()) {
     if (!child->IsProcessingInstruction()) {
@@ -164,7 +166,8 @@ bool HTMLTemplateElement::BeginPatch(ContainerNode& node) {
     }
     ProcessingInstruction* processing_instruction =
         To<ProcessingInstruction>(child);
-    if (processing_instruction->GetAttribute("name") != for_attr) {
+    if (processing_instruction->GetAttributeValue(kNamePseudoAttr) !=
+        for_attr) {
       continue;
     }
 

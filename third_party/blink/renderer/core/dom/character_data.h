@@ -110,8 +110,10 @@ class CORE_EXPORT CharacterData : public Node {
   enum UpdateSource {
     kUpdateFromParser,
     kUpdateFromNonParser,
+    kUpdateFromAttributeChange,
   };
   void DidModifyData(const String& old_value, UpdateSource);
+  void SetDataFromAttributeChange(const String&);
 
   union {
     ParkableString parkable_data_;

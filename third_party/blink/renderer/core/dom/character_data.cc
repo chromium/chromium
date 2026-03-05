@@ -205,13 +205,21 @@ void CharacterData::SetDataAndUpdate(const String& new_data,
   if (source != kUpdateFromParser) {
     if (auto* processing_instruction_node =
             DynamicTo<ProcessingInstruction>(this))
-      processing_instruction_node->DidAttributeChanged();
+      processing_instruction_node->DidChangeData();
 
     GetDocument().NotifyUpdateCharacterData(this, diff);
   }
 
   GetDocument().IncDOMTreeVersion();
   DidModifyData(old_data, source);
+}
+
+void CharacterData::SetDataFromAttributeChange(const String& data) {
+  CHECK(IsProcessingInstruction());
+  String old_data = data_;
+  SetDataWithoutUpdate(data);
+  GetDocument().IncDOMTreeVersion();
+  DidModifyData(old_data, kUpdateFromAttributeChange);
 }
 
 void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {

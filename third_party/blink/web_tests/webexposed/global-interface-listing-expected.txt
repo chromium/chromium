@@ -7883,6 +7883,13 @@ interface ProcessingInstruction : CharacterData
     getter sheet
     getter target
     method constructor
+    method getAttribute
+    method getAttributeNames
+    method hasAttribute
+    method hasAttributes
+    method removeAttribute
+    method setAttribute
+    method toggleAttribute
 interface Profiler : EventTarget
     attribute @@toStringTag
     getter sampleInterval
