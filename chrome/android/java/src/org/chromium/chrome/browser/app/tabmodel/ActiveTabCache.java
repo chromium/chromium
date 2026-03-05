@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.base.ThreadUtils.assertOnUiThread;
+import static org.chromium.chrome.browser.tabpersistence.TabStateFileManager.FLATBUFFER_PREFIX;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -68,10 +69,12 @@ public class ActiveTabCache {
      * @param tabIndex The index of the active tab.
      * @param cipherFactory The cipher factory for encrypting incognito tab state.
      */
-    public void saveActiveTab(Tab tab, int tabIndex, CipherFactory cipherFactory) {
+    public void saveActiveTab(Tab tab, int tabIndex, @Nullable CipherFactory cipherFactory) {
         assertOnUiThread();
 
         boolean isOffTheRecord = tab.isOffTheRecord();
+        assert !isOffTheRecord || cipherFactory != null;
+
         String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
         File file = new File(getOrCreateCacheDirectory(), fileName);
         TabState tabState = TabStateExtractor.from(tab);
@@ -90,8 +93,9 @@ public class ActiveTabCache {
      * @param cipherFactory The cipher factory for decrypting incognito tab state.
      */
     public @Nullable CachedActiveTab restoreActiveTab(
-            boolean isOffTheRecord, CipherFactory cipherFactory) {
+            boolean isOffTheRecord, @Nullable CipherFactory cipherFactory) {
         assertOnUiThread();
+        assert !isOffTheRecord || cipherFactory != null;
 
         String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
         File file = new File(getOrCreateCacheDirectory(), fileName);
@@ -180,7 +184,9 @@ public class ActiveTabCache {
 
     private static String getFileName(String windowTag, boolean incognito) {
         String suffix = incognito ? INCOGNITO_SUFFIX : REGULAR_SUFFIX;
-        return windowTag + suffix;
+        // This prefix is required to ensure FlatBuffer is used during serialization and
+        // deserialization.
+        return FLATBUFFER_PREFIX + windowTag + suffix;
     }
 
     private static void deleteFileAndPref(String fileName) {

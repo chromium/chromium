@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabpersistence;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.SystemClock;
 import android.util.AtomicFile;
 import android.util.Pair;
@@ -57,9 +59,14 @@ import javax.crypto.CipherOutputStream;
 /** Saves and restores {@link TabState} to and from files. */
 @NullMarked
 public class TabStateFileManager {
-    // Different variants will be experimented with and each variant will have
-    // a different prefix.
-    private static final String FLATBUFFER_PREFIX = "flatbufferv1_";
+    /**
+     * Prefix for TabState files requiring FlatBuffer serialization/deserialization.
+     *
+     * <p>Different variants will be experimented with and each variant will have a different
+     * prefix.
+     */
+    public static final String FLATBUFFER_PREFIX = "flatbufferv1_";
+
     private static final String NULL_STR = "";
 
     @VisibleForTesting public static final String SAVED_TAB_STATE_FILE_PREFIX = "tab";
@@ -260,7 +267,8 @@ public class TabStateFileManager {
      */
     @VisibleForTesting
     public static @Nullable TabState restoreTabStateInternal(
-            File tabFile, boolean isEncrypted, CipherFactory cipherFactory) {
+            File tabFile, boolean isEncrypted, @Nullable CipherFactory cipherFactory) {
+        maybeAssertCipherFactoryPresent(isEncrypted, cipherFactory);
         TabState tabState = null;
         try {
             // TODO(b/307795775) investigate what strongly typed exceptions the FlatBuffer
@@ -310,11 +318,12 @@ public class TabStateFileManager {
      *
      * @param file file with serialized {@link TabState}
      * @param encrypted Whether the file is encrypted or not.
-     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files. Does
+     *     not need to be provided for non-encrypted files.
      * @return TabState that has been restored, or null if it failed.
      */
     private static @Nullable TabState readState(
-            File file, boolean encrypted, CipherFactory cipherFactory)
+            File file, boolean encrypted, @Nullable CipherFactory cipherFactory)
             throws IOException, FileNotFoundException {
         if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
             return readStateFlatBuffer(file, encrypted, cipherFactory);
@@ -322,8 +331,9 @@ public class TabStateFileManager {
         FileInputStream input = new FileInputStream(file);
         DataInputStream stream = null;
         try {
+            maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
             if (encrypted) {
-                Cipher cipher = cipherFactory.getCipher(Cipher.DECRYPT_MODE);
+                Cipher cipher = assumeNonNull(cipherFactory).getCipher(Cipher.DECRYPT_MODE);
                 if (cipher != null) {
                     stream = new DataInputStream(new CipherInputStream(input, cipher));
                 }
@@ -500,16 +510,23 @@ public class TabStateFileManager {
         }
     }
 
+    private static void maybeAssertCipherFactoryPresent(
+            boolean encrypted, @Nullable CipherFactory cipherFactory) {
+        assert !encrypted || cipherFactory != null;
+    }
+
     private static @Nullable TabState readStateFlatBuffer(
-            File file, boolean encrypted, CipherFactory cipherFactory) throws IOException {
+            File file, boolean encrypted, @Nullable CipherFactory cipherFactory)
+            throws IOException {
         FileInputStream fileInputStream = null;
         CipherInputStream cipherInputStream = null;
         DataInputStream dataInputStream = null;
         try {
+            maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
             fileInputStream = new FileInputStream(file);
             FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
             if (encrypted) {
-                Cipher cipher = cipherFactory.getCipher(Cipher.DECRYPT_MODE);
+                Cipher cipher = assumeNonNull(cipherFactory).getCipher(Cipher.DECRYPT_MODE);
                 if (cipher == null) {
                     Log.e(
                             TAG,
@@ -630,11 +647,12 @@ public class TabStateFileManager {
      * @param file File to write the tab's state to.
      * @param state State object obtained from from {@link Tab#getState()}.
      * @param encrypted Whether or not the TabState should be encrypted.
-     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files.
+     * @param cipherFactory The {@link CipherFactory} used for encrypting and decrypting files. Does
+     *     not need to be provided if not encrypted.
      */
     @VisibleForTesting
     public static void saveStateInternal(
-            File file, TabState state, boolean encrypted, CipherFactory cipherFactory) {
+            File file, TabState state, boolean encrypted, @Nullable CipherFactory cipherFactory) {
         if (state == null || state.contentsState == null) return;
         long startTime = SystemClock.elapsedRealtime();
 
@@ -648,6 +666,7 @@ public class TabStateFileManager {
         DataOutputStream dataOutputStream = null;
         FileOutputStream fileOutputStream = null;
         try {
+            maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
             if (file.getName().startsWith(FLATBUFFER_PREFIX)) {
                 saveStateFlatBuffer(
                         file, state, encrypted, cipherFactory, contentsStateBytes, startTime);
@@ -656,7 +675,7 @@ public class TabStateFileManager {
             fileOutputStream = new FileOutputStream(file);
 
             if (encrypted) {
-                Cipher cipher = cipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+                Cipher cipher = assumeNonNull(cipherFactory).getCipher(Cipher.ENCRYPT_MODE);
                 if (cipher != null) {
                     dataOutputStream =
                             new DataOutputStream(
@@ -716,7 +735,7 @@ public class TabStateFileManager {
             File file,
             TabState state,
             boolean encrypted,
-            CipherFactory cipherFactory,
+            @Nullable CipherFactory cipherFactory,
             byte[] contentsStateBytes,
             long startTime) {
         FileOutputStream fileOutputStream = null;
@@ -725,11 +744,12 @@ public class TabStateFileManager {
         boolean success = false;
         AtomicFile atomicFile = new AtomicFile(file);
         try {
+            maybeAssertCipherFactoryPresent(encrypted, cipherFactory);
             fileOutputStream = atomicFile.startWrite();
             FlatBufferTabStateSerializer serializer = new FlatBufferTabStateSerializer(encrypted);
             ByteBuffer data = serializer.serialize(state, contentsStateBytes);
             if (encrypted) {
-                Cipher cipher = cipherFactory.getCipher(Cipher.ENCRYPT_MODE);
+                Cipher cipher = assumeNonNull(cipherFactory).getCipher(Cipher.ENCRYPT_MODE);
                 if (cipher == null) {
                     Log.e(TAG, "Cannot save TabState FlatBuffer file because cipher is null");
                     return;
