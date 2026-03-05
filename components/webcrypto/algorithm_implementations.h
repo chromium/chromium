@@ -19,6 +19,7 @@ std::unique_ptr<AlgorithmImplementation> CreateAesCbcImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateAesCtrImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateAesGcmImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateAesKwImplementation();
+std::unique_ptr<AlgorithmImplementation> CreateChaCha20Poly1305Implementation();
 std::unique_ptr<AlgorithmImplementation> CreateHmacImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateRsaOaepImplementation();
 std::unique_ptr<AlgorithmImplementation> CreateRsaSsaImplementation();

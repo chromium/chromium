@@ -110,11 +110,13 @@ WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateEc(
       id, std::make_unique<WebCryptoEcKeyAlgorithmParams>(named_curve));
 }
 
+// TODO(hchao): collapse into CreateWithoutParams
 WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateEd25519(
     WebCryptoAlgorithmId id) {
   return WebCryptoKeyAlgorithm(id, nullptr);
 }
 
+// TODO(hchao): collapse into CreateWithoutParams
 WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateX25519(
     WebCryptoAlgorithmId id) {
   return WebCryptoKeyAlgorithm(id, nullptr);
@@ -122,8 +124,10 @@ WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateX25519(
 
 WebCryptoKeyAlgorithm WebCryptoKeyAlgorithm::CreateWithoutParams(
     WebCryptoAlgorithmId id) {
-  if (!WebCryptoAlgorithm::IsKdf(id))
+  if (!WebCryptoAlgorithm::IsKdf(id) &&
+      id != kWebCryptoAlgorithmIdChaCha20Poly1305) {
     return WebCryptoKeyAlgorithm();
+  }
   return WebCryptoKeyAlgorithm(id, nullptr);
 }
 

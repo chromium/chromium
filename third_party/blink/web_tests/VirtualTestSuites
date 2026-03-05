@@ -5159,6 +5159,25 @@
     ],
     "expires": "never"
   },
+  {
+    "prefix": "webcrypto-pqc",
+    "owners": [
+      "hchao@chromium.org",
+      "chrome-secure-web-and-net@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [
+      "external/wpt/WebCryptoAPI/"
+    ],
+    "args": [
+      "--enable-features=WebCryptoPQC"
+    ],
+    "expires": "May 2, 2026"
+  },
   "This individual test must be run separately from others, because it makes a",
   "huge memory allocation that often causes OOM if other tests have run in the",
   "same content_shell harness. For this reason this virtual test suite must",

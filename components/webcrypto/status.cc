@@ -405,6 +405,21 @@ Status Status::ErrorX25519LengthTooLong() {
                 "The length provided for X25519 is too large.");
 }
 
+Status Status::ErrorIncorrectSizeChaCha20Poly1305Iv() {
+  return Status(blink::kWebCryptoErrorTypeOperation,
+                "The \"iv\" has an unexpected length -- must be 16 bytes");
+}
+
+Status Status::ErrorInvalidChaCha20Poly1305TagLength() {
+  return Status(blink::kWebCryptoErrorTypeOperation,
+                "The tag length is invalid: Must be 128 bits");
+}
+
+Status Status::ErrorImportChaCha20Poly1305KeyLength() {
+  return Status(blink::kWebCryptoErrorTypeData,
+                "ChaCha20-Poly1305 key data must be 256 bits");
+}
+
 Status::Status(blink::WebCryptoErrorType error_type,
                std::string_view error_details_utf8)
     : type_(TYPE_ERROR),

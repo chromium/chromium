@@ -559,7 +559,8 @@ bool V8ScriptValueSerializerForModules::WriteCryptoKey(
           break;
         }
         default:
-          DCHECK(WebCryptoAlgorithm::IsKdf(algorithm.Id()));
+          DCHECK(WebCryptoAlgorithm::IsKdf(algorithm.Id()) ||
+                 algorithm.Id() == kWebCryptoAlgorithmIdChaCha20Poly1305);
           WriteOneByte(kNoParamsKeyTag);
           WriteUint32(AlgorithmIdForWireFormat(algorithm.Id()));
       }

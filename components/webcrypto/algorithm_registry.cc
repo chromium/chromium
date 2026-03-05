@@ -22,6 +22,7 @@ class AlgorithmRegistry {
         aes_cbc_(CreateAesCbcImplementation()),
         aes_ctr_(CreateAesCtrImplementation()),
         aes_kw_(CreateAesKwImplementation()),
+        chacha20_poly1305_(CreateChaCha20Poly1305Implementation()),
         hmac_(CreateHmacImplementation()),
         rsa_ssa_(CreateRsaSsaImplementation()),
         rsa_oaep_(CreateRsaOaepImplementation()),
@@ -69,7 +70,8 @@ class AlgorithmRegistry {
         return ed25519_.get();
       case blink::kWebCryptoAlgorithmIdX25519:
         return x25519_.get();
-      // TODO(crbug.com/450627018): implement chacha20poly1305
+      case blink::kWebCryptoAlgorithmIdChaCha20Poly1305:
+        return chacha20_poly1305_.get();
       // TODO(crbug.com/450848555): implement ML-DSA 44/65/87
       // TODO(crbug.com/450627019): implement ML-KEM 768/1024
       default:
@@ -83,6 +85,7 @@ class AlgorithmRegistry {
   const std::unique_ptr<AlgorithmImplementation> aes_cbc_;
   const std::unique_ptr<AlgorithmImplementation> aes_ctr_;
   const std::unique_ptr<AlgorithmImplementation> aes_kw_;
+  const std::unique_ptr<AlgorithmImplementation> chacha20_poly1305_;
   const std::unique_ptr<AlgorithmImplementation> hmac_;
   const std::unique_ptr<AlgorithmImplementation> rsa_ssa_;
   const std::unique_ptr<AlgorithmImplementation> rsa_oaep_;

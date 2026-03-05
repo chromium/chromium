@@ -22,6 +22,8 @@ static_library("webcrypto") {
     "algorithms/aes_kw.cc",
     "algorithms/asymmetric_key_util.cc",
     "algorithms/asymmetric_key_util.h",
+    "algorithms/chacha20_poly1305.cc",
+    "algorithms/chacha20_poly1305.h",
     "algorithms/ec.cc",
     "algorithms/ec.h",
     "algorithms/ecdh.cc",

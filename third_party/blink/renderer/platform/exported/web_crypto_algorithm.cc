@@ -319,20 +319,19 @@ constexpr auto kAlgorithmIdToInfo = std::to_array<WebCryptoAlgorithmInfo>({
     {// Index 18
      // TODO(crbug.com/450627018): ChaCha20-Poly1305 is experimental behind
      // a flag. See https://chromestatus.com/feature/5198951632470016
-     // TODO(crbug.com/450627018): Fix params for methods
      "ChaCha20-Poly1305",
      {
-         WebCryptoAlgorithmInfo::kUndefined,  // Encrypt
-         WebCryptoAlgorithmInfo::kUndefined,  // Decrypt
-         WebCryptoAlgorithmInfo::kUndefined,  // Sign
-         WebCryptoAlgorithmInfo::kUndefined,  // Verify
-         WebCryptoAlgorithmInfo::kUndefined,  // Digest
-         WebCryptoAlgorithmInfo::kUndefined,  // GenerateKey
-         WebCryptoAlgorithmInfo::kUndefined,  // ImportKey
-         WebCryptoAlgorithmInfo::kUndefined,  // GetKeyLength
-         WebCryptoAlgorithmInfo::kUndefined,  // DeriveBits
-         WebCryptoAlgorithmInfo::kUndefined,  // WrapKey
-         WebCryptoAlgorithmInfo::kUndefined   // UnwrapKey
+         kWebCryptoAlgorithmParamsTypeAeadParams,  // Encrypt
+         kWebCryptoAlgorithmParamsTypeAeadParams,  // Decrypt
+         WebCryptoAlgorithmInfo::kUndefined,       // Sign
+         WebCryptoAlgorithmInfo::kUndefined,       // Verify
+         WebCryptoAlgorithmInfo::kUndefined,       // Digest
+         kWebCryptoAlgorithmParamsTypeNone,        // GenerateKey
+         kWebCryptoAlgorithmParamsTypeNone,        // ImportKey
+         kWebCryptoAlgorithmParamsTypeNone,        // GetKeyLength
+         WebCryptoAlgorithmInfo::kUndefined,       // DeriveBits
+         kWebCryptoAlgorithmParamsTypeAeadParams,  // WrapKey
+         kWebCryptoAlgorithmParamsTypeAeadParams   // UnwrapKey
      }},
     {// Index 19
      // TODO(crbug.com/450848555): ML-DSA-44 is experimental behind

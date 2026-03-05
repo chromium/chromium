@@ -304,6 +304,18 @@ class Status {
   // X25519.
   static Status ErrorImportX25519KeyLength();
 
+  // When doing an ChaCha20-Poly1305 encryption/decryption, the "iv" parameter
+  // was not 12  bytes.
+  static Status ErrorIncorrectSizeChaCha20Poly1305Iv();
+
+  // The authentication tag length specified for ChaCha20-Poly1305
+  // encrypt/decrypt was not 128.
+  static Status ErrorInvalidChaCha20Poly1305TagLength();
+
+  // The key data buffer provided for importKey() is an incorrect length for
+  // ChaCha20-Poly1305.
+  static Status ErrorImportChaCha20Poly1305KeyLength();
+
  private:
   enum Type { TYPE_ERROR, TYPE_SUCCESS };
 
