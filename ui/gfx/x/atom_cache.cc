@@ -162,7 +162,6 @@ constexpr auto kAtomsToCache = std::to_array<const char* const>({
     "chromium/x-browser-actions",
     "chromium/x-file-system-files",
     "chromium/x-internal-source-rfh-token",
-    "chromium/x-pepper-custom-data",
     "chromium/x-renderer-taint",
     "chromium/x-source-url",
     "chromium/x-web-custom-data",
