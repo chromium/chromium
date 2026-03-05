@@ -3638,6 +3638,9 @@ are declared in tools/grit/grit_args.gni.
         <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL" desc="The title at the top of an web app update dialog when only the url of the app changed.">
           A new version of this app is available
         </message>
+        <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL_FORCED_MIGRATION" desc="The title at the top of an web app update dialog when the app is forced to be migrated to a new URL.">
+          A new version of this app is required
+        </message>
         <message name="IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_URL" desc="The title at the top of the web app update dialog when the name and url changed.">
           Review name and URL updates
         </message>

@@ -75,6 +75,9 @@ int GetDialogTitleMessageId(const WebAppIdentityUpdate& update) {
     case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kIconChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_LOGO;
     case WebAppIdentityUpdate::kUrlChange:
+      if (update.is_forced_migration) {
+        return IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL_FORCED_MIGRATION;
+      }
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_URL;
     case WebAppIdentityUpdate::kNameChange | WebAppIdentityUpdate::kUrlChange:
       return IDS_WEBAPP_UPDATE_DIALOG_TITLE_NAME_AND_URL;
