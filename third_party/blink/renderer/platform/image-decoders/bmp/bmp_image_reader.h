@@ -73,8 +73,8 @@ class PLATFORM_EXPORT BMPImageReader final {
     RLE4 = 2,
     // Windows V3+ only
     BITFIELDS = 3,
-    JPEG = 4,
-    PNG = 5,
+    JPEG = 4,            // Unsupported - see https://crbug.com/456842524
+    PNG = 5,             // Unsupported - see https://crbug.com/456842524
     ALPHABITFIELDS = 6,  // Windows CE only
     // OS/2 2.x-only
     HUFFMAN1D,  // Stored in file as 3
@@ -166,9 +166,6 @@ class PLATFORM_EXPORT BMPImageReader final {
 
   // Processes any embedded ICC color profile.
   bool ProcessEmbeddedColorProfile();
-
-  // Decodes the image data for compression types JPEG and PNG.
-  bool DecodeAlternateFormat();
 
   // For BI_[ALPHA]BITFIELDS images, initializes the bit_masks_[] and
   // bit_offsets_[] arrays.  ProcessInfoHeader() will initialize these for
@@ -319,9 +316,6 @@ class PLATFORM_EXPORT BMPImageReader final {
 
   // The BMP info header.
   BitmapInfoHeader info_header_ = {};
-
-  // Used only for bitmaps with compression types JPEG or PNG.
-  std::unique_ptr<ImageDecoder> alternate_decoder_;
 
   // True if this is an OS/2 1.x (aka Windows 2.x) BMP.  The struct
   // layouts for this type of BMP are slightly different from the later,

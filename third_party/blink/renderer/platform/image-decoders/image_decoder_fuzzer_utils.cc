@@ -72,8 +72,7 @@ std::unique_ptr<ImageDecoder> CreateImageDecoder(DecoderType decoder_type,
     case DecoderType::kJpegDecoder: {
       return std::make_unique<JPEGImageDecoder>(
           GetAlphaOption(fdp), GetColorBehavior(fdp), GetAuxImageType(fdp),
-          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>(),
-          /*offset=*/fdp.ConsumeIntegral<uint32_t>());
+          /*max_decoded_bytes=*/fdp.ConsumeIntegral<uint32_t>());
     }
     case DecoderType::kPngDecoder: {
       return std::make_unique<PngImageDecoder>(
