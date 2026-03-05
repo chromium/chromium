@@ -9,6 +9,7 @@
 
 #include "base/byte_size.h"
 #include "base/callback_list.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
@@ -17,11 +18,19 @@
 #include "ui/base/models/image_model.h"
 #include "url/gurl.h"
 
+class TabResourceUsage;
+class ThumbnailImage;
+
+namespace tab_groups {
+class CollaborationMessagingTabData;
+}  // namespace tab_groups
+
 namespace tabs {
 class TabInterface;
 
 struct TabData {
   TabData();
+  ~TabData();
 
   bool operator==(const TabData& other) const;
 
@@ -40,6 +49,8 @@ struct TabData {
   bool should_show_discard_status = false;
   std::optional<base::ByteSize> discarded_memory_savings;
   TabNetworkState network_state = TabNetworkState::kNone;
+  bool is_tab_discarded = false;
+  GURL last_committed_url;
 
   // Alert properties:
   std::optional<TabAlert> alert_state;
@@ -47,6 +58,11 @@ struct TabData {
   // TabInterface properties:
   bool pinned = false;
   bool blocked = false;
+
+  scoped_refptr<ThumbnailImage> thumbnail;
+  scoped_refptr<const TabResourceUsage> tab_resource_usage;
+  base::WeakPtr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging = nullptr;
 };
 
 // Caches various data about a tab and notifies subscribers when any of the

@@ -7,18 +7,46 @@
 #include <string>
 
 #include "base/functional/bind.h"
+#include "chrome/browser/collaboration/messaging/messaging_backend_service_factory.h"
+#include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/contents_observing_tab_feature.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
+#include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
+#include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
+
+namespace {
+using collaboration::messaging::MessagingBackendService;
+using collaboration::messaging::MessagingBackendServiceFactory;
+using collaboration::messaging::PersistentMessage;
+
+base::WeakPtr<tab_groups::CollaborationMessagingTabData>
+GetCollaborationMessage(tabs::TabInterface* tab) {
+  if (!tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
+    return nullptr;
+  }
+
+  auto* data = tab->GetTabFeatures()->collaboration_messaging_tab_data();
+  if (!data) {
+    return nullptr;
+  }
+
+  return data->GetWeakPtr();
+}
+}  // namespace
 
 namespace tabs {
 
 TabData::TabData() = default;
+TabData::~TabData() = default;
 
 bool TabData::operator==(const TabData& other) const {
   return title == other.title &&
@@ -35,8 +63,11 @@ bool TabData::operator==(const TabData& other) const {
          should_show_discard_status == other.should_show_discard_status &&
          discarded_memory_savings == other.discarded_memory_savings &&
          network_state == other.network_state &&
+         is_tab_discarded == other.is_tab_discarded &&
+         last_committed_url == other.last_committed_url &&
          alert_state == other.alert_state && pinned == other.pinned &&
-         blocked == other.blocked;
+         blocked == other.blocked && thumbnail == other.thumbnail &&
+         tab_resource_usage == other.tab_resource_usage;
 }
 
 TabDataObserver::TabDataObserver(TabInterface* tab_interface)
@@ -102,9 +133,25 @@ void TabDataObserver::OnTabUIChange() {
   updated_tab_data.discarded_memory_savings =
       tab_ui_helper->GetDiscardedMemorySavings();
   updated_tab_data.network_state = tab_ui_helper->GetTabNetworkState();
+  updated_tab_data.is_tab_discarded = tab_ui_helper->IsDiscarded();
+  updated_tab_data.last_committed_url = tab_ui_helper->GetLastCommittedURL();
   updated_tab_data.alert_state = tab_alert_controller->GetAlertToShow();
   updated_tab_data.pinned = tab_interface_->IsPinned();
   updated_tab_data.blocked = tab_interface_->IsBlocked();
+
+  content::WebContents* const web_contents = tab_interface_->GetContents();
+  ThumbnailTabHelper* const thumbnail_tab_helper =
+      ThumbnailTabHelper::FromWebContents(web_contents);
+  updated_tab_data.thumbnail =
+      thumbnail_tab_helper ? thumbnail_tab_helper->thumbnail() : nullptr;
+
+  TabResourceUsageTabHelper* const tab_resource_usage_tab_helper =
+      TabResourceUsageTabHelper::From(tab_interface_);
+  updated_tab_data.tab_resource_usage =
+      tab_resource_usage_tab_helper->resource_usage();
+
+  updated_tab_data.collaboration_messaging =
+      GetCollaborationMessage(tab_interface_);
 
   if (tab_data_ != updated_tab_data) {
     const TabChangeType change_type =

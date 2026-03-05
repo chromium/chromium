@@ -268,6 +268,10 @@ GURL TabUIHelper::GetVisibleURL() {
                                   : contents->GetVisibleURL();
 }
 
+GURL TabUIHelper::GetLastCommittedURL() {
+  return tab().GetContents()->GetLastCommittedURL();
+}
+
 void TabUIHelper::TitleWasSet(content::NavigationEntry* entry) {
   tab_ui_change_callbacks_.Notify();
 }
@@ -333,6 +337,10 @@ void TabUIHelper::SetNeedsAttention(bool needs_attention) {
 
   needs_attention_ = needs_attention;
   tab_ui_change_callbacks_.Notify();
+}
+
+bool TabUIHelper::IsDiscarded() {
+  return tab().GetContents()->WasDiscarded();
 }
 
 bool TabUIHelper::ShouldShowDiscardStatus() {

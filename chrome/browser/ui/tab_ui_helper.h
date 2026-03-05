@@ -82,6 +82,8 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
 
   GURL GetVisibleURL();
 
+  GURL GetLastCommittedURL();
+
   // tabs::ContentsObservingTabFeature override:
   void TitleWasSet(content::NavigationEntry* entry) override;
   void DidStopLoading() override;
@@ -102,6 +104,8 @@ class TabUIHelper : public tabs::ContentsObservingTabFeature {
 
   void SetNeedsAttention(bool needs_attention);
   bool needs_attention() const { return needs_attention_; }
+
+  bool IsDiscarded();
 
   // Returns true if the tab is eligible to show the discard UI.
   bool ShouldShowDiscardStatus();
