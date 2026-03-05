@@ -65,9 +65,6 @@ class ExternalTextureCache : public GarbageCollected<ExternalTextureCache> {
   void Add(VideoFrame* frame, GPUExternalTexture* external_texture);
   void Remove(VideoFrame* frame);
 
-  void ReferenceUntilGPUIsFinished(
-      scoped_refptr<WebGPUMailboxTexture> mailbox_texture);
-
   void Trace(Visitor* visitor) const;
   GPUDevice* device() const;
 

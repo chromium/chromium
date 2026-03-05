@@ -919,6 +919,36 @@ void GPUQueue::CopyFromVideoElement(
   };
   GetHandle().CopyExternalTextureForBrowser(&src, &destination, &copy_size,
                                             &options);
+
+  if (external_texture.is_zero_copy &&
+      source.media_video_frame->metadata().read_lock_fences_enabled) {
+    ReferenceUntilGPUIsFinished(std::move(external_texture.mailbox_texture));
+  }
+}
+
+void GPUQueue::ReferenceUntilGPUIsFinished(
+    scoped_refptr<WebGPUMailboxTexture> mailbox_texture) {
+  CHECK(mailbox_texture);
+  ExecutionContext* execution_context = device_->GetExecutionContext();
+
+  // If device has no valid execution context. Release
+  // the mailbox immediately.
+  if (!execution_context) {
+    return;
+  }
+
+  // Keep mailbox texture alive until callback returns.
+  auto* callback = BindWGPUOnceCallback(
+      [](scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
+         wgpu::QueueWorkDoneStatus, wgpu::StringView) {},
+      std::move(mailbox_texture));
+
+  GetHandle().OnSubmittedWorkDone(wgpu::CallbackMode::AllowProcessEvents,
+                                  callback->UnboundCallback(),
+                                  callback->AsUserdata());
+
+  // Ensure commands are flushed.
+  device_->EnsureFlush(ToEventLoop(execution_context));
 }
 
 bool GPUQueue::CopyFromCanvasSourceImage(

@@ -158,31 +158,6 @@ void ExternalTextureCache::ExpireTask() {
   }
 }
 
-void ExternalTextureCache::ReferenceUntilGPUIsFinished(
-    scoped_refptr<WebGPUMailboxTexture> mailbox_texture) {
-  CHECK(mailbox_texture);
-  ExecutionContext* execution_context = device()->GetExecutionContext();
-
-  // If device has no valid execution context. Release
-  // the mailbox immediately.
-  if (!execution_context) {
-    return;
-  }
-
-  // Keep mailbox texture alive until callback returns.
-  auto* callback = BindWGPUOnceCallback(
-      [](scoped_refptr<WebGPUMailboxTexture> mailbox_texture,
-         wgpu::QueueWorkDoneStatus, wgpu::StringView) {},
-      std::move(mailbox_texture));
-
-  device()->queue()->GetHandle().OnSubmittedWorkDone(
-      wgpu::CallbackMode::AllowProcessEvents, callback->UnboundCallback(),
-      callback->AsUserdata());
-
-  // Ensure commands are flushed.
-  device()->EnsureFlush(ToEventLoop(execution_context));
-}
-
 // static
 GPUExternalTexture* GPUExternalTexture::CreateImpl(
     ExternalTextureCache* cache,
@@ -372,7 +347,7 @@ void GPUExternalTexture::Destroy() {
   // construction. Zero copy path needs to ensure all gpu commands
   // execution finished before destroy.
   if (isZeroCopy() && IsReadLockFenceEnabled()) {
-    cache_->ReferenceUntilGPUIsFinished(std::move(mailbox_texture_));
+    device()->queue()->ReferenceUntilGPUIsFinished(std::move(mailbox_texture_));
   }
 
   status_ = Status::Destroyed;
