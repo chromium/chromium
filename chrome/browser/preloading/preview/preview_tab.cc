@@ -79,10 +79,9 @@ PreviewTab::PreviewTab(PreviewManager* preview_manager,
       url_(url) {
   CHECK(base::FeatureList::IsEnabled(blink::features::kLinkPreview));
   web_contents_->SetDelegate(this);
-  scoped_ignore_web_inputs_ = web_contents_->IgnoreInputEvents(
-      base::BindRepeating(&PreviewTab::AuditWebInputEvent,
-                          base::Unretained(this)),
-      /*should_ignore_a11y_input=*/true);
+  scoped_ignore_web_inputs_ =
+      web_contents_->IgnoreInputEvents(base::BindRepeating(
+          &PreviewTab::AuditWebInputEvent, base::Unretained(this)));
 
   // WebView setup.
   view_->SetWebContents(web_contents_.get());
