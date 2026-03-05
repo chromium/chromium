@@ -20,8 +20,6 @@ namespace content {
 
 class NavigationThrottleRegistry;
 class RenderFrameHost;
-class WebContents;
-class IdentityRequestDialogController;
 
 namespace webid {
 class RequestService;
@@ -50,14 +48,9 @@ class CONTENT_EXPORT NavigationInterceptor
   using RequestServiceBuilder =
       base::RepeatingCallback<RequestService*(content::RenderFrameHost* rfh)>;
 
-  using ControllerBuilder =
-      base::RepeatingCallback<std::unique_ptr<IdentityRequestDialogController>(
-          content::WebContents* web_contents)>;
-
   explicit NavigationInterceptor(NavigationThrottleRegistry& registry);
   NavigationInterceptor(NavigationThrottleRegistry& registry,
-                        RequestServiceBuilder service_builder,
-                        ControllerBuilder controller_builder);
+                        RequestServiceBuilder service_builder);
   ~NavigationInterceptor() override;
 
   NavigationInterceptor(const NavigationInterceptor&) = delete;
@@ -86,7 +79,6 @@ class CONTENT_EXPORT NavigationInterceptor
       bool is_auto_selected);
 
   RequestServiceBuilder service_builder_;
-  ControllerBuilder controller_builder_;
   // Tracks the document present in the target RenderFrameHost at the time the
   // relevant navigation began. This will be navigated to complete the FedCM
   // flow after the initiating navigation is canceled and replaced. A

@@ -18,7 +18,8 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/webid/identity_request_dialog_controller.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
+#include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/common/content_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/url_util.h"
@@ -49,22 +50,13 @@ NavigationInterceptor::NavigationInterceptor(
               [](content::RenderFrameHost* rfh) -> RequestService* {
                 return webid::RequestService::GetOrCreateForCurrentDocument(
                     rfh);
-              }),
-          base::BindRepeating(
-              [](content::WebContents* web_contents)
-                  -> std::unique_ptr<IdentityRequestDialogController> {
-                return GetContentClient()
-                    ->browser()
-                    ->CreateIdentityRequestDialogController(web_contents);
               })) {}
 
 NavigationInterceptor::NavigationInterceptor(
     NavigationThrottleRegistry& registry,
-    RequestServiceBuilder service_builder,
-    ControllerBuilder controller_builder)
+    RequestServiceBuilder service_builder)
     : content::NavigationThrottle(registry),
-      service_builder_(std::move(service_builder)),
-      controller_builder_(std::move(controller_builder)) {}
+      service_builder_(std::move(service_builder)) {}
 
 NavigationInterceptor::~NavigationInterceptor() = default;
 
@@ -205,10 +197,18 @@ void NavigationInterceptor::OnConnectionStatusHeaderParsed(
       account_id = account_id_it->second.member[0].item.GetString();
     }
 
-    std::unique_ptr<IdentityRequestDialogController> controller =
-        controller_builder_.Run(WebContents::FromRenderFrameHost(rfh));
-    if (controller) {
-      controller->OnConnectionStatusHeaderReceived(account_id);
+    FederatedEmbedderLoginRequest* embedder_login_request =
+        FederatedEmbedderLoginRequest::Get(
+            WebContents::FromRenderFrameHost(rfh));
+    // The server can send this header without embedder login request.
+    if (embedder_login_request) {
+      if (account_id == embedder_login_request->account_id()) {
+        embedder_login_request->OnFederatedResultReceived(
+            FederatedLoginResult::kSuccess);
+      } else {
+        embedder_login_request->OnFederatedResultReceived(
+            FederatedLoginResult::kExpectedAccountNotPresent);
+      }
     }
   }
 

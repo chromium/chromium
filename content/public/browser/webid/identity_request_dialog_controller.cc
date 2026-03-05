@@ -173,9 +173,6 @@ WebContents* IdentityRequestDialogController::ShowModalDialog(
 
 void IdentityRequestDialogController::CloseModalDialog() {}
 
-void IdentityRequestDialogController::OnConnectionStatusHeaderReceived(
-    const std::optional<std::string>& account_id) {}
-
 void IdentityRequestDialogController::OnFlowCompleted(
     content::webid::FederatedLoginResult result) {}
 
