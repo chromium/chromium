@@ -43,8 +43,7 @@ class CORE_EXPORT GridLanesRunningPositions {
 
   GridLanesRunningPositions(const GridLayoutTrackCollection& track_collection,
                             const ComputedStyle& style,
-                            LayoutUnit tie_threshold,
-                            const Vector<wtf_size_t>& collapsed_track_indexes)
+                            LayoutUnit tie_threshold)
       : track_collection_openings_(
             /*size=*/track_collection.EndLineOfImplicitGrid(),
             Vector<TrackOpening>(
@@ -58,7 +57,7 @@ class CORE_EXPORT GridLanesRunningPositions {
         is_reverse_track_direction_(style.IsReverseGridLanesTrackDirection()) {
     // To avoid placing items in collapsed tracks, set such tracks to the max
     // size.
-    for (wtf_size_t index : collapsed_track_indexes) {
+    for (wtf_size_t index : track_collection.CollapsedTrackIndexes()) {
       track_collection_openings_[index].back().start_position =
           LayoutUnit::Max();
     }

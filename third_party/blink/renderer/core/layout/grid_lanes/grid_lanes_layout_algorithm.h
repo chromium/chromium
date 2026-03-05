@@ -109,14 +109,11 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
   // track sizing pass will be required once we've computed the intrinsic track
   // size. `opt_oof_children` is an optional vector of out-of-flow direct
   // children of the grid-lanes container that this method will populate.
-  // `collapsed_track_indexes` will be populated with all the grid track indexes
-  // that were collapsed as a result of auto-fit.
   GridSizingTrackCollection ComputeGridAxisTracks(
       const SizingConstraint sizing_constraint,
       const HashMap<GridTrackSize, LayoutUnit>* intrinsic_repeat_track_sizes,
       const bool should_apply_inline_size_containment,
       GridItems& grid_lanes_items,
-      Vector<wtf_size_t>& collapsed_track_indexes,
       wtf_size_t& start_offset,
       bool& needs_intrinsic_track_size,
       HeapVector<Member<LayoutBox>>* opt_oof_children = nullptr);
@@ -126,7 +123,6 @@ class CORE_EXPORT GridLanesLayoutAlgorithm
       const GridItems& grid_lanes_items,
       SizingConstraint sizing_constraint,
       bool& needs_intrinsic_track_size,
-      Vector<wtf_size_t>& collapsed_track_indexes,
       wtf_size_t& start_offset);
 
   // Given a `track_collection`, return all the track sizes of an auto repeat

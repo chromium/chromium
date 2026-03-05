@@ -107,12 +107,8 @@ class CORE_EXPORT GridRangeBuilder {
   // Build the collection of ranges based on information provided through the
   // specified tracks and `EnsureTrackCoverage`. If `needs_intrinsic_track_size`
   // is true, that means we are in a track sizing pass to computed a repeat tack
-  // defintion of intrinsic sized tracks. If `collapsed_track_indexes` is
-  // not nullptr, this method with populate it with the track indexes of all
-  // collapsed tracks.
-  GridRangeVector FinalizeRanges(
-      bool needs_intrinsic_track_size = false,
-      Vector<wtf_size_t>* collapsed_track_indexes = nullptr);
+  // definition of intrinsic sized tracks.
+  GridRangeVector FinalizeRanges(bool needs_intrinsic_track_size = false);
 
  private:
   friend class GridTrackCollectionTest;
@@ -231,6 +227,10 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
 
   wtf_size_t FirstNonCollapsedLineIndex() const;
 
+  const Vector<wtf_size_t>& CollapsedTrackIndexes() const {
+    return collapsed_track_indexes_;
+  }
+
  protected:
   friend class GridLanesLayoutAlgorithmTest;
 
@@ -282,6 +282,10 @@ class CORE_EXPORT GridLayoutTrackCollection : public GridTrackCollectionBase {
   LayoutUnit accumulated_gutter_size_delta_;
   LayoutUnit accumulated_start_extra_margin_;
   LayoutUnit accumulated_end_extra_margin_;
+
+  // Collapsed track indexes from auto-fit ranges, populated when
+  // `should_store_collapsed_track_indexes` is true at construction.
+  Vector<wtf_size_t> collapsed_track_indexes_;
 };
 
 // |GridRangeBuilder::EnsureTrackCoverage| may introduce a range start and/or
@@ -428,7 +432,8 @@ class CORE_EXPORT GridSizingTrackCollection final
   explicit GridSizingTrackCollection(
       GridRangeVector&& ranges,
       GridTrackSizingDirection track_direction = kForColumns,
-      bool must_create_baselines = false);
+      bool must_create_baselines = false,
+      bool should_store_collapsed_track_indexes = false);
 
   // This class should be specifically used for grid sizing.
   bool IsForSizing() const override { return true; }

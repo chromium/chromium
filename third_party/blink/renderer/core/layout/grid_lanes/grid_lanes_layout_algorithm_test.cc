@@ -21,7 +21,6 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     wtf_size_t start_offset;
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
-    collapsed_track_indexes_.clear();
 
     auto grid_lanes_items =
         algorithm.Node().ConstructGridLanesItems(line_resolver);
@@ -29,7 +28,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
         SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
         /*should_apply_inline_size_containment=*/false, grid_lanes_items,
-        collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
+        start_offset, needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -39,15 +38,13 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     //
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (needs_intrinsic_track_size) {
-      CHECK(collapsed_track_indexes_.empty());
-
       HashMap<GridTrackSize, LayoutUnit> intrinsic_repeat_track_sizes =
           algorithm.GetIntrinsicRepeaterTrackSizes(!grid_lanes_items.IsEmpty(),
                                                    grid_axis_tracks_.value());
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
           SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
           /*should_apply_inline_size_containment=*/false, grid_lanes_items,
-          collapsed_track_indexes_, start_offset, needs_intrinsic_track_size);
+          start_offset, needs_intrinsic_track_size);
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
@@ -104,8 +101,9 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   GridLanesRunningPositions InitializeGridLanesRunningPositions(
       const Vector<LayoutUnit>& running_positions,
       LayoutUnit tie_threshold) {
+    const Vector<wtf_size_t> empty_collapsed_tracks;
     return GridLanesRunningPositions(running_positions, tie_threshold,
-                                     collapsed_track_indexes_);
+                                     empty_collapsed_tracks);
   }
 
   void SetAutoPlacementCursor(wtf_size_t cursor,
@@ -129,9 +127,6 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   // Virtual items represent the contributions of item groups in track sizing
   // and are not directly related to any children of the container.
   Vector<GridLanesItemCachedData> virtual_items_data_;
-
-  // List of track indexes that have been collapsed.
-  Vector<wtf_size_t> collapsed_track_indexes_;
 };
 
 TEST_F(GridLanesLayoutAlgorithmTest, ConstructGridLanesItems) {

@@ -119,8 +119,7 @@ void GridRangeBuilder::EnsureTrackCoverage(
 }
 
 GridRangeVector GridRangeBuilder::FinalizeRanges(
-    bool needs_intrinsic_track_size,
-    Vector<wtf_size_t>* collapsed_track_indexes) {
+    bool needs_intrinsic_track_size) {
   DCHECK_EQ(start_lines_.size(), end_lines_.size());
 
   // Sort start and ending tracks from low to high.
@@ -315,13 +314,6 @@ GridRangeVector GridRangeBuilder::FinalizeRanges(
         !needs_intrinsic_track_size) {
       range.SetIsCollapsed();
       range.set_count = 0;
-      if (collapsed_track_indexes) {
-        wtf_size_t start_line = range.start_line;
-        for (wtf_size_t i = start_line; i < start_line + range.track_count;
-             ++i) {
-          collapsed_track_indexes->emplace_back(i);
-        }
-      }
     } else {
       // If this is a non-collapsed range, the number of sets in this range is
       // the number of track definitions in the current repeater clamped by the
@@ -885,7 +877,8 @@ bool GridLayoutTrackCollection::HasIndefiniteSet() const {
 GridSizingTrackCollection::GridSizingTrackCollection(
     GridRangeVector&& ranges,
     GridTrackSizingDirection track_direction,
-    bool must_create_baselines)
+    bool must_create_baselines,
+    bool should_store_collapsed_track_indexes)
     : GridLayoutTrackCollection(track_direction) {
   ranges_ = std::move(ranges);
 
@@ -893,11 +886,20 @@ GridSizingTrackCollection::GridSizingTrackCollection(
     baselines_.emplace();
   }
 
+  if (should_store_collapsed_track_indexes) {
+    collapsed_track_indexes_.Shrink(0);
+  }
+
   wtf_size_t set_count = 0;
   for (const auto& range : ranges_) {
     if (!range.IsCollapsed()) {
       non_collapsed_track_count_ += range.track_count;
       set_count += range.set_count;
+    } else if (should_store_collapsed_track_indexes) {
+      for (wtf_size_t i = range.start_line;
+           i < range.start_line + range.track_count; ++i) {
+        collapsed_track_indexes_.emplace_back(i);
+      }
     }
   }
 
