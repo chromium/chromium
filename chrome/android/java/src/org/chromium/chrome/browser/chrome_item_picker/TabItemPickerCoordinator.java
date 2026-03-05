@@ -186,6 +186,15 @@ public class TabItemPickerCoordinator {
             return;
         }
 
+        boolean isIncognito = profile.isIncognitoBranded();
+        TabGroupModelFilter filter = mTabModelSelector.getTabGroupModelFilter(isIncognito);
+        if (filter == null || filter.getTabModel().getProfile() == null) {
+            // TODO(crbug.com/490050233): Investigate why profile is becoming null in incognito
+            // mode during split screen.
+            runSuccessCallbackIfSame(false, successCallback);
+            return;
+        }
+
         // Wait for tab data (state from disk) to be fully initialized.
         TabModelUtils.runOnTabStateInitialized(
                 mTabModelSelector,

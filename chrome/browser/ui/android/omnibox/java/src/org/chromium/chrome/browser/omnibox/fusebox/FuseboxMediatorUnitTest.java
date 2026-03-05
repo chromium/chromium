@@ -954,6 +954,16 @@ public class FuseboxMediatorUnitTest {
     }
 
     @Test
+    public void testOnTabPickerResult_resultCanceledWithError_showsSnackbar() {
+        Intent intent = new Intent();
+        intent.putExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR, "error message");
+
+        mMediator.onTabPickerResult(Activity.RESULT_CANCELED, intent);
+
+        verify(mSnackbarManager).showSnackbar(any());
+    }
+
+    @Test
     public void testUpdatePopupButtonEnabledStates_maxAttachmentsReached() {
         mInput.setRequestType(AutocompleteRequestType.SEARCH);
         assertTrue(mModel.get(FuseboxProperties.POPUP_ATTACH_CURRENT_TAB_ENABLED));

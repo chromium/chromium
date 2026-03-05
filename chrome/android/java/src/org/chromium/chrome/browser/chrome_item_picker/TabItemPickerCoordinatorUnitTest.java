@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
@@ -64,6 +66,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.RenderWidgetHostView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.test.util.MockitoHelper;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -95,6 +98,7 @@ public class TabItemPickerCoordinatorUnitTest {
     @Mock private TabModel mRegularTabModel;
     @Mock private PageContentExtractionService mPageContentExtractionService;
     @Mock private WebContents mWebContents;
+    @Mock private TabGroupModelFilter mTabGroupModelFilter;
 
     @Mock private SelectionDelegate<TabListEditorItemSelectionId> mSelectionDelegateMock;
     @Captor private ArgumentCaptor<List<Tab>> mTabListCaptor;
@@ -131,6 +135,11 @@ public class TabItemPickerCoordinatorUnitTest {
 
         when(mTabModelSelector.getModel(false)).thenReturn(mRegularTabModel);
         when(mRegularTabModel.index()).thenReturn(0);
+        when(mRegularTabModel.getProfile()).thenReturn(mProfile);
+
+        when(mTabModelSelector.getTabGroupModelFilter(anyBoolean()))
+                .thenReturn(mTabGroupModelFilter);
+        when(mTabGroupModelFilter.getTabModel()).thenReturn(mRegularTabModel);
 
         when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
         when(mTabListEditorCoordinator.getController()).thenReturn(mTabListEditorController);
@@ -441,5 +450,21 @@ public class TabItemPickerCoordinatorUnitTest {
 
         verify(mActivity).finish();
         verify(incognitoTabModel).removeIncognitoObserver(observerCaptor.getValue());
+    }
+
+    @Test
+    public void testDestroyAfterShowAttemptFailure() {
+        when(TabWindowManagerSingleton.getInstance()
+                        .requestSelectorWithoutActivity(anyInt(), any(Profile.class)))
+                .thenReturn(mTabModelSelector);
+
+        MockitoHelper.runWithValue(0, false).when(mItemPickerCoordinator).showTabItemPicker(any());
+        mProfileSupplierImpl.set(mProfile);
+        shadowOf(Looper.getMainLooper()).idle();
+
+        // Simulate the failure to show the picker.
+        mItemPickerCoordinator.showTabItemPicker(mCallback);
+        // Destroying the coordinator should not crash.
+        mItemPickerCoordinator.destroy();
     }
 }

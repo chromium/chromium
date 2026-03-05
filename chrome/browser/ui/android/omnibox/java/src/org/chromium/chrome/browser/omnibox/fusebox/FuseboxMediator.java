@@ -495,6 +495,14 @@ public class FuseboxMediator implements FuseboxAttachmentChangeListener {
 
     void onTabPickerResult(int resultCode, @Nullable Intent data) {
         if (!isInInputSession()) return;
+
+        if (resultCode == Activity.RESULT_CANCELED) {
+            if (data != null && data.hasExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR)) {
+                onAttachmentUploadFailed();
+            }
+            return;
+        }
+
         if (resultCode != Activity.RESULT_OK || data == null || data.getExtras() == null) return;
         ArrayList<Integer> tabIds =
                 data.getIntegerArrayListExtra(ChromeItemPickerExtras.EXTRA_ATTACHMENT_TAB_IDS);

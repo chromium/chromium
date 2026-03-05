@@ -189,14 +189,13 @@ public class ChromeItemPickerActivity extends SnackbarActivity implements PreAtt
     private void handlePickerShowAttempt(boolean success) {
         if (!success) {
             handleFailureToShowPicker("Failed to load the TabModelSelector.");
-            return;
         }
     }
 
     private void handleFailureToShowPicker(String error) {
         Log.e(TAG, error);
         final Intent resultIntent = new Intent();
-        resultIntent.putExtra(IntentHandler.EXTRA_ITEM_PICKER_ERROR, error);
+        resultIntent.putExtra(ChromeItemPickerExtras.EXTRA_ITEM_PICKER_ERROR, error);
         setResult(Activity.RESULT_CANCELED, resultIntent);
         finish();
     }
