@@ -43,7 +43,6 @@
 
 cr-page-selector {
   flex: 1;
-  overflow: auto;
   min-width: 0;
 
   display: flex;

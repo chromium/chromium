@@ -57,6 +57,11 @@
   width: var(--skill-icon);
 }
 
+cr-tooltip {
+  --paper-tooltip-min-width: 0;
+  max-width: 216px;
+}
+
 #name {
   flex: 1;
   min-width: 0;
