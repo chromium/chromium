@@ -3042,14 +3042,30 @@ void MatchAdjacency(const MatchFinder::MatchResult& result) {
   EmitEdge(lhs, rhs);
 }
 
+// TODO(angdaniel): Convert this to use the project.h interface instead of a
+// switch statement.
 raw_ptr_plugin::FilterFile PathsToExclude() {
   std::vector<std::string> paths_to_exclude_lines;
-  paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
-                                kSpanifyManualPathsToIgnore.begin(),
-                                kSpanifyManualPathsToIgnore.end());
-  paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
-                                kSeparateRepositoryPaths.begin(),
-                                kSeparateRepositoryPaths.end());
+  switch (g_project) {
+    case ProjectName::kPartitionAlloc:
+      break;
+    case ProjectName::kDawn:
+    case ProjectName::kSkia:
+    case ProjectName::kAngle:
+      // Fallback: Currently these projects have no specific exclusions defined.
+      break;
+    case ProjectName::kChrome:
+    default:
+      paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                    kSpanifyManualPathsToIgnoreChrome.begin(),
+                                    kSpanifyManualPathsToIgnoreChrome.end());
+
+      paths_to_exclude_lines.insert(paths_to_exclude_lines.end(),
+                                    kSeparateRepositoryPaths.begin(),
+                                    kSeparateRepositoryPaths.end());
+      break;
+  }
+
   return raw_ptr_plugin::FilterFile(paths_to_exclude_lines);
 }
 
@@ -3100,11 +3116,15 @@ class Spanifier {
   explicit Spanifier(MatchFinder& finder) : match_finder_(finder) {
     // `raw_ptr` or `span` should not have `.data()` applied.
     auto frontier_exclusions = anyOf(
-        isExpansionInSystemHeader(), raw_ptr_plugin::isInExternCContext(),
+        // 1. Common exclusions that aren't project specific:
+        isExpansionInSystemHeader(), isInExcludedMacroLocation(),
         raw_ptr_plugin::isInThirdPartyLocation(),
         raw_ptr_plugin::isInGeneratedLocation(),
-        raw_ptr_plugin::ImplicitFieldDeclaration(), isInExcludedMacroLocation(),
-        raw_ptr_plugin::isInLocationListedInFilterFile(&paths_to_exclude_));
+        raw_ptr_plugin::ImplicitFieldDeclaration(),
+        raw_ptr_plugin::isInExternCContext(),
+
+        // 2. Project-Specific Exclusions
+        isExcludedFromProject(&paths_to_exclude_));
 
     // Standard exclusions include `raw_ptr` and `span`.
     auto exclusions = anyOf(
