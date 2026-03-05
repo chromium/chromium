@@ -1342,16 +1342,17 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
     gpu::SharedImageUsageSet shared_image_usage_flags =
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ;
 
-    // Determine whether this SharedImage can be configured for low-latency
-    // or placement in overlays.
+    // Configure this SharedImage for scanout and concurrent read/write as
+    // appropriate.
     bool low_latency_supported =
         canvas()->LowLatencyEnabled() &&
         SharedGpuContext::LowLatencyUsageSupportedForCanvas2D(raster_mode);
-    if (low_latency_supported) {
-      shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT |
-                                  gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-    } else if (SharedGpuContext::UseOverlaysForCanvas2D()) {
+    if (low_latency_supported || SharedGpuContext::UseOverlaysForCanvas2D()) {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
+      if (low_latency_supported) {
+        shared_image_usage_flags |=
+            gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
+      }
     }
 
     provider = Canvas2DResourceProviderSharedImage::CreateWithClear(
