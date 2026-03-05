@@ -1285,36 +1285,19 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
+  // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
+  // for text selection. This should be done after we request DomDistiller
+  // distillation to ensure the distillation state is correct prior to
+  // updating the accessibility tree. Otherwise, reading mode can get into
+  // an incorrect distillation state, which can cause crashes and unexpected
+  // behavior.
   content::RenderFrameHost* rfh = contents->GetPrimaryMainFrame();
   VLOG(1) << "Sending non-pdf tree with id " << rfh->GetAXTreeID();
-
-  const bool use_readability =
-      features::IsReadAnythingWithReadabilityEnabled() && !is_pdf_with_frame_;
-
-  if (use_readability) {
-    // We must emit `kDistillationInProgress` before sending the new tree ID
-    // to the renderer with page_->OnActiveAXTreeIDChanged. This ensures the
-    // renderer pauses its update processing
-    // (`ReadAnythingAppController::IsUpdateProcessingPaused() == true`) for the
-    // new tree. If we reverse this order, any A11y events arriving in the gap
-    // will be processed on an incomplete tree and cause a crash.
-    page_->OnReadabilityDistillationStateChanged(
-        read_anything::mojom::ReadAnythingDistillationState::
-            kDistillationInProgress);
-  }
-
-  // When IsReadAnythingWithReadabilityEnabled is true, we still send AX tree
-  // for text selection.
+  RequestDomDistillerDistillation(contents);
   page_->OnActiveAXTreeIDChanged(rfh->GetAXTreeID(), rfh->GetPageUkmSourceId(),
                                  /*is_pdf=*/false);
-
-  if (use_readability) {
-    // Now that the renderer is prepped, request distillation. If this fails
-    // synchronously, the renderer will correctly fall back to Screen2x for the
-    // *new* tree.
-    RequestDomDistillerDistillation(contents);
-  }
 }
+
 void ReadAnythingUntrustedPageHandler::RequestDomDistillerDistillation(
     content::WebContents* content) {
   if (!features::IsReadAnythingWithReadabilityEnabled() || is_pdf_with_frame_) {
