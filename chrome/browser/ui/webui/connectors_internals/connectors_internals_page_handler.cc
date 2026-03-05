@@ -27,6 +27,7 @@
 #include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/client_certificates/core/certificate_provisioning_service.h"
 #include "components/enterprise/connectors/connectors_internals.mojom.h"
+#include "components/enterprise/connectors/core/connectors_internals_utils.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,8 +41,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
-#include "components/enterprise/client_certificates/core/client_identity.h"
-#include "components/enterprise/client_certificates/core/private_key.h"
 #endif
 
 namespace enterprise_connectors {
@@ -63,26 +62,6 @@ std::string ConvertPolicyLevelToString(DTCPolicyLevel level) {
   }
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
-connectors_internals::mojom::ClientIdentityPtr GetIdentity(
-    client_certificates::CertificateProvisioningService* provisioning_service,
-    std::vector<std::string>& enabled_levels,
-    const std::string& enabled_level) {
-  const auto& status = provisioning_service->GetCurrentStatus();
-  if (!(status.is_policy_enabled)) {
-    return nullptr;
-  }
-  enabled_levels.push_back(enabled_level);
-
-  if (!status.identity.has_value()) {
-    return nullptr;
-  }
-
-  return utils::ConvertIdentity(status.identity.value(),
-                                status.last_upload_code);
-}
-#endif  // BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_ANDROID)
@@ -174,14 +153,14 @@ void ConnectorsInternalsPageHandler::GetClientCertificateState(
   connectors_internals::mojom::ClientIdentityPtr managed_browser_identity =
       nullptr;
   if (browser_certificate_provisioning_service) {
-    managed_browser_identity = GetIdentity(
+    managed_browser_identity = utils::GetIdentity(
         browser_certificate_provisioning_service, enabled_levels, kBrowser);
   }
 
   connectors_internals::mojom::ClientIdentityPtr managed_profile_identity =
       nullptr;
   if (profile_certificate_provisioning_service) {
-    managed_profile_identity = GetIdentity(
+    managed_profile_identity = utils::GetIdentity(
         profile_certificate_provisioning_service, enabled_levels, kProfile);
   }
 

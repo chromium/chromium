@@ -12,9 +12,16 @@ source_set("connectors_internals") {
     "connectors_internals_ui.mm",
   ]
   deps = [
+    "//base",
+    "//components/enterprise/client_certificates/core",
+    "//components/enterprise/client_certificates/ios",
     "//components/enterprise/connectors:mojom",
+    "//components/enterprise/connectors/core",
     "//components/enterprise/connectors/resources",
     "//components/enterprise/connectors/resources:resources_grit",
+    "//ios/chrome/browser/enterprise/client_certificates",
+    "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/web/public",

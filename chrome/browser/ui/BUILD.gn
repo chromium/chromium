@@ -484,6 +484,7 @@ static_library("ui") {
     "//components/enterprise",
     "//components/enterprise/browser/identifiers",
     "//components/enterprise/browser/promotion",
+    "//components/enterprise/connectors/core",
     "//components/error_page/content/browser",
     "//components/facilitated_payments/core/features",
     "//components/favicon/content",

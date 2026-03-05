@@ -7,6 +7,8 @@ include_rules = [
   "+components/ukm",
   "+components/url_matcher",
   "+crypto",
+  "+net/cert",
+  "+net/ssl",
   "+ui/base/clipboard",
   "+ui/base/l10n",
   "+third_party/re2",
