@@ -172,31 +172,27 @@ VerticalSplitTabView::GetLinkDropIndex(const gfx::Point& loc_in_view) {
     return std::nullopt;
   }
 
+  CHECK_EQ(collection_node_->children().size(), 2ul);
+
+  const auto& start_node = collection_node_->children()[0];
+  gfx::Point start_loc = views::View::ConvertPointToTarget(
+      start_node->view(), this,
+      start_node->view()->GetLocalBounds().CenterPoint());
+  const auto& end_node = collection_node_->children()[1];
+  gfx::Point end_loc = views::View::ConvertPointToTarget(
+      end_node->view(), this, end_node->view()->GetLocalBounds().CenterPoint());
+
   VerticalTabDragHandler& drag_handler =
       collection_node_->GetController()->GetDragHandler();
 
-  for (const auto& node : collection_node_->children()) {
-    auto* view = node->view();
-    gfx::Point loc_in_child =
-        views::View::ConvertPointToTarget(this, view, loc_in_view);
-
-    // If the drag lands on any individual tab (using the horizontal position
-    // to determine if it's near the center), then replace the contents of
-    // that tab.
-    constexpr double kDragOverMargins = 0.2;
-    if (view->HitTestPoint(loc_in_child) &&
-        loc_in_child.x() > view->width() * kDragOverMargins &&
-        loc_in_child.x() < view->width() * (1.0 - kDragOverMargins)) {
-      return drag_handler.GetLinkDropIndexForNode(*node, std::nullopt);
-    }
+  // Links can't be dropped between tabs in a split view so just determine the
+  // closest tab to the drop point.
+  if ((start_loc - loc_in_view).LengthSquared() <
+      (end_loc - loc_in_view).LengthSquared()) {
+    return drag_handler.GetLinkDropIndexForNode(*start_node, std::nullopt);
+  } else {
+    return drag_handler.GetLinkDropIndexForNode(*end_node, std::nullopt);
   }
-
-  // Fallback: If the drag appears in between the two tabs use the vertical
-  // drag position to place the new tab before/after the split.
-  return drag_handler.GetLinkDropIndexForNode(*collection_node_,
-                                              loc_in_view.y() < height() / 2
-                                                  ? DragPositionHint::kBefore
-                                                  : DragPositionHint::kAfter);
 }
 
 double VerticalSplitTabView::GetHoverAnimationValue() const {

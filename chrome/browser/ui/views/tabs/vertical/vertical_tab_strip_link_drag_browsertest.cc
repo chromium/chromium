@@ -235,23 +235,23 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInSplitTabs) {
               BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
   }
 
-  // Drop in the middle of the split view, but between tabs -> before/after
-  // split depending on vertical position.
+  // Drop in the middle of the split view horizontally and vertically.
   {
-    // Middle vertically, but very left edge of the first tab.
-    gfx::Point location(2, split_view->height() / 2 - 1);
+    // Just to the left of the center point -> replace tab 0.
+    gfx::Point location(split_view->width() / 2 - 1, split_view->height() / 2);
     auto drop_index = GetDropIndexAt(split_view, location);
     ASSERT_TRUE(drop_index.has_value());
     EXPECT_EQ(drop_index->index, 0);
     EXPECT_EQ(drop_index->relative_to_index,
-              BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex);
+              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
 
-    location.set_y(split_view->height() / 2 + 1);
+    // Just to the right of the center point -> replace tab 1.
+    location.set_x(split_view->width() / 2 + 1);
     drop_index = GetDropIndexAt(split_view, location);
     ASSERT_TRUE(drop_index.has_value());
-    EXPECT_EQ(drop_index->index, 2);
+    EXPECT_EQ(drop_index->index, 1);
     EXPECT_EQ(drop_index->relative_to_index,
-              BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex);
+              BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
   }
 }
 
