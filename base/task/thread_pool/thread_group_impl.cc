@@ -621,7 +621,7 @@ RegisteredTaskSource ThreadGroupImpl::WorkerDelegate::SwapProcessedTask(
                                            static_cast<WorkerThread*>(worker));
   }
   // Must be called without holding a lock.
-  if (outer_->thread_group_profiler_ && !task_source) {
+  if (outer_->thread_group_profiler_ && !next_task_source) {
     outer_->thread_group_profiler_->OnWorkerThreadIdle(worker);
   }
   return next_task_source;
