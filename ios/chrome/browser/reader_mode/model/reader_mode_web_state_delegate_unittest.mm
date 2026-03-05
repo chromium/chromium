@@ -40,11 +40,17 @@ class MockWebStateDelegate : public web::WebStateDelegate {
                NSArray<NSNumber*>*,
                web::WebStatePermissionDecisionHandler),
               (override));
-  MOCK_METHOD(
-      void,
-      OnAuthRequired,
-      (web::WebState*, NSURLProtectionSpace*, NSURLCredential*, AuthCallback),
-      (override));
+  MOCK_METHOD(void,
+              OnAuthRequired,
+              (web::WebState*,
+               NSURLProtectionSpace*,
+               NSURLCredential*,
+               HTTPAuthCallback),
+              (override));
+  MOCK_METHOD(void,
+              OnAuthRequired,
+              (web::WebState*, NSURLProtectionSpace*, ClientCertAuthCallback),
+              (override));
   MOCK_METHOD(void,
               ContextMenuConfiguration,
               (web::WebState*,
@@ -103,7 +109,7 @@ TEST_F(ReaderModeWebStateDelegateTest,
   EXPECT_TRUE(callback_called);
 }
 
-// Tests that OnAuthRequired is not forwarded.
+// Tests that OnAuthRequired for HTTP auth is not forwarded.
 TEST_F(ReaderModeWebStateDelegateTest, OnAuthRequiredNotForwarded) {
   EXPECT_CALL(mock_web_state_delegate_,
               OnAuthRequired(testing::_, testing::_, testing::_, testing::_))
@@ -114,6 +120,20 @@ TEST_F(ReaderModeWebStateDelegateTest, OnAuthRequiredNotForwarded) {
       base::BindOnce([](bool* result, NSString* username,
                         NSString* password) { *result = true; },
                      &callback_called));
+  EXPECT_TRUE(callback_called);
+}
+
+// Tests that OnAuthRequired for client certs is not forwarded.
+TEST_F(ReaderModeWebStateDelegateTest, OnClientCertAuthRequiredNotForwarded) {
+  EXPECT_CALL(mock_web_state_delegate_,
+              OnAuthRequired(testing::_, testing::_, testing::_))
+      .Times(0);
+  __block bool callback_called = false;
+  reader_mode_web_state_delegate_.OnAuthRequired(
+      nullptr, nil,
+      base::BindOnce(
+          [](bool* result, SecIdentityRef identity) { *result = true; },
+          &callback_called));
   EXPECT_TRUE(callback_called);
 }
 

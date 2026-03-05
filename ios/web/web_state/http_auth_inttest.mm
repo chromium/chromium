@@ -67,7 +67,7 @@ TEST_F(HttpAuthTest, SuccessfullBasicAuth) {
   ASSERT_TRUE(web_state()->IsLoading());
   auth_request = delegate_.last_authentication_request();
   ASSERT_TRUE(auth_request);
-  std::move(auth_request->auth_callback).Run(@"me", @"goodpass");
+  std::move(auth_request->http_auth_callback).Run(@"me", @"goodpass");
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return web_state()->GetTitle() == u"me/goodpass";
   }));
@@ -82,7 +82,7 @@ TEST_F(HttpAuthTest, UnsucessfulBasicAuth) {
 
   // Make sure that incorrect credentials request authentication again.
   auto* auth_request = delegate_.last_authentication_request();
-  std::move(auth_request->auth_callback).Run(@"me", @"badpass");
+  std::move(auth_request->http_auth_callback).Run(@"me", @"badpass");
   ASSERT_TRUE(WaitForOnAuthRequiredCallback());
 
   // Verify that callback receives correct WebState.
@@ -103,7 +103,7 @@ TEST_F(HttpAuthTest, UnsucessfulBasicAuth) {
               protection_space.authenticationMethod);
 
   // Cancel authentication and make sure that authentication is denied.
-  std::move(auth_request->auth_callback)
+  std::move(auth_request->http_auth_callback)
       .Run(/*username=*/nil, /*password=*/nil);
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return web_state()->GetTitle() == u"Denied: Missing Authorization Header";

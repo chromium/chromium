@@ -134,13 +134,13 @@ void WebStateDelegateBridge::OnAuthRequired(
     WebState* source,
     NSURLProtectionSpace* protection_space,
     NSURLCredential* proposed_credential,
-    AuthCallback callback) {
+    HTTPAuthCallback callback) {
   if ([delegate_
           respondsToSelector:@selector
           (webState:
               didRequestHTTPAuthForProtectionSpace:proposedCredential
                                                   :completionHandler:)]) {
-    __block AuthCallback local_callback = std::move(callback);
+    __block HTTPAuthCallback local_callback = std::move(callback);
     [delegate_ webState:source
         didRequestHTTPAuthForProtectionSpace:protection_space
                           proposedCredential:proposed_credential
@@ -150,6 +150,23 @@ void WebStateDelegateBridge::OnAuthRequired(
                            }];
   } else {
     std::move(callback).Run(nil, nil);
+  }
+}
+
+void WebStateDelegateBridge::OnAuthRequired(
+    WebState* source,
+    NSURLProtectionSpace* protection_space,
+    ClientCertAuthCallback callback) {
+  if ([delegate_
+          respondsToSelector:@selector
+          (webState:
+              didRequestClientCertAuthForProtectionSpace:completionHandler:)]) {
+    [delegate_ webState:source
+        didRequestClientCertAuthForProtectionSpace:protection_space
+                                 completionHandler:base::CallbackToBlock(
+                                                       std::move(callback))];
+  } else {
+    std::move(callback).Run(nil);
   }
 }
 

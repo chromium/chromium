@@ -8,9 +8,13 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/content_settings/core/common/content_settings.h"
+#import "components/enterprise/client_certificates/ios/certificate_provisioning_service_ios.h"
+#import "components/enterprise/client_certificates/ios/client_identity_ios.h"
 #import "ios/chrome/browser/content_settings/model/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/context_menu/ui_bundled/context_menu_configuration_provider.h"
 #import "ios/chrome/browser/dialogs/ui_bundled/nsurl_protection_space_util.h"
+#import "ios/chrome/browser/enterprise/client_certificates/client_certificates_service_ios.h"
+#import "ios/chrome/browser/enterprise/client_certificates/client_certificates_service_ios_factory.h"
 #import "ios/chrome/browser/enterprise/data_controls/model/data_controls_tab_helper.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
@@ -43,7 +47,7 @@ namespace {
 // Callback for HTTP authentication dialogs. This callback is a standalone
 // function rather than an instance method. This is to ensure that the callback
 // can be executed regardless of whether the browser agent has been destroyed.
-void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
+void OnHTTPAuthOverlayFinished(web::WebStateDelegate::HTTPAuthCallback callback,
                                OverlayResponse* response) {
   if (response) {
     HTTPAuthOverlayResponseInfo* auth_info =
@@ -55,6 +59,17 @@ void OnHTTPAuthOverlayFinished(web::WebStateDelegate::AuthCallback callback,
     }
   }
   std::move(callback).Run(nil, nil);
+}
+
+void OnGetIdentityFinished(
+    web::WebStateDelegate::ClientCertAuthCallback callback,
+    std::unique_ptr<client_certificates::ClientIdentityIOS> result) {
+  if (result) {
+    std::move(callback).Run(result->identity_ref.get());
+    return;
+  }
+
+  std::move(callback).Run(nullptr);
 }
 
 void OnInsecureFormWarningResponse(base::OnceCallback<void(bool)> callback,
@@ -300,7 +315,7 @@ void WebStateDelegateBrowserAgent::OnAuthRequired(
     web::WebState* source,
     NSURLProtectionSpace* protection_space,
     NSURLCredential* proposed_credential,
-    web::WebStateDelegate::AuthCallback callback) {
+    web::WebStateDelegate::HTTPAuthCallback callback) {
   std::string message = base::SysNSStringToUTF8(
       nsurlprotectionspace_util::MessageForHTTPAuth(protection_space));
   std::string default_username;
@@ -315,6 +330,24 @@ void WebStateDelegateBrowserAgent::OnAuthRequired(
       base::BindOnce(&OnHTTPAuthOverlayFinished, std::move(callback)));
   OverlayRequestQueue::FromWebState(source, OverlayModality::kWebContentArea)
       ->AddRequest(std::move(request));
+}
+
+void WebStateDelegateBrowserAgent::OnAuthRequired(
+    web::WebState* source,
+    NSURLProtectionSpace* protection_space,
+    web::WebStateDelegate::ClientCertAuthCallback callback) {
+  ProfileIOS* profile = ProfileIOS::FromBrowserState(source->GetBrowserState());
+
+  client_certificates::ClientCertificatesServiceIOS* service =
+      client_certificates::ClientCertificatesServiceIOSFactory::GetForProfile(
+          profile);
+  if (service) {
+    service->GetAutoSelectedIdentity(
+        nsurlprotectionspace_util::RequesterOrigin(protection_space),
+        base::BindOnce(&OnGetIdentityFinished, std::move(callback)));
+  } else {
+    std::move(callback).Run(nullptr);
+  }
 }
 
 UIView* WebStateDelegateBrowserAgent::GetWebViewContainer(

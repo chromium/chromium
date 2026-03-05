@@ -165,16 +165,45 @@ TEST_F(WebStateDelegateBridgeTest,
 }
 
 // Tests `OnAuthRequired` forwarding.
-TEST_F(WebStateDelegateBridgeTest, OnAuthRequired) {
-  EXPECT_FALSE([delegate_ authenticationRequested]);
+TEST_F(WebStateDelegateBridgeTest, OnHTTPAuthRequired) {
+  EXPECT_FALSE([delegate_ httpAuthenticationRequested]);
   EXPECT_FALSE([delegate_ webState]);
   NSURLProtectionSpace* protection_space = [[NSURLProtectionSpace alloc] init];
   NSURLCredential* credential = [[NSURLCredential alloc] init];
-  WebStateDelegate::AuthCallback callback = base::DoNothing();
+  WebStateDelegate::HTTPAuthCallback callback = base::DoNothing();
   bridge_->OnAuthRequired(&fake_web_state_, protection_space, credential,
                           std::move(callback));
-  EXPECT_TRUE([delegate_ authenticationRequested]);
+  EXPECT_TRUE([delegate_ httpAuthenticationRequested]);
   EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
+}
+
+// Tests `OnAuthRequired` for client certs forwarding.
+TEST_F(WebStateDelegateBridgeTest, OnClientCertAuthRequired) {
+  EXPECT_FALSE([delegate_ clientCertAuthenticationRequested]);
+  EXPECT_FALSE([delegate_ webState]);
+  NSURLProtectionSpace* protection_space = [[NSURLProtectionSpace alloc] init];
+  WebStateDelegate::ClientCertAuthCallback callback = base::DoNothing();
+  bridge_->OnAuthRequired(&fake_web_state_, protection_space,
+                          std::move(callback));
+  EXPECT_TRUE([delegate_ clientCertAuthenticationRequested]);
+  EXPECT_EQ(&fake_web_state_, [delegate_ webState]);
+}
+
+// Tests `OnAuthRequired` for client certs forwarding to delegate which does not
+// implement
+// `webState:didRequestClientCertAuthForProtectionSpace:completionHandler:`
+// method.
+TEST_F(WebStateDelegateBridgeTest,
+       OnClientCertAuthRequiredWithNoDelegateMethod) {
+  __block bool callback_called = false;
+  WebStateDelegate::ClientCertAuthCallback callback =
+      base::BindOnce(^(SecIdentityRef identity) {
+        EXPECT_FALSE(identity);
+        callback_called = true;
+      });
+  empty_delegate_bridge_->OnAuthRequired(&fake_web_state_, nil,
+                                         std::move(callback));
+  EXPECT_TRUE(callback_called);
 }
 
 // Tests `ShouldAllowCopy` forwarding.

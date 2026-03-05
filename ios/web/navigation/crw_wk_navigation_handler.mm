@@ -97,6 +97,37 @@ enum class ErrorPagePresentationFailed {
   kMaxValue = kOtherWKErrorDomain
 };
 
+// Type of the completion handler for ProcessClientCertAuthForUser.
+using SessionAuthChallengeBlock = void (^)(NSURLSessionAuthChallengeDisposition,
+                                           NSURLCredential*);
+
+// Used in webView:didReceiveAuthenticationChallenge:completionHandler: to reply
+// with NSURLSessionAuthChallengeDisposition and credentials.
+void ProcessClientCertAuthForUser(WKWebView* web_view,
+                                  SessionAuthChallengeBlock completion_handler,
+                                  SecIdentityRef identity) {
+  if (!identity) {
+    // Embedder cancelled authentication. If the web view is attached to a
+    // window, perform default handling to allow the system to potentially show
+    // a certificate picker. If not (e.g., for pre-rendering), cancel the
+    // challenge to avoid showing UI in the background or caching nil response
+    // returned by prerender browser agent.
+    if (web_view.window) {
+      completion_handler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+    } else {
+      completion_handler(NSURLSessionAuthChallengeCancelAuthenticationChallenge,
+                         nil);
+    }
+    return;
+  }
+  completion_handler(
+      NSURLSessionAuthChallengeUseCredential,
+      [NSURLCredential
+          credentialWithIdentity:identity
+                    certificates:nil
+                     persistence:NSURLCredentialPersistenceForSession]);
+}
+
 void LogPresentingErrorPageFailedWithError(NSError* error) {
   ErrorPagePresentationFailed failure_type =
       ErrorPagePresentationFailed::kUnknown;
@@ -1078,6 +1109,13 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
     return;
   }
 
+  if ([authMethod isEqualToString:NSURLAuthenticationMethodClientCertificate]) {
+    [self handleClientCertAuthForChallenge:challenge
+                                   webView:webView
+                         completionHandler:completionHandler];
+    return;
+  }
+
   if (![authMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
     completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
     return;
@@ -1795,6 +1833,24 @@ void LogPresentingErrorPageFailedWithError(NSError* error) {
           credentialWithUser:user
                     password:password
                  persistence:NSURLCredentialPersistenceForSession]);
+}
+
+// Used in webView:didReceiveAuthenticationChallenge:completionHandler: to reply
+// with NSURLSessionAuthChallengeDisposition and credentials.
+- (void)handleClientCertAuthForChallenge:
+            (NSURLAuthenticationChallenge*)challenge
+                                 webView:(WKWebView*)webView
+                       completionHandler:
+                           (void (^)(NSURLSessionAuthChallengeDisposition,
+                                     NSURLCredential*))completionHandler {
+  NSURLProtectionSpace* space = challenge.protectionSpace;
+  DCHECK([space.authenticationMethod
+      isEqualToString:NSURLAuthenticationMethodClientCertificate]);
+
+  __weak WKWebView* weakWebView = webView;
+  self.webStateImpl->OnAuthRequired(
+      space, base::BindOnce(&ProcessClientCertAuthForUser, weakWebView,
+                            completionHandler));
 }
 
 // Called when a load ends in an error.

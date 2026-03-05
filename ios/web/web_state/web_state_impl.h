@@ -257,11 +257,16 @@ class WebStateImpl final : public WebState {
                               const GURL& opener_url,
                               bool initiated_by_user);
 
-  // Notifies the delegate that request receives an authentication challenge
+  // Notifies the delegate that request receives a HTTP authentication challenge
   // and is unable to respond using cached credentials.
   void OnAuthRequired(NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      WebStateDelegate::AuthCallback callback);
+                      WebStateDelegate::HTTPAuthCallback callback);
+
+  // Notifies the delegate that request receives a client certificate
+  // authentication challenge and is unable to respond using cached credentials.
+  void OnAuthRequired(NSURLProtectionSpace* protection_space,
+                      WebStateDelegate::ClientCertAuthCallback callback);
 
   // Cancels all dialogs associated with this web_state.
   void CancelDialogs();

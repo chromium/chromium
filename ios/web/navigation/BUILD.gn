@@ -18,6 +18,7 @@ source_set("navigation") {
     ":core",
     ":navigation_manager_util",
     "//base",
+    "//components/enterprise/client_certificates/core",
     "//components/security_interstitials/core:insecure_form_util",
     "//components/sessions:session_id",
     "//ios/components/security_interstitials/https_only_mode:feature",

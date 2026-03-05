@@ -105,12 +105,22 @@ void FakeWebStateDelegate::OnAuthRequired(
     WebState* source,
     NSURLProtectionSpace* protection_space,
     NSURLCredential* credential,
-    AuthCallback callback) {
+    HTTPAuthCallback callback) {
   last_authentication_request_ = std::make_unique<FakeAuthenticationRequest>();
   last_authentication_request_->web_state = source;
   last_authentication_request_->protection_space = protection_space;
   last_authentication_request_->credential = credential;
-  last_authentication_request_->auth_callback = std::move(callback);
+  last_authentication_request_->http_auth_callback = std::move(callback);
+}
+
+void FakeWebStateDelegate::OnAuthRequired(
+    WebState* source,
+    NSURLProtectionSpace* protection_space,
+    ClientCertAuthCallback callback) {
+  last_authentication_request_ = std::make_unique<FakeAuthenticationRequest>();
+  last_authentication_request_->web_state = source;
+  last_authentication_request_->protection_space = protection_space;
+  last_authentication_request_->client_cert_auth_callback = std::move(callback);
 }
 
 void FakeWebStateDelegate::HandlePermissionsDecisionRequest(

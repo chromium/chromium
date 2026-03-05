@@ -54,7 +54,8 @@ struct FakeAuthenticationRequest {
   raw_ptr<WebState, DanglingUntriaged> web_state = nullptr;
   NSURLProtectionSpace* protection_space;
   NSURLCredential* credential;
-  WebStateDelegate::AuthCallback auth_callback;
+  WebStateDelegate::HTTPAuthCallback http_auth_callback;
+  WebStateDelegate::ClientCertAuthCallback client_cert_auth_callback;
 };
 
 // Encapsulates information about popup.
@@ -88,7 +89,10 @@ class FakeWebStateDelegate : public WebStateDelegate {
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      AuthCallback callback) override;
+                      HTTPAuthCallback callback) override;
+  void OnAuthRequired(WebState* source,
+                      NSURLProtectionSpace* protection_space,
+                      ClientCertAuthCallback callback) override;
   void HandlePermissionsDecisionRequest(
       WebState* source,
       NSArray<NSNumber*>* permissions,

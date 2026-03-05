@@ -159,7 +159,7 @@ TEST_F(WebStateDelegateBrowserAgentTest, OnAuthRequired) {
       [[NSURLCredential alloc] initWithUser:@""
                                    password:@""
                                 persistence:NSURLCredentialPersistenceNone];
-  web::WebStateDelegate::AuthCallback callback =
+  web::WebStateDelegate::HTTPAuthCallback callback =
       base::BindOnce(^(NSString* user, NSString* password){
       });
   web::WebState* web_state = InsertNewWebState(GURL(kURL1));

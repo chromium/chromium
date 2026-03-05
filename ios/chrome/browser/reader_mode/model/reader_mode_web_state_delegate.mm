@@ -52,8 +52,15 @@ void ReaderModeWebStateDelegate::OnAuthRequired(
     web::WebState* source,
     NSURLProtectionSpace* protection_space,
     NSURLCredential* credential,
-    AuthCallback callback) {
+    HTTPAuthCallback callback) {
   std::move(callback).Run(nullptr, nullptr);
+}
+
+void ReaderModeWebStateDelegate::OnAuthRequired(
+    web::WebState* source,
+    NSURLProtectionSpace* protection_space,
+    ClientCertAuthCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 void ReaderModeWebStateDelegate::HandlePermissionsDecisionRequest(

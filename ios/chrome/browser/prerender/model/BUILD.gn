@@ -18,6 +18,7 @@ source_set("model") {
   deps = [
     ":prerender_pref",
     "//base",
+    "//components/enterprise/client_certificates/core",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/signin/ios/browser",
@@ -26,7 +27,9 @@ source_set("model") {
     "//components/supervised_user/core/common",
     "//ios/chrome/browser/app_launcher/model",
     "//ios/chrome/browser/crash_report/model:model_internal",
+    "//ios/chrome/browser/dialogs/ui_bundled:dialogs_internal",
     "//ios/chrome/browser/download/model:mime_types",
+    "//ios/chrome/browser/enterprise/client_certificates",
     "//ios/chrome/browser/geolocation/model",
     "//ios/chrome/browser/history/model:tab_helper",
     "//ios/chrome/browser/itunes_urls/model",

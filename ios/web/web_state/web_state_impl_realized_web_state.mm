@@ -572,12 +572,22 @@ WebState* WebStateImpl::RealizedWebState::CreateNewWebState(
 void WebStateImpl::RealizedWebState::OnAuthRequired(
     NSURLProtectionSpace* protection_space,
     NSURLCredential* proposed_credential,
-    WebStateDelegate::AuthCallback callback) {
+    WebStateDelegate::HTTPAuthCallback callback) {
   if (delegate_) {
     delegate_->OnAuthRequired(owner_, protection_space, proposed_credential,
                               std::move(callback));
   } else {
     std::move(callback).Run(nil, nil);
+  }
+}
+
+void WebStateImpl::RealizedWebState::OnAuthRequired(
+    NSURLProtectionSpace* protection_space,
+    WebStateDelegate::ClientCertAuthCallback callback) {
+  if (delegate_) {
+    delegate_->OnAuthRequired(owner_, protection_space, std::move(callback));
+  } else {
+    std::move(callback).Run(nil);
   }
 }
 

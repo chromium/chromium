@@ -84,6 +84,16 @@
                        completionHandler:(void (^)(NSString* username,
                                                    NSString* password))handler;
 
+// Called when a request receives an authentication challenge specified by
+// `protectionSpace`, and is unable to respond using cached credentials.
+// Clients must call `handler` even if they want to cancel authentication
+// (in which case `identity` should be nil).
+- (void)webState:(web::WebState*)webState
+    didRequestClientCertAuthForProtectionSpace:
+        (NSURLProtectionSpace*)protectionSpace
+                             completionHandler:
+                                 (void (^)(SecIdentityRef))handler;
+
 // Called to know the size of the view containing the WebView.
 - (UIView*)webViewContainerForWebState:(web::WebState*)webState;
 
@@ -149,7 +159,10 @@ class WebStateDelegateBridge : public web::WebStateDelegate {
   void OnAuthRequired(WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      AuthCallback callback) override;
+                      HTTPAuthCallback callback) override;
+  void OnAuthRequired(WebState* source,
+                      NSURLProtectionSpace* protection_space,
+                      ClientCertAuthCallback callback) override;
   UIView* GetWebViewContainer(WebState* source) override;
   void ContextMenuConfiguration(
       WebState* source,

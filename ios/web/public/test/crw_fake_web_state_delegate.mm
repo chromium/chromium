@@ -23,7 +23,9 @@
 @synthesize cutAllowedRequested = _cutAllowedRequested;
 @synthesize didFinishClipboardReadRequested = _didFinishClipboardReadRequested;
 @synthesize permissionsRequestHandled = _permissionsRequestHandled;
-@synthesize authenticationRequested = _authenticationRequested;
+@synthesize httpAuthenticationRequested = _httpAuthenticationRequested;
+@synthesize clientCertAuthenticationRequested =
+    _clientCertAuthenticationRequested;
 @synthesize isAppLaunchingAllowedForWebStateReturnValue =
     _isAppLaunchingAllowedForWebStateReturnValue;
 
@@ -101,7 +103,16 @@
                        completionHandler:(void (^)(NSString* username,
                                                    NSString* password))handler {
   _webState = webState;
-  _authenticationRequested = YES;
+  _httpAuthenticationRequested = YES;
+}
+
+- (void)webState:(web::WebState*)webState
+    didRequestClientCertAuthForProtectionSpace:
+        (NSURLProtectionSpace*)protectionSpace
+                             completionHandler:
+                                 (void (^)(SecIdentityRef))handler {
+  _webState = webState;
+  _clientCertAuthenticationRequested = YES;
 }
 
 - (const web::WebState::OpenURLParams*)openURLParams {

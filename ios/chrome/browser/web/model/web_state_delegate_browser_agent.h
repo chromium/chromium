@@ -82,7 +82,10 @@ class WebStateDelegateBrowserAgent
   void OnAuthRequired(web::WebState* source,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      AuthCallback callback) override;
+                      HTTPAuthCallback callback) override;
+  void OnAuthRequired(web::WebState* source,
+                      NSURLProtectionSpace* protection_space,
+                      ClientCertAuthCallback callback) override;
   UIView* GetWebViewContainer(web::WebState* source) override;
   void ContextMenuConfiguration(
       web::WebState* source,

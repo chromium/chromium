@@ -212,9 +212,16 @@ class PrerenderBrowserAgent::Delegate final
   void OnAuthRequired(web::WebState* web_state,
                       NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      AuthCallback callback) final {
+                      HTTPAuthCallback callback) final {
     agent_->ScheduleCancelPrerender();
     std::move(callback).Run(nil, nil);
+  }
+
+  void OnAuthRequired(web::WebState* web_state,
+                      NSURLProtectionSpace* protection_space,
+                      ClientCertAuthCallback callback) final {
+    agent_->ScheduleCancelPrerender();
+    std::move(callback).Run(nil);
   }
 
   UIView* GetWebViewContainer(web::WebState* web_state) final {

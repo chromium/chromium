@@ -537,6 +537,15 @@ inline constexpr char kDarkModeParameterDarkValue[] = "1";
       webState, protectionSpace, proposedCredential, base::BindOnce(handler));
 }
 
+- (void)webState:(web::WebState*)webState
+    didRequestClientCertAuthForProtectionSpace:
+        (NSURLProtectionSpace*)protectionSpace
+                             completionHandler:
+                                 (void (^)(SecIdentityRef))handler {
+  _browserWebStateDelegate->OnAuthRequired(webState, protectionSpace,
+                                           base::BindOnce(handler));
+}
+
 // This API can be used to show custom input views in the web view.
 - (id<CRWResponderInputView>)webStateInputViewProvider:
     (web::WebState*)webState {

@@ -161,7 +161,9 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
                               bool initiated_by_user);
   void OnAuthRequired(NSURLProtectionSpace* protection_space,
                       NSURLCredential* proposed_credential,
-                      WebStateDelegate::AuthCallback callback);
+                      WebStateDelegate::HTTPAuthCallback callback);
+  void OnAuthRequired(NSURLProtectionSpace* protection_space,
+                      WebStateDelegate::ClientCertAuthCallback callback);
   void RetrieveExistingFrames();
 
   // WebState:

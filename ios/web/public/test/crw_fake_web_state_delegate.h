@@ -37,9 +37,12 @@
 @property(nonatomic, readonly) BOOL javaScriptDialogPresenterRequested;
 // Whether `webState:handlePermissions:decisionHandler` has been called or not.
 @property(nonatomic, readonly) BOOL permissionsRequestHandled;
-// Whether `webState:didRequestHTTPAuthForProtectionSpace:...| has been called
+// Whether `webState:didRequestHTTPAuthForProtectionSpace:...` has been called
 // or not.
-@property(nonatomic, readonly) BOOL authenticationRequested;
+@property(nonatomic, readonly) BOOL httpAuthenticationRequested;
+// Whether `webState:didRequestClientCertAuthForProtectionSpace:...` has been
+// called or not.
+@property(nonatomic, readonly) BOOL clientCertAuthenticationRequested;
 // Specifies the return value of `isAppLaunchingAllowedForWebState:`.
 @property(nonatomic) BOOL isAppLaunchingAllowedForWebStateReturnValue;
 

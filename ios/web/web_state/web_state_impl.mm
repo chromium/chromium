@@ -405,10 +405,17 @@ WebState* WebStateImpl::CreateNewWebState(const GURL& url,
 
 void WebStateImpl::OnAuthRequired(NSURLProtectionSpace* protection_space,
                                   NSURLCredential* proposed_credential,
-                                  WebStateDelegate::AuthCallback callback) {
+                                  WebStateDelegate::HTTPAuthCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   RealizedState()->OnAuthRequired(protection_space, proposed_credential,
                                   std::move(callback));
+}
+
+void WebStateImpl::OnAuthRequired(
+    NSURLProtectionSpace* protection_space,
+    WebStateDelegate::ClientCertAuthCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  RealizedState()->OnAuthRequired(protection_space, std::move(callback));
 }
 
 void WebStateImpl::CancelDialogs() {

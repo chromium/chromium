@@ -73,8 +73,14 @@ void WebStateDelegate::HandlePermissionsDecisionRequest(
 void WebStateDelegate::OnAuthRequired(WebState* source,
                                       NSURLProtectionSpace* protection_space,
                                       NSURLCredential* proposed_credential,
-                                      AuthCallback callback) {
+                                      HTTPAuthCallback callback) {
   std::move(callback).Run(nil, nil);
+}
+
+void WebStateDelegate::OnAuthRequired(WebState* source,
+                                      NSURLProtectionSpace* protection_space,
+                                      ClientCertAuthCallback callback) {
+  std::move(callback).Run(nil);
 }
 
 UIView* WebStateDelegate::GetWebViewContainer(WebState* source) {
