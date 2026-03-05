@@ -1203,12 +1203,14 @@ message MetaTag {
 }
 
 // Metadata about a frame.
-// Next ID: 3
+// Next ID: 4
 message FrameMetadata {
   // The URL of the frame.
   string url = 1 [features = { field_presence: EXPLICIT }];
 
   repeated MetaTag meta_tags = 2;
+
+  bool has_media_transcripts = 3 [features = { field_presence: EXPLICIT }];
 }
 
 // Metadata (URL and meta tags) from page content. Includes data from meta tags

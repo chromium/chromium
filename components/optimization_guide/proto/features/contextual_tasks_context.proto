@@ -33,12 +33,23 @@ message ContextualTasksContextQuality {
 
   // The version of the model generating the query embedding.
   int64 embedding_model_version = 3 [features = { field_presence: EXPLICIT }];
+
+  // Number of words in the query.
+  int32 number_of_query_words = 4 [features = { field_presence: EXPLICIT }];
+
+  // The mode of tab selection. `aggregate_tab_score` is set based on the mode.
+  TabSelectionMode tab_selection_mode = 5 [features = { field_presence: EXPLICIT }];
 }
 
-// Next ID: 7
+// Next ID: 10
 message ContextualTasksTabContext {
   // The highest query-passage embedding score for the tab.
-  float best_embedding_score = 1 [features = { field_presence: EXPLICIT }];
+  // Note that, the fields 7, 8 have been added later to store all the
+  // embeddings match scores.
+  float best_embedding_score = 1 [
+    deprecated = true,
+    features = { field_presence: EXPLICIT }
+  ];
 
   // The number of seconds since the tab was last active.
   int64 seconds_since_last_active = 2 [features = { field_presence: EXPLICIT }];
@@ -53,6 +64,17 @@ message ContextualTasksTabContext {
   // The number of seconds spent on the tab while it was last being active (i.e
   // while it was in the foreground).
   int64 seconds_of_last_visit = 6 [features = { field_presence: EXPLICIT }];
+
+  // Cosine similarity between the query embedding and the tab title embedding.
+  float query_title_similarity = 7 [features = { field_presence: EXPLICIT }];
+
+  // Cosine similarity scores between the query embedding and embeddings of
+  // up to N (currently 10) passages from the tab.
+  repeated float query_passage_similarities = 8;
+
+  // Cosine similarity between the active tab's title and this candidate tab's
+  // title.
+  float active_tab_title_similarity = 9 [features = { field_presence: EXPLICIT }];
 
   // ////////////////////////////////////////////////////////////////////////////
   // Fields below are some sort of label groundtruth.
@@ -70,4 +92,17 @@ enum ContextualTasksSurface {
   CONTEXTUAL_TASK_SURFACE_OMNIBOX = 2;
 
   CONTEXTUAL_TASK_SURFACE_CONTEXTUAL_TASKS_UI = 3;
+}
+
+// The mode of tab selection. `aggregate_tab_score` is set based on the mode.
+enum TabSelectionMode {
+  TAB_SELECTION_MODE_UNKNOWN = 0;
+
+  TAB_SELECTION_MODE_STATIC_SIGNALS = 1;
+
+  TAB_SELECTION_MODE_STATIC_AND_ENGAGEMENT_SIGNALS = 2;
+
+  TAB_SELECTION_MODE_STATIC_ML_MODEL = 3;
+
+  TAB_SELECTION_MODE_STATIC_ML_MODEL_AND_ENGAGEMENT_SIGNALS = 4;
 }
