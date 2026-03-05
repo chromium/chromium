@@ -1159,6 +1159,21 @@
             ]
         }
     ],
+    "AndroidSetupList": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AndroidSetupList"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidSmsOtpFilling": [
         {
             "platforms": [
