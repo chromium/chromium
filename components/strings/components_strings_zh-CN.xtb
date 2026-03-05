@@ -1402,6 +1402,7 @@
 <translation id="3226387218769101247">缩略图</translation>
 <translation id="3227137524299004712">麦克风</translation>
 <translation id="3229041911291329567">与您的设备和浏览器相关的版本信息</translation>
+<translation id="3229254977651514276">请检查日期</translation>
 <translation id="3229277193950731405">复制版本字符串</translation>
 <translation id="323107829343500871">输入“<ph name="CREDIT_CARD" />”的银行卡验证码 (CVC)</translation>
 <translation id="323585066388831737">浅红色</translation>
@@ -1840,6 +1841,7 @@
 <translation id="3927932062596804919">拒绝</translation>
 <translation id="3928806096717999469">修改，在新窗口中打开</translation>
 <translation id="3930260846839546333">手提包和钱包</translation>
+<translation id="393417216277380082">移动传感器和光传感器</translation>
 <translation id="3937834511546249636">国防工业</translation>
 <translation id="3939773374150895049">要改用 WebAuthn 来取代银行卡验证码 (CVC) 吗？</translation>
 <translation id="3941630233824954464">启用强制性身份重新验证</translation>
@@ -1906,6 +1908,7 @@
 <translation id="4031179711345676612">已允许使用麦克风</translation>
 <translation id="4036753017940930924">地块与土地</translation>
 <translation id="403724377879219932">可以请求访问本地网络中的其他设备</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />，新增项目</translation>
 <translation id="4039506337798853114">若要显示光标，请按 |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">大致位置</translation>
 <translation id="4045070493270310437">重新打开标签页</translation>
@@ -2526,6 +2529,7 @@
 <translation id="5018802455907704660">16 x 20 英寸</translation>
 <translation id="5019198164206649151">后备存储状态不佳</translation>
 <translation id="5019293549442035120">您可以在各种 Google 产品中使用已保存的地址。此地址将保存到您的 Google 账号 <ph name="USER_EMAIL" />。</translation>
+<translation id="5019819206251569004">移动传感器和光传感器</translation>
 <translation id="5019952743397118625">已设置 <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> 政策。<ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> 不会控制开发者模式在扩展程序页面上的使用情况。</translation>
 <translation id="5021500396464456616">请与发送此链接的人联系</translation>
 <translation id="5021557570875267742">使用 Chrome 跟踪价格</translation>
@@ -2569,6 +2573,7 @@
 <translation id="5093232627742069661">Z 型折</translation>
 <translation id="5093417502834168387">登录时遇到问题？请试试其他方式</translation>
 <translation id="5094747076828555589">此服务器无法证明它是<ph name="DOMAIN" />；Chromium不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
+<translation id="5096066272198024688">正在保存您的信息…</translation>
 <translation id="5097099694988056070">设备统计信息（例如 CPU/RAM 使用情况）</translation>
 <translation id="5097468150760963273">27 x 39 英寸</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -2633,6 +2638,7 @@
 <translation id="5190835502935405962">书签栏</translation>
 <translation id="5191315092027169558">您的个人资料由 <ph name="DOMAIN" /> 管理</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> 想下载多个文件</translation>
+<translation id="5199121357983849992">要保存身份证吗？</translation>
 <translation id="5200063972779787617">将地址保存到账号</translation>
 <translation id="5201306358585911203">此网页上的嵌入式页面显示</translation>
 <translation id="5203716867500274632">管理员允许在 ChromeOS 设备的先前会话和当前会话之间同步以下数据：</translation>
@@ -2791,6 +2797,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">将此银行卡验证码 (CVC) 保存到 Google 钱包 (<ph name="ACCOUNT_EMAIL" />) 中可加快结账速度</translation>
 <translation id="5436307623797390637">设备上的应用</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />，原来为 <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">逆转顺序，正面朝上</translation>
 <translation id="5447235695608032700">允许 <ph name="SITE" /> 使用其保存的与您相关的信息</translation>
 <translation id="5447973833955560753">恢复密码</translation>
@@ -3772,6 +3779,7 @@
 <translation id="7003278537452757231">地垫与地毯</translation>
 <translation id="7003322000677139268">车辆零配件</translation>
 <translation id="7004499039102548441">最近打开的标签页</translation>
+<translation id="700483187606163535">您的信息会保存到 <ph name="ACCOUNT" /> 的 <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" />。您可以在各项 Google 产品中使用它更快地填写表单。</translation>
 <translation id="7006930604109697472">仍然发送</translation>
 <translation id="7009364359744329733">此卡目前不可用，请稍后再试。</translation>
 <translation id="7010658264061801199">餐饮</translation>
@@ -4073,6 +4081,7 @@
 <translation id="746412105358554870">JavaScript 优化和安全性</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> 会知道您访问过 <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 英寸</translation>
+<translation id="7467332121947433617">要更新身份证吗？</translation>
 <translation id="7469935732330206581">表单不安全</translation>
 <translation id="7470854469646445678">请提供复制原因（必填）</translation>
 <translation id="7471007961486718967">请提供转移原因（必填）</translation>

@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">Нет доступных мест для скачивания</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Вы использовали аккаунт на этом сайте</translation>
 <translation id="4214315110991671325">Если вы разрешили использование файлов cookie, Chrome может применять их для предзагрузки.</translation>
+<translation id="421517251707893998">Нажмите "Закрепить для быстрого доступа".</translation>
 <translation id="4216511743389425832">Озвучить эту страницу</translation>
 <translation id="4225725533026049334">Вы подписаны</translation>
 <translation id="4225895483398857530">Кнопка на панели инструментов</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Перезапустить Chrome</translation>
 <translation id="6513924416597632811">Скопировать ссылку на страницу результатов поиска по запросу: <ph name="SEARCH_QUERY" />. Источник: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Подтвердить</translation>
+<translation id="6521218807522232085">Создавайте, сохраняйте и изменяйте пароли. Быстрый доступ к ним позволит вам легко входить в аккаунты.</translation>
 <translation id="6527303717912515753">Поделиться</translation>
 <translation id="652948702951888897">История Chrome</translation>
 <translation id="6532866250404780454">В сервисе больше не будут отображаться данные о сайтах, которые вы посещаете в Chrome. Кроме того, будут удалены все таймеры сайтов.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">Войдите в аккаунт на нужном сайте.</translation>
 <translation id="6684809838922667136">Сделайте браузер Chrome лучше</translation>
 <translation id="6689436252814043643">Режим чтения недоступен.</translation>
+<translation id="669971068476817798">Нажмите "Сохранить".</translation>
 <translation id="6700279777779583398">Предпочтения сохранены</translation>
 <translation id="670498945988402717">Проверено вчера.</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">Генерировать описания изображений?</translation>
 <translation id="7057969023583258980">Открыть всю историю Chrome</translation>
 <translation id="7063006564040364415">Не удалось связаться с сервером синхронизации</translation>
+<translation id="7063106218165698546">Настройте группу вкладок и нажмите "Готово".</translation>
 <translation id="7071521146534760487">Настройки аккаунта</translation>
 <translation id="707155805709242880">Выберите ниже, что нужно синхронизировать.</translation>
 <translation id="7077143737582773186">SD-карта</translation>

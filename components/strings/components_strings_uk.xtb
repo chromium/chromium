@@ -1404,6 +1404,7 @@
 <translation id="3226387218769101247">Ескізи</translation>
 <translation id="3227137524299004712">Мікрофон</translation>
 <translation id="3229041911291329567">Інформація про версії пристрою та веб-переглядача</translation>
+<translation id="3229254977651514276">Перевірте дату</translation>
 <translation id="3229277193950731405">Копіювати сегмент з інформацією про версію</translation>
 <translation id="323107829343500871">Ввести код CVC картки <ph name="CREDIT_CARD" /></translation>
 <translation id="323585066388831737">Світло-червоний</translation>
@@ -1844,6 +1845,7 @@
 <translation id="3927932062596804919">Відмовити</translation>
 <translation id="3928806096717999469">Редагувати (відкриється нове вікно)</translation>
 <translation id="3930260846839546333">Сумочки й гаманці</translation>
+<translation id="393417216277380082">Датчики руху й освітлення</translation>
 <translation id="3937834511546249636">Оборонна промисловість</translation>
 <translation id="3939773374150895049">Використовувати веб-автентифікацію замість коду CVC?</translation>
 <translation id="3941630233824954464">Увімкнути обов’язкову повторну автентифікацію</translation>
@@ -2531,6 +2533,7 @@
 <translation id="5018802455907704660">16 x 20 дюйм.</translation>
 <translation id="5019198164206649151">Резервний носій пошкоджено</translation>
 <translation id="5019293549442035120">Ви можете використовувати збережені адреси в усіх продуктах Google. Цю адресу буде збережено у вашому обліковому записі Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="5019819206251569004">датчики руху й освітлення</translation>
 <translation id="5019952743397118625">Правило <ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> налаштовано. Правило <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> не керуватиме доступністю режиму розробника на сторінці розширень.</translation>
 <translation id="5021500396464456616">Зв’яжіться з користувачем, який надіслав це посилання</translation>
 <translation id="5021557570875267742">Відстежуйте ціни за допомогою Chrome</translation>
@@ -2574,6 +2577,7 @@
 <translation id="5093232627742069661">Зігнути гармошкою</translation>
 <translation id="5093417502834168387">Не можете ввійти в обліковий запис? Спробуйте інший спосіб.</translation>
 <translation id="5094747076828555589">Цей сервер не зміг довести, що він – домен <ph name="DOMAIN" />. Chromium не вважає його сертифікат безпеки надійним. Імовірні причини: неправильна конфігурація або хтось намагається перехопити ваше з’єднання.</translation>
+<translation id="5096066272198024688">Зберігання інформації…</translation>
 <translation id="5097099694988056070">Статистика пристрою, як-от використання ЦП чи оперативної пам’яті</translation>
 <translation id="5097468150760963273">27 x 39 дюйм.</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -3780,6 +3784,7 @@
 <translation id="7003278537452757231">Килими й килимові покриття</translation>
 <translation id="7003322000677139268">Запасні частини й аксесуари для транспортних засобів</translation>
 <translation id="7004499039102548441">Останні вкладки</translation>
+<translation id="700483187606163535">Вашу інформацію збережено в сервісі <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> для облікового запису <ph name="ACCOUNT" />. Ви можете використовувати її в продуктах Google, щоб швидше заповнювати форми.</translation>
 <translation id="7006930604109697472">Усе одно надіслати</translation>
 <translation id="7009364359744329733">Ця картка зараз недоступна. Повторіть спробу пізніше.</translation>
 <translation id="7010658264061801199">Їжа й напої</translation>

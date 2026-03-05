@@ -699,7 +699,7 @@
 <translation id="6438480100790416671">स्टोरेज के लिए बची जगह की जांच की जा रही है…</translation>
 <translation id="6451527188465304418">आपके संगठन की सुरक्षा नीतियों के मुताबिक इस फ़ाइल की जांच की जा रही है...</translation>
 <translation id="6480474281747138552">यूएस प्रोग्रामर ड्वोरक</translation>
-<translation id="6483241221370343062">बेहतर बनाओ</translation>
+<translation id="6483241221370343062">पोलिश</translation>
 <translation id="6485131920355264772">स्थान जानकारी पाने में विफल रहा</translation>
 <translation id="6495925982925244349"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल की क्षमता <ph name="SIGNAL_STRENGTH" />%, आपका एडमिन प्रबंधित करता है, जानकारी</translation>
 <translation id="649877868557234318"><ph name="FILE_NAME" /> को <ph name="FOLDER_NAME" /> में एक्सट्रैक्ट किया जा रहा है</translation>
@@ -798,7 +798,7 @@
 <translation id="7180611975245234373">रीफ्रेश करें</translation>
 <translation id="7189874332498648577"><ph name="NUMBER_OF_GB" /> जीबी</translation>
 <translation id="7191454237977785534">फ़ाइल को इस रूप में सेव करें</translation>
-<translation id="7192364647705823015">क्रोएशन</translation>
+<translation id="7192364647705823015">क्रोएशियन</translation>
 <translation id="7224162581405244205">आइसलैंडिक</translation>
 <translation id="7229570126336867161">EVDO की आवश्यकता है</translation>
 <translation id="7230898482850090046">आपके एडमिन ने आपसे "सिम लॉक करें" सेटिंग बंद करने का अनुरोध किया है</translation>
@@ -983,7 +983,7 @@
 <translation id="8512483403832814140">किसी भी समय</translation>
 <translation id="853494022971700746">फ़्रेंच (फ़्रांस)</translation>
 <translation id="8540608333167683902"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, जानकारी</translation>
-<translation id="8543218582821188600">कनेडियन अंग्रेज़ी</translation>
+<translation id="8543218582821188600">कनेडियन इंग्लिश</translation>
 <translation id="8545476925160229291">अंग्रेज़ी (यूएस)</translation>
 <translation id="854655314928502177">वेब प्रॉक्सी अपने आप खोज संबंधी URL:</translation>
 <translation id="8547747809824590510">आपके एडमिन ने प्रॉक्सी ओवरराइड के नियम सेट किए हैं</translation>

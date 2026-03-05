@@ -1404,6 +1404,7 @@
 <translation id="3226387218769101247">תמונות ממוזערות</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
 <translation id="3229041911291329567">פרטי גרסה של המכשיר והדפדפן</translation>
+<translation id="3229254977651514276">צריך לבדוק שהתאריך תקין</translation>
 <translation id="3229277193950731405">העתקת מחרוזת הגרסה</translation>
 <translation id="323107829343500871">יש להזין את קוד האימות של הכרטיס <ph name="CREDIT_CARD" /></translation>
 <translation id="323585066388831737">אדום בהיר</translation>
@@ -1910,6 +1911,7 @@
 <translation id="4031179711345676612">ניתן להשתמש במיקרופון בדף זה</translation>
 <translation id="4036753017940930924">חלקות וקרקעות</translation>
 <translation id="403724377879219932">האתר יכול לבקש הרשאה להתחבר למכשירים אחרים ברשת המקומית</translation>
+<translation id="4038863931942689384">‫<ph name="ATTRIBUTE_VALUE" />, חדש</translation>
 <translation id="4039506337798853114">כדי להציג את הסמן, צריך ללחוץ על |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">משוער</translation>
 <translation id="4045070493270310437">פתיחה מחדש של כרטיסיות</translation>
@@ -2800,6 +2802,7 @@ Del</translation>
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">‏כדי לשלם מהר יותר, כדאי לשמור את קוד האימות (CVC) ב-Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">אפליקציות במכשיר</translation>
+<translation id="5441409130426352029">‫<ph name="ATTRIBUTE_VALUE" />, היה <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">בסדר הפוך עם הפנים כלפי מעלה</translation>
 <translation id="5447235695608032700">מתן הרשאה לאתר <ph name="SITE" /> להשתמש במידע עליך שנשמר בו</translation>
 <translation id="5447973833955560753">סיסמה לשחזור</translation>

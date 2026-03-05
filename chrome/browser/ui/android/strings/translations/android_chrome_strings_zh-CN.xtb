@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">没有可用的下载内容保存位置</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 您曾通过该账号访问此网站</translation>
 <translation id="4214315110991671325">如果您允许使用 Cookie，Chrome 便可能会使用 Cookie 进行预加载。</translation>
+<translation id="421517251707893998">点按“固定此快捷方式”</translation>
 <translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4225725533026049334">已关注</translation>
 <translation id="4225895483398857530">工具栏中的快捷方式</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">重新启动 Chrome</translation>
 <translation id="6513924416597632811">复制指向以下搜索查询的搜索结果页的链接：<ph name="SEARCH_QUERY" />。来源：<ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">验证</translation>
+<translation id="6521218807522232085">您可以创建、保存和管理密码，以便轻松登录</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="652948702951888897">Chrome 历史记录</translation>
 <translation id="6532866250404780454">您在 Chrome 中访问的网站不会显示。所有网站计时器都会被删除。</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">登录相应网站</translation>
 <translation id="6684809838922667136">帮助改善 Chrome</translation>
 <translation id="6689436252814043643">无法使用阅读模式</translation>
+<translation id="669971068476817798">点按“保存”</translation>
 <translation id="6700279777779583398">已保存选择</translation>
 <translation id="670498945988402717">昨天检查过</translation>
 <translation id="6710213216561001401">上一项</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">获取图片说明？</translation>
 <translation id="7057969023583258980">打开完整的 Chrome 历史记录</translation>
 <translation id="7063006564040364415">无法连接到同步服务器。</translation>
+<translation id="7063106218165698546">自定义标签页分组，然后点按“完成”</translation>
 <translation id="7071521146534760487">管理账号</translation>
 <translation id="707155805709242880">请在下方选择要同步的内容</translation>
 <translation id="7077143737582773186">SD 卡</translation>

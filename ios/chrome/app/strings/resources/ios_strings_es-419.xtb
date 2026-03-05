@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{El favorito se guardó en "{title}" en tu cuenta ({email})}other{{count} favoritos se guardaron en "{title}" en tu cuenta ({email})}}</translation>
 <translation id="1207493287814084192">5:30 p.m.</translation>
 <translation id="1217294226280635614">Vista dividida</translation>
+<translation id="1218730690561976633">Activa o desactiva la verificación de usuario de autocompletado mejorado</translation>
 <translation id="1219674500290482172">No se puede establecer conexión con Internet.</translation>
 <translation id="1223498995510244364">Resumir</translation>
 <translation id="1227113644794103810">Pestañas inactivas</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Error al compartir por falta de conexión a la red</translation>
 <translation id="1668001730617725852">Abrir en un nuevo grupo de pestañas</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> a <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Según las políticas de tu organización, es posible que este archivo contenga información sensible</translation>
 <translation id="168389590065701766">Ahora puedes abrir Google Lens desde la barra de direcciones y buscar lo que ves</translation>
 <translation id="1689333818294560261">Sobrenombre</translation>
 <translation id="169048873465870056">¿Quieres quitar la pestaña y borrar el grupo?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">También puedes usar las contraseñas guardadas en tus otros dispositivos.</translation>
 <translation id="3177338796769255211">Accede para obtener tus favoritos y más en todos tus dispositivos</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y tu dispositivo de sitios peligrosos)</translation>
+<translation id="3183362380688692618">Nuevo grupo de pestañas…</translation>
 <translation id="3186796054637504691">Borrar historial y datos del sitio web</translation>
 <translation id="3190736958609431397">Dejar de realizar el seguimiento</translation>
 <translation id="3208260410153224535">Tu organización desactivó el acceso. Los favoritos, las contraseñas y otros elementos nuevos se guardarán solo en este dispositivo.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} de {count} forma de pago}other{{position} de {count} formas de pago}}</translation>
 <translation id="5075939510584558547">Guardar sin encriptación</translation>
 <translation id="5076534614343816664">Seguimiento de precios</translation>
+<translation id="507762438756999615">No se puede compartir el archivo debido a las políticas de tu organización</translation>
 <translation id="5078303485429639424">Activar las notificaciones de <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Usar la contraseña sugerida</translation>
 <translation id="5083464117946352670">Tamaño de archivo desconocido</translation>
@@ -1969,6 +1973,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8059533439631660104">Contrae la sección.</translation>
 <translation id="8061584726507121204">Historial</translation>
 <translation id="8064946459644399612">Se aplicaron tus preferencias de la página Nueva pestaña</translation>
+<translation id="8065136076319366194">No se recomienda guardar</translation>
 <translation id="8065556469005366939">Comparte tus pestañas para obtener respuestas más pertinentes</translation>
 <translation id="8069394452933076548">Elige cuándo quieres que las pestañas que no se usaron recientemente pasen a la sección de pestañas inactivas.</translation>
 <translation id="8073670137947914548">Descarga completa</translation>
@@ -1991,6 +1996,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8132598642024322408">El precio actual es <ph name="PRICE" />; antes costaba <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Usa una contraseña única para cada sitio o app. Si otra persona descubre una contraseña reutilizada, podrá usarla para acceder a otras cuentas. Haz clic para abrir el sitio web y cambiarlas ahora.</translation>
+<translation id="8133810265969517544">No se recomienda compartir</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} pestaña cerrada}other{{count} pestañas cerradas}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 más}other{# más}}</translation>
 <translation id="8150167929304790980">Nombre completo</translation>
@@ -2240,6 +2246,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="8976414606286374109">Las tarjetas se guardan en tu Cuenta de Google.</translation>
 <translation id="8981454092730389528">Controles de actividad de Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, sitio fijado</translation>
+<translation id="8990960056509724223">No se pudo guardar el archivo debido a las políticas de tu organización</translation>
 <translation id="8998289560386111590">No está disponible en tu dispositivo</translation>
 <translation id="9000532564152265066">Todas las pestañas</translation>
 <translation id="9003677638446136377">Volver a comprobar</translation>

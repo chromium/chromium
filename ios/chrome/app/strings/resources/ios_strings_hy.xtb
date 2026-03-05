@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Էջանիշը պահվեց {email} հաշվի «{title}» պանակում}one{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}other{{count} էջանիշ պահվեց {email} հաշվի «{title}» պանակում}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Տրոհված էկրան</translation>
+<translation id="1218730690561976633">Միացնել/անջատել բարելավված ինքնալրացման օգտատիրոջ հաստատումը</translation>
 <translation id="1219674500290482172">Հնարավոր չէ միանալ համացանցին:</translation>
 <translation id="1223498995510244364">Ամփոփել</translation>
 <translation id="1227113644794103810">Ոչ ակտիվ ներդիրներ</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Չհաջողվեց համօգտագործել, քանի որ դուք միացած չեք ցանցին:</translation>
 <translation id="1668001730617725852">Բացել ներդիրների նոր խմբում</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" />ից <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Ձեր կազմակերպության կանոնների համաձայն՝ այս ֆայլը կարող է զգայուն տեղեկություններ պարունակել</translation>
 <translation id="168389590065701766">Այժմ դուք կարող եք բացել Google Տեսապակին ձեր հասցեագոտուց և որոնել ցանկացած բան, ինչ տեսնում եք</translation>
 <translation id="1689333818294560261">Կեղծանուն</translation>
 <translation id="169048873465870056">Հեռացնե՞լ ներդիրը և ջնջել խումբը</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">Պահված գաղտնաբառերը կարող եք նաև օգտագործել ձեր մյուս սարքերում։</translation>
 <translation id="3177338796769255211">Մուտք գործեք՝ ձեր էջանիշները և մյուս տվյալները ձեր բոլոր սարքերում օգտագործելու համար</translation>
 <translation id="3181954750937456830">Անվտանգ դիտարկում (պաշտպանում է ձեզ և ձեր սարքը վտանգավոր կայքերից)</translation>
+<translation id="3183362380688692618">Ներդիրների նոր խումբ...</translation>
 <translation id="3186796054637504691">Մաքրել պատմությունը և կայքերի տվյալները</translation>
 <translation id="3190736958609431397">Այլևս չհետագծել</translation>
 <translation id="3208260410153224535">Ձեր կազմակերպությունն անջատել է դիտարկիչում մուտք գործելու հնարավորությունը։ Նոր էջանիշները, գաղտնաբառերը և այլ տվյալներ կպահվեն միայն այս սարքում։</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{Վճարման {position} եղանակ՝ {count}-ից}one{Վճարման {position} եղանակ՝ {count}-ից}other{Վճարման {position} եղանակ՝ {count}-ից}}</translation>
 <translation id="5075939510584558547">Պահում առանց գաղտնագրման</translation>
 <translation id="5076534614343816664">Գների հետագծում</translation>
+<translation id="507762438756999615">Ձեր կազմակերպության կանոնների պատճառով ֆայլով հնարավոր չէ կիսվել</translation>
 <translation id="5078303485429639424">Միացնել «<ph name="FEATURE_NAME" />» գործառույթի ծանուցումները</translation>
 <translation id="5079950360618752063">Օգտագործել առաջարկված գաղտնաբառը</translation>
 <translation id="5083464117946352670">Չհաջողվեց որոշել ֆայլի չափը:</translation>
@@ -1969,6 +1973,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8059533439631660104">Կոծկում է բաժինը:</translation>
 <translation id="8061584726507121204">Պատմություն</translation>
 <translation id="8064946459644399612">Նոր ներդիրի էջի կարգավորումները կիրառվեցին</translation>
+<translation id="8065136076319366194">Խորհուրդ չի տրվում պահել</translation>
 <translation id="8065556469005366939">Կիսվեք ձեր ներդիրներով՝ ավելի դիպուկ պատասխաններ ստանալու համար</translation>
 <translation id="8069394452933076548">Ընտրեք, թե վերջերս չօգտագործված ներդիրները երբ պետք է տեղափոխվեն ոչ ակտիվ ներդիրների բաժին։</translation>
 <translation id="8073670137947914548">Ներբեռնումն ավարտվեց</translation>
@@ -1991,6 +1996,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8131740175452115882">Հաստատել</translation>
 <translation id="8132598642024322408">Նոր գինը՝ <ph name="PRICE" />, նախկին գինը՝ <ph name="PREVIOUS_PRICE" />։</translation>
 <translation id="813370552429173916">Յուրաքանչյուր կայքի կամ հավելվածի համար օգտագործեք չկրկնվող գաղտնաբառեր։ Եթե ինչ-որ մեկին հասանելի դառնա կրկնվող գաղտնաբառը, նա կկարողանա մտնել ձեր մյուս հաշիվները։ Սեղմեք՝ կայքը բացելու և գաղտնաբառերը փոխելու համար։</translation>
+<translation id="8133810265969517544">Խորհուրդ չի տրվում կիսվել</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} փակված ներդիր}one{{count} փակված ներդիր}other{{count} փակված ներդիր}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 այլ}one{# այլ}other{# այլ}}</translation>
 <translation id="8150167929304790980">Անուն, ազգանուն</translation>
@@ -2240,6 +2246,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8976414606286374109">Քարտերը պահվում են Google հաշվում։</translation>
 <translation id="8981454092730389528">Google-ի գործունեության կառավարներ</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, ամրացված կայք</translation>
+<translation id="8990960056509724223">Ձեր կազմակերպության կանոնների պատճառով ֆայլը չհաջողվեց պահել</translation>
 <translation id="8998289560386111590">Հասանելի չէ ձեր սարքում</translation>
 <translation id="9000532564152265066">Բոլոր ներդիրները</translation>
 <translation id="9003677638446136377">Ստուգել նորից</translation>

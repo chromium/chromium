@@ -1404,6 +1404,7 @@
 <translation id="3226387218769101247">ภาพขนาดย่อ</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
 <translation id="3229041911291329567">ข้อมูลเวอร์ชันเกี่ยวกับอุปกรณ์และเบราว์เซอร์</translation>
+<translation id="3229254977651514276">ตรวจสอบวันที่</translation>
 <translation id="3229277193950731405">คัดลอกสตริงเวอร์ชัน</translation>
 <translation id="323107829343500871">ป้อน CVC สำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="323585066388831737">สีแดงอ่อน</translation>
@@ -1909,6 +1910,7 @@
 <translation id="4031179711345676612">อนุญาตให้ใช้ไมโครโฟน</translation>
 <translation id="4036753017940930924">ที่ดินและแปลงที่ดิน</translation>
 <translation id="403724377879219932">สามารถขอเข้าถึงอุปกรณ์อื่นๆ ในเครือข่ายภายในของคุณ</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" /> ใหม่</translation>
 <translation id="4039506337798853114">หากต้องการแสดงเคอร์เซอร์ ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">โดยประมาณ</translation>
 <translation id="4045070493270310437">เปิดแท็บอีกครั้ง</translation>
@@ -2636,6 +2638,7 @@
 <translation id="5190835502935405962">แถบบุ๊กมาร์ก</translation>
 <translation id="5191315092027169558">โปรไฟล์ของคุณจัดการโดย <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> ต้องการดาวน์โหลดหลายไฟล์</translation>
+<translation id="5199121357983849992">บันทึกบัตรประชาชนไหม</translation>
 <translation id="5200063972779787617">บันทึกที่อยู่ในบัญชี</translation>
 <translation id="5201306358585911203">หน้าที่ฝังไว้ในหน้าเว็บนี้บอกว่า</translation>
 <translation id="5203716867500274632">ผู้ดูแลระบบได้เปิดใช้การซิงค์ต่อไปนี้ระหว่างเซสชันก่อนหน้าและปัจจุบันในอุปกรณ์ ChromeOS ของคุณ</translation>
@@ -2794,6 +2797,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">บันทึก CVC นี้ไว้ใน Google Wallet (<ph name="ACCOUNT_EMAIL" />) เพื่อให้ชำระเงินได้เร็วขึ้น</translation>
 <translation id="5436307623797390637">แอปในอุปกรณ์</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" /> จากเดิม <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">ลำดับย้อนกลับหงายหน้าขึ้น</translation>
 <translation id="5447235695608032700">อนุญาตให้ <ph name="SITE" /> ใช้ข้อมูลเกี่ยวกับคุณที่บันทึกไว้</translation>
 <translation id="5447973833955560753">รหัสผ่านสำหรับการกู้คืน</translation>
@@ -4077,6 +4081,7 @@
 <translation id="746412105358554870">การเพิ่มประสิทธิภาพและความปลอดภัยของ JavaScript</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> จะรู้ว่าคุณไปที่ <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 x 13 นิ้ว</translation>
+<translation id="7467332121947433617">อัปเดตบัตรประชาชนไหม</translation>
 <translation id="7469935732330206581">ฟอร์มไม่ปลอดภัย</translation>
 <translation id="7470854469646445678">ระบุเหตุผลในการคัดลอก (ต้องระบุ)</translation>
 <translation id="7471007961486718967">ระบุเหตุผลในการโอน (ต้องระบุ)</translation>

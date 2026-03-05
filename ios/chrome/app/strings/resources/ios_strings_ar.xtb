@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{تم حفظ الإشارة المرجعية في "{title}" ضِمن حسابك {email}}zero{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}two{تمّ حفظ إشارتَين مرجعيتَين ({count}) في "{title}" ضِمن حسابك {email}}few{تمّ حفظ {count} إشارات مرجعية في "{title}" ضِمن حسابك {email}}many{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}other{تمّ حفظ {count} إشارة مرجعية في "{title}" ضِمن حسابك {email}}}</translation>
 <translation id="1207493287814084192">‫5:30 مساءً</translation>
 <translation id="1217294226280635614">تقسيم العرض</translation>
+<translation id="1218730690561976633">إيقاف أو تفعيل التحقق من هوية المستخدم قبل الملء التلقائي المحسّن</translation>
 <translation id="1219674500290482172">يتعذر الاتصال بالإنترنت.</translation>
 <translation id="1223498995510244364">تلخيص</translation>
 <translation id="1227113644794103810">علامات التبويب غير النشطة</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">تعذّرت المشاركة بسبب عدم اتصالك بالشبكة.</translation>
 <translation id="1668001730617725852">الفتح في مجموعة علامات تبويب جديدة</translation>
 <translation id="1674504678466460478">من <ph name="SOURCE_LANGUAGE" /> إلى <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">استنادًا إلى سياسات مؤسستك، قد يحتوي هذا الملف على معلومات حساسة</translation>
 <translation id="168389590065701766">‏يمكنك الآن فتح "عدسة Google" من شريط العناوين والبحث في أي محتوى يظهر على الشاشة</translation>
 <translation id="1689333818294560261">اللقب</translation>
 <translation id="169048873465870056">هل تريد إزالة علامة التبويب وحذف المجموعة؟</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">يمكنك أيضًا استخدام كلمات المرور المحفوظة على أجهزتك الأخرى.</translation>
 <translation id="3177338796769255211">يمكنك تسجيل الدخول للوصول إلى الإشارات المرجعية وغير ذلك على جميع أجهزتك</translation>
 <translation id="3181954750937456830">التصفُّح الآمن (يحميك ويحمي جهازك من المواقع الإلكترونية الضارة)</translation>
+<translation id="3183362380688692618">مجموعة علامات تبويب جديدة…</translation>
 <translation id="3186796054637504691">محو السجلّ وبيانات المواقع الإلكترونية</translation>
 <translation id="3190736958609431397">إيقاف التتبُّع</translation>
 <translation id="3208260410153224535">أوقفت مؤسستك إمكانية تسجيل الدخول. سيتم حفظ كلمات المرور والإشارات المرجعية الجديدة وغيرها على هذا الجهاز فقط.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{‫{position} من إجمالي طريقة دفع واحدة ({count})}zero{‫{position} من إجمالي {count} طريقة دفع}two{‫{position} من إجمالي طريقتَي دفع ({count})}few{‫{position} من إجمالي {count} طُرق دفع}many{‫{position} من إجمالي {count} طريقة دفع}other{‫{position} من إجمالي {count} طريقة دفع}}</translation>
 <translation id="5075939510584558547">الحفظ بدون تشفير</translation>
 <translation id="5076534614343816664">تتبُّع الأسعار</translation>
+<translation id="507762438756999615">تتعذَّر مشاركة الملف بسبب سياسات مؤسستك</translation>
 <translation id="5078303485429639424">تفعيل إشعارات "<ph name="FEATURE_NAME" />"</translation>
 <translation id="5079950360618752063">استخدام كلمة مرور مُقترَحة</translation>
 <translation id="5083464117946352670">تعذر تحديد حجم الملف.</translation>
@@ -1967,6 +1971,7 @@
 <translation id="8059533439631660104">طي القسم.</translation>
 <translation id="8061584726507121204">السجلّ</translation>
 <translation id="8064946459644399612">تم تطبيق الإعدادات المفضّلة لصفحة "علامة تبويب جديدة"</translation>
+<translation id="8065136076319366194">لا يُنصح بحفظ الملف</translation>
 <translation id="8065556469005366939">يمكنك الحصول على ردود أكثر ملاءمةً من خلال مشاركة علامات التبويب</translation>
 <translation id="8069394452933076548">يمكنك اختيار وقت نقل علامات التبويب غير المستخدَمة مؤخرًا إلى قسم علامات التبويب غير النشطة.</translation>
 <translation id="8073670137947914548">اكتمل التنزيل</translation>
@@ -1989,6 +1994,7 @@
 <translation id="8131740175452115882">تأكيد</translation>
 <translation id="8132598642024322408">السعر الآن <ph name="PRICE" /> بعدما كان <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">استخدِم كلمة مرور فريدة لكل موقع إلكتروني أو تطبيق. فإذا اكتشف أحدهم كلمة مرور مستخدَمة لعدة حسابات، يمكنه استخدامها للدخول إلى حساباتك الأخرى. انقر لفتح الموقع الإلكتروني وتغيير كلمة المرور الآن.</translation>
+<translation id="8133810265969517544">لا يُنصح بمشاركة الملف</translation>
 <translation id="8135556271852808840">{count,plural, =1{تم إغلاق علامة تبويب ({count}) واحدة}zero{تم إغلاق {count} علامة تبويب}two{تم إغلاق علامتَي تبويب ({count})}few{تم إغلاق {count} علامات تبويب}many{تم إغلاق {count} علامة تبويب}other{تم إغلاق {count} علامة تبويب}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{اقتراح واحد آخر}zero{‫# اقتراح آخر}two{اقتراحان آخران}few{‫# اقتراحات}many{‫# اقتراحًا}other{‫# اقتراح}}</translation>
 <translation id="8150167929304790980">الاسم بالكامل</translation>
@@ -2239,6 +2245,7 @@
 <translation id="8976414606286374109">‏يتم حفظ بطاقات الائتمان في حسابك على Google.</translation>
 <translation id="8981454092730389528">‏عناصر التحكم في النشاط على Google</translation>
 <translation id="8988107725234939347">‫"<ph name="WEBSITE_TITLE" />"، موقع إلكتروني مثبَّت</translation>
+<translation id="8990960056509724223">يتعذَّر حفظ الملف بسبب سياسات مؤسستك</translation>
 <translation id="8998289560386111590">غير متاح على جهازك</translation>
 <translation id="9000532564152265066">جميع علامات التبويب</translation>
 <translation id="9003677638446136377">التحقق مرة أخرى</translation>

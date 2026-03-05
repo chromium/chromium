@@ -746,6 +746,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4198423547019359126">Tallennussijainteja ei ole saatavilla</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Käytit tällä sivustolla</translation>
 <translation id="4214315110991671325">Jos sallit evästeet, Chrome voi käyttää niitä esilataamiseen.</translation>
+<translation id="421517251707893998">Valitse Kiinnitä pikakuvake</translation>
 <translation id="4216511743389425832">Kuuntele tämä sivu</translation>
 <translation id="4225725533026049334">Seurataan</translation>
 <translation id="4225895483398857530">Työkalupalkin pikakuvake</translation>
@@ -1325,6 +1326,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6508722015517270189">Käynnistä Chrome uudelleen.</translation>
 <translation id="6513924416597632811">Kopioi linkki hakutulossivulle: <ph name="SEARCH_QUERY" />. Lähde: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">Vahvista</translation>
+<translation id="6521218807522232085">Luo, tallenna ja ylläpidä salasanoja, jotta voit kirjautua helposti sisään</translation>
 <translation id="6527303717912515753">Jaa</translation>
 <translation id="652948702951888897">Chromen historia</translation>
 <translation id="6532866250404780454">Chromessa käyttämäsi sivustot eivät näy. Kaikki sivuston ajastimet poistetaan.</translation>
@@ -1373,6 +1375,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6684262542644248484">Kirjaudu sisään sivustolle</translation>
 <translation id="6684809838922667136">Entistä parempi Chrome</translation>
 <translation id="6689436252814043643">Lukutila ei ole käytettävissä</translation>
+<translation id="669971068476817798">Valitse Tallenna</translation>
 <translation id="6700279777779583398">Valinnat tallennettu</translation>
 <translation id="670498945988402717">Tarkistettu eilen</translation>
 <translation id="6710213216561001401">Edellinen</translation>
@@ -1482,6 +1485,7 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7054588988317389591">Muodostetaanko kuvaselitykset?</translation>
 <translation id="7057969023583258980">Avaa koko Chrome-historia</translation>
 <translation id="7063006564040364415">Synkronointipalvelimeen ei saada yhteyttä.</translation>
+<translation id="7063106218165698546">Muokkaa välilehtiryhmää ja valitse Valmis</translation>
 <translation id="7071521146534760487">Hallinnoi tiliä</translation>
 <translation id="707155805709242880">Valitse synkronoitava sisältö alta</translation>
 <translation id="7077143737582773186">Secure Digital</translation>

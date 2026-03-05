@@ -1402,6 +1402,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="3226387218769101247">Indexképek</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Az eszköz és a böngésző verzióadatai</translation>
+<translation id="3229254977651514276">Ellenőrizze a dátumot</translation>
 <translation id="3229277193950731405">Verzió-karakterlánc másolása</translation>
 <translation id="323107829343500871">Adja meg a(z) <ph name="CREDIT_CARD" /> kártya CVC-kódját</translation>
 <translation id="323585066388831737">Világospiros</translation>
@@ -1907,6 +1908,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="4031179711345676612">Mikrofon engedélyezve</translation>
 <translation id="4036753017940930924">Telkek és földek</translation>
 <translation id="403724377879219932">Engedélyt kérhet arra, hogy hozzáférjen a helyi hálózaton lévő más eszközökhöz</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, új</translation>
 <translation id="4039506337798853114">A kurzor megjelenítéséhez nyomja le a következőt: |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Hozzávetőleges</translation>
 <translation id="4045070493270310437">Lapok újbóli megnyitása</translation>
@@ -2634,6 +2636,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
 <translation id="5190835502935405962">Könyvjelzősáv</translation>
 <translation id="5191315092027169558">Profilját a következő kezeli: <ph name="DOMAIN" /></translation>
 <translation id="51918995459521422">A(z) <ph name="ORIGIN" /> több fájlt szeretne letölteni</translation>
+<translation id="5199121357983849992">Menti az igazolványt?</translation>
 <translation id="5200063972779787617">Cím mentése a fiókba</translation>
 <translation id="5201306358585911203">Az oldal egyik beágyazott oldalának közlendője</translation>
 <translation id="5203716867500274632">A rendszergazda engedélyezte, hogy a következők az összes ChromeOS-eszközén szinkronizálódjanak az Ön előző és jelenlegi munkamenete között:</translation>
@@ -2792,6 +2795,7 @@ A későbbi fizetési lehetőségek elrejtéséhez lépjen a <ph name="BEGIN_LIN
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">A gyorsabb fizetés érdekében mentheti ezt a CVC-kódot a Google Walletbe (<ph name="ACCOUNT_EMAIL" />).</translation>
 <translation id="5436307623797390637">Alkalmazások az eszközön</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, korábban <ph name="PREVIOUS_VALUE" /> volt</translation>
 <translation id="5443468954631487277">Fordított sorrend, felfelé fordítva</translation>
 <translation id="5447235695608032700">A(z) <ph name="SITE" /> felhasználhatja az Önről mentett adatait</translation>
 <translation id="5447973833955560753">Helyreállítási jelszó</translation>
@@ -4075,6 +4079,7 @@ További részletek:
 <translation id="746412105358554870">JavaScript-optimalizálás és -biztonság</translation>
 <translation id="7465036432780054056">A(z) <ph name="EMBEDDED_URL" /> tudni fogja, hogy Ön járt itt: <ph name="TOP_LEVEL_URL" /></translation>
 <translation id="7465963048299965912">10 × 13 hüvelyk</translation>
+<translation id="7467332121947433617">Frissíti az igazolványt?</translation>
 <translation id="7469935732330206581">Az űrlap nem biztonságos</translation>
 <translation id="7470854469646445678">Adja meg a másolás okát (kötelező)</translation>
 <translation id="7471007961486718967">Adja meg az átvitel okát (kötelező)</translation>

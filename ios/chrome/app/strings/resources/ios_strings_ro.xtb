@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Marcaj salvat în {title} în contul tău, {email}}few{{count} marcaje s-au salvat în {title} în contul tău {email}.}other{{count} de marcaje s-au salvat în {title} în contul tău {email}.}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Afișare împărțită</translation>
+<translation id="1218730690561976633">Comută confirmarea utilizatorului pentru completarea automată îmbunătățită.</translation>
 <translation id="1219674500290482172">Nu se poate realiza conexiunea la internet.</translation>
 <translation id="1223498995510244364">Rezumă</translation>
 <translation id="1227113644794103810">File inactive</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Nu s-a trimis, pentru că nu te-ai conectat la rețea.</translation>
 <translation id="1668001730617725852">Deschide într-un nou grup de file</translation>
 <translation id="1674504678466460478">Din <ph name="SOURCE_LANGUAGE" /> în <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Conform politicilor organizației, acest fișier poate conține informații sensibile.</translation>
 <translation id="168389590065701766">Acum poți deschide Google Lens din bara de adrese și poți căuta tot ce vezi</translation>
 <translation id="1689333818294560261">Pseudonim</translation>
 <translation id="169048873465870056">Elimini fila și ștergi grupul?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">Poți folosi parolele salvate și pe alte dispozitive.</translation>
 <translation id="3177338796769255211">Conectează-te pentru a-ți accesa marcajele și altele pe toate dispozitivele</translation>
 <translation id="3181954750937456830">Navigare sigură (protecție împotriva site-urilor periculoase)</translation>
+<translation id="3183362380688692618">Grup de file nou...</translation>
 <translation id="3186796054637504691">Golire istoric și Date site</translation>
 <translation id="3190736958609431397">Anulează urmărirea</translation>
 <translation id="3208260410153224535">Organizația a dezactivat conectarea. Marcajele, parolele și alte date noi vor fi salvate numai pe acest dispozitiv.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} din {count} metodă de plată}few{{position} din {count} metode de plată}other{{position} din {count} de metode de plată}}</translation>
 <translation id="5075939510584558547">Salvează fără criptare</translation>
 <translation id="5076534614343816664">Urmărirea prețurilor</translation>
+<translation id="507762438756999615">Accesul la fișier nu poate fi permis din cauza politicilor organizației.</translation>
 <translation id="5078303485429639424">Activează notificările pentru <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Folosește parola sugerată</translation>
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>
@@ -1969,6 +1973,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8059533439631660104">Restrânge secțiunea.</translation>
 <translation id="8061584726507121204">Istoric</translation>
 <translation id="8064946459644399612">Preferințele pentru pagina Filă nouă au fost aplicate</translation>
+<translation id="8065136076319366194">Nu se recomandă salvarea.</translation>
 <translation id="8065556469005366939">Primește răspunsuri mai relevante permițând accesul la file</translation>
 <translation id="8069394452933076548">Alege momentul în care filele care nu au folosite recent se mută în secțiunea filelor inactive.</translation>
 <translation id="8073670137947914548">Descărcarea s-a finalizat</translation>
@@ -1991,6 +1996,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8131740175452115882">Confirmați</translation>
 <translation id="8132598642024322408">Acum <ph name="PRICE" />, a fost <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Folosește o parolă unică pentru fiecare site sau aplicație. Dacă cineva află o parolă refolosită, o poate folosi pentru a-ți accesa celelalte conturi. Dă clic pentru a deschide site-ul și modific-o acum.</translation>
+<translation id="8133810265969517544">Nu se recomandă permiterea accesului.</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} filă închisă}few{{count} file închise}other{{count} de file închise}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{Încă una}few{Încă #}other{Încă #}}</translation>
 <translation id="8150167929304790980">Nume complet</translation>
@@ -2240,6 +2246,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="8976414606286374109">Cardurile se salvează în Contul Google.</translation>
 <translation id="8981454092730389528">Opțiuni privind activitatea Google</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, site fixat</translation>
+<translation id="8990960056509724223">Fișierul nu a putut fi salvat din cauza politicilor organizației.</translation>
 <translation id="8998289560386111590">Nu este disponibil pe dispozitivul tău</translation>
 <translation id="9000532564152265066">Toate filele</translation>
 <translation id="9003677638446136377">Verifică din nou</translation>

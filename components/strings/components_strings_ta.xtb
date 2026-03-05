@@ -1401,6 +1401,7 @@
 <translation id="3226387218769101247">சிறுபடங்கள்</translation>
 <translation id="3227137524299004712">மைக்ரோஃபோன்</translation>
 <translation id="3229041911291329567">உங்கள் சாதனம் மற்றும் உலாவியின் பதிப்புத் தகவல்</translation>
+<translation id="3229254977651514276">தேதியைச் சரிபார்க்கவும்</translation>
 <translation id="3229277193950731405">பதிப்பு வார்த்தையை நகலெடு</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> இன் CVC எண்ணை உள்ளிடவும்</translation>
 <translation id="323585066388831737">லைட் சிவப்பு</translation>
@@ -1906,6 +1907,7 @@
 <translation id="4031179711345676612">மைக்ரோஃபோன் அனுமதிக்கப்பட்டது</translation>
 <translation id="4036753017940930924">பகுதியளவு நிலங்கள் மற்றும் நிலம்</translation>
 <translation id="403724377879219932">உங்கள் லோக்கல் நெட்வொர்க்கில் உள்ள பிற சாதனங்களை அணுக அனுமதி கேட்கலாம்</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, புதிது</translation>
 <translation id="4039506337798853114">கர்சரைக் காட்ட |<ph name="ACCELERATOR" />| பட்டனை அழுத்தவும்</translation>
 <translation id="4042597221652780603">தோராயமானது</translation>
 <translation id="4045070493270310437">பக்கங்களை மீண்டும் திற</translation>
@@ -2633,6 +2635,7 @@
 <translation id="5190835502935405962">புக்மார்க் பட்டி</translation>
 <translation id="5191315092027169558">உங்கள் சுயவிவரத்தை <ph name="DOMAIN" /> நிர்வகிக்கிறது</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> பல ஃபைல்களைப் பதிவிறக்க விரும்புகிறது</translation>
+<translation id="5199121357983849992">ஐ‌டி கார்டைச் சேமிக்கவா?</translation>
 <translation id="5200063972779787617">முகவரியைக் கணக்கில் சேமிக்கவா?</translation>
 <translation id="5201306358585911203">இந்தப் பக்கத்திலுள்ள உட்பொதிக்கப்பட்ட பக்கம் தெரிவிப்பது:</translation>
 <translation id="5203716867500274632">எல்லா ChromeOS சாதனங்களிலும் உங்களின் முந்தைய மற்றும் தற்போதைய அமர்வுகளுக்கு இடையே பின்வருபவை ஒத்திசைக்கப்பட வேண்டும் என்பதற்காக அவற்றை உங்கள் நிர்வாகி ஆன் செய்துள்ளார்:</translation>
@@ -2791,6 +2794,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">விரைவான செக்-அவுட்டிற்கு, Google Walletடில் (<ph name="ACCOUNT_EMAIL" />) இந்த CVCயைச் சேமியுங்கள்</translation>
 <translation id="5436307623797390637">சாதனத்திலுள்ள ஆப்ஸ்</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, முன்பு: <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">பின்னோக்கிய வரிசையில் மேல் நோக்கிய பாணி</translation>
 <translation id="5447235695608032700">உங்களைப் பற்றி <ph name="SITE" /> சேமித்துள்ள தகவல்களைப் பயன்படுத்த அனுமதிக்கும்</translation>
 <translation id="5447973833955560753">கடவுச்சொல்லை மீட்டெடுத்தல்</translation>
@@ -4073,6 +4077,7 @@
 <translation id="746412105358554870">JavaScript மேம்பாடுகள் மற்றும் பாதுகாப்பு</translation>
 <translation id="7465036432780054056"><ph name="TOP_LEVEL_URL" /> தளத்தைப் பார்வையிட்டீர்கள் என்பதை <ph name="EMBEDDED_URL" />க்குத் தெரியப்படுத்தும்</translation>
 <translation id="7465963048299965912">10 x 13 இன்ச்</translation>
+<translation id="7467332121947433617">ஐடி கார்டை புதுப்பிக்கவா?</translation>
 <translation id="7469935732330206581">படிவம் பாதுகாப்பானது அல்ல</translation>
 <translation id="7470854469646445678">நகலெடுப்பதற்கான காரணத்தை வழங்கவும் (அவசியம்)</translation>
 <translation id="7471007961486718967">மாற்றுவதற்கான காரணத்தை வழங்கவும் (அவசியம்)</translation>

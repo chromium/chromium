@@ -1401,6 +1401,7 @@
 <translation id="3226387218769101247">थम्बनेलहरू</translation>
 <translation id="3227137524299004712">माइक्रोफोन</translation>
 <translation id="3229041911291329567">तपाईंको यन्त्र र ब्राउजरको संस्करणसम्बन्धी जानकारी</translation>
+<translation id="3229254977651514276">मिति जाँच गर्नुहोस्</translation>
 <translation id="3229277193950731405">संस्करणको स्ट्रिङ कपी गर्नुहोस्</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> को CVC प्रविष्टि गर्नुहोस्</translation>
 <translation id="323585066388831737">हल्का रातो</translation>
@@ -1907,6 +1908,7 @@
 <translation id="4031179711345676612">माइक्रोफोन प्रयोग गर्ने अनुमति छ</translation>
 <translation id="4036753017940930924">प्लट तथा जग्गा</translation>
 <translation id="403724377879219932">तपाईंको लोकल नेटवर्कमा कनेक्ट भएका अन्य डिभाइसहरू एक्सेस गर्ने अनुमति माग्न सक्छ</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, नयाँ</translation>
 <translation id="4039506337798853114">आफ्नो कर्सर देखाउन |<ph name="ACCELERATOR" />| थिच्नुहोस्</translation>
 <translation id="4042597221652780603">अनुमानित</translation>
 <translation id="4045070493270310437">ट्याबहरू फेरि खोल्नुहोस्</translation>
@@ -2635,6 +2637,7 @@
 <translation id="5190835502935405962">पृष्ठमञ्जूषा पट्टी</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> ले तपाईंको प्रोफाइल व्यवस्थापन गर्छ</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> एकभन्दा बढी फाइलहरू डाउनलोड गर्न चाहन्छ</translation>
+<translation id="5199121357983849992">परिचयपत्र सेभ गर्ने हो?</translation>
 <translation id="5200063972779787617">यो ठेगाना खातामा सेभ गर्नुहोस्</translation>
 <translation id="5201306358585911203">यो पृष्ठमा इम्बेड गरिएको पृष्ठले यसो भन्छ</translation>
 <translation id="5203716867500274632">तपाईंका एड्मिनले ChromeOS का विभिन्न डिभाइसमा तपाईंका अघिल्ला र हालका सत्रहरूका बिचमा निम्न सुविधाहरू सिंक गर्ने अनुमति दिनुभएको छ:</translation>
@@ -2793,6 +2796,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">अझ छिटो चेकआउट गर्न यो CVC Google Wallet (<ph name="ACCOUNT_EMAIL" />) मा सेभ गर्नुहोस्</translation>
 <translation id="5436307623797390637">यो डिभाइसमा इन्स्टल गरिएका एपहरू</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, पहिले <ph name="PREVIOUS_VALUE" /> थियो</translation>
 <translation id="5443468954631487277">विपरीत क्रम तर माथितिर फर्काएर</translation>
 <translation id="5447235695608032700"><ph name="SITE" /> लाई उक्त साइटले तपाईंका बारेमा सेभ गरेको जानकारी प्रयोग गर्ने अनुमति दिनुहोस्</translation>
 <translation id="5447973833955560753">रिकभरी पासवर्ड</translation>
@@ -4075,6 +4079,7 @@
 <translation id="746412105358554870">JavaScript अप्टिमाइजेसन तथा सुरक्षा</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> लाई तपाईं <ph name="TOP_LEVEL_URL" /> मा जानुभएको कुरा थाहा हुने छ</translation>
 <translation id="7465963048299965912">१० x १३ इन्च</translation>
+<translation id="7467332121947433617">परिचयपत्र अपडेट गर्ने हो?</translation>
 <translation id="7469935732330206581">यो फारम सुरक्षित छैन</translation>
 <translation id="7470854469646445678">कपी गर्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>
 <translation id="7471007961486718967">ट्रान्स्फर गर्नुको कारण उल्लेख गर्नुहोस् (अनिवार्य)</translation>

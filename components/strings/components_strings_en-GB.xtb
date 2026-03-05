@@ -1404,6 +1404,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3226387218769101247">Thumbnails</translation>
 <translation id="3227137524299004712">Microphone</translation>
 <translation id="3229041911291329567">Version information about your device and browser</translation>
+<translation id="3229254977651514276">Check the date</translation>
 <translation id="3229277193950731405">Copy version string</translation>
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
 <translation id="323585066388831737">Light red</translation>
@@ -1844,6 +1845,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="3927932062596804919">Deny</translation>
 <translation id="3928806096717999469">Edit, opens a new window</translation>
 <translation id="3930260846839546333">Handbags</translation>
+<translation id="393417216277380082">Motion and light sensors</translation>
 <translation id="3937834511546249636">Defence industry</translation>
 <translation id="3939773374150895049">Use WebAuthn instead of CVC?</translation>
 <translation id="3941630233824954464">Enable mandatory re-authentication</translation>
@@ -1910,6 +1912,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="4031179711345676612">Microphone allowed</translation>
 <translation id="4036753017940930924">Lots and land</translation>
 <translation id="403724377879219932">Can ask to access other devices on your local network</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, new</translation>
 <translation id="4039506337798853114">To show your cursor, press |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Approximate</translation>
 <translation id="4045070493270310437">Reopen tabs</translation>
@@ -2530,6 +2533,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5018802455907704660">16 in x 20 in</translation>
 <translation id="5019198164206649151">Backing store in bad state</translation>
 <translation id="5019293549442035120">You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="USER_EMAIL" />.</translation>
+<translation id="5019819206251569004">motion and light sensors</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> policy is set. <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> will not control the availability of developer mode on the extensions page.</translation>
 <translation id="5021500396464456616">Contact the person who sent this link</translation>
 <translation id="5021557570875267742">Track prices with Chrome</translation>
@@ -2573,6 +2577,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="5093232627742069661">Z-fold</translation>
 <translation id="5093417502834168387">Trouble signing in? Try another way</translation>
 <translation id="5094747076828555589">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by Chromium. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
+<translation id="5096066272198024688">Saving your info…</translation>
 <translation id="5097099694988056070">Device statistics such as CPU/RAM usage</translation>
 <translation id="5097468150760963273">27 in x 39 in</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -2796,6 +2801,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">For faster checkout, save this CVC in Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Apps on device</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, was <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Reverse order face up</translation>
 <translation id="5447235695608032700">Allow <ph name="SITE" /> to use info they've saved about you</translation>
 <translation id="5447973833955560753">Recovery password</translation>
@@ -3778,6 +3784,7 @@ To hide pay later options, go to <ph name="BEGIN_LINK" />payment settings<ph nam
 <translation id="7003278537452757231">Rugs and Carpets</translation>
 <translation id="7003322000677139268">Vehicle parts and accessories</translation>
 <translation id="7004499039102548441">Recent tabs</translation>
+<translation id="700483187606163535">Your info is saved to <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> for <ph name="ACCOUNT" />. You can use it across Google products to fill forms faster.</translation>
 <translation id="7006930604109697472">Send anyway</translation>
 <translation id="7009364359744329733">This card is not available at the moment. Please try again later.</translation>
 <translation id="7010658264061801199">Food and drink</translation>

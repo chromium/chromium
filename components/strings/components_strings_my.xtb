@@ -1406,6 +1406,7 @@
 <translation id="3226387218769101247">ပုံသေးများ</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3229041911291329567">သင့်စက်နှင့် ဘရောင်ဇာအကြောင်း ဗားရှင်းအချက်အလက်</translation>
+<translation id="3229254977651514276">ရက်စွဲကို စစ်ဆေးပါ</translation>
 <translation id="3229277193950731405">ဗားရှင်းစာကြောင်း မိတ္တူကူးရန်</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> အတွက် CVC ကို ထည့်ပါ</translation>
 <translation id="323585066388831737">အနီဖျော့</translation>
@@ -1844,6 +1845,7 @@
 <translation id="3927932062596804919">ငြင်းပယ်</translation>
 <translation id="3928806096717999469">တည်းဖြတ်ရန်၊ ဝင်းဒိုးအသစ်ကို ဖွင့်သည်</translation>
 <translation id="3930260846839546333">လက်ကိုင်အိတ်နှင့် ပိုက်ဆံအိတ်</translation>
+<translation id="393417216277380082">လှုပ်ရှားမှု၊ အလင်းအာရုံခံကိရိယာ</translation>
 <translation id="3937834511546249636">ကာကွယ်ရေးလုပ်ငန်း</translation>
 <translation id="3939773374150895049">CVC အစား WebAuthn သုံးမလား။</translation>
 <translation id="3941630233824954464">မဖြစ်မနေ ပြန်လည် အထောက်အထားစိစစ်ခြင်း ဖွင့်ရန်</translation>
@@ -1910,6 +1912,7 @@
 <translation id="4031179711345676612">မိုက်ခရိုဖုန်းကို သုံးခွင့်ပြုထားသည်</translation>
 <translation id="4036753017940930924">မြေကွက်၊ ခြံ</translation>
 <translation id="403724377879219932">သင့်အိမ်သုံးကွန်ရက်ရှိ အခြားစက်များကို သုံးခွင့်တောင်းနိုင်သည်</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />- အသစ်</translation>
 <translation id="4039506337798853114">သင်၏ကာဆာကို ပြရန် |<ph name="ACCELERATOR" />| နှိပ်ပါ</translation>
 <translation id="4042597221652780603">ခန့်မှန်းခြေ</translation>
 <translation id="4045070493270310437">တဘ်များ ပြန်ဖွင့်ရန်</translation>
@@ -2531,6 +2534,7 @@
 <translation id="5018802455907704660">၁၆ x ၂၀ လက်မ</translation>
 <translation id="5019198164206649151">နောက်ခံ စတိုး အခြေအနေ ဆိုးနေ</translation>
 <translation id="5019293549442035120">သိမ်းထားသောလိပ်စာများကို Google ထုတ်ကုန်များအနှံ့တွင် သုံးနိုင်သည်။ ဤလိပ်စာကို သင့် Google Account <ph name="USER_EMAIL" /> တွင် သိမ်းမည်။</translation>
+<translation id="5019819206251569004">လှုပ်ရှားမှုနှင့် အလင်းအာရုံခံကိရိယာများ</translation>
 <translation id="5019952743397118625"><ph name="EXTENSION_DEVELOPER_MODE_SETTINGS_POLICY_NAME" /> မူဝါဒ သတ်မှတ်ထားသည်။ <ph name="DEVELOPER_TOOLS_AVAILABILITY_POLICY_NAME" /> သည် နောက်ဆက်တွဲများ စာမျက်နှာတွင် ထုတ်လုပ်သူမုဒ် အသုံးပြုနိုင်မှုကို ထိန်းချုပ်မည်မဟုတ်ပါ။</translation>
 <translation id="5021500396464456616">ဤလင့်ခ်ပို့သူကို ဆက်သွယ်ပါ</translation>
 <translation id="5021557570875267742">Chrome ဖြင့် ဈေးနှုန်းစောင့်ကြည့်ခြင်း</translation>
@@ -2574,6 +2578,7 @@
 <translation id="5093232627742069661">Z ပုံစံ ခေါက်ရန်</translation>
 <translation id="5093417502834168387">လက်မှတ်ထိုးဝင်ရာတွင် အခက်အခဲရှိသလား။ အခြားနည်းဖြင့် စမ်းကြည့်ပါ</translation>
 <translation id="5094747076828555589">ဒီဆာဗာက <ph name="DOMAIN" /> ဖြစ်တာကို သက်သေထူ မပြနိုင်ခဲ့ပါ၊ ၎င်း၏ လုံခြုံရေး လက်မှတ်ကို Chromium ဘက်မှ မယုံကြည်ပါ။ ဖွဲ့စည်းစီစဉ်မှု အမှားကြောင့် သို့မဟုတ် တိုက်ခိုက်လိုသူက သင်၏ ချိတ်ဆက်မှုကို ကြားဖြတ်ယူနေ၍ ထိုသို့ ဖြစ်လာနိုင်ခဲ့ပါသည်။</translation>
+<translation id="5096066272198024688">သင့်အချက်အလက်ကို သိမ်းနေသည်...</translation>
 <translation id="5097099694988056070">CPU/RAM အသုံးပြုမှုကဲ့သို့ စက်ပစ္စည်း၏ ကိန်းဂဏန်း အချက်အလက်များ</translation>
 <translation id="5097468150760963273">၂၇ x ၃၉ လက်မ</translation>
 <translation id="5097501891273180634">A2</translation>
@@ -2797,6 +2802,7 @@
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">အမြန်ငွေရှင်းနိုင်ရန် ဤ CVC နံပါတ်ကို Google Wallet (<ph name="ACCOUNT_EMAIL" />) တွင် သိမ်းပါ</translation>
 <translation id="5436307623797390637">စက်ရှိ အက်ပ်များ</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />၊ ယခင်က <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">ပြောင်းပြန်အစဉ်ဖြင့် အပေါ်လှန်ထားရန်</translation>
 <translation id="5447235695608032700">၎င်းတို့သိမ်းထားသော သင့်အကြောင်း အချက်အလက်များကို <ph name="SITE" /> အား သုံးခွင့်ပြုရန်</translation>
 <translation id="5447973833955560753">ပြန်လည်ရယူရေး စကားဝှက်</translation>
@@ -3778,6 +3784,7 @@
 <translation id="7003278537452757231">ကော်ဇော</translation>
 <translation id="7003322000677139268">ယာဉ်အစိတ်အပိုင်း၊ အပိုပစ္စည်း</translation>
 <translation id="7004499039102548441">မကြာမီက တဲဘ်များ</translation>
+<translation id="700483187606163535">သင့်အချက်အလက်ကို <ph name="ACCOUNT" /> အတွက် <ph name="IDS_AUTOFILL_GOOGLE_WALLET_TITLE" /> သို့ သိမ်းလိုက်သည်။ ဖောင်များ ပိုမိုမြန်ဆန်စွာဖြည့်ရန် Google ထုတ်ကုန်များတွင် ၎င်းကို သုံးနိုင်သည်။</translation>
 <translation id="7006930604109697472">မည်သို့ပင်ဖြစ်စေ ပို့ရန်</translation>
 <translation id="7009364359744329733">ဤကတ်ကို ယခုမရနိုင်ပါ။ နောက်မှ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7010658264061801199">အစားအသောက်</translation>

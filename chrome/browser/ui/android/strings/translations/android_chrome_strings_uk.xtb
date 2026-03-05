@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">Немає доступних місць для завантаження</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • Ви використовували на цьому сайті</translation>
 <translation id="4214315110991671325">Якщо ви дозволите файли cookie, Chrome може використовувати їх для попереднього завантаження.</translation>
+<translation id="421517251707893998">Натисніть "Закріпити цей ярлик"</translation>
 <translation id="4216511743389425832">Прослухати цю сторінку</translation>
 <translation id="4225725533026049334">Ви підписалися</translation>
 <translation id="4225895483398857530">Кнопка на панелі інструментів</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Перезапустіть Chrome</translation>
 <translation id="6513924416597632811">Копіювати посилання на сторінку результатів пошуку за запитом "<ph name="SEARCH_QUERY" />". Джерело: <ph name="PAGE_URL" />.</translation>
 <translation id="6518133107902771759">Підтвердити</translation>
+<translation id="6521218807522232085">Створюйте та зберігайте паролі й керуйте ними, щоб простіше входити у свої облікові записи</translation>
 <translation id="6527303717912515753">Надіслати</translation>
 <translation id="652948702951888897">Історія Chrome</translation>
 <translation id="6532866250404780454">Відвідані в Chrome веб-сайти не відображатимуться. Усі таймери для них буде видалено.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">Увійдіть в обліковий запис на потрібному вебсайті</translation>
 <translation id="6684809838922667136">Покращте Chrome</translation>
 <translation id="6689436252814043643">Режим читання недоступний</translation>
+<translation id="669971068476817798">Натисніть "Зберегти"</translation>
 <translation id="6700279777779583398">Вибрані налаштування збережено</translation>
 <translation id="670498945988402717">Перевірено вчора</translation>
 <translation id="6710213216561001401">Назад</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">Отримувати описи зображень?</translation>
 <translation id="7057969023583258980">Відкрити повну історію Chrome</translation>
 <translation id="7063006564040364415">Не вдалося з’єднатись із сервером синхронізації.</translation>
+<translation id="7063106218165698546">Налаштуйте групу вкладок і натисніть "Готово"</translation>
 <translation id="7071521146534760487">Керувати обліковим записом</translation>
 <translation id="707155805709242880">Нижче виберіть, що потрібно синхронізувати</translation>
 <translation id="7077143737582773186">Карта SD</translation>

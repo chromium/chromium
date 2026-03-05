@@ -1401,6 +1401,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="3226387218769101247">Irudi txikiak</translation>
 <translation id="3227137524299004712">Mikrofonoa</translation>
 <translation id="3229041911291329567">Gailuaren eta arakatzailearen bertsioari buruzko informazioa</translation>
+<translation id="3229254977651514276">Egiaztatu data</translation>
 <translation id="3229277193950731405">Kopiatu bertsioaren katea</translation>
 <translation id="323107829343500871">Idatzi <ph name="CREDIT_CARD" /> txartelaren CVCa</translation>
 <translation id="323585066388831737">Gorri argia</translation>
@@ -1906,6 +1907,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="4031179711345676612">Mikrofonoa erabil daiteke</translation>
 <translation id="4036753017940930924">Lursailak</translation>
 <translation id="403724377879219932">Sare lokaleko beste gailuak erabiltzeko baimena eska dezake</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, berria</translation>
 <translation id="4039506337798853114">Kurtsorea bistaratzeko, sakatu |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Gutxi gorabeherakoa</translation>
 <translation id="4045070493270310437">Ireki berriro fitxak</translation>
@@ -2633,6 +2635,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
 <translation id="5190835502935405962">Laster-marken barra</translation>
 <translation id="5191315092027169558"><ph name="DOMAIN" /> domeinuak kudeatzen du profila</translation>
 <translation id="51918995459521422"><ph name="ORIGIN" /> webguneak fitxategi bat baino gehiago deskargatu nahi ditu</translation>
+<translation id="5199121357983849992">Nortasun-agiria gorde nahi duzu?</translation>
 <translation id="5200063972779787617">Gorde helbidea kontuan</translation>
 <translation id="5201306358585911203">Orriko orri kapsulatu batek hau dio:</translation>
 <translation id="5203716867500274632">Zure administratzaileak aurreko eta oraingo saioen artean hauen sinkronizazioa gaitu du zure ChromeOS-eko gailu guztietan:</translation>
@@ -2791,6 +2794,7 @@ Geroago ordaintzeko aukerak ezkutatzeko, joan <ph name="BEGIN_LINK" />Ordainketa
         <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Ordainketa-prozesua bizkortzeko, gorde CVC hau Google Diru-zorroa zerbitzuan (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Gailuko aplikazioak</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, lehen <ph name="PREVIOUS_VALUE" /> zen</translation>
 <translation id="5443468954631487277">Alderantzizko ordenan, ahoz gora</translation>
 <translation id="5447235695608032700">Eman zuri buruz gordetako informazioa erabiltzeko baimena <ph name="SITE" /> webguneari</translation>
 <translation id="5447973833955560753">Kontua berreskuratzeko pasahitza</translation>
@@ -4072,6 +4076,7 @@ Xehetasun gehiago:
 <translation id="746412105358554870">JavaScript-en optimizazioa eta segurtasuna</translation>
 <translation id="7465036432780054056"><ph name="EMBEDDED_URL" /> webguneak <ph name="TOP_LEVEL_URL" /> bisitatu duzula jakingo du</translation>
 <translation id="7465963048299965912">25,4 × 33,02 cm (10 × 13 in)</translation>
+<translation id="7467332121947433617">Nortasun-agiria eguneratu nahi duzu?</translation>
 <translation id="7469935732330206581">Inprimakia ez da segurua</translation>
 <translation id="7470854469646445678">Kopiatzeko arrazoia (beharrezkoa)</translation>
 <translation id="7471007961486718967">Transferitzeko arrazoia (beharrezkoa)</translation>

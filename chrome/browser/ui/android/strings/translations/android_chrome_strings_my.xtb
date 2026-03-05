@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">ဒေါင်းလုဒ်တည်နေရာ မရှိပါ</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • ဤဝဘ်ဆိုက်တွင် သင်သုံးထားသည်</translation>
 <translation id="4214315110991671325">သင်သည် ကွတ်ကီးများကို ခွင့်ပြုပါက Chrome က ကြိုဖွင့်ခြင်းအတွက် ၎င်းတို့ကို သုံးနိုင်ပါသည်။</translation>
+<translation id="421517251707893998">‘ဤဖြတ်လမ်းလင့်ခ် ပင်ထိုးရန်’ ကို တို့ပါ</translation>
 <translation id="4216511743389425832">ဤစာမျက်နှာကို နားထောင်ရန်</translation>
 <translation id="4225725533026049334">လိုက်ကြည့်နေသည်များ</translation>
 <translation id="4225895483398857530">ကိရိယာဘား ဖြတ်လမ်းလင့်ခ်</translation>
@@ -1324,6 +1325,7 @@
 <translation id="6508722015517270189">Chrome ကို ပိတ်ပြီးပြန်ဖွင့်ပါ</translation>
 <translation id="6513924416597632811"><ph name="SEARCH_QUERY" /> အတွက် ရှာဖွေမှုရလဒ်ပြ စာမျက်နှာသို့ လင့်ခ်ကို မိတ္တူကူးနိုင်သည်။ ရင်းမြစ်- <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">စိစစ်ရန်</translation>
+<translation id="6521218807522232085">လွယ်ကူစွာ လက်မှတ်ထိုးဝင်နိုင်ရန် စကားဝှက်များ ပြုလုပ်၊ သိမ်းဆည်း၊ စီမံပါ</translation>
 <translation id="6527303717912515753">မျှဝေရန်</translation>
 <translation id="652948702951888897">Chrome မှတ်တမ်း</translation>
 <translation id="6532866250404780454">Chrome တွင် သင်ဖွင့်ကြည့်ထားသည့် ဝဘ်ဆိုက်များကို ပြသမည် မဟုတ်ပါ။ ဝဘ်ဆိုက်တိုင်မာများအားလုံးကို ဖျက်လိုက်ပါမည်။</translation>
@@ -1372,6 +1374,7 @@
 <translation id="6684262542644248484">ဝဘ်ဆိုက်သို့ လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="6684809838922667136">Chrome ပိုကောင်းရန်လုပ်ခြင်း</translation>
 <translation id="6689436252814043643">စာဖတ်မုဒ်ကို မရနိုင်ပါ</translation>
+<translation id="669971068476817798">‘သိမ်းရန်’ ကို တို့ပါ</translation>
 <translation id="6700279777779583398">ရွေးချယ်မှုများ သိမ်းလိုက်သည်</translation>
 <translation id="670498945988402717">မနေ့က စစ်ဆေးခဲ့သည်</translation>
 <translation id="6710213216561001401">အရင်</translation>
@@ -1481,6 +1484,7 @@
 <translation id="7054588988317389591">ပုံရှင်းလင်းချက်များ ရယူမလား။</translation>
 <translation id="7057969023583258980">Chrome မှတ်တမ်းအပြည့်အစုံကို ဖွင့်ရန်</translation>
 <translation id="7063006564040364415">စင့်ခ်ဆာဗာသို့ ချိတ်ဆက်၍ မရပါ။</translation>
+<translation id="7063106218165698546">တဘ်အုပ်စုကို စိတ်ကြိုက်လုပ်ပြီး ‘ပြီးပြီ’ ကို နှိပ်ပါ</translation>
 <translation id="7071521146534760487">အကောင့်ကို စီမံရန်</translation>
 <translation id="707155805709242880">စင့်ခ်လုပ်ရမည်များကို အောက်တွင်ရွေးပါ</translation>
 <translation id="7077143737582773186">SD ကတ်</translation>

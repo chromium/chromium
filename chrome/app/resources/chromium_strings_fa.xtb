@@ -27,6 +27,7 @@
 <translation id="126567311906253476">‏وقتی با <ph name="USER_EMAIL" /> به سیستم سرویس‌های Google مثل Gmail یا YouTube وارد می‌شوید، می‌توانید به‌طور خودکار با همان حساب به سیستم Chromium وارد شوید</translation>
 <translation id="1290883685122687410">خطای راه‌اندازی: <ph name="METAINSTALLER_EXIT_CODE" />. <ph name="WINDOWS_ERROR" /></translation>
 <translation id="1315551408014407711">‏راه‌اندازی نمایه Chromium جدید</translation>
+<translation id="132092532143527429">‏با «Gemini در Chromium» امتحان کنید</translation>
 <translation id="1324107359134968521">‏‫Chromium برای کاوش دستگاه‌های بلوتوث
 باید به بلوتوث دسترسی داشته باشد. <ph name="IDS_SERIAL_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1330562121671411446">تشخیص دادن زبان</translation>
@@ -607,6 +608,7 @@ Chromium قادر به بازیابی تنظیمات شما نیست.</translati
 <translation id="7622753900276619808">‏اکنون ویژگی‌های بیشتری در Chromium دردسترس شما قرار دارد</translation>
 <translation id="7624307931717240213">ما از اطلاعات برای بهبود این سرویس استفاده می‌کنیم. به «خط‌مشی رازداری» و «شرایط خدمات» مراجعه کنید.</translation>
 <translation id="7649070708921625228">راهنما</translation>
+<translation id="7650134251917003571">‏دریافت برنامه Chromium</translation>
 <translation id="7656340475565475526">‏اجازه دهید Chromium برایتان مرور کند</translation>
 <translation id="7658239707568436148">لغو</translation>
 <translation id="7686590090926151193">‏Chromium مرورگر پیش‌فرض شما نیست</translation>

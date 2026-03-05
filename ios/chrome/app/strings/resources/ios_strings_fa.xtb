@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{نشانک در پوشه «{title}» در حسابتان ({email}) ذخیره شد}one{‫{count} نشانک در پوشه «{title}» در حسابتان ({email}) ذخیره شد}other{‫{count} نشانک در پوشه «{title}» در حسابتان ({email}) ذخیره شد}}</translation>
 <translation id="1207493287814084192">۵:۳۰ ب.ظ.</translation>
 <translation id="1217294226280635614">نمای دونیمه</translation>
+<translation id="1218730690561976633">روشن/خاموش کردن درستی‌سنجی کاربر برای تکمیل خودکار بهبودیافته</translation>
 <translation id="1219674500290482172">اتصال به اینترنت امکان‌پذیر نیست.</translation>
 <translation id="1223498995510244364">خلاصه کردن</translation>
 <translation id="1227113644794103810">زبانه‌های غیرفعال</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">اشتراک‌گذاری انجام نشد چون به شبکه وصل نیستید.</translation>
 <translation id="1668001730617725852">باز کردن در گروه زبانه جدید</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> به<ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">براساس خط‌مشی‌های سازمانتان، این فایل ممکن است حاوی اطلاعات حساس باشد</translation>
 <translation id="168389590065701766">‏اکنون می‌توانید «لنز Google» را از نوار نشانی باز کنید و هر آنچه را که می‌بینید جستجو کنید</translation>
 <translation id="1689333818294560261">نام مستعار</translation>
 <translation id="169048873465870056">زبانه برداشته و گروه حذف شود؟</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">همچنین می‌توانید از گذرواژه‌های ذخیره‌شده در دیگر دستگاه‌هایتان استفاده کنید.</translation>
 <translation id="3177338796769255211">به سیستم وارد شوید تا نشانک‌ها و موارد دیگر را در همه دستگاه‌هایتان دریافت کنید</translation>
 <translation id="3181954750937456830">مرور ایمن (از شما و دستگاهتان درمقابل سایت‌های خطرناک محافظت می‌کند)</translation>
+<translation id="3183362380688692618">گروه زبانه جدید…</translation>
 <translation id="3186796054637504691">‏‫Clear History and Website Data (پاک کردن داده‌های وب‌سایت و سابقه)</translation>
 <translation id="3190736958609431397">لغو پیگیری</translation>
 <translation id="3208260410153224535">سازمانتان ورود به سیستم را خاموش کرده است. نشانک‌ها، گذرواژه‌ها، و سایر اطلاعات جدید فقط در این دستگاه ذخیره خواهد شد.</translation>
@@ -668,6 +671,7 @@
 <translation id="3476450923187944815">در برنامه‌های دیگر به گذرواژه‌هایتان دسترسی داشته باشید.</translation>
 <translation id="3485558910355485767">پنجره جدید ناشناس</translation>
 <translation id="3488501490964659223">زبانه‌ها بسته شد و داده‌های مرور حذف شد. از سیستم خارج شدید</translation>
+<translation id="3490396108106323715">هم‌رسانی کردن زبانه فعلی</translation>
 <translation id="3493531032208478708">درباره محتوای پیشنهادی <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="349446645805573740">محل ذخیره کردن «<ph name="BEGIN_BOLD" /><ph name="FILENAME" /><ph name="END_BOLD" />» را انتخاب کنید</translation>
 <translation id="3504377992102007712">تنظیمات</translation>
@@ -694,6 +698,7 @@
 <translation id="3565012355885596568">بار کردن تصاویر ممکن نبود</translation>
 <translation id="3565930036634619844">زبانه. ‫<ph name="TAB_INDEX" /> از <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3567168891086460374">ذخیره به روشی دیگر</translation>
+<translation id="3572503683475187385">‏وقتی که گپ جدیدی شروع می‌کنید، زبانه فعلی با Gemini هم‌رسانی می‌شود. وقتی که زبانه‌ای را با Gemini هم‌رسانی می‌کنید، محتوا و نشانی وب آن به Google ارسال می‌شود. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="3572607909481582402">‏در «حساب Google» شما</translation>
 <translation id="3575234738189584619">جستجو با «لنز»</translation>
 <translation id="3575426792457739946">این فهرست حاوی همه نمایه‌های بارشده است.</translation>
@@ -737,6 +742,7 @@
 <translation id="3751873026576444885">‏توقف جستجوی صفحه با «لنز Google»</translation>
 <translation id="3753408171347588045">درحال پیگیری قیمت‌ها هستید</translation>
 <translation id="3753618528540214374">زمینه سبزآبی</translation>
+<translation id="3759491607478608474">‏محتوای زبانه فعلی را با Gemini هم‌رسانی کنید تا پاسخ‌های مرتبط‌تری دریافت کنید</translation>
 <translation id="3762232513783804601">‏ساخته‌شده برای iPad شما</translation>
 <translation id="3768725474733206671">باز کردن مجدد آخرین برگه بسته‌شده</translation>
 <translation id="3779810277399252432">اتصال اینترنتی ندارید</translation>
@@ -984,6 +990,7 @@
 <translation id="4650125387981512669">ادامه دادن به‌عنوان <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4651927776207937667">{count,plural, =1{پنهان کردن پس‌از ۱ دقیقه}one{پنهان کردن پس‌از {count} دقیقه}other{پنهان کردن پس‌از {count} دقیقه}}</translation>
 <translation id="4652817563047461855">از ایمن بودن گذرواژه‌هایتان مطمئن شوید، ببینید گذرواژه‌هایتان لو رفته‌اند یا نه، و توصیه‌هایی برای کمک به محافظت از خودتان در فضای آنلاین دریافت کنید. <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
+<translation id="4653053602672040238">روشن کردن هم‌رسانی زبانه</translation>
 <translation id="4658335131052370646">ذخیره</translation>
 <translation id="466307903888586355">سازمانتان ذخیره کردن فایل را مسدود کرده است</translation>
 <translation id="4668929960204016307">،</translation>
@@ -1112,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{‫{position} از {count} روش پرداخت}one{‫{position} از {count} روش پرداخت}other{‫{position} از {count} روش پرداخت}}</translation>
 <translation id="5075939510584558547">ذخیره بدون رمزگذاری</translation>
 <translation id="5076534614343816664">پیگیری قیمت</translation>
+<translation id="507762438756999615">به‌دلیل خط‌مشی‌های سازمانتان، فایل هم‌رسانی نمی‌شود</translation>
 <translation id="5078303485429639424">روشن کردن اعلان‌های «<ph name="FEATURE_NAME" />»</translation>
 <translation id="5079950360618752063">استفاده از گذرواژه پیشنهادی</translation>
 <translation id="5083464117946352670">تعیین اندازه فایل ممکن نیست.</translation>
@@ -1297,6 +1305,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="5718049162805123412">باید این گذرواژه‌ها را همین‌حالا تغییر دهید</translation>
 <translation id="5721040778297053709">کارت اعتباری را در این قاب قرار دهید</translation>
 <translation id="572328651809341494">زبانه‌های اخیر</translation>
+<translation id="5724590854763964497">‏به‌طور پیش‌فرض، وقتی گپ جدیدی شروع می‌کنید، زبانه فعلی‌تان هم‌رسانی می‌شود. وقتی که زبانه‌ها هم‌رسانی می‌شوند، محتوا و نشانی وب آن‌ها به Google ارسال می‌شود اما از آن‌ها برای بهبود مدل‌های هوشواره زایا استفاده نخواهد شد. هرزمان خواستید می‌توانید این تنظیم را تغییر دهید.</translation>
 <translation id="5724941645893276623">برای مرور خصوصی وب، زبانه جدیدی اضافه کنید</translation>
 <translation id="5728072125198221967">‏سرویس‌های پیوندشده Google</translation>
 <translation id="5728700505257787410">متأسفیم، مشکلی در ورود به حساب شما وجود داشت.</translation>
@@ -1964,6 +1973,8 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8059533439631660104">بخش را کوچک می‌کند.</translation>
 <translation id="8061584726507121204">سابقه</translation>
 <translation id="8064946459644399612">اولویت‌های صفحه زبانه جدید اعمال شد</translation>
+<translation id="8065136076319366194">ذخیره توصیه نمی‌شود</translation>
+<translation id="8065556469005366939">با هم‌رسانی کردن زبانه‌ها، پاسخ‌های مرتبط‌تری دریافت کنید</translation>
 <translation id="8069394452933076548">انتخاب کنید زبانه‌هایی که اخیراً از آن‌ها استفاده نشده است چه‌موقع به بخش زبانه غیرفعال منتقل شوند.</translation>
 <translation id="8073670137947914548">بارگیری به پایان رسید</translation>
 <translation id="8076492880354921740">زبانه‌ها</translation>
@@ -1985,6 +1996,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8131740175452115882">تأیید کردن</translation>
 <translation id="8132598642024322408">قیمت فعلی <ph name="PRICE" /> است، قیمت قبلی <ph name="PREVIOUS_PRICE" /> بود.</translation>
 <translation id="813370552429173916">برای هر سایت یا برنامه از گذرواژه‌ای متمایز استفاده کنید. اگر فردی گذرواژه دوباره‌استفاده‌شده‌ای را پیدا کند، می‌تواند از آن برای دسترسی به حساب‌های دیگرتان هم استفاده کند. برای باز کردن وب‌سایت و تغییر آن‌ها کلیک کنید.</translation>
+<translation id="8133810265969517544">هم‌رسانی توصیه نمی‌شود</translation>
 <translation id="8135556271852808840">{count,plural, =1{‫{count} زبانه بسته‌شده}one{‫{count} زبانه بسته‌شده}other{‫{count} زبانه بسته‌شده}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{‫۱ مورد دیگر}one{‫# مورد دیگر}other{‫# مورد دیگر}}</translation>
 <translation id="8150167929304790980">نام کامل</translation>
@@ -2132,6 +2144,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8660600697590740984">جستجوی تصویر کپی‌شده با «لنز»</translation>
 <translation id="866266761389616183">اوه، نه!</translation>
 <translation id="8663764600409216912">از گذرواژه‌هایی استفاده می‌کنید که حدس زدنشان سخت به‌نظر می‌رسد</translation>
+<translation id="8664992138761940052">‏به‌طور پیش‌فرض، وقتی گپ جدیدی شروع می‌کنید، زبانه فعلی‌تان هم‌رسانی می‌شود. وقتی که زبانه‌ها هم‌رسانی می‌شوند، محتوا و نشانی وب آن‌ها به Google ارسال می‌شوند. هرزمان خواستید می‌توانید این تنظیم را تغییر دهید.</translation>
 <translation id="8668210798914567634">این صفحه در «فهرست خواندن» شما ذخیره شده است.</translation>
 <translation id="8672642291731179042">ترجمه کردن صفحه‌ها</translation>
 <translation id="8672733398999596205">فعال کردن همه موارد</translation>
@@ -2233,6 +2246,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8976414606286374109">‏کارت‌ها در «حساب Google» شما ذخیره می‌شوند.</translation>
 <translation id="8981454092730389528">‏کنترل‌های فعالیت Google</translation>
 <translation id="8988107725234939347">‫<ph name="WEBSITE_TITLE" />، سایت سنجاق‌شده</translation>
+<translation id="8990960056509724223">به‌دلیل خط‌مشی‌های سازمانتان، فایل ذخیره نشد</translation>
 <translation id="8998289560386111590">در دستگاهتان دردسترس نیست</translation>
 <translation id="9000532564152265066">همه زبانه‌ها</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>

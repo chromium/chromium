@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">沒有可用的下載位置</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • 你曾用於此網站</translation>
 <translation id="4214315110991671325">如果您允許 Cookie，Chrome 可能會使用 Cookie 預先載入網頁。</translation>
+<translation id="421517251707893998">輕按 [固定此捷徑]</translation>
 <translation id="4216511743389425832">朗讀此頁面內容</translation>
 <translation id="4225725533026049334">追蹤中</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">重新啟動 Chrome</translation>
 <translation id="6513924416597632811">複製「<ph name="SEARCH_QUERY" />」的搜尋結果網頁連結，來源：<ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">驗證</translation>
+<translation id="6521218807522232085">建立、儲存及管理密碼，方便輕鬆登入</translation>
 <translation id="6527303717912515753">分享</translation>
 <translation id="652948702951888897">Chrome 記錄</translation>
 <translation id="6532866250404780454">系統不會顯示您在 Chrome 上瀏覽的網站。所有網站計時器將會被刪除。</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">登入網站</translation>
 <translation id="6684809838922667136">協助改善 Chrome</translation>
 <translation id="6689436252814043643">無法使用閱讀模式</translation>
+<translation id="669971068476817798">輕按 [儲存]</translation>
 <translation id="6700279777779583398">已儲存選擇</translation>
 <translation id="670498945988402717">曾在昨天檢查</translation>
 <translation id="6710213216561001401">上一個</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">要取得圖片說明嗎？</translation>
 <translation id="7057969023583258980">開啟完整的 Chrome 記錄</translation>
 <translation id="7063006564040364415">無法連線至同步處理伺服器。</translation>
+<translation id="7063106218165698546">自訂分頁群組並按一下 [完成]</translation>
 <translation id="7071521146534760487">管理帳戶</translation>
 <translation id="707155805709242880">在下方選擇要同步處理的項目</translation>
 <translation id="7077143737582773186">SD 卡</translation>

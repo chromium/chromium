@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{Bookmark saved to ‘{title}’ in your account, {email}}other{{count} bookmarks saved to ‘{title}’ in your account, {email}}}</translation>
 <translation id="1207493287814084192">5.30 p.m.</translation>
 <translation id="1217294226280635614">Split view</translation>
+<translation id="1218730690561976633">Toggle enhanced autofill user verification</translation>
 <translation id="1219674500290482172">Unable to connect to the Internet.</translation>
 <translation id="1223498995510244364">Summarise</translation>
 <translation id="1227113644794103810">Inactive tabs</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">Sharing failed because you are not connected to the network.</translation>
 <translation id="1668001730617725852">Open in new tab group</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> to <ph name="TARGET_LANGUAGE" /></translation>
+<translation id="1678855624321223424">Based on your organisation's policies, this file may contain sensitive information</translation>
 <translation id="168389590065701766">You can now open Google Lens from your address bar and search anything that you see</translation>
 <translation id="1689333818294560261">Nickname</translation>
 <translation id="169048873465870056">Remove tab and delete group?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">You can also use saved passwords on your other devices.</translation>
 <translation id="3177338796769255211">Sign in to get your bookmarks and more on all your devices</translation>
 <translation id="3181954750937456830">Safe Browsing (protects you and your device from dangerous sites)</translation>
+<translation id="3183362380688692618">New tab group…</translation>
 <translation id="3186796054637504691">Clear History and Website Data</translation>
 <translation id="3190736958609431397">Untrack</translation>
 <translation id="3208260410153224535">Your organisation turned off sign-in. New bookmarks, passwords and more will be saved only to this device.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position} of {count} payment method}other{{position} of {count} payment methods}}</translation>
 <translation id="5075939510584558547">Save without encryption</translation>
 <translation id="5076534614343816664">Price tracking</translation>
+<translation id="507762438756999615">File can't be shared due to your organisation's policies</translation>
 <translation id="5078303485429639424">Turn on notifications for <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Use suggested password</translation>
 <translation id="5083464117946352670">Cannot determine file size.</translation>
@@ -1969,6 +1973,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8059533439631660104">Collapses the section.</translation>
 <translation id="8061584726507121204">History</translation>
 <translation id="8064946459644399612">Applied your New tab page preferences</translation>
+<translation id="8065136076319366194">Saving not recommended</translation>
 <translation id="8065556469005366939">Get more relevant answers by sharing your tabs</translation>
 <translation id="8069394452933076548">Choose when tabs that haven't been used recently are moved to the inactive tabs section.</translation>
 <translation id="8073670137947914548">Download finished</translation>
@@ -1991,6 +1996,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8131740175452115882">Confirm</translation>
 <translation id="8132598642024322408">Now <ph name="PRICE" />, was <ph name="PREVIOUS_PRICE" />.</translation>
 <translation id="813370552429173916">Use a unique password for every site or app. If someone discovers a reused password, it can be used to access your other accounts. Click to open the website and change them now.</translation>
+<translation id="8133810265969517544">Sharing not recommended</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} closed tab}other{{count} closed tabs}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 other}other{# others}}</translation>
 <translation id="8150167929304790980">Full name</translation>
@@ -2240,6 +2246,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="8976414606286374109">Cards are saved to your Google Account.</translation>
 <translation id="8981454092730389528">Google Activity controls</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, pinned site</translation>
+<translation id="8990960056509724223">File couldn't save due to your organisation's policies</translation>
 <translation id="8998289560386111590">Not available on your device</translation>
 <translation id="9000532564152265066">All tabs</translation>
 <translation id="9003677638446136377">Check again</translation>

@@ -1405,6 +1405,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="3226387218769101247">Thumbnail</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3229041911291329567">Informasi versi tentang perangkat dan browser Anda</translation>
+<translation id="3229254977651514276">Periksa tanggal</translation>
 <translation id="3229277193950731405">Salin string versi</translation>
 <translation id="323107829343500871">Masukkan CVC untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="323585066388831737">Merah Terang</translation>
@@ -1910,6 +1911,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
 <translation id="4031179711345676612">Mikrofon diizinkan</translation>
 <translation id="4036753017940930924">Kaveling &amp; Tanah</translation>
 <translation id="403724377879219932">Dapat meminta akses ke perangkat lain di jaringan lokal Anda</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, baru</translation>
 <translation id="4039506337798853114">Untuk menampilkan kursor, tekan |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Perkiraan</translation>
 <translation id="4045070493270310437">Buka kembali tab</translation>
@@ -2796,6 +2798,7 @@ Untuk menyembunyikan opsi bayar nanti, buka <ph name="BEGIN_LINK" />setelan pemb
           <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Untuk mempercepat checkout, simpan CVC ini di Google Wallet (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Aplikasi di perangkat</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, sebelumnya <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">Urutan yang berkebalikan menghadap ke atas</translation>
 <translation id="5447235695608032700">Izinkan <ph name="SITE" /> untuk menggunakan info tentang Anda yang telah disimpan situs</translation>
 <translation id="5447973833955560753">Sandi pemulihan</translation>

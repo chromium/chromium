@@ -746,6 +746,7 @@
 <translation id="4198423547019359126">ჩამოსატვირთი მდებარეობები მიუწვდომელია</translation>
 <translation id="4209029522667123437"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> • თქვენ გამოიყენეთ ამ საიტზე</translation>
 <translation id="4214315110991671325">ქუქი-ჩანაწერების დაშვების შემთხვევაში, Chrome-მა, შესაძლოა, გამოიყენოს ისინი წინასწარ ჩატვირთვისთვის.</translation>
+<translation id="421517251707893998">შეეხეთ ამ მალსახმობის ჩამაგრებას</translation>
 <translation id="4216511743389425832">ამ გვერდის მოსმენა</translation>
 <translation id="4225725533026049334">თვალს ადევნებთ</translation>
 <translation id="4225895483398857530">ხელსაწყოთა ზოლის მალსახმობი</translation>
@@ -1325,6 +1326,7 @@
 <translation id="6508722015517270189">Chrome-ის გადატვირთვა</translation>
 <translation id="6513924416597632811">დააკოპირეთ ძიების შედეგების გვერდის ბმული მოთხოვნისთვის: <ph name="SEARCH_QUERY" />. წყარო: <ph name="PAGE_URL" /></translation>
 <translation id="6518133107902771759">გადამოწმება</translation>
+<translation id="6521218807522232085">შექმენით, შეინახეთ და მართეთ თქვენი პაროლები, რომ მარტივად გაიაროთ ავტორიზაცია</translation>
 <translation id="6527303717912515753">გაზიარება</translation>
 <translation id="652948702951888897">Chrome ისტორია</translation>
 <translation id="6532866250404780454">Chrome-იდან მონახულებული ვებსაიტები არ გამოჩნდება. ვებსაიტების ყველა ტაიმერი წაიშლება.</translation>
@@ -1373,6 +1375,7 @@
 <translation id="6684262542644248484">შედით ვებსაიტის სისტემაში</translation>
 <translation id="6684809838922667136">გააუმჯობესეთ Chrome</translation>
 <translation id="6689436252814043643">წაკითხვის რეჟიმი ხელმიუწვდომელია</translation>
+<translation id="669971068476817798">შეეხეთ შენახვას</translation>
 <translation id="6700279777779583398">არჩევანი შენახულია</translation>
 <translation id="670498945988402717">შემოწმდა გუშინ</translation>
 <translation id="6710213216561001401">წინა</translation>
@@ -1482,6 +1485,7 @@
 <translation id="7054588988317389591">გსურთ სურათების აღწერილობების მიღება?</translation>
 <translation id="7057969023583258980">Chrome-ის სრული ისტორიის გახსნა</translation>
 <translation id="7063006564040364415">ვერ ვუკავშირდებით სინქრონიზაციის სერვერს.</translation>
+<translation id="7063106218165698546">მოირგეთ ჩანართების ჯგუფი და დააჭირეთ ღილაკს „მზადაა“</translation>
 <translation id="7071521146534760487">ანგარიშის მართვა</translation>
 <translation id="707155805709242880">ქვემოთ აირჩიეთ, რის სინქრონიზაცია გსურთ</translation>
 <translation id="7077143737582773186">SD ბარათი</translation>

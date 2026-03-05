@@ -1328,7 +1328,7 @@
 <translation id="3115363211799416195">{0,plural, =1{Спампаваць канфідэнцыяльны файл?}one{Спампаваць канфідэнцыяльныя файлы?}few{Спампаваць канфідэнцыяльныя файлы?}many{Спампаваць канфідэнцыяльныя файлы?}other{Спампаваць канфідэнцыяльныя файлы?}}</translation>
 <translation id="3115874930288085374">Вы выкарыстоўваеце дамен "<ph name="ENROLLMENT_DOMAIN" />", які патрабуе ад вас стварыць рэзервовую копію сваіх даных і вярнуць прыладу <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3116158981186517402">Ламінацыя</translation>
-<translation id="3116695032231023709">Захавайц пасведчанне асобы</translation>
+<translation id="3116695032231023709">Захавайце пасведчанне асобы</translation>
 <translation id="3119689199889622589">Арганічная і натуральная ежа</translation>
 <translation id="3120730422813725195">Elo</translation>
 <translation id="31207688938192855"><ph name="BEGIN_LINK" />Паспрабаваць запусціць дыягностыку падключэння<ph name="END_LINK" />.</translation>
@@ -1336,7 +1336,7 @@
 <translation id="3121994479408824897">Перайсці на <ph name="DOMAIN" /></translation>
 <translation id="3122696783148405307">Паказаць вынікі за апошнія 30 дзён</translation>
 <translation id="3126023634486644099">Этыкетачны матэрыял з перманентным клеем</translation>
-<translation id="3132345256151444894">Захавайце нумар перагляду</translation>
+<translation id="3132345256151444894">Захавайце ідэнтыфікатар Redress number</translation>
 <translation id="3133565499688974786">Цяпер <ph name="SEARCH_ENGINE_NAME" /> – стандартная пошукавая сістэма</translation>
 <translation id="3134859781443140237">Лакальная сетка</translation>
 <translation id="3137283076021007034"><ph name="KEYWORD" /> – Пошук: <ph name="KEYWORD_SHORT_NAME" /></translation>
@@ -1405,6 +1405,7 @@
 <translation id="3226387218769101247">Мініяцюры</translation>
 <translation id="3227137524299004712">Мікрафон</translation>
 <translation id="3229041911291329567">Звесткі пра версію прылады і браўзера</translation>
+<translation id="3229254977651514276">Праверце дату</translation>
 <translation id="3229277193950731405">Скапіраваць радок з версіяй</translation>
 <translation id="323107829343500871">Увядзіце CVC-код карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="323585066388831737">Светла-чырвоны</translation>
@@ -1910,6 +1911,7 @@
 <translation id="4031179711345676612">Выкарыстанне мікрафона дазволена</translation>
 <translation id="4036753017940930924">Зямля і зямельныя ўчасткі</translation>
 <translation id="403724377879219932">Можа запытваць доступ да іншых прылад у лакальнай сетцы</translation>
+<translation id="4038863931942689384"><ph name="ATTRIBUTE_VALUE" />, новае</translation>
 <translation id="4039506337798853114">Каб паказаць курсор, націсніце |<ph name="ACCELERATOR" />|</translation>
 <translation id="4042597221652780603">Прыблізнае</translation>
 <translation id="4045070493270310437">Адкрыць укладкі зноў</translation>
@@ -2795,6 +2797,7 @@
 <ph name="END_LIST" /></translation>
 <translation id="5434803328547504573">Каб ажыццяўляць аплату хутчэй, захавайце гэты код CVC у Google Кашальку (<ph name="ACCOUNT_EMAIL" />)</translation>
 <translation id="5436307623797390637">Праграмы на прыладзе</translation>
+<translation id="5441409130426352029"><ph name="ATTRIBUTE_VALUE" />, было раней: <ph name="PREVIOUS_VALUE" /></translation>
 <translation id="5443468954631487277">У адваротным парадку, рабочым бокам уверх</translation>
 <translation id="5447235695608032700">Дазволіць сайту "<ph name="SITE" />" выкарыстоўваць інфармацыю, якую ён пра вас захаваў</translation>
 <translation id="5447973833955560753">Пароль для аднаўлення</translation>
@@ -4913,7 +4916,7 @@
 <translation id="8811725516933141693">Каб пачаць чат з Gemini, увядзіце @gemini</translation>
 <translation id="8813277370772331957">Нагадаць пазней</translation>
 <translation id="8814707942599948500">Канверт C8</translation>
-<translation id="881559332211266856">Змяніце нумар перагляду</translation>
+<translation id="881559332211266856">Змяніце ідэнтыфікатар Redress number</translation>
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб абнавіць браўзер Chrome праз яго налады, націсніце Tab, затым Enter</translation>
 <translation id="8819855907485254989">Захавайце білет на транспарт у Кашальку</translation>
 <translation id="8820817407110198400">Закладкі</translation>

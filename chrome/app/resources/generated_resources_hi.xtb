@@ -30,7 +30,7 @@
 <translation id="1011431628606634753">Google Password Manager के लिए खाता वापस पाने का पिन बदलें</translation>
 <translation id="1012794136286421601">आपके दस्तावेज़, शीट, स्लाइड, और ड्रॉइंग फ़ाइलें सिंक की जा रही हैं. उन्हें ऑनलाइन या ऑफ़लाइन एक्सेस करने के लिए Google डिस्क ऐप्लिकेशन खोलें.</translation>
 <translation id="1012876632442809908">USB-C डिवाइस (सामने वाला पोर्ट)</translation>
-<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" इंस्टॉल करें</translation>
+<translation id="10146536653536065">"<ph name="EXTENSION_NAME" />" को इंस्टॉल करें</translation>
 <translation id="1015041505466489552">TrackPoint</translation>
 <translation id="1015318665228971643">फ़ोल्डर के नाम में बदलाव करें</translation>
 <translation id="1015578595646638936">{NUM_DAYS,plural, =1{<ph name="DEVICE_TYPE" /> को अपडेट करने का आखिरी दिन}one{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिन में अपडेट करें}other{<ph name="DEVICE_TYPE" /> को {NUM_DAYS} दिनों में अपडेट करें}}</translation>
@@ -813,7 +813,6 @@
 <translation id="1543284117603151572">Edge से आयात किया गया</translation>
 <translation id="1543538514740974167">यहां तेज़ी से पहुंचें</translation>
 <translation id="1544588554445317666">फ़ाइल का पाथ छोटा करें या इसे किसी दूसरी जगह सेव करके देखें</translation>
-<translation id="1545177026077493356">स्वचालित किओस्क मोड</translation>
 <translation id="1545749641540134597">QR कोड स्कैन करें</translation>
 <translation id="1545775234664667895">थीम "<ph name="THEME_NAME" />" इंस्टॉल की गई</translation>
 <translation id="1546031833947068368">{COUNT,plural, =1{आपकी गुप्त विंडो फिर से नहीं खुलेगी.}one{आपकी # गुप्त विंडो फिर से नहीं खुलेगी.}other{आपकी # गुप्त विंडो फिर से नहीं खुलेंगी.}}</translation>
@@ -1042,6 +1041,7 @@
 <translation id="1682696837763999627">माउस का कर्सर बड़ा करने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="1682867089915960590">क्या आप कैरेट ब्राउज़िंग चालू करना चाहते हैं?</translation>
 <translation id="1686550358074589746">ग्लाइड करके लिखने की सुविधा चालू करें</translation>
+<translation id="1686684082159608623">आपके एडमिन ने इस ऐप्लिकेशन के अपडेट को ब्लॉक कर दिया है. इसलिए हो सकता है कि यह ऐप्लिकेशन ठीक से काम न करे</translation>
 <translation id="1686785653877010442">ताज़ा खबरों की जानकारी देने या चैट मैसेज के बारे में बताने के लिए, साइटें आपको सूचनाएं भेजती हैं.</translation>
 <translation id="168715261339224929">अपने सभी डिवाइस पर अपने बुकमार्क पाने के लिए, सिंक चालू करें.</translation>
 <translation id="1688935057616748272">कोई अक्षर लिखें</translation>
@@ -2715,7 +2715,6 @@
 <translation id="2789486458103222910">ठीक है</translation>
 <translation id="2790112944253231361">इस टैब को बदला गया</translation>
 <translation id="2791529110887957050">Linux हटाएं</translation>
-<translation id="2791952154587244007">एक गड़बड़ी हुई. किओस्क ऐप्लिकेशन इस डिवाइस परअपने-आपलॉन्च नहीं हो सकेंगे.</translation>
 <translation id="2792465461386711506">अपने फ़ोन में Chrome पर हाल ही में खोले गए टैब देखने के लिए, Chrome सिंक की सुविधा चालू करें</translation>
 <translation id="2792697226874849938">पाबंदी से जुड़ी इमेज</translation>
 <translation id="2794522004398861033">ई-सिम सेट अप करने के लिए, वाई-फ़ाई या ईथरनेट से कनेक्ट करें</translation>
@@ -2990,7 +2989,6 @@
 <translation id="2983311431122838216">Google Search पर एआई मोड में सवाल पूछें</translation>
 <translation id="2983373101216420412">केस में <ph name="PERCENTAGE" />% बैटरी बची है.</translation>
 <translation id="2983818520079887040">सेटिंग...</translation>
-<translation id="2984384421572259426">इस्तेमाल नहीं किए जा रहे टैब हटाएं</translation>
 <translation id="2984727013951557074">फ़ाइल अब भी Drive में सिंक हो रही है.</translation>
 <translation id="2984923316661218534">Google Password Manager का इस्तेमाल करके इस डिवाइस पर अपनी पासकी पाएं</translation>
 <translation id="2985348301114641460">अपने एडमिन को "<ph name="EXTENSION_NAME" />" इंस्टॉल करने का अनुरोध भेजें?</translation>
@@ -3657,7 +3655,6 @@
 <translation id="3445925074670675829">USB-C डिवाइस</translation>
 <translation id="3446274660183028131">Windows को इंस्टॉल करने के लिए कृपया Parallels Desktop को लॉन्च करें.</translation>
 <translation id="344630545793878684">अपना डेटा कई वेबसाइटों पर पढ़ें</translation>
-<translation id="3447644827015694497">क्या आपको इनऐक्टिव टैब देखने हैं?</translation>
 <translation id="3447797901512053632"><ph name="TAB_NAME" /> को <ph name="DEVICE_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="3448492834076427715">खाता अपडेट करें</translation>
 <translation id="3449393517661170867">टैब की गई नई विंडो</translation>
@@ -4553,7 +4550,6 @@
 <translation id="4014432863917027322">"<ph name="EXTENSION_NAME" />" को ठीक करें?</translation>
 <translation id="4015163439792426608">एक्सटेंशन मिल गए? एक ही जगह पर आसानी से अपने <ph name="BEGIN_LINK" />एक्सटेंशन प्रबंधित करें<ph name="END_LINK" />.</translation>
 <translation id="4015250302257349679">इस बबल पर फ़ोकस करने के लिए, <ph name="ACCELERATOR" /> दबाएं. इसे दोबारा दबाकर उस एलिमेंट पर फ़ोकस करें जिसकी ओर यह बबल इशारा कर रहा है.</translation>
-<translation id="4016762287427926315">आपने <ph name="APP_NAME" /> को जो अनुमतियां दी हैं वे इस ऐप्लिकेशन के लिए भी लागू होंगी. <ph name="BEGIN_LINK" />मैनेज करें<ph name="END_LINK" /></translation>
 <translation id="4017225831995090447">इस लिंक के लिए क्यूआर कोड बनाएं</translation>
 <translation id="4018953474106733212">यह सुविधा सिर्फ़ वेब डेवलपर को चालू करनी चाहिए. साथ ही, इसे सिर्फ़ भरोसेमंद ऐप्लिकेशन के साथ इस्तेमाल किया जाना चाहिए.</translation>
 <translation id="4019983356493507433">बुकमार्क की सूची में बदलाव करें</translation>
@@ -4946,7 +4942,6 @@
 <translation id="429344752071832554">ग्रुप से फ़ोकस हटाएं</translation>
 <translation id="4294392694389031609"><ph name="FILE_NAME" /> को डाउनलोड के इतिहास से मिटा दिया गया है. हालांकि, यह अब भी आपके डिवाइस में मौजूद है</translation>
 <translation id="4295979599050707005">कृपया साइन इन करके यह पुष्टि करें कि आपका खाता <ph name="USER_EMAIL" /> वेबसाइट, ऐप्लिकेशन और Chrome या Google Play के एक्सटेंशन के लिए इस्तेमाल किया जा सकता है. आप यह खाता हटा भी सकते हैं. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
-<translation id="4296424230850377304"><ph name="APP_NAME" /> से इंस्टॉल और स्ट्रीम किए गए ऐप्लिकेशन</translation>
 <translation id="4296632172536745000">इस साइट से जुड़ा आपका ओरिजनल पासवर्ड, सार्वजनिक तौर पर लीक हो चुका है. आपने <ph name="DATE" /> को <ph name="BRAND" /> से, अपने खाते का पासवर्ड अपने-आप बदलने के लिए कहा था.</translation>
 <translation id="4297219207642690536">रीस्टार्ट करें और रीसेट करें</translation>
 <translation id="4297813521149011456">डिसप्ले का घुमाव</translation>
@@ -5167,7 +5162,6 @@
 <translation id="4437947179446780764">पसंद के मुताबिक डीएनएस की सेवा देने वाली कंपनी जोड़ें</translation>
 <translation id="4438043733494739848">पारदर्शी</translation>
 <translation id="4439157218765614426">नीति के तहत, दिखाने की अनुमति नहीं है.</translation>
-<translation id="4441124369922430666">क्या आप चाहते हैं कि मशीन चालू होने पर यह ऐप्लिकेशन अपने आप शुरू हो जाए?</translation>
 <translation id="4441147046941420429">जारी रखने के लिए, अपनी सुरक्षा कुंजी को अपने डिवाइस से हटाएं. इसके बाद, उसे दाेबारा डालें और छुएं.</translation>
 <translation id="444134486829715816">पूरा खोलें...</translation>
 <translation id="4441928470323187829">आपके एडमिन ने पिन किया</translation>
@@ -6776,7 +6770,6 @@
 <translation id="5571066253365925590">ब्लूटूथ सक्षम किया गया</translation>
 <translation id="5571092938913434726">ग्लोबल मीडिया कंट्रोल</translation>
 <translation id="5571832155627049070">अपनी प्रोफ़ाइल को पसंद के मुताबिक बनाएं</translation>
-<translation id="5572000034319109899">इस्तेमाल नहीं किए जा रहे टैब हटाएं</translation>
 <translation id="5572166921642484567">कलर स्कीम मोड चुनें</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" /> के लिए साइट की जानकारी दिखाएं</translation>
 <translation id="557506220935336383">दूसरी साइटों के लिए, एक्सटेंशन से जुड़ी अनुमतियां देखें</translation>
@@ -8430,7 +8423,6 @@
 <translation id="6723946439672043591">कोई दूसरी प्रोफ़ाइल चुनें</translation>
 <translation id="6725073593266469338">यूज़र इंटरफ़ेस (यूआई) सेवा</translation>
 <translation id="6725206449694821596">इंटरनेट प्रिंटिंग प्रोटोकॉल (IPP)</translation>
-<translation id="6725627354629889015">क्या आपको इस्तेमाल नहीं किए जा रहे टैब हटाने हैं?</translation>
 <translation id="6725970970008349185">प्रति पेज प्रदर्शित किए जाने वाले उम्मीदवारों की संख्या</translation>
 <translation id="672609503628871915">देखें कि नया क्या है</translation>
 <translation id="6726800386221816228">खास वर्ण</translation>
@@ -8692,7 +8684,6 @@
 <translation id="6897756054229464646">Gemini के साथ</translation>
 <translation id="6897972855231767338">मेहमान के तौर पर ब्राउज़ करने के बारे में ज़्यादा जानें</translation>
 <translation id="6898438890765871056">OneDrive फ़ोल्डर खोलें</translation>
-<translation id="6898440773573063262">किओस्क ऐप्लिकेशन अब इस डिवाइस परअपने-आपलॉन्च होने के लिए कॉन्फ़िगर किए जा सकते हैं.</translation>
 <translation id="6898524422976162959">टैब ग्रुप का ट्यूटोरियल लॉन्च करें</translation>
 <translation id="6898926986978115885">फ़िलहाल, तेज़ आवाज़ में सुनने की सुविधा का इस्तेमाल नहीं किया जा सकता.</translation>
 <translation id="6899427698619335650">फ़्लेक्सिबल डायक्रिटिक असाइनमेंट की अनुमति दें. उदाहरण के लिए, “ánh” का आउटपुट पाने के लिए “anh1” या “a1nh” टाइप किया जा सकता है.</translation>
@@ -10600,7 +10591,6 @@
 <translation id="8192944472786724289"><ph name="APP_NAME" /> आपकी स्क्रीन पर मौजूद कॉन्टेंट शेयर करना चाहता है.</translation>
 <translation id="8193195501228940758"><ph name="WEBSITE" /> हटाएं</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />आपके डिवाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
-<translation id="8194788147118885421">इनऐक्टिव टैब देखें</translation>
 <translation id="8195265224453131880">फ़िल्टर के कलर की इंटेंसिटी</translation>
 <translation id="8195854162863398249"><ph name="FEATURE_NAME" /> रोक दें</translation>
 <translation id="8195920051450756553">एक ही बटन के दोबारा ऐक्टिवेट होने में लगने वाला समय</translation>
@@ -11417,7 +11407,6 @@
 <translation id="8732212173949624846">अपने प्रवेश किए हुए सभी डिवाइस पर अपना ब्राउज़िंग इतिहास पढ़ें और बदलें</translation>
 <translation id="8732844209475700754">निजता, सुरक्षा, और डेटा इकट्ठा करने से जुड़ी ज़्यादा सेटिंग</translation>
 <translation id="8733779588180110397">⌥+क्लिक</translation>
-<translation id="8734073480934656039">इस सेटिंग को सक्षम करने से किओस्क ऐप्लिकेशन स्टार्टअप पर अपने आप लॉन्च हो जाते हैं.</translation>
 <translation id="8734755021067981851">कोई यूएसबी डिवाइस जुड़ा नहीं है.</translation>
 <translation id="8736288397686080465">इस साइट को पृष्‍ठभूमि में अपडेट किया गया है.</translation>
 <translation id="8737709691285775803">Shill</translation>
@@ -11646,7 +11635,6 @@
 <translation id="8884264823507872907">क्या आपको ऑफ़िस के लिए एक नई प्रोफ़ाइल बनानी है?</translation>
 <translation id="8884570509232205463">आपका डिवाइस अब <ph name="UNLOCK_TIME" /> बजे अनलॉक होगा.</translation>
 <translation id="8885449336974696155"><ph name="BEGIN_LINK" />मौजूदा सेटिंग<ph name="END_LINK" /> के बारे में बताकर ChromeOS को बेहतर बनाने में मदद करें</translation>
-<translation id="8886745493279779790">इनऐक्टिव टैब देखें</translation>
 <translation id="8888253246822647887">अपग्रेड पूरा होने पर आपका ऐप्लिकेशन खुल जाएगा. अपग्रेड में कुछ समय लग सकता है.</translation>
 <translation id="8888459276890791557">आसानी से ऐक्सेस करने के लिए, इस साइड पैनल को पिन किया जा सकता है</translation>
 <translation id="8888621340860433230">विकल्प दिखाएं</translation>
@@ -11942,7 +11930,6 @@
 <translation id="9068598199622656904">कीबोर्ड शॉर्टकट के लिए, बटनों को एक साथ दबाकर रखने के बजाय एक बार में एक बटन दबाएं</translation>
 <translation id="9068878141610261315">इस तरह की फ़ाइल, शेयर नहीं की जा सकती</translation>
 <translation id="9069417381769492963">आपकी खोज से मिलता-जुलता कोई बुकमार्क नहीं है</translation>
-<translation id="9070231741075992882"><ph name="APP_NAME" /> को दी जाने वाली अनुमतियां, इंस्टॉल किए गए और स्ट्रीमिंग ऐप्लिकेशन के लिए भी लागू होंगी.</translation>
 <translation id="9070342919388027491">टैब को बाईं ओर ले जाया गया</translation>
 <translation id="9072220108592671115">इंस्टॉल किया गया वर्शन <ph name="VERSION" /></translation>
 <translation id="9072918088200875065">आपने Gemini को इन साइटों पर साइन इन करने की अनुमति दी है, ताकि वह आपके लिए टास्क पूरे कर सके</translation>

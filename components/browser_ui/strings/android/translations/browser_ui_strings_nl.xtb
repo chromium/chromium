@@ -7,6 +7,7 @@
 <translation id="1070329623210597193">Bestanden die deze site mag bekijken of bewerken</translation>
 <translation id="1073417869336441572">Help ons Chrome te verbeteren door ons te vertellen waarom je cookies van derden hebt toegestaan. <ph name="BEGIN_LINK" />Feedback sturen<ph name="END_LINK" /></translation>
 <translation id="1074758928858737435">Je kunt vragen om de desktopversie van sites te bekijken</translation>
+<translation id="1109482864356262001">Functies waarvoor bewegings- of lichtsensoren nodig zijn, werken niet</translation>
 <translation id="1126523729897810826">Voer de voorgestelde acties hieronder uit om het maximale uit Chrome te halen</translation>
 <translation id="113098737392899175">Navigeren op pagina's met een tekstcursor als er een toetsenbord is aangesloten</translation>
 <translation id="1148624853678088576">Je bent helemaal klaar!</translation>
@@ -128,6 +129,7 @@
 <translation id="2241587408274973373">Kaarten op de pagina Nieuw tabblad</translation>
 <translation id="2241634353105152135">Slechts één keer</translation>
 <translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> verwijderen</translation>
+<translation id="227763434929139750">Niet toestaan dat sites bewegings- of lichtsensoren gebruiken</translation>
 <translation id="228293613124499805">De meeste sites die je bezoekt, slaan waarschijnlijk gegevens op je apparaat op. Dit gebeurt vaak om de functionaliteit te verbeteren door je voorkeuren of met de site gedeelde informatie op te slaan. We raden je aan deze instelling aan te laten.</translation>
 <translation id="2289270750774289114">Vragen wanneer een site Bluetooth-apparaten in de buurt wilt detecteren (aanbevolen)</translation>
 <translation id="2315043854645842844">Certificaatselectie aan clientzijde wordt niet ondersteund door het besturingssysteem.</translation>
@@ -298,6 +300,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="3922092564198021702">Open Instellingen op je telefoon</translation>
 <translation id="3924858949939391676">Links tonen zodra de leesmodus aanstaat</translation>
 <translation id="3933121352599513978">Ongewenste verzoeken samenvouwen (aanbevolen)</translation>
+<translation id="393417216277380082">Bewegings- en lichtsensoren</translation>
 <translation id="3934905113567851655">Knijp om het formaat aan te passen</translation>
 <translation id="3955321697524543127">Niet toestaan dat sites verbinding maken met USB-apparaten</translation>
 <translation id="3965467402665811906">Sites kunnen vragen of ze informatie over je mogen gebruiken</translation>
@@ -369,6 +372,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="4672315773691449562">Tik op Browser-app en daarna op Chrome</translation>
 <translation id="4676059169848868271">Als je <ph name="APP_NAME" /> handen volgen wilt laten gebruiken, zet je handen volgen ook aan via de <ph name="BEGIN_LINK" />systeeminstellingen<ph name="END_LINK" />.</translation>
 <translation id="4688045258817337666">Je kaarten beheren</translation>
+<translation id="4722332387043141878">Sites gebruiken de bewegings- en lichtsensoren van je apparaat meestal voor functies zoals virtual reality of fitnesstracking</translation>
 <translation id="4755971844837804407">Als deze optie aanstaat, kunnen sites elke advertentie aan je tonen. Staat de optie uit, dan kunnen sites geen opdringerige of misleidende advertenties tonen.</translation>
 <translation id="4779083564647765204">Zoom</translation>
 <translation id="4807122856660838973">Safe Browsing aanzetten</translation>
@@ -513,6 +517,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="6196640612572343990">Cookies van derden blokkeren</translation>
 <translation id="6205314730813004066">Advertentieprivacy</translation>
 <translation id="6207207788774442484">Gegevens verwijderen en rechten resetten</translation>
+<translation id="6211409961905616543">Sites kunnen bewegings- en lichtsensoren gebruiken</translation>
 <translation id="6218508144653756827">Fuchsiakleurig thema</translation>
 <translation id="6231752747840485235"><ph name="APP_NAME" /> verwijderen?</translation>
 <translation id="6234351944623978659">Tik op Browser-app &gt; Chrome</translation>
@@ -757,6 +762,7 @@ Geavanceerde beveiliging beheert deze Chrome-instellingen:
 <translation id="8801657293260363985">V8 is de JavaScript- en WebAssembly-engine van Chrome die wordt gebruikt om de sitesprestaties te verbeteren</translation>
 <translation id="8803526663383843427">Als dit aanstaat</translation>
 <translation id="8805385115381080995">Je kunt sneller browsen omdat een site je minder vaak vraagt te verifiëren dat je een echte persoon bent</translation>
+<translation id="881644524232657178">Als deze optie aanstaat, kunnen sites de bewegings- en lichtsensoren van je apparaat gebruiken. Staat de optie uit, dan kunnen sites geen sensoren gebruiken.</translation>
 <translation id="8847988622838149491">USB</translation>
 <translation id="8874790741333031443">Sta cookies van derden tijdelijk toe. Dit betekent dat je minder browserbeveiliging hebt, maar dat sitefuncties waarschijnlijk wel werken zoals verwacht.</translation>
 <translation id="8889294078294184559">Terwijl je browst, kunnen sites via Chrome checken en met een eerder bezochte site verifiëren dat je waarschijnlijk een echte persoon bent</translation>

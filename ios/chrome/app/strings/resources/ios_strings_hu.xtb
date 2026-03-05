@@ -58,6 +58,7 @@
 <translation id="1204075260022434100">{count,plural, =1{A könyvjelző el lett mentve {email} fiókja következő mappájába: „{title}”}other{{count} könyvjelző el lett mentve {email} fiókja következő mappájába: „{title}”.}}</translation>
 <translation id="1207493287814084192">17:30</translation>
 <translation id="1217294226280635614">Osztott nézet</translation>
+<translation id="1218730690561976633">A továbbfejlesztett automatikus kitöltés felhasználói ellenőrzésének be- vagy kikapcsolása</translation>
 <translation id="1219674500290482172">Nem lehet kapcsolódni az internethez.</translation>
 <translation id="1223498995510244364">Összegzés</translation>
 <translation id="1227113644794103810">Inaktív lapok</translation>
@@ -193,6 +194,7 @@
 <translation id="1657011748321897393">A megosztás nem sikerült, mert nem csatlakozik a hálózathoz.</translation>
 <translation id="1668001730617725852">Megnyitás új lapcsoportban</translation>
 <translation id="1674504678466460478"><ph name="SOURCE_LANGUAGE" /> nyelvről <ph name="TARGET_LANGUAGE" /> nyelvre</translation>
+<translation id="1678855624321223424">A szervezeti házirendek alapján ez a fájl bizalmas információkat tartalmazhat</translation>
 <translation id="168389590065701766">Mostantól a címsávból is megnyithatja a Google Lenst, és bármire rákereshet, amit lát</translation>
 <translation id="1689333818294560261">Egyedi név</translation>
 <translation id="169048873465870056">Eltávolítja a lapot és törli a csoportot?</translation>
@@ -599,6 +601,7 @@
 <translation id="3174662312949010067">A többi eszközén is használhatja mentett jelszavait.</translation>
 <translation id="3177338796769255211">Bejelentkezve valamennyi eszközén hozzáférhet könyvjelzőihez és egyebekhez.</translation>
 <translation id="3181954750937456830">Biztonságos Böngészés (megvédi Önt és eszközét a veszélyes webhelyekkel szemben)</translation>
+<translation id="3183362380688692618">Új lapcsoport…</translation>
 <translation id="3186796054637504691">Előzmények és webhelyadatok törlése</translation>
 <translation id="3190736958609431397">Nyomon követés megszüntetése</translation>
 <translation id="3208260410153224535">Szervezete kikapcsolta a bejelentkezést. Az új könyvjelzők, jelszavak és egyebek csak erre az eszközre lesznek mentve.</translation>
@@ -1116,6 +1119,7 @@
 <translation id="507187271399539513">{count,plural, =1{{position}. fizetési mód, összesen ennyiből: {count}}other{{position}. fizetési mód, összesen ennyiből: {count}}}</translation>
 <translation id="5075939510584558547">Mentés titkosítás nélkül</translation>
 <translation id="5076534614343816664">Árfigyelés</translation>
+<translation id="507762438756999615">A fájl nem osztható meg a szervezeti házirendek miatt</translation>
 <translation id="5078303485429639424">A következő értesítéseinek bekapcsolása: <ph name="FEATURE_NAME" /></translation>
 <translation id="5079950360618752063">Javasolt jelszó használata</translation>
 <translation id="5083464117946352670">A fájlméret ismeretlen.</translation>
@@ -1969,6 +1973,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8059533439631660104">Összecsukja a panelt.</translation>
 <translation id="8061584726507121204">Előzmények</translation>
 <translation id="8064946459644399612">Az Új lap oldal beállításai alkalmazva</translation>
+<translation id="8065136076319366194">A mentés nem javasolt</translation>
 <translation id="8065556469005366939">Relevánsabb válaszokat kaphat, ha megosztja a lapjait</translation>
 <translation id="8069394452933076548">Válassza ki, hogy mikor kerüljenek a legutóbb nem használt lapok az inaktív lapok szakaszba.</translation>
 <translation id="8073670137947914548">Sikeres letöltés</translation>
@@ -1991,6 +1996,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8131740175452115882">Megerősítés</translation>
 <translation id="8132598642024322408">Most <ph name="PRICE" />, korábban <ph name="PREVIOUS_PRICE" /> volt.</translation>
 <translation id="813370552429173916">Minden webhelyen és alkalmazásban egyedi jelszót használjon. Ha valaki újrafelhasznált jelszóhoz jut hozzá, a többi Ön által használt fiókhoz is hozzáférhet. Kattintson a webhely megnyitásához, és azonnali módosításához</translation>
+<translation id="8133810265969517544">A megosztás nem javasolt</translation>
 <translation id="8135556271852808840">{count,plural, =1{{count} bezárt lap}other{{count} bezárt lap}}</translation>
 <translation id="8135643032449715400">{COUNT,plural, =1{1 további}other{# további}}</translation>
 <translation id="8150167929304790980">Teljes név</translation>
@@ -2240,6 +2246,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="8976414606286374109">A kártyákat a rendszer az Ön Google-fiókjába menti.</translation>
 <translation id="8981454092730389528">Google Tevékenységvezérlők</translation>
 <translation id="8988107725234939347"><ph name="WEBSITE_TITLE" />, kitűzött webhely</translation>
+<translation id="8990960056509724223">Nem sikerült menteni a fájlt a szervezeti házirendek miatt</translation>
 <translation id="8998289560386111590">Nem áll rendelkezésre az eszközén</translation>
 <translation id="9000532564152265066">Összes lap</translation>
 <translation id="9003677638446136377">Ellenőrzés újra</translation>
