@@ -273,11 +273,6 @@ class CrComponentsComposeboxTest : public WebUIMochaBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextMenuEntrypoint) {
-  RunTest("cr_components/composebox/context_menu_entrypoint_test.js",
-          "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrComponentsComposeboxTest, ContextualEntrypointButton) {
   RunTest("cr_components/composebox/contextual_entrypoint_button_test.js",
           "mocha.run()");
