@@ -93,8 +93,8 @@ suite('Lens search', () => {
     document.body.appendChild(realbox);
 
     // Act.
-    realbox.$.input.value = 'hello';
-    realbox.$.input.dispatchEvent(new InputEvent('input'));
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
 
     const matches = [createAutocompleteMatch()];
     testProxy.callbackRouterRemote.autocompleteResultChanged(

@@ -501,7 +501,25 @@ export class SearchboxElement extends SearchboxElementBase implements
   }
 
   isInputEmpty(): boolean {
-    return !this.$.input.value.trim();
+    return !this.lastInput_.text.trim();
+  }
+
+  protected shouldShowVoiceLens_(isEnabled: boolean): boolean {
+    if (!isEnabled) {
+      return false;
+    }
+
+    if (!this.isInputEmpty()) {
+      return false;
+    }
+
+    if (this.dropdownIsVisible &&
+        (this.composeButtonEnabled ||
+         this.searchboxLayoutMode.startsWith('Tall'))) {
+      return false;
+    }
+
+    return true;
   }
 
   queryAutocomplete() {
