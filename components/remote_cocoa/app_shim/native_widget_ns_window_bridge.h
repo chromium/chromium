@@ -481,9 +481,9 @@ class REMOTE_COCOA_APP_SHIM_EXPORT NativeWidgetNSWindowBridge
   // shadow needs to be invalidated when a frame is received for the new shape.
   bool invalidate_shadow_on_frame_swap_ = false;
 
-  // A blob representing the window's saved state, which is applied and cleared
-  // on the first call to SetVisibilityState().
-  std::vector<uint8_t> pending_restoration_data_;
+  // The window's saved state, which is applied and cleared on the first call to
+  // SetVisibilityState().
+  remote_cocoa::mojom::StateRestorationDataPtr pending_restoration_data_;
 
   // Manages immersive mode when in fullscreen.
   std::unique_ptr<ImmersiveModeControllerCocoa> immersive_mode_controller_;

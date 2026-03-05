@@ -91,6 +91,30 @@ display::Display GetDisplayForWindow(NSWindow* window) {
 
 }  // namespace
 
+@class NSWindowRestorationOptions;
+
+// An NSKeyedUnarchiver that can optionally vend NSWindowRestorationOptions.
+@interface RestorationOptionsKeyedUnarchiver : NSKeyedUnarchiver
+@property BOOL returnRestorationOptions;
+@end
+
+@implementation RestorationOptionsKeyedUnarchiver
+
+@synthesize returnRestorationOptions;
+
+- (NSWindowRestorationOptions*)_windowRestorationOptions {
+  // Returning a default-initialized NSWindowRestorationOptions from
+  // _windowRestorationOptions is enough to get windows to restore on the spaces
+  // whence they came.
+  if (self.returnRestorationOptions) {
+    return [[NSClassFromString(@"NSWindowRestorationOptions") alloc] init];
+  }
+
+  return nil;
+}
+
+@end
+
 // The NSView that hosts the composited CALayer drawing the UI. It fills the
 // window but is not hittable so that accessibility hit tests always go to the
 // BridgedContentView.
@@ -529,7 +553,7 @@ void NativeWidgetNSWindowBridge::InitWindow(
     mojom::NativeWidgetNSWindowInitParamsPtr params) {
   modal_type_ = params->modal_type;
   is_translucent_window_ = params->is_translucent;
-  pending_restoration_data_ = params->state_restoration_data;
+  pending_restoration_data_ = params->state_restoration_data.Clone();
 
   if (display::Screen::Get()->IsHeadless()) {
     [window_ setIsHeadless:YES];
@@ -827,7 +851,6 @@ void NativeWidgetNSWindowBridge::CloseWindowNow() {
 
 void NativeWidgetNSWindowBridge::SetVisibilityState(
     WindowVisibilityState new_state) {
-
   // During session restore this method gets called from RestoreTabsToBrowser()
   // with new_state = kShowAndActivateWindow. We consume restoration data on our
   // first time through this method so we can use its existence as an
@@ -843,15 +866,54 @@ void NativeWidgetNSWindowBridge::SetVisibilityState(
   bool session_restore_in_progress = false;
 
   // Restore Cocoa window state.
-  if (HasWindowRestorationData()) {
-    NSData* restore_ns_data =
-        [NSData dataWithBytes:pending_restoration_data_.data()
-                       length:pending_restoration_data_.size()];
-    NSKeyedUnarchiver* decoder =
-        [[NSKeyedUnarchiver alloc] initForReadingFromData:restore_ns_data
-                                                    error:nil];
+  if (pending_restoration_data_) {
+    NSData* restore_ns_data = [NSData
+        dataWithBytes:pending_restoration_data_->appkit_restoration_data.data()
+               length:pending_restoration_data_->appkit_restoration_data
+                          .size()];
+    RestorationOptionsKeyedUnarchiver* decoder =
+        [[RestorationOptionsKeyedUnarchiver alloc]
+            initForReadingFromData:restore_ns_data
+                             error:nil];
+
+    // Standard macOS behavior is: if a user quits and relaunches an app, window
+    // restoration code puts all restored windows onto the primary space. If the
+    // system quits and relaunches an app during, say, a system restart, window
+    // restoration code puts the restored windows back onto the spaces whence
+    // they came.
+    //
+    // Chromium wants to do the same for its restarts: if it was restarted
+    // (rather than just quit), it wants to return windows to their spaces.
+    // There is no API to do this (FB22128442), so two different approaches are
+    // used.
+    //
+    // Prior to macOS 15, the defaults key NSWindowRestoresWorkspaceAtLaunch is
+    // used. That triggers window restoration code to put windows back.
+    //
+    // NSWindowRestoresWorkspaceAtLaunch stopped working in macOS 15
+    // (FB15644170). However, if the decoder passed to -restoreStateWithCoder:
+    // has a method _windowRestorationOptions which returns a
+    // default-initialized NSWindowRestorationOptions object, that will cause
+    // the window restoration code to put windows back.
+    //
+    // Note that, in theory, -restoreStateWithCoder: shouldn't be used at all;
+    // the NSWindowRestoration API should be used (https://crbug.com/376834368).
+    // However, that API is insufficiently flexible enough for Chromium's usage
+    // (FB22128526) so it is not used. When that API is revised so that it is
+    // flexible enough, Chromium should switch to it.
+
+    if (base::mac::MacOSMajorVersion() >= 15) {
+      decoder.returnRestorationOptions =
+          pending_restoration_data_->restore_space;
+    } else if (pending_restoration_data_->restore_space) {
+      [NSUserDefaults.standardUserDefaults registerDefaults:@{
+        @"NSWindowRestoresWorkspaceAtLaunch" : @YES
+      }];
+    }
+
     [window_ restoreStateWithCoder:decoder];
-    pending_restoration_data_.clear();
+
+    pending_restoration_data_.reset();
 
     session_restore_in_progress = true;
   }
@@ -1031,7 +1093,7 @@ void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
 }
 
 bool NativeWidgetNSWindowBridge::HasWindowRestorationData() {
-  return !pending_restoration_data_.empty();
+  return !pending_restoration_data_.is_null();
 }
 
 void NativeWidgetNSWindowBridge::RestoreCollectionBehavior() {
