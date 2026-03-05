@@ -14,13 +14,11 @@ PopupControllerCommon::PopupControllerCommon(
     gfx::RectF element_bounds,
     base::i18n::TextDirection text_direction,
     gfx::NativeView container_view,
-    PopupAnchorType anchor_type,
-    bool show_tabbed_popup)
+    PopupAnchorType anchor_type)
     : element_bounds(std::move(element_bounds)),
       text_direction(text_direction),
       container_view(container_view),
-      anchor_type(anchor_type),
-      show_tabbed_popup(show_tabbed_popup) {}
+      anchor_type(anchor_type) {}
 
 PopupControllerCommon::PopupControllerCommon(const PopupControllerCommon&) =
     default;
