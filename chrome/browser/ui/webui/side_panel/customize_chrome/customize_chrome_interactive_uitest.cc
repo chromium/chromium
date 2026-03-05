@@ -289,9 +289,7 @@ class CustomizeChromeEnterpriseInteractiveTest
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpFooter,
-                              features::kEnterpriseBadgingForNtpFooter},
-        {});
+        /*enabled_features=*/{ntp_features::kNtpFooter}, {});
     InteractiveBrowserTest::SetUp();
   }
 

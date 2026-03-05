@@ -229,9 +229,7 @@ class FooterControllerEnterpriseTest
       public testing::WithParamInterface<bool> {
  public:
   FooterControllerEnterpriseTest() {
-    feature_list_.InitWithFeatureStates(
-        {{ntp_features::kNtpFooter, true},
-         {features::kEnterpriseBadgingForNtpFooter, true}});
+    feature_list_.InitWithFeatureStates({{ntp_features::kNtpFooter, true}});
   }
   ~FooterControllerEnterpriseTest() override = default;
 

@@ -287,8 +287,6 @@ TEST_F(NewTabFooterHandlerExtensionTest, SetNtpExtensionName_ReenablePolicy) {
 class NewTabFooterHandlerEnterpriseTest : public testing::Test {
  public:
   void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        features::kEnterpriseBadgingForNtpFooter);
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());

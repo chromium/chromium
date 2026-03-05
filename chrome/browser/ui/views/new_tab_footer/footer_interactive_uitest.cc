@@ -300,8 +300,7 @@ class FooterEnterpriseInteractiveTest : public FooterInteractiveTestBase {
  public:
   FooterEnterpriseInteractiveTest() {
     scoped_feature_list_.InitWithFeatureStates(
-        {{ntp_features::kNtpFooter, true},
-         {features::kEnterpriseBadgingForNtpFooter, true}});
+        {{ntp_features::kNtpFooter, true}});
   }
   ~FooterEnterpriseInteractiveTest() override = default;
 

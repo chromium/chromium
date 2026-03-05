@@ -1551,12 +1551,6 @@ inline constexpr char kImageDescriptionsAlternateRoutingDescription[] =
     "When adding automatic captions to images, use a different route to "
     "acquire descriptions.";
 
-inline constexpr char kEnterpriseBadgingForNtpFooterName[] =
-    "Enable enterprise badging on the New Tab Page";
-inline constexpr char kEnterpriseBadgingForNtpFooterDescription[] =
-    "Enable enterprise profile badging in the footer on the New Tab Page. This "
-    "includes showing the enterprise logo and the management disclaimer";
-
 inline constexpr char kEnableClientCertificateProvisioningOnAndroidName[] =
     "Enable client certificate provisioning on Android";
 inline constexpr char

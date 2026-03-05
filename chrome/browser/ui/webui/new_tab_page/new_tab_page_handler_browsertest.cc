@@ -422,8 +422,7 @@ class NewTabPageHandlerManagedTest : public NewTabPageHandlerBaseBrowserTest,
  public:
   NewTabPageHandlerManagedTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ntp_features::kNtpFooter,
-                              features::kEnterpriseBadgingForNtpFooter},
+        /*enabled_features=*/{ntp_features::kNtpFooter},
         /*disabled_features=*/{});
   }
 
