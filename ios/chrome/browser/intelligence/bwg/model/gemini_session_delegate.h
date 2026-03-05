@@ -64,6 +64,9 @@ typedef NS_ENUM(NSInteger, BWGInputType) {
   BWGInputTypeNanoBananaTurnThisImageIntoAWatercolorPainting = 22,
   // Nano Banana: make this image look like instant film input type.
   BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm = 23,
+  // Input from Helios entry point on the Edit menu when user highlights text
+  // Something like: “Explain this to me: <selected text>”
+  BWGInputTypeEditMenuPrompt = 24,
 };
 // LINT.ThenChange(
 //   /ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h:IOSGeminiFirstPromptSubmissionMethod,

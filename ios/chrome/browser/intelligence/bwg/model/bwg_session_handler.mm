@@ -79,6 +79,8 @@ IOSGeminiFirstPromptSubmissionMethod ConvertBWGInputTypeToHistogramEnum(
     case BWGInputTypeNanoBananaMakeThisImageLookLikeInstantFilm:
       return IOSGeminiFirstPromptSubmissionMethod::
           kNanoBananaMakeThisImageLookLikeInstantFilm;
+    case BWGInputTypeEditMenuPrompt:
+      return IOSGeminiFirstPromptSubmissionMethod::kEditMenuPrompt;
   }
 }
 

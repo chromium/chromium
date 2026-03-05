@@ -832,6 +832,7 @@ chromium-metrics-reviews@google.com.
   <int value="22"
       label="Nano Banana: Turn This Image Into a Watercolor Painting"/>
   <int value="23" label="Nano Banana: Make This Image Look Like Instant Film"/>
+  <int value="24" label="Edit Menu Prompt"/>
 </enum>
 
 <!-- LINT.ThenChange(

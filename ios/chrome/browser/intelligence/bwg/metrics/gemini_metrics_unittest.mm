@@ -380,3 +380,9 @@ TEST_F(GeminiMetricsTest, RecordGeminiIneligibilityReasons) {
 
   histogram_tester_.ExpectTotalCount(histogram, 2);
 }
+
+TEST_F(GeminiMetricsTest, RecordGeminiEditMenuSelectedTextLength) {
+  RecordGeminiEditMenuSelectedTextLength(100);
+  histogram_tester_.ExpectBucketCount(kEditMenuSelectedTextLengthHistogram, 100,
+                                      1);
+}

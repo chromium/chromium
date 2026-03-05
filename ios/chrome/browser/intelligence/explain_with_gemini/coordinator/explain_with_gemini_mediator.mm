@@ -12,6 +12,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "ios/chrome/browser/browser_content/ui_bundled/browser_edit_menu_utils.h"
+#import "ios/chrome/browser/intelligence/bwg/metrics/gemini_metrics.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
@@ -186,7 +187,8 @@ typedef void (^ProceduralBlockWithBlockWithItemArray)(
                                      IDS_IOS_EXPLAIN_GEMINI_PROMPT_PREFIX),
                                  text];
 
-  // TODO(crbug.com/483004001): Add metrics logging.
+  RecordGeminiEditMenuSelectedTextLength(text.length);
+
   GeminiStartupState* startupState = [[GeminiStartupState alloc]
       initWithEntryPoint:gemini::EntryPoint::EditMenu];
   startupState.prepopulatedPrompt = prepopulatedPrompt;

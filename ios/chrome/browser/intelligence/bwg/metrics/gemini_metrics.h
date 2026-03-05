@@ -178,7 +178,8 @@ enum class IOSGeminiFirstPromptSubmissionMethod {
   kNanoBananaTurnThisImageIntoAVintagePostcard = 21,
   kNanoBananaTurnThisImageIntoAWatercolorPainting = 22,
   kNanoBananaMakeThisImageLookLikeInstantFilm = 23,
-  kMaxValue = kNanoBananaMakeThisImageLookLikeInstantFilm,
+  kEditMenuPrompt = 24,
+  kMaxValue = kEditMenuPrompt,
 };
 // LINT.ThenChange(
 //   /tools/metrics/histograms/metadata/ios/enums.xml:IOSGeminiFirstPromptSubmissionMethod,
@@ -214,6 +215,9 @@ extern const char kResponseLatencyWithGeneratedImageHistogram[];
 
 // UMA histogram key for IOS.Gemini.Response.Latency.WithoutGeneratedImage.
 extern const char kResponseLatencyWithoutGeneratedImageHistogram[];
+
+// UMA histogram key for IOS.Gemini.EditMenuPrompt.SelectedText.Length.
+extern const char kEditMenuSelectedTextLengthHistogram[];
 
 // Represents the completed Gemini session types.
 enum class IOSGeminiSessionType {
@@ -378,7 +382,7 @@ void RecordGeminiSessionLengthByType(base::TimeDelta session_duration,
 
 // Records when user sees the Gemini entry point impression.
 // Can be called once every 10 minutes to avoid spam logging.
-void RecordGeminiEntryPointImpression();
+void RecordGeminiEntryPointImpression(gemini::EntryPoint entry_point);
 
 // Records that the Gemini FRE was shown.
 void RecordFREShown();
@@ -526,5 +530,8 @@ void RecordGeminiCameraFlowPresentCameraPicker();
 // Records the result of the camera picker.
 void RecordGeminiCameraFlowCameraPickerResult(
     IOSGeminiCameraPickerResult result);
+
+// Records the length of the selected text in the edit menu.
+void RecordGeminiEditMenuSelectedTextLength(int length);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_GEMINI_METRICS_H_
