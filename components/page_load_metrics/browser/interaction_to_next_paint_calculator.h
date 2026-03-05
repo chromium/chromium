@@ -56,7 +56,7 @@ class InteractionToNextPaintCalculator {
   ~InteractionToNextPaintCalculator();
 
   void AddNewEventTimings(
-      const content::RenderFrameHost& source,
+      content::GlobalRenderFrameHostToken source_token,
       base::span<const mojom::EventTimingPtr> event_timings);
 
   void ClearEventTimings();

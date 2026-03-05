@@ -668,7 +668,8 @@ void PageLoadMetricsUpdateDispatcher::
         const std::vector<mojom::EventTimingPtr>& event_timings) {
   if (!event_timings.empty()) {
     soft_navigation_interval_interaction_to_next_paint_calculator_
-        .AddNewEventTimings(*render_frame_host, event_timings);
+        .AddNewEventTimings(render_frame_host->GetGlobalFrameToken(),
+                            event_timings);
   }
 }
 
@@ -808,8 +809,8 @@ void PageLoadMetricsUpdateDispatcher::UpdatePageEventTiming(
   if (!event_timings.empty()) {
     uint64_t old_num_interactions =
         interaction_to_next_paint_calculator_.num_user_interactions();
-    interaction_to_next_paint_calculator_.AddNewEventTimings(*render_frame_host,
-                                                             event_timings);
+    interaction_to_next_paint_calculator_.AddNewEventTimings(
+        render_frame_host->GetGlobalFrameToken(), event_timings);
     uint64_t new_num_interactions =
         interaction_to_next_paint_calculator_.num_user_interactions();
     client_->OnPageEventTimingChanged(new_num_interactions -

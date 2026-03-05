@@ -35,15 +35,11 @@ InteractionToNextPaintCalculator::worst_latency() const {
 }
 
 void InteractionToNextPaintCalculator::AddNewEventTimings(
-    const content::RenderFrameHost& source,
+    content::GlobalRenderFrameHostToken source_token,
     base::span<const mojom::EventTimingPtr> event_timings) {
   if (event_timings.empty()) {
     return;
   }
-
-  content::GlobalRenderFrameHostToken source_token =
-      source.GetGlobalFrameToken();
-
   InteractionIdRange& range = interaction_id_ranges_per_source_[source_token];
   for (const auto& event_timing : event_timings) {
     uint64_t id = event_timing->interaction_id;

@@ -19,8 +19,8 @@ class InteractionToNextPaintCalculatorTest
   void AddNewEventTimings(
       const content::RenderFrameHost* source,
       std::vector<page_load_metrics::mojom::EventTimingPtr>& event_timings) {
-    interaction_to_next_paint_calculator_.AddNewEventTimings(*source,
-                                                             event_timings);
+    interaction_to_next_paint_calculator_.AddNewEventTimings(
+        source->GetGlobalFrameToken(), event_timings);
   }
 
   uint64_t GetNumInteractions() {
