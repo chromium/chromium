@@ -1326,13 +1326,14 @@ CanvasRenderingContext2D::CreateCanvasResourceProvider() {
   const viz::SharedImageFormat format = GetSharedImageFormat();
   const gfx::ColorSpace color_space = GetColorSpace();
 
+  const bool is_gpu_compositing_enabled =
+      SharedGpuContext::IsGpuCompositingEnabled();
+  const bool use_gpu_raster = canvas()->ShouldTryToUseGpuRaster() &&
+                              canvas()->ShouldAccelerate2dContext();
+
   // If using GPU compositing, try to create a SharedImage-backed provider if
   // either (a) using GPU raster or (b) using CPU raster and want to use
   // mappable SharedImage for Canvas2D.
-  const bool use_gpu_raster = canvas()->ShouldTryToUseGpuRaster() &&
-                              canvas()->ShouldAccelerate2dContext();
-  const bool is_gpu_compositing_enabled =
-      SharedGpuContext::IsGpuCompositingEnabled();
   if (is_gpu_compositing_enabled &&
       (use_gpu_raster ||
        SharedGpuContext::UseMappableSharedImagesForCanvas2D())) {
