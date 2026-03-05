@@ -603,10 +603,18 @@ void WebRtcLoggingController::DoUploadLogAndRtpDumps(
                           << ", uorc=" << upload_log_on_render_close_;
 
   content::BrowserContext* browser_context = GetBrowserContext();
-  bool is_text_log_upload_allowed = IsWebRtcTextLogAllowed(
-      browser_context, GetApiType(),
-      web_api_settings_.has_value() ? web_api_settings_->origin
-                                    : url::Origin());
+  bool is_text_log_upload_allowed = true;
+  // The browser context can be null if the upload occurs when the renderer
+  // process is being torn down. Skip the authorization check in this case.
+  // For the Web API, we rely on the authorization check done before calling
+  // StartLogging.
+  // For the extension API, it is always authorized in this case.
+  if (browser_context) {
+    is_text_log_upload_allowed = IsWebRtcTextLogAllowed(
+        browser_context, GetApiType(),
+        web_api_settings_.has_value() ? web_api_settings_->origin
+                                      : url::Origin());
+  }
   log_uploader->background_task_runner()->PostTask(
       FROM_HERE,
       base::BindOnce(
