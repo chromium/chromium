@@ -106,7 +106,7 @@ std::optional<std::string> UserAgentMetadata::Marshal(
   for (const auto& form_factors : in->form_factors) {
     out.WriteString(form_factors);
   }
-  return std::string(reinterpret_cast<const char*>(out.data()), out.size());
+  return std::string(out.AsStringView());
 }
 
 // static

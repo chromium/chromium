@@ -10,7 +10,6 @@
 #include <utility>
 #include <variant>
 
-#include "base/compiler_specific.h"
 #include "base/json/json_writer.h"
 #include "base/pickle.h"
 #include "base/strings/escape.h"
@@ -199,10 +198,7 @@ void ScopedClipboardWriter::WritePickledData(
   RecordWrite(ClipboardFormatMetric::kCustomData);
   Clipboard::RawData raw_data;
   raw_data.format = format;
-  raw_data.data = std::vector<uint8_t>(
-      reinterpret_cast<const uint8_t*>(pickle.data()),
-      UNSAFE_TODO(reinterpret_cast<const uint8_t*>(pickle.data()) +
-                  pickle.size()));
+  raw_data.data = std::vector<uint8_t>(std::from_range, pickle.AsBytes());
   raw_objects_.insert({format, std::move(raw_data)});
 }
 

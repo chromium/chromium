@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/json/values_util.h"
 #include "base/pickle.h"
@@ -156,9 +155,7 @@ ContentRevision ToContentRevision(const std::string& str) {
 std::string SerializeDebugStreamData(const DebugStreamData& data) {
   base::Pickle pickle;
   PickleDebugStreamData(data, pickle);
-  const uint8_t* pickle_data_ptr = static_cast<const uint8_t*>(pickle.data());
-  return base::Base64Encode(
-      UNSAFE_TODO(base::span<const uint8_t>(pickle_data_ptr, pickle.size())));
+  return base::Base64Encode(pickle.AsBytes());
 }
 
 std::optional<DebugStreamData> DeserializeDebugStreamData(

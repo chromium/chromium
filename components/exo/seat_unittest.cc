@@ -353,8 +353,7 @@ TEST_F(SeatTest, SetSelectionWebCustomData) {
   custom_data[u"text/uri-list"] = u"data";
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(custom_data, &pickle);
-  auto custom_data_str =
-      std::string(reinterpret_cast<const char*>(pickle.data()), pickle.size());
+  std::string custom_data_str(pickle.AsStringView());
 
   TestDataSourceDelegate delegate;
   const std::string kMimeType = "chromium/x-web-custom-data";

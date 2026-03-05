@@ -142,7 +142,7 @@ string QuicServerInfo::SerializeInner() const {
   for (const auto& cert : state_.certs)
     p.WriteString(cert);
 
-  return string(reinterpret_cast<const char*>(p.data()), p.size());
+  return string(p.AsStringView());
 }
 
 }  // namespace net
