@@ -16,6 +16,7 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
+#include "content/browser/network/network_service_process_tracker_win.h"
 #include "content/browser/ssl/ssl_manager.h"
 #include "content/browser/webrtc/webrtc_connections_observer.h"
 #include "content/public/browser/browser_context.h"
@@ -210,6 +211,7 @@ void NetworkServiceClient::OnIPAddressChanged(
 #if BUILDFLAG(IS_WIN)
 mojo::PendingRemote<network::mojom::SocketBroker>
 NetworkServiceClient::BindSocketBroker() {
+  EnsureNetworkServiceListenerStarted();
   return socket_broker_.BindNewRemote();
 }
 #endif  // BUILDFLAG(IS_WIN)

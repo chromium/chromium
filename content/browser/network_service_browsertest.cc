@@ -1919,7 +1919,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceCookieEncryptionBrowserTest,
                        base::File::FLAG_DELETE_ON_CLOSE);
     ASSERT_TRUE(temp_file.IsValid());
     base::Process peer_process = base::Process::OpenWithExtraPrivileges(
-        GetNetworkServiceProcess().Pid());
+        GetNetworkServiceProcessForTesting().Pid());
     const auto minidump_type = static_cast<MINIDUMP_TYPE>(
         MiniDumpWithFullMemory | MiniDumpIgnoreInaccessibleMemory);
     ASSERT_TRUE(::MiniDumpWriteDump(peer_process.Handle(), peer_process.Pid(),

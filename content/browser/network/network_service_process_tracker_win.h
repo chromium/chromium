@@ -5,30 +5,43 @@
 #ifndef CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
 #define CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_PROCESS_TRACKER_WIN_H_
 
-#include "base/functional/callback_forward.h"
-#include "base/process/process.h"
 #include "content/common/content_export.h"
+
+namespace base {
+class Process;
+class TimeDelta;
+}  // namespace base
 
 namespace content {
 
-// Obtains a base::Process representing the current running network service.
-// This might return an invalid base::Process if the network service does not
-// exist. Must be called on the UI thread.
-CONTENT_EXPORT base::Process GetNetworkServiceProcess();
+// Starts the NetworkServiceListener if it is not already running. This prevents
+// other processes from reusing the Network Service's process ID for a period
+// after it is restarted, to help ensure that network::SocketBrokerImpl does not
+// assign a socket to the wrong process.
+CONTENT_EXPORT void EnsureNetworkServiceListenerStarted();
 
-// Registers a closure to be called when a new network service process has
-// started and GetNetworkServiceProcess() will return a handle to it. When
-// called with code equivalent to
-//   if (!GetNetworkServiceProcess.IsValid()) {
-//     WaitForNetworkServiceProcess(base::BindOnce(...));
-//   }
-// then it is guaranteed that notifications will not be missed and that
-// GetNetworkServiceProcess() will return a valid Process during execution of
-// the closure.
-//
-// Must be called on the UI thread. The closure will be run on the UI thread.
-CONTENT_EXPORT void WaitForNetworkServiceProcess(
-    base::OnceClosure on_available);
+// Attempts to obtain a base::Process representing the current running network
+// service. This might return an invalid base::Process if the network service
+// has been restarted recently. It may also briefly return a base::Process for a
+// previous incarnation of the network service due to delays in propagating
+// updates to the UI thread. It's best to avoid needing this if you can. Must be
+// called on the UI thread.
+CONTENT_EXPORT base::Process GetNetworkServiceProcessForTesting();
+
+// Allow tests to override how long the Network Service's process handle is kept
+// alive after it goes away.
+class CONTENT_EXPORT ScopedKeepOldProcessHandlePeriodForTesting {
+ public:
+  explicit ScopedKeepOldProcessHandlePeriodForTesting(base::TimeDelta duration);
+
+  // Not copyable or assignable.
+  ScopedKeepOldProcessHandlePeriodForTesting(
+      const ScopedKeepOldProcessHandlePeriodForTesting&) = delete;
+  ScopedKeepOldProcessHandlePeriodForTesting& operator=(
+      const ScopedKeepOldProcessHandlePeriodForTesting&) = delete;
+
+  ~ScopedKeepOldProcessHandlePeriodForTesting();
+};
 
 }  // namespace content
 

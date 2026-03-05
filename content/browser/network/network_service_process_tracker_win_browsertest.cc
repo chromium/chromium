@@ -6,9 +6,14 @@
 
 #include <windows.h>
 
+#include "base/location.h"
+#include "base/process/process.h"
 #include "base/process/process_handle.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/common/content_features.h"
@@ -25,6 +30,7 @@ class NetworkServiceProcessTrackerTest : public ContentBrowserTest {
  public:
   void SetUp() override {
     feature_list_.InitAndDisableFeature(features::kNetworkServiceInProcess);
+    content::ForceOutOfProcessNetworkService();
     ContentBrowserTest::SetUp();
   }
 
@@ -45,7 +51,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest,
   // This scoped base::Process ensures that the refcount to the underlying
   // process handle remains, meaning that the same handle won't ever be reused
   // for future processes.
-  base::Process first_process = GetNetworkServiceProcess();
+  base::Process first_process = GetNetworkServiceProcessForTesting();
   ASSERT_NE(first_process.Handle(), base::kNullProcessHandle);
 
   SimulateNetworkServiceCrash();
@@ -55,46 +61,69 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest,
       network_service_test2.BindNewPipeAndPassReceiver());
   // This ensures network service is fully running.
   network_service_test2.FlushForTesting();
-  base::Process second_process = GetNetworkServiceProcess();
+  base::Process second_process = GetNetworkServiceProcessForTesting();
 
   ASSERT_NE(second_process.Handle(), base::kNullProcessHandle);
   ASSERT_NE(first_process.Handle(), second_process.Handle());
 }
 
+// This test relies on the fact that the OpenProcess() Windows API call permits
+// opening a process that has exited as long as some process has an open handle
+// on it, and that base::Process::Open() exposes this behavior. If either of
+// those things should change, the test will stop working.
 IN_PROC_BROWSER_TEST_F(NetworkServiceProcessTrackerTest,
-                       WaitForNetworkServiceProcess) {
-  ASSERT_FALSE(IsInProcessNetworkService());
+                       KeepsNetworkServiceProcessHandle) {
+  // Keep the network service process handle alive for 1 seconds instead of the
+  // default, to make this test run acceptably quickly.
+  ScopedKeepOldProcessHandlePeriodForTesting keep_old_process_handle_period(
+      base::Seconds(1));
 
-  // Ensure network service is fully running.
   mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
   GetNetworkService()->BindTestInterfaceForTesting(
       network_service_test.BindNewPipeAndPassReceiver());
+  // This ensures network service is fully running.
   network_service_test.FlushForTesting();
-  ASSERT_TRUE(GetNetworkServiceProcess().IsValid());
+
+  EnsureNetworkServiceListenerStarted();
+  base::ProcessId original_process_id =
+      GetNetworkServiceProcessForTesting().Pid();
+
+  base::RunLoop run_loop1;
+  base::OneShotTimer timer1;
+  timer1.Start(FROM_HERE, base::Seconds(0.5), run_loop1.QuitClosure());
 
   SimulateNetworkServiceCrash();
 
-  // SimulateNetworkServiceCrash() actually makes a mojo call to the
-  // newly-created network service internally, which means the new network
-  // service is already running at this point. Usually, the
-  // NetworkServiceProcessTracker hasn't been notified yet, but sometimes it
-  // has. When the notification has already happened, the rest of the test won't
-  // work, so just skip it.
-  if (GetNetworkServiceProcess().IsValid()) {
-    GTEST_SKIP() << "Cannot test notification: restart already notified";
+  // Wait 0.5 seconds.
+  run_loop1.Run();
+
+  {
+    base::Process original_process = base::Process::Open(original_process_id);
+    EXPECT_TRUE(original_process.IsValid());
+
+    // Make sure the process has actually exited.
+    original_process.WaitForExit(nullptr);
   }
 
-  base::RunLoop run_loop;
-  WaitForNetworkServiceProcess(run_loop.QuitClosure());
+  // Make sure the NetworkServiceListener has actually picked up the new
+  // process and had a chance to start its own timer.
+  ASSERT_TRUE(base::test::RunUntil([&] {
+    base::Process network_service_process =
+        GetNetworkServiceProcessForTesting();
+    return network_service_process.IsValid() &&
+           network_service_process.Pid() != original_process_id;
+  }));
 
-  // Trigger restart.
-  mojo::Remote<network::mojom::NetworkServiceTest> network_service_test2;
-  GetNetworkService()->BindTestInterfaceForTesting(
-      network_service_test2.BindNewPipeAndPassReceiver());
-  network_service_test2.FlushForTesting();
+  // Wait another second. The timer set by NetworkServiceListener is definitely
+  // running at this point, so is guaranteed to fire before `timer2` by the
+  // semantics of base::OneShotTimer.
+  base::RunLoop run_loop2;
+  base::OneShotTimer timer2;
+  timer2.Start(FROM_HERE, base::Seconds(1.0), run_loop2.QuitClosure());
+  run_loop2.Run();
 
-  run_loop.Run();
-  EXPECT_TRUE(GetNetworkServiceProcess().IsValid());
+  // Verify that we didn't pass the first expectation by accident.
+  EXPECT_FALSE(base::Process::Open(original_process_id).IsValid());
 }
 
 class NetworkServiceSingleProcessTrackerTest : public ContentBrowserTest {
@@ -109,7 +138,7 @@ class NetworkServiceSingleProcessTrackerTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(NetworkServiceSingleProcessTrackerTest, GetProcess) {
-  base::Process process = GetNetworkServiceProcess();
+  base::Process process = GetNetworkServiceProcessForTesting();
   ASSERT_EQ(process.Pid(), ::GetCurrentProcessId());
 }
 
