@@ -378,7 +378,13 @@ IN_PROC_BROWSER_TEST_P(SyncAuthTest, RetryInitialSetupWithTransientError) {
 }
 
 // Verify that SyncServiceImpl fetches a new token when an old token expires.
-IN_PROC_BROWSER_TEST_P(SyncAuthTest, TokenExpiry) {
+// TODO(crbug.com/490065002): Test is flaky on Mac, Linux, Windows.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+#define MAYBE_TokenExpiry DISABLED_TokenExpiry
+#else
+#define MAYBE_TokenExpiry TokenExpiry
+#endif
+IN_PROC_BROWSER_TEST_P(SyncAuthTest, MAYBE_TokenExpiry) {
   // Initial sync succeeds with a short lived OAuth2 Token.
   ASSERT_TRUE(SetupClients());
   GetFakeServer()->ClearHttpError();
