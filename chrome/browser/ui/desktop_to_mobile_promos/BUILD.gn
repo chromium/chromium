@@ -9,6 +9,7 @@ source_set("utils") {
     "//base",
     "//chrome/browser/desktop_to_mobile_promos:utils",
     "//components/desktop_to_mobile_promos",
+    "//components/sync_device_info",
   ]
 }
 

@@ -143,7 +143,7 @@ class IOSPromosUtilsTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
 };
 
-TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_Recent) {
+TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_Recent) {
   // Set a recent timestamp for the iOS device.
   WriteCrossDeviceValue(profile()->GetPrefs(),
                         prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
@@ -154,10 +154,10 @@ TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_Recent) {
       CreateDeviceInfo(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
                        syncer::DeviceInfo::FormFactor::kPhone));
 
-  EXPECT_TRUE(ios_promos_utils::IsUserActiveOnIOS(profile()));
+  EXPECT_TRUE(ios_promos_utils::IsUserActive16OnIOS(profile()));
 }
 
-TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_Old) {
+TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_Old) {
   // Set an old timestamp for the iOS device.
   WriteCrossDeviceValue(profile()->GetPrefs(),
                         prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
@@ -169,10 +169,10 @@ TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_Old) {
       CreateDeviceInfo(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
                        syncer::DeviceInfo::FormFactor::kPhone));
 
-  EXPECT_FALSE(ios_promos_utils::IsUserActiveOnIOS(profile()));
+  EXPECT_FALSE(ios_promos_utils::IsUserActive16OnIOS(profile()));
 }
 
-TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_NoIOSDevice) {
+TEST_F(IOSPromosUtilsTest, IsUserActive16OnIOS_NoIOSDevice) {
   // Set a recent timestamp for a non-iOS device.
   WriteCrossDeviceValue(profile()->GetPrefs(),
                         prefs::kCrossDeviceCrossPlatformPromosIOS16thActiveDay,
@@ -183,36 +183,39 @@ TEST_F(IOSPromosUtilsTest, IsUserActiveOnIOS_NoIOSDevice) {
       CreateDeviceInfo(kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
                        syncer::DeviceInfo::FormFactor::kPhone));
 
-  EXPECT_FALSE(ios_promos_utils::IsUserActiveOnIOS(profile()));
+  EXPECT_FALSE(ios_promos_utils::IsUserActive16OnIOS(profile()));
 }
 
-// Tests that IsUserActiveOnAndroid returns true when a recent Android device
+// Tests that HasUserBeenActiveOnOS returns true when a recent Android device
 // exists.
-TEST_F(IOSPromosUtilsTest, IsUserActiveOnAndroid_Recent) {
+TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_Recent) {
   device_info_tracker()->Add(CreateDeviceInfoWithTime(
       kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
       base::Time::Now() - base::Days(1)));
 
-  EXPECT_TRUE(ios_promos_utils::IsUserActiveOnAndroid(profile()));
+  EXPECT_TRUE(ios_promos_utils::HasUserBeenActiveOnOS(
+      profile(), syncer::DeviceInfo::OsType::kAndroid));
 }
 
-// Tests that IsUserActiveOnAndroid returns false when only an old Android
+// Tests that HasUserBeenActiveOnOS returns false when only an old Android
 // device exists.
-TEST_F(IOSPromosUtilsTest, IsUserActiveOnAndroid_Old) {
+TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_Old) {
   device_info_tracker()->Add(CreateDeviceInfoWithTime(
       kAndroidDevice, syncer::DeviceInfo::OsType::kAndroid,
       base::Time::Now() - base::Days(30)));
 
-  EXPECT_FALSE(ios_promos_utils::IsUserActiveOnAndroid(profile()));
+  EXPECT_FALSE(ios_promos_utils::HasUserBeenActiveOnOS(
+      profile(), syncer::DeviceInfo::OsType::kAndroid));
 }
 
-// Tests that IsUserActiveOnAndroid returns false when no Android device exists.
-TEST_F(IOSPromosUtilsTest, IsUserActiveOnAndroid_NoDevice) {
+// Tests that HasUserBeenActiveOnOS returns false when no Android device exists.
+TEST_F(IOSPromosUtilsTest, HasUserBeenActiveOnOS_NoDevice) {
   device_info_tracker()->Add(
       CreateDeviceInfoWithTime(kIOSDevice, syncer::DeviceInfo::OsType::kIOS,
                                base::Time::Now() - base::Days(1)));
 
-  EXPECT_FALSE(ios_promos_utils::IsUserActiveOnAndroid(profile()));
+  EXPECT_FALSE(ios_promos_utils::HasUserBeenActiveOnOS(
+      profile(), syncer::DeviceInfo::OsType::kAndroid));
 }
 
 }  // namespace

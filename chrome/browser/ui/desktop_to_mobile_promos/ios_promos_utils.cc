@@ -31,7 +31,6 @@
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 #include "components/sync/service/sync_service.h"
-#include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 #include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h"
@@ -236,7 +235,7 @@ void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
       std::move(promo_not_shown_callback));
 }
 
-bool IsUserActiveOnIOS(Profile* profile) {
+bool IsUserActive16OnIOS(Profile* profile) {
   CrossDevicePrefTracker* pref_tracker =
       CrossDevicePrefTrackerFactory::GetForProfile(profile);
   CHECK(pref_tracker);
@@ -252,7 +251,8 @@ bool IsUserActiveOnIOS(Profile* profile) {
   return false;
 }
 
-bool IsUserActiveOnAndroid(Profile* profile) {
+bool HasUserBeenActiveOnOS(Profile* profile,
+                           syncer::DeviceInfo::OsType os_type) {
   syncer::DeviceInfoSyncService* device_info_sync_service =
       DeviceInfoSyncServiceFactory::GetForProfile(profile);
   if (!device_info_sync_service) {
@@ -267,7 +267,7 @@ bool IsUserActiveOnAndroid(Profile* profile) {
 
   for (const syncer::DeviceInfo* device_info :
        device_info_tracker->GetAllDeviceInfo()) {
-    if (device_info->os_type() == syncer::DeviceInfo::OsType::kAndroid &&
+    if (device_info->os_type() == os_type &&
         IsRecent(device_info->last_updated_timestamp(), kActiveUserRecency)) {
       return true;
     }

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "components/desktop_to_mobile_promos/promos_types.h"
+#include "components/sync_device_info/device_info.h"
 
 class Browser;
 class Profile;
@@ -34,12 +35,12 @@ void MaybeOverrideCardConfirmationBubbleWithIOSPaymentPromo(
 
 // Returns true if the signed-in user has been active 16 out of the last 28 days
 // on an iOS device.
-bool IsUserActiveOnIOS(Profile* profile);
+bool IsUserActive16OnIOS(Profile* profile);
 
-// Returns true if the user has an Android device that has been active in the
-// last 28 days. This is not exactly an Android version of
-// `IsUserActiveOnIOS()` - the logic is different.
-bool IsUserActiveOnAndroid(Profile* profile);
+// Returns true if the user has been synced on the given OS any time in the
+// last 28 days.
+bool HasUserBeenActiveOnOS(Profile* profile,
+                           syncer::DeviceInfo::OsType os_type);
 
 }  // namespace ios_promos_utils
 
