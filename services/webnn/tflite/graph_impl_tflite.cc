@@ -226,6 +226,26 @@ class GraphImplTflite::ComputeResources {
                                           TfLiteStatusToString(status)})));
     }
 
+    // Check that the input and output tensor sizes match the model.
+    for (auto [name, descriptor] : self->input_name_to_descriptor) {
+      TfLiteTensor* tensor =
+          self->interpreter_->tensor(descriptor.tensor_index);
+      if (tensor->bytes != descriptor.descriptor.PackedByteLength()) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            base::StrCat({"Input tensor size mismatch: ", name})));
+      }
+    }
+    for (auto [name, descriptor] : self->output_name_to_descriptor) {
+      TfLiteTensor* tensor =
+          self->interpreter_->tensor(descriptor.tensor_index);
+      if (tensor->bytes != descriptor.descriptor.PackedByteLength()) {
+        return base::unexpected(mojom::Error::New(
+            mojom::Error::Code::kUnknownError,
+            base::StrCat({"Output tensor size mismatch: ", name})));
+      }
+    }
+
     absl::flat_hash_set<mojom::Device> devices;
     for (int i : self->interpreter_->execution_plan()) {
       const auto& [node, registration] =
@@ -280,6 +300,8 @@ class GraphImplTflite::ComputeResources {
       }
 
       base::span<uint8_t> data = buffer->AsSpan();
+      CHECK_EQ(data.size(), tensor->bytes);
+
       TfLiteStatus status = interpreter_->SetCustomAllocationForTensor(
           tensor_idx, {data.data(), data.size()});
       if (status != kTfLiteOk) {
