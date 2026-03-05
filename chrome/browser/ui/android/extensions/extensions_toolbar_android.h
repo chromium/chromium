@@ -59,7 +59,8 @@ class ExtensionsToolbarAndroid : public ExtensionsToolbarViewModel::Delegate,
       content::WebContents* web_contents);
   base::android::ScopedJavaLocalRef<jobject> GetAction(
       JNIEnv* env,
-      const ToolbarActionsModel::ActionId& action_id);
+      const ToolbarActionsModel::ActionId& action_id,
+      content::WebContents* web_contents);
   base::android::ScopedJavaLocalRef<jobject> GetIcon(
       JNIEnv* env,
       const ToolbarActionsModel::ActionId& action_id,

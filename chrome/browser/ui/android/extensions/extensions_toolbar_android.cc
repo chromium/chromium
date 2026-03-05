@@ -155,11 +155,13 @@ void ExtensionsToolbarAndroid::Destroy(JNIEnv* env) {
 
 base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetAction(
     JNIEnv* env,
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    content::WebContents* web_contents) {
   ToolbarActionViewModel* action =
       toolbar_view_model_->GetActionModelForId(action_id);
   return Java_ExtensionAction_Constructor(
-      env, action_id, base::UTF16ToUTF8(action->GetActionName()));
+      env, action_id, base::UTF16ToUTF8(action->GetTooltip(web_contents)),
+      base::UTF16ToUTF8(action->GetAccessibleName(web_contents)));
 }
 
 base::android::ScopedJavaLocalRef<jobject> ExtensionsToolbarAndroid::GetIcon(

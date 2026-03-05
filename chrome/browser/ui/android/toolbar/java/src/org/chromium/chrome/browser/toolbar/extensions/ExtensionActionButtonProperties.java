@@ -31,6 +31,10 @@ public class ExtensionActionButtonProperties {
 
     // Keep the entries sorted by name.
 
+    /** The accessible name of the action. */
+    public static final WritableObjectPropertyKey<String> ACCESSIBLE_NAME =
+            new WritableObjectPropertyKey<>();
+
     /** The {@link ExtensionActionDragHelper} to distinguish input events. */
     public static final WritableObjectPropertyKey<ExtensionActionDragHelper> DRAG_HELPER =
             new WritableObjectPropertyKey<>();
@@ -49,11 +53,9 @@ public class ExtensionActionButtonProperties {
     public static final WritableObjectPropertyKey<View.OnLongClickListener> ON_LONG_CLICK_LISTENER =
             new WritableObjectPropertyKey<>();
 
-    /**
-     * The title of the action. It is the name of the extension by default, but an extension can
-     * update it programmatically.
-     */
-    public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+    /** The tooltip of the action. */
+    public static final WritableObjectPropertyKey<String> TOOLTIP =
+            new WritableObjectPropertyKey<>();
 
     /* The touch listener. */
     public static final WritableObjectPropertyKey<View.OnTouchListener> TOUCH_LISTENER =
@@ -62,12 +64,13 @@ public class ExtensionActionButtonProperties {
     /** The list of all keys defined here. */
     public static final PropertyKey[] ALL_KEYS =
             new PropertyKey[] {
+                ACCESSIBLE_NAME,
                 DRAG_HELPER,
                 ICON,
                 ID,
                 ON_CLICK_LISTENER,
                 ON_LONG_CLICK_LISTENER,
-                TITLE,
+                TOOLTIP,
                 TOUCH_LISTENER
             };
 }

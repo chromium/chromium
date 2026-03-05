@@ -145,7 +145,7 @@ public class ExtensionActionListMediatorTest {
         mActions.put(ACTION2_ID, action2);
         mActions.put(ACTION3_ID, action3);
 
-        when(mExtensionsToolbarBridge.getAction(anyString()))
+        when(mExtensionsToolbarBridge.getAction(anyString(), any(WebContents.class)))
                 .thenAnswer(
                         invocation -> {
                             String id = invocation.getArgument(0);
@@ -153,7 +153,8 @@ public class ExtensionActionListMediatorTest {
                             ActionData action = mActions.get(id);
                             assert action != null;
 
-                            return new ExtensionAction(action.getId(), action.getTitle());
+                            return new ExtensionAction(
+                                    action.getId(), action.getTitle(), action.getTitle());
                         });
 
         when(mExtensionsToolbarBridge.getPinnedActionIds())
@@ -364,7 +365,8 @@ public class ExtensionActionListMediatorTest {
         ListItem item = mModels.get(index);
         assertEquals(ListItemType.EXTENSION_ACTION, item.type);
         assertEquals(id, item.model.get(ExtensionActionButtonProperties.ID));
-        assertEquals(title, item.model.get(ExtensionActionButtonProperties.TITLE));
+        assertEquals(title, item.model.get(ExtensionActionButtonProperties.TOOLTIP));
+        assertEquals(title, item.model.get(ExtensionActionButtonProperties.ACCESSIBLE_NAME));
         assertTrue(icon.sameAs(item.model.get(ExtensionActionButtonProperties.ICON)));
     }
 }

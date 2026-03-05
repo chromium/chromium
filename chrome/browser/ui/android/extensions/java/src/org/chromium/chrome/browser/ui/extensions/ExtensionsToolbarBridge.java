@@ -81,7 +81,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
     }
 
     @Nullable
-    public ExtensionAction getAction(String actionId) {
+    public ExtensionAction getAction(String actionId, @Nullable WebContents webContents) {
         if (mProfile.shutdownStarted()) {
             // TODO(crbug.com/459079170): This is to prevent tests from breaking. {@code
             // ExtensionToolbarCoordinatorImpl} should ideally be destroyed following {@code
@@ -89,7 +89,7 @@ public class ExtensionsToolbarBridge implements Destroyable {
             return null;
         }
         return ExtensionsToolbarBridgeJni.get()
-                .getAction(mNativeExtensionsToolbarAndroid, actionId);
+                .getAction(mNativeExtensionsToolbarAndroid, actionId, webContents);
     }
 
     @Nullable
@@ -274,7 +274,9 @@ public class ExtensionsToolbarBridge implements Destroyable {
         void destroy(long nativeExtensionsToolbarAndroid);
 
         @Nullable ExtensionAction getAction(
-                long nativeExtensionsToolbarAndroid, @JniType("std::string") String actionId);
+                long nativeExtensionsToolbarAndroid,
+                @JniType("std::string") String actionId,
+                @Nullable @JniType("content::WebContents*") WebContents webContents);
 
         @Nullable Bitmap getIcon(
                 long nativeExtensionsToolbarAndroid,

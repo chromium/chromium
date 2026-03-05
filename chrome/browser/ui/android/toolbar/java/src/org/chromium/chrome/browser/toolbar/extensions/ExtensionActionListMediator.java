@@ -185,7 +185,7 @@ class ExtensionActionListMediator implements Destroyable {
                 break;
             }
 
-            ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
+            ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
             if (action == null) {
                 continue;
             }
@@ -223,6 +223,9 @@ class ExtensionActionListMediator implements Destroyable {
         return new ListItem(
                 ListItemType.EXTENSION_ACTION,
                 new PropertyModel.Builder(ExtensionActionButtonProperties.ALL_KEYS)
+                        .with(
+                                ExtensionActionButtonProperties.ACCESSIBLE_NAME,
+                                action.getAccessibleName())
                         .with(ExtensionActionButtonProperties.ICON, icon)
                         .with(ExtensionActionButtonProperties.ID, actionId)
                         .with(
@@ -234,7 +237,7 @@ class ExtensionActionListMediator implements Destroyable {
                                     requestShowContextMenu(actionId);
                                     return true;
                                 })
-                        .with(ExtensionActionButtonProperties.TITLE, action.getTitle())
+                        .with(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip())
                         .build());
     }
 
@@ -263,7 +266,7 @@ class ExtensionActionListMediator implements Destroyable {
 
     private void updateActionPropertiesForIndex(
             int index, String actionId, @Nullable WebContents webContents) {
-        ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId);
+        ExtensionAction action = mExtensionsToolbarBridge.getAction(actionId, webContents);
         if (action == null) {
             return;
         }
@@ -271,7 +274,10 @@ class ExtensionActionListMediator implements Destroyable {
         Bitmap icon = getIconForAction(actionId, webContents);
         mModels.get(index).model.set(ExtensionActionButtonProperties.ICON, icon);
 
-        mModels.get(index).model.set(ExtensionActionButtonProperties.TITLE, action.getTitle());
+        mModels.get(index)
+                .model
+                .set(ExtensionActionButtonProperties.ACCESSIBLE_NAME, action.getAccessibleName());
+        mModels.get(index).model.set(ExtensionActionButtonProperties.TOOLTIP, action.getTooltip());
     }
 
     private void updateActionPropertiesForAll() {

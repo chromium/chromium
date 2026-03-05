@@ -130,23 +130,19 @@ public class ExtensionToolbarTest {
         ExtensionTestUtils.setExtensionActionVisible(mProfile, extension2Id, true);
 
         // Ensure visibility of the toolbar actions.
-        // TODO(crbug.com/435305159): The content description should be the action name, not the
-        // extension name.
-        ViewUtils.onViewWaiting(withContentDescription("Test Extension 1"))
+        ViewUtils.onViewWaiting(withContentDescription("Test Action 1"))
                 .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Test Extension 2"))
+        ViewUtils.onViewWaiting(withContentDescription("Test Action 2"))
                 .check(matches(isDisplayed()));
 
         // Disable the extension 2.
         ExtensionTestUtils.disableExtension(mProfile, extension2Id);
 
         // The extension 2 should disappear.
-        // TODO(crbug.com/435305159): The content description should be the action name, not the
-        // extension name.
         onView(isRoot())
                 .check(
                         withEventualExpectedViewState(
-                                withContentDescription("Test Extension 2"), VIEW_GONE | VIEW_NULL));
+                                withContentDescription("Test Action 2"), VIEW_GONE | VIEW_NULL));
     }
 
     /**
@@ -167,9 +163,9 @@ public class ExtensionToolbarTest {
         // Pin both extensions.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, alphaId, true);
         ExtensionTestUtils.setExtensionActionVisible(mProfile, betaId, true);
-        ViewUtils.onViewWaiting(withContentDescription("Alpha Extension"))
+        ViewUtils.onViewWaiting(withContentDescription("Alpha Action"))
                 .check(matches(isDisplayed()));
-        ViewUtils.onViewWaiting(withContentDescription("Beta Extension"))
+        ViewUtils.onViewWaiting(withContentDescription("Beta Action"))
                 .check(matches(isDisplayed()));
 
         // To start, neither extensions should have any render frames (which here equates to no open
@@ -180,7 +176,7 @@ public class ExtensionToolbarTest {
         // Click on Alpha and wait for it to open the popup.
         try (ExtensionTestMessageListener listener =
                 new ExtensionTestMessageListener("alpha popup opened")) {
-            clickViewWithContentDescription("Alpha Extension");
+            clickViewWithContentDescription("Alpha Action");
             assertTrue(listener.waitUntilSatisfied());
         }
         // Verify that Alpha (and only Alpha) has an active frame (i.e., popup).
@@ -194,7 +190,7 @@ public class ExtensionToolbarTest {
         // Click on Beta. This should result in Beta's popup opening and Alpha's closing.
         try (ExtensionTestMessageListener listener =
                 new ExtensionTestMessageListener("beta popup opened")) {
-            clickViewWithContentDescription("Beta Extension");
+            clickViewWithContentDescription("Beta Action");
             assertTrue(listener.waitUntilSatisfied());
         }
         // Beta (and only Beta) should have an active popup.
@@ -257,13 +253,13 @@ public class ExtensionToolbarTest {
 
         // Pin the extension.
         ExtensionTestUtils.setExtensionActionVisible(mProfile, id, true);
-        ViewUtils.onViewWaiting(withContentDescription("Test Extension"))
+        ViewUtils.onViewWaiting(withContentDescription("Test Action"))
                 .check(matches(isDisplayed()));
 
         // Click on the extension and wait for it to open the popup.
         try (ExtensionTestMessageListener listener =
                 new ExtensionTestMessageListener("popup opened")) {
-            clickViewWithContentDescription("Test Extension");
+            clickViewWithContentDescription("Test Action");
             assertTrue(listener.waitUntilSatisfied());
         }
 
@@ -279,7 +275,7 @@ public class ExtensionToolbarTest {
         onView(isRoot())
                 .check(
                         withEventualExpectedViewState(
-                                withContentDescription("Test Extension"), VIEW_GONE | VIEW_NULL));
+                                withContentDescription("Test Action"), VIEW_GONE | VIEW_NULL));
 
         // The popup should be gone.
         CriteriaHelper.pollInstrumentationThread(

@@ -20,10 +20,12 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class ExtensionActionButtonViewBinder {
     @SuppressLint("ClickableViewAccessibility")
     public static void bind(PropertyModel model, ListMenuButton button, PropertyKey key) {
-        if (key == ExtensionActionButtonProperties.TITLE) {
-            String title = model.get(ExtensionActionButtonProperties.TITLE);
-            button.setTooltipText(title);
-            button.setContentDescription(title);
+        if (key == ExtensionActionButtonProperties.ACCESSIBLE_NAME) {
+            String accessibleName = model.get(ExtensionActionButtonProperties.ACCESSIBLE_NAME);
+            button.setContentDescription(accessibleName);
+        } else if (key == ExtensionActionButtonProperties.TOOLTIP) {
+            String tooltip = model.get(ExtensionActionButtonProperties.TOOLTIP);
+            button.setTooltipText(tooltip);
         } else if (key == ExtensionActionButtonProperties.ICON) {
             Bitmap bitmap = model.get(ExtensionActionButtonProperties.ICON);
             button.setImageBitmap(bitmap);
