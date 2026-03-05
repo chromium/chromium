@@ -9,6 +9,7 @@
 #include "components/safe_browsing/core/browser/download_check_result.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_local_state_delegate.h"
 #include "components/safe_browsing/core/browser/web_ui/safe_browsing_ui_util.h"
+#include "components/safe_browsing/core/browser/web_ui/web_ui_info_singleton_event_observer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cookies/canonical_cookie.h"
@@ -27,6 +28,27 @@ using MessageCallback = base::RepeatingCallback<void(const base::ListValue&)>;
 
 class SafeBrowsingUIHandler {
  public:
+  // A delegate class that communicates the changes received by the
+  // WebUIInfoSingletonEventObserver to the SafeBrowsingUIHandler for the
+  // purpose of notify JavaScript listeners.
+  class ObserverDelegate : public WebUIInfoSingletonEventObserver::Delegate {
+   public:
+    explicit ObserverDelegate(SafeBrowsingUIHandler& handler);
+    ~ObserverDelegate() override;
+
+    // WebUIInfoSingletonEventObserver::Delegate::
+    base::DictValue GetFormattedTailoredVerdictOverride() override;
+    void SendEventToHandler(std::string_view event_name,
+                            base::Value value) override;
+    void SendEventToHandler(std::string_view event_name,
+                            base::ListValue& list) override;
+    void SendEventToHandler(std::string_view event_name,
+                            base::DictValue dict) override;
+
+   private:
+    raw_ref<SafeBrowsingUIHandler> handler_;
+  };
+
   SafeBrowsingUIHandler(
       std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
       os_crypt_async::OSCryptAsync* os_crypt_async);
@@ -158,6 +180,14 @@ class SafeBrowsingUIHandler {
  protected:
   // Gets the tailored verdict override in a format for displaying.
   base::DictValue GetFormattedTailoredVerdictOverride();
+
+  // Notifies JS listeners of changes.
+  virtual void NotifyWebUIListener(std::string_view event_name,
+                                   const base::Value& value) = 0;
+  virtual void NotifyWebUIListener(std::string_view event_name,
+                                   const base::ListValue& list) = 0;
+  virtual void NotifyWebUIListener(std::string_view event_name,
+                                   const base::DictValue& dict) = 0;
 
  private:
   // Sends formatted tailored verdict override information to the WebUI.

@@ -20,6 +20,35 @@
 
 namespace safe_browsing {
 
+SafeBrowsingUIHandler::ObserverDelegate::ObserverDelegate(
+    SafeBrowsingUIHandler& handler)
+    : handler_(handler) {}
+
+SafeBrowsingUIHandler::ObserverDelegate::~ObserverDelegate() = default;
+
+base::DictValue
+SafeBrowsingUIHandler::ObserverDelegate::GetFormattedTailoredVerdictOverride() {
+  return handler_->GetFormattedTailoredVerdictOverride();
+}
+
+void SafeBrowsingUIHandler::ObserverDelegate::SendEventToHandler(
+    std::string_view event_name,
+    base::Value value) {
+  handler_->NotifyWebUIListener(event_name, value);
+}
+
+void SafeBrowsingUIHandler::ObserverDelegate::SendEventToHandler(
+    std::string_view event_name,
+    base::ListValue& list) {
+  handler_->NotifyWebUIListener(event_name, list);
+}
+
+void SafeBrowsingUIHandler::ObserverDelegate::SendEventToHandler(
+    std::string_view event_name,
+    base::DictValue dict) {
+  handler_->NotifyWebUIListener(event_name, dict);
+}
+
 SafeBrowsingUIHandler::SafeBrowsingUIHandler(
     std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
     os_crypt_async::OSCryptAsync* os_crypt_async)

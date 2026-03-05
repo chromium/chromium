@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_content_ui_handler.h"
 
+#include "base/values.h"
 #include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/common/encryptor.h"
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
@@ -16,35 +17,6 @@
 #endif
 
 namespace safe_browsing {
-
-SafeBrowsingContentUIHandler::ObserverDelegate::ObserverDelegate(
-    SafeBrowsingContentUIHandler& handler)
-    : handler_(handler) {}
-
-SafeBrowsingContentUIHandler::ObserverDelegate::~ObserverDelegate() = default;
-
-base::DictValue SafeBrowsingContentUIHandler::ObserverDelegate::
-    GetFormattedTailoredVerdictOverride() {
-  return handler_->GetFormattedTailoredVerdictOverride();
-}
-
-void SafeBrowsingContentUIHandler::ObserverDelegate::SendEventToHandler(
-    std::string_view event_name,
-    base::Value value) {
-  handler_->NotifyWebUIListener(event_name, value);
-}
-
-void SafeBrowsingContentUIHandler::ObserverDelegate::SendEventToHandler(
-    std::string_view event_name,
-    base::ListValue& list) {
-  handler_->NotifyWebUIListener(event_name, list);
-}
-
-void SafeBrowsingContentUIHandler::ObserverDelegate::SendEventToHandler(
-    std::string_view event_name,
-    base::DictValue dict) {
-  handler_->NotifyWebUIListener(event_name, dict);
-}
 
 SafeBrowsingContentUIHandler::SafeBrowsingContentUIHandler(
     content::BrowserContext* context,
@@ -174,6 +146,25 @@ WebUIInfoSingleton* SafeBrowsingContentUIHandler::web_ui_info_singleton() {
 WebUIInfoSingletonEventObserver*
 SafeBrowsingContentUIHandler::event_observer() {
   return event_observer_.get();
+}
+
+void SafeBrowsingContentUIHandler::NotifyWebUIListener(
+    std::string_view event_name,
+    const base::Value& value) {
+  AllowJavascript();
+  FireWebUIListener(event_name, value);
+}
+void SafeBrowsingContentUIHandler::NotifyWebUIListener(
+    std::string_view event_name,
+    const base::ListValue& list) {
+  AllowJavascript();
+  FireWebUIListener(event_name, list);
+}
+void SafeBrowsingContentUIHandler::NotifyWebUIListener(
+    std::string_view event_name,
+    const base::DictValue& dict) {
+  AllowJavascript();
+  FireWebUIListener(event_name, dict);
 }
 
 }  // namespace safe_browsing

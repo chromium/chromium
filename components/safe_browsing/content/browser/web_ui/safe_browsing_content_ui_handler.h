@@ -28,27 +28,6 @@ namespace safe_browsing {
 class SafeBrowsingContentUIHandler : public content::WebUIMessageHandler,
                                      public SafeBrowsingUIHandler {
  public:
-  // A delegate class that communicates the changes received by the
-  // WebUIInfoSingletonEventObserver to the SafeBrowsingContentUIHandler for the
-  // purpose of notify JavaScript listeners.
-  class ObserverDelegate : public WebUIInfoSingletonEventObserver::Delegate {
-   public:
-    explicit ObserverDelegate(SafeBrowsingContentUIHandler& handler);
-    ~ObserverDelegate() override;
-
-    // WebUIInfoSingletonEventObserver::Delegate::
-    base::DictValue GetFormattedTailoredVerdictOverride() override;
-    void SendEventToHandler(std::string_view event_name,
-                            base::Value value) override;
-    void SendEventToHandler(std::string_view event_name,
-                            base::ListValue& list) override;
-    void SendEventToHandler(std::string_view event_name,
-                            base::DictValue dict) override;
-
-   private:
-    raw_ref<SafeBrowsingContentUIHandler> handler_;
-  };
-
   SafeBrowsingContentUIHandler(
       content::BrowserContext* context,
       std::unique_ptr<SafeBrowsingLocalStateDelegate> delegate,
@@ -91,15 +70,16 @@ class SafeBrowsingContentUIHandler : public content::WebUIMessageHandler,
   WebUIInfoSingleton* web_ui_info_singleton() override;
   WebUIInfoSingletonEventObserver* event_observer() override;
 
- private:
+ protected:
   // Notifies JS listeners of changes.
-  template <typename... Values>
   void NotifyWebUIListener(std::string_view event_name,
-                           const Values&... values) {
-    AllowJavascript();
-    FireWebUIListener(event_name, values...);
-  }
+                           const base::Value& value) override;
+  void NotifyWebUIListener(std::string_view event_name,
+                           const base::ListValue& list) override;
+  void NotifyWebUIListener(std::string_view event_name,
+                           const base::DictValue& dict) override;
 
+ private:
   raw_ptr<content::BrowserContext> browser_context_;
 
   // An observer object that waits for changes to the WebUIInfoSingleton and
