@@ -365,7 +365,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   transport_availability_info().resident_key_requirement =
       options_.resident_key;
   transport_availability_info().attestation_conveyance_preference =
-      request.attestation_preference;
+      request_.attestation_preference;
   transport_availability_info().user_verification_requirement =
       request_.user_verification;
   transport_availability_info().request_is_internal_only =
@@ -391,7 +391,7 @@ MakeCredentialRequestHandler::MakeCredentialRequestHandler(
   auto available_transports =
       base::STLSetIntersection<base::flat_set<FidoTransportProtocol>>(
           supported_transports, allowed_transports);
-  bool consider_enclave = request.authenticator_attachment !=
+  bool consider_enclave = request_.authenticator_attachment !=
                           AuthenticatorAttachment::kCrossPlatform;
   if (options_.is_passkey_upgrade_request) {
     consider_enclave = true;
