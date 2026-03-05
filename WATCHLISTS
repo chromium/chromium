@@ -5,7 +5,7 @@
 # Watchlist Rules
 # Refer: https://chromium.googlesource.com/chromium/src/+/main/docs/infra/watchlists.md
 
-# IMPORTANT: The regular expression filepath is tested against each path using
+# Important: The regular expression filepath is tested against each path using
 # re.search, so it is not usually necessary to add .* at the end of the pattern.
 
 {
@@ -677,6 +677,16 @@
     'blink_w3ctests': {
       'filepath': 'third_party/blink/web_tests/external/' \
                   '|third_party/blink/tools/blinkpy/w3c/'
+    },
+    'blink_webmcp': {
+      'filepath': 'third_party/blink/public/mojom/content_extraction/script_tools.mojom' \
+                  '|third_party/blink/public/web/.*script_tool' \
+                  '|third_party/blink/renderer/core/events/web_mcp' \
+                  '|third_party/blink/renderer/core/html/forms/.*_mcp_' \
+                  '|third_party/blink/renderer/core/script_tool' \
+                  '|third_party/blink/web_tests/fast/webmcp' \
+                  '|third_party/blink/web_tests/wpt_internal/script_tools' \
+                  '|third_party/blink/web_tests/wpt_internal/webmcp',
     },
     'blink_webp': {
       'filepath': 'third_party/blink/renderer/platform/image-decoders/webp' \
@@ -2491,6 +2501,12 @@
                     '|content/browser/webid'\
                     '|chrome/browser/.*webid',
     },
+    'webmcp': {
+        'filepath': 'chrome/browser/actor/tools/.*script_tool' \
+                    '|chrome/browser/glic/host/.*script_tool' \
+                    '|chrome/renderer/actor/.*script_tool' \
+                    '|chrome/test/data/actor/.*script_tool',
+    },
     'webnn': {
         'filepath': 'third_party/blink/renderer/modules/ml/webnn/'\
                     '|services/webnn/',
@@ -2815,6 +2831,8 @@
     'blink_viewport_interaction': ['kenneth.christiansen@gmail.com',
                                    'bokan@chromium.org'],
     'blink_w3ctests': ['blink-reviews-w3ctests@chromium.org'],
+    'blink_webmcp': ['khushalsagar@chromium.org',
+                     'mfoltz+watch-webmcp@chromium.org'],
     'blink_webp': ['jzern@chromium.org',
                    'urvang@chromium.org',
                    'mbarowsky+watch-blink-webp@chromium.org'],
@@ -3467,6 +3485,7 @@
     'webid': ['yigu+watch@chromium.org',
               'cbiesinger@chromium.org',
               'npm+watch@chromium.org'],
+    'webmcp': ['mfoltz+watch-webmcp@chromium.org'],
     'webnn': ['qjw@chromium.org', 'ningxin.hu@intel.com'],
     'webotp': ['yigu+watch@chromium.org'],
     'webrtc_browser_tests': ['phoglund+watch@chromium.org'],
