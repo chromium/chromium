@@ -439,10 +439,6 @@ void CloudBinaryUploadService::OnGetRequestData(
       return;
     }
 
-    // If the error is not unrecoverable, chrome can attempt to sent the
-    // file contents to the content analysis service.  Let the service know that
-    // a metadata-only analysis is required.
-    request->set_require_metadata_verdict(true);
     // If the file is encrypted, let the service know that the file is
     // encrypted.
     if (result ==

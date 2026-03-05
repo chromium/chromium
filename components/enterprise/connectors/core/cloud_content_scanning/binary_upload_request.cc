@@ -195,12 +195,6 @@ void BinaryUploadRequest::set_reason(
   content_analysis_request_.set_reason(reason);
 }
 
-void BinaryUploadRequest::set_require_metadata_verdict(
-    bool require_metadata_verdict) {
-  content_analysis_request_.set_require_metadata_verdict(
-      require_metadata_verdict);
-}
-
 void BinaryUploadRequest::set_is_content_encrypted(bool is_content_encrypted) {
   content_analysis_request_.set_is_content_encrypted(is_content_encrypted);
 }
