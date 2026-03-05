@@ -894,7 +894,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
         testProxy.searchboxHandler.getCallCount('setActiveToolMode'), 2);
     assertEquals(
         ComposeboxToolMode.kImageGen,
-        testProxy.searchboxHandler.getArgs('setActiveToolMode')[0]);
+        testProxy.searchboxHandler.getArgs('setActiveToolMode')[1]);
 
     // Deleting the image should call setCreateImageMode again but with
     // imagePresent false.
@@ -912,7 +912,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
         testProxy.searchboxHandler.getCallCount('setActiveToolMode'), 3);
     assertEquals(
         ComposeboxToolMode.kImageGen,
-        testProxy.searchboxHandler.getArgs('setActiveToolMode')[0]);
+        testProxy.searchboxHandler.getArgs('setActiveToolMode')[2]);
   });
 
   test('composebox does not open match when only file present', async () => {
