@@ -65,6 +65,8 @@ class PLATFORM_EXPORT MatrixTransformOperation final
   }
 
   TransformOperation* Accumulate(const TransformOperation&) override;
+  TransformOperation* AccumulateN(const TransformOperation& other,
+                                  int n) override;
 
   TransformOperation* Blend(const TransformOperation* from,
                             double progress,

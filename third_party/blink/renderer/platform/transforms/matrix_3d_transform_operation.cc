@@ -45,6 +45,55 @@ TransformOperation* Matrix3DTransformOperation::Accumulate(
   return MakeGarbageCollected<Matrix3DTransformOperation>(result);
 }
 
+// static
+std::optional<gfx::Transform> Matrix3DTransformOperation::AccumulateTransforms(
+    const gfx::Transform& base,
+    const gfx::Transform& delta,
+    int n) {
+  std::optional<gfx::DecomposedTransform> base_decomp = base.Decompose();
+  if (!base_decomp) {
+    return std::nullopt;
+  }
+  std::optional<gfx::DecomposedTransform> delta_decomp = delta.Decompose();
+  if (!delta_decomp) {
+    return std::nullopt;
+  }
+
+  // Calculate the accumulated value for each component over |n| iterations.
+  // See: https://www.w3.org/TR/css-transforms-2/#combining-transform-lists
+  gfx::DecomposedTransform out;
+  for (size_t i = 0; i < 3u; i++) {
+    out.translate[i] =
+        base_decomp->translate[i] + n * delta_decomp->translate[i];
+    out.scale[i] = base_decomp->scale[i] + n * (delta_decomp->scale[i] - 1);
+    out.skew[i] = base_decomp->skew[i] + n * delta_decomp->skew[i];
+    out.perspective[i] =
+        base_decomp->perspective[i] + n * delta_decomp->perspective[i];
+  }
+  out.perspective[3] =
+      base_decomp->perspective[3] + n * (delta_decomp->perspective[3] - 1);
+
+  gfx::Quaternion delta_q_n =
+      gfx::Quaternion().Slerp(delta_decomp->quaternion, static_cast<double>(n));
+  out.quaternion = base_decomp->quaternion * delta_q_n;
+
+  return gfx::Transform::Compose(out);
+}
+
+TransformOperation* Matrix3DTransformOperation::AccumulateN(
+    const TransformOperation& other_op,
+    int n) {
+  DCHECK(other_op.IsSameType(*this));
+  const auto& other = To<Matrix3DTransformOperation>(other_op);
+
+  std::optional<gfx::Transform> result =
+      AccumulateTransforms(matrix_, other.matrix_, n);
+  if (!result) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<Matrix3DTransformOperation>(*result);
+}
+
 TransformOperation* Matrix3DTransformOperation::Blend(
     const TransformOperation* from,
     double progress,

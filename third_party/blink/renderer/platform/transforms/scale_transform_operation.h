@@ -48,6 +48,8 @@ class PLATFORM_EXPORT ScaleTransformOperation final
     transform.Scale3d(x_, y_, z_);
   }
   TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* AccumulateN(const TransformOperation& other,
+                                  int n) override;
   TransformOperation* Blend(const TransformOperation* from,
                             double progress,
                             bool blend_to_identity = false) override;

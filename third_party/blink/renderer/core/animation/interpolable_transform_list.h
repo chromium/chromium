@@ -38,6 +38,14 @@ class CORE_EXPORT InterpolableTransformList final : public InterpolableValue {
   TransformOperations operations() const { return operations_; }
 
   void PreConcat(const InterpolableTransformList& underlying);
+
+  // Accumulates |delta| onto this transform list.
+  void Accumulate(const InterpolableTransformList& delta);
+
+  // Accumulates |delta| onto this transform list, |n| times.
+  void AccumulateN(const InterpolableTransformList& delta, int n);
+
+  // Accumulates this transform list onto |underlying|.
   void AccumulateOnto(const InterpolableTransformList& underlying);
 
   // InterpolableValue implementation:

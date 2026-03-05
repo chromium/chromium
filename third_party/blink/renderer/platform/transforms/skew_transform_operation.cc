@@ -33,6 +33,16 @@ TransformOperation* SkewTransformOperation::Accumulate(
       angle_x_ + skew_other.angle_x_, angle_y_ + skew_other.angle_y_, type_);
 }
 
+TransformOperation* SkewTransformOperation::AccumulateN(
+    const TransformOperation& other,
+    int n) {
+  DCHECK(other.CanBlendWith(*this));
+  const auto& skew_other = To<SkewTransformOperation>(other);
+  return MakeGarbageCollected<SkewTransformOperation>(
+      angle_x_ + n * skew_other.angle_x_, angle_y_ + n * skew_other.angle_y_,
+      type_);
+}
+
 TransformOperation* SkewTransformOperation::Blend(
     const TransformOperation* from,
     double progress,

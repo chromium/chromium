@@ -29,6 +29,17 @@ void InterpolableTransformList::PreConcat(
   operations_.Operations() = result;
 }
 
+void InterpolableTransformList::Accumulate(
+    const InterpolableTransformList& delta) {
+  operations_ = operations_.Accumulate(delta.operations_);
+}
+
+void InterpolableTransformList::AccumulateN(
+    const InterpolableTransformList& delta,
+    int n) {
+  operations_ = operations_.AccumulateN(delta.operations_, n);
+}
+
 void InterpolableTransformList::AccumulateOnto(
     const InterpolableTransformList& underlying) {
   operations_ = underlying.operations_.Accumulate(operations_);

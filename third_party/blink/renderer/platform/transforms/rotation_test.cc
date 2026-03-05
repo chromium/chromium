@@ -7,6 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "ui/gfx/geometry/point3_f.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
@@ -134,6 +135,74 @@ TEST(RotationTest, SlerpTest) {
   EXPECT_AXIS(gfx::Vector3dF(root2_inv, root2_inv, 0), xy_rotation.axis);
   double expected_angle = Rad2deg(std::acos(1.0 / 3.0));
   EXPECT_ANGLE(expected_angle, xy_rotation.angle);
+}
+
+// Helper: apply Add(a, b) n times sequentially.
+static Rotation AddSequential(const Rotation& a, const Rotation& b, int n) {
+  Rotation result = a;
+  for (int i = 0; i < n; i++) {
+    result = Rotation::Add(result, b);
+  }
+  return result;
+}
+
+// Helper: compare two rotations by converting to transforms and checking they
+// produce the same result when applied to a test point.
+static void ExpectRotationNear(const Rotation& a,
+                               const Rotation& b,
+                               double tolerance = 1e-4) {
+  gfx::Transform ta;
+  ta.RotateAbout(a.axis, a.angle);
+  gfx::Transform tb;
+  tb.RotateAbout(b.axis, b.angle);
+  // Compare by applying to a point.
+  gfx::Point3F test_point(1.0f, 2.0f, 3.0f);
+  gfx::Point3F pa = ta.MapPoint(test_point);
+  gfx::Point3F pb = tb.MapPoint(test_point);
+  EXPECT_NEAR(pa.x(), pb.x(), tolerance);
+  EXPECT_NEAR(pa.y(), pb.y(), tolerance);
+  EXPECT_NEAR(pa.z(), pb.z(), tolerance);
+}
+
+TEST(RotationTest, AddNIdentityDelta) {
+  Rotation base(gfx::Vector3dF(1, 0, 0), 45);
+  Rotation identity;
+
+  for (int n : {0, 1, 5}) {
+    ExpectRotationNear(Rotation::AddN(base, identity, n), base);
+  }
+}
+
+TEST(RotationTest, AddNSameAxis) {
+  Rotation base(gfx::Vector3dF(1, 0, 0), 45);
+  Rotation delta(gfx::Vector3dF(1, 0, 0), 30);
+
+  Rotation result_0 = Rotation::AddN(base, delta, 0);
+  EXPECT_ANGLE(45, result_0.angle);
+
+  Rotation result_1 = Rotation::AddN(base, delta, 1);
+  EXPECT_ANGLE(Rotation::Add(base, delta).angle, result_1.angle);
+
+  // Verify that AddN produces the same result as using Add N times.
+  for (int n : {2, 5, 10}) {
+    ExpectRotationNear(Rotation::AddN(base, delta, n),
+                       AddSequential(base, delta, n));
+  }
+}
+
+TEST(RotationTest, AddNDifferentAxes) {
+  Rotation base(gfx::Vector3dF(1, 0, 0), 45);
+  Rotation delta(gfx::Vector3dF(0, 1, 0), 30);
+
+  ExpectRotationNear(Rotation::AddN(base, delta, 0), base);
+  ExpectRotationNear(Rotation::AddN(base, delta, 1),
+                     Rotation::Add(base, delta));
+
+  // Verify that AddN produces the same result as using Add N times.
+  for (int n : {2, 5, 10}) {
+    ExpectRotationNear(Rotation::AddN(base, delta, n),
+                       AddSequential(base, delta, n));
+  }
 }
 
 }  // namespace blink

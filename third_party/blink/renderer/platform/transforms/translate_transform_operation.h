@@ -91,6 +91,8 @@ class PLATFORM_EXPORT TranslateTransformOperation final
 
  private:
   TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* AccumulateN(const TransformOperation& other,
+                                  int n) override;
   TransformOperation* Blend(const TransformOperation* from,
                             double progress,
                             bool blend_to_identity = false) override;

@@ -145,4 +145,27 @@ Rotation Rotation::Add(const Rotation& a, const Rotation& b) {
   return ComputeRotation(qc);
 }
 
+Rotation Rotation::AddN(const Rotation& a, const Rotation& b, int n) {
+  double angle_a;
+  double angle_b;
+  gfx::Vector3dF axis;
+  if (GetCommonAxis(a, b, axis, angle_a, angle_b)) {
+    return Rotation(axis, angle_a + n * angle_b);
+  }
+
+  Quaternion qa = ComputeQuaternion(a);
+  Quaternion qb = ComputeQuaternion(b);
+  // Slerp() interpolates between two quaternions at a given point and supports
+  // extrapolation beyond [0,1], so Slerp(identity, qb, n) gives us the result
+  // of applying rotation b n times.
+  Quaternion qb_n = Quaternion().Slerp(qb, static_cast<double>(n));
+  Quaternion qc = qa * qb_n;
+  if (qc.w() < 0) {
+    // Choose the equivalent rotation with the smaller angle.
+    qc = qc.flip();
+  }
+
+  return ComputeRotation(qc);
+}
+
 }  // namespace blink

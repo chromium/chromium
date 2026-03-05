@@ -35,6 +35,10 @@ struct PLATFORM_EXPORT Rotation {
   // Returns a rotation whose effect is equivalent to applying a followed by b.
   static Rotation Add(const Rotation& /*a*/, const Rotation& /*b*/);
 
+  // Returns a rotation whose effect is equivalent to applying a followed by b,
+  // n times.
+  static Rotation AddN(const Rotation& /*a*/, const Rotation& /*b*/, int n);
+
   // No restrictions on the axis vector.
   gfx::Vector3dF axis;
 

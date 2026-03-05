@@ -259,6 +259,67 @@ TransformOperations TransformOperations::Accumulate(
   return success ? result : to;
 }
 
+TransformOperations TransformOperations::AccumulateN(
+    const TransformOperations& to,
+    int n) const {
+  DCHECK_GE(n, 0);
+
+  if (n == 0) {
+    return *this;
+  }
+  if (!to.size() && !size()) {
+    return *this;
+  }
+
+  bool success = true;
+  wtf_size_t matching_prefix_length = MatchingPrefixLength(to);
+  wtf_size_t max_path_length =
+      std::max(Operations().size(), to.Operations().size());
+
+  // Same logic as in Accumulate, but applying the delta |n| times.
+  TransformOperations result = ApplyFunctionToMatchingPrefix(
+      BindRepeating(
+          [](int n, TransformOperation* from,
+             TransformOperation* to) -> TransformOperation* {
+            if (to && from) {
+              return from->AccumulateN(*to, n);
+            }
+            if (to) {
+              // If |from| is missing, accumulate over the identity |n| times.
+              TransformOperation* identity = to->Blend(nullptr, 1.0, true);
+              if (identity) {
+                return identity->AccumulateN(*to, n);
+              }
+              return nullptr;
+            }
+            return from;
+          },
+          n),
+      *this, to, matching_prefix_length, &success);
+
+  if (success && matching_prefix_length < max_path_length) {
+    gfx::Transform from_transform;
+    gfx::Transform to_transform;
+    ApplyRemaining(gfx::SizeF(), matching_prefix_length, from_transform);
+    to.ApplyRemaining(gfx::SizeF(), matching_prefix_length, to_transform);
+
+    TransformOperation* from_matrix =
+        MakeGarbageCollected<Matrix3DTransformOperation>(from_transform);
+    TransformOperation* to_matrix =
+        MakeGarbageCollected<Matrix3DTransformOperation>(to_transform);
+    TransformOperation* matrix_op = from_matrix->AccumulateN(*to_matrix, n);
+
+    if (matrix_op) {
+      result.Operations().push_back(matrix_op);
+    } else {
+      success = false;
+    }
+  }
+
+  // On failure, behavior is to replace.
+  return success ? result : to;
+}
+
 static void FindCandidatesInPlane(double px,
                                   double py,
                                   double nz,

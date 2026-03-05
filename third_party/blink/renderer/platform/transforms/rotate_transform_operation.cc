@@ -66,6 +66,16 @@ TransformOperation* RotateTransformOperation::Accumulate(
       new_rotation, GetTypeForRotation(new_rotation));
 }
 
+TransformOperation* RotateTransformOperation::AccumulateN(
+    const TransformOperation& other,
+    int n) {
+  DCHECK(IsMatchingOperationType(other.GetType()));
+  Rotation new_rotation = Rotation::AddN(
+      rotation_, To<RotateTransformOperation>(other).rotation_, n);
+  return MakeGarbageCollected<RotateTransformOperation>(
+      new_rotation, GetTypeForRotation(new_rotation));
+}
+
 TransformOperation* RotateTransformOperation::Blend(
     const TransformOperation* from,
     double progress,

@@ -72,6 +72,9 @@ class PLATFORM_EXPORT InterpolatedTransformOperation final
   TransformOperation* Accumulate(const TransformOperation&) override {
     NOTREACHED();
   }
+  TransformOperation* AccumulateN(const TransformOperation&, int) override {
+    NOTREACHED();
+  }
 
   TransformOperation* Blend(const TransformOperation* from,
                             double progress,

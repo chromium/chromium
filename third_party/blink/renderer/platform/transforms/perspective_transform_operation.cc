@@ -58,6 +58,33 @@ TransformOperation* PerspectiveTransformOperation::Accumulate(
   return MakeGarbageCollected<PerspectiveTransformOperation>(result);
 }
 
+TransformOperation* PerspectiveTransformOperation::AccumulateN(
+    const TransformOperation& other,
+    int n) {
+  DCHECK(other.IsSameType(*this));
+  DCHECK_GT(n, 0);
+  const auto& other_op = To<PerspectiveTransformOperation>(other);
+
+  // Accumulate applied n times:
+  //   result = (base * delta) / (delta + n * base)
+  std::optional<double> result;
+  if (!Perspective()) {
+    if (!other_op.Perspective()) {
+      result = std::nullopt;
+    } else {
+      result = other_op.UsedPerspective() / n;
+    }
+  } else if (!other_op.Perspective()) {
+    result = Perspective();
+  } else {
+    double other_p = other_op.UsedPerspective();
+    double p = UsedPerspective();
+    result = (p * other_p) / (other_p + n * p);
+  }
+
+  return MakeGarbageCollected<PerspectiveTransformOperation>(result);
+}
+
 TransformOperation* PerspectiveTransformOperation::Blend(
     const TransformOperation* from,
     double progress,

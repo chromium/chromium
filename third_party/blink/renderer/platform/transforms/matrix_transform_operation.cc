@@ -23,6 +23,8 @@
 
 #include <algorithm>
 
+#include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
+
 namespace blink {
 
 TransformOperation* MatrixTransformOperation::Accumulate(
@@ -35,6 +37,21 @@ TransformOperation* MatrixTransformOperation::Accumulate(
     return nullptr;
 
   return MakeGarbageCollected<MatrixTransformOperation>(result);
+}
+
+TransformOperation* MatrixTransformOperation::AccumulateN(
+    const TransformOperation& other_op,
+    int n) {
+  DCHECK(other_op.IsSameType(*this));
+  const auto& other = To<MatrixTransformOperation>(other_op);
+
+  std::optional<gfx::Transform> result =
+      Matrix3DTransformOperation::AccumulateTransforms(matrix_, other.matrix_,
+                                                       n);
+  if (!result) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<MatrixTransformOperation>(*result);
 }
 
 TransformOperation* MatrixTransformOperation::Blend(

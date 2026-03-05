@@ -87,6 +87,8 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
   }
 
   TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* AccumulateN(const TransformOperation& other,
+                                  int n) override;
   TransformOperation* Blend(const TransformOperation* from,
                             double progress,
                             bool blend_to_identity = false) override;

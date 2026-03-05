@@ -26,6 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_MATRIX_3D_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_MATRIX_3D_TRANSFORM_OPERATION_H_
 
+#include <optional>
+
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -38,6 +40,14 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
       : matrix_(matrix) {}
 
   gfx::Transform Matrix() const { return matrix_; }
+
+  // Decomposes |base| and |delta|, accumulates delta onto base N times per
+  // component, and recomposes. Returns nullopt if either matrix cannot be
+  // decomposed.
+  static std::optional<gfx::Transform> AccumulateTransforms(
+      const gfx::Transform& base,
+      const gfx::Transform& delta,
+      int n);
 
   static bool IsMatchingOperationType(OperationType type) {
     return type == kMatrix3D;
@@ -58,6 +68,8 @@ class PLATFORM_EXPORT Matrix3DTransformOperation final
   }
 
   TransformOperation* Accumulate(const TransformOperation& other) override;
+  TransformOperation* AccumulateN(const TransformOperation& other,
+                                  int n) override;
 
   TransformOperation* Blend(const TransformOperation* from,
                             double progress,

@@ -184,6 +184,9 @@ class PLATFORM_EXPORT TransformOperations {
   // https://drafts.csswg.org/css-transforms-2/#combining-transform-lists
   TransformOperations Accumulate(const TransformOperations& to) const;
 
+  // Perform accumulation of |to| onto |this|, |n| times.
+  TransformOperations AccumulateN(const TransformOperations& to, int n) const;
+
   bool ContainsSingularMatrixTransform() const;
   bool IsMergedTransformSingular(wtf_size_t offset) const;
 

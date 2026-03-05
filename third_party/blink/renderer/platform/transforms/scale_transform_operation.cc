@@ -62,6 +62,18 @@ TransformOperation* ScaleTransformOperation::Accumulate(
       new_x, new_y, new_z, GetTypeForScale(new_x, new_y, new_z));
 }
 
+TransformOperation* ScaleTransformOperation::AccumulateN(
+    const TransformOperation& other,
+    int n) {
+  DCHECK(other.CanBlendWith(*this));
+  const auto& other_op = To<ScaleTransformOperation>(other);
+  double new_x = x_ + n * (other_op.x_ - 1);
+  double new_y = y_ + n * (other_op.y_ - 1);
+  double new_z = z_ + n * (other_op.z_ - 1);
+  return MakeGarbageCollected<ScaleTransformOperation>(
+      new_x, new_y, new_z, GetTypeForScale(new_x, new_y, new_z));
+}
+
 TransformOperation* ScaleTransformOperation::Blend(
     const TransformOperation* from,
     double progress,

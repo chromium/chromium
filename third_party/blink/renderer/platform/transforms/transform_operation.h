@@ -82,6 +82,10 @@ class PLATFORM_EXPORT TransformOperation
   // https://drafts.csswg.org/css-transforms-2/#combining-transform-lists
   virtual TransformOperation* Accumulate(const TransformOperation& other) = 0;
 
+  // Accumulates |other| onto |this|, |n| times.
+  virtual TransformOperation* AccumulateN(const TransformOperation& other,
+                                          int n) = 0;
+
   virtual TransformOperation* Blend(const TransformOperation* from,
                                     double progress,
                                     bool blend_to_identity = false) = 0;

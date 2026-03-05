@@ -41,6 +41,21 @@ Length AddLengths(const Length& lhs, const Length& rhs) {
       MakeGarbageCollected<CalculationValue>(result, Length::ValueRange::kAll));
 }
 
+Length ScaleAndAddLength(const Length& base, const Length& delta, int n) {
+  PixelsAndPercent base_pap = base.GetPixelsAndPercent();
+  PixelsAndPercent delta_pap = delta.GetPixelsAndPercent();
+  delta_pap *= static_cast<float>(n);
+  PixelsAndPercent result = base_pap + delta_pap;
+  if (result.percent == 0) {
+    return Length(result.pixels, Length::kFixed);
+  }
+  if (result.pixels == 0) {
+    return Length(result.percent, Length::kPercent);
+  }
+  return Length(
+      MakeGarbageCollected<CalculationValue>(result, Length::ValueRange::kAll));
+}
+
 TransformOperation::OperationType GetTypeForTranslate(const Length& x,
                                                       const Length& y,
                                                       double z) {
@@ -67,6 +82,18 @@ TransformOperation* TranslateTransformOperation::Accumulate(
   Length new_x = AddLengths(x_, other_op.x_);
   Length new_y = AddLengths(y_, other_op.y_);
   double new_z = z_ + other_op.z_;
+  return MakeGarbageCollected<TranslateTransformOperation>(
+      new_x, new_y, new_z, GetTypeForTranslate(new_x, new_y, new_z));
+}
+
+TransformOperation* TranslateTransformOperation::AccumulateN(
+    const TransformOperation& other,
+    int n) {
+  DCHECK(other.CanBlendWith(*this));
+  const auto& other_op = To<TranslateTransformOperation>(other);
+  Length new_x = ScaleAndAddLength(x_, other_op.x_, n);
+  Length new_y = ScaleAndAddLength(y_, other_op.y_, n);
+  double new_z = z_ + n * other_op.z_;
   return MakeGarbageCollected<TranslateTransformOperation>(
       new_x, new_y, new_z, GetTypeForTranslate(new_x, new_y, new_z));
 }
