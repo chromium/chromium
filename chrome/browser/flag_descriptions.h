@@ -3557,6 +3557,11 @@ inline constexpr char kReportOmniboxAutofocusHeaderName[] =
 inline constexpr char kReportOmniboxAutofocusHeaderDescription[] =
     "Enables reporting 'X-Omnibox-Autofocus' header to Google.";
 
+inline constexpr char kReportUnsafeSiteName[] = "Report Unsafe Site";
+inline constexpr char kReportUnsafeSiteDescription[] =
+    "Enables the 'Report Unsafe Site' menu item in the app Help menu, which "
+    "enables users to report the webpage in the active tab as unsafe.";
+
 inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsName[] =
     "Show permission grants from Related Website Sets";
 inline constexpr char kShowRelatedWebsiteSetsPermissionGrantsDescription[] =

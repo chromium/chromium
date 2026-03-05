@@ -11127,6 +11127,7 @@ from previous Chrome versions.
   <int value="-1134420065" label="CriticalPersistedTabData:disabled"/>
   <int value="-1134412904" label="PrivacySandboxSettings:disabled"/>
   <int value="-1134307340" label="stop-loading-in-background:enabled"/>
+  <int value="-1134032405" label="ReportUnsafeSite:enabled"/>
   <int value="-1133983181" label="AccessibilityManifestV3BrailleIme:disabled"/>
   <int value="-1133442631" label="FwupdDeveloperMode:enabled"/>
   <int value="-1133285806" label="MacLoopbackAudioForScreenShare:disabled"/>
@@ -12626,6 +12627,7 @@ from previous Chrome versions.
   <int value="-623611759" label="TabSelectionEditorV2:enabled"/>
   <int value="-623364791" label="ClickToCallReceiver:disabled"/>
   <int value="-622685174" label="enable-pdf-material-ui"/>
+  <int value="-622474802" label="ReportUnsafeSite:disabled"/>
   <int value="-621382525" label="VizDisplayCompositor:enabled"/>
   <int value="-620902693" label="PageInfoHistory:disabled"/>
   <int value="-620801681" label="EnableCertManagementUIV2:disabled"/>
