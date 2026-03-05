@@ -133,7 +133,7 @@ TEST_F(QuerySyncManagerTest, Shrink) {
   QuerySyncManager::QueryInfo info;
   EXPECT_TRUE(sync_manager_->Alloc(&info));
   QuerySyncManager::Bucket* bucket = info.bucket;
-  QuerySync* syncs = bucket->syncs;
+  QuerySync* syncs = bucket->syncs.data();
 
   FencedAllocator::State state =
       mapped_memory_->GetPointerStatusForTest(syncs, nullptr);
@@ -157,7 +157,7 @@ TEST_F(QuerySyncManagerTest, Shrink) {
 
   EXPECT_TRUE(sync_manager_->Alloc(&info));
   bucket = info.bucket;
-  syncs = bucket->syncs;
+  syncs = bucket->syncs.data();
 
   state = mapped_memory_->GetPointerStatusForTest(syncs, nullptr);
   EXPECT_EQ(FencedAllocator::IN_USE, state);
@@ -180,7 +180,7 @@ TEST_F(QuerySyncManagerTest, Shrink) {
 
   EXPECT_TRUE(sync_manager_->Alloc(&info));
   bucket = info.bucket;
-  syncs = bucket->syncs;
+  syncs = bucket->syncs.data();
 
   state = mapped_memory_->GetPointerStatusForTest(syncs, nullptr);
   EXPECT_EQ(FencedAllocator::IN_USE, state);
