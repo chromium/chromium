@@ -119,11 +119,10 @@ int TabEventTrackerImpl::GetSelectedCount(int tab_id) const {
         it != tab_id_selection_map_.end()) {
       const std::vector<TabSelection>& selection_list = it->second;
       const auto time_now = base::Time::Now();
-      return std::count_if(selection_list.begin(), selection_list.end(),
-                           [=](const TabSelection selection) {
-                             return time_now - selection.time <=
-                                    kSelectionTimeWindow;
-                           });
+      return std::ranges::count_if(
+          selection_list, [=](const TabSelection selection) {
+            return time_now - selection.time <= kSelectionTimeWindow;
+          });
     }
   }
   return 0;

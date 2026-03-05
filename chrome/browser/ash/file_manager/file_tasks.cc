@@ -361,7 +361,7 @@ void OpenFilesWithBrowser(Profile* profile,
              const std::vector<std::optional<apps::LaunchResult::State>>&
                  opens) {
             const int num_opened =
-                std::count_if(opens.begin(), opens.end(), [](auto& o) {
+                std::ranges::count_if(opens, [](auto& o) {
                   return o.has_value() &&
                          o.value() == apps::LaunchResult::State::kSuccess;
                 });

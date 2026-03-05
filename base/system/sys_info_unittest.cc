@@ -504,10 +504,10 @@ TEST_F(SysInfoTest, NumberOfEfficientProcessors) {
   size_t expected_count = SysInfo::NumberOfEfficientProcessors() == 0
                               ? frequencies.size()
                               : SysInfo::NumberOfEfficientProcessors();
-  EXPECT_EQ(std::count_if(frequencies.begin(), frequencies.end(),
-                          [min_frequency](uint64_t freq) {
-                            return freq == min_frequency;
-                          }),
+  EXPECT_EQ(std::ranges::count_if(frequencies,
+                                  [min_frequency](uint64_t freq) {
+                                    return freq == min_frequency;
+                                  }),
             expected_count);
 }
 

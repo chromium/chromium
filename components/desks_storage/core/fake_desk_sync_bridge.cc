@@ -145,8 +145,8 @@ size_t FakeDeskSyncBridge::GetSaveAndRecallDeskEntryCount() const {
 }
 
 size_t FakeDeskSyncBridge::GetDeskTemplateEntryCount() const {
-  size_t template_count = std::count_if(
-      desk_template_entries_.begin(), desk_template_entries_.end(),
+  size_t template_count = std::ranges::count_if(
+      desk_template_entries_,
       [](const std::pair<base::Uuid, std::unique_ptr<ash::DeskTemplate>>&
              entry) {
         return entry.second->type() == ash::DeskTemplateType::kTemplate;

@@ -119,10 +119,9 @@ class FakeObserver : public InvalidationListener::Observer {
   auto CountSpecificInvalidation(const std::string& payload,
                                  int64_t version,
                                  base::Time issue_timestamp) {
-    return std::count_if(
-        received_invalidations_.begin(), received_invalidations_.end(),
-        [&payload, &version, &issue_timestamp,
-         this](const DirectInvalidation& invalidation) {
+    return std::ranges::count_if(
+        received_invalidations_, [&payload, &version, &issue_timestamp, this](
+                                     const DirectInvalidation& invalidation) {
           return invalidation.type() == GetType() &&
                  invalidation.payload() == payload &&
                  invalidation.version() == version &&

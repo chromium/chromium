@@ -149,11 +149,10 @@ void ContextualSearchboxHandler::GetRecentTabs(GetRecentTabsCallback callback) {
     for (const auto& tab : tabs) {
       title_counts[tab->title]++;
     }
-    int duplicate_count =
-        std::count_if(title_counts.begin(), title_counts.end(),
-                      [](const std::pair<const std::string, int>& pair) {
-                        return pair.second > 1;
-                      });
+    int duplicate_count = std::ranges::count_if(
+        title_counts, [](const std::pair<const std::string, int>& pair) {
+          return pair.second > 1;
+        });
 
     // Sort the tabs by last active time, and truncate to the maximum number of
     // tabs to return.

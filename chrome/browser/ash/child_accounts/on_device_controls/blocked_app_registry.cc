@@ -213,8 +213,8 @@ void BlockedAppRegistry::OnAppUninstalled(const std::string& app_id) {
 }
 
 int BlockedAppRegistry::GetUninstalledBlockedAppCount() const {
-  return std::count_if(
-      registry_.begin(), registry_.end(),
+  return std::ranges::count_if(
+      registry_,
       [](std::pair<std::string, BlockedAppDetails> const& blocked_app) {
         return !blocked_app.second.IsInstalled();
       });

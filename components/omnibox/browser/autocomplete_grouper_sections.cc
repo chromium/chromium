@@ -793,8 +793,8 @@ ZpsSectionWithMVTiles::ZpsSectionWithMVTiles(
     : ZpsSection(limit, std::move(groups), group_configs) {}
 
 void ZpsSectionWithMVTiles::InitFromMatches(ACMatches& matches) {
-  size_t tile_count = std::count_if(
-      matches.begin(), matches.end(), [](const AutocompleteMatch& m) {
+  size_t tile_count =
+      std::ranges::count_if(matches, [](const AutocompleteMatch& m) {
         return m.suggestion_group_id.value_or(omnibox::GROUP_INVALID) ==
                omnibox::GROUP_MOBILE_MOST_VISITED;
       });
