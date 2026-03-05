@@ -160,7 +160,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
     mojo::PendingReceiver<searchbox::mojom::PageHandler>
         pending_searchbox_handler,
     GetSessionHandleCallback get_session_callback,
-    GetInputStateModelCallback get_input_model_callback)
+    TakeInputStateModelCallback take_input_model_callback)
     : ComposeboxHandler(
           std::move(pending_handler),
           std::move(pending_page),
@@ -172,7 +172,7 @@ ContextualTasksComposeboxHandler::ContextualTasksComposeboxHandler(
                                                              web_contents,
                                                              this)),
           std::move(get_session_callback)),
-      get_input_model_callback_(std::move(get_input_model_callback)),
+      take_input_model_callback_(std::move(take_input_model_callback)),
       web_ui_interface_(web_ui_interface),
       contextual_tasks_service_(
           contextual_tasks::ContextualTasksServiceFactory::GetForProfile(
@@ -453,9 +453,9 @@ void ContextualTasksComposeboxHandler::OnTaskChanged() {
 }
 
 void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
-  if (get_input_model_callback_) {
+  if (take_input_model_callback_) {
     std::unique_ptr<contextual_search::InputStateModel> current_input_state =
-        std::move(get_input_model_callback_).Run();
+        std::move(take_input_model_callback_).Run();
 
     if (current_input_state) {
       ResetInputStateModel();
@@ -467,12 +467,29 @@ void ContextualTasksComposeboxHandler::InitializeInputStateModel() {
               weak_ptr_factory_.GetWeakPtr()));
 
       input_state_model_->Initialize();
-      return;
+    } else {
+      ResetInputStateModel();
+      ContextualSearchboxHandler::InitializeInputStateModel();
     }
+  } else {
+    ResetInputStateModel();
+    ContextualSearchboxHandler::InitializeInputStateModel();
   }
 
-  ResetInputStateModel();
-  ContextualSearchboxHandler::InitializeInputStateModel();
+  if (input_state_model_) {
+    // crbug.com/488112121: Temporary implementation to disable file and deep
+    // search when the aegc=1 URL parameter is present on the AI page.
+    // This is moved from the WebUI to C++ to avoid extra Mojo APIs.
+    GURL inner_frame_url = web_ui_interface_->GetInnerFrameUrl();
+    std::string aegc_val;
+    if (net::GetValueForKeyInQuery(inner_frame_url, "aegc", &aegc_val) &&
+        aegc_val == "1") {
+      input_state_model_->SetPermanentlyDisabledTools(
+          {omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH});
+      input_state_model_->SetPermanentlyDisabledInputTypes(
+          {omnibox::InputType::INPUT_TYPE_LENS_FILE});
+    }
+  }
 }
 
 void ContextualTasksComposeboxHandler::AddFileContextFromBrowser(

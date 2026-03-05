@@ -53,7 +53,7 @@ class MockContextualTasksComposeboxHandler
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       GetSessionHandleCallback get_session_callback,
-      GetInputStateModelCallback get_inputstatemodel_callback)
+      TakeInputStateModelCallback get_inputstatemodel_callback)
       : ContextualTasksComposeboxHandler(
             ui_controller,
             profile,
@@ -678,7 +678,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksSidePanelCoordinatorInteractiveUiTest,
           base::BindRepeating(
               &ContextualTasksUI::GetOrCreateContextualSessionHandle,
               base::Unretained(ui)),
-          base::BindRepeating(&ContextualTasksUI::GetInputStateModel,
+          base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                               base::Unretained(ui)));
   MockContextualTasksComposeboxHandler* mock_handler =
       mock_composebox_handler.get();

@@ -783,4 +783,48 @@ TEST_F(InputStateModelTest,
             cloned_state.allowed_input_types.end());
 }
 
+// crbug.com/488112121: This test covers the temporary behavior of forcing
+// items to be disabled based on external triggers (like URL parameters).
+// Remove this test when the temporary workaround in
+// ContextualTasksComposeboxHandler is removed.
+TEST_F(InputStateModelCompatibilityTest, ForcedDisabledToolsAndInputTypes) {
+  // Enable content sharing to prevent the policy from erasing allowlisted
+  // inputs.
+  pref_service_.SetInteger(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kEnabled));
+
+  input_state_model_->SetPermanentlyDisabledTools(
+      {omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH});
+  auto state = input_state_model_->get_state_for_testing();
+
+  EXPECT_THAT(state.disabled_tools,
+              testing::Contains(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH));
+
+  input_state_model_->SetPermanentlyDisabledInputTypes(
+      {omnibox::InputType::INPUT_TYPE_LENS_FILE,
+       omnibox::InputType::INPUT_TYPE_BROWSER_TAB});
+  state = input_state_model_->get_state_for_testing();
+
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_FILE));
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Contains(omnibox::InputType::INPUT_TYPE_BROWSER_TAB));
+
+  input_state_model_->SetPermanentlyDisabledTools({});
+  input_state_model_->SetPermanentlyDisabledInputTypes({});
+  state = input_state_model_->get_state_for_testing();
+
+  EXPECT_THAT(state.disabled_tools,
+              testing::Not(
+                  testing::Contains(omnibox::ToolMode::TOOL_MODE_DEEP_SEARCH)));
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Not(
+                  testing::Contains(omnibox::InputType::INPUT_TYPE_LENS_FILE)));
+  EXPECT_THAT(state.disabled_input_types,
+              testing::Not(testing::Contains(
+                  omnibox::InputType::INPUT_TYPE_BROWSER_TAB)));
+}
+
 }  // namespace contextual_search
