@@ -686,6 +686,8 @@ mojom::URLResponseHeadPtr BuildResponseHead(
   response->was_in_prefetch_cache =
       !(url_request.load_flags() & net::LOAD_PREFETCH) &&
       response_info.unused_since_prefetch;
+  response->did_send_available_dictionary =
+      response_info.did_send_available_dictionary;
   response->did_use_shared_dictionary = response_info.did_use_shared_dictionary;
   response->did_use_server_http_auth = response_info.did_use_server_http_auth;
   response->device_bound_session_usage =

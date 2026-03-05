@@ -878,26 +878,6 @@ class DevToolsSharedDictionaryFeatureDisabledBrowserTest
   ~DevToolsSharedDictionaryFeatureDisabledBrowserTest() override = default;
 };
 
-IN_PROC_BROWSER_TEST_F(SharedDictionaryDevToolsBrowserTest,
-                       UseErrorCrossOriginNoCorsRequest) {
-  const std::string kHostName = "www.example.com";
-  const std::string kCrossOriginHostName = "other.example.com";
-  embedded_https_test_server().SetCertHostnames(
-      {kHostName, kCrossOriginHostName});
-  ASSERT_TRUE(embedded_https_test_server().Start());
-  NavigateAndEnableAudits(embedded_https_test_server().GetURL(
-      kHostName, "/shared_dictionary/blank.html"));
-  content::RenderFrameHost* rfh = GetPrimaryMainFrame();
-  EXPECT_TRUE(
-      ExecJs(rfh, FetchUrlScript(embedded_https_test_server().GetURL(
-                      kCrossOriginHostName, "/shared_dictionary/test.dict"))));
-  WaitUntilDictionaryRegistered();
-  EXPECT_TRUE(ExecJs(
-      rfh, FetchUrlWithNoCorsModeScript(embedded_https_test_server().GetURL(
-               kCrossOriginHostName, "/shared_dictionary/path/target"))));
-  WaitForSharedDictionaryIssueAdded("UseErrorCrossOriginNoCorsRequest");
-}
-
 // Can't cause the dictionary load failure by deletaing the disk cache directory
 // on Windows.
 #if !BUILDFLAG(IS_WIN)

@@ -612,6 +612,9 @@ BASE_FEATURE_PARAM(size_t,
                    /*name=*/"max_size",
                    1'000'000);
 
+BASE_FEATURE(kCompressionDictionaryLimitEarlyMatching,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNetworkServiceTaskScheduler, base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
                    kNetworkServiceTaskSchedulerResourceScheduler,

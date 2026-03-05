@@ -290,6 +290,9 @@ struct URLResponseHead {
   // matches the cached bytecode.
   bool should_use_source_hash_for_js_code_cache = false;
 
+  // True if the request included an available compression dictionary.
+  bool did_send_available_dictionary = false;
+
   // True if the response used a shared dictionary for decoding its body.
   bool did_use_shared_dictionary = false;
 

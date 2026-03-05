@@ -7827,15 +7827,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{SuccessOrFailure}"
+    name="Net.SharedDictionaryTransaction.DictionaryReadLatency.{RequestType}.{SuccessOrFailure}"
     units="ms" expires_after="2026-08-30">
   <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
   <summary>
     The delay of SharedDictionaryTransaction caused by reading a shared
-    dictionary. Recorded when the dictionary is read in the
+    dictionary for a {RequestType}. Recorded when the dictionary is read in the
     SharedDictionaryTransaction.
   </summary>
+  <token key="RequestType">
+    <variant name="Document" summary="document load (main frame or subframe)"/>
+    <variant name="Subresource" summary="subresource load"/>
+  </token>
   <token key="SuccessOrFailure" variants="SuccessOrFailure"/>
 </histogram>
 

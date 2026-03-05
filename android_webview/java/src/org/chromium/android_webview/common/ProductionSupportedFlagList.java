@@ -1179,6 +1179,10 @@ public final class ProductionSupportedFlagList {
                 "When enabled, the default user agent string is fetched more quickly without"
                         + " waiting for chromium startup to complete."),
         Flag.baseFeature(
+                NetworkServiceFeatures.COMPRESSION_DICTIONARY_LIMIT_EARLY_MATCHING,
+                "When enabled, limits the early loading of compression dictionaries to document"
+                        + " requests."),
+        Flag.baseFeature(
                 NetworkServiceFeatures.COMPRESSION_DICTIONARY_TTL,
                 "When enabled, adds support an explicit compression dictionary lifetime using the"
                         + " `ttl` parameter in the `use-as-dictionary` HTTP response header."),

@@ -160,13 +160,15 @@ class NET_EXPORT SharedDictionaryNetworkTransaction : public HttpTransaction {
 
   std::unique_ptr<SourceStream> shared_compression_stream_;
 
-  // This is set only when a shared dictionary is used for decoding the body.
-  std::unique_ptr<HttpResponseInfo> shared_dictionary_used_response_info_;
+  // This is set only when a shared dictionary is available.
+  std::unique_ptr<HttpResponseInfo> shared_dictionary_response_info_;
 
   ConnectedCallback connected_callback_;
 
   bool cert_is_issued_by_known_root_ = false;
   NextProto negotiated_protocol_ = NextProto::kProtoUnknown;
+
+  bool request_destination_is_document_ = false;
 
   base::RepeatingCallback<scoped_refptr<SharedDictionary>()>
       shared_dictionary_getter_;

@@ -7,7 +7,6 @@ module network.mojom;
 // This error enum is used to show the reason for the compression
 // dictionary related failures in DevTools.
 enum SharedDictionaryError {
-  kUseErrorCrossOriginNoCorsRequest,
   kUseErrorDictionaryLoadFailure,
   kUseErrorMatchingDictionaryNotUsed,
   kUseErrorUnexpectedContentDictionaryHeader,

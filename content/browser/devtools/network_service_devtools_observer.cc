@@ -309,8 +309,6 @@ protocol::String BuildSharedDictionaryError(
   namespace SharedDictionaryErrorEnum =
       protocol::Audits::SharedDictionaryErrorEnum;
   switch (write_error) {
-    case SharedDictionaryError::kUseErrorCrossOriginNoCorsRequest:
-      return SharedDictionaryErrorEnum::UseErrorCrossOriginNoCorsRequest;
     case SharedDictionaryError::kUseErrorDictionaryLoadFailure:
       return SharedDictionaryErrorEnum::UseErrorDictionaryLoadFailure;
     case SharedDictionaryError::kUseErrorMatchingDictionaryNotUsed:

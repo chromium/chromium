@@ -358,20 +358,27 @@ CorsURLLoader::CorsURLLoader(
       request_.load_flags |=
           net::LOAD_DISABLE_SHARED_DICTIONARY_AFTER_CROSS_ORIGIN_REDIRECT;
     }
-    // This is intended to load the dictionary as soon as possible. Without
-    // this, the dictionary will be loaded from the disk when
-    // `HttpNetworkTransaction` builds the request header just before sending it
-    // to the server.
-    shared_dictionary_storage_->GetDictionary(
-        request_.url, request_.destination,
-        base::BindOnce(
-            [](base::WeakPtr<CorsURLLoader> loader,
-               scoped_refptr<net::SharedDictionary> shared_dictionary) {
-              if (loader) {
-                loader->shared_dictionary_ = std::move(shared_dictionary);
-              }
-            },
-            weak_factory_.GetWeakPtr()));
+
+    // Experiment with limiting the early loading of dictionaries to document
+    // requests.
+    if (!base::FeatureList::IsEnabled(
+            features::kCompressionDictionaryLimitEarlyMatching) ||
+        request_.destination == mojom::RequestDestination::kDocument) {
+      // This is intended to load the dictionary as soon as possible. Without
+      // this, the dictionary will be loaded from the disk when
+      // `HttpNetworkTransaction` builds the request header just before sending
+      // it to the server.
+      shared_dictionary_storage_->GetDictionary(
+          request_.url, request_.destination,
+          base::BindOnce(
+              [](base::WeakPtr<CorsURLLoader> loader,
+                 scoped_refptr<net::SharedDictionary> shared_dictionary) {
+                if (loader) {
+                  loader->shared_dictionary_ = std::move(shared_dictionary);
+                }
+              },
+              weak_factory_.GetWeakPtr()));
+    }
   }
 }
 
@@ -612,16 +619,10 @@ void CorsURLLoader::OnReceiveResponse(
     }
   }
 
-  if (!response_head->did_use_shared_dictionary && shared_dictionary_) {
-    if (!(request_.load_flags & net::LOAD_CAN_USE_SHARED_DICTIONARY)) {
-      // There are matching dictionary, but we can't use it because
-      // the request is no-cors cross origin request.
-      MaybeReportSharedDictionaryErrorToDevTools(
-          mojom::SharedDictionaryError::kUseErrorCrossOriginNoCorsRequest);
-    } else {
-      MaybeReportSharedDictionaryErrorToDevTools(
-          mojom::SharedDictionaryError::kUseErrorMatchingDictionaryNotUsed);
-    }
+  if (!response_head->did_use_shared_dictionary &&
+      response_head->did_send_available_dictionary) {
+    MaybeReportSharedDictionaryErrorToDevTools(
+        mojom::SharedDictionaryError::kUseErrorMatchingDictionaryNotUsed);
   }
 
   // Opaque response tainting requests must not use shared dictionary.

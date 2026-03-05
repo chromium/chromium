@@ -6701,6 +6701,27 @@
             ]
         }
     ],
+    "CompressionDictionaryLimitEarlyMatching": [
+        {
+            "platforms": [
+                "android",
+                "android_webview",
+                "chromeos",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enable",
+                    "enable_features": [
+                        "CompressionDictionaryLimitEarlyMatching"
+                    ]
+                }
+            ]
+        }
+    ],
     "CompressionDictionaryPreload": [
         {
             "platforms": [

@@ -197,6 +197,11 @@ class NET_EXPORT HttpResponseInfo {
   // session. Used for filtering cache access.
   std::optional<int64_t> browser_run_id;
 
+  // True if the request matched a shared dictionary and advertised it as being
+  // available with an "Available-Dictionary" request header.
+  // This is always false for resources served from cache.
+  bool did_send_available_dictionary = false;
+
   // True if the response used a shared dictionary for decoding its body.
   // This is always false for resources served from cache (where
   // dictionary-compressed responses are stored uncompressed).
