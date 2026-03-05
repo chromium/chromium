@@ -48,18 +48,17 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
 
   class Delegate {
    public:
+    virtual ~Delegate() = default;
+
     // Returns the currently active WebContents, or nullptr if there is none.
     virtual content::WebContents* GetWebContentsForExtension() = 0;
-
-   protected:
-    ~Delegate() {}  // should only be deleted via concrete type.
   };
 
   // If `extension_filter` is not ALL_EXTENSIONS, only keybindings by
   // by extensions that match the filter will be registered.
   ExtensionKeybindingRegistry(content::BrowserContext* context,
                               ExtensionFilter extension_filter,
-                              Delegate* delegate);
+                              std::unique_ptr<Delegate> delegate);
 
   ExtensionKeybindingRegistry(const ExtensionKeybindingRegistry&) = delete;
   ExtensionKeybindingRegistry& operator=(const ExtensionKeybindingRegistry&) =
@@ -180,8 +179,7 @@ class ExtensionKeybindingRegistry : public CommandService::Observer,
   // What extensions to register keybindings for.
   ExtensionFilter extension_filter_;
 
-  // Weak pointer to our delegate. Not owned by us. Must outlive this class.
-  raw_ptr<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
 
   // Maps an accelerator to a list of string pairs (extension id, command name)
   // for commands that have been registered. This keeps track of the targets for

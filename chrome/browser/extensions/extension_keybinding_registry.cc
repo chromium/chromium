@@ -41,10 +41,10 @@ namespace extensions {
 ExtensionKeybindingRegistry::ExtensionKeybindingRegistry(
     content::BrowserContext* context,
     ExtensionFilter extension_filter,
-    Delegate* delegate)
+    std::unique_ptr<Delegate> delegate)
     : browser_context_(context),
       extension_filter_(extension_filter),
-      delegate_(delegate),
+      delegate_(std::move(delegate)),
       shortcut_handling_suspended_(false) {
   extension_registry_observation_.Observe(
       ExtensionRegistry::Get(browser_context_));
@@ -183,9 +183,6 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   base::ListValue args;
   args.Append(command);
 
-// TODO(crbug.com/406136564): Support tab parameter for commands.onCommand
-// on desktop Android.
-#if BUILDFLAG(ENABLE_EXTENSIONS)
   base::Value tab_value;
   if (delegate_) {
     content::WebContents* web_contents =
@@ -217,7 +214,6 @@ void ExtensionKeybindingRegistry::CommandExecuted(
   }
 
   args.Append(std::move(tab_value));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   auto event =
       std::make_unique<Event>(events::COMMANDS_ON_COMMAND, kOnCommandEventName,

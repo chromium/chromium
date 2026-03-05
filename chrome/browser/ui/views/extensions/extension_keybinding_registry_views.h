@@ -32,7 +32,7 @@ class ExtensionKeybindingRegistryViews
   ExtensionKeybindingRegistryViews(Profile* profile,
                                    views::FocusManager* focus_manager,
                                    ExtensionFilter extension_filter,
-                                   Delegate* delegate);
+                                   std::unique_ptr<Delegate> delegate);
 
   ExtensionKeybindingRegistryViews(const ExtensionKeybindingRegistryViews&) =
       delete;

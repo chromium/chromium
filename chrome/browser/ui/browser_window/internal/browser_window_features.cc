@@ -198,13 +198,15 @@
 #include "chrome/browser/ui/overscroll_pref_manager.h"
 #endif  // defined(USE_AURA)
 
-class BrowserWindowFeatures::ExtensionKeybindingRegistryDelegateTabStrip final
+namespace {
+
+class ExtensionKeybindingRegistryDelegateTabStrip final
     : public extensions::ExtensionKeybindingRegistry::Delegate {
  public:
   explicit ExtensionKeybindingRegistryDelegateTabStrip(
       TabStripModel& tab_strip_model)
       : tab_strip_model_(tab_strip_model) {}
-  ~ExtensionKeybindingRegistryDelegateTabStrip() = default;
+  ~ExtensionKeybindingRegistryDelegateTabStrip() override = default;
 
   ExtensionKeybindingRegistryDelegateTabStrip(
       const ExtensionKeybindingRegistryDelegateTabStrip& other) = delete;
@@ -218,6 +220,8 @@ class BrowserWindowFeatures::ExtensionKeybindingRegistryDelegateTabStrip final
  private:
   const raw_ref<TabStripModel> tab_strip_model_;
 };
+
+}  // namespace
 
 BrowserWindowFeatures::BrowserWindowFeatures() = default;
 BrowserWindowFeatures::~BrowserWindowFeatures() = default;
@@ -663,14 +667,12 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
 
   // Focus manager can be null in tests.
   if (focus_manager) {
-    extension_keybinding_delegate_ =
-        std::make_unique<ExtensionKeybindingRegistryDelegateTabStrip>(
-            *browser->GetTabStripModel());
     extension_keybinding_registry_ =
         std::make_unique<ExtensionKeybindingRegistryViews>(
             profile, focus_manager,
             extensions::ExtensionKeybindingRegistry::ALL_EXTENSIONS,
-            extension_keybinding_delegate_.get());
+            std::make_unique<ExtensionKeybindingRegistryDelegateTabStrip>(
+                *browser->GetTabStripModel()));
   }
 
   if (browser->is_type_normal()) {
