@@ -233,7 +233,7 @@ class NET_EXPORT CookieBase {
       const CookieOptions& options_used) const {}
 
   // Keep defaults here in sync with
-  // services/network/public/interfaces/cookie_manager.mojom.
+  // services/network/public/mojom/cookie_manager.mojom.
   std::string name_;
   std::string domain_;
   std::string path_;

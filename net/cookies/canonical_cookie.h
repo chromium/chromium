@@ -468,7 +468,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
       const CookieOptions& options_used) const override;
 
   // Keep defaults here in sync with
-  // services/network/public/interfaces/cookie_manager.mojom.
+  // services/network/public/mojom/cookie_manager.mojom.
   // These are the fields specific to CanonicalCookie. See CookieBase for other
   // data fields.
   // If adding more data fields, please also adjust GetAllDataMembersAsTuple().
