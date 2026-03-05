@@ -5,10 +5,10 @@
 #include "chromecast/app/linux/cast_crash_reporter_client.h"
 
 #include <fstream>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
-#include "base/compiler_specific.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -27,15 +27,14 @@
 namespace chromecast {
 namespace {
 
-const char kFakeDumpstateContents[] = "Dumpstate Contents\nDumpdumpdumpdump\n";
+constexpr std::string_view kFakeDumpstateContents =
+    "Dumpstate Contents\nDumpdumpdumpdump\n";
 const char kFakeMinidumpContents[] = "Minidump Contents\nLine1\nLine2\n";
 
 int WriteFakeDumpStateFile(const std::string& path) {
   // Append the correct extension and write the data to file.
-  base::File dumpstate(base::FilePath(path).AddExtension(".txt.gz"),
-                       base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  UNSAFE_TODO(dumpstate.Write(0, kFakeDumpstateContents,
-                              sizeof(kFakeDumpstateContents) - 1));
+  base::WriteFile(base::FilePath(path).AddExtension(".txt.gz"),
+                  kFakeDumpstateContents);
   return 0;
 }
 
