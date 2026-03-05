@@ -6,7 +6,6 @@ package org.chromium.android_webview.test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.EITHER_PROCESS;
 
@@ -25,9 +24,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.variations.VariationsServiceMetricsHelper;
@@ -56,6 +58,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(EITHER_PROCESS) // These tests don't use the renderer process
 public class AwVariationsSeedFetcherTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final int HTTP_OK = 200;
     private static final int HTTP_NOT_FOUND = 404;
     private static final int HTTP_NOT_MODIFIED = 304;
@@ -209,7 +213,6 @@ public class AwVariationsSeedFetcherTest {
         AwVariationsSeedFetcher.setMocks(mScheduler, mDownloader);
         VariationsTestUtils.deleteSeeds();
         mContext = ContextUtils.getApplicationContext();
-        initMocks(this);
     }
 
     @After

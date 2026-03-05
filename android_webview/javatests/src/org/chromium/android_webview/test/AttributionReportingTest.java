@@ -33,7 +33,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwSettings;
@@ -55,6 +56,8 @@ import java.util.List;
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
 public class AttributionReportingTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String SOURCE_REGISTRATION_PATH = "/source";
     private static final String TRIGGER_REGISTRATION_PATH = "/trigger";
     private static final String OS_SOURCE_RESPONSE_HEADER =
@@ -81,7 +84,6 @@ public class AttributionReportingTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mMockCallbackHelper = new CallbackHelper();
 
         when(mMockAttributionManager.registerWebSourceAsync(

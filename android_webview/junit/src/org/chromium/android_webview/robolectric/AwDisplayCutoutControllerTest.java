@@ -27,10 +27,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.android_webview.AwDisplayCutoutController;
@@ -42,6 +44,8 @@ import org.chromium.base.test.util.Feature;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class AwDisplayCutoutControllerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String TAG = "DisplayCutoutTest";
     private static final boolean DEBUG = false;
 
@@ -64,7 +68,6 @@ public class AwDisplayCutoutControllerTest {
     @Before
     public void setUp() {
         if (DEBUG) Log.i(TAG, "setUp");
-        MockitoAnnotations.initMocks(this);
 
         // Set up default values.
         setWindowInsets(new Rect(20, 40, 60, 80));

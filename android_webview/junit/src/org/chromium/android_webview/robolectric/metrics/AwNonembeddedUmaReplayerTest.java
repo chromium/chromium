@@ -10,10 +10,12 @@ import static org.mockito.Mockito.verify;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.metrics.AwNonembeddedUmaReplayer;
 import org.chromium.android_webview.proto.MetricsBridgeRecords.HistogramRecord;
@@ -26,11 +28,12 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // Ok to mock UmaRecorder since this is testing metrics.
 public class AwNonembeddedUmaReplayerTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Mock private UmaRecorder mUmaRecorder;
 
     @Before
     public void initMocks() {
-        MockitoAnnotations.initMocks(this);
         UmaRecorderHolder.setNonNativeDelegate(mUmaRecorder);
     }
 

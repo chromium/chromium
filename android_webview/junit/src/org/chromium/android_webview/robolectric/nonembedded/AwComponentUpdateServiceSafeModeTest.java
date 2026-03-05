@@ -13,10 +13,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.common.SafeModeController;
 import org.chromium.android_webview.nonembedded.AwComponentUpdateService;
@@ -33,6 +35,8 @@ import java.util.Set;
 /** Test AwComponentUpdateService's behavior when Safe Mode Reset is applied. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class AwComponentUpdateServiceSafeModeTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private static final String TEST_FILE = "testManifest.json";
     private File mDirectory;
     private AwComponentUpdateService mComponentUpdateService;
@@ -41,7 +45,6 @@ public class AwComponentUpdateServiceSafeModeTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mComponentUpdateService = new AwComponentUpdateService();
         PathUtils.setPrivateDataDirectorySuffix("webview", "WebView");
         mDirectory = new File(PathUtils.getDataDirectory(), "components/cus/");

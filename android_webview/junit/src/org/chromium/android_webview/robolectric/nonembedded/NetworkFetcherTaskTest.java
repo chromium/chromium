@@ -16,10 +16,12 @@ import androidx.test.filters.MediumTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.android_webview.nonembedded.NetworkFetcherTask;
 import org.chromium.android_webview.nonembedded.NetworkFetcherTaskJni;
@@ -41,6 +43,8 @@ import java.util.concurrent.TimeoutException;
 @RunWith(BaseRobolectricTestRunner.class)
 @SuppressWarnings("DoNotMock") // Mocks GURL.
 public class NetworkFetcherTaskTest {
+    @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     private HttpURLConnection mConnection;
     private Context mContext;
     private File mTempDirectory;
@@ -48,7 +52,6 @@ public class NetworkFetcherTaskTest {
 
     @Before
     public void setUp() throws IOException {
-        MockitoAnnotations.initMocks(this);
         NetworkFetcherTaskJni.setInstanceForTesting(mNativeMock);
 
         mContext = ContextUtils.getApplicationContext();
