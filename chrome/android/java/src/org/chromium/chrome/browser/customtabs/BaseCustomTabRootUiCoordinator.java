@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import static org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType.INCOGNITO;
+import static org.chromium.chrome.browser.flags.CustomTabProfileType.INCOGNITO;
 
 import android.content.Intent;
 import android.graphics.Color;

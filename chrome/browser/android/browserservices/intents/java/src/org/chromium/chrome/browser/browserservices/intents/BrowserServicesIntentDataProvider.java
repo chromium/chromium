@@ -34,6 +34,7 @@ import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.util.WindowFeatures;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.device.mojom.ScreenOrientationLockType;
@@ -96,22 +97,6 @@ public abstract class BrowserServicesIntentDataProvider {
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ActivitySideSheetSlideInBehavior {}
-
-    // The type of Profile and UI that is used by the custom tab.
-    @IntDef({
-        CustomTabProfileType.REGULAR,
-        CustomTabProfileType.INCOGNITO,
-        CustomTabProfileType.EPHEMERAL
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface CustomTabProfileType {
-        // The normal user profile.
-        int REGULAR = 0;
-        // An off-the-record profile with incognito UI.
-        int INCOGNITO = 1;
-        // An off-the-record profile without references to incognito mode.
-        int EPHEMERAL = 2;
-    }
 
     /**
      * Represents apps that launch Incognito CCT. DO NOT reorder items in this interface, because

@@ -13,6 +13,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 
 import java.util.Collections;
 import java.util.List;

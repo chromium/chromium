@@ -93,6 +93,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsFeatureUsage.CustomTabsF
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.share.ShareUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.ui.google_bottom_bar.GoogleBottomBarCoordinator;
@@ -1054,7 +1055,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      * the UI surface.
      *
      * @param type {@link CustomTabsUiType} value.
-     * @param incognito Whether the {@link CustomTabProfileType} is incongnito.
+     * @param incognito Whether the {@link CustomTabProfileType} is incognito.
      */
     public static boolean isOpenInBrowserDisallowed(int type, boolean incognito) {
         return !isOpenInBrowserAllowedForType(type)

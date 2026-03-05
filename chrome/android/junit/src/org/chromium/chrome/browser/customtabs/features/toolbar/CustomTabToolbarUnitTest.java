@@ -87,6 +87,7 @@ import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.Minimi
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbar.CustomTabLocationBar;
 import org.chromium.chrome.browser.dom_distiller.ReaderModeManager;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.status.PageInfoIphController;
@@ -189,8 +190,7 @@ public class CustomTabToolbarUnitTest {
                         ObservableSuppliers.alwaysFalse());
 
         MinimizedFeatureUtils.setDeviceEligibleForMinimizedCustomTabForTesting(true);
-        when(mIntentDataProvider.getCustomTabMode())
-                .thenReturn(BrowserServicesIntentDataProvider.CustomTabProfileType.REGULAR);
+        when(mIntentDataProvider.getCustomTabMode()).thenReturn(CustomTabProfileType.REGULAR);
         when(mIntentDataProvider.getCloseButtonPosition())
                 .thenReturn(CLOSE_BUTTON_POSITION_DEFAULT);
         when(mIntentDataProvider.isCloseButtonEnabled()).thenReturn(true);
