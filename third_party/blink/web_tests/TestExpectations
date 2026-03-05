@@ -214,7 +214,6 @@ crbug.com/1446498 accessibility/details-summary-crash.html [ Failure Pass ]
 crbug.com/1446498 custom-elements/cereactions-with-exception.html [ Failure Pass ]
 crbug.com/1446498 dom/node/replace_child_recheck.html [ Failure Pass ]
 crbug.com/1446498 editing/execCommand/crash-inserting-list.html [ Failure Pass ]
-crbug.com/1446498 editing/execCommand/replaceSelectorCommand-crash.html [ Pass Timeout ]
 crbug.com/1446498 fast/dom/move-nodes-across-documents.html [ Failure Pass ]
 # ====== Mutation Events tests to here ========================
 

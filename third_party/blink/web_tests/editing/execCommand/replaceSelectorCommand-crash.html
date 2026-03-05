@@ -7,6 +7,17 @@
   var af = [], i = 0;
   var setIntervalId;
   var done = false;
+  var pending = false;
+
+  function scheduleMain() {
+    if (done || pending)
+      return;
+    pending = true;
+    queueMicrotask(() => {
+      pending = false;
+      main();
+    });
+  }
 
   function main() {
     testObject.step(() => {
@@ -18,6 +29,8 @@
         document.body.innerHTML += "<p>Test for crbug.com/338982. Passes if it does not crash</p>";
         document.body.innerHTML += "<p>PASS</p>";
         clearInterval(setIntervalId);
+        document.removeEventListener("beforeinput", scheduleMain, true);
+        document.removeEventListener("input", scheduleMain, true);
         testObject.done();
         return;
       }
@@ -74,7 +87,8 @@
   af.push(function() {});
   af.push(function() {});
 
-  document.addEventListener("DOMNodeInserted", main, false);
+  document.addEventListener("beforeinput", scheduleMain, true);
+  document.addEventListener("input", scheduleMain, true);
   setIntervalId = setInterval(main, 10);
 </script>
 <input>
