@@ -58,7 +58,8 @@ export class ExtensionsDropOverlayElement extends CrLitElement {
     });
 
     this.eventTracker_.add(
-        dragTarget, 'drag-and-drop-load-error', (e: CustomEvent) => {
+        dragTarget, 'drag-and-drop-load-error',
+        (e: CustomEvent<Error|chrome.developerPrivate.LoadError>) => {
           this.fire('load-error', e.detail);
         });
 

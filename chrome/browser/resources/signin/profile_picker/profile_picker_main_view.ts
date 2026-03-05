@@ -333,13 +333,12 @@ export class ProfilePickerMainViewElement extends
     return !isAskOnStartupAllowed() || !shouldShowBasedOnProfilesCount;
   }
 
-  protected onToggleDrag_(e: Event) {
+  protected onToggleDrag_(e: CustomEvent<{toggle: boolean}>) {
     if (!this.dragDelegate_) {
       return;
     }
 
-    const customEvent = e as CustomEvent;
-    this.dragDelegate_.toggleDrag(customEvent.detail.toggle);
+    this.dragDelegate_.toggleDrag(e.detail.toggle);
   }
 
   protected onDisableAllPickerButtons_() {

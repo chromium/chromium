@@ -444,13 +444,13 @@ export class AppElement extends AppElementBase implements SpeechListener,
     this.speechController_.previewVoice(event.detail.previewVoice);
   }
 
-  protected onVoiceMenuOpen_(event: CustomEvent) {
+  protected onVoiceMenuOpen_(event: CustomEvent<void>) {
     event.preventDefault();
     event.stopPropagation();
     this.speechController_.onVoiceMenuOpen();
   }
 
-  protected onVoiceMenuClose_(event: CustomEvent) {
+  protected onVoiceMenuClose_(event: CustomEvent<void>) {
     event.preventDefault();
     event.stopPropagation();
     this.speechController_.onVoiceMenuClose();

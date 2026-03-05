@@ -184,7 +184,7 @@ export class UserEducationInternalsElement extends
     this.filter = e.detail.toLowerCase();
   }
 
-  protected onTutorialPromoLaunch_(e: CustomEvent) {
+  protected onTutorialPromoLaunch_(e: CustomEvent<string>) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -196,7 +196,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onFeaturePromoPromoLaunch_(e: CustomEvent) {
+  protected onFeaturePromoPromoLaunch_(e: CustomEvent<string>) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -214,7 +214,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onFeaturePromoClearPromoData_(e: CustomEvent) {
+  protected onFeaturePromoClearPromoData_(e: CustomEvent<string>) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -278,7 +278,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNewBadgeClearPromoData_(e: CustomEvent) {
+  protected onNewBadgeClearPromoData_(e: CustomEvent<string>) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
 
@@ -315,7 +315,7 @@ export class UserEducationInternalsElement extends
     });
   }
 
-  protected onNtpPromoClearPromoData_(e: CustomEvent) {
+  protected onNtpPromoClearPromoData_(e: CustomEvent<string>) {
     const id = e.detail;
     this.featurePromoErrorMessage_ = '';
     this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {

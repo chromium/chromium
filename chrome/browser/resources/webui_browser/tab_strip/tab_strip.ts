@@ -186,7 +186,7 @@ export class TabStripElement extends CrLitElement implements TabStripObserver {
     });
   }
 
-  protected onTabCloseClick(e: CustomEvent) {
+  protected onTabCloseClick(e: CustomEvent<{id: string}>) {
     this.tabStripService_.closeTabs([e.detail.id]);
   }
 

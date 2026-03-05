@@ -129,7 +129,7 @@ export class AutoTabGroupsResultsElement extends CrLitElement {
     this.updateScroll_();
   }
 
-  protected onCreateGroupClick_(event: CustomEvent) {
+  protected onCreateGroupClick_(event: CustomEvent<void>) {
     event.stopPropagation();
     event.preventDefault();
 

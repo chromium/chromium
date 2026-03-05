@@ -135,10 +135,9 @@ export class BatchUploadAppElement extends BatchUploadAppElementBase {
     this.batchUploadBrowserProxy_.handler.updateViewHeight(height);
   }
 
-  protected onSectionToggleChanged_(e: Event) {
-    const customEvent = e as CustomEvent;
+  protected onSectionToggleChanged_(e: CustomEvent<{toggle: boolean}>) {
     const sectionIndex = Number((e.target as HTMLElement).dataset['index']);
-    this.dataSectionsToggles_[sectionIndex] = customEvent.detail.toggle;
+    this.dataSectionsToggles_[sectionIndex] = e.detail.toggle;
     this.updateSaveEnabled_();
   }
 

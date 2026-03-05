@@ -250,13 +250,13 @@ export class AutoTabGroupsGroupElement extends CrLitElement {
     this.showInput_ = true;
   }
 
-  protected onRejectGroupClick_(event: CustomEvent) {
+  protected onRejectGroupClick_(event: CustomEvent<void>) {
     event.stopPropagation();
     event.preventDefault();
     this.fire('reject-click', {organizationId: this.organizationId});
   }
 
-  protected onCreateGroupClick_(event: CustomEvent) {
+  protected onCreateGroupClick_(event: CustomEvent<void>) {
     event.stopPropagation();
     event.preventDefault();
     this.fire('create-group-click', {

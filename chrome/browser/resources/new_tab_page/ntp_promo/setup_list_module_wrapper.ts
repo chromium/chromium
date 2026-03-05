@@ -107,7 +107,7 @@ export class SetupListModuleWrapperElement extends CrLitElement {
     this.$.undoToast.show();
   }
 
-  protected onModuleReady_(e: CustomEvent) {
+  protected onModuleReady_(e: CustomEvent<boolean>) {
     this.moduleReady_ = e.detail;
   }
 

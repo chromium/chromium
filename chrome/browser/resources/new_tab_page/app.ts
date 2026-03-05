@@ -936,7 +936,7 @@ export class AppElement extends AppElementBase {
     this.onCloseComposebox_(closeComposebox);
   }
 
-  protected onCloseComposebox_(e: CustomEvent) {
+  protected onCloseComposebox_(e: CustomEvent<{composeboxText?: string}>) {
     const composeboxDialog =
         this.shadowRoot.querySelector<HTMLDialogElement>('#composeboxDialog');
     assert(composeboxDialog);

@@ -101,7 +101,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
     return '';
   }
 
-  protected onLearnMoreLinkClicked_(e: CustomEvent): void {
+  protected onLearnMoreLinkClicked_(e: CustomEvent<{event: Event}>): void {
     if (!this.getLearnMoreLinkUrl_()) {
       // Currently, this branch should only be used on Windows.
       e.detail.event.preventDefault();
@@ -110,7 +110,7 @@ export class FileHandlingItemElement extends FileHandlingItemBase {
     }
   }
 
-  protected onTypeListLinkClicked_(e: CustomEvent): void {
+  protected onTypeListLinkClicked_(e: CustomEvent<{event: Event}>): void {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
     e.detail.event.preventDefault();

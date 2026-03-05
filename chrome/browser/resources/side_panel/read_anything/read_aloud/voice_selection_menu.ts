@@ -306,7 +306,7 @@ export class VoiceSelectionMenuElement extends VoiceSelectionMenuElementBase
     this.fire(ToolbarEvent.LANGUAGE_MENU_OPEN);
   }
 
-  protected onLanguageMenuClose_(event: CustomEvent) {
+  protected onLanguageMenuClose_(event: CustomEvent<void>) {
     event.preventDefault();
     event.stopPropagation();
 

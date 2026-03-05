@@ -526,7 +526,8 @@ export class ContextualTasksAppElement extends CrLitElement {
         this.onInputPlateBoundsUpdate_.bind(this));
 
     this.eventTracker_.add(
-        this.$.composebox, 'composebox-height-update', (e: CustomEvent) => {
+        this.$.composebox, 'composebox-height-update',
+        (e: CustomEvent<{height: number}>) => {
           // TODO(crbug.com/483737358): Sending an object instead of a proto is
           // a temporary solution to unblock the prototype. Remove this method
           // once the proto is implemented on the webview side.

@@ -211,7 +211,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         this.clearInputAndFocus(/* querySubmitted= */ true);
       });
       this.eventTracker_.add(
-          composebox, 'carousel-resize', (e: CustomEvent) => {
+          composebox, 'carousel-resize', (e: CustomEvent<{height: number}>) => {
             if (e.detail.height !== undefined) {
               composebox.style.setProperty(
                   '--carousel-height', `${e.detail.height}px`);
@@ -219,7 +219,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
             }
           });
       this.eventTracker_.add(
-          composebox, 'composebox-resize', (e: CustomEvent) => {
+          composebox, 'composebox-resize',
+          (e: CustomEvent<{height: number}>) => {
             if (e.detail.height !== undefined) {
               this.composeboxHeight_ = e.detail.height;
             }
