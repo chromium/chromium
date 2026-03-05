@@ -5506,6 +5506,7 @@ shown properly on the user-facing crash UI.
   <int value="-2147009295" label="ERROR_INSTALL_PACKAGE_NOT_FOUND"/>
   <int value="-2146959355" label="CO_E_SERVER_EXEC_FAILURE"/>
   <int value="-2146959352" label="CO_E_SERVER_STOPPING"/>
+  <int value="-2146893802" label="NTE_BAD_KEYSET"/>
   <int value="-2146893051" label="SEC_E_SECPKG_NOT_FOUND"/>
   <int value="-2146893002" label="SEC_E_WRONG_CREDENTIAL_HANDLE"/>
   <int value="-2146893001" label="SEC_E_CRYPTO_SYSTEM_INVALID"/>
