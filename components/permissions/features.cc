@@ -87,10 +87,6 @@ BASE_FEATURE(kRecordChooserPermissionLastVisitedTimestamps,
 BASE_FEATURE(kShowRelatedWebsiteSetsPermissionGrants,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, Quiet prompts triggered by CPSS will have "Get Notifications?"
-// as the the chip text instead of the usual "Notifications Blocked".
-BASE_FEATURE(kCpssQuietChipTextUpdate, base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kCpssUseTfliteSignatureRunner, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicActorPermissionsAutoReject, base::FEATURE_ENABLED_BY_DEFAULT);

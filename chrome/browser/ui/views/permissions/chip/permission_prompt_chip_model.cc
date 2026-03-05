@@ -48,7 +48,6 @@ bool IsMicAndCameraRequest(
 
 const gfx::VectorIcon& GetBlockedPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(delegate);
   const auto& requests = delegate->Requests();
 
   // We need to use the icon from the camera request when it's an request for
@@ -63,7 +62,6 @@ const gfx::VectorIcon& GetBlockedPermissionIconId(
 
 const gfx::VectorIcon& GetPermissionIconId(
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(delegate);
   const auto& requests = delegate->Requests();
 
   // We need to use the icon from the camera request when it's an request for
@@ -77,19 +75,7 @@ const gfx::VectorIcon& GetPermissionIconId(
 
 std::u16string GetQuietPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(delegate);
-  DCHECK(delegate->ReasonForUsingQuietUi());
   auto chip_text_type = permissions::PermissionRequest::QUIET_REQUEST;
-  const auto quiet_ui_reason = delegate->ReasonForUsingQuietUi();
-  if (quiet_ui_reason == permissions::PermissionRequestManager::QuietUiReason::
-                             kServicePredictedVeryUnlikelyGrant ||
-      quiet_ui_reason == permissions::PermissionRequestManager::QuietUiReason::
-                             kOnDevicePredictedVeryUnlikelyGrant) {
-    chip_text_type = base::FeatureList::IsEnabled(
-                         permissions::features::kCpssQuietChipTextUpdate)
-                         ? permissions::PermissionRequest::LOUD_REQUEST
-                         : permissions::PermissionRequest::QUIET_REQUEST;
-  }
   auto quiet_request_text =
       delegate->Requests()[0]->GetRequestChipText(chip_text_type);
   return quiet_request_text.value_or(u"");
@@ -97,7 +83,6 @@ std::u16string GetQuietPermissionMessage(
 
 std::u16string GetLoudPermissionMessage(
     permissions::PermissionPrompt::Delegate* delegate) {
-  DCHECK(delegate);
 
   const auto& requests = delegate->Requests();
   if (IsMicAndCameraRequest(requests)) {
@@ -118,7 +103,6 @@ std::u16string GetLoudPermissionMessage(
 bool ShouldPermissionBubbleExpand(
     permissions::PermissionPrompt::Delegate* delegate,
     PermissionPromptStyle prompt_style) {
-  DCHECK(delegate);
   if (PermissionPromptStyle::kQuietChip == prompt_style) {
     return !permissions::PermissionUiSelector::ShouldSuppressAnimation(
         delegate->ReasonForUsingQuietUi());
@@ -134,28 +118,14 @@ PermissionPromptChipModel::PermissionPromptChipModel(
     : delegate_(delegate),
       allowed_icon_(GetPermissionIconId(delegate.get())),
       blocked_icon_(GetBlockedPermissionIconId(delegate.get())) {
-  DCHECK(delegate_);
 
   if (delegate_->ShouldCurrentRequestUseQuietUI()) {
-    DCHECK(delegate_->ReasonForUsingQuietUi());
     prompt_style_ = PermissionPromptStyle::kQuietChip;
     should_bubble_start_open_ = false;
-    const auto quiet_ui_reason = delegate_->ReasonForUsingQuietUi();
-    if (quiet_ui_reason ==
-            permissions::PermissionRequestManager::QuietUiReason::
-                kOnDevicePredictedVeryUnlikelyGrant ||
-        quiet_ui_reason ==
-            permissions::PermissionRequestManager::QuietUiReason::
-                kServicePredictedVeryUnlikelyGrant) {
-      should_display_blocked_icon_ = !base::FeatureList::IsEnabled(
-          permissions::features::kCpssQuietChipTextUpdate);
-    } else {
-      should_display_blocked_icon_ = true;
-    }
+    should_display_blocked_icon_ = true;
     should_expand_ =
         ShouldPermissionBubbleExpand(delegate_.get(), prompt_style_) &&
-        (should_bubble_start_open_ ||
-         (!delegate_->WasCurrentRequestAlreadyDisplayed()));
+        (!delegate_->WasCurrentRequestAlreadyDisplayed());
 
     chip_text_ = GetQuietPermissionMessage(delegate_.get());
     chip_theme_ = PermissionChipTheme::kLowVisibility;
