@@ -841,6 +841,7 @@ if (is_android) {
   robolectric_library("chrome_junit_tests_org.chromium.chrome.browser.media") {
     sources = [
       "src/org/chromium/chrome/browser/media/AutoPictureInPicturePermissionControllerTest.java",
+      "src/org/chromium/chrome/browser/media/DocumentPictureInPictureActivityUnitTest.java",
       "src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureControllerUnitTest.java",
       "src/org/chromium/chrome/browser/media/MediaCapturePickerInvokerTest.java",
       "src/org/chromium/chrome/browser/media/document_picture_in_picture_header/DocumentPictureInPictureHeaderCoordinatorUnitTest.java",
@@ -859,7 +860,10 @@ if (is_android) {
       "src/org/chromium/chrome/browser/media/ui/MediaNotificationTitleUpdatedTest.java",
     ]
 
-    deps = [ ":chrome_junit_tests_helper" ]
+    deps = [
+      ":chrome_junit_tests_helper",
+      "//base:flagged_apis_java",
+    ]
   }
 
   robolectric_library(
