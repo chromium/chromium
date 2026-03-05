@@ -33,7 +33,7 @@ class SVGPathByteStreamBuilder::CoalescingBuffer {
  public:
   explicit CoalescingBuffer(SVGPathByteStreamBuilderStorage& result)
       : remaining_(bytes_), result_(result) {}
-  ~CoalescingBuffer() { result_.AppendRange(bytes_, remaining_.data()); }
+  ~CoalescingBuffer() { result_.Append(bytes_, remaining_.data()); }
 
   template <size_t N>
   void WriteBytes(std::array<uint8_t, N> value) {

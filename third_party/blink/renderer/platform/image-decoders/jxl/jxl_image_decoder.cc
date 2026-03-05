@@ -252,9 +252,7 @@ void JXLImageDecoder::Decode(wtf_size_t index, bool only_size) {
         if (!IgnoresColorSpace()) {
           auto icc_data = (*decoder_)->get_icc_profile();
           if (!icc_data.empty()) {
-            Vector<uint8_t> icc_copy;
-            icc_copy.AppendRange(icc_data.begin(), icc_data.end());
-            auto profile = ColorProfile::Create(base::span(icc_copy));
+            auto profile = ColorProfile::Create(icc_data);
             if (profile) {
               SetEmbeddedColorProfile(std::move(profile));
             }

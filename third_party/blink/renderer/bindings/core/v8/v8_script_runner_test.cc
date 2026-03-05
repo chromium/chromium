@@ -191,9 +191,7 @@ class V8ScriptRunnerTest : public testing::Test {
     // Copy the serialized data to return it at an independent vector.
     base::span<const uint8_t> serialized_data_view =
         cached_metadata->SerializedData();
-    Vector<uint8_t> ret;
-    ret.AppendRange(serialized_data_view.begin(), serialized_data_view.end());
-    return ret;
+    return Vector<uint8_t>(serialized_data_view);
   }
 
   // TODO(leszeks): Change this from needing an explicit quit callback to

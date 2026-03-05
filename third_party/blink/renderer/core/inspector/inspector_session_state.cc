@@ -39,8 +39,7 @@ void InspectorSessionState::EnqueueUpdate(const String& key,
                                           const std::vector<uint8_t>* value) {
   std::optional<Vector<uint8_t>> updated_value;
   if (value) {
-    Vector<uint8_t> payload;
-    payload.AppendRange(value->begin(), value->end());
+    Vector<uint8_t> payload(*value);
     updated_value = std::move(payload);
   }
   updates_->entries.Set(key, std::move(updated_value));

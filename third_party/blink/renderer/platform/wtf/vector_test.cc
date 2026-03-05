@@ -612,12 +612,12 @@ TEST(VectorTest, AppendContainers) {
   std::array<int, 3> other_array = {{3, 4, 5}};
   int other_c_array[4] = {6, 7, 8, 9};
   result.append_range(other_vector);
-  result.AppendRange(other_array.begin(), other_array.end());
+  result.Append(other_array.begin(), other_array.end());
   result.append_range(base::span(other_c_array));
   EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
 
   result.append_range(empty_vector);
-  result.AppendRange(other_array.end(), other_array.end());
+  result.Append(other_array.end(), other_array.end());
   result.append_range(base::span(other_c_array).subspan<4>());
   EXPECT_THAT(result, ::testing::ElementsAre(1, 2, 3, 4, 5, 6, 7, 8, 9));
 }

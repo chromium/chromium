@@ -352,7 +352,7 @@ class InspectorPostBodyParser : public RefCounted<InspectorPostBodyParser> {
     // Concatenate all parts into a single buffer.
     Vector<char> combined;
     for (const auto& part : raw_parts_) {
-      combined.AppendRange(part.begin(), part.end());
+      combined.append_range(part);
     }
 
     // Try to decode as UTF-8 first.

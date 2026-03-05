@@ -680,8 +680,7 @@ def make_fill_template_properties_function(cg_context):
         body.extend([
             T("static_assert(std::size(kOwnPropertyNames) "
               "== kOwnPropertyCount);"),
-            T("properties.AppendRange(std::cbegin(kOwnPropertyNames),"
-              " std::cend(kOwnPropertyNames));"),
+            T("properties.append_range(kOwnPropertyNames);"),
             T("DCHECK_EQ(properties.size(), kTotalPropertyCount);")
         ])
 

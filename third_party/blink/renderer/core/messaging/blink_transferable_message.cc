@@ -43,7 +43,7 @@ BlinkTransferableMessage BlinkTransferableMessage::FromTransferableMessage(
   result.sender_agent_cluster_id = message.sender_agent_cluster_id;
   result.locked_to_sender_agent_cluster =
       message.locked_to_sender_agent_cluster;
-  result.ports.AppendRange(message.ports.begin(), message.ports.end());
+  result.ports.append_range(message.ports);
   for (auto& channel : message.stream_channels) {
     result.message->GetStreams().push_back(
         SerializedScriptValue::Stream(channel.ReleaseHandle()));

@@ -78,9 +78,10 @@ class MockTokenValidator : public TrialTokenValidator {
                      const OriginInfo& origin_info,
                      base::span<const OriginInfo> scripts,
                      base::Time time)
-        : token(token_param), origin(origin_info), current_time(time) {
-      third_party_origin_info.AppendRange(scripts.begin(), scripts.end());
-    }
+        : token(token_param),
+          origin(origin_info),
+          third_party_origin_info(scripts),
+          current_time(time) {}
   };
 
   MockTokenValidator() = default;

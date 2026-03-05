@@ -699,8 +699,7 @@ class ContentCaptureSimTest : public SimTest {
       SetCapturedContent(child_frame_content_);
     } else if (type == ContentType::kAll) {
       Vector<cc::NodeInfo> holders(main_frame_content_);
-      holders.AppendRange(child_frame_content_.begin(),
-                          child_frame_content_.end());
+      holders.append_range(child_frame_content_);
       SetCapturedContent(holders);
     }
   }

@@ -140,8 +140,7 @@ class RequestAsFile : public BlobBytesProviderTest,
 
     auto combined_bytes_span =
         base::span(combined_bytes_).subspan(GetParam().offset, GetParam().size);
-    sliced_data_.AppendRange(combined_bytes_span.begin(),
-                             combined_bytes_span.end());
+    sliced_data_.append_range(combined_bytes_span);
   }
 
   base::File DoRequestAsFile(uint64_t source_offset,

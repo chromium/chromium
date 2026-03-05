@@ -408,9 +408,7 @@ mojom::blink::StorageTypeAccessed ToMojoStorageType(
 
 HeapVector<Member<PostLayoutSnapshotClient>> CopyClients(
     const HeapHashSet<WeakMember<PostLayoutSnapshotClient>>& clients) {
-  HeapVector<Member<PostLayoutSnapshotClient>> copy;
-  copy.ReserveInitialCapacity(clients.size());
-  copy.AppendRange(clients.begin(), clients.end());
+  HeapVector<Member<PostLayoutSnapshotClient>> copy(clients);
   return copy;
 }
 

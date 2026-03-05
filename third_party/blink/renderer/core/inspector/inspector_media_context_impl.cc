@@ -36,14 +36,6 @@ MediaInspectorContextImpl::MediaInspectorContextImpl(ExecutionContext& context)
   DCHECK(context.IsWindow() || context.IsWorkerGlobalScope());
 }
 
-// Local to cc file for converting
-template <typename T, typename Iterable>
-static Vector<T> Iter2Vector(const Iterable& iterable) {
-  Vector<T> result;
-  result.AppendRange(iterable.begin(), iterable.end());
-  return result;
-}
-
 // Garbage collection method.
 void MediaInspectorContextImpl::Trace(Visitor* visitor) const {
   Supplement<ExecutionContext>::Trace(visitor);
@@ -175,14 +167,13 @@ void MediaInspectorContextImpl::NotifyPlayerErrors(
     const InspectorPlayerErrors& errors) {
   const auto& player = players_.find(player_id);
   if (player != players_.end()) {
-    player->value->errors.AppendRange(errors.begin(), errors.end());
+    player->value->errors.append_range(errors);
     total_event_count_ += errors.size();
     if (total_event_count_ > kMaxCachedPlayerEvents)
       CullPlayers(player_id);
   }
 
-  Vector<InspectorPlayerError> vector =
-      Iter2Vector<InspectorPlayerError>(errors);
+  Vector<InspectorPlayerError> vector(errors);
   probe::PlayerErrorsRaised(GetSupplementable(), player_id, vector);
 }
 
@@ -191,14 +182,13 @@ void MediaInspectorContextImpl::NotifyPlayerEvents(
     const InspectorPlayerEvents& events) {
   const auto& player = players_.find(player_id);
   if (player != players_.end()) {
-    player->value->events.AppendRange(events.begin(), events.end());
+    player->value->events.append_range(events);
     total_event_count_ += events.size();
     if (total_event_count_ > kMaxCachedPlayerEvents)
       CullPlayers(player_id);
   }
 
-  Vector<InspectorPlayerEvent> vector =
-      Iter2Vector<InspectorPlayerEvent>(events);
+  Vector<InspectorPlayerEvent> vector(events);
   probe::PlayerEventsAdded(GetSupplementable(), player_id, vector);
 }
 
@@ -220,14 +210,13 @@ void MediaInspectorContextImpl::NotifyPlayerMessages(
     const InspectorPlayerMessages& messages) {
   const auto& player = players_.find(player_id);
   if (player != players_.end()) {
-    player->value->messages.AppendRange(messages.begin(), messages.end());
+    player->value->messages.append_range(messages);
     total_event_count_ += messages.size();
     if (total_event_count_ > kMaxCachedPlayerEvents)
       CullPlayers(player_id);
   }
 
-  Vector<InspectorPlayerMessage> vector =
-      Iter2Vector<InspectorPlayerMessage>(messages);
+  Vector<InspectorPlayerMessage> vector(messages);
   probe::PlayerMessagesLogged(GetSupplementable(), player_id, vector);
 }
 

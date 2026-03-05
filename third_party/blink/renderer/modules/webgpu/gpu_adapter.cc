@@ -289,9 +289,7 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
     }
   }
 
-  Vector<wgpu::FeatureName> required_features;
-  required_features.AppendRange(required_features_set.begin(),
-                                required_features_set.end());
+  Vector<wgpu::FeatureName> required_features(required_features_set);
   dawn_desc.requiredFeatures = required_features.data();
   dawn_desc.requiredFeatureCount = required_features.size();
 

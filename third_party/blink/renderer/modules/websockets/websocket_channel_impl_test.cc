@@ -335,8 +335,7 @@ class WebSocketChannelImplTest : public WebSocketChannelImplTestBase {
     }
     buffer = buffer.first(bytes_to_read);
 
-    Vector<uint8_t> data_to_pass;
-    data_to_pass.AppendRange(buffer.begin(), buffer.end());
+    Vector<uint8_t> data_to_pass(buffer);
 
     const MojoResult end_result = readable->EndReadData(buffer.size());
     DCHECK_EQ(end_result, MOJO_RESULT_OK);

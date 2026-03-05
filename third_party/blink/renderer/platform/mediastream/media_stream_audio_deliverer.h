@@ -95,8 +95,7 @@ class MediaStreamAudioDeliverer {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
     base::AutoLock auto_lock(consumers_lock_);
     *consumer_list = consumers_;
-    consumer_list->AppendRange(pending_consumers_.begin(),
-                               pending_consumers_.end());
+    consumer_list->append_range(pending_consumers_);
   }
 
   // Change the format of the audio passed in the next call to OnData(). This
@@ -113,7 +112,7 @@ class MediaStreamAudioDeliverer {
                                     params.AsHumanReadableString().c_str()));
       params_ = params;
     }
-    pending_consumers_.AppendRange(consumers_.begin(), consumers_.end());
+    pending_consumers_.append_range(consumers_);
     consumers_.clear();
   }
 
@@ -135,8 +134,7 @@ class MediaStreamAudioDeliverer {
       DCHECK(params.IsValid());
       for (Consumer* consumer : pending_consumers_)
         consumer->OnSetFormat(params);
-      consumers_.AppendRange(pending_consumers_.begin(),
-                             pending_consumers_.end());
+      consumers_.append_range(pending_consumers_);
       pending_consumers_.clear();
       SendLogMessage(String::Format("%s => (number of active consumers=%u)",
                                     __func__, consumers_.size()));

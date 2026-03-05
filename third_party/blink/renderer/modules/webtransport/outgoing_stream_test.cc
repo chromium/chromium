@@ -107,7 +107,7 @@ class StreamCreator {
         return data;
     }
 
-    data.AppendRange(buffer.begin(), buffer.end());
+    data.append_range(buffer);
     data_pipe_consumer_->EndReadData(buffer.size());
     return data;
   }

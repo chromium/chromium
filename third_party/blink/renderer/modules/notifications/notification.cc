@@ -321,8 +321,7 @@ String Notification::badge() const {
 VibrationController::VibrationPattern Notification::vibrate() const {
   VibrationController::VibrationPattern pattern;
   if (data_->vibration_pattern.has_value()) {
-    pattern.AppendRange(data_->vibration_pattern->begin(),
-                        data_->vibration_pattern->end());
+    pattern.append_range(*data_->vibration_pattern);
   }
 
   return pattern;

@@ -302,7 +302,7 @@ void InlinePaintContext::PushDecoratingBoxAncestors(
 
 void InlinePaintContext::PushDecoratingBoxes(
     const base::span<DecoratingBox>& boxes) {
-  decorating_boxes_.AppendRange(boxes.begin(), boxes.end());
+  decorating_boxes_.append_range(boxes);
 }
 
 InlinePaintContext::ScopedLineBox::ScopedLineBox(

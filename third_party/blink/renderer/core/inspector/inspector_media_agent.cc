@@ -130,9 +130,8 @@ void InspectorMediaAgent::RegisterAgent() {
   for (const auto& player_id : players) {
     const auto& media_player = cache->MediaPlayerFromId(player_id);
     PlayerCreated(media_player);
-    Vector<InspectorPlayerProperty> properties;
-    properties.AppendRange(media_player.properties.Values().begin(),
-                           media_player.properties.Values().end());
+    Vector<InspectorPlayerProperty> properties(
+        media_player.properties.Values());
 
     PlayerPropertiesChanged(player_id, properties);
     PlayerMessagesLogged(player_id, media_player.messages);

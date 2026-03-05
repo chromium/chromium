@@ -27,6 +27,7 @@
 
 #include <iterator>
 
+#include "base/containers/adapters.h"
 #include "base/containers/enum_set.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/forms/form_control_type.mojom-blink.h"
@@ -1738,8 +1739,7 @@ PopoverHideResult HTMLElement::CloseEntirePopoverStack(
     // order.
     CHECK(probe::ToCoreProbeSink(popover_stack_for_inspector.back())
               ->HasDevToolsSessions());
-    stack.AppendRange(popover_stack_for_inspector.rbegin(),
-                      popover_stack_for_inspector.rend());
+    stack.append_range(base::Reversed(popover_stack_for_inspector));
     return PopoverHideResult::kForcedOpenByInspector;
   }
   return PopoverHideResult::kHidden;
@@ -1854,8 +1854,7 @@ PopoverHideResult HTMLElement::HideAllPopoversUntil(
       }
 
       if (!popover_stack_for_inspector->empty()) {
-        stack.AppendRange(popover_stack_for_inspector->rbegin(),
-                          popover_stack_for_inspector->rend());
+        stack.append_range(base::Reversed(*popover_stack_for_inspector));
         result = PopoverHideResult::kForcedOpenByInspector;
       }
     } while (repeating_hide);

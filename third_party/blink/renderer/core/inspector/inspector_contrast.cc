@@ -52,7 +52,7 @@ void BlendWithColorsFromGradient(cssvalue::CSSGradientValue* gradient,
 
   Vector<Color> stop_colors = gradient->GetStopColors(document, style);
   if (colors.empty()) {
-    colors.AppendRange(stop_colors.begin(), stop_colors.end());
+    colors.append_range(stop_colors);
   } else {
     if (colors.size() > 1) {
       // Gradient on gradient is too complicated, bail out.
