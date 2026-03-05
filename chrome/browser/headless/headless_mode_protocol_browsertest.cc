@@ -483,8 +483,8 @@ HEADLESS_MODE_PROTOCOL_TEST(RemoveScreenGetScreenDetails,
 
 HEADLESS_MODE_PROTOCOL_TEST(AddRemoveScreen, "shared/add-remove-screen.js")
 
-// Emulation.UpdateScreen is not yet supported on macOS and Windows.
-#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
+// Emulation.UpdateScreen is not yet supported on Windows.
+#if !BUILDFLAG(IS_WIN)
 HEADLESS_MODE_PROTOCOL_TEST(UpdateScreenBounds,
                             "shared/update-screen-bounds.js")
 
