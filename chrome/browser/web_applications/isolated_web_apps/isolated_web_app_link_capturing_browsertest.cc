@@ -16,11 +16,15 @@
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_test_update_server.h"
+#include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_navigation_capturing_browsertest_base.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/prefs/pref_service.h"
 #include "components/web_package/test_support/signed_web_bundles/signing_keys.h"
 #include "components/webapps/common/web_app_id.h"
 #include "components/webapps/services/web_app_origin_association/test/test_web_app_origin_association_fetcher.h"
@@ -160,20 +164,27 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
         std::move(origin_association_fetcher));
   }
 
-  void InstallIsolatedWebApp(ManifestLaunchHandler_ClientMode client_mode) {
+  IsolatedWebAppUrlInfo InstallIsolatedWebApp(
+      ManifestLaunchHandler_ClientMode client_mode,
+      bool with_scope_extensions = true,
+      std::string version = "1.0.0") {
     const auto bundle_id = web_package::SignedWebBundleId::CreateForPublicKey(
         web_package::test::GetDefaultEd25519KeyPair().public_key);
 
-    const url::Origin scope_extended_origin =
-        url::Origin::Create(GetCapturableUrlWithQuery());
-    SetFakeOriginAssociationFetcher(scope_extended_origin, bundle_id);
+    auto manifest_builder = ManifestBuilder()
+                                .SetName("app_" + version)
+                                .SetVersion(version)
+                                .SetLaunchHandlerClientMode(client_mode);
 
+    if (with_scope_extensions) {
+      const url::Origin scope_extended_origin =
+          url::Origin::Create(GetCapturableUrlWithQuery());
+      SetFakeOriginAssociationFetcher(scope_extended_origin, bundle_id);
+      manifest_builder.AddScopeExtension(scope_extended_origin,
+                                         /*has_origin_wildcard=*/false);
+    }
     IsolatedWebAppUrlInfo url_info =
-        IsolatedWebAppBuilder(
-            ManifestBuilder()
-                .SetLaunchHandlerClientMode(client_mode)
-                .AddScopeExtension(scope_extended_origin,
-                                   /*has_origin_wildcard=*/false))
+        IsolatedWebAppBuilder(std::move(manifest_builder))
             .AddHtml("/", kIwaHtmlContent)
             .AddJs("script.js", kIwaJsContent)
             .BuildBundle(bundle_id,
@@ -182,6 +193,8 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
 
     app_id_ = url_info.app_id();
     app_start_url_ = url_info.origin().GetURL();
+
+    return url_info;
   }
 
   // Simulates a click on a specific element ID in the given web contents.
@@ -206,6 +219,25 @@ class IsolatedWebAppLinkCapturingBrowserTestBase
     // Simulate the click at those coordinates.
     content::SimulateMouseClickAt(contents, modifiers, button,
                                   gfx::Point(x, y));
+  }
+
+  void CreateLinkInTab(content::WebContents* web_content,
+                       const GURL& url,
+                       const std::string& id,
+                       const std::string& target = "") {
+    std::string script = base::StringPrintf(
+        R"(
+          const link = document.createElement('a');
+          link.id = '%s';
+          link.href = '%s';
+          link.textContent = 'Capturable Link';
+          if ('%s') {
+            link.target = '%s';
+          }
+          document.body.append(link);
+        )",
+        id.c_str(), url.spec().c_str(), target.c_str(), target.c_str());
+    ASSERT_TRUE(content::ExecJs(web_content, script));
   }
 
   const webapps::AppId& app_id() const { return app_id_; }
@@ -267,10 +299,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromBrowserWindowBrowserTest,
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), https_server()->GetURL("/simple.html")));
-
-  ASSERT_TRUE(
-      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
-          .has_value());
 
   GURL destination_url = GetCapturableUrlWithQuery();
   std::string script;
@@ -377,25 +405,6 @@ class IsolatedWebAppLinkCapturingFromAppWindowBrowserTest
 
  protected:
   ManifestLaunchHandler_ClientMode GetClientMode() const { return GetParam(); }
-
-  void CreateLinkInTab(content::WebContents* web_content,
-                       const GURL& url,
-                       const std::string& id,
-                       const std::string& target = "") {
-    std::string script = base::StringPrintf(
-        R"(
-          const link = document.createElement('a');
-          link.id = '%s';
-          link.href = '%s';
-          link.textContent = 'Capturable Link';
-          if ('%s') {
-            link.target = '%s';
-          }
-          document.body.append(link);
-        )",
-        id.c_str(), url.spec().c_str(), target.c_str(), target.c_str());
-    ASSERT_TRUE(content::ExecJs(web_content, script));
-  }
 };
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
@@ -407,9 +416,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
-  ASSERT_TRUE(
-      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
-          .has_value());
 
   int initial_browser_tabs_count = browser()->tab_strip_model()->count();
 
@@ -443,9 +449,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
-  ASSERT_TRUE(
-      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
-          .has_value());
 
   // Shift + Left Click the link.
   GURL destination_url = GetCapturableUrlWithQuery();
@@ -484,9 +487,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
-  ASSERT_TRUE(
-      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
-          .has_value());
 
   // Usual click on the link.
   GURL destination_url = GetCapturableUrlWithQuery();
@@ -534,9 +534,6 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppLinkCapturingFromAppWindowBrowserTest,
 
   WaitForLaunchParams(existing_app_contents,
                       /*min_launch_params_to_wait_for=*/1);
-  ASSERT_TRUE(
-      apps::test::EnableLinkCapturingByUser(browser()->profile(), app_id())
-          .has_value());
 
   // Create link with target="_blank".
   GURL destination_url = GetCapturableUrlWithQuery();
@@ -570,5 +567,117 @@ INSTANTIATE_TEST_SUITE_P(
                     ManifestLaunchHandler_ClientMode::kNavigateExisting,
                     ManifestLaunchHandler_ClientMode::kNavigateNew),
     GenerateAppWindowTestName);
+
+using IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest =
+    IsolatedWebAppLinkCapturingBrowserTestBase;
+
+// Ensure that link capturing is enabled by default for Isolated Web Apps.
+// Note, link capturing is disabled in ChromeOS by default for PWA.
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
+                       TargetBlankClick) {
+  InstallIsolatedWebApp(ManifestLaunchHandler_ClientMode::kNavigateNew);
+  // Create link with target="_blank".
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(GetBrowserTab(), destination_url, "capture-link",
+                  /*target=*/"_blank");
+
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+  SimulateClickOnElement(GetBrowserTab(), "capture-link",
+                         blink::WebInputEvent::kNoModifiers,
+                         blink::WebMouseEvent::Button::kLeft);
+
+  Browser* new_browser = browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+  EXPECT_TRUE(AppBrowserController::IsForWebApp(new_browser, app_id()));
+
+  content::WebContents* new_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+
+  WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(destination_url));
+}
+
+// Ensure that links are captured if Isolated Web App
+// was installed without scope extensions and then updated with
+// scope extensions.
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppLinkCapturingDefaultBehaviorBrowserTest,
+                       LinkCaptureAfterUpdateWithScopeExtensions) {
+  IsolatedWebAppUrlInfo url_info = InstallIsolatedWebApp(
+      ManifestLaunchHandler_ClientMode::kNavigateNew,
+      /*with_scope_extensions=*/false, /*version=*/"1.0.0");
+  auto bundle_id = url_info.web_bundle_id();
+
+  // Set up the update server and add a new bundle with scope extensions.
+  IsolatedWebAppTestUpdateServer update_server;
+  url::Origin scope_extension_origin =
+      url::Origin::Create(GetCapturableUrlWithQuery());
+  SetFakeOriginAssociationFetcher(scope_extension_origin, bundle_id);
+
+  auto updated_app =
+      IsolatedWebAppBuilder(
+          ManifestBuilder()
+              .SetName("app-2.0.0")
+              .SetVersion("2.0.0")
+              .SetLaunchHandlerClientMode(
+                  ManifestLaunchHandler_ClientMode::kNavigateNew)
+              .AddScopeExtension(scope_extension_origin,
+                                 /*has_origin_wildcard=*/false))
+          .AddHtml("/", kIwaHtmlContent)
+          .AddJs("script.js", kIwaJsContent)
+          .BuildBundle(bundle_id,
+                       {web_package::test::GetDefaultEd25519KeyPair()});
+
+  updated_app->TrustSigningKey();
+  update_server.AddBundle(std::move(updated_app));
+
+  // Force install policy to trigger the update manager.
+  profile()->GetPrefs()->SetList(
+      prefs::kIsolatedWebAppInstallForceList,
+      base::ListValue().Append(
+          update_server.CreateForceInstallPolicyEntry(bundle_id)));
+
+  // Trigger the update and wait for it to apply.
+  WebAppTestManifestUpdatedObserver manifest_updated_observer(
+      &provider().install_manager());
+  manifest_updated_observer.BeginListening({url_info.app_id()});
+
+  EXPECT_THAT(provider().isolated_web_app_update_manager().DiscoverUpdatesNow(),
+              testing::Eq(1ul));
+
+  manifest_updated_observer.Wait();
+
+  // Verify the app was properly updated to the new version with extensions.
+  const WebApp* web_app =
+      provider().registrar_unsafe().GetAppById(url_info.app_id());
+  ASSERT_TRUE(web_app);
+  EXPECT_EQ("app-2.0.0", web_app->untranslated_name());
+  EXPECT_EQ(1UL, web_app->validated_scope_extensions().size());
+
+  // Test that the updated IWA can now properly capture links.
+  GURL destination_url = GetCapturableUrlWithQuery();
+  CreateLinkInTab(GetBrowserTab(), destination_url, "capture-link-update",
+                  /*target=*/"_blank");
+
+  ui_test_utils::BrowserCreatedObserver browser_observer;
+  SimulateClickOnElement(GetBrowserTab(), "capture-link-update",
+                         blink::WebInputEvent::kNoModifiers,
+                         blink::WebMouseEvent::Button::kLeft);
+
+  Browser* new_browser = browser_observer.Wait();
+  ASSERT_TRUE(new_browser);
+
+  EXPECT_TRUE(
+      AppBrowserController::IsForWebApp(new_browser, url_info.app_id()));
+  content::WebContents* new_contents =
+      new_browser->tab_strip_model()->GetActiveWebContents();
+
+  // Validate the launch params to ensure full end-to-end payload delivery.
+  WaitForLaunchParams(new_contents, /*min_launch_params_to_wait_for=*/1);
+  EXPECT_THAT(apps::test::GetLaunchParamUrlsInContents(
+                  new_contents, "launchParamsTargetUrls"),
+              testing::ElementsAre(destination_url));
+}
 
 }  // namespace web_app

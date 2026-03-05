@@ -129,6 +129,7 @@
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/preferred_apps_list_handle.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/browser/api/file_handlers/mime_util.h"  // nogncheck
 #include "ui/message_center/public/cpp/notification.h"
@@ -485,6 +486,39 @@ apps::IntentFilters CreateIntentFiltersFromFileHandlers(
 
   return filters;
 }
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool AppHasSupportedLinks(apps::AppServiceProxy* proxy,
+                         const webapps::AppId& app_id) {
+  bool has_intent_filters = false;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&](const apps::AppUpdate& update) {
+        for (auto& intent_filter : update.IntentFilters()) {
+          if (apps_util::IsSupportedLinkForApp(app_id, intent_filter)) {
+            has_intent_filters = true;
+            break;
+          }
+        }
+      });
+  return has_intent_filters;
+}
+
+bool AreOtherAppsPreferredForLinks(
+    apps::AppServiceProxy* proxy,
+    const webapps::AppId& app_id,
+    const std::optional<apps::IntentFilters>& new_app_intent_filters) {
+  if (!new_app_intent_filters.has_value() || new_app_intent_filters->empty()) {
+    return false;
+  }
+
+  base::flat_set<std::string> preferred_apps =
+      proxy->PreferredAppsList().FindPreferredAppsForFilters(
+          *new_app_intent_filters);
+  preferred_apps.erase(app_id);
+
+  return preferred_apps.size() > 0;
+}
+#endif  //  BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -1366,17 +1400,28 @@ void WebAppPublisherHelper::OnWebAppInstalled(const webapps::AppId& app_id) {
     // the raw icon might have changed. Notify App Service to invalidate the
     // icon disk cache.
     app->icon_key->update_version = true;
-    delegate_->PublishWebApp(std::move(app));
-  }
 
-// Todo(b:372661290): Extract custom link preference handling into a new post
-// web app install hook.
 #if BUILDFLAG(IS_CHROMEOS)
-  if (ChromeOsWebAppExperiments::ShouldAddLinkPreference(app_id, profile_)) {
-    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
-    proxy->SetSupportedLinksPreference(app_id);
-  }
+    bool iwa_capture_links_set_default =
+        registrar().AppMatches(app_id, WebAppFilter::IsIsolatedApp() |
+                                           WebAppFilter::IsIsolatedSubApp()) &&
+        !AreOtherAppsPreferredForLinks(
+            apps::AppServiceProxyFactory::GetForProfile(profile_), app_id,
+            app->intent_filters);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+    delegate_->PublishWebApp(std::move(app));
+
+    // Todo(b:372661290): Extract custom link preference handling into a new
+    // post web app install hook.
+#if BUILDFLAG(IS_CHROMEOS)
+    if (iwa_capture_links_set_default ||
+        ChromeOsWebAppExperiments::ShouldAddLinkPreference(app_id, profile_)) {
+      auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+      proxy->SetSupportedLinksPreference(app_id);
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+  }
 }
 
 void WebAppPublisherHelper::OnWebAppInstalledWithOsHooks(
@@ -1392,12 +1437,34 @@ void WebAppPublisherHelper::OnWebAppManifestUpdated(
   const WebApp* web_app = GetWebApp(app_id);
   if (web_app) {
     auto app = CreateWebApp(web_app);
+
+#if BUILDFLAG(IS_CHROMEOS)
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+
+    bool iwa_capture_links_set_default =
+        registrar().AppMatches(app_id, WebAppFilter::IsIsolatedApp() |
+                                           WebAppFilter::IsIsolatedSubApp()) &&
+        (proxy->PreferredAppsList().IsPreferredAppForSupportedLinks(app_id) ||
+         // IsPreferredAppForSupportedLinks returns false if app has 0 intent
+         // filters, regardless of SetSupportedLinksPreference was called on
+         // install.
+         (!AppHasSupportedLinks(proxy, app_id) &&
+          !AreOtherAppsPreferredForLinks(proxy, app_id, app->intent_filters)));
+
+#endif  //  BUILDFLAG(IS_CHROMEOS)
+
     // The manifest updated might cause the app raw icon updated. So set
     // a new `raw_icon_data_version`, to remove the icon files saved in the
     // AppService icon directory, to get the new raw icon files of the web app
     // for AppService.
     app->icon_key->update_version = true;
     delegate_->PublishWebApp(std::move(app));
+
+#if BUILDFLAG(IS_CHROMEOS)
+    if (iwa_capture_links_set_default) {
+      proxy->SetSupportedLinksPreference(app_id);
+    }
+#endif  //  BUILDFLAG(IS_CHROMEOS)
   }
 }
 
