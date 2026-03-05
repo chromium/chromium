@@ -2064,6 +2064,18 @@ FlexLayoutAlgorithm::GiveItemsFinalPositionAndSizeForFragmentation(
       is_column_ ? container_builder_.BorderScrollbarPadding().block_end
                  : container_builder_.BorderScrollbarPadding().inline_end;
 
+  // The gap accumulator expects flex lines in ascending order, which isn't
+  // guaranteed during column flex fragmentation. Pre-set the minimum flex line
+  // index for this fragment.
+  if (gap_accumulator && is_column_) {
+    for (wtf_size_t i = 0; i < flex_lines->size(); i++) {
+      if (!(*flex_lines)[i].has_seen_all_children) {
+        gap_accumulator->SetFirstFlexLineProcessedIndex(i);
+        break;
+      }
+    }
+  }
+
   for (auto entry = item_iterator.NextItem(broke_before_row);
        FlexItemData* flex_item = entry.flex_item;
        entry = item_iterator.NextItem(broke_before_row)) {

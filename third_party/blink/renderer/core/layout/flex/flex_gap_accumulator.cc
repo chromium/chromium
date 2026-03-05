@@ -163,7 +163,7 @@ void FlexGapAccumulator::HandleCrossGapRangesForCurrentItem(
   }
 
   if (flex_line_index > 0) {
-    CHECK_LE(flex_line_index - 1, main_gaps_.size());
+    CHECK_LT(flex_line_index - 1, main_gaps_.size());
     // We increment the `RangeOfCrossGapsAfter` for the previous line, since
     // the CrossGaps that start at this line fall "after" the previous line.
     main_gaps_[flex_line_index - 1].IncrementRangeOfCrossGapsAfter(

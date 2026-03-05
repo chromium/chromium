@@ -225,6 +225,10 @@ class CORE_EXPORT FlexGapAccumulator {
     content_main_end_ = content_main_end;
   }
 
+  void SetFirstFlexLineProcessedIndex(wtf_size_t index) {
+    first_flex_line_processed_index_ = index;
+  }
+
   const Vector<MainGap>& MainGaps() const { return main_gaps_; }
 
   // In the flex algorithm, there are some cases where we need to suppress a row
