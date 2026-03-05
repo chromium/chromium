@@ -56,15 +56,15 @@ import * as Geometry from 'devtools/models/geometry/geometry.js'
 
 
   TestRunner.addResult('\nSetting scale to 0.5');
-  toolbar.onScaleMenuChanged(0.5);
+  toolbar.model.scaleSetting().set(0.5);
   dumpModelInfo();
 
   TestRunner.addResult('Setting scale to 1');
-  toolbar.onScaleMenuChanged(1);
+  toolbar.model.scaleSetting().set(1);
   dumpModelInfo();
 
   TestRunner.addResult('Setting scale to 1.25');
-  toolbar.onScaleMenuChanged(1.25);
+  toolbar.model.scaleSetting().set(1.25);
   dumpModelInfo();
 
   TestRunner.completeTest();
