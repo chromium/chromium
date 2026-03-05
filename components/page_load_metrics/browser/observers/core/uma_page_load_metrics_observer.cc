@@ -1096,6 +1096,9 @@ void UmaPageLoadMetricsObserver::RecordTimingHistograms(
   }
 
   RecordNormalizedResponsivenessMetrics();
+
+  EmitPageLoadTimelineTraceEvents(main_frame_timing,
+                                  all_frames_largest_contentful_paint);
 }
 
 void UmaPageLoadMetricsObserver::RecordNormalizedResponsivenessMetrics() {
@@ -1272,4 +1275,116 @@ void UmaPageLoadMetricsObserver::EmitInstantTraceEvent(
                 ->set_page_load();
         page_load_proto->set_navigation_id(GetDelegate().GetNavigationId());
       });
+}
+
+void UmaPageLoadMetricsObserver::EmitPageLoadTimelineTraceEvents(
+    const page_load_metrics::mojom::PageLoadTiming& main_frame_timing,
+    const page_load_metrics::ContentfulPaintTimingInfo&
+        all_frames_largest_contentful_paint) {
+  // Record events in a global track so they appear under "Global Track Events"
+  // in Perfetto.
+  constexpr uint64_t kGlobalInstantTrackId = 0;
+  static const perfetto::NamedTrack track(
+      "PageLoad: Timelines", base::trace_event::GetNextGlobalTraceId(),
+      perfetto::Track::Global(kGlobalInstantTrackId));
+
+  auto write_trace_event =
+      [&](const char* name, base::TimeTicks begin, base::TimeTicks end,
+          std::optional<uint64_t> navigation_id = std::nullopt,
+          std::string url = "") {
+        if (begin.is_null() || end.is_null() || end < begin) {
+          return;
+        }
+        TRACE_EVENT_BEGIN(
+            "navigation", perfetto::StaticString{name}, track, begin,
+            [&](perfetto::EventContext& ctx) {
+              if (!navigation_id.has_value()) {
+                return;
+              }
+              auto* page_load_proto =
+                  ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                      ->set_page_load();
+              page_load_proto->set_navigation_id(*navigation_id);
+              if (!url.empty()) {
+                page_load_proto->set_url(url);
+              }
+            });
+        TRACE_EVENT_END("navigation", track, end);
+      };
+
+  base::TimeTicks navigation_start = GetDelegate().GetNavigationStart();
+
+  if (!navigation_handle_timing_.user_interaction.is_null()) {
+    write_trace_event("InteractionToActualNavigationStart",
+                      navigation_handle_timing_.user_interaction,
+                      navigation_handle_timing_.actual_navigation_start);
+  }
+
+  if (!navigation_handle_timing_.actual_navigation_start.is_null()) {
+    write_trace_event("ActualNavigationStartToNavigationStart",
+                      navigation_handle_timing_.actual_navigation_start,
+                      navigation_start);
+    if (navigation_handle_timing_.before_unload_dialog_duration.is_positive() &&
+        navigation_handle_timing_.before_unload_dialog_duration <
+            navigation_start -
+                navigation_handle_timing_.actual_navigation_start) {
+      write_trace_event(
+          "BeforeUnloadDialog",
+          navigation_start -
+              navigation_handle_timing_.before_unload_dialog_duration,
+          navigation_start);
+    }
+  }
+
+  write_trace_event("NavigationStartToNavigationCommitSent", navigation_start,
+                    navigation_handle_timing_.navigation_commit_sent_time,
+                    GetDelegate().GetNavigationId(),
+                    GetDelegate().GetUrl().possibly_invalid_spec());
+
+  if (!main_frame_timing.parse_timing ||
+      !main_frame_timing.parse_timing->parse_start ||
+      main_frame_timing.parse_timing->parse_start->is_negative()) {
+    return;
+  }
+
+  const base::TimeTicks parse_start =
+      navigation_start + *main_frame_timing.parse_timing->parse_start;
+
+  write_trace_event("NavigationCommitSentToParseStart",
+                    navigation_handle_timing_.navigation_commit_sent_time,
+                    parse_start);
+
+  std::vector<std::pair<base::TimeTicks, const char*>> events;
+
+  if (main_frame_timing.document_timing &&
+      main_frame_timing.document_timing->dom_content_loaded_event_start &&
+      !main_frame_timing.document_timing->dom_content_loaded_event_start
+           ->is_negative()) {
+    events.emplace_back(
+        navigation_start +
+            *main_frame_timing.document_timing->dom_content_loaded_event_start,
+        "ParseStartToDOMContentLoaded");
+  }
+
+  if (main_frame_timing.paint_timing &&
+      main_frame_timing.paint_timing->first_contentful_paint &&
+      !main_frame_timing.paint_timing->first_contentful_paint->is_negative()) {
+    events.emplace_back(
+        navigation_start +
+            *main_frame_timing.paint_timing->first_contentful_paint,
+        "ParseStartToFCP");
+  }
+
+  if (all_frames_largest_contentful_paint.ContainsValidTime() &&
+      !all_frames_largest_contentful_paint.Time()->is_negative()) {
+    events.emplace_back(
+        navigation_start + *all_frames_largest_contentful_paint.Time(),
+        "ParseStartToLCP");
+  }
+
+  std::sort(events.begin(), events.end(),
+            [](const auto& a, const auto& b) { return a.first > b.first; });
+  for (const auto& [timestamp, name] : events) {
+    write_trace_event(name, parse_start, timestamp);
+  }
 }

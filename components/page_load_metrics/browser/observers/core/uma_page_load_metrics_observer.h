@@ -222,6 +222,11 @@ class UmaPageLoadMetricsObserver
 
   void EmitInstantTraceEvent(base::TimeDelta duration, const char event_name[]);
 
+  void EmitPageLoadTimelineTraceEvents(
+      const page_load_metrics::mojom::PageLoadTiming& main_frame_timing,
+      const page_load_metrics::ContentfulPaintTimingInfo&
+          all_frames_largest_contentful_paint);
+
   content::NavigationHandleTiming navigation_handle_timing_;
 
   ui::PageTransition transition_;
