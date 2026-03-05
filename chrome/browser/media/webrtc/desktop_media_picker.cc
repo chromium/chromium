@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
 
 #if BUILDFLAG(IS_ANDROID)
+// Enabled by Finch depending on form factor.
 BASE_FEATURE(kAndroidMediaPicker, base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
