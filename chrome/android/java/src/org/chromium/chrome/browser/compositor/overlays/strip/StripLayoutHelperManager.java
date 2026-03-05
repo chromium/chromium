@@ -998,20 +998,17 @@ public class StripLayoutHelperManager
                     mWidth
                             - mRightPadding
                             - (isMsbVisible
-                                    ? getModelSelectorButtonWidthWithEndPadding()
+                                    ? (getModelSelectorButtonWidthWithEndPadding()
                                             + mGlicButton.getWidth()
-                                            + GLIC_MSB_BUTTON_PADDING_DP
+                                            + GLIC_MSB_BUTTON_PADDING_DP)
                                     : getGlicButtonWidthWithEndPadding()));
         } else {
             mGlicButton.setDrawX(
                     mLeftPadding
                             + (isMsbVisible
-                                    ? getModelSelectorButtonWidthWithEndPadding()
-                                            - assumeNonNull(mModelSelectorButton).getWidth()
-                                            - GLIC_MSB_BUTTON_PADDING_DP
-                                    : 0)
-                            + getGlicButtonWidthWithEndPadding()
-                            - mGlicButton.getWidth());
+                                    ? (getModelSelectorButtonWidthWithEndPadding()
+                                            + GLIC_MSB_BUTTON_PADDING_DP)
+                                    : mStripEndPadding));
         }
     }
 
@@ -1174,10 +1171,7 @@ public class StripLayoutHelperManager
                 mModelSelectorButton.setDrawX(
                         mWidth - mRightPadding - getModelSelectorButtonWidthWithEndPadding());
             } else {
-                mModelSelectorButton.setDrawX(
-                        mLeftPadding
-                                + getModelSelectorButtonWidthWithEndPadding()
-                                - mModelSelectorButton.getWidth());
+                mModelSelectorButton.setDrawX(mLeftPadding + mStripEndPadding);
             }
         }
 
