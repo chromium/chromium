@@ -362,7 +362,7 @@ CSSRuleList* CSSGroupingRule::cssRules() const {
 
 void CSSGroupingRule::Reattach(StyleRuleBase* rule) {
   DCHECK(rule);
-  group_rule_ = static_cast<StyleRuleGroup*>(rule);
+  group_rule_ = To<StyleRuleGroup>(rule);
   for (unsigned i = 0; i < child_rule_cssom_wrappers_.size(); ++i) {
     if (child_rule_cssom_wrappers_[i]) {
       child_rule_cssom_wrappers_[i]->Reattach(
