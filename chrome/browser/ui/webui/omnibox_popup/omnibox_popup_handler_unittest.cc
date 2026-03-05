@@ -14,6 +14,38 @@
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/models/menu_model.h"
+#include "ui/gfx/geometry/point.h"
+
+namespace {
+
+class TestEmbedder final : public TopChromeWebUIController::Embedder {
+ public:
+  TestEmbedder() = default;
+  ~TestEmbedder() = default;
+
+  void ShowUI() override {}
+  void CloseUI() override {}
+  void HideContextMenu() override {}
+
+  void ShowContextMenu(gfx::Point point,
+                       std::unique_ptr<ui::MenuModel> menu_model) override {
+    context_menu_shown_ = true;
+  }
+
+  bool context_menu_shown() const { return context_menu_shown_; }
+
+  base::WeakPtr<TestEmbedder> GetWeakPtr() {
+    return weak_factory_.GetWeakPtr();
+  }
+
+ private:
+  bool context_menu_shown_ = false;
+
+  base::WeakPtrFactory<TestEmbedder> weak_factory_{this};
+};
+
+}  // namespace
 
 class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
  public:
@@ -27,6 +59,8 @@ class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
     handler_ = std::make_unique<OmniboxPopupHandler>(
         mojo::PendingReceiver<omnibox_popup::mojom::PageHandler>(),
         page_.BindAndGetRemote());
+    embedder_ = std::make_unique<TestEmbedder>();
+    handler_->set_embedder(embedder_->GetWeakPtr());
   }
 
   void TearDown() override {
@@ -41,6 +75,7 @@ class OmniboxPopupHandlerTest : public ChromeRenderViewHostTestHarness {
   content::TestWebUI web_ui_;
   std::unique_ptr<OmniboxPopupUI> omnibox_popup_ui_;
   testing::NiceMock<MockOmniboxPopupPage> page_;
+  std::unique_ptr<TestEmbedder> embedder_;
   std::unique_ptr<OmniboxPopupHandler> handler_;
 };
 
@@ -48,4 +83,9 @@ TEST_F(OmniboxPopupHandlerTest, OnShow) {
   EXPECT_CALL(page_, OnShow());
   handler_->OnShow();
   page_.FlushForTesting();
+}
+
+TEST_F(OmniboxPopupHandlerTest, ShowContextMenu) {
+  handler_->ShowContextMenu(gfx::Point());
+  EXPECT_TRUE(embedder_->context_menu_shown());
 }

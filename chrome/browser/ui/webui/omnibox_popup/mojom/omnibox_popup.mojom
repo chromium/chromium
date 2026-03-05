@@ -4,6 +4,8 @@
 
 module omnibox_popup.mojom;
 
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
 // Browser-side handler for the Omnibox Popup.
 interface PageHandlerFactory {
   // Creates and binds a new PageHandler to handle calls from the WebUI page.
@@ -13,6 +15,8 @@ interface PageHandlerFactory {
 
 // Browser-side handler for the Omnibox Popup.
 interface PageHandler {
+  // Opens context menu.
+  ShowContextMenu(gfx.mojom.Point point);
 };
 
 // The WebUI page for the Omnibox Popup.

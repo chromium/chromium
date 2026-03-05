@@ -216,12 +216,6 @@ void ComposeboxHandler::ClearFiles(bool should_block_auto_suggested_tabs) {
   }
 }
 
-void ComposeboxHandler::ShowContextMenu(const gfx::Point& point) {
-  if (embedder_) {
-    embedder_->ShowContextMenu(point, /*menu_model=*/nullptr);
-  }
-}
-
 void ComposeboxHandler::SubmitQuery(const std::string& query_text,
                                     uint8_t mouse_button,
                                     bool alt_key,

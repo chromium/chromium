@@ -6,33 +6,48 @@
 #define CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/contextual_search/searchbox_context_data.h"
 #include "chrome/browser/ui/webui/omnibox_popup/mojom/omnibox_popup_aim.mojom.h"
+#include "chrome/browser/ui/webui/top_chrome/top_chrome_web_ui_controller.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 class OmniboxAimPopupWebUIContent;
-class OmniboxPopupUI;
 class GURL;
+
+namespace content {
+class WebContents;
+}
+
+namespace gfx {
+class Point;
+}
 
 class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
  public:
   OmniboxPopupAimHandler(
       mojo::PendingReceiver<omnibox_popup_aim::mojom::PageHandler> receiver,
       mojo::PendingRemote<omnibox_popup_aim::mojom::Page> page,
-      OmniboxPopupUI* omnibox_popup_ui);
+      content::WebContents* web_contents);
 
   OmniboxPopupAimHandler(const OmniboxPopupAimHandler&) = delete;
   OmniboxPopupAimHandler& operator=(const OmniboxPopupAimHandler&) = delete;
 
   ~OmniboxPopupAimHandler() override;
 
+  void set_embedder(
+      base::WeakPtr<TopChromeWebUIController::Embedder> embedder) {
+    embedder_ = embedder;
+  }
+
   // omnibox_popup_aim::mojom::PageHandler:
   // Forwards a close event from the page to the browser.
   void RequestClose() override;
   void NavigateCurrentTab(const GURL& url) override;
+  void ShowContextMenu(const gfx::Point& point) override;
 
   // Forwards an `OnWidgetShown()` call to the page.
   void OnPopupShown(std::unique_ptr<SearchboxContextData::Context> context);
@@ -48,14 +63,16 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   // used to notify the page that searchbox context has been added.
   void AddContext(std::unique_ptr<SearchboxContextData::Context> context);
 
- private:
-  OmniboxAimPopupWebUIContent* GetAimPopupContent();
+ protected:
+  virtual OmniboxAimPopupWebUIContent* GetAimPopupContent();
 
+ private:
   void OnPopupHiddenCallback(const std::string& input);
 
   mojo::Receiver<omnibox_popup_aim::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup_aim::mojom::Page> page_;
-  raw_ptr<OmniboxPopupUI> omnibox_popup_ui_;
+  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<TopChromeWebUIController::Embedder> embedder_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_OMNIBOX_POPUP_OMNIBOX_POPUP_AIM_HANDLER_H_
