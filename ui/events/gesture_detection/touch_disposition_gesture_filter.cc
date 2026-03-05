@@ -476,7 +476,6 @@ void TouchDispositionGestureFilter::SendGesture(
       ending_event_motion_event_id_ = event.motion_event_id;
       ending_event_primary_tool_type_ = event.primary_tool_type;
       needs_scroll_ending_event_ = true;
-      scroll_begin_consumed_ = state_.current_touch_consumed();
       if (scroll_update_compensator_.has_value()) {
         // The reference timestamp here since it is a good approximation of when
         // the ack for the first touch move is received.

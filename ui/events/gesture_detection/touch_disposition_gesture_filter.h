@@ -104,8 +104,6 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
     // Whether an event of |type| has been filtered from the current sequence.
     bool HasFilteredGestureType(EventType type) const;
 
-    bool current_touch_consumed() const { return current_touch_consumed_; }
-
    private:
     // True iff the sequence has had any touch down event consumed.
     bool start_touch_consumed_;
@@ -146,7 +144,6 @@ class GESTURE_DETECTION_EXPORT TouchDispositionGestureFilter {
   bool needs_fling_ending_event_;
   bool needs_scroll_ending_event_;
 
-  bool scroll_begin_consumed_{false};
   bool first_gsu_sent_{false};
 
   // Utility class for keeping generating gesture scroll updates that compensate
