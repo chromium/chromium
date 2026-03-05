@@ -115,10 +115,15 @@ AngleVulkanImageBackingFactory::CreateSharedImage(
 }
 
 bool AngleVulkanImageBackingFactory::IsGMBSupported(
-    gfx::GpuMemoryBufferType gmb_type) const {
+    gfx::GpuMemoryBufferType gmb_type,
+    SharedImageUsageSet usage) const {
   switch (gmb_type) {
+    // AngleVulkan backing is used for GL & Vulkan interop, so the usage must
+    // contain GLES2, unless it is created from GPU memory buffer.
+    // TODO(penghuang): use AngleVulkan backing for non GL & Vulkan interop
+    // usage?
     case gfx::EMPTY_BUFFER:
-      return true;
+      return HasGLES2ReadOrWriteUsage(usage);
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
     case gfx::NATIVE_PIXMAP: {
       auto* vulkan_implementation =
@@ -134,21 +139,6 @@ bool AngleVulkanImageBackingFactory::IsGMBSupported(
   }
 }
 
-bool AngleVulkanImageBackingFactory::CanUseAngleVulkanImageBacking(
-    SharedImageUsageSet usage,
-    gfx::GpuMemoryBufferType gmb_type) const {
-  if (!IsGMBSupported(gmb_type))
-    return false;
-
-  // AngleVulkan backing is used for GL & Vulkan interop, so the usage must
-  // contain GLES2, unless it is created from GPU memory buffer.
-  // TODO(penghuang): use AngleVulkan backing for non GL & Vulkan interop usage?
-  if (gmb_type == gfx::EMPTY_BUFFER)
-    return HasGLES2ReadOrWriteUsage(usage);
-
-  return true;
-}
-
 bool AngleVulkanImageBackingFactory::IsSupported(
     SharedImageUsageSet usage,
     viz::SharedImageFormat format,
@@ -158,16 +148,15 @@ bool AngleVulkanImageBackingFactory::IsSupported(
     GrContextType gr_context_type,
     base::span<const uint8_t> pixel_data) {
   DCHECK_EQ(gr_context_type, GrContextType::kVulkan);
+  if (thread_safe) {
+    return false;
+  }
 
   if (!HasVkFormat(format)) {
     return false;
   }
 
-  if (!CanUseAngleVulkanImageBacking(usage, gmb_type)) {
-    return false;
-  }
-
-  if (thread_safe) {
+  if (!IsGMBSupported(gmb_type, usage)) {
     return false;
   }
 

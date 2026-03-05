@@ -66,9 +66,8 @@ class GPU_GLES2_EXPORT AngleVulkanImageBackingFactory
   SharedImageBackingType GetBackingType() override;
 
  private:
-  bool IsGMBSupported(gfx::GpuMemoryBufferType gmb_type) const;
-  bool CanUseAngleVulkanImageBacking(SharedImageUsageSet usage,
-                                     gfx::GpuMemoryBufferType gmb_type) const;
+  bool IsGMBSupported(gfx::GpuMemoryBufferType gmb_type,
+                      SharedImageUsageSet usage) const;
 
   const scoped_refptr<SharedContextState> context_state_;
 };

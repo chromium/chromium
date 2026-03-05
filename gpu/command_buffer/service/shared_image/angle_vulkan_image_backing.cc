@@ -345,7 +345,6 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
                            : ToVkFormatSinglePlanar(format());
   auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
       device_queue, std::move(handle), size(), vk_format, color_space());
-
   if (!vulkan_image) {
     return false;
   }
@@ -353,7 +352,6 @@ bool AngleVulkanImageBacking::InitializeWihGMB(
   vk_textures_.emplace_back(std::move(vulkan_image), format(), color_space());
 
   SetCleared();
-
   return true;
 }
 
