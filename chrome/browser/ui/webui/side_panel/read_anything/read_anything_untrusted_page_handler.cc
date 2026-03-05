@@ -1226,6 +1226,8 @@ void ReadAnythingUntrustedPageHandler::CheckIfActiveAXTreeChangedToPdf() {
 
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   is_pdf_with_frame_ = false;
+  is_waiting_for_pdf_frame_ = false;
+
   // If the side panel is not active, we should not send the active tree id.
   // This check is skipped when immersive read anything is enabled because
   // there are times when the side panel is inactive but the Reading Mode
