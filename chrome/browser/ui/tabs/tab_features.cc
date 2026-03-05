@@ -398,12 +398,10 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   // This block instantiates the page action controllers that depends on the
   // `commerce_ui_tab_helper_` and not need to be created before.
   if (commerce_ui_tab_helper_) {
-    if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
-      commerce_discounts_page_action_view_controller_ =
-          GetUserDataFactory()
-              .CreateInstance<commerce::DiscountsPageActionViewController>(
-                  tab, tab, *page_action_controller_, *commerce_ui_tab_helper_);
-    }
+    commerce_discounts_page_action_view_controller_ =
+        GetUserDataFactory()
+            .CreateInstance<commerce::DiscountsPageActionViewController>(
+                tab, tab, *page_action_controller_, *commerce_ui_tab_helper_);
   }
 
   if (base::FeatureList::IsEnabled(

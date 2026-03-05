@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/autofill/payments/mandatory_reauth_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/save_payment_icon_view.h"
 #include "chrome/browser/ui/views/autofill/payments/virtual_card_enroll_icon_view.h"
-#include "chrome/browser/ui/views/commerce/discounts_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/ai_mode_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
@@ -125,11 +124,6 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<CookieControlsIconView>(
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
-        break;
-      case PageActionIconType::kDiscounts:
-        add_page_action_icon(type, std::make_unique<DiscountsIconView>(
-                                       params.icon_label_bubble_delegate,
-                                       params.page_action_icon_delegate));
         break;
       case PageActionIconType::kFind:
         add_page_action_icon(

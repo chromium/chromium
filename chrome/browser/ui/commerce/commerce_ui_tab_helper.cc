@@ -506,14 +506,9 @@ void CommerceUiTabHelper::ShowDiscountBubble(
 }
 
 void CommerceUiTabHelper::UpdateDiscountsIconView() {
-  if (IsPageActionMigrated(PageActionIconType::kDiscounts)) {
-    DiscountsPageActionViewController::From(tab())->UpdatePageIcon(
-        ShouldShowDiscountsIconView(),
-        ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
-    return;
-  }
-
-  UpdatePageActionIconView(PageActionIconType::kDiscounts);
+  DiscountsPageActionViewController::From(tab())->UpdatePageIcon(
+      ShouldShowDiscountsIconView(),
+      ShouldExpandPageActionIcon(PageActionIconType::kDiscounts));
 }
 
 const DiscountsBubbleCoordinator&

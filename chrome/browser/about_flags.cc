@@ -1117,7 +1117,6 @@ const FeatureEntry::FeatureParam kPageActionsMigrationParams[] = {
     {"cookie_controls", "true"},
     {"click_to_call", "true"},
     {"collaboration_messaging", "true"},
-    {"discounts", "true"},
     {"file_system_access", "true"},
     {"filled_card_information", "true"},
     {"find", "true"},

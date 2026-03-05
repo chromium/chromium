@@ -34,7 +34,6 @@ DiscountsPageActionViewController::DiscountsPageActionViewController(
       page_action_controller_(page_action_controller),
       commerce_ui_tab_helper_(commerce_ui_tab_helper),
       scoped_unowned_user_data_(tab_interface.GetUnownedUserDataHost(), *this) {
-  CHECK(IsPageActionMigrated(PageActionIconType::kDiscounts));
   RegisterAsPageActionObserver(*page_action_controller_);
 }
 
