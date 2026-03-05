@@ -282,8 +282,11 @@ bool StructTraits<media::mojom::VideoFrameDataView,
     }
 
     const size_t num_planes = offsets.size();
-    if (num_planes == 0 || num_planes > 3) {
-      DLOG(ERROR) << "Invalid number of planes: " << num_planes;
+    if (num_planes != strides.size() ||
+        num_planes != media::VideoFrame::NumPlanes(format)) {
+      DLOG(ERROR) << "Invalid number of planes: offsets=" << num_planes
+                  << ", strides=" << strides.size()
+                  << ", format=" << VideoPixelFormatToString(format);
       return false;
     }
 
