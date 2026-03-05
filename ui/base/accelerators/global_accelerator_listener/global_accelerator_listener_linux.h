@@ -12,6 +12,7 @@
 #include <tuple>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -72,9 +73,18 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
   };
 
   struct BoundCommand {
+    BoundCommand();
+    ~BoundCommand();
+    BoundCommand(const BoundCommand&);
+    BoundCommand& operator=(const BoundCommand&);
+    BoundCommand(BoundCommand&&);
+    BoundCommand& operator=(BoundCommand&&);
+
     ui::Command command;
     std::string accelerator_group_id;
-    raw_ptr<Observer> observer = nullptr;
+    // Takes `accelerator_group_id` and `command_id`.
+    base::RepeatingCallback<void(const std::string&, const std::string&)>
+        execute_command;
   };
 
   // GlobalAcceleratorListener:
@@ -84,11 +94,14 @@ class GlobalAcceleratorListenerLinux : public GlobalAcceleratorListener {
       const ui::Accelerator& accelerator) override;
   void StopListeningForAccelerator(const ui::Accelerator& accelerator) override;
   bool IsRegistrationHandledExternally() const override;
-  void OnCommandsChanged(const std::string& accelerator_group_id,
-                         const std::string& profile_id,
-                         const ui::CommandMap& commands,
-                         gfx::AcceleratedWidget widget,
-                         Observer* observer) override;
+  void OnCommandsChanged(
+      const std::string& accelerator_group_id,
+      const std::string& profile_id,
+      const ui::CommandMap& commands,
+      gfx::AcceleratedWidget widget,
+      base::RepeatingCallback<void(const std::string&, const std::string&)>
+          execute_command) override;
+  void PruneStaleCommands() override;
 
   void OnCreateSession(
       base::expected<dbus_xdg::Dictionary, dbus_xdg::ResponseError> results);

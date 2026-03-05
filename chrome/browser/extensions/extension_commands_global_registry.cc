@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/extension_commands_global_registry.h"
 
+#include "base/functional/bind.h"
 #include "base/lazy_instance.h"
 #include "base/uuid.h"
 #include "build/build_config.h"
@@ -71,13 +72,20 @@ ExtensionCommandsGlobalRegistry::ExtensionCommandsGlobalRegistry(
 }
 
 ExtensionCommandsGlobalRegistry::~ExtensionCommandsGlobalRegistry() {
-  if (!IsEventTargetsEmpty()) {
-    ui::GlobalAcceleratorListener* global_shortcut_listener =
-        ui::GlobalAcceleratorListener::GetInstance();
-    if (!global_shortcut_listener) {
-      return;
-    }
+  ui::GlobalAcceleratorListener* global_shortcut_listener =
+      ui::GlobalAcceleratorListener::GetInstance();
+  if (!global_shortcut_listener) {
+    return;
+  }
 
+  if (global_shortcut_listener->IsRegistrationHandledExternally()) {
+    // Eagerly cancel callbacks so PruneStaleCommands() can clear them before
+    // the WeakPtrFactory destructor runs.
+    weak_ptr_factory_.InvalidateWeakPtrs();
+    global_shortcut_listener->PruneStaleCommands();
+  }
+
+  if (!IsEventTargetsEmpty()) {
     // Resume GlobalShortcutListener before we clean up if the shortcut handling
     // is currently suspended.
     if (global_shortcut_listener->IsShortcutHandlingSuspended()) {
@@ -140,7 +148,9 @@ bool ExtensionCommandsGlobalRegistry::PopulateCommands(
 
     instance->OnCommandsChanged(
         extension->id(), profile_id, *commands,
-        GetAcceleratedWidgetForContext(browser_context_), this);
+        GetAcceleratedWidgetForContext(browser_context_),
+        base::BindRepeating(&ExtensionCommandsGlobalRegistry::ExecuteCommand,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   // Add all the active global keybindings, if any.

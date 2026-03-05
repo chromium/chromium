@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "ui/base/accelerators/command.h"
 #include "ui/gfx/native_ui_types.h"
@@ -68,12 +69,20 @@ class GlobalAcceleratorListener {
   // Returns whether shortcut handling is currently suspended.
   bool IsShortcutHandlingSuspended() const;
 
-  // Called when a group of commands are registered.
-  virtual void OnCommandsChanged(const std::string& accelerator_group_id,
-                                 const std::string& profile_id,
-                                 const CommandMap& commands,
-                                 gfx::AcceleratedWidget widget,
-                                 Observer* observer) {}
+  // Called when a group of commands are registered. `execute_command` may be
+  // bound with a WeakPtr so that it becomes a no-op when the caller is
+  // destroyed. `execute_command` takes `accelerator_group_id` and
+  // `command_id`.
+  virtual void OnCommandsChanged(
+      const std::string& accelerator_group_id,
+      const std::string& profile_id,
+      const CommandMap& commands,
+      gfx::AcceleratedWidget widget,
+      base::RepeatingCallback<void(const std::string&, const std::string&)>
+          execute_command) {}
+
+  // Removes command map entries whose execute_command callbacks are cancelled.
+  virtual void PruneStaleCommands() {}
 
   virtual bool IsRegistrationHandledExternally() const;
 

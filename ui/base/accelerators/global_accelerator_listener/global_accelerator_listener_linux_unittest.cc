@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/nix/xdg_util.h"
 #include "base/notreached.h"
@@ -353,7 +354,9 @@ TEST(GlobalAcceleratorListenerLinuxTest, OnCommandsChanged) {
         });
 
     global_shortcut_listener->OnCommandsChanged(
-        kExtensionId, kProfileId, commands, widget, observer.get());
+        kExtensionId, kProfileId, commands, widget,
+        base::BindRepeating(&MockObserver::ExecuteCommand,
+                            base::Unretained(observer.get())));
   };
 
   commands[kCommandName] = ui::Command(kCommandName, kShortcutDescription,

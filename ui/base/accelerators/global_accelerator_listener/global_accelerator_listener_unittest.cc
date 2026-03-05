@@ -5,7 +5,10 @@
 #include "ui/base/accelerators/global_accelerator_listener/global_accelerator_listener.h"
 
 #include <memory>
+#include <set>
+#include <string>
 
+#include "base/functional/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -46,7 +49,8 @@ class BaseGlobalAcceleratorListenerForTesting final
                     const std::string&,
                     const ui::CommandMap&,
                     gfx::AcceleratedWidget,
-                    Observer*));
+                    base::RepeatingCallback<void(const std::string&,
+                                                 const std::string&)>));
 
  private:
   std::set<ui::Accelerator> registered_accelerators_;
@@ -144,7 +148,7 @@ TEST_F(GlobalAcceleratorListenerTest, OnCommandsChanged) {
               OnCommandsChanged(kAcceleratorGroupId, kProfileId, testing::_,
                                 testing::_, testing::_));
   listener->OnCommandsChanged(kAcceleratorGroupId, kProfileId, kCommands,
-                              gfx::kNullAcceleratedWidget, GetObserver());
+                              gfx::kNullAcceleratedWidget, base::DoNothing());
 }
 
 #if !BUILDFLAG(IS_WIN)
@@ -160,7 +164,7 @@ TEST_F(GlobalAcceleratorListenerTest, OnCommandsChangedWithWidget) {
   EXPECT_CALL(*ui_listener, OnCommandsChanged(kAcceleratorGroupId, kProfileId,
                                               testing::_, kWidget, testing::_));
   listener->OnCommandsChanged(kAcceleratorGroupId, kProfileId, kCommands,
-                              kWidget, GetObserver());
+                              kWidget, base::DoNothing());
 }
 #endif
 
