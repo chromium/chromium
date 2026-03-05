@@ -36,11 +36,11 @@ struct PageActionViewParams;
 // PageActionView is the view displaying the page action. There is one per
 // browser, per page action.
 class PageActionView : public IconLabelBubbleView,
-                       public PageActionModelObserver,
-                       public views::WidgetObserver {
+                       public PageActionModelObserver {
   METADATA_HEADER(PageActionView, IconLabelBubbleView)
  public:
   PageActionView(actions::ActionItem* action_item,
+
                  const PageActionViewParams& params,
                  ui::ElementIdentifier element_identifier);
   PageActionView(const PageActionView&) = delete;
@@ -120,11 +120,10 @@ class PageActionView : public IconLabelBubbleView,
   // notification will happen after PageActionModel::NotifyChange().
   void NotifyIsChipShowingChange();
 
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
   void CloseAnchoredMessage();
   void AnchoredMessageClick();
+
+  void OnAnchoredMessageWidgetClose(views::Widget::ClosedReason closed_reason);
 
   void CreateAndShowAnchoredMessage(const PageActionModelInterface& model);
 

@@ -74,16 +74,8 @@ PageActionView::~PageActionView() {
   if (anchored_message_) {
     CHECK(anchored_message_widget_);
     anchored_message_ = nullptr;
-    anchored_message_widget_->RemoveObserver(this);
     anchored_message_widget_ = nullptr;
   }
-}
-
-void PageActionView::OnWidgetDestroying(views::Widget* widget) {
-  CHECK(anchored_message_);
-  CHECK(anchored_message_widget_);
-  anchored_message_ = nullptr;
-  anchored_message_widget_ = nullptr;
 }
 
 bool PageActionView::IsChipVisible() const {
@@ -160,7 +152,6 @@ void PageActionView::OnPageActionModelChanged(
   if (model.GetVisible() && model.ShouldShowAnchoredMessage()) {
     CreateAndShowAnchoredMessage(model);
   } else if (anchored_message_ && anchored_message_widget_) {
-    anchored_message_widget_->RemoveObserver(this);
     anchored_message_ = nullptr;
     anchored_message_widget_ = nullptr;
   }
@@ -379,7 +370,9 @@ void PageActionView::CreateAndShowAnchoredMessage(
           views::Widget::InitParams::CLIENT_OWNS_WIDGET));
 
   if (anchored_message_widget_) {
-    anchored_message_widget_->AddObserver(this);
+    anchored_message_widget_->MakeCloseSynchronous(
+        base::BindOnce(&PageActionView::OnAnchoredMessageWidgetClose,
+                       weak_factory_.GetWeakPtr()));
     anchored_message_widget_->Show();
   } else {
     anchored_message_ = nullptr;
@@ -399,6 +392,14 @@ void PageActionView::AnchoredMessageClick() {
                        static_cast<std::underlying_type_t<PageActionTrigger>>(
                            PageActionTrigger::kMouse))
           .Build());
+}
+
+void PageActionView::OnAnchoredMessageWidgetClose(
+    views::Widget::ClosedReason closed_reason) {
+  CHECK(anchored_message_);
+  CHECK(anchored_message_widget_);
+  anchored_message_ = nullptr;
+  anchored_message_widget_ = nullptr;
 }
 
 AnchoredMessageBubbleView* PageActionView::GetAnchoredMessageForTesting() {
