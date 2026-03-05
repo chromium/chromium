@@ -1054,6 +1054,14 @@ inline constexpr char kAutofillSharedStorageServerCardDataDescription[] =
     "When enabled, the cached server credit card data from autofill will be "
     "pushed into the shared storage database for the payments origin.";
 
+inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixName[] =
+    "Ensures showing of the BNPL VCN on manual fallback sheet in the Touch To "
+    "Fill flow";
+inline constexpr char kAutofillTouchToFillShowManualFillForVcnFixDescription[] =
+    "When enabled, it successfully shows the VCN when the BNPL flow is "
+    "successful and the user clicks on the 'show card' button to fill the card "
+    "manually.";
+
 inline constexpr char kAutofillUnmaskCardRequestTimeoutName[] =
     "Timeout for the credit card unmask request";
 inline constexpr char kAutofillUnmaskCardRequestTimeoutDescription[] =

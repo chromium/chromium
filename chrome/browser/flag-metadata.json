@@ -1001,6 +1001,11 @@
     "expiry_milestone": 136
   },
   {
+    "name": "autofill-touch-to-fill-show-manual-fill-for-vcn-fix",
+    "owners": ["viplavkadam@google.com", "payments-autofill-team@google.com"],
+    "expiry_milestone": 155
+  },
+  {
     "name": "autofill-unmask-card-request-timeout",
     "owners": ["junhuihe@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 135
