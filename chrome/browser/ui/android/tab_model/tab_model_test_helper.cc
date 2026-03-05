@@ -41,7 +41,10 @@
 
 TestTabModel::TestTabModel(Profile* profile,
                            chrome::android::ActivityType activity_type)
-    : TabModel(profile, activity_type, TabModel::TabModelType::kStandard) {}
+    : TabModel(profile,
+               activity_type,
+               std::nullopt,
+               TabModel::TabModelType::kStandard) {}
 
 TestTabModel::~TestTabModel() = default;
 
@@ -311,7 +314,10 @@ void TestTabModel::AssociateWithBrowserWindow(BrowserWindowInterface* browser) {
 OwningTestTabModel::OwningTestTabModel(
     Profile* profile,
     chrome::android::ActivityType activity_type)
-    : TabModel(profile, activity_type, TabModel::TabModelType::kStandard) {
+    : TabModel(profile,
+               activity_type,
+               std::nullopt,
+               TabModel::TabModelType::kStandard) {
   TabModelList::AddTabModel(this);
 }
 

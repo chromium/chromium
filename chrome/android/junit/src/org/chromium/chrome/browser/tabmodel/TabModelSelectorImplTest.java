@@ -122,6 +122,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         /* startIncognito= */ false);
 
@@ -423,6 +424,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         /* startIncognito= */ false);
         MockTabModel regularTabModel = new MockTabModel(mProfile, null);
@@ -493,6 +495,7 @@ public class TabModelSelectorImplTest {
                         mAsyncTabParamsManager,
                         /* supportUndo= */ false,
                         NO_RESTORE_TYPE,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         /* startIncognito= */ false);
         when(regularModel.isActiveModel()).thenReturn(true);

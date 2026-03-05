@@ -1536,6 +1536,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity {
             mTabFactory =
                     new CustomTabActivityTabFactory(
                             this,
+
                             getCustomTabTabPersistencePolicy(),
                             getWindowAndroid(),
                             getProfileProviderSupplier(),

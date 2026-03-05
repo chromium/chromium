@@ -38,6 +38,8 @@ class TabModelJniBridge : public TabModel {
                     const jni_zero::JavaRef<jobject>& jobj,
                     Profile* profile,
                     chrome::android::ActivityType activity_type,
+                    std::optional<chrome::android::CustomTabProfileType>
+                        custom_tab_profile_type,
                     TabModelType tab_model_type);
   void Destroy(JNIEnv* env);
 

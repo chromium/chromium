@@ -64,6 +64,7 @@ using base::android::JavaRef;
 using base::android::SafeGetArrayLength;
 using base::android::ScopedJavaLocalRef;
 using chrome::android::ActivityType;
+using chrome::android::CustomTabProfileType;
 using content::WebContents;
 using tab_groups::TabGroupColorId;
 using tab_groups::TabGroupVisualData;
@@ -98,12 +99,14 @@ AndroidBrowserWindow* GetAndroidBrowserWindow(SessionID session_id) {
 
 }  // namespace
 
-TabModelJniBridge::TabModelJniBridge(JNIEnv* env,
-                                     const jni_zero::JavaRef<jobject>& jobj,
-                                     Profile* profile,
-                                     ActivityType activity_type,
-                                     TabModelType tab_model_type)
-    : TabModel(profile, activity_type, tab_model_type),
+TabModelJniBridge::TabModelJniBridge(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& jobj,
+    Profile* profile,
+    ActivityType activity_type,
+    std::optional<CustomTabProfileType> custom_tab_profile_type,
+    TabModelType tab_model_type)
+    : TabModel(profile, activity_type, custom_tab_profile_type, tab_model_type),
       java_object_(env, jobj) {
   // The archived tab model isn't tracked in native, except to comply with clear
   // browsing data.
@@ -879,13 +882,22 @@ TabModelJniBridge::~TabModelJniBridge() {
   }
 }
 
-static int64_t JNI_TabModelJniBridge_Init(JNIEnv* env,
-                                          const JavaRef<jobject>& obj,
-                                          Profile* profile,
-                                          int32_t j_activity_type,
-                                          int32_t j_tab_model_type) {
+static int64_t JNI_TabModelJniBridge_Init(
+    JNIEnv* env,
+    const JavaRef<jobject>& obj,
+    Profile* profile,
+    int32_t j_activity_type,
+    std::optional<int32_t> j_custom_tab_profile_type,
+    int32_t j_tab_model_type) {
+  std::optional<chrome::android::CustomTabProfileType> custom_tab_profile_type =
+      j_custom_tab_profile_type.has_value()
+          ? std::make_optional(
+                static_cast<chrome::android::CustomTabProfileType>(
+                    j_custom_tab_profile_type.value()))
+          : std::nullopt;
   TabModel* tab_model = new TabModelJniBridge(
       env, obj, profile, static_cast<ActivityType>(j_activity_type),
+      custom_tab_profile_type,
       static_cast<TabModel::TabModelType>(j_tab_model_type));
   return reinterpret_cast<intptr_t>(tab_model);
 }

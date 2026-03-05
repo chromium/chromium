@@ -13,9 +13,11 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabmodel.AsyncTabParamsManagerSingleton;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.tab.ScopedStorageBatch;
@@ -204,6 +206,7 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
             super(
                     profile,
                     activityType,
+                    /* customTabProfileType= */ null,
                     TabModelType.STANDARD,
                     null,
                     null,
@@ -224,11 +227,14 @@ public class TabModelSelectorObserverTestRule extends ChromeBrowserTestRule {
         }
 
         @Override
-        public void initializeNative(int activityType, @TabModelType int tabModelType) {
+        public void initializeNative(
+                @ActivityType int activityType,
+                @CustomTabProfileType @Nullable Integer customTabProfileType,
+                @TabModelType int tabModelType) {
             // Skip setting up the TabModelObserverJniBridge by using the archived tab model.
             // Initializing this leads to unexpected observers being added and crashes due to
             // mObserverSet not being initialized. This test should be refactored.
-            super.initializeNative(activityType, TabModelType.ARCHIVED);
+            super.initializeNative(activityType, customTabProfileType, TabModelType.ARCHIVED);
         }
 
         @Override

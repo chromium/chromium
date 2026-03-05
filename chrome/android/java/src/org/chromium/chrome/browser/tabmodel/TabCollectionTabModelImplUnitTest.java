@@ -33,6 +33,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.price_tracking.PriceTrackingFeatures;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -96,6 +97,7 @@ public class TabCollectionTabModelImplUnitTest {
                         any(TabModelJniBridge.class),
                         eq(mProfile),
                         eq(ActivityType.TABBED),
+                        eq(null),
                         eq(TabModelType.STANDARD)))
                 .thenReturn(TAB_MODEL_JNI_BRIDGE_PTR);
 
@@ -107,6 +109,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mProfile,
                         ActivityType.TABBED,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
@@ -391,6 +394,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mOtrProfile,
                         ActivityType.TABBED,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
@@ -419,6 +423,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mOtrProfile,
                         ActivityType.TABBED,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
@@ -475,6 +480,7 @@ public class TabCollectionTabModelImplUnitTest {
                 new TabCollectionTabModelImpl(
                         mOtrProfile,
                         ActivityType.TABBED,
+                        /* customTabProfileType= */ null,
                         TabModelType.STANDARD,
                         mRegularTabCreator,
                         mIncognitoTabCreator,
@@ -614,6 +620,7 @@ public class TabCollectionTabModelImplUnitTest {
         return new TabCollectionTabModelImpl(
                 profile,
                 ActivityType.CUSTOM_TAB,
+                CustomTabProfileType.REGULAR,
                 TabModelType.STANDARD,
                 null,
                 null,

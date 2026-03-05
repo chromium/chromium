@@ -58,7 +58,7 @@ public class CustomTabActivityTabFactory {
     private final CipherFactory mCipherFactory;
 
     private @Nullable CustomTabsTabModelOrchestrator mTabModelOrchestrator;
-    @ActivityType int mActivityType;
+    private @ActivityType int mActivityType;
 
     public CustomTabActivityTabFactory(
             Activity activity,
@@ -108,6 +108,7 @@ public class CustomTabActivityTabFactory {
                         mTabCreatorManager,
                         mPersistencePolicy,
                         mActivityType,
+                        mIntentDataProvider.getCustomTabMode(),
                         AsyncTabParamsManagerSingleton.getInstance(),
                         mCipherFactory);
     }

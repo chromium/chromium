@@ -16,6 +16,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.flags.ActivityType;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.AccumulatingTabCreator;
@@ -53,6 +54,7 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
             TabCreatorManager tabCreatorManager,
             TabPersistencePolicy persistencePolicy,
             @ActivityType int activityType,
+            @Nullable @CustomTabProfileType Integer customTabProfileType,
             AsyncTabParamsManager asyncTabParamsManager,
             CipherFactory cipherFactory) {
         mActivity = activity;
@@ -69,10 +71,11 @@ public class CustomTabsTabModelOrchestrator extends TabModelOrchestrator {
                         nextTabPolicySupplier,
                         /* multiInstanceManager= */ null,
                         asyncTabParamsManager,
-                        false,
+                        /* supportUndo= */ false,
                         activityType,
+                        customTabProfileType,
                         TabModelType.STANDARD,
-                        false);
+                        /* startIncognito= */ false);
 
         TabWindowManager tabWindowManager = TabWindowManagerSingleton.getInstance();
         tabWindowManager.registerCustomTabsTabModelSelector(

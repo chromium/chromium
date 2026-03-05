@@ -49,8 +49,9 @@ public class DefaultTabModelSelectorFactory implements TabModelSelectorFactory {
                 asyncTabParamsManager,
                 true,
                 ActivityType.TABBED,
+                /* customTabProfileType= */ null,
                 TabModelType.STANDARD,
-                false);
+                /* startIncognito= */ false);
     }
 
     @Override

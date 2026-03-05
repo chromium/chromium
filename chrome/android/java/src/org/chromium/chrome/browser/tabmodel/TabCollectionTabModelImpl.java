@@ -38,6 +38,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.CustomTabProfileType;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBridge;
 import org.chromium.chrome.browser.ntp.RecentlyClosedBulkEvent;
 import org.chromium.chrome.browser.ntp.RecentlyClosedEntry;
@@ -333,6 +334,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     /**
      * @param profile The {@link Profile} tabs in the tab collection tab model belongs to.
      * @param activityType The type of activity this tab collection tab model is for.
+     * @param customTabProfileType The profile type of the custom tab, or null if not a custom tab.
      * @param regularTabCreator The tab creator for regular tabs.
      * @param incognitoTabCreator The tab creator for incognito tabs.
      * @param orderController Controls logic for selecting and positioning tabs.
@@ -348,6 +350,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public TabCollectionTabModelImpl(
             Profile profile,
             @ActivityType int activityType,
+            @Nullable @CustomTabProfileType Integer customTabProfileType,
             @TabModelType int tabModelType,
             TabCreator regularTabCreator,
             TabCreator incognitoTabCreator,
@@ -378,7 +381,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                     new PendingTabClosureManager(this, new PendingTabClosureDelegateImpl());
         }
 
-        initializeNative(activityType, tabModelType);
+        initializeNative(activityType, customTabProfileType, tabModelType);
     }
 
     @Override
@@ -821,8 +824,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     // TabModelJniBridge overrides.
 
     @Override
-    public void initializeNative(@ActivityType int activityType, @TabModelType int tabModelType) {
-        super.initializeNative(activityType, tabModelType);
+    public void initializeNative(
+            @ActivityType int activityType,
+            @Nullable @CustomTabProfileType Integer customTabProfileType,
+            @TabModelType int tabModelType) {
+        super.initializeNative(activityType, customTabProfileType, tabModelType);
         assert mNativeTabCollectionTabModelImplPtr == 0;
         mNativeTabCollectionTabModelImplPtr =
                 TabCollectionTabModelImplJni.get().init(this, getProfile());

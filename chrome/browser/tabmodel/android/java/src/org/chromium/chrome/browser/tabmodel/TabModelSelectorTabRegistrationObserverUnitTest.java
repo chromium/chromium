@@ -52,7 +52,11 @@ public class TabModelSelectorTabRegistrationObserverUnitTest {
     public void setUp() {
         TabModelJniBridgeJni.setInstanceForTesting(mTabModelJniBridge);
         when(mTabModelJniBridge.init(
-                        any(TabModelJniBridge.class), any(Profile.class), anyInt(), anyInt()))
+                        any(TabModelJniBridge.class),
+                        any(Profile.class),
+                        anyInt(),
+                        any(),
+                        anyInt()))
                 .thenReturn(FAKE_NATIVE_ADDRESS);
 
         when(mIncognitoProfile.isOffTheRecord()).thenReturn(true);

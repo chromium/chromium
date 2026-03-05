@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_ANDROID_TAB_MODEL_TAB_MODEL_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
@@ -309,6 +310,10 @@ class TabModel : public TabListInterface {
   virtual tabs::TabCollection* GetTabStripCollection() const = 0;
 
   chrome::android::ActivityType activity_type() const { return activity_type_; }
+  const std::optional<chrome::android::CustomTabProfileType>&
+  custom_tab_profile_type() const {
+    return custom_tab_profile_type_;
+  }
   TabModelType GetTabModelType() const { return tab_model_type_; }
 
   static bool EnableBrowserWindowInterfaceMobile();
@@ -316,6 +321,8 @@ class TabModel : public TabListInterface {
  protected:
   TabModel(Profile* profile,
            chrome::android::ActivityType activity_type,
+           std::optional<chrome::android::CustomTabProfileType>
+               custom_tab_profile_type,
            TabModelType tab_model_type);
   ~TabModel() override;
 
@@ -336,6 +343,7 @@ class TabModel : public TabListInterface {
   raw_ptr<Profile, DanglingUntriaged> profile_;
 
   chrome::android::ActivityType activity_type_;
+  std::optional<chrome::android::CustomTabProfileType> custom_tab_profile_type_;
   TabModelType tab_model_type_;
 
   // The LiveTabContext associated with TabModel.
