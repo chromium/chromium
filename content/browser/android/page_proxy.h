@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_ANDROID_PAGE_PROXY_H_
 
 #include "base/android/jni_string.h"
-#include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/raw_ptr.h"
 #include "net/http/http_request_headers.h"
@@ -27,12 +26,6 @@ class PageProxy final {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaPage() const;
 
- private:
-  // A weak reference to the Java object. The Java object will be kept alive by
-  // a static map in the Java code. ScopedJavaGlobalRef would scale poorly with
-  // a large number of Pages as each entry would consume a slot in the finite
-  // global ref table.
-  JavaObjectWeakGlobalRef java_page_;
 };
 
 }  // namespace content

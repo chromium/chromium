@@ -20,8 +20,8 @@ import java.util.Map;
 public class Page {
     // Using ScopedJavaGlobalRef in the owning C++ object to keep the Java object alive consumes an
     // entry per instance in the finite global ref table. This scales poorly with a large number of
-    // WebContents. As a workaround, the C++ owner uses a JavaObjectWeakGlobalRef and an entry is
-    // kept in the a static map of the native pointer to Java objects to prevent garbage collection.
+    // WebContents. As a workaround, an entry is kept in a static map from the native pointer to the
+    // Java object to prevent garbage collection.
     private static final Map<Long, Page> sPages = new HashMap<>();
 
     private boolean mIsPrerendering;
@@ -48,7 +48,8 @@ public class Page {
         mNativePage = nativePage;
         mIsPrerendering = isPrerendering;
         if (mNativePage != 0) {
-            sPages.put(mNativePage, this);
+            var oldValue = sPages.put(mNativePage, this);
+            assert oldValue == null;
         }
     }
 
@@ -65,7 +66,7 @@ public class Page {
     private void destroy() {
         assert mNativePage != 0;
         var removedValue = sPages.remove(mNativePage);
-        assert removedValue != null;
+        assert removedValue == this;
         mNativePage = 0;
     }
 
@@ -83,5 +84,10 @@ public class Page {
 
     public void setUrl(GURL url) {
         mUrl = url;
+    }
+
+    @CalledByNative
+    private static @Nullable Page getJavaObject(long nativePage) {
+        return sPages.get(nativePage);
     }
 }
