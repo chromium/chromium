@@ -72,6 +72,12 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
   // Returns whether the active tab context suggestion is currently showing.
   virtual bool IsActiveTabContextSuggestionShowing() const = 0;
 
+  // Returns whether the UI can be expanded to a full tab.
+  virtual bool CanExpandToFullTab() const = 0;
+
+  // Moves the UI associated with this WebUI to a new tab.
+  virtual void MoveTaskUiToNewTab() = 0;
+
   // Mojo & Session.
 
   // Sends a message to the <webview> guest. The WebUI is responsible for

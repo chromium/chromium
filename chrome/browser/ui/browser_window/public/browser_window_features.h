@@ -49,6 +49,7 @@ class LocationBar;
 class CommentsSidePanelCoordinator;
 class ContentsBorderController;
 class ContextualTasksEphemeralButtonController;
+class ContextualTasksCloseButtonController;
 class CookieControlsBubbleCoordinator;
 class DataSharingBubbleController;
 class DesktopBrowserWindowCapabilities;
@@ -659,6 +660,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<ContextualTasksEphemeralButtonController>
       contextual_tasks_ephemeral_button_controller_;
+
+  std::unique_ptr<ContextualTasksCloseButtonController>
+      contextual_tasks_close_button_controller_;
 
   std::unique_ptr<tabs::GlicNudgeController> glic_nudge_controller_;
 

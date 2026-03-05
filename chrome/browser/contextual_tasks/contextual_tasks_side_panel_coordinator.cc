@@ -690,6 +690,10 @@ bool ContextualTasksSidePanelCoordinator::UpdateWebContentsForActiveTab() {
     web_view_->SetWebContents(web_contents);
   }
 
+  if (prev_web_contents != web_contents) {
+    NotifyExpandToFullTabStateChanged();
+  }
+
   return prev_web_contents != web_contents;
 }
 
@@ -1024,6 +1028,15 @@ size_t ContextualTasksSidePanelCoordinator::GetNumberOfActiveTasks() const {
   return task_id_to_web_contents_cache_.size();
 }
 
+void ContextualTasksSidePanelCoordinator::MoveTaskUiToNewTab() {
+  if (!web_view_ || !web_view_->web_contents()) {
+    return;
+  }
+  if (auto* web_ui_interface = GetWebUiInterface(web_view_->web_contents())) {
+    web_ui_interface->MoveTaskUiToNewTab();
+  }
+}
+
 std::optional<tabs::TabHandle>
 ContextualTasksSidePanelCoordinator::GetAutoSuggestedTabHandle() {
   auto* web_ui_interface = GetWebUiInterface(web_view_->web_contents());
@@ -1062,6 +1075,28 @@ void ContextualTasksSidePanelCoordinator::OnEligibilityChange(
     }
     task_id_to_web_contents_cache_.clear();
   }
+}
+
+void ContextualTasksSidePanelCoordinator::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void ContextualTasksSidePanelCoordinator::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void ContextualTasksSidePanelCoordinator::NotifyExpandToFullTabStateChanged() {
+  for (auto& observer : observers_) {
+    observer.ExpandToFullTabStateChanged();
+  }
+}
+
+bool ContextualTasksSidePanelCoordinator::CanExpandToFullTab() const {
+  if (!web_view_ || !web_view_->web_contents()) {
+    return false;
+  }
+  auto* web_ui_interface = GetWebUiInterface(web_view_->web_contents());
+  return web_ui_interface ? web_ui_interface->CanExpandToFullTab() : false;
 }
 
 }  // namespace contextual_tasks
