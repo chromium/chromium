@@ -39,7 +39,7 @@ class CastWebContentsScopes {
                 activity,
                 layout,
                 () -> {
-                    return ActivityWindowAndroid.create(
+                    return new ActivityWindowAndroid(
                             activity,
                             /* listenToActivityState= */ true,
                             IntentRequestTracker.createFromActivity(activity),

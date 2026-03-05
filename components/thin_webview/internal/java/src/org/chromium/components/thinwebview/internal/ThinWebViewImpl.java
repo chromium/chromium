@@ -4,7 +4,6 @@
 
 package org.chromium.components.thinwebview.internal;
 
-import android.app.Activity;
 import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
@@ -58,11 +57,10 @@ public class ThinWebViewImpl extends FrameLayout implements ThinWebView {
             ThinWebViewConstraints constraints,
             IntentRequestTracker intentRequestTracker) {
         super(context);
-        Activity activity = ContextUtils.activityFromContext(context);
-        if (activity != null) {
+        if (ContextUtils.activityFromContext(context) != null) {
             mWindowAndroid =
-                    ActivityWindowAndroid.create(
-                            activity,
+                    new ActivityWindowAndroid(
+                            context,
                             /* listenToActivityState= */ true,
                             intentRequestTracker,
                             /* insetObserver= */ null,

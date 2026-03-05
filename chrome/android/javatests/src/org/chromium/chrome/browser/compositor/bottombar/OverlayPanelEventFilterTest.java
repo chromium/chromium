@@ -276,7 +276,7 @@ public class OverlayPanelEventFilterTest {
                 () -> {
                     mActivity = activityTestRule.getActivity();
                     mWindowAndroid =
-                            ActivityWindowAndroid.create(
+                            new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),

@@ -114,7 +114,7 @@ public class AndroidPaymentAppFinderUnitTest {
         mWindowAndroid =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
-                            return ActivityWindowAndroid.create(
+                            return new ActivityWindowAndroid(
                                     sActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(sActivity),

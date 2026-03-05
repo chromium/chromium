@@ -163,9 +163,9 @@ public class AndroidShareSheetControllerUnitTest {
         mActivityScenario.getScenario().onActivity((activity) -> mActivity = activity);
         mActivityScenario.getScenario().moveToState(State.RESUMED);
         mWindow =
-                ActivityWindowAndroid.create(
+                new ActivityWindowAndroid(
                         mActivity,
-                        /* listenToActivityState= */ false,
+                        false,
                         IntentRequestTracker.createFromActivity(mActivity),
                         mInsetObserver,
                         /* trackOcclusion= */ true);

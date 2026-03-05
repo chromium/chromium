@@ -89,7 +89,6 @@ import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
@@ -275,7 +274,6 @@ public class SearchActivity extends AsyncInitializationActivity
         return new ActivityWindowAndroid(
                 this,
                 /* listenToActivityState= */ true,
-                new ActivityAndroidPermissionDelegate(new WeakReference(this)),
                 new ActivityKeyboardVisibilityDelegate(new WeakReference(this)),
                 /* activityTopResumedSupported= */ false,
                 getIntentRequestTracker(),

@@ -145,7 +145,7 @@ public class ContactsPickerDialogTest
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
                             mActivity = activityTestRule.getActivity();
-                            return ActivityWindowAndroid.create(
+                            return new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),

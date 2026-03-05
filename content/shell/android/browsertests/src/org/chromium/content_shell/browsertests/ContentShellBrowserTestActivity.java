@@ -65,7 +65,7 @@ public abstract class ContentShellBrowserTestActivity extends NativeBrowserTestA
         mShellManager = (ShellManager) findViewById(getShellManagerViewId());
         IntentRequestTracker intentRequestTracker = IntentRequestTracker.createFromActivity(this);
         mWindowAndroid =
-                ActivityWindowAndroid.create(
+                new ActivityWindowAndroid(
                         this,
                         /* listenToActivityState= */ true,
                         intentRequestTracker,

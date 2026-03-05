@@ -187,7 +187,7 @@ public class OverlayPanelBaseTest {
                 () -> {
                     mActivity = activityTestRule.getActivity();
                     mWindowAndroid =
-                            ActivityWindowAndroid.create(
+                            new ActivityWindowAndroid(
                                     mActivity,
                                     /* listenToActivityState= */ true,
                                     IntentRequestTracker.createFromActivity(mActivity),
