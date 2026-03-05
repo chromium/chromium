@@ -869,9 +869,38 @@ std::vector<CreditCard> GetTouchToFillCardsToSuggest(
              : std::vector<CreditCard>();
 }
 
+bool ShouldCreateBnplSuggestionForTouchToFill(BrowserAutofillManager& manager,
+                                              const FormGlobalId& form_id) {
+  bool passes_credit_card_number_check = true;
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableAiBasedAmountExtraction)) {
+    const FormStructure* form_structure = manager.FindCachedFormById(form_id);
+    // Checks whether the credit card number field is empty. If the number field
+    // is not empty, privacy restrictions prohibit showing the BNPL option.
+    passes_credit_card_number_check =
+        form_structure
+            ? std::ranges::none_of(
+                  form_structure->fields(),
+                  [](const std::unique_ptr<AutofillField>& form_field) {
+                    return form_field->Type().GetCreditCardType() ==
+                               FieldType::CREDIT_CARD_NUMBER &&
+                           !SanitizedFieldIsEmpty(form_field->value());
+                  })
+            : false;
+  }
+  return base::FeatureList::IsEnabled(
+             features::kAutofillEnableBuyNowPayLater) &&
+         manager.GetPaymentsBnplManager() &&
+         payments::IsEligibleForBnpl(manager.client()) &&
+         base::FeatureList::IsEnabled(
+             features::kAutofillEnableAmountExtraction) &&
+         passes_credit_card_number_check;
+}
+
 std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     base::span<const CreditCard> credit_cards,
-    BrowserAutofillManager& manager) {
+    BrowserAutofillManager& manager,
+    const FormGlobalId& form_id) {
   std::vector<Suggestion> suggestions;
   suggestions.reserve(credit_cards.size());
   autofill_metrics::CardMetadataLoggingContext metadata_logging_context =
@@ -947,10 +976,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     }
     suggestions.push_back(suggestion);
   }
-  if (manager.GetPaymentsBnplManager() &&
-      payments::IsEligibleForBnpl(manager.client()) &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableAmountExtraction) &&
-      base::FeatureList::IsEnabled(features::kAutofillEnableBuyNowPayLater)) {
+  if (ShouldCreateBnplSuggestionForTouchToFill(manager, form_id)) {
     suggestions.reserve(suggestions.size() + 1);
     suggestions.push_back(
         CreateBnplSuggestion(/*bnpl_issuers=*/manager.client()

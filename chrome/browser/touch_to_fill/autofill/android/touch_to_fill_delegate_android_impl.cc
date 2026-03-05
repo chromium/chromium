@@ -261,21 +261,21 @@ bool TouchToFillDelegateAndroidImpl::TryToShowTouchToFill(
     payments::PaymentsAutofillClient& payments_client =
         *manager_->client().GetPaymentsAutofillClient();
     const bool shown = std::visit(
-        absl::Overload{[&](std::vector<CreditCard> items_to_suggest) {
-                         return payments_client.ShowTouchToFillCreditCard(
-                             GetWeakPtr(),
-                             GetCreditCardSuggestionsForTouchToFill(
-                                 std::move(items_to_suggest), *manager_));
-                       },
-                       [&](std::vector<Iban> items_to_suggest) {
-                         return payments_client.ShowTouchToFillIban(
-                             GetWeakPtr(), std::move(items_to_suggest));
-                       },
-                       [&](std::vector<LoyaltyCard> items_to_suggest) {
-                         return payments_client
-                             .ShowTouchToFillAffiliatedLoyaltyCard(
-                                 GetWeakPtr(), std::move(items_to_suggest));
-                       }},
+        absl::Overload{
+            [&](std::vector<CreditCard> items_to_suggest) {
+              return payments_client.ShowTouchToFillCreditCard(
+                  GetWeakPtr(), GetCreditCardSuggestionsForTouchToFill(
+                                    std::move(items_to_suggest), *manager_,
+                                    form.global_id()));
+            },
+            [&](std::vector<Iban> items_to_suggest) {
+              return payments_client.ShowTouchToFillIban(
+                  GetWeakPtr(), std::move(items_to_suggest));
+            },
+            [&](std::vector<LoyaltyCard> items_to_suggest) {
+              return payments_client.ShowTouchToFillAffiliatedLoyaltyCard(
+                  GetWeakPtr(), std::move(items_to_suggest));
+            }},
         std::move(dry_run.items_to_suggest));
     if (!shown) {
       dry_run.outcome = TriggerOutcome::kFailedToDisplayBottomSheet;

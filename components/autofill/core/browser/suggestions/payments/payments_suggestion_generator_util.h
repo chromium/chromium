@@ -97,13 +97,22 @@ Suggestion CreateBnplSuggestion(
     std::optional<int64_t> extracted_amount_in_micros,
     const payments::AmountExtractionStatus& amount_extraction_status = {});
 
+// Check whether to add a BNPL suggestion for Touch-To-Fill based on eligibility
+// for the purchase and whether the card number field is empty when AI-based
+// amount extraction is enabled.
+bool ShouldCreateBnplSuggestionForTouchToFill(BrowserAutofillManager& manager,
+                                              const FormGlobalId& form_id);
+
 // Generates touch-to-fill suggestions for all available credit cards to be
 // used in the bottom sheet. Benefits information, containing instrument IDs and
 // issuer IDs, will be added to the `metadata_logging_context` and assigned to
-// the BrowserAutofillManager's `credit_card_form_event_logger`.
+// the BrowserAutofillManager's `credit_card_form_event_logger`. Also add a BNPL
+// suggestion if eligible for the purchase and the card number field is empty
+// for AI-based amount extraction.
 std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
     base::span<const CreditCard> credit_cards,
-    BrowserAutofillManager& manager);
+    BrowserAutofillManager& manager,
+    const FormGlobalId& form_id);
 
 // Generates a footer suggestion "Manage payment methods..." menu item which
 // will redirect to Chrome payment settings page. `with_gpay_logo` is used to

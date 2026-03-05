@@ -778,8 +778,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                         expected_instrument_ids_to_available_benefit_sources)))
       .Times(1);
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   if (GetBenefitSource() == "curinos" &&
@@ -815,8 +815,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                         expected_instrument_ids_to_available_benefit_sources)))
       .Times(1);
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   EXPECT_EQ(suggestions[0].type, SuggestionType::kVirtualCreditCardEntry);
   if (GetBenefitSource() == "curinos" &&
@@ -851,8 +851,8 @@ TEST_P(
       GURL("https://random-url.com"));
   std::vector<CreditCard> cards = {card()};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   // Merchant benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -880,8 +880,8 @@ TEST_P(
           CreditCardCategoryBenefit::BenefitCategory::kUnknownBenefitCategory));
   std::vector<CreditCard> cards = {card()};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   // Category benefit description is not returned.
   EXPECT_THAT(suggestions[0],
@@ -906,8 +906,8 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
       .WillByDefault(testing::Return(true));
   std::vector<CreditCard> cards = {card()};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   // Benefit description is not returned for flat rate benefits.
   EXPECT_THAT(suggestions[0],
@@ -934,7 +934,8 @@ TEST_P(
                         expected_instrument_ids_to_available_benefit_sources)))
       .Times(1);
 
-  GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager(),
+                                         test::MakeFormGlobalId());
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -2687,7 +2688,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       .WillByDefault(testing::Return(true));
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      {CreateServerCard(), CreateLocalCard()}, autofill_manager());
+      {CreateServerCard(), CreateLocalCard()}, autofill_manager(),
+      test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 3U);
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
@@ -2717,7 +2719,7 @@ TEST_F(
       .WillByDefault(testing::Return(false));
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      {CreateServerCard()}, autofill_manager());
+      {CreateServerCard()}, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
@@ -2740,7 +2742,7 @@ TEST_F(
       .WillByDefault(testing::Return(true));
 
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
-      {CreateServerCard()}, autofill_manager());
+      {CreateServerCard()}, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
@@ -2760,7 +2762,8 @@ TEST_F(PaymentsSuggestionGeneratorBnplTest,
       .Times(1);
 
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
-                                         autofill_manager());
+                                         autofill_manager(),
+                                         test::MakeFormGlobalId());
 }
 
 // Verifies that OnBnplSuggestionShown is not called when a BNPL suggestion is
@@ -2778,7 +2781,8 @@ TEST_F(
       .Times(0);
 
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
-                                         autofill_manager());
+                                         autofill_manager(),
+                                         test::MakeFormGlobalId());
 }
 
 // Verifies that OnBnplSuggestionShown is not called when a BNPL suggestion is
@@ -2802,8 +2806,75 @@ TEST_F(
       .Times(0);
 
   GetCreditCardSuggestionsForTouchToFill(/*credit_cards=*/{CreateServerCard()},
-                                         autofill_manager());
+                                         autofill_manager(),
+                                         test::MakeFormGlobalId());
 }
+
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GetCreditCardSuggestionsForTouchToFill_EmptyCardNumberField_IncludesBnpl) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBuyNowPayLater,
+       features::kAutofillEnableAmountExtraction,
+       features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+  FormData form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                   .value = u"Card Name",
+                   .is_autofilled_according_to_renderer = true},
+                  {.role = CREDIT_CARD_NUMBER, .value = u""}}});
+  autofill_manager().AddSeenForm(form,
+                                 {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      {CreateServerCard(), CreateLocalCard()}, autofill_manager(),
+      form.global_id());
+
+  ASSERT_EQ(suggestions.size(), 3U);
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kCreditCardEntry);
+  EXPECT_EQ(suggestions[2].type, SuggestionType::kBnplEntry);
+}
+
+TEST_F(
+    PaymentsSuggestionGeneratorBnplTest,
+    GetCreditCardSuggestionsForTouchToFill_NonEmptyCardNumberField_ExcludesBnpl) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      /*enabled_features=*/
+      {features::kAutofillEnableBuyNowPayLater,
+       features::kAutofillEnableAmountExtraction,
+       features::kAutofillEnableAiBasedAmountExtraction},
+      /*disabled_features=*/{});
+  payments_data().AddBnplIssuer(test::GetTestUnlinkedBnplIssuer());
+  FormData form = test::GetFormData(
+      {.fields = {{.role = CREDIT_CARD_NAME_FULL,
+                   .value = u"Card Name",
+                   .is_autofilled_according_to_renderer = true},
+                  {.role = CREDIT_CARD_NUMBER, .value = u"01230123012399"}}});
+  autofill_manager().AddSeenForm(form,
+                                 {CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER});
+  ON_CALL(*static_cast<MockAutofillOptimizationGuideDecider*>(
+              autofill_client().GetAutofillOptimizationGuideDecider()),
+          IsUrlEligibleForBnplIssuer)
+      .WillByDefault(testing::Return(true));
+
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      {CreateServerCard(), CreateLocalCard()}, autofill_manager(),
+      form.global_id());
+
+  ASSERT_EQ(suggestions.size(), 2U);
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
+  EXPECT_EQ(suggestions[1].type, SuggestionType::kCreditCardEntry);
+}
+
 #endif  // BUILDFLAG(IS_ANDROID)
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
@@ -4953,8 +5024,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   CreditCard server_card = CreateServerCard();
   std::vector<CreditCard> cards = {virtual_card, server_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(suggestions[0].main_text.value,
@@ -4979,8 +5050,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   CreditCard server_card = CreateServerCard();
   std::vector<CreditCard> cards = {virtual_card, server_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 2U);
   // Virtual card displays `Virtual card` label. If the merchant has opted out
@@ -5011,8 +5082,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(
@@ -5031,8 +5102,8 @@ TEST_P(
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0]
@@ -5047,8 +5118,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   server_card.SetNetworkForMaskedCard(kVisaCard);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 1U);
   EXPECT_EQ(suggestions[0].icon, Suggestion::Icon::kCardVisa);
@@ -5062,8 +5133,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   server_card.set_card_art_url(expected_custom_icon_url);
   std::vector<CreditCard> cards = {server_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 1U);
   const Suggestion::CustomIconUrl* custom_icon_url =
@@ -5082,8 +5153,8 @@ TEST_P(AutofillCreditCardSuggestionContentForTouchToFillTest,
   payments_data().AddCreditCard(local_card);
   std::vector<CreditCard> cards = {server_card, local_card};
 
-  std::vector<Suggestion> suggestions =
-      GetCreditCardSuggestionsForTouchToFill(cards, autofill_manager());
+  std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
+      cards, autofill_manager(), test::MakeFormGlobalId());
 
   ASSERT_EQ(suggestions.size(), 2U);
   EXPECT_EQ(
