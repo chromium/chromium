@@ -33,7 +33,7 @@ class PasswordRequirementsSpecFetcher {
   //
   // If the network request fails or times out, the callback receives an empty
   // spec.
-  virtual void Fetch(GURL origin, FetchCallback callback) = 0;
+  virtual void Fetch(const GURL& origin, FetchCallback callback) = 0;
 };
 
 }  // namespace autofill

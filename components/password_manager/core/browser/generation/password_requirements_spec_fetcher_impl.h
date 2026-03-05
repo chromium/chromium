@@ -66,8 +66,7 @@ class PasswordRequirementsSpecFetcherImpl
   ~PasswordRequirementsSpecFetcherImpl() override;
 
   // Implementation for PasswordRequirementsSpecFetcher:
-  // TODO(crbug.com/40216268): Pass GURL by const reference here.
-  void Fetch(GURL origin, FetchCallback callback) override;
+  void Fetch(const GURL& origin, FetchCallback callback) override;
 
  private:
   // This structure bundles all data that are associated to a network request

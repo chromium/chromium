@@ -24,7 +24,7 @@ class MockPasswordRequirementsSpecFetcher
   MockPasswordRequirementsSpecFetcher() = default;
   ~MockPasswordRequirementsSpecFetcher() override = default;
 
-  void Fetch(GURL origin, FetchCallback callback) override {
+  void Fetch(const GURL& origin, FetchCallback callback) override {
     fetch_count_[origin]++;
     auto iter = data_to_return_.find(origin);
     std::move(callback).Run(iter != data_to_return_.end()

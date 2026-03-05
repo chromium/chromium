@@ -103,7 +103,7 @@ GURL GetUrlForRequirementsSpec(int version, const std::string& hash_prefix) {
 
 }  // namespace
 
-void PasswordRequirementsSpecFetcherImpl::Fetch(GURL origin,
+void PasswordRequirementsSpecFetcherImpl::Fetch(const GURL& origin,
                                                 FetchCallback callback) {
   DCHECK(origin.is_valid());
   VLOG(1) << "Fetching password requirements spec for " << origin;
@@ -124,27 +124,31 @@ void PasswordRequirementsSpecFetcherImpl::Fetch(GURL origin,
   }
 
   // Canonicalize away trailing periods in hostname.
-  while (!origin.host().empty() && origin.host().back() == '.') {
-    std::string_view new_host =
-        origin.host().substr(0, origin.host().length() - 1);
+  GURL canonicalized_origin = origin;
+  while (!canonicalized_origin.host().empty() &&
+         canonicalized_origin.host().back() == '.') {
+    std::string_view new_host = canonicalized_origin.host().substr(
+        0, canonicalized_origin.host().length() - 1);
     GURL::Replacements replacements;
     replacements.SetHostStr(new_host);
-    origin = origin.ReplaceComponents(replacements);
+    canonicalized_origin = canonicalized_origin.ReplaceComponents(replacements);
   }
 
-  std::string hash_prefix = GetHashPrefix(origin, prefix_length_);
+  std::string hash_prefix = GetHashPrefix(canonicalized_origin, prefix_length_);
 
   // If a lookup is happening already, just register another callback.
   auto iter = lookups_in_flight_.find(hash_prefix);
   if (iter != lookups_in_flight_.end()) {
-    iter->second->callbacks.emplace_back(origin, std::move(callback));
+    iter->second->callbacks.emplace_back(std::move(canonicalized_origin),
+                                         std::move(callback));
     VLOG(1) << "Lookup already in flight";
     return;
   }
 
   // Start another lookup otherwise.
   auto lookup = std::make_unique<LookupInFlight>();
-  lookup->callbacks.emplace_back(origin, std::move(callback));
+  lookup->callbacks.emplace_back(std::move(canonicalized_origin),
+                                 std::move(callback));
   lookup->start_of_request = base::TimeTicks::Now();
 
   net::NetworkTrafficAnnotationTag traffic_annotation =

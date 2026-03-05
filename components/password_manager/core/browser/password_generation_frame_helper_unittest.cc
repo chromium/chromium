@@ -126,7 +126,7 @@ class FakePasswordRequirementsSpecFetcher
   FakePasswordRequirementsSpecFetcher() = default;
   ~FakePasswordRequirementsSpecFetcher() override = default;
 
-  void Fetch(GURL origin, FetchCallback callback) override {
+  void Fetch(const GURL& origin, FetchCallback callback) override {
     if (origin.DeprecatedGetOriginAsURL().host().find(kNoServerResponse) !=
         std::string::npos) {
       std::move(callback).Run(PasswordRequirementsSpec());
