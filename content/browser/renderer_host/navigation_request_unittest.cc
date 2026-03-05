@@ -149,6 +149,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
         base::BindOnce(&NavigationRequestTest::UpdateThrottleCheckResult,
                        base::Unretained(this)));
 
+    GetNavigationRequest()->ComputePoliciesToCommit();
     GetNavigationRequest()->WillCommitWithoutUrlLoader();
   }
 
