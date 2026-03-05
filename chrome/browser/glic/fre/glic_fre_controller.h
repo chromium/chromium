@@ -74,6 +74,12 @@ enum class GlicFreWidgetClosedReason {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicFreWidgetClosedReason)
 
+///////////
+// WARNING: The FRE dialog is deprecated, this will be removed soon. However,
+// some small parts may be still need kept for Unified FRE.
+// See b/489122337
+///////////
+
 // This class owns and manages the glic FRE modal dialog, and is owned by a
 // GlicWindowController.
 //
