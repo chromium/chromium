@@ -60,6 +60,10 @@ enum class TabGridTransitionType {
 
   // Whether the transition is for an incognito tab.
   BOOL _incognito;
+
+  // The top and bottom toolbar snapshot views.
+  UIView* _topToolbarSnapshotView;
+  UIView* _bottomToolbarSnapshotView;
 }
 
 #pragma mark - Public
@@ -127,6 +131,34 @@ enum class TabGridTransitionType {
 
 #pragma mark - Private
 
+// Takes snapshots of the top and bottom toolbars, for normal transitions.
+- (void)takeToolbarSnapshots {
+  if (_transitionType != TabGridTransitionType::kNormal) {
+    return;
+  }
+
+  CGRect contentAreaFrame = [self contentAreaFrame];
+
+  // No top toolbar snapshot for regular browser NTPs in grid to tab
+  // animations. `shouldHideTopToolbar` is not directly used here as the
+  // screenshot of the content below the status bar is needed when doing a Tab
+  // to Grid transition.
+  BOOL shouldSkipTopToolbarSnapshot =
+      [self shouldHideTopToolbar] &&
+      _params->direction == TabGridTransitionDirection::kFromTabGridToBrowser;
+
+  UIViewController* browserLayout = _params->browser_layout_view_controller;
+  if (!shouldSkipTopToolbarSnapshot) {
+    _topToolbarSnapshotView =
+        [self snapshotOfViewPortionAboveRect:browserLayout.view
+                                  middleRect:contentAreaFrame];
+  }
+
+  _bottomToolbarSnapshotView =
+      [self snapshotOfViewPortionBelowRect:browserLayout.view
+                                middleRect:contentAreaFrame];
+}
+
 // Performs the Browser to Tab Grid transition with a `completion` block.
 - (void)performBrowserToTabGridTransitionWithCompletion:
     (ProceduralBlock)completion {
@@ -161,6 +193,11 @@ enum class TabGridTransitionType {
 
 // Prepares items for the Browser to Tab Grid transition.
 - (void)prepareBrowserToTabGridTransition {
+  // Take the toolbar snapshots before adding the `_browserLayoutViewController`
+  // to the hierarchy (since taking the snapshots forces a screen update). This
+  // fixes some transition issues.
+  [self takeToolbarSnapshots];
+
   [_params->browser_layout_view_controller willMoveToParentViewController:nil];
 }
 
@@ -168,7 +205,6 @@ enum class TabGridTransitionType {
 - (void)prepareTabGridToBrowserTransition {
   UIViewController* tabGrid = _params->tab_grid_view_controller;
   UIViewController* browserLayout = _params->browser_layout_view_controller;
-  [tabGrid addChildViewController:browserLayout];
   if (IsChromeNextIaEnabled()) {
     // Remove from superview to ensure all constraints are gone.
     [browserLayout.view removeFromSuperview];
@@ -183,6 +219,15 @@ enum class TabGridTransitionType {
     [tabGrid.view addSubview:browserLayout.view];
   }
 
+  // Take the toolbar snapshots before adding the `_browserLayoutViewController`
+  // to the hierarchy (since taking the snapshots forces a screen update). This
+  // fixes some transition issues.
+  [self takeToolbarSnapshots];
+
+  [tabGrid addChildViewController:browserLayout];
+  [tabGrid.view addSubview:browserLayout.view];
+  // `didMoveToParentViewController` is called in
+  // `finalizeTabGridToBrowserTransition`, no need to call here.
   browserLayout.view.accessibilityViewIsModal = YES;
 }
 
@@ -259,13 +304,7 @@ enum class TabGridTransitionType {
 - (TabGridAnimationParameters*)createAnimationParameters {
   UIViewController* tabGrid = _params->tab_grid_view_controller;
   UIViewController* browserLayout = _params->browser_layout_view_controller;
-  // Get the content area frame.
-  UIView* tabContentView = browserLayout.view;
-  NamedGuide* contentAreaGuide =
-      [_params->browser_layout_view_controller contentAreaGuide];
-  CGRect contentAreaFrame =
-      [contentAreaGuide.owningView convertRect:contentAreaGuide.layoutFrame
-                                        toView:tabContentView];
+  CGRect contentAreaFrame = [self contentAreaFrame];
 
   // Get the "top toolbar height" (everything above the web content area) by
   // using the `contentAreaFrame.origin.y`. This dynamically handles the
@@ -287,17 +326,6 @@ enum class TabGridTransitionType {
   // disabled for regular browser NTPs and iPads.
   BOOL scaleTopToolbar =
       !_isRegularBrowserNTP && IsSplitToolbarMode(_activeGrid);
-
-  // No top toolbar snapshot for regular browser NTPs for grid to tab
-  // animations. `topToolbarHidden` is not directly used here as the screenshot
-  // of the content below the status bar is needed when doing a Tab to Grid
-  // transition.
-  UIView* topToolbarSnapshotView =
-      topToolbarHidden && _params->direction ==
-                              TabGridTransitionDirection::kFromTabGridToBrowser
-          ? nil
-          : [self snapshotOfViewPortionAboveRect:tabContentView
-                                      middleRect:contentAreaFrame];
 
   // Get the animation's destination and origin frames.
   CGRect destinationFrame =
@@ -322,10 +350,8 @@ enum class TabGridTransitionType {
                 contentSnapshot:_tabGridCellItem.snapshot
                topToolbarHeight:topToolbarHeight
             bottomToolbarHeight:bottomToolbarHeight
-         topToolbarSnapshotView:topToolbarSnapshotView
-      bottomToolbarSnapshotView:
-          [self snapshotOfViewPortionBelowRect:tabContentView
-                                    middleRect:contentAreaFrame]
+         topToolbarSnapshotView:_topToolbarSnapshotView
+      bottomToolbarSnapshotView:_bottomToolbarSnapshotView
           shouldScaleTopToolbar:scaleTopToolbar
                       incognito:_incognito
                topToolbarHidden:topToolbarHidden];
@@ -372,6 +398,16 @@ enum class TabGridTransitionType {
   UIViewController* tabGrid = _params->tab_grid_view_controller;
   return _isRegularBrowserNTP && !CanShowTabStrip(tabGrid) &&
          IsSplitToolbarMode(tabGrid);
+}
+
+// Get the content area's frame.
+- (CGRect)contentAreaFrame {
+  UIViewController<TabGridTransitionContextProvider>* browserLayout =
+      _params->browser_layout_view_controller;
+
+  NamedGuide* contentAreaGuide = [browserLayout contentAreaGuide];
+  return [contentAreaGuide.owningView convertRect:contentAreaGuide.layoutFrame
+                                           toView:browserLayout.view];
 }
 
 @end
