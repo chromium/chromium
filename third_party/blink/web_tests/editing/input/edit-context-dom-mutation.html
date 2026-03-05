@@ -293,6 +293,21 @@
     assert_equals(editContext.text, "H");
     assert_equals(editContext.selectionStart, 1);
     assert_equals(editContext.selectionEnd, 1);
+
+    // Test with range selection
+    editContext.updateText(0, 1, "Hello world!");
+    editContext.updateSelection(6, 12); // select "world!"
+    editContext.updateText(0, 12, "Hi"); // shorten text, selection becomes stale
+    assert_equals(editContext.text, "Hi");
+    // Selection offsets exceed text length - this is non-standard behavior.
+    // TODO(crbug.com/379170477): updateText should adjust selection to stay within bounds.
+    assert_equals(editContext.selectionStart, 6);
+    assert_equals(editContext.selectionEnd, 12);
+
+    eventSender.keyDown('Backspace');
+    assert_equals(editContext.selectionStart, 1);
+    assert_equals(editContext.selectionEnd, 1);
+    assert_equals(editContext.text, "H");
   }, "EditContext should not crash during backward deletion if selection is not updated after updateText()")
 
   test(() => {
@@ -328,6 +343,21 @@
     assert_equals(editContext.text, "Hi");
     assert_equals(editContext.selectionStart, 2);
     assert_equals(editContext.selectionEnd, 2);
+
+    // Test with range selection
+    editContext.updateText(0, 2, "Hello world!");
+    editContext.updateSelection(6, 12); // select "world!"
+    editContext.updateText(0, 12, "Hi");
+    assert_equals(editContext.text, "Hi");
+    // Selection offsets exceed text length - this is non-standard behavior.
+    // TODO(crbug.com/379170477): updateText should adjust selection to stay within bounds.
+    assert_equals(editContext.selectionStart, 6);
+    assert_equals(editContext.selectionEnd, 12);
+
+    eventSender.keyDown('Delete');
+    assert_equals(editContext.selectionStart, 2);
+    assert_equals(editContext.selectionEnd, 2);
+    assert_equals(editContext.text, "Hi");
   }, "EditContext should not crash during forward deletion if selection is not updated after updateText()")
 </script>
 </body>
