@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
@@ -16,20 +16,20 @@ static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
 namespace extensions {
 
-ExtensionWebUIOverrideRegistrar::ExtensionWebUIOverrideRegistrar(
+ExtensionUrlOverridesRegistrar::ExtensionUrlOverridesRegistrar(
     content::BrowserContext* context) {
   ExtensionUrlOverrides::InitializeChromeURLOverrides(
       Profile::FromBrowserContext(context));
   extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
   ExtensionSystem::Get(context)->ready().Post(
       FROM_HERE,
-      base::BindOnce(&ExtensionWebUIOverrideRegistrar::OnExtensionSystemReady,
+      base::BindOnce(&ExtensionUrlOverridesRegistrar::OnExtensionSystemReady,
                      weak_factory_.GetWeakPtr(), context));
 }
 
-ExtensionWebUIOverrideRegistrar::~ExtensionWebUIOverrideRegistrar() = default;
+ExtensionUrlOverridesRegistrar::~ExtensionUrlOverridesRegistrar() = default;
 
-void ExtensionWebUIOverrideRegistrar::OnExtensionLoaded(
+void ExtensionUrlOverridesRegistrar::OnExtensionLoaded(
     content::BrowserContext* browser_context,
     const Extension* extension) {
   const URLOverrides::URLOverrideMap& overrides =
@@ -43,7 +43,7 @@ void ExtensionWebUIOverrideRegistrar::OnExtensionLoaded(
   }
 }
 
-void ExtensionWebUIOverrideRegistrar::OnExtensionUnloaded(
+void ExtensionUrlOverridesRegistrar::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UnloadedExtensionReason reason) {
@@ -58,7 +58,7 @@ void ExtensionWebUIOverrideRegistrar::OnExtensionUnloaded(
   }
 }
 
-void ExtensionWebUIOverrideRegistrar::OnExtensionUninstalled(
+void ExtensionUrlOverridesRegistrar::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     UninstallReason reason) {
@@ -67,27 +67,27 @@ void ExtensionWebUIOverrideRegistrar::OnExtensionUninstalled(
       URLOverrides::GetChromeURLOverrides(extension));
 }
 
-void ExtensionWebUIOverrideRegistrar::OnExtensionSystemReady(
+void ExtensionUrlOverridesRegistrar::OnExtensionSystemReady(
     content::BrowserContext* context) {
   ExtensionUrlOverrides::ValidateChromeURLOverrides(
       Profile::FromBrowserContext(context));
 }
 
-void ExtensionWebUIOverrideRegistrar::AddObserver(Observer* observer) {
+void ExtensionUrlOverridesRegistrar::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);
 }
 
-void ExtensionWebUIOverrideRegistrar::RemoveObserver(Observer* observer) {
+void ExtensionUrlOverridesRegistrar::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
 }
 
 static base::LazyInstance<BrowserContextKeyedAPIFactory<
-    ExtensionWebUIOverrideRegistrar>>::DestructorAtExit
+    ExtensionUrlOverridesRegistrar>>::DestructorAtExit
     g_extension_web_ui_override_registrar_factory = LAZY_INSTANCE_INITIALIZER;
 
 // static
-BrowserContextKeyedAPIFactory<ExtensionWebUIOverrideRegistrar>*
-ExtensionWebUIOverrideRegistrar::GetFactoryInstance() {
+BrowserContextKeyedAPIFactory<ExtensionUrlOverridesRegistrar>*
+ExtensionUrlOverridesRegistrar::GetFactoryInstance() {
   return g_extension_web_ui_override_registrar_factory.Pointer();
 }
 

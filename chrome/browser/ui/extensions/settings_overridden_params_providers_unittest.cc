@@ -8,7 +8,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/extensions/extension_url_overrides.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/webui_url_constants.h"
@@ -27,13 +27,13 @@ class SettingsOverriddenParamsProvidersUnitTest
 
     // The NtpOverriddenDialogController rellies on ExtensionUrlOverrides;
     // ensure one exists.
-    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
+    extensions::ExtensionUrlOverridesRegistrar::GetFactoryInstance()
         ->SetTestingFactoryAndUse(
             profile(),
             base::BindRepeating([](content::BrowserContext* context)
                                     -> std::unique_ptr<KeyedService> {
               return std::make_unique<
-                  extensions::ExtensionWebUIOverrideRegistrar>(context);
+                  extensions::ExtensionUrlOverridesRegistrar>(context);
             }));
     auto* template_url_service = static_cast<TemplateURLService*>(
         TemplateURLServiceFactory::GetInstance()->SetTestingFactoryAndUse(

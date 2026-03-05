@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service_test_with_install.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
 #include "chrome/browser/extensions/external_provider_manager.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/common/webui_url_constants.h"
@@ -58,11 +58,11 @@ constexpr char kNtpOverrideExtensionId[] = "feclidjhghfjpipmbpajpkdeemmjhlei";
 
 std::unique_ptr<KeyedService> BuildOverrideRegistrar(
     content::BrowserContext* context) {
-  return std::make_unique<ExtensionWebUIOverrideRegistrar>(context);
+  return std::make_unique<ExtensionUrlOverridesRegistrar>(context);
 }
 
 class TestOverrideRegistrarObserver
-    : public ExtensionWebUIOverrideRegistrar::Observer {
+    : public ExtensionUrlOverridesRegistrar::Observer {
  public:
   TestOverrideRegistrarObserver() = default;
   ~TestOverrideRegistrarObserver() override = default;
@@ -100,9 +100,9 @@ class ExtensionWebUITest : public testing::Test {
         static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile_.get()));
     system->CreateExtensionService(base::CommandLine::ForCurrentProcess(),
                                    base::FilePath(), false);
-    ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
+    ExtensionUrlOverridesRegistrar::GetFactoryInstance()->SetTestingFactory(
         profile_.get(), base::BindRepeating(&BuildOverrideRegistrar));
-    ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile_.get());
+    ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(profile_.get());
   }
 
   void TearDown() override {
@@ -222,9 +222,8 @@ TEST_F(ExtensionWebUITest, ExtensionURLOverride) {
 
 TEST_F(ExtensionWebUITest, OverrideRegistrarObserver) {
   TestOverrideRegistrarObserver observer;
-  ExtensionWebUIOverrideRegistrar* override_registrar =
-      ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
-          profile_.get());
+  ExtensionUrlOverridesRegistrar* override_registrar =
+      ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(profile_.get());
   override_registrar->AddObserver(&observer);
 
   scoped_refptr<const Extension> extension(
@@ -251,9 +250,8 @@ TEST_F(ExtensionWebUITest, OverrideRegistrarObserver) {
 
 TEST_F(ExtensionWebUITest, OverrideRegistrarObserverNoOverride) {
   TestOverrideRegistrarObserver observer;
-  ExtensionWebUIOverrideRegistrar* override_registrar =
-      ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
-          profile_.get());
+  ExtensionUrlOverridesRegistrar* override_registrar =
+      ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(profile_.get());
   override_registrar->AddObserver(&observer);
 
   scoped_refptr<const Extension> extension(

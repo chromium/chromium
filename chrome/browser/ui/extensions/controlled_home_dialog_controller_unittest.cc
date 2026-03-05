@@ -10,7 +10,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
@@ -33,7 +33,7 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildOverrideRegistrar(
     content::BrowserContext* context) {
-  return std::make_unique<extensions::ExtensionWebUIOverrideRegistrar>(context);
+  return std::make_unique<extensions::ExtensionUrlOverridesRegistrar>(context);
 }
 
 }  // namespace
@@ -117,10 +117,10 @@ class ControlledHomeDialogControllerTest : public BrowserWithTestWindowTest {
     // Set up the rest of the necessary systems.
     extensions::ExtensionSystem::Get(profile())->extension_service()->Init();
 
-    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()
+    extensions::ExtensionUrlOverridesRegistrar::GetFactoryInstance()
         ->SetTestingFactory(profile(),
                             base::BindRepeating(&BuildOverrideRegistrar));
-    extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(
+    extensions::ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(
         profile());
 
     extension_prefs_ = extensions::ExtensionPrefs::Get(profile());

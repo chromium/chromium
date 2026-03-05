@@ -13,7 +13,7 @@
 #include "base/observer_list.h"
 #include "chrome/browser/android/extensions/extensions_url_override_registry_manager.h"
 #include "chrome/browser/android/extensions/extensions_url_override_state_tracker.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
@@ -42,7 +42,7 @@ class ExtensionUrlOverrideStateTrackerImpl
  private:
   // Synchronizes the state tracker to the Extensions Override Registrar.
   class RegistrarSynchronizer
-      : public ExtensionWebUIOverrideRegistrar::Observer {
+      : public ExtensionUrlOverridesRegistrar::Observer {
    public:
     RegistrarSynchronizer(Profile* profile,
                           ExtensionUrlOverrideStateTrackerImpl* state_tracker);
@@ -83,7 +83,7 @@ class ExtensionUrlOverrideStateTrackerImpl
 
   std::unique_ptr<RegistrarSynchronizer> synchronizer_;
 
-  raw_ptr<ExtensionWebUIOverrideRegistrar> registrar_;
+  raw_ptr<ExtensionUrlOverridesRegistrar> registrar_;
   raw_ptr<StateListener> listener_;
   raw_ptr<Profile> profile_;
 };

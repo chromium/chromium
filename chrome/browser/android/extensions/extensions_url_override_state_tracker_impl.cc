@@ -51,7 +51,7 @@ ExtensionUrlOverrideStateTrackerImpl::ExtensionUrlOverrideStateTrackerImpl(
     StateListener* listener)
     : listener_(listener), profile_(profile) {
   registrar_ =
-      ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile_);
+      ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(profile_);
   synchronizer_ = std::make_unique<RegistrarSynchronizer>(profile, this);
   registrar_->AddObserver(synchronizer_.get());
 }

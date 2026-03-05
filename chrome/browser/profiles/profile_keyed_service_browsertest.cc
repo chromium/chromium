@@ -705,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceGuestBrowserTest,
     "ExtensionSystemShared",
     "ExtensionUpdater",
     "ExtensionProtocolShutdownNotifierFactory",
-    "ExtensionWebUIOverrideRegistrar",
+    "ExtensionUrlOverridesRegistrar",
     "ExternalInstallManager",
   #if BUILDFLAG(ENABLE_EXTENSIONS)
     "ExternalProviderManager",

@@ -9,7 +9,7 @@
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
-#include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
+#include "chrome/browser/extensions/extension_url_overrides_registrar.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/crx_file/id_util.h"
 #include "extensions/browser/extension_registrar.h"
@@ -22,7 +22,7 @@ namespace {
 
 std::unique_ptr<KeyedService> BuildOverrideRegistrar(
     content::BrowserContext* context) {
-  return std::make_unique<ExtensionWebUIOverrideRegistrar>(context);
+  return std::make_unique<ExtensionUrlOverridesRegistrar>(context);
 }
 
 scoped_refptr<const Extension> GetNtpExtension(const std::string& name) {
@@ -46,11 +46,11 @@ TEST_F(SettingsApiBubbleHelpersUnitTest, TestAcknowledgeExistingExtensions) {
       SetAcknowledgeExistingNtpExtensionsForTesting(true);
 
   InitializeEmptyExtensionService();
-  ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->SetTestingFactory(
+  ExtensionUrlOverridesRegistrar::GetFactoryInstance()->SetTestingFactory(
       profile(), base::BindRepeating(&BuildOverrideRegistrar));
   // We need to trigger the instantiation of the WebUIOverrideRegistrar for
   // it to be constructed, since by default it's not constructed in tests.
-  ExtensionWebUIOverrideRegistrar::GetFactoryInstance()->Get(profile());
+  ExtensionUrlOverridesRegistrar::GetFactoryInstance()->Get(profile());
 
   // Create an extension overriding the NTP.
   scoped_refptr<const Extension> first = GetNtpExtension("first");
