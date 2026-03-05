@@ -5,16 +5,11 @@
 [ExternalExtensionType="printerProvider.PrinterInfo"]
 typedef object PrinterProviderPrinterInfo;
 
+[ExternalExtensionType="printerProvider.PrintError"]
+typedef object PrinterProviderPrintError;
+
 [instanceOf=Blob]
 typedef object Blob;
-
-// Same as in printerProvider.PrintError enum API.
-enum PrintError {
-  "OK",
-  "FAILED",
-  "INVALID_TICKET",
-  "INVALID_DATA"
-};
 
 // printerProviderInternal
 // Internal API used to run callbacks passed to chrome.printerProvider API
@@ -46,15 +41,15 @@ interface PrinterProviderInternal {
   // |requestId|: Parameter identifying the event instance for which the
   //     callback is run.
   // |error|: The printer capability returned by the extension.
-  static undefined reportPrinterCapability(long request_id,
+  static undefined reportPrinterCapability(long requestId,
                                            optional object capability);
 
   // Runs callback to printerProvider.onPrintRequested event.
   // |requestId|: Parameter identifying the event instance for which the
   //     callback is run.
   // |error|: The requested print job result.
-  static undefined reportPrintResult(long request_id,
-                                     optional PrintError error);
+  static undefined reportPrintResult(long requestId,
+                                     optional PrinterProviderPrintError error);
 
   // Gets information needed to create a print data blob for a print request.
   // The blob will be dispatched to the extension via

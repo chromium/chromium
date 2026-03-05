@@ -211,8 +211,7 @@ class PendingPrintRequests {
 
   // Completes the request with the provided request id. It runs the request
   // callback and removes the request from the set.
-  bool Complete(int request_id,
-                api::printer_provider_internal::PrintError error);
+  bool Complete(int request_id, api::printer_provider::PrintError error);
 
   // Runs all pending callbacks with ERROR_FAILED and clears the set of
   // pending requests.
@@ -288,7 +287,7 @@ class PrinterProviderAPIImpl : public PrinterProviderAPI,
                              base::DictValue result) override;
   void OnPrintResult(const Extension* extension,
                      int request_id,
-                     api::printer_provider_internal::PrintError error) override;
+                     api::printer_provider::PrintError error) override;
   void OnGetUsbPrinterInfoResult(
       const Extension* extension,
       int request_id,
@@ -459,9 +458,8 @@ int PendingPrintRequests::Add(PrinterProviderPrintJob job,
   return last_request_id_;
 }
 
-bool PendingPrintRequests::Complete(
-    int request_id,
-    api::printer_provider_internal::PrintError error) {
+bool PendingPrintRequests::Complete(int request_id,
+                                    api::printer_provider::PrintError error) {
   auto it = pending_requests_.find(request_id);
   if (it == pending_requests_.end())
     return false;
@@ -470,11 +468,11 @@ bool PendingPrintRequests::Complete(
   pending_requests_.erase(it);
 
   base::Value error_value;
-  if (error != api::printer_provider_internal::PrintError::kOk) {
+  if (error != api::printer_provider::PrintError::kOk) {
     const std::string error_str =
-        error == api::printer_provider_internal::PrintError::kNone
+        error == api::printer_provider::PrintError::kNone
             ? PrinterProviderAPI::GetDefaultPrintError()
-            : api::printer_provider_internal::ToString(error);
+            : api::printer_provider::ToString(error);
     error_value = base::Value(error_str);
   }
   std::move(callback).Run(error_value);
@@ -727,11 +725,11 @@ void PrinterProviderAPIImpl::OnGetCapabilityResult(const Extension* extension,
 void PrinterProviderAPIImpl::OnPrintResult(
     const Extension* extension,
     int request_id,
-    api::printer_provider_internal::PrintError error) {
+    api::printer_provider::PrintError error) {
   PRINTER_LOG(DEBUG) << "Notifying extensionID=" << extension->id()
                      << " that OnPrint request id=" << request_id
                      << " has completed with status="
-                     << api::printer_provider_internal::ToString(error);
+                     << api::printer_provider::ToString(error);
   pending_print_requests_[extension->id()].Complete(request_id, error);
 }
 
@@ -816,8 +814,8 @@ std::unique_ptr<PrinterProviderAPI> PrinterProviderAPI::Create(
 
 // static
 std::string PrinterProviderAPI::GetDefaultPrintError() {
-  return api::printer_provider_internal::ToString(
-      api::printer_provider_internal::PrintError::kFailed);
+  return api::printer_provider::ToString(
+      api::printer_provider::PrintError::kFailed);
 }
 
 }  // namespace extensions

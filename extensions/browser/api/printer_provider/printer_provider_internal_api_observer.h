@@ -43,10 +43,9 @@ class PrinterProviderInternalAPIObserver {
   // `extension`.
   // `request_id` is the request id passed to the original
   // chrome.printerProvider.onPrintRequested event.
-  virtual void OnPrintResult(
-      const Extension* extension,
-      int request_id,
-      api::printer_provider_internal::PrintError error) = 0;
+  virtual void OnPrintResult(const Extension* extension,
+                             int request_id,
+                             api::printer_provider::PrintError error) = 0;
 
   // Used by chrome.printerProviderInternal API to report
   // chrome.printerProvider.onGetUsbPrinterInfoRequested result returned by the

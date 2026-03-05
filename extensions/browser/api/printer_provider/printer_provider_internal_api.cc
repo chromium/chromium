@@ -80,7 +80,7 @@ void PrinterProviderInternalAPI::NotifyGetCapabilityResult(
 void PrinterProviderInternalAPI::NotifyPrintResult(
     const Extension* extension,
     int request_id,
-    api::printer_provider_internal::PrintError error) {
+    api::printer_provider::PrintError error) {
   for (auto& observer : observers_)
     observer.OnPrintResult(extension, request_id, error);
 }
