@@ -1,12 +1,12 @@
 {
   "name": "Conflicting keybinding test, duplicate of Basics extension (dir next to this), but uses different messages",
   "version": "1.0",
-  "manifest_version": 2,
+  "manifest_version": 3,
   "background": {
-    "scripts": ["background.js"]
+    "service_worker": "background.js"
   },
   "permissions": ["activeTab"],
-  "browser_action": {
+  "action": {
     "default_title": "Send message"
   },
   "commands": {
@@ -20,7 +20,7 @@
       },
       "description": "Toggle feature foo"
     },
-    "_execute_browser_action": {
+    "_execute_action": {
       "suggested_key": {
         "mac": "MacCtrl+Shift+F",
         "default": "Ctrl+Shift+F"

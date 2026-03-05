@@ -20,6 +20,7 @@
 #include "ui/android/ui_android_export.h"
 #include "ui/android/ui_android_jni_headers/WindowAndroid_shared_jni.h"
 #include "ui/android/view_android.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/overlay_transform.h"
 
@@ -146,6 +147,15 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
   // Intended for native browser tests.
   void SetModalDialogManagerForTesting(
       base::android::ScopedJavaLocalRef<jobject> java_modal_dialog_manager);
+
+  // Dispatches KeyEvent to the corresponding Java Activity.
+  // `key_event_types` is the bit flags of ui_controls::AcceleratorState.
+  bool SendKeyEventsForTesting(KeyboardCode key,
+                               int key_event_types,
+                               bool shift,
+                               bool control,
+                               bool alt,
+                               bool command);
 
   float mouse_wheel_scroll_factor() const { return mouse_wheel_scroll_factor_; }
 

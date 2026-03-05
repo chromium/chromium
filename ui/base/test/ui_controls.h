@@ -14,8 +14,6 @@
 
 namespace ui_controls {
 
-enum KeyEventType { kKeyPress = 1 << 0, kKeyRelease = 1 << 1 };
-
 // A set of utility functions to generate native events in platform
 // independent way. Note that since the implementations depend on a window being
 // top level, these can only be called from test suites that are not sharded.
@@ -43,6 +41,7 @@ enum KeyEventType { kKeyPress = 1 << 0, kKeyRelease = 1 << 1 };
 // tests.
 void EnableUIControls();
 
+#if !BUILDFLAG(IS_ANDROID)
 // Reset the state in ui controls logic that are updated by the test to the
 // initial state.
 void ResetUIControlsIfEnabled();
@@ -53,6 +52,10 @@ bool IsUIControlsEnabled();
 
 // Generates keyboard accelerator state in bitmap from each key boolean.
 int GenerateAcceleratorState(bool control, bool shift, bool alt, bool command);
+
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+enum KeyEventType { kKeyPress = 1 << 0, kKeyRelease = 1 << 1 };
 
 // Send a key press with/without modifier keys. This will trigger a key release
 // event after the key press.
@@ -100,6 +103,8 @@ bool SendKeyEventsNotifyWhenDone(gfx::NativeWindow window,
                                  base::OnceClosure task,
                                  int accelerator_state = kNoAccelerator);
 #endif  // !BUILDFLAG(IS_WIN)
+
+#if !BUILDFLAG(IS_ANDROID)
 
 // A default value for a window hint specifies that no window hint is given and
 // an appropriate target window should be deduced from the target or current
@@ -211,6 +216,8 @@ void InstallUIControlsAura(UIControlsAura* instance);
 // traverse more elements for accessibility reasons.
 bool IsFullKeyboardAccessEnabled();
 #endif
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace ui_controls
 

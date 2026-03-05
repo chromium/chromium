@@ -1795,6 +1795,7 @@ source_set("platform_browser_tests") {
     }
 
     if (is_android) {
+      sources += [ "../browser/extensions/extension_keybinding_apitest.cc" ]
       deps += [
         ":test_support_jni_headers",
         "//components/feed:feature_list",
@@ -2360,6 +2361,8 @@ if (is_android) {
       "../browser/ssl/cert_verifier_platform_browser_test.h",
       "base/android/android_browser_test.cc",
       "base/android/android_browser_test.h",
+      "base/interactive_test_utils.cc",
+      "base/interactive_test_utils.h",
       "base/mixin_based_in_process_browser_test.cc",
       "base/mixin_based_in_process_browser_test.h",
       "base/platform_browser_test.h",
@@ -2372,7 +2375,9 @@ if (is_android) {
       "//chrome/browser",
       "//chrome/browser/ui",
       "//chrome/browser/ui/android/tab_model",
+      "//chrome/browser/ui/browser_window",
       "//content/public/browser",
+      "//ui/base:test_support",
     ]
   }
 

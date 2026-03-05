@@ -21,6 +21,7 @@
 #include "ui/android/window_android_compositor.h"
 #include "ui/android/window_android_observer.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/events/keycodes/keyboard_code_conversion_android.h"
 #include "ui/gfx/display_color_spaces.h"
 
 // Must come after all headers that specialize FromJniType() / ToJniType().
@@ -288,6 +289,20 @@ void WindowAndroid::SetModalDialogManagerForTesting(
   JNIEnv* env = base::android::AttachCurrentThread();
   ui::Java_WindowAndroid_setModalDialogManagerForTesting(
       env, GetJavaObject(), java_modal_dialog_manager);
+}
+
+bool WindowAndroid::SendKeyEventsForTesting(KeyboardCode key,
+                                            int key_event_types,
+                                            bool shift,
+                                            bool control,
+                                            bool alt,
+                                            bool command) {
+  return Java_WindowAndroid_sendKeyEventsForTesting(
+             AttachCurrentThread(), GetJavaObject(),
+             AndroidKeyCodeFromKeyboardCode(key), key_event_types,
+             (shift ? JNI_TRUE : JNI_FALSE), (control ? JNI_TRUE : JNI_FALSE),
+             (alt ? JNI_TRUE : JNI_FALSE),
+             /*meta=*/(command ? JNI_TRUE : JNI_FALSE)) == JNI_TRUE;
 }
 
 void WindowAndroid::ShowToast(const std::string text) {

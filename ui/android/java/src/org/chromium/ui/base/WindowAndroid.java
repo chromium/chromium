@@ -26,6 +26,7 @@ import android.os.Process;
 import android.os.SystemClock;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.KeyEvent;
 import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
@@ -97,6 +98,10 @@ public class WindowAndroid
     // Arbitrary error margin to account for cases where the display's refresh rate might not
     // exactly match the target rate.
     private static final float MAX_REFRESH_RATE_DELTA = 2.f;
+
+    // Constants that must be consistent with ui_controls::KeyEventType in C++.
+    private static final int KEY_EVENT_TYPE_KEY_PRESS = 1;
+    private static final int KEY_EVENT_TYPE_KEY_RELEASE = 2;
 
     private final @Nullable LifetimeAssert mLifetimeAssert;
     private @Nullable IntentRequestTrackerImpl mIntentRequestTracker;
@@ -850,6 +855,56 @@ public class WindowAndroid
     @CalledByNativeForTesting
     private void setModalDialogManagerForTesting(ModalDialogManager modalDialogManager) {
         mModalDialogManagerForTesting = modalDialogManager;
+    }
+
+    @CalledByNativeForTesting
+    private boolean sendKeyEventsForTesting(
+            int code,
+            int keyEventTypes,
+            boolean shift,
+            boolean control,
+            boolean alt,
+            boolean meta) {
+
+        Activity activity = ContextUtils.activityFromContext(mContextRef.get());
+        if (activity == null || activity.isFinishing()) {
+            return false;
+        }
+
+        long downTime = System.currentTimeMillis();
+        int metaState =
+                (shift ? KeyEvent.META_SHIFT_ON : 0)
+                        | (control ? KeyEvent.META_CTRL_ON : 0)
+                        | (alt ? KeyEvent.META_ALT_ON : 0)
+                        | (meta ? KeyEvent.META_META_ON : 0);
+
+        if ((keyEventTypes & KEY_EVENT_TYPE_KEY_PRESS) != 0) {
+            if (!activity.dispatchKeyEvent(
+                    new KeyEvent(
+                            downTime,
+                            /* eventTime= */ downTime,
+                            KeyEvent.ACTION_DOWN,
+                            code,
+                            /* repeat= */ 0,
+                            metaState))) {
+                return false;
+            }
+        }
+
+        if ((keyEventTypes & KEY_EVENT_TYPE_KEY_RELEASE) != 0) {
+            if (!activity.dispatchKeyEvent(
+                    new KeyEvent(
+                            downTime,
+                            /* eventTime= */ System.currentTimeMillis(),
+                            KeyEvent.ACTION_UP,
+                            code,
+                            /* repeat= */ 0,
+                            metaState))) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @CalledByNative

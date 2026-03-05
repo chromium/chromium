@@ -34,6 +34,8 @@ class Widget;
 
 namespace ui_test_utils {
 
+#if !BUILDFLAG(IS_ANDROID)
+
 // Use in browser interactive uitests to wait until a browser is set to active.
 // To use, create and call WaitForActivation(). Since on some platforms, the
 // active browser list kept in |BrowserList| is updated before the actual
@@ -85,6 +87,8 @@ void HideNativeWindow(gfx::NativeWindow window);
 // Show and focus a native window. Returns true on success.
 [[nodiscard]] bool ShowAndFocusNativeWindow(gfx::NativeWindow window);
 
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Sends key press and release events to a `browser` or `window`. Waits until at
 // least the key release (or key press, depending on `wait_for`) events have
 // been dispatched, or the test times out. It's useful to wait for key press
@@ -109,6 +113,8 @@ void HideNativeWindow(gfx::NativeWindow window);
     bool alt,
     bool command,
     ui_controls::KeyEventType wait_for = ui_controls::kKeyRelease);
+
+#if !BUILDFLAG(IS_ANDROID)
 
 // Sends a move event blocking until received. Returns true if the event was
 // successfully received. This uses ui_controls::SendMouse***NotifyWhenDone,
@@ -178,6 +184,8 @@ display::Display GetSecondaryDisplay(display::Screen* screen);
 // second one is the other display.
 std::pair<display::Display, display::Display> GetDisplays(
     display::Screen* screen);
+
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace ui_test_utils
 
