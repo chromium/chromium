@@ -69,7 +69,7 @@ public class PermissionParamsListBuilderUnitTest {
     public void addLocationEntryAndBuildWhenSystemLocationDisabled() {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(false);
         mPermissionParamsListBuilder.addPermissionEntry(
-                "Test", "test", ContentSettingsType.GEOLOCATION, true, false);
+                "Test", "test", ContentSettingsType.GEOLOCATION_WITH_OPTIONS, true, false);
 
         List<PermissionObject> permissions = mPermissionParamsListBuilder.build();
         assertEquals(1, permissions.size());
