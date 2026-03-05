@@ -89,7 +89,8 @@ BOOL ShouldTriggerIPHForURLVisits(history::QueryURLAndVisitsResult result) {
 GURL GetValidUrl(NSString* urlString) {
   GURL fixedUpURL = url_formatter::FixupURL(base::SysNSStringToUTF8(urlString),
                                             std::string());
-  if (fixedUpURL.IsStandard() || fixedUpURL.SchemeIs("chrome")) {
+  if ((fixedUpURL.IsStandard() || fixedUpURL.SchemeIs("chrome")) &&
+      fixedUpURL.is_valid()) {
     return fixedUpURL;
   }
   return GURL();
