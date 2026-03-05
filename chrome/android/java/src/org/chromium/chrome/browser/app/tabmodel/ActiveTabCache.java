@@ -40,6 +40,18 @@ public class ActiveTabCache {
     private static final String INCOGNITO_SUFFIX = "_incognito";
     private static @Nullable File sActiveTabDirectory;
 
+    /** Creates an instance of {@link ActiveTabCache}. */
+    @FunctionalInterface
+    public interface Factory {
+        /**
+         * @param windowTag The tag for the window being tracked.
+         * @param selector The selector associated with the window.
+         * @param cipherFactory The cipher factory for the store.
+         */
+        ActiveTabCache build(
+                String windowTag, TabModelSelector selector, @Nullable CipherFactory cipherFactory);
+    }
+
     public Callback<@Nullable Tab> mOnRegularActiveTabChanged =
             tab -> onActiveTabChanged(/* isModelOtr= */ false, tab);
     public Callback<@Nullable Tab> mOnIncognitoActiveTabChanged =
@@ -74,13 +86,12 @@ public class ActiveTabCache {
      * active tab each time it is updated.
      *
      * @param tab The active tab.
-     * @param cipherFactory The cipher factory for encrypting incognito tab state.
      */
-    public void saveActiveTab(Tab tab, @Nullable CipherFactory cipherFactory) {
+    public void saveActiveTab(Tab tab) {
         assertOnUiThread();
 
         boolean isOffTheRecord = tab.isOffTheRecord();
-        assert !isOffTheRecord || cipherFactory != null;
+        assert !isOffTheRecord || mCipherFactory != null;
 
         String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
         File file = new File(getOrCreateCacheDirectory(), fileName);
@@ -89,7 +100,7 @@ public class ActiveTabCache {
             return;
         }
 
-        TabStateFileManager.saveStateInternal(file, tabState, isOffTheRecord, cipherFactory);
+        TabStateFileManager.saveStateInternal(file, tabState, isOffTheRecord, mCipherFactory);
     }
 
     /**
@@ -97,18 +108,16 @@ public class ActiveTabCache {
      * null.
      *
      * @param isOffTheRecord Whether to restore the incognito active tab.
-     * @param cipherFactory The cipher factory for decrypting incognito tab state.
      */
-    public @Nullable TabState restoreActiveTab(
-            boolean isOffTheRecord, @Nullable CipherFactory cipherFactory) {
+    public @Nullable TabState restoreActiveTab(boolean isOffTheRecord) {
         assertOnUiThread();
-        assert !isOffTheRecord || cipherFactory != null;
+        assert !isOffTheRecord || mCipherFactory != null;
 
         String fileName = isOffTheRecord ? mIncognitoTabFileName : mRegularTabFileName;
         File file = new File(getOrCreateCacheDirectory(), fileName);
         if (!file.exists()) return null;
 
-        return TabStateFileManager.restoreTabStateInternal(file, isOffTheRecord, cipherFactory);
+        return TabStateFileManager.restoreTabStateInternal(file, isOffTheRecord, mCipherFactory);
     }
 
     public void startTracking(boolean incognito) {
@@ -213,7 +222,7 @@ public class ActiveTabCache {
         } else {
             boolean isOffTheRecord = tab.isOffTheRecord();
             assert isModelOtr == isOffTheRecord;
-            saveActiveTab(tab, isModelOtr ? mCipherFactory : null);
+            saveActiveTab(tab);
         }
     }
 

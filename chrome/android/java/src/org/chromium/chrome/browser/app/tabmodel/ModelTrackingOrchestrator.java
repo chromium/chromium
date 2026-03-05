@@ -54,6 +54,7 @@ public class ModelTrackingOrchestrator {
          * @param windowTag The window tag to use for the window.
          * @param migrationManager The migration manager for the window.
          * @param tabModelSelector The {@link TabModelSelector} to observe changes for.
+         * @param activeTabCache Used to cache active tab state for the window.
          * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
          * @param isAuthoritative Whether this store is the authoritative store for the window.
          */
@@ -61,6 +62,7 @@ public class ModelTrackingOrchestrator {
                 String windowTag,
                 PersistentStoreMigrationManager migrationManager,
                 TabModelSelector tabModelSelector,
+                ActiveTabCache activeTabCache,
                 boolean hasCipherFactory,
                 boolean isAuthoritative);
     }
@@ -131,6 +133,7 @@ public class ModelTrackingOrchestrator {
     private final String mWindowTag;
     private final PersistentStoreMigrationManager mMigrationManager;
     private final TabModelSelector mTabModelSelector;
+    private final ActiveTabCache mActiveTabCache;
     private final boolean mIsAuthoritative;
     private final Map<Token, Boolean> mGroupIncognitoStatus = new HashMap<>();
     private final IncognitoTabModelObserver mIncognitoTabModelObserver =
@@ -199,6 +202,7 @@ public class ModelTrackingOrchestrator {
      * @param windowTag The window tag to use for the window.
      * @param migrationManager The migration manager for the window.
      * @param tabModelSelector The {@link TabModelSelector} to observe changes for.
+     * @param activeTabCache Used to cache active tab state for the window.
      * @param hasCipherFactory Whether a cipher factory was provided for OTR data.
      * @param isAuthoritative Whether this store is the authoritative store for the window.
      */
@@ -206,11 +210,13 @@ public class ModelTrackingOrchestrator {
             String windowTag,
             PersistentStoreMigrationManager migrationManager,
             TabModelSelector tabModelSelector,
+            ActiveTabCache activeTabCache,
             boolean hasCipherFactory,
             boolean isAuthoritative) {
         mWindowTag = windowTag;
         mMigrationManager = migrationManager;
         mTabModelSelector = tabModelSelector;
+        mActiveTabCache = activeTabCache;
         mIsAuthoritative = isAuthoritative;
 
         if (hasCipherFactory) {
@@ -320,6 +326,11 @@ public class ModelTrackingOrchestrator {
                 tab.isOffTheRecord() ? mIncognitoSynchronizer : mRegularSynchronizer;
         if (synchronizer == null) return;
         synchronizer.saveTab(tab);
+
+        TabModel model = mTabModelSelector.getModel(tab.isOffTheRecord());
+        if (model.getCurrentTabSupplier().get() == tab) {
+            mActiveTabCache.saveActiveTab(tab);
+        }
     }
 
     /**
@@ -424,12 +435,14 @@ public class ModelTrackingOrchestrator {
                     CollectionSaveForwarder.createForTabStripCollection(
                             profileAndCollection.profile, profileAndCollection.collection);
         }
+        mActiveTabCache.startTracking(incognito);
+
         Callback<@Nullable Tab> obs =
                 incognito ? mIncognitoActiveTabObserver : mRegularActiveTabObserver;
         mTabModelSelector
                 .getModel(incognito)
                 .getCurrentTabSupplier()
-                .addSyncObserverAndPostIfNonNull(obs);
+                .addSyncObserverAndCallIfNonNull(obs);
     }
 
     private void initVisualDataTracking(boolean incognito) {
@@ -489,12 +502,14 @@ public class ModelTrackingOrchestrator {
         TabModel model = mTabModelSelector.getModel(incognito);
         if (incognito) {
             if (mIncognitoWindowForwarder != null) {
+                mActiveTabCache.stopTracking(/* incognito= */ true);
                 model.getCurrentTabSupplier().removeObserver(mIncognitoActiveTabObserver);
                 mIncognitoWindowForwarder.destroy();
                 mIncognitoWindowForwarder = null;
             }
         } else {
             if (mRegularWindowForwarder != null) {
+                mActiveTabCache.stopTracking(/* incognito= */ false);
                 model.getCurrentTabSupplier().removeObserver(mRegularActiveTabObserver);
                 mRegularWindowForwarder.destroy();
                 mRegularWindowForwarder = null;

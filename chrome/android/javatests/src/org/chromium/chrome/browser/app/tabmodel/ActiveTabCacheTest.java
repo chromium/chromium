@@ -60,15 +60,14 @@ public class ActiveTabCacheTest {
     public void testSaveAndRestore() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull("Tab state should not be null", tabState);
                     assertEquals(
                             "URL should match", tab.getUrl().getSpec(), tabState.url.getSpec());
@@ -89,13 +88,12 @@ public class ActiveTabCacheTest {
                                     mCipherFactory);
                 });
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, mCipherFactory));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ true, mCipherFactory);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ true);
                     assertNotNull("Tab state should not be null", tabState);
                     assertEquals(
                             "URL should match", tab.getUrl().getSpec(), tabState.url.getSpec());
@@ -107,18 +105,16 @@ public class ActiveTabCacheTest {
     public void testReplaceActiveTab() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActiveTabCache.saveActiveTab(tab, /* cipherFactory= */ null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
 
         waitForActiveTabFileCreation(/* incognito= */ false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
                     assertEquals("URL should match", "about:blank", tabState.url.getSpec());
                 });
@@ -128,14 +124,12 @@ public class ActiveTabCacheTest {
         Tab newTab = page.getTab();
 
         // Save again with new state
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActiveTabCache.saveActiveTab(newTab, /* cipherFactory= */ null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(newTab));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
                     assertEquals(newUrl, tabState.url.getSpec());
                 });
@@ -146,9 +140,9 @@ public class ActiveTabCacheTest {
     public void testClearActiveTab() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
 
         waitForActiveTabFileCreation(/* incognito= */ false);
 
@@ -156,8 +150,7 @@ public class ActiveTabCacheTest {
                 () -> {
                     mActiveTabCache.clearActiveTab(false);
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNull(tabState);
                 });
     }
@@ -167,14 +160,14 @@ public class ActiveTabCacheTest {
     public void testSaveIncognito_NullCipherFactory_ThrowsException() {
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ false);
         assertTrue(tab.isOffTheRecord());
 
         Holder<Boolean> threwException = new Holder<>(false);
         try {
             // This will result in a RuntimeException or AssertionError depending on whether
             // ThreadUtils.runOnUiThreadBlocking rethrows as a RuntimeException.
-            ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, null));
+            ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
         } catch (RuntimeException | AssertionError e) {
             threwException.onResult(true);
         }
@@ -186,17 +179,19 @@ public class ActiveTabCacheTest {
     public void testRestoreIncognito_NullCipherFactory_ThrowsException() {
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, mCipherFactory));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
 
         waitForActiveTabFileCreation(/* incognito= */ true);
+
+        initActiveTabCache(/* hasCipherFactory= */ false);
 
         Holder<Boolean> threwException = new Holder<>(false);
         try {
             // This will result in a RuntimeException or AssertionError depending on whether
             // ThreadUtils.runOnUiThreadBlocking rethrows as a RuntimeException.
-            ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.restoreActiveTab(true, null));
+            ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.restoreActiveTab(true));
         } catch (RuntimeException | AssertionError e) {
             threwException.onResult(true);
         }
@@ -208,10 +203,10 @@ public class ActiveTabCacheTest {
     public void testSaveAndRestoreRegular_WithCipherFactory() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
         // Pass a cipher factory even though it's regular tab. It will not be used.
-        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab, mCipherFactory));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
 
         waitForActiveTabFileCreation(/* incognito= */ false);
 
@@ -219,8 +214,7 @@ public class ActiveTabCacheTest {
                 () -> {
                     // Restoration should work because it is a regular tab.
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
                     assertEquals(tab.getUrl().getSpec(), tabState.url.getSpec());
                 });
@@ -228,7 +222,7 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     // Restoration should still work even with a cipher factory.
-                    TabState tabState = mActiveTabCache.restoreActiveTab(false, mCipherFactory);
+                    TabState tabState = mActiveTabCache.restoreActiveTab(false);
                     assertNotNull(tabState);
                 });
     }
@@ -238,10 +232,9 @@ public class ActiveTabCacheTest {
     public void testFlatBufferUsage() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActiveTabCache.saveActiveTab(tab, /* cipherFactory= */ null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
         waitForActiveTabFileCreation(/* incognito= */ false);
     }
 
@@ -250,10 +243,9 @@ public class ActiveTabCacheTest {
     public void testCleanupWindow() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> mActiveTabCache.saveActiveTab(tab, /* cipherFactory= */ null));
+        ThreadUtils.runOnUiThreadBlocking(() -> mActiveTabCache.saveActiveTab(tab));
         waitForActiveTabFileCreation(/* incognito= */ false);
     }
 
@@ -262,7 +254,7 @@ public class ActiveTabCacheTest {
     public void testTrackingActiveTab() {
         WebPageStation page = mActivityTestRule.startOnBlankPage();
         Tab tab1 = page.getTab();
-        initActiveTabCache();
+        initActiveTabCache(/* hasCipherFactory= */ true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> mActiveTabCache.startTracking(/* incognito= */ false));
@@ -280,8 +272,7 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
                     assertEquals("about:blank", tabState.url.getSpec());
                 });
@@ -291,8 +282,7 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ false, /* cipherFactory= */ null);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ false);
                     assertNotNull(tabState);
                     assertEquals(getOriginalNativeNtpUrl(), tabState.url.getSpec());
                 });
@@ -333,8 +323,7 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ true, mCipherFactory);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ true);
                     assertNotNull(tabState);
                     assertEquals(aboutBlankUrl, tabState.url.getSpec());
                 });
@@ -344,8 +333,7 @@ public class ActiveTabCacheTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     TabState tabState =
-                            mActiveTabCache.restoreActiveTab(
-                                    /* isOffTheRecord= */ true, mCipherFactory);
+                            mActiveTabCache.restoreActiveTab(/* isOffTheRecord= */ true);
                     assertNotNull(tabState);
                     assertEquals(getOriginalNativeNtpUrl(), tabState.url.getSpec());
                 });
@@ -362,7 +350,7 @@ public class ActiveTabCacheTest {
                 .closeTabs();
     }
 
-    private void initActiveTabCache() {
+    private void initActiveTabCache(boolean hasCipherFactory) {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mActiveTabCache =
@@ -372,7 +360,7 @@ public class ActiveTabCacheTest {
                                             .getActivity()
                                             .getTabModelSelectorSupplier()
                                             .get(),
-                                    mCipherFactory);
+                                    hasCipherFactory ? mCipherFactory : null);
                 });
     }
 

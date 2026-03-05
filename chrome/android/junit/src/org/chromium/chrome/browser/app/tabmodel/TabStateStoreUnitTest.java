@@ -79,14 +79,16 @@ public class TabStateStoreUnitTest {
     @Mock private TabStateStorageService mTabStateStorageService;
     @Mock private TabPersistentStoreObserver mObserver;
     @Mock private ModelTrackingOrchestrator mModelTrackingOrchestrator;
+    @Mock private ActiveTabCache mActiveTabCache;
     @Mock private TabCountTracker mTabCountTracker;
     @Mock private StorageLoadedData mRegularData;
     @Mock private StorageLoadedData mIncognitoData;
     @Mock private TabList mComprehensiveTabList;
     @Captor private ArgumentCaptor<Callback<StorageLoadedData>> mCallbackCaptor;
 
-    private final ModelTrackingOrchestrator.Factory mFactory =
-            (a, b, c, d, e) -> mModelTrackingOrchestrator;
+    private final ModelTrackingOrchestrator.Factory mModelTrackingOrchestratorFactory =
+            (a, b, c, d, e, f) -> mModelTrackingOrchestrator;
+    private final ActiveTabCache.Factory mActiveTabCacheFactory = (a, b, c) -> mActiveTabCache;
     private final SettableNullableObservableSupplier<Tab> mRegularTabSupplier =
             ObservableSuppliers.createNullable();
     private final SettableNullableObservableSupplier<Tab> mIncognitoTabSupplier =
@@ -127,7 +129,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ true);
         mTabStateStore.addObserver(mObserver);
 
@@ -160,6 +163,7 @@ public class TabStateStoreUnitTest {
         mTabStateStore.clearCurrentWindow();
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onWindowCleared();
     }
 
@@ -174,7 +178,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ true);
         when(mMigrationManager.shouldRazeStoreForWindow(true)).thenReturn(true);
 
@@ -182,6 +187,7 @@ public class TabStateStoreUnitTest {
 
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onWindowCleared();
         verify(mMigrationManager).onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
     }
@@ -197,7 +203,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ true);
         when(mMigrationManager.shouldRazeStoreForWindow(true)).thenReturn(false);
 
@@ -205,6 +212,7 @@ public class TabStateStoreUnitTest {
 
         verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker, never()).clearCurrentWindow();
+        verify(mActiveTabCache, never()).clearCurrentWindow();
         verify(mMigrationManager, never()).onWindowCleared();
         verify(mMigrationManager).onAuthoritativeStoreInitialized(StoreType.TAB_STATE_STORE);
     }
@@ -220,7 +228,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ false);
         when(mMigrationManager.shouldRazeStoreForWindow(false)).thenReturn(true);
 
@@ -228,6 +237,7 @@ public class TabStateStoreUnitTest {
 
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onShadowStoreRazed();
         verify(mMigrationManager, never()).onAuthoritativeStoreInitialized(anyInt());
     }
@@ -243,7 +253,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ false);
         when(mMigrationManager.shouldRazeStoreForWindow(false)).thenReturn(false);
 
@@ -251,6 +262,7 @@ public class TabStateStoreUnitTest {
 
         verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker, never()).clearCurrentWindow();
+        verify(mActiveTabCache, never()).clearCurrentWindow();
         verify(mMigrationManager, never()).onShadowStoreRazed();
         verify(mMigrationManager, never()).onAuthoritativeStoreInitialized(anyInt());
     }
@@ -283,7 +295,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ true);
         mTabStateStore.onNativeLibraryReady();
 
@@ -396,6 +409,8 @@ public class TabStateStoreUnitTest {
         Assert.assertThrows(AssertionError.class, () -> regularCallback.onResult(mRegularData));
 
         verify(mTabStateStorageService).clearUnusedNodesForWindow(WINDOW_TAG, false, null);
+        verify(mTabCountTracker).clearTabCount(false);
+        verify(mActiveTabCache).clearActiveTab(false);
         verify(tabState.contentsState).destroy();
         verify(mRegularData).destroy();
     }
@@ -481,6 +496,7 @@ public class TabStateStoreUnitTest {
         verify(mModelTrackingOrchestrator).onRestoreFinished();
         verify(mTabStateStorageService, never()).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker, never()).clearCurrentWindow();
+        verify(mActiveTabCache, never()).clearCurrentWindow();
         verify(mMigrationManager, never()).onWindowCleared();
         verify(mMigrationManager, never()).onShadowStoreRazed();
     }
@@ -496,7 +512,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ false);
         mTabStateStore.addObserver(mObserver);
 
@@ -534,6 +551,7 @@ public class TabStateStoreUnitTest {
         verify(mModelTrackingOrchestrator).onRestoreFinished();
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onShadowStoreRazed();
     }
 
@@ -577,7 +595,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ false);
         mTabStateStore.addObserver(mObserver);
 
@@ -616,6 +635,7 @@ public class TabStateStoreUnitTest {
         verify(mTabStateStorageService).loadAllData(eq(WINDOW_TAG), eq(false), any());
         verify(mTabStateStorageService, never()).loadAllData(eq(WINDOW_TAG), eq(true), any());
         verify(mTabCountTracker).clearTabCount(true);
+        verify(mActiveTabCache).clearActiveTab(true);
         verify(mTabStateStorageService).clearUnusedNodesForWindow(WINDOW_TAG, true, null);
     }
 
@@ -645,7 +665,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         /* cipherFactory= */ null,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ true);
         noCipherTabStateStore.addObserver(mObserver);
         noCipherTabStateStore.onNativeLibraryReady();
@@ -667,6 +688,7 @@ public class TabStateStoreUnitTest {
 
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onWindowCleared();
     }
 
@@ -681,7 +703,8 @@ public class TabStateStoreUnitTest {
                         mMigrationManager,
                         mCipherFactory,
                         mTabCountTracker,
-                        mFactory,
+                        mModelTrackingOrchestratorFactory,
+                        mActiveTabCacheFactory,
                         /* isAuthoritative= */ false);
 
         mTabStateStore.onNativeLibraryReady();
@@ -689,6 +712,7 @@ public class TabStateStoreUnitTest {
 
         verify(mTabStateStorageService).clearWindow(WINDOW_TAG);
         verify(mTabCountTracker).clearCurrentWindow();
+        verify(mActiveTabCache).clearCurrentWindow();
         verify(mMigrationManager).onShadowStoreRazed();
     }
 }

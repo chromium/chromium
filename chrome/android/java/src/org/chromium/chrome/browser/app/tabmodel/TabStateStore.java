@@ -53,12 +53,14 @@ public class TabStateStore implements TabPersistentStore {
     private final String mWindowTag;
     private final TabCountTracker mTabCountTracker;
     private final ModelTrackingOrchestrator.Factory mOrchestratorFactory;
+    private final ActiveTabCache.Factory mActiveTabCacheFactory;
     private final TabPersistencePolicy mTabPersistencePolicy;
     private final @Nullable CipherFactory mCipherFactory;
     private final boolean mIsAuthoritative;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
     private final ObserverList<TabPersistentStoreObserver> mObservers = new ObserverList<>();
+    private @MonotonicNonNull ActiveTabCache mActiveTabCache;
     private @MonotonicNonNull ModelTrackingOrchestrator mModelTrackingManager;
     private boolean mHasCipherFactory;
 
@@ -164,8 +166,10 @@ public class TabStateStore implements TabPersistentStore {
      * @param migrationManager The migration manager for the window.
      * @param cipherFactory The {@link CipherFactory} to use for encryption. If null, it will not be
      *     possible to load/save off the record nodes.
-     * @param isAuthoritative Whether this store is the authoritative store for the window.
+     * @param tabCountTracker Tracks the number of tabs in the window.
      * @param orchestratorFactory The factory to create {@link ModelTrackingOrchestrator} instances.
+     * @param activeTabCacheFactory The factory to create {@link ModelTrackingOrchestrator}
+     *     instances.
      * @param isAuthoritative Whether the store is authoritative for the window.
      */
     public TabStateStore(
@@ -177,6 +181,7 @@ public class TabStateStore implements TabPersistentStore {
             @Nullable CipherFactory cipherFactory,
             TabCountTracker tabCountTracker,
             ModelTrackingOrchestrator.Factory orchestratorFactory,
+            ActiveTabCache.Factory activeTabCacheFactory,
             boolean isAuthoritative) {
         mTabModelSelector = tabModelSelector;
         mWindowTag = windowTag;
@@ -186,6 +191,7 @@ public class TabStateStore implements TabPersistentStore {
         mCipherFactory = cipherFactory;
         mIsAuthoritative = isAuthoritative;
         mOrchestratorFactory = orchestratorFactory;
+        mActiveTabCacheFactory = activeTabCacheFactory;
         mTabCountTracker = tabCountTracker;
     }
 
@@ -214,6 +220,9 @@ public class TabStateStore implements TabPersistentStore {
             mHasCipherFactory = false;
         }
 
+        mActiveTabCache =
+                mActiveTabCacheFactory.build(mWindowTag, mTabModelSelector, mCipherFactory);
+
         if (mMigrationManager.shouldRazeStoreForWindow(mIsAuthoritative)) {
             clearCurrentWindow();
         }
@@ -227,6 +236,7 @@ public class TabStateStore implements TabPersistentStore {
                         mWindowTag,
                         mMigrationManager,
                         mTabModelSelector,
+                        mActiveTabCache,
                         mHasCipherFactory,
                         mIsAuthoritative);
 
@@ -296,6 +306,7 @@ public class TabStateStore implements TabPersistentStore {
             mTabCountTracker.clearTabCount(/* incognito= */ true);
             mTabStateStorageService.clearUnusedNodesForWindow(
                     mWindowTag, /* isOffTheRecord= */ true, /* tabStripCollection= */ null);
+            mActiveTabCache.clearActiveTab(/* incognito= */ true);
         }
     }
 
@@ -458,9 +469,11 @@ public class TabStateStore implements TabPersistentStore {
     @Override
     public void clearCurrentWindow() {
         assert mTabStateStorageService != null;
+        assert mActiveTabCache != null;
 
         mTabStateStorageService.clearWindow(mWindowTag);
         mTabCountTracker.clearCurrentWindow();
+        mActiveTabCache.clearCurrentWindow();
 
         if (mIsAuthoritative) {
             mMigrationManager.onWindowCleared();
@@ -545,6 +558,7 @@ public class TabStateStore implements TabPersistentStore {
             mTabStateStorageService.clearUnusedNodesForWindow(
                     mWindowTag, incognito, /* tabStripCollection= */ null);
             mTabCountTracker.clearTabCount(incognito);
+            mActiveTabCache.clearActiveTab(incognito);
             String formattedErrorMessage =
                     String.format(
                             Locale.ROOT,
@@ -638,10 +652,11 @@ public class TabStateStore implements TabPersistentStore {
         }
     }
 
-    @EnsuresNonNull({"mTabStateStorageService", "mModelTrackingManager"})
+    @EnsuresNonNull({"mTabStateStorageService", "mModelTrackingManager", "mActiveTabCache"})
     private void assertInitialized() {
-        assert mTabStateStorageService != null && mModelTrackingManager != null
-                : "The store has not been initialized";
+        assert mTabStateStorageService != null;
+        assert mModelTrackingManager != null;
+        assert mActiveTabCache != null;
     }
 
     private void fullyDestroyLoadedData(StorageLoadedData data) {
@@ -678,6 +693,7 @@ public class TabStateStore implements TabPersistentStore {
             assert service != null;
             service.clearState();
             TabCountTracker.clearGlobalState();
+            ActiveTabCache.clearGlobalState();
         }
 
         /**
@@ -696,6 +712,7 @@ public class TabStateStore implements TabPersistentStore {
 
             service.clearWindow(windowTag);
             TabCountTracker.cleanupWindow(windowTag);
+            ActiveTabCache.cleanupWindow(windowTag);
         }
     }
 }
