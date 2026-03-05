@@ -64,6 +64,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private int mContextMenuFirstLocationYPx;
     private @Nullable AnchoredPopupWindow mPopupWindow;
     private final View mLayout;
+    private final @Nullable View mRootView;
     private @Nullable OnLayoutChangeListener mOnLayoutChangeListener;
     private @Nullable DragEventDispatchHelper mDragEventDispatchHelper;
     private final Rect mRect;
@@ -105,6 +106,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
      * @param touchEventDelegateView View View that is showing behind the context menu. If menu is
      *     shown as a popup without scrim, and this view is provided, the context menu will dispatch
      *     touch events other than ACTION_DOWN.
+     * @param rootView The root View of the window on which the context menu is displayed.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *     coordinates are expected to be screen coordinates.
      * @param shouldPadForWindowInsets If a wrapper layout should be applied to window inset
@@ -123,6 +125,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View touchEventDelegateView,
+            @Nullable View rootView,
             Rect rect,
             boolean shouldPadForWindowInsets,
             @Nullable Runnable onDismissCallback) {
@@ -139,6 +142,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         mDesiredPopupContentWidth = desiredPopupContentWidth;
         mTouchEventDelegateView = touchEventDelegateView;
         mRect = rect;
+        mRootView = rootView;
         mOnDismissCallback = onDismissCallback;
     }
 
@@ -151,8 +155,19 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
         if (mShouldRemoveScrim) {
             dialogWindow.clearFlags(WindowManager.LayoutParams.FLAG_DIM_BEHIND);
             dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL);
+
             if (mIsFlyout) {
                 dialogWindow.addFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+            }
+
+            if (mRootView != null
+                    && mRootView.getLayoutParams() instanceof WindowManager.LayoutParams wmlp) {
+                // It's possible that {@link mRootView} is in a {@link PopupWindow}, in which case
+                // we have to compensate for the origin. Normally, {@link AnchoredPopupWindow}
+                // handles nesting if we pass it the correct {@code rootView} of the popup window -
+                // however, dialogs behave differently because they add an transparent overlay to
+                // block clicks and dim the contents.
+                mRect.offset(wmlp.x, wmlp.y);
             }
         }
         Window activityWindow = mActivity.getWindow();

@@ -270,7 +270,7 @@ public class ContextMenuDialogUnitTest {
     private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
         return new ContextMenuDialog(
                 mActivity,
-                0,
+                /* theme= */ 0,
                 ContextMenuDialog.NO_CUSTOM_MARGIN,
                 ContextMenuDialog.NO_CUSTOM_MARGIN,
                 mRootView,
@@ -278,9 +278,10 @@ public class ContextMenuDialogUnitTest {
                 isPopup,
                 /* isFlyout= */ false,
                 shouldRemoveScrim,
-                0,
-                0,
+                /* popupMargin= */ 0,
+                /* desiredPopupContentWidth= */ 0,
                 mSpyDragDispatchingDestinationView,
+                /* rootView= */ null,
                 new Rect(0, 0, 0, 0),
                 /* shouldPadForWindowInsets= */ true,
                 /* onDismissCallback */ null);

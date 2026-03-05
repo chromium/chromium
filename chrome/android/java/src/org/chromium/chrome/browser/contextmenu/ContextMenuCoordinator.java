@@ -41,7 +41,6 @@ import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.ui.hierarchicalmenu.FlyoutController;
 import org.chromium.ui.hierarchicalmenu.FlyoutController.FlyoutHandler;
 import org.chromium.ui.hierarchicalmenu.HierarchicalMenuController;
@@ -76,7 +75,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     }
 
     private final Activity mActivity;
-    private WindowAndroid mWindowAndroid;
     private WebContents mWebContents;
     private WebContentsObserver mWebContentsObserver;
     private @Nullable ContextMenuChipController mChipController;
@@ -154,16 +152,18 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
     // Calculate true top content offset to be used to compute the AnchorRect used by
     // AnchoredPopupWindow, with origin below the system decoration which may or may not be merged
     // with the tabstrip.
-    private static float topContentOffset(float offset, WindowAndroid windowAndroid) {
+    private static float topContentOffset(float offset, Activity activity) {
         // If edge-to-edge mode is disabled, the input offset i.e. height of tabstrip plus toolbar
         // is correct.
-        if (!EdgeToEdgeStateProvider.isEdgeToEdgeEnabledForWindow(windowAndroid)) return offset;
+        if (!EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled()) {
+            return offset;
+        }
 
         // Otherwise, the system decoration is tabstrip, so the input offset should only be height
         // of toolbar.
         // Compute the height of system decoration to get height of tabstrip, and subtract it from
         // the input offset.
-        Window window = windowAndroid.getWindow();
+        Window window = activity.getWindow();
         if (window == null) return offset;
         View view = window.getDecorView();
         // The rect of the window without system decoration, see
@@ -216,7 +216,6 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             final Runnable onMenuClosed,
             @Nullable ChipDelegate chipDelegate) {
         mParams = params;
-        mWindowAndroid = window;
         mOnMenuClosed = onMenuClosed;
 
         final boolean isDragDropEnabled = ContextMenuUtils.isDragDropEnabled(mActivity);
@@ -233,7 +232,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         assertNonNull(window.getWindow()),
                         webContents,
                         params,
-                        topContentOffset(mTopContentOffsetPx, window),
+                        topContentOffset(mTopContentOffsetPx, mActivity),
                         mUsePopupWindow,
                         layout);
         boolean shouldRemoveScrim = ContextMenuUtils.isPopupSupported(mActivity);
@@ -284,13 +283,12 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                             .getDimensionPixelSize(R.dimen.context_menu_small_width);
         }
 
+        View containerView = assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView();
+
         // When drag and drop is enabled, context menu will be dismissed by web content when drag
         // moves beyond certain threshold. ContentView will need to receive drag events dispatched
         // from ContextMenuDialog in order to calculate the movement.
-        View dragDispatchingTargetView =
-                isDragDropEnabled
-                        ? assumeNonNull(webContents.getViewAndroidDelegate()).getContainerView()
-                        : null;
+        View dragDispatchingTargetView = isDragDropEnabled ? containerView : null;
 
         ContextMenuDialog dialog =
                 createContextMenuDialog(
@@ -305,6 +303,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
+                        containerView != null ? containerView.getRootView() : null,
                         contextMenuRect,
                         /* onDismissCallback= */ null);
         dialog.setOnShowListener(dialogInterface -> onMenuShown.run());
@@ -421,7 +420,8 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         /* popupMargin= */ null,
                         /* desiredPopupContentWidth= */ null,
                         /* dragDispatchingTargetView= */ null,
-                        calculateFlyoutAnchorRect(mActivity, mWindowAndroid, view),
+                        /* rootView= */ null,
+                        calculateFlyoutAnchorRect(mActivity, view),
                         () -> {
                             dismissRunnable.run();
                         });
@@ -440,12 +440,11 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
         mListViews.subList(removeFromIndex, mListViews.size()).clear();
     }
 
-    private static Rect calculateFlyoutAnchorRect(
-            Activity activity, WindowAndroid windowAndroid, View itemView) {
+    private static Rect calculateFlyoutAnchorRect(Activity activity, View itemView) {
         Rect anchorRect =
                 FlyoutController.calculateFlyoutAnchorRect(
                         itemView, activity.getWindow().getDecorView());
-        anchorRect.offset(0, (int) topContentOffset(0, windowAndroid));
+        anchorRect.offset(0, (int) topContentOffset(0, activity));
 
         return anchorRect;
     }
@@ -467,6 +466,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
      * @param desiredPopupContentWidth The desired width for the content of the context menu.
      * @param dragDispatchingTargetView The view presented behind the context menu. If provided,
      *     drag event happened outside of ContextMenu will be dispatched into this View.
+     * @param rootView The root View of the window on which we display the context menu.
      * @param rect Rect location where context menu is triggered. If this menu is a popup, the
      *     coordinates are expected to be screen coordinates.
      * @return Returns a final dialog that does not have a background can be displayed using {@link
@@ -485,6 +485,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
             @Nullable Integer popupMargin,
             @Nullable Integer desiredPopupContentWidth,
             @Nullable View dragDispatchingTargetView,
+            @Nullable View rootView,
             Rect rect,
             @Nullable Runnable onDismissCallback) {
         // TODO(sinansahin): Refactor ContextMenuDialog as well.
@@ -502,6 +503,7 @@ public class ContextMenuCoordinator implements ContextMenuUi, FlyoutHandler<Cont
                         popupMargin,
                         desiredPopupContentWidth,
                         dragDispatchingTargetView,
+                        rootView,
                         rect,
                         EdgeToEdgeUtils.isEdgeToEdgeEverywhereEnabled(),
                         onDismissCallback);
