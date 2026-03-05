@@ -53,7 +53,8 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
 
-  void OnSoftNavigation() override;
+  void OnSoftNavigationUpdated(
+      const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
 
   void OnPageEventTimingUpdate(uint64_t num_interactions) override;
 
@@ -321,9 +322,14 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
     run_loop_->Quit();
 }
 
-void PageLoadMetricsTestWaiter::OnSoftNavigation() {
+void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        new_soft_navigation_metrics) {
   soft_navigation_count_updated_ = true;
-  ++current_soft_navigation_count_;
+  // Increment soft navigation count.
+  if (new_soft_navigation_metrics.count > current_soft_navigation_count_) {
+    current_soft_navigation_count_ = new_soft_navigation_metrics.count;
+  }
 }
 
 void PageLoadMetricsTestWaiter::OnPageEventTimingUpdated(
@@ -783,9 +789,10 @@ void WaiterMetricsObserver::OnTimingUpdate(
   }
 }
 
-void WaiterMetricsObserver::OnSoftNavigation() {
+void WaiterMetricsObserver::OnSoftNavigationUpdated(
+    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   if (waiter_) {
-    waiter_->OnSoftNavigation();
+    waiter_->OnSoftNavigationMetricsUpdated(soft_navigation_metrics);
   }
 }
 

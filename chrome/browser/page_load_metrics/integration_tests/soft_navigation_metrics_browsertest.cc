@@ -430,8 +430,6 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // in UKM against the web exposed values.
     if (soft_nav_heuristics_enabled) {
       EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
-      ASSERT_EQ(soft_nav_lcp_list.size(), soft_nav_lcp.size());
-      ASSERT_EQ(soft_nav_lcp_list.size(), soft_nav_start_times.size());
       for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
         SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
         const base::DictValue& timing = soft_nav_lcp_list[i].GetDict();

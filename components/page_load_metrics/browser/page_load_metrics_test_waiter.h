@@ -240,7 +240,9 @@ class PageLoadMetricsTestWaiter : public MetricsLifecycleObserver {
   void OnTimingUpdated(content::RenderFrameHost* subframe_rfh,
                        const page_load_metrics::mojom::PageLoadTiming& timing);
 
-  void OnSoftNavigation();
+  void OnSoftNavigationMetricsUpdated(
+      const page_load_metrics::mojom::SoftNavigationMetrics&
+          soft_navigation_metrics);
 
   // Updates observed page fields when a input timing update is received by the
   // MetricsWebContentsObserver. Stops waiting if expectations are satsfied

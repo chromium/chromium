@@ -126,9 +126,8 @@ class FakePageTimingSender : public PageTimingSender {
         const std::vector<mojom::EventTimingPtr>& event_timings,
         const std::optional<blink::SubresourceLoadMetrics>&
             subresource_load_metrics,
-        const std::vector<mojom::SoftNavigationMetricsPtr>&
-            soft_navigation_metrics,
-        const std::vector<mojom::LargestContentfulPaintTimingPtr>&
+        const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+        const mojom::LargestContentfulPaintTimingPtr&
             soft_largest_contentful_paint);
 
    private:
@@ -177,8 +176,8 @@ class FakePageTimingSender : public PageTimingSender {
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
-      std::vector<mojom::LargestContentfulPaintTimingPtr>
+      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
+      const mojom::LargestContentfulPaintTimingPtr&
           soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override;
 

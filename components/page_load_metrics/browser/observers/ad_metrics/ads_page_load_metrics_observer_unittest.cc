@@ -218,8 +218,8 @@ class ResourceLoadingCancellingThrottle
         mojom::FrameRenderDataUpdatePtr(std::in_place),
         mojom::CpuTimingPtr(std::in_place),
         std::vector<mojom::EventTimingPtr>(), std::nullopt,
-        std::vector<mojom::SoftNavigationMetricsPtr>(),
-        std::vector<mojom::LargestContentfulPaintTimingPtr>(),
+        mojom::SoftNavigationMetricsPtr(std::in_place),
+        mojom::LargestContentfulPaintTimingPtr(std::in_place),
         std::vector<mojom::CustomUserTimingMarkPtr>());
   }
 };

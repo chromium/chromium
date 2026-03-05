@@ -841,18 +841,21 @@ void UkmPageLoadMetricsObserver::
   builder.Record(ukm::UkmRecorder::Get());
 }
 
-void UkmPageLoadMetricsObserver::OnSoftNavigation() {
-  const auto& current_soft_navigation_metrics =
-      GetDelegate().GetSoftNavigationMetrics();
+void UkmPageLoadMetricsObserver::OnSoftNavigationUpdated(
+    const page_load_metrics::mojom::SoftNavigationMetrics&
+        new_soft_navigation_metrics) {
+  auto current_soft_navigation_metrics =
+      GetDelegate().GetSoftNavigationMetrics().Clone();
 
   // When the 1st soft navigation comes in, we record the
   // soft_navigation_interval_responsiveness_metrics_normalization_ as INP
   // before soft nav.
-  if (current_soft_navigation_metrics.soft_navigation_offset == 0) {
+  if (current_soft_navigation_metrics->count == 0) {
     RecordLargestContentfulPaintBeforeSoftNavigation();
     RecordResponsivenessMetricsBeforeSoftNavigationForMainFrame();
     RecordLayoutShiftBeforeSoftNavigationForMainFrame();
-  } else if (current_soft_navigation_metrics.soft_navigation_offset > 0) {
+  } else if (current_soft_navigation_metrics->count !=
+             new_soft_navigation_metrics.count) {
     // We only want to record metrics once for each soft navigation. So we flush
     // the current soft navigation metrics when the next soft navigation starts.
     // So the first soft navigation metrics are recorded when the second soft
@@ -862,8 +865,8 @@ void UkmPageLoadMetricsObserver::OnSoftNavigation() {
     // load.
     RecordSoftNavigationMetrics(
         GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
-            current_soft_navigation_metrics.same_document_metrics_token),
-        current_soft_navigation_metrics);
+            *current_soft_navigation_metrics->same_document_metrics_token),
+        *current_soft_navigation_metrics);
   }
 }
 
@@ -1060,22 +1063,21 @@ void UkmPageLoadMetricsObserver::RecordLastSoftNavigation() {
 
   const auto& soft_navigation_metrics =
       GetDelegate().GetSoftNavigationMetrics();
-  builder.SetSoftNavigationCount(
-      soft_navigation_metrics.soft_navigation_offset);
+  builder.SetSoftNavigationCount(soft_navigation_metrics.count);
 
   // Record last soft navigation metrics. The smallest count that would be set
   // for an actual soft navigation metric is 1.
-  if (soft_navigation_metrics.soft_navigation_offset) {
+  if (soft_navigation_metrics.count) {
     RecordSoftNavigationMetrics(
         GetDelegate().GetUkmSourceIdForSameDocumentNavigation(
-            soft_navigation_metrics.same_document_metrics_token),
+            *soft_navigation_metrics.same_document_metrics_token),
         soft_navigation_metrics);
   }
   builder.Record(ukm::UkmRecorder::Get());
 
   // Record soft navigation count histogram to UMA.
   base::UmaHistogramCounts100(kHistogramSoftNavigationCount,
-                              soft_navigation_metrics.soft_navigation_offset);
+                              soft_navigation_metrics.count);
 }
 
 void UkmPageLoadMetricsObserver::RecordInternalTimingMetrics(

@@ -182,7 +182,8 @@ void PageLoadMetricsForwardObserver::OnTimingUpdate(
     const mojom::PageLoadTiming& timing) {}
 
 // Soft navigations only happen in outermost top-level documents.
-void PageLoadMetricsForwardObserver::OnSoftNavigation() {}
+void PageLoadMetricsForwardObserver::OnSoftNavigationUpdated(
+    const mojom::SoftNavigationMetrics&) {}
 
 void PageLoadMetricsForwardObserver::OnEventTimingUpdate(
     content::RenderFrameHost* subframe_rfh,
