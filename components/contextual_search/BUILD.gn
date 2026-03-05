@@ -124,6 +124,8 @@ source_set("test_support") {
     "fake_variations_client.h",
     "mock_contextual_search_context_controller.cc",
     "mock_contextual_search_context_controller.h",
+    "mock_contextual_search_service.cc",
+    "mock_contextual_search_service.h",
     "mock_contextual_search_session_handle.cc",
     "mock_contextual_search_session_handle.h",
   ]
