@@ -138,6 +138,7 @@
 #include "third_party/blink/renderer/core/scheduler/scripted_idle_task_controller.h"
 #include "third_party/blink/renderer/core/scheduler/task_attribution_util.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
+#include "third_party/blink/renderer/core/scroll/scoped_scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
@@ -1822,23 +1823,18 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(
     resolver =
         MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
   }
-
   ScriptPromise<ScrollResult> promise =
       resolver ? resolver->Promise() : EmptyPromise();
+  auto scoped_resolver =
+      std::make_unique<ScopedScrollPromiseResolver>(resolver);
 
   if (!IsCurrentlyDisplayedInFrame()) {
-    if (resolver) {
-      resolver->Resolve(ScrollResult::Create());
-    }
     return promise;
   }
 
   LocalFrameView* view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   if (!view || !page) {
-    if (resolver) {
-      resolver->Resolve(ScrollResult::Create());
-    }
     return promise;
   }
 
@@ -1878,7 +1874,8 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollBy(
           scroll_to_options->behavior().AsEnum());
   viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
-      cc::ScrollSourceType::kRelativeScroll, scroll_behavior, resolver);
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior,
+      std::move(scoped_resolver));
 
   return promise;
 }
@@ -1901,23 +1898,18 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(
     resolver =
         MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
   }
-
   ScriptPromise<ScrollResult> promise =
       resolver ? resolver->Promise() : EmptyPromise();
+  auto scoped_resolver =
+      std::make_unique<ScopedScrollPromiseResolver>(resolver);
 
   if (!IsCurrentlyDisplayedInFrame()) {
-    if (resolver) {
-      resolver->Resolve(ScrollResult::Create());
-    }
     return promise;
   }
 
   LocalFrameView* view = GetFrame()->View();
   Page* page = GetFrame()->GetPage();
   if (!view || !page) {
-    if (resolver) {
-      resolver->Resolve(ScrollResult::Create());
-    }
     return promise;
   }
 
@@ -1967,7 +1959,8 @@ ScriptPromise<ScrollResult> LocalDOMWindow::scrollTo(
           scroll_to_options->behavior().AsEnum());
   viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_scaled_position),
-      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior, resolver);
+      cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
+      std::move(scoped_resolver));
 
   return promise;
 }

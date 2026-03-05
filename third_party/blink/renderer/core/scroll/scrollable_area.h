@@ -38,7 +38,6 @@
 #include "third_party/blink/public/common/input/web_gesture_device.h"
 #include "third_party/blink/public/mojom/scroll/scroll_into_view_params.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -78,6 +77,7 @@ class MacScrollbarAnimator;
 class Node;
 class PaintLayer;
 class ProgrammaticScrollAnimator;
+class ScopedScrollPromiseResolver;
 class ScrollAnchor;
 class ScrollAnimatorBase;
 struct SerializedAnchor;
@@ -139,10 +139,11 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Sets the scroll offset on this `ScrollableArea`. This method is used only
   // by the callers from the JS side (like `Element.scroll()`).
-  bool SetProgrammaticScrollOffset(const ScrollOffset&,
-                                   cc::ScrollSourceType,
-                                   mojom::blink::ScrollBehavior,
-                                   ScriptPromiseResolver<ScrollResult>*);
+  bool SetProgrammaticScrollOffset(
+      const ScrollOffset&,
+      cc::ScrollSourceType,
+      mojom::blink::ScrollBehavior,
+      std::unique_ptr<ScopedScrollPromiseResolver>);
 
   void ScrollBy(
       const ScrollOffset&,
@@ -169,14 +170,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   static mojom::blink::ScrollBehavior V8EnumToScrollBehavior(
       V8ScrollBehavior::Enum);
-
-  // Register the promise resolver to handle it later at the end of the
-  // requested scroll. This interrupts the pending resolver, if any, by
-  // resolving it through `ProgrammaticScrollAnimator`.
-  void RegisterPromiseResolver(ScriptPromiseResolver<ScrollResult>*);
-
-  // Resolve the registered promise, if any.
-  void SettlePendingPromiseResolver(ScrollCompletionMode);
 
   void MouseEnteredScrollbar(Scrollbar&);
   void MouseExitedScrollbar(Scrollbar&);
@@ -715,25 +708,6 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     kLayout,
   };
 
-  // An RAII-style class that wraps the `ScriptPromiseResolver` from a JS scroll
-  // request, to guarantee that the promise gets resolved when the the object is
-  // no longer in scope.
-  class ScopedPromiseResolver {
-   public:
-    explicit ScopedPromiseResolver(
-        ScriptPromiseResolver<ScrollResult>* resolver)
-        : resolver_(resolver) {}
-
-    ~ScopedPromiseResolver() {
-      if (resolver_) {
-        resolver_->Resolve(ScrollResult::Create());
-      }
-    }
-
-   private:
-    Persistent<ScriptPromiseResolver<ScrollResult>> resolver_;
-  };
-
   void SetScrollbarsHiddenIfOverlayInternal(bool);
 
   bool InitiateScrollAnimation(const ScrollOffset&,
@@ -823,7 +797,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   Member<TextOverflowPostLayoutSnapshot> text_overflow_snapshot_;
 
-  std::unique_ptr<ScopedPromiseResolver> promise_resolver_;
+  std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver_;
 
   ScrollOffset pending_scroll_anchor_adjustment_;
 

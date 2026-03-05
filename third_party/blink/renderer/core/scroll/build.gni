@@ -22,6 +22,7 @@ blink_core_sources_scroll = [
   "scrollable_area.h",
   "scrollbar.cc",
   "scrollbar.h",
+  "scoped_scroll_promise_resolver.h",
   "mac_scrollbar_animator.h",
   "scrollbar_layer_delegate.cc",
   "scrollbar_layer_delegate.h",

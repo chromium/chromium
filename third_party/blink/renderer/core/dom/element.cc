@@ -2942,11 +2942,13 @@ ScriptPromise<ScrollResult> Element::scrollBy(
     resolver =
         MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
   }
+  auto scoped_resolver =
+      std::make_unique<ScopedScrollPromiseResolver>(resolver);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    ScrollFrameBy(scroll_to_options, resolver);
+    ScrollFrameBy(scroll_to_options, std::move(scoped_resolver));
   } else {
-    ScrollLayoutBoxBy(scroll_to_options, resolver);
+    ScrollLayoutBoxBy(scroll_to_options, std::move(scoped_resolver));
   }
 
   return resolver ? resolver->Promise() : EmptyPromise();
@@ -2970,17 +2972,17 @@ ScriptPromise<ScrollResult> Element::scrollTo(
     resolver =
         MakeGarbageCollected<ScriptPromiseResolver<ScrollResult>>(script_state);
   }
+  auto scoped_resolver =
+      std::make_unique<ScopedScrollPromiseResolver>(resolver);
 
-  ScrollTo(scroll_to_options, resolver);
+  ScrollTo(scroll_to_options, std::move(scoped_resolver));
   return resolver ? resolver->Promise() : EmptyPromise();
 }
 
-bool Element::ScrollTo(const ScrollToOptions* scroll_to_options,
-                       ScriptPromiseResolver<ScrollResult>* resolver) {
+bool Element::ScrollTo(
+    const ScrollToOptions* scroll_to_options,
+    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
   if (!InActiveDocument()) {
-    if (resolver) {
-      resolver->Resolve();
-    }
     return false;
   }
 
@@ -2994,9 +2996,9 @@ bool Element::ScrollTo(const ScrollToOptions* scroll_to_options,
                                             DocumentUpdateReason::kJavaScript);
 
   if (GetDocument().ScrollingElementNoLayout() == this) {
-    return ScrollFrameTo(scroll_to_options, resolver);
+    return ScrollFrameTo(scroll_to_options, std::move(scoped_resolver));
   } else {
-    return ScrollLayoutBoxTo(scroll_to_options, resolver);
+    return ScrollLayoutBoxTo(scroll_to_options, std::move(scoped_resolver));
   }
 }
 
@@ -3017,8 +3019,9 @@ void Element::scrollToForTesting(double x, double y) {
   scrollTo(nullptr, x, y);
 }
 
-bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options,
-                                ScriptPromiseResolver<ScrollResult>* resolver) {
+bool Element::ScrollLayoutBoxBy(
+    const ScrollToOptions* scroll_to_options,
+    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
   gfx::Vector2dF displacement;
   if (scroll_to_options->hasLeft()) {
     displacement.set_x(
@@ -3036,9 +3039,6 @@ bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options,
   PaintLayerScrollableArea* scrollable_area =
       box ? box->GetScrollableArea() : nullptr;
   if (!scrollable_area) {
-    if (resolver) {
-      resolver->Resolve();
-    }
     return false;
   }
 
@@ -3057,11 +3057,13 @@ bool Element::ScrollLayoutBoxBy(const ScrollToOptions* scroll_to_options,
 
   return scrollable_area->SetProgrammaticScrollOffset(
       ScrollOffset(new_position - gfx::PointF(scrollable_area->ScrollOrigin())),
-      cc::ScrollSourceType::kRelativeScroll, scroll_behavior, resolver);
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior,
+      std::move(scoped_resolver));
 }
 
-bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options,
-                                ScriptPromiseResolver<ScrollResult>* resolver) {
+bool Element::ScrollLayoutBoxTo(
+    const ScrollToOptions* scroll_to_options,
+    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
@@ -3071,9 +3073,6 @@ bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options,
       box ? box->GetScrollableArea() : nullptr;
 
   if (!scrollable_area) {
-    if (resolver) {
-      resolver->Resolve();
-    }
     return false;
   }
 
@@ -3127,11 +3126,12 @@ bool Element::ScrollLayoutBoxTo(const ScrollToOptions* scroll_to_options,
 
   return scrollable_area->SetProgrammaticScrollOffset(
       new_offset, cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
-      resolver);
+      std::move(scoped_resolver));
 }
 
-bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options,
-                            ScriptPromiseResolver<ScrollResult>* resolver) {
+bool Element::ScrollFrameBy(
+    const ScrollToOptions* scroll_to_options,
+    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
   gfx::Vector2dF displacement;
   if (scroll_to_options->hasLeft()) {
     displacement.set_x(
@@ -3148,9 +3148,6 @@ bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options,
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame || !frame->View() || !frame->View()->LayoutViewport() ||
       !GetDocument().GetPage()) {
-    if (resolver) {
-      resolver->Resolve();
-    }
     return false;
   }
 
@@ -3168,20 +3165,19 @@ bool Element::ScrollFrameBy(const ScrollToOptions* scroll_to_options,
 
   return viewport->SetProgrammaticScrollOffset(
       viewport->ScrollPositionToOffset(new_position),
-      cc::ScrollSourceType::kRelativeScroll, scroll_behavior, resolver);
+      cc::ScrollSourceType::kRelativeScroll, scroll_behavior,
+      std::move(scoped_resolver));
 }
 
-bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options,
-                            ScriptPromiseResolver<ScrollResult>* resolver) {
+bool Element::ScrollFrameTo(
+    const ScrollToOptions* scroll_to_options,
+    std::unique_ptr<ScopedScrollPromiseResolver> scoped_resolver) {
   mojom::blink::ScrollBehavior scroll_behavior =
       ScrollableArea::V8EnumToScrollBehavior(
           scroll_to_options->behavior().AsEnum());
   LocalFrame* frame = GetDocument().GetFrame();
   if (!frame || !frame->View() || !frame->View()->LayoutViewport() ||
       !GetDocument().GetPage()) {
-    if (resolver) {
-      resolver->Resolve();
-    }
     return false;
   }
 
@@ -3211,7 +3207,7 @@ bool Element::ScrollFrameTo(const ScrollToOptions* scroll_to_options,
 
   return viewport->SetProgrammaticScrollOffset(
       new_offset, cc::ScrollSourceType::kAbsoluteScroll, scroll_behavior,
-      resolver);
+      std::move(scoped_resolver));
 }
 
 bool Element::HandleScrollByPageCommand(CommandEventType command) {

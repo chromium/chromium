@@ -69,6 +69,7 @@
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
+#include "third_party/blink/renderer/core/scroll/scoped_scroll_promise_resolver.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
 #include "third_party/blink/renderer/core/scroll/scroll_into_view_util.h"
@@ -405,8 +406,12 @@ bool ScrollableArea::SetProgrammaticScrollOffset(
     const ScrollOffset& offset,
     cc::ScrollSourceType source_type,
     mojom::blink::ScrollBehavior behavior,
-    ScriptPromiseResolver<ScrollResult>* resolver) {
-  RegisterPromiseResolver(resolver);
+    std::unique_ptr<ScopedScrollPromiseResolver> resolver) {
+  // If the last `promise_resolver_` is pending, it has been passed on to
+  // `ProgrammaticScrollAnimator` already and the `SetScrollOffsetInternal` call
+  // below "interrupts" the animator to resolve the pending promise.
+  promise_resolver_ = std::move(resolver);
+
   if (!SetScrollOffsetInternal(offset, mojom::blink::ScrollType::kProgrammatic,
                                source_type, behavior, false)) {
     promise_resolver_ = nullptr;
@@ -520,7 +525,7 @@ bool ScrollableArea::InitiateScrollAnimation(
 
   ScrollCallback callback = ScrollCallback(blink::BindOnce(
       [](WeakPersistent<ScrollableArea> area,
-         std::unique_ptr<ScopedPromiseResolver> promise_resolver,
+         std::unique_ptr<ScopedScrollPromiseResolver> promise_resolver,
          ScrollCompletionMode mode) {
         if (area) {
           area->OnScrollFinished(/*enqueue_scrollend=*/mode ==
@@ -663,11 +668,6 @@ mojom::blink::ScrollBehavior ScrollableArea::V8EnumToScrollBehavior(
       return mojom::blink::ScrollBehavior::kSmooth;
   }
   NOTREACHED();
-}
-
-void ScrollableArea::RegisterPromiseResolver(
-    ScriptPromiseResolver<ScrollResult>* resolver) {
-  promise_resolver_ = std::make_unique<ScopedPromiseResolver>(resolver);
 }
 
 void ScrollableArea::MouseEnteredScrollbar(Scrollbar& scrollbar) {
