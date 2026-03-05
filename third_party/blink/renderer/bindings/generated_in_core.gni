@@ -170,8 +170,6 @@ generated_dictionary_sources_in_core = [
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_close_watcher_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_model_context_options.cc",
-  "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_model_context_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/core/v8/v8_command_event_init.cc",

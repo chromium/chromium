@@ -127,56 +127,6 @@ async function runTests() {
         print(`FAIL: Expected 1 tool (echo), got ${tools.length}`);
     }
 
-    // Test 3: provideContext should trigger callback
-    expectedCallbacks++;
-    navigator.modelContext.provideContext({
-        tools: [
-            {
-                execute: greet,
-                name: "greet",
-                description: "greet someone",
-                inputSchema: {
-                    type: "object",
-                    properties: {
-                        "name": {
-                            description: "Name to greet",
-                            type: "string",
-                        }
-                    },
-                    required: ["name"]
-                },
-            }
-        ]
-    });
-
-    await waitForCallback();
-
-    if (callbackCount === expectedCallbacks) {
-        print("PASS: Callback fired after provideContext");
-    } else {
-        print(`FAIL: Expected ${expectedCallbacks} callbacks, got ${callbackCount}`);
-    }
-
-    // Test 4: clearContext should trigger callback
-    expectedCallbacks++;
-    navigator.modelContext.clearContext();
-
-    await waitForCallback();
-
-    if (callbackCount === expectedCallbacks) {
-        print("PASS: Callback fired after clearContext");
-    } else {
-        print(`FAIL: Expected ${expectedCallbacks} callbacks, got ${callbackCount}`);
-    }
-
-    // Verify all tools cleared
-    tools = navigator.modelContextTesting.listTools();
-    if (tools.length === 0) {
-        print("PASS: Tool list empty after clearContext");
-    } else {
-        print(`FAIL: Expected 0 tools, got ${tools.length}`);
-    }
-
     if (window.testRunner) {
         testRunner.notifyDone();
     }

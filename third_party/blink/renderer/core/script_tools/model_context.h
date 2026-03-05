@@ -63,11 +63,6 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   std::optional<ScriptToolDeclaration> GetScriptToolDeclaration(
       const String& name) const;
 
-  void provideContext(ScriptState* state,
-                      const ModelContextOptions* options,
-                      ExceptionState& exception_state);
-  void clearContext();
-
   std::optional<uint32_t> ExecuteTool(
       const String& name,
       const String& input_arguments,
@@ -160,10 +155,6 @@ class CORE_EXPORT ModelContext : public ScriptWrappable {
   void ExecuteDeclarativeTool(DeclarativeWebMCPTool* tool,
                               const String& input_arguments,
                               ScriptToolExecutedCallback tool_executed_cb);
-
-  bool RegisterTool(ScriptState* script_state,
-                    ModelContextTool* tool,
-                    ExceptionState& exception_state);
 
   void OnToolExecuted(uint32_t execution_id, std::optional<String> result);
 

@@ -8,7 +8,6 @@
 #include "third_party/blink/public/platform/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_script_tool_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/capture_source_location.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_model_context_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_model_context_tool.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_annotations.h"
@@ -183,9 +182,54 @@ void ModelContext::ForEachScriptTool(
 void ModelContext::registerTool(ScriptState* script_state,
                                 ModelContextTool* tool,
                                 ExceptionState& exception_state) {
-  if (!RegisterTool(script_state, tool, exception_state)) {
+  if (tool_map_.find(tool->name()) != tool_map_.end()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Duplicate tool name");
     return;
   }
+
+  if (!tool->name() || tool->name().empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Tool name is required");
+    return;
+  }
+
+  if (!tool->description() || tool->description().empty()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Description is required");
+    return;
+  }
+
+  String input_schema;
+  if (tool->hasInputSchema()) {
+    input_schema =
+        ValidateAndStringifyObject(script_state, tool->inputSchema());
+    if (!input_schema) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                        "Invalid input schema");
+      return;
+    }
+  }
+
+  auto script_tool = mojom::blink::ScriptTool::New();
+  script_tool->name = tool->name();
+  script_tool->description = tool->description();
+  script_tool->input_schema = input_schema;
+
+  if (tool->hasAnnotations()) {
+    script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
+    CHECK(tool->annotations()->hasReadOnlyHint());
+    script_tool->annotations->read_only = tool->annotations()->readOnlyHint();
+  }
+
+  auto* tool_data = MakeGarbageCollected<ToolData>(
+      base::PassKey<ModelContext>(), std::move(script_tool),
+      /*v8_tool_function=*/tool->execute(),
+      CaptureSourceLocation(ExecutionContext::From(script_state)));
+
+  tool_map_.insert(tool->name(), tool_data);
+  OnToolsChanged();
+  UseCounter::Count(document_, WebFeature::kModelContextRegisterTool);
 }
 
 void ModelContext::unregisterTool(const String& tool_name,
@@ -215,24 +259,6 @@ std::optional<ScriptToolDeclaration> ModelContext::GetScriptToolDeclaration(
     declaration.read_only = script_tool.annotations->read_only;
   }
   return declaration;
-}
-
-void ModelContext::provideContext(ScriptState* script_state,
-                                  const ModelContextOptions* options,
-                                  ExceptionState& exception_state) {
-  auto prev_tool_map = std::move(tool_map_);
-
-  for (auto tool : options->tools()) {
-    if (!RegisterTool(script_state, tool, exception_state)) {
-      tool_map_ = std::move(prev_tool_map);
-      return;
-    }
-  }
-}
-
-void ModelContext::clearContext() {
-  tool_map_.clear();
-  OnToolsChanged();
 }
 
 std::optional<uint32_t> ModelContext::ExecuteTool(
@@ -428,60 +454,6 @@ std::optional<uint32_t> ModelContext::ExecuteV8Tool(
               MakeGarbageCollected<ToolFunctionFinishedCallback>(
                   this, execution_id, false));
   return execution_id;
-}
-
-bool ModelContext::RegisterTool(ScriptState* script_state,
-                                ModelContextTool* tool,
-                                ExceptionState& exception_state) {
-  if (tool_map_.find(tool->name()) != tool_map_.end()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Duplicate tool name");
-    return false;
-  }
-
-  if (!tool->name() || tool->name().empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Tool name is required");
-    return false;
-  }
-
-  if (!tool->description() || tool->description().empty()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Description is required");
-    return false;
-  }
-
-  String input_schema;
-  if (tool->hasInputSchema()) {
-    input_schema =
-        ValidateAndStringifyObject(script_state, tool->inputSchema());
-    if (!input_schema) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                        "Invalid input schema");
-      return false;
-    }
-  }
-
-  auto script_tool = mojom::blink::ScriptTool::New();
-  script_tool->name = tool->name();
-  script_tool->description = tool->description();
-  script_tool->input_schema = input_schema;
-
-  if (tool->hasAnnotations()) {
-    script_tool->annotations = mojom::blink::ScriptToolAnnotations::New();
-    CHECK(tool->annotations()->hasReadOnlyHint());
-    script_tool->annotations->read_only = tool->annotations()->readOnlyHint();
-  }
-
-  auto* tool_data = MakeGarbageCollected<ToolData>(
-      base::PassKey<ModelContext>(), std::move(script_tool),
-      /*v8_tool_function=*/tool->execute(),
-      CaptureSourceLocation(ExecutionContext::From(script_state)));
-
-  tool_map_.insert(tool->name(), tool_data);
-  OnToolsChanged();
-  UseCounter::Count(document_, WebFeature::kModelContextRegisterTool);
-  return true;
 }
 
 void ModelContext::RegisterDeclarativeTool(

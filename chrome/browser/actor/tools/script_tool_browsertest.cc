@@ -92,60 +92,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, BadToolName) {
   ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
 }
 
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ProvideContext) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_provide_context.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  const std::string echo_input =
-      R"JSON(
-        { "text": "Hello World" }
-      )JSON";
-  auto echo_action = MakeScriptToolRequest(*main_frame(), "echo", echo_input);
-  auto echo_action_response = RunScriptTool(std::move(echo_action));
-
-  EXPECT_EQ(echo_action_response->tool->name, "echo");
-  EXPECT_EQ(echo_action_response->input_arguments, echo_input);
-  EXPECT_EQ(echo_action_response->result, "Hello World");
-
-  const std::string reverse_input =
-      R"JSON(
-        { "text": "abc123" }
-      )JSON";
-  auto reverse_action =
-      MakeScriptToolRequest(*main_frame(), "reverse", reverse_input);
-  auto reverse_action_response = RunScriptTool(std::move(reverse_action));
-  EXPECT_EQ(reverse_action_response->tool->name, "reverse");
-  EXPECT_EQ(reverse_action_response->input_arguments, reverse_input);
-  EXPECT_EQ(reverse_action_response->result, "321cba");
-}
-
-IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, ClearContext) {
-  const GURL url =
-      embedded_test_server()->GetURL("/actor/script_tool_provide_context.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  const std::string echo_input =
-      R"JSON(
-        { "text": "test" }
-      )JSON";
-  auto echo_action = MakeScriptToolRequest(*main_frame(), "echo", echo_input);
-  ActResultFuture echo_result;
-  actor_task().Act(ToRequestList(echo_action), echo_result.GetCallback());
-  ExpectOkResult(echo_result);
-
-  ASSERT_TRUE(content::ExecJs(web_contents(),
-                              "navigator.modelContext.clearContext();"));
-
-  auto echo_action_after_clear =
-      MakeScriptToolRequest(*main_frame(), "echo", echo_input);
-  ActResultFuture echo_result_after_clear;
-  actor_task().Act(ToRequestList(echo_action_after_clear),
-                   echo_result_after_clear.GetCallback());
-  ExpectErrorResult(echo_result_after_clear,
-                    mojom::ActionResultCode::kScriptToolInvalidName);
-}
-
 IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, DeclarativeTool) {
   const GURL url =
       embedded_test_server()->GetURL("/actor/declarative_script_tool.html");

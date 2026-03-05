@@ -70,36 +70,5 @@ promise_test(async t => {
   assert_equals(tools.length, 1, "Tool list back to 1 tool after unregistration");
   assert_equals(tools[0].name, "echo", "Remaining tool is echo");
 
-  // Test 3: provideContext
-  eventPromise = watcher.wait_for('toolchange');
-  navigator.modelContext.provideContext({
-      tools: [
-          {
-              execute: greet,
-              name: "greet",
-              description: "greet someone",
-              inputSchema: {
-                  type: "object",
-                  properties: {
-                      "name": {
-                          description: "Name to greet",
-                          type: "string",
-                      }
-                  },
-                  required: ["name"]
-              },
-          }
-      ]
-  });
-  await eventPromise;
-
-  // Test 4: clearContext
-  eventPromise = watcher.wait_for('toolchange');
-  navigator.modelContext.clearContext();
-  await eventPromise;
-
-  tools = navigator.modelContextTesting.listTools();
-  assert_equals(tools.length, 0, "Tool list empty after clearContext");
-
 }, "Test navigator.modelContextTesting toolchange events");
 </script>

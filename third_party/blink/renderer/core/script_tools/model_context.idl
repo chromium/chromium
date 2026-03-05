@@ -9,8 +9,6 @@
     SecureContext,
     RuntimeEnabled=WebMCP
 ] interface ModelContext {
-  [CallWith=ScriptState, RaisesException] undefined provideContext(optional ModelContextOptions options = {});
-  undefined clearContext();
   [CallWith=ScriptState, RaisesException] undefined registerTool(ModelContextTool tool);
   [RaisesException] undefined unregisterTool(DOMString name);
 };

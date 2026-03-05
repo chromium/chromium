@@ -6647,9 +6647,7 @@ interface MimeTypeArray
     method namedItem
 interface ModelContext
     attribute @@toStringTag
-    method clearContext
     method constructor
-    method provideContext
     method registerTool
     method unregisterTool
 interface Mojo
