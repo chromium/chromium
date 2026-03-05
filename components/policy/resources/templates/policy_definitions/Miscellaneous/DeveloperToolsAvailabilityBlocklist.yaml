@@ -21,9 +21,9 @@ example_value:
 - .exact.hostname.com
 - '*'
 - file://*
-future_on:
-- chrome.*
-- chrome_os
+supported_on:
+- chrome.*:147-
+- chrome_os:147-
 features:
   dynamic_refresh: true
   per_profile: true

@@ -205,7 +205,7 @@ BASE_FEATURE(kDevToolsAcceptDebuggingConnections,
 // Whether the policy dialog should be shown instead of greying out the
 // Developer Tools toggle.
 // TODO(crbug.com/442892562): Remove this flag once the feature is launched.
-BASE_FEATURE(kDevToolsShowPolicyDialog, base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kDevToolsShowPolicyDialog, base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kDevToolsAiAssistanceContextSelectionAgent,
              base::FEATURE_ENABLED_BY_DEFAULT);
