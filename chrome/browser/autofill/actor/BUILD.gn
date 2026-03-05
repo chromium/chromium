@@ -11,6 +11,8 @@ static_library("actor") {
     "actor_form_filling_service_impl.h",
     "actor_form_section_splitter.cc",
     "actor_form_section_splitter.h",
+    "actor_key_metrics_recorder.cc",
+    "actor_key_metrics_recorder.h",
   ]
 
   deps = [
