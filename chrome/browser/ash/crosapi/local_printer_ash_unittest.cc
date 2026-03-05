@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -884,7 +885,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_BackgroundGraphics) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_MaxSheetsAllowed) {
   auto* prefs = GetPrefs();
-  prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, 5);
+  prefs->SetInteger(ash::prefs::kPrintingMaxSheetsAllowed, 5);
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -897,7 +898,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_MaxSheetsAllowed) {
 // Zero sheets allowed is a valid policy.
 TEST_F(LocalPrinterAshTest, GetPolicies_ZeroSheetsAllowed) {
   auto* prefs = GetPrefs();
-  prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, 0);
+  prefs->SetInteger(ash::prefs::kPrintingMaxSheetsAllowed, 0);
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -911,7 +912,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_ZeroSheetsAllowed) {
 // Negative sheets allowed is not a valid policy.
 TEST_F(LocalPrinterAshTest, GetPolicies_NegativeMaxSheets) {
   auto* prefs = GetPrefs();
-  prefs->SetInteger(prefs::kPrintingMaxSheetsAllowed, -1);
+  prefs->SetInteger(ash::prefs::kPrintingMaxSheetsAllowed, -1);
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -980,8 +981,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Color) {
       static_cast<int32_t>(printing::mojom::ColorModeRestriction::kMonochrome) |
       static_cast<int32_t>(printing::mojom::ColorModeRestriction::kColor));
   auto* prefs = GetPrefs();
-  prefs->SetInteger(prefs::kPrintingAllowedColorModes, 3);
-  prefs->SetInteger(prefs::kPrintingColorDefault, 2);
+  prefs->SetInteger(ash::prefs::kPrintingAllowedColorModes, 3);
+  prefs->SetInteger(ash::prefs::kPrintingColorDefault, 2);
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -997,8 +998,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Duplex) {
       static_cast<int32_t>(printing::mojom::DuplexModeRestriction::kSimplex) |
       static_cast<int32_t>(printing::mojom::DuplexModeRestriction::kDuplex));
   auto* prefs = GetPrefs();
-  prefs->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
-  prefs->SetInteger(prefs::kPrintingDuplexDefault, 1);
+  prefs->SetInteger(ash::prefs::kPrintingAllowedDuplexModes, 7);
+  prefs->SetInteger(ash::prefs::kPrintingDuplexDefault, 1);
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -1011,8 +1012,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Duplex) {
 
 TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
   auto* prefs = GetPrefs();
-  prefs->SetInteger(prefs::kPrintingAllowedPinModes, 1);
-  prefs->SetInteger(prefs::kPrintingPinDefault, 2);
+  prefs->SetInteger(ash::prefs::kPrintingAllowedPinModes, 1);
+  prefs->SetInteger(ash::prefs::kPrintingPinDefault, 2);
 
   crosapi::mojom::PoliciesPtr policies;
   local_printer_ash()->GetPolicies(base::BindLambdaForTesting(
@@ -1026,7 +1027,8 @@ TEST_F(LocalPrinterAshTest, GetPolicies_Pin) {
 
 TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {
   SetUsername("user@email.com");
-  GetPrefs()->SetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled, true);
+  GetPrefs()->SetBoolean(ash::prefs::kPrintingSendUsernameAndFilenameEnabled,
+                         true);
   std::optional<std::string> username;
   local_printer_ash()->GetUsernamePerPolicy(
       base::BindOnce(base::BindLambdaForTesting(
@@ -1037,7 +1039,8 @@ TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Allowed) {
 
 TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Denied) {
   SetUsername("user@email.com");
-  GetPrefs()->SetBoolean(prefs::kPrintingSendUsernameAndFilenameEnabled, false);
+  GetPrefs()->SetBoolean(ash::prefs::kPrintingSendUsernameAndFilenameEnabled,
+                         false);
   std::optional<std::string> username;
   local_printer_ash()->GetUsernamePerPolicy(
       base::BindOnce(base::BindLambdaForTesting(

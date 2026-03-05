@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/history/print_job_history_cleaner.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -11,7 +12,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -66,7 +66,7 @@ void PrintJobHistoryCleaner::OnPrefServiceInitialized(
     base::OnceClosure callback,
     bool success) {
   int expiration_period =
-      pref_service_->GetInteger(prefs::kPrintJobHistoryExpirationPeriod);
+      pref_service_->GetInteger(ash::prefs::kPrintJobHistoryExpirationPeriod);
 
   // We don't want to run cleanup procedure if there are no expired print jobs.
   if (!success || !print_job_database_->IsInitialized() ||
@@ -93,7 +93,7 @@ void PrintJobHistoryCleaner::OnPrintJobsRetrieved(
   }
   std::vector<std::string> print_job_ids_to_remove;
   base::TimeDelta print_job_history_expiration_period = base::Days(
-      pref_service_->GetInteger(prefs::kPrintJobHistoryExpirationPeriod));
+      pref_service_->GetInteger(ash::prefs::kPrintJobHistoryExpirationPeriod));
 
   base::Time now = clock_->Now();
   oldest_print_job_completion_time_ = now;

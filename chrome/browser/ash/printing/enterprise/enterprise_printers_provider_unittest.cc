@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/to_vector.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
@@ -151,12 +151,12 @@ class EnterprisePrintersProviderTest : public testing::Test {
 
     // Explicitly set empty allowlist to disable all printers. Individual test
     // cases will override this.
-    prefs_->SetManagedPref(prefs::kRecommendedPrintersAllowlist,
+    prefs_->SetManagedPref(ash::prefs::kRecommendedPrintersAllowlist,
                            base::ListValue());
     cros_settings_->Set(kDevicePrintersAllowlist, base::Value());
 
     prefs_->SetManagedPref(
-        prefs::kRecommendedPrintersAccessMode,
+        ash::prefs::kRecommendedPrintersAccessMode,
         base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
     cros_settings_->Set(
         kDevicePrintersAccessMode,
@@ -173,7 +173,7 @@ class EnterprisePrintersProviderTest : public testing::Test {
   }
 
   void SetRecommendedPrinters(const std::vector<std::string>& printer_jsons) {
-    prefs_->SetManagedPref(prefs::kRecommendedPrinters,
+    prefs_->SetManagedPref(ash::prefs::kRecommendedPrinters,
                            StringsToValueList(printer_jsons));
     task_environment_.RunUntilIdle();
   }
@@ -188,7 +188,7 @@ class EnterprisePrintersProviderTest : public testing::Test {
 
   void SetUserPolicyPrinters(
       const std::vector<std::string>& allowed_printer_ids) {
-    prefs_->SetManagedPref(prefs::kRecommendedPrintersAllowlist,
+    prefs_->SetManagedPref(ash::prefs::kRecommendedPrintersAllowlist,
                            StringsToValueList(allowed_printer_ids));
 
     task_environment_.RunUntilIdle();

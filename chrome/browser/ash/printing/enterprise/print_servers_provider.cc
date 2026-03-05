@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
@@ -19,7 +20,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/printing/print_server.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -341,13 +341,13 @@ class PrintServersProviderImpl : public PrintServersProvider {
 // static
 void PrintServersProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kExternalPrintServersAllowlist);
+  registry->RegisterListPref(ash::prefs::kExternalPrintServersAllowlist);
 }
 
 // static
 void PrintServersProvider::RegisterLocalStatePrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterListPref(prefs::kDeviceExternalPrintServersAllowlist);
+  registry->RegisterListPref(ash::prefs::kDeviceExternalPrintServersAllowlist);
 }
 
 // static

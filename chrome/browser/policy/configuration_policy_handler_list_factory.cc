@@ -1472,10 +1472,10 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kSchedulerConfiguration,
     base::Value::Type::STRING },
   { key::kExternalPrintServersAllowlist,
-    prefs::kExternalPrintServersAllowlist,
+    ash::prefs::kExternalPrintServersAllowlist,
     base::Value::Type::LIST },
   { key::kDeviceExternalPrintServersAllowlist,
-    prefs::kDeviceExternalPrintServersAllowlist,
+    ash::prefs::kDeviceExternalPrintServersAllowlist,
     base::Value::Type::LIST },
   { key::kAllowedLanguages,
     prefs::kAllowedLanguages,
@@ -1523,7 +1523,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     prefs::kNTLMShareAuthenticationEnabled,
     base::Value::Type::BOOLEAN },
   { key::kPrintingSendUsernameAndFilenameEnabled,
-    prefs::kPrintingSendUsernameAndFilenameEnabled,
+    ash::prefs::kPrintingSendUsernameAndFilenameEnabled,
     base::Value::Type::BOOLEAN },
   { key::kUserPluginVmAllowed,
     plugin_vm::prefs::kPluginVmAllowed,
@@ -1652,7 +1652,7 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
     ash::prefs::kLoginDisplayPasswordButtonEnabled,
     base::Value::Type::BOOLEAN },
   { key::kDeletePrintJobHistoryAllowed,
-    prefs::kDeletePrintJobHistoryAllowed,
+    ash::prefs::kDeletePrintJobHistoryAllowed,
     base::Value::Type::BOOLEAN },
   { key::kSuggestedContentEnabled,
     ash::prefs::kSuggestedContentEnabled,
@@ -3138,12 +3138,12 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   // Handler for another policy with JSON strings, lenient but shows warnings.
   handlers->AddHandler(
       std::make_unique<SimpleJsonStringSchemaValidatingPolicyHandler>(
-          key::kPrinters, prefs::kRecommendedPrinters,
+          key::kPrinters, ash::prefs::kRecommendedPrinters,
           chrome_schema.GetValidationSchema(),
           SimpleSchemaValidatingPolicyHandler::RECOMMENDED_ALLOWED,
           SimpleSchemaValidatingPolicyHandler::MANDATORY_ALLOWED));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kUserPrintersAllowed, prefs::kUserPrintersAllowed,
+      key::kUserPrintersAllowed, ash::prefs::kUserPrintersAllowed,
       base::Value::Type::BOOLEAN));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kGaiaOfflineSigninTimeLimitDays,
@@ -3188,13 +3188,13 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<ExternalDataPolicyHandler>(
       key::kPrintersBulkConfiguration));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kPrintersBulkAccessMode, prefs::kRecommendedPrintersAccessMode,
+      key::kPrintersBulkAccessMode, ash::prefs::kRecommendedPrintersAccessMode,
       base::Value::Type::INTEGER));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kPrintersBulkBlocklist, prefs::kRecommendedPrintersBlocklist,
+      key::kPrintersBulkBlocklist, ash::prefs::kRecommendedPrintersBlocklist,
       base::Value::Type::LIST));
   handlers->AddHandler(std::make_unique<SimplePolicyHandler>(
-      key::kPrintersBulkAllowlist, prefs::kRecommendedPrintersAllowlist,
+      key::kPrintersBulkAllowlist, ash::prefs::kRecommendedPrintersAllowlist,
       base::Value::Type::LIST));
   handlers->AddHandler(
       std::make_unique<ExternalDataPolicyHandler>(key::kExternalPrintServers));
@@ -3238,11 +3238,11 @@ std::unique_ptr<ConfigurationPolicyHandlerList> BuildHandlerList(
   handlers->AddHandler(std::make_unique<PrintingDuplexDefaultPolicyHandler>());
   handlers->AddHandler(std::make_unique<PrintingPinDefaultPolicyHandler>());
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
-      key::kPrintingMaxSheetsAllowed, prefs::kPrintingMaxSheetsAllowed, 1,
+      key::kPrintingMaxSheetsAllowed, ash::prefs::kPrintingMaxSheetsAllowed, 1,
       INT_MAX, true));
   handlers->AddHandler(std::make_unique<IntRangePolicyHandler>(
       key::kPrintJobHistoryExpirationPeriod,
-      prefs::kPrintJobHistoryExpirationPeriod, -1, INT_MAX, true));
+      ash::prefs::kPrintJobHistoryExpirationPeriod, -1, INT_MAX, true));
   handlers->AddHandler(std::make_unique<SimpleSchemaValidatingPolicyHandler>(
       key::kNetworkFileSharesPreconfiguredShares,
       prefs::kNetworkFileSharesPreconfiguredShares, chrome_schema,

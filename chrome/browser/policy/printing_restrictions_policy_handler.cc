@@ -13,6 +13,10 @@
 #include "components/strings/grit/components_strings.h"
 #include "printing/buildflags/buildflags.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 namespace policy {
 
 template <class Mode>
@@ -71,7 +75,7 @@ bool PrintingEnumPolicyHandler<Mode>::GetValue(const PolicyMap& policies,
 PrintingAllowedColorModesPolicyHandler::PrintingAllowedColorModesPolicyHandler()
     : PrintingEnumPolicyHandler<printing::ColorModeRestriction>(
           key::kPrintingAllowedColorModes,
-          prefs::kPrintingAllowedColorModes,
+          ash::prefs::kPrintingAllowedColorModes,
           {
               {"any", printing::ColorModeRestriction::kUnset},
               {"monochrome", printing::ColorModeRestriction::kMonochrome},
@@ -84,7 +88,7 @@ PrintingAllowedColorModesPolicyHandler::
 PrintingColorDefaultPolicyHandler::PrintingColorDefaultPolicyHandler()
     : PrintingEnumPolicyHandler<printing::ColorModeRestriction>(
           key::kPrintingColorDefault,
-          prefs::kPrintingColorDefault,
+          ash::prefs::kPrintingColorDefault,
           {
               {"monochrome", printing::ColorModeRestriction::kMonochrome},
               {"color", printing::ColorModeRestriction::kColor},
@@ -97,7 +101,7 @@ PrintingAllowedDuplexModesPolicyHandler::
     PrintingAllowedDuplexModesPolicyHandler()
     : PrintingEnumPolicyHandler<printing::DuplexModeRestriction>(
           key::kPrintingAllowedDuplexModes,
-          prefs::kPrintingAllowedDuplexModes,
+          ash::prefs::kPrintingAllowedDuplexModes,
           {
               {"any", printing::DuplexModeRestriction::kUnset},
               {"simplex", printing::DuplexModeRestriction::kSimplex},
@@ -110,7 +114,7 @@ PrintingAllowedDuplexModesPolicyHandler::
 PrintingDuplexDefaultPolicyHandler::PrintingDuplexDefaultPolicyHandler()
     : PrintingEnumPolicyHandler<printing::DuplexModeRestriction>(
           key::kPrintingDuplexDefault,
-          prefs::kPrintingDuplexDefault,
+          ash::prefs::kPrintingDuplexDefault,
           {
               {"simplex", printing::DuplexModeRestriction::kSimplex},
               {"long-edge", printing::DuplexModeRestriction::kLongEdge},
@@ -123,7 +127,7 @@ PrintingDuplexDefaultPolicyHandler::~PrintingDuplexDefaultPolicyHandler() =
 PrintingAllowedPinModesPolicyHandler::PrintingAllowedPinModesPolicyHandler()
     : PrintingEnumPolicyHandler<printing::PinModeRestriction>(
           key::kPrintingAllowedPinModes,
-          prefs::kPrintingAllowedPinModes,
+          ash::prefs::kPrintingAllowedPinModes,
           {
               {"any", printing::PinModeRestriction::kUnset},
               {"pin", printing::PinModeRestriction::kPin},
@@ -136,7 +140,7 @@ PrintingAllowedPinModesPolicyHandler::~PrintingAllowedPinModesPolicyHandler() =
 PrintingPinDefaultPolicyHandler::PrintingPinDefaultPolicyHandler()
     : PrintingEnumPolicyHandler<printing::PinModeRestriction>(
           key::kPrintingPinDefault,
-          prefs::kPrintingPinDefault,
+          ash::prefs::kPrintingPinDefault,
           {
               {"pin", printing::PinModeRestriction::kPin},
               {"no_pin", printing::PinModeRestriction::kNoPin},

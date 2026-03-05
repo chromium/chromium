@@ -1314,7 +1314,7 @@ constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
      {syncable_prefs_ids::kUse24HourClock, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},
-    {prefs::kUserPrintersAllowed,
+    {ash::prefs::kUserPrintersAllowed,
      {syncable_prefs_ids::kUserPrintersAllowed, syncer::OS_PREFERENCES,
       sync_preferences::PrefSensitivity::kNone,
       sync_preferences::MergeBehavior::kNone}},

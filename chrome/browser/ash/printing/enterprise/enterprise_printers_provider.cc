@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -19,7 +20,6 @@
 #include "chrome/browser/ash/printing/enterprise/calculators_policies_binder.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "chromeos/printing/printer_translator.h"
@@ -94,7 +94,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
     // Binds policy with recommended printers (deprecated). This method calls
     // indirectly RecalculateCurrentPrintersList() that prepares the first
     // version of final list of printers.
-    BindPref(prefs::kRecommendedPrinters,
+    BindPref(ash::prefs::kRecommendedPrinters,
              &EnterprisePrintersProviderImpl::UpdateUserRecommendedPrinters);
   }
 
@@ -137,7 +137,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
   // printers. It is called when value of the policy changes.
   void UpdateUserRecommendedPrinters() {
     recommended_printers_.clear();
-    std::vector<std::string> data = FromPrefs(prefs::kRecommendedPrinters);
+    std::vector<std::string> data = FromPrefs(ash::prefs::kRecommendedPrinters);
     for (const auto& printer_json : data) {
       std::optional<base::Value> printer_value = base::JSONReader::Read(
           printer_json, base::JSON_ALLOW_TRAILING_COMMAS);
@@ -302,7 +302,7 @@ class EnterprisePrintersProviderImpl : public EnterprisePrintersProvider,
 // static
 void EnterprisePrintersProvider::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterListPref(prefs::kRecommendedPrinters);
+  registry->RegisterListPref(ash::prefs::kRecommendedPrinters);
   CalculatorsPoliciesBinder::RegisterProfilePrefs(registry);
 }
 

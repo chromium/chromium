@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
@@ -11,7 +12,6 @@
 #include "chrome/browser/ash/printing/print_management/print_job_info_mojom_conversions.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/prefs/pref_service.h"
@@ -39,10 +39,10 @@ PrintingManager::PrintingManager(
   history_service_observation_.Observe(history_service_.get());
   cups_print_job_manager_->AddObserver(this);
 
-  delete_print_job_history_allowed_.Init(prefs::kDeletePrintJobHistoryAllowed,
-                                         pref_service);
+  delete_print_job_history_allowed_.Init(
+      ash::prefs::kDeletePrintJobHistoryAllowed, pref_service);
   print_job_history_expiration_period_.Init(
-      prefs::kPrintJobHistoryExpirationPeriod, pref_service);
+      ash::prefs::kPrintJobHistoryExpirationPeriod, pref_service);
 }
 
 PrintingManager::~PrintingManager() {

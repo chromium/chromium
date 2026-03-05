@@ -7,11 +7,11 @@
 #include <array>
 #include <string>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/printing/enterprise/bulk_printers_calculator.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/common/pref_names.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/prefs/testing_pref_service.h"
@@ -133,7 +133,7 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsAllAccess) {
 
   // Set prefs to complete computation
   prefs_.SetManagedPref(
-      prefs::kRecommendedPrintersAccessMode,
+      ash::prefs::kRecommendedPrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::ALL_ACCESS));
 
   env_.RunUntilIdle();
@@ -146,9 +146,9 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsAllowlist) {
 
   // Set prefs to complete computation
   prefs_.SetManagedPref(
-      prefs::kRecommendedPrintersAccessMode,
+      ash::prefs::kRecommendedPrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
-  prefs_.SetManagedPref(prefs::kRecommendedPrintersAllowlist,
+  prefs_.SetManagedPref(ash::prefs::kRecommendedPrintersAllowlist,
                         StringsToList(kAllowlistIds));
 
   env_.RunUntilIdle();
@@ -161,9 +161,9 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsBlocklist) {
 
   // Set prefs to complete computation
   prefs_.SetManagedPref(
-      prefs::kRecommendedPrintersAccessMode,
+      ash::prefs::kRecommendedPrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::BLOCKLIST_ONLY));
-  prefs_.SetManagedPref(prefs::kRecommendedPrintersBlocklist,
+  prefs_.SetManagedPref(ash::prefs::kRecommendedPrintersBlocklist,
                         StringsToList(kBlocklistIds));
 
   env_.RunUntilIdle();
@@ -175,9 +175,9 @@ TEST_F(CalculatorsPoliciesBinderTest, PrefsBeforeBind) {
   // Verify that if preferences are set before we bind to policies, the
   // calculator is still properly populated.
   prefs_.SetManagedPref(
-      prefs::kRecommendedPrintersAccessMode,
+      ash::prefs::kRecommendedPrintersAccessMode,
       base::Value(BulkPrintersCalculator::AccessMode::ALLOWLIST_ONLY));
-  prefs_.SetManagedPref(prefs::kRecommendedPrintersAllowlist,
+  prefs_.SetManagedPref(ash::prefs::kRecommendedPrintersAllowlist,
                         StringsToList(kAllowlistIds));
 
   auto calculator = UserCalculator();

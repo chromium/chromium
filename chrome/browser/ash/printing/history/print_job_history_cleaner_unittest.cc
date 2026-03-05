@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/history/print_job_history_cleaner.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -101,7 +101,7 @@ class PrintJobHistoryCleanerTest : public ::testing::Test {
 
 TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobs) {
   // Set expiration period to 1 day.
-  test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, 1);
+  test_prefs_.SetInteger(ash::prefs::kPrintJobHistoryExpirationPeriod, 1);
   print_job_database_->Initialize(base::DoNothing());
 
   task_environment_.FastForwardBy(base::Days(300));
@@ -135,7 +135,7 @@ TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobs) {
 
 TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobsAfterPrefChanged) {
   // Set expiration period to 1 day.
-  test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, 3);
+  test_prefs_.SetInteger(ash::prefs::kPrintJobHistoryExpirationPeriod, 3);
   print_job_database_->Initialize(base::DoNothing());
 
   task_environment_.FastForwardBy(base::Days(300));
@@ -153,7 +153,7 @@ TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobsAfterPrefChanged) {
   ASSERT_EQ(1u, entries.size());
   EXPECT_EQ(kId1, entries[0].id());
 
-  test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, 1);
+  test_prefs_.SetInteger(ash::prefs::kPrintJobHistoryExpirationPeriod, 1);
   base::RunLoop run_loop2;
   print_job_history_cleaner_->CleanUp(run_loop2.QuitClosure());
   run_loop2.Run();
@@ -164,7 +164,7 @@ TEST_F(PrintJobHistoryCleanerTest, CleanExpiredPrintJobsAfterPrefChanged) {
 
 TEST_F(PrintJobHistoryCleanerTest, StorePrintJobHistoryIndefinite) {
   // Set expiration period policy to store history indefinitely.
-  test_prefs_.SetInteger(prefs::kPrintJobHistoryExpirationPeriod, -1);
+  test_prefs_.SetInteger(ash::prefs::kPrintJobHistoryExpirationPeriod, -1);
   print_job_database_->Initialize(base::DoNothing());
 
   task_environment_.FastForwardBy(base::Days(300));

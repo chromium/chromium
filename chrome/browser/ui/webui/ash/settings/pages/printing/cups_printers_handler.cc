@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
@@ -41,7 +42,6 @@
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/server_printer_url_util.h"
 #include "chrome/common/chrome_paths.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/ppd_line_reader.h"
@@ -417,7 +417,7 @@ void CupsPrintersHandler::HandleUpdateCupsPrinter(const base::ListValue& args) {
   Printer printer(printer_id);
   printer.set_display_name(printer_name);
 
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kUserPrintersAllowed)) {
+  if (!profile_->GetPrefs()->GetBoolean(ash::prefs::kUserPrintersAllowed)) {
     PRINTER_LOG(DEBUG) << "HandleUpdateCupsPrinter() called when "
                           "kUserPrintersAllowed is set to false";
     OnAddedOrEditedPrinterCommon(printer,
@@ -841,7 +841,7 @@ void CupsPrintersHandler::AddOrReconfigurePrinter(const base::ListValue& args,
     return;
   }
 
-  if (!profile_->GetPrefs()->GetBoolean(prefs::kUserPrintersAllowed)) {
+  if (!profile_->GetPrefs()->GetBoolean(ash::prefs::kUserPrintersAllowed)) {
     PRINTER_LOG(DEBUG) << "AddOrReconfigurePrinter() called when "
                           "kUserPrintersAllowed is set to false";
     OnAddedOrEditedPrinterCommon(*printer,

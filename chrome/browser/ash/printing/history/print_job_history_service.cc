@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/printing/history/print_job_history_cleaner.h"
-#include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace ash {
@@ -18,7 +18,7 @@ PrintJobHistoryService::~PrintJobHistoryService() = default;
 void PrintJobHistoryService::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
-      prefs::kPrintJobHistoryExpirationPeriod,
+      ash::prefs::kPrintJobHistoryExpirationPeriod,
       PrintJobHistoryCleaner::kDefaultPrintJobHistoryExpirationPeriodDays);
 }
 

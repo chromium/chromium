@@ -82,6 +82,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
+#include "ash/constants/ash_pref_names.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
@@ -973,7 +974,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultPaperSizeCustomSize) {
 
 #if BUILDFLAG(IS_CHROMEOS)
 TEST_F(PrintPreviewHandlerTest, InitialSettingsMaxSheetsAllowedPolicy) {
-  prefs()->SetInteger(prefs::kPrintingMaxSheetsAllowed, 2);
+  prefs()->SetInteger(ash::prefs::kPrintingMaxSheetsAllowed, 2);
   Initialize();
   ValidateInitialSettingsValuePolicy(*web_ui()->call_data().back(), "sheets",
                                      base::Value(2));
@@ -981,7 +982,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsMaxSheetsAllowedPolicy) {
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableColorAndMonochrome) {
   // Set a pref that should take priority over StickySettings.
-  prefs()->SetInteger(prefs::kPrintingAllowedColorModes, 3);
+  prefs()->SetInteger(ash::prefs::kPrintingAllowedColorModes, 3);
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "color", base::Value(3), std::nullopt);
@@ -989,7 +990,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableColorAndMonochrome) {
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultColor) {
   // Set a pref that should take priority over StickySettings.
-  prefs()->SetInteger(prefs::kPrintingColorDefault, 2);
+  prefs()->SetInteger(ash::prefs::kPrintingColorDefault, 2);
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "color", std::nullopt, base::Value(2));
@@ -997,7 +998,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultColor) {
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableSimplexAndDuplex) {
   // Set a pref that should take priority over StickySettings.
-  prefs()->SetInteger(prefs::kPrintingAllowedDuplexModes, 7);
+  prefs()->SetInteger(ash::prefs::kPrintingAllowedDuplexModes, 7);
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "duplex", base::Value(7), std::nullopt);
@@ -1005,7 +1006,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsEnableSimplexAndDuplex) {
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultSimplex) {
   // Set a pref that should take priority over StickySettings.
-  prefs()->SetInteger(prefs::kPrintingDuplexDefault, 1);
+  prefs()->SetInteger(ash::prefs::kPrintingDuplexDefault, 1);
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "duplex", std::nullopt, base::Value(1));
@@ -1013,7 +1014,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultSimplex) {
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictPin) {
   // Set a pref that should take priority over StickySettings.
-  prefs()->SetInteger(prefs::kPrintingAllowedPinModes, 1);
+  prefs()->SetInteger(ash::prefs::kPrintingAllowedPinModes, 1);
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "pin", base::Value(1), std::nullopt);
@@ -1021,7 +1022,7 @@ TEST_F(PrintPreviewHandlerTest, InitialSettingsRestrictPin) {
 
 TEST_F(PrintPreviewHandlerTest, InitialSettingsDefaultNoPin) {
   // Set a pref that should take priority over StickySettings.
-  prefs()->SetInteger(prefs::kPrintingPinDefault, 2);
+  prefs()->SetInteger(ash::prefs::kPrintingPinDefault, 2);
   Initialize();
   ValidateInitialSettingsAllowedDefaultModePolicy(
       *web_ui()->call_data().back(), "pin", std::nullopt, base::Value(2));

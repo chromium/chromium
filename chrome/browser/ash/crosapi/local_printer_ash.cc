@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/check.h"
 #include "base/check_deref.h"
@@ -582,41 +583,41 @@ void LocalPrinterAsh::GetPolicies(GetPoliciesCallback callback) {
   }
 
   policies->paper_size_default = printing::ParsePaperSizeDefault(*prefs);
-  if (prefs->HasPrefPath(prefs::kPrintingMaxSheetsAllowed)) {
-    int max_sheets = prefs->GetInteger(prefs::kPrintingMaxSheetsAllowed);
+  if (prefs->HasPrefPath(ash::prefs::kPrintingMaxSheetsAllowed)) {
+    int max_sheets = prefs->GetInteger(ash::prefs::kPrintingMaxSheetsAllowed);
     if (max_sheets >= 0) {
       policies->max_sheets_allowed = max_sheets;
       policies->max_sheets_allowed_has_value = true;
     }
   }
 
-  if (prefs->HasPrefPath(prefs::kPrintingAllowedColorModes)) {
+  if (prefs->HasPrefPath(ash::prefs::kPrintingAllowedColorModes)) {
     policies->allowed_color_modes =
-        prefs->GetInteger(prefs::kPrintingAllowedColorModes);
+        prefs->GetInteger(ash::prefs::kPrintingAllowedColorModes);
   }
-  if (prefs->HasPrefPath(prefs::kPrintingAllowedDuplexModes)) {
+  if (prefs->HasPrefPath(ash::prefs::kPrintingAllowedDuplexModes)) {
     policies->allowed_duplex_modes =
-        prefs->GetInteger(prefs::kPrintingAllowedDuplexModes);
+        prefs->GetInteger(ash::prefs::kPrintingAllowedDuplexModes);
   }
-  if (prefs->HasPrefPath(prefs::kPrintingAllowedPinModes)) {
+  if (prefs->HasPrefPath(ash::prefs::kPrintingAllowedPinModes)) {
     policies->allowed_pin_modes =
         static_cast<printing::mojom::PinModeRestriction>(
-            prefs->GetInteger(prefs::kPrintingAllowedPinModes));
+            prefs->GetInteger(ash::prefs::kPrintingAllowedPinModes));
   }
-  if (prefs->HasPrefPath(prefs::kPrintingColorDefault)) {
+  if (prefs->HasPrefPath(ash::prefs::kPrintingColorDefault)) {
     policies->default_color_mode =
         static_cast<printing::mojom::ColorModeRestriction>(
-            prefs->GetInteger(prefs::kPrintingColorDefault));
+            prefs->GetInteger(ash::prefs::kPrintingColorDefault));
   }
-  if (prefs->HasPrefPath(prefs::kPrintingDuplexDefault)) {
+  if (prefs->HasPrefPath(ash::prefs::kPrintingDuplexDefault)) {
     policies->default_duplex_mode =
         static_cast<printing::mojom::DuplexModeRestriction>(
-            prefs->GetInteger(prefs::kPrintingDuplexDefault));
+            prefs->GetInteger(ash::prefs::kPrintingDuplexDefault));
   }
-  if (prefs->HasPrefPath(prefs::kPrintingPinDefault)) {
+  if (prefs->HasPrefPath(ash::prefs::kPrintingPinDefault)) {
     policies->default_pin_mode =
         static_cast<printing::mojom::PinModeRestriction>(
-            prefs->GetInteger(prefs::kPrintingPinDefault));
+            prefs->GetInteger(ash::prefs::kPrintingPinDefault));
   }
 
   if (prefs->HasPrefPath(prefs::kPrintPdfAsImageDefault)) {
@@ -634,10 +635,11 @@ void LocalPrinterAsh::GetUsernamePerPolicy(
   Profile* profile = GetProfile();
   const std::string username =
       ash::ProfileHelper::Get()->GetUserByProfile(profile)->display_email();
-  std::move(callback).Run(profile->GetPrefs()->GetBoolean(
-                              prefs::kPrintingSendUsernameAndFilenameEnabled)
-                              ? std::make_optional(username)
-                              : std::nullopt);
+  std::move(callback).Run(
+      profile->GetPrefs()->GetBoolean(
+          ash::prefs::kPrintingSendUsernameAndFilenameEnabled)
+          ? std::make_optional(username)
+          : std::nullopt);
 }
 
 void LocalPrinterAsh::GetPrinterTypeDenyList(

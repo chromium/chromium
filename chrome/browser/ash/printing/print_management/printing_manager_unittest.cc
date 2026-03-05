@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/ash/printing/history/print_job_history_service_impl.h"
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
 #include "components/history/core/browser/history_service.h"
@@ -87,7 +87,7 @@ class PrintingManagerTest : public ::testing::Test {
     test_prefs_.SetInitializationCompleted();
     PrintJobHistoryService::RegisterProfilePrefs(test_prefs_.registry());
     test_prefs_.registry()->RegisterBooleanPref(
-        prefs::kDeletePrintJobHistoryAllowed, true);
+        ash::prefs::kDeletePrintJobHistoryAllowed, true);
 
     print_job_manager_ = std::make_unique<TestCupsPrintJobManager>(&profile_);
     auto print_job_database = std::make_unique<TestPrintJobDatabase>();
@@ -230,7 +230,7 @@ TEST_F(PrintingManagerTest, DeleteAllPrintJobs) {
 }
 
 TEST_F(PrintingManagerTest, DeleteAllPrintJobsPreventedByPolicy) {
-  test_prefs_.SetBoolean(prefs::kDeletePrintJobHistoryAllowed, false);
+  test_prefs_.SetBoolean(ash::prefs::kDeletePrintJobHistoryAllowed, false);
 
   // Assert no initial print jobs are ongoing or saved.
   RunGetPrintJobs();
@@ -278,7 +278,7 @@ TEST_F(PrintingManagerTest, DeletingBrowserHistoryDeletesAllPrintJobs) {
 }
 
 TEST_F(PrintingManagerTest, PolicyPreventsDeletingBrowserHistoryDeletingJobs) {
-  test_prefs_.SetBoolean(prefs::kDeletePrintJobHistoryAllowed, false);
+  test_prefs_.SetBoolean(ash::prefs::kDeletePrintJobHistoryAllowed, false);
 
   // Assert no initial print jobs are ongoing or saved.
   RunGetPrintJobs();

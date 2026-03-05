@@ -1151,7 +1151,7 @@ const PrefsUtil::TypedPrefMap& PrefsUtil::GetAllowlistedKeys() {
       settings_api::PrefType::kNumber;
 
   // Native Printing settings.
-  (*s_allowlist)[::prefs::kUserPrintersAllowed] =
+  (*s_allowlist)[ash::prefs::kUserPrintersAllowed] =
       settings_api::PrefType::kBoolean;
 
   // Privacy settings.

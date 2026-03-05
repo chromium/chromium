@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/printing/cups_print_job_notification_utils.h"
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_service.h"
@@ -101,7 +101,7 @@ std::u16string GetNotificationBodyMessageForUnauthorizedClient(
       base::UTF8ToUTF16(job.printer().display_name());
   bool send_username_and_filename_policy_enabled =
       profile.GetPrefs()->GetBoolean(
-          prefs::kPrintingSendUsernameAndFilenameEnabled);
+          ash::prefs::kPrintingSendUsernameAndFilenameEnabled);
   if (send_username_and_filename_policy_enabled) {
     return l10n_util::GetStringFUTF16(
         IDS_PRINT_JOB_NOTIFICATION_CLIENT_UNAUTHORIZED_MESSAGE,

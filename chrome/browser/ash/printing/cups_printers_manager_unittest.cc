@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/functional/bind.h"
@@ -36,7 +37,6 @@
 #include "chrome/browser/ash/printing/usb_printer_detector.h"
 #include "chrome/browser/ash/printing/usb_printer_notification_controller.h"
 #include "chrome/browser/printing/print_preview_sticky_settings.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dlcservice/fake_dlcservice_client.h"
 #include "chromeos/ash/components/dbus/printscanmgr/printscanmgr_client.h"
@@ -780,7 +780,7 @@ TEST_F(CupsPrintersManagerTest, GetPrintersUserNativePrintersDisabled) {
   task_environment_.RunUntilIdle();
 
   // Disable the use of non-enterprise printers.
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   // Verify that non-enterprise printers are not returned by GetPrinters()
   std::vector<Printer> saved_printers =
@@ -810,7 +810,7 @@ TEST_F(CupsPrintersManagerTest, SavePrinterUserNativePrintersDisabled) {
   ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
 
   // Disable the use of non-enterprise printers.
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   // Update the existing saved printer. Verify that the changes did not
   // progogate.
@@ -819,32 +819,32 @@ TEST_F(CupsPrintersManagerTest, SavePrinterUserNativePrintersDisabled) {
   task_environment_.RunUntilIdle();
 
   // Reenable user printers in order to do checking.
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, true);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, true);
   ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
   EXPECT_EQ(manager_->GetPrinters(PrinterClass::kSaved)[0].display_name(), "");
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   // Attempt to update the Automatic and Discovered printers. In both cases
   // check that the printers do not move into the saved category.
   manager_->SavePrinter(Printer("Automatic"));
   task_environment_.RunUntilIdle();
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, true);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, true);
   ExpectPrintersInClassAre(PrinterClass::kAutomatic, {"Automatic"});
   ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   manager_->SavePrinter(Printer("Discovered"));
   task_environment_.RunUntilIdle();
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, true);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, true);
   ExpectPrintersInClassAre(PrinterClass::kDiscovered, {"Discovered"});
   ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   // Attempt to update a printer that we haven't seen before, check that
   // nothing changed.
   manager_->SavePrinter(Printer("NewFangled"));
   task_environment_.RunUntilIdle();
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, true);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, true);
   ExpectPrintersInClassAre(PrinterClass::kSaved, {"Saved"});
 }
 
@@ -861,7 +861,7 @@ TEST_F(CupsPrintersManagerTest, GetPrinterUserNativePrintersDisabled) {
   ExpectPrintersInClassAre(PrinterClass::kEnterprise, {"Enterprise"});
 
   // Disable the use of non-enterprise printers.
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   std::optional<Printer> saved_printer = manager_->GetPrinter("Saved");
   EXPECT_FALSE(saved_printer);
@@ -1043,7 +1043,7 @@ TEST_F(CupsPrintersManagerTest, CanHandleManyUsbPrinters) {
 // pref is set to false.
 TEST_F(CupsPrintersManagerTest, AutomaticPrinterNotInstalledAutomatically) {
   // Disable the use of non-enterprise printers.
-  UpdatePolicyValue(prefs::kUserPrintersAllowed, false);
+  UpdatePolicyValue(ash::prefs::kUserPrintersAllowed, false);
 
   auto automatic_printer = MakeAutomaticPrinter(kPrinterId);
   automatic_printer.printer.SetUri("usb://host/path");

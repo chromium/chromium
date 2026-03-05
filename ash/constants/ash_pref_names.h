@@ -2907,6 +2907,90 @@ inline constexpr char kUse24HourClock[] = "settings.clock.use_24hour_clock";
 // A string pref containing Timezone ID for this user.
 inline constexpr char kUserTimezone[] = "settings.timezone";
 
+//-----------------------------------------------------------------------------
+// Printing related Prefs
+//-----------------------------------------------------------------------------
+
+// Boolean flag which represents whether the user's print job history can be
+// deleted.
+inline constexpr char kDeletePrintJobHistoryAllowed[] =
+    "printing.delete_print_job_history_allowed";
+
+// A pref holding the list of allowed printing color mode as a bitmask composed
+// of |printing::ColorModeRestriction| values. 0 is no restriction.
+inline constexpr char kPrintingAllowedColorModes[] =
+    "printing.allowed_color_modes";
+
+// A pref holding the list of allowed printing duplex mode as a bitmask composed
+// of |printing::DuplexModeRestriction| values. 0 is no restriction.
+inline constexpr char kPrintingAllowedDuplexModes[] =
+    "printing.allowed_duplex_modes";
+
+// A pref holding the allowed PIN printing modes.
+inline constexpr char kPrintingAllowedPinModes[] = "printing.allowed_pin_modes";
+
+// A pref holding the default color mode.
+inline constexpr char kPrintingColorDefault[] = "printing.color_default";
+
+// A pref holding the default duplex mode.
+inline constexpr char kPrintingDuplexDefault[] = "printing.duplex_default";
+
+// Indicates how many sheets is allowed to use for a single print job.
+inline constexpr char kPrintingMaxSheetsAllowed[] =
+    "printing.max_sheets_allowed";
+
+// A pref holding the default PIN mode.
+inline constexpr char kPrintingPinDefault[] = "printing.pin_default";
+
+// Boolean flag which represents whether username and filename should be sent
+// to print server.
+inline constexpr char kPrintingSendUsernameAndFilenameEnabled[] =
+    "printing.send_username_and_filename_enabled";
+
+// Indicates how long print jobs metadata is stored on the device, in days.
+inline constexpr char kPrintJobHistoryExpirationPeriod[] =
+    "printing.print_job_history_expiration_period";
+
+//-----------------------------------------------------------------------------
+// Native printing related Prefs
+//-----------------------------------------------------------------------------
+
+// List of print servers ids that are allowed in the device policy. List of
+// strings.
+inline constexpr char kDeviceExternalPrintServersAllowlist[] =
+    "native_printing.device_external_print_servers_allowlist";
+
+// List of print servers ids that are allowed in the user policy. List of
+// strings. Note that this used to be `kExternalPrintServersWhitelist`, hence
+// the difference between the variable name and the string value.
+inline constexpr char kExternalPrintServersAllowlist[] =
+    "native_printing.external_print_servers_whitelist";
+
+// List of printers configured by policy.
+inline constexpr char kRecommendedPrinters[] =
+    "native_printing.recommended_printers";
+
+// Enum designating the type of restrictions bulk printers are using.
+inline constexpr char kRecommendedPrintersAccessMode[] =
+    "native_printing.recommended_printers_access_mode";
+
+// List of printer ids that are allowed.  List of strings. Note that this
+// used to be `kRecommendedNativePrintersWhitelist`, hence the difference
+// between the variable name and the string value.
+inline constexpr char kRecommendedPrintersAllowlist[] =
+    "native_printing.recommended_printers_whitelist";
+
+// List of printer ids which are explicitly disallowed.  List of strings. Note
+// that this used to be `kRecommendedPrintersBlacklist`, hence the difference
+// between the variable name and the string value.
+inline constexpr char kRecommendedPrintersBlocklist[] =
+    "native_printing.recommended_printers_blacklist";
+
+// A Boolean flag which represents whether or not users are allowed to configure
+// and use their own printers.
+inline constexpr char kUserPrintersAllowed[] =
+    "native_printing.user_native_printers_allowed";
+
 // NOTE: New prefs should start with the "ash." prefix. Existing prefs moved
 // into this file should not be renamed, since they may be synced.
 

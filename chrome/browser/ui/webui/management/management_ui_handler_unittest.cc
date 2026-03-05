@@ -569,7 +569,7 @@ class ManagementUIHandlerTests :
     settings_.device_settings()->SetBoolean(
         ash::kDeviceReportXDREvents, GetTestConfig().device_report_xdr_events);
     profile_->GetPrefs()->SetBoolean(
-        prefs::kPrintingSendUsernameAndFilenameEnabled,
+        ash::prefs::kPrintingSendUsernameAndFilenameEnabled,
         GetTestConfig().printing_send_username_and_filename);
     profile_->GetPrefs()->SetBoolean(
         crostini::prefs::kReportCrostiniUsageEnabled,

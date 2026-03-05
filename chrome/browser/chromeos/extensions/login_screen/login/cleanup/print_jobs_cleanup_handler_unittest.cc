@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -18,7 +19,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 #include "chrome/browser/ash/printing/test_cups_print_job_manager.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -92,9 +92,9 @@ class PrintJobsCleanupHandlerUnittest : public testing::Test {
             std::move(print_job_database), print_job_manager_.get(),
             &test_prefs_);
     test_prefs_.registry()->RegisterBooleanPref(
-        prefs::kDeletePrintJobHistoryAllowed, true);
+        ash::prefs::kDeletePrintJobHistoryAllowed, true);
     test_prefs_.registry()->RegisterIntegerPref(
-        prefs::kPrintJobHistoryExpirationPeriod, 1);
+        ash::prefs::kPrintJobHistoryExpirationPeriod, 1);
     EXPECT_TRUE(history_dir_.CreateUniqueTempDir());
     history_service_ =
         history::CreateHistoryService(history_dir_.GetPath(), true);

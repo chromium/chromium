@@ -34,7 +34,7 @@ class PrintJobHistoryCleaner {
 
   // Removes expired print jobs from the database.
   // The expiration period is controlled by
-  // |prefs::kPrintJobHistoryExpirationPeriod| pref.
+  // |ash::prefs::kPrintJobHistoryExpirationPeriod| pref.
   // |callback| is called after all expired print jobs are removed from the
   // database.
   void CleanUp(base::OnceClosure callback);

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/management/management_ui_handler_chromeos.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/check_is_test.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -283,7 +284,7 @@ void AddDeviceReportingInfo(base::ListValue* report_sources,
   }
 
   bool report_print_username = profile->GetPrefs()->GetBoolean(
-      prefs::kPrintingSendUsernameAndFilenameEnabled);
+      ash::prefs::kPrintingSendUsernameAndFilenameEnabled);
   if (report_print_username && !report_print_jobs) {
     AddDeviceReportingElement(report_sources, kManagementPrinting,
                               DeviceReportingType::kPrint);

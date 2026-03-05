@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/webui/print_management/print_management_ui.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
 namespace ash {
@@ -96,7 +96,8 @@ PrintingManagerFactory::BuildServiceInstanceForBrowserContext(
 
 void PrintingManagerFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* user_prefs) {
-  user_prefs->RegisterBooleanPref(prefs::kDeletePrintJobHistoryAllowed, true);
+  user_prefs->RegisterBooleanPref(ash::prefs::kDeletePrintJobHistoryAllowed,
+                                  true);
 }
 
 bool PrintingManagerFactory::ServiceIsCreatedWithBrowserContext() const {
