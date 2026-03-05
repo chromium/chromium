@@ -9,6 +9,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/blink/public/common/use_counter/webdx_feature_maps.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/blink/public/mojom/use_counter/use_counter_feature.mojom.h"
 
@@ -178,7 +179,7 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
 
         // For any WebFeature use counters that are mapped to a WebDXFeature,
         // record the WebDXFeature use counter as well.
-        auto map = GetWebFeatureToWebDXFeatureMap();
+        auto map = blink::GetWebFeatureToWebDXFeatureMap();
         auto entry = map.find(web_feature);
 
         if (entry != map.end()) {
@@ -206,7 +207,7 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
         if (!uma_css_properties_->IsRecordedOrDeferred(css_property)) {
           uma_css_properties_->RecordOrDefer(css_property);
 
-          auto map = GetCSSProperties2WebDXFeatureMap();
+          auto map = blink::GetCSSPropertiesToWebDXFeatureMap();
           auto entry = map.find(css_property);
 
           if (entry != map.end() &&
@@ -224,7 +225,7 @@ void UseCounterMetricsRecorder::RecordOrDeferUseCounterFeature(
                 animated_css_property)) {
           uma_animated_css_properties_->RecordOrDefer(animated_css_property);
 
-          auto map = GetAnimatedCSSProperties2WebDXFeatureMap();
+          auto map = blink::GetAnimatedCSSPropertiesToWebDXFeatureMap();
           auto entry = map.find(animated_css_property);
 
           if (entry != map.end() &&
@@ -326,7 +327,7 @@ void UseCounterMetricsRecorder::RecordPrivacySensitiveFeatures(
 }
 
 // WebDXFeature use counter mappings have been moved to
-// components/page_load_metrics/browser/observers/use_counter/webdx_feature_maps.cc
+// third_party/blink/common/use_counter/webdx_feature_maps.cc
 UseCounterPageLoadMetricsObserver::UseCounterPageLoadMetricsObserver() =
     default;
 

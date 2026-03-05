@@ -2,19 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/no_destructor.h"
-#include "components/page_load_metrics/browser/observers/use_counter_page_load_metrics_observer.h"
+#include "third_party/blink/public/common/use_counter/webdx_feature_maps.h"
 
-// This file defines a mapping of WebFeature use counters and CSS sample IDs
-// to the corresponding WebDXFeature use counters.
+#include "base/no_destructor.h"
+
+namespace blink {
 
 using WebFeature = blink::mojom::WebFeature;
 using WebDXFeature = blink::mojom::WebDXFeature;
 using CSSSampleId = blink::mojom::CSSSampleId;
-using WebDXFeature = blink::mojom::WebDXFeature;
 
-const base::flat_map<blink::mojom::WebFeature, blink::mojom::WebDXFeature>&
-UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
+const base::flat_map<WebFeature, WebDXFeature>&
+GetWebFeatureToWebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<WebFeature, WebDXFeature>>
       kMap{{
@@ -484,8 +483,8 @@ UseCounterMetricsRecorder::GetWebFeatureToWebDXFeatureMap() {
   return *kMap;
 }
 
-const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
-UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
+const base::flat_map<CSSSampleId, WebDXFeature>&
+GetCSSPropertiesToWebDXFeatureMap() {
   static constexpr WebDXFeature logical_properties =
       WebDXFeature::kLogicalProperties;
   static const base::NoDestructor<
@@ -631,8 +630,8 @@ UseCounterMetricsRecorder::GetCSSProperties2WebDXFeatureMap() {
   return *kMap;
 }
 
-const base::flat_map<blink::mojom::CSSSampleId, blink::mojom::WebDXFeature>&
-UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
+const base::flat_map<CSSSampleId, WebDXFeature>&
+GetAnimatedCSSPropertiesToWebDXFeatureMap() {
   static const base::NoDestructor<
       const base::flat_map<CSSSampleId, WebDXFeature>>
       kMap{{
@@ -643,3 +642,5 @@ UseCounterMetricsRecorder::GetAnimatedCSSProperties2WebDXFeatureMap() {
 
   return *kMap;
 }
+
+}  // namespace blink

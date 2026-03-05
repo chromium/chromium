@@ -72,18 +72,6 @@ class UseCounterMetricsRecorder {
   // Returns a list of opt-in UKM features for use counter.
   static const UkmFeatureList& GetAllowedUkmFeatures();
 
-  // Getters for mappings of WebFeature and CSSSampleId's to WebDXFeature use
-  // counters.
-  static const base::flat_map<blink::mojom::WebFeature,
-                              blink::mojom::WebDXFeature>&
-  GetWebFeatureToWebDXFeatureMap();
-  static const base::flat_map<blink::mojom::CSSSampleId,
-                              blink::mojom::WebDXFeature>&
-  GetCSSProperties2WebDXFeatureMap();
-  static const base::flat_map<blink::mojom::CSSSampleId,
-                              blink::mojom::WebDXFeature>&
-  GetAnimatedCSSProperties2WebDXFeatureMap();
-
   // To keep tracks of which features have been measured.
   // `uma_features_` and `uma_main_frame_features_` are also used for UKMs.
   AtMostOnceEnumUmaDeferrer<blink::mojom::WebFeature> uma_features_;
