@@ -21,9 +21,4 @@ public class EntityEditorView extends EditorViewBase {
     public EntityEditorView(Activity activity) {
         super(activity);
     }
-
-    @Override
-    protected void initFocus() {
-        // TODO: crbug.com/476755159 - Implement.
-    }
 }

@@ -210,6 +210,16 @@ public class EntityEditorModuleTest {
 
     @Test
     @SmallTest
+    public void testValidateOnShow() {
+        when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        showEditorDialog(NEW_LOCAL_PASSPORT);
+
+        PropertyModel model = mCoordinator.getEditorModelForTest();
+        assertFalse(model.get(EntityEditorProperties.VALIDATE_ON_SHOW));
+    }
+
+    @Test
+    @SmallTest
     public void testShowEditorDialogForNewEntity() {
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
         showEditorDialog(NEW_LOCAL_PASSPORT);

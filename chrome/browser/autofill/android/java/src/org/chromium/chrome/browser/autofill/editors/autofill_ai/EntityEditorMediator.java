@@ -14,6 +14,7 @@ import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEdi
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.EDITOR_TITLE;
+import static org.chromium.chrome.browser.autofill.editors.autofill_ai.EntityEditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DATE;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.common.EditorComponentsProperties.ItemType.NOTICE;
@@ -117,6 +118,7 @@ class EntityEditorMediator {
                         R.string.autofill_delete_suggestion_button)
                 .with(DELETE_CALLBACK, this::onDelete)
                 .with(ALLOW_DELETE, mEntityInstance.getRecordType() == RecordType.LOCAL)
+                .with(VALIDATE_ON_SHOW, false)
                 .with(EDITOR_FIELDS, getEditorFields())
                 .build();
     }

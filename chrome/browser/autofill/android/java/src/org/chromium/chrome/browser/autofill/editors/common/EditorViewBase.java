@@ -22,6 +22,7 @@ import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Handler;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +55,7 @@ import org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldV
 import org.chromium.chrome.browser.autofill.editors.common.text_field.TextFieldViewBinder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.components.browser_ui.settings.SettingsUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.ActionConfirmationDialog;
@@ -114,6 +116,7 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     private final List<Spinner> mDropdownFields = new ArrayList<>();
 
     private boolean mIsDismissed;
+    private boolean mValidateOnShow;
 
     private final View mButtonBar;
     private Button mDoneButton;
@@ -194,6 +197,10 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
     public void onDismiss(DialogInterface dialog) {
         mIsDismissed = true;
         removeTextChangedListeners();
+    }
+
+    public void setValidateOnShow(boolean validateOnShow) {
+        mValidateOnShow = validateOnShow;
     }
 
     public void setEditorFields(ListModel<EditorItem> editorFields) {
@@ -656,6 +663,51 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
         }
     }
 
+    private void initFocus() {
+        new Handler()
+                .post(
+                        () -> {
+                            List<FieldView> invalidViews = new ArrayList<>();
+                            if (mValidateOnShow) {
+                                for (FieldView view : getFieldViews()) {
+                                    if (!view.validate()) {
+                                        invalidViews.add(view);
+                                    }
+                                }
+                            }
+
+                            // If TalkBack is enabled, we want to keep the focus at the top
+                            // because the user would not learn about the elements that are
+                            // above the focused field.
+                            if (!ChromeAccessibilityUtil.get().isAccessibilityEnabled()) {
+                                if (!invalidViews.isEmpty()) {
+                                    // Immediately focus the first invalid field to make it faster
+                                    // to edit.
+                                    invalidViews.get(0).scrollToAndFocus();
+                                } else {
+                                    // Trigger default focus as it is not triggered automatically on
+                                    // Android
+                                    // P+.
+                                    getContainerView().requestFocus();
+                                }
+                            }
+                            // Note that keyboard will not be shown for dropdown field since it's
+                            // not
+                            // necessary.
+                            if (getCurrentFocus() != null) {
+                                KeyboardVisibilityDelegate.getInstance()
+                                        .showKeyboard(getCurrentFocus());
+                                // Put the cursor to the end of the text.
+                                if (getCurrentFocus() instanceof EditText) {
+                                    EditText focusedEditText = (EditText) getCurrentFocus();
+                                    focusedEditText.setSelection(
+                                            focusedEditText.getText().length());
+                                }
+                            }
+                            if (sObserverForTest != null) sObserverForTest.onEditorReadyToEdit();
+                        });
+    }
+
     @Override
     public void onClick(View view) {
         // Disable interaction during animation.
@@ -667,9 +719,6 @@ public abstract class EditorViewBase extends AlwaysDismissedDialog
             assumeNonNull(mCancelRunnable).run();
         }
     }
-
-    /** Called when the editor is shown to initialize the view focus. */
-    protected abstract void initFocus();
 
     public static void setEditorObserverForTest(EditorObserverForTest observerForTest) {
         sObserverForTest = observerForTest;
