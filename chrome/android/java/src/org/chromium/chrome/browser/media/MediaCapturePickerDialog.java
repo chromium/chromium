@@ -215,12 +215,18 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                     switch (action) {
                         case CaptureAction.CAPTURE_CANCELLED:
                             mDelegate.onCancel();
+                            MediaCapturePickerManager.recordResult(
+                                    MediaCapturePickerManager.Result.CANCELLED);
                             break;
                         case CaptureAction.CAPTURE_WINDOW:
                             mDelegate.onPickWindow();
+                            MediaCapturePickerManager.recordResult(
+                                    MediaCapturePickerManager.Result.WINDOW_SELECTED);
                             break;
                         case CaptureAction.CAPTURE_SCREEN:
                             mDelegate.onPickScreen();
+                            MediaCapturePickerManager.recordResult(
+                                    MediaCapturePickerManager.Result.SCREEN_SELECTED);
                             break;
                         default:
                             assert false;
@@ -256,9 +262,13 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                             assert webContents != null;
 
                             mDelegate.onPickTab(webContents, mAudioSwitch.isChecked());
+                            MediaCapturePickerManager.recordResult(
+                                    MediaCapturePickerManager.Result.TAB_SELECTED);
                         } else {
                             Log.d(TAG, "PickerDialog: cancelled");
                             mDelegate.onCancel();
+                            MediaCapturePickerManager.recordResult(
+                                    MediaCapturePickerManager.Result.CANCELLED);
                         }
                         mDelegate = null;
                         mModalDialogManager.dismissDialog(
@@ -272,6 +282,8 @@ public class MediaCapturePickerDialog implements MediaCapturePickerTabObserver.D
                     public void onDismiss(PropertyModel model, int dismissalCause) {
                         if (mDelegate != null) {
                             mDelegate.onCancel();
+                            MediaCapturePickerManager.recordResult(
+                                    MediaCapturePickerManager.Result.CANCELLED);
                             mDelegate = null;
                         }
                         allTabObserver.destroy();

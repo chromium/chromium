@@ -6,7 +6,10 @@ package org.chromium.chrome.browser.media;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.PreferredDisplaySurface;
 import org.chromium.blink.mojom.WindowAudioPreference;
 import org.chromium.build.annotations.NullMarked;
@@ -22,6 +25,42 @@ import org.chromium.ui.base.WindowAndroid;
 @NullMarked
 public class MediaCapturePickerManager {
     private static final String TAG = "MediaCapture";
+    private static final String RESULT_HISTOGRAM = "Media.MediaCapture.UI.Android.Picker.Result";
+    private static final String PRE_SHOW_FAILURE_HISTOGRAM =
+            "Media.MediaCapture.UI.Android.Picker.PreShowFailure";
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange
+    @IntDef({Result.CANCELLED, Result.TAB_SELECTED, Result.WINDOW_SELECTED, Result.SCREEN_SELECTED})
+    public @interface Result {
+        int CANCELLED = 0;
+        int TAB_SELECTED = 1;
+        int WINDOW_SELECTED = 2;
+        int SCREEN_SELECTED = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/media/enums.xml:MediaCapturePickerResultEnum)
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange
+    @IntDef({
+        PreShowFailure.CONTEXT_NULL_ERROR,
+        PreShowFailure.PICKER_DELEGATE_NULL_ERROR,
+        PreShowFailure.APP_CONTENT_SHARING_DISABLED_ERROR,
+        PreShowFailure.MEDIA_PROJECTION_MANAGER_NULL_ERROR
+    })
+    public @interface PreShowFailure {
+        int CONTEXT_NULL_ERROR = 0;
+        int PICKER_DELEGATE_NULL_ERROR = 1;
+        int APP_CONTENT_SHARING_DISABLED_ERROR = 2;
+        int MEDIA_PROJECTION_MANAGER_NULL_ERROR = 3;
+        int NUM_ENTRIES = 4;
+    }
+
+    // LINT.ThenChange(/tools/metrics/histograms/metadata/media/enums.xml:MediaCapturePreShowFailureEnum)
 
     /** A delegate for handling returning the picker result. */
     public interface Delegate extends MediaCapturePickerTabObserver.FilterDelegate {
@@ -141,6 +180,7 @@ public class MediaCapturePickerManager {
                     TAG,
                     "Cannot get Context from params web contents to show picker dialog, cancel "
                             + "media capture request");
+            recordPreShowFailure(PreShowFailure.CONTEXT_NULL_ERROR);
             delegate.onCancel();
             return;
         }
@@ -152,5 +192,14 @@ public class MediaCapturePickerManager {
             Log.d(TAG, "New media picker is disabled, showing MediaCapturePickerDialog");
             new MediaCapturePickerDialog(context, params, delegate).show();
         }
+    }
+
+    static void recordResult(@Result int result) {
+        RecordHistogram.recordEnumeratedHistogram(RESULT_HISTOGRAM, result, Result.NUM_ENTRIES);
+    }
+
+    public static void recordPreShowFailure(@PreShowFailure int reason) {
+        RecordHistogram.recordEnumeratedHistogram(
+                PRE_SHOW_FAILURE_HISTOGRAM, reason, PreShowFailure.NUM_ENTRIES);
     }
 }

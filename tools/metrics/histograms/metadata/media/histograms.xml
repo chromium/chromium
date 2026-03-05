@@ -4988,6 +4988,28 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Media.MediaCapture.UI.Android.Picker.PreShowFailure"
+    enum="MediaCapturePickerPreShowFailureEnum" expires_after="2027-03-01">
+  <owner>hscham@chromium.org</owner>
+  <owner>lokeric@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the reason why the media capture picker failed to be shown. Recorded
+    each time the picker fails to show.
+  </summary>
+</histogram>
+
+<histogram name="Media.MediaCapture.UI.Android.Picker.Result"
+    enum="MediaCapturePickerResult" expires_after="2027-03-01">
+  <owner>hscham@chromium.org</owner>
+  <owner>lokeric@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the result of a user's interaction with the media capture picker.
+    Recorded each time the picker is closed.
+  </summary>
+</histogram>
+
 <histogram name="Media.MediaCodecError.NegativeCodecExceptionErrorCode"
     units="CodecErrorCode" expires_after="2026-12-09">
   <owner>vpasupathy@chromium.org</owner>

@@ -62,8 +62,14 @@ public class MediaCapturePickerInvoker {
                 return;
             }
             Log.e(TAG, "PickerInvoker: Failed to create ScreenCapture Intent, cancel request");
+            // The delegate will record pre-show failure in createScreenCaptureIntent() before
+            // returning null.
+            delegate.onCancel();
+            return;
         }
         Log.e(TAG, "PickerInvoker: No PickerDelegate, cancel request");
+        MediaCapturePickerManager.recordPreShowFailure(
+                MediaCapturePickerManager.PreShowFailure.PICKER_DELEGATE_NULL_ERROR);
         delegate.onCancel();
     }
 
@@ -76,6 +82,7 @@ public class MediaCapturePickerInvoker {
         Log.d(TAG, "PickerInvoker: AndroidCapturePrompt received user action %d", action);
         if (action == CaptureAction.CAPTURE_CANCELLED) {
             delegate.onCancel();
+            MediaCapturePickerManager.recordResult(MediaCapturePickerManager.Result.CANCELLED);
         } else if (action == CaptureAction.CAPTURE_WINDOW) {
             Tab tab = impl.getPickedTab();
             if (tab != null) {
@@ -89,14 +96,20 @@ public class MediaCapturePickerInvoker {
                 WebContents pickedTabwebContents = tab.getWebContents();
                 assert pickedTabwebContents != null;
                 delegate.onPickTab(pickedTabwebContents, impl.shouldShareAudio());
+                MediaCapturePickerManager.recordResult(
+                        MediaCapturePickerManager.Result.TAB_SELECTED);
             } else {
                 // User selected a window or screen.
                 Log.d(TAG, "PickerInvoker: A window or screen was picked");
                 ScreenCapture.onPick(webContents, result);
                 delegate.onPickWindow();
+                MediaCapturePickerManager.recordResult(
+                        MediaCapturePickerManager.Result.WINDOW_SELECTED);
             }
         } else if (action == CaptureAction.CAPTURE_SCREEN) {
             delegate.onPickScreen();
+            MediaCapturePickerManager.recordResult(
+                    MediaCapturePickerManager.Result.SCREEN_SELECTED);
         }
         impl.onFinish(webContents);
     }

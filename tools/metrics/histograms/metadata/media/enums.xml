@@ -1302,6 +1302,34 @@ chromium-metrics-reviews@google.com.
   <int value="7" label="Not shown because incognito"/>
 </enum>
 
+<!-- LINT.IfChange(MediaCapturePickerPreShowFailureEnum) -->
+
+<enum name="MediaCapturePickerPreShowFailureEnum">
+  <summary>
+    Records the reason why the media capture picker failed to show.
+  </summary>
+  <int value="0" label="ContextNullError"/>
+  <int value="1" label="PickerDelegateNullError"/>
+  <int value="2" label="AppContentSharingDisabledError"/>
+  <int value="3" label="MediaProjectionManagerNullError"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/media/MediaCapturePickerManager.java:PreShowFailure) -->
+
+<!-- LINT.IfChange(MediaCapturePickerResultEnum) -->
+
+<enum name="MediaCapturePickerResult">
+  <summary>
+    Records the result of a user's interaction with the media capture picker.
+  </summary>
+  <int value="0" label="Cancelled"/>
+  <int value="1" label="TabSelected"/>
+  <int value="2" label="WindowSelected"/>
+  <int value="3" label="ScreenSelected"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/media/MediaCapturePickerManager.java:Result) -->
+
 <enum name="MediaCodecError">
   <int value="0" label="MEDIA_CODEC_OK"/>
   <int value="1" label="MEDIA_CODEC_TRY_AGAIN_LATER"/>
