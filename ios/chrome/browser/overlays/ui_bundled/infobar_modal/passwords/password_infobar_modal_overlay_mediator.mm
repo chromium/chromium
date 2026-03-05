@@ -4,17 +4,13 @@
 
 #import "ios/chrome/browser/overlays/ui_bundled/infobar_modal/passwords/password_infobar_modal_overlay_mediator.h"
 
-#import "base/memory/raw_ptr.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/metrics/user_metrics.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "components/password_manager/core/browser/manage_passwords_referrer.h"
 #import "ios/chrome/browser/overlays/model/public/default/default_infobar_overlay_request_config.h"
-#import "ios/chrome/browser/overlays/model/public/overlay_callback_manager.h"
-#import "ios/chrome/browser/overlays/model/public/overlay_request.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_support.h"
-#import "ios/chrome/browser/overlays/model/public/overlay_response.h"
 #import "ios/chrome/browser/overlays/ui_bundled/overlay_request_mediator+subclassing.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_save_password_infobar_delegate.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -29,7 +25,6 @@
 @end
 
 @implementation PasswordInfobarModalOverlayMediator {
-  raw_ptr<IOSChromeSavePasswordInfoBarDelegate, DanglingUntriaged> delegate_;
   InfobarType infobarType_;
 }
 
@@ -41,28 +36,41 @@
              : nullptr;
 }
 
+// Returns the password delegate from the config, or nullptr if the request has
+// been cancelled and the config is no longer available.
+- (IOSChromeSavePasswordInfoBarDelegate*)passwordDelegate {
+  if (!self.config) {
+    return nullptr;
+  }
+  return static_cast<IOSChromeSavePasswordInfoBarDelegate*>(
+      self.config->delegate());
+}
+
 - (void)setConsumer:(id<InfobarPasswordModalConsumer>)consumer {
   if (_consumer == consumer) {
     return;
   }
   _consumer = consumer;
 
-  if (!_consumer || !self.config) {
+  if (!_consumer) {
     return;
   }
 
-  delegate_ = static_cast<IOSChromeSavePasswordInfoBarDelegate*>(
-      self.config->delegate());
+  IOSChromeSavePasswordInfoBarDelegate* delegate = self.passwordDelegate;
+  if (!delegate) {
+    return;
+  }
+
   infobarType_ = self.config->infobar_type();
 
-  [_consumer setOriginalUsername:delegate_->GetUserNameText()];
-  NSString* password = delegate_->GetPasswordText();
+  [_consumer setOriginalUsername:delegate->GetUserNameText()];
+  NSString* password = delegate->GetPasswordText();
   [_consumer setMaskedPassword:[@"" stringByPaddingToLength:password.length
                                                  withString:@"•"
                                             startingAtIndex:0]];
   [_consumer setUnmaskedPassword:password];
   std::optional<std::string> account_string =
-      delegate_->GetAccountToStorePassword();
+      delegate->GetAccountToStorePassword();
   NSString* details_text =
       account_string
           ? l10n_util::GetNSStringF(
@@ -72,15 +80,15 @@
   [_consumer setDetailsTextMessage:details_text];
 
   NSString* save_button_text = base::SysUTF16ToNSString(
-      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
+      delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_OK));
   [_consumer setSaveButtonText:save_button_text];
 
   NSString* cancel_button_text = base::SysUTF16ToNSString(
-      delegate_->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+      delegate->GetButtonLabel(ConfirmInfoBarDelegate::BUTTON_CANCEL));
   [_consumer setCancelButtonText:cancel_button_text];
 
-  [_consumer setURL:delegate_->GetURLHostText()];
-  [_consumer setCurrentCredentialsSaved:delegate_->IsCurrentPasswordSaved()];
+  [_consumer setURL:delegate->GetURLHostText()];
+  [_consumer setCurrentCredentialsSaved:delegate->IsCurrentPasswordSaved()];
 }
 
 #pragma mark - OverlayRequestMediator
@@ -96,12 +104,13 @@
   // Receiving this delegate callback when the request is null means that the
   // update credentials button was tapped after the request was cancelled, but
   // before the modal UI has finished being dismissed.
-  if (!self.request) {
+  IOSChromeSavePasswordInfoBarDelegate* delegate = self.passwordDelegate;
+  if (!delegate) {
     return;
   }
 
-  delegate_->UpdateCredentials(username, password);
-  delegate_->Accept();
+  delegate->UpdateCredentials(username, password);
+  delegate->Accept();
 
   [self dismissInfobarModal:nil];
 }
@@ -110,11 +119,12 @@
   // Receiving this delegate callback when the request is null means that the
   // never save credentials button was tapped after the request was cancelled,
   // but before the modal UI has finished being dismissed.
-  if (!self.request) {
+  IOSChromeSavePasswordInfoBarDelegate* delegate = self.passwordDelegate;
+  if (!delegate) {
     return;
   }
 
-  delegate_->Cancel();
+  delegate->Cancel();
   [self dismissInfobarModal:nil];
 }
 
@@ -122,14 +132,15 @@
   // Receiving this delegate callback when the request is null means that the
   // present passwords settings button was tapped after the request was
   // cancelled, but before the modal UI has finished being dismissed.
-  if (!self.request) {
+  IOSChromeSavePasswordInfoBarDelegate* delegate = self.passwordDelegate;
+  if (!delegate) {
     return;
   }
 
   [self dismissInfobarModal:nil];
 
   id<SettingsCommands> settings_command_handler =
-      HandlerForProtocol(delegate_->GetDispatcher(), SettingsCommands);
+      HandlerForProtocol(delegate->GetDispatcher(), SettingsCommands);
   [settings_command_handler showSavedPasswordsSettingsFromViewController:nil];
 
   UMA_HISTOGRAM_ENUMERATION(
