@@ -284,8 +284,8 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
                                     curve_length);
 
               kernels_[i]->down_sampler_->Process(
-                  temp_span.data(), destination_bus->Channel(i)->MutableData(),
-                  frames_to_process * 2);
+                  temp_span, destination_bus->Channel(i)->MutableSpan().first(
+                                 frames_to_process));
             } break;
 
             case V8OverSampleType::Enum::k4X: {
@@ -303,11 +303,10 @@ void WaveShaperHandler::Process(uint32_t frames_to_process) {
                                     frames_to_process * 4, curve_data,
                                     curve_length);
 
-              kernels_[i]->down_sampler2_->Process(
-                  temp_span2.data(), temp_span.data(), frames_to_process * 4);
+              kernels_[i]->down_sampler2_->Process(temp_span2, temp_span);
               kernels_[i]->down_sampler_->Process(
-                  temp_span.data(), destination_bus->Channel(i)->MutableData(),
-                  frames_to_process * 2);
+                  temp_span, destination_bus->Channel(i)->MutableSpan().first(
+                                 frames_to_process));
             } break;
           }
         }

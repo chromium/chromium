@@ -32,7 +32,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/fdlibm/ieee754.h"
 
@@ -90,13 +89,14 @@ DownSampler::DownSampler(unsigned input_block_size)
       temp_buffer_(input_block_size / 2),
       input_buffer_(input_block_size * 2) {}
 
-void DownSampler::Process(const float* source_p,
-                          float* dest_p,
-                          uint32_t source_frames_to_process) {
+void DownSampler::Process(base::span<const float> source,
+                          base::span<float> dest) {
+  const size_t source_frames_to_process = source.size();
   DCHECK_EQ(source_frames_to_process, input_block_size_);
 
-  uint32_t dest_frames_to_process = source_frames_to_process / 2;
+  const size_t dest_frames_to_process = source_frames_to_process / 2;
 
+  DCHECK_EQ(dest.size(), dest_frames_to_process);
   DCHECK_EQ(dest_frames_to_process, temp_buffer_.size());
   DCHECK_EQ(convolver_.ConvolutionKernelSize(),
             static_cast<unsigned>(kDefaultKernelSize / 2));
@@ -107,36 +107,40 @@ void DownSampler::Process(const float* source_p,
   DCHECK_EQ(input_buffer_.size(), source_frames_to_process * 2);
   DCHECK_LE(half_size, source_frames_to_process);
 
-  float* input_p = UNSAFE_TODO(input_buffer_.Data() + source_frames_to_process);
-  UNSAFE_TODO(
-      memcpy(input_p, source_p, sizeof(float) * source_frames_to_process));
+  base::span<float> input_buffer_span = input_buffer_.as_span();
+  base::span<float> second_half =
+      input_buffer_span.subspan(source_frames_to_process);
 
-  // Copy the odd sample-frames from sourceP, delayed by one sample-frame
+  second_half.copy_from(source);
+
+  // Copy the odd sample-frames from source, delayed by one sample-frame
   // (destination sample-rate) to match shifting forward in time in
   // m_reducedKernel.
-  float* odd_samples_p = temp_buffer_.Data();
-  for (unsigned i = 0; i < dest_frames_to_process; ++i) {
-    UNSAFE_TODO(odd_samples_p[i]) = *(UNSAFE_TODO((input_p - 1) + i * 2));
+  base::span<float> odd_samples = temp_buffer_.as_span();
+  base::span<const float> delayed_input =
+      input_buffer_span.subspan(source_frames_to_process - 1);
+  for (size_t i = 0; i < dest_frames_to_process; ++i) {
+    odd_samples[i] = delayed_input[i * 2];
   }
 
   // Actually process oddSamplesP with m_reducedKernel for efficiency.
   // The theoretical kernel is double this size with 0 values for even terms
   // (except center).
-  convolver_.Process(odd_samples_p, dest_p, dest_frames_to_process);
+  convolver_.Process(odd_samples.data(), dest.data(), dest_frames_to_process);
 
   // Now, account for the 0.5 term right in the middle of the kernel.
   // This amounts to a delay-line of length halfSize (at the source
   // sample-rate), scaled by 0.5.
 
   // Sum into the destination.
-  for (unsigned i = 0; i < dest_frames_to_process; ++i) {
-    UNSAFE_TODO(dest_p[i]) +=
-        0.5 * *(UNSAFE_TODO((input_p - half_size) + i * 2));
+  base::span<const float> delayed_half =
+      input_buffer_span.subspan(source_frames_to_process - half_size);
+  for (size_t i = 0; i < dest_frames_to_process; ++i) {
+    dest[i] += 0.5 * delayed_half[i * 2];
   }
 
   // Copy 2nd half of input buffer to 1st half.
-  UNSAFE_TODO(memcpy(input_buffer_.Data(), input_p,
-                     sizeof(float) * source_frames_to_process));
+  input_buffer_span.first(source_frames_to_process).copy_from(second_half);
 }
 
 void DownSampler::Reset() {
