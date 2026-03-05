@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_behavior.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
@@ -79,7 +80,6 @@ class PaintLayer;
 class ProgrammaticScrollAnimator;
 class ScrollAnchor;
 class ScrollAnimatorBase;
-class ScrollResult;
 struct SerializedAnchor;
 class ScrollMarkerGroupPseudoElement;
 class TextOverflowPostLayoutSnapshot;
@@ -172,7 +172,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   // Register the promise resolver to handle it later at the end of the
   // requested scroll. This interrupts the pending resolver, if any, by
-  // resolving it.
+  // resolving it through `ProgrammaticScrollAnimator`.
   void RegisterPromiseResolver(ScriptPromiseResolver<ScrollResult>*);
 
   // Resolve the registered promise, if any.
@@ -715,6 +715,25 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
     kLayout,
   };
 
+  // An RAII-style class that wraps the `ScriptPromiseResolver` from a JS scroll
+  // request, to guarantee that the promise gets resolved when the the object is
+  // no longer in scope.
+  class ScopedPromiseResolver {
+   public:
+    explicit ScopedPromiseResolver(
+        ScriptPromiseResolver<ScrollResult>* resolver)
+        : resolver_(resolver) {}
+
+    ~ScopedPromiseResolver() {
+      if (resolver_) {
+        resolver_->Resolve(ScrollResult::Create());
+      }
+    }
+
+   private:
+    Persistent<ScriptPromiseResolver<ScrollResult>> resolver_;
+  };
+
   void SetScrollbarsHiddenIfOverlayInternal(bool);
 
   bool InitiateScrollAnimation(const ScrollOffset&,
@@ -804,9 +823,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   Member<TextOverflowPostLayoutSnapshot> text_overflow_snapshot_;
 
-  // Holds on to the `ScriptPromiseResolver` from a JS scroll request to be able
-  // to resolve it at dtor if not resolved explicitly earlier.
-  Member<ScriptPromiseResolver<ScrollResult>> promise_resolver_;
+  std::unique_ptr<ScopedPromiseResolver> promise_resolver_;
 
   ScrollOffset pending_scroll_anchor_adjustment_;
 

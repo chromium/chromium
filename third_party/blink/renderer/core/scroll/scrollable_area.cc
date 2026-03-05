@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -132,10 +133,6 @@ void ScrollableArea::Dispose() {
   DisposeImpl();
   fade_overlay_scrollbars_timer_ = nullptr;
   has_been_disposed_ = true;
-  if (promise_resolver_) {
-    promise_resolver_->Resolve();
-    promise_resolver_ = nullptr;
-  }
 }
 
 void ScrollableArea::ClearScrollableArea() {
@@ -519,13 +516,17 @@ bool ScrollableArea::InitiateScrollAnimation(
   }
 
   ScrollCallback callback = ScrollCallback(blink::BindOnce(
-      [](WeakPersistent<ScrollableArea> area, ScrollCompletionMode mode) {
+      [](WeakPersistent<ScrollableArea> area,
+         std::unique_ptr<ScopedPromiseResolver> promise_resolver,
+         ScrollCompletionMode mode) {
         if (area) {
           area->OnScrollFinished(/*enqueue_scrollend=*/mode ==
                                  ScrollCompletionMode::kFinished);
         }
+        // The promise in `promise_resolver` is implicitly resolved when this
+        // callback is destroyed.
       },
-      WrapWeakPersistent(this)));
+      WrapWeakPersistent(this), std::move(promise_resolver_)));
 
   // Enqueue scrollsnapchanging if necessary.
   if (auto* snap_container = GetSnapContainerData()) {
@@ -663,16 +664,7 @@ mojom::blink::ScrollBehavior ScrollableArea::V8EnumToScrollBehavior(
 
 void ScrollableArea::RegisterPromiseResolver(
     ScriptPromiseResolver<ScrollResult>* resolver) {
-  if (promise_resolver_) {
-    promise_resolver_->Resolve();
-  }
-  promise_resolver_ = resolver;
-}
-
-void ScrollableArea::SettlePendingPromiseResolver(ScrollCompletionMode mode) {
-  if (promise_resolver_) {
-    promise_resolver_->Resolve();
-  }
+  promise_resolver_ = std::make_unique<ScopedPromiseResolver>(resolver);
 }
 
 void ScrollableArea::MouseEnteredScrollbar(Scrollbar& scrollbar) {
@@ -1159,8 +1151,6 @@ void ScrollableArea::OnScrollFinished(bool enqueue_scrollend) {
     }
   }
 
-  SettlePendingPromiseResolver(ScrollCompletionMode::kFinished);
-
   GetLayoutBox()
       ->GetFrame()
       ->LocalFrameRoot()
@@ -1337,7 +1327,6 @@ void ScrollableArea::Trace(Visitor* visitor) const {
   visitor->Trace(programmatic_scroll_animator_);
   visitor->Trace(fade_overlay_scrollbars_timer_);
   visitor->Trace(text_overflow_snapshot_);
-  visitor->Trace(promise_resolver_);
 }
 
 void ScrollableArea::InjectScrollbarGestureScroll(
