@@ -618,25 +618,6 @@ bool TabAndroid::IsTrustedWebActivity() const {
   return Java_TabImpl_isTrustedWebActivity(env, GetJavaObject(env));
 }
 
-tabs::TabCollection* TabAndroid::GetRootCollection() const {
-  tabs::TabCollection* root = parent_collection_;
-  if (!root) {
-    return nullptr;
-  }
-  // Split + Group + Unpinned + Strip
-  static constexpr int kMaxTabCollectionDepth = 4;
-  int depth = 0;
-  while (root->GetParentCollection() && depth < kMaxTabCollectionDepth) {
-    root = root->GetParentCollection();
-    depth++;
-  }
-  if (root->GetParentCollection()) {
-    LOG(ERROR) << "TabCollection depth exceeds limit";
-    return nullptr;
-  }
-  return root;
-}
-
 base::WeakPtr<TabAndroid> TabAndroid::GetTabAndroidWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }

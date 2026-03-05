@@ -226,8 +226,6 @@ class TabAndroid : public tabs::TabInterface,
 
   void SetDevToolsAgentHost(scoped_refptr<content::DevToolsAgentHost> host);
 
-  tabs::TabCollection* GetRootCollection() const;
-
   base::WeakPtr<TabAndroid> GetTabAndroidWeakPtr();
 
   // TabInterface overrides:

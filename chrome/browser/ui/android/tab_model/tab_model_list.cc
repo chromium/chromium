@@ -77,14 +77,6 @@ TabModel* TabModelList::GetTabModelForWebContents(
     return nullptr;
   }
 
-  // Try the fast path lookup if we can find a tab.
-  TabAndroid* tab = TabAndroid::FromWebContents(web_contents);
-  if (tab) {
-    return GetTabModelForTabAndroid(tab);
-  }
-
-  // Fallback exhaustive search (often the case in tests and perhaps some edge
-  // cases).
   for (TabModel* model : models()) {
     const size_t tab_count = model->GetTabCount();
     for (size_t index = 0; index < tab_count; index++) {
@@ -93,6 +85,7 @@ TabModel* TabModelList::GetTabModelForWebContents(
       }
     }
   }
+
   return nullptr;
 }
 
@@ -101,20 +94,6 @@ TabModel* TabModelList::GetTabModelForTabAndroid(TabAndroid* tab_android) {
     return nullptr;
   }
 
-  // Fast lookup path for tabs with a root collection. Linear in number of tab
-  // models.
-  tabs::TabCollection* root = tab_android->GetRootCollection();
-  if (root) {
-    for (TabModel* model : models()) {
-      if (model->GetTabStripCollection() == root) {
-        return model;
-      }
-    }
-  }
-
-  // Fallback exhaustive search for tabs without a root collection (often the
-  // case in tests and perhaps some edge cases). Linear in number of all open
-  // tabs.
   for (TabModel* model : models()) {
     const size_t tab_count = model->GetTabCount();
     for (size_t index = 0; index < tab_count; index++) {
