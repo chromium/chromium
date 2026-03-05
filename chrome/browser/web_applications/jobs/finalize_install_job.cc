@@ -660,17 +660,14 @@ void FinalizeInstallJob::AdjustAppStateBeforeCommit(const WebApp* existing_app,
     web_app.SetFileHandlerApprovalState(*approval_state);
   }
 
-  // If the validated migration sources change, schedule a command to update
-  // the pending migration info field for all web apps to reflect these
-  // changes.
+  // Schedule a command to update the pending migration info field for web apps
+  // regardless of if the validated migration sources of the newly installed app
+  // changed. If we already have a app installed that wants to be a migration
+  // target for the newly installed app, this makes sure that this is reflected
+  // correctly.
   if (base::FeatureList::IsEnabled(blink::features::kWebAppMigrationApi)) {
-    auto old_sources = existing_app
-                           ? existing_app->validated_migration_sources()
-                           : std::vector<MigrationSource>{};
-    if (old_sources != web_app.validated_migration_sources()) {
-      provider.scheduler().ScheduleResolveWebAppPendingMigrationInfo(
-          base::DoNothing());
-    }
+    provider.scheduler().ScheduleResolveWebAppPendingMigrationInfo(
+        base::DoNothing());
   }
 }
 
