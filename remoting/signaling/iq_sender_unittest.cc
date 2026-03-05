@@ -14,12 +14,9 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "remoting/signaling/jingle_data_structures.h"
-#include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/mock_signal_strategy.h"
-#include "remoting/signaling/xmpp_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
 using ::testing::_;
 using ::testing::DeleteArg;
@@ -29,15 +26,14 @@ using ::testing::NotNull;
 using ::testing::Return;
 using ::testing::SaveArg;
 
-using ::jingle_xmpp::QName;
-using ::jingle_xmpp::XmlElement;
-
 namespace remoting {
 
 namespace {
 
 const char kStanzaId[] = "123";
-const char kTo[] = "user@domain.com";
+const char kLocalUser[] = "local_user@domain.com";
+const char kRemoteUser[] = "remote_user@domain.com";
+const char kUpperCaseRemoteUser[] = "REMOTE_USER@domain.com";
 
 MATCHER_P(ReplyEq, expected, "") {
   return arg.reply_type == expected.reply_type &&
@@ -48,7 +44,7 @@ MATCHER_P(ReplyEq, expected, "") {
 
 class IqSenderTest : public testing::Test {
  public:
-  IqSenderTest() : signal_strategy_(SignalingAddress("local_jid@domain.com")) {
+  IqSenderTest() : signal_strategy_(SignalingAddress(kLocalUser)) {
     EXPECT_CALL(signal_strategy_, AddListener(NotNull()));
     sender_ = std::make_unique<IqSender>(&signal_strategy_);
     EXPECT_CALL(
@@ -59,49 +55,42 @@ class IqSenderTest : public testing::Test {
  protected:
   void SendTestMessage() {
     JingleMessage message;
-    message.to = SignalingAddress(kTo);
+    message.to = SignalingAddress(kRemoteUser);
     message.sid = "test_sid";
     message.message_id = kStanzaId;
     message.SetPayload(SessionTerminate());
 
-    EXPECT_CALL(signal_strategy_, SendMessage(SignalingAddress(kTo), _))
+    EXPECT_CALL(signal_strategy_, SendMessage(SignalingAddress(kRemoteUser), _))
         .WillOnce([&](const SignalingAddress&, SignalingMessage&& message_arg) {
           auto* sent_jingle_message = std::get_if<JingleMessage>(&message_arg);
           EXPECT_TRUE(sent_jingle_message);
-          if (sent_jingle_message) {
-            std::unique_ptr<XmlElement> sent_stanza =
-                JingleMessageToXml(*sent_jingle_message);
-            std::unique_ptr<XmlElement> expected_stanza =
-                JingleMessageToXml(message);
-            EXPECT_EQ(expected_stanza->Str(), sent_stanza->Str());
+          if (!sent_jingle_message) {
+            return false;
           }
+
+          EXPECT_EQ(sent_jingle_message->to, message.to);
+          EXPECT_EQ(sent_jingle_message->sid, message.sid);
+          EXPECT_EQ(sent_jingle_message->message_id, message.message_id);
+          EXPECT_EQ(sent_jingle_message->action(), message.action());
+          EXPECT_TRUE(
+              std::get_if<SessionTerminate>(&sent_jingle_message->payload()));
           return true;
         });
     request_ = sender_->SendIq(message, callback_.Get());
   }
 
-  bool FormatAndDeliverResponse(const std::string& from,
-                                std::unique_ptr<XmlElement>* response_out) {
-    std::unique_ptr<XmlElement> response(new XmlElement(kQNameIq));
-    response->AddAttr(QName(std::string(), "type"), "result");
-    response->AddAttr(QName(std::string(), "id"), kStanzaId);
-    response->AddAttr(QName(std::string(), "from"), from);
-
-    XmlElement* response_body =
-        new XmlElement(QName("test:namespace", "response-body"));
-    response->AddElement(response_body);
-
+  bool DeliverResponse(const std::string& from,
+                       JingleMessageReply* reply_out = nullptr) {
     JingleMessageReply reply;
-    bool parse_result = JingleMessageReplyFromXml(response.get(), &reply);
-    DCHECK(parse_result);
+    reply.reply_type = JingleMessageReply::REPLY_RESULT;
     reply.message_id = kStanzaId;
     reply.from = SignalingAddress(from);
 
     bool result = sender_->OnSignalStrategyIncomingMessage(
         SignalingAddress(from), SignalingMessage(reply));
 
-    if (response_out) {
-      *response_out = std::move(response);
+    if (reply_out) {
+      *reply_out = std::move(reply);
     }
     return result;
   }
@@ -116,11 +105,8 @@ class IqSenderTest : public testing::Test {
 TEST_F(IqSenderTest, SendIq) {
   ASSERT_NO_FATAL_FAILURE({ SendTestMessage(); });
 
-  std::unique_ptr<XmlElement> response_xml;
-  EXPECT_TRUE(FormatAndDeliverResponse(kTo, &response_xml));
-
   JingleMessageReply expected_reply;
-  ASSERT_TRUE(JingleMessageReplyFromXml(response_xml.get(), &expected_reply));
+  EXPECT_TRUE(DeliverResponse(kRemoteUser, &expected_reply));
 
   EXPECT_CALL(callback_, Run(request_.get(), ReplyEq(expected_reply)));
   base::RunLoop().RunUntilIdle();
@@ -145,13 +131,9 @@ TEST_F(IqSenderTest, Timeout) {
 TEST_F(IqSenderTest, NotNormalizedJid) {
   ASSERT_NO_FATAL_FAILURE({ SendTestMessage(); });
 
-  // Set upper-case from value, which is equivalent to kTo in the original
-  // message.
-  std::unique_ptr<XmlElement> response_xml;
-  EXPECT_TRUE(FormatAndDeliverResponse("USER@domain.com", &response_xml));
-
+  // Use an upper-case value to verify it is normalized.
   JingleMessageReply expected_reply;
-  ASSERT_TRUE(JingleMessageReplyFromXml(response_xml.get(), &expected_reply));
+  EXPECT_TRUE(DeliverResponse(kUpperCaseRemoteUser, &expected_reply));
 
   EXPECT_CALL(callback_, Run(request_.get(), ReplyEq(expected_reply)));
   base::RunLoop().RunUntilIdle();
@@ -160,7 +142,7 @@ TEST_F(IqSenderTest, NotNormalizedJid) {
 TEST_F(IqSenderTest, InvalidFrom) {
   ASSERT_NO_FATAL_FAILURE({ SendTestMessage(); });
 
-  EXPECT_FALSE(FormatAndDeliverResponse("different_user@domain.com", nullptr));
+  EXPECT_FALSE(DeliverResponse("different_user@domain.com", nullptr));
 
   EXPECT_CALL(callback_, Run(_, _)).Times(0);
   base::RunLoop().RunUntilIdle();

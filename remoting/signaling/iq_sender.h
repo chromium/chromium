@@ -19,10 +19,6 @@ namespace base {
 class TimeDelta;
 }  // namespace base
 
-namespace jingle_xmpp {
-class XmlElement;
-}  // namespace jingle_xmpp
-
 namespace remoting {
 
 class IqRequest;
@@ -30,11 +26,10 @@ class JingleMessage;
 struct JingleMessageReply;
 class SignalStrategy;
 
-// IqSender handles sending iq requests and routing of responses to
-// those requests.
+// Handles sending IQ requests and the routing of responses to those requests.
 class IqSender : public SignalStrategy::Listener {
  public:
-  // Callback that is called when an Iq response is received.
+  // Called when an IQ response is received.
   using ReplyCallback =
       base::OnceCallback<void(IqRequest* request,
                               const JingleMessageReply& response)>;
@@ -46,10 +41,10 @@ class IqSender : public SignalStrategy::Listener {
 
   ~IqSender() override;
 
-  // Send a Jingle IQ. Returns an IqRequest object that represents the request.
-  // |callback| is called when response to |stanza| is received. Destroy the
-  // returned IqRequest to cancel the callback. Caller must take ownership of
-  // the result. Result must be destroyed before sender is destroyed.
+  // Send a Jingle IQ. Returns an IqRequest instance which maps to the request.
+  // |callback| is called when a response to |message| is received. Destroying
+  // the IqRequest instance will cancel the callback. The IqRequest instance
+  // must be destroyed before the IqSender instance is destroyed.
   std::unique_ptr<IqRequest> SendIq(const JingleMessage& message,
                                     ReplyCallback callback);
 
@@ -64,12 +59,6 @@ class IqSender : public SignalStrategy::Listener {
       IqRequestMap;
   friend class IqRequest;
 
-  // Sends an IQ stanza. Returns an IqRequest object that represents the
-  // request. |callback| is called when response to |stanza| is received.
-  std::unique_ptr<IqRequest> SendIq(
-      std::unique_ptr<jingle_xmpp::XmlElement> stanza,
-      ReplyCallback callback);
-
   // Removes |request| from the list of pending requests. Called by IqRequest.
   void RemoveRequest(IqRequest* request);
 
@@ -77,7 +66,7 @@ class IqSender : public SignalStrategy::Listener {
   IqRequestMap requests_;
 };
 
-// This call must only be used on the thread it was created on.
+// IqRequest instances are bound to the thread they are created on.
 class IqRequest {
  public:
   IqRequest(IqSender* sender,
@@ -89,8 +78,8 @@ class IqRequest {
 
   ~IqRequest();
 
-  // Sets timeout for the request. When the timeout expires the
-  // callback is called with the |response| set to nullptr.
+  // Sets the timeout for the request. When the timeout expires, |callback| is
+  // called with a JingleMessageReply with its text set to "timeout".
   void SetTimeout(base::TimeDelta timeout);
 
  private:
