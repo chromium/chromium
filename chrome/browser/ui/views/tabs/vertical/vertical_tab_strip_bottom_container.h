@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_BOTTOM_CONTAINER_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_VERTICAL_VERTICAL_TAB_STRIP_BOTTOM_CONTAINER_H_
 
+#include "ui/views/context_menu_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 
+class BrowserWindowInterface;
+class NewTabButtonMenuModel;
 class TabStripFlatEdgeButton;
 
 namespace tabs {
@@ -15,15 +18,18 @@ class VerticalTabStripStateController;
 
 namespace views {
 class ActionViewController;
+class MenuRunner;
 }  // namespace views
 
 // Bottom container of the vertical tab strip which includes the new tab button.
-class VerticalTabStripBottomContainer : public views::FlexLayoutView {
+class VerticalTabStripBottomContainer : public views::FlexLayoutView,
+                                        public views::ContextMenuController {
   METADATA_HEADER(VerticalTabStripBottomContainer, views::View)
  public:
   VerticalTabStripBottomContainer(
       tabs::VerticalTabStripStateController* state_controller,
       actions::ActionItem* root_action_item,
+      BrowserWindowInterface* browser,
       base::RepeatingClosure record_new_tab_button_pressed);
   ~VerticalTabStripBottomContainer() override;
 
@@ -34,15 +40,24 @@ class VerticalTabStripBottomContainer : public views::FlexLayoutView {
   void OnCollapsedStateChanged(
       tabs::VerticalTabStripStateController* state_controller);
 
+  // views::ContextMenuController:
+  void ShowContextMenuForViewImpl(
+      View* source,
+      const gfx::Point& point,
+      ui::mojom::MenuSourceType source_type) override;
+
  private:
   void UpdateButtonStyles(
       tabs::VerticalTabStripStateController* state_controller);
 
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   raw_ptr<TabStripFlatEdgeButton> new_tab_button_ = nullptr;
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription new_tab_button_pressed_subscription_;
 
+  std::unique_ptr<NewTabButtonMenuModel> context_menu_model_;
+  std::unique_ptr<views::MenuRunner> context_menu_runner_;
   std::unique_ptr<views::ActionViewController> action_view_controller_;
 };
 

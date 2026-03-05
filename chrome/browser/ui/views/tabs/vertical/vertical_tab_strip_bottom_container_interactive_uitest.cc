@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_everything_menu.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/vertical_tab_strip_region_view.h"
+#include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/prefs/pref_service.h"
@@ -112,6 +113,34 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripBottomContainerInteractiveUiTest,
                    !vt_region_view->IsPositionInWindowCaption(pt_above);
           },
           "Check that clicking new tab does not expose caption space"));
+}
+
+class NewTabButtonContextMenuInteractiveUITest
+    : public VerticalTabStripBottomContainerInteractiveUiTest {
+ public:
+  NewTabButtonContextMenuInteractiveUITest() = default;
+  ~NewTabButtonContextMenuInteractiveUITest() override = default;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    VerticalTabStripBottomContainerInteractiveUiTest::
+        SetUpInProcessBrowserTestFixture();
+    feature_list_.InitAndEnableFeature(features::kTabGroupMenuMoreEntryPoints);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabButtonContextMenuInteractiveUITest,
+                       VerifyNewTabButtonContextMenu) {
+  RunTestSequence(
+      WaitForShow(kNewTabButtonElementId), MoveMouseTo(kNewTabButtonElementId),
+      MayInvolveNativeContextMenu(
+          ClickMouse(ui_controls::RIGHT),
+          WaitForShow(NewTabButtonMenuModel::kNewTab),
+          SelectMenuItem(NewTabButtonMenuModel::kNewTab),
+          CheckResult(
+              [this]() { return browser()->tab_strip_model()->count(); }, 2)));
 }
 
 }  // namespace base::test

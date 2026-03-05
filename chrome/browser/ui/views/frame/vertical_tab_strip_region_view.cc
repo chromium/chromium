@@ -105,7 +105,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
 
   bottom_button_container_ =
       AddChildView(std::make_unique<VerticalTabStripBottomContainer>(
-          state_controller_, root_action_item,
+          state_controller_, root_action_item, browser_view->browser(),
           base::BindRepeating(
               &VerticalTabStripRegionView::RecordNewTabButtonPressed,
               base::Unretained(this))));

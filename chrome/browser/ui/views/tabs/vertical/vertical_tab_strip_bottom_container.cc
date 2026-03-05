@@ -8,17 +8,22 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
+#include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/tabs/new_tab_button.h"
 #include "chrome/browser/ui/views/tabs/shared/tab_strip_flat_edge_button.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/actions/action_view_controller.h"
+#include "ui/views/controls/menu/menu_runner.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
     tabs::VerticalTabStripStateController* state_controller,
     actions::ActionItem* root_action_item,
+    BrowserWindowInterface* browser,
     base::RepeatingClosure record_new_tab_button_pressed)
-    : root_action_item_(root_action_item),
+    : browser_(browser),
+      root_action_item_(root_action_item),
       action_view_controller_(std::make_unique<views::ActionViewController>()) {
   SetProperty(views::kElementIdentifierKey,
               kVerticalTabStripBottomContainerElementId);
@@ -29,6 +34,7 @@ VerticalTabStripBottomContainer::VerticalTabStripBottomContainer(
           base::Unretained(this)));
 
   new_tab_button_ = AddChildButtonFor(kActionNewTab);
+  new_tab_button_->set_context_menu_controller(this);
   new_tab_button_->SetProperty(views::kElementIdentifierKey,
                                kNewTabButtonElementId);
   new_tab_button_pressed_subscription_ =
@@ -81,6 +87,25 @@ bool VerticalTabStripBottomContainer::IsPositionInWindowCaption(
     }
   }
   return true;
+}
+
+void VerticalTabStripBottomContainer::ShowContextMenuForViewImpl(
+    View* source,
+    const gfx::Point& point,
+    ui::mojom::MenuSourceType source_type) {
+  if (features::IsTabGroupMenuMoreEntryPointsEnabled()) {
+    context_menu_model_ = std::make_unique<NewTabButtonMenuModel>(browser_);
+
+    int32_t menu_runner_flags =
+        views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU;
+
+    context_menu_runner_ = std::make_unique<views::MenuRunner>(
+        context_menu_model_.get(), menu_runner_flags);
+
+    context_menu_runner_->RunMenuAt(
+        source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
+        views::MenuAnchorPosition::kTopLeft, source_type);
+  }
 }
 
 void VerticalTabStripBottomContainer::OnCollapsedStateChanged(
