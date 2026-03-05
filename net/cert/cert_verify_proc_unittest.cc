@@ -1060,56 +1060,70 @@ TEST_P(CertVerifyProcInternalTest, NameConstraintsFailure) {
 
 // This fixture is for testing the verification of a certificate chain which
 // has some sort of mismatched signature algorithm (i.e.
-// Certificate.signatureAlgorithm and TBSCertificate.algorithm are different).
+// Certificate.signatureAlgorithm and TBSCertificate.algorithm are different),
+// or unsupported signature algorithms.
 class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
  protected:
-  // In the test setup, SHA384 is given special treatment as an unknown
-  // algorithm.
-  static constexpr bssl::DigestAlgorithm kUnknownDigestAlgorithm =
-      bssl::DigestAlgorithm::Sha384;
+  static constexpr uint8_t kMd2WithRSAEncryption[] = {
+      0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+      0xf7, 0x0d, 0x01, 0x01, 0x02, 0x05, 0x00};
+  static constexpr uint8_t kMd4WithRSAEncryption[] = {
+      0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+      0xf7, 0x0d, 0x01, 0x01, 0x03, 0x05, 0x00};
+  static constexpr uint8_t kMd5WithRSAEncryption[] = {
+      0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+      0xf7, 0x0d, 0x01, 0x01, 0x04, 0x05, 0x00};
+  static constexpr uint8_t kSha1WithRSAEncryption[] = {
+      0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+      0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00};
+  static constexpr uint8_t kSha256WithRSAEncryption[] = {
+      0x30, 0x0d, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
+      0xf7, 0x0d, 0x01, 0x01, 0x0b, 0x05, 0x00};
+  static constexpr uint8_t kEcdsaWithSha256[] = {
+      0x30, 0x0a, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x04, 0x03, 0x02};
+  static constexpr uint8_t kUnknownDigestAlgorithm[] = {
+      0x30, 0x0d, 0x06, 0x09, 0x8a, 0x87, 0x18, 0x46,
+      0xd7, 0x0d, 0x01, 0x01, 0x0b, 0x05, 0x00};
 
   struct CertParams {
     // Certificate.signatureAlgorithm
-    bssl::DigestAlgorithm cert_algorithm;
+    base::raw_span<const uint8_t> cert_algorithm;
 
     // TBSCertificate.algorithm
-    bssl::DigestAlgorithm tbs_algorithm;
+    base::raw_span<const uint8_t> tbs_algorithm;
   };
 
   // Shorthand for VerifyChain() where only the leaf's parameters need
   // to be specified.
   [[nodiscard]] int VerifyLeaf(const CertParams& leaf_params) {
-    return VerifyChain(
-        {// Target
-         leaf_params,
-         // Intermediate
-         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
-         // Root
-         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256}});
+    return VerifyChain({// Target
+                        leaf_params,
+                        // Intermediate
+                        {kSha256WithRSAEncryption, kSha256WithRSAEncryption},
+                        // Root
+                        {kSha256WithRSAEncryption, kSha256WithRSAEncryption}});
   }
 
   // Shorthand for VerifyChain() where only the intermediate's parameters need
   // to be specified.
   [[nodiscard]] int VerifyIntermediate(const CertParams& intermediate_params) {
-    return VerifyChain(
-        {// Target
-         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
-         // Intermediate
-         intermediate_params,
-         // Root
-         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256}});
+    return VerifyChain({// Target
+                        {kSha256WithRSAEncryption, kSha256WithRSAEncryption},
+                        // Intermediate
+                        intermediate_params,
+                        // Root
+                        {kSha256WithRSAEncryption, kSha256WithRSAEncryption}});
   }
 
   // Shorthand for VerifyChain() where only the root's parameters need to be
   // specified.
   [[nodiscard]] int VerifyRoot(const CertParams& root_params) {
-    return VerifyChain(
-        {// Target
-         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
-         // Intermediate
-         {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256},
-         // Root
-         root_params});
+    return VerifyChain({// Target
+                        {kSha256WithRSAEncryption, kSha256WithRSAEncryption},
+                        // Intermediate
+                        {kSha256WithRSAEncryption, kSha256WithRSAEncryption},
+                        // Root
+                        root_params});
   }
 
   // Manufactures a certificate chain where each certificate has the indicated
@@ -1121,10 +1135,10 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
     std::vector<std::unique_ptr<CertBuilder>> builders =
         CertBuilder::CreateSimpleChain(chain_params.size());
     for (size_t i = 0; i < chain_params.size(); i++) {
-      builders[i]->SetOuterSignatureAlgorithmTLV(base::as_string_view(
-          GetAlgorithmSequence(chain_params[i].cert_algorithm)));
-      builders[i]->SetTBSSignatureAlgorithmTLV(base::as_string_view(
-          GetAlgorithmSequence(chain_params[i].tbs_algorithm)));
+      builders[i]->SetOuterSignatureAlgorithmTLV(
+          base::as_string_view(chain_params[i].cert_algorithm));
+      builders[i]->SetTBSSignatureAlgorithmTLV(
+          base::as_string_view(chain_params[i].tbs_algorithm));
     }
 
     scoped_refptr<X509Certificate> chain =
@@ -1144,135 +1158,125 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
         chain.get(), "www.example.com", /*ocsp_response=*/std::string(),
         /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
   }
-
- private:
-  static base::span<const uint8_t> GetAlgorithmSequence(
-      bssl::DigestAlgorithm algorithm) {
-    switch (algorithm) {
-      case bssl::DigestAlgorithm::Sha1:
-        static const uint8_t kSha1WithRSAEncryption[] = {
-            0x30, 0x0D, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
-            0xf7, 0x0d, 0x01, 0x01, 0x05, 0x05, 0x00};
-        return kSha1WithRSAEncryption;
-      case bssl::DigestAlgorithm::Sha256:
-        static const uint8_t kSha256WithRSAEncryption[] = {
-            0x30, 0x0D, 0x06, 0x09, 0x2a, 0x86, 0x48, 0x86,
-            0xf7, 0x0d, 0x01, 0x01, 0x0b, 0x05, 0x00};
-        return kSha256WithRSAEncryption;
-      case kUnknownDigestAlgorithm:
-        static const uint8_t kUnknownAlgorithm[] = {
-            0x30, 0x0D, 0x06, 0x09, 0x8a, 0x87, 0x18, 0x46,
-            0xd7, 0x0d, 0x01, 0x01, 0x0b, 0x05, 0x00};
-        return kUnknownAlgorithm;
-      default:
-        NOTREACHED() << "Unsupported digest algorithm";
-    }
-  }
 };
 
-// This is a control test to make sure that the test helper
-// VerifyLeaf() works as expected. There is no actual mismatch in the
-// algorithms used here.
-//
-// Also functions as a regression test for crbug.com/481168373, confirming that
-// the SHA-1 status of the leaf is calculated properly when issued by a
-// non-SHA-1 intermediate.
-//
-//  Certificate.signatureAlgorithm:  sha1WithRSASignature
-//  TBSCertificate.algorithm:        sha1WithRSAEncryption
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha1) {
-  int rv =
-      VerifyLeaf({bssl::DigestAlgorithm::Sha1, bssl::DigestAlgorithm::Sha1});
-  ASSERT_THAT(rv, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
+// A leaf with matching, supported algorithms is allowed.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSupportedAlgorithms) {
+  EXPECT_THAT(VerifyLeaf({kSha256WithRSAEncryption, kSha256WithRSAEncryption}),
+              IsOk());
+  EXPECT_THAT(VerifyLeaf({kEcdsaWithSha256, kEcdsaWithSha256}), IsOk());
 }
 
-// This is a control test to make sure that the test helper
-// VerifyLeaf() works as expected. There is no actual mismatch in the
-// algorithms used here.
-//
-//  Certificate.signatureAlgorithm:  sha256WithRSASignature
-//  TBSCertificate.algorithm:        sha256WithRSAEncryption
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha256) {
-  int rv = VerifyLeaf(
-      {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha256});
-  ASSERT_THAT(rv, IsOk());
+// A leaf with matching, but unsupported algorithms is an error.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       LeafUnsupportedAlgorithms) {
+  EXPECT_THAT(VerifyLeaf({kSha1WithRSAEncryption, kSha1WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kMd5WithRSAEncryption, kMd5WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kMd4WithRSAEncryption, kMd4WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kMd2WithRSAEncryption, kMd2WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kUnknownDigestAlgorithm, kUnknownDigestAlgorithm}),
+              IsError(ERR_CERT_INVALID));
 }
 
-// Mismatched signature algorithms in the leaf certificate.
-//
-//  Certificate.signatureAlgorithm:  sha1WithRSASignature
-//  TBSCertificate.algorithm:        sha256WithRSAEncryption
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha1Sha256) {
-  int rv =
-      VerifyLeaf({bssl::DigestAlgorithm::Sha1, bssl::DigestAlgorithm::Sha256});
-  ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
+// Mismatched signature algorithms in the leaf certificate should fail even if
+// both algorithms are supported.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       LeafMismatchBetweenSupportedAlgorithms) {
+  EXPECT_THAT(VerifyLeaf({kEcdsaWithSha256, kSha256WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kSha256WithRSAEncryption, kEcdsaWithSha256}),
+              IsError(ERR_CERT_INVALID));
 }
 
-// Mismatched signature algorithms in the leaf certificate.
-//
-//  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
-//  TBSCertificate.algorithm:        sha1WithRSASignature
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Sha1) {
-  int rv =
-      VerifyLeaf({bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha1});
-  ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
+// Mismatched signature algorithms in the leaf certificate should fail if
+// one algorithm is unsupported or unknown.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       LeafMismatchWithUnsupportedAlgorithm) {
+  EXPECT_THAT(VerifyLeaf({kSha1WithRSAEncryption, kSha256WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kSha256WithRSAEncryption, kSha1WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+
+  EXPECT_THAT(VerifyLeaf({kUnknownDigestAlgorithm, kSha256WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyLeaf({kSha256WithRSAEncryption, kUnknownDigestAlgorithm}),
+              IsError(ERR_CERT_INVALID));
 }
 
-// Unrecognized signature algorithm in the leaf certificate.
-//
-//  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
-//  TBSCertificate.algorithm:        ?
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafSha256Unknown) {
-  int rv = VerifyLeaf({bssl::DigestAlgorithm::Sha256, kUnknownDigestAlgorithm});
-  ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
+// An intermediate with matching, supported algorithms is allowed.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       IntermediateSupportedAlgorithms) {
+  EXPECT_THAT(
+      VerifyIntermediate({kSha256WithRSAEncryption, kSha256WithRSAEncryption}),
+      IsOk());
+  EXPECT_THAT(VerifyIntermediate({kEcdsaWithSha256, kEcdsaWithSha256}), IsOk());
 }
 
-// Unrecognized signature algorithm in the leaf certificate.
-//
-//  Certificate.signatureAlgorithm:  ?
-//  TBSCertificate.algorithm:        sha256WithRSAEncryption
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, LeafUnknownSha256) {
-  int rv = VerifyLeaf({kUnknownDigestAlgorithm, bssl::DigestAlgorithm::Sha256});
-  ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
+// An intermediate with matching, but unsupported algorithms is an error.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       IntermediateUnsupportedAlgorithms) {
+  EXPECT_THAT(
+      VerifyIntermediate({kSha1WithRSAEncryption, kSha1WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(
+      VerifyIntermediate({kMd5WithRSAEncryption, kMd5WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(
+      VerifyIntermediate({kMd4WithRSAEncryption, kMd4WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(
+      VerifyIntermediate({kMd2WithRSAEncryption, kMd2WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(
+      VerifyIntermediate({kUnknownDigestAlgorithm, kUnknownDigestAlgorithm}),
+      IsError(ERR_CERT_INVALID));
 }
 
-// Mismatched signature algorithms in the intermediate certificate.
-//
-//  Certificate.signatureAlgorithm:  sha1WithRSASignature
-//  TBSCertificate.algorithm:        sha256WithRSAEncryption
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha1Sha256) {
-  int rv = VerifyIntermediate(
-      {bssl::DigestAlgorithm::Sha1, bssl::DigestAlgorithm::Sha256});
-  ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
+// Mismatched signature algorithms in the intermediate certificate should fail
+// even if both algorithms are supported.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       IntermediateMismatchBetweenSupportedAlgorithms) {
+  EXPECT_THAT(VerifyIntermediate({kEcdsaWithSha256, kSha256WithRSAEncryption}),
+              IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(VerifyIntermediate({kSha256WithRSAEncryption, kEcdsaWithSha256}),
+              IsError(ERR_CERT_INVALID));
 }
 
-// Mismatched signature algorithms in the intermediate certificate.
-//
-//  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
-//  TBSCertificate.algorithm:        sha1WithRSASignature
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, IntermediateSha256Sha1) {
-  int rv = VerifyIntermediate(
-      {bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha1});
-  ASSERT_THAT(rv, IsError(ERR_CERT_INVALID));
+// Mismatched signature algorithms in the intermediate certificate should fail
+// if one algorithm is unsupported or unknown.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest,
+       IntermediateMismatchWithUnsupportedAlgorithm) {
+  EXPECT_THAT(
+      VerifyIntermediate({kSha1WithRSAEncryption, kSha256WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(
+      VerifyIntermediate({kSha256WithRSAEncryption, kSha1WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+
+  EXPECT_THAT(
+      VerifyIntermediate({kUnknownDigestAlgorithm, kSha256WithRSAEncryption}),
+      IsError(ERR_CERT_INVALID));
+  EXPECT_THAT(
+      VerifyIntermediate({kSha256WithRSAEncryption, kUnknownDigestAlgorithm}),
+      IsError(ERR_CERT_INVALID));
 }
 
-// Mismatched signature algorithms in the root certificate.
-//
-//  Certificate.signatureAlgorithm:  sha256WithRSAEncryption
-//  TBSCertificate.algorithm:        sha1WithRSASignature
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootSha256Sha1) {
-  int rv =
-      VerifyRoot({bssl::DigestAlgorithm::Sha256, bssl::DigestAlgorithm::Sha1});
-  ASSERT_THAT(rv, IsOk());
+// Mismatched signature algorithms in the root certificate are ignored.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootMismatch) {
+  EXPECT_THAT(VerifyRoot({kSha256WithRSAEncryption, kEcdsaWithSha256}), IsOk());
 }
 
-// Unrecognized signature algorithm in the root certificate.
-//
-//  Certificate.signatureAlgorithm:  ?
-//  TBSCertificate.algorithm:        sha256WithRSAEncryption
-TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownSha256) {
-  int rv = VerifyRoot({kUnknownDigestAlgorithm, bssl::DigestAlgorithm::Sha256});
-  ASSERT_THAT(rv, IsOk());
+// Unrecognized or weak signature algorithms in the root certificate are
+// ignored.
+TEST_F(CertVerifyProcInspectSignatureAlgorithmsTest, RootUnknownAlgorithm) {
+  EXPECT_THAT(VerifyRoot({kUnknownDigestAlgorithm, kUnknownDigestAlgorithm}),
+              IsOk());
+  EXPECT_THAT(VerifyRoot({kSha1WithRSAEncryption, kSha1WithRSAEncryption}),
+              IsOk());
 }
 
 TEST(CertVerifyProcTest, TestHasTooLongValidity) {
@@ -3010,7 +3014,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
         intermediate_sha256.get()));
     ASSERT_EQ(2u, verify_result.verified_cert->intermediate_buffers().size());
 
-    EXPECT_FALSE(verify_result.has_sha1);
     EXPECT_THAT(error, IsOk());
   } else {
     EXPECT_NE(OK, error);
@@ -3024,10 +3027,6 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
       // statuses. See https://crbug.com/1191795.
       return;
     }
-    EXPECT_TRUE(verify_result.cert_status &
-                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
-    EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
-    EXPECT_TRUE(verify_result.has_sha1);
   }
 }
 
@@ -5335,12 +5334,11 @@ TEST_P(CertVerifyProcConstraintsTrustedSelfSignedTest, UnknownExtension) {
 }
 
 TEST(CertVerifyProcTest, RejectsPublicSHA1) {
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
-  ASSERT_TRUE(cert);
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  leaf->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
+  scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
 
   CertVerifyResult result;
-  result.has_sha1 = true;
   result.is_issued_by_known_root = true;
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -5349,17 +5347,15 @@ TEST(CertVerifyProcTest, RejectsPublicSHA1) {
   int error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
 }
 
 TEST(CertVerifyProcTest, RejectsPrivateSHA1) {
-  scoped_refptr<X509Certificate> cert(
-      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem"));
-  ASSERT_TRUE(cert);
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
+  leaf->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
+  scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
 
   CertVerifyResult result;
-  result.has_sha1 = true;
   result.is_issued_by_known_root = false;
   auto verify_proc = base::MakeRefCounted<MockCertVerifyProc>(result);
 
@@ -5368,8 +5364,7 @@ TEST(CertVerifyProcTest, RejectsPrivateSHA1) {
   int error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, &verify_result, NetLogWithSource());
-  EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_SHA1_SIGNATURE_PRESENT);
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
 }
 
 // Tests that a certificate chain with a SHA-1 leaf is rejected when verified
@@ -5385,17 +5380,7 @@ TEST_P(CertVerifyProcInternalTest, Sha1LeafNonSha1Intermediate) {
   CertVerifyResult verify_result;
   int flags = 0;
   int error = Verify(cert.get(), "www.example.com", flags, &verify_result);
-  if (VerifyProcTypeIsAndroidQOrLater()) {
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
-    // Old versions of android that don't reject SHA-1, where it is enforced in
-    // the CertVerifyProc wrapper. Only cronet supports android versions this
-    // old.
-    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-  } else {
-    EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-  }
-  EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+  EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
 }
 
 // Tests that a certificate chain with a SHA-1 intermediate is rejected when
@@ -5412,216 +5397,35 @@ TEST_P(CertVerifyProcInternalTest, NonSha1LeafSha1Intermediate) {
   int flags = 0;
   int error = Verify(cert.get(), "www.example.com", flags, &verify_result);
   if (VerifyProcTypeIsAndroidQOrLater()) {
-    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
     // On Android >= version 10, the wrapped verifier fails at the
     // intermediate, so the returned partial chain ends there. The
     // InspectSignatureAlgorithmsInChain function does not check the last cert
     // in the returned chain since it doesn't want to check the algorithm on
     // the root certificate. Thus the result does not get the
-    // CERT_STATUS_WEAK_SIGNATURE_ALGORITHM status set.
-  } else if (verify_proc_type() == CERT_VERIFY_PROC_ANDROID) {
-    // Old versions of android that don't reject SHA-1, where it is enforced in
-    // the CertVerifyProc wrapper. Only cronet supports android versions this
-    // old.
-    EXPECT_THAT(error, IsError(ERR_CERT_WEAK_SIGNATURE_ALGORITHM));
-    EXPECT_TRUE(verify_result.cert_status &
-                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
+    // CERT_STATUS_INVALID status set, and CertVerifyProcAndroid has marked it
+    // as AUTHORITY_INVALID.
+    EXPECT_THAT(error, IsError(ERR_CERT_AUTHORITY_INVALID));
   } else {
     EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
-    EXPECT_TRUE(verify_result.cert_status &
-                CERT_STATUS_WEAK_SIGNATURE_ALGORITHM);
   }
 }
 
-enum ExpectedAlgorithms {
-  EXPECT_SHA1 = 1 << 0,
-  EXPECT_STATUS_INVALID = 1 << 1,
-};
+// Tests that a certificate chain with a SHA-1 root is accepted when verified
+// by the real verification implementation. (The self-signature on the trust
+// anchor doesn't matter, so we don't care if it used a weak algorithm.)
+TEST_P(CertVerifyProcInternalTest, Sha1Root) {
+  auto [leaf, intermediate, root] = CertBuilder::CreateSimpleChain3();
 
-struct WeakDigestTestData {
-  const char* root_cert_filename;
-  const char* intermediate_cert_filename;
-  const char* ee_cert_filename;
-  int expected_algorithms;
-};
+  root->SetSignatureAlgorithm(bssl::SignatureAlgorithm::kEcdsaSha1);
 
-const char* StringOrDefault(const char* str, const char* default_value) {
-  if (!str)
-    return default_value;
-  return str;
-}
+  scoped_refptr<X509Certificate> cert = leaf->GetX509CertificateChain();
+  ScopedTestRoot scoped_test_root(root->GetX509Certificate());
 
-// GTest 'magic' pretty-printer, so that if/when a test fails, it knows how
-// to output the parameter that was passed. Without this, it will simply
-// attempt to print out the first twenty bytes of the object, which depending
-// on platform and alignment, may result in an invalid read.
-void PrintTo(const WeakDigestTestData& data, std::ostream* os) {
-  *os << "root: " << StringOrDefault(data.root_cert_filename, "none")
-      << "; intermediate: "
-      << StringOrDefault(data.intermediate_cert_filename, "none")
-      << "; end-entity: " << data.ee_cert_filename;
-}
-
-class CertVerifyProcWeakDigestTest
-    : public testing::TestWithParam<WeakDigestTestData> {
- public:
-  CertVerifyProcWeakDigestTest() = default;
-  ~CertVerifyProcWeakDigestTest() override = default;
-};
-
-// Tests that the CertVerifyProc::Verify() properly surfaces the (weak) hash
-// algorithms used in the chain.
-TEST_P(CertVerifyProcWeakDigestTest, VerifyDetectsAlgorithm) {
-  WeakDigestTestData data = GetParam();
-  base::FilePath certs_dir = GetTestCertsDirectory();
-
-  // Build |intermediates| as the full chain (including trust anchor).
-  std::vector<bssl::UniquePtr<CRYPTO_BUFFER>> intermediates;
-
-  if (data.intermediate_cert_filename) {
-    scoped_refptr<X509Certificate> intermediate_cert =
-        ImportCertFromFile(certs_dir, data.intermediate_cert_filename);
-    ASSERT_TRUE(intermediate_cert);
-    intermediates.push_back(bssl::UpRef(intermediate_cert->cert_buffer()));
-  }
-
-  if (data.root_cert_filename) {
-    scoped_refptr<X509Certificate> root_cert =
-        ImportCertFromFile(certs_dir, data.root_cert_filename);
-    ASSERT_TRUE(root_cert);
-    intermediates.push_back(bssl::UpRef(root_cert->cert_buffer()));
-  }
-
-  scoped_refptr<X509Certificate> ee_cert =
-      ImportCertFromFile(certs_dir, data.ee_cert_filename);
-  ASSERT_TRUE(ee_cert);
-
-  scoped_refptr<X509Certificate> ee_chain = X509Certificate::CreateFromBuffer(
-      bssl::UpRef(ee_cert->cert_buffer()), std::move(intermediates));
-  ASSERT_TRUE(ee_chain);
-
-  int flags = 0;
   CertVerifyResult verify_result;
-
-  // Use a mock CertVerifyProc that returns success with a verified_cert of
-  // |ee_chain|.
-  //
-  // This is sufficient for the purposes of this test, as the checking for weak
-  // hash algorithms is done by CertVerifyProc::Verify().
-  auto proc = base::MakeRefCounted<MockCertVerifyProc>(CertVerifyResult());
-  int error = proc->Verify(ee_chain.get(), "127.0.0.1",
-                           /*ocsp_response=*/std::string(),
-                           /*sct_list=*/std::string(), flags, &verify_result,
-                           NetLogWithSource());
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_SHA1), verify_result.has_sha1);
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_STATUS_INVALID),
-            !!(verify_result.cert_status & CERT_STATUS_INVALID));
-  EXPECT_EQ(!!(data.expected_algorithms & EXPECT_STATUS_INVALID),
-            error == ERR_CERT_INVALID);
+  int flags = 0;
+  int error = Verify(cert.get(), "www.example.com", flags, &verify_result);
+  EXPECT_THAT(error, IsOk());
 }
-
-// The signature algorithm of the root CA should not matter.
-const WeakDigestTestData kVerifyRootCATestData[] = {
-    {"weak_digest_md5_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_SHA1},
-    {"weak_digest_md4_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_SHA1},
-    {"weak_digest_md2_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_SHA1},
-};
-INSTANTIATE_TEST_SUITE_P(VerifyRoot,
-                         CertVerifyProcWeakDigestTest,
-                         testing::ValuesIn(kVerifyRootCATestData));
-
-// The signature algorithm of intermediates should be properly detected.
-const WeakDigestTestData kVerifyIntermediateCATestData[] = {
-    {"weak_digest_sha1_root.pem", "weak_digest_md5_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_STATUS_INVALID | EXPECT_SHA1},
-    {"weak_digest_sha1_root.pem", "weak_digest_md4_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_STATUS_INVALID | EXPECT_SHA1},
-    {"weak_digest_sha1_root.pem", "weak_digest_md2_intermediate.pem",
-     "weak_digest_sha1_ee.pem", EXPECT_STATUS_INVALID | EXPECT_SHA1},
-};
-
-INSTANTIATE_TEST_SUITE_P(VerifyIntermediate,
-                         CertVerifyProcWeakDigestTest,
-                         testing::ValuesIn(kVerifyIntermediateCATestData));
-
-// The signature algorithm of end-entity should be properly detected.
-const WeakDigestTestData kVerifyEndEntityTestData[] = {
-    {"weak_digest_sha1_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_md5_ee.pem", EXPECT_STATUS_INVALID},
-    {"weak_digest_sha1_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_md4_ee.pem", EXPECT_STATUS_INVALID},
-    {"weak_digest_sha1_root.pem", "weak_digest_sha1_intermediate.pem",
-     "weak_digest_md2_ee.pem", EXPECT_STATUS_INVALID},
-};
-
-INSTANTIATE_TEST_SUITE_P(VerifyEndEntity,
-                         CertVerifyProcWeakDigestTest,
-                         testing::ValuesIn(kVerifyEndEntityTestData));
-
-// Incomplete chains do not report the status of the intermediate.
-// Note: really each of these tests should also expect the digest algorithm of
-// the intermediate (included as a comment). However CertVerifyProc::Verify() is
-// unable to distinguish that this is an intermediate and not a trust anchor, so
-// this intermediate is treated like a trust anchor.
-const WeakDigestTestData kVerifyIncompleteIntermediateTestData[] = {
-    {nullptr, "weak_digest_md5_intermediate.pem", "weak_digest_sha1_ee.pem",
-     EXPECT_SHA1},
-    {nullptr, "weak_digest_md4_intermediate.pem", "weak_digest_sha1_ee.pem",
-     EXPECT_SHA1},
-    {nullptr, "weak_digest_md2_intermediate.pem", "weak_digest_sha1_ee.pem",
-     EXPECT_SHA1},
-};
-
-INSTANTIATE_TEST_SUITE_P(
-    MAYBE_VerifyIncompleteIntermediate,
-    CertVerifyProcWeakDigestTest,
-    testing::ValuesIn(kVerifyIncompleteIntermediateTestData));
-
-// Incomplete chains should report the status of the end-entity.
-// since the intermediate is treated as a trust anchor these should
-// be still simply be invalid.
-const WeakDigestTestData kVerifyIncompleteEETestData[] = {
-    {nullptr, "weak_digest_sha1_intermediate.pem", "weak_digest_md5_ee.pem",
-     EXPECT_STATUS_INVALID},
-    {nullptr, "weak_digest_sha1_intermediate.pem", "weak_digest_md4_ee.pem",
-     EXPECT_STATUS_INVALID},
-    {nullptr, "weak_digest_sha1_intermediate.pem", "weak_digest_md2_ee.pem",
-     EXPECT_STATUS_INVALID},
-};
-
-INSTANTIATE_TEST_SUITE_P(VerifyIncompleteEndEntity,
-                         CertVerifyProcWeakDigestTest,
-                         testing::ValuesIn(kVerifyIncompleteEETestData));
-
-// Md2, Md4, and Md5 are all considered invalid.
-const WeakDigestTestData kVerifyMixedTestData[] = {
-    {"weak_digest_sha1_root.pem", "weak_digest_md5_intermediate.pem",
-     "weak_digest_md2_ee.pem", EXPECT_STATUS_INVALID},
-    {"weak_digest_sha1_root.pem", "weak_digest_md2_intermediate.pem",
-     "weak_digest_md5_ee.pem", EXPECT_STATUS_INVALID},
-    {"weak_digest_sha1_root.pem", "weak_digest_md4_intermediate.pem",
-     "weak_digest_md2_ee.pem", EXPECT_STATUS_INVALID},
-};
-
-INSTANTIATE_TEST_SUITE_P(VerifyMixed,
-                         CertVerifyProcWeakDigestTest,
-                         testing::ValuesIn(kVerifyMixedTestData));
-
-// The EE is a trusted certificate. Even though it uses weak hashes, these
-// should not be reported.
-const WeakDigestTestData kVerifyTrustedEETestData[] = {
-    {nullptr, nullptr, "weak_digest_md5_ee.pem", 0},
-    {nullptr, nullptr, "weak_digest_md4_ee.pem", 0},
-    {nullptr, nullptr, "weak_digest_md2_ee.pem", 0},
-    {nullptr, nullptr, "weak_digest_sha1_ee.pem", 0},
-};
-
-INSTANTIATE_TEST_SUITE_P(VerifyTrustedEE,
-                         CertVerifyProcWeakDigestTest,
-                         testing::ValuesIn(kVerifyTrustedEETestData));
 
 // Test fixture for verifying certificate names.
 class CertVerifyProcNameTest : public ::testing::Test {

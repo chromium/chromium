@@ -304,7 +304,6 @@ class NET_EXPORT CertVerifyProc
   // Implementations are expected to fill in all applicable fields, excluding:
   //
   // * ocsp_result
-  // * has_sha1
   //
   // which will be filled in by |Verify()|. If an error code is returned,
   // |verify_result->cert_status| should be non-zero, indicating an

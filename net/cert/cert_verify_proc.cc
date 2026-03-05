@@ -261,9 +261,8 @@ void RecordTrustAnchorHistogram(const std::vector<SHA256HashValue>& spki_hashes,
 
 // Inspects the signature algorithms in a single certificate |cert|.
 //
-//   * Sets |verify_result->has_sha1| to true if the certificate uses SHA1.
-//
-// Returns false if the signature algorithm was unknown or mismatched.
+// Returns false if the signature algorithm was unknown, mismatched, or
+// not allowed.
 [[nodiscard]] bool InspectSignatureAlgorithmForCert(
     const CRYPTO_BUFFER* cert,
     CertVerifyResult* verify_result) {
@@ -285,10 +284,15 @@ void RecordTrustAnchorHistogram(const std::vector<SHA256HashValue>& spki_hashes,
     return false;
   }
 
-  verify_result->has_sha1 =
-      verify_result->has_sha1 ||
-      *cert_algorithm == bssl::SignatureAlgorithm::kRsaPkcs1Sha1 ||
-      *cert_algorithm == bssl::SignatureAlgorithm::kEcdsaSha1;
+  if (*cert_algorithm == bssl::SignatureAlgorithm::kRsaPkcs1Sha1 ||
+      *cert_algorithm == bssl::SignatureAlgorithm::kEcdsaSha1) {
+    // The underlying verifier has likely already failed due to the SHA-1
+    // signature, double-checking here is mostly unnecessary. (The only case
+    // this is check is expected to be load-bearing is when cronet is running
+    // on an old Android (before Android 10) that allows SHA-1 signatures.)
+    return false;
+  }
+
   return true;
 }
 
@@ -323,8 +327,6 @@ void RecordTrustAnchorHistogram(const std::vector<SHA256HashValue>& spki_hashes,
   if (verify_result->verified_cert->intermediate_buffers().empty()) {
     return true;
   }
-
-  DCHECK(!verify_result->has_sha1);
 
   // Fill in hash algorithms for the certificates, excluding the
   // final one (which is presumably the trust anchor; may be incorrect for
@@ -518,33 +520,6 @@ int CertVerifyProc::Verify(X509Certificate* cert,
 
   if (weak_key) {
     verify_result->cert_status |= CERT_STATUS_WEAK_KEY;
-    // Avoid replacing a more serious error, such as an OS/library failure,
-    // by ensuring that if verification failed, it failed with a certificate
-    // error.
-    if (rv == OK || IsCertificateError(rv))
-      rv = MapCertStatusToNetError(verify_result->cert_status);
-  }
-
-  // Flag certificates using weak signature algorithms.
-  if (verify_result->has_sha1) {
-    // TODO(crbug.com/487349971): remove CERT_STATUS_SHA1_SIGNATURE_PRESENT.
-    // This is a non-error status to indicate the cases when a verification
-    // with a SHA-1 certificate could succeed when
-    // VERIFY_ENABLE_SHA1_LOCAL_ANCHORS was set. It no longer has a purpose
-    // now that SHA-1 is never allowed.
-    // TODO(crbug.com/487349971): remove the CertVerifyResult has_sha1 field
-    // and the CERT_STATUS_WEAK_SIGNATURE_ALGORITHM status. has_sha1 is only
-    // used to smuggle some state from InspectSignatureAlgorithmForCert up to
-    // here so that we can set a different status. We could just make
-    // InspectSignatureAlgorithmForCert fail on a SHA-1 sigalg instead of
-    // having a dedicated cert status code / error code for weak signature. In
-    // general, the underlying verifier has likely already failed due to the
-    // SHA-1 signature with a CERT_STATUS_INVALID error, so all we are doing
-    // here is adding an additional, lower priority error status. (The only
-    // case this is check should be load-bearing is when cronet is running on
-    // an ancient android version that wouldn't fail on SHA-1 itself.)
-    verify_result->cert_status |= CERT_STATUS_WEAK_SIGNATURE_ALGORITHM |
-                                  CERT_STATUS_SHA1_SIGNATURE_PRESENT;
     // Avoid replacing a more serious error, such as an OS/library failure,
     // by ensuring that if verification failed, it failed with a certificate
     // error.

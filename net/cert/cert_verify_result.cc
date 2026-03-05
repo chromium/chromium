@@ -28,7 +28,6 @@ CertVerifyResult::~CertVerifyResult() = default;
 void CertVerifyResult::Reset() {
   verified_cert = nullptr;
   cert_status = 0;
-  has_sha1 = false;
   is_issued_by_known_root = false;
 
   public_key_hashes.clear();

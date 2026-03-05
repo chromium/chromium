@@ -1522,8 +1522,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, SHA1IsNotAllowed) {
 
   ssl_test_util::CheckAuthenticationBrokenState(
       browser()->tab_strip_model()->GetActiveWebContents(),
-      net::CERT_STATUS_INVALID | net::CERT_STATUS_WEAK_SIGNATURE_ALGORITHM,
-      AuthState::SHOWING_INTERSTITIAL);
+      net::CERT_STATUS_INVALID, AuthState::SHOWING_INTERSTITIAL);
 }
 
 // Visit a HTTP page which request WSS connection to a server providing invalid

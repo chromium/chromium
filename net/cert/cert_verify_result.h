@@ -61,10 +61,6 @@ class NET_EXPORT CertVerifyResult {
   // chain.
   CertStatus cert_status;
 
-  // Hash algorithms used by the certificate chain, excluding the trust
-  // anchor.
-  bool has_sha1;
-
   // If the certificate was successfully verified then this contains the
   // hashes for all of the SubjectPublicKeyInfos of the chain (target,
   // intermediates, and trust anchor)

@@ -23,6 +23,8 @@ CERT_STATUS_FLAG(NO_REVOCATION_MECHANISM, 1 << 4)
 CERT_STATUS_FLAG(UNABLE_TO_CHECK_REVOCATION, 1 << 5)
 CERT_STATUS_FLAG(REVOKED, 1 << 6)
 CERT_STATUS_FLAG(INVALID, 1 << 7)
+// TODO(crbug.com/487349971): should CERT_STATUS_WEAK_SIGNATURE_ALGORITHM be
+// deprecated?  It's mostly unused now, but maybe we'll want to use it again?
 CERT_STATUS_FLAG(WEAK_SIGNATURE_ALGORITHM, 1 << 8)
 // 1 << 9 was used for CERT_STATUS_NOT_IN_DNS
 CERT_STATUS_FLAG(NON_UNIQUE_NAME, 1 << 10)
@@ -36,6 +38,14 @@ CERT_STATUS_FLAG(VALIDITY_TOO_LONG, 1 << 15)
 CERT_STATUS_FLAG(IS_EV, 1 << 16)
 CERT_STATUS_FLAG(REV_CHECKING_ENABLED, 1 << 17)
 // Bit 18 was CERT_STATUS_IS_DNSSEC
+// TODO(crbug.com/487349971): deprecate CERT_STATUS_SHA1_SIGNATURE_PRESENT.
+// This was a non-error status to indicate the cases when a verification
+// with a SHA-1 certificate could succeed when
+// VERIFY_ENABLE_SHA1_LOCAL_ANCHORS was set. It no longer has a purpose now
+// that SHA-1 is never allowed, and this status is no longer set, but still has
+// references in UI layer code. (Or we could re-purpose this bit for a more
+// general "weak signature present" non-error status if we need that in the
+// future.)
 CERT_STATUS_FLAG(SHA1_SIGNATURE_PRESENT, 1 << 19)
 // Bit 20 was CERT_STATUS_CT_COMPLIANCE_FAILED
 CERT_STATUS_FLAG(KNOWN_INTERCEPTION_DETECTED, 1 << 21)
