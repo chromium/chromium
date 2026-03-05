@@ -396,8 +396,24 @@ void ContextualCueingHelper::OnCueingDecision(
     return;
   }
 
-  const GURL& url = web_contents()->GetLastCommittedURL();
-  auto can_show_decision = contextual_cueing_service_->CanShowNudge(url);
+  const bool should_open_side_panel =
+      decision_result->auto_open_eligible &&
+      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
+
+  const bool is_auto_open_pdf_side_panel_cue =
+      should_open_side_panel &&
+      web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
+      base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf);
+
+  // Check nudge rate-limiting/backoff caps. Auto-open PDF side panel bypasses
+  // this check for a more detemrinistic feel.
+  NudgeDecision can_show_decision;
+  if (is_auto_open_pdf_side_panel_cue) {
+    can_show_decision = NudgeDecision::kSuccess;
+  } else {
+    const GURL& url = web_contents()->GetLastCommittedURL();
+    can_show_decision = contextual_cueing_service_->CanShowNudge(url);
+  }
   decision_recorder->set_nudge_decision(can_show_decision);
   if (can_show_decision != NudgeDecision::kSuccess) {
     return;
@@ -405,10 +421,6 @@ void ContextualCueingHelper::OnCueingDecision(
 
   // Handle side panel auto-open case: bypass nudge and open panel directly.
   // If auto-open fails or is disabled, falls through to standard nudge.
-  const bool should_open_side_panel =
-      decision_result->auto_open_eligible &&
-      base::FeatureList::IsEnabled(kEnableAutoOpenGlicSidePanel);
-
   if (should_open_side_panel) {
     auto* tab_interface = tabs::TabInterface::GetFromContents(web_contents());
     auto* browser_window_interface = tab_interface->GetBrowserWindowInterface();
@@ -424,8 +436,7 @@ void ContextualCueingHelper::OnCueingDecision(
 
       glic::mojom::InvocationSource invocation_source =
           glic::mojom::InvocationSource::kAutoOpenedByContextualCue;
-      if (web_contents()->GetContentsMimeType() == pdf::kPDFMimeType &&
-          base::FeatureList::IsEnabled(features::kAutoOpenGlicForPdf)) {
+      if (is_auto_open_pdf_side_panel_cue) {
         invocation_source = glic::mojom::InvocationSource::kAutoOpenedForPdf;
       }
 
