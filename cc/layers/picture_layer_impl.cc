@@ -353,20 +353,6 @@ bool PictureLayerImpl::AppendQuadForTile(
     switch (draw_info.mode()) {
       case TileDrawInfo::RESOURCE_MODE: {
         gfx::RectF texture_rect = iter.texture_rect();
-
-        // The raster_contents_scale_ is the best scale that the layer is
-        // trying to produce, even though it may not be ideal. Since that's
-        // the best the layer can promise in the future, consider those as
-        // complete. Also consider a tile complete if it is ideal scale or
-        // better. Note that PLTS::CoverageIterator prefers the _smallest_
-        // scale that is >= ideal, which may be < raster_contents_scale_.
-        if (iter->contents_scale_key() != raster_contents_scale_key() &&
-            iter->contents_scale_key() < GetIdealContentsScaleKey() &&
-            geometry_rect.Intersects(
-                shared_data->scaled_viewport_for_tile_priority_)) {
-          append_quads_data->checkerboarded_needs_raster = true;
-        }
-
         auto* quad = render_pass->CreateAndAppendDrawQuad<viz::TileDrawQuad>();
         quad->SetNew(shared_quad_state, offset_geometry_rect,
                      offset_visible_geometry_rect, needs_blending,
@@ -2153,6 +2139,9 @@ PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeAllTiles() {
 }
 
 gfx::ContentColorUsage PictureLayerImpl::GetContentColorUsage() const {
+  if (!raster_source_) {
+    return gfx::ContentColorUsage::kSRGB;
+  }
   auto display_item_list = raster_source_->GetDisplayItemList();
   if (!display_item_list)
     return gfx::ContentColorUsage::kSRGB;

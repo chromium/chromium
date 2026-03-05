@@ -18,6 +18,7 @@
 #include "cc/layers/layer_impl.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
+#include "cc/test/fake_picture_layer_impl.h"
 #include "cc/test/fake_rendering_stats_instrumentation.h"
 #include "cc/test/layer_test_common.h"
 #include "cc/test/property_tree_test_utils.h"
@@ -41,7 +42,7 @@ struct TestFrameData : public FrameData {
   ~TestFrameData();
 };
 
-class DidDrawCheckLayer : public LayerImpl {
+class DidDrawCheckLayer : public FakePictureLayerImpl {
  public:
   static std::unique_ptr<DidDrawCheckLayer> Create(LayerTreeImpl* tree_impl,
                                                    int id);

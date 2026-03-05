@@ -709,13 +709,15 @@ bool TileManager::PrepareTiles(
   return true;
 }
 
-void TileManager::PrepareToDraw() {
+bool TileManager::PrepareToDraw() {
   TRACE_EVENT0("cc", "TileManager::PrepareToDraw");
 
   if (!tile_task_manager_) {
     TRACE_EVENT_INSTANT0("cc", "TileManager::PrepareToDrawAborted",
                          TRACE_EVENT_SCOPE_THREAD);
-    return;
+    // TODO(zmo): Audit if returning true is the right thing to do when
+    // TreesInViz is enabled for UI and tile_task_manager_ may not exist.
+    return true;
   }
 
   tile_task_manager_->CheckForCompletedTasks();
@@ -725,7 +727,8 @@ void TileManager::PrepareToDraw() {
 
   // We want to reset the flag back to false now that we're drawing. This may be
   // set to true again in future PrepareTiles calls.
-  if (IsReadyToDraw()) {
+  bool is_ready_to_draw = IsReadyToDraw();
+  if (is_ready_to_draw) {
     client_->SetIsLikelyToRequireADraw(false);
   }
 
@@ -733,6 +736,7 @@ void TileManager::PrepareToDraw() {
       "cc", "TileManager::PrepareToDrawFinished", TRACE_EVENT_SCOPE_THREAD,
       "stats", RasterTaskCompletionStatsAsValue(raster_task_completion_stats_));
   raster_task_completion_stats_ = RasterTaskCompletionStats();
+  return is_ready_to_draw;
 }
 
 void TileManager::DidModifyTilePriorities() {

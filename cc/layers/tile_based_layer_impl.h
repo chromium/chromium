@@ -379,7 +379,6 @@ void TileBasedLayerImpl<Tiling>::AppendQuads(
 
   if (missing_tile_count) {
     append_quads_data->num_missing_tiles += missing_tile_count;
-    append_quads_data->checkerboarded_needs_raster = true;
     TRACE_EVENT_INSTANT1("cc", "TileBasedLayerImpl::AppendQuads checkerboard",
                          TRACE_EVENT_SCOPE_THREAD, "missing_tile_count",
                          missing_tile_count);

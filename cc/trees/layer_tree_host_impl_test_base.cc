@@ -67,7 +67,7 @@ void DidDrawCheckLayer::ClearDidDrawCheck() {
 }
 
 DidDrawCheckLayer::DidDrawCheckLayer(LayerTreeImpl* tree_impl, int id)
-    : LayerImpl(tree_impl, id),
+    : FakePictureLayerImpl(tree_impl, id),
       will_draw_returns_false_(false),
       will_draw_returned_true_(false),
       append_quads_called_(false),

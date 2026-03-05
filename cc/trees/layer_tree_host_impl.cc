@@ -1545,7 +1545,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   DrawResult draw_result = DrawResult::kSuccess;
 
   int num_missing_tiles = 0;
-  CHECK(!frame->checkerboarded_needs_raster);
   CHECK(!frame->checkerboarded_needs_record);
 
   frame->has_copy_requests =
@@ -1671,8 +1670,6 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
             append_quads_data.approximated_visible_content_area);
 
         num_missing_tiles += append_quads_data.num_missing_tiles;
-        frame->checkerboarded_needs_raster |=
-            append_quads_data.checkerboarded_needs_raster;
         frame->checkerboarded_needs_record |=
             append_quads_data.checkerboarded_needs_record;
 
@@ -1879,7 +1876,7 @@ DrawResult LayerTreeHostImpl::PrepareToDraw(FrameData* frame,
     // This will cause NotifyTileStateChanged() to be called for any tiles that
     // completed, which will add damage for visible tiles to the frame for them
     // so they appear as part of the current frame being drawn.
-    tile_manager_.PrepareToDraw();
+    frame->checkerboarded_needs_raster = !tile_manager_.PrepareToDraw();
   }
 
   frame->render_surface_list = &active_tree_->GetRenderSurfaceList();
