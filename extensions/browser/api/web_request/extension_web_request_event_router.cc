@@ -1078,9 +1078,6 @@ int WebRequestEventRouter::OnBeforeRequest(
         CreateEventDetails(*request, extra_info_spec));
     event_details->SetRequestBody(request);
 
-    GetExtensionWebRequestTimeTracker().LogBeforeRequestDispatchTime(
-        request->id, base::TimeTicks::Now());
-
     initialize_blocked_requests |= DispatchEvent(
         browser_context, request, listeners, std::move(event_details));
   }
@@ -2834,8 +2831,6 @@ void WebRequestEventRouter::DecrementBlockCount(
 
   // Ensure that the response is for the event we are blocked on.
   DCHECK_EQ(blocked_request->event, GetEventTypeFromEventName(event_name));
-  // Cache the event type; we use it below.
-  EventTypes request_event = blocked_request->event;
 
   int num_handlers_blocking = --blocked_request->num_handlers_blocking;
   CHECK_GE(num_handlers_blocking, 0);
@@ -2857,10 +2852,6 @@ void WebRequestEventRouter::DecrementBlockCount(
     // Note: `blocked_request` can be deleted here, depending on the outcome
     // of ExecuteDeltas(). Use the cached `request_event` and `request_id`
     // instead of using `blocked_request`.
-    if (request_event == EventTypes::kOnBeforeRequest) {
-      GetExtensionWebRequestTimeTracker().LogBeforeRequestCompletionTime(
-          request_id, base::TimeTicks::Now());
-    }
   }
 }
 

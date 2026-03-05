@@ -4832,43 +4832,6 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram
-    name="Extensions.WebRequest.BeforeRequestListenerEvaluationTime.{HandlerTypes}"
-    units="ms" expires_after="2025-11-15">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
-  <summary>
-    The total amount of time, measured in milliseconds, between when an event is
-    dispatched to webRequest listeners and when all responses are received and
-    handled for an onBeforeRequest event. Emitted when there are {HandlerTypes}
-    for the request. Recorded once per request if the request completes.
-  </summary>
-  <token key="HandlerTypes">
-    <variant name="WebRequestAndDeclarativeNetRequest"
-        summary="both webRequest listeners and declarativeNetRequest rules"/>
-    <variant name="WebRequestOnly" summary="only webRequest listeners"/>
-  </token>
-</histogram>
-
-<histogram
-    name="Extensions.WebRequest.BeforeRequestListenerEvaluationTimeInMicroseconds.{HandlerTypes}"
-    units="microseconds" expires_after="2025-09-07">
-  <owner>rdevlin.cronin@chromium.org</owner>
-  <owner>src/extensions/OWNERS</owner>
-  <summary>
-    The total amount of time, measured in microseconds, between when an event is
-    dispatched to webRequest listeners and when all responses are received and
-    handled for an onBeforeRequest event. Emitted when there are {HandlerTypes}
-    for the request. Recorded once per request if the request completes. This is
-    only emitted for users with high resolution clocks.
-  </summary>
-  <token key="HandlerTypes">
-    <variant name="WebRequestAndDeclarativeNetRequest"
-        summary="both webRequest listeners and declarativeNetRequest rules"/>
-    <variant name="WebRequestOnly" summary="only webRequest listeners"/>
-  </token>
-</histogram>
-
-<histogram
     name="Extensions.WebRequest.DeclarativeRequestDependentExtensionCount"
     units="Extension Count" expires_after="2027-01-27">
   <owner>toyoshim@chromium.org</owner>
