@@ -330,7 +330,14 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
   EXPECT_TRUE(future.Wait());
 }
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
+// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR_Empty DISABLED_PerformOCR_Empty
+#else
+#define MAYBE_PerformOCR_Empty PerformOCR_Empty
+#endif
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, MAYBE_PerformOCR_Empty) {
   ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
 
   SkBitmap bitmap =
@@ -345,7 +352,15 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Empty) {
 // failure due to library changes.
 // If this test fails after updating the library, there is a high probability
 // that the new library has some sort of incompatibility with Chromium.
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
+// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR_Simple DISABLED_PerformOCR_Simple
+#else
+#define MAYBE_PerformOCR_Simple PerformOCR_Simple
+#endif
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       MAYBE_PerformOCR_Simple) {
   base::HistogramTester histograms;
 
   ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kTest), IsOcrAvailable());
@@ -412,7 +427,15 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_Simple) {
       "Accessibility.ScreenAI.OCR.MostDetectedLanguage.PDF", 0);
 }
 
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest, PerformOCR_PdfMetrics) {
+// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR_PdfMetrics DISABLED_PerformOCR_PdfMetrics
+#else
+#define MAYBE_PerformOCR_PdfMetrics PerformOCR_PdfMetrics
+#endif
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
+                       MAYBE_PerformOCR_PdfMetrics) {
   base::HistogramTester histograms;
 
   ASSERT_EQ(CreateAndInitOCR(mojom::OcrClientType::kPdfViewer),
@@ -493,8 +516,16 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 #endif
 }
 
+// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR_AfterServiceRevive \
+  DISABLED_PerformOCR_AfterServiceRevive
+#else
+#define MAYBE_PerformOCR_AfterServiceRevive PerformOCR_AfterServiceRevive
+#endif
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       PerformOCR_AfterServiceRevive) {
+                       MAYBE_PerformOCR_AfterServiceRevive) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
@@ -533,8 +564,15 @@ IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
 #endif
 }
 
+// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR_AfterDisconnect DISABLED_PerformOCR_AfterDisconnect
+#else
+#define MAYBE_PerformOCR_AfterDisconnect PerformOCR_AfterDisconnect
+#endif
 IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerTest,
-                       PerformOCR_AfterDisconnect) {
+                       MAYBE_PerformOCR_AfterDisconnect) {
   if (!IsOcrAvailable()) {
     GTEST_SKIP() << "This test is only available when service is available";
   }
@@ -625,7 +663,15 @@ class OpticalCharacterRecognizerResultsTest
 // minor changes in recognition results of the library. The failed cases can be
 // checked and if the new result is acceptable. For each test case, the last
 // line in the .txt file is the minimum acceptable match and it can be updated.
-IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest, PerformOCR) {
+// TODO(crbug.com/470431038): Tests time out flakily on Linux debug and release
+// builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_PerformOCR DISABLED_PerformOCR
+#else
+#define MAYBE_PerformOCR PerformOCR
+#endif
+IN_PROC_BROWSER_TEST_P(OpticalCharacterRecognizerResultsTest,
+                       MAYBE_PerformOCR) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   ASSERT_TRUE(CreateAndInitOCR());
 
