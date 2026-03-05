@@ -27,6 +27,7 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
+#include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #endif
 
 namespace segmentation_platform::home_modules {
@@ -266,10 +267,14 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardEnabled) {
 }
 
 // Tests that the Registry won't register the TabGroupPromo card when it is
-// disabled because of user's interaction history.
+// disabled because of user's impression history.
 TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
-  profile_pref_service_.SetUserPref(kTabGroupPromoImpressionCounterPref,
-                                    std::make_unique<base::Value>(11));
+  // Simulate showing the card enough times to reach its maximum limit (10).
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto card = std::make_unique<TabGroupPromo>(&profile_pref_service_);
+    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
+  }
+
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 
@@ -288,44 +293,6 @@ TEST_F(HomeModulesCardRegistryTest, TestTabGroupPromoCardDisabled) {
   EXPECT_THAT(signalKeys, Not(Contains("tab_group_shown_count")));
   EXPECT_THAT(signalKeys, Not(Contains("is_user_signed_in")));
   EXPECT_THAT(signalKeys, Not(Contains("educational_tip_shown_count")));
-}
-
-// Tests that for educational tip cards, except for the default browser promo
-// card, could send a notification when the card is shown once per session,
-// rather than every time it is displayed.
-TEST_F(HomeModulesCardRegistryTest, TestShouldNotifyCardShownPerSession) {
-  registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
-                                              &local_state_pref_service_);
-
-  const char* card_name_1 = kTabGroupPromo;
-  const char* card_name_2 = kTabGroupSyncPromo;
-
-  // Verify initial pref values are 0
-  EXPECT_EQ(
-      0, profile_pref_service_.GetInteger(kTabGroupPromoImpressionCounterPref));
-  EXPECT_EQ(0, profile_pref_service_.GetInteger(
-                   kTabGroupSyncPromoImpressionCounterPref));
-
-  // First impression in the session should increment the counter.
-  registry_->NotifyCardShown(card_name_1);
-  EXPECT_EQ(
-      1, profile_pref_service_.GetInteger(kTabGroupPromoImpressionCounterPref));
-
-  // Second impression in the same session should NOT increment the counter.
-  registry_->NotifyCardShown(card_name_1);
-  EXPECT_EQ(
-      1, profile_pref_service_.GetInteger(kTabGroupPromoImpressionCounterPref));
-
-  // Test with a different card to ensure it's tracked independently.
-  registry_->NotifyCardShown(card_name_2);
-  EXPECT_EQ(1, profile_pref_service_.GetInteger(
-                   kTabGroupSyncPromoImpressionCounterPref));
-
-  // Second impression for the second card in the same session should NOT
-  // increment.
-  registry_->NotifyCardShown(card_name_2);
-  EXPECT_EQ(1, profile_pref_service_.GetInteger(
-                   kTabGroupSyncPromoImpressionCounterPref));
 }
 
 // Tests that the Registry registers the TabGroupSyncPromo card when its feature

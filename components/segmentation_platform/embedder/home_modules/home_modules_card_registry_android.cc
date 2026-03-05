@@ -33,10 +33,6 @@ const char kAuxiliarySearchPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.auxiliary_search_promo_counter";
 const char kAuxiliarySearchPromoInteractedPref[] =
     "ephemeral_pref_interacted.auxiliary_search_promo_interacted";
-const char kTabGroupPromoImpressionCounterPref[] =
-    "ephemeral_pref_counter.tab_group_promo_counter";
-const char kTabGroupPromoInteractedPref[] =
-    "ephemeral_pref_interacted.tab_group_promo_interacted";
 const char kTabGroupSyncPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.tab_group_sync_promo_counter";
 const char kTabGroupSyncPromoInteractedPref[] =
@@ -77,9 +73,7 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
         std::make_unique<HistorySyncPromo>(profile_prefs_));
   }
 
-  int tab_group_promo_count =
-      profile_prefs_->GetInteger(kTabGroupPromoImpressionCounterPref);
-  if (TabGroupPromo::IsEnabled(tab_group_promo_count)) {
+  if (TabGroupPromo::IsEnabled(profile_prefs_)) {
     all_cards_by_priority_.push_back(
         std::make_unique<TabGroupPromo>(profile_prefs_));
   }
@@ -120,10 +114,9 @@ void HomeModulesCardRegistryAndroid::RegisterLocalStatePrefs(
 void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   DefaultBrowserPromo::RegisterProfilePrefs(registry);
+  TabGroupPromo::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kAuxiliarySearchPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kAuxiliarySearchPromoInteractedPref, false);
-  registry->RegisterIntegerPref(kTabGroupPromoImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(kTabGroupPromoInteractedPref, false);
   registry->RegisterIntegerPref(kTabGroupSyncPromoImpressionCounterPref, 0);
   registry->RegisterBooleanPref(kTabGroupSyncPromoInteractedPref, false);
   registry->RegisterIntegerPref(kQuickDeletePromoImpressionCounterPref, 0);
@@ -151,12 +144,7 @@ void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
     // Educational tip cards, except for the default browser promo card, will
     // send a notification when the card is shown once per session, rather than
     // every time it is displayed.
-    if (strcmp(card_name, kTabGroupPromo) == 0) {
-      int freshness_impression_count =
-          profile_prefs_->GetInteger(kTabGroupPromoImpressionCounterPref);
-      profile_prefs_->SetInteger(kTabGroupPromoImpressionCounterPref,
-                                 freshness_impression_count + 1);
-    } else if (strcmp(card_name, kTabGroupSyncPromo) == 0) {
+    if (strcmp(card_name, kTabGroupSyncPromo) == 0) {
       int freshness_impression_count =
           profile_prefs_->GetInteger(kTabGroupSyncPromoImpressionCounterPref);
       profile_prefs_->SetInteger(kTabGroupSyncPromoImpressionCounterPref,
@@ -198,9 +186,7 @@ void HomeModulesCardRegistryAndroid::NotifyCardInteracted(
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnInteract()` lifecycle hook.
-  if (strcmp(card_name, kTabGroupPromo) == 0) {
-    profile_prefs_->SetBoolean(kTabGroupPromoInteractedPref, true);
-  } else if (strcmp(card_name, kTabGroupSyncPromo) == 0) {
+  if (strcmp(card_name, kTabGroupSyncPromo) == 0) {
     profile_prefs_->SetBoolean(kTabGroupSyncPromoInteractedPref, true);
   } else if (strcmp(card_name, kQuickDeletePromo) == 0) {
     profile_prefs_->SetBoolean(kQuickDeletePromoInteractedPref, true);

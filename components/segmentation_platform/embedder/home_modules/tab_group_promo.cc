@@ -6,9 +6,10 @@
 
 #include "base/metrics/field_trial_params.h"
 #include "components/commerce/core/commerce_feature_list.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/ephemeral_module_utils.h"
-#include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #include "components/segmentation_platform/public/features.h"
 #include "components/segmentation_platform/public/proto/model_metadata.pb.h"
 
@@ -17,6 +18,14 @@ namespace {
 // The number of tabs required to make the tab group promo card visible to
 // users.
 const int kTabCountLimit = 10;
+
+// Impression counter for the Tab Group promo ephemeral module.
+const char kTabGroupPromoImpressionCounterPref[] =
+    "ephemeral_pref_counter.tab_group_promo_counter";
+
+// Interaction counter for the Tab Group promo ephemeral module.
+const char kTabGroupPromoInteractedPref[] =
+    "ephemeral_pref_interacted.tab_group_promo_interacted";
 
 const char kEducationalTipModuleHistogramName[] =
     "MagicStack.Clank.NewTabPage.Module.TopImpressionV2";
@@ -31,6 +40,12 @@ namespace segmentation_platform::home_modules {
 
 TabGroupPromo::TabGroupPromo(PrefService* profile_prefs)
     : CardSelectionInfo(kTabGroupPromo), profile_prefs_(profile_prefs) {}
+
+// static
+void TabGroupPromo::RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterIntegerPref(kTabGroupPromoImpressionCounterPref, 0);
+  registry->RegisterBooleanPref(kTabGroupPromoInteractedPref, false);
+}
 
 std::map<SignalKey, FeatureQuery> TabGroupPromo::GetInputs() {
   std::map<SignalKey, FeatureQuery> map = {
@@ -128,7 +143,8 @@ CardSelectionInfo::ShowResult TabGroupPromo::ComputeCardResult(
   return result;
 }
 
-bool TabGroupPromo::IsEnabled(int impression_count) {
+// static
+bool TabGroupPromo::IsEnabled(PrefService* profile_prefs) {
   std::optional<CardSelectionInfo::ShowResult> forced_result =
       GetForcedEphemeralModuleShowResult();
 
@@ -138,11 +154,35 @@ bool TabGroupPromo::IsEnabled(int impression_count) {
     return true;
   }
 
+  int impression_count =
+      profile_prefs->GetInteger(kTabGroupPromoImpressionCounterPref);
+
   if (impression_count >= kSingleEphemeralCardMaxImpressions) {
     return false;
   }
 
   return true;
+}
+
+void TabGroupPromo::OnShow(PrefService* profile_prefs,
+                           PrefService* local_state) {
+  // Only record an impression once per session.
+  if (has_been_shown_this_session_) {
+    return;
+  }
+
+  has_been_shown_this_session_ = true;
+
+  int freshness_impression_count =
+      profile_prefs->GetInteger(kTabGroupPromoImpressionCounterPref);
+
+  profile_prefs->SetInteger(kTabGroupPromoImpressionCounterPref,
+                            freshness_impression_count + 1);
+}
+
+void TabGroupPromo::OnInteract(PrefService* profile_prefs,
+                               PrefService* local_state) {
+  profile_prefs->SetBoolean(kTabGroupPromoInteractedPref, true);
 }
 
 }  // namespace segmentation_platform::home_modules

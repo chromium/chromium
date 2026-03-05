@@ -20,7 +20,7 @@ class TabGroupPromoTest : public testing::Test {
   ~TabGroupPromoTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    TabGroupPromo::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TearDown() override { Test::TearDown(); }
@@ -32,10 +32,12 @@ class TabGroupPromoTest : public testing::Test {
                                  float isUserSignedIn,
                                  float educationalTipShownCount,
                                  EphemeralHomeModuleRank position) {
-    pref_service_.SetUserPref(
-        kTabGroupPromoInteractedPref,
-        std::make_unique<base::Value>(hasTabGroupPromoInteracted));
     auto card = std::make_unique<TabGroupPromo>(&pref_service_);
+
+    if (hasTabGroupPromoInteracted) {
+      card->OnInteract(&pref_service_, nullptr);
+    }
+
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {educationalTipShownCount, isUserSignedIn, numberOfTabs,
                      tabGroupExists, tabGroupPromoShownCount});
@@ -154,6 +156,25 @@ TEST_F(
                             /* isUserSignedIn */ 1,
                             /* educationalTipShownCount */ 1,
                             EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(TabGroupPromoTest, IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<TabGroupPromo>(&pref_service_);
+
+  EXPECT_TRUE(TabGroupPromo::IsEnabled(&pref_service_));
+
+  // Recreate the card each iteration to simulate separate sessions, as
+  // impressions are counted once per card lifetime.
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto session_card = std::make_unique<TabGroupPromo>(&pref_service_);
+    EXPECT_TRUE(TabGroupPromo::IsEnabled(&pref_service_));
+    session_card->OnShow(&pref_service_, nullptr);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(TabGroupPromo::IsEnabled(&pref_service_));
 }
 
 }  // namespace segmentation_platform::home_modules
