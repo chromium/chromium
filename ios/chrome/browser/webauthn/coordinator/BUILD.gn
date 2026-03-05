@@ -12,6 +12,7 @@ source_set("coordinator") {
   deps = [
     "//base",
     "//components/strings",
+    "//components/webauthn/ios",
     "//components/webauthn/ios:passkey_types",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/settings/ui_bundled/password:title_view",

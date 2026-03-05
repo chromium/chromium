@@ -9,6 +9,9 @@
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
+NSString* const kPasskeyIncognitoInterstitialViewID =
+    @"PasskeyIncognitoInterstitialViewID";
+
 @implementation PasskeyIncognitoInterstitialViewController
 
 - (void)loadView {
@@ -28,6 +31,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
+  self.view.accessibilityIdentifier = kPasskeyIncognitoInterstitialViewID;
   // TODO(crbug.com/487898150): Modify background color.
   self.view.backgroundColor = [UIColor colorNamed:kBackgroundColor];
 }

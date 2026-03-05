@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
 
+#import "base/test/ios/wait_util.h"
 #import "base/test/task_environment.h"
+#import "base/test/test_future.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
 #import "ios/chrome/browser/webauthn/ui/passkey_incognito_interstitial_view_controller.h"
@@ -12,6 +14,9 @@
 #import "ios/chrome/test/scoped_key_window.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
+
+using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
 
 class PasskeyIncognitoInterstitialCoordinatorTest : public PlatformTest {
  protected:
@@ -33,16 +38,12 @@ class PasskeyIncognitoInterstitialCoordinatorTest : public PlatformTest {
 
 // Tests that tapping the 'Continue' button runs the callback with `true`.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, PrimaryActionReturnsTrue) {
-  __block bool callback_executed = false;
-  __block bool callback_result = false;
+  base::test::TestFuture<bool> test_future;
 
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        callback:base::BindOnce(^(bool proceed) {
-                          callback_executed = true;
-                          callback_result = proceed;
-                        })];
+                        callback:test_future.GetCallback()];
 
   [coordinator_ start];
 
@@ -51,23 +52,20 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, PrimaryActionReturnsTrue) {
 
   [action_handler confirmationAlertPrimaryAction];
 
-  EXPECT_TRUE(callback_executed);
-  EXPECT_TRUE(callback_result);
+  [coordinator_ stop];
+
+  EXPECT_TRUE(test_future.Get());
 }
 
 // Tests that tapping the 'Cancel' button runs the callback with `false`.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest,
        SecondaryActionReturnsFalse) {
-  __block bool callback_executed = false;
-  __block bool callback_result = true;
+  base::test::TestFuture<bool> test_future;
 
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        callback:base::BindOnce(^(bool proceed) {
-                          callback_executed = true;
-                          callback_result = proceed;
-                        })];
+                        callback:test_future.GetCallback()];
 
   [coordinator_ start];
 
@@ -76,45 +74,36 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest,
 
   [action_handler confirmationAlertSecondaryAction];
 
-  EXPECT_TRUE(callback_executed);
-  EXPECT_FALSE(callback_result);
+  [coordinator_ stop];
+
+  EXPECT_FALSE(test_future.Get());
 }
 
 // Tests that forcefully stopping the coordinator runs the callback with
 // `false`.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest,
        StopReturnsFalseIfNoActionTaken) {
-  __block bool callback_executed = false;
-  __block bool callback_result = true;
+  base::test::TestFuture<bool> test_future;
 
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        callback:base::BindOnce(^(bool proceed) {
-                          callback_executed = true;
-                          callback_result = proceed;
-                        })];
+                        callback:test_future.GetCallback()];
 
   [coordinator_ start];
-
   [coordinator_ stop];
 
-  EXPECT_TRUE(callback_executed);
-  EXPECT_FALSE(callback_result);
+  EXPECT_FALSE(test_future.Get());
 }
 
 // Tests that dismissing the sheet runs the callback with `false`.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, SwipeDownReturnsFalse) {
-  __block bool callback_executed = false;
-  __block bool callback_result = true;
+  base::test::TestFuture<bool> test_future;
 
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        callback:base::BindOnce(^(bool proceed) {
-                          callback_executed = true;
-                          callback_result = proceed;
-                        })];
+                        callback:test_future.GetCallback()];
 
   [coordinator_ start];
 
@@ -123,33 +112,24 @@ TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, SwipeDownReturnsFalse) {
 
   [delegate passkeyIncognitoInterstitialViewDidDisappear];
 
-  EXPECT_TRUE(callback_executed);
-  EXPECT_FALSE(callback_result);
+  EXPECT_FALSE(test_future.Get());
 }
 
 // Tests that the callback is strictly executed only once.
 TEST_F(PasskeyIncognitoInterstitialCoordinatorTest, CallbackNotCalledTwice) {
-  __block int callback_execution_count = 0;
-
+  base::test::TestFuture<bool> test_future;
   coordinator_ = [[PasskeyIncognitoInterstitialCoordinator alloc]
       initWithBaseViewController:base_view_controller_
                          browser:browser_.get()
-                        callback:base::BindOnce(^(bool proceed) {
-                          callback_execution_count++;
-                        })];
-
+                        callback:test_future.GetCallback()];
   [coordinator_ start];
-
-  id<ConfirmationAlertActionHandler> action_handler =
-      (id<ConfirmationAlertActionHandler>)coordinator_;
-
-  [action_handler confirmationAlertPrimaryAction];
-
-  [coordinator_ stop];
 
   id<PasskeyIncognitoInterstitialViewControllerDelegate> delegate =
       (id<PasskeyIncognitoInterstitialViewControllerDelegate>)coordinator_;
   [delegate passkeyIncognitoInterstitialViewDidDisappear];
 
-  EXPECT_EQ(1, callback_execution_count);
+  EXPECT_TRUE(test_future.IsReady());
+  EXPECT_FALSE(test_future.Get());
+
+  [delegate passkeyIncognitoInterstitialViewDidDisappear];
 }

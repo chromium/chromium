@@ -12,6 +12,9 @@
 - (void)passkeyIncognitoInterstitialViewDidDisappear;
 @end
 
+// The accessibility identifier of incognito interstitial bottom sheet.
+extern NSString* const kPasskeyIncognitoInterstitialViewID;
+
 // View controller for the incognito passkey interstitial.
 @interface PasskeyIncognitoInterstitialViewController
     : ConfirmationAlertViewController

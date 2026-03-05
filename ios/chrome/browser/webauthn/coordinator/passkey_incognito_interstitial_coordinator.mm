@@ -4,8 +4,15 @@
 
 #import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
 
+#import "base/apple/foundation_util.h"
+#import "base/functional/bind.h"
+#import "base/functional/callback_helpers.h"
+#import "base/ios/block_types.h"
 #import "ios/chrome/browser/webauthn/ui/passkey_incognito_interstitial_view_controller.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
+
+// Represents the user's interaction with the incognito interstitial dialog.
+enum class IncognitoInterstitialAction { kDismissed, kContinue, kCancel };
 
 @interface PasskeyIncognitoInterstitialCoordinator () <
     ConfirmationAlertActionHandler,
@@ -18,6 +25,9 @@
 
   // The view controller being managed by this coordinator.
   PasskeyIncognitoInterstitialViewController* _viewController;
+
+  // Tracks the user's interaction with the incognito interstitial dialog.
+  IncognitoInterstitialAction _userAction;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -27,6 +37,7 @@
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
     _callback = std::move(callback);
+    _userAction = IncognitoInterstitialAction::kDismissed;
   }
   return self;
 }
@@ -54,28 +65,38 @@
 - (void)stop {
   _viewController.delegate = nil;
 
-  [self.baseViewController dismissViewControllerAnimated:YES completion:nil];
-  _viewController = nil;
+  bool result = (_userAction == IncognitoInterstitialAction::kContinue);
 
-  if (_callback) {
-    std::move(_callback).Run(false);
+  if (!_viewController.presentingViewController && _callback) {
+    std::move(_callback).Run(result);
+    _viewController = nil;
+    return;
   }
+
+  // Run the callback only after the dismissal animation completes. This
+  // prevents a presentation race condition where the backend tries to present
+  // the next sheet while the current sheet is still animating away.
+  ProceduralBlock completionBlock = nil;
+  if (_callback) {
+    completionBlock =
+        base::CallbackToBlock(base::BindOnce(std::move(_callback), result));
+  }
+
+  [self.baseViewController dismissViewControllerAnimated:YES
+                                              completion:completionBlock];
+  _viewController = nil;
 }
 
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  if (_callback) {
-    std::move(_callback).Run(true);
-  }
-  // TODO(crbug.com/487226407): Use a handler to dismiss the coordinator.
+  _userAction = IncognitoInterstitialAction::kContinue;
+  [self.passkeyClientHandler dismissPasskeyIncognitoInterstitial];
 }
 
 - (void)confirmationAlertSecondaryAction {
-  if (_callback) {
-    std::move(_callback).Run(false);
-  }
-  // TODO(crbug.com/487226407): Use a handler to dismiss the coordinator.
+  _userAction = IncognitoInterstitialAction::kCancel;
+  [self.passkeyClientHandler dismissPasskeyIncognitoInterstitial];
 }
 
 #pragma mark - PasskeyIncognitoInterstitialViewControllerDelegate
@@ -84,7 +105,7 @@
   if (_callback) {
     std::move(_callback).Run(false);
   }
-  // TODO(crbug.com/487226407): Use a handler to dismiss the coordinator.
+  [self.passkeyClientHandler dismissPasskeyIncognitoInterstitial];
 }
 
 @end

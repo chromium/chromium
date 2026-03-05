@@ -27,6 +27,11 @@
 // Dismisses the passkey welcome screen.
 - (void)dismissPasskeyWelcomeScreen;
 
+// Shows and dismisses the incognito passkey interstitial.
+- (void)showPasskeyIncognitoInterstitial:
+    (webauthn::IOSPasskeyClient::InterstitialCallback)callback;
+- (void)dismissPasskeyIncognitoInterstitial;
+
 @end
 
 #endif  // COMPONENTS_WEBAUTHN_IOS_IOS_PASSKEY_CLIENT_COMMANDS_H_

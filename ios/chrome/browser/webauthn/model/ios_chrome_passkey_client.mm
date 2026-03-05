@@ -151,8 +151,12 @@ void IOSChromePasskeyClient::ShowCreationBottomSheet(RequestInfo request_info) {
 }
 
 void IOSChromePasskeyClient::ShowInterstitial(InterstitialCallback callback) {
-  // TODO(crbug.com/479583177): Implement incognito interstitial UI.
-  std::move(callback).Run(true);
+  if (!command_handler_) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  [command_handler_ showPasskeyIncognitoInterstitial:std::move(callback)];
 }
 
 void IOSChromePasskeyClient::AllowPasskeyCreationInfobar(bool allowed) {

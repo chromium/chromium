@@ -354,6 +354,7 @@
 #import "ios/chrome/browser/web/model/web_state_delegate_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent_observer_bridge.h"
+#import "ios/chrome/browser/webauthn/coordinator/passkey_incognito_interstitial_coordinator.h"
 #import "ios/chrome/browser/webauthn/coordinator/passkey_welcome_screen_coordinator.h"
 #import "ios/chrome/browser/webui/model/net_export_tab_helper_delegate.h"
 #import "ios/chrome/browser/webui/ui_bundled/net_export_coordinator.h"
@@ -799,6 +800,9 @@ const char kChromeAppStoreUrl[] =
 
   // Block to run after the Synced Set Up UI has finished dismissing.
   ProceduralBlock _runAfterSyncedSetUpDismissal;
+
+  // The coordinator for the passkey incognito interstitial.
+  PasskeyIncognitoInterstitialCoordinator* _passkeyIncognitoCoordinator;
 }
 
 #pragma mark - ReaderModeBrowserAgentDelegate
@@ -1778,6 +1782,9 @@ const char kChromeAppStoreUrl[] =
   [_passkeyCreationBottomSheetCoordinator stop];
   _passkeyCreationBottomSheetCoordinator = nil;
 
+  [_passkeyIncognitoCoordinator stop];
+  _passkeyIncognitoCoordinator = nil;
+
   if (IsSyncedSetUpEnabled()) {
     [self stopSyncedSetUpCoordinator];
   }
@@ -2346,6 +2353,29 @@ const char kChromeAppStoreUrl[] =
   [self stopPasskeyWelcomeScreenCoordinator];
 }
 
+- (void)showPasskeyIncognitoInterstitial:
+    (webauthn::IOSPasskeyClient::InterstitialCallback)callback {
+  if (_passkeyIncognitoCoordinator) {
+    return;
+  }
+
+  _passkeyIncognitoCoordinator =
+      [[PasskeyIncognitoInterstitialCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                            callback:std::move(callback)];
+
+  _passkeyIncognitoCoordinator.passkeyClientHandler =
+      HandlerForProtocol(self.dispatcher, IOSPasskeyClientCommands);
+
+  [_passkeyIncognitoCoordinator start];
+}
+
+- (void)dismissPasskeyIncognitoInterstitial {
+  [_passkeyIncognitoCoordinator stop];
+  _passkeyIncognitoCoordinator = nil;
+}
+
 #pragma mark - BrowserCoordinatorCommands
 
 - (void)printTabWithBaseViewController:(UIViewController*)baseViewController {
@@ -2898,6 +2928,9 @@ const char kChromeAppStoreUrl[] =
 
   [_passkeyWelcomeScreenCoordinator stop];
   _passkeyWelcomeScreenCoordinator = nil;
+
+  [_passkeyIncognitoCoordinator stop];
+  _passkeyIncognitoCoordinator = nil;
 
   if (IsSyncedSetUpEnabled()) {
     [self stopSyncedSetUpCoordinator];

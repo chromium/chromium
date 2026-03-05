@@ -10,6 +10,8 @@
 #import "ios/chrome/browser/authentication/test/signin_earl_grey.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/webauthn/test/ios_chrome_passkey_client_app_interface.h"
+#import "ios/chrome/browser/webauthn/ui/passkey_incognito_interstitial_view_controller.h"
+#import "ios/chrome/common/ui/button_stack/button_stack_constants.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -30,6 +32,22 @@ namespace {
 id<GREYMatcher> CreatePasskeyButton() {
   return chrome_test_util::StaticTextWithAccessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_PASSKEY_CREATION_BOTTOM_SHEET_CREATE));
+}
+
+// Returns the matcher for the incognito interstitial's "Continue" button.
+id<GREYMatcher> IncognitoContinueButton() {
+  return grey_accessibilityID(kButtonStackPrimaryActionAccessibilityIdentifier);
+}
+
+// Returns the matcher for the incognito interstitial's "Cancel" button.
+id<GREYMatcher> IncognitoCancelButton() {
+  return grey_accessibilityID(
+      kButtonStackSecondaryActionAccessibilityIdentifier);
+}
+
+// Replace the matcher for the incognito interstitial bottom sheet.
+id<GREYMatcher> IncognitoInterstitialView() {
+  return grey_accessibilityID(kPasskeyIncognitoInterstitialViewID);
 }
 
 }  // namespace
@@ -94,6 +112,51 @@ id<GREYMatcher> CreatePasskeyButton() {
       l10n_util::GetStringUTF16(IDS_IOS_CREDENTIAL_PROVIDER_PASSKEY_SAVED);
   [ChromeEarlGrey
       waitForMatcher:grey_text(base::SysUTF16ToNSString(infobarTitleText))];
+}
+
+// Tests that the dialog box is visible when triggered in Incognito.
+- (void)testIncognitoInterstitialIsVisible {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadPasskeyCreationPage];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:IncognitoInterstitialView()];
+}
+
+// Tests that tapping the "Cancel" button dismisses the sheet and aborts the
+// flow.
+- (void)testIncognitoInterstitialCancelDismissesSheet {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadPasskeyCreationPage];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:IncognitoCancelButton()];
+
+  [[EarlGrey selectElementWithMatcher:IncognitoCancelButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:IncognitoInterstitialView()];
+
+  [[EarlGrey selectElementWithMatcher:CreatePasskeyButton()]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that tapping the "Continue" button dismisses the sheet and resumes the
+// creation flow.
+- (void)testIncognitoInterstitialContinueShowsCreationSheet {
+  [ChromeEarlGrey openNewIncognitoTab];
+  [self loadPasskeyCreationPage];
+
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:IncognitoContinueButton()];
+
+  [[EarlGrey selectElementWithMatcher:IncognitoContinueButton()]
+      performAction:grey_tap()];
+
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:IncognitoInterstitialView()];
+
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:CreatePasskeyButton()];
 }
 
 @end
