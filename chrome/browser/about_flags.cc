@@ -8545,6 +8545,15 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(webnn::mojom::features::kWebNNOnnxRuntime)},
 #endif  // BUILDFLAG(IS_WIN)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"permission-promise-lifetime-modulation-android",
+     flag_descriptions::kPermissionPromiseLifetimeModulationAndroidName,
+     flag_descriptions::kPermissionPromiseLifetimeModulationAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         permissions::features::kPermissionPromiseLifetimeModulationAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     {"left-hand-side-activity-indicators",
      flag_descriptions::kLeftHandSideActivityIndicatorsName,
      flag_descriptions::kLeftHandSideActivityIndicatorsDescription, kOsDesktop,

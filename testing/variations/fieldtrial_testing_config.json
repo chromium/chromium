@@ -18714,6 +18714,21 @@
             ]
         }
     ],
+    "PermissionPromiseLifetimeModulationAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PermissionPromiseLifetimeModulationAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "PermissionsAIP92": [
         {
             "platforms": [

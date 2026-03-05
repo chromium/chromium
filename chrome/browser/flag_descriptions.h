@@ -595,6 +595,12 @@ inline constexpr char kDisplayEdgeToEdgeFullscreenDescription[] =
     "Enable Display Edge to Edge Fullscreen when Chrome on Android is running "
     "in a windowing mode.";
 
+inline constexpr char kPermissionPromiseLifetimeModulationAndroidName[] =
+    "PermissionPromiseLifetimeModulationAndroid";
+inline constexpr char kPermissionPromiseLifetimeModulationAndroidDescription[] =
+    "Modulates the lifetime of a permission promise based on the prompt\'s UI "
+    "treatment on Android.";
+
 inline constexpr char kEnableBenchmarkingName[] = "Enable benchmarking";
 inline constexpr char kEnableBenchmarkingDescription[] =
     "Sets all features to a fixed state; that is, disables randomization for "

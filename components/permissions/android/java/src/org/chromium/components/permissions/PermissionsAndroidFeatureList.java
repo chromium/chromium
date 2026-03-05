@@ -38,6 +38,8 @@ public abstract class PermissionsAndroidFeatureList {
             "AndroidItemChooserCancelButton";
     public static final String PERMISSIONS_ANDROID_CLAPPER_LOUD = "PermissionsAndroidClapperLoud";
     public static final String PERMISSIONS_ANDROID_CLAPPER_QUIET = "PermissionsAndroidClapperQuiet";
+    public static final String PERMISSION_PROMISE_LIFETIME_MODULATION_ANDROID =
+            "PermissionPromiseLifetimeModulationAndroid";
     public static final String PERMISSIONS_GESTURE_GATED_PROMPTS = "PermissionsGestureGatedPrompts";
 
     public static final String USER_MEDIA_ELEMENT = "UserMediaElement";

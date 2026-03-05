@@ -376,6 +376,7 @@ source_set("unit_tests") {
       "android/bluetooth_chooser_android_unittest.cc",
       "android/bluetooth_scanning_prompt_android_unittest.cc",
       "android/permission_prompt/permission_dialog_delegate_unittest.cc",
+      "android/permission_prompt/permission_prompt_android_factory_unittest.cc",
       "android/permissions_reprompt_controller_android_unittest.cc",
     ]
   }

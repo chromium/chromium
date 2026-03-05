@@ -9033,6 +9033,8 @@ from previous Chrome versions.
   <int value="-1843451369" label="NewTabPageCustomizationThemeSync:disabled"/>
   <int value="-1842511843" label="DiceWebSigninInterception:enabled"/>
   <int value="-1842145650" label="WaylandLinuxDrmSyncobj:enabled"/>
+  <int value="-1841928540"
+      label="PermissionPromiseLifetimeModulationAndroid:disabled"/>
   <int value="-1841624903" label="FilesMaterializedViews:disabled"/>
   <int value="-1841054968" label="HdrAgtm:disabled"/>
   <int value="-1840821581" label="WebViewPowerSchedulerThrottleIdle:disabled"/>
@@ -18585,6 +18587,8 @@ from previous Chrome versions.
   <int value="1403792475" label="ShareMenu:enabled"/>
   <int value="1404592684"
       label="LegacyTechReportEnableCookieIssueReports:enabled"/>
+  <int value="1404619211"
+      label="PermissionPromiseLifetimeModulationAndroid:enabled"/>
   <int value="1404726271" label="ReduceHorizontalFlingVelocity:enabled"/>
   <int value="1404805189" label="MediaAppImageMantis:enabled"/>
   <int value="1405459667" label="enable-fast-text-autosizing"/>

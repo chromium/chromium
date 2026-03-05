@@ -27,6 +27,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
@@ -238,6 +239,51 @@ public class PermissionClapperQuietTest {
                             .setTabSwitchCallbackForTesting(onTabSwitchCallback::notifyCalled);
                 });
         return onTabSwitchCallback;
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Permissions"})
+    @EnableFeatures({PermissionsAndroidFeatureList.PERMISSION_PROMISE_LIFETIME_MODULATION_ANDROID})
+    public void testPromiseLifetimeModulation() throws Exception {
+        // Setup page and trigger request.
+        if (PAGE_URL.startsWith("http")) {
+            mPermissionRule.loadUrl(PAGE_URL);
+        } else {
+            mPermissionRule.setUpUrl(PAGE_URL);
+        }
+        waitForSecurityIcon();
+
+        mPermissionRule.runJavaScriptCodeInCurrentTab(
+                "window.promiseResolved = false; window.onclick = function() { if"
+                        + " (window.functionToRun) { eval(window.functionToRun); } };");
+
+        // We trigger the notification and immediately update window.promiseResolved when it
+        // resolves/rejects
+        mPermissionRule.runJavaScriptCodeInCurrentTabWithGesture(
+                "Notification.requestPermission().then(() => { window.promiseResolved = true;"
+                        + " }).catch(() => { window.promiseResolved = true; })");
+
+        // Wait for the UI to be shown
+        waitForQuietIcon();
+
+        // Wait up to 3 seconds for the promise to resolve without interacting with the UI.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        String result =
+                                mPermissionRule.runJavaScriptCodeInCurrentTab(
+                                        "window.promiseResolved");
+                        Criteria.checkThat(result, org.hamcrest.Matchers.is("true"));
+                    } catch (Exception e) {
+                        throw new CriteriaNotSatisfiedException(e);
+                    }
+                },
+                3500,
+                100);
+
+        // Ensure the UI is still visible!
+        onView(withId(R.id.location_bar_status_icon)).check(matches(isDisplayed()));
     }
 
     @Test

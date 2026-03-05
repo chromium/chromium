@@ -9,6 +9,7 @@
 #include "components/permissions/android/permission_prompt/permission_dialog.h"
 #include "components/permissions/android/permission_prompt/permission_message.h"
 #include "components/permissions/android/permissions_android_feature_map.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_prompt.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/request_type.h"
@@ -25,6 +26,16 @@ std::unique_ptr<PermissionPrompt> PermissionPrompt::Create(
             EmbeddedPermissionPromptAndroid::Create(web_contents, delegate)) {
       return embedded_prompt;
     }
+  }
+
+  if (base::FeatureList::IsEnabled(
+          permissions::features::kPermissionPromiseLifetimeModulationAndroid) &&
+      delegate->ShouldCurrentRequestUseQuietUI()) {
+    // This part will resolve a promise attached to this permission request.
+    // This is needed to not unintentionally block a site waiting for when the
+    // quiet prompt will get resolved. On the desktop we will show an infobar
+    // asking to reload this page in case the prompt will be granted.
+    delegate->PreIgnoreQuietPrompt();
   }
 
   // For Quiet Clapper (e.g. abusive, embargoed), show the silent Omnibox
