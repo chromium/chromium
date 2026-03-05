@@ -347,15 +347,19 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
                              const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
 
-  result->metrics_type = MatchTypeToMetricsType(match.type);
   result->is_answer = false;
   result->contents = match.contents;
   result->contents_type = ClassesToType(match.contents_class);
   result->description = match.description;
   result->description_type = ClassesToType(match.description_class);
 
-  // This may not be the final type. Bookmarks take precedence.
-  result->omnibox_type = MatchTypeToOmniboxType(match.type);
+  if (bookmark_model && bookmark_model->IsBookmarked(match.destination_url)) {
+    result->omnibox_type = SearchResult::OmniboxType::kBookmark;
+    result->metrics_type = SearchResult::MetricsType::kBookmark;
+  } else {
+    result->omnibox_type = MatchTypeToOmniboxType(match.type);
+    result->metrics_type = MatchTypeToMetricsType(match.type);
+  }
 
   if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       !match.image_url.is_empty()) {
@@ -363,6 +367,7 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
   } else {
     // Set the favicon if this result is eligible.
     bool use_favicon =
+        result->omnibox_type == SearchResult::OmniboxType::kBookmark ||
         result->omnibox_type == SearchResult::OmniboxType::kDomain ||
         result->omnibox_type == SearchResult::OmniboxType::kOpenTab;
     if (use_favicon && favicon_cache) {
@@ -383,15 +388,7 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
         result->favicon = icon.AsImageSkia();
       }
     }
-
-    // Otherwise, set the bookmark type if this result is eligible.
-    if (result->favicon.isNull() && bookmark_model &&
-        bookmark_model->IsBookmarked(match.destination_url)) {
-      result->omnibox_type = SearchResult::OmniboxType::kBookmark;
-      result->metrics_type = SearchResult::MetricsType::kBookmark;
-    }
   }
-
   return result;
 }
 
