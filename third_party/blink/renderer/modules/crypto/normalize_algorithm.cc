@@ -202,8 +202,9 @@ std::optional<WebCryptoAlgorithmId> LookupAlgorithmIdByName(
   }
 
   if (it->algorithm_name_length != algorithm_name.length() ||
-      !DeprecatedEqualIgnoringCase(algorithm_name, it->algorithm_name))
+      !EqualIgnoringAsciiCase(algorithm_name, it->algorithm_name)) {
     return std::nullopt;
+  }
 
   WebCryptoAlgorithmId id = it->algorithm_id;
 
