@@ -1233,6 +1233,12 @@ Chromium is unable to recover your settings.
         <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">
           Customize Chromium to give your browser a new look
         </message>
+        <message name="IDS_NTP_MOBILE_PROMO_TITLE" desc="Title of the NTP promo that promotes the browser on mobile.">
+          Get Chromium on your phone
+        </message>
+        <message name="IDS_NTP_MOBILE_PROMO_PASSWORDS_TITLE" desc="Title of the NTP promo that promotes the browser on mobile for passwords.">
+          Get the Chromium app to save passwords on the go
+        </message>
         <message name="IDS_NTP_SIGN_IN_PROMO_WITH_BOOKMARKS" desc="The text shown in the body of the New Tab Page sign in promotion">
           Sign in to Chromium to get your passwords, bookmarks, and more on all your devices
         </message>

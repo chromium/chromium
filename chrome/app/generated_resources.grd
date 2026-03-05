@@ -10562,6 +10562,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
         <message name="IDS_IOS_DEVICE_TYPE_IPAD" desc="The product name 'iPad'.">
           iPad
         </message>
+        <message name="IDS_NTP_MOBILE_PROMO_BODY" desc="Body text of the NTP promo that promotes Chrome on mobile.">
+          Scan this with your phone to get your bookmarks, passwords, and more on the go
+        </message>
+        <message name="IDS_NTP_MOBILE_PROMO_PASSWORDS_BODY" desc="Body text of the NTP promo that promotes Chrome on mobile for passwords.">
+          Scan this with your phone to save and autofill your passwords to easily sign in to sites and apps
+        </message>
       </if>
 
       <!--Desktop to iOS password promo strings-->
