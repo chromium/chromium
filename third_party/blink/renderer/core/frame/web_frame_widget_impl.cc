@@ -4470,6 +4470,8 @@ void WebFrameWidgetImpl::PasteFromImageBytes(
   Event* const evt =
       ClipboardEvent::Create(event_type_names::kPaste, data_transfer);
 
+  target->DispatchEvent(*evt);
+
   // If the default event handling is prevented, it indicates the paste event
   // was handled by the app. Notify the caller of the success status.
   std::move(callback).Run(evt->defaultPrevented());
