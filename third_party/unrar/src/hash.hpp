@@ -48,9 +48,9 @@ class DataHash
     uint gfExpCRC(uint N);
 
     // Speed gain seems to vanish above 8 CRC32 threads.
-    static const uint CRC32_POOL_THREADS=8;
+    static constexpr uint CRC32_POOL_THREADS=8u;
     // Thread pool must allow at least BLAKE2_THREADS_NUMBER threads.
-    static const uint HASH_POOL_THREADS=Max(BLAKE2_THREADS_NUMBER,CRC32_POOL_THREADS);
+    static constexpr uint HASH_POOL_THREADS=Max(BLAKE2_THREADS_NUMBER,CRC32_POOL_THREADS);
 
     HASH_TYPE HashType;
     uint CurCRC32;

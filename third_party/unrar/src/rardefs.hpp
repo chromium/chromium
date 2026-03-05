@@ -1,11 +1,37 @@
 #ifndef _RAR_DEFS_
 #define _RAR_DEFS_
 
+// These interfere textually with the numerics headers in
+// `partition_alloc_base`, which are evaluated early through the
+// inclusion of `base/containers/span.h`.
+//
+// When building for Chromium, include the necessary headers for the
+// `std::` spellings of these.
+#if defined(CHROMIUM_UNRAR)
+
+#include <algorithm>
+
+template <typename T>
+constexpr T Max (const T& a, const T& b) {
+  return std::max(a, b);
+}
+
+template <typename T>
+constexpr T Min (const T& a, const T& b) {
+  return std::min(a, b);
+}
+
+// `Abs()` appears unused.
+
+#else
+
 #define  Min(x,y) (((x)<(y)) ? (x):(y))
 #define  Max(x,y) (((x)>(y)) ? (x):(y))
 
 // Universal replacement of abs function.
 #define  Abs(x) (((x)<0) ? -(x):(x))
+
+#endif  // defined(CHROMIUM_UNRAR)
 
 #define  ASIZE(x) (sizeof(x)/sizeof(x[0]))
 
@@ -19,7 +45,11 @@
 
 // Set some arbitrary sensible limit to maximum path length to prevent
 // the excessive memory allocation for dynamically allocated strings.
+#if defined(CHROMIUM_UNRAR)
+inline constexpr size_t  MAXPATHSIZE = 0x10000u;
+#else
 #define  MAXPATHSIZE       0x10000
+#endif  // defined(CHROMIUM_UNRAR)
 
 #define  MAXSFXSIZE        0x400000
 

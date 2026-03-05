@@ -397,7 +397,7 @@ bool RecVolumes5::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
 
       // We can have volumes of different size. Let's use data chunk
       // for largest volume size.
-      uint DataToProcess=(uint)Min(RecBufferSize,MaxVolSize-ProcessedSize);
+      uint DataToProcess=(uint)Min(uint{RecBufferSize},uint{MaxVolSize-ProcessedSize});
       ProcessRS(Cmd,I,B,DataToProcess,false);
     }
     if (MaxRead==0)
@@ -407,7 +407,7 @@ bool RecVolumes5::Restore(CommandData *Cmd,const std::wstring &Name,bool Silent)
       if (!ValidFlags[I])
       {
         RecVolItem *Item=&RecItems[I];
-        size_t WriteSize=(size_t)Min(MaxRead,Item->FileSize);
+        size_t WriteSize=(size_t)Min(size_t{MaxRead},size_t{Item->FileSize});
         Item->f->Write(Buf+(J++)*RecBufferSize,WriteSize);
         Item->FileSize-=WriteSize;
       }

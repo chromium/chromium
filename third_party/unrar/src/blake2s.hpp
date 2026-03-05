@@ -2,8 +2,13 @@
 #ifndef _RAR_BLAKE2_
 #define _RAR_BLAKE2_
 
+#if defined(CHROMIUM_UNRAR)
+inline constexpr unsigned int BLAKE2_DIGEST_SIZE = 32u;
+inline constexpr unsigned int BLAKE2_THREADS_NUMBER = 8u;
+#else
 #define BLAKE2_DIGEST_SIZE 32
 #define BLAKE2_THREADS_NUMBER 8
+#endif  // defined(CHROMIUM_UNRAR)
 
 // Use constexpr instead of enums for -std=c++20 compatibility.
 constexpr size_t BLAKE2S_BLOCKBYTES = 64;

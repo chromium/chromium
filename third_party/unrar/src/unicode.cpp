@@ -164,7 +164,7 @@ bool WideToCharMap(const wchar *Src,char *Dest,size_t DestSize,bool &Success)
   memset(Dest,0,DestSize);
   
   Success=true;
-  uint SrcPos=0,DestPos=0;
+  size_t SrcPos=0,DestPos=0;
   while (Src[SrcPos]!=0 && DestPos<DestSize-MB_CUR_MAX)
   {
     if (uint(Src[SrcPos])==MappedStringMark)
@@ -244,7 +244,7 @@ void CharToWideMap(const char *Src,wchar *Dest,size_t DestSize,bool &Success)
       DestPos++;
     }
   }
-  Dest[Min(DestPos,DestSize-1)]=0;
+  Dest[Min(size_t{DestPos},DestSize-1)]=0;
 }
 #endif
 

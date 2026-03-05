@@ -427,7 +427,7 @@ int File::Read(void *Data,size_t Size)
           for (size_t I=0;I<Size;I+=512)
           {
             Seek(FilePos+I,SEEK_SET);
-            size_t SizeToRead=Min(Size-I,512);
+            size_t SizeToRead=Min(Size-I,size_t{512u});
             int ReadCode=DirectRead(Data,SizeToRead);
             ReadSize+=(ReadCode==-1) ? 512:ReadCode;
             if (ReadSize!=-1)
@@ -583,7 +583,7 @@ bool File::RawSeek(int64 Offset,int Method)
     byte Buf[4096];
     if (Method==SEEK_CUR || Method==SEEK_SET && Offset>=CurFilePos)
     {
-      uint64 SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
+      size_t SkipSize=Method==SEEK_CUR ? Offset:Offset-CurFilePos;
       while (SkipSize>0) // Reading to emulate seek forward.
       {
         int ReadSize=Read(Buf,(size_t)Min(SkipSize,ASIZE(Buf)));

@@ -207,7 +207,7 @@ uint QuickOpen::ReadBuffer()
 {
   int64 SavePos=Arc->Tell();
   Arc->File::Seek(RawDataStart+RawDataPos,SEEK_SET);
-  size_t SizeToRead=(size_t)Min(RawDataSize-RawDataPos,MaxBufSize-ReadBufSize);
+  size_t SizeToRead=(size_t)Min(size_t{RawDataSize-RawDataPos},MaxBufSize-ReadBufSize);
   if (Arc->SubHead.Encrypted)
     SizeToRead &= ~CRYPT_BLOCK_MASK;
   int ReadSize=0;

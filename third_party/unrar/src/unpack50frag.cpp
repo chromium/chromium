@@ -46,7 +46,7 @@ void FragmentedWindow::Init(size_t WinSize)
     // than current, so we do not need blocks if they are smaller than
     // "size left / attempts left". Also we do not waste time to blocks
     // smaller than some arbitrary constant.
-    size_t MinSize=Max(Size/(ASIZE(Mem)-BlockNum), 0x400000);
+    size_t MinSize=Max(Size/(ASIZE(Mem)-BlockNum), size_t{0x400000});
 
     byte *NewMem=NULL;
     while (Size>=MinSize)

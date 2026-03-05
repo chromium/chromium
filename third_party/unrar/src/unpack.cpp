@@ -78,7 +78,7 @@ void Unpack::SetThreads(uint Threads)
 {
   // More than 8 threads are unlikely to provide noticeable gain
   // for unpacking, but would use the additional memory.
-  MaxUserThreads=Min(Threads,8);
+  MaxUserThreads=Min(Threads,8u);
   UnpThreadPool=new ThreadPool(MaxUserThreads);
 }
 #endif
@@ -235,7 +235,7 @@ void Unpack::UnpInitData(bool Solid)
     UnpPtr=WrPtr=0;
     PrevPtr=0;
     FirstWinDone=false;
-    WriteBorder=Min(MaxWinSize,UNPACK_MAX_WRITE);
+    WriteBorder=Min(MaxWinSize,size_t{UNPACK_MAX_WRITE});
   }
   // Filters never share several solid files, so we can safely reset them
   // even in solid archive.

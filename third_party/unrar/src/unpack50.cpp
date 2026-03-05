@@ -409,7 +409,7 @@ void Unpack::UnpWriteBuf()
   // We prefer to write data in blocks not exceeding UNPACK_MAX_WRITE
   // instead of potentially huge MaxWinSize blocks. It also allows us
   // to keep the size of Filters array reasonable.
-  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,UNPACK_MAX_WRITE));
+  WriteBorder=WrapUp(UnpPtr+Min(MaxWinSize,size_t{UNPACK_MAX_WRITE}));
 
   // Choose the nearest among WriteBorder and WrPtr actual written border.
   // If border is equal to UnpPtr, it means that we have MaxWinSize data ahead.

@@ -308,7 +308,7 @@ void ListFileHeader(Archive &Arc,FileHeader &hd,bool &TitleShown,bool Verbose,bo
           }
           else
           {
-            size_t DataSize=(size_t)Min(hd.PackSize,MAXPATHSIZE);
+            size_t DataSize=(size_t)Min(size_t{hd.PackSize},MAXPATHSIZE);
             std::vector<char> Buf(DataSize+1);
             Arc.Read(Buf.data(),DataSize);
             Buf[DataSize] = 0;
