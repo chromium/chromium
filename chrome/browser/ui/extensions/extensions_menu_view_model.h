@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSIONS_MENU_VIEW_MODEL_H_
 
 #include <optional>
+#include <string>
 
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
@@ -94,9 +95,10 @@ class ExtensionsMenuViewModel : public extensions::PermissionsManager::Observer,
     // icon updates because (a) icons are loaded asynchronously and (b) they
     // only require updating the icon and no other fields (e.g an action update
     // can include a permissions change which affects other views apart from the
-    // action menu entry).
-    virtual void OnActionUpdated(
-        const ToolbarActionsModel::ActionId& action_id) = 0;
+    // action menu entry). An action update could affect the action order in the
+    // menu entries. Therefore, we pass the new `index`.
+    virtual void OnActionUpdated(const ToolbarActionsModel::ActionId& action_id,
+                                 int index) = 0;
 
     // Called when an action icon is updated.
     virtual void OnActionIconUpdated(

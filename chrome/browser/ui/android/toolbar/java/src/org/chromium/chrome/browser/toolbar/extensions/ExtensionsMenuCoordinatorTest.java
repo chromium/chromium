@@ -15,7 +15,6 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.graphics.Color;
-import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -282,28 +281,6 @@ public class ExtensionsMenuCoordinatorTest {
         // the native model is initialized.
         assertNotNull("Bridge should have been initialized by the click", mCapturedMenuBridge);
         mCapturedMenuBridge.onReady();
-    }
-
-    @Test
-    public void testUpdateSiteSettingsToggle() {
-        mExtensionsMenuButton.performClick();
-        MaterialSwitchWithText toggle =
-                mExtensionsMenuCoordinator
-                        .getContentView()
-                        .findViewById(R.id.extensions_menu_site_settings_toggle);
-
-        mExtensionsMenuCoordinator.mMediator.updateSiteSettingsToggle(
-                createSiteSettingsState("label", true));
-        assertEquals(View.VISIBLE, toggle.getVisibility());
-        assertEquals(true, toggle.isChecked());
-        assertEquals("label", toggle.getText());
-
-        mExtensionsMenuCoordinator.mMediator.updateSiteSettingsToggle(
-                createSiteSettingsState(
-                        "label_2", false, ExtensionsMenuTypes.ControlState.Status.HIDDEN));
-        assertEquals(View.GONE, toggle.getVisibility());
-        assertEquals(false, toggle.isChecked());
-        assertEquals("label_2", toggle.getText());
     }
 
     @Test

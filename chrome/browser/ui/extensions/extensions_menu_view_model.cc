@@ -1224,9 +1224,13 @@ void ExtensionsMenuViewModel::OnToolbarActionUpdated(
   // name is set on the manifest and shouldn't dynamically change.
   std::sort(action_models_.begin(), action_models_.end(), SortActionsByName);
 
+  // Find the new index of the action.
+  std::optional<int> index = GetActionIndex(action_id);
+  CHECK(index);
+
   // Notify observers.
   for (Observer& observer : observers_) {
-    observer.OnActionUpdated(action_id);
+    observer.OnActionUpdated(action_id, *index);
   }
 }
 

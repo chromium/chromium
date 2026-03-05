@@ -124,7 +124,9 @@ public class ExtensionsMenuMediatorTest {
         ExtensionsMenuBridgeJni.setInstanceForTesting(mExtensionsMenuBridgeJniMock);
 
         // Mock site settings state.
-        mSiteSettingsState = createSiteSettingsState("label", true);
+        mSiteSettingsState =
+                createSiteSettingsState(
+                        "label", ExtensionsMenuTypes.ControlState.Status.HIDDEN, /* isOn= */ false);
         when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
                 .thenReturn(mSiteSettingsState);
         when(mExtensionsMenuBridgeJniMock.init(any(), anyLong()))
@@ -372,6 +374,52 @@ public class ExtensionsMenuMediatorTest {
     }
 
     /**
+     * Tests that updating an extension action correctly updates its corresponding action model in
+     * the menu, updating its order if necessary.
+     */
+    @Test
+    public void testOnActionUpdated() {
+        // Initialize the action models with two items.
+        List<ExtensionsMenuTypes.MenuEntryState> entries = new ArrayList<>();
+        entries.add(
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_a", "Extension A", ICON_RED, /* isPinned= */ false));
+        entries.add(
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_b", "Extension B", ICON_BLUE, /* isPinned= */ false));
+        when(mExtensionsMenuBridgeJniMock.getMenuEntries(anyLong())).thenReturn(entries);
+
+        // Open extensions menu by simulating the native callback triggering onReady.
+        mBridgeCaptor.getValue().onReady();
+
+        assertEquals(2, mActionModels.size());
+
+        // Simulate the native callback for Extension A updated, maintaining its current index.
+        ExtensionsMenuTypes.MenuEntryState updatedEntryA =
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_a", "Extension A Updated", ICON_RED, /* isPinned= */ false);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntryA);
+        mBridgeCaptor.getValue().onActionUpdated(0);
+
+        // Verify "Extension A" is updated at its current index.
+        assertEquals(2, mActionModels.size());
+        assertItemAt(0, "Extension A Updated", ICON_RED, ICON_MORE);
+        assertItemAt(1, "Extension B", ICON_BLUE, ICON_MORE);
+
+        // Simulate the native callback for Extension A updated, moving to a new index.
+        ExtensionsMenuTypes.MenuEntryState updatedEntryB =
+                ExtensionTestUtils.createSimpleMenuEntry(
+                        "id_b", "Extension B Updated", ICON_BLUE, /* isPinned= */ false);
+        when(mExtensionsMenuBridgeJniMock.getMenuEntry(anyLong(), eq(0))).thenReturn(updatedEntryB);
+        mBridgeCaptor.getValue().onActionUpdated(0);
+
+        // Verify "Extension B" moved to index 0 and "Extension A" moved to index 1.
+        assertEquals(2, mActionModels.size());
+        assertItemAt(0, "Extension B Updated", ICON_BLUE, ICON_MORE);
+        assertItemAt(1, "Extension A Updated", ICON_RED, ICON_MORE);
+    }
+
+    /**
      * Tests that clicking on the context menu button of an extension item opens the context menu.
      */
     @Test
@@ -420,16 +468,62 @@ public class ExtensionsMenuMediatorTest {
         return mockButton;
     }
 
+    /**
+     * Tests that site settings toggle is correctly updated based on the state provided by the
+     * native side.
+     */
     @Test
     public void testUpdateSiteSettingsToggle() {
-        ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
-                createSiteSettingsState("test_label", true);
-
-        mMenuMediator.updateSiteSettingsToggle(siteSettingsState);
+        // Verify toggle properties when it should be visible and on.
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsStateOn =
+                createSiteSettingsState(
+                        "test_label",
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* isOn= */ true);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
+                .thenReturn(siteSettingsStateOn);
+        mMenuMediator.updateSiteSettingsToggle();
 
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, true);
         verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label");
+
+        clearInvocations(mMenuPropertyModel);
+
+        // Verify toggle properties when it should be visible and off.
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsStateOff =
+                createSiteSettingsState(
+                        "test_label_2",
+                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        /* isOn= */ false);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
+                .thenReturn(siteSettingsStateOff);
+        mMenuMediator.updateSiteSettingsToggle();
+
+        verify(mMenuPropertyModel).set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, true);
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, false);
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label_2");
+
+        clearInvocations(mMenuPropertyModel);
+
+        // Verify toggle properties when it should be hidden (doesn't matter if toggle is on/off).
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsStateHidden =
+                createSiteSettingsState(
+                        "test_label_3",
+                        ExtensionsMenuTypes.ControlState.Status.HIDDEN,
+                        /* isOn= */ false);
+        when(mExtensionsMenuBridgeJniMock.getSiteSettings(anyLong()))
+                .thenReturn(siteSettingsStateHidden);
+        mMenuMediator.updateSiteSettingsToggle();
+
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE, false);
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED, false);
+        verify(mMenuPropertyModel)
+                .set(ExtensionsMenuProperties.SITE_SETTINGS_LABEL, "test_label_3");
     }
 
     @Test
@@ -463,10 +557,10 @@ public class ExtensionsMenuMediatorTest {
     }
 
     private ExtensionsMenuTypes.SiteSettingsState createSiteSettingsState(
-            String label, boolean isOn) {
+            String label, @ExtensionsMenuTypes.ControlState.Status int status, boolean isOn) {
         ExtensionsMenuTypes.ControlState toggleState =
                 new ExtensionsMenuTypes.ControlState(
-                        ExtensionsMenuTypes.ControlState.Status.ENABLED,
+                        status,
                         "toggle_text",
                         "accessible_name",
                         "tooltip",

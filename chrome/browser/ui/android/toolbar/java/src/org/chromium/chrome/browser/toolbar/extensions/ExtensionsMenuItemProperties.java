@@ -16,6 +16,9 @@ import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 @NullMarked
 public class ExtensionsMenuItemProperties {
 
+    public static final WritableObjectPropertyKey<String> EXTENSION_ID =
+            new WritableObjectPropertyKey<>();
+
     public static final WritableObjectPropertyKey<@Nullable Bitmap> ICON =
             new WritableObjectPropertyKey<>();
 
@@ -28,5 +31,7 @@ public class ExtensionsMenuItemProperties {
             CONTEXT_MENU_BUTTON_ON_CLICK = new WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {ICON, TITLE, CONTEXT_MENU_BUTTON_ICON, CONTEXT_MENU_BUTTON_ON_CLICK};
+            new PropertyKey[] {
+                EXTENSION_ID, ICON, TITLE, CONTEXT_MENU_BUTTON_ICON, CONTEXT_MENU_BUTTON_ON_CLICK
+            };
 }

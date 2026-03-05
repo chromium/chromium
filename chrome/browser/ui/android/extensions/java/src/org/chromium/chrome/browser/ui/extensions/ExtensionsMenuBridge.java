@@ -118,6 +118,17 @@ public class ExtensionsMenuBridge implements Destroyable {
     }
 
     /**
+     * Callback from native indicating that an extension has been updated.
+     *
+     * @param actionIndex The index of the menu entry in the menu corresponding to the action
+     *     updated.
+     */
+    @CalledByNative
+    public void onActionUpdated(int actionIndex) {
+        mObserver.onActionUpdated(actionIndex);
+    }
+
+    /**
      * Callback from native indicating that the menu data is ready. This will not be called if the
      * menu data is ready at the menu bridge initialization.
      */
@@ -142,6 +153,9 @@ public class ExtensionsMenuBridge implements Destroyable {
 
         /** Called when an action has been removed from the menu. */
         void onActionRemoved(int actionIndex);
+
+        /** Called when an extension has been updated on actionIndex. */
+        void onActionUpdated(int actionIndex);
 
         /** Called when the menu data is ready to be consumed. */
         void onReady();

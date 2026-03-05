@@ -277,7 +277,8 @@ void ExtensionsMenuDelegateDesktop::OnActionRemoved(
 }
 
 void ExtensionsMenuDelegateDesktop::OnActionUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    int index) {
   CHECK(current_page_);
 
   // Update the main page if it is open since an action update can affect the

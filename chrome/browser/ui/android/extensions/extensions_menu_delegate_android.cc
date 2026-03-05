@@ -159,9 +159,10 @@ void ExtensionsMenuDelegateAndroid::OnActionRemoved(
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionUpdated(
-    const ToolbarActionsModel::ActionId& action_id) {
+    const ToolbarActionsModel::ActionId& action_id,
+    int index) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_ExtensionsMenuBridge_onModelChanged(env, java_object_);
+  Java_ExtensionsMenuBridge_onActionUpdated(env, java_object_, index);
 }
 
 void ExtensionsMenuDelegateAndroid::OnActionIconUpdated(

@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.toolbar.extensions;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.NullableObservableSupplier;
 import org.chromium.build.annotations.NullMarked;
@@ -104,22 +106,6 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
                 /* dismissRunnable= */ null);
     }
 
-    /**
-     * Updates the site settings toggle.
-     *
-     * @param siteSettingsState The site settings state to update to.
-     */
-    void updateSiteSettingsToggle(ExtensionsMenuTypes.SiteSettingsState siteSettingsState) {
-        mMenuPropertyModel.set(
-                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE,
-                siteSettingsState.toggle.status != ExtensionsMenuTypes.ControlState.Status.HIDDEN);
-        mMenuPropertyModel.set(
-                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED,
-                siteSettingsState.toggle.isOn);
-        mMenuPropertyModel.set(
-                ExtensionsMenuProperties.SITE_SETTINGS_LABEL, siteSettingsState.label);
-    }
-
     /** Destroys the mediator. */
     @Override
     public void destroy() {
@@ -135,13 +121,9 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         // TODO(crbug.com/473213114): Implement data pull for site permissions page.
         // This will need to consider the event source (e.g., page navigation vs. action update)
         // to fetch and update the UI correctly, as their effects differ on the site permissions
-        // page
-        // and they will need to have different JNI observers.
+        // page and they will need to have different JNI observers.
         if (isMainPageVisible()) {
-            ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
-                    mMenuBridge.getSiteSettingsState();
-            updateSiteSettingsToggle(siteSettingsState);
-
+            updateSiteSettingsToggle();
             updateMenuEntries();
             return;
         }
@@ -174,6 +156,38 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
         updateZeroState();
     }
 
+    @Override
+    public void onActionUpdated(int newIndex) {
+        ExtensionsMenuTypes.MenuEntryState entry = mMenuBridge.getMenuEntry(newIndex);
+
+        // Find the old index for the model corresponding to the updated action.
+        int oldIndex = -1;
+        for (int i = 0; i < mActionModels.size(); i++) {
+            String modelId =
+                    mActionModels.get(i).model.get(ExtensionsMenuItemProperties.EXTENSION_ID);
+            if (modelId.equals(entry.id)) {
+                oldIndex = i;
+                break;
+            }
+        }
+        assert oldIndex != -1
+                : "Action model with ID " + entry.id + " should exist in mActionModels.";
+
+        // Update the menu item model.
+        ListItem item = mActionModels.get(oldIndex);
+        item.model.set(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text);
+        item.model.set(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon);
+
+        // Update position if the index changed.
+        if (oldIndex != newIndex) {
+            mActionModels.removeAt(oldIndex);
+            mActionModels.add(newIndex, item);
+        }
+
+        // An action update can change the state of the site settings toggle.
+        updateSiteSettingsToggle();
+    }
+
     /**
      * Called when the native side is ready with the menu data, which can happen on mediator
      * construction or by an observer called originated from the native side. Populates the action
@@ -194,8 +208,10 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private ListItem createMenuItem(ExtensionsMenuTypes.MenuEntryState entry) {
         boolean isActionPinned = entry.contextMenuButton.isOn;
         int contextMenuIcon = isActionPinned ? R.drawable.ic_keep_24dp : R.drawable.ic_more_vert;
+
         PropertyModel model =
                 new PropertyModel.Builder(ExtensionsMenuItemProperties.ALL_KEYS)
+                        .with(ExtensionsMenuItemProperties.EXTENSION_ID, entry.id)
                         .with(ExtensionsMenuItemProperties.TITLE, entry.actionButton.text)
                         .with(ExtensionsMenuItemProperties.ICON, entry.actionButton.icon)
                         .with(
@@ -235,5 +251,20 @@ class ExtensionsMenuMediator implements Destroyable, ExtensionsMenuBridge.Observ
     private void updateZeroState() {
         boolean isZeroState = mActionModels.size() == 0;
         mMenuPropertyModel.set(ExtensionsMenuProperties.IS_ZERO_STATE, isZeroState);
+    }
+
+    /** Updates the site settings toggle. */
+    @VisibleForTesting
+    void updateSiteSettingsToggle() {
+        ExtensionsMenuTypes.SiteSettingsState siteSettingsState =
+                mMenuBridge.getSiteSettingsState();
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_VISIBLE,
+                siteSettingsState.toggle.status != ExtensionsMenuTypes.ControlState.Status.HIDDEN);
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_TOGGLE_CHECKED,
+                siteSettingsState.toggle.isOn);
+        mMenuPropertyModel.set(
+                ExtensionsMenuProperties.SITE_SETTINGS_LABEL, siteSettingsState.label);
     }
 }
