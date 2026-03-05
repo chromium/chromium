@@ -985,6 +985,9 @@ as required builders.
 * [linux-full-remote-rel](https://ci.chromium.org/p/chromium/builders/try/linux-full-remote-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-full-remote-rel""))
   * Experiment percentage: 10.0
 
+* [mac-gpu-rel](https://ci.chromium.org/p/chromium/builders/try/mac-gpu-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""mac-gpu-rel""))
+  * Experiment percentage: 30.0
+
 * [tricium-clang-tidy](https://ci.chromium.org/p/chromium/builders/try/tricium-clang-tidy) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""tricium-clang-tidy""))
   * Experiment percentage: 100.0
 

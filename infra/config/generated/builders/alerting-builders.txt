@@ -677,6 +677,7 @@ try/mac-clobber-rel
 try/mac-enterprise-companion-try-builder-dbg
 try/mac-enterprise-companion-try-builder-rel
 try/mac-fieldtrial-tester
+try/mac-gpu-rel
 try/mac-libfuzzer-asan-rel
 try/mac-official
 try/mac-rel

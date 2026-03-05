@@ -919,6 +919,7 @@
     "mac-clobber-rel": "try/mac-clobber-rel/gn-args.json",
     "mac-code-coverage": "try/mac-code-coverage/gn-args.json",
     "mac-fieldtrial-tester": "try/mac-fieldtrial-tester/gn-args.json",
+    "mac-gpu-rel": "try/mac-gpu-rel/gn-args.json",
     "mac-intel-on-arm64-rel": "try/mac-intel-on-arm64-rel/gn-args.json",
     "mac-libfuzzer-asan-rel": "try/mac-libfuzzer-asan-rel/gn-args.json",
     "mac-lsan-fyi-rel": "try/mac-lsan-fyi-rel/gn-args.json",
