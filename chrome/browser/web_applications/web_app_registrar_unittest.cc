@@ -561,11 +561,9 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
       web_app::WebAppFilter::InstalledInOperatingSystemForTesting());
   EXPECT_EQ(0u, in_scope.size());
   EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
-      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      origin_scope, web_app::WebAppFilter::InstalledInChrome()));
   EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
-      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app3_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   auto app1 = test::CreateWebApp(app1_scope);
   RegisterAppUnsafe(std::move(app1));
@@ -574,18 +572,15 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
       origin_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      origin_scope, web_app::WebAppFilter::InstalledInChrome()));
   EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
-      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app3_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
       app1_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      app1_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app1_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   auto app2 = test::CreateWebApp(app2_scope);
   RegisterAppUnsafe(std::move(app2));
@@ -594,25 +589,21 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
       origin_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      origin_scope, web_app::WebAppFilter::InstalledInChrome()));
   EXPECT_FALSE(registrar().DoesScopeContainAnyApp(
-      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app3_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
       app1_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      app1_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app1_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
       app2_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app2_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      app2_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app2_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   auto app3 = test::CreateWebApp(app3_scope);
   RegisterAppUnsafe(std::move(app3));
@@ -621,15 +612,13 @@ TEST_F(WebAppRegistrarTest, CanFindAppsInScope) {
       origin_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app1_id, app2_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      origin_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                     proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      origin_scope, web_app::WebAppFilter::InstalledInChrome()));
 
   in_scope = registrar().FindAllAppsNestedInUrl(
       app3_scope, web_app::WebAppFilter::InstalledInChrome());
   EXPECT_THAT(in_scope, testing::UnorderedElementsAre(app3_id));
   EXPECT_TRUE(registrar().DoesScopeContainAnyApp(
-      app3_scope, {proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-                   proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION}));
+      app3_scope, web_app::WebAppFilter::InstalledInChrome()));
 }
 
 TEST_F(WebAppRegistrarTest, CanFindAppWithUrlInScope) {

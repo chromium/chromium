@@ -15,6 +15,7 @@
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/common/web_app_id.h"
@@ -51,9 +52,8 @@ void UpdateFileHandlerCommand::StartWithLock(std::unique_ptr<AppLock> lock) {
 
   lock_ = std::move(lock);
 
-  if (!lock_->registrar().IsInstallState(
-          app_id_, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                    proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (!lock_->registrar().AppMatches(app_id_,
+                                     WebAppFilter::InstalledInChrome())) {
     CompleteAndSelfDestruct(CommandResult::kFailure);
     return;
   }

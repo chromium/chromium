@@ -175,15 +175,10 @@ void NotificationPlatformBridgeMac::GetDisplayedForOrigin(
 
   std::vector<webapps::AppId> web_app_ids;
   if (web_app::UseNotificationAttributionForWebAppShims()) {
-    if (auto* web_app_provider =
-            web_app::WebAppProvider::GetForWebApps(profile)) {
-      web_app::WebAppRegistrar& registrar =
-          web_app_provider->registrar_unsafe();
-      for (const webapps::AppId& app_id : registrar.GetAppIds()) {
-        if (!registrar.IsInstallState(
-                app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
-          continue;
-        }
+    if (auto* provider = web_app::WebAppProvider::GetForWebApps(profile)) {
+      web_app::WebAppRegistrar& registrar = provider->registrar_unsafe();
+      for (const webapps::AppId& app_id : registrar.GetAppIds(
+               web_app::WebAppFilter::SupportsOsNotifications())) {
         if (!url::IsSameOriginWith(registrar.GetAppScope(app_id), origin)) {
           continue;
         }

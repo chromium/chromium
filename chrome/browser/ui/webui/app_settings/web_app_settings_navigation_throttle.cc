@@ -6,6 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -75,9 +76,8 @@ WebAppSettingsNavigationThrottle::WillStartRequest() {
     return content::NavigationThrottle::DEFER;
   }
 
-  if (!provider->registrar_unsafe().IsInstallState(
-          app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (!provider->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::InstalledInChrome())) {
     return content::NavigationThrottle::BLOCK_REQUEST;
   }
 
@@ -95,9 +95,8 @@ void WebAppSettingsNavigationThrottle::ContinueCheckForApp(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   CHECK(provider);
-  if (provider->registrar_unsafe().IsInstallState(
-          app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (provider->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::InstalledInChrome())) {
     Resume();
   } else {
     CancelDeferredNavigation(content::NavigationThrottle::BLOCK_REQUEST);

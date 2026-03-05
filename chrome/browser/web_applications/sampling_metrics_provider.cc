@@ -50,9 +50,8 @@ void EmitUkmMetricsForTab(tabs::TabInterface* tab) {
   DailyInteraction interaction;
 
   interaction.start_url = registrar.GetAppStartUrl(*app_id);
-  interaction.installed = registrar.IsInstallState(
-      *app_id, {proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                proto::INSTALLED_WITH_OS_INTEGRATION});
+  interaction.installed =
+      registrar.AppMatches(*app_id, WebAppFilter::InstalledInChrome());
   auto install_source =
       provider->registrar_unsafe().GetLatestAppInstallSource(*app_id);
   if (install_source) {

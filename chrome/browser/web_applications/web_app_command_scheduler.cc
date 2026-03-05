@@ -810,16 +810,9 @@ void WebAppCommandScheduler::GetAllAppsForFilter(
       base::BindOnce(
           [](const WebAppFilter& filter, AllAppsLock& lock,
              base::DictValue& debug_value) {
-            std::vector<webapps::AppId> apps;
-            // GetAppIds() automatically excludes some things like stubs and
-            // uninstalling. If those are needed, the filter should likely
-            // be just integrated into the GetApps() system directly.
-            for (const webapps::AppId& app_id : lock.registrar().GetAppIds()) {
-              if (lock.registrar().AppMatches(app_id, filter)) {
-                apps.push_back(app_id);
-              }
-            }
-            return apps;
+            // `filter` automatically excludes some things like stubs and
+            // uninstalling apps.
+            return lock.registrar().GetAppIds(filter);
           },
           filter),
       /*on_complete=*/std::move(callback),

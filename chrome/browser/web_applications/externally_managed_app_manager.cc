@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
@@ -550,11 +551,8 @@ void ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
   auto is_app_installed_by_other_sources_or_display_modes =
       [&](const webapps::AppId& app_id,
           std::optional<mojom::UserDisplayMode> desired_display_mode) {
-        if (!lock.registrar().IsInstallState(
-                app_id,
-                {web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION,
-                 web_app::proto::InstallState::
-                     INSTALLED_WITH_OS_INTEGRATION})) {
+        if (!lock.registrar().AppMatches(app_id,
+                                         WebAppFilter::InstalledInChrome())) {
           return /*keep_old_app=*/false;
         }
         const WebApp* app = lock.registrar().GetAppById(app_id);

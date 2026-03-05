@@ -12,6 +12,7 @@
 #else
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "url/url_constants.h"
@@ -33,8 +34,7 @@ bool DoesOriginContainAnyInstalledWebApp(
   // TODO(crbug.com/340952100): Evaluate call sites of DoesScopeContainAnyApp
   // for correctness.
   return provider->registrar_unsafe().DoesScopeContainAnyApp(
-      origin, {web_app::proto::InstallState::INSTALLED_WITH_OS_INTEGRATION,
-               web_app::proto::InstallState::INSTALLED_WITHOUT_OS_INTEGRATION});
+      origin, web_app::WebAppFilter::InstalledInChrome());
 #endif
 }
 

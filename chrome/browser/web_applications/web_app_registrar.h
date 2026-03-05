@@ -214,11 +214,10 @@ class WebAppRegistrar {
       const WebAppFilter& filter) const;
 
   // Returns true if there exists at least one app installed under `scope` that
-  // is in the given `allowed_states`.
+  // matches the given `filter`.
   // TODO(crbug.com/341337420): Support scope extensions.
-  bool DoesScopeContainAnyApp(
-      const GURL& scope,
-      std::initializer_list<proto::InstallState> allowed_states) const;
+  bool DoesScopeContainAnyApp(const GURL& scope,
+                              const WebAppFilter& filter) const;
 
   // Returns whether the app is currently being uninstalled. This will be true
   // after uninstall has begun but before the OS integration hooks for uninstall
@@ -383,7 +382,8 @@ class WebAppRegistrar {
   bool GetWindowControlsOverlayEnabled(const webapps::AppId& app_id) const;
 
   // Gets the IDs for all apps in `GetApps()`.
-  std::vector<webapps::AppId> GetAppIds() const;
+  std::vector<webapps::AppId> GetAppIds(
+      std::optional<WebAppFilter> = std::nullopt) const;
 
   // Gets the IDs for all sub-apps of parent app with id |parent_app_id|.
   std::vector<webapps::AppId> GetAllSubAppIds(
@@ -521,9 +521,6 @@ class WebAppRegistrar {
   // Verifies if the scopes of 2 apps match for user link capturing.
   bool AppScopesMatchForUserLinkCapturing(const webapps::AppId& app_id1,
                                           const webapps::AppId& app_id2) const;
-
-  bool IsPreferredAppForCapturingUrl(const GURL& url,
-                                     const webapps::AppId& app_id);
 #endif
 
   // Returns information about apps that controls the input url, i.e. the app's
@@ -701,9 +698,6 @@ class WebAppRegistrar {
   void SetRegistry(Registry&& registry);
 
   void CountMutation();
-
-  // Gets the IDs for all apps in `app_set`.
-  std::vector<webapps::AppId> GetAppIdsForAppSet(const AppSet& app_set) const;
 
  private:
   bool AppMatches(const webapps::AppId& app_id,

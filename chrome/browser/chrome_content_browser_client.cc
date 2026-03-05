@@ -550,6 +550,7 @@
 #include "chrome/browser/web_applications/locks/app_lock.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -4735,9 +4736,8 @@ void ChromeContentBrowserClient::OverrideWebPreferences(
         const webapps::AppId& app_id = browser->app_controller()->app_id();
         const web_app::WebAppRegistrar& registrar =
             web_app_provider->registrar_unsafe();
-        if (registrar.IsInstallState(
-                app_id, {web_app::proto::INSTALLED_WITH_OS_INTEGRATION,
-                         web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION})) {
+        if (registrar.AppMatches(app_id,
+                                 web_app::WebAppFilter::InstalledInChrome())) {
           web_prefs->web_app_scope = registrar.GetAppScope(app_id);
         }
 
@@ -8740,9 +8740,8 @@ void ChromeContentBrowserClient::QueryInstalledWebAppsByManifestId(
                                          .Set("manifest_id", manifest_id.spec())
                                          .Set("frame_url", frame_url.spec()));
 
-            if (!lock.registrar().IsInstallState(
-                    app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                             web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+            if (!lock.registrar().AppMatches(
+                    app_id, web_app::WebAppFilter::InstalledInChrome())) {
               debug_value.Set("did_find_application", false);
               return std::nullopt;
             }

@@ -34,6 +34,7 @@
 #include "chrome/browser/web_applications/proto/web_app_install_state.pb.h"
 #include "chrome/browser/web_applications/scheduler/fetch_installability_for_chrome_management_result.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
+#include "chrome/browser/web_applications/web_app_filter.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
@@ -356,9 +357,8 @@ void ChromeManagementAPIDelegate::InstallOrLaunchReplacementWebApp(
   // Launch the app if web_app_url happens to match start_url. If not, the app
   // could still be installed with different start_url.
   webapps::AppId app_id = web_app::GenerateAppIdFromManifestId(web_app_url);
-  if (provider->registrar_unsafe().IsInstallState(
-          app_id, {web_app::proto::INSTALLED_WITHOUT_OS_INTEGRATION,
-                   web_app::proto::INSTALLED_WITH_OS_INTEGRATION})) {
+  if (provider->registrar_unsafe().AppMatches(
+          app_id, web_app::WebAppFilter::InstalledInChrome())) {
     LaunchWebApp(
         web_app::GenerateAppId(/*manifest_id_path=*/std::nullopt, web_app_url),
         profile);
