@@ -3768,7 +3768,7 @@
       "cjgrant@chromium.org",
       "dfried@chromium.org"
     ],
-    "expiry_milestone": 146
+    "expiry_milestone": 155
   },
   {
     "name": "enable-ntp-enterprise-shortcuts",
@@ -9330,7 +9330,7 @@
       "cjgrant@chromium.org",
       "dfried@chromium.org"
     ],
-    "expiry_milestone": 145
+    "expiry_milestone": 155
   },
   {
     "name": "throttle-main-thread-to-60hz",
