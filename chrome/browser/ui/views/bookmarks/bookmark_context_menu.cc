@@ -67,6 +67,11 @@ BookmarkContextMenu::BookmarkContextMenu(
       base::WrapUnique<views::MenuItemView>(menu_),
       views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::IS_NESTED |
           views::MenuRunner::MENU_ITEM_CONTEXT_MENU);
+  ui::SimpleMenuModel* menu_model = controller_->menu_model();
+  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
+    views::MenuModelAdapter::AppendMenuItemFromModel(
+        menu_model, i, menu_, menu_model->GetCommandIdAt(i));
+  }
 }
 
 BookmarkContextMenu::~BookmarkContextMenu() = default;
@@ -92,8 +97,6 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
           std::move(PreRunCallback()).Run();
         }
 
-        self->EnsureMenuItems();
-
         // width/height don't matter here.
         self->menu_runner_->RunMenuAt(self->parent_widget_, nullptr,
                                       gfx::Rect(point.x(), point.y(), 0, 0),
@@ -101,18 +104,6 @@ void BookmarkContextMenu::RunMenuAt(const gfx::Point& point,
                                       source_type);
       },
       weak_factory_.GetWeakPtr(), point, source_type));
-}
-
-void BookmarkContextMenu::EnsureMenuItems() {
-  if (added_menu_items_) {
-    return;
-  }
-  added_menu_items_ = true;
-  ui::SimpleMenuModel* menu_model = controller_->menu_model();
-  for (size_t i = 0; i < menu_model->GetItemCount(); ++i) {
-    views::MenuModelAdapter::AppendMenuItemFromModel(
-        menu_model, i, menu_, menu_model->GetCommandIdAt(i));
-  }
 }
 
 void BookmarkContextMenu::UpdateCanPaste(base::OnceClosure callback) {

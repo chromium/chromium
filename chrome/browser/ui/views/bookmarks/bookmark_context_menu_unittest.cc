@@ -16,7 +16,6 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/run_until.h"
 #include "base/test/with_feature_override.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -467,10 +466,9 @@ TEST_P(BookmarkContextMenuTest, ShowManagedBookmarks) {
   std::vector<raw_ptr<const BookmarkNode, VectorExperimental>> nodes = {
       bb_node->children().front().get(),
   };
-  auto controller = std::make_unique<BookmarkContextMenu>(
-      nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone, nodes,
-      false);
-  controller->EnsureMenuItems();
+  std::unique_ptr<BookmarkContextMenu> controller(
+      new BookmarkContextMenu(nullptr, nullptr, profile_.get(),
+                              BookmarkLaunchLocation::kNone, nodes, false));
 
   // Verify that there are no managed nodes yet.
   bookmarks::ManagedBookmarkService* managed =
@@ -503,7 +501,6 @@ TEST_P(BookmarkContextMenuTest, ShowManagedBookmarks) {
   controller = std::make_unique<BookmarkContextMenu>(
       nullptr, nullptr, profile_.get(), BookmarkLaunchLocation::kNone, nodes,
       false);
-  controller->EnsureMenuItems();
   EXPECT_TRUE(controller->IsCommandVisible(IDC_BOOKMARK_BAR_NEW_FOLDER));
   EXPECT_TRUE(
       controller->IsCommandVisible(IDC_BOOKMARK_BAR_SHOW_MANAGED_BOOKMARKS));
