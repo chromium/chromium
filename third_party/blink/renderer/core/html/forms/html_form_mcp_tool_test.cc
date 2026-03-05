@@ -827,11 +827,10 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_ImplicitLabelText) {
          "select": {
            "type": "string",
            "oneOf": [
-             { "const": "Option 1", "title": "This is option 1" },
-             { "const": "Option 2", "title": "This is option 2" },
-             { "const": "Option 3", "title": "This is option 3" }
+             { "type": "string", "const": "Option 1", "title": "This is option 1" },
+             { "type": "string", "const": "Option 2", "title": "This is option 2" },
+             { "type": "string", "const": "Option 3", "title": "This is option 3" }
            ],
-           "enum": ["Option 1", "Option 2", "Option 3"],
            "description": "LABEL"
          }
       },
@@ -865,11 +864,10 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select) {
          "select": {
            "type": "string",
            "oneOf": [
-             { "const": "Option 1", "title": "This is option 1" },
-             { "const": "Option 2", "title": "This is option 2" },
-             { "const": "Option 3", "title": "This is option 3" }
-           ],
-           "enum": ["Option 1", "Option 2", "Option 3"]
+             { "type": "string", "const": "Option 1", "title": "This is option 1" },
+             { "type": "string", "const": "Option 2", "title": "This is option 2" },
+             { "type": "string", "const": "Option 3", "title": "This is option 3" }
+           ]
          }
       },
       "required": ["select"]
@@ -900,9 +898,8 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Title) {
          "select": {
            "type": "string",
            "oneOf": [
-             { "const": "Option 1", "title": "This is option 1" }
+             { "type": "string", "const": "Option 1", "title": "This is option 1" }
            ],
-           "enum": ["Option 1"],
            "title": "Possible Options"
          }
       },
@@ -938,11 +935,10 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Select_Multiple) {
            "items": {
              "type": "string",
              "oneOf": [
-               { "const": "Option 1", "title": "This is option 1" },
-               { "const": "Option 2", "title": "This is option 2" },
-               { "const": "Option 3", "title": "This is option 3" }
-             ],
-             "enum": ["Option 1", "Option 2", "Option 3"]
+               { "type": "string", "const": "Option 1", "title": "This is option 1" },
+               { "type": "string", "const": "Option 2", "title": "This is option 2" },
+               { "type": "string", "const": "Option 3", "title": "This is option 3" }
+             ]
            },
            "uniqueItems": true
          }
@@ -1252,28 +1248,18 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_Multiple) {
     {
       "type": "object",
       "properties": {
-         "fruit": {
-           "type": "array",
-           "items": {
-             "type": "string",
-             "oneOf": [
-               {
-                 "const": "apple",
-                 "title": "Apple"
-               },
-               {
-                 "const": "melon",
-                 "title": "Melon"
-               },
-               {
-                 "const": "grape",
-                 "title": "Grape"
-               }
-             ],
-             "enum": ["apple", "melon", "grape"]
-           },
-           "uniqueItems": true
-         }
+        "fruit": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "oneOf": [
+              { "type": "string", "const": "apple", "title": "Apple" },
+              { "type": "string", "const": "melon", "title": "Melon" },
+              { "type": "string", "const": "grape", "title": "Grape" }
+            ]
+          },
+          "uniqueItems": true
+        }
       },
       "required": []
     }
@@ -1314,27 +1300,20 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Checkbox_ToolParamAttributes) {
     {
       "type": "object",
       "properties": {
-         "fruit": {
-           "type": "array",
-           "items": {
-             "type": "string",
-             "oneOf": [
-               {
-                 "const": "apple"
-               },
-               {
-                 "const": "melon"
-               },
-               {
-                 "const": "grape"
-               }
-             ],
-             "enum": ["apple", "melon", "grape"]
-           },
-           "uniqueItems": true,
-           "title": "TITLE",
-           "description": "DESC"
-         }
+        "fruit": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "oneOf": [
+              { "type": "string", "const": "apple" },
+              { "type": "string", "const": "melon" },
+              { "type": "string", "const": "grape" }
+            ]
+          },
+          "uniqueItems": true,
+          "title": "TITLE",
+          "description": "DESC"
+        }
       },
       "required": []
     }
@@ -2376,19 +2355,21 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio) {
            "type": "string",
            "oneOf": [
              {
+               "type": "string",
                "const": "s",
                "title": "Small"
              },
              {
+               "type": "string",
                "const": "m",
                "title": "Medium"
              },
              {
+               "type": "string",
                "const": "l",
                "title": "Large"
              }
-           ],
-           "enum": ["s", "m", "l"]
+           ]
          }
       },
       "required": []
@@ -2423,31 +2404,35 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Multiple) {
            "type": "string",
            "oneOf": [
              {
+               "type": "string",
                "const": "s"
              },
              {
+               "type": "string",
                "const": "m"
              },
              {
+               "type": "string",
                "const": "l"
              }
-           ],
-           "enum": ["s", "m", "l"]
+           ]
          },
          "item": {
            "type": "string",
            "oneOf": [
              {
+               "type": "string",
                "const": "hoodie"
              },
              {
+               "type": "string",
                "const": "shirt"
              },
              {
+               "type": "string",
                "const": "hat"
              }
-           ],
-           "enum": ["hoodie", "shirt", "hat"]
+           ]
          }
       },
       "required": []
@@ -2514,16 +2499,18 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_Required) {
            "type": "string",
            "oneOf": [
              {
+               "type": "string",
                "const": "s"
              },
              {
+               "type": "string",
                "const": "m"
              },
              {
+               "type": "string",
                "const": "l"
              }
-           ],
-           "enum": ["s", "m", "l"]
+           ]
          }
       },
       "required": ["size"]
@@ -2557,16 +2544,18 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamDescription) {
            "type": "string",
            "oneOf": [
              {
+               "type": "string",
                "const": "s"
              },
              {
+               "type": "string",
                "const": "m"
              },
              {
+               "type": "string",
                "const": "l"
              }
            ],
-           "enum": ["s", "m", "l"],
            "description": "DESC"
          }
       },
@@ -2601,16 +2590,18 @@ TEST_F(HTMLFormMcpToolTest, ParameterSchema_Radio_ToolParamTitle) {
            "type": "string",
            "oneOf": [
              {
+               "type": "string",
                "const": "s"
              },
              {
+               "type": "string",
                "const": "m"
              },
              {
+               "type": "string",
                "const": "l"
              }
            ],
-           "enum": ["s", "m", "l"],
            "title": "TITLE"
          }
       },
