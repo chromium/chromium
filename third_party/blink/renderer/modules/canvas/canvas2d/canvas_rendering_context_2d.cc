@@ -174,21 +174,21 @@ CanvasRenderingContext* CanvasRenderingContext2D::Factory::Create(
       MakeGarbageCollected<CanvasRenderingContext2D>(
           static_cast<HTMLCanvasElement*>(host), attrs);
   DCHECK(rendering_context);
-  UseCounter::CountWebDXFeature(execution_context, WebDXFeature::kCanvas2D);
+  UseCounter::CountWebDXFeature(execution_context, WebDXFeature::kCanvas_2d);
   if (attrs.alpha) {
     UseCounter::CountWebDXFeature(execution_context,
-                                  WebDXFeature::kCanvas2DAlpha);
+                                  WebDXFeature::kCanvas_2dAlpha);
   }
   if (attrs.desynchronized) {
     UseCounter::Count(execution_context,
                       WebFeature::kHTMLCanvasElementLowLatency_2D);
     UseCounter::CountWebDXFeature(execution_context,
-                                  WebDXFeature::kCanvas2DDesynchronized);
+                                  WebDXFeature::kCanvas_2dDesynchronized);
   }
   if (attrs.will_read_frequently ==
       CanvasContextCreationAttributesCore::WillReadFrequently::kTrue) {
     UseCounter::CountWebDXFeature(execution_context,
-                                  WebDXFeature::kCanvas2DWillreadfrequently);
+                                  WebDXFeature::kCanvas_2dWillreadfrequently);
   }
   if (attrs.color_space != PredefinedColorSpace::kSRGB) {
     UseCounter::Count(execution_context, WebFeature::kCanvasUseColorSpace);

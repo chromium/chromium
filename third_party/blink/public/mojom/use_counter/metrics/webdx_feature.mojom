@@ -36,14 +36,16 @@ module blink.mojom;
 // file names) used by the WebDX community group at the W3C
 // (https://github.com/web-platform-dx/web-features/tree/main/features). Those
 // identifiers are all lower case alphanumeric identifiers, with dashes (-) as
-// word separators. To translate those identifier names to enum names,
-// capitalize the first alphabetic character in each sequence of alphabetic
-// characters, then remove dashes. I.e. "view-transitions" becomes
-// kViewTransitions, canvas-2d-color-management becomes
-// kCanvas2DColorManagement, etc. This translation should match the behavior of
-// id.title().replace("-", "") in Python or SUBSTITUTE(PROPER(id), "-", "") in
-// Google Sheets. More discussion about WebDX feature identifier naming can be
-// found at
+// word separators. To translate an identifier name to an enum name:
+// 1. Split the identifier into parts by dashes.
+// 2. Capitalize the first character of each part.
+// 3. Join the parts, replacing dashes with an underscore if the next part
+//    starts with a digit, and removing the dashes otherwise.
+//
+// I.e. "view-transitions" becomes kViewTransitions, "canvas-2d" becomes
+// kCanvas_2d, "float16array" becomes kFloat16array.
+//
+// More discussion about WebDX feature identifier naming can be found at
 // https://github.com/web-platform-dx/web-features/tree/main/docs#identifiers
 //
 // In the event that you're adding a use counter for a feature that is yet to be
@@ -260,11 +262,11 @@ enum WebDXFeature {
   kDynamicRange = 198,
   kDisplayMode = 199,
   kCanvas = 200,
-  kCanvas2D = 201,
-  kCanvas2DAlpha = 202,
-  kCanvas2DColorManagement = 203,
-  kCanvas2DDesynchronized = 204,
-  kCanvas2DWillreadfrequently = 205,
+  kCanvas_2d = 201,
+  kCanvas_2dAlpha = 202,
+  kCanvas_2dColorManagement = 203,
+  kCanvas_2dDesynchronized = 204,
+  kCanvas_2dWillreadfrequently = 205,
   kCh = 206,
   kRch = 207,
   kRubyAlign = 208,
@@ -357,7 +359,7 @@ enum WebDXFeature {
   kScrollMarkers = 295,
   kPopoverHint = 296,
   kRegexpEscape = 297,
-  kFloat16Array = 298,
+  kFloat16array = 298,
   kAppFileHandlers = 299,
   kAppProtocolHandlers = 300,
   kBadging = 301,
@@ -393,7 +395,7 @@ enum WebDXFeature {
   kTextUnderlineOffset = 331,
   kWindowManagement = 332,
   kRequestclose = 333,
-  kUint8ArrayBase64Hex = 334,
+  kUint8arrayBase64Hex = 334,
   kLineBreak = 335,
   kOverflowClip = 336,
   kLightDark = 337,
