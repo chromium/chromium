@@ -18,6 +18,8 @@ import setup_modules
 
 import chromium_src.third_party.pyyaml as pyyaml
 import chromium_src.tools.metrics.histograms.histogram_configuration_model as histogram_configuration_model
+import chromium_src.tools.metrics.common.diff_util as diff_util
+
 
 ENUMS_PATH = 'tools/metrics/histograms/metadata/enterprise/enums.xml'
 POLICY_LIST_PATH = 'components/policy/resources/templates/policies.yaml'
@@ -88,7 +90,8 @@ def main():
   UpdatePoliciesHistogramDefinitions(policy_list_content['policies'],
                                      histograms_doc)
   new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
-  if PromptUserToAcceptDiff(xml, new_xml, 'Is the updated version acceptable?'):
+  if diff_util.PromptUserToAcceptDiff(xml, new_xml,
+                                      'Is the updated version acceptable?'):
     with open(ENUMS_PATH, 'wb') as f:
       f.write(new_xml.encode('utf-8'))
 
