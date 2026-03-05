@@ -160,6 +160,9 @@ enum CreditCardSaveManagerObserverEvent : int {
 // Sets the CVC storage preference.
 + (void)setPaymentCvcStorageEnabled:(BOOL)enabled;
 
+// Triggers the Autofill AI save entity bubble.
++ (void)showAutofillAiSaveEntityBubble;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_AUTOFILL_APP_INTERFACE_H_
