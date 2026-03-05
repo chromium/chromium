@@ -1847,10 +1847,26 @@ bool PrefetchContainer::IsNoVarySearchHeaderMatch(const GURL& url) const {
 }
 
 bool PrefetchContainer::ShouldWaitForNoVarySearchHeader(const GURL& url) const {
-  const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
-      request().no_vary_search_hint();
-  return !GetNonRedirectHead() && no_vary_search_hint &&
-         no_vary_search_hint->AreEquivalent(url, GetURL());
+  switch (GetLoadState()) {
+    case LoadState::kDeterminedHead:
+    case LoadState::kCompleted:
+      return false;
+
+    case LoadState::kNotStarted:
+    case LoadState::kEligible:
+    case LoadState::kStarted:
+      if (const std::optional<net::HttpNoVarySearchData>& no_vary_search_hint =
+              request().no_vary_search_hint()) {
+        return no_vary_search_hint->AreEquivalent(url, GetURL());
+      }
+      return false;
+
+    case LoadState::kFailedDeterminedHead:
+    case LoadState::kFailed:
+    case LoadState::kFailedIneligible:
+    case LoadState::kFailedHeldback:
+      return false;
+  }
 }
 
 void PrefetchContainer::OnUnregisterCandidate(
