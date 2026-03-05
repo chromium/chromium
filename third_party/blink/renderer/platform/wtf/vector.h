@@ -1506,12 +1506,16 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   //     element is constructed directly on the backing buffer with placement
   //     new.
   // Append(buffer, size)
-  //     Insert elements represented by `buffer` and `size`. Always copies.
-  // AppendRange(begin, end)
+  //     Appends elements represented by `buffer` and `size` to `this`. Always
+  //     copies.
+  // Append(begin, end)
+  //     Appends elements from `begin` to (but not including) `end` to `this`.
+  //     May copy or move depending on the input type, e.g. wrapping an
+  //     iterator with `std::make_move_iterator()` will move.
   // append_range(range)
-  //     Inserts elements represented by a pair of iterators or an input range.
-  //     May copy or move depending on the input type, e.g. using iterators
-  //     created by `std::make_move_iterator()` will move.
+  //     Appends elements in `range` to `this`. May copy or move depending on
+  //     the input type, e.g. wrapping a range with `base::RangeAsRvalues()`
+  //     will move.
   // UncheckedAppend(value)
   //     Insert a single element like push_back(), but this function assumes
   //     the vector has enough capacity such that it can store the new element
@@ -1527,9 +1531,12 @@ class Vector : private VectorBuffer<T, INLINE_CAPACITY, Allocator> {
   }
   template <typename U>
   void Append(const U*, wtf_size_t);
-  // TODO(crbug.com/487938766): Rename to `Append()`?
   template <typename Iterator>
-  void AppendRange(Iterator begin, Iterator end);
+  void Append(Iterator begin, Iterator end);
+  // TODO(crbug.com/487938766): Delete this when all callsites are migrated to
+  // `Append()`.
+  template <typename Iterator>
+  void AppendRange(Iterator begin, Iterator end) { Append(begin, end); }
   template <typename R>
     requires(std::ranges::input_range<R>)
   void append_range(R&& range);
@@ -2290,8 +2297,8 @@ Vector<T, InlineCapacity, Allocator>::AppendSlowCase(U&& val) {
 
 template <typename T, wtf_size_t InlineCapacity, typename Allocator>
 template <typename Iterator>
-void Vector<T, InlineCapacity, Allocator>::AppendRange(Iterator begin,
-                                                       Iterator end) {
+void Vector<T, InlineCapacity, Allocator>::Append(Iterator begin,
+                                                  Iterator end) {
   for (Iterator it = begin; it != end; ++it)
     push_back(*it);
 }
@@ -2304,7 +2311,7 @@ inline void Vector<T, InlineCapacity, Allocator>::append_range(R&& r) {
                 std::ranges::sized_range<R>) {
     Append(std::ranges::data(r), std::ranges::size(r));
   } else {
-    AppendRange(std::ranges::begin(r), std::ranges::end(r));
+    Append(std::ranges::begin(r), std::ranges::end(r));
   }
 }
 
