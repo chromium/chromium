@@ -478,14 +478,6 @@ api::tabs::Tab ExtensionTabUtil::CreateTabObject(
 }
 
 // static
-base::ListValue ExtensionTabUtil::CreateTabList(BrowserWindowInterface* browser,
-                                                const Extension* extension,
-                                                mojom::ContextType context) {
-  return WindowControllerFromBrowser(browser)->CreateTabList(extension,
-                                                             context);
-}
-
-// static
 base::DictValue ExtensionTabUtil::CreateWindowValueForExtension(
     BrowserWindowInterface& browser,
     const Extension* extension,

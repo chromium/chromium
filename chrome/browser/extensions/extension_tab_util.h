@@ -95,10 +95,6 @@ class ExtensionTabUtil {
   static int GetTabId(const content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
 
-  static base::ListValue CreateTabList(BrowserWindowInterface* browser,
-                                       const Extension* extension,
-                                       mojom::ContextType context);
-
   static WindowController* GetControllerFromWindowID(
       const ChromeExtensionFunctionDetails& details,
       int window_id,
