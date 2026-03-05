@@ -64,6 +64,8 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
   void RunMenuAt(const gfx::Point& point,
                  ui::mojom::MenuSourceType source_type);
 
+  void EnsureMenuItems();
+
   void UpdateCanPaste(base::OnceClosure callback);
 
   views::MenuItemView* menu() const { return menu_; }
@@ -103,6 +105,9 @@ class BookmarkContextMenu : public BookmarkContextMenuControllerDelegate,
 
   // Should the menu close when a node is removed.
   bool close_on_remove_;
+
+  // Whether EnsureMenuItems() has been called.
+  bool added_menu_items_ = false;
 
   base::WeakPtrFactory<BookmarkContextMenu> weak_factory_{this};
 };
