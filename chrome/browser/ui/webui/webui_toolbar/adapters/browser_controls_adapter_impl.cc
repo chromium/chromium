@@ -7,13 +7,10 @@
 #include "base/check_deref.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/command_updater.h"
-#include "chrome/browser/preloading/chrome_preloading.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/tabs/split_tab_metrics.h"
 #include "chrome/browser/ui/webui/webui_toolbar/utils/split_tabs_utils.h"
-#include "components/tabs/public/tab_interface.h"
-#include "content/public/browser/web_contents.h"
 
 namespace browser_controls_api {
 
@@ -34,20 +31,6 @@ void BrowserControlsAdapterImpl::Reload(bool bypass_cache,
 void BrowserControlsAdapterImpl::Stop() {
   command_updater_->ExecuteCommandWithDisposition(
       IDC_STOP, WindowOpenDisposition::CURRENT_TAB);
-}
-
-void BrowserControlsAdapterImpl::Back(WindowOpenDisposition disposition) {
-  command_updater_->ExecuteCommandWithDisposition(IDC_BACK, disposition);
-}
-
-void BrowserControlsAdapterImpl::Forward(WindowOpenDisposition disposition) {
-  command_updater_->ExecuteCommandWithDisposition(IDC_FORWARD, disposition);
-}
-
-void BrowserControlsAdapterImpl::BackButtonHovered() {
-  browser_.get().GetActiveTabInterface()->GetContents()->BackNavigationLikely(
-      chrome_preloading_predictor::kBackButtonHover,
-      WindowOpenDisposition::CURRENT_TAB);
 }
 
 void BrowserControlsAdapterImpl::CreateNewSplitTab() {

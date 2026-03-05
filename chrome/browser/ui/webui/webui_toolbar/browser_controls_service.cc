@@ -46,14 +46,6 @@ int ToUIEventFlags(
         event_flags |= ui::EF_COMMAND_DOWN;
         break;
       }
-      case ClickDispositionFlag::kShiftKeyDown: {
-        event_flags |= ui::EF_SHIFT_DOWN;
-        break;
-      }
-      case ClickDispositionFlag::kControlKeyDown: {
-        event_flags |= ui::EF_CONTROL_DOWN;
-        break;
-      }
       case ClickDispositionFlag::kUnspecified:
         NOTREACHED() << "Unexpected ClickDispositionFlag::kUnspecified.";
     }
@@ -122,23 +114,6 @@ void BrowserControlsService::StopLoad() {
                      kInputToStopMouseReleaseHistogram,
                      kInputMouseReleaseStartMark));
   // TODO(crbug.com/448794588): Handle KeyPress events.
-}
-
-void BrowserControlsService::Back(
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
-        flags) {
-  browser_adapter_->Back(ui::DispositionFromEventFlags(ToUIEventFlags(flags)));
-}
-
-void BrowserControlsService::Forward(
-    const std::vector<browser_controls_api::mojom::ClickDispositionFlag>&
-        flags) {
-  browser_adapter_->Forward(
-      ui::DispositionFromEventFlags(ToUIEventFlags(flags)));
-}
-
-void BrowserControlsService::BackButtonHovered() {
-  browser_adapter_->BackButtonHovered();
 }
 
 void BrowserControlsService::SplitActiveTab() {

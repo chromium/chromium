@@ -16,7 +16,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/named_trigger.h"
-#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
@@ -131,8 +130,6 @@ WebUIToolbarWebView::WebUIToolbarWebView(
       reload_control_(this),
       split_tabs_control_(this),
       location_bar_(std::move(location_bar)),
-      back_control_(this, BackForwardButton::Direction::kBack),
-      forward_control_(this, BackForwardButton::Direction::kForward),
       clock_(base::DefaultTickClock::GetInstance()),
       touch_ui_subscription_(ui::TouchUiController::Get()->RegisterCallback(
           base::BindRepeating(&WebUIToolbarWebView::OnTouchUiChanged,
@@ -143,8 +140,6 @@ WebUIToolbarWebView::WebUIToolbarWebView(
   last_queued_state_.reload_control_state =
       toolbar_ui_api::mojom::ReloadControlState::New();
   last_queued_state_.layout_constants_version = 0;
-  last_queued_state_.back_forward_control_state = GetBackForwardState();
-
   if (auto* manager = InitialWebUIWindowMetricsManager::From(browser_)) {
     manager->OnReloadButtonCreated();
   }
@@ -207,9 +202,6 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
   button_count += features::IsWebUIReloadButtonEnabled();
   button_count += features::IsWebUISplitTabsButtonEnabled() &&
                   split_tabs_control_.IsVisible();
-  button_count += features::IsWebUIBackForwardButtonEnabled();
-  button_count += features::IsWebUIBackForwardButtonEnabled() &&
-                  forward_control_.GetVisible();
 
   const int size = GetLayoutConstant(LayoutConstant::kToolbarButtonHeight);
   int width = button_count * size;
@@ -222,11 +214,6 @@ gfx::Size WebUIToolbarWebView::CalculatePreferredSize(
     // TODO(http://crbug.com/470042732): Where is the 4px margin from?
     width += 4 + location_bar_->PreferredSize().width();
   }
-
-  if (features::IsWebUIBackForwardButtonEnabled()) {
-    width += back_button_leading_margin_;
-  }
-
   return gfx::Size(width, size);
 }
 
@@ -247,12 +234,6 @@ void WebUIToolbarWebView::HandleContextMenu(
           .OffsetFromOrigin();
 
   switch (menu_type) {
-    case toolbar_ui_api::mojom::ContextMenuType::kBack:
-      back_control_.HandleContextMenu(GetWidget(), screen_location, source);
-      break;
-    case toolbar_ui_api::mojom::ContextMenuType::kForward:
-      forward_control_.HandleContextMenu(GetWidget(), screen_location, source);
-      break;
     case toolbar_ui_api::mojom::ContextMenuType::kReload:
       reload_control_.HandleContextMenu(GetWidget(), screen_location, source);
       break;
@@ -322,25 +303,6 @@ void WebUIToolbarWebView::DidFinishNavigation(
   auto* ui = GetWebUIToolbarUI();
   CHECK(ui) << "Could not find the web ui for the toolbar";
   ui->Init(this);
-}
-
-void WebUIToolbarWebView::SetBackButtonLeadingMargin(int margin) {
-  back_button_leading_margin_ = margin;
-  OnBackForwardStateChanged();
-  PreferredSizeChanged();
-}
-
-void WebUIToolbarWebView::SetBackForwardEnabled(int command_id, bool enabled) {
-  if (command_id == IDC_BACK) {
-    back_control_.SetEnabled(enabled);
-  } else {
-    forward_control_.SetEnabled(enabled);
-  }
-}
-
-void WebUIToolbarWebView::SetForwardVisible(bool visible) {
-  forward_control_.SetVisible(visible);
-  PreferredSizeChanged();
 }
 
 void WebUIToolbarWebView::DidFirstVisuallyNonEmptyPaint() {
@@ -475,14 +437,6 @@ void WebUIToolbarWebView::OnSplitTabsControlStateChanged(
   }
 }
 
-void WebUIToolbarWebView::OnBackForwardStateChanged() {
-  auto state = GetBackForwardState();
-  if (*state != *last_queued_state_.back_forward_control_state) {
-    last_queued_state_.back_forward_control_state = std::move(state);
-    PostPushNavigationState();
-  }
-}
-
 void WebUIToolbarWebView::OnTouchUiChanged() {
   ++last_queued_state_.layout_constants_version;
   PostPushNavigationState();
@@ -501,15 +455,6 @@ void WebUIToolbarWebView::PushNavigationState(uint64_t state_generation) {
       web_ui->OnNavigationControlsStateChanged(last_queued_state_.Clone());
     }
   }
-}
-
-toolbar_ui_api::mojom::BackForwardControlStatePtr
-WebUIToolbarWebView::GetBackForwardState() const {
-  auto state = toolbar_ui_api::mojom::BackForwardControlState::New();
-  state->back_button_state = back_control_.GetButtonState();
-  state->forward_button_state = forward_control_.GetButtonState();
-  state->back_button_leading_margin = back_button_leading_margin_;
-  return state;
 }
 
 BEGIN_METADATA(WebUIToolbarWebView)
