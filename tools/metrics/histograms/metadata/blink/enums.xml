@@ -6443,6 +6443,10 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5806" label="AutofillEvent"/>
   <int value="5807" label="WebAppManifestMigrateFrom"/>
   <int value="5808" label="WebAppManifestMigrateTo"/>
+  <int value="5809" label="LongAnimationFrameTimingStyleDuration"/>
+  <int value="5810" label="LongAnimationFrameTimingLayoutDuration"/>
+  <int value="5811" label="PerformanceScriptTimingForcedStyleDuration"/>
+  <int value="5812" label="PerformanceScriptTimingForcedLayoutDuration"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->
