@@ -22,8 +22,9 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
 
-    auto grid_lanes_items =
-        algorithm.Node().ConstructGridLanesItems(line_resolver);
+    auto grid_lanes_items = algorithm.Node().ConstructGridItems(
+        line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+        /*opt_oof_children=*/nullptr);
     bool needs_intrinsic_track_size = false;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
         SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
@@ -152,7 +153,9 @@ TEST_F(GridLanesLayoutAlgorithmTest, ConstructGridLanesItems) {
   GridLanesNode node(GetLayoutBoxByElementId("grid-lanes"));
 
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  auto grid_lanes_items = node.ConstructGridLanesItems(line_resolver);
+  auto grid_lanes_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr);
 
   const Vector<GridSpan> expected_spans = {
       GridSpan::IndefiniteGridSpan(1),
@@ -268,7 +271,9 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroups) {
 
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto grid_lanes_items = node.ConstructGridLanesItems(line_resolver);
+  const auto grid_lanes_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr);
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
       node.CollectItemGroups(line_resolver, grid_lanes_items, max_end_line,
@@ -309,7 +314,9 @@ TEST_F(GridLanesLayoutAlgorithmTest, CollectGridLanesItemGroupsWithBaseline) {
 
   wtf_size_t max_end_line, start_offset;
   const GridLineResolver line_resolver(node.Style(), /*auto_repetitions=*/0);
-  const auto grid_lanes_items = node.ConstructGridLanesItems(line_resolver);
+  const auto grid_lanes_items = node.ConstructGridItems(
+      line_resolver, /*must_invalidate_placement_cache=*/nullptr,
+      /*opt_oof_children=*/nullptr);
   wtf_size_t unplaced_item_span_count = 0;
   const auto item_groups =
       node.CollectItemGroups(line_resolver, grid_lanes_items, max_end_line,

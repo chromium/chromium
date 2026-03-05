@@ -1163,15 +1163,16 @@ GridSizingTrackCollection GridLanesLayoutAlgorithm::ComputeGridAxisTracks(
   const auto& node = Node();
   if (!should_apply_inline_size_containment) {
     if (grid_lanes_items.IsEmpty()) {
-      grid_lanes_items =
-          node.ConstructGridLanesItems(line_resolver, opt_oof_children);
+      grid_lanes_items = node.ConstructGridItems(
+          line_resolver,
+          /*must_invalidate_placement_cache=*/nullptr, opt_oof_children);
     } else {
       // If `grid_lanes_items` is not empty, that means that we are in
       // a second track sizing pass required for intrinsic tracks within
       // a repeat() track definition. Don't construct the grid-lanes items
       // from scratch. Rather, adjust their spans based on the updated
       // `line_resolver`.
-      node.AdjustGridLanesItemSpans(grid_lanes_items, line_resolver);
+      node.AdjustGridItemSpans(grid_lanes_items, line_resolver);
     }
   }
 

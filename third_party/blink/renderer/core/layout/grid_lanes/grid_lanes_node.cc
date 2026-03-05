@@ -12,10 +12,9 @@ namespace blink {
 
 namespace {
 
-void AdjustGridLanesItemSpan(
-    GridItemData& grid_lanes_item,
-    const GridLineResolver& line_resolver,
-    const GridTrackSizingDirection grid_axis_direction) {
+void AdjustGridItemSpan(GridItemData& grid_lanes_item,
+                        const GridLineResolver& line_resolver,
+                        const GridTrackSizingDirection grid_axis_direction) {
   // Resolve the positions of the items based on style. We can only resolve
   // the number of spans for each item based on the grid axis.
   GridSpan item_span = line_resolver.ResolveGridPositionsFromStyle(
@@ -105,9 +104,13 @@ GridLanesItemGroups GridLanesNode::CollectItemGroups(
   return item_groups;
 }
 
-GridItems GridLanesNode::ConstructGridLanesItems(
+// TODO(almaher): Do something with `opt_has_nested_subgrid` and make sure that
+// subgridded items are incorporated here.
+GridItems GridLanesNode::ConstructGridItems(
     const GridLineResolver& line_resolver,
-    HeapVector<Member<LayoutBox>>* opt_oof_children) const {
+    bool* must_invalidate_placement_cache,
+    HeapVector<Member<LayoutBox>>* opt_oof_children,
+    bool* opt_has_nested_subgrid) const {
   const ComputedStyle& style = Style();
   const GridTrackSizingDirection grid_axis_direction =
       style.GridLanesTrackSizingDirection();
@@ -133,8 +136,7 @@ GridItems GridLanesNode::ConstructGridLanesItems(
       should_sort_grid_lanes_items_by_order_property |=
           child.Style().Order() != initial_order;
 
-      AdjustGridLanesItemSpan(*grid_lanes_item, line_resolver,
-                              grid_axis_direction);
+      AdjustGridItemSpan(*grid_lanes_item, line_resolver, grid_axis_direction);
       grid_lanes_items.Append(grid_lanes_item);
     }
 
@@ -146,14 +148,20 @@ GridItems GridLanesNode::ConstructGridLanesItems(
   return grid_lanes_items;
 }
 
-void GridLanesNode::AdjustGridLanesItemSpans(
+void GridLanesNode::AppendSubgriddedItems(GridItems* grid_items) const {
+  CHECK(grid_items);
+
+  // TODO(almaher): Actually implement this. Maybe we can reuse the same
+  // method between both grid/grid-lanes nodes?
+}
+
+void GridLanesNode::AdjustGridItemSpans(
     GridItems& grid_lanes_items,
     const GridLineResolver& line_resolver) const {
   const GridTrackSizingDirection grid_axis_direction =
       Style().GridLanesTrackSizingDirection();
   for (GridItemData& grid_lanes_item : grid_lanes_items) {
-    AdjustGridLanesItemSpan(grid_lanes_item, line_resolver,
-                            grid_axis_direction);
+    AdjustGridItemSpan(grid_lanes_item, line_resolver, grid_axis_direction);
   }
 }
 
