@@ -2458,11 +2458,8 @@ String Node::textContent(bool convert_brs_to_newlines,
   return content.ReleaseString();
 }
 
-V8UnionStringOrTrustedScript* Node::textContentForBinding() const {
-  const String& value = textContent();
-  if (value.IsNull())
-    return nullptr;
-  return MakeGarbageCollected<V8UnionStringOrTrustedScript>(value);
+String Node::textContentForBinding() const {
+  return textContent();
 }
 
 void Node::setTextContentForBinding(const V8UnionStringOrTrustedScript* value,

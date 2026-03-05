@@ -32,6 +32,29 @@ class DictionaryBase;
 class EnumerationBase;
 class UnionBase;
 
+namespace internal {
+
+template <typename T>
+struct NullTraits {};
+
+template <typename T>
+  requires std::is_pointer_v<T>
+struct NullTraits<T> {
+  static bool IsNull(T t) { return t == nullptr; }
+};
+
+template <>
+struct NullTraits<nullptr_t> {
+  static constexpr bool IsNull(nullptr_t) { return true; }
+};
+
+template <>
+struct NullTraits<String> {
+  static bool IsNull(const String& str) { return str.IsNull(); }
+};
+
+}  // namespace internal
+
 }  // namespace bindings
 
 // ToV8Traits provides C++ -> V8 conversion.
@@ -792,6 +815,13 @@ struct ToV8Traits<T> {
     DCHECK(value);
     return value->ToV8(script_state);
   }
+  template <typename ArgType>
+    requires(!std::is_same_v<T*, std::remove_cvref_t<ArgType>> &&
+             std::is_constructible_v<T, ArgType>)
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
+                                                 ArgType&& value) {
+    return T::DirectToV8(script_state, std::forward<ArgType>(value));
+  }
 };
 
 template <typename T>
@@ -802,6 +832,17 @@ struct ToV8Traits<IDLNullable<T>> {
     if (!value)
       return v8::Null(script_state->GetIsolate());
     return ToV8Traits<T>::ToV8(script_state, value);
+  }
+  template <typename ArgType>
+    requires(!std::is_same_v<T*, std::remove_cvref_t<ArgType>> &&
+             std::is_constructible_v<T, ArgType>)
+  [[nodiscard]] static v8::Local<v8::Value> ToV8(ScriptState* script_state,
+                                                 ArgType&& value) {
+    if (bindings::internal::NullTraits<std::remove_cvref_t<ArgType>>::IsNull(
+            value)) {
+      return v8::Null(script_state->GetIsolate());
+    }
+    return T::DirectToV8(script_state, std::forward<ArgType>(value));
   }
 };
 

@@ -253,6 +253,16 @@ inline constexpr bool
         std::is_convertible<NativeIntType, IDLIntType>::value ||
         std::is_enum<NativeIntType>::value;
 
+// Accept return of a specific union member type instead of the union. This is
+// mostly relevant for properties that accept unions for setters by allowing
+// to return a more specific type for a getter and allows to minimize heap
+// allocations for short-lived objects.
+template <typename IDLType, typename ReturnType>
+  requires(std::derived_from<IDLType, UnionBase> &&
+           !std::is_same_v<IDLType, std::remove_pointer_t<ReturnType>> &&
+           std::is_constructible_v<IDLType, ReturnType>)
+inline constexpr bool IsReturnTypeCompatible<IDLType, ReturnType> = true;
+
 // TODO(caseq): should we restrict KURLs to strings of particular type? Forbid
 // implicit conversion altogether?
 template <typename IDLStringType>

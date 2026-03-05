@@ -344,7 +344,7 @@ class CORE_EXPORT Node : public EventTarget {
                      TextVisitor* visitor = nullptr,
                      unsigned int max_length = UINT_MAX) const;
   virtual void setTextContent(const String&);
-  V8UnionStringOrTrustedScript* textContentForBinding() const;
+  String textContentForBinding() const;
   virtual void setTextContentForBinding(
       const V8UnionStringOrTrustedScript* value,
       ExceptionState& exception_state);

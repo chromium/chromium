@@ -860,6 +860,35 @@ def make_tov8_function(cg_context):
     return func_decl, func_def
 
 
+def make_direct_tov8_functions(cg_context):
+    assert isinstance(cg_context, CodeGenContext)
+
+    F = FormatNode
+
+    decls = []
+    defs = []
+    for member in cg_context.union_members:
+        if member.is_null:
+            continue
+        traits_type = native_value_tag(member.idl_type)
+        arg_type = member.type_info.member_ref_t
+        func_def = CxxFuncDefNode("DirectToV8",
+                                  arg_decls=[
+                                      "ScriptState* script_state",
+                                      "{} value".format(
+                                          member.type_info.member_ref_t)
+                                  ],
+                                  class_name="${class_name}",
+                                  return_type="v8::Local<v8::Value>")
+        func_def.set_base_template_vars(cg_context.template_bindings())
+        func_def.body.append(
+            F("return ToV8Traits<{}>::ToV8(script_state, value);".format(
+                traits_type)))
+        defs.append(func_def)
+        func_decl = func_def.make_decl(static=True)
+        decls.append(func_decl)
+    return decls, defs
+
 def make_trace_function(cg_context):
     assert isinstance(cg_context, CodeGenContext)
 
@@ -1008,6 +1037,8 @@ def generate_union(union_identifier):
     ctor_decls, ctor_defs = make_constructors(cg_context)
     accessor_decls, accessor_defs = make_accessor_functions(cg_context)
     tov8_func_decls, tov8_func_defs = make_tov8_function(cg_context)
+    direct_tov8_func_decls, direct_tov8_func_defs = make_direct_tov8_functions(
+        cg_context)
     trace_func_decls, trace_func_defs = make_trace_function(cg_context)
     clear_func_decls, clear_func_defs = make_clear_function(cg_context)
     name_func_decls, name_func_defs = make_name_function(cg_context)
@@ -1100,6 +1131,10 @@ def generate_union(union_identifier):
         class_def.public_section.append(tov8_func_decls)
         class_def.public_section.append(EmptyNode())
         source_blink_ns.body.append(tov8_func_defs)
+        source_blink_ns.body.append(EmptyNode())
+        class_def.public_section.extend(direct_tov8_func_decls)
+        source_blink_ns.body.append(EmptyNode())
+        source_blink_ns.body.extend(direct_tov8_func_defs)
         source_blink_ns.body.append(EmptyNode())
 
     class_def.public_section.append(trace_func_decls)

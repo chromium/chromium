@@ -244,7 +244,7 @@ void HTMLScriptElement::setTextContent(const String& string) {
   Node::setTextContent(string);
 }
 
-V8UnionStringOrTrustedScript* HTMLScriptElement::scriptTextContentForBinding() {
+String HTMLScriptElement::scriptTextContentForBinding() {
   return textContentForBinding();
 }
 
