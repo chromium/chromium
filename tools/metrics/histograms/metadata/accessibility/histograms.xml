@@ -538,6 +538,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.Android.RunningAccessibilityTools"
+    enum="AccessibilityAndroidAccessibilityTools" expires_after="2026-08-18">
+  <owner>aaronmoss@google.com</owner>
+  <owner>davidsegovia@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Logged during browser startup and accessibility tool activation when the
+    provided tool is enabled.
+  </summary>
+</histogram>
+
 <histogram
     name="Accessibility.Android.TextFormatting.Performance.DurationForRangeCount.{Bucket}"
     units="microseconds" expires_after="M152">
@@ -715,41 +726,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<!-- LINT.IfChange(AssistiveTechPackage) -->
-
-<histogram name="Accessibility.Android.{AssistiveTechPackage}"
-    enum="BooleanEnabled" expires_after="2026-11-01">
-  <owner>davidsegovia@google.com</owner>
-  <owner>chrome-a11y-core@google.com</owner>
-  <summary>
-    Logged if {AssistiveTechPackage} is enabled. Recorded during browser startup
-    or toggled on during user session.
-  </summary>
-  <token key="AssistiveTechPackage">
-    <variant name="AccessibilitySuite" summary="Android Accessibility Suite"/>
-    <variant name="ActionBlocks" summary="Action Blocks Accessibility"/>
-    <variant name="BrailleBack" summary="BrailleBack"/>
-    <variant name="SoundAmplifier" summary="Sound Amplifier"/>
-    <variant name="VoiceAccess" summary="Voice Accces"/>
-  </token>
-</histogram>
-
-<!-- LINT.ThenChange(//content/browser/accessibility/browser_accessibility_state_impl_android.cc:kAssistiveTechMap) -->
-
-<histogram name="Accessibility.AndroidServiceInfo.{RunningApps}"
+<histogram name="Accessibility.AndroidServiceInfo2.{RunningApps}"
     enum="AccessibilityAndroidServiceInfoEnum" expires_after="2026-08-02">
-  <owner>mschillaci@google.com</owner>
+  <owner>aaronmoss@google.com</owner>
   <owner>aldietz@google.com</owner>
   <owner>dtseng@chromium.org</owner>
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Tracks events, flags, feedback and capabilities of enabled accessibility
     services separated into variants based on the types of running accessibility
-    services. This information would be a subset of the (now deprecated)
-    Accessibility.AndroidServiceInfo histogram. It will allow us to look at the
-    same histograms but only for a subset of users (e.g. what are the requested
-    flags etc of enabled accessibility services for clients running only a
-    password manager).
+    services. It allows us to track requested flags, capabilities, and events,
+    segmented by which type of accessibility services the user has active. It
+    replaces the equivalent Accessibility.AndroidServiceInfo.{RunningApps}
+    histogram due to a time-series break where all services with the Android S+
+    isAccessibilityTool flag are classified as ASSISTIVE_TECH.
   </summary>
   <token key="RunningApps">
     <variant name="ALL_VARIANTS"/>

@@ -920,7 +920,8 @@ public class WebContentsAccessibilityTest {
                 () -> {
                     AccessibilityState.setIsKnownScreenReaderEnabledForTesting(true);
                     AccessibilityState.setIsOnlyPasswordManagersEnabledForTesting(false);
-                    AccessibilityState.setServiceIdsForTesting(KNOWN_SCREEN_READER_SERVICE_IDS);
+                    AccessibilityState.setServiceIdsForTesting(
+                            KNOWN_SCREEN_READER_SERVICE_IDS, true);
                 });
 
         var histogramWatcher =

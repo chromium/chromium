@@ -21,23 +21,36 @@ namespace content {
 
 namespace {
 
-// LINT.IfChange(kAssistiveTechMap)
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(AccessibilityAndroidAccessibilityTools)
+enum class AccessibilityAndroidAccessibilityTools {
+  kUnknownDeclaredTool = 0,
+  kTalkBack = 1,
+  kVoiceAccess = 2,
+  kActionBlocks = 3,
+  kSoundAmplifier = 4,
+  kSwitchAccess = 5,
+  kAccessibilityMenu = 6,
+  kBrailleBack = 7,
+  kMaxValue = kBrailleBack,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/histograms.xml:AccessibilityAndroidAccessibilityTools)
 
 // These are hashes of different accessibility services which are generally used
-// as part of an assistive technology.
-//
-// The string values in this map are used to form the names of histograms
-// (e.g., "Accessibility.Android.AccessibilitySuite"). If you change these
-// values, ensure the corresponding histogram definitions are also updated.
+// as part of an assistive technology, mapped to their corresponding enum
+// variant in `AccessibilityAndroidAccessibilityTools`.
 constexpr auto kAssistiveTechMap =
-    base::MakeFixedFlatMap<uint32_t, std::string_view>(
-        {{0x349d4b1a, "AccessibilitySuite"},
-         {0xa5a469fc, "SoundAmplifier"},
-         {0xb13e6179, "ActionBlocks"},
-         {0xb38ef877, "VoiceAccess"},
-         {0xbc2897b4, "BrailleBack"}});
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/accessibility/histograms.xml:AssistiveTechPackage)
+    base::MakeFixedFlatMap<uint32_t, AccessibilityAndroidAccessibilityTools>(
+        {{0x1630cddb, AccessibilityAndroidAccessibilityTools::kSwitchAccess},
+         {0x349d4b1a, AccessibilityAndroidAccessibilityTools::kTalkBack},
+         {0xa5a469fc, AccessibilityAndroidAccessibilityTools::kSoundAmplifier},
+         {0xb13e6179, AccessibilityAndroidAccessibilityTools::kActionBlocks},
+         {0xb38ef877, AccessibilityAndroidAccessibilityTools::kVoiceAccess},
+         {0xbc2897b4, AccessibilityAndroidAccessibilityTools::kBrailleBack},
+         {0xf2c0d757,
+          AccessibilityAndroidAccessibilityTools::kAccessibilityMenu}});
 
 // These are hashes of different "accessibility" services that enable
 // accessibility but are only using it in the context of password management.
@@ -64,67 +77,69 @@ enum {
   UMA_CAPABILITY_CAN_REQUEST_FILTER_KEY_EVENTS = 3,
   UMA_CAPABILITY_CAN_REQUEST_TOUCH_EXPLORATION = 4,
   UMA_CAPABILITY_CAN_RETRIEVE_WINDOW_CONTENT = 5,
-  UMA_EVENT_ANNOUNCEMENT = 6,
-  UMA_EVENT_ASSIST_READING_CONTEXT = 7,
-  UMA_EVENT_GESTURE_DETECTION_END = 8,
-  UMA_EVENT_GESTURE_DETECTION_START = 9,
-  UMA_EVENT_NOTIFICATION_STATE_CHANGED = 10,
-  UMA_EVENT_TOUCH_EXPLORATION_GESTURE_END = 11,
-  UMA_EVENT_TOUCH_EXPLORATION_GESTURE_START = 12,
-  UMA_EVENT_TOUCH_INTERACTION_END = 13,
-  UMA_EVENT_TOUCH_INTERACTION_START = 14,
-  UMA_EVENT_VIEW_ACCESSIBILITY_FOCUSED = 15,
-  UMA_EVENT_VIEW_ACCESSIBILITY_FOCUS_CLEARED = 16,
-  UMA_EVENT_VIEW_CLICKED = 17,
-  UMA_EVENT_VIEW_CONTEXT_CLICKED = 18,
-  UMA_EVENT_VIEW_FOCUSED = 19,
-  UMA_EVENT_VIEW_HOVER_ENTER = 20,
-  UMA_EVENT_VIEW_HOVER_EXIT = 21,
-  UMA_EVENT_VIEW_LONG_CLICKED = 22,
-  UMA_EVENT_VIEW_SCROLLED = 23,
-  UMA_EVENT_VIEW_SELECTED = 24,
-  UMA_EVENT_VIEW_TEXT_CHANGED = 25,
-  UMA_EVENT_VIEW_TEXT_SELECTION_CHANGED = 26,
-  UMA_EVENT_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY = 27,
-  UMA_EVENT_WINDOWS_CHANGED = 28,
-  UMA_EVENT_WINDOW_CONTENT_CHANGED = 29,
-  UMA_EVENT_WINDOW_STATE_CHANGED = 30,
-  UMA_FEEDBACK_AUDIBLE = 31,
-  UMA_FEEDBACK_BRAILLE = 32,
-  UMA_FEEDBACK_GENERIC = 33,
-  UMA_FEEDBACK_HAPTIC = 34,
-  UMA_FEEDBACK_SPOKEN = 35,
-  UMA_FEEDBACK_VISUAL = 36,
-  UMA_FLAG_FORCE_DIRECT_BOOT_AWARE = 37,
-  UMA_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS = 38,
-  UMA_FLAG_REPORT_VIEW_IDS = 39,
-  UMA_FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY = 40,
-  UMA_FLAG_REQUEST_FILTER_KEY_EVENTS = 41,
-  UMA_FLAG_REQUEST_TOUCH_EXPLORATION_MODE = 42,
-  UMA_FLAG_RETRIEVE_INTERACTIVE_WINDOWS = 43,
-  UMA_SERVICE_TYPE_UNKNOWN = 44,
-  UMA_SERVICE_TYPE_PASSWORD_MANAGER = 45,
-  UMA_SERVICE_TYPE_ASSISTIVE_TECH = 46,
+  UMA_CAPABILITY_CAN_REQUEST_FINGERPRINT_GESTURES = 6,
+  UMA_CAPABILITY_CAN_TAKE_SCREENSHOT = 7,
 
-  UMA_CAPABILITY_CAN_REQUEST_FINGERPRINT_GESTURES = 47,
-  UMA_CAPABILITY_CAN_TAKE_SCREENSHOT = 48,
+  UMA_EVENT_ANNOUNCEMENT = 8,
+  UMA_EVENT_ASSIST_READING_CONTEXT = 9,
+  UMA_EVENT_GESTURE_DETECTION_END = 10,
+  UMA_EVENT_GESTURE_DETECTION_START = 11,
+  UMA_EVENT_NOTIFICATION_STATE_CHANGED = 12,
+  UMA_EVENT_TOUCH_EXPLORATION_GESTURE_END = 13,
+  UMA_EVENT_TOUCH_EXPLORATION_GESTURE_START = 14,
+  UMA_EVENT_TOUCH_INTERACTION_END = 15,
+  UMA_EVENT_TOUCH_INTERACTION_START = 16,
+  UMA_EVENT_VIEW_ACCESSIBILITY_FOCUSED = 17,
+  UMA_EVENT_VIEW_ACCESSIBILITY_FOCUS_CLEARED = 18,
+  UMA_EVENT_VIEW_CLICKED = 19,
+  UMA_EVENT_VIEW_CONTEXT_CLICKED = 20,
+  UMA_EVENT_VIEW_FOCUSED = 21,
+  UMA_EVENT_VIEW_HOVER_ENTER = 22,
+  UMA_EVENT_VIEW_HOVER_EXIT = 23,
+  UMA_EVENT_VIEW_LONG_CLICKED = 24,
+  UMA_EVENT_VIEW_SCROLLED = 25,
+  UMA_EVENT_VIEW_SELECTED = 26,
+  UMA_EVENT_VIEW_TEXT_CHANGED = 27,
+  UMA_EVENT_VIEW_TEXT_SELECTION_CHANGED = 28,
+  UMA_EVENT_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY = 29,
+  UMA_EVENT_WINDOWS_CHANGED = 30,
+  UMA_EVENT_WINDOW_CONTENT_CHANGED = 31,
+  UMA_EVENT_WINDOW_STATE_CHANGED = 32,
+  UMA_EVENT_SPEECH_STATE_CHANGE = 33,
+  UMA_EVENT_VIEW_TARGETED_BY_SCROLL = 34,
+
+  UMA_FEEDBACK_AUDIBLE = 35,
+  UMA_FEEDBACK_BRAILLE = 36,
+  UMA_FEEDBACK_GENERIC = 37,
+  UMA_FEEDBACK_HAPTIC = 38,
+  UMA_FEEDBACK_SPOKEN = 39,
+  UMA_FEEDBACK_VISUAL = 40,
+  UMA_FEEDBACK_ALL_MASK = 41,
+
+  UMA_FLAG_FORCE_DIRECT_BOOT_AWARE = 42,
+  UMA_FLAG_INCLUDE_NOT_IMPORTANT_VIEWS = 43,
+  UMA_FLAG_REPORT_VIEW_IDS = 44,
+  UMA_FLAG_REQUEST_ENHANCED_WEB_ACCESSIBILITY = 45,
+  UMA_FLAG_REQUEST_FILTER_KEY_EVENTS = 46,
+  UMA_FLAG_REQUEST_TOUCH_EXPLORATION_MODE = 47,
+  UMA_FLAG_RETRIEVE_INTERACTIVE_WINDOWS = 48,
   UMA_FLAG_ENABLE_ACCESSIBILITY_VOLUME = 49,
   UMA_FLAG_REQUEST_ACCESSIBILITY_BUTTON = 50,
   UMA_FLAG_REQUEST_FINGERPRINT_GESTURES = 51,
   UMA_FLAG_REQUEST_MULTI_FINGER_GESTURES = 52,
   UMA_FLAG_REQUEST_SHORTCUT_WARNING_DIALOG_SPOKEN_FEEDBACK = 53,
   UMA_FLAG_SERVICE_HANDLES_DOUBLE_TAP = 54,
+  UMA_FLAG_REQUEST_2_FINGER_PASSTHROUGH = 55,
+  UMA_FLAG_SEND_MOTION_EVENTS = 56,
+  UMA_FLAG_INPUT_METHOD_EDITOR = 57,
 
-  UMA_SERVICE_TYPE_ASSISTIVE_TECH_WITH_PASSWORD_MANAGER = 55,
-  UMA_SERVICE_TYPE_ASSISTIVE_TECH_WITH_UNKNOWN = 56,
-  UMA_SERVICE_TYPE_PASSWORD_MANAGER_WITH_UNKNOWN = 57,
-  UMA_SERVICE_TYPE_ALL_VARIANTS = 58,
-
-  UMA_EVENT_SPEECH_STATE_CHANGE = 59,
-  UMA_FEEDBACK_ALL_MASK = 60,
-  UMA_FLAG_REQUEST_2_FINGER_PASSTHROUGH = 61,
-  UMA_FLAG_SEND_MOTION_EVENTS = 62,
-  UMA_FLAG_INPUT_METHOD_EDITOR = 63,
+  UMA_SERVICE_TYPE_UNKNOWN = 58,
+  UMA_SERVICE_TYPE_PASSWORD_MANAGER = 59,
+  UMA_SERVICE_TYPE_ASSISTIVE_TECH = 60,
+  UMA_SERVICE_TYPE_ASSISTIVE_TECH_WITH_PASSWORD_MANAGER = 61,
+  UMA_SERVICE_TYPE_ASSISTIVE_TECH_WITH_UNKNOWN = 62,
+  UMA_SERVICE_TYPE_PASSWORD_MANAGER_WITH_UNKNOWN = 63,
+  UMA_SERVICE_TYPE_ALL_VARIANTS = 64,
 
   // This must always be the last enum. It's okay for its value to
   // increase, but none of the other enum values may change.
@@ -165,6 +180,7 @@ enum {
   ACCESSIBILITYEVENT_TYPE_VIEW_CONTEXT_CLICKED = 0x00800000,
   ACCESSIBILITYEVENT_TYPE_ASSIST_READING_CONTEXT = 0x01000000,
   ACCESSIBILITYEVENT_TYPE_SPEECH_STATE_CHANGE = 0x02000000,
+  ACCESSIBILITYEVENT_TYPE_VIEW_TARGETED_BY_SCROLL = 0x04000000,
 };
 
 // These are constants from
@@ -247,20 +263,19 @@ enum {
 // This macro simplifies the recording of the aggregate accessibility
 // information in the CollectAccessibilityServiceStats() method, below.
 //
-// There are 7 possible variants of the "Accessibility.AndroidServiceInfo.{}"
-// histogram. We consider users that have: assistive tech, password managers, or
-// an unknown service enabled. We track the 7 possible subsets of these (the
-// empty set of nothing enabled is implicitly tracked by whichever users do not
-// belong to one of the other groups). Requested event, feedback, flag, and
-// capabilities are recorded per subset.
-#define RECORD_ALL_HISTOGRAMS(event, feedback, flag, capability,  \
-                              service_type_variant)               \
-  RecordAccessibilityServiceStatsHistogram(                       \
-      event, feedback, flag, capability,                          \
-      "Accessibility.AndroidServiceInfo." #service_type_variant); \
-  SERVICE_TYPE_HISTOGRAM(                                         \
-      UMA_SERVICE_TYPE_##service_type_variant,                    \
-      "Accessibility.AndroidServiceInfo." #service_type_variant)
+// There are 7 possible variants of the "Accessibility.AndroidServiceInfo2.{}"
+// histogram. We consider users that have assistive tech, password managers, or
+// an unknown service enabled. We track the 7 non-empty combinations of these
+// classes of accessibility services, logging requested event, feedback, flag,
+// and capabilities on a per-combination basis.
+#define RECORD_ALL_HISTOGRAMS(event, feedback, flag, capability,   \
+                              service_type_variant)                \
+  RecordAccessibilityServiceStatsHistogram(                        \
+      event, feedback, flag, capability,                           \
+      "Accessibility.AndroidServiceInfo2." #service_type_variant); \
+  SERVICE_TYPE_HISTOGRAM(                                          \
+      UMA_SERVICE_TYPE_##service_type_variant,                     \
+      "Accessibility.AndroidServiceInfo2." #service_type_variant)
 }  // namespace
 
 BrowserAccessibilityStateImplAndroid::BrowserAccessibilityStateImplAndroid() {
@@ -276,14 +291,14 @@ void BrowserAccessibilityStateImplAndroid::
       ui::AccessibilityState::GetAccessibilityServiceEventTypeMask();
   int feedback_type_mask =
       ui::AccessibilityState::GetAccessibilityServiceFeedbackTypeMask();
-
   int flags_mask = ui::AccessibilityState::GetAccessibilityServiceFlagsMask();
-
   int capabilities_mask =
       ui::AccessibilityState::GetAccessibilityServiceCapabilitiesMask();
-
   std::vector<std::string> service_ids =
       ui::AccessibilityState::GetAccessibilityServiceIds();
+  std::vector<bool> accessibility_tool_flags =
+      ui::AccessibilityState::GetAccessibilityToolFlags();
+  CHECK_EQ(service_ids.size(), accessibility_tool_flags.size());
 
   int len = service_ids.size();
   bool has_assistive_tech = false;
@@ -295,7 +310,8 @@ void BrowserAccessibilityStateImplAndroid::
     std::string service_package = service_id.erase(service_id.find("/"));
     uint32_t service_hash = base::PersistentHash(service_package);
 
-    if (RecordAssistiveTechHistogram(service_hash)) {
+    if (RecordAssistiveTechHistogram(service_hash,
+                                     accessibility_tool_flags[i])) {
       has_assistive_tech = true;
     } else if (std::ranges::contains(kPasswordPackageHashes, service_hash)) {
       has_password_manager = true;
@@ -428,20 +444,23 @@ void BrowserAccessibilityStateImplAndroid::RefreshAssistiveTech() {
     base::debug::ClearCrashKeyString(ax_talkback_crash_key);
   }
 
-  UMA_HISTOGRAM_BOOLEAN("Accessibility.Android.TalkBack", is_active);
-
   OnAssistiveTechFound(is_active ? ui::AssistiveTech::kTalkback
                                  : ui::AssistiveTech::kNone);
 }
 
-bool RecordAssistiveTechHistogram(uint32_t service_hash) {
+bool RecordAssistiveTechHistogram(uint32_t service_hash,
+                                  bool is_accessibility_tool) {
+  static constexpr std::string_view histogram =
+      "Accessibility.Android.RunningAccessibilityTools";
   const auto it = kAssistiveTechMap.find(service_hash);
 
   if (it != kAssistiveTechMap.end()) {
-    const std::string histogram_full_name =
-        "Accessibility.Android." + std::string(it->second);
-
-    base::UmaHistogramBoolean(histogram_full_name, true);
+    base::UmaHistogramEnumeration(histogram, it->second);
+    return true;
+  } else if (is_accessibility_tool) {
+    base::UmaHistogramEnumeration(
+        histogram,
+        AccessibilityAndroidAccessibilityTools::kUnknownDeclaredTool);
     return true;
   }
 

@@ -78,6 +78,12 @@ class COMPONENT_EXPORT(AX_BASE_ANDROID) AccessibilityState {
   // Returns a vector containing the IDs of all running accessibility services.
   static std::vector<std::string> GetAccessibilityServiceIds();
 
+  // Returns a vector containing the `isAccessibilityTool` manifest flag for
+  // all running accessibility services, in the same order as
+  // `GetAccessibilityServiceIds()`. Note that this defaults to `false` on pre-S
+  // versions of Android, unlike the SDK version which defaults to `true`.
+  static std::vector<bool> GetAccessibilityToolFlags();
+
   // Returns the OS-level setting for the text cursor blink interval.
   static base::TimeDelta GetTextCursorBlinkInterval();
 

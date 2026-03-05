@@ -123,6 +123,15 @@ std::vector<std::string> AccessibilityState::GetAccessibilityServiceIds() {
 }
 
 // static
+std::vector<bool> AccessibilityState::GetAccessibilityToolFlags() {
+  JNIEnv* const env = base::android::AttachCurrentThread();
+  std::vector<bool> tool_flags;
+  base::android::JavaBooleanArrayToBoolVector(
+      env, Java_AccessibilityState_getAccessibilityToolFlags(env), &tool_flags);
+  return tool_flags;
+}
+
+// static
 base::TimeDelta AccessibilityState::GetTextCursorBlinkInterval() {
   return base::Milliseconds(Java_AccessibilityState_getTextCursorBlinkInterval(
       base::android::AttachCurrentThread()));

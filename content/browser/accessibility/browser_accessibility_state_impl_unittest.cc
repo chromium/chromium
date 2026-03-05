@@ -193,33 +193,38 @@ TEST(BrowserAccessibilityStateImplAndroidTest,
      RecordAccessibilityTechHistograms) {
   base::HistogramTester histogram_tester;
 
-  std::array<std::string_view, 5> histograms{
-      "Accessibility.Android.AccessibilitySuite",
-      "Accessibility.Android.SoundAmplifier",
-      "Accessibility.Android.ActionBlocks", "Accessibility.Android.VoiceAccess",
-      "Accessibility.Android.BrailleBack"};
+  static constexpr std::array<uint32_t, 7> service_hashes = {
+      0x1630cddb,  // Switch Access
+      0x349d4b1a,  // TalkBack
+      0xa5a469fc,  // Sound Amplifier
+      0xb13e6179,  // Action Blocks
+      0xb38ef877,  // Voice Access
+      0xbc2897b4,  // BrailleBack
+      0xf2c0d757,  // Accessibility Menu
+  };
 
-  ASSERT_FALSE(RecordAssistiveTechHistogram(0));
+  static constexpr std::string_view histogram =
+      "Accessibility.Android.RunningAccessibilityTools";
 
-  // Ensure we start at zeroes.
-  for (std::string_view histogram : histograms) {
-    histogram_tester.ExpectTotalCount(histogram, 0);
-  }
+  // Try an unknown hash
+  ASSERT_FALSE(RecordAssistiveTechHistogram(0, false));
+
+  // Ensure we start at zero.
+  histogram_tester.ExpectTotalCount(histogram, 0);
 
   // Start recording.
-  ASSERT_TRUE(RecordAssistiveTechHistogram(0x349d4b1a));  // AccessibilitySuite
-  ASSERT_TRUE(RecordAssistiveTechHistogram(0xa5a469fc));  // SoundAmplifier
-  ASSERT_TRUE(RecordAssistiveTechHistogram(0xb13e6179));  // ActionBlocks
-  ASSERT_TRUE(RecordAssistiveTechHistogram(0xb38ef877));  // VoiceAccess
-  ASSERT_TRUE(RecordAssistiveTechHistogram(0xbc2897b4));  // BrailleBack
-
-  for (std::string_view histogram : histograms) {
-    histogram_tester.ExpectTotalCount(histogram, 1);
+  for (int i = 0; i < service_hashes.size(); ++i) {
+    ASSERT_TRUE(RecordAssistiveTechHistogram(service_hashes[i], false));
+    histogram_tester.ExpectTotalCount(histogram, i + 1);
   }
 
-  // One more.
-  ASSERT_TRUE(RecordAssistiveTechHistogram(0x349d4b1a));  // AccessibilitySuite
-  histogram_tester.ExpectTotalCount(histograms[0], 2);
+  // Duplicate one histogram.
+  ASSERT_TRUE(RecordAssistiveTechHistogram(service_hashes[0], false));
+  histogram_tester.ExpectTotalCount(histogram, service_hashes.size() + 1);
+
+  // Try an unknown accessibility tool.
+  ASSERT_TRUE(RecordAssistiveTechHistogram(0, true));
+  histogram_tester.ExpectTotalCount(histogram, service_hashes.size() + 2);
 }
 
 #endif  // BUILDFLAG(IS_ANDROID)

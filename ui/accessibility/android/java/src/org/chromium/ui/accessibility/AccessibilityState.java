@@ -212,6 +212,18 @@ public class AccessibilityState {
         }
     }
 
+    // The service ID and whether the `isAccessibilityTool=true` manifest flag is explicitly
+    // set for a given service. Before Android S, `isAccessibilityTool` is always false.
+    private static class ServiceProperties {
+        public final String id;
+        public final boolean isAccessibilityTool;
+
+        public ServiceProperties(String id, boolean isAccessibilityTool) {
+            this.id = id;
+            this.isAccessibilityTool = isAccessibilityTool;
+        }
+    }
+
     // Analysis of the most popular accessibility services on Android suggests that any service that
     // requests any of these three events is an accessibility service that has a more complex user
     // interaction than something like password managers, but not as much as screen readers. This
@@ -293,8 +305,8 @@ public class AccessibilityState {
 
     private static @Nullable AccessibilityManager sAccessibilityManager;
 
-    // The IDs of all running accessibility services.
-    private static @Nullable List<String> sServiceIds;
+    // The IDs and `isAccessibilityTool` manifest state of all running accessibility services.
+    private static @Nullable List<ServiceProperties> sServiceProperties;
 
     // The set of listeners of AccessibilityState, implemented using
     // a WeakHashSet behind the scenes so that listeners can be garbage-collected
@@ -434,7 +446,7 @@ public class AccessibilityState {
 
     public static int getNumberOfRunningServices() {
         if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sServiceIds).size();
+        return assumeNonNull(sServiceProperties).size();
     }
 
     /**
@@ -675,6 +687,10 @@ public class AccessibilityState {
     }
 
     protected static void updateAccessibilityServices() {
+        updateAccessibilityServices(/* recordHistograms= */ false);
+    }
+
+    private static void updateAccessibilityServices(boolean recordHistograms) {
         long now = SystemClock.elapsedRealtimeNanos() / 1000;
         if (!sInitialized) {
             sState = new State(false, false, false, false, false, false, false, false, false);
@@ -699,18 +715,29 @@ public class AccessibilityState {
 
         // Get the list of currently running accessibility services.
         List<AccessibilityServiceInfo> serviceInfoList = getRunningServiceInfoList();
-        sServiceIds = new ArrayList<>();
+        sServiceProperties = new ArrayList<>();
         List<String> runningServiceNames = new ArrayList<>();
         for (AccessibilityServiceInfo service : serviceInfoList) {
             if (service == null) continue;
-            isAccessibilityToolPresent |=
-                    (Build.VERSION.SDK_INT < Build.VERSION_CODES.S
-                            || service.isAccessibilityTool());
             isAnyAccessibilityServiceEnabled = true;
 
             String serviceId = service.getId();
-            sServiceIds.add(serviceId);
             addCanonicalizedComponentNameToArray(runningServiceNames, serviceId);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                // Check if the service is an accessibility tool based on the manifest flag.
+                if (service.isAccessibilityTool()) {
+                    isAccessibilityToolPresent = true;
+                    sServiceProperties.add(new ServiceProperties(serviceId, true));
+                } else {
+                    sServiceProperties.add(new ServiceProperties(serviceId, false));
+                }
+            } else {
+                // Before Android S, assume all accessibility services are accessibility tools,
+                // but none explicitly flag themselves as such without the manifest flag.
+                isAccessibilityToolPresent = true;
+                sServiceProperties.add(new ServiceProperties(serviceId, false));
+            }
 
             sEventTypeMask |= service.eventTypes;
             sFeedbackTypeMask |= service.feedbackType;
@@ -779,7 +806,11 @@ public class AccessibilityState {
                         UPDATE_ACCESSIBILITY_SERVICES_DID_POLL, true);
                 ThreadUtils.getUiThreadHandler()
                         .postDelayed(
-                                AccessibilityState::updateAccessibilityServices, sNextDelayMillis);
+                                recordHistograms
+                                        ? AccessibilityState::processServicesChange
+                                        : AccessibilityState::updateAccessibilityServices,
+                                sNextDelayMillis);
+                recordHistograms = false; // Leave histograms to delayed call.
                 sPollCount++;
                 sNextDelayMillis *= 2;
                 return;
@@ -797,7 +828,13 @@ public class AccessibilityState {
         // Calculate heuristic state value derivations.
         boolean isComplexUserInteractionServiceEnabled =
                 (0 != (sEventTypeMaskHeuristic & COMPLEX_USER_INTERACTION_SERVICE_EVENT_TYPE_MASK));
-        boolean isKnownScreenReaderEnabled = sServiceIds.contains(KNOWN_SCREEN_READER_SERVICE_IDS);
+        boolean isKnownScreenReaderEnabled = false;
+        for (ServiceProperties service : sServiceProperties) {
+            if (KNOWN_SCREEN_READER_SERVICE_IDS.equals(service.id)) {
+                isKnownScreenReaderEnabled = true;
+                break;
+            }
+        }
 
         boolean isOnlyAutofillRunning = false;
         try {
@@ -871,6 +908,9 @@ public class AccessibilityState {
                         isOnlyAutofillRunning,
                         isOnlyPasswordManagersEnabled,
                         isKnownScreenReaderEnabled));
+        if (recordHistograms) {
+            AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
+        }
     }
 
     private static void updateAndNotifyStateChange(State newState) {
@@ -940,7 +980,31 @@ public class AccessibilityState {
     @CalledByNative
     private static String[] getAccessibilityServiceIds() {
         if (!sInitialized) updateAccessibilityServices();
-        return assumeNonNull(sServiceIds).toArray(new String[0]);
+        assert sServiceProperties != null;
+
+        String[] ids = new String[sServiceProperties.size()];
+        for (int i = 0; i < ids.length; i++) {
+            ids[i] = sServiceProperties.get(i).id;
+        }
+        return ids;
+    }
+
+    /**
+     * Return a list of whether running accessibility services have {@code isAccessibilityTool=true}
+     * declared in their manifest. Note that {@code isAccessibilityTool} was introduced in Android
+     * S; on earlier Android versions this will return all {@code false}. The returned array will
+     * have the same length as the array returned by {@link #getAccessibilityServiceIds()}.
+     */
+    @CalledByNative
+    private static boolean[] getAccessibilityToolFlags() {
+        if (!sInitialized) updateAccessibilityServices();
+        assert sServiceProperties != null;
+
+        boolean[] flags = new boolean[sServiceProperties.size()];
+        for (int i = 0; i < flags.length; i++) {
+            flags[i] = sServiceProperties.get(i).isAccessibilityTool;
+        }
+        return flags;
     }
 
     /**
@@ -1108,8 +1172,7 @@ public class AccessibilityState {
     }
 
     private static void processServicesChange() {
-        updateAccessibilityServices();
-        AccessibilityStateJni.get().recordAccessibilityServiceInfoHistograms();
+        updateAccessibilityServices(/* recordHistograms= */ true);
     }
 
     private static void processExtraStateChange() {
@@ -1369,16 +1432,16 @@ public class AccessibilityState {
         sEnabledServiceStringForTesting = enabledServiceString;
     }
 
-    public static void setServiceIdsForTesting(String newServiceId) {
+    public static void setServiceIdsForTesting(String newServiceId, boolean isAccessibilityTool) {
         if (!sInitialized) initializeForTesting();
 
-        sServiceIds = new ArrayList<>();
-        sServiceIds.add(newServiceId);
+        sServiceProperties = new ArrayList<>();
+        sServiceProperties.add(new ServiceProperties(newServiceId, isAccessibilityTool));
     }
 
     private static void initializeForTesting() {
         sState = new State(false, false, false, false, false, false, false, false, false);
-        sServiceIds = new ArrayList<>();
+        sServiceProperties = new ArrayList<>();
         fetchAccessibilityManager();
         sInitialized = true;
         sIsInTestingMode = true;
@@ -1386,7 +1449,7 @@ public class AccessibilityState {
 
     protected static void uninitializeForTesting() {
         sState = null;
-        sServiceIds = null;
+        sServiceProperties = null;
         sAccessibilityManager = null;
         sInitialized = false;
         sIsInTestingMode = false;
