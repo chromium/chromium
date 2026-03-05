@@ -25,17 +25,13 @@ import org.chromium.components.thinwebview.ThinWebView;
 import org.chromium.components.thinwebview.ThinWebViewConstraints;
 import org.chromium.components.thinwebview.ThinWebViewFactory;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.permissions.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
-
-import java.lang.ref.WeakReference;
 
 /**
  * Manages the display of an extension action's popup UI.
@@ -108,9 +104,6 @@ class ExtensionActionPopup implements Destroyable {
                 new ActivityWindowAndroid(
                         activity,
                         /* listenToActivityState= */ true,
-                        new ActivityAndroidPermissionDelegate(new WeakReference(mActivity)),
-                        new ActivityKeyboardVisibilityDelegate(new WeakReference(mActivity)),
-                        /* activityTopResumedSupported= */ false,
                         NullUtil.assumeNonNull(windowAndroid.getIntentRequestTracker()),
                         /* insetObserver= */ null,
                         /* trackOcclusion= */ true) {
