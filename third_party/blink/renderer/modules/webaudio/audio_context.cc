@@ -505,6 +505,14 @@ AudioContext* AudioContext::Create(ExecutionContext* context,
   AudioContext* audio_context = MakeGarbageCollected<AudioContext>(
       window, latency_hint, sample_rate, sink_descriptor,
       update_echo_cancellation_on_first_start, render_quantum_frames);
+
+  if (audio_context->HasAllocationFailed()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "The context could not be created due to memory limitation.");
+    return nullptr;
+  }
+
   ++hardware_context_count;
   audio_context->UpdateStateIfNeeded();
 

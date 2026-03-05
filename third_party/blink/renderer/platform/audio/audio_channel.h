@@ -54,12 +54,15 @@ class PLATFORM_EXPORT AudioChannel final {
 
   // Manage storage for us.
   explicit AudioChannel(uint32_t length)
-      : length_(length), raw_pointer_(nullptr), silent_(true) {
-    mem_buffer_ = std::make_unique<AudioFloatArray>(length);
+      : length_(0), raw_pointer_(nullptr), silent_(true) {
+    CHECK(TryAllocate(length));
   }
 
   // A "blank" audio channel -- must call Set() before it's useful...
   AudioChannel() : length_(0), raw_pointer_(nullptr), silent_(true) {}
+
+  // Methods for internal allocation.
+  bool TryAllocate(uint32_t length);
 
   // Redefine the memory for this channel. |storage| represents external memory
   // not managed by this object.

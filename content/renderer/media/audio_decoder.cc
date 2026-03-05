@@ -68,7 +68,9 @@ std::unique_ptr<blink::WebAudioBus> DecodeAudioFileData(
   // Allocate and configure the output audio channel data and then
   // copy the decoded data to the destination.
   auto out = std::make_unique<WebAudioBus>();
-  out->Initialize(number_of_channels, number_of_frames, sample_rate);
+  if (!out->TryInitialize(number_of_channels, number_of_frames, sample_rate)) {
+    return nullptr;
+  }
 
   std::vector<base::SpanWriter<float>> dest_channels;
   dest_channels.reserve(number_of_channels);

@@ -142,9 +142,13 @@ void OfflineAudioDestinationHandler::InitializeOfflineRenderThread(
 
   shared_render_target_ = render_target->CreateSharedAudioBuffer();
   render_bus_ =
-      AudioBus::Create(render_target->numberOfChannels(),
-                       GetDeferredTaskHandler().RenderQuantumFrames());
-  DCHECK(render_bus_);
+      AudioBus::TryCreate(render_target->numberOfChannels(),
+                          GetDeferredTaskHandler().RenderQuantumFrames());
+  if (!render_bus_) {
+    Context()->SetAllocationFailed();
+    render_bus_ = AudioBus::TryCreate(render_target->numberOfChannels(), 0);
+    CHECK(render_bus_);
+  }
 
   PrepareTaskRunnerForRendering();
 }

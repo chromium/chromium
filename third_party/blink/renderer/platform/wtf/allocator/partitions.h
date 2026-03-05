@@ -88,7 +88,11 @@ class WTF_EXPORT Partitions {
 
   static void* PA_MALLOC_FN BufferMalloc(size_t n, const char* type_name);
   static void* BufferTryRealloc(void* p, size_t n, const char* type_name);
+  static void* PA_MALLOC_FN BufferTryAlignedZeroedMalloc(size_t n,
+                                                         size_t alignment,
+                                                         const char* type_name);
   static void BufferFree(void* p);
+  static void BufferAlignedFree(void* p);
   static void BufferFreeWithSize(void* p, size_t size);
   static size_t BufferPotentialCapacity(size_t n);
 

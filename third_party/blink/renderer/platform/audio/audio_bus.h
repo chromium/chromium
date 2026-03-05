@@ -70,6 +70,8 @@ class PLATFORM_EXPORT AudioBus final : public ThreadSafeRefCounted<AudioBus> {
   static scoped_refptr<AudioBus> Create(unsigned number_of_channels,
                                         uint32_t length,
                                         bool allocate = true);
+  static scoped_refptr<AudioBus> TryCreate(unsigned number_of_channels,
+                                           uint32_t length);
 
   // Pass in 0.0 for sampleRate to use the file's sample-rate, otherwise a
   // sample-rate conversion to the requested sampleRate will be made (if it

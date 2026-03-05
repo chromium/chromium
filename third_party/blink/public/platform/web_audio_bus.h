@@ -46,11 +46,10 @@ class BLINK_PLATFORM_EXPORT WebAudioBus {
   WebAudioBus() = default;
   ~WebAudioBus() { Reset(); }
 
-  // Initialize() allocates memory of the given length for the given number of
-  // channels.
-  void Initialize(unsigned number_of_channels,
-                  size_t length,
-                  double sample_rate);
+  // Returns false if allocation fails.
+  bool TryInitialize(unsigned number_of_channels,
+                     size_t length,
+                     double sample_rate);
 
   // ResizeSmaller() can only be called after Initialize() with a new length <=
   // the initialization length.  The data stored in the bus will remain

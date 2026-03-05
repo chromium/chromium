@@ -2188,6 +2188,7 @@ source_set("blink_platform_unittests_sources") {
     "animation/animation_translation_util_test.cc",
     "animation/compositor_animation_test.cc",
     "animation/timing_function_test.cc",
+    "audio/audio_array_test.cc",
     "audio/audio_destination_test.cc",
     "audio/audio_destination_uma_reporter_test.cc",
     "audio/audio_frame_stats_accumulator_test.cc",

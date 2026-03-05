@@ -55,12 +55,35 @@ const unsigned kMaxBusChannels = 32;
 scoped_refptr<AudioBus> AudioBus::Create(unsigned number_of_channels,
                                          uint32_t length,
                                          bool allocate) {
-  DCHECK_LE(number_of_channels, kMaxBusChannels);
   if (number_of_channels > kMaxBusChannels) {
     return nullptr;
   }
 
-  return base::AdoptRef(new AudioBus(number_of_channels, length, allocate));
+  if (allocate) {
+    scoped_refptr<AudioBus> bus = TryCreate(number_of_channels, length);
+    CHECK(bus);
+    return bus;
+  }
+
+  return base::AdoptRef(new AudioBus(number_of_channels, length, false));
+}
+
+scoped_refptr<AudioBus> AudioBus::TryCreate(unsigned number_of_channels,
+                                            uint32_t length) {
+  if (number_of_channels > kMaxBusChannels) {
+    return nullptr;
+  }
+
+  scoped_refptr<AudioBus> bus =
+      base::AdoptRef(new AudioBus(number_of_channels, length, false));
+
+  for (unsigned i = 0; i < number_of_channels; ++i) {
+    if (!bus->Channel(i)->TryAllocate(length)) {
+      return nullptr;
+    }
+  }
+
+  return bus;
 }
 
 AudioBus::AudioBus(unsigned number_of_channels, uint32_t length, bool allocate)
