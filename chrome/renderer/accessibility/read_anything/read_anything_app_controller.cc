@@ -1211,6 +1211,8 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("startOffset", &ReadAnythingAppController::StartOffset)
       .SetProperty("endNodeId", &ReadAnythingAppController::EndNodeId)
       .SetProperty("endOffset", &ReadAnythingAppController::EndOffset)
+      .SetProperty("hasValidSelection",
+                   &ReadAnythingAppController::HasValidSelection)
       .SetProperty("fontName", &ReadAnythingAppController::FontName)
       .SetProperty("fontSize", &ReadAnythingAppController::FontSize)
       .SetProperty("linksEnabled", &ReadAnythingAppController::LinksEnabled)
@@ -1485,6 +1487,10 @@ ui::AXNodeID ReadAnythingAppController::EndNodeId() const {
 
 int ReadAnythingAppController::EndOffset() const {
   return model_.end_offset();
+}
+
+bool ReadAnythingAppController::HasValidSelection() const {
+  return model_.has_selection();
 }
 
 std::string ReadAnythingAppController::FontName() const {

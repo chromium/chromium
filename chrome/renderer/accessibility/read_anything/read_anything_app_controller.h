@@ -214,6 +214,7 @@ class ReadAnythingAppController
   int StartOffset() const;
   ui::AXNodeID EndNodeId() const;
   int EndOffset() const;
+  bool HasValidSelection() const;
   std::string FontName() const;
   float FontSize() const;
   bool LinksEnabled() const;

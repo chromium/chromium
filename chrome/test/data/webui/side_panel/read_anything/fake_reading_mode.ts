@@ -10,6 +10,7 @@ export class FakeReadingMode {
   startOffset: number = 0;
   endNodeId: number = 0;
   endOffset: number = 0;
+  hasValidSelection: boolean = true;
 
   // Items in the ReadAnythingTheme struct, see read_anything.mojom for info.
   fontName: string = 'MyFont';

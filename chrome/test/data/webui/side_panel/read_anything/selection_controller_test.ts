@@ -835,6 +835,15 @@ suite('SelectionController', () => {
       assertFalse(!!selection.focusNode);
     });
 
+    test('does nothing when selection is invalid', () => {
+      selectNodesInMainPanel(100, 2, 101, 10);
+      chrome.readingMode.hasValidSelection = false;
+      selectionController.updateSelection(selection, document.body);
+
+      assertFalse(!!selection.anchorNode);
+      assertFalse(!!selection.focusNode);
+    });
+
     test('selects nodes directly if they are text nodes', () => {
       const expectedAnchorOffset = 2;
       const expectedFocusOffset = 10;

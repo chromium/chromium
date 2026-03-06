@@ -38,6 +38,11 @@ declare namespace chrome {
     let endNodeId: number;
     let endOffset: number;
 
+    // If the selection from the main content is considered "valid." It's
+    // possible to receive bad selection data from the accessibility tree in
+    // the renderer. If this happens, the selection should be ignored.
+    let hasValidSelection: boolean;
+
     // The current style theme values.
     let fontName: string;
     let fontSize: number;

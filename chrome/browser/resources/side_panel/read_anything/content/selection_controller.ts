@@ -145,8 +145,8 @@ export class SelectionController {
     if (!selectionToUpdate) {
       return;
     }
-    const {startNodeId, endNodeId} = chrome.readingMode;
-    if (!startNodeId || !endNodeId) {
+    const {startNodeId, endNodeId, hasValidSelection} = chrome.readingMode;
+    if (!startNodeId || !endNodeId || !hasValidSelection) {
       // The selection is the main panel collapsed, so clear the selection here.
       selectionToUpdate.removeAllRanges();
       return;
