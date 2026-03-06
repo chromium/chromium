@@ -35,6 +35,7 @@ class OutputOption(enum.Flag):
     DETAILED_ACCOUNTS = enum.auto()
     MESSAGES = enum.auto()
     ALL_REVISIONS = enum.auto()
+    SUBMITTABLE = enum.auto()
 
     def __iter__(self) -> Iterator['OutputOption']:
         # TODO(crbug.com/40631540): Remove this handcrafted `__iter__` after
@@ -54,7 +55,8 @@ class GerritAPI:
     DEFAULT_OUTPUT = (OutputOption.CURRENT_FILES
                       | OutputOption.CURRENT_REVISION
                       | OutputOption.COMMIT_FOOTERS
-                      | OutputOption.DETAILED_ACCOUNTS)
+                      | OutputOption.DETAILED_ACCOUNTS
+                      | OutputOption.SUBMITTABLE)
 
     def __init__(self, host, user, token):
         self.host = host
@@ -168,7 +170,6 @@ class GerritAPI:
         query = ' '.join([
             f'project:"{self.project_config.gerrit_project}"',
             f'branch:{self.project_config.gerrit_branch}',
-            'is:submittable',
             '-is:wip',
         ])
         open_cls = self.query_cls(query, limit, output_options)
@@ -253,6 +254,10 @@ class GerritCL(object):
     def revisions(self):
         return self._data['revisions']
 
+    @property
+    def submittable(self):
+        return self._data['submittable']
+
     def post_comment(self, message):
         """Posts a comment to the CL."""
         path = '/a/changes/{id}/revisions/current/review'.format(id=self.id)
@@ -269,11 +274,15 @@ class GerritCL(object):
 
     def is_exportable(self):
         # TODO(robertma): Consolidate with the related part in chromium_exportable_commits.py.
-
         try:
             files = list(self.current_revision['files'].keys())
         except KeyError:
             # Empty (deleted) CL is not exportable.
+            return False
+
+        force_wpt_export = ('Force-WPT-Export: true'
+                            in self.current_revision['commit_with_footers'])
+        if not self.submittable and not force_wpt_export:
             return False
 
         # Guard against accidental CLs that touch thousands of files.

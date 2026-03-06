@@ -54,6 +54,7 @@ class TestExporterTest(LoggingTestCase):
                         'commit_with_footers': 'a commit with footers'
                     }
                 },
+                'submittable': True,
                 'owner': {
                     'email': 'test@chromium.org'
                 },
@@ -267,6 +268,7 @@ class TestExporterTest(LoggingTestCase):
                         'commit_with_footers': 'a commit with footers'
                     }
                 },
+                'submittable': True,
                 'owner': {
                     'email': 'test@chromium.org'
                 },
@@ -288,6 +290,7 @@ class TestExporterTest(LoggingTestCase):
                         'commit_with_footers': 'a commit with footers'
                     }
                 },
+                'submittable': True,
                 'owner': {
                     'email': 'test@chromium.org'
                 },
@@ -360,6 +363,7 @@ class TestExporterTest(LoggingTestCase):
                         'commit_with_footers': 'a commit with footers'
                     }
                 },
+                'submittable': True,
                 'owner': {
                     'email': 'test@chromium.org'
                 },
@@ -413,6 +417,7 @@ class TestExporterTest(LoggingTestCase):
                         'description': 'subject 2',
                     },
                 },
+                'submittable': True,
                 'owner': {
                     'email': 'test@chromium.org'
                 },
@@ -540,6 +545,7 @@ class TestExporterTest(LoggingTestCase):
                         'description': 'subject 2',
                     },
                 },
+                'submittable': True,
                 'owner': {
                     'email': 'test@chromium.org'
                 },
