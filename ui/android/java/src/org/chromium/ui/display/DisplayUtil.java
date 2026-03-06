@@ -47,6 +47,7 @@ public abstract class DisplayUtil {
             "android.software.car.display_compatibility";
     private static @Nullable Boolean sCarmaPhase1Version2ComplianceForTesting;
     private static @Nullable Boolean sIsGlobalDefaultDisplayTabletSized;
+    private static @Nullable Double sGlobalDefaultDisplaySizeInInches;
     private static @Nullable Boolean sIsDisplayCompatAppForTesting;
     private static @Nullable Integer sSmallestScreenWidthForTesting;
     private static @Nullable Boolean sIsOnDefaultDisplayForTesting;
@@ -163,6 +164,27 @@ public abstract class DisplayUtil {
         sIsGlobalDefaultDisplayTabletSized =
                 smallestWidth >= DeviceFormFactor.MINIMUM_TABLET_WIDTH_DP;
         return sIsGlobalDefaultDisplayTabletSized;
+    }
+
+    /**
+     * Determines whether the device's global default display meets a minimum physical diagonal
+     * size.
+     *
+     * <p>This method compares the physical diagonal screen size of the default display in inches
+     * against the provided {@code diagonalThresholdInches}. The physical screen size is calculated
+     * and cached upon the first invocation to avoid redundant system calls.
+     *
+     * @param diagonalThresholdInches The physical screen size threshold in inches to compare
+     *     against.
+     * @return {@code true} if the global default display's diagonal size is greater than the
+     *     threshold, {@code false} otherwise.
+     */
+    public static boolean isGlobalDefaultDisplayWithMinDiagonal(double diagonalThresholdInches) {
+        if (sGlobalDefaultDisplaySizeInInches == null) {
+            DisplayAndroid displayAndroid = DisplayAndroid.getGlobalDefaultDisplay();
+            sGlobalDefaultDisplaySizeInInches = getDisplaySizeInInches(displayAndroid);
+        }
+        return sGlobalDefaultDisplaySizeInInches > diagonalThresholdInches;
     }
 
     /** Returns the given value converted from px to dp. */

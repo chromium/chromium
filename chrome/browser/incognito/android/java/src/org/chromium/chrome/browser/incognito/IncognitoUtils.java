@@ -28,6 +28,7 @@ import org.chromium.ui.display.DisplayUtil;
 /** Utilities for working with incognito tabs spread across multiple activities. */
 @NullMarked
 public class IncognitoUtils {
+    private static final double LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES = 8.0;
     private static @Nullable Boolean sIsEnabledForTesting;
     private static @Nullable Boolean sShouldOpenIncognitoAsWindowForTesting;
 
@@ -93,9 +94,14 @@ public class IncognitoUtils {
             return false;
         }
         if (BuildConfig.IS_FOR_TEST) {
+            // The feature should be ON for Android Desktop.
+            // The screen size check is not reliable on Android Desktop emulator.
             sShouldOpenIncognitoAsWindowForTesting =
-                    ThreadUtils.runOnUiThreadBlocking(
-                            DisplayUtil::isGlobalDefaultDisplayTabletSized);
+                    DeviceInfo.isDesktop()
+                            || ThreadUtils.runOnUiThreadBlocking(
+                                    () ->
+                                            DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
+                                                    LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES));
             return sShouldOpenIncognitoAsWindowForTesting;
         }
 
@@ -104,7 +110,8 @@ public class IncognitoUtils {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S_V2) {
             return false;
         }
-        return DisplayUtil.isGlobalDefaultDisplayTabletSized();
+        return DisplayUtil.isGlobalDefaultDisplayWithMinDiagonal(
+                LARGE_DIAGONAL_DISPLAY_THRESHOLD_INCHES);
     }
 
     /**
