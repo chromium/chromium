@@ -244,28 +244,8 @@ class SendTabToSelfUrlDeletedChecker
   const raw_ptr<send_tab_to_self::SendTabToSelfSyncService> service_;
 };
 
-// Class that allows waiting until Autofill has parsed the expected number of
-// form fields in `web_contents`. Polling is used because there's no easy way to
-// observe Autofill parsing events from here.
-class SendTabToSelfFormFieldsParsedChecker : public StatusChangeChecker {
- public:
-  SendTabToSelfFormFieldsParsedChecker(
-      content::WebContents* web_contents,
-      std::map<std::string, std::string> expected_fields);
-  ~SendTabToSelfFormFieldsParsedChecker() override;
-
-  // StatusChangeChecker implementation.
-  bool IsExitConditionSatisfied(std::ostream* os) override;
-
- private:
-  const raw_ptr<content::WebContents> web_contents_;
-  const std::map<std::string, std::string> expected_fields_;
-  base::RepeatingTimer timer_;
-};
-
 // Class that allows waiting until Autofill has seen (cached) the expected
-// forms in `web_contents` and their field types have been determined,
-// and optionally verifies their values.
+// forms in `web_contents` and their expected values.
 class AutofillFieldsSeenChecker : public StatusChangeChecker,
                                   public autofill::AutofillManager::Observer {
  public:
@@ -281,10 +261,6 @@ class AutofillFieldsSeenChecker : public StatusChangeChecker,
       autofill::AutofillManager& manager,
       base::span<const autofill::FormGlobalId> updated_forms,
       base::span<const autofill::FormGlobalId> removed_forms) override;
-  void OnFieldTypesDetermined(autofill::AutofillManager& manager,
-                              autofill::FormGlobalId form,
-                              FieldTypeSource source,
-                              bool small_forms_were_parsed) override;
   void OnAfterTextFieldValueChanged(autofill::AutofillManager& manager,
                                     autofill::FormGlobalId form,
                                     autofill::FieldGlobalId field) override;

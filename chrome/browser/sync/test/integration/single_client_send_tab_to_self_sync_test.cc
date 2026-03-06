@@ -56,6 +56,7 @@ using send_tab_to_self_helper::GetFormFieldValueById;
 using send_tab_to_self_helper::PopulateFormField;
 using testing::AllOf;
 using testing::Eq;
+using testing::Field;
 using testing::Property;
 using testing::UnorderedElementsAre;
 
@@ -245,13 +246,25 @@ IN_PROC_BROWSER_TEST_P(SingleClientSendTabToSelfSyncTest,
           web_contents, {{"NAME_FIRST", kName}, {"EMAIL_ADDRESS", kEmail}})
           .Wait());
 
-  // Wait for Autofill to parse the fields.
-  // TODO(crbug.com/485145029): Remove the waiting logic here and instead assert
-  // synchronously what the result of extraction is expected to be.
-  ASSERT_TRUE(
-      send_tab_to_self_helper::SendTabToSelfFormFieldsParsedChecker(
-          web_contents, {{"NAME_FIRST", kName}, {"EMAIL_ADDRESS", kEmail}})
-          .Wait());
+  // Verify the behavior of form field extraction, ahead of exercising the
+  // "real" sending logic below.
+  {
+    std::stringstream os;
+    EXPECT_THAT(
+        send_tab_to_self::ExtractFormFieldsFromWebContentsForTesting(
+            web_contents, os)
+            .form_field_info.fields,
+        UnorderedElementsAre(
+            AllOf(Field(&send_tab_to_self::PageContext::FormField::id_attribute,
+                        Eq(u"NAME_FIRST")),
+                  Field(&send_tab_to_self::PageContext::FormField::value,
+                        Eq(base::UTF8ToUTF16(kName)))),
+            AllOf(Field(&send_tab_to_self::PageContext::FormField::id_attribute,
+                        Eq(u"EMAIL_ADDRESS")),
+                  Field(&send_tab_to_self::PageContext::FormField::value,
+                        Eq(base::UTF8ToUTF16(kEmail))))))
+        << os.str();
+  }
 
   // Trigger sending.
   const std::string target_guid = "target_guid";

@@ -338,54 +338,6 @@ void SendTabToSelfUrlDeletedChecker::EntriesRemovedRemotely(
   CheckExitCondition();
 }
 
-SendTabToSelfFormFieldsParsedChecker::SendTabToSelfFormFieldsParsedChecker(
-    content::WebContents* web_contents,
-    std::map<std::string, std::string> expected_fields)
-    : web_contents_(web_contents),
-      expected_fields_(std::move(expected_fields)) {
-  timer_.Start(FROM_HERE, base::Milliseconds(100),
-               base::BindRepeating(
-                   &SendTabToSelfFormFieldsParsedChecker::CheckExitCondition,
-                   base::Unretained(this)));
-}
-
-SendTabToSelfFormFieldsParsedChecker::~SendTabToSelfFormFieldsParsedChecker() =
-    default;
-
-bool SendTabToSelfFormFieldsParsedChecker::IsExitConditionSatisfied(
-    std::ostream* os) {
-  *os << "Waiting for form fields to be parsed and values matched: ";
-  for (const auto& [id, value] : expected_fields_) {
-    *os << id << "='" << value << "' ";
-  }
-
-  send_tab_to_self::PageContext context =
-      send_tab_to_self::ExtractFormFieldsFromWebContentsForTesting(
-          web_contents_, *os);
-
-  std::map<std::string, std::string> remaining_fields = expected_fields_;
-  for (const send_tab_to_self::PageContext::FormField& field :
-       context.form_field_info.fields) {
-    std::string id = base::UTF16ToUTF8(field.id_attribute);
-    if (const std::string* expected_value =
-            base::FindOrNull(remaining_fields, id)) {
-      if (*expected_value == base::UTF16ToUTF8(field.value)) {
-        remaining_fields.erase(id);
-      }
-    }
-  }
-
-  if (!remaining_fields.empty()) {
-    *os << "(Missing or value mismatch: ";
-    for (const auto& [id, value] : remaining_fields) {
-      *os << id << " ";
-    }
-    *os << ")";
-  }
-
-  return remaining_fields.empty();
-}
-
 AutofillFieldsSeenChecker::AutofillFieldsSeenChecker(
     content::WebContents* web_contents,
     std::map<std::string, std::string> expected_fields)
@@ -401,8 +353,7 @@ AutofillFieldsSeenChecker::AutofillFieldsSeenChecker(
 AutofillFieldsSeenChecker::~AutofillFieldsSeenChecker() = default;
 
 bool AutofillFieldsSeenChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Waiting for autofill fields to be seen, types determined, and "
-         "values matched: ";
+  *os << "Waiting for autofill fields to be seen and values matched: ";
   for (const auto& [id, value] : expected_fields_) {
     *os << id << "='" << value << "' ";
   }
@@ -419,16 +370,11 @@ bool AutofillFieldsSeenChecker::IsExitConditionSatisfied(std::ostream* os) {
         [&](const autofill::FormStructure& form) {
           for (const std::unique_ptr<autofill::AutofillField>& field :
                form.fields()) {
-            autofill::FieldTypeSet types = field->Type().GetTypes();
-            // TODO(crbug.com/485145029): Remove field type verification, which
-            // shouldn't be relevant for this logic.
-            if (!types.empty() && !types.contains(autofill::UNKNOWN_TYPE)) {
-              std::string id = base::UTF16ToUTF8(field->id_attribute());
-              if (const std::string* expected_value =
-                      base::FindOrNull(remaining_fields, id)) {
-                if (*expected_value == base::UTF16ToUTF8(field->value())) {
-                  remaining_fields.erase(id);
-                }
+            const std::string id = base::UTF16ToUTF8(field->id_attribute());
+            if (const std::string* expected_value =
+                    base::FindOrNull(remaining_fields, id)) {
+              if (*expected_value == base::UTF16ToUTF8(field->value())) {
+                remaining_fields.erase(id);
               }
             }
           }
@@ -436,7 +382,7 @@ bool AutofillFieldsSeenChecker::IsExitConditionSatisfied(std::ostream* os) {
   });
 
   if (!remaining_fields.empty()) {
-    *os << "(Missing, type undetermined, or value mismatch: ";
+    *os << "(Missing or value mismatch: ";
     for (const auto& [id, value] : remaining_fields) {
       *os << id << " ";
     }
@@ -450,14 +396,6 @@ void AutofillFieldsSeenChecker::OnAfterFormsSeen(
     autofill::AutofillManager& manager,
     base::span<const autofill::FormGlobalId> updated_forms,
     base::span<const autofill::FormGlobalId> removed_forms) {
-  CheckExitCondition();
-}
-
-void AutofillFieldsSeenChecker::OnFieldTypesDetermined(
-    autofill::AutofillManager& manager,
-    autofill::FormGlobalId form,
-    FieldTypeSource source,
-    bool small_forms_were_parsed) {
   CheckExitCondition();
 }
 
