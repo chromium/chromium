@@ -2844,6 +2844,10 @@
       status: "experimental",
     },
     {
+      name: "FocusRingRespectExplicitOutlineColorInDarkMode",
+      status: "stable",
+    },
+    {
       name: "FontAccess",
       status: {"Android": "", "default": "stable"},
     },

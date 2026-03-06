@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -127,6 +128,17 @@ TEST_F(OutlinePainterTest, FocusRingRespectsExplicitOutlineColorInDarkMode) {
   EXPECT_EQ(Color::kWhite, LayoutTheme::GetTheme().FocusRingColor(
                                mojom::blink::ColorScheme::kDark));
   EXPECT_EQ(Color::kWhite, webkit_color);
+#endif
+}
+
+TEST_F(OutlinePainterTest, FocusRingDarkModeColorFlagCanDisableFix) {
+#if !BUILDFLAG(IS_MAC)
+  RuntimeEnabledFeaturesTestHelpers::
+      ScopedFocusRingRespectExplicitOutlineColorInDarkMode scoped_feature(
+          false);
+  LayoutTheme::GetTheme().SetCustomFocusRingColor(Color(0x10, 0x10, 0x10));
+  EXPECT_EQ(Color(0x10, 0x10, 0x10), LayoutTheme::GetTheme().FocusRingColor(
+                                         mojom::blink::ColorScheme::kDark));
 #endif
 }
 

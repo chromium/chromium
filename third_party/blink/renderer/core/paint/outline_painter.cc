@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/styled_stroke_data.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
 #include "ui/gfx/geometry/point_conversions.h"
@@ -856,6 +857,13 @@ void PaintFocusRing(GraphicsContext& context,
                     const FloatRoundedRect::Radii& corner_radii,
                     const LayoutObject::OutlineInfo& info) {
   Color inner_color = style.VisitedDependentColor(GetCSSPropertyOutlineColor());
+#if !BUILDFLAG(IS_MAC)
+  if (style.DarkColorScheme() &&
+      !RuntimeEnabledFeatures::
+          FocusRingRespectExplicitOutlineColorInDarkModeEnabled()) {
+    inner_color = Color::kWhite;
+  }
+#endif
 
   const float outer_ring_width = FocusRingOuterStrokeWidth(style);
   const float inner_ring_width = FocusRingInnerStrokeWidth(style);

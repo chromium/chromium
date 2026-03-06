@@ -876,7 +876,9 @@ Color LayoutTheme::FocusRingColor(
 #if !BUILDFLAG(IS_MAC)
   // Keep focus rings visible in dark mode even when embedders provide a dark
   // custom color (e.g. renderer prefs defaulting to 0x101010).
-  if (color_scheme == mojom::blink::ColorScheme::kDark) {
+  if (color_scheme == mojom::blink::ColorScheme::kDark &&
+      RuntimeEnabledFeatures::
+          FocusRingRespectExplicitOutlineColorInDarkModeEnabled()) {
     return Color::kWhite;
   }
 #endif
