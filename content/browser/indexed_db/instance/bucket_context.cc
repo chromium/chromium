@@ -537,13 +537,6 @@ void BucketContext::QueueRunTasks() {
   }
 
   task_run_queued_ = true;
-  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&BucketContext::RunTasks, weak_factory_.GetWeakPtr()));
-}
-
-void BucketContext::RunTasks() {
-  task_run_queued_ = false;
   if (last_idle_tasks_completion_time_) {
     base::UmaHistogramMediumTimes(
         base::StrCat({"IndexedDB.IdleTasksCompletionToNextActivity",
@@ -551,6 +544,14 @@ void BucketContext::RunTasks() {
         base::TimeTicks::Now() - *last_idle_tasks_completion_time_);
     last_idle_tasks_completion_time_.reset();
   }
+
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BucketContext::RunTasks, weak_factory_.GetWeakPtr()));
+}
+
+void BucketContext::RunTasks() {
+  task_run_queued_ = false;
 
   for (auto db_it = databases_.begin(); db_it != databases_.end();) {
     Database& db = *db_it->second;
@@ -588,6 +589,10 @@ void BucketContext::RunIdleTasks() {
   // Though the idle timer is stopped before resetting the backing store, an
   // already posted task may run after the backing store has been reset.
   if (!backing_store_) {
+    return;
+  }
+  // A task may have been posted at the last second.
+  if (task_run_queued_) {
     return;
   }
   base::TimeTicks start = base::TimeTicks::Now();
