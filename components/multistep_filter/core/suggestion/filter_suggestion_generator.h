@@ -13,9 +13,6 @@
 
 namespace multistep_filter {
 
-using UrlFilterSuggestionCallback =
-    base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>;
-
 // Generates filter suggestions for a given URL.
 //
 // Analyzes a URL to determine if a filter suggestion should be displayed.
@@ -34,8 +31,9 @@ class FilterSuggestionGenerator {
   //
   // Invokes `callback` with a suggestion if one is generated, or with
   // std::nullopt if no suggestion is applicable.
-  void GenerateSuggestion(const GURL& url,
-                          UrlFilterSuggestionCallback callback);
+  virtual void GenerateSuggestion(
+      const GURL& url,
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)> callback);
 };
 
 }  // namespace multistep_filter

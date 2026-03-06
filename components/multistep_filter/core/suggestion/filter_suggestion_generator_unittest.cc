@@ -32,7 +32,9 @@ TEST_F(FilterSuggestionGeneratorTest, CreateAndDestroy) {
 TEST_F(FilterSuggestionGeneratorTest, GenerateSuggestion) {
   // Since implementation is NOTIMPLEMENTED, we just verify it can be called.
   // We use a MockCallback to verify the interface.
-  base::MockCallback<UrlFilterSuggestionCallback> callback;
+  base::MockCallback<
+      base::OnceCallback<void(std::optional<UrlFilterSuggestion>)>>
+      callback;
 
   // We expect the callback to be run with std::nullopt.
   EXPECT_CALL(callback, Run(testing::Eq(std::nullopt)));

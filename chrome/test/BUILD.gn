@@ -7151,6 +7151,7 @@ test("unit_tests") {
     "//chrome/browser/media/router:unittests",
     "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
     "//chrome/browser/metrics/structured",
+    "//chrome/browser/multistep_filter:unit_tests",
     "//chrome/browser/navigation_predictor:unit_tests",
     "//chrome/browser/net:key_pinning_proto",
     "//chrome/browser/net:probe_message_proto",

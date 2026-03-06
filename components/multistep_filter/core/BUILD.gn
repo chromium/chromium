@@ -11,6 +11,16 @@ source_set("features") {
 }
 
 source_set("core") {
+  sources = [
+    "multistep_filter_service.cc",
+    "multistep_filter_service.h",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/signin/public/identity_manager",
+    "//url",
+  ]
   public_deps = [
     "//components/multistep_filter/core/data_models",
     "//components/multistep_filter/core/suggestion",
@@ -19,5 +29,16 @@ source_set("core") {
 
 source_set("unit_tests") {
   testonly = true
-  deps = [ "//components/multistep_filter/core/suggestion:unit_tests" ]
+  sources = [ "multistep_filter_service_unittest.cc" ]
+  deps = [
+    ":core",
+    "//base",
+    "//base/test:test_support",
+    "//components/multistep_filter/core/suggestion",
+    "//components/multistep_filter/core/suggestion:unit_tests",
+    "//components/signin/public/identity_manager:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
 }
