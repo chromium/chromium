@@ -4,7 +4,7 @@
 
 #import <WebKit/WebKit.h>
 
-#import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
+#import "ios/web/test/fakes/crw_fake_web_view_content_view.h"
 #import "ios/web/test/web_test_with_web_controller.h"
 #import "ios/web/test/wk_web_view_crash_utils.h"
 #import "testing/gtest/include/gtest/gtest-spi.h"

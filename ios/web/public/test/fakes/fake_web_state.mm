@@ -11,7 +11,6 @@
 #import "base/functional/callback.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/sessions/core/session_id.h"
-#import "ios/web/common/crw_content_view.h"
 #import "ios/web/js_messaging/web_frames_manager_impl.h"
 #import "ios/web/public/download/crw_web_view_download.h"
 #import "ios/web/public/js_messaging/web_frame.h"
@@ -19,6 +18,7 @@
 #import "ios/web/public/test/fakes/crw_fake_find_interaction.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/policy_decision_state_tracker.h"
+#import "ios/web/web_state/ui/crw_content_view.h"
 
 namespace web {
 

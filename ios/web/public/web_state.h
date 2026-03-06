@@ -36,14 +36,12 @@
 
 class GURL;
 
-@protocol CRWScrollableContent;
 @protocol CRWWebViewDownload;
 @protocol CRWFindInteraction;
 @protocol CRWWebViewDownloadDelegate;
 @protocol CRWWebViewProxy;
 typedef id<CRWWebViewProxy> CRWWebViewProxyType;
 @class UIView;
-typedef UIView<CRWScrollableContent> CRWContentView;
 
 namespace web {
 namespace proto {

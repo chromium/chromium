@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
 
 // Container view class that manages the display of content.

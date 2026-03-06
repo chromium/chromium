@@ -8,11 +8,10 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-#import "ios/web/common/crw_content_view.h"
-
 @class CRWWebControllerContainerView;
 @class CRWWebViewContentView;
 @class CRWWebViewProxyImpl;
+enum class CrFullscreenState;
 
 @protocol CRWWebControllerContainerViewDelegate <NSObject>
 

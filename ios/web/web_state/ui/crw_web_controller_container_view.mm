@@ -7,10 +7,10 @@
 #import "base/check.h"
 #import "base/notreached.h"
 #import "base/time/time.h"
-#import "ios/web/common/crw_content_view.h"
 #import "ios/web/common/crw_viewport_adjustment_container.h"
-#import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
+#import "ios/web/web_state/ui/crw_content_view.h"
+#import "ios/web/web_state/ui/crw_web_view_content_view.h"
 #import "ios/web/web_state/ui/crw_web_view_proxy_impl.h"
 
 namespace {

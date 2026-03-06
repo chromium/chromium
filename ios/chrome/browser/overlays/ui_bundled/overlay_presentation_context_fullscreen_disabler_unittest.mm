@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/web/model/web_view_proxy/web_view_proxy_tab_helper.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_obscured_insets_controller.h"
-#import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/ui/crw_web_view_proxy.h"
@@ -47,10 +46,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
     web_view_ = [[CRWWebView alloc]
         initWithFrame:scoped_window_.Get().bounds
         configuration:[[WKWebViewConfiguration alloc] init]];
-    content_view_ = [[CRWWebViewContentView alloc]
-        initWithWebView:web_view_
-             scrollView:web_view_.scrollView
-        fullscreenState:CrFullscreenState::kNotInFullScreen];
+    content_view_ = [[UIView alloc] init];
     // Set up the fake presentation context so OverlayPresenterObserver
     // callbacks are sent.
     overlay_presenter()->SetPresentationContext(&presentation_context_);
@@ -93,7 +89,7 @@ class OverlayPresentationContextFullscreenDisablerTest : public PlatformTest {
   FakeOverlayPresentationContext presentation_context_;
   ScopedKeyWindow scoped_window_;
   CRWWebView* web_view_ = nil;
-  CRWWebViewContentView* content_view_ = nil;
+  UIView* content_view_ = nil;
 };
 
 // Tests that OverlayPresentationContextFullscreenDisabler disables fullscreen

@@ -227,6 +227,7 @@ source_set("ios_web_general_unittests") {
     "//ios/web/test:mojo_bindings",
     "//ios/web/test:test_constants",
     "//ios/web/test:test_support",
+    "//ios/web/test/fakes",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//net:test_support",
     "//testing/gmock",

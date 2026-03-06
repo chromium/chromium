@@ -22,6 +22,7 @@ source_set("ui") {
     "//ios/web/annotations",
     "//ios/web/browsing_data",
     "//ios/web/common",
+    "//ios/web/common:crw_web_view_resizing_type",
     "//ios/web/download",
     "//ios/web/favicon",
     "//ios/web/find_in_page",
@@ -63,6 +64,7 @@ source_set("ui") {
   }
 
   sources = [
+    "crw_content_view.h",
     "crw_media_capture_permission_request.h",
     "crw_media_capture_permission_request.mm",
     "crw_touch_tracking_recognizer.mm",
@@ -72,6 +74,7 @@ source_set("ui") {
     "crw_web_request_controller.h",
     "crw_web_request_controller.mm",
     "crw_web_view_content_view.h",
+    "crw_web_view_content_view.mm",
     "crw_web_view_proxy_impl.h",
     "crw_web_view_proxy_impl.mm",
     "crw_web_view_scroll_view_delegate_proxy.h",

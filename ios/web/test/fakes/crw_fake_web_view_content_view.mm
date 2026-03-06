@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/public/test/fakes/crw_fake_web_view_content_view.h"
+#import "ios/web/test/fakes/crw_fake_web_view_content_view.h"
 
 #import "base/check.h"
 #import "base/notreached.h"

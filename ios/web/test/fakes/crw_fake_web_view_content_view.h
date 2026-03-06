@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_
-#define IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_
+#ifndef IOS_WEB_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_
+#define IOS_WEB_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_
 
-#import "ios/web/common/crw_web_view_content_view.h"
+#import "ios/web/web_state/ui/crw_web_view_content_view.h"
 
 // A test version of CRWWebViewContentView.
 @interface CRWFakeWebViewContentView : CRWWebViewContentView
@@ -23,4 +23,4 @@
 
 @end
 
-#endif  // IOS_WEB_PUBLIC_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_
+#endif  // IOS_WEB_TEST_FAKES_CRW_FAKE_WEB_VIEW_CONTENT_VIEW_H_

@@ -22,7 +22,6 @@
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_obscured_insets_controller.h"
-#import "ios/web/common/crw_web_view_content_view.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -72,10 +71,7 @@ class SideSwipeMediatorTest : public ReaderModeTest {
       : web_view_([[CRWWebView alloc]
             initWithFrame:scoped_window_.Get().bounds
             configuration:[[WKWebViewConfiguration alloc] init]]),
-        content_view_([[CRWWebViewContentView alloc]
-            initWithWebView:web_view_
-                 scrollView:web_view_.scrollView
-            fullscreenState:CrFullscreenState::kNotInFullScreen]) {}
+        content_view_([[UIView alloc] init]) {}
 
   void SetUp() override {
     ReaderModeTest::SetUp();
@@ -120,7 +116,7 @@ class SideSwipeMediatorTest : public ReaderModeTest {
   FakeSideSwipeUIController* fake_swipe_ui_controller_;
   ScopedKeyWindow scoped_window_;
   CRWWebView* web_view_ = nil;
-  CRWWebViewContentView* content_view_ = nil;
+  UIView* content_view_ = nil;
   raw_ptr<web::WebState, DanglingUntriaged> original_web_state_ = nil;
   std::optional<int> active_web_state_index_;
 };
