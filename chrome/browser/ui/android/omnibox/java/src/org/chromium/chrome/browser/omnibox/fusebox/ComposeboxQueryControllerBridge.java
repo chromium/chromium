@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.omnibox.fusebox;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JniType;
 import org.jni_zero.NativeMethods;
@@ -176,13 +174,11 @@ public class ComposeboxQueryControllerBridge {
         return mInputStateSupplier;
     }
 
-    @VisibleForTesting
     public static void setInstanceForTesting(@Nullable ComposeboxQueryControllerBridge instance) {
         sInstanceForTesting = Optional.ofNullable(instance);
         ResettersForTesting.register(ComposeboxQueryControllerBridge::resetInstanceForTesting);
     }
 
-    @VisibleForTesting
     public static void resetInstanceForTesting() {
         sInstanceForTesting = null;
     }
