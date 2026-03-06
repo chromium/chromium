@@ -40,10 +40,10 @@ are treated in different ways during painting:
     *   Replaced normal-flow stacking elements:
         [replaced elements](https://html.spec.whatwg.org/C/#replaced-elements)
         that do not have non-auto z-index but are stacking contexts for elements
-        below them. Right now the only example is SVG `<foreignObject>`. The
-        difference between these elements and regular stacking contexts is that
-        they paint in the foreground phase of the painting algorithm (as opposed
-        to the positioned descendants phase).
+        below them. Examples include SVG `<foreignObject>` and HTML `<video>`.
+        The difference between these elements and regular stacking contexts is
+        that they paint in the foreground phase of the painting algorithm (as
+        opposed to the positioned descendants phase).
 
     *   Elements that are not real stacking contexts but are treated as stacking
         contexts but don't manage other stacked elements. Their z-ordering are

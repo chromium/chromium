@@ -1861,7 +1861,10 @@ PaintLayer* PaintLayer::HitTestChildren(
   auto hit_test_child =
       [&](PaintLayer* child_layer, bool overflow_controls_only,
           const HitTestRecursionData& recursion_data) -> bool {
-    if (child_layer->IsReplacedNormalFlowStackingContext()) {
+    // Hit-testing of the whole subtree of an SVG foreignObject, including
+    // stacked children, is handled by LayoutSVGForeignObject, so don't hit
+    // test stacked children here.
+    if (child_layer->GetLayoutObject().IsSVGForeignObject()) {
       return false;
     }
 

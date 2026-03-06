@@ -83,6 +83,8 @@ class CORE_EXPORT LayoutVideo final : public LayoutMedia {
     NOT_DESTROYED();
     return true;
   }
+  bool IsReplacedNormalFlowStackingContext(
+      const ComputedStyle& style) const final;
 
   void PaintReplaced(const PaintInfo&,
                      const PhysicalOffset& paint_offset) const override;

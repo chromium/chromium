@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/video_painter.h"
@@ -36,6 +37,14 @@ namespace blink {
 LayoutVideo::LayoutVideo(HTMLVideoElement* video) : LayoutMedia(video) {}
 
 LayoutVideo::~LayoutVideo() = default;
+
+bool LayoutVideo::IsReplacedNormalFlowStackingContext(
+    const ComputedStyle& style) const {
+  NOT_DESTROYED();
+  return RuntimeEnabledFeatures::StackingContextIsNotStackedEnabled() &&
+         style.GetPosition() == EPosition::kStatic &&
+         VideoElement()->FastHasAttribute(html_names::kControlsAttr);
+}
 
 void LayoutVideo::NaturalSizeChanged() {
   NOT_DESTROYED();

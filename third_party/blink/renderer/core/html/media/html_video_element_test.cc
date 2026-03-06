@@ -355,6 +355,7 @@ TEST_P(HTMLVideoElementTest,
   EXPECT_TRUE(video()->GetWebMediaPlayer());
   ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+  UpdateAllLifecyclePhasesForTest();
 
   // Request visibility and verify `RecordVideoOcclusionState` is called.
   const std::string expected_occlusion_state =
@@ -444,6 +445,7 @@ TEST_P(HTMLVideoElementTest, VideoVisibilityTrackerVideoElementRectDimensions) {
             gfx::Size(video()->videoWidth(), video()->videoHeight()));
   ASSERT_NE(VideoVisibilityTracker(), nullptr);
   EXPECT_NE(VideoVisibilityTrackerAttachedToDocument(), nullptr);
+  UpdateAllLifecyclePhasesForTest();
 
   RequestVisibility(base::DoNothing());
 

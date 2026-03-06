@@ -604,7 +604,10 @@ PaintResult PaintLayerPainter::PaintChildren(
 
   PaintLayerPaintOrderIterator iterator(&paint_layer_, children_to_visit);
   while (PaintLayer* child = iterator.Next()) {
-    if (child->IsReplacedNormalFlowStackingContext()) {
+    // Painting of the whole subtree of an SVG foreignObject, including
+    // stacked children, is handled by SVGForeignObjectPainter, so don't
+    // paint stacked children here.
+    if (child->GetLayoutObject().IsSVGForeignObject()) {
       continue;
     }
 
