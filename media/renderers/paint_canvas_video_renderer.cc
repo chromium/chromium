@@ -1630,15 +1630,21 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
             video_frame->CompatRGBColorSpace());
     CHECK(rgb_shared_image);
 
-    // Wait on the `rgb_sync_token` passed from the cache that may have been
-    // updated from the previous frame.
-    std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
-        rgb_shared_image->BeginRasterAccess(canvas_ri, rgb_sync_token,
-                                            /*readonly=*/false);
-
-    // If there's no cache hit, perform a copy.
-    if (status != VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
-      // Copy into the shared image backing of the cached copy.
+    // Copy the source video frame into the intermediate (cached) SI if
+    // necessary and generate the sync token that the following access of that
+    // cached SI will wait on.
+    gpu::SyncToken sync_token;
+    if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
+      // Cache hit: Wait on the `rgb_sync_token` passed from the cache that may
+      // have been updated from the previous frame.
+      sync_token = gpu::RasterScopedAccess::EndAccess(
+          rgb_shared_image->BeginRasterAccess(canvas_ri, rgb_sync_token,
+                                              /*readonly=*/false));
+    } else {
+      // Cache miss: Copy the VideoFrame into the cached SI.
+      std::unique_ptr<gpu::RasterScopedAccess> dst_ri_access =
+          rgb_shared_image->BeginRasterAccess(canvas_ri, rgb_sync_token,
+                                              /*readonly=*/false);
       std::unique_ptr<gpu::RasterScopedAccess> src_ri_access =
           shared_image->BeginRasterAccess(canvas_ri,
                                           video_frame->acquire_sync_token(),
@@ -1653,13 +1659,12 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
       SynchronizeVideoFrameRead(video_frame, canvas_ri,
                                 raster_context_provider->ContextSupport(),
                                 std::move(src_ri_access));
+
+      sync_token = gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
     }
 
     // Wait for mailbox creation on canvas context before consuming it and
     // copying from it on the consumer context.
-    gpu::SyncToken sync_token =
-        gpu::RasterScopedAccess::EndAccess(std::move(dst_ri_access));
-
     gpu::SyncToken dest_sync_token = CopySharedImageToGLTextureViaTextureCopy(
         destination_gl, video_frame->coded_size(), video_frame->visible_rect(),
         rgb_shared_image.get(), sync_token, target, texture, internal_format,
