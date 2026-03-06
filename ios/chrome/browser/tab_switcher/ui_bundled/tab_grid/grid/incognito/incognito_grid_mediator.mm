@@ -14,9 +14,9 @@
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/tribool.h"
 #import "components/supervised_user/core/browser/family_link_user_capabilities.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
@@ -38,7 +38,7 @@
 // refactored.
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_view_controller.h"
 
-@interface IncognitoGridMediator () <IncognitoReauthObserver,
+@interface IncognitoGridMediator () <IncognitoStateObserver,
                                      FamilyLinkUserCapabilitiesObserving>
 @end
 
@@ -159,7 +159,7 @@
 - (void)disconnect {
   _familyLinkUserCapabilitiesObserver.reset();
   _identityManager = nil;
-  [_reauthSceneAgent removeObserver:self];
+  [self.incognitoState removeObserver:self];
   [super disconnect];
 }
 
@@ -171,7 +171,7 @@
   // correct delegate.
   [self.toolbarsMutator setToolbarsButtonsDelegate:self];
 
-  BOOL authenticationRequired = self.reauthSceneAgent.authenticationRequired;
+  BOOL authenticationRequired = self.incognitoState.authenticationRequired;
   if (_incognitoDisabled || authenticationRequired) {
     if (IsIOSSoftLockEnabled()) {
       [self.toolbarsMutator
@@ -231,35 +231,35 @@
   return browser->GetProfile()->GetPrefs();
 }
 
-- (void)setReauthSceneAgent:(IncognitoReauthSceneAgent*)reauthSceneAgent {
-  if (_reauthSceneAgent == reauthSceneAgent) {
+- (void)setIncognitoState:(IncognitoState*)incognitoState {
+  if (_incognitoState == incognitoState) {
     return;
   }
-  [_reauthSceneAgent removeObserver:self];
-  _reauthSceneAgent = reauthSceneAgent;
-  [_reauthSceneAgent addObserver:self];
+  [_incognitoState removeObserver:self];
+  _incognitoState = incognitoState;
+  [_incognitoState addObserver:self];
 }
 
-#pragma mark - IncognitoReauthObserver
+#pragma mark - IncognitoStateObserver
 
-- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
-    didUpdateAuthenticationRequirement:(BOOL)isRequired {
-  if (isRequired) {
+- (void)didUpdateAuthenticationRequirementForState:
+    (IncognitoState*)incognitoState {
+  if (incognitoState.authenticationRequired) {
     [self.tabGroupsHandler hideTabGroup];
   }
   if (_selected) {
-    if (isRequired) {
+    if (incognitoState.authenticationRequired) {
       self.modeHolder.mode = TabGridMode::kNormal;
     }
     [self configureToolbarsButtons];
   }
 }
 
-- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
-    didUpdateIncognitoLockState:(IncognitoLockState)incogitoLockState {
-  BOOL reauthRequired = incogitoLockState != IncognitoLockState::kNone;
-  [self reauthAgent:agent didUpdateAuthenticationRequirement:reauthRequired];
-  [self.toolbarsMutator setIncognitoToolbarsBackgroundHidden:reauthRequired];
+- (void)didUpdateIncognitoLockStateForState:(IncognitoState*)incognitoState {
+  [self didUpdateAuthenticationRequirementForState:incognitoState];
+  [self.toolbarsMutator
+      setIncognitoToolbarsBackgroundHidden:incognitoState
+                                               .authenticationRequired];
 }
 
 #pragma mark - FamilyLinkUserCapabilitiesObserving

@@ -7,19 +7,6 @@
 
 #import "base/time/time.h"
 
-// Enum that captures the type of overlay, if any, that is displayed over
-// incognito content.
-enum class IncognitoLockState {
-  // No overlay should be displayed over the incognito content.
-  kNone,
-  // An overlay is displayed over incognito content that requires
-  // reauthentication in order to dismiss.
-  kReauth,
-  // An overlay is displayed over incognito content that requires a tap in order
-  // to dismiss.
-  kSoftLock,
-};
-
 // Histogram name for Incognito lock setting interactions.
 const char kIncognitoLockSettingInteractionHistogram[] =
     "IOS.IncognitoLockSettingInteraction";

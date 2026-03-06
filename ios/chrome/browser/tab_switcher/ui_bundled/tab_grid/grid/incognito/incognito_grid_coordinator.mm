@@ -130,7 +130,7 @@
   _mediator =
       [[IncognitoGridMediator alloc] initWithModeHolder:self.modeHolder];
   _mediator.incognitoDelegate = self;
-  _mediator.reauthSceneAgent = _reauthAgent;
+  _mediator.incognitoState = self.sceneState.incognitoState;
   _mediator.tracker = tracker;
 
   GridContainerViewController* container =
@@ -149,8 +149,8 @@
     container.containedViewController = self.disabledViewController;
   }
 
-  _incognitoAuthMediator =
-      [[IncognitoReauthMediator alloc] initWithReauthAgent:_reauthAgent];
+  _incognitoAuthMediator = [[IncognitoReauthMediator alloc]
+      initWithIncognitoState:self.sceneState.incognitoState];
   _incognitoAuthMediator.consumer = self.gridViewController;
 
   [super start];

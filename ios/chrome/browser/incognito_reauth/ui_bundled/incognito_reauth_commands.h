@@ -15,7 +15,7 @@
 // Requests authentication and marks the scene as authenticated until the next
 // scene foregrounding.
 // The authentication will require user interaction. To know when it changes, a
-// IncognitoReauthObserver callback will be called.
+// IncognitoStateObserver callback will be called.
 - (void)authenticateIncognitoContent;
 
 // Marks the scene as authenticated until the next scene foregrounding, by

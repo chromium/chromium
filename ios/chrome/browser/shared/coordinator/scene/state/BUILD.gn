@@ -10,8 +10,14 @@ source_set("state") {
     "tab_grid_state.mm",
   ]
   deps = [
+    ":incognito_lock_state",
     "//base",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
   ]
+}
+
+source_set("incognito_lock_state") {
+  sources = [ "incognito_lock_state.h" ]
 }

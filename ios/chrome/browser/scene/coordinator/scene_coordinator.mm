@@ -699,10 +699,10 @@ void OnListFamilyMembersResponse(
 
 - (void)openURLInNewTab:(OpenNewTabCommand*)command {
   if (command.inIncognito) {
-    IncognitoReauthSceneAgent* reauthAgent =
-        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
-    if (reauthAgent.authenticationRequired) {
+    if (self.sceneState.incognitoState.authenticationRequired) {
       __weak __typeof(self) weakSelf = self;
+      IncognitoReauthSceneAgent* reauthAgent =
+          [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
       [reauthAgent
           authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
             if (success) {

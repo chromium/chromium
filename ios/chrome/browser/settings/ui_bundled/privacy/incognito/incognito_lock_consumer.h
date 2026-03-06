@@ -5,7 +5,9 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_INCOGNITO_INCOGNITO_LOCK_CONSUMER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_PRIVACY_INCOGNITO_INCOGNITO_LOCK_CONSUMER_H_
 
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
+#import <Foundation/Foundation.h>
+
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 
 // Consumer for the IncognitoLockMediator to update the
 // IncognitoLockViewController.

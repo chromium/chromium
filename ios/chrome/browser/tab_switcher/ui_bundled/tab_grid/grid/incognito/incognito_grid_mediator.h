@@ -11,7 +11,7 @@ namespace feature_engagement {
 class Tracker;
 }
 @protocol IncognitoGridMediatorDelegate;
-@class IncognitoReauthSceneAgent;
+@class IncognitoState;
 @protocol TabGroupsCommands;
 
 namespace signin {
@@ -24,7 +24,7 @@ class IdentityManager;
 // Incognito mediator delegate.
 @property(nonatomic, weak) id<IncognitoGridMediatorDelegate> incognitoDelegate;
 // The reauth scene agent to handle the button enabled state.
-@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthSceneAgent;
+@property(nonatomic, weak) IncognitoState* incognitoState;
 // The feature engagement tracker to alert of promo events.
 @property(nonatomic, assign) feature_engagement::Tracker* tracker;
 

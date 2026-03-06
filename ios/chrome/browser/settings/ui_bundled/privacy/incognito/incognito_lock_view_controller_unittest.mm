@@ -6,8 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_mutator.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"

@@ -7,14 +7,14 @@
 
 #import <UIKit/UIKit.h>
 
-@class IncognitoReauthSceneAgent;
+@class IncognitoState;
 @protocol IncognitoReauthConsumer;
 
 // Mediator handling incognito reauthentication. Uses the reauth scene agent as
 // the source of truth for reauth state.
 @interface IncognitoReauthMediator : NSObject
 
-- (instancetype)initWithReauthAgent:(IncognitoReauthSceneAgent*)reauthAgent
+- (instancetype)initWithIncognitoState:(IncognitoState*)incognitoState
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

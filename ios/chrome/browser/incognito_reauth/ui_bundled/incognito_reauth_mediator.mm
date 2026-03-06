@@ -7,28 +7,28 @@
 #import <Foundation/Foundation.h>
 
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
 
-@interface IncognitoReauthMediator () <IncognitoReauthObserver>
+@interface IncognitoReauthMediator () <IncognitoStateObserver>
 
-// Agent tracking the authentication status.
-@property(nonatomic, weak) IncognitoReauthSceneAgent* reauthAgent;
+// Incognito state object tracking the authentication status.
+@property(nonatomic, weak) IncognitoState* incognitoState;
 
 @end
 
 @implementation IncognitoReauthMediator
 
-- (instancetype)initWithReauthAgent:(IncognitoReauthSceneAgent*)reauthAgent {
+- (instancetype)initWithIncognitoState:(IncognitoState*)incognitoState {
   self = [super init];
   if (self) {
-    _reauthAgent = reauthAgent;
-    [reauthAgent addObserver:self];
+    _incognitoState = incognitoState;
+    [incognitoState addObserver:self];
   }
   return self;
 }
@@ -36,29 +36,29 @@
 - (void)setConsumer:(id<IncognitoReauthConsumer>)consumer {
   _consumer = consumer;
   if (IsIOSSoftLockEnabled()) {
-    [self notifyConsumer:_reauthAgent.incognitoLockState];
+    [self notifyConsumer:_incognitoState.lockState];
   } else {
     [self.consumer
-        setItemsRequireAuthentication:_reauthAgent.authenticationRequired];
+        setItemsRequireAuthentication:_incognitoState.authenticationRequired];
   }
 }
 
 - (void)dealloc {
-  [_reauthAgent removeObserver:self];
+  [_incognitoState removeObserver:self];
 }
 
-#pragma mark - IncognitoReauthObserver
+#pragma mark - IncognitoStateObserver
 
-- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
-    didUpdateAuthenticationRequirement:(BOOL)isRequired {
+- (void)didUpdateAuthenticationRequirementForState:
+    (IncognitoState*)incognitoState {
   CHECK(!IsIOSSoftLockEnabled());
-  [self.consumer setItemsRequireAuthentication:isRequired];
+  [self.consumer
+      setItemsRequireAuthentication:incognitoState.authenticationRequired];
 }
 
-- (void)reauthAgent:(IncognitoReauthSceneAgent*)agent
-    didUpdateIncognitoLockState:(IncognitoLockState)incognitoLockState {
+- (void)didUpdateIncognitoLockStateForState:(IncognitoState*)incognitoState {
   CHECK(IsIOSSoftLockEnabled());
-  [self notifyConsumer:incognitoLockState];
+  [self notifyConsumer:incognitoState.lockState];
 }
 
 #pragma mark - Private

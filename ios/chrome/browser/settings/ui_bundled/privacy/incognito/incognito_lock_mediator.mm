@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/first_run/public/best_features_item.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/settings/ui_bundled/privacy/incognito/incognito_lock_consumer.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/welcome_back/model/features.h"

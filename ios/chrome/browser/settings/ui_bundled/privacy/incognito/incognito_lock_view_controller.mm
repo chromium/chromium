@@ -9,7 +9,6 @@
 #import "base/apple/foundation_util.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
 #import "ios/chrome/browser/net/model/crurl.h"
 #import "ios/chrome/browser/settings/ui_bundled/elements/info_popover_view_controller.h"

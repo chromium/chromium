@@ -7,6 +7,8 @@
 #import "base/apple/foundation_util.h"
 #import "base/ios/crb_protocol_observers.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 namespace {
 
@@ -24,6 +26,8 @@ NSString* const kIncognitoCurrentKey = @"IncognitoActive";
 @implementation IncognitoState {
   IncognitoStateObserverList* _observers;
 }
+
+@synthesize lockState = _lockState;
 
 - (instancetype)initWithSceneState:(SceneState*)sceneState {
   self = [super init];
@@ -59,6 +63,23 @@ NSString* const kIncognitoCurrentKey = @"IncognitoActive";
   }
   [self.sceneState setSessionObject:@(incognitoContentVisible)
                              forKey:kIncognitoCurrentKey];
+}
+
+- (BOOL)isAuthenticationRequired {
+  return self.lockState != IncognitoLockState::kNone;
+}
+
+- (void)setLockState:(IncognitoLockState)lockState {
+  if (_lockState == lockState) {
+    return;
+  }
+  BOOL wasAuthenticationRequired = self.isAuthenticationRequired;
+  _lockState = lockState;
+  if (IsIOSSoftLockEnabled()) {
+    [_observers didUpdateIncognitoLockStateForState:self];
+  } else if (wasAuthenticationRequired != self.isAuthenticationRequired) {
+    [_observers didUpdateAuthenticationRequirementForState:self];
+  }
 }
 
 @end

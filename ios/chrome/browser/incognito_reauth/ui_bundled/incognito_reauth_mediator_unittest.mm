@@ -6,10 +6,10 @@
 
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/scoped_feature_list.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_consumer.h"
-#import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"
@@ -23,27 +23,28 @@ class IncognitoReauthMediatorTest : public PlatformTest {
  protected:
   IncognitoReauthMediatorTest() {
     feature_list_.InitWithFeatureState(kIOSSoftLock, YES);
-    agent_ = [OCMockObject niceMockForClass:[IncognitoReauthSceneAgent class]];
+    incognito_state_ = [OCMockObject niceMockForClass:[IncognitoState class]];
     consumer_ =
         [OCMockObject mockForProtocol:@protocol(IncognitoReauthConsumer)];
   }
 
   void SetUp() override {
-    mediator_ = [[IncognitoReauthMediator alloc] initWithReauthAgent:agent_];
+    mediator_ = [[IncognitoReauthMediator alloc]
+        initWithIncognitoState:incognito_state_];
   }
 
   IncognitoReauthMediator* mediator_;
   base::test::ScopedFeatureList feature_list_;
 
   // Mocks
-  id agent_;
+  id incognito_state_;
   id consumer_;
 };
 
 // Test that the consumer is correctly notified when the mediator is initiated
 // and no lock is required.
 TEST_F(IncognitoReauthMediatorTest, InitWithoutLock) {
-  OCMStub([agent_ incognitoLockState]).andReturn(IncognitoLockState::kNone);
+  OCMStub([incognito_state_ lockState]).andReturn(IncognitoLockState::kNone);
   OCMExpect([consumer_ setItemsRequireAuthentication:NO
                                withPrimaryButtonText:nil
                                   accessibilityLabel:nil]);
@@ -54,7 +55,8 @@ TEST_F(IncognitoReauthMediatorTest, InitWithoutLock) {
 // Test that the consumer is correctly notified when the mediator is initiated
 // and soft lock is required.
 TEST_F(IncognitoReauthMediatorTest, InitWithSoftLock) {
-  OCMStub([agent_ incognitoLockState]).andReturn(IncognitoLockState::kSoftLock);
+  OCMStub([incognito_state_ lockState])
+      .andReturn(IncognitoLockState::kSoftLock);
   OCMExpect([consumer_
       setItemsRequireAuthentication:YES
               withPrimaryButtonText:
@@ -70,7 +72,7 @@ TEST_F(IncognitoReauthMediatorTest, InitWithSoftLock) {
 // Test that the consumer is correctly notified when the mediator is initiated
 // and reauth is required.
 TEST_F(IncognitoReauthMediatorTest, InitWithReauth) {
-  OCMStub([agent_ incognitoLockState]).andReturn(IncognitoLockState::kReauth);
+  OCMStub([incognito_state_ lockState]).andReturn(IncognitoLockState::kReauth);
   OCMExpect([consumer_
       setItemsRequireAuthentication:YES
               withPrimaryButtonText:

@@ -67,6 +67,7 @@
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider.h"
 #import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
@@ -950,10 +951,11 @@ BookmarkNodeIDSet GetBookmarkNodeIDSet(
         inIncognito:(BOOL)inIncognito
              newTab:(BOOL)newTab {
   if (inIncognito) {
-    IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
-        agentFromScene:_browser.get()->GetSceneState()];
-    if (reauthAgent.authenticationRequired) {
+    SceneState* scene = _browser.get()->GetSceneState();
+    if (scene.incognitoState.authenticationRequired) {
       __weak BookmarksHomeViewController* weakSelf = self;
+      IncognitoReauthSceneAgent* reauthAgent =
+          [IncognitoReauthSceneAgent agentFromScene:scene];
       [reauthAgent
           authenticateIncognitoContentWithCompletionBlock:^(BOOL success) {
             if (success) {

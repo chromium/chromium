@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/prerender/model/prerender_browser_agent.h"
 #import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -380,9 +381,9 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
   }
 
   // Only open tab in incognito if re-authentication is not needed.
-  IncognitoReauthSceneAgent* reauth_agent =
-      [IncognitoReauthSceneAgent agentFromScene:browser_->GetSceneState()];
-  if (params.in_incognito && reauth_agent.authenticationRequired) {
+
+  SceneState* scene = browser_->GetSceneState();
+  if (params.in_incognito && scene.incognitoState.authenticationRequired) {
     base::OnceCallback<void(BOOL)> load_url_on_auth_success = base::BindOnce(
         [](base::OnceClosure closure, BOOL success) {
           if (success) {
@@ -391,6 +392,8 @@ void UrlLoadingBrowserAgent::LoadUrlInNewTab(const UrlLoadParams& params) {
         },
         base::BindOnce(&UrlLoadingBrowserAgent::LoadUrlInNewTab,
                        weak_ptr_factory_.GetWeakPtr(), params));
+    IncognitoReauthSceneAgent* reauth_agent =
+        [IncognitoReauthSceneAgent agentFromScene:scene];
     [reauth_agent
         authenticateIncognitoContentWithCompletionBlock:
             base::CallbackToBlock(std::move(load_url_on_auth_success))];

@@ -1967,9 +1967,10 @@ void InjectNTP(Browser* browser) {
 
   // Wrap the post-dismiss-modals action with the incognito auth check.
   if (targetMode == ApplicationModeForTabOpening::INCOGNITO) {
-    IncognitoReauthSceneAgent* reauthAgent =
-        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
-    if (reauthAgent.authenticationRequired) {
+    SceneState* scene = self.sceneState;
+    if (scene.incognitoState.authenticationRequired) {
+      IncognitoReauthSceneAgent* reauthAgent =
+          [IncognitoReauthSceneAgent agentFromScene:scene];
       void (^wrappedDismissModalCompletion)() = dismissModalsCompletion;
       dismissModalsCompletion = ^{
         [weakSelf

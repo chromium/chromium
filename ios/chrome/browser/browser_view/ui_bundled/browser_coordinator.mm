@@ -1836,11 +1836,8 @@ const char kChromeAppStoreUrl[] =
   browserViewController.nonModalPromoPresentationDelegate = self;
 
   if (self.isOffTheRecord) {
-    IncognitoReauthSceneAgent* reauthAgent =
-        [IncognitoReauthSceneAgent agentFromScene:self.sceneState];
-
-    self.incognitoAuthMediator =
-        [[IncognitoReauthMediator alloc] initWithReauthAgent:reauthAgent];
+    self.incognitoAuthMediator = [[IncognitoReauthMediator alloc]
+        initWithIncognitoState:self.sceneState.incognitoState];
     self.incognitoAuthMediator.consumer = browserViewController;
   }
 }
