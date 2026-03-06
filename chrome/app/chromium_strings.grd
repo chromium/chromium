@@ -1593,6 +1593,14 @@ Chromium is unable to recover your settings.
         ''' It also controls what page is shown when you start Chromium or search from the Omnibox. '''
       </message>
 
+      <!-- Search Settings Page -->
+      <message name="IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_ACTIVE_SHORTCUTS_EXPLANATION" desc="Subtitle for the active features and extensions subsection, explaining how they can be used.">
+        To search a specific Chromium feature or extension, type its shortcut in the address bar, followed by your selected keyboard key
+      </message>
+      <message name="IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_INACTIVE_SHORTCUTS_EXPLANATION" desc="Subtitle for the inactive features and extensions subsection, explaining how they can be used.">
+        Some Chromium features and extensions come with shortcuts. You can choose to turn them back on.
+      </message>
+
       <!-- Webstore strings -->
       <message name="IDS_WEBSTORE_APP_DESCRIPTION" desc="Description for the WebStore app.">
         Discover great apps, games, extensions and themes for Chromium.

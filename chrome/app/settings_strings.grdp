@@ -373,6 +373,12 @@
   <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION" desc="Label text of an indicator that a setting's value is being controlled by an extension.">
     <ph name="NAME">$1<ex>Adblocker plusplus</ex></ph> is controlling this setting
   </message>
+ <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION_TITLE" desc="Title of the disclaimer that a setting's value is being controlled by an extension.">
+   An extension is controlling this setting
+ </message>
+  <message name="IDS_SETTINGS_CONTROLLED_BY_EXTENSION_WITH_DISABLE_AND_MANAGE_OPTION" desc="Text of the disclaimer that a setting's value is being controlled by an extension. `Disable` link immediately disables the extension. `Manage` link goes to the Details > Extension Options link; either `chrome://extensions/?options=ID ` or `chrome-extension://ID/options.html`">
+    The "<ph name="NAME">$1<ex>Adblocker plusplus</ex></ph>" extension is controlling this setting. To change your default search engine, <ph name="BEGIN_LINK_DISABLE">&lt;a href="#" id="disableLink"&gt;</ph>disable the extension<ph name="END_LINK_DISABLE">&lt;/a&gt;</ph> or <ph name="BEGIN_LINK_MANAGE">&lt;a target="_blank" href="$2" id="manageLink"&gt;</ph>manage its settings<ph name="END_LINK_MANAGE">&lt;/a&gt;</ph>.
+  </message>
   <message name="IDS_SETTINGS_CLEAR" desc="Label used on a menu item or button to delete an item.">
     Delete
   </message>
@@ -2323,6 +2329,9 @@
   <message name="IDS_SETTINGS_SEARCH" desc="Name of the settings page which displays search engine preferences.">
     Search engine
   </message>
+  <message name="IDS_SETTINGS_DEFAULT_SEARCH" desc="Title of the search settings page section which displays the default search engine.">
+    Default search engine
+  </message>
   <message name="IDS_SETTINGS_SEARCH_EXPLANATION_ACCESSIBILITY_LABEL" desc="Accessibility label for a 'learn more' link which links to an article about setting a default search engine.">
     Learn more about default search engines
   </message>
@@ -2334,6 +2343,54 @@
   </message>
   <message name="IDS_SETTINGS_SEARCH_MANAGE_SEARCH_ENGINES_EXPLANATION" desc="Explanation for the Manage Search Engines button.">
     Create shortcuts for searching sites and manage your search engine
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_SITE_SEARCH" desc="Label for 'Shortcuts for sites and search engines' section">
+    Shortcuts for sites and search engines
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ACTIVE_SHORTCUTS" desc="Label for 'Shortcuts for sites and search engines' subsection containing the active sites and search engines.">
+    Your site shortcuts
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ACTIVE_SHORTCUTS_EXPLANATION" desc="Subtitle for the active sites and search engines subsection, explaining how they can be used.">
+    To search a specific site or search engine, type its shortcut in the address bar, followed by your selected keyboard key
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_INACTIVE_SHORTCUTS" desc="Label for 'Shortcuts for sites and search engines' subsection containing the inactive sites and search engines.">
+    Available site shortcuts
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_INACTIVE_SHORTCUTS_EXPLANATION" desc="Subtitle for the inactive sites and search engines subsection, explaining how they can be used.">
+    You visited these sites, and they requested to become a shortcut. You can choose to turn them on.
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_EXTENSION_ENGINES" desc="Label for 'Shortcuts for features and extensions' section">
+    Shortcuts for features and extensions
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_ACTIVE_SHORTCUTS" desc="Label for 'Shortcuts for features and extensions' subsection containing the active features and extensions.">
+    Your feature and extension shortcuts
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_EXTENSION_ENGINES_INACTIVE_SHORTCUTS" desc="Label for 'Shortcuts for features and extensions' subsection containing the inactive features and extensions.">
+    Available feature and extension shortcuts
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_KEYBOARD_KEY_TITLE" desc="Label for scoped search mode trigger options section">
+    Keyboard key
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_KEYBOARD_KEY_DESCRIPTION" desc="Text explaining how to use keyword mode">
+    In the address bar, use this key with all your shortcuts
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ACTIVATE" desc="Text of the button that activates a search engine" meaning="To turn on/enable usage of the search engine">
+    Turn on
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_DEACTIVATE" desc="Text of the button that deactivates a search engine" meaning="To turn off/disable usage of the search engine">
+    Turn off
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_ACTIVATE_SHORTCUT" desc="Text of the button that activates a shortcut" meaning="To turn on/enable usage of the shortcut">
+    Turn on shortcut
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_DEACTIVATE_SHORTCUT" desc="Text of the button that deactivates a shortcut" meaning="To turn off/disable usage of the shortcut">
+    Turn off shortcut
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_DISABLE_EXTENSION" desc="Text displayed for a button that allows the user to disable a Chrome extension">
+    Disable extension
+  </message>
+  <message name="IDS_SETTINGS_SEARCH_MANAGE_EXTENSION" desc="Text displayed for a button that allows the user to manage a Chrome extension">
+    Manage extension
   </message>
 
   <!-- Search Engines Page -->

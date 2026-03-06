@@ -1933,6 +1933,18 @@ are declared in tools/grit/grit_args.gni.
           &amp;Manage Search Engines and Site Search
         </message>
       </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS"
+                 desc="Title of the popup menu item that takes the user to 'Manage search engines and shortcuts' in Settings.">
+          &amp;Manage search engines and shortcuts
+        </message>
+      </if>
+      <if expr="use_titlecase">
+        <message name="IDS_MANAGE_SEARCH_ENGINES_AND_SHORTCUTS"
+                 desc="In Title Case: Title of the popup menu item that takes the user to 'Manage search engines and shortcuts' in Settings.">
+          &amp;Manage Search Engines and Shortcuts
+        </message>
+      </if>
 
       <!-- Search Engine Settings -->
       <message name="IDS_SEARCH_ENGINES_EDITOR_KEYWORD_COLUMN"
