@@ -523,6 +523,8 @@ public class ToolbarTablet extends ToolbarLayout {
 
     @Override
     public void onWidthConsumerVisibilityChanged() {
+        if (!isToolbarTabletResizeRefactorEnabled()) return;
+
         // Re-allocate width to account for a change in a width consumer's visibility.
         int unspecifiedSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         allocateAvailableToolbarWidth(
