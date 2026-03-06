@@ -2977,6 +2977,8 @@ source_set("browser") {
         "date_time_chooser/ios/date_time_chooser_util.mm",
         "date_time_chooser/ios/date_time_chooser_view_controller.h",
         "date_time_chooser/ios/date_time_chooser_view_controller.mm",
+        "renderer_host/ios_extended_text_input_traits.h",
+        "renderer_host/ios_extended_text_input_traits.mm",
         "renderer_host/render_widget_host_view_ios_uiview.h",
         "renderer_host/render_widget_host_view_ios_uiview.mm",
       ]

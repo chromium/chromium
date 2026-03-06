@@ -8,6 +8,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/input/web_input_event_builders_ios.h"
+#include "content/browser/renderer_host/ios_extended_text_input_traits.h"
 #include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 static void* kObservingContext = &kObservingContext;
@@ -109,40 +110,6 @@ static void* kObservingContext = &kObservingContext;
 }
 @end
 
-@interface BlinkExtendedTextInputTraits : NSObject <BEExtendedTextInputTraits>
-@property(nonatomic) UITextAutocapitalizationType autocapitalizationType;
-@property(nonatomic) UITextAutocorrectionType autocorrectionType;
-@property(nonatomic) UITextSpellCheckingType spellCheckingType;
-@property(nonatomic) UITextSmartQuotesType smartQuotesType;
-@property(nonatomic) UITextSmartDashesType smartDashesType;
-@property(nonatomic) UITextInlinePredictionType inlinePredictionType;
-@property(nonatomic) UIKeyboardType keyboardType;
-@property(nonatomic) UIKeyboardAppearance keyboardAppearance;
-@property(nonatomic) UIReturnKeyType returnKeyType;
-@property(nonatomic, getter=isSecureTextEntry) BOOL secureTextEntry;
-@property(nonatomic, getter=isSingleLineDocument) BOOL singleLineDocument;
-@property(nonatomic, getter=isTypingAdaptationEnabled)
-    BOOL typingAdaptationEnabled;
-@property(nonatomic, copy) UITextContentType textContentType;
-@property(nonatomic, copy) UITextInputPasswordRules* passwordRules;
-@property(nonatomic) UITextSmartInsertDeleteType smartInsertDeleteType;
-@property(nonatomic) BOOL enablesReturnKeyAutomatically;
-@property(nonatomic, strong) UIColor* insertionPointColor;
-@property(nonatomic, strong) UIColor* selectionHandleColor;
-@property(nonatomic, strong) UIColor* selectionHighlightColor;
-@end
-@implementation BlinkExtendedTextInputTraits
-- (instancetype)init {
-  if (!(self = [super init])) {
-    return nil;
-  }
-  self.typingAdaptationEnabled = YES;
-  self.selectionHandleColor = [UIColor blueColor];
-  return self;
-}
-
-@end
-
 @implementation RenderWidgetUIView
 @synthesize tokenizer;
 
@@ -151,6 +118,7 @@ static void* kObservingContext = &kObservingContext;
   self = [self init];
   if (self) {
     _view = view;
+    _extendedTextInputTraits = [[IOSExtendedTextInputTraits alloc] init];
     text_interaction_ = [[BETextInteraction alloc] init];
     [self addInteraction:text_interaction_];
     self.multipleTouchEnabled = YES;
@@ -401,7 +369,7 @@ static void* kObservingContext = &kObservingContext;
 }
 
 - (id<BEExtendedTextInputTraits>)extendedTextInputTraits {
-  return [[BlinkExtendedTextInputTraits alloc] init];
+  return _extendedTextInputTraits;
 }
 
 - (void)handleEditCommands:(const std::vector<std::string>&)commands {
@@ -1240,6 +1208,7 @@ static void* kObservingContext = &kObservingContext;
 
 - (void)onUpdateTextInputState:(const ui::mojom::TextInputState&)state
                     withBounds:(CGRect)bounds {
+  [_extendedTextInputTraits updateFromTextInputState:state];
   // Check for the visibility request and policy if VK APIs are enabled.
   if (state.vk_policy == ui::mojom::VirtualKeyboardPolicy::MANUAL) {
     // policy is manual.

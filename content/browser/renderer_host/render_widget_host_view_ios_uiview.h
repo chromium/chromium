@@ -8,6 +8,8 @@
 #import <BrowserEngineKit/BrowserEngineKit.h>
 #import <UIKit/UIKit.h>
 
+@class IOSExtendedTextInputTraits;
+
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_ios.h"
@@ -18,6 +20,7 @@
 @interface RenderWidgetUIView
     : CALayerFrameSinkProvider <BETextInput, UITextInput> {
   base::WeakPtr<content::RenderWidgetHostViewIOS> _view;
+  IOSExtendedTextInputTraits* _extendedTextInputTraits;
   id<BETextInputDelegate> be_text_input_delegate_;
   BETextInteraction* text_interaction_;
   BOOL _isEditable;
