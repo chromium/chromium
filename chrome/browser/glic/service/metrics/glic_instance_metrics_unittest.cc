@@ -119,7 +119,9 @@ TEST_F(GlicInstanceMetricsTest, OnFloatyClosed_WithoutOpening_LogsError) {
 }
 
 TEST_F(GlicInstanceMetricsTest, OnSidePanelClosed_WithoutOpening_LogsError) {
-  metrics_.OnSidePanelClosed(static_cast<tabs::TabInterface*>(&mock_tab_));
+  metrics_.OnSidePanelClosed(
+      static_cast<tabs::TabInterface*>(&mock_tab_),
+      GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kSidePanelClosedWithoutOpen, 1);
@@ -203,7 +205,8 @@ TEST_F(GlicInstanceMetricsTest, ValidFloatyFlow_DoesNotLogError) {
 TEST_F(GlicInstanceMetricsTest, ValidSidePanelFlow_DoesNotLogError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
   metrics_.OnShowInSidePanel(&mock_tab_);
-  metrics_.OnSidePanelClosed(&mock_tab_);
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectTotalCount("Glic.Instance.Metrics.Error", 0);
 }
 
@@ -259,8 +262,10 @@ TEST_F(GlicInstanceMetricsTest, Floaty_OpenCloseClose_LogsError) {
 TEST_F(GlicInstanceMetricsTest, SidePanel_OpenCloseClose_LogsError) {
   EXPECT_CALL(mock_tab_, GetTabHandle()).WillRepeatedly(testing::Return(1));
   metrics_.OnShowInSidePanel(&mock_tab_);
-  metrics_.OnSidePanelClosed(&mock_tab_);
-  metrics_.OnSidePanelClosed(&mock_tab_);
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
+  metrics_.OnSidePanelClosed(
+      &mock_tab_, GlicInstanceMetrics::CloseReason::kExplicitlyClosed);
   histogram_tester_.ExpectUniqueSample(
       "Glic.Instance.Metrics.Error",
       GlicInstanceMetricsError::kSidePanelClosedWithoutOpen, 1);

@@ -164,8 +164,10 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   // Called when the floaty is hidden.
   void OnFloatyClosed();
 
+  enum class CloseReason { kExplicitlyClosed, kTabSwitched };
+
   // Called when the side panel is closed.
-  void OnSidePanelClosed(tabs::TabInterface* tab);
+  void OnSidePanelClosed(tabs::TabInterface* tab, CloseReason reason);
 
   // Called when an embedder is unbound from this instance.
   void OnUnbindEmbedder(EmbedderKey key);

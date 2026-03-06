@@ -116,7 +116,7 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeNoAction) {
     // Destructor triggers logging.
   }
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.TabContents",
+      "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents",
       DaisyChainFirstAction::kNoAction, 1);
 }
 
@@ -127,7 +127,7 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeInputSubmitted) {
     helper.OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
   }
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents",
+      "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
       DaisyChainFirstAction::kInputSubmitted, 1);
 }
 
@@ -136,14 +136,14 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeSidePanelClosedDelayed) {
     GlicInstanceHelper helper(&mock_tab_);
     helper.SetIsDaisyChained(DaisyChainSource::kActorAddTab);
     helper.OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
-    // Should not log immediately.
+    // Should not log immediately since kSidePanelClosed is ambiguous.
     histogram_tester_.ExpectTotalCount(
-        "Glic.Instance.FirstActionInDaisyChainPanel.ActorAddTab", 0);
+        "Glic.Instance.AutoOpenedPanel.FirstAction.ActorAddTab", 0);
     // Fast forward to trigger timeout.
     task_environment_.FastForwardBy(base::Seconds(6));
   }
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.ActorAddTab",
+      "Glic.Instance.AutoOpenedPanel.FirstAction.ActorAddTab",
       DaisyChainFirstAction::kSidePanelClosed, 1);
 }
 
@@ -151,36 +151,53 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeRaceCondition) {
   {
     GlicInstanceHelper helper(&mock_tab_);
     helper.SetIsDaisyChained(DaisyChainSource::kTabContents);
-    helper.OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kTabSwitched);
     // Ambiguous action start timer.
     histogram_tester_.ExpectTotalCount(
-        "Glic.Instance.FirstActionInDaisyChainPanel.TabContents", 0);
+        "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents", 0);
 
     // Terminal action happens before timeout.
     helper.OnDaisyChainAction(DaisyChainFirstAction::kRecursiveDaisyChain);
   }
-  // Should log terminal action immediately and ignore side panel closed.
+  // Should log terminal action immediately and ignore intermediate ambiguous
+  // action.
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.TabContents",
+      "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents",
       DaisyChainFirstAction::kRecursiveDaisyChain, 1);
 }
 
-TEST_F(GlicInstanceHelperTest,
-       LogsDaisyChainOutcomeSidePanelClosedDestruction) {
+TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeTabSwitchedDestruction) {
   {
     GlicInstanceHelper helper(&mock_tab_);
     helper.SetIsDaisyChained(DaisyChainSource::kNewTab);
-    helper.OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kTabSwitched);
     // Should not log immediately.
     histogram_tester_.ExpectTotalCount(
-        "Glic.Instance.FirstActionInDaisyChainPanel.NewTab", 0);
+        "Glic.Instance.AutoOpenedPanel.FirstAction.NewTab", 0);
     // Destruction happens before timeout (timer was 5s).
     task_environment_.FastForwardBy(base::Seconds(2));
   }
   // Should log on destruction.
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.NewTab",
-      DaisyChainFirstAction::kSidePanelClosed, 1);
+      "Glic.Instance.AutoOpenedPanel.FirstAction.NewTab",
+      DaisyChainFirstAction::kTabSwitched, 1);
+}
+
+TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeTabSwitchedDelayed) {
+  {
+    GlicInstanceHelper helper(&mock_tab_);
+    helper.SetIsDaisyChained(DaisyChainSource::kActorAddTab);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kTabSwitched);
+    // Should not log immediately.
+    histogram_tester_.ExpectTotalCount(
+        "Glic.Instance.AutoOpenedPanel.FirstAction.ActorAddTab", 0);
+    // Fast forward to trigger timeout.
+    task_environment_.FastForwardBy(base::Seconds(6));
+  }
+  // New metric keeps kTabSwitched as is.
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.ActorAddTab",
+      DaisyChainFirstAction::kTabSwitched, 1);
 }
 
 TEST_F(GlicInstanceHelperTest, LogsNewTabOutcome) {
@@ -190,7 +207,29 @@ TEST_F(GlicInstanceHelperTest, LogsNewTabOutcome) {
     helper.OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
   }
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.NewTab",
+      "Glic.Instance.AutoOpenedPanel.FirstAction.NewTab",
+      DaisyChainFirstAction::kInputSubmitted, 1);
+}
+
+TEST_F(GlicInstanceHelperTest, LogsWebHandoffBluebirdOutcome) {
+  {
+    GlicInstanceHelper helper(&mock_tab_);
+    helper.SetIsDaisyChained(DaisyChainSource::kWebHandoff);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
+  }
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.WebHandoff",
+      DaisyChainFirstAction::kInputSubmitted, 1);
+}
+
+TEST_F(GlicInstanceHelperTest, LogsAutoOpenPdfOutcome) {
+  {
+    GlicInstanceHelper helper(&mock_tab_);
+    helper.SetIsDaisyChained(DaisyChainSource::kAutoOpenPdf);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kInputSubmitted);
+  }
+  histogram_tester_.ExpectUniqueSample(
+      "Glic.Instance.AutoOpenedPanel.FirstAction.AutoOpenPdf",
       DaisyChainFirstAction::kInputSubmitted, 1);
 }
 
@@ -198,23 +237,23 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeNoActionOverwrite) {
   {
     GlicInstanceHelper helper(&mock_tab_);
     helper.SetIsDaisyChained(DaisyChainSource::kTabContents);
-    helper.OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
+    helper.OnDaisyChainAction(DaisyChainFirstAction::kTabSwitched);
     // Ambiguous action start timer.
     histogram_tester_.ExpectTotalCount(
-        "Glic.Instance.FirstActionInDaisyChainPanel.TabContents", 0);
+        "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents", 0);
 
     // NoAction should be ignored if we already have an action.
     helper.OnDaisyChainAction(DaisyChainFirstAction::kNoAction);
     histogram_tester_.ExpectTotalCount(
-        "Glic.Instance.FirstActionInDaisyChainPanel.TabContents", 0);
+        "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents", 0);
 
     // Fast forward to trigger timeout.
     task_environment_.FastForwardBy(base::Seconds(6));
   }
-  // Should log SidePanelClosed.
+  // Should log TabSwitched
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.TabContents",
-      DaisyChainFirstAction::kSidePanelClosed, 1);
+      "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents",
+      DaisyChainFirstAction::kTabSwitched, 1);
 }
 
 TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeNoActionOnDestruction) {
@@ -225,7 +264,7 @@ TEST_F(GlicInstanceHelperTest, LogsDaisyChainOutcomeNoActionOnDestruction) {
     // Destructor triggers logging.
   }
   histogram_tester_.ExpectUniqueSample(
-      "Glic.Instance.FirstActionInDaisyChainPanel.TabContents",
+      "Glic.Instance.AutoOpenedPanel.FirstAction.TabContents",
       DaisyChainFirstAction::kNoAction, 1);
 }
 

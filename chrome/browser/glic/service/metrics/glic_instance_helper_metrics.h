@@ -19,7 +19,10 @@ enum class DaisyChainFirstAction {
   kSwitchedConversation = 2,
   kRecursiveDaisyChain = 3,
   kSidePanelClosed = 4,
-  kMaxValue = kSidePanelClosed,
+  kTabSwitched = 5,
+  kMaxValue = kTabSwitched,
+  // TODO(crbug.com/487306585): Add FRE-related first actions too.
+
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:GlicDaisyChainFirstAction)
 
@@ -39,7 +42,9 @@ class GlicInstanceHelperMetrics {
   void OnBoundToInstance(const InstanceId& instance_id);
   void OnPinnedByInstance(const InstanceId& instance_id);
 
-  // Marks the tab as being part of a daisy chain session.
+  // TODO(crbug.com/489758590) Overhaul names with "DaisyChain" and maybe rename
+  // to "AutoOpenPanel";
+  //  Marks the tab as being part of a daisy chain session.
   void SetIsDaisyChained(DaisyChainSource source);
 
   // Records a significant user action during a daisy chain session.

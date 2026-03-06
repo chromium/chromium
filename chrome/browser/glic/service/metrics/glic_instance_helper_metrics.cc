@@ -61,7 +61,11 @@ void GlicInstanceHelperMetrics::OnDaisyChainAction(
 
   current_metric_action_ = action;
 
-  if (action == DaisyChainFirstAction::kSidePanelClosed) {
+  // Switching tabs or explicitly closing the side panel can be ambiguous, e.g.
+  // user may cycle through tabs or quickly re-open the panel to finish
+  // something. We start a timer to wait for a more definitive action.
+  if (action == DaisyChainFirstAction::kTabSwitched ||
+      action == DaisyChainFirstAction::kSidePanelClosed) {
     // Ambiguous action. Start/restart timer.
     flush_timer_.Start(FROM_HERE, base::Seconds(5), this,
                        &GlicInstanceHelperMetrics::FlushMetric);
@@ -76,8 +80,9 @@ void GlicInstanceHelperMetrics::FlushMetric() {
     return;
   }
   std::string source_str = GetDaisyChainSourceString(daisy_chain_source_);
+
   base::UmaHistogramEnumeration(
-      base::StrCat({"Glic.Instance.FirstActionInDaisyChainPanel.", source_str}),
+      base::StrCat({"Glic.Instance.AutoOpenedPanel.FirstAction.", source_str}),
       current_metric_action_);
   metric_finalized_ = true;
   flush_timer_.Stop();

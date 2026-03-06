@@ -183,7 +183,11 @@ void GlicSidePanelUi::SidePanelStateChanged(
   // Showing only happens through glic entrypoint, hiding can also be triggered
   // by side panel coordinator when replacing glic with another entry.
   if (state != GlicSidePanelCoordinator::State::kShown && tab_) {
-    instance_metrics_->OnSidePanelClosed(tab_.get());
+    GlicInstanceMetrics::CloseReason reason =
+        state == GlicSidePanelCoordinator::State::kBackgrounded
+            ? GlicInstanceMetrics::CloseReason::kTabSwitched
+            : GlicInstanceMetrics::CloseReason::kExplicitlyClosed;
+    instance_metrics_->OnSidePanelClosed(tab_.get(), reason);
     panel_state_.kind = mojom::PanelStateKind::kHidden;
     delegate_->NotifyPanelStateChanged();
     // NOTE: `this` will be destroyed after this call.

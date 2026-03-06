@@ -2537,7 +2537,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
 
   // 4. Verify no action yet.
   histogram_tester->ExpectTotalCount(
-      "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents", 0);
+      "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents", 0);
 
   // 5. Trigger "createTab" (recursive) from the second tab's panel.
   ExecuteJsTest({.params = base::Value("createTab")});
@@ -2549,7 +2549,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   // 7. Verify recursive metric for the second tab (which was daisy chained).
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester->GetBucketCount(
-               "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents",
+               "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
                DaisyChainFirstAction::kRecursiveDaisyChain) == 1;
   }));
 
@@ -2563,7 +2563,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain,
   // 10. Verify inputSubmitted metric for the third tab.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester->GetBucketCount(
-               "Glic.Instance.FirstActionInDaisyChainPanel.GlicContents",
+               "Glic.Instance.AutoOpenedPanel.FirstAction.GlicContents",
                DaisyChainFirstAction::kInputSubmitted) == 1;
   }));
 }
@@ -2595,7 +2595,7 @@ IN_PROC_BROWSER_TEST_P(GlicApiTestWithDaisyChain, testNewTabMetrics) {
   // 5. Verify Metric.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return histogram_tester->GetBucketCount(
-               "Glic.Instance.FirstActionInDaisyChainPanel.NewTab",
+               "Glic.Instance.AutoOpenedPanel.FirstAction.NewTab",
                DaisyChainFirstAction::kInputSubmitted) == 1;
   }));
 }

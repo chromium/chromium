@@ -314,6 +314,16 @@ void GlicInstanceMetrics::OnShowInSidePanel(tabs::TabInterface* tab) {
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Show.SidePanel"));
   LogEvent(GlicInstanceEvent::kSidePanelShown);
   LogEvent(GlicInstanceEvent::kShown);
+
+  if (auto* helper = GlicInstanceHelper::From(tab)) {
+    if (last_invocation_source_ ==
+        mojom::InvocationSource::kNavigationCapture) {
+      helper->SetIsDaisyChained(DaisyChainSource::kWebHandoff);
+    } else if (last_invocation_source_ ==
+               mojom::InvocationSource::kAutoOpenedForPdf) {
+      helper->SetIsDaisyChained(DaisyChainSource::kAutoOpenPdf);
+    }
+  }
 }
 
 void GlicInstanceMetrics::OnShowInFloaty(const ShowOptions& options) {
@@ -351,13 +361,19 @@ void GlicInstanceMetrics::OnFloatyClosed() {
   floaty_open_time_ = base::TimeTicks();
 }
 
-void GlicInstanceMetrics::OnSidePanelClosed(tabs::TabInterface* tab) {
+void GlicInstanceMetrics::OnSidePanelClosed(
+    tabs::TabInterface* tab,
+    GlicInstanceMetrics::CloseReason reason) {
   if (!tab) {
     return;
   }
 
   if (auto* helper = GlicInstanceHelper::From(tab)) {
-    helper->OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
+    if (reason == GlicInstanceMetrics::CloseReason::kTabSwitched) {
+      helper->OnDaisyChainAction(DaisyChainFirstAction::kTabSwitched);
+    } else {
+      helper->OnDaisyChainAction(DaisyChainFirstAction::kSidePanelClosed);
+    }
   }
 
   tabs::TabHandle tab_handle = tab->GetHandle();
