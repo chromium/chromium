@@ -39,10 +39,6 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if BUILDFLAG(IS_LINUX)
-#include "ui/ozone/public/ozone_platform.h"
-#endif
-
 namespace {
 
 enum class DragPosition { kAbove, kBelow };
@@ -305,13 +301,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, CancelDragWithinUnpinnedContainer) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitTabs) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -346,13 +335,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitTabs) {
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplit) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -395,13 +377,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOverSplit) {
 #define MAYBE_DragOverSplitInGroup DragOverSplitInGroup
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragOverSplitInGroup) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -479,13 +454,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragMultipleTabs) {
 #define MAYBE_DragMultipleTabsInGroup DragMultipleTabsInGroup
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, MAYBE_DragMultipleTabsInGroup) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -619,13 +587,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragOutOfGroup) {
 #endif
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
                        MAYBE_DragMultiplePinnedTabsWithinContainer) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -668,13 +629,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragSplitWithinPinnedContainer) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
@@ -733,13 +687,6 @@ IN_PROC_BROWSER_TEST_F(VerticalTabDragTest,
 }
 
 IN_PROC_BROWSER_TEST_F(VerticalTabDragTest, DragGroupHeader) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/470605545): The test flakes with a CHECK for
-  // `GlobalBrowserCollection::GetInstance()->IsEmpty()` failing.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Flaky on wayland crbug.com/470605545";
-  }
-#endif
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFourthTab);
   TabStripModel* tab_strip_model = browser()->GetTabStripModel();
   ASSERT_NE(nullptr, tab_strip_model);
