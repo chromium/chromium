@@ -59,6 +59,15 @@ std::optional<history_embeddings::proto::PassagesValue> PassagesBlobToProto(
     return std::nullopt;
   }
 
+  // To prevent an out-of-memory crash from a corrupted gzip footer allocating
+  // a huge string, verify the uncompressed size is reasonable (16 MB).
+  uint32_t uncompressed_size =
+      compression::GetUncompressedSize(compressed_proto);
+  constexpr uint32_t kMaxUncompressedSize = 16 * 1024 * 1024;
+  if (uncompressed_size > kMaxUncompressedSize) {
+    return std::nullopt;
+  }
+
   std::string serialized_proto;
   if (!compression::GzipUncompress(std::move(compressed_proto),
                                    &serialized_proto)) {
