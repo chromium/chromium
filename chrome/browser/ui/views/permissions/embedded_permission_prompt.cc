@@ -111,8 +111,8 @@ void EmbeddedPermissionPrompt::CloseCurrentViewAndMaybeShowNext(
   if (prompt_view) {
     prompt_view_tracker_.SetView(prompt_view);
     if (!content_scrim_widget_) {
-      scoped_ignore_input_events_ = web_contents()->IgnoreInputEvents(
-          std::nullopt, /*should_ignore_a11y_input=*/true);
+      scoped_ignore_input_events_ =
+          web_contents()->IgnoreInputEvents(std::nullopt);
       // Creating the widget will display it. That's why we create it only if
       // the tab can show modal UI.
       tabs::TabInterface* tab =
