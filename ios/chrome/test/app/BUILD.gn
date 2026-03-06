@@ -24,6 +24,8 @@ source_set("test_support") {
     "sync_test_util.mm",
     "tab_test_util.h",
     "tab_test_util.mm",
+    "uikit_test_util.h",
+    "uikit_test_util.mm",
     "web_view_interaction_test_util.h",
     "web_view_interaction_test_util.mm",
     "window_test_util.h",
