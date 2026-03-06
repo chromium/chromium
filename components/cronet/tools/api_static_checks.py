@@ -8,17 +8,17 @@ import argparse
 import os
 import re
 import shutil
-import subprocess
 import sys
 import tempfile
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
 
+sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
+from util import build_utils  # pylint: disable=wrong-import-position
+
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'components'))
 from cronet.tools import update_api  # pylint: disable=wrong-import-position
-from cronet.tools import utils  # pylint: disable=wrong-import-position
-from util import build_utils  # pylint: disable=wrong-import-position
 
 # These regular expressions catch the beginning of lines that declare classes
 # and methods.  The first group returned by a match is the class or method name.
@@ -122,8 +122,8 @@ ALLOWED_EXCEPTIONS = [
     'org.chromium.net.impl.VersionSafeCallbacks$ApiVersion/getCronetVersion -> org/chromium/net/ApiVersion/getCronetVersion:()Ljava/lang/String;',
 ]
 
-JAR_PATH = utils.JAR_PATH
-JAVAP_PATH = utils.JAVAP_PATH
+JAR_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'jar')
+JAVAP_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javap')
 
 
 def find_api_calls(dump, api_classes, bad_calls):
@@ -170,8 +170,11 @@ def check_api_calls(opts):
     temp_dir = tempfile.mkdtemp()
 
     # Extract API class files from jar
-    jar_cmd = [JAR_PATH, 'xf', os.path.abspath(opts.api_jar)]
-    utils.run(jar_cmd, verbose=opts.verbose, cwd=temp_dir)
+    jar_cmd = [
+        os.path.relpath(JAR_PATH, temp_dir), 'xf',
+        os.path.abspath(opts.api_jar)
+    ]
+    build_utils.CheckOutput(jar_cmd, cwd=temp_dir)
     shutil.rmtree(os.path.join(temp_dir, 'META-INF'), ignore_errors=True)
 
     # Collect names of API classes
@@ -192,8 +195,11 @@ def check_api_calls(opts):
 
     # Extract impl class files from jars
     for impl_jar in opts.impl_jar:
-        jar_cmd = [JAR_PATH, 'xf', os.path.abspath(impl_jar)]
-        utils.run(jar_cmd, verbose=opts.verbose, cwd=temp_dir)
+        jar_cmd = [
+            os.path.relpath(JAR_PATH, temp_dir), 'xf',
+            os.path.abspath(impl_jar)
+        ]
+        build_utils.CheckOutput(jar_cmd, cwd=temp_dir)
     shutil.rmtree(os.path.join(temp_dir, 'META-INF'), ignore_errors=True)
 
     # Process classes
@@ -203,13 +209,10 @@ def check_api_calls(opts):
             continue
         # Dump classes
         dump_file = os.path.join(temp_dir, 'dump.txt')
-        javap_cmd = [JAVAP_PATH, '-private', '-c'
-                     ] + [os.path.join(dirpath, f) for f in filenames]
-        try:
-            dump_output = utils.run_and_get_stdout(javap_cmd,
-                                                   verbose=opts.verbose)
-            utils.write_file(dump_file, dump_output)
-        except subprocess.CalledProcessError:
+        javap_cmd = '%s -private -c %s > %s' % (JAVAP_PATH, ' '.join(
+            os.path.join(dirpath, f)
+            for f in filenames).replace('$', '\\$'), dump_file)
+        if os.system(javap_cmd):
             print('ERROR: javap failed on ' + ' '.join(filenames))
             return False
         # Process class dump
@@ -230,7 +233,7 @@ def check_api_calls(opts):
 
 
 def check_api_version(opts):
-    if update_api.check_up_to_date(opts.api_jar, verbose=opts.verbose):
+    if update_api.check_up_to_date(opts.api_jar):
         return True
     print('ERROR: API file out of date.  Please run this command:')
     print('       components/cronet/tools/update_api.py --api_jar %s' %
@@ -252,9 +255,6 @@ def main(args):
                         metavar='path/to/cronet_impl_native_java.jar',
                         action='append')
     parser.add_argument('--stamp', help='Path to touch on success.')
-    parser.add_argument('--verbose',
-                        help='Print verbose output.',
-                        action='store_true')
     opts = parser.parse_args(args)
 
     ret = True
