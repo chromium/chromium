@@ -78,14 +78,14 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
 
   if (is_sample_accurate && offset_->IsAudioRate()) {
     DCHECK_LE(frames_to_process, sample_accurate_values_.size());
-    float* offsets = sample_accurate_values_.Data();
     offset_->CalculateSampleAccurateValues(
         sample_accurate_values_.as_span().first(frames_to_process));
     if (non_silent_frames_to_process > 0) {
-      UNSAFE_TODO(
-          memcpy(output_bus->Channel(0)->MutableData() + quantum_frame_offset,
-                 offsets + quantum_frame_offset,
-                 non_silent_frames_to_process * sizeof(*offsets)));
+      output_bus->Channel(0)
+          ->MutableSpan()
+          .subspan(quantum_frame_offset, non_silent_frames_to_process)
+          .copy_from(sample_accurate_values_.as_span().subspan(
+              quantum_frame_offset, non_silent_frames_to_process));
       output_bus->ClearSilentFlag();
     } else {
       output_bus->Zero();
@@ -98,14 +98,10 @@ void ConstantSourceHandler::Process(uint32_t frames_to_process) {
   if (value == 0) {
     output_bus->Zero();
   } else {
-    UNSAFE_TODO({
-      float* dest = output_bus->Channel(0)->MutableData();
-      dest += quantum_frame_offset;
-      for (unsigned k = 0; k < non_silent_frames_to_process; ++k) {
-        dest[k] = value;
-      }
-      output_bus->ClearSilentFlag();
-    });
+    std::ranges::fill(output_bus->Channel(0)->MutableSpan().subspan(
+                          quantum_frame_offset, non_silent_frames_to_process),
+                      value);
+    output_bus->ClearSilentFlag();
   }
 }
 
