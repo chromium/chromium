@@ -57,7 +57,7 @@ class PLATFORM_EXPORT SharedGpuContext {
   // "ImageChromium" refers to putting a canvas into a hardware layer which is
   // directly scanned out of display, bypassing chromium's own GPU composite.
   // It is the same "ImageChromium" referenced by
-  // `RuntimeEnabledFeatures::WebGLImageChromiumEnabled` for example.
+  // `WebGLImageChromiumEnabled` for example.
   // The name is out of date and refers to the system that morphed into
   // SharedImage.
   // This method performs context-specific check that's not available when
@@ -67,6 +67,8 @@ class PLATFORM_EXPORT SharedGpuContext {
 #else
   static bool MaySupportWebGLImageChromium() { return true; }
 #endif
+
+  static bool WebGLImageChromiumEnabled();
 
   // Whether mappable SharedImages should be used for canvas2d content with CPU
   // raster.

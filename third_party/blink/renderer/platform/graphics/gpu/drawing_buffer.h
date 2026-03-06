@@ -570,7 +570,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   void ClearChromiumImageAlpha(const ColorBuffer&);
 
   // Tries to create a CHROMIUM_image backed texture if
-  // RuntimeEnabledFeatures::WebGLImageChromiumEnabled() is true. On failure,
+  // SharedGpuContext::WebGLImageChromiumEnabled() is true. On failure,
   // or if the flag is false, creates a default texture. Always returns a valid
   // ColorBuffer.
   scoped_refptr<ColorBuffer> CreateColorBuffer(const gfx::Size&);

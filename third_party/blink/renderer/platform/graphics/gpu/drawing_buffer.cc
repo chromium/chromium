@@ -2005,7 +2005,7 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
     if (SharedGpuContext::IsGpuCompositingEnabled() &&
         chromium_image_usage_ == kAllowChromiumImage) {
       should_use_chromium_image =
-          RuntimeEnabledFeatures::WebGLImageChromiumEnabled() ||
+          SharedGpuContext::WebGLImageChromiumEnabled() ||
           (low_latency_enabled() &&
            base::FeatureList::IsEnabled(
                features::kLowLatencyWebGLImageChromium));
