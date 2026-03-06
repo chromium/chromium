@@ -8,7 +8,7 @@ Setting bounds: {
     width : 700
     windowState : normal
 }
-0,0 1600x1200 maximized
+10,10 1050x1180 normal
 Setting 'fullscreen' state
 0,0 1600x1200 fullscreen
 Setting bounds: {
@@ -18,4 +18,4 @@ Setting bounds: {
     width : 700
     windowState : normal
 }
-0,0 1600x1200 fullscreen
+10,10 1050x1180 normal

@@ -3,6 +3,10 @@
 // found in the LICENSE file.
 //
 // META: --screen-info={1600x1200}
+//
+// This test produces unexpected results in headless mode,
+// see http://crbug.com/446247998.
+// META: fork_headless_mode_expectations
 
 (async function(testRunner) {
   const {dp} = await testRunner.startBlank(
@@ -12,22 +16,20 @@
 
   async function logWindowBounds() {
     const {bounds} = (await dp.Browser.getWindowBounds({windowId})).result;
-    testRunner.log(`Window: ${bounds.left},${bounds.top} ${bounds.width}x${
+    testRunner.log(`${bounds.left},${bounds.top} ${bounds.width}x${
         bounds.height} ${bounds.windowState}`);
   }
-
-  testRunner.log(`Initial state:`);
-  dp.Browser.setWindowBounds(
-      {windowId, bounds: {left: 10, top: 10, width: 700, height: 500}});
-  await logWindowBounds();
 
   for (const state of ['maximized', 'fullscreen']) {
     testRunner.log(`Setting '${state}' state`);
     dp.Browser.setWindowBounds({windowId, bounds: {windowState: state}});
     await logWindowBounds();
 
-    testRunner.log(`Restoring to normal state:`);
-    dp.Browser.setWindowBounds({windowId, bounds: {windowState: `normal`}});
+    const bounds =
+        {left: 10, top: 10, width: 700, height: 500, windowState: `normal`};
+
+    testRunner.log(bounds, `Setting bounds: `);
+    dp.Browser.setWindowBounds({windowId, bounds});
     await logWindowBounds();
   }
 
