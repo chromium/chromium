@@ -1449,9 +1449,16 @@ void AutofillAgent::ApplyFieldAction(
                 (action_type == mojom::FieldActionType::kReplaceAll));
             break;
           case mojom::FieldActionType::kReplaceAtMemoryTrigger:
-            // TODO(crbug.com/488311191): Implement for contenteditable.
-            NOTIMPLEMENTED() << "Previewing is not implemented for "
-                                "contenteditables";
+            WebLocalFrame* frame = unsafe_render_frame()->GetWebFrame();
+            WebRange selection =
+                frame->GetInputMethodController()->GetSelectionOffsets();
+            if (ShouldTriggerAtMemorySearchForContentEditable(frame,
+                                                              selection)) {
+              frame->SetEditableSelectionOffsets(selection.StartOffset() - 2,
+                                                 selection.StartOffset());
+            }
+            frame->ExecuteCommand(WebString::FromASCII("InsertText"),
+                                  WebString::FromUTF16(value));
             break;
         }
     }

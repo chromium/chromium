@@ -49,6 +49,7 @@
 #include "third_party/blink/public/web/web_autofill_state.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_frame_widget.h"
+#include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_view.h"
 
@@ -2192,6 +2193,103 @@ TEST_F(AutofillAgentMemoryContentEditableTriggerTest, MultipleTriggers) {
 
   SimulateTyping("@@");
   SimulateTyping("abc@@");
+}
+
+// Tests that kReplaceAtMemoryTrigger correctly replaces the "@@" trigger in a
+// contenteditable element and places the cursor after the filled value.
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest,
+       ReplaceAtMemoryTriggerInContentEditable) {
+  blink::WebElement ce = GetWebElementById("ce");
+
+  // 1. Set initial text with the trigger and position cursor at the end.
+  SimulateComplexTyping("Prefix@@");
+
+  // 2. Trigger the fill action.
+  autofill_agent().ApplyFieldAction(
+      mojom::FieldActionType::kReplaceAtMemoryTrigger,
+      mojom::ActionPersistence::kFill, form_util::GetFieldRendererId(ce),
+      u"Suffix");
+
+  // 3. Verify the trigger was replaced.
+  EXPECT_EQ(u"PrefixSuffix", ce.TextContent().Utf16());
+
+  // 4. Verify the cursor position (at the end of "PrefixSuffix").
+  blink::WebRange selection =
+      GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
+  EXPECT_EQ(12, selection.StartOffset());
+  EXPECT_EQ(12, selection.EndOffset());
+}
+
+// Tests that kReplaceAtMemoryTrigger inserts a value at the current cursor
+// position if "@@" is not found immediately before the cursor (for example,
+// during context menu invocation).
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest,
+       ReplaceAtMemoryTriggerForContextMenu) {
+  blink::WebElement ce = GetWebElementById("ce");
+
+  // 1. Set initial text without the trigger and position cursor at the end.
+  SimulateComplexTyping("PrefixSuffix");
+
+  // 2. Put cursor position between "Prefix" and "Suffix".
+  GetMainFrame()->SetEditableSelectionOffsets(6, 6);
+  test_api(autofill_agent()).ContentEditableDidChange(ce);
+
+  // Verify the cursor position before triggering the fill action.
+  EXPECT_EQ(6, GetMainFrame()
+                   ->GetInputMethodController()
+                   ->GetSelectionOffsets()
+                   .StartOffset());
+
+  // 3. Trigger the fill action.
+  autofill_agent().ApplyFieldAction(
+      mojom::FieldActionType::kReplaceAtMemoryTrigger,
+      mojom::ActionPersistence::kFill, form_util::GetFieldRendererId(ce),
+      u"Result");
+
+  // 4. Verify the text was inserted.
+  EXPECT_EQ(u"PrefixResultSuffix", ce.TextContent().Utf16());
+
+  // 5. Verify the cursor position (at the end of "Result").
+  // "Prefix" (6) + "Result" (6) = 12.
+  blink::WebRange selection =
+      GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
+  EXPECT_EQ(12, selection.StartOffset());
+}
+
+// Tests that kReplaceAtMemoryTrigger replaces a pre-existing selection.
+TEST_F(AutofillAgentMemoryContentEditableTriggerTest,
+       ReplaceAtMemoryTriggerWithSelection) {
+  blink::WebElement ce = GetWebElementById("ce");
+
+  // 1. Set initial text and select a middle portion.
+  ExecuteJavaScriptForTests(R"(
+    const el = document.getElementById('ce');
+    el.focus();
+    el.innerText = 'PrefixSelectedSuffix';
+    const range = document.createRange();
+    // Select "Selected" (offsets 6 to 14).
+    range.setStart(el.childNodes[0], 6);
+    range.setEnd(el.childNodes[0], 14);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  )");
+  test_api(autofill_agent()).ContentEditableDidChange(ce);
+
+  // 2. Trigger the fill action.
+  autofill_agent().ApplyFieldAction(
+      mojom::FieldActionType::kReplaceAtMemoryTrigger,
+      mojom::ActionPersistence::kFill, form_util::GetFieldRendererId(ce),
+      u"Result");
+
+  // 3. Verify "Selected" was replaced by "Result".
+  EXPECT_EQ(u"PrefixResultSuffix", ce.TextContent().Utf16());
+
+  // 4. Verify the cursor position (at the end of "Result").
+  // "Prefix" (6) + "Result" (6) = 12.
+  blink::WebRange selection =
+      GetMainFrame()->GetInputMethodController()->GetSelectionOffsets();
+  EXPECT_EQ(12, selection.StartOffset());
 }
 
 }  // namespace
