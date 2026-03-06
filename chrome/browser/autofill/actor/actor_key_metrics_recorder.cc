@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/containers/flat_map.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -72,6 +71,8 @@ void ActorKeyMetricsRecorder::RecordKeyMetrics(
     // TODO(crbug.com/487534942): Add more key metrics.
     const std::string_view product_str =
         product == FillingProduct::kAddress ? "Address" : "CreditCard";
+
+    RecordFillingReadiness(form_structure, state, product_str);
     if (is_fillable) {
       RecordFillingAssistance(form_structure, state, product_str);
     }
@@ -105,6 +106,16 @@ void ActorKeyMetricsRecorder::RecordFillingAssistance(
           {"Autofill.Actor.KeyMetrics.FillingAssistance.", product_str}),
       state.actor_filled_fields.find(form_structure.global_id()) !=
           state.actor_filled_fields.end());
+}
+
+void ActorKeyMetricsRecorder::RecordFillingReadiness(
+    const FormStructure& form_structure,
+    const ProductState& state,
+    std::string_view product_str) {
+  base::UmaHistogramBoolean(
+      base::StrCat(
+          {"Autofill.Actor.KeyMetrics.FillingReadiness.", product_str}),
+      state.with_actor_suggestions.contains(form_structure.global_id()));
 }
 
 }  // namespace autofill

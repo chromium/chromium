@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 #define CHROME_BROWSER_AUTOFILL_ACTOR_ACTOR_KEY_METRICS_RECORDER_H_
 
-#include "base/containers/fixed_flat_map.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ref.h"
@@ -71,6 +70,9 @@ class ActorKeyMetricsRecorder {
   void RecordFillingAssistance(const FormStructure& form_structure,
                                const ProductState& state,
                                std::string_view product_str);
+  void RecordFillingReadiness(const FormStructure& form_structure,
+                              const ProductState& state,
+                              std::string_view product_str);
 
   std::array<ProductState, std::to_underlying(FillingProduct::kMaxValue) + 1>
       states_;

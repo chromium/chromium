@@ -1360,6 +1360,68 @@ TEST_F(ActorFormFillingServiceTest,
       "Autofill.Actor.KeyMetrics.FillingAssistance.Address", 2);
 }
 
+// Tests that FillingReadiness metrics are correctly recorded when actor
+// suggestions are available.
+TEST_F(ActorFormFillingServiceTest,
+       FillingReadinessMetrics_SuggestionsAvailable) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = ADDRESS_HOME_CITY}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(), HasValue());
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingReadiness.Address", true, 1);
+}
+
+// Tests that FillingReadiness metrics are correctly recorded when actor
+// suggestions are NOT available.
+TEST_F(ActorFormFillingServiceTest,
+       FillingReadinessMetrics_SuggestionsNotAvailable) {
+  base::HistogramTester histogram_tester;
+  // Use a form type that won't have suggestions (e.g. by using an unfindable
+  // request or similar, but SeeForm needs to be called to cache it).
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL}}});
+
+  GetSuggestionsFuture future;
+  // Trigger on a field that doesn't exist in any form to fail suggestion
+  // generation.
+  service().GetSuggestions(tab(), {UnfindableFillRequest()},
+                           future.GetCallback());
+  EXPECT_THAT(future.Get(), ErrorIs(ActorFormFillingError::kNoSuggestions));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingReadiness.Address", false, 1);
+}
+
+// Tests that FillingReadiness metrics are correctly recorded for credit cards.
+TEST_F(ActorFormFillingServiceTest, FillingReadinessMetrics_CreditCard) {
+  base::HistogramTester histogram_tester;
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form =
+      SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                          {.server_type = CREDIT_CARD_NUMBER},
+                          {.server_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  EXPECT_THAT(future.Get(), HasValue());
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingReadiness.CreditCard", true, 1);
+}
+
 }  // namespace
 
 }  // namespace autofill
