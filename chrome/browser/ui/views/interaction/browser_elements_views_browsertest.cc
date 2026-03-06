@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/typed_identifier.h"
 
 using BrowserElementsViewsBrowsertest = InProcessBrowserTest;
 
@@ -40,7 +40,8 @@ IN_PROC_BROWSER_TEST_F(BrowserElementsViewsBrowsertest,
 }
 
 IN_PROC_BROWSER_TEST_F(BrowserElementsViewsBrowsertest, RetrieveView) {
-  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(ToolbarView, kToolbarViewRetrievalId);
+  DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier, ToolbarView,
+                                      kToolbarViewRetrievalId);
   auto* const browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   auto* const elements = BrowserElementsViews::From(browser());
   elements->AddRetrievalCallback(kToolbarViewRetrievalId,

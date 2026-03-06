@@ -12,15 +12,16 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/interaction/browser_elements.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
-#include "ui/base/interaction/typed_identifier.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
 
-DECLARE_TYPED_IDENTIFIER_VALUE_OLD(views::WebView,
-                                   kActiveContentsWebViewRetrievalId);
+DECLARE_TYPED_IDENTIFIER_VALUE(ui::ElementIdentifier,
+                               views::WebView,
+                               kActiveContentsWebViewRetrievalId);
 
 // Provides Views-specific extensions to `BrowserElements` so it can
 // provide a context, elements, and Views.
@@ -76,15 +77,16 @@ class BrowserElementsViews : public BrowserElements {
   // TearDown().
   template <typename T>
     requires std::derived_from<T, views::View>
-  void AddRetrievalCallback(ui::TypedIdentifierOld<T> retrieval_id,
-                            RetrievalCallback<T> callback);
+  void AddRetrievalCallback(
+      ui::TypedIdentifier<ui::ElementIdentifier, T> retrieval_id,
+      RetrievalCallback<T> callback);
 
   // Retrieves a view using a callback registered with `retrieval_id`. Will
   // return null if no callback is registered, this object is in an invalid
   // state, or the view is not present or is the wrong type.
   template <typename T>
     requires std::derived_from<T, views::View>
-  T* RetrieveView(ui::TypedIdentifierOld<T> retrieval_id);
+  T* RetrieveView(ui::TypedIdentifier<ui::ElementIdentifier, T> retrieval_id);
 
  private:
   virtual bool IsInitialized() const = 0;
@@ -105,7 +107,7 @@ T* BrowserElementsViews::GetViewAs(ui::ElementIdentifier id) {
 template <typename T>
   requires std::derived_from<T, views::View>
 void BrowserElementsViews::AddRetrievalCallback(
-    ui::TypedIdentifierOld<T> retrieval_id,
+    ui::TypedIdentifier<ui::ElementIdentifier, T> retrieval_id,
     RetrievalCallback<T> callback) {
   CHECK(IsInitialized());
   const auto result = retrieval_callbacks_.emplace(
@@ -119,7 +121,8 @@ void BrowserElementsViews::AddRetrievalCallback(
 
 template <typename T>
   requires std::derived_from<T, views::View>
-T* BrowserElementsViews::RetrieveView(ui::TypedIdentifierOld<T> id) {
+T* BrowserElementsViews::RetrieveView(
+    ui::TypedIdentifier<ui::ElementIdentifier, T> id) {
   if (const auto it = retrieval_callbacks_.find(id.identifier());
       it != retrieval_callbacks_.end()) {
     return views::AsViewClass<T>(it->second.Run());

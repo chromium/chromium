@@ -17,7 +17,6 @@ component("interaction") {
     "framework_specific_implementation.h",
     "framework_specific_registration_list.h",
     "interaction_sequence.h",
-    "typed_identifier.h",
   ]
 
   public_deps = [ "//ui/base/identifier" ]
