@@ -40,6 +40,7 @@ constexpr size_t kMaxSelectionLength = 1000;
 #if !BUILDFLAG(IS_ANDROID)
 // The MIME type for selected text.
 constexpr char kSelectionMimeType[] = "application/x-glic-selection";
+constexpr char kPromptMimeType[] = "application/x-glic-prompt";
 
 #endif
 }  // namespace
@@ -136,13 +137,29 @@ void GlicSelectionObserver::UpdateSelectionState(
     auto context = mojom::AdditionalContext::New();
     context->source = mojom::AdditionalContextSource::kTextSelection;
     std::vector<mojom::AdditionalContextPartPtr> parts;
-    auto context_data = mojom::ContextData::New();
-    context_data->mime_type = kSelectionMimeType;
-    std::string utf8_text = base::UTF16ToUTF8(selected_text);
-    context_data->data =
-        mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
-    parts.push_back(
-        mojom::AdditionalContextPart::NewData(std::move(context_data)));
+
+    {
+      auto context_data = mojom::ContextData::New();
+      context_data->mime_type = kSelectionMimeType;
+      std::string utf8_text = base::UTF16ToUTF8(selected_text);
+      context_data->data =
+          mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
+      parts.push_back(
+          mojom::AdditionalContextPart::NewData(std::move(context_data)));
+    }
+
+    {
+      auto context_data = mojom::ContextData::New();
+      context_data->mime_type = kPromptMimeType;
+      std::u16string prompt_text = l10n_util::GetStringFUTF16(
+          IDS_GLIC_SELECTION_TELL_ME_ABOUT, std::u16string());
+      std::string utf8_text = base::UTF16ToUTF8(prompt_text);
+      context_data->data =
+          mojo_base::BigBuffer(base::as_bytes(base::span(utf8_text)));
+      parts.push_back(
+          mojom::AdditionalContextPart::NewData(std::move(context_data)));
+    }
+
     context->parts = std::move(parts);
 
     glic_keyed_service_->SendAdditionalContext(tab_interface->GetHandle(),
