@@ -54,17 +54,15 @@ DevtoolsDurableMessage::~DevtoolsDurableMessage() {
   accounting_delegate_->WillDestroyMessage(*this);
 }
 
-void DevtoolsDurableMessage::AddBytes(base::span<const uint8_t> bytes,
-                                      size_t encoded_byte_size) {
+void DevtoolsDurableMessage::AddBytes(base::span<const uint8_t> bytes) {
   CHECK(!is_complete_);
   base::WeakPtr<DevtoolsDurableMessage> self = GetWeakPtr();
-  accounting_delegate_->WillAddBytes(*this, encoded_byte_size);
+  accounting_delegate_->WillAddBytes(*this, bytes.size());
   if (!self) {
     return;
   }
 
   bytes_.insert(bytes_.end(), bytes.begin(), bytes.end());
-  encoded_byte_size_ += encoded_byte_size;
 }
 
 mojo_base::BigBuffer DevtoolsDurableMessage::Retrieve() const {
@@ -82,8 +80,9 @@ mojo_base::BigBuffer DevtoolsDurableMessage::Retrieve() const {
           std::move(encoded_stream), client_decoding_types_);
   scoped_refptr<net::GrowableIOBuffer> decode_buffer =
       base::MakeRefCounted<net::GrowableIOBuffer>();
-  // Set to encoded size initially.
-  decode_buffer->SetCapacity(encoded_byte_size_);
+  // Use the stored bytes length as the initial capacity since decompression
+  // will typically expand the payload. std::max ensures it is non-zero.
+  decode_buffer->SetCapacity(std::max(bytes_.size(), size_t{4096}));
   while (decoding_stream->MayHaveMoreBytes()) {
     if (decode_buffer->RemainingCapacity() == 0) {
       decode_buffer->SetCapacity(decode_buffer->capacity() * 2);

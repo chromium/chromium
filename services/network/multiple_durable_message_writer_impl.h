@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) MultipleDurableMessageWriterImpl
   ~MultipleDurableMessageWriterImpl() override;
 
   // DevtoolsDurableMessageWriter implementation:
-  void AddBytes(base::span<const uint8_t> bytes, size_t encoded_size) override;
+  void AddBytes(base::span<const uint8_t> bytes) override;
   void MarkComplete() override;
   void SetClientDecodingTypes(
       std::vector<net::SourceStreamType> types) override;

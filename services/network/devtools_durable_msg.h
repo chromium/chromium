@@ -33,12 +33,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessage {
 
   bool is_complete() const { return is_complete_; }
   const std::string& request_id() const { return request_id_; }
-  size_t encoded_byte_size() const { return encoded_byte_size_; }
-  size_t byte_size_for_testing() const { return bytes_.size(); }
+  size_t size() const { return bytes_.size(); }
 
   // Appends bytes to the message. May delete `this` if accounting_delegate_
   // decides to evict the current message.
-  void AddBytes(base::span<const uint8_t> bytes, size_t encoded_size);
+  void AddBytes(base::span<const uint8_t> bytes);
   void MarkComplete();
   mojo_base::BigBuffer Retrieve() const;
   base::WeakPtr<DevtoolsDurableMessage> GetWeakPtr() {
@@ -57,7 +56,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessage {
  private:
   std::vector<uint8_t> bytes_;
   bool is_complete_ = false;
-  size_t encoded_byte_size_ = 0;
   const std::string request_id_;
   std::vector<net::SourceStreamType> client_decoding_types_;
 

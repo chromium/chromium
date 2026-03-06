@@ -67,10 +67,10 @@ TEST_F(MultipleDurableMessageWriterImplTest, ForwardsAddBytes) {
   EXPECT_CALL(accounting_delegate_,
               WillAddBytes(testing::Ref(*msg2), bytes.size()));
 
-  writer.AddBytes(bytes, bytes.size());
+  writer.AddBytes(bytes);
 
-  EXPECT_EQ(msg1->byte_size_for_testing(), bytes.size());
-  EXPECT_EQ(msg2->byte_size_for_testing(), bytes.size());
+  EXPECT_EQ(msg1->size(), bytes.size());
+  EXPECT_EQ(msg2->size(), bytes.size());
 
   EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg1)));
   EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg2)));
@@ -156,11 +156,11 @@ TEST_F(MultipleDurableMessageWriterImplTest, HandlesDestroyedMessages) {
   EXPECT_CALL(accounting_delegate_,
               WillAddBytes(testing::Ref(*msg2), bytes.size()));
 
-  writer.AddBytes(bytes, bytes.size());
+  writer.AddBytes(bytes);
   writer.MarkComplete();
 
   EXPECT_TRUE(msg2->is_complete());
-  EXPECT_EQ(msg2->byte_size_for_testing(), bytes.size());
+  EXPECT_EQ(msg2->size(), bytes.size());
 
   EXPECT_CALL(accounting_delegate_, WillDestroyMessage(testing::Ref(*msg2)));
   EXPECT_CALL(accounting_delegate_, WillRemoveBytes(testing::Ref(*msg2)))

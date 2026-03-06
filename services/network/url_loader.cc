@@ -2694,15 +2694,9 @@ void URLLoader::MaybeCollectDurableMessage(size_t new_data_offset,
     return;
   }
 
-  int64_t raw_bytes_cur_size = url_request_->GetRawBodyBytes();
-  int64_t raw_bytes_delta =
-      raw_bytes_cur_size - devtools_durable_message_raw_size_;
-  durable_message_writer_->AddBytes(
-      base::as_byte_span(
-          base::span(*pending_write_)
-              .subspan(new_data_offset, static_cast<size_t>(num_bytes))),
-      raw_bytes_delta);
-  devtools_durable_message_raw_size_ = raw_bytes_cur_size;
+  durable_message_writer_->AddBytes(base::as_byte_span(
+      base::span(*pending_write_)
+          .subspan(new_data_offset, static_cast<size_t>(num_bytes))));
 }
 
 void URLLoader::PerformSyntheticResponseFallback() {

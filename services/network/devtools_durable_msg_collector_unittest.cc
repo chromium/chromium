@@ -58,7 +58,7 @@ class DevtoolsDurableMessageCollectorTest : public testing::Test {
   void AddBytes(base::WeakPtr<DevtoolsDurableMessage> msg,
                 base::span<const uint8_t> bytes) {
     ASSERT_NE(msg, nullptr);
-    msg->AddBytes(bytes, bytes.size());
+    msg->AddBytes(bytes);
   }
 
   void AddBytes(base::WeakPtr<DevtoolsDurableMessage> msg,

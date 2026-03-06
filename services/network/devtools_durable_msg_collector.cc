@@ -115,7 +115,7 @@ void DevtoolsDurableMessageCollector::WillAddBytes(
 
 void DevtoolsDurableMessageCollector::WillRemoveBytes(
     DevtoolsDurableMessage& message) {
-  int64_t size = message.encoded_byte_size();
+  int64_t size = message.size();
   cur_buffer_size_ -= size;
   CHECK_GE(cur_buffer_size_, 0);
   if (manager_) {

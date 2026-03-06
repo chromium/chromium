@@ -14,11 +14,11 @@ MultipleDurableMessageWriterImpl::MultipleDurableMessageWriterImpl(
 
 MultipleDurableMessageWriterImpl::~MultipleDurableMessageWriterImpl() = default;
 
-void MultipleDurableMessageWriterImpl::AddBytes(base::span<const uint8_t> bytes,
-                                                size_t encoded_size) {
+void MultipleDurableMessageWriterImpl::AddBytes(
+    base::span<const uint8_t> bytes) {
   for (const auto& durable_message : messages_) {
     if (durable_message) {
-      durable_message->AddBytes(bytes, encoded_size);
+      durable_message->AddBytes(bytes);
     }
   }
 }

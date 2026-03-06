@@ -672,7 +672,7 @@ class MockDurableMessageAccountingDelegate
   }
 
   void WillRemoveBytes(DevtoolsDurableMessage& message) override {
-    size_ -= message.encoded_byte_size();
+    size_ -= message.size();
   }
 
   void WillDestroyMessage(DevtoolsDurableMessage& message) override {}
@@ -2766,14 +2766,12 @@ TEST_F(URLLoaderTest, WritesToDurableMessage) {
   DevtoolsDurableMessage durable_message("test", accounting_delegate);
   set_durable_messages({durable_message.GetWeakPtr()});
   std::string body;
-  constexpr int kGzippedBodyLength = 60;
+
   EXPECT_EQ(net::OK, Load(test_server()->GetURL("/hello.html.gz"), &body));
   EXPECT_EQ(body, ReadTestFile("hello.html"));
   EXPECT_TRUE(durable_message.is_complete());
-  ASSERT_EQ(accounting_delegate.size(), kGzippedBodyLength);
-  ASSERT_EQ(durable_message.encoded_byte_size(),
-            static_cast<size_t>(kGzippedBodyLength));
-  ASSERT_EQ(durable_message.byte_size_for_testing(), body.size());
+  ASSERT_EQ(accounting_delegate.size(), static_cast<int64_t>(body.size()));
+  ASSERT_EQ(durable_message.size(), body.size());
   // Retrieve the stored body and verify that it is accurate.
   EXPECT_EQ(durable_message.Retrieve(), base::as_byte_span(body));
 }
@@ -2782,7 +2780,7 @@ TEST_F(URLLoaderTest, DurableMessageWorksWithMimeSniffing) {
   MockDurableMessageAccountingDelegate accounting_delegate;
   DevtoolsDurableMessage durable_message("test", accounting_delegate);
   set_durable_messages({durable_message.GetWeakPtr()});
-  constexpr int kGzippedBodyLength = 142;
+
   set_sniff();
   set_client_side_content_decoding_enabled();
   std::string encoded_body;
@@ -2796,10 +2794,9 @@ TEST_F(URLLoaderTest, DurableMessageWorksWithMimeSniffing) {
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_EQ(encoded_body, ReadTestFile("content-sniffer-test0.html.gz"));
   EXPECT_TRUE(durable_message.is_complete());
-  ASSERT_EQ(accounting_delegate.size(), kGzippedBodyLength);
-  ASSERT_EQ(durable_message.encoded_byte_size(),
-            static_cast<size_t>(kGzippedBodyLength));
-  ASSERT_EQ(durable_message.byte_size_for_testing(), encoded_body.size());
+  ASSERT_EQ(accounting_delegate.size(),
+            static_cast<int64_t>(encoded_body.size()));
+  ASSERT_EQ(durable_message.size(), encoded_body.size());
   // Retrieve the stored body and verify that it is accurate and contents are in
   // decoded form.
   mojo_base::BigBuffer buffer = durable_message.Retrieve();
@@ -2856,8 +2853,7 @@ TEST_F(URLLoaderMockSocketTest, DurableMessageWorksWithLotsOfData) {
   EXPECT_TRUE(durable_message.is_complete());
   size_t compressed_size = compressed.size();
   ASSERT_EQ(accounting_delegate.size(), static_cast<int64_t>(compressed_size));
-  ASSERT_EQ(durable_message.encoded_byte_size(), compressed_size);
-  ASSERT_EQ(durable_message.byte_size_for_testing(), compressed_size);
+  ASSERT_EQ(durable_message.size(), compressed_size);
   EXPECT_EQ(durable_message.Retrieve(), base::as_byte_span(response_body));
 }
 
@@ -2867,7 +2863,7 @@ TEST_F(URLLoaderTest, DurableMessagePerformsClientSideDecodingGzip) {
   MockDurableMessageAccountingDelegate accounting_delegate;
   DevtoolsDurableMessage durable_message("test", accounting_delegate);
   set_durable_messages({durable_message.GetWeakPtr()});
-  constexpr size_t kGzippedBodyLength = 60;
+
   set_sniff();
   set_client_side_content_decoding_enabled();
   std::string encoded_body;
@@ -2879,8 +2875,7 @@ TEST_F(URLLoaderTest, DurableMessagePerformsClientSideDecodingGzip) {
               ElementsAre(net::SourceStreamType::kGzip));
   EXPECT_TRUE(durable_message.is_complete());
   ASSERT_EQ(accounting_delegate.size(),
-            static_cast<int64_t>(kGzippedBodyLength));
-  ASSERT_EQ(durable_message.encoded_byte_size(), kGzippedBodyLength);
+            static_cast<int64_t>(encoded_body.size()));
   // Retrieve the stored body and verify that it is accurate and contents are in
   // decoded form.
   mojo_base::BigBuffer buffer = durable_message.Retrieve();

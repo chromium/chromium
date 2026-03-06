@@ -24,13 +24,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) DevtoolsDurableMessageWriter {
 
   // Adds bytes to the message. Durable Messages are collected and stored
   // as they are seen by URLLoader, which may or may not be decoded.
-  // Accounting for Durable Messages are  done per per encoded size.
-  // https://w3c.github.io/webdriver-bidi/#command-network-addDataCollector
-  // `encoded_size` represents the over-the-wire size of the chunk that is
-  // being added, and this can be different from bytes.size() if the network
-  // stack has already removed encoding.
-  virtual void AddBytes(base::span<const uint8_t> bytes,
-                        size_t encoded_size) = 0;
+  virtual void AddBytes(base::span<const uint8_t> bytes) = 0;
 
   // Mark that this message has completed writing. This usually means the
   // message will be available for decoding and retrieval by the Durable

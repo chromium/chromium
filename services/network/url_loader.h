@@ -795,9 +795,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   // DevTools Durable Message instances, if enabled.
   std::unique_ptr<DevtoolsDurableMessageWriter> durable_message_writer_;
 
-  // Keeps track of raw body sizes transmitted to DevTools.
-  int64_t devtools_durable_message_raw_size_ = 0;
-
   base::WeakPtrFactory<URLLoader> weak_ptr_factory_{this};
 };
 
