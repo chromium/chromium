@@ -22,6 +22,7 @@
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/animation/animation.h"
 #include "url/gurl.h"
 
 class ChromeWebContentsViewDelegateAndroidTest
@@ -48,6 +49,9 @@ class ChromeWebContentsViewDelegateAndroidTest
 
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+
+    // Force animations ON for these tests, as some CI bots have them disabled.
+    gfx::Animation::SetPrefersReducedMotionForTesting(false);
 
     // TemplateURLService must be loaded before it can be used.
     auto* template_url_service =
