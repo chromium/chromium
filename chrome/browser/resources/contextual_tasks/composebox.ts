@@ -176,7 +176,11 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   private isOnboardingTooltipDismissCountBelowCap_: boolean =
       loadTimeData.getBoolean('isOnboardingTooltipDismissCountBelowCap');
   private userDismissedTooltip_: boolean = false;
+  // Tracks the resize of the composebox to provide height updates.
   private resizeObserver_: ResizeObserver|null = null;
+  // Tracks the resize of the composebox and the auto added chip to provide
+  // position updates to the tooltip.
+  private tooltipResizeObserver_: ResizeObserver|null = null;
   private tooltipImpressionTimer_: number|null = null;
   private readonly tooltipImpressionDelay_: number =
       loadTimeData.getInteger('composeboxShowOnboardingTooltipImpressionDelay');
@@ -276,7 +280,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   override disconnectedCallback() {
     super.disconnectedCallback();
     this.clearTooltipImpressionTimer_();
-    this.stopObservingResize_();
+    this.stopObservingTooltipResize_();
     if (this.resizeObserver_) {
       this.resizeObserver_.disconnect();
       this.resizeObserver_ = null;
@@ -338,7 +342,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         !this.$.composebox.getHasAutomaticActiveTabChipToken()) {
       tooltip.hide();
       this.onboardingTooltipIsVisible_ = false;
-      this.stopObservingResize_();
+      this.stopObservingTooltipResize_();
       // Clear the timer if the tooltip is hidden. This will prevent it being
       // count as an impression if the chip only showed up briefly.
       this.clearTooltipImpressionTimer_();
@@ -352,7 +356,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         tooltip.updatePosition();
       } else if (this.shouldShowOnboardingTooltip()) {
         tooltip.show();
-        this.startObservingResize_(target);
+        this.startObservingTooltipResize_(target);
         this.onboardingTooltipIsVisible_ = true;
 
         // Start the impression timer if the tooltip is newly shown.
@@ -377,7 +381,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected onOnboardingTooltipDismissed_() {
     this.userDismissedTooltip_ = true;
     this.onboardingTooltipIsVisible_ = false;
-    this.stopObservingResize_();
+    this.stopObservingTooltipResize_();
     this.clearTooltipImpressionTimer_();
   }
 
@@ -457,26 +461,26 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.pageHandler_.handleFileUpload(false);
   }
 
-  private startObservingResize_(target: Element|null) {
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
+  private startObservingTooltipResize_(target: Element|null) {
+    if (this.tooltipResizeObserver_) {
+      this.tooltipResizeObserver_.disconnect();
     }
-    this.resizeObserver_ = new ResizeObserver(() => {
+    this.tooltipResizeObserver_ = new ResizeObserver(() => {
       const tooltip = this.$.onboardingTooltip;
       if (tooltip && tooltip.target) {
         tooltip.updatePosition();
       }
     });
-    this.resizeObserver_.observe(this.$.composebox);
+    this.tooltipResizeObserver_.observe(this.$.composebox);
     if (target) {
-      this.resizeObserver_.observe(target);
+      this.tooltipResizeObserver_.observe(target);
     }
   }
 
-  private stopObservingResize_() {
-    if (this.resizeObserver_) {
-      this.resizeObserver_.disconnect();
-      this.resizeObserver_ = null;
+  private stopObservingTooltipResize_() {
+    if (this.tooltipResizeObserver_) {
+      this.tooltipResizeObserver_.disconnect();
+      this.tooltipResizeObserver_ = null;
     }
   }
 
@@ -517,6 +521,14 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   updateTooltipVisibilityForTesting() {
     this.updateTooltipVisibility_();
+  }
+
+  get resizeObserverForTesting() {
+    return this.resizeObserver_;
+  }
+
+  get tooltipResizeObserverForTesting() {
+    return this.tooltipResizeObserver_;
   }
 }
 

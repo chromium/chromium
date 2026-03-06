@@ -572,6 +572,49 @@ suite('ContextualTasksComposeboxTest', () => {
     assertTrue(tooltip.shouldShow);
   });
 
+  test('TooltipResizeObserverCoexistsWithResizeObserver', () => {
+    mockTimer.install();
+    const composeboxElement = contextualTasksApp.$.composebox;
+    const innerComposebox = composeboxElement.$.composebox;
+
+    // Initially, only resizeObserver_ should exist.
+    assertTrue(!!composeboxElement.resizeObserverForTesting);
+    assertFalse(!!composeboxElement.tooltipResizeObserverForTesting);
+
+    // Force show tooltip.
+    loadTimeData.overrideValues({
+      showOnboardingTooltip: true,
+      isOnboardingTooltipDismissCountBelowCap: true,
+      composeboxShowOnboardingTooltipSessionImpressionCap: 10,
+    });
+    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
+    composeboxElement.userDismissedTooltipForTesting = false;
+
+    // Simulate active tab chip token presence to trigger tooltip.
+    innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
+    innerComposebox.getAutomaticActiveTabChipElement = () =>
+        document.createElement('div');
+
+    composeboxElement.updateTooltipVisibilityForTesting();
+
+    // Now both observers should exist.
+    assertTrue(!!composeboxElement.resizeObserverForTesting);
+    assertTrue(!!composeboxElement.tooltipResizeObserverForTesting);
+
+    // Verify resizeObserver_ still works.
+    Object.defineProperty(innerComposebox, 'offsetHeight', {
+      writable: true,
+      configurable: true,
+      value: 500,
+    });
+
+    // Trigger all resize observers.
+    MockResizeObserver.instances.forEach(obs => obs.trigger());
+    mockTimer.tick(100);
+
+    assertEquals(500, composeboxElement.composeboxHeightForTesting);
+  });
+
   test('TooltipImpressionIncrementsAfterDelay', () => {
     mockTimer.install();
     const composeboxElement = contextualTasksApp.$.composebox;
