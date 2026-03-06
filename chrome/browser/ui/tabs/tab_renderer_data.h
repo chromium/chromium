@@ -1,0 +1,74 @@
+// Copyright 2012 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_
+#define CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_
+
+#include <string>
+
+#include "base/byte_size.h"
+#include "base/process/kill.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
+#include "chrome/browser/ui/tabs/tab_network_state.h"
+#include "ui/base/models/image_model.h"
+#include "url/gurl.h"
+
+class TabResourceUsage;
+class ThumbnailImage;
+
+namespace tab_groups {
+class CollaborationMessagingTabData;
+}  // namespace tab_groups
+
+namespace tabs {
+enum class TabAlert;
+class TabInterface;
+}  // namespace tabs
+
+// Wraps the state needed by the renderers.
+struct TabRendererData {
+  static TabRendererData FromTabInterface(tabs::TabInterface* tab);
+
+  TabRendererData();
+  TabRendererData(const TabRendererData& other);
+  TabRendererData(TabRendererData&& other);
+  ~TabRendererData();
+
+  TabRendererData& operator=(const TabRendererData& other);
+  TabRendererData& operator=(TabRendererData&& other);
+
+  bool operator==(const TabRendererData& other) const;
+
+  ui::ImageModel favicon;
+  scoped_refptr<ThumbnailImage> thumbnail;
+  TabNetworkState network_state = TabNetworkState::kNone;
+  std::u16string title;
+  // This corresponds to WebContents::GetVisibleUrl().
+  GURL visible_url;
+  // This corresponds to WebContents::GetLastCommittedUrl().
+  GURL last_committed_url;
+  // False if the omnibox doesn't display the URL (i.e. when a lookalike URL
+  // interstitial is being displayed).
+  bool should_display_url = true;
+  bool is_crashed = false;
+  bool show_icon = true;
+  bool pinned = false;
+  bool blocked = false;
+  std::vector<tabs::TabAlert> alert_state;
+  bool should_hide_throbber = false;
+  bool should_render_loading_title = false;
+  bool should_themify_favicon = false;
+  bool is_tab_discarded = false;
+  base::WeakPtr<tab_groups::CollaborationMessagingTabData>
+      collaboration_messaging = nullptr;
+  bool should_show_discard_status = false;
+  // Amount of memory saved through discarding the tab
+  base::ByteSize discarded_memory_savings;
+  // Contains information about how much resource a tab is using
+  scoped_refptr<const TabResourceUsage> tab_resource_usage;
+  bool is_monochrome_favicon = false;
+  bool needs_attention = false;
+};
+
+#endif  // CHROME_BROWSER_UI_TABS_TAB_RENDERER_DATA_H_

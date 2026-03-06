@@ -600,7 +600,8 @@ std::optional<int> HorizontalTabStripRegionView::GetFocusedTabIndex() const {
   return std::nullopt;
 }
 
-const tabs::TabData& HorizontalTabStripRegionView::GetTabData(int tab_index) {
+const TabRendererData& HorizontalTabStripRegionView::GetTabRendererData(
+    int tab_index) {
   return tab_strip_->tab_at(tab_index)->data();
 }
 
