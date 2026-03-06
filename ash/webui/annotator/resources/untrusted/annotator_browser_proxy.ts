@@ -1,4 +1,4 @@
-// Copyright 2022 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,38 +7,37 @@ import {UntrustedAnnotatorPageCallbackRouter, UntrustedAnnotatorPageHandlerFacto
 /**
  * To use the annotator proxy, please import this module and call
  * AnnotatorBrowserProxyImpl.getInstance().*
- *
- * @interface
  */
-export class AnnotatorBrowserProxy {
+export interface AnnotatorBrowserProxy {
   /**
    * Annotator
    * Notifies the embedder content that undo/redo availability changed for
    * annotator.
-   * @param {boolean} undoAvailable
-   * @param {boolean} redoAvailable
+   * @param undoAvailable
+   * @param redoAvailable
    */
-  onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {}
+  onUndoRedoAvailabilityChanged(undoAvailable: boolean, redoAvailable: boolean):
+      void;
 
   /**
    * Annotator
    * Notifies the embedder content that the canvas has either succeeded or
    * failed to initialize.
-   * @param {boolean} success
+   * @param success
    */
-  onCanvasInitialized(success) {}
+  onCanvasInitialized(success: boolean): void;
 }
 
-/**
- * @implements {AnnotatorBrowserProxy}
- */
-export class AnnotatorBrowserProxyImpl {
+export class AnnotatorBrowserProxyImpl implements AnnotatorBrowserProxy {
+  private pageHandlerRemote: UntrustedAnnotatorPageHandlerRemote;
+  private annotatorCallbackRouter: UntrustedAnnotatorPageCallbackRouter;
+
   constructor() {
-    this.pageHandlerFactory = UntrustedAnnotatorPageHandlerFactory.getRemote();
+    const pageHandlerFactory = UntrustedAnnotatorPageHandlerFactory.getRemote();
     this.pageHandlerRemote = new UntrustedAnnotatorPageHandlerRemote();
     this.annotatorCallbackRouter = new UntrustedAnnotatorPageCallbackRouter();
 
-    this.pageHandlerFactory.create(
+    pageHandlerFactory.create(
         this.pageHandlerRemote.$.bindNewPipeAndPassReceiver(),
         this.annotatorCallbackRouter.$.bindNewPipeAndPassRemote());
   }
@@ -47,14 +46,13 @@ export class AnnotatorBrowserProxyImpl {
     return this.annotatorCallbackRouter;
   }
 
-  /** @override */
-  onUndoRedoAvailabilityChanged(undoAvailable, redoAvailable) {
+  onUndoRedoAvailabilityChanged(
+      undoAvailable: boolean, redoAvailable: boolean) {
     this.pageHandlerRemote.onUndoRedoAvailabilityChanged(
         undoAvailable, redoAvailable);
   }
 
-  /** @override */
-  onCanvasInitialized(success) {
+  onCanvasInitialized(success: boolean) {
     this.pageHandlerRemote.onCanvasInitialized(success);
   }
 }

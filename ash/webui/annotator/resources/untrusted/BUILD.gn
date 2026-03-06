@@ -9,7 +9,7 @@ assert(is_chromeos, "Annotator is ChromeOS only")
 build_webui("build") {
   static_files = [ "annotator.html" ]
   ts_files = [
-    "annotator_browser_proxy.js",
+    "annotator_browser_proxy.ts",
     "untrusted_annotator_comm_factory.js",
   ]
   mojo_files = [
