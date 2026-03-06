@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+async_test((t) => {
+  const context = new AudioContext();
+  context.audioWorklet.addModule('syntax-error-processor.js').then(() => {
+    assert_unreached('addModule should have failed due to syntax error.');
+  }).catch((e) => {
+    t.step(() => {
+      assert_true(e instanceof Error,
+          'The thrown object should be an Error.');
+      const errorString = e.message + (e.stack ? e.stack : '');
+      assert_true(errorString.includes('syntax-error-processor.js'),
+          'Error message or stack should contain the processor file name');
+      assert_true(/:[1-9]\d*/.test(errorString),
+          'Error message or stack should contain a valid line number');
+    });
+    t.done();
+  });
+}, 'Test AudioWorklet addModule syntax error reporting (Expected Behavior)');
+</script>
+</body>
+</html>

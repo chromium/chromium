@@ -19,6 +19,57 @@
 
 namespace blink {
 
+namespace {
+void AugmentExceptionWithSourceLocation(ScriptState* script_state,
+                                        v8::Local<v8::Value> exception_value) {
+  if (!exception_value->IsObject()) {
+    return;
+  }
+
+  v8::Isolate* isolate = script_state->GetIsolate();
+  v8::Local<v8::Context> context = script_state->GetContext();
+
+  v8::Local<v8::Object> exception_object = exception_value.As<v8::Object>();
+  v8::Local<v8::Value> message_value;
+  if (!exception_object->Get(context, V8AtomicString(isolate, "message"))
+           .ToLocal(&message_value) ||
+      !message_value->IsString()) {
+    return;
+  }
+
+  v8::Local<v8::Message> message =
+      v8::Exception::CreateMessage(isolate, exception_value);
+  if (message.IsEmpty()) {
+    return;
+  }
+
+  v8::Local<v8::Value> location_value = message->GetScriptResourceName();
+  String location_string;
+  if (!location_value.IsEmpty() && location_value->IsString()) {
+    location_string = ToCoreString(isolate, location_value.As<v8::String>());
+  }
+
+  if (location_string.empty()) {
+    return;
+  }
+
+  int line_number = message->GetLineNumber(context).FromMaybe(0);
+
+  String message_string = ToCoreString(isolate, message_value.As<v8::String>());
+  String new_message_string;
+  if (line_number != 0) {
+    new_message_string = message_string + " (at " + location_string + ":" +
+                         String::Number(line_number) + ")";
+  } else {
+    new_message_string = message_string + " (at " + location_string + ")";
+  }
+
+  std::ignore =
+      exception_object->Set(context, V8AtomicString(isolate, "message"),
+                            V8String(isolate, new_message_string));
+}
+}  // namespace
+
 WorkletModuleTreeClient::WorkletModuleTreeClient(
     ScriptState* script_state,
     scoped_refptr<base::SingleThreadTaskRunner> outside_settings_task_runner,
@@ -68,14 +119,20 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
     // the stack here. Ideally, all V8 bindings would understand non-default
     // microtask queues.
     V8DoNotRunMicrotasksScope microtasks_scope(script_state_);
+    v8::Local<v8::Value> exception_value =
+        module_script->CreateErrorToRethrow().V8Value();
+
+    AugmentExceptionWithSourceLocation(script_state_, exception_value);
+
+    scoped_refptr<SerializedScriptValue> serialized_error =
+        SerializedScriptValue::SerializeAndSwallowExceptions(
+            script_state_->GetIsolate(), exception_value);
+
     PostCrossThreadTask(
         *outside_settings_task_runner_, FROM_HERE,
-        CrossThreadBindOnce(
-            &WorkletPendingTasks::Abort,
-            WrapCrossThreadPersistent(pending_tasks_.Get()),
-            SerializedScriptValue::SerializeAndSwallowExceptions(
-                script_state_->GetIsolate(),
-                module_script->CreateErrorToRethrow().V8Value())));
+        CrossThreadBindOnce(&WorkletPendingTasks::Abort,
+                            WrapCrossThreadPersistent(pending_tasks_.Get()),
+                            serialized_error));
     return;
   }
 
