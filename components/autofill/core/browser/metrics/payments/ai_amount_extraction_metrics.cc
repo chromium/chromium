@@ -77,7 +77,7 @@ void LogAiAmountExtractionResult(
         ukm_builder.SetSuccessLatencyInMillis(latency->InMilliseconds());
         break;
       case AiAmountExtractionResult::kFailed:
-        base::UmaHistogramTimes("Autofill.AiAmountExtraction.Latency.Failed",
+        base::UmaHistogramTimes("Autofill.AiAmountExtraction.Latency.Failure",
                                 latency.value());
         ukm_builder.SetFailureLatencyInMillis(latency->InMilliseconds());
         break;

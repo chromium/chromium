@@ -1745,7 +1745,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </summary>
 </histogram>
 
-<histogram name="Autofill.AiAmountExtraction.Latency.Result"
+<histogram
+    name="Autofill.AiAmountExtraction.Latency.{AiAmountExtractionLatencyResult}"
     enum="AiAmountExtractionResult" expires_after="2026-06-01">
   <owner>jamessun@google.com</owner>
   <owner>payments-autofill-team@google.com</owner>
@@ -1755,6 +1756,12 @@ Called by update_autofill_enums.py. This is a manual comment.-->
     when the model execution completes (successfully, with failure, or with
     invalid data).
   </summary>
+  <token key="AiAmountExtractionLatencyResult">
+    <variant name="Failure" summary="AI amount extraction failure latency"/>
+    <variant name="InvalidResponse"
+        summary="AI amount extraction invalid response latency"/>
+    <variant name="Success" summary="AI amount extraction success latency"/>
+  </token>
 </histogram>
 
 <histogram name="Autofill.AiAmountExtraction.Result"
