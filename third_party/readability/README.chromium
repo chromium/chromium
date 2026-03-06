@@ -27,3 +27,5 @@ update the modded_src/version and update the list of changes below.
   crbug.com/467368520): If these both match or both mismatch the title,
   choose the longer string.
 - Remove <label for="id-of-removed-input"> (crbug.com/483369387).
+- When extracting title from JSON-LD, fallback to checking if the original
+  document title includes the name or headline (crbug.com/487369435).

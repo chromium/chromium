@@ -566,6 +566,26 @@ Readability.prototype = {
   },
 
   /**
+   * Get the document title.
+   *
+   * @return string
+   **/
+  _getDocTitle() {
+    var doc = this._doc;
+    var docTitle = "";
+
+    try {
+      docTitle = typeof doc.title === "string" ?
+          doc.title.trim() :
+          this._getInnerText(doc.getElementsByTagName("title")[0]);
+    } catch (e) {
+      /* ignore exceptions setting the title. */
+    }
+
+    return docTitle;
+  },
+
+  /**
    * Get the article title as an H1.
    *
    * @return string
@@ -575,18 +595,7 @@ Readability.prototype = {
     var curTitle = "";
     var origTitle = "";
 
-    try {
-      curTitle = origTitle = doc.title.trim();
-
-      // If they had an element with id "title" in their HTML
-      if (typeof curTitle !== "string") {
-        curTitle = origTitle = this._getInnerText(
-          doc.getElementsByTagName("title")[0]
-        );
-      }
-    } catch (e) {
-      /* ignore exceptions setting the title. */
-    }
+    curTitle = origTitle = this._getDocTitle();
 
     var titleHadHierarchicalSeparators = false;
     function wordCount(str) {
@@ -1750,12 +1759,23 @@ Readability.prototype = {
 
             const TITLE_SIMILARITY_THRESHOLD = 0.75;
             const title = this._getArticleTitle();
-            const nameMatches =
+            let nameMatches =
                 this._textSimilarity(parsed.name, title) >
                     TITLE_SIMILARITY_THRESHOLD;
-            const headlineMatches =
+            let headlineMatches =
                 this._textSimilarity(parsed.headline, title) >
                     TITLE_SIMILARITY_THRESHOLD;
+
+            if (!nameMatches && !headlineMatches) {
+              let docTitle = this._getDocTitle();
+              if (docTitle) {
+                const docTitleLower = docTitle.toLowerCase();
+                nameMatches = docTitleLower.includes(parsed.name.toLowerCase());
+                headlineMatches =
+                    docTitleLower.includes(parsed.headline.toLowerCase());
+              }
+            }
+
             const useName = (nameMatches !== headlineMatches) ? nameMatches :
                 (parsed.name.length >= parsed.headline.length);
             metadata.title = useName ? parsed.name : parsed.headline;
