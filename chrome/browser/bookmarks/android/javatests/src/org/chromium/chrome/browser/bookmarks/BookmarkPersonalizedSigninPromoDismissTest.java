@@ -42,26 +42,21 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.sync.SyncTestRule;
+import org.chromium.chrome.browser.ui.signin.SyncPromoController;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.BookmarkTestRule;
 import org.chromium.chrome.test.util.BookmarkTestUtil;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 /** Tests different scenarios when the bookmark personalized signin promo is not shown. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add(ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE)
 public class BookmarkPersonalizedSigninPromoDismissTest {
-    private static final int MAX_IMPRESSIONS_BOOKMARKS = 20;
-
-    private final String mBookmarkPromoShowCountPreferenceName =
-            ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
-                    SigninPreferencesManager.SigninPromoAccessPointId.BOOKMARKS);
-
     private final SyncTestRule mSyncTestRule = new SyncTestRule();
 
     private final BookmarkTestRule mBookmarkTestRule = new BookmarkTestRule();
@@ -74,7 +69,7 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @Before
     public void setUp() throws Exception {
-        setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -92,10 +87,13 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     @After
     public void tearDown() {
-        ChromeSharedPreferences.getInstance().removeKey(mBookmarkPromoShowCountPreferenceName);
+        ChromeSharedPreferences.getInstance()
+                .removeKey(
+                        SyncPromoController.getPromoShowCountPreferenceName(
+                                SigninAccessPoint.BOOKMARK_MANAGER));
         ChromeSharedPreferences.getInstance()
                 .removeKey(ChromePreferenceKeys.SYNC_PROMO_TOTAL_SHOW_COUNT);
-        setPrefSigninPromoDeclinedBookmarksForTests(false);
+        SyncPromoController.setPrefSigninPromoDeclinedBookmarksForTests(false);
     }
 
     @Test
@@ -164,7 +162,10 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
     @MediumTest
     public void testPromoNotExistWhenImpressionLimitReached() {
         ChromeSharedPreferences.getInstance()
-                .writeInt(mBookmarkPromoShowCountPreferenceName, MAX_IMPRESSIONS_BOOKMARKS);
+                .writeInt(
+                        SyncPromoController.getPromoShowCountPreferenceName(
+                                SigninAccessPoint.BOOKMARK_MANAGER),
+                        SyncPromoController.getMaxImpressionsBookmarksForTests());
         mBookmarkTestRule.showBookmarkManager(mSyncTestRule.getActivity());
         onActiveViewId(R.id.signin_promo_view_container).check(doesNotExist());
     }
@@ -176,7 +177,9 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         assertEquals(
                 0,
                 ChromeSharedPreferences.getInstance()
-                        .readInt(mBookmarkPromoShowCountPreferenceName));
+                        .readInt(
+                                SyncPromoController.getPromoShowCountPreferenceName(
+                                        SigninAccessPoint.BOOKMARK_MANAGER)));
         var histogramWatcher =
                 HistogramWatcher.newSingleRecordWatcher("Signin.SyncPromo.Shown.Count.Bookmarks");
 
@@ -188,7 +191,9 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
         // triggering all metrics again.
         int bookmarkShownCount =
                 ChromeSharedPreferences.getInstance()
-                        .readInt(mBookmarkPromoShowCountPreferenceName);
+                        .readInt(
+                                SyncPromoController.getPromoShowCountPreferenceName(
+                                        SigninAccessPoint.BOOKMARK_MANAGER));
         assertTrue(
                 "Expected at least one, but found " + bookmarkShownCount, bookmarkShownCount >= 1);
         histogramWatcher.assertExpected();
@@ -214,10 +219,5 @@ public class BookmarkPersonalizedSigninPromoDismissTest {
 
     private static ViewInteraction onActiveViewId(@IdRes int id) {
         return onView(allOf(withId(id), activeInRecyclerView()));
-    }
-
-    private void setPrefSigninPromoDeclinedBookmarksForTests(boolean isDeclined) {
-        ChromeSharedPreferences.getInstance()
-                .writeBoolean(ChromePreferenceKeys.SIGNIN_PROMO_BOOKMARKS_DECLINED, isDeclined);
     }
 }
