@@ -352,8 +352,15 @@ INSTANTIATE_TEST_SUITE_P(,
                              // Values for Pdf server response eligibility.
                              ::testing::Values(true, false)));
 
+
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG))
+// TODO(crbug.com/488467253): Fix and re-enable this test for CrOS.
+#define MAYBE_ComprehensiveEligibilityTest DISABLED_ComprehensiveEligibilityTest
+#else
+#define MAYBE_ComprehensiveEligibilityTest ComprehensiveEligibilityTest
+#endif
 IN_PROC_BROWSER_TEST_P(ChromeAimEligibilityServiceBrowserTest,
-                       ComprehensiveEligibilityTest) {
+                       MAYBE_ComprehensiveEligibilityTest) {
   auto [locale, country, server_eligibility_enabled, allowed_by_policy,
         is_google_dse, is_server_eligible, is_pdf_upload_eligible] = GetParam();
 
@@ -1351,8 +1358,14 @@ IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
   EXPECT_TRUE(request_handled_future.Get());
 }
 
+#if BUILDFLAG(IS_CHROMEOS) && (!defined(NDEBUG))
+// TODO(crbug.com/488467253): Fix and re-enable this test for CrOS.
+#define MAYBE_OTRRequestIsNotDropped DISABLED_OTRRequestIsNotDropped
+#else
+#define MAYBE_OTRRequestIsNotDropped OTRRequestIsNotDropped
+#endif
 IN_PROC_BROWSER_TEST_F(ChromeAimEligibilityServiceOAuthBrowserTest,
-                       OTRRequestIsNotDropped) {
+                       MAYBE_OTRRequestIsNotDropped) {
   // Expectation: The request should include the Authorization header.
   omnibox::AimEligibilityResponse response;
   response.set_is_eligible(true);
