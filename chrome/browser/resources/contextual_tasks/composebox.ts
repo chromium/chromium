@@ -16,7 +16,7 @@ import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
 import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {ToolMode} from '//resources/mojo/components/omnibox/composebox/composebox_query.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -129,6 +129,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         type: Boolean,
         reflect: true,
       },
+      selectedMatchIndex_: {type: Number},
     };
   }
 
@@ -161,6 +162,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
       loadTimeData.getBoolean('showOnboardingTooltip');
   protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
   protected accessor showSuggestionsActivityLink_: boolean = false;
+  protected accessor selectedMatchIndex_: number = -1;
+  protected searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
@@ -184,6 +187,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
     this.searchboxCallbackRouter_ =
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
+    this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
   }
 
   override connectedCallback() {
@@ -382,6 +386,41 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected onSuggestionsResultReceived_(e: CustomEvent<AutocompleteResult>) {
     this.isLoading_ = false;
     this.zeroStateSuggestions_ = e.detail;
+  }
+
+  // Handle keyboard events on the suggestions dropdown.
+  protected onDropdownKeydown_(e: KeyboardEvent) {
+    if (e.key === 'Enter') {
+      this.navigateToMatch_(this.selectedMatchIndex_);
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }
+
+  private updateSelection_(index: number) {
+    this.selectedMatchIndex_ = index;
+  }
+
+  protected onMatchFocusin_(e: CustomEvent<{index: number}>) {
+    this.updateSelection_(e.detail.index);
+  }
+
+  private navigateToMatch_(index: number) {
+    const match = this.zeroStateSuggestions_?.matches[index];
+
+    if (match) {
+      this.searchboxHandler_.openAutocompleteMatch(
+          /*line=*/ index,
+          /*url=*/ match.destinationUrl,
+          /*areMatchesShowing=*/ true,
+          /*mouseButton=*/ 0,
+          /*altKey=*/ false,
+          /*ctrlKey=*/ false,
+          /*metaKey=*/ false,
+          /*shiftKey=*/ false);
+    }
+    this.clearInputAndFocus(/* querySubmitted= */ true);
+    this.selectedMatchIndex_ = -1;
   }
 
   private clearTooltipImpressionTimer_() {

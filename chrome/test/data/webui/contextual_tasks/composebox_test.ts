@@ -1355,4 +1355,73 @@ suite('ContextualTasksComposeboxTest', () => {
             !!composebox.shadowRoot.querySelector('#carousel'),
             'Carousel should be removed from the DOM');
       });
+
+  // Test that the Tab key correctly synchronizes the selected index.
+  test('TabFocusSyncsSelectedIndex', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const dropdown =
+        (contextualComposebox as any).$.contextualTasksSuggestionsContainer;
+
+    // Simulate focus moving to the first match (index 0) via Tab key.
+    dropdown.dispatchEvent(new CustomEvent('match-focusin', {
+      detail: {index: 0},
+      bubbles: true,
+      composed: true,
+    }));
+
+    await microtasksFinished();
+
+    // Verify the index is synced in both the parent and the dropdown.
+    assertEquals(0, (contextualComposebox as any).selectedMatchIndex_);
+    assertEquals(0, dropdown.selectedMatchIndex);
+  });
+
+  test('TabFocusPopulatesTextAndEnterSubmits', async () => {
+    const contextualComposebox = contextualTasksApp.$.composebox;
+    const dropdown =
+        (contextualComposebox as any).$.contextualTasksSuggestionsContainer;
+    const innerComposebox = (contextualComposebox as any).$.composebox;
+
+    // Setup mock zero-state results.
+    const matches = [
+      createAutocompleteMatch(
+          {contents: 'focus match', destinationUrl: 'https://test.com'}),
+    ];
+    (contextualComposebox as any).zeroStateSuggestions_ =
+        createAutocompleteResultForTesting({
+          input: '',
+          matches: matches,
+        });
+
+    await microtasksFinished();
+    await contextualComposebox.updateComplete;
+
+    // Simulate Tab focus (match-focusin).
+    dropdown.dispatchEvent(new CustomEvent('match-focusin', {
+      detail: {index: 0},
+      bubbles: true,
+      composed: true,
+    }));
+
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+
+    // Simulate pressing Enter to submit.
+    dropdown.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'Enter',
+      bubbles: true,
+      composed: true,
+    }));
+
+    // Verify the Mojo handler was called correctly.
+    const [index, url] =
+        await mockSearchboxPageHandler.whenCalled('openAutocompleteMatch');
+    assertEquals(0, index);
+    assertEquals('https://test.com', url);
+
+    // After submission, verify the input is cleared by your component logic.
+    await microtasksFinished();
+    await innerComposebox.updateComplete;
+    assertEquals('', innerComposebox.getInputText());
+  });
 });

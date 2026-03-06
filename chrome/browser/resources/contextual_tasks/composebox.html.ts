@@ -27,7 +27,10 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .result="${this.zeroStateSuggestions_}"
           .maxSuggestions="${5}"
           .overrideClampLineNum="${3}"
-          ?hidden="${!this.showSuggestions_}">
+          .selectedMatchIndex="${this.selectedMatchIndex_}"
+          ?hidden="${!this.showSuggestions_}"
+          @match-focusin="${this.onMatchFocusin_}"
+          @keydown="${this.onDropdownKeydown_}">
       </cr-composebox-dropdown>
       ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
         <div id="suggestionActivity">
@@ -76,7 +79,10 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .result="${this.zeroStateSuggestions_}"
           .maxSuggestions="${5}"
           .overrideClampLineNum="${3}"
-          ?hidden="${!this.showSuggestions_}">
+          .selectedMatchIndex="${this.selectedMatchIndex_}"
+          ?hidden="${!this.showSuggestions_}"
+          @match-focusin="${this.onMatchFocusin_}"
+          @keydown="${this.onDropdownKeydown_}">
       </cr-composebox-dropdown>
       ${this.showSuggestionsActivityLink_ && this.showSuggestions_ ? html`
         <div id="suggestionActivity">
