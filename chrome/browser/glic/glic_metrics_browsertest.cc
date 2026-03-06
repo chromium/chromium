@@ -27,8 +27,7 @@ namespace {
 
 class GlicMetricsBrowserTest : public InProcessBrowserTest {
  public:
-  GlicMetricsBrowserTest()
-      : GlicMetricsBrowserTest({}, {features::kGlicMultiInstance}) {}
+  GlicMetricsBrowserTest() : GlicMetricsBrowserTest({}, {}) {}
 
  protected:
   explicit GlicMetricsBrowserTest(
@@ -54,41 +53,7 @@ class GlicMetricsBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<GlicTestEnvironment> glic_test_environment_;
 };
 
-IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_SingleInstance) {
-#if BUILDFLAG(IS_LINUX)
-  // TODO(crbug.com/475900964): Test fails when capturing
-  // Glic.Fre.Dismissed.Onboarding user action.
-  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
-    GTEST_SKIP() << "Test failing on Wayland: crbug.com/475900964";
-  }
-#endif
-
-  ASSERT_FALSE(GlicEnabling::IsMultiInstanceEnabled());
-
-  base::UserActionTester user_action_tester;
-
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
-                 mojom::InvocationSource::kOsButton);
-
-  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Shown"), 1);
-
-  GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
-      ->ToggleUI(browser(), /*prevent_close=*/false,
-                 mojom::InvocationSource::kOsButton);
-
-  EXPECT_EQ(user_action_tester.GetActionCount("Glic.Fre.Dismissed.Onboarding"),
-            0);
-}
-
-class GlicMetricsMultiInstanceBrowserTest : public GlicMetricsBrowserTest {
- public:
-  GlicMetricsMultiInstanceBrowserTest()
-      : GlicMetricsBrowserTest({features::kGlicMultiInstance}, {}) {}
-};
-
-IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
-                       GlicFreShown_MultiInstance) {
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest, GlicFreShown_MultiInstance) {
   ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
 
   base::UserActionTester user_action_tester;
@@ -107,7 +72,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
             1);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        ToggleAndOpenSourceMetrics_SidePanel) {
   ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
 
@@ -134,7 +99,7 @@ IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
                                       mojom::InvocationSource::kOsButton, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(GlicMetricsMultiInstanceBrowserTest,
+IN_PROC_BROWSER_TEST_F(GlicMetricsBrowserTest,
                        ToggleAndOpenSourceMetrics_Floaty) {
   ASSERT_TRUE(GlicEnabling::IsMultiInstanceEnabled());
 

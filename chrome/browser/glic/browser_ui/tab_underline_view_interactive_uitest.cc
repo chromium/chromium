@@ -612,10 +612,7 @@ class TabUnderlineViewMultiInstanceUiTest : public TabUnderlineViewUiTest {
   TabUnderlineViewMultiInstanceUiTest() {
     // kGlicMultiInstance, kGlicMultiTab, kGlicMultitabUnderlines are required
     // for IsMultiInstanceEnabled().
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
   ~TabUnderlineViewMultiInstanceUiTest() override = default;
 

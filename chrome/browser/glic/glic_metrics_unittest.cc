@@ -1002,10 +1002,8 @@ TEST_F(GlicMetricsTest, OnRecordUseCounter) {
 class GlicMetricsTrustFirstOnboardingTest : public GlicMetricsTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlicTrustFirstOnboarding, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kGlicTrustFirstOnboarding},
+                                          {});
     GlicMetricsTest::SetUp();
     // Revert FRE status to NotStarted to simulate new user for this experiment.
     profile()->GetPrefs()->SetInteger(

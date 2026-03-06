@@ -47,8 +47,6 @@ class GlicInstanceMetricsTest : public test::InteractiveGlicTest {
               {features::kGlicMetricsSessionRestartDebounceTimer.name,
                base::NumberToString(DEBOUNCE_TIMEOUT_MS.InMilliseconds()) +
                    "ms"}}},
-            {features::kGlicMultiInstance, {}},
-            {mojom::features::kGlicMultiTab, {}},
         },
         {});
   }

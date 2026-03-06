@@ -133,10 +133,6 @@ class ExecutionEngineOriginGatingBrowserTestBase
         optimization_guide::kComponentHintsUpdatedResultHistogramString, 1);
   }
 
-  virtual bool multi_instance_enabled() {
-    return base::FeatureList::IsEnabled(features::kGlicMultiInstance);
-  }
-
   content::WebContents* web_contents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
   }
@@ -239,16 +235,9 @@ class ExecutionEngineOriginGatingBrowserTestBase
     base::test::TestFuture<
         base::expected<int32_t, glic::mojom::CreateTaskErrorReason>>
         create_task_future;
-    if (multi_instance_enabled()) {
-      ASSERT_TRUE(GetGlicInstanceImpl());
-      GetGlicInstanceImpl()->CreateTask(nullptr, nullptr,
-                                        create_task_future.GetCallback());
-    } else {
-      glic::GlicKeyedService* service = glic::GlicKeyedService::Get(
-          InProcessBrowserTest::browser()->profile());
-      service->CreateTask(service->GetWeakPtr(), nullptr,
-                          create_task_future.GetCallback());
-    }
+    ASSERT_TRUE(GetGlicInstanceImpl());
+    GetGlicInstanceImpl()->CreateTask(nullptr, nullptr,
+                                      create_task_future.GetCallback());
     auto result = create_task_future.Get();
     ASSERT_TRUE(result.has_value());
     task_id_ = TaskId(result.value());
@@ -264,31 +253,20 @@ class ExecutionEngineOriginGatingBrowserTestBase
 };
 
 class ExecutionEngineOriginGatingBrowserTest
-    : public ExecutionEngineOriginGatingBrowserTestBase,
-      public testing::WithParamInterface<bool> {
+    : public ExecutionEngineOriginGatingBrowserTestBase {
  public:
   ExecutionEngineOriginGatingBrowserTest() {
-    if (multi_instance_enabled()) {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{features::kGlicMultiInstance,
-                                glic::mojom::features::kGlicMultiTab},
-          /*disabled_features=*/{});
-    } else {
-      scoped_feature_list_.InitWithFeatures(
-          /*enabled_features=*/{},
-          /*disabled_features=*/{features::kGlicMultiInstance,
-                                 glic::mojom::features::kGlicMultiTab});
-    }
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{});
   }
   ~ExecutionEngineOriginGatingBrowserTest() override = default;
-
-  bool multi_instance_enabled() override { return GetParam(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmNavigationToNewOrigin_Granted) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -335,7 +313,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.PermissionGranted", true, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmNavigationToNewOrigin_Denied) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -381,7 +359,7 @@ class ExecutionEngineOriginGatingExplicitGrantBrowserTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingExplicitGrantBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingExplicitGrantBrowserTest,
                        ImplicitGrantDisabled) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
@@ -404,15 +382,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingExplicitGrantBrowserTest,
                     mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExecutionEngineOriginGatingExplicitGrantBrowserTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "MultiInstance"
-                                             : "SingleInstance";
-                         });
-
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmBlockedOriginWithUser_Granted) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -482,7 +452,7 @@ class ExecutionEngineOriginGatingUserPromptingBrowserTest
 
 // When kGlicPromptUserForNavigationToNewOrigins is enabled, we should not
 // prompt twice for the same non-sensitive origin.
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingUserPromptingBrowserTest,
                        ConfirmBlockedOriginWithUser_Nonsensitive) {
   const GURL start_url =
       embedded_https_test_server().GetURL("example.com", "/actor/link.html");
@@ -528,7 +498,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
 
 // When kGlicPromptUserForNavigationToNewOrigins is enabled, we should not
 // prompt twice even if the origin becomes sensitive during the task.
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingUserPromptingBrowserTest,
                        ConfirmBlockedOriginWithUser_ComponentUpdate) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -585,7 +555,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingUserPromptingBrowserTest,
   EXPECT_TRUE(content::NavigateToURL(web_contents(), eventually_sensitive));
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        ConfirmBlockedOriginWithUser_Denied) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -617,7 +587,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.PermissionGranted", false, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        OriginGatingNavigateAction) {
   const GURL start_url =
       embedded_https_test_server().GetURL("foo.com", "/actor/blank.html");
@@ -671,7 +641,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                     mojom::ActionResultCode::kTriggeredNavigationBlocked);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        AddWritableMainframeOrigins) {
   const GURL cross_origin_url =
       embedded_https_test_server().GetURL("bar.com", "/actor/blank.html");
@@ -705,7 +675,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   ExpectOkResult(result2);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        BlockedNavigationNotAddedToAllowlist) {
   base::HistogramTester histogram_tester;
   const GURL start_url = embedded_https_test_server().GetURL(
@@ -771,7 +741,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.ConfirmedListSize2", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        SandboxedSiteDoesNotReprompt) {
   base::HistogramTester histogram_tester;
   const GURL sandboxed_blocked_page = embedded_https_test_server().GetURL(
@@ -829,7 +799,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       "Actor.NavigationGating.ConfirmedListSize2", 1, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigationNotGatedWithStaticList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -874,7 +844,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kAllowByStaticList, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        SameOriginNavigationInStaticAllowList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -903,7 +873,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kAllowSameOrigin, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        CrossOriginNavigationInStaticBlockListAndAllowList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -938,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        StaticBlockOverridesDynamicList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -980,7 +950,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
                                      1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        StaticAllowListOverridesDynamicList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -1021,7 +991,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
   histogram_tester.ExpectUniqueSample(kSameSiteInitiatorHistogram, false, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigationBlockedByStaticList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -1062,7 +1032,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigationWithOpaqueSourceOriginBlockedUnderWildcard) {
   base::HistogramTester histogram_tester;
   const GURL blocked_url =
@@ -1093,7 +1063,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        NavigateToSandboxedPageBlockedByStaticList) {
   base::HistogramTester histogram_tester;
   const GURL start_url =
@@ -1134,7 +1104,7 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
       ExecutionEngine::GatingDecision::kBlockByStaticList, 1);
 }
 
-IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExecutionEngineOriginGatingBrowserTest,
                        BlocklistAppliesToMayActOnTab) {
   const GURL start_url = embedded_https_test_server().GetURL(
       "bad.example.com", "/actor/link.html");
@@ -1160,21 +1130,6 @@ IN_PROC_BROWSER_TEST_P(ExecutionEngineOriginGatingBrowserTest,
           : mojom::ActionResultCode::kUrlBlocked;
   ExpectErrorResult(result, expected_result);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExecutionEngineOriginGatingBrowserTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "MultiInstance"
-                                             : "SingleInstance";
-                         });
-INSTANTIATE_TEST_SUITE_P(All,
-                         ExecutionEngineOriginGatingUserPromptingBrowserTest,
-                         testing::Bool(),
-                         [](auto& info) {
-                           return info.param ? "MultiInstance"
-                                             : "SingleInstance";
-                         });
 
 class ExecutionEngineOriginGatingParamBrowserTest
     : public ExecutionEngineOriginGatingBrowserTestBase,

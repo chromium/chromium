@@ -170,8 +170,7 @@ class GlicInstanceCoordinatorBrowserTest
  public:
   GlicInstanceCoordinatorBrowserTest() {
     feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlicMultiInstance,
-                              features::kGlicDaisyChainNewTabs,
+        /*enabled_features=*/{features::kGlicDaisyChainNewTabs,
                               features::kGlicWebContentsWarming,
                               features::kGlicTabRestoration},
         /*disabled_features=*/{});
@@ -390,8 +389,7 @@ class GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest
   GlicInstanceCoordinatorTrustFirstOnboardingArm1BrowserTest() {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{features::kGlicTrustFirstOnboarding,
-          {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}},
-         {features::kGlicMultiInstance, {}}},
+          {{features::kGlicTrustFirstOnboardingArmParam.name, "1"}}}},
         {});
   }
 

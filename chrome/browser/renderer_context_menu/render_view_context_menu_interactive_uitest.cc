@@ -1181,9 +1181,6 @@ class GlicInteractiveContextMenuTest
     if (UseMultiInstance()) {
       scoped_feature_list_.InitWithFeatures(
           /*enabled_features=*/{features::kGlic, features::kGlicShareImage,
-                                features::kGlicMultiInstance,
-                                features::kGlicUnifiedFreScreen,
-                                glic::mojom::features::kGlicMultiTab,
                                 features::kGlicMultitabUnderlines},
           /*disabled_features=*/{features::kGlicWarming,
                                  blink::features::kSvgFallBackToContainerSize,

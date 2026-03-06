@@ -34,10 +34,7 @@ namespace {
 class GlicDelegatingSharingManagerBrowserTest : public NonInteractiveGlicTest {
  public:
   GlicDelegatingSharingManagerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
   ~GlicDelegatingSharingManagerBrowserTest() override = default;
 
@@ -549,10 +546,7 @@ class GlicStablePinningDelegatingSharingManagerBrowserTest
     : public NonInteractiveGlicTest {
  public:
   GlicStablePinningDelegatingSharingManagerBrowserTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
 
   std::unique_ptr<GlicSharingManagerImpl> CreateSharingManager(

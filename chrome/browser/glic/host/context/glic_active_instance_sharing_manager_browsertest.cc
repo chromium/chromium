@@ -135,9 +135,7 @@ class GlicActiveInstanceSharingManagerProfileStateTest
       public testing::WithParamInterface<bool> {
  public:
   GlicActiveInstanceSharingManagerProfileStateTest() {
-    std::vector<base::test::FeatureRef> enabled_features = {
-        features::kGlic, features::kGlicMultiInstance,
-        mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines};
+    std::vector<base::test::FeatureRef> enabled_features = {features::kGlic};
     std::vector<base::test::FeatureRef> disabled_features = {
         features::kGlicTrustFirstOnboarding};
 

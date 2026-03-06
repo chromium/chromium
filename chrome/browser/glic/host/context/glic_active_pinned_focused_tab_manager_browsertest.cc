@@ -30,10 +30,7 @@ class GlicActivePinnedFocusedTabManagerBrowserTest
  public:
   GlicActivePinnedFocusedTabManagerBrowserTest() {
     // Enable multi-instance and multi-tab.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kGlic, features::kGlicMultiInstance,
-         mojom::features::kGlicMultiTab, features::kGlicMultitabUnderlines},
-        {});
+    scoped_feature_list_.InitWithFeatures({features::kGlic}, {});
   }
 
  protected:
