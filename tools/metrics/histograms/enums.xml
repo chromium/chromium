@@ -11875,6 +11875,7 @@ from previous Chrome versions.
   <int value="-879031960" label="FetchKeepaliveTimeoutSetting:disabled"/>
   <int value="-879024703" label="pwa-update-dialog-for-name-and-icon:enabled"/>
   <int value="-878580380" label="CrostiniUseLxd4:enabled"/>
+  <int value="-878440121" label="EnableAndroidSidePanelDevFeature:disabled"/>
   <int value="-877253585"
       label="HistoryClustersNavigationContextClustering:enabled"/>
   <int value="-876773120" label="TabbedAppOverflowMenuActionBar:enabled"/>
@@ -17255,6 +17256,7 @@ from previous Chrome versions.
       label="AboutThisSitePersistentSidePanelEntry:disabled"/>
   <int value="952817891" label="TabSwitcherGroupSuggestionsAndroid:disabled"/>
   <int value="954368502" label="AllowWgcWindowCapturer:enabled"/>
+  <int value="954741366" label="EnableAndroidSidePanelDevFeature:enabled"/>
   <int value="955200915" label="enable-openxr-android-smooth-depth:disabled"/>
   <int value="955340765" label="ChromeHomeOptOutSnackbar:enabled"/>
   <int value="955425932" label="EnterpriseReportingInChromeOS:enabled"/>

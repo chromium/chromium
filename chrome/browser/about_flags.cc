@@ -12924,6 +12924,14 @@ const FeatureEntry kFeatureEntries[] = {
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
+    {"enable-android-side-panel-dev-feature",
+     flag_descriptions::kEnableAndroidSidePanelDevFeatureName,
+     flag_descriptions::kEnableAndroidSidePanelDevFeatureDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kEnableAndroidSidePanelDevFeature)},
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
     {"signin-level-up-button", flag_descriptions::kSigninLevelUpButtonName,
      flag_descriptions::kSigninLevelUpButtonDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(switches::kSigninLevelUpButton)},
