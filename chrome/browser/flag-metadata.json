@@ -7025,11 +7025,6 @@
     "expiry_milestone": 150
   },
   {
-    "name": "ntp-realbox-contextual-and-trending-suggestions",
-    "owners": ["jennserrano@google.com", "niharm@google.com", "chrome-omnibox-team@google.com"],
-    "expiry_milestone": 130
-  },
-  {
     "name": "ntp-realbox-cr23-theming",
     "owners": [ "niharm@google.com", "mahmadi@google.com"],
     "expiry_milestone": 140

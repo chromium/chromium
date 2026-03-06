@@ -6254,12 +6254,6 @@ inline constexpr char kNtpOutlookCalendarModuleName[] =
 inline constexpr char kNtpOutlookCalendarModuleDescription[] =
     "Shows the Outlook Calendar module on the New Tab Page.";
 
-inline constexpr char kNtpRealboxContextualAndTrendingSuggestionsName[] =
-    "NTP Realbox Contextual and Trending Suggestions";
-inline constexpr char kNtpRealboxContextualAndTrendingSuggestionsDescription[] =
-    "Allows NTP Realbox's second column to display contextual and trending "
-    "text suggestions.";
-
 inline constexpr char kNtpRealboxCr23ThemingName[] =
     "Chrome Refresh Themed Realbox";
 inline constexpr char kNtpRealboxCr23ThemingDescription[] =

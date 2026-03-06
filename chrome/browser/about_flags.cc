@@ -7263,14 +7263,6 @@ const FeatureEntry kFeatureEntries[] = {
                                     kNtpOutlookCalendarModuleVariations,
                                     "DesktopNtpModules")},
 
-    {"ntp-realbox-contextual-and-trending-suggestions",
-     flag_descriptions::kNtpRealboxContextualAndTrendingSuggestionsName,
-     flag_descriptions::kNtpRealboxContextualAndTrendingSuggestionsDescription,
-     kOsDesktop,
-     FEATURE_VALUE_TYPE(
-         omnibox_feature_configs::RealboxContextualAndTrendingSuggestions::
-             kRealboxContextualAndTrendingSuggestions)},
-
     {"ntp-realbox-cr23-theming", flag_descriptions::kNtpRealboxCr23ThemingName,
      flag_descriptions::kNtpRealboxCr23ThemingDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(ntp_features::kRealboxCr23Theming,

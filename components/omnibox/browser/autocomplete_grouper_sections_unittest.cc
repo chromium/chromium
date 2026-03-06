@@ -1958,15 +1958,6 @@ TEST(AutocompleteGrouperSectionsTest, IOSNTPZpsSection) {
 
 // Tests the groups and limits for DesktopSecondaryNTPZpsSection.
 TEST(AutocompleteGrouperSectionsTest, DesktopSecondaryNTPZpsSection) {
-  // Explicitly enable RealboxContextualAndTrendingSuggestions feature and set
-  // params.
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::RealboxContextualAndTrendingSuggestions>
-      scoped_config;
-  scoped_config.Get().enabled = true;
-  scoped_config.Get().total_limit = 4;
-  scoped_config.Get().contextual_suggestions_limit = 4;
-  scoped_config.Get().trending_suggestions_limit = 4;
   auto test = [](ACMatches matches, std::vector<int> expected_relevances) {
     PSections sections;
     omnibox::GroupConfigMap group_configs;
@@ -2031,45 +2022,12 @@ TEST(AutocompleteGrouperSectionsTest, DesktopSecondaryNTPZpsSection) {
           CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST)},
          {});
   }
-  // Test groups and limits when RealboxContextualAndTrendingSuggestions feature
-  // is disabled.
-  scoped_config.Reset();
-  scoped_config.Get().enabled = false;
-  {
-    SCOPED_TRACE(
-        "Matches should be added up to their group limit. "
-        "(RealboxContextualAndTrendingSuggestions feature disabled)");
-    test({CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS),
-          CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS),
-          CreateMatch(98, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS),
-          CreateMatch(97, omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS)},
-         {100, 99, 98});
-  }
-  {
-    SCOPED_TRACE(
-        "Given no matches that can be added to this section because of their "
-        "Group limit, should return no matches. "
-        "(RealboxContextualAndTrendingSuggestions feature disabled)");
-    test({CreateMatch(100, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-          CreateMatch(99, omnibox::GROUP_PREVIOUS_SEARCH_RELATED),
-          CreateMatch(98, omnibox::GROUP_TRENDS)},
-         {});
-  }
 }
 
 // Tests the behavior when DesktopNTPZpsSection and
 // DesktopSecondaryNTPZpsSection are both created.
 TEST(AutocompleteGrouperSectionsTest,
      DesktopNTPZpsSectionAndDesktopSecondaryNTPZpsSection) {
-  // Explicitly enable RealboxContextualAndTrendingSuggestions feature and set
-  // params.
-  omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::RealboxContextualAndTrendingSuggestions>
-      scoped_config;
-  scoped_config.Get().enabled = true;
-  scoped_config.Get().total_limit = 4;
-  scoped_config.Get().contextual_suggestions_limit = 4;
-  scoped_config.Get().trending_suggestions_limit = 4;
   auto test = [](ACMatches matches, std::vector<int> expected_relevances,
                  bool trends_has_default_side_type = true) {
     PSections sections;
@@ -2140,32 +2098,6 @@ TEST(AutocompleteGrouperSectionsTest,
                         omnibox::GROUP_PREVIOUS_SEARCH_RELATED_ENTITY_CHIPS),
         },
         {200, 199, 198, 197, 100, 99, 98, 97, 92, 91, 90});
-  }
-  // Test groups and limits when RealboxContextualAndTrendingSuggestions feature
-  // is disabled.
-  scoped_config.Reset();
-  scoped_config.Get().enabled = false;
-  {
-    SCOPED_TRACE(
-        "Given 8 psuggest matches, and trending matches with a secondary side "
-        "type, but RealboxContextualAndTrendingSuggestions"
-        "feature disabled, do not show trending on the RHS.");
-    test(
-        {
-            CreateMatch(100, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(99, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(98, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(97, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(96, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(95, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(94, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(93, omnibox::GROUP_PERSONALIZED_ZERO_SUGGEST),
-            CreateMatch(92, omnibox::GROUP_TRENDS),
-            CreateMatch(91, omnibox::GROUP_TRENDS),
-            CreateMatch(90, omnibox::GROUP_TRENDS),
-            CreateMatch(89, omnibox::GROUP_TRENDS),
-        },
-        {100, 99, 98, 97, 96, 95, 94, 93}, false);
   }
 }
 
