@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/debug/dump_without_crashing.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
 #include "content/browser/preloading/prerender/prerender_host.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
@@ -293,7 +294,11 @@ void PrerenderHandleImpl::OnHostDestroyed(PrerenderFinalStatus status) {
 
 void PrerenderHandleImpl::OnHeadersReceived(
     NavigationHandle& navigation_handle) {
-  CHECK_EQ(State::kLoading, state_);
+  if (state_ != State::kLoading) {
+    SCOPED_CRASH_KEY_NUMBER("BUG489979390", "state", static_cast<int>(state_));
+    base::debug::DumpWithoutCrashing();
+    return;
+  }
   state_ = State::kReady;
 
   for (auto& callback : on_headers_received_callbacks_) {
