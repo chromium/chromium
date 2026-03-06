@@ -16,6 +16,7 @@ URLLoaderFactoryBuilder& URLLoaderFactoryBuilder::operator=(
 std::tuple<mojo::PendingReceiver<mojom::URLLoaderFactory>,
            mojo::PendingRemote<mojom::URLLoaderFactory>>
 URLLoaderFactoryBuilder::Append() {
+  num_interceptors_++;
   if (IsEmpty()) {
     mojo::PendingRemote<mojom::URLLoaderFactory> tail_factory_remote;
     tail_ = tail_factory_remote.InitWithNewPipeAndPassReceiver();

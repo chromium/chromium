@@ -110,6 +110,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
     CHECK(mojo::FusePipes(std::move(receiver), std::move(head_)));
   }
 
+  size_t num_interceptors() const { return num_interceptors_; }
+
  private:
   bool IsEmpty() const;
 
@@ -152,6 +154,8 @@ class COMPONENT_EXPORT(NETWORK_CPP) URLLoaderFactoryBuilder final {
   // If they are both invalid, then there are no interceptors.
   mojo::PendingRemote<mojom::URLLoaderFactory> head_;
   mojo::PendingReceiver<mojom::URLLoaderFactory> tail_;
+
+  size_t num_interceptors_ = 0;
 };
 
 // `PendingRemote` -> `SharedURLLoaderFactory`:

@@ -11,6 +11,7 @@
 #include "base/containers/adapters.h"
 #include "base/debug/alias.h"
 #include "base/debug/crash_logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/optional_util.h"
@@ -1349,6 +1350,11 @@ ServiceWorkerClient::CreateNetworkURLLoaderFactory(
       factory_builder, &header_client, &bypass_redirect_checks_unused,
       /*disable_secure_dns=*/nullptr, /*factory_override=*/nullptr,
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse}));
+
+  // Record the number of interceptors for metrics.
+  base::UmaHistogramCounts100(
+      "ServiceWorker.URLLoaderFactoryInterceptorCountForMainResource",
+      factory_builder.num_interceptors());
 
   // Make the network factory.
   return base::MakeRefCounted<network::WrapperSharedURLLoaderFactory>(

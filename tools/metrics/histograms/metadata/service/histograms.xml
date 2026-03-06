@@ -2136,6 +2136,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.URLLoaderFactoryInterceptorCountForMainResource"
+    units="count" expires_after="2027-03-06">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the number of interceptors involved in the URLLoaderFactory creation
+    for the main resource request in ServiceWorkerClient. This is recorded when
+    a navigation request is initiated by the service worker (e.g., navigation
+    preload, synthetic response).
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.WindowClientNavigationIPAddressSpaceMismatch"
     enum="Boolean" expires_after="2026-09-22">
   <owner>hchao@chromium.org</owner>
