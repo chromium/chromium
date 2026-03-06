@@ -2521,6 +2521,16 @@ Keep consistent with active providers. Doesn't need to include every provider in
   </summary>
 </histogram>
 
+<histogram name="Omnibox.MobileFusebox.AttachmentsPopupButtonClickedInSession"
+    enum="Boolean" expires_after="2026-11-11">
+  <owner>pnoland@google.com</owner>
+  <owner>chrome-mobile-search@google.com</owner>
+  <summary>
+    Records whether the attachments popup button was clicked or not during an
+    omnibox session. Recorded when the omnibox session ends.
+  </summary>
+</histogram>
+
 <histogram name="Omnibox.MobileFusebox.AttachmentsPopupToggled" enum="Boolean"
     expires_after="2026-11-11">
   <owner>pnoland@google.com</owner>
