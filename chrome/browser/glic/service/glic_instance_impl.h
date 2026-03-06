@@ -171,6 +171,7 @@ class GlicInstanceImpl : public GlicInstance,
   std::optional<std::string> conversation_id() const override;
   base::CallbackListSubscription RegisterStateChange(
       StateChangeCallback callback) override;
+  void BindTabForTesting(tabs::TabInterface* tab) override;
 
   // Host::InstanceDelegate:
   // TODO: Currently, both GlicInstanceImpl and GlicKeyedService implement

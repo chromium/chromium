@@ -17,6 +17,10 @@ namespace views {
 class Widget;
 }  // namespace views
 
+namespace tabs {
+class TabInterface;
+}  // namespace tabs
+
 namespace glic {
 
 class Host;
@@ -93,6 +97,8 @@ class GlicInstance : public glic_instance_internal::UIDelegate {
   virtual base::TimeDelta GetTimeSinceLastActive() const = 0;
 
   virtual GlicInstanceMetrics* instance_metrics() = 0;
+
+  virtual void BindTabForTesting(tabs::TabInterface* tab) = 0;
 };
 
 }  // namespace glic

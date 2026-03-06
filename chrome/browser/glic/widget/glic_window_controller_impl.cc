@@ -1392,6 +1392,9 @@ GlicWindowControllerImpl::AddActiveInstanceChangedCallbackAndNotifyImmediately(
 GlicInstance* GlicWindowControllerImpl::GetActiveInstance() {
   NOTREACHED();
 }
+void GlicWindowControllerImpl::BindTabForTesting(tabs::TabInterface* tab) {
+  NOTREACHED();
+}
 
 void GlicWindowControllerImpl::SetWindowState(State new_state) {
   if (state_ == new_state) {

@@ -9,10 +9,12 @@
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
+#include "chrome/browser/glic/host/glic.mojom-shared.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/glic/test_support/glic_test_environment.h"
+#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -442,7 +444,7 @@ class TabMenuModelGlicMultiTabTest : public TabMenuModelBrowserTest {
   TabMenuModelGlicMultiTabTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{glic::mojom::features::kGlicMultiTab},
-        /*disabled_features=*/{features::kGlicMultiInstance});
+        /*disabled_features=*/{});
   }
 
  protected:
@@ -470,12 +472,8 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, NotShared) {
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
                      tab_strip_model, 1);
-  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
-                  .has_value());
-  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
-                   .has_value());
-  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
-                   .has_value());
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(TabStripModel::CommandGlicShare).has_value());
 }
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
@@ -483,46 +481,42 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, SomeShared) {
   chrome::NewTab(browser());
   chrome::NewTab(browser());
 
-  sharing_manager().PinTabs({TabHandleAtIndex(0)});
+  auto* service = glic::GlicKeyedService::Get(profile());
+  service->ToggleUI(browser(), true,
+                    glic::mojom::InvocationSource::kOsButtonMenu);
+  auto* instance =
+      service->GetInstanceForTab(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(instance);
+  instance->BindTabForTesting(tab_strip()->GetTabAtIndex(0));
 
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
                      tab_strip(), 1);
-  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
-                  .has_value());
-  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
-                   .has_value());
-  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
-                   .has_value());
+  EXPECT_TRUE(
+      model.GetIndexOfCommandId(TabStripModel::CommandGlicShare).has_value());
+  EXPECT_FALSE(
+      model.GetIndexOfCommandId(TabStripModel::CommandGlicUnshare).has_value());
 }
 
-IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, AllShared) {
-  for (int i = 0; i < 3; ++i) {
-    chrome::NewTab(browser());
-    sharing_manager().PinTabs({TabHandleAtIndex(i)});
-  }
-
-  TabMenuModel model(&delegate_,
-                     browser()->GetFeatures().tab_menu_model_delegate(),
-                     tab_strip(), 1);
-  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStartShare)
-                   .has_value());
-  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
-                  .has_value());
-  EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
-                   .has_value());
-}
 
 IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
+  auto* service = glic::GlicKeyedService::Get(profile());
+  service->ToggleUI(browser(), true,
+                    glic::mojom::InvocationSource::kOsButtonMenu);
+  auto* instance =
+      service->GetInstanceForTab(browser()->GetActiveTabInterface());
+  ASSERT_TRUE(instance);
   const int limit = sharing_manager().GetMaxPinnedTabs();
   for (int i = 0; i < limit; ++i) {
     chrome::NewTab(browser());
-    sharing_manager().PinTabs({TabHandleAtIndex(i)});
+    instance->BindTabForTesting(tab_strip()->GetTabAtIndex(i));
   }
   chrome::NewTab(browser());
   tab_strip()->SelectTabAt(limit);
+  instance->BindTabForTesting(tab_strip()->GetTabAtIndex(limit));
   EXPECT_FALSE(sharing_manager().IsTabPinned(TabHandleAtIndex(limit)));
 
+  // No change in the menu when sharing too many.
   TabMenuModel model(&delegate_,
                      browser()->GetFeatures().tab_menu_model_delegate(),
                      tab_strip(), limit);
@@ -530,6 +524,4 @@ IN_PROC_BROWSER_TEST_F(TabMenuModelGlicMultiTabTest, TooManyShared) {
                    .has_value());
   EXPECT_FALSE(model.GetIndexOfCommandId(TabStripModel::CommandGlicStopShare)
                    .has_value());
-  EXPECT_TRUE(model.GetIndexOfCommandId(TabStripModel::CommandGlicShareLimit)
-                  .has_value());
 }

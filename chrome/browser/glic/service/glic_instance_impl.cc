@@ -706,6 +706,10 @@ base::CallbackListSubscription GlicInstanceImpl::RegisterStateChange(
   return state_change_callback_list_.Add(std::move(callback));
 }
 
+void GlicInstanceImpl::BindTabForTesting(tabs::TabInterface* tab) {
+  BindTab(tab, GlicPinTrigger::kContextMenu, true);
+}
+
 void GlicInstanceImpl::FetchZeroStateSuggestions(
     bool is_first_run,
     std::optional<std::vector<std::string>> supported_tools,

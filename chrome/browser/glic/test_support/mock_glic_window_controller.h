@@ -116,6 +116,7 @@ class MockGlicWindowController
               (PanelStateObserver*),
               (override));
   MOCK_METHOD(glic::GlicInstanceMetrics*, instance_metrics, (), (override));
+  MOCK_METHOD(void, BindTabForTesting, (tabs::TabInterface * tab), (override));
 
   MOCK_METHOD(void,
               CreateNewConversationForTabs,

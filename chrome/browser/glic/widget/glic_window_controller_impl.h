@@ -204,6 +204,7 @@ class GlicWindowControllerImpl
   AddActiveInstanceChangedCallbackAndNotifyImmediately(
       ActiveInstanceChangedCallback callback) override;
   GlicInstance* GetActiveInstance() override;
+  void BindTabForTesting(tabs::TabInterface* tab) override;
 
   // Testing functionality.
   GlicWindowAnimator* GetWindowAnimatorForTesting();
