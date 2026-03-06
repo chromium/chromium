@@ -20,7 +20,7 @@ namespace glic {
 class GlicKeyedService;
 
 // This class is partially responsible for updating tab indicators for glic
-// focus. TODO(crbug.com/393557651): Simplify TabRendererData design, at which
+// focus. TODO(crbug.com/393557651): Simplify tabs::TabData design, at which
 // point this class can be fully responsible.
 //
 // Tab UI reflects feature state (such as the glic focused tab), but is stored

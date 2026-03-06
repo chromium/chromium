@@ -25,7 +25,7 @@
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/ui_features.h"
@@ -506,7 +506,7 @@ TabHoverCardBubbleView::~TabHoverCardBubbleView() = default;
 
 CollaborationMessagingRowData
 TabHoverCardBubbleView::GetCollaborationMessagingData(
-    const TabRendererData& tab_data) {
+    const tabs::TabData& tab_data) {
   using collaboration::messaging::CollaborationEvent;
 
   CollaborationMessagingRowData collaboration_messaging_data;
@@ -553,7 +553,7 @@ void TabHoverCardBubbleView::UpdateCardContent(
   }
 
   std::u16string title;
-  const TabRendererData& tab_data = anchor_target->data();
+  const tabs::TabData& tab_data = anchor_target->data();
   GURL domain_url;
   // Use committed URL to determine if no page has yet loaded, since the title
   // can be blank for some web pages.
@@ -566,8 +566,7 @@ void TabHoverCardBubbleView::UpdateCardContent(
   } else {
     domain_url = tab_data.last_committed_url;
     title = tab_data.title;
-    alert_state_ =
-        tabs::TabAlertController::GetAlertStateToShow(tab_data.alert_state);
+    alert_state_ = tab_data.alert_state;
   }
 
   std::u16string domain;
@@ -644,7 +643,8 @@ void TabHoverCardBubbleView::UpdateCardContent(
                            show_memory_usage || show_collaboration_messaging;
 
   footer_view_->SetAlertData(
-      {alert_state_, show_discard_status, tab_data.discarded_memory_savings});
+      {alert_state_, show_discard_status,
+       tab_data.discarded_memory_savings.value_or(base::ByteSize())});
 
   footer_view_->SetPerformanceData(
       {show_memory_usage, is_high_memory_usage, tab_memory_usage});

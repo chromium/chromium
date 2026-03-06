@@ -170,14 +170,14 @@ IN_PROC_BROWSER_TEST_F(TabHoverCardControllerTest,
             TabHoverCardController::kNotWaiting);
 }
 // TODO(crbug.com/481392191): Crash the anchor tab directly as part of the test
-// instead of manipulating the TabRendererData.
+// instead of manipulating the tabs::TabData.
 IN_PROC_BROWSER_TEST_F(TabHoverCardControllerTest, ShowPreviewsForCrashedTab) {
   chrome::AddTabAt(browser(), GURL("http://foo1.com"), 0, false);
   chrome::AddTabAt(browser(), GURL("http://foo2.com"), 1, false);
   browser()->tab_strip_model()->ActivateTabAt(0);
 
   HoverCardAnchorTarget* const target_tab = GetHoverCardAnchorTargetAt(1);
-  TabRendererData data;
+  tabs::TabData data;
   data.is_crashed = true;
   TestThumbnailImageDelegate delegate;
   auto image = base::MakeRefCounted<ThumbnailImage>(&delegate);

@@ -2244,12 +2244,10 @@
         '|chrome/browser/ui/tabs/tab_utils'\
         '|chrome/browser/ui/views/tabs/alert_indicator_button'\
         '|chrome/browser/ui/views/tabs/tab\.cc'\
-        '|chrome/browser/ui/views/tabs/tab_renderer_data'\
         '|media/audio/audio_(output_controller|power_monitor)',
     },
     'tab_alerts': {
-      'filepath': 'chrome/browser/ui/tabs/alert/'\
-        '|chrome/browser/ui/views/tabs/tab_renderer_data'
+      'filepath': 'chrome/browser/ui/tabs/alert/'
     },
     'tab_capture': {
       # TODO: Watch code in media/audio & audio service for tab audio capture

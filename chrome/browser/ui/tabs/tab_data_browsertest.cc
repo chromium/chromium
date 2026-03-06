@@ -1,17 +1,18 @@
-// Copyright 2025 The Chromium Authors
+// Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 
+#include <memory>
 #include <string>
 
 #include "base/byte_size.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
@@ -35,11 +36,9 @@
 
 namespace tabs {
 
-constexpr char kGivenName[] = "User";
-
-class TabRendererDataTest : public InProcessBrowserTest {
+class TabDataObserverBrowserTest : public InProcessBrowserTest {
  public:
-  TabRendererDataTest() {
+  TabDataObserverBrowserTest() {
     scoped_feature_list_.InitAndEnableFeature(
         data_sharing::features::kDataSharingFeature);
   }
@@ -63,109 +62,96 @@ class TabRendererDataTest : public InProcessBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FromTabInterface) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, DefaultTabData) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
-  TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
 
   EXPECT_FALSE(data.pinned);
-  EXPECT_TRUE(data.show_icon);
+  EXPECT_TRUE(data.should_display_favicon);
   EXPECT_EQ(data.network_state, TabNetworkState::kNone);
-  EXPECT_TRUE(data.alert_state.empty());
+  EXPECT_FALSE(data.alert_state.has_value());
   EXPECT_EQ(data.visible_url, GURL(url::kAboutBlankURL));
-  EXPECT_EQ(data.last_committed_url, GURL(url::kAboutBlankURL));
   EXPECT_EQ(data.title, TabUIHelper::From(tab_interface)->GetTitle());
   EXPECT_FALSE(data.blocked);
   EXPECT_FALSE(data.should_hide_throbber);
-  EXPECT_FALSE(data.is_tab_discarded);
   EXPECT_FALSE(data.should_show_discard_status);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, PinnedStateChange) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, PinnedStateChange) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
-  TabRendererData data_before =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_FALSE(data_before.pinned);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
+  EXPECT_FALSE(data.pinned);
 
   tab_strip_model->SetTabPinned(0, true);
-  TabRendererData data_after_pinning =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_TRUE(data_after_pinning.pinned);
+  EXPECT_TRUE(data.pinned);
 
   tab_strip_model->SetTabPinned(0, false);
-  TabRendererData data_after_unpinning =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_FALSE(data_after_unpinning.pinned);
-
-  EXPECT_NE(data_before, data_after_pinning);
-  EXPECT_NE(data_after_pinning, data_after_unpinning);
-  EXPECT_EQ(data_before, data_after_unpinning);
+  EXPECT_FALSE(data.pinned);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TitleChange) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, TitleChange) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  content::WebContents* wc = tab_strip_model->GetWebContentsAt(0);
+  content::WebContents* const web_contents =
+      tab_strip_model->GetWebContentsAt(0);
 
-  UpdateTitleForEntry(wc, u"First Tab");
-  tabs::TabInterface* const tab_interface =
+  UpdateTitleForEntry(web_contents, u"First Tab");
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
-  TabRendererData data_initial =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_EQ(data_initial.title, u"First Tab");
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
+  EXPECT_EQ(data.title, u"First Tab");
 
-  UpdateTitleForEntry(wc, u"First Tab Updated");
-  TabRendererData data_updated =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_EQ(data_updated.title, u"First Tab Updated");
+  UpdateTitleForEntry(web_contents, u"First Tab Updated");
+  EXPECT_EQ(data.title, u"First Tab Updated");
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, BlockedState) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, BlockedState) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
   // Initially not blocked
-  TabRendererData data_initial =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_FALSE(data_initial.blocked);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
+  EXPECT_FALSE(data.blocked);
 
   // Block the tab and verify
   tab_strip_model->SetTabBlocked(0, true);
-  TabRendererData data_blocked =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_TRUE(data_blocked.blocked);
-
-  EXPECT_NE(data_initial, data_blocked);
+  EXPECT_TRUE(data.blocked);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FaviconAndIconFlags) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, FaviconAndIconFlags) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   {  // Initial favicon data matches default
-    tabs::TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(0);
+    TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(0);
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), GURL(url::kAboutBlankURL),
         WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
+    auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+    const TabData& data = tab_data_observer->tab_data();
     EXPECT_EQ(data.favicon, TabUIHelper::From(tab_interface)->GetFavicon());
     EXPECT_FALSE(data.should_themify_favicon);
     EXPECT_FALSE(data.is_monochrome_favicon);
-    EXPECT_TRUE(data.show_icon);
+    EXPECT_TRUE(data.should_display_favicon);
   }
 
   {  // Themeable by virtual URL only.
@@ -173,14 +159,14 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FaviconAndIconFlags) {
         browser(), GURL(url::kAboutBlankURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    tabs::TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(1);
-    content::WebContents* wc_virtual = tab_interface->GetContents();
+    TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(1);
+    content::WebContents* const wc_virtual = tab_interface->GetContents();
     auto* entry_virtual = wc_virtual->GetController().GetLastCommittedEntry();
     ASSERT_NE(nullptr, entry_virtual);
     const GURL themeable_virtual_url("chrome://feedback/");
     entry_virtual->SetVirtualURL(themeable_virtual_url);
-    TabRendererData virtual_data =
-        TabRendererData::FromTabInterface(tab_interface);
+    auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+    const TabData& virtual_data = tab_data_observer->tab_data();
     EXPECT_TRUE(virtual_data.should_themify_favicon);
   }
 
@@ -189,37 +175,38 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, FaviconAndIconFlags) {
         browser(), GURL(url::kAboutBlankURL),
         WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    tabs::TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(2);
-    content::WebContents* wc_actual = tab_interface->GetContents();
+    TabInterface* const tab_interface = tab_strip_model->GetTabAtIndex(2);
+    content::WebContents* const wc_actual = tab_interface->GetContents();
     auto* entry_actual = wc_actual->GetController().GetLastCommittedEntry();
     ASSERT_NE(nullptr, entry_actual);
     const GURL themeable_url("chrome://new-tab-page/");
     entry_actual->SetURL(themeable_url);
-    TabRendererData actual_data =
-        TabRendererData::FromTabInterface(tab_interface);
+    auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+    const TabData& actual_data = tab_data_observer->tab_data();
     EXPECT_TRUE(actual_data.should_themify_favicon);
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Urls) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, Urls) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
   content::WebContents* wc = tab_interface->GetContents();
   auto* entry = wc->GetController().GetLastCommittedEntry();
   ASSERT_NE(nullptr, entry);
   const GURL kUrl("http://example.com/");
   entry->SetURL(kUrl);
-  TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
   EXPECT_EQ(data.visible_url, kUrl);
-  EXPECT_EQ(data.last_committed_url, kUrl);
   EXPECT_TRUE(data.should_display_url);
   EXPECT_FALSE(data.should_render_loading_title);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DomainUrlHiddenForNtpAndTabSearch) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
+                       DomainUrlHiddenForNtpAndTabSearch) {
   struct TestCase {
     GURL url;
     bool expected_domain_visible;
@@ -237,14 +224,16 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, DomainUrlHiddenForNtpAndTabSearch) {
     ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), test_case.url, WindowOpenDisposition::CURRENT_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-    TabRendererData data = TabRendererData::FromTabInterface(
-        browser()->GetTabStripModel()->GetTabAtIndex(0));
+    TabInterface* const tab_interface =
+        browser()->GetTabStripModel()->GetTabAtIndex(0);
+    auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+    const TabData& data = tab_data_observer->tab_data();
     EXPECT_EQ(data.should_display_url, test_case.expected_domain_visible)
         << test_case.url;
   }
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, UncomittedNavigationUrl) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, UncomittedNavigationUrl) {
   // The /nocontent navigation won't commit so it reverts back to the initial
   // navigation.
   GURL uncommitted_url = embedded_test_server()->GetURL("c.test", "/nocontent");
@@ -256,19 +245,20 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, UncomittedNavigationUrl) {
   content::WebContents* wc = tab_strip_model->GetWebContentsAt(1);
   auto* entry = wc->GetController().GetLastCommittedEntry();
   ASSERT_TRUE(entry->IsInitialEntry());
-  TabRendererData data =
-      TabRendererData::FromTabInterface(tab_strip_model->GetTabAtIndex(0));
+  TabInterface* const tab_interface =
+      browser()->GetTabStripModel()->GetTabAtIndex(0);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
   EXPECT_EQ(data.visible_url, GURL(url::kAboutBlankURL));
-  EXPECT_EQ(data.last_committed_url, GURL(url::kAboutBlankURL));
   EXPECT_TRUE(data.should_display_url);
   EXPECT_FALSE(data.should_render_loading_title);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldRenderLoadingTitle) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldRenderLoadingTitle) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
   content::WebContents* wc = tab_interface->GetContents();
   UpdateTitleForEntry(wc, u"");
@@ -277,36 +267,32 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldRenderLoadingTitle) {
   ASSERT_NE(nullptr, entry);
   const GURL kUntrustedUrl("chrome-untrusted://test/");
   entry->SetURL(kUntrustedUrl);
-
-  TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
   EXPECT_FALSE(data.should_render_loading_title);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, CrashedStatus) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, CrashedStatus) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
   content::WebContents* wc = tab_interface->GetContents();
-  TabRendererData data_initial =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_FALSE(data_initial.is_crashed);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
+  EXPECT_FALSE(data.is_crashed);
   content::CrashTab(wc);
-  TabRendererData data_crashed =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_TRUE(data_crashed.is_crashed);
+  EXPECT_TRUE(data.is_crashed);
 
   // The tab should not be crashed after navigating to another site.
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  TabRendererData data_navigation =
-      TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_FALSE(data_navigation.is_crashed);
+  EXPECT_FALSE(data.is_crashed);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, NetworkState) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, NetworkState) {
   const GURL kUrl("http://example.com/");
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), kUrl, WindowOpenDisposition::CURRENT_TAB,
@@ -314,49 +300,48 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, NetworkState) {
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
 
-  TabRendererData data_loading =
-      TabRendererData::FromTabInterface(tab_interface);
+  tabs::TabData data_loading = tabs::TabData::FromTabInterface(tab_interface);
   EXPECT_NE(data_loading.network_state, TabNetworkState::kNone);
 
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
 
-  TabRendererData data_committed =
-      TabRendererData::FromTabInterface(tab_interface);
+  tabs::TabData data_committed = tabs::TabData::FromTabInterface(tab_interface);
   EXPECT_EQ(data_committed.network_state, TabNetworkState::kNone);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, AlertStateAudioPlaying) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, AlertStateAudioPlaying) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
   content::WebContents* wc = tab_interface->GetContents();
   base::ScopedClosureRunner scoped_closure_runner = wc->MarkAudible();
-  TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
-  EXPECT_NE(data.alert_state.end(),
-            std::find(data.alert_state.begin(), data.alert_state.end(),
-                      tabs::TabAlert::kAudioPlaying));
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
+  EXPECT_TRUE(data.alert_state.has_value());
+  EXPECT_EQ(data.alert_state.value(), TabAlert::kAudioPlaying);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, ShouldHideThrobber) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, ShouldHideThrobber) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL),
       WindowOpenDisposition::NEW_BACKGROUND_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
-  tabs::TabInterface* const tab_interface =
+  TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(1);
   TabUIHelper* const helper = TabUIHelper::From(tab_interface);
   ASSERT_NE(nullptr, helper);
   helper->SetCreatedBySessionRestore(true);
-  TabRendererData data = TabRendererData::FromTabInterface(tab_interface);
+  auto tab_data_observer = std::make_unique<TabDataObserver>(tab_interface);
+  const TabData& data = tab_data_observer->tab_data();
   EXPECT_TRUE(helper->ShouldHideThrobber());
   EXPECT_TRUE(data.should_hide_throbber);
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Thumbnail) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, Thumbnail) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -367,8 +352,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Thumbnail) {
   ASSERT_NE(nullptr, thumbnail_tab_helper);
 
   // Initial data should reference the helper's thumbnail and have no data.
-  TabRendererData data_initial =
-      TabRendererData::FromTabInterface(tab_interface);
+  tabs::TabData data_initial = tabs::TabData::FromTabInterface(tab_interface);
   EXPECT_EQ(data_initial.thumbnail.get(),
             thumbnail_tab_helper->thumbnail().get());
   EXPECT_FALSE(data_initial.thumbnail->has_data());
@@ -387,45 +371,42 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest, Thumbnail) {
 
   // After assignment, thumbnail has data and FromTabInterface reflects it.
   EXPECT_TRUE(thumbnail_tab_helper->thumbnail()->has_data());
-  TabRendererData data_updated =
-      TabRendererData::FromTabInterface(tab_interface);
+  tabs::TabData data_updated = tabs::TabData::FromTabInterface(tab_interface);
   EXPECT_TRUE(data_updated.thumbnail->has_data());
   EXPECT_EQ(data_updated.thumbnail.get(),
             thumbnail_tab_helper->thumbnail().get());
   EXPECT_EQ(data_initial, data_updated);
 }
 
-// TODO(crbug.com/443125652): Creating a test for deferred functionality
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest, TabLifecycleManagement) {
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest, TabLifecycleManagement) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   tabs::TabInterface* const tab_interface =
       browser()->GetTabStripModel()->GetTabAtIndex(0);
 
-  TabRendererData data_default =
-      TabRendererData::FromTabInterface(tab_interface);
+  tabs::TabData data_default = tabs::TabData::FromTabInterface(tab_interface);
   EXPECT_FALSE(data_default.is_tab_discarded);
   EXPECT_FALSE(data_default.should_show_discard_status);
-  EXPECT_TRUE(data_default.discarded_memory_savings.is_zero());
+  EXPECT_FALSE(data_default.discarded_memory_savings.has_value());
   EXPECT_TRUE(data_default.tab_resource_usage);
   TabResourceUsageTabHelper::From(tab_interface)
       ->SetMemoryUsage(base::ByteSize(1234));
-  TabRendererData data_usage = TabRendererData::FromTabInterface(tab_interface);
+  tabs::TabData data_usage = tabs::TabData::FromTabInterface(tab_interface);
   ASSERT_TRUE(data_usage.tab_resource_usage);
   EXPECT_EQ(data_usage.tab_resource_usage->memory_usage(),
             base::ByteSize(1234));
 }
 
-IN_PROC_BROWSER_TEST_F(TabRendererDataTest,
+IN_PROC_BROWSER_TEST_F(TabDataObserverBrowserTest,
                        CollaborationMessagingTabDataInvalidatedOnTabClosure) {
   ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL(url::kAboutBlankURL), WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
   TabStripModel* const tab_strip_model = browser()->tab_strip_model();
 
-  TabRendererData data1 =
-      TabRendererData::FromTabInterface(tab_strip_model->GetTabAtIndex(0));
+  tabs::TabData data1 =
+      tabs::TabData::FromTabInterface(tab_strip_model->GetTabAtIndex(0));
 
   EXPECT_TRUE(data1.collaboration_messaging);
 
@@ -437,8 +418,8 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest,
 
     ASSERT_EQ(2, tab_strip_model->count());
 
-    TabRendererData data2 =
-        TabRendererData::FromTabInterface(tab_strip_model->GetTabAtIndex(1));
+    tabs::TabData data2 =
+        tabs::TabData::FromTabInterface(tab_strip_model->GetTabAtIndex(1));
     EXPECT_TRUE(data2.collaboration_messaging);
 
     // Before adding the message.
@@ -449,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(TabRendererDataTest,
     message.type = collaboration::messaging::PersistentNotificationType::CHIP;
     message.collaboration_event = tab_groups::CollaborationEvent::TAB_ADDED;
     message.attribution.triggering_user = data_sharing::GroupMember();
-    message.attribution.triggering_user->given_name = kGivenName;
+    message.attribution.triggering_user->given_name = "User";
 
     // After adding the message.
     data2.collaboration_messaging->set_mocked_avatar_for_testing(

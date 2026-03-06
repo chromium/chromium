@@ -11,8 +11,8 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
 #include "chrome/browser/ui/views/tabs/tab/alert_indicator_button.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
@@ -132,7 +132,7 @@ class Tab : public gfx::AnimationDelegate,
   // HoverCardAnchorTarget:
   bool IsActive() const override;
   bool IsValid() const override;
-  const TabRendererData& data() const override;
+  const tabs::TabData& data() const override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
 
   // Notifies the AlertIndicatorButton that the active state of this tab has
@@ -159,7 +159,7 @@ class Tab : public gfx::AnimationDelegate,
 
   // Sets the data this tabs displays. Should only be called after Tab is added
   // to widget hierarchy.
-  void SetData(TabRendererData data);
+  void SetData(tabs::TabData data);
 
   // Redraws the loading animation if one is visible. Otherwise, no-op. The
   // `elapsed_time` parameter is shared between tabs and used to keep the
@@ -266,7 +266,7 @@ class Tab : public gfx::AnimationDelegate,
   // The controller, never nullptr.
   const raw_ptr<TabSlotController> controller_;
 
-  TabRendererData data_;
+  tabs::TabData data_;
 
   std::unique_ptr<TabStyleViews> tab_style_views_;
 

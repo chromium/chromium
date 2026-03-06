@@ -47,8 +47,8 @@
 #include "chrome/browser/ui/tabs/organization/tab_organization_service_factory.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_session.h"
 #include "chrome/browser/ui/tabs/organization/tab_organization_utils.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
@@ -973,56 +973,54 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
     const TabStripModel* tab_strip_model,
     content::WebContents* contents,
     int index) const {
-  auto tab_data = tab_search::mojom::Tab::New();
+  auto tab_mojom_data = tab_search::mojom::Tab::New();
   tabs::TabInterface* const tab = tab_strip_model->GetTabAtIndex(index);
 
-  tab_data->active = tab->IsActivated();
-  tab_data->visible = tab->IsVisible();
-  tab_data->tab_id = tab->GetHandle().raw_value();
-  tab_data->index = index;
+  tab_mojom_data->active = tab->IsActivated();
+  tab_mojom_data->visible = tab->IsVisible();
+  tab_mojom_data->tab_id = tab->GetHandle().raw_value();
+  tab_mojom_data->index = index;
   const std::optional<tab_groups::TabGroupId> group_id = tab->GetGroup();
   if (group_id.has_value()) {
-    tab_data->group_id = group_id.value().token();
+    tab_mojom_data->group_id = group_id.value().token();
   }
-  tab_data->pinned = tab->IsPinned();
-  tab_data->split = tab->IsSplit();
+  tab_mojom_data->pinned = tab->IsPinned();
+  tab_mojom_data->split = tab->IsSplit();
 
-  const TabRendererData tab_renderer_data =
-      TabRendererData::FromTabInterface(tab);
-  tab_data->title = base::UTF16ToUTF8(tab_renderer_data.title);
-  const auto& last_committed_url = tab_renderer_data.last_committed_url;
+  const tabs::TabData tab_data = tabs::TabData::FromTabInterface(tab);
+  tab_mojom_data->title = base::UTF16ToUTF8(tab_data.title);
+  const auto& last_committed_url = tab_data.last_committed_url;
   // A visible URL is used when the a new tab is still loading.
   // If it is cancelled during loading the visible URL becomes empty.
   // We will display an empty URL as about:blank in Javascript.
   if (!last_committed_url.is_valid() || last_committed_url.is_empty()) {
-    tab_data->url = tab_renderer_data.should_display_url
-                        ? tab_renderer_data.visible_url
-                        : GURL(url::kAboutBlankURL);
+    tab_mojom_data->url = tab_data.should_display_url
+                              ? tab_data.visible_url
+                              : GURL(url::kAboutBlankURL);
   } else {
-    tab_data->url = last_committed_url;
+    tab_mojom_data->url = last_committed_url;
   }
 
-  if (tab_renderer_data.favicon.IsEmpty()) {
-    tab_data->is_default_favicon = true;
+  if (tab_data.favicon.IsEmpty()) {
+    tab_mojom_data->is_default_favicon = true;
   } else {
     const ui::ColorProvider& provider =
         web_ui_->GetWebContents()->GetColorProvider();
     const gfx::ImageSkia default_favicon =
         favicon::GetDefaultFaviconModel().Rasterize(&provider);
-    gfx::ImageSkia raster_favicon =
-        tab_renderer_data.favicon.Rasterize(&provider);
+    gfx::ImageSkia raster_favicon = tab_data.favicon.Rasterize(&provider);
 
-    if (tab_renderer_data.should_themify_favicon) {
+    if (tab_data.should_themify_favicon) {
       raster_favicon = ThemeFavicon(raster_favicon, provider);
     }
 
-    tab_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
+    tab_mojom_data->favicon_url = GURL(webui::EncodePNGAndMakeDataURI(
         raster_favicon, web_ui_->GetDeviceScaleFactor()));
-    tab_data->is_default_favicon =
+    tab_mojom_data->is_default_favicon =
         raster_favicon.BackedBySameObjectAs(default_favicon);
   }
 
-  tab_data->show_icon = tab_renderer_data.show_icon;
+  tab_mojom_data->show_icon = tab_data.should_display_favicon;
 
   // https://crbug.com/435697558: Use the max value of
   // GetLastInteractionTimeTicks and GetLastActiveTimeTicks to account for
@@ -1030,12 +1028,12 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
   const base::TimeTicks last_active_time_ticks =
       std::max(contents->GetLastInteractionTimeTicks(),
                contents->GetLastActiveTimeTicks());
-  tab_data->last_active_time_ticks = last_active_time_ticks;
+  tab_mojom_data->last_active_time_ticks = last_active_time_ticks;
 
   // last_active_time_for_testing can affect pixel tests depending on when the
   // view pops up. To make it consistent, override the string to something
   // constant.
-  tab_data->last_active_elapsed_text =
+  tab_mojom_data->last_active_elapsed_text =
       disable_last_active_time_for_testing_
           ? "0"
           : GetLastActiveElapsedText(last_active_time_ticks);
@@ -1044,7 +1042,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
       tabs::TabAlertController::From(tab)->GetAllActiveAlerts();
   // Currently, we only report media alert states.
   std::ranges::copy_if(alert_states.begin(), alert_states.end(),
-                       std::back_inserter(tab_data->alert_states),
+                       std::back_inserter(tab_mojom_data->alert_states),
                        [](tabs::TabAlert alert) {
                          return alert == tabs::TabAlert::kMediaRecording ||
                                 alert == tabs::TabAlert::kAudioRecording ||
@@ -1054,7 +1052,7 @@ tab_search::mojom::TabPtr TabSearchPageHandler::GetTab(
                                 alert == tabs::TabAlert::kGlicAccessing;
                        });
 
-  return tab_data;
+  return tab_mojom_data;
 }
 
 tab_search::mojom::RecentlyClosedTabPtr

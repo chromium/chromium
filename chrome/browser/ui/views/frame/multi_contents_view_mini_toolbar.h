@@ -14,7 +14,9 @@
 #include "ui/views/view.h"
 
 class ContentsWebView;
-struct TabRendererData;
+namespace tabs {
+struct TabData;
+}
 
 namespace tabs {
 enum class TabAlert;
@@ -67,10 +69,10 @@ class MultiContentsViewMiniToolbar : public views::View,
   void RegisterTabAlertSubscription();
   void OnAlertStatusIndicatorChanged(std::optional<tabs::TabAlert> new_alert);
 
-  std::optional<TabRendererData> GetTabData();
+  std::optional<tabs::TabData> GetTabData();
   // Updates the favicon and domain based on the provided |tab_data|.
-  void UpdateContents(TabRendererData tab_data);
-  void UpdateFavicon(TabRendererData tab_data);
+  void UpdateContents(tabs::TabData tab_data);
+  void UpdateFavicon(tabs::TabData tab_data);
 
   void OpenSplitViewMenu();
   void CloseCurrentView();

@@ -24,8 +24,8 @@
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
@@ -778,7 +778,7 @@ bool VerticalTabView::IsValid() const {
   return collection_node_ && !IsDragging();
 }
 
-const TabRendererData& VerticalTabView::data() const {
+const tabs::TabData& VerticalTabView::data() const {
   return tab_data_;
 }
 
@@ -874,8 +874,8 @@ void VerticalTabView::SetSelection(bool selected) {
 }
 
 void VerticalTabView::UpdateTabData(tabs::TabInterface* tab) {
-  TabRendererData new_data = TabRendererData::FromTabInterface(tab);
-  TabRendererData old_data = std::move(tab_data_);
+  tabs::TabData new_data = tabs::TabData::FromTabInterface(tab);
+  tabs::TabData old_data = std::move(tab_data_);
   tab_data_ = std::move(new_data);
 
   if (tabs::ShouldUpdateAccessibleName(old_data, tab_data_)) {
@@ -891,8 +891,7 @@ void VerticalTabView::UpdateTabData(tabs::TabInterface* tab) {
 
   UpdateTitle();
 
-  alert_indicator_->TransitionToAlertState(
-      tabs::TabAlertController::GetAlertStateToShow(tab_data_.alert_state));
+  alert_indicator_->TransitionToAlertState(tab_data_.alert_state);
   alert_indicator_->UpdateEnabledForMuteToggle();
 }
 
@@ -990,10 +989,9 @@ void VerticalTabView::CloseButtonPressed(const ui::Event& event) {
   CHECK(alert_indicator_);
   if (!alert_indicator_->GetVisible()) {
     base::RecordAction(base::UserMetricsAction("CloseTab_NoAlertIndicator"));
-  } else if (auto alert_state = tabs::TabAlertController::GetAlertStateToShow(
-                 tab_data_.alert_state);
-             alert_state.has_value()) {
-    tabs::TabAlertController::RecordCloseTabMetrics(alert_state.value());
+  } else if (tab_data_.alert_state.has_value()) {
+    tabs::TabAlertController::RecordCloseTabMetrics(
+        tab_data_.alert_state.value());
   }
 
   if (split_) {

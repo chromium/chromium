@@ -37,6 +37,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/split_tab_util.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_group_deletion_dialog_controller.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -44,7 +45,6 @@
 #include "chrome/browser/ui/tabs/tab_menu_model.h"
 #include "chrome/browser/ui/tabs/tab_muted_utils.h"
 #include "chrome/browser/ui/tabs/tab_network_state.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -681,9 +681,9 @@ void BrowserTabStripController::OnTabStripModelChanged(
       hover_tab_selector_.CancelTabTransition();
 
       // A move may have resulted in the pinned state changing, so pass in a
-      // TabRendererData.
+      // tabs::TabData.
       tabstrip_->MoveTab(move->from_index, move->to_index,
-                         TabRendererData::FromTabInterface(
+                         tabs::TabData::FromTabInterface(
                              model_->GetTabAtIndex(move->to_index)));
       break;
     }
@@ -889,7 +889,7 @@ const BrowserFrameView* BrowserTabStripController::GetFrameView() const {
 }
 
 void BrowserTabStripController::SetTabDataAt(int model_index) {
-  tabstrip_->SetTabData(model_index, TabRendererData::FromTabInterface(
+  tabstrip_->SetTabData(model_index, tabs::TabData::FromTabInterface(
                                          model_->GetTabAtIndex(model_index)));
 }
 
@@ -902,7 +902,7 @@ void BrowserTabStripController::AddTabs(
   for (const auto& [tab, index] : contents_list) {
     tabs_data.push_back({.index = index,
                          .handle = tab->GetHandle(),
-                         .data = TabRendererData::FromTabInterface(tab)});
+                         .data = tabs::TabData::FromTabInterface(tab)});
   }
 
   tabstrip_->AddTabsAt(std::move(tabs_data));

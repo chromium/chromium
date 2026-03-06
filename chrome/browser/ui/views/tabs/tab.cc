@@ -891,7 +891,7 @@ bool Tab::IsValid() const {
   return !closing() && !detached() && !dragging() && GetVisible();
 }
 
-const TabRendererData& Tab::data() const {
+const tabs::TabData& Tab::data() const {
   return data_;
 }
 
@@ -945,14 +945,14 @@ bool Tab::HasThumbnail() const {
   return data().thumbnail && data().thumbnail->has_data();
 }
 
-void Tab::SetData(TabRendererData data) {
+void Tab::SetData(tabs::TabData data) {
   DCHECK(GetWidget());
 
   if (data_ == data) {
     return;
   }
 
-  TabRendererData old(std::move(data_));
+  tabs::TabData old(std::move(data_));
   data_ = std::move(data);
 
   icon_->SetData(data_);
@@ -972,10 +972,8 @@ void Tab::SetData(TabRendererData data) {
   }
   title_->SetText(title);
 
-  const auto new_alert_state =
-      tabs::TabAlertController::GetAlertStateToShow(data_.alert_state);
-  const auto old_alert_state =
-      tabs::TabAlertController::GetAlertStateToShow(old.alert_state);
+  const auto new_alert_state = data_.alert_state;
+  const auto old_alert_state = old.alert_state;
   if (new_alert_state != old_alert_state) {
     alert_indicator_button_->TransitionToAlertState(new_alert_state);
   }
@@ -1100,11 +1098,10 @@ void Tab::UpdateIconVisibility() {
     return;
   }
 
-  const bool has_favicon = data().show_icon;
+  const bool has_favicon = data().should_display_favicon;
   bool has_alert_icon =
-      (alert_indicator_button_
-           ? alert_indicator_button_->showing_alert_state()
-           : tabs::TabAlertController::GetAlertStateToShow(data().alert_state))
+      (alert_indicator_button_ ? alert_indicator_button_->showing_alert_state()
+                               : data().alert_state)
           .has_value();
   std::optional<tabs::TabAlert> current_alert_state =
       alert_indicator_button_->showing_alert_state();
@@ -1297,10 +1294,8 @@ void Tab::CloseButtonPressed(const ui::Event& event) {
 
   if (!alert_indicator_button_ || !alert_indicator_button_->GetVisible()) {
     base::RecordAction(UserMetricsAction("CloseTab_NoAlertIndicator"));
-  } else if (auto alert_state = tabs::TabAlertController::GetAlertStateToShow(
-                 data_.alert_state);
-             alert_state.has_value()) {
-    tabs::TabAlertController::RecordCloseTabMetrics(alert_state.value());
+  } else if (data_.alert_state.has_value()) {
+    tabs::TabAlertController::RecordCloseTabMetrics(data_.alert_state.value());
   }
 
   const std::vector<Tab*>& tabs_in_split = controller()->GetTabsInSplit(this);

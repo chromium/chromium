@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TABS_TAB_DATA_OBSERVER_H_
-#define CHROME_BROWSER_UI_TABS_TAB_DATA_OBSERVER_H_
+#ifndef CHROME_BROWSER_UI_TABS_TAB_DATA_H_
+#define CHROME_BROWSER_UI_TABS_TAB_DATA_H_
 
 #include <string>
 
@@ -29,8 +29,14 @@ namespace tabs {
 class TabInterface;
 
 struct TabData {
+  static TabData FromTabInterface(tabs::TabInterface* tab);
+
   TabData();
+  TabData(const TabData& other);
+  TabData(TabData&& other);
   ~TabData();
+  TabData& operator=(const TabData& other);
+  TabData& operator=(TabData&& other);
 
   bool operator==(const TabData& other) const;
 
@@ -38,12 +44,12 @@ struct TabData {
   std::u16string title;
   bool should_render_loading_title = false;
   bool should_themify_favicon = false;
-  bool should_display_favicon = false;
+  bool should_display_favicon = true;
   bool is_monochrome_favicon = false;
   ui::ImageModel favicon;
   bool should_hide_throbber = false;
   bool is_crashed = false;
-  bool should_display_url = false;
+  bool should_display_url = true;
   GURL visible_url;
   bool needs_attention = false;
   bool should_show_discard_status = false;
@@ -103,4 +109,4 @@ class TabDataObserver {
 
 }  // namespace tabs
 
-#endif  // CHROME_BROWSER_UI_TABS_TAB_DATA_OBSERVER_H_
+#endif  // CHROME_BROWSER_UI_TABS_TAB_DATA_H_

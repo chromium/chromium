@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/tabs/tab_data_observer.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 
 #include <string>
 
@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/thumbnails/thumbnail_image.h"
 #include "chrome/browser/ui/thumbnails/thumbnail_tab_helper.h"
 #include "components/collaboration/public/messaging/messaging_backend_service.h"
 #include "components/tabs/public/tab_interface.h"
@@ -45,8 +46,56 @@ GetCollaborationMessage(tabs::TabInterface* tab) {
 
 namespace tabs {
 
+TabData TabData::FromTabInterface(tabs::TabInterface* tab_interface) {
+  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface);
+  tabs::TabAlertController* const tab_alert_controller =
+      tabs::TabAlertController::From(tab_interface);
+
+  TabData tab_data;
+  tab_data.title = tab_ui_helper->GetTitle();
+  tab_data.should_render_loading_title =
+      tab_ui_helper->ShouldRenderLoadingTitle();
+  tab_data.should_themify_favicon = tab_ui_helper->ShouldThemifyFavicon();
+  tab_data.should_display_favicon = tab_ui_helper->ShouldDisplayFavicon();
+  tab_data.is_monochrome_favicon = tab_ui_helper->IsMonochromeFavicon();
+  tab_data.favicon = tab_ui_helper->GetFavicon();
+  tab_data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
+  tab_data.is_crashed = tab_ui_helper->IsCrashed();
+  tab_data.should_display_url = tab_ui_helper->ShouldDisplayURL();
+  tab_data.visible_url = tab_ui_helper->GetVisibleURL();
+  tab_data.needs_attention = tab_ui_helper->needs_attention();
+  tab_data.should_show_discard_status =
+      tab_ui_helper->ShouldShowDiscardStatus();
+  tab_data.discarded_memory_savings =
+      tab_ui_helper->GetDiscardedMemorySavings();
+  tab_data.network_state = tab_ui_helper->GetTabNetworkState();
+  tab_data.is_tab_discarded = tab_ui_helper->IsDiscarded();
+  tab_data.last_committed_url = tab_ui_helper->GetLastCommittedURL();
+  tab_data.alert_state = tab_alert_controller->GetAlertToShow();
+  tab_data.pinned = tab_interface->IsPinned();
+  tab_data.blocked = tab_interface->IsBlocked();
+
+  content::WebContents* const web_contents = tab_interface->GetContents();
+  ThumbnailTabHelper* const thumbnail_tab_helper =
+      ThumbnailTabHelper::FromWebContents(web_contents);
+  tab_data.thumbnail =
+      thumbnail_tab_helper ? thumbnail_tab_helper->thumbnail() : nullptr;
+
+  TabResourceUsageTabHelper* const tab_resource_usage_tab_helper =
+      TabResourceUsageTabHelper::From(tab_interface);
+  tab_data.tab_resource_usage = tab_resource_usage_tab_helper->resource_usage();
+
+  tab_data.collaboration_messaging = GetCollaborationMessage(tab_interface);
+
+  return tab_data;
+}
+
 TabData::TabData() = default;
+TabData::TabData(const TabData& other) = default;
+TabData::TabData(TabData&& other) = default;
 TabData::~TabData() = default;
+TabData& TabData::operator=(const TabData& other) = default;
+TabData& TabData::operator=(TabData&& other) = default;
 
 bool TabData::operator==(const TabData& other) const {
   return title == other.title &&
@@ -109,50 +158,7 @@ void TabDataObserver::NotifyTabDataChanged(TabChangeType change_type) {
 }
 
 void TabDataObserver::OnTabUIChange() {
-  TabUIHelper* const tab_ui_helper = TabUIHelper::From(tab_interface_);
-  tabs::TabAlertController* const tab_alert_controller =
-      tabs::TabAlertController::From(tab_interface_);
-
-  TabData updated_tab_data;
-  updated_tab_data.title = tab_ui_helper->GetTitle();
-  updated_tab_data.should_render_loading_title =
-      tab_ui_helper->ShouldRenderLoadingTitle();
-  updated_tab_data.should_themify_favicon =
-      tab_ui_helper->ShouldThemifyFavicon();
-  updated_tab_data.should_display_favicon =
-      tab_ui_helper->ShouldDisplayFavicon();
-  updated_tab_data.is_monochrome_favicon = tab_ui_helper->IsMonochromeFavicon();
-  updated_tab_data.favicon = tab_ui_helper->GetFavicon();
-  updated_tab_data.should_hide_throbber = tab_ui_helper->ShouldHideThrobber();
-  updated_tab_data.is_crashed = tab_ui_helper->IsCrashed();
-  updated_tab_data.should_display_url = tab_ui_helper->ShouldDisplayURL();
-  updated_tab_data.visible_url = tab_ui_helper->GetVisibleURL();
-  updated_tab_data.needs_attention = tab_ui_helper->needs_attention();
-  updated_tab_data.should_show_discard_status =
-      tab_ui_helper->ShouldShowDiscardStatus();
-  updated_tab_data.discarded_memory_savings =
-      tab_ui_helper->GetDiscardedMemorySavings();
-  updated_tab_data.network_state = tab_ui_helper->GetTabNetworkState();
-  updated_tab_data.is_tab_discarded = tab_ui_helper->IsDiscarded();
-  updated_tab_data.last_committed_url = tab_ui_helper->GetLastCommittedURL();
-  updated_tab_data.alert_state = tab_alert_controller->GetAlertToShow();
-  updated_tab_data.pinned = tab_interface_->IsPinned();
-  updated_tab_data.blocked = tab_interface_->IsBlocked();
-
-  content::WebContents* const web_contents = tab_interface_->GetContents();
-  ThumbnailTabHelper* const thumbnail_tab_helper =
-      ThumbnailTabHelper::FromWebContents(web_contents);
-  updated_tab_data.thumbnail =
-      thumbnail_tab_helper ? thumbnail_tab_helper->thumbnail() : nullptr;
-
-  TabResourceUsageTabHelper* const tab_resource_usage_tab_helper =
-      TabResourceUsageTabHelper::From(tab_interface_);
-  updated_tab_data.tab_resource_usage =
-      tab_resource_usage_tab_helper->resource_usage();
-
-  updated_tab_data.collaboration_messaging =
-      GetCollaborationMessage(tab_interface_);
-
+  TabData updated_tab_data = TabData::FromTabInterface(tab_interface_);
   if (tab_data_ != updated_tab_data) {
     const TabChangeType change_type =
         tab_data_.needs_attention != updated_tab_data.needs_attention

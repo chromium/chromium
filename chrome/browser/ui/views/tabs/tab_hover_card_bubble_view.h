@@ -38,7 +38,9 @@ enum class TabAlert;
 class TabStyle;
 class FadeLabelView;
 class HoverCardAnchorTarget;
-struct TabRendererData;
+namespace tabs {
+struct TabData;
+}
 
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
@@ -68,9 +70,9 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   TabHoverCardBubbleView& operator=(const TabHoverCardBubbleView&) = delete;
   ~TabHoverCardBubbleView() override;
 
-  // Create the CollaborationMessagingRowData from TabRendererData.
+  // Create the CollaborationMessagingRowData from tabs::TabData.
   CollaborationMessagingRowData GetCollaborationMessagingData(
-      const TabRendererData& tab_data);
+      const tabs::TabData& tab_data);
 
   // Updates and formats title, alert state, domain, and preview image.
   void UpdateCardContent(const HoverCardAnchorTarget* anchor_target);

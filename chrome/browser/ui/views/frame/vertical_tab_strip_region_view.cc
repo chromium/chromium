@@ -335,8 +335,7 @@ std::optional<int> VerticalTabStripRegionView::GetFocusedTabIndex() const {
   return std::nullopt;
 }
 
-const TabRendererData& VerticalTabStripRegionView::GetTabRendererData(
-    int tab_index) {
+const tabs::TabData& VerticalTabStripRegionView::GetTabData(int tab_index) {
   tabs::TabInterface* tab = tab_strip_model_->GetTabAtIndex(tab_index);
   CHECK(tab);
 

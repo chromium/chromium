@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/features.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/frame/browser_root_view.h"
@@ -532,7 +532,7 @@ TEST_P(TabStripTest, TabNeedsAttentionBlocked) {
   Tab* tab1 = tab_strip_->tab_at(1);
 
   // Block tab1.
-  TabRendererData data;
+  tabs::TabData data;
   data.blocked = true;
   tab1->SetData(data);
 
@@ -551,7 +551,7 @@ TEST_P(TabStripTest, TabNeedsAttentionGeneric) {
   Tab* tab1 = tab_strip_->tab_at(1);
 
   // Set needs attention.
-  TabRendererData data;
+  tabs::TabData data;
   data.needs_attention = true;
   tab1->SetData(data);
 

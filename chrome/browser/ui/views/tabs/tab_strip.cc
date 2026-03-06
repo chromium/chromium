@@ -1227,8 +1227,7 @@ bool TabStrip::TabHasNetworkError(int tab_index) const {
 }
 
 std::optional<tabs::TabAlert> TabStrip::GetTabAlertState(int tab_index) const {
-  return tabs::TabAlertController::GetAlertStateToShow(
-      tab_at(tab_index)->data().alert_state);
+  return tab_at(tab_index)->data().alert_state;
 }
 
 void TabStrip::UpdateLoadingAnimations(const base::TimeDelta& elapsed_time) {
@@ -1254,7 +1253,7 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
 
   for (int index = 0; index < static_cast<int>(tabs_datas.size()); index++) {
     Tab* tab = tabs[index];
-    TabRendererData renderer_data = tabs_datas[index].data;
+    tabs::TabData renderer_data = tabs_datas[index].data;
     tab->set_context_menu_controller(&context_menu_controller_);
     selected_tabs_.IncrementFrom(tabs_datas[index].index);
 
@@ -1302,7 +1301,7 @@ void TabStrip::AddTabsAt(const std::vector<AddTabData>& tabs_datas) {
 
 void TabStrip::MoveTab(int from_model_index,
                        int to_model_index,
-                       TabRendererData data) {
+                       tabs::TabData data) {
   CHECK_GT(GetTabCount(), 0)
       << "The tab strip must contain at least one tab to perform a move "
          "operation.";
@@ -1351,7 +1350,7 @@ void TabStrip::OnTabWillBeRemoved(content::WebContents* contents,
   drag_context_->OnTabWillBeRemoved(contents);
 }
 
-void TabStrip::SetTabData(int model_index, TabRendererData data) {
+void TabStrip::SetTabData(int model_index, tabs::TabData data) {
   Tab* tab = tab_at(model_index);
   const bool pinned = data.pinned;
   const bool pinned_state_changed = tab->data().pinned != pinned;
