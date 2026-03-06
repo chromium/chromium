@@ -66,7 +66,7 @@ const base::FeatureParam<bool> kPdfInk2TextAnnotations{
 
 // Enables text highlighting with the Ink highlighter brush.
 const base::FeatureParam<bool> kPdfInk2TextHighlighting{
-    &kPdfInk2, "text-highlighting", false};
+    &kPdfInk2, "text-highlighting", true};
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_PDF_SAVE_TO_DRIVE)
