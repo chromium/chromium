@@ -16,14 +16,11 @@ class ProjectsPanelNoTabGroupsView : public views::View {
   METADATA_HEADER(ProjectsPanelNoTabGroupsView, views::View)
 
  public:
-  explicit ProjectsPanelNoTabGroupsView();
+  ProjectsPanelNoTabGroupsView();
   ProjectsPanelNoTabGroupsView(const ProjectsPanelNoTabGroupsView&) = delete;
   ProjectsPanelNoTabGroupsView& operator=(const ProjectsPanelNoTabGroupsView&) =
       delete;
   ~ProjectsPanelNoTabGroupsView() override;
-
-  // views::View
-  void OnPaint(gfx::Canvas* canvas) override;
 
  private:
   raw_ptr<views::ImageView> no_tab_groups_image_ = nullptr;
