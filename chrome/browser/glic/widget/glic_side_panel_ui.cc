@@ -194,6 +194,7 @@ void GlicSidePanelUi::CaptureScreenshot(
     glic::mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   if (!tab_) {
     std::move(callback).Run(nullptr);
+    return;
   }
   if (!screenshot_capturer_) {
     screenshot_capturer_ = std::make_unique<GlicScreenshotCapturer>();
