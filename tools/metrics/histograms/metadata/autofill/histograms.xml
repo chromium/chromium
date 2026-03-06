@@ -1098,6 +1098,36 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Actor.PerfectFilling.{FormType}" enum="Boolean"
+    expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    For a form of type {FormType}, log at submission time if the filling
+    experience was perfect. In a perfect filling experience, the user must have
+    not edited any field, meaning that the filed must either be autofilled
+    without prefix-matching and without further corrections, empty, have the
+    same value as pageload or have its value set by JavaScript.
+
+    Note that the {FormType} is not mutually exclusive. If a single form
+    contains both address and credit card information, the metric is recorded
+    for each {FormType}. In such a combined form, both the address and the
+    credit card information needs to be filled perfectly, in order to record
+    perfect filling.
+
+    Is is no different from Autofill.PerfectFilling.* metrics, except that it is
+    only recorded for forms that are filled by the actor, and followup filling
+    by standard Autofill is not considered an actor perfect filling experience.
+  </summary>
+  <token key="FormType">
+    <variant name="Address" summary="Form contains address information."/>
+    <variant name="CreditCard"
+        summary="Form contains credit card information."/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.AddedNewAddress"
     enum="AutofillManuallyAddedAddressSurface" expires_after="2026-06-07">
   <owner>brunobraga@google.com</owner>

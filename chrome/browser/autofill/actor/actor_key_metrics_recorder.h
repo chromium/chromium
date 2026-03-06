@@ -77,6 +77,9 @@ class ActorKeyMetricsRecorder {
   void RecordFillingReadiness(const FormStructure& form_structure,
                               const ProductState& state,
                               std::string_view product_str);
+  void RecordPerfectFillingMetric(const FormStructure& form_structure,
+                                  const ProductState& state,
+                                  std::string_view product_str);
 
   std::array<ProductState, std::to_underlying(FillingProduct::kMaxValue) + 1>
       states_;
