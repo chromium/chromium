@@ -1,5 +1,4 @@
-waffles@chromium.org
-sorin@chromium.org
+file://components/update_client/OWNERS
 
 # if the above are unavailable
 file://extensions/OWNERS

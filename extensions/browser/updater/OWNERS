@@ -3,5 +3,4 @@
 burunduk@chromium.org
 
 # For the UpdateClient flow (UpdateService and its parts).
-sorin@chromium.org
-waffles@chromium.org
+file://components/update_client/OWNERS
