@@ -436,12 +436,14 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
   return it == local_frames_map.end() ? nullptr : it->value.Get();
 }
 
-void LocalFrame::Init(Frame* opener,
-                      const DocumentToken& document_token,
-                      std::unique_ptr<PolicyContainer> policy_container,
-                      const StorageKey& storage_key,
-                      ukm::SourceId document_ukm_source_id,
-                      const KURL& creator_base_url) {
+void LocalFrame::Init(
+    Frame* opener,
+    const DocumentToken& document_token,
+    std::unique_ptr<PolicyContainer> policy_container,
+    const StorageKey& storage_key,
+    ukm::SourceId document_ukm_source_id,
+    const KURL& creator_base_url,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
   if (!policy_container)
     policy_container = PolicyContainer::CreateEmpty();
 
@@ -454,7 +456,8 @@ void LocalFrame::Init(Frame* opener,
 
   SetOpenerDoNotNotify(opener);
   loader_.Init(document_token, std::move(policy_container), storage_key,
-               document_ukm_source_id, creator_base_url);
+               document_ukm_source_id, creator_base_url,
+               std::move(sandbox_origin_token));
 }
 
 void LocalFrame::SetView(LocalFrameView* view) {

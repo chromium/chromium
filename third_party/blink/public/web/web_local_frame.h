@@ -148,8 +148,8 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
       WebFrame* opener = nullptr,
       const WebString& name = WebString(),
       network::mojom::WebSandboxFlags = network::mojom::WebSandboxFlags::kNone,
-      const WebURL& base_url = WebURL());
-
+      const WebURL& base_url = WebURL(),
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
   // Used to create a provisional local frame. Currently, it's possible for a
   // provisional navigation not to commit (i.e. it might turn into a download),
   // but this can only be determined by actually trying to load it. The loading

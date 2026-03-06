@@ -430,6 +430,8 @@ void WebViewPlugin::LoadHTML(const std::string& html_data, const GURL& url) {
   params->policy_container->policies.sandbox_flags =
       static_cast<WebSandboxFlags>(
           ~static_cast<int>(WebSandboxFlags::kScripts));
+  params->origin_to_commit = blink::WebSecurityOrigin(url::Origin());
+
   blink::WebNavigationParams::FillStaticResponse(params.get(), "text/html",
                                                  "UTF-8", html_data);
   web_view_helper_.main_frame()->CommitNavigation(std::move(params),

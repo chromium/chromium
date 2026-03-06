@@ -903,6 +903,12 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // cross-document navigations that will cancel each other if one doesn't have
   // time to finish before the next one begins.
   TaskHandle cross_origin_parent_load_event_task_;
+
+  // Token used to derive a consistent opaque origin for the initial empty
+  // document of a newly created sandboxed frame or window. Non-null only
+  // when committing the initial empty document with the `kOrigin` sandbox
+  // flag set, null for all cross-document navigations.
+  std::unique_ptr<base::UnguessableToken> sandbox_origin_token_;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

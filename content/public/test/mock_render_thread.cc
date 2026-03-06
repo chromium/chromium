@@ -61,11 +61,14 @@ bool MockRenderThread::GenerateFrameRoutingID(
     int32_t& routing_id,
     blink::LocalFrameToken& frame_token,
     base::UnguessableToken& devtools_frame_token,
-    blink::DocumentToken& document_token) {
+    blink::DocumentToken& document_token,
+    std::unique_ptr<base::UnguessableToken>& sandbox_origin_token) {
   routing_id = GetNextRoutingID();
   frame_token = blink::LocalFrameToken();
   devtools_frame_token = base::UnguessableToken::Create();
   document_token = blink::DocumentToken();
+  sandbox_origin_token = std::make_unique<base::UnguessableToken>(
+      base::UnguessableToken::Create());
   return true;
 }
 

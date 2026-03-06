@@ -67,6 +67,12 @@ class LocalDOMWindowTest : public PageTestBase {
         blink::WebPolicyContainerPolicies(),
         mock_policy_container_host.BindNewEndpointAndPassDedicatedRemote());
     params->policy_container->policies.sandbox_flags = sandbox_flags;
+    if ((params->policy_container->policies.sandbox_flags &
+         network::mojom::blink::WebSandboxFlags::kOrigin) !=
+        network::mojom::blink::WebSandboxFlags::kNone) {
+      params->origin_to_commit =
+          SecurityOrigin::Create(url)->DeriveNewOpaqueOrigin();
+    }
     GetFrame().Loader().CommitNavigation(std::move(params),
                                          /*extra_data=*/nullptr);
     test::RunPendingTasks();

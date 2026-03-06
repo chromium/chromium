@@ -65,7 +65,8 @@ class CONTENT_EXPORT RenderThread : virtual public ChildThread {
       int32_t& routing_id,
       blink::LocalFrameToken& frame_token,
       base::UnguessableToken& devtools_frame_token,
-      blink::DocumentToken& document_token) = 0;
+      blink::DocumentToken& document_token,
+      std::unique_ptr<base::UnguessableToken>& sandbox_origin_token) = 0;
 
   // Add/remove observers for the process.
   virtual void AddObserver(RenderThreadObserver* observer) = 0;

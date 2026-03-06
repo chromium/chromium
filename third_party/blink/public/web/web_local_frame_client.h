@@ -267,8 +267,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   // `complete_creation()`, and return the created frame.
   //
   // `complete_creation` takes the newly-created `WebLocalFrame` as well as the
-  // `DocumentToken` and `BrowserInterfaceBroker` to use for the initial empty
-  // document.
+  // `DocumentToken`, `BrowserInterfaceBroker` and `sandbox_origin_token` to use
+  // for the initial empty document.
   //
   // `document_ukm_source_id` is the UKM source id to be used for the new
   // document in the frame. If `ukm::kInvalidSourceId` is passed, a new UKM
@@ -276,7 +276,8 @@ class BLINK_EXPORT WebLocalFrameClient {
   using FinishChildFrameCreationFn = base::FunctionRef<void(
       WebLocalFrame*,
       const DocumentToken&,
-      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>)>;
+      CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token)>;
   virtual WebLocalFrame* CreateChildFrame(
       mojom::TreeScopeType,
       const WebString& name,

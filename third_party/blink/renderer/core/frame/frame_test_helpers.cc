@@ -317,7 +317,9 @@ WebLocalFrameImpl* CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(
       parent.CreateLocalChild(scope, client, nullptr, LocalFrameToken()));
   client->Bind(frame, std::move(owned_client));
-  finish_creation(frame, DocumentToken(), mojo::NullRemote());
+  finish_creation(frame, DocumentToken(), mojo::NullRemote(),
+                  std::make_unique<base::UnguessableToken>(
+                      base::UnguessableToken::Create()));
   return frame;
 }
 
@@ -335,7 +337,9 @@ WebLocalFrameImpl* CreateLocalChild(
   auto* frame = To<WebLocalFrameImpl>(
       parent.CreateLocalChild(scope, client, nullptr, LocalFrameToken()));
   client->Bind(frame, std::move(self_owned));
-  finish_creation(frame, DocumentToken(), mojo::NullRemote());
+  finish_creation(frame, DocumentToken(), mojo::NullRemote(),
+                  std::make_unique<base::UnguessableToken>(
+                      base::UnguessableToken::Create()));
   return frame;
 }
 
@@ -845,7 +849,9 @@ WebLocalFrame* TestWebFrameClient::CreateChildFrame(
   client->sandbox_flags_ = frame_policy.sandbox_flags;
   TestWebFrameClient* client_ptr = client.get();
   client_ptr->Bind(frame, std::move(client));
-  finish_creation(frame, DocumentToken(), mojo::NullRemote());
+  finish_creation(frame, DocumentToken(), mojo::NullRemote(),
+                  std::make_unique<base::UnguessableToken>(
+                      base::UnguessableToken::Create()));
   return frame;
 }
 
@@ -916,6 +922,12 @@ void TestWebFrameClient::CommitNavigation(
   // and the included sandbox flags to commit, and then passed on within the
   // WebNavigationParams.
   params->policy_container->policies.sandbox_flags |= sandbox_flags();
+  if ((params->policy_container->policies.sandbox_flags &
+       network::mojom::blink::WebSandboxFlags::kOrigin) !=
+      network::mojom::blink::WebSandboxFlags::kNone) {
+    params->origin_to_commit = SecurityOrigin::Create(info->url_request.Url())
+                                   ->DeriveNewOpaqueOrigin();
+  }
   frame_->CommitNavigation(std::move(params), nullptr /* extra_data */);
 }
 

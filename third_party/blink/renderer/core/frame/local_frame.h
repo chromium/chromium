@@ -227,18 +227,24 @@ class CORE_EXPORT LocalFrame final
   //   you pass ukm::kInvalidSourceId, a new ukm source id will be generated.
   // - `creator_base_url` is the base url of the initiator that created this
   //    frame.
+  // - `sandbox_origin_token` is used to deterministically generate opaque
+  //    origins for newly created sandboxed frames and windows. Only set
+  //    during initial frame/window creation, null for regular cross-document
+  //    navigation commits.
   //
   // Note: Usually, the initial empty document inherits its |policy_container|
   // and |storage_key| from the parent or the opener. The inheritance operation
   // is taken care of by the browser (if this LocalFrame was just created in
   // response to the creation of a RenderFrameHost) or by blink if this is a
   // synchronously created LocalFrame child.
-  void Init(Frame* opener,
-            const DocumentToken& document_token,
-            std::unique_ptr<PolicyContainer> policy_container,
-            const StorageKey& storage_key,
-            ukm::SourceId document_ukm_source_id,
-            const KURL& creator_base_url);
+  void Init(
+      Frame* opener,
+      const DocumentToken& document_token,
+      std::unique_ptr<PolicyContainer> policy_container,
+      const StorageKey& storage_key,
+      ukm::SourceId document_ukm_source_id,
+      const KURL& creator_base_url,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
   void SetView(LocalFrameView*);
   void CreateView(const gfx::Size&, const Color&);
 

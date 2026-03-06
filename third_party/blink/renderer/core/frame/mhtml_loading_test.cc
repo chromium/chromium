@@ -97,6 +97,12 @@ class MHTMLLoadingTest : public testing::Test {
     params->policy_container->policies.sandbox_flags = kMhtmlSandboxFlags;
     params->body_loader =
         StaticDataNavigationBodyLoader::CreateWithData(std::move(buffer));
+    if ((params->policy_container->policies.sandbox_flags &
+         network::mojom::blink::WebSandboxFlags::kOrigin) !=
+        network::mojom::blink::WebSandboxFlags::kNone) {
+      params->origin_to_commit =
+          SecurityOrigin::Create(url)->DeriveNewOpaqueOrigin();
+    }
     frame->CommitNavigation(std::move(params), nullptr /* extra_data */);
     frame_test_helpers::PumpPendingRequestsForFrameToLoad(frame);
   }

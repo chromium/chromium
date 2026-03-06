@@ -673,7 +673,8 @@ bool RenderThreadImpl::GenerateFrameRoutingID(
     int32_t& routing_id,
     blink::LocalFrameToken& frame_token,
     base::UnguessableToken& devtools_frame_token,
-    blink::DocumentToken& document_token) {
+    blink::DocumentToken& document_token,
+    std::unique_ptr<base::UnguessableToken>& sandbox_origin_token) {
   if (!use_cached_routing_table_) {
     mojom::FrameRoutingInfoPtr info;
     if (!render_message_filter()->GenerateSingleFrameRoutingInfo(&info)) {
@@ -683,6 +684,8 @@ bool RenderThreadImpl::GenerateFrameRoutingID(
     frame_token = info->frame_token;
     devtools_frame_token = info->devtools_frame_token;
     document_token = info->document_token;
+    sandbox_origin_token =
+        std::make_unique<base::UnguessableToken>(info->sandbox_origin_token);
     return true;
   }
 
@@ -702,6 +705,8 @@ bool RenderThreadImpl::GenerateFrameRoutingID(
   frame_token = front->frame_token;
   devtools_frame_token = front->devtools_frame_token;
   document_token = front->document_token;
+  sandbox_origin_token =
+      std::make_unique<base::UnguessableToken>(front->sandbox_origin_token);
   cached_frame_routing_.pop_front();
 
   // If the table drops to 2 or less, request an asynchronous populate.

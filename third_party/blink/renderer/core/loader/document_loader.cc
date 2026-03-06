@@ -182,6 +182,7 @@
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "third_party/blink/renderer/platform/weborigin/sandboxed_opaque_security_origin_creator.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -456,6 +457,7 @@ struct SameSizeAsDocumentLoader
   bool force_new_document_sequence_number;
   base::TimeDelta total_taken_time_to_update_subresource_load_metrics;
   TaskHandle cross_origin_parent_load_event_task;
+  std::unique_ptr<base::UnguessableToken> sandbox_origin_token;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -618,7 +620,8 @@ DocumentLoader::DocumentLoader(
       initial_permission_statuses_(ConvertPermissionStatusFlatMapToHashMap(
           params_->initial_permission_statuses)),
       force_new_document_sequence_number_(
-          params_->force_new_document_sequence_number) {
+          params_->force_new_document_sequence_number),
+      sandbox_origin_token_(std::move(params_->sandbox_origin_token)) {
   TRACE_EVENT("loading", "DocumentLoader::DocumentLoader",
               perfetto::Flow::FromPointer(this));
   DCHECK(frame_);
@@ -783,6 +786,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
   params->modified_runtime_features = modified_runtime_features_;
   params->visited_link_salt = visited_link_salt_;
   params->content_settings = content_settings_->Clone();
+  params->sandbox_origin_token = std::move(sandbox_origin_token_);
 
   if (RuntimeEnabledFeatures::GeolocationElementEnabled(
           frame_->DomWindow()->GetExecutionContext()) ||
@@ -2402,8 +2406,31 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       network::mojom::blink::WebSandboxFlags::kNone) {
     // If `origin_to_commit_` is set, don't create a new opaque origin, but just
     // use `origin_to_commit_`, which is already opaque.
-    auto sandbox_origin =
-        origin_to_commit_ ? origin_to_commit_ : origin->DeriveNewOpaqueOrigin();
+    scoped_refptr<SecurityOrigin> sandbox_origin;
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kUseSandboxTokenForOriginDerivation)) {
+      if (origin_to_commit_) {
+        sandbox_origin = origin_to_commit_;
+      } else {
+        // The token is only set for the initial empty document of sandboxed
+        // frames/windows, so verify we're in that state.
+        CHECK(GetFrameLoader().IsOnInitialEmptyDocument());
+        CHECK(url_.IsAboutBlankUrl() || url_.IsEmpty());
+        // Create a new opaque origin using the provided nonce token for
+        // sandboxed frames that require specific origin generation.
+        auto sandbox_origin_token = std::move(sandbox_origin_token_);
+        CHECK(sandbox_origin_token);
+        sandbox_origin =
+            SandboxedOpaqueSecurityOriginCreator::CreateOriginForSandboxedFrame(
+                base::PassKey<DocumentLoader>(), *sandbox_origin_token,
+                origin.get());
+      }
+    } else {
+      sandbox_origin = origin_to_commit_ ? origin_to_commit_
+                                         : origin->DeriveNewOpaqueOrigin();
+    }
+
     CHECK(sandbox_origin->IsOpaque());
 
     // If we're supposed to inherit our security origin from our
@@ -2439,6 +2466,9 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
       }
     }
     origin = sandbox_origin;
+  } else {
+    // The token is only set for sandboxed frames, verify it's not set here.
+    CHECK(!sandbox_origin_token_);
   }
 
   if (commit_reason_ == CommitReason::kInitialization &&

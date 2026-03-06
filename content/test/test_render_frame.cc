@@ -27,6 +27,7 @@
 #include "net/base/data_url.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/permissions_policy/permissions_policy_declaration.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
@@ -369,6 +370,14 @@ void TestRenderFrame::BeginNavigation(
 
     navigation_params->policy_container->policies.sandbox_flags =
         navigation_params->frame_policy->sandbox_flags;
+
+    if ((navigation_params->policy_container->policies.sandbox_flags &
+         network::mojom::WebSandboxFlags::kOrigin) !=
+        network::mojom::WebSandboxFlags::kNone) {
+      url::Origin requestor_origin = info->url_request.RequestorOrigin();
+      navigation_params->origin_to_commit =
+          blink::WebSecurityOrigin(requestor_origin.DeriveNewOpaqueOrigin());
+    }
 
     if (url.IsAboutSrcdoc()) {
       blink::TestWebFrameHelper::FillStaticResponseForSrcdocNavigation(

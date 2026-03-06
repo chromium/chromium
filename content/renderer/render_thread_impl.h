@@ -152,10 +152,13 @@ class CONTENT_EXPORT RenderThreadImpl
   IPC::SyncChannel* GetChannel() override;
   std::string GetLocale() override;
 
-  bool GenerateFrameRoutingID(int32_t& routing_id,
-                              blink::LocalFrameToken& frame_token,
-                              base::UnguessableToken& devtools_frame_token,
-                              blink::DocumentToken& document_token) override;
+  bool GenerateFrameRoutingID(
+      int32_t& routing_id,
+      blink::LocalFrameToken& frame_token,
+      base::UnguessableToken& devtools_frame_token,
+      blink::DocumentToken& document_token,
+      std::unique_ptr<base::UnguessableToken>& sandbox_origin_token) override;
+
   void AddObserver(RenderThreadObserver* observer) override;
   void RemoveObserver(RenderThreadObserver* observer) override;
   int PostTaskToAllWebWorkers(base::RepeatingClosure closure) override;

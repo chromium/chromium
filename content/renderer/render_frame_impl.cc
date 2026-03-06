@@ -137,6 +137,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/not_implemented_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
@@ -1619,7 +1620,10 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
       // This conversion is a little sad, as this often comes from a
       // WebString...
       WebString::FromUTF8(replication_state->name),
-      replication_state->frame_policy.sandbox_flags, base_url);
+      replication_state->frame_policy.sandbox_flags, base_url,
+      params->sandbox_origin_token ? std::make_unique<base::UnguessableToken>(
+                                         params->sandbox_origin_token.value())
+                                   : nullptr);
   if (!params->is_on_initial_empty_document)
     render_frame->frame_->SetIsNotOnInitialEmptyDocument();
 
@@ -3677,9 +3681,14 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
   blink::LocalFrameToken frame_token;
   base::UnguessableToken devtools_frame_token;
   blink::DocumentToken document_token;
+  // Stored as unique_ptr to enforce move-only semantics, ensuring the token is
+  // consumed exactly once. Always populated from FrameRoutingInfo
+  // (pre-allocated before we know if the frame is sandboxed), but only used if
+  // the frame actually ends up being sandboxed.
+  std::unique_ptr<base::UnguessableToken> sandbox_origin_token;
   if (!RenderThread::Get()->GenerateFrameRoutingID(
-          child_routing_id, frame_token, devtools_frame_token,
-          document_token)) {
+          child_routing_id, frame_token, devtools_frame_token, document_token,
+          sandbox_origin_token)) {
     return nullptr;
   }
   trace_event.child_frame_token = frame_token;
@@ -3739,7 +3748,8 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       scope, child_render_frame,
       child_render_frame->blink_interface_registry_.get(), frame_token);
   finish_creation(web_frame, document_token,
-                  std::move(browser_interface_broker));
+                  std::move(browser_interface_broker),
+                  std::move(sandbox_origin_token));
 
   child_render_frame->in_frame_tree_ = true;
   child_render_frame->Initialize(/*parent=*/GetWebFrame());
@@ -5722,6 +5732,8 @@ void RenderFrameImpl::SynchronouslyCommitAboutBlankForBug778318(
   // This quirk is internal to the renderer, so just reuse the previous
   // DocumentToken.
   navigation_params->document_token = frame_->GetDocument().Token();
+  navigation_params->origin_to_commit =
+      frame_->GetDocument().GetSecurityOrigin();
   navigation_params->is_synchronous_commit_for_bug_778318 = true;
   // We need the provider to be non-null, otherwise Blink crashes, even
   // though the provider should not be used for any actual networking.
@@ -6990,6 +7002,7 @@ WebView* RenderFrameImpl::CreateNewWindow(
   main_frame_params->frame = std::move(pending_frame_receiver);
   main_frame_params->interface_broker = std::move(browser_interface_broker);
   main_frame_params->document_token = reply->document_token;
+  main_frame_params->sandbox_origin_token = reply->sandbox_origin_token;
   main_frame_params->policy_container = std::move(reply->policy_container);
   main_frame_params->associated_interface_provider_remote =
       std::move(associated_interface_provider);

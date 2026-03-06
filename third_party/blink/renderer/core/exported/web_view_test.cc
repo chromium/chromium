@@ -4610,7 +4610,8 @@ class CreateChildCounterFrameClient
       base::FunctionRef<void(
           WebLocalFrame*,
           const DocumentToken&,
-          CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>)>
+          CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
+          std::unique_ptr<base::UnguessableToken> sandbox_origin_token)>
           complete_initialization) override;
 
   int Count() const { return count_; }
@@ -4628,10 +4629,11 @@ WebLocalFrame* CreateChildCounterFrameClient::CreateChildFrame(
     FrameOwnerElementType frame_owner_element_type,
     WebPolicyContainerBindParams policy_container_bind_params,
     ukm::SourceId document_ukm_source_id,
-    base::FunctionRef<void(
-        WebLocalFrame*,
-        const DocumentToken&,
-        CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>)>
+    base::FunctionRef<
+        void(WebLocalFrame*,
+             const DocumentToken&,
+             CrossVariantMojoRemote<mojom::BrowserInterfaceBrokerInterfaceBase>,
+             std::unique_ptr<base::UnguessableToken> sandbox_origin_token)>
         complete_initialization) {
   ++count_;
   return TestWebFrameClient::CreateChildFrame(

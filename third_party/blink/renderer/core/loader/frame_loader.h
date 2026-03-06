@@ -88,7 +88,8 @@ class CORE_EXPORT FrameLoader final {
             std::unique_ptr<PolicyContainer> policy_container,
             const StorageKey& storage_key,
             ukm::SourceId document_ukm_source_id,
-            const KURL& creator_base_url);
+            const KURL& creator_base_url,
+            std::unique_ptr<base::UnguessableToken> sandbox_origin_token);
 
   ResourceRequest ResourceRequestForReload(
       WebFrameLoadType,

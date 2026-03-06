@@ -401,6 +401,13 @@ struct BLINK_EXPORT WebNavigationParams {
   // for details.
   base::UnguessableToken devtools_navigation_token;
 
+  // Token used to derive a consistent opaque origin for the initial empty
+  // document of a newly created sandboxed frame (e.g., `<iframe sandbox>`) or
+  // window (e.g., `window.open()` with sandbox flags). Set only when the frame
+  // has the `kOrigin` sandbox flag, null for regular cross-document navigation
+  // commit, which use `DocumentLoader::origin_to_commit_` instead.
+  std::unique_ptr<base::UnguessableToken> sandbox_origin_token;
+
   // Seed for all PAAPI Auction Nonces generated in this document.
   base::Uuid base_auction_nonce;
 
