@@ -988,6 +988,22 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
       SkColorSetRGB(0x47, 0x47, 0x47)};
   mixer[kColorReadAnythingToolbarIconLowContrastDark] = {
       SkColorSetRGB(0xC7, 0xC7, 0xC7)};
+  mixer[kColorReadAnythingToolbarIconHoverBackground] = {
+      ui::kColorSysStateHoverOnSubtle};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundBlue] = {
+      SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundDark] = {
+      SkColorSetARGB(0x1A, 0xFD, 0xFC, 0xFB)};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundLight] = {
+      SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundYellow] = {
+      SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundHighContrast] = {
+      SkColorSetARGB(0x1A, 0xE3, 0xE3, 0xE3)};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundLowContrastLight] = {
+      SkColorSetARGB(0x0F, 0x1F, 0x1F, 0x1F)};
+  mixer[kColorReadAnythingToolbarIconHoverBackgroundLowContrastDark] = {
+      SkColorSetARGB(0x1A, 0xE3, 0xE3, 0xE3)};
   mixer[kColorReadAnythingAudioControlsIcon] = {
       dark_mode ? SkColorSetRGB(0xC7, 0xC7, 0xC7)
                 : SkColorSetRGB(0x47, 0x47, 0x47)};
@@ -1006,6 +1022,36 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorReadAnythingAudioControlsIconLowContrastDark] = {
       SkColorSetRGB(0xC7, 0xC7, 0xC7)};
 
+  mixer[kColorReadAnythingToolbarFocusOutline] = {ui::kColorSysPrimary};
+  mixer[kColorReadAnythingToolbarFocusOutlineBlue] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingToolbarFocusOutlineDark] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorReadAnythingToolbarFocusOutlineLight] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingToolbarFocusOutlineYellow] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingToolbarFocusOutlineHighContrast] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorReadAnythingToolbarFocusOutlineLowContrastLight] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingToolbarFocusOutlineLowContrastDark] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutline] = {ui::kColorSysPrimary};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineBlue] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineDark] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineLight] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineYellow] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineHighContrast] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineLowContrastLight] = {
+      SkColorSetRGB(0x0B, 0x57, 0xD0)};
+  mixer[kColorReadAnythingOnAudioPlayerFocusOutlineLowContrastDark] = {
+      SkColorSetRGB(0xA8, 0xC7, 0xFA)};
   mixer[kColorReadAnythingSeparator] = {dark_mode
                                             ? kColorReadAnythingSeparatorDark
                                             : kColorReadAnythingSeparatorLight};

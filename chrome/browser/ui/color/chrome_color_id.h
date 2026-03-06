@@ -688,6 +688,30 @@
   E_CPONLY(kColorReadAnythingToolbarIconLowContrast) \
   E_CPONLY(kColorReadAnythingToolbarIconLowContrastLight) \
   E_CPONLY(kColorReadAnythingToolbarIconLowContrastDark) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackground) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundBlue) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundDark) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundLight) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundYellow) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundHighContrast) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundLowContrastLight) \
+  E_CPONLY(kColorReadAnythingToolbarIconHoverBackgroundLowContrastDark) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutline) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineBlue) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineDark) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineLight) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineYellow) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineHighContrast) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineLowContrastLight) \
+  E_CPONLY(kColorReadAnythingToolbarFocusOutlineLowContrastDark) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutline) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineBlue) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineDark) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineLight) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineYellow) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineHighContrast) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineLowContrastLight) \
+  E_CPONLY(kColorReadAnythingOnAudioPlayerFocusOutlineLowContrastDark) \
   E_CPONLY(kColorReadAnythingAudioControlsIcon) \
   E_CPONLY(kColorReadAnythingAudioControlsIconBlue) \
   E_CPONLY(kColorReadAnythingAudioControlsIconDark) \

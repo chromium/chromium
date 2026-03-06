@@ -18,6 +18,13 @@
   color: var(--color-side-panel-entry-icon);
 }
 
+.immersive-toolbar-container #play-pause,
+.immersive-toolbar-container #previousGranularity,
+.immersive-toolbar-container #nextGranularity {
+  --cr-icon-button-focus-outline-color:
+    var(--on-audio-player-focus-outline-color);
+}
+
 @media (forced-colors: active) {
     #play-pause {
     --cr-icon-button-fill-color: CanvasText;
@@ -151,6 +158,9 @@
 .immersive-toolbar-container cr-icon-button {
   --cr-icon-button-icon-size: 20px;
   --cr-icon-button-size: 28px;
+  --cr-icon-button-hover-background-color:
+      var(--toolbar-icon-hover-background-color);
+  --cr-icon-button-focus-outline-color: var(--toolbar-focus-outline-color);
 }
 
 .announce-block {
@@ -183,6 +193,7 @@
 }
 
 .immersive-toolbar-container #rate {
+  --cr-focus-outline-color: var(--on-audio-player-focus-outline-color);
   height: 28px;
   width: 28px;
   margin: 4px 2px;

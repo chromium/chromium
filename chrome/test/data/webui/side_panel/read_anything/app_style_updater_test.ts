@@ -797,6 +797,83 @@ suite('AppStyleUpdater', () => {
         computeStyle('--toolbar-icon-color'));
   });
 
+  test('on player focus outline colors change with theme', () => {
+    const expectedDefault = 'rgb(1, 1, 1)';
+    const expectedLight = 'rgb(2, 2, 2)';
+    const expectedDark = 'rgb(3, 3, 3)';
+    const expectedYellow = 'rgb(4, 4, 4)';
+    const expectedBlue = 'rgb(5, 5, 5)';
+    const expectedHighContrast = 'rgb(6, 6, 6)';
+    const expectedLowContrastLight = 'rgb(8, 8, 8)';
+    const expectedLowContrastDark = 'rgb(9, 9, 9)';
+    updateStyles({
+      '--color-read-anything-on-audio-player-focus-outline': expectedDefault,
+      '--color-read-anything-on-audio-player-focus-outline-light':
+          expectedLight,
+      '--color-read-anything-on-audio-player-focus-outline-dark': expectedDark,
+      '--color-read-anything-on-audio-player-focus-outline-yellow':
+          expectedYellow,
+      '--color-read-anything-on-audio-player-focus-outline-blue': expectedBlue,
+      '--color-read-anything-on-audio-player-focus-outline-high-contrast':
+          expectedHighContrast,
+      '--color-read-anything-on-audio-player-focus-outline-low-contrast-light':
+          expectedLowContrastLight,
+      '--color-read-anything-on-audio-player-focus-outline-low-contrast-dark':
+          expectedLowContrastDark,
+    });
+
+    // Default theme
+    chrome.readingMode.colorTheme = chrome.readingMode.defaultTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDefault, computeStyle('--on-audio-player-focus-outline-color'));
+
+    // Light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLight, computeStyle('--on-audio-player-focus-outline-color'));
+
+    // Dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.darkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedDark, computeStyle('--on-audio-player-focus-outline-color'));
+
+    // Yellow theme
+    chrome.readingMode.colorTheme = chrome.readingMode.yellowTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedYellow, computeStyle('--on-audio-player-focus-outline-color'));
+
+    // Blue theme
+    chrome.readingMode.colorTheme = chrome.readingMode.blueTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedBlue, computeStyle('--on-audio-player-focus-outline-color'));
+
+    // High contrast theme
+    chrome.readingMode.colorTheme = chrome.readingMode.highContrastTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedHighContrast,
+        computeStyle('--on-audio-player-focus-outline-color'));
+
+    // LowContrast light theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastLightTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastLight,
+        computeStyle('--on-audio-player-focus-outline-color'));
+
+    // LowContrast dark theme
+    chrome.readingMode.colorTheme = chrome.readingMode.lowContrastDarkTheme;
+    updater.setTheme();
+    assertEquals(
+        expectedLowContrastDark,
+        computeStyle('--on-audio-player-focus-outline-color'));
+  });
+
   test('setTheme with line focus window does not update color', () => {
     const lineFocusColor = 'rgb(50, 21, 0)';
     const expectedLineFocusBg = 'none';

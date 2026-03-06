@@ -42,6 +42,11 @@ const AUDIO_PLAYER_BACKGROUND =
 const AUDIO_PLAYER_ICON = 'var(--color-read-anything-audio-player-icon';
 // Immersive mode specific colors.
 const TOOLBAR_ICON = 'var(--color-read-anything-toolbar-icon';
+const TOOLBAR_ICON_HOVER_BACKGROUND =
+    'var(--color-read-anything-toolbar-icon-hover-background';
+const TOOLBAR_FOCUS_OUTLINE = 'var(--color-read-anything-toolbar-focus-outline';
+const ON_AUDIO_PLAYER_FOCUS_OUTLINE =
+    'var(--color-read-anything-on-audio-player-focus-outline';
 const AUDIO_CONTROLS_ICON = 'var(--color-read-anything-audio-controls-icon';
 // Line focus styles.
 // Determined by experimentation to balance visibility without risking
@@ -220,6 +225,15 @@ export class AppStyleUpdater {
     this.setStyle_(
         '--toolbar-icon-color', this.getToolbarIconColor_(colorSuffix));
     this.setStyle_(
+        '--toolbar-icon-hover-background-color',
+        this.getToolbarIconHoverBackgroundColor_(colorSuffix));
+    this.setStyle_(
+        '--toolbar-focus-outline-color',
+        this.getToolbarFocusOutlineColor_(colorSuffix));
+    this.setStyle_(
+        '--on-audio-player-focus-outline-color',
+        this.getOnAudioPlayerFocusOutlineColor_(colorSuffix));
+    this.setStyle_(
         '--audio-controls-icon-color',
         this.getAudioControlsIconColor_(colorSuffix));
     const lineFocusBg = this.app_.style.getPropertyValue('--line-focus-bg');
@@ -333,6 +347,25 @@ export class AppStyleUpdater {
     return (colorSuffix === ColorSuffix.DEFAULT) ?
         TOOLBAR_ICON :
         `${TOOLBAR_ICON}${colorSuffix})`;
+  }
+
+  private getToolbarIconHoverBackgroundColor_(colorSuffix: ColorSuffix):
+      string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        TOOLBAR_ICON_HOVER_BACKGROUND :
+        (`${TOOLBAR_ICON_HOVER_BACKGROUND}${colorSuffix})`);
+  }
+
+  private getToolbarFocusOutlineColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        TOOLBAR_FOCUS_OUTLINE :
+        (`${TOOLBAR_FOCUS_OUTLINE}${colorSuffix})`);
+  }
+
+  private getOnAudioPlayerFocusOutlineColor_(colorSuffix: ColorSuffix): string {
+    return (colorSuffix === ColorSuffix.DEFAULT) ?
+        ON_AUDIO_PLAYER_FOCUS_OUTLINE :
+        (`${ON_AUDIO_PLAYER_FOCUS_OUTLINE}${colorSuffix})`);
   }
 
   private getAudioControlsIconColor_(colorSuffix: ColorSuffix): string {
