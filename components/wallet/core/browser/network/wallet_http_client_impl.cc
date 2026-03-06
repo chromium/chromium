@@ -147,7 +147,7 @@ void WalletHttpClientImpl::SendRequestInternal(
           trigger:
             "User triggers a wallet action."
           data:
-            "JSON data specific to the request."
+            "Serialised proto data specific to the request."
           destination: GOOGLE_OWNED_SERVICE
           internal {
             contacts {
@@ -180,7 +180,7 @@ void WalletHttpClientImpl::SendRequestInternal(
   UrlLoaderList::iterator it = active_loaders_.insert(
       active_loaders_.begin(), std::move(simple_url_loader));
   loader_ptr->AttachStringForUpload(request->GetRequestContent(),
-                                    "application/protobuf");
+                                    "application/x-protobuf");
   loader_ptr->SetAllowHttpErrorResults(true);
   loader_ptr->DownloadToString(
       url_loader_factory_.get(),

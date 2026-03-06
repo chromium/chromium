@@ -113,7 +113,7 @@ TEST_F(WalletHttpClientImplTest, ContentType) {
   std::optional<std::string> content_type =
       pending_request->request.headers.GetHeader(
           net::HttpRequestHeaders::kContentType);
-  EXPECT_THAT(content_type, Optional(Eq("application/protobuf")));
+  EXPECT_THAT(content_type, Optional(Eq("application/x-protobuf")));
 }
 
 // Tests that UpsertPublicPass successfully triggers a network request and
