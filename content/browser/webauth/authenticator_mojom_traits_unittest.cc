@@ -22,9 +22,6 @@ namespace mojo {
 
 using device::AuthenticatorAttachment;
 using device::AuthenticatorSelectionCriteria;
-using device::CableDiscoveryData;
-using device::CableEidArray;
-using device::CableSessionPreKeyArray;
 using device::CoseAlgorithmIdentifier;
 using device::CredentialType;
 using device::FidoTransportProtocol;
@@ -38,16 +35,6 @@ using device::UserVerificationRequirement;
 const std::vector<uint8_t> kDescriptorId = {'d', 'e', 's', 'c'};
 constexpr char kRpId[] = "google.com";
 constexpr char kRpName[] = "Google";
-constexpr CableEidArray kClientEid = {{0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
-                                       0x07, 0x08, 0x09, 0x10, 0x11, 0x12, 0x13,
-                                       0x14, 0x15}};
-constexpr CableEidArray kAuthenticatorEid = {
-    {0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
-     0x01, 0x01, 0x01, 0x01}};
-constexpr CableSessionPreKeyArray kSessionPreKey = {
-    {0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff,
-     0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff}};
 
 namespace {
 
@@ -150,16 +137,6 @@ TEST(AuthenticatorMojomTraitsTest, SerializePublicKeyCredentialUserEntity) {
   AssertSerializeAndDeserializeSucceeds<
       blink::mojom::PublicKeyCredentialUserEntity,
       PublicKeyCredentialUserEntity>(success_cases);
-}
-
-// Verify serialization and deserialization of CableDiscoveryData.
-TEST(AuthenticatorMojomTraitsTest, SerializeCableDiscoveryData) {
-  std::vector<CableDiscoveryData> success_cases = {
-      CableDiscoveryData(CableDiscoveryData::Version::V1, kClientEid,
-                         kAuthenticatorEid, kSessionPreKey)};
-
-  AssertSerializeAndDeserializeSucceeds<blink::mojom::CableAuthentication,
-                                        CableDiscoveryData>(success_cases);
 }
 
 }  // namespace mojo

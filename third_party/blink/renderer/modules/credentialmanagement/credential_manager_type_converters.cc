@@ -32,7 +32,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_inputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authentication_extensions_supplemental_pub_keys_outputs.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_authenticator_selection_criteria.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_cable_authentication_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_current_user_details_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_disconnect_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_credential_request_options_context.h"
@@ -75,8 +74,6 @@ using blink::mojom::blink::AuthenticatorAttachment;
 using blink::mojom::blink::AuthenticatorSelectionCriteria;
 using blink::mojom::blink::AuthenticatorSelectionCriteriaPtr;
 using blink::mojom::blink::AuthenticatorTransport;
-using blink::mojom::blink::CableAuthentication;
-using blink::mojom::blink::CableAuthenticationPtr;
 using blink::mojom::blink::CredentialInfo;
 using blink::mojom::blink::CredentialInfoPtr;
 using blink::mojom::blink::CredentialType;
@@ -771,50 +768,6 @@ TypeConverter<PublicKeyCredentialCreationOptionsPtr,
   return mojo_options;
 }
 
-static blink::Vector<uint8_t> ConvertFixedSizeArray(
-    const blink::V8BufferSource* buffer,
-    unsigned length) {
-  if (blink::DOMArrayPiece(buffer).ByteLength() != length) {
-    return {};
-  }
-
-  return ConvertTo<blink::Vector<uint8_t>>(buffer);
-}
-
-// static
-CableAuthenticationPtr
-TypeConverter<CableAuthenticationPtr, blink::CableAuthenticationData>::Convert(
-    const blink::CableAuthenticationData& data) {
-  auto entity = CableAuthentication::New();
-  entity->version = data.version();
-  switch (entity->version) {
-    case 1:
-      entity->client_eid = ConvertFixedSizeArray(data.clientEid(), 16);
-      entity->authenticator_eid =
-          ConvertFixedSizeArray(data.authenticatorEid(), 16);
-      entity->session_pre_key = ConvertFixedSizeArray(data.sessionPreKey(), 32);
-      if (entity->client_eid->empty() || entity->authenticator_eid->empty() ||
-          entity->session_pre_key->empty()) {
-        return nullptr;
-      }
-      break;
-
-    case 2:
-      entity->server_link_data =
-          ConvertTo<blink::Vector<uint8_t>>(data.sessionPreKey());
-      if (entity->server_link_data->empty()) {
-        return nullptr;
-      }
-      entity->experiments = ConvertTo<blink::Vector<uint8_t>>(data.clientEid());
-      break;
-
-    default:
-      return nullptr;
-  }
-
-  return entity;
-}
-
 // static
 PublicKeyCredentialRequestOptionsPtr
 TypeConverter<PublicKeyCredentialRequestOptionsPtr,
@@ -885,21 +838,6 @@ TypeConverter<AuthenticationExtensionsClientInputsPtr,
       blink::mojom::blink::AuthenticationExtensionsClientInputs::New();
   if (inputs.hasAppid()) {
     mojo_inputs->appid = inputs.appid();
-  }
-  if (inputs.hasCableAuthentication()) {
-    blink::Vector<CableAuthenticationPtr> mojo_data;
-    for (auto& data : inputs.cableAuthentication()) {
-      if (data->version() < 1 || data->version() > 2) {
-        continue;
-      }
-      CableAuthenticationPtr mojo_cable = CableAuthentication::From(*data);
-      if (mojo_cable) {
-        mojo_data.push_back(std::move(mojo_cable));
-      }
-    }
-    if (mojo_data.size() > 0) {
-      mojo_inputs->cable_authentication_data = std::move(mojo_data);
-    }
   }
 #if BUILDFLAG(IS_ANDROID)
   if (inputs.hasUvm()) {

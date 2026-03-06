@@ -19,7 +19,6 @@
 #include "device/fido/attestation_object.h"
 #include "device/fido/fido_user_verification_requirement.h"
 #include "device/fido/public/authenticator_selection_criteria.h"
-#include "device/fido/public/cable_discovery_data.h"
 #include "device/fido/public/features.h"
 #include "device/fido/public/fido_constants.h"
 #include "device/fido/public/fido_transport_protocol.h"
@@ -235,32 +234,6 @@ base::Value ToValue(const device::LargeBlobSupport large_blob) {
     case device::LargeBlobSupport::kPreferred:
       return base::Value(device::kExtensionLargeBlobSupportPreferred);
   }
-}
-
-base::Value ToValue(const device::CableDiscoveryData& cable_authentication) {
-  base::DictValue value;
-  switch (cable_authentication.version) {
-    case device::CableDiscoveryData::Version::INVALID:
-      NOTREACHED();
-    case device::CableDiscoveryData::Version::V1:
-      value.Set("version", 1);
-      value.Set("clientEid",
-                Base64UrlEncode(cable_authentication.v1->client_eid));
-      value.Set("authenticatorEid",
-                Base64UrlEncode(cable_authentication.v1->authenticator_eid));
-      value.Set("sessionPreKey",
-                Base64UrlEncode(cable_authentication.v1->session_pre_key));
-      break;
-    case device::CableDiscoveryData::Version::V2:
-      value.Set("version", 2);
-      value.Set("clientEid",
-                Base64UrlEncode(cable_authentication.v2->experiments));
-      value.Set("authenticatorEid", "");
-      value.Set("sessionPreKey",
-                Base64UrlEncode(cable_authentication.v2->server_link_data));
-      break;
-  }
-  return base::Value(std::move(value));
 }
 
 base::Value ToValue(
@@ -536,15 +509,6 @@ base::Value ToValue(
 
   if (options->extensions->appid) {
     extensions.Set("appid", *options->extensions->appid);
-  }
-
-  base::ListValue cable_authentication_data;
-  for (const device::CableDiscoveryData& cable :
-       options->extensions->cable_authentication_data) {
-    cable_authentication_data.Append(ToValue(cable));
-  }
-  if (!cable_authentication_data.empty()) {
-    extensions.Set("cableAuthentication", std::move(cable_authentication_data));
   }
 
   if (options->extensions->get_cred_blob) {

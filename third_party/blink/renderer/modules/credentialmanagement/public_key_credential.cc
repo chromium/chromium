@@ -69,8 +69,8 @@ void OnGetClientCapabilitiesComplete(
   // extension implemented by the client, formed by prefixing "extension:"
   // to the extension identifier.
   //
-  // Excluded extensions: cableAuthentication, uvm, remoteDesktopClientOverride,
-  // and supplementalPubKeys.
+  // Excluded extensions: uvm, remoteDesktopClientOverride, and
+  // supplementalPubKeys.
   results.emplace_back("extension:appid", true);
   results.emplace_back("extension:appidExclude", true);
   results.emplace_back("extension:hmacCreateSecret", true);

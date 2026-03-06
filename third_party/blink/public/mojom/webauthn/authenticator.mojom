@@ -287,35 +287,6 @@ enum UserVerificationRequirement {
   DISCOURAGED,
 };
 
-// Cloud-assisted BLE extension data for getAssertion.
-struct CableAuthentication {
-  // The caBLE version requested.
-  uint8 version;
-
-  // A 16-byte ephemeral identifier that the browser will advertise.
-  // (Present iff version == 1.)
-  array<uint8, 16>? client_eid;
-
-  // A 16-byte ephemeral identifier that the browser expects to receive from a
-  // responding authenticator.
-  // (Present iff version == 1.)
-  array<uint8, 16>? authenticator_eid;
-
-  // A 32-byte pre-key used to compute a session key to encrypt messages between
-  // a paired client and authenticator following a successful discovery.
-  // (Present iff version == 1.)
-  array<uint8, 32>? session_pre_key;
-
-  // caBLEv2 server-link data, used to find and communicate with a caBLEv2
-  // device.
-  // (Present iff version == 2.)
-  array<uint8>? server_link_data;
-
-  // caBLEv2 experiment numbers.
-  // (Present iff version == 2.)
-  array<uint8>? experiments;
-};
-
 // See https://w3c.github.io/webauthn/#dictdef-authenticationextensionsprfvalues
 struct PRFValues {
   // In the Javascript-to-native direction, id is the credential ID for these
@@ -443,14 +414,6 @@ struct AuthenticationExtensionsClientInputs {
   // The contents of the appid extension, if any. See
   // https://w3c.github.io/webauthn/#sctn-appid-extension
   string? appid;
-
-  // The contents of the cloud assisted BLE extension for getAssertion
-  // requests, if any. This extension permits browsers and authenticator
-  // devices to establish a pairingless BLE connection.
-  // TODO(crbug.com/842371): Add link to spec when available.
-  // There may be multiple sets if multiple caBLE credentials have been
-  // registered with the relying party.
-  array<CableAuthentication> cable_authentication_data;
 
   // Only supported by fido2 devices on android, will eventually supported by
   // other platform.

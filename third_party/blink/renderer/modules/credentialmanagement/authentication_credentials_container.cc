@@ -1747,13 +1747,6 @@ AuthenticationCredentialsContainer::create(
         }
       }
     }
-    if (options->publicKey()->extensions()->hasCableAuthentication()) {
-      resolver->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError,
-          "The 'cableAuthentication' extension is only valid when requesting "
-          "an assertion"));
-      return promise;
-    }
     if (options->publicKey()->extensions()->hasLargeBlob()) {
       if (options->publicKey()->extensions()->largeBlob()->hasRead()) {
         resolver->Reject(MakeGarbageCollected<DOMException>(

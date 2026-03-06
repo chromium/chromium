@@ -174,8 +174,6 @@ using blink::mojom::AuthenticatorSelectionCriteria;
 using blink::mojom::AuthenticatorSelectionCriteriaPtr;
 using blink::mojom::AuthenticatorStatus;
 using blink::mojom::AuthenticatorTransport;
-using blink::mojom::CableAuthentication;
-using blink::mojom::CableAuthenticationPtr;
 using blink::mojom::CommonCredentialInfo;
 using blink::mojom::GetAssertionAuthenticatorResponse;
 using blink::mojom::GetAssertionAuthenticatorResponsePtr;
@@ -262,19 +260,6 @@ PublicKeyCredentialReportOptionsPtr GetTestPublicKeyCredentialReportOptions() {
   auto options = PublicKeyCredentialReportOptions::New();
   options->relying_party_id = std::string(kTestRelyingPartyId);
   return options;
-}
-
-std::vector<device::CableDiscoveryData> GetTestCableExtension() {
-  device::CableDiscoveryData cable;
-  cable.version = device::CableDiscoveryData::Version::V1;
-  cable.v1.emplace();
-  cable.v1->client_eid.fill(0x01);
-  cable.v1->authenticator_eid.fill(0x02);
-  cable.v1->session_pre_key.fill(0x03);
-
-  std::vector<device::CableDiscoveryData> ret;
-  ret.emplace_back(std::move(cable));
-  return ret;
 }
 
 device::AuthenticatorData AuthDataFromMakeCredentialResponse(
@@ -1273,7 +1258,6 @@ TEST_F(AuthenticatorImplTest, NoSilentAuthenticationForCable) {
     PublicKeyCredentialRequestOptionsPtr options =
         GetTestPublicKeyCredentialRequestOptions();
     options->allow_credentials = GetTestCredentials(/*num_credentials=*/2);
-    options->extensions->cable_authentication_data = GetTestCableExtension();
 
     if (is_cable_device) {
       virtual_device_factory_->SetTransport(

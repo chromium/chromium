@@ -30,7 +30,6 @@ class AuthenticationExtensionsPaymentOutputs;
 class AuthenticationExtensionsSupplementalPubKeysInputs;
 class AuthenticationExtensionsSupplementalPubKeysOutputs;
 class AuthenticatorSelectionCriteria;
-class CableAuthenticationData;
 class Credential;
 class CurrentUserDetailsOptions;
 class IdentityCredentialDisconnectOptions;
@@ -215,13 +214,6 @@ struct MODULES_EXPORT
                   blink::PublicKeyCredentialCreationOptions> {
   static blink::mojom::blink::PublicKeyCredentialCreationOptionsPtr Convert(
       const blink::PublicKeyCredentialCreationOptions&);
-};
-
-template <>
-struct TypeConverter<blink::mojom::blink::CableAuthenticationPtr,
-                     blink::CableAuthenticationData> {
-  static blink::mojom::blink::CableAuthenticationPtr Convert(
-      const blink::CableAuthenticationData&);
 };
 
 template <>

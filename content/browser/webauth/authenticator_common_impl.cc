@@ -183,10 +183,6 @@ device::CtapGetAssertionRequest CreateCtapGetAssertionRequest(
     request_parameter.app_id = std::move(*app_id);
   }
 
-  if (!options->extensions->cable_authentication_data.empty()) {
-    request_parameter.cable_extension =
-        options->extensions->cable_authentication_data;
-  }
   return request_parameter;
 }
 

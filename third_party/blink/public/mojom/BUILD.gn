@@ -1986,10 +1986,6 @@ mojom_component("authenticator_mojo_bindings") {
           cpp = "::device::PublicKeyCredentialUserEntity"
         },
         {
-          mojom = "blink.mojom.CableAuthentication"
-          cpp = "::device::CableDiscoveryData"
-        },
-        {
           mojom = "blink.mojom.AttestationConveyancePreference"
           cpp = "::device::AttestationConveyancePreference"
         },

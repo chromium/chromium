@@ -289,51 +289,6 @@ bool StructTraits<blink::mojom::PublicKeyCredentialUserEntityDataView,
 }
 
 // static
-bool StructTraits<blink::mojom::CableAuthenticationDataView,
-                  device::CableDiscoveryData>::
-    Read(blink::mojom::CableAuthenticationDataView data,
-         device::CableDiscoveryData* out) {
-  switch (data.version()) {
-    case 1: {
-      std::optional<std::array<uint8_t, 16>> client_eid, authenticator_eid;
-      std::optional<std::array<uint8_t, 32>> session_pre_key;
-      if (!data.ReadClientEid(&client_eid) || !client_eid ||
-          !data.ReadAuthenticatorEid(&authenticator_eid) ||
-          !authenticator_eid || !data.ReadSessionPreKey(&session_pre_key) ||
-          !session_pre_key) {
-        return false;
-      }
-
-      out->version = device::CableDiscoveryData::Version::V1;
-      out->v1.emplace();
-      out->v1->client_eid = *client_eid;
-      out->v1->authenticator_eid = *authenticator_eid;
-      out->v1->session_pre_key = *session_pre_key;
-      break;
-    }
-
-    case 2: {
-      std::optional<std::vector<uint8_t>> server_link_data;
-      std::optional<std::vector<uint8_t>> experiments;
-      if (!data.ReadServerLinkData(&server_link_data) || !server_link_data ||
-          !data.ReadExperiments(&experiments) || !experiments) {
-        return false;
-      }
-
-      out->version = device::CableDiscoveryData::Version::V2;
-      out->v2.emplace(std::move(*server_link_data), std::move(*experiments));
-
-      break;
-    }
-
-    default:
-      return false;
-  }
-
-  return true;
-}
-
-// static
 blink::mojom::AttestationConveyancePreference
 EnumTraits<blink::mojom::AttestationConveyancePreference,
            device::AttestationConveyancePreference>::

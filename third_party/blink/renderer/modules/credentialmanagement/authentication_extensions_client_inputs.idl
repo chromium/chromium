@@ -14,7 +14,6 @@ dictionary AuthenticationExtensionsClientInputs {
 
   // https://w3c.github.io/webauthn/#sctn-appid-exclude-extension
   USVString appidExclude;
-  sequence<CableAuthenticationData> cableAuthentication;
 
   // https://fidoalliance.org/specs/fido-v2.0-rd-20180702/fido-client-to-authenticator-protocol-v2.0-rd-20180702.html#sctn-hmac-secret-extension
   boolean hmacCreateSecret;
