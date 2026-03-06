@@ -30,6 +30,8 @@
 #include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_web_view.h"
 #include "chrome/browser/contextual_tasks/entry_point_eligibility_manager.h"
+#include "chrome/browser/devtools/devtools_ui_bindings.h"
+#include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_list/tab_list_interface.h"
@@ -378,6 +380,16 @@ void ContextualTasksSidePanelCoordinator::TransferWebContentsFromTab(
   // This helps prevent any unintended back/forward navigation.
   if (web_contents->GetController().CanPruneAllButLastCommitted()) {
     web_contents->GetController().PruneAllButLastCommitted();
+  }
+
+  // If dev tools were open, close them. This prevents issues where the tab
+  // backing the WebContents disappears and confuses the dev tools.
+  // TODO(489511091): Ideally an event is triggered that allows dev tools to
+  //                  react by popping the tools out into their own window.
+  DevToolsUIBindings::Delegate* dev_tools_delegate =
+      DevToolsWindow::GetInstanceForInspectedWebContents(web_contents.get());
+  if (dev_tools_delegate) {
+    dev_tools_delegate->CloseWindow();
   }
 
   SetBrowserWindowInterface(web_contents.get(), browser_window_);

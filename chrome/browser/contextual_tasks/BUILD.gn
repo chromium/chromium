@@ -213,6 +213,7 @@ source_set("ui_impl") {
     "//chrome/browser:global_features",
     "//chrome/browser/autocomplete:aim_eligibility_service",
     "//chrome/browser/contextual_search",
+    "//chrome/browser/devtools",
     "//chrome/browser/feedback:feedback_enum",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/profiles:profile",
