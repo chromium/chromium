@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/identifier/unique_identifier.h"
 
 namespace ui {
 
@@ -56,7 +56,7 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_INTERACTION) FrameworkSpecificImplementation {
  public:
   // Used by IsA() and AsA() methods to do runtime type-checking.
-  using FrameworkIdentifier = ElementIdentifier;
+  DECLARE_UNIQUE_IDENTIFIER_TYPE(FrameworkIdentifier);
 
   FrameworkSpecificImplementation() = default;
   FrameworkSpecificImplementation(const FrameworkSpecificImplementation&) =
@@ -113,14 +113,17 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) FrameworkSpecificImplementation {
   bool CheckInstanceFrameworkHierarchy(FrameworkIdentifier) const override;
 
 // This is used internally; don't use it directly.
-#define DEFINE_FRAMEWORK_SPECIFIC_METADATA_COMMON(ClassName)         \
-  const char* ClassName::GetImplementationName() const {             \
-    return #ClassName;                                               \
-  }                                                                  \
-  ui::FrameworkSpecificImplementation::FrameworkIdentifier           \
-  ClassName::GetFrameworkIdentifier() {                              \
-    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(k##ClassName##Identifier); \
-    return k##ClassName##Identifier;                                 \
+#define DEFINE_FRAMEWORK_SPECIFIC_METADATA_COMMON(ClassName)      \
+  const char* ClassName::GetImplementationName() const {          \
+    return #ClassName;                                            \
+  }                                                               \
+  ui::FrameworkSpecificImplementation::FrameworkIdentifier        \
+  ClassName::GetFrameworkIdentifier() {                           \
+    DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(                   \
+        __FILE__, __LINE__,                                       \
+        ui::FrameworkSpecificImplementation::FrameworkIdentifier, \
+        k##ClassName##Identifier);                                \
+    return k##ClassName##Identifier;                              \
   }
 
 // Use to define an implementation that will only report as itself. Put this in
