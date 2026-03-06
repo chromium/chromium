@@ -490,7 +490,9 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
     theme_color = web_app.sync_proto().theme_color();
   }
   std::optional<webapps::ManifestId> migrated_from_manifest_id;
-  if (web_app.sync_proto().has_migrated_from_manifest_id()) {
+  if (base::FeatureList::IsEnabled(
+          features::kWebAppHandleAppMigrationViaSync) &&
+      web_app.sync_proto().has_migrated_from_manifest_id()) {
     migrated_from_manifest_id = webapps::ManifestId(
         GURL(web_app.sync_proto().migrated_from_manifest_id()));
   }
