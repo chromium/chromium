@@ -154,18 +154,18 @@ mojom::ConsoleMessageLevel MessageLevelFromNonFatalErrorLevel(int error_level) {
 String ToBlinkString(v8::Local<v8::Context> context,
                      v8::Local<v8::String> source,
                      size_t max_length) {
-  v8::String::Value source_str(v8::Isolate::GetCurrent(), source);
-  size_t len;
-  if (max_length == 0) {
-    len = static_cast<size_t>(source_str.length());
-  } else {
-    len = std::min(max_length, static_cast<size_t>(source_str.length()));
+  uint32_t source_length = source->Length();
+  size_t len = max_length == 0 ? source_length
+                               : std::min<size_t>(max_length, source_length);
+  if (len == 0) {
+    return String();
   }
-  // SAFETY: v8::String::Value guarantees *source_str has source_str.length()
-  // length and we guarantee len is equal to or less than source_str.length().
-  const auto snippet = UNSAFE_BUFFERS(
-      base::span(reinterpret_cast<const UChar*>(*source_str), len));
-  return String(snippet);
+  base::span<UChar> buffer;
+  String result = String::CreateUninitialized(len, buffer);
+  DCHECK_LE(len, std::numeric_limits<uint32_t>::max());
+  source->WriteV2(v8::Isolate::GetCurrent(), 0, static_cast<uint32_t>(len),
+                  reinterpret_cast<uint16_t*>(buffer.data()));
+  return result;
 }
 
 // NOTE: when editing this, please also edit the error messages we throw when
