@@ -282,7 +282,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      */
     @CalledByNative
     public static @Nullable SelectionPopupControllerImpl fromWebContentsNoCreate(
-            WebContents webContents) {
+            @JniType("content::WebContents*") WebContents webContents) {
         return webContents.getOrSetUserData(SelectionPopupControllerImpl.class, null);
     }
 

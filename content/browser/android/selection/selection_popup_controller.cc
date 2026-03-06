@@ -104,7 +104,7 @@ SelectionPopupController* SelectionPopupController::FromWebContents(
 }
 
 SelectionPopupController::SelectionPopupController(WebContents* web_contents)
-    : RenderWidgetHostConnector(web_contents), web_contents_(web_contents) {}
+    : RenderWidgetHostConnector(web_contents) {}
 
 SelectionPopupController::~SelectionPopupController() {
   JNIEnv* env = AttachCurrentThread();
@@ -127,18 +127,10 @@ ScopedJavaLocalRef<jobject> SelectionPopupController::GetContext(
 
 ScopedJavaLocalRef<jobject> SelectionPopupController::GetJavaObject(
     JNIEnv* env) const {
-  WebContents* contents = web_contents_.get();
+  WebContents* contents = web_contents();
   CHECK(contents);
-
-  // In some tests the Java WebContents might not be instantiated. Early out if
-  // this happens.
-  auto jcontents = contents->GetJavaWebContents();
-  if (!jcontents) {
-    return ScopedJavaLocalRef<jobject>();
-  }
-
   return Java_SelectionPopupControllerImpl_fromWebContentsNoCreate(env,
-                                                                   jcontents);
+                                                                   contents);
 }
 
 void SelectionPopupController::SetTextHandlesHiddenForDropdownMenu(

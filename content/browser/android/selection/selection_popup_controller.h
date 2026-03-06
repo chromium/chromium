@@ -89,8 +89,6 @@ class SelectionPopupController : public RenderWidgetHostConnector {
   // Retained to keep the model in scope until the menu is dismissed.
   std::unique_ptr<ui::MenuModelBridge> menu_model_bridge_;
   std::unique_ptr<ui::MenuModel> extra_items_menu_model_;
-
-  raw_ptr<WebContents> web_contents_ = nullptr;
 };
 
 }  // namespace content
