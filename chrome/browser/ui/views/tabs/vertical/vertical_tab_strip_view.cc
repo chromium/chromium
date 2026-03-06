@@ -8,6 +8,7 @@
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
@@ -208,18 +209,18 @@ void VerticalTabStripView::OnMouseExited(const ui::MouseEvent& event) {
   }
 }
 
-void VerticalTabStripView::OnTabStripModelChanged(
-    TabStripModel* tab_strip_model,
-    const TabStripModelChange& change,
-    const TabStripSelectionChange& selection) {
-  if (collection_node_ && selection.active_tab_changed() && selection.new_tab) {
+void VerticalTabStripView::OnActiveTabChanged(
+    const tabs::TabInterface* active_tab) {
+  if (collection_node_ && active_tab) {
     // Expand group if the activated tab is within a collapsed group unless
     // we are header dragging the collapsed group.
-    if (selection.new_tab->GetGroup().has_value() &&
+    if (active_tab->GetGroup().has_value() &&
         !collection_node_->GetController()->GetDragHandler().IsDragging()) {
       TabCollectionNode* group_node = collection_node_->GetNodeForHandle(
-          tab_strip_model->group_model()
-              ->GetTabGroup(selection.new_tab->GetGroup().value())
+          active_tab->GetBrowserWindowInterface()
+              ->GetTabStripModel()
+              ->group_model()
+              ->GetTabGroup(active_tab->GetGroup().value())
               ->GetCollectionHandle());
       CHECK(group_node);
 
@@ -233,7 +234,7 @@ void VerticalTabStripView::OnTabStripModelChanged(
 
     // Scroll to the activated tab if it isn't in the visible viewport.
     TabCollectionNode* activated_node =
-        collection_node_->GetNodeForHandle(selection.new_tab->GetHandle());
+        collection_node_->GetNodeForHandle(active_tab->GetHandle());
     CHECK(activated_node);
     if (pinned_tabs_container_view_->Contains(activated_node->view())) {
       pinned_tabs_scroll_view_->RegisterNextSuccessfulFramePostLayoutCallback(
@@ -319,12 +320,6 @@ bool VerticalTabStripView::IsPositionInWindowCaption(const gfx::Point& point) {
   return true;
 }
 
-void VerticalTabStripView::InitializeTabStrip(TabStripModel& tab_strip_model) {
-  // TODO(crbug.com/452120900): TabStripModelObserver auto-unregisters in its
-  // destructor.
-  tab_strip_model.AddObserver(this);
-}
-
 views::View* VerticalTabStripView::AddScrollViewContents(
     std::unique_ptr<views::View> view) {
   if (auto* container =
@@ -406,7 +401,7 @@ void VerticalTabStripView::DidPresentFramePostActivation(
   }
 
   // Get the visible bounds of the content view.
-  const gfx::Rect visible_contents_rect = scroll_view->GetVisibleRect();
+  const gfx::Rect visible_contents_rect = scroll_view->GetOpaqueVisibleRect();
 
   // Determine the adjustment required to fit the activated view into the
   // visible content view bounds.

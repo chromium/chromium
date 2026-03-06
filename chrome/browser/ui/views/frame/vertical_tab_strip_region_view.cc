@@ -583,7 +583,11 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
       gfx::Insets::VH(
           GetLayoutConstant(LayoutConstant::kVerticalTabStripCollapsedPadding),
           0));
-  tab_strip_view_->InitializeTabStrip(*tab_strip_model_);
+
+  on_active_tab_changed_subscription_ =
+      root_node_->RegisterOnActiveTabChangedCallback(
+          base::BindRepeating(&VerticalTabStripView::OnActiveTabChanged,
+                              base::Unretained(tab_strip_view_)));
 
   std::optional<size_t> separator_index = GetIndexOf(top_button_separator_);
   CHECK(separator_index.has_value());
@@ -592,6 +596,7 @@ views::View* VerticalTabStripRegionView::SetTabStripView(
 }
 
 void VerticalTabStripRegionView::ClearTabStripView(views::View* view) {
+  on_active_tab_changed_subscription_.reset();
   CHECK(tab_strip_view_);
   CHECK(tab_strip_view_ == view);
   RemoveChildViewT(std::exchange(tab_strip_view_, nullptr));

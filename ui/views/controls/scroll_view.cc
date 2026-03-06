@@ -458,6 +458,25 @@ gfx::Rect ScrollView::GetVisibleRect() const {
                    contents_viewport_->height());
 }
 
+gfx::Rect ScrollView::GetOpaqueVisibleRect() const {
+  gfx::Rect visible_rect = GetVisibleRect();
+  if (visible_rect.IsEmpty()) {
+    return visible_rect;
+  }
+  // Inset the rect if gradient masks are visible to ensure we only
+  // report the fully opaque region as "visible".
+  if (gradient_direction_ == GradientDirection::kVertical) {
+    int top_inset = is_leading_gradient_visible_ ? kGradientPixelSize : 0;
+    int bottom_inset = is_trailing_gradient_visible_ ? kGradientPixelSize : 0;
+    visible_rect.Inset(gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
+  } else if (gradient_direction_ == GradientDirection::kHorizontal) {
+    int left_inset = is_leading_gradient_visible_ ? kGradientPixelSize : 0;
+    int right_inset = is_trailing_gradient_visible_ ? kGradientPixelSize : 0;
+    visible_rect.Inset(gfx::Insets::TLBR(0, left_inset, 0, right_inset));
+  }
+  return visible_rect;
+}
+
 void ScrollView::SetHorizontalScrollBarMode(
     ScrollBarMode horizontal_scroll_bar_mode) {
   if (horizontal_scroll_bar_mode_ == horizontal_scroll_bar_mode) {

@@ -140,6 +140,10 @@ class VIEWS_EXPORT ScrollView : public View, public ScrollBarController {
   // Returns the visible region of the content View.
   gfx::Rect GetVisibleRect() const;
 
+  // Returns the opaque visible region of the content view which excludes any
+  // gradient mask that is applied by the scroll view.
+  gfx::Rect GetOpaqueVisibleRect() const;
+
   // Scrolls the `contents_` by an offset.
   void ScrollByOffset(const gfx::PointF& offset);
 

@@ -68,6 +68,18 @@ RootTabCollectionNode::RegisterOnChildrenAddedCallback(
   return on_children_added_callback_list_.Add(std::move(callback));
 }
 
+base::CallbackListSubscription
+RootTabCollectionNode::RegisterOnChildRemovedCallback(
+    base::RepeatingClosure callback) {
+  return on_children_removed_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
+RootTabCollectionNode::RegisterOnActiveTabChangedCallback(
+    RootTabCollectionNode::ActiveTabChangedCallback callback) {
+  return on_active_tab_changed_callback_list_.Add(std::move(callback));
+}
+
 void RootTabCollectionNode::OnChildrenAdded(
     const tabs::TabCollection::Position& position,
     const tabs::TabCollectionNodes& handles,
@@ -93,6 +105,7 @@ void RootTabCollectionNode::OnChildrenRemoved(
     parent_node->RemoveChild(GetPassKey(), handle,
                              /*perform_deinitialization=*/false);
   }
+  on_children_removed_callback_list_.Notify();
 }
 
 void RootTabCollectionNode::OnChildMoved(
@@ -156,6 +169,7 @@ void RootTabCollectionNode::OnTabStripModelChanged(
     if (selection.new_tab) {
       changed_tabs.insert(selection.new_tab);
     }
+    on_active_tab_changed_callback_list_.Notify(selection.new_tab);
   }
 
   if (selection.selection_changed()) {
