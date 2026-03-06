@@ -968,10 +968,8 @@ DocumentFragment* HTMLElement::TextToFragment(const String& text,
   return fragment;
 }
 
-V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
-HTMLElement::innerTextForBinding() {
-  return MakeGarbageCollected<
-      V8UnionStringLegacyNullToEmptyStringOrTrustedScript>(innerText());
+String HTMLElement::innerTextForBinding() {
+  return innerText();
 }
 
 void HTMLElement::setInnerTextForBinding(

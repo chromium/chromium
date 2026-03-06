@@ -129,7 +129,7 @@ class CORE_EXPORT HTMLElement : public Element {
   String title() const final;
 
   void setInnerText(const String&);
-  V8UnionStringLegacyNullToEmptyStringOrTrustedScript* innerTextForBinding();
+  String innerTextForBinding();
   virtual void setInnerTextForBinding(
       const V8UnionStringLegacyNullToEmptyStringOrTrustedScript*
           string_or_trusted_script,
