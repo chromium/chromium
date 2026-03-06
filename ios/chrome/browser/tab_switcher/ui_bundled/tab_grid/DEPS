@@ -1,6 +1,7 @@
 include_rules = [
   # go/keep-sorted start
   "+components/collaboration/public",
+  "+components/desktop_to_mobile_promos",
   "+components/saved_tab_groups/public",
   "+ios/chrome/browser/app_bar/coordinator/app_bar_coordinator.h",
   "+ios/chrome/browser/first_run/guided_tour/coordinator/guided_tour_coordinator.h",

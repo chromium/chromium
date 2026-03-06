@@ -16,6 +16,7 @@
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
 #import "components/collaboration/public/collaboration_flow_type.h"
 #import "components/collaboration/public/collaboration_service.h"
+#import "components/desktop_to_mobile_promos/features.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
@@ -401,9 +402,17 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 }
 
 - (void)showTabGridPage:(TabGridPage)page {
-  CHECK_NE(page, TabGridPageTabGroups);
-  [_mediator setActivePage:page];
-
+  if (page == TabGridPage::TabGridPageTabGroups) {
+    if (MobilePromoOnDesktopTypeEnabled(
+            MobilePromoOnDesktopPromoType::kTabGroups)) {
+      [self showPage:page animated:NO];
+    } else {
+      // Fallback to regular tabs if the feature is disabled.
+      [_mediator setActivePage:TabGridPage::TabGridPageRegularTabs];
+    }
+  } else {
+    [_mediator setActivePage:page];
+  }
   SceneState* sceneState = self.regularBrowser->GetSceneState();
   sceneState.tabGridState.tabGridVisible = YES;
 
@@ -1933,6 +1942,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
       potentialGridContainer = [_regularGridCoordinator gridView];
       break;
     case TabGridPageTabGroups:
+      if (MobilePromoOnDesktopTypeEnabled(
+              MobilePromoOnDesktopPromoType::kTabGroups)) {
+        potentialGridContainer =
+            _tabGroupsPanelCoordinator.gridContainerViewController.view;
+        break;
+      }
       NOTREACHED();
   }
   UIView* baseView = _viewController.view;
@@ -1954,6 +1969,12 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
           [_regularGridCoordinator gridContainerForAnimation];
       break;
     case TabGridPageTabGroups:
+      if (MobilePromoOnDesktopTypeEnabled(
+              MobilePromoOnDesktopPromoType::kTabGroups)) {
+        potentialAnimationContainer =
+            _tabGroupsPanelCoordinator.gridContainerViewController.view;
+        break;
+      }
       NOTREACHED();
   }
   if (potentialAnimationContainer) {

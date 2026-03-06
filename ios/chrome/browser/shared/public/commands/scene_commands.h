@@ -40,6 +40,8 @@ enum class TabGridOpeningMode {
   kIncognito,
   // Force to display the regular mode.
   kRegular,
+  // Force to display the Tab Groups page in regular mode.
+  kTabGroups,
 };
 
 // Protocol for commands that will generally be handled by the application,

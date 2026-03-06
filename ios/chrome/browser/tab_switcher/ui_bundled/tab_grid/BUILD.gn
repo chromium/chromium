@@ -23,6 +23,7 @@ source_set("tab_grid") {
     "//base",
     "//components/bookmarks/browser",
     "//components/collaboration/public",
+    "//components/desktop_to_mobile_promos",
     "//components/feature_engagement/public",
     "//components/prefs/ios",
     "//components/saved_tab_groups/public",

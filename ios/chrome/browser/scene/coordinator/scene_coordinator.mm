@@ -639,13 +639,20 @@ void OnListFamilyMembersResponse(
   }
 
   BOOL incognito = self.currentBrowser->type() == Browser::Type::kIncognito;
+  TabGridPage page =
+      incognito ? TabGridPageIncognitoTabs : TabGridPageRegularTabs;
   if (mode == TabGridOpeningMode::kRegular && incognito) {
     [self.UIHandler setCurrentInterfaceForMode:ApplicationMode::NORMAL];
+    page = TabGridPageRegularTabs;
   } else if (mode == TabGridOpeningMode::kIncognito && !incognito) {
     [self.UIHandler setCurrentInterfaceForMode:ApplicationMode::INCOGNITO];
+    page = TabGridPageIncognitoTabs;
+  } else if (mode == TabGridOpeningMode::kTabGroups) {
+    [self.UIHandler setCurrentInterfaceForMode:ApplicationMode::NORMAL];
+    page = TabGridPageTabGroups;
   }
 
-  [self showTabSwitcher];
+  [self showTabSwitcherAtPage:page];
 }
 
 - (void)showPrivacySettingsFromViewController:
@@ -1755,12 +1762,8 @@ void OnListFamilyMembersResponse(
 }
 
 // Shows the tab switcher UI.
-- (void)showTabSwitcher {
+- (void)showTabSwitcherAtPage:(TabGridPage)page {
   [self setActiveMode:TabGridMode::kNormal];
-  TabGridPage page = (self.currentBrowser->type() == Browser::Type::kIncognito)
-                         ? TabGridPageIncognitoTabs
-                         : TabGridPageRegularTabs;
-
   [self showTabGridPage:page];
 }
 
