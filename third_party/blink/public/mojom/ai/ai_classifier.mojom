@@ -1,0 +1,31 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/ai/ai_common.mojom";
+import "third_party/blink/public/mojom/ai/model_streaming_responder.mojom";
+import "mojo/public/mojom/base/work_in_progress.mojom";
+
+// Taxonomy explainer
+// https://github.com/explainers-by-googlers/taxonomy-api/blob/main/README.md
+
+// Defined locally to avoid touching ai_manager.mojom for now.
+[RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+interface AIManagerCreateClassifierClient {
+  // Called with a created classifier's mojo interface
+  OnResult(pending_remote<AIClassifier>? classifier);
+  // Called when an AIClassifier cannot be created.
+  // `quota_error_info` may provide additional info for kInitialInputTooLarge.
+  OnError(AIManagerCreateClientError error, QuotaErrorInfo? quota_error_info);
+};
+
+// Interface for AIClassifier that can output a predefined taxonomy category.
+[RuntimeFeature=mojo_base.mojom.kMojomWorkInProgress]
+interface AIClassifier {
+  // Classify text to taxonomy categories.
+  Classify(string input,
+            string context,
+            pending_remote<ModelStreamingResponder> pending_responder);
+};

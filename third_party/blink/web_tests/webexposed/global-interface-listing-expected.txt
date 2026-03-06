@@ -1446,6 +1446,14 @@ interface CharacterData : Node
     method replaceWithHTMLUnsafe
     method substringData
     setter data
+interface Classifier
+    static method availability
+    static method create
+    attribute @@toStringTag
+    getter inputQuota
+    method classify
+    method constructor
+    method destroy
 interface Clipboard : EventTarget
     attribute @@toStringTag
     getter onclipboardchange

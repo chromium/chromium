@@ -1,0 +1,57 @@
+// Copyright 2026 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Taxonomy API
+// https://github.com/explainers-by-googlers/taxonomy-api
+
+dictionary ClassifierCreateOptions {
+  AbortSignal signal;
+  CreateMonitorCallback monitor;
+};
+
+dictionary ClassifierClassifyOptions {
+  DOMString context;
+  AbortSignal signal;
+};
+
+[
+  Exposed=(Window),
+  RuntimeEnabled=AIClassifierAPI,
+  SecureContext
+]
+// TODO(crbug.com/484080220): Create api metrics.
+interface Classifier {
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Availability> availability();
+
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  static Promise<Classifier> create(
+    optional ClassifierCreateOptions options = {}
+  );
+
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  // TODO(crbug.com/485366700): Change output to match explainer output.
+  // For now call json.parse() on output.
+  Promise<DOMString> classify(
+    DOMString input,
+    optional ClassifierClassifyOptions options = {}
+  );
+
+  [
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  void destroy();
+
+  readonly attribute unrestricted double inputQuota;
+};
