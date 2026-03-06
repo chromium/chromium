@@ -25,7 +25,6 @@
 
 static_assert(BUILDFLAG(ENABLE_EXTENSIONS_CORE));
 
-class Browser;
 class BrowserWindowInterface;
 class GURL;
 class Profile;
@@ -286,15 +285,6 @@ class ExtensionTabUtil {
 
   static WindowController* GetWindowControllerOfTab(
       content::WebContents* web_contents);
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // Open the extension's options page. Returns true if an options page was
-  // successfully opened (though it may not necessarily *load*, e.g. if the
-  // URL does not exist). This call to open the options page is initiated by
-  // the extension via chrome.runtime.openOptionsPage.
-  static bool OpenOptionsPageFromAPI(const Extension* extension,
-                                     content::BrowserContext* browser_context);
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
   // Open the extension's options page. Returns true if an options page was
   // successfully opened (though it may not necessarily *load*, e.g. if the

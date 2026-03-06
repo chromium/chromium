@@ -37,6 +37,8 @@
 #include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/manifest_handlers/incognito_info.h"
+#include "extensions/common/manifest_handlers/options_page_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "net/base/backoff_entry.h"
 
@@ -57,6 +59,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
 #else
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -416,8 +419,38 @@ bool ChromeRuntimeAPIDelegate::OpenOptionsPage(
     const Extension* extension,
     content::BrowserContext* browser_context) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  return extensions::ExtensionTabUtil::OpenOptionsPageFromAPI(extension,
-                                                              browser_context);
+  if (!extensions::OptionsPageInfo::HasOptionsPage(extension)) {
+    return false;
+  }
+
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  // This version of OpenOptionsPage() is only called when the extension
+  // initiated the command via chrome.runtime.openOptionsPage. For a spanning
+  // mode extension, this API could only be called from a regular profile, since
+  // that's the only place it's running.
+  DCHECK(!profile->IsOffTheRecord() ||
+         extensions::IncognitoInfo::IsSplitMode(extension));
+  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile);
+
+  if (!browser) {
+    if (Browser::GetCreationStatusForProfile(profile) !=
+        Browser::CreationStatus::kOk) {
+      return false;
+    }
+
+    // TODO(devlin): This has always used user_gesture=true, though it's not
+    // necessarily tied to a user gesture. We should change that.
+    bool user_gesture = true;
+    BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
+                                     *profile, user_gesture);
+    // Note: This uses a non-android variant of the method that returns a
+    // fully-initialized browser window. To port to desktop android, this will
+    // need to be async.
+    browser = CreateBrowserWindow(std::move(params));
+    CHECK(browser);
+  }
+
+  return extensions::ExtensionTabUtil::OpenOptionsPage(extension, browser);
 #else
   // TODO(crbug.com/383366125): Implement this when options page for extensions
   // becomes available for desktop android.

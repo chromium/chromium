@@ -72,8 +72,7 @@
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit_external.h"
 #include "chrome/browser/ui/browser.h"                             // nogncheck
 #include "chrome/browser/ui/browser_finder.h"                      // nogncheck
-#include "chrome/browser/ui/browser_window.h"                      // nogncheck
-#include "chrome/browser/ui/browser_window/public/create_browser_window.h"
+#include "chrome/browser/ui/browser_navigator_params.h"            // nogncheck
 #include "chrome/browser/ui/recently_audible_helper.h"             // nogncheck
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"  // nogncheck
 #include "chrome/browser/ui/tabs/tab_enums.h"                      // nogncheck
@@ -125,23 +124,6 @@ enum class NavigationScheme {
 WindowController* WindowControllerFromBrowser(BrowserWindowInterface* browser) {
   return BrowserExtensionWindowController::From(browser);
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-
-BrowserWindowInterface* CreateBrowser(Profile* profile, bool user_gesture) {
-  if (Browser::GetCreationStatusForProfile(profile) !=
-      Browser::CreationStatus::kOk) {
-    return nullptr;
-  }
-
-  BrowserWindowCreateParams params(BrowserWindowInterface::TYPE_NORMAL,
-                                   *profile, user_gesture);
-  // TODO(https://crbug.com/430344931): When this is ported to android
-  // platforms, this window isn't guaranteed to be fully initialized.
-  return CreateBrowserWindow(std::move(params));
-}
-
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // Use this function for reporting a tab id to an extension. It will
 // take care of setting the id to TAB_ID_NONE if necessary (for
@@ -1230,28 +1212,6 @@ WindowController* ExtensionTabUtil::GetWindowControllerOfTab(
   }
   return nullptr;
 }
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-// static
-bool ExtensionTabUtil::OpenOptionsPageFromAPI(
-    const Extension* extension,
-    content::BrowserContext* browser_context) {
-  if (!OptionsPageInfo::HasOptionsPage(extension))
-    return false;
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  // This version of OpenOptionsPage() is only called when the extension
-  // initiated the command via chrome.runtime.openOptionsPage. For a spanning
-  // mode extension, this API could only be called from a regular profile, since
-  // that's the only place it's running.
-  DCHECK(!profile->IsOffTheRecord() || IncognitoInfo::IsSplitMode(extension));
-  BrowserWindowInterface* browser = chrome::FindBrowserWithProfile(profile);
-  if (!browser)
-    browser = CreateBrowser(profile, true);
-  if (!browser)
-    return false;
-  return extensions::ExtensionTabUtil::OpenOptionsPage(extension, browser);
-}
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 // static
 bool ExtensionTabUtil::OpenOptionsPage(const Extension* extension,
