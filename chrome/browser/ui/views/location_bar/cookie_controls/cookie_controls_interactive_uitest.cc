@@ -329,8 +329,17 @@ class CookieControlsWithIphUiTest : public CookieControlsInteractiveTestBase {
   ~CookieControlsWithIphUiTest() override = default;
 };
 
+// TODO(crbug.com/409272227): IPH tests are flaky on Linux and Win asan bots
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
+  DISABLED_ShowAndDismissIphOnHighSiteEngagement
+#else
+#define MAYBE_ShowAndDismissIphOnHighSiteEngagement \
+  ShowAndDismissIphOnHighSiteEngagement
+#endif
 IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       ShowAndDismissIphOnHighSiteEngagement) {
+                       MAYBE_ShowAndDismissIphOnHighSiteEngagement) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
@@ -351,7 +360,15 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
       EnsureNotPresent(CookieControlsBubbleView::kCookieControlsBubble));
 }
 
-IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, OpenUserBypassViaIph) {
+// TODO(crbug.com/409272227): Flaky on linux-rel and win-asan.
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_OpenUserBypassViaIph DISABLED_OpenUserBypassViaIph
+#else
+#define MAYBE_OpenUserBypassViaIph OpenUserBypassViaIph
+#endif
+IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
+                       MAYBE_OpenUserBypassViaIph) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
@@ -369,8 +386,17 @@ IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest, OpenUserBypassViaIph) {
           user_education::HelpBubbleView::kHelpBubbleElementIdForTesting));
 }
 
+// TODO(crbug.com/409272227): Flaky on linux-rel and win-asan.
+#if (BUILDFLAG(IS_LINUX) && defined(NDEBUG)) || \
+    (BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
+#define MAYBE_OpenUserBypassViaIconWhenIphVisible \
+  DISABLED_OpenUserBypassViaIconWhenIphVisible
+#else
+#define MAYBE_OpenUserBypassViaIconWhenIphVisible \
+  OpenUserBypassViaIconWhenIphVisible
+#endif
 IN_PROC_BROWSER_TEST_F(CookieControlsWithIphUiTest,
-                       OpenUserBypassViaIconWhenIphVisible) {
+                       MAYBE_OpenUserBypassViaIconWhenIphVisible) {
   BlockThirdPartyCookies();
   SetHighSiteEngagement();
   RunTestSequence(
