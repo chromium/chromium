@@ -17,7 +17,7 @@
 
 @implementation BWGLinkOpeningHandler {
   // The URL loading agent for opening URLs.
-  raw_ptr<UrlLoadingBrowserAgent, DanglingUntriaged> _URLLoadingAgent;
+  raw_ptr<UrlLoadingBrowserAgent> _URLLoadingAgent;
 
   // The command dispatcher to dispatch commands.
   CommandDispatcher* _dispatcher;
@@ -33,6 +33,11 @@
     _dispatcher = dispatcher;
   }
   return self;
+}
+
+- (void)disconnect {
+  _URLLoadingAgent = nullptr;
+  _dispatcher = nil;
 }
 
 - (void)openURLInNewTab:(NSString*)URL {
@@ -56,6 +61,9 @@
         [OpenNewTabCommand commandWithURLFromChrome:gurl];
     [sceneCommandsHandler closePresentedViewsAndOpenURL:command];
   } else {
+    if (!_URLLoadingAgent) {
+      return;
+    }
     UrlLoadParams params = UrlLoadParams::InNewTab(gurl);
     params.append_to = OpenPosition::kCurrentTab;
     _URLLoadingAgent->Load(params);

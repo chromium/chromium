@@ -97,9 +97,11 @@ class BwgServiceTest : public PlatformTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 
   // Profile and services that depend on the environment are declared next.
+  // Note: `pref_service_` must be declared before `gemini_service_` so that
+  // it is destroyed after `gemini_service_`, preventing a dangling pointer.
   std::unique_ptr<TestProfileIOS> profile_;
-  std::unique_ptr<BwgService> gemini_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
+  std::unique_ptr<BwgService> gemini_service_;
   raw_ptr<AuthenticationService> auth_service_;
   raw_ptr<OptimizationGuideService> optimization_guide_service_;
 

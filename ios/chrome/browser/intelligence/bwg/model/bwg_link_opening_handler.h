@@ -29,6 +29,10 @@ class UrlLoadingBrowserAgent;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+// Disconnects the handler from the UrlLoadingBrowserAgent and dispatcher.
+// Must be called before the Browser is destroyed.
+- (void)disconnect;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_LINK_OPENING_HANDLER_H_

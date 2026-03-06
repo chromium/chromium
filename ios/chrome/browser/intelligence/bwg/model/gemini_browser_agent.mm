@@ -197,6 +197,9 @@ GeminiBrowserAgent::GeminiBrowserAgent(Browser* browser)
 }
 
 GeminiBrowserAgent::~GeminiBrowserAgent() {
+  [bwg_link_opening_handler_ disconnect];
+  bwg_link_opening_handler_ = nil;
+
   if (keyboard_show_observer_) {
     [[NSNotificationCenter defaultCenter]
         removeObserver:keyboard_show_observer_];
