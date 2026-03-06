@@ -209,7 +209,6 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 .withTitleRes(stringId)
                 .withMenuId(R.id.share_group)
                 .withStartIconRes(R.drawable.ic_group_24dp)
-                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
                 .build();
     }
 
@@ -223,7 +222,6 @@ public class TabListGroupMenuCoordinator extends TabGroupOverflowMenuCoordinator
                 .withMenuId(menuId)
                 .withStartIconRes(startIconId)
                 .withIsIncognito(isIncognito)
-                .withTextAppearanceStyle(R.style.TextAppearance_TextLarge_Primary_Baseline_Light)
                 .build();
     }
 }
