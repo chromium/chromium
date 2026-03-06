@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -97,7 +98,7 @@ int BrokeredTcpClientSocket::Connect(net::CompletionOnceCallback callback) {
       addresses_.begin()->GetFamily(),
       base::BindOnce(&BrokeredTcpClientSocket::DidCompleteCreate,
                      brokered_weak_ptr_factory_.GetWeakPtr(),
-                     std::move(callback)));
+                     std::move(callback), base::TimeTicks::Now()));
 
   return net::ERR_IO_PENDING;
 }
@@ -115,9 +116,16 @@ void BrokeredTcpClientSocket::DidCompleteConnect(
 
 void BrokeredTcpClientSocket ::DidCompleteCreate(
     net::CompletionOnceCallback callback,
+    base::TimeTicks start_time,
     network::TransferableSocket socket,
     int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const auto now = base::TimeTicks::Now();
+  // TODO(crbug.com/489579955): This histogram is recorded very frequently.
+  // Remove it once enough data is collected.
+  UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+      "Network.BrokeredTcpClientSocket.SocketCreationTime", now - start_time,
+      base::Microseconds(1), base::Milliseconds(10), 100);
   net_log_source_.EndEventWithNetErrorCode(
       net::NetLogEventType::BROKERED_CREATE_SOCKET, result);
   if (result != net::OK) {

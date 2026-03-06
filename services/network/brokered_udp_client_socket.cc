@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
@@ -105,9 +106,12 @@ int BrokeredUdpClientSocket::ConnectAsyncInternal(
   CHECK(!connect_called_);
   connect_called_ = true;
   if (!client_socket_factory_->ShouldBroker(address.address())) {
+    // `start_time` is not used in this case, so we pass an empty TimeTicks
+    // object.
     return DidCompleteCreate(/*should_broker=*/false, address,
-                             std::move(callback), network::TransferableSocket(),
-                             net::OK);
+                             std::move(callback),
+                             /*start_time=*/base::TimeTicks(),
+                             network::TransferableSocket(), net::OK);
   }
   net_log_source_.BeginEvent(net::NetLogEventType::BROKERED_CREATE_SOCKET);
   client_socket_factory_->BrokerCreateUdpSocket(
@@ -115,7 +119,7 @@ int BrokeredUdpClientSocket::ConnectAsyncInternal(
       base::BindOnce(
           base::IgnoreResult(&BrokeredUdpClientSocket::DidCompleteCreate),
           brokered_weak_ptr_factory_.GetWeakPtr(), /*should_broker=*/true,
-          address, std::move(callback)));
+          address, std::move(callback), base::TimeTicks::Now()));
   return net::ERR_IO_PENDING;
 }
 
@@ -147,10 +151,17 @@ int BrokeredUdpClientSocket::DidCompleteCreate(
     bool should_broker,
     const net::IPEndPoint& address,
     net::CompletionOnceCallback callback,
+    base::TimeTicks start_time,
     network::TransferableSocket socket,
     int result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (should_broker) {
+    const auto now = base::TimeTicks::Now();
+    // TODO(crbug.com/489579955): This histogram is recorded very frequently.
+    // Remove it once enough data is collected.
+    UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
+        "Network.BrokeredUdpClientSocket.SocketCreationTime", now - start_time,
+        base::Microseconds(1), base::Milliseconds(10), 100);
     net_log_source_.EndEventWithNetErrorCode(
         net::NetLogEventType::BROKERED_CREATE_SOCKET, result);
     if (result != net::OK) {

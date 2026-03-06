@@ -137,6 +137,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredUdpClientSocket
   int DidCompleteCreate(bool should_broker,
                         const net::IPEndPoint& address,
                         net::CompletionOnceCallback callback,
+                        base::TimeTicks start_time,
                         network::TransferableSocket socket,
                         int result);
 

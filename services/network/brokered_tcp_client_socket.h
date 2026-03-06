@@ -104,6 +104,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) BrokeredTcpClientSocket
   void DidCompleteConnect(net::CompletionOnceCallback callback, int result);
 
   void DidCompleteCreate(net::CompletionOnceCallback callback,
+                         base::TimeTicks start_time,
                          network::TransferableSocket socket,
                          int result);
 
