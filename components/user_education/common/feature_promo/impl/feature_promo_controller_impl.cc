@@ -994,6 +994,13 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerImpl::ShowPromoBubbleImpl(
     bubble_params.arrow = params.arrow;
     bubble_params.focus_on_show_hint = spec.focus_on_show_override();
 
+    // If timeouts are explicitly disabled then set that the bubble explicitly
+    // does not time out.
+    if (spec.bubble_should_time_out_override().has_value() &&
+        !spec.bubble_should_time_out_override().value()) {
+      bubble_params.timeout = base::Seconds(0);
+    }
+
     bubble_params.timeout_callback =
         base::BindOnce(&FeaturePromoControllerImpl::OnHelpBubbleTimeout,
                        GetImplWeakPtr(), base::Unretained(spec.feature()));

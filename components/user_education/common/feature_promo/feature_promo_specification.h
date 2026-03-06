@@ -491,6 +491,12 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // can be done to fix it.
   FeaturePromoSpecification& OverrideFocusOnShow(bool focus_on_show);
 
+  // Overrides the default behavior for IPH to direct whether the promo should
+  // time out. Only applies to toasts. Setting to false requires being
+  // specifically allowlisted.
+  FeaturePromoSpecification& OverrideBubbleShouldTimeOut(
+      bool bubble_should_time_out);
+
   // Set the promo subtype. Setting the subtype to most values other than
   // `kNormal` requires being on an allowlist.
   FeaturePromoSpecification& SetPromoSubtype(PromoSubtype promo_subtype);
@@ -535,6 +541,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   const gfx::VectorIcon* bubble_icon() const { return bubble_icon_; }
   const std::optional<bool>& focus_on_show_override() const {
     return focus_on_show_override_;
+  }
+  const std::optional<bool>& bubble_should_time_out_override() const {
+    return bubble_should_time_out_override_;
   }
   int screen_reader_string_id() const { return screen_reader_string_id_; }
   const AcceleratorInfo& screen_reader_accelerator() const {
@@ -689,6 +698,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // focus bubbles with action buttons, but not bubbles that only have a close
   // button.
   std::optional<bool> focus_on_show_override_;
+
+  // Overrides the default timeout behavior for a bubble.
+  std::optional<bool> bubble_should_time_out_override_;
 
   // Optional screen reader announcement that replaces bubble text when the
   // bubble is first announced.
