@@ -8497,6 +8497,16 @@
                     "enable_features": [
                         "NtpFeatureOptimizationShortcutsRemoval"
                     ]
+                },
+                {
+                    "name": "Enabled_Stable",
+                    "params": {
+                        "ShortcutsMinStalenessUpdateTimeInterval": "1d",
+                        "StaleShortcutsCountThreshold": "60"
+                    },
+                    "enable_features": [
+                        "NtpFeatureOptimizationShortcutsRemoval"
+                    ]
                 }
             ]
         }
