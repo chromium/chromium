@@ -9,6 +9,7 @@
 
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace variations {
@@ -26,6 +27,8 @@ class COMPONENT_EXPORT(VARIATIONS) LimitedLayerEntropyCostTracker {
   //   * layer - The layer whose entropy is being tracked.
   //   * entropy_limit_in_bits - The maximum allowed entropy limit for any
   //   member of the limited layer.
+  //   * current_time - The time used by the entropy tracker for visibility
+  //   considerations.
   //
   // The tracker expects that the layer and study data passed to its constructor
   // and methods are valid. However, as this data comes from external sources
@@ -34,7 +37,8 @@ class COMPONENT_EXPORT(VARIATIONS) LimitedLayerEntropyCostTracker {
   // input was provided. If this occurs, the tracker will be invalidated and
   // the seed from which the tracker is derived should be rejected.
   LimitedLayerEntropyCostTracker(const Layer& layer,
-                                 double entropy_limit_in_bits);
+                                 double entropy_limit_in_bits,
+                                 base::Time current_time = base::Time::Now());
   ~LimitedLayerEntropyCostTracker();
 
   LimitedLayerEntropyCostTracker(const LimitedLayerEntropyCostTracker&) =
@@ -80,6 +84,9 @@ class COMPONENT_EXPORT(VARIATIONS) LimitedLayerEntropyCostTracker {
 
   // The maximum allowed entropy limit for any member of the limited layer.
   const double entropy_limit_in_bits_;
+
+  // The time used by the entropy tracker for visibility considerations.
+  const base::Time entropy_evaluation_time_;
 
   // ID of the active limited layer for this client. This is used to sanity
   // check the studies whose entropy is being tracked (they should all refer
