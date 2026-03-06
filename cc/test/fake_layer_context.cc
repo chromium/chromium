@@ -4,7 +4,10 @@
 
 #include "cc/test/fake_layer_context.h"
 
+#include <vector>
+
 #include "base/time/time.h"
+#include "ui/latency/latency_info.h"
 
 namespace cc {
 
@@ -16,7 +19,8 @@ base::TimeTicks FakeLayerContext::UpdateDisplayTreeFrom(
     gpu::SharedImageInterface* shared_image_interface,
     const gfx::Rect& viewport_damage_rect,
     const viz::LocalSurfaceId& target_local_surface_id,
-    bool frame_has_damage) {
+    bool frame_has_damage,
+    std::vector<ui::LatencyInfo> latency_info) {
   return base::TimeTicks::Now();
 }
 

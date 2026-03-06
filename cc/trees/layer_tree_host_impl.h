@@ -79,6 +79,7 @@
 #include "components/viz/common/view_transition_element_resource_id.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d_f.h"
+#include "ui/latency/latency_info.h"
 
 namespace gfx {
 class PointF;
@@ -445,7 +446,8 @@ class CC_EXPORT LayerTreeHostImpl : public TileManagerClient,
   void DidDrawAllLayers(const FrameData& frame);
 
   // Pushes differential updates to the display tree via a LayerContext.
-  base::TimeTicks UpdateDisplayTree(FrameData& frame);
+  base::TimeTicks UpdateDisplayTree(FrameData& frame,
+                                    std::vector<ui::LatencyInfo> latency_info);
 
   const LayerTreeSettings& settings() const { return settings_; }
 

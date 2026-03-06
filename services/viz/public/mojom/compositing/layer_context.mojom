@@ -23,6 +23,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/display_color_spaces.mojom";
 import "ui/gfx/mojom/overlay_transform.mojom";
 import "ui/gfx/mojom/delegated_ink_metadata.mojom";
+import "ui/latency/mojom/latency_info.mojom";
 
 // Describes a request to create or delete a UIResource in the service-side
 // display tree.
@@ -239,6 +240,9 @@ struct LayerTreeUpdate {
 
   // Equivalent to hud_layer() && hud_layer()->IsANimatingHUDContents().
   bool is_animating_hud_contents;
+
+  // Latency info for the current update.
+  array<ui.mojom.LatencyInfo> latency_info;
 };
 
 // Drives updates to a GPU-side LayerTreeHostImpl from its corresponding

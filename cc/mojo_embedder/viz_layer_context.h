@@ -21,6 +21,7 @@
 #include "services/viz/public/mojom/compositing/animation.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "services/viz/public/mojom/compositing/layer_context.mojom.h"
+#include "ui/latency/latency_info.h"
 
 namespace cc {
 
@@ -48,7 +49,8 @@ class CC_MOJO_EMBEDDER_EXPORT VizLayerContext
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
       const viz::LocalSurfaceId& target_local_surface_id,
-      bool frame_has_damage) override;
+      bool frame_has_damage,
+      std::vector<ui::LatencyInfo> latency_info) override;
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,
                          viz::ClientResourceProvider& resource_provider,

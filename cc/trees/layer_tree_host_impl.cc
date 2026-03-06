@@ -156,6 +156,7 @@
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/skia_span_util.h"
+#include "ui/latency/latency_info.h"
 
 namespace cc {
 namespace {
@@ -3013,7 +3014,7 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
 
     // Send updates to Viz even for no damage case when TreesInViz is enabled.
     if (settings_.TreesInVizInClientProcess()) {
-      UpdateDisplayTree(*frame);
+      UpdateDisplayTree(*frame, {});
     }
 
     active_tree()->ResetAllChangeTracking();
@@ -3103,7 +3104,8 @@ std::optional<SubmitInfo> LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   if (settings_.TreesInVizInClientProcess()) {
     send_frame_token_to_embedder_ =
         compositor_frame.metadata.send_frame_token_to_embedder;
-    trees_in_viz_submit_time = UpdateDisplayTree(*frame);
+    trees_in_viz_submit_time = UpdateDisplayTree(
+        *frame, std::move(compositor_frame.metadata.latency_info));
 
     layer_tree_frame_sink_->ExportFrameTiming();
   } else {
@@ -3598,14 +3600,17 @@ void LayerTreeHostImpl::DidDrawAllLayers(const FrameData& frame) {
   }
 }
 
-base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(FrameData& frame) {
+base::TimeTicks LayerTreeHostImpl::UpdateDisplayTree(
+    FrameData& frame,
+    std::vector<ui::LatencyInfo> latency_info) {
   DCHECK(settings_.TreesInVizInClientProcess());
   DCHECK(layer_context_);
 
   return layer_context_->UpdateDisplayTreeFrom(
       *active_tree(), *resource_provider(),
       layer_tree_frame_sink_->shared_image_interface().get(),
-      viewport_damage_rect_, target_local_surface_id_, !frame.has_no_damage);
+      viewport_damage_rect_, target_local_surface_id_, !frame.has_no_damage,
+      std::move(latency_info));
 }
 
 int LayerTreeHostImpl::RequestedMSAASampleCount() const {

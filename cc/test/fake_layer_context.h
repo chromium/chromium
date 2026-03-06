@@ -5,7 +5,10 @@
 #ifndef CC_TEST_FAKE_LAYER_CONTEXT_H_
 #define CC_TEST_FAKE_LAYER_CONTEXT_H_
 
+#include <vector>
+
 #include "cc/trees/layer_context.h"
+#include "ui/latency/latency_info.h"
 
 namespace cc {
 
@@ -22,7 +25,8 @@ class FakeLayerContext : public LayerContext {
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
       const viz::LocalSurfaceId& target_local_surface_id,
-      bool frame_has_damage) override;
+      bool frame_has_damage,
+      std::vector<ui::LatencyInfo> latency_info) override;
 
   void UpdateDisplayTile(PictureLayerImpl& layer,
                          const Tile& tile,

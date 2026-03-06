@@ -5,10 +5,13 @@
 #ifndef CC_TREES_LAYER_CONTEXT_H_
 #define CC_TREES_LAYER_CONTEXT_H_
 
+#include <vector>
+
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/trees/commit_state.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
+#include "ui/latency/latency_info.h"
 
 namespace gfx {
 class Rect;
@@ -45,7 +48,8 @@ class CC_EXPORT LayerContext {
       gpu::SharedImageInterface* shared_image_interface,
       const gfx::Rect& viewport_damage_rect,
       const viz::LocalSurfaceId& target_local_surface_id,
-      bool frame_has_damage) = 0;
+      bool frame_has_damage,
+      std::vector<ui::LatencyInfo> latency_info) = 0;
 
   // Pushes an update to a single tile in the context's display tree.
   virtual void UpdateDisplayTile(
