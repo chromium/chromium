@@ -10,10 +10,38 @@ export function getHtml(this: ComposeboxFileThumbnailElement) {
   // clang-format off
   return html`<!--_html_template_start_-->
     <div id="container">
-      ${this.file.type === 'injectedinput' ? html`
+      ${this.file.type === 'injectedinput' ? this.file.iconName ? html`
         <div id="injectedInputChip" class="chip">
-          <div id="injectedInputThumbnail"
-            class="thumbnail injected-input-thumbnail">
+          <div id="injectedInputIconThumbnail" class="thumbnail" part="thumbnail">
+            ${this.isUploading_ ? html`
+              <svg role="image" class="spinner" viewBox="0 0 100 100">
+                <circle class="spinner-circle" cx="50" cy="50" r="40" />
+              </svg>
+            ` : html`
+              <cr-icon icon="aim:${this.file.iconName}"
+                  class="injected-input-icon"></cr-icon>
+            `}
+          </div>
+          <p class="title" part="thumbnail-title" id="injectedInputTitle">
+            ${this.file.name}
+          </p>
+          <div class="overlay">
+            <div class="gradient-protection"></div>
+            ${this.file.isDeletable ? html`<cr-icon-button
+                id="removeInjectedInputIconButton"
+                class="remove-button"
+                iron-icon="cr:clear"
+                title="${this.file.name}"
+                aria-label="${this.deleteFileButtonTitle_}"
+                @click="${this.deleteFile_}">
+            </cr-icon-button>`: ''}
+          </div>
+          <div class="chip-overlay"></div>
+        </div>
+      ` : html`
+        <div id="injectedInputChip" class="chip">
+          <div id="injectedInputImgThumbnail"
+            class="thumbnail injected-input-img-thumbnail">
             <img class="injected-input-img"
               src="${this.file.objectUrl || this.file.dataUrl}"
               aria-label="${this.file.name}">

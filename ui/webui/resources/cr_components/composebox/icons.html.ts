@@ -70,6 +70,29 @@ div.innerHTML = getTrustedHTML`
       </g>
     </defs>
   </svg>
+</cr-iconset>
+<cr-iconset name="aim" size=24>
+  <svg>
+    <defs>
+      <g id="unspecified" viewBox="0 -960 960 960">
+      </g>
+      <g id="add" viewBox="0 -960 960 960">
+        <path d="M440-440H200v-80h240v-240h80v240h240v80H520v240h-80v-240Z" fill="currentColor"/>
+      </g>
+      <g id="check" viewBox="0 -960 960 960">
+        <path d="M382-240 154-468l57-57 171 171 367-367 57 57-424 424Z" fill="currentColor"/>
+      </g>
+      <g id="quoteFilled" viewBox="0 -960 960 960">
+        <path d="m228-240 92-160q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-5.5 42.5T458-480L320-240h-92Zm360 0 92-160q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 23-5.5 42.5T818-480L680-240h-92Z" fill="currentColor"/>
+      </g>
+      <g id="image" viewBox="0 -960 960 960">
+        <path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm40-80h480L570-480 450-320l-90-120-120 160Zm-40 80v-560 560Z" fill="currentColor"/>
+      </g>
+      <g id="drivePdf" viewBox="0 -960 960 960">
+        <path d="M620-360h60v-80h60v-60h-60v-40h60v-60H620v240Zm-400 0h60v-80h60q17 0 28.5-11.5T380-480v-80q0-17-11.5-28.5T340-600H220v240Zm60-140v-40h40v40h-40Zm136 140h120q17 0 28.5-11.5T576-400v-160q0-17-11.5-28.5T536-600H416v240Zm60-60v-120h40v120h-40ZM200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h560q33 0 56.5 23.5T840-760v560q0 33-23.5 56.5T760-120H200Zm0-80h560v-560H200v560Zm0-560v560-560Z" fill="currentColor"/>
+      </g>
+    </defs>
+  </svg>
 </cr-iconset>`;
 
 const iconsets = div.querySelectorAll('cr-iconset');

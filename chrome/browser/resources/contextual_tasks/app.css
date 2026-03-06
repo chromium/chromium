@@ -125,6 +125,7 @@
   --thumbnail-chip-overlay-width: 100%;
   --thumbnail-chip-padding: 6px;
   --thumbnail-chip-width: 154px;
+  --aim-icon-color: rgba(86, 89, 94, 1);
 
   /* Toolbar colors */
   --toolbar-background-color: var(--search-background-color);
@@ -230,6 +231,7 @@
   --search-background-color-rgb: 16, 18, 23;
   --ghost-loader-base: #333438;
   --ghost-loader-highlight: #3A3F50;
+  --aim-icon-color: rgba(173, 175, 184, 1);
 
   /* Toolbar colors - Dark mode */
   --toolbar-divider-color: rgb(94,94,94);
