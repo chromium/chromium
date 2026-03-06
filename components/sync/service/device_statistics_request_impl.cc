@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
 #include "components/signin/public/base/oauth_consumer_id.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
@@ -75,7 +76,7 @@ void DeviceStatisticsRequestImpl::AccessTokenFetchComplete(
   access_token_fetcher_.reset();
 
   if (error.state() != GoogleServiceAuthError::NONE) {
-    UpdateStateAndNotify(State::kFailed);
+    UpdateStateAndNotify(Outcome::kAuthError);
 
     // It is valid for the callback to delete `this`, so do not access any
     // members below here.
@@ -182,17 +183,21 @@ void DeviceStatisticsRequestImpl::AccessTokenFetchComplete(
 void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
     signin::AccessTokenInfo access_token_info,
     std::optional<std::string> response_body) {
-  int response_code = -1;
+  const int net_error_code = simple_url_loader_->NetError();
+  CHECK_LE(net_error_code, 0);
+
+  int http_response_code = -1;
   if (simple_url_loader_->ResponseInfo() &&
       simple_url_loader_->ResponseInfo()->headers) {
-    response_code =
+    http_response_code =
         simple_url_loader_->ResponseInfo()->headers->response_code();
   }
   simple_url_loader_.reset();
 
   // If the response code indicates that the token might not be valid,
   // invalidate the token and try again.
-  if (response_code == net::HTTP_UNAUTHORIZED && !has_retried_authorization_) {
+  if (http_response_code == net::HTTP_UNAUTHORIZED &&
+      !has_retried_authorization_) {
     identity_manager_->RemoveAccessTokenFromCache(
         account_.account_id, signin::OAuthConsumerId::kWebHistoryService,
         access_token_info.token);
@@ -202,19 +207,28 @@ void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
     return;
   }
 
-  if (response_code != net::HTTP_OK) {
-    UpdateStateAndNotify(State::kFailed);
+  base::UmaHistogramSparse(
+      "Sync.DeviceStatistics.RequestUrlFetchResponse",
+      net_error_code != net::OK ? net_error_code : http_response_code);
+
+  if (net_error_code != net::OK) {
+    UpdateStateAndNotify(Outcome::kNetworkError);
+    return;
+  }
+
+  if (http_response_code != net::HTTP_OK) {
+    UpdateStateAndNotify(Outcome::kHttpError);
     return;
   }
 
   if (!response_body) {
-    UpdateStateAndNotify(State::kFailed);
+    UpdateStateAndNotify(Outcome::kEmptyResponse);
     return;
   }
 
   sync_pb::ClientToServerResponse response;
   if (!response.ParseFromString(response_body.value())) {
-    UpdateStateAndNotify(State::kFailed);
+    UpdateStateAndNotify(Outcome::kInvalidResponse);
     return;
   }
 
@@ -222,15 +236,16 @@ void DeviceStatisticsRequestImpl::SimpleLoaderComplete(
     results_.push_back(entity);
   }
 
-  UpdateStateAndNotify(State::kComplete);
+  UpdateStateAndNotify(Outcome::kSuccess);
   // It is valid for the callback to delete `this`, so do not access any
   // members below here.
 }
 
-void DeviceStatisticsRequestImpl::UpdateStateAndNotify(State state) {
-  CHECK(state == State::kComplete || state == State::kFailed);
+void DeviceStatisticsRequestImpl::UpdateStateAndNotify(Outcome outcome) {
   CHECK(callback_);
-  state_ = state;
+  base::UmaHistogramEnumeration("Sync.DeviceStatistics.RequestOutcome",
+                                outcome);
+  state_ = (outcome == Outcome::kSuccess) ? State::kComplete : State::kFailed;
   std::move(callback_).Run();
 }
 

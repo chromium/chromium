@@ -58,12 +58,22 @@ class DeviceStatisticsRequestImpl : public DeviceStatisticsRequest {
   const std::vector<sync_pb::SyncEntity>& GetResults() const override;
 
  private:
+  enum class Outcome {
+    kSuccess = 0,
+    kNetworkError = 1,
+    kHttpError = 2,
+    kAuthError = 3,
+    kEmptyResponse = 4,
+    kInvalidResponse = 5,
+    kMaxValue = kInvalidResponse
+  };
+
   void AccessTokenFetchComplete(GoogleServiceAuthError error,
                                 signin::AccessTokenInfo access_token_info);
   void SimpleLoaderComplete(signin::AccessTokenInfo access_token_info,
                             std::optional<std::string> response_body);
 
-  void UpdateStateAndNotify(State state);
+  void UpdateStateAndNotify(Outcome outcome);
 
   const CoreAccountInfo account_;
 
