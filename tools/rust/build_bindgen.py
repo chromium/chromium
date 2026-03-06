@@ -27,8 +27,8 @@ from build import (CheckoutGitRepo, DownloadAndUnpack, LLVM_BUILD_TOOLS_DIR,
 from update import (RmTree)
 
 # The git hash to use.  See https://github.com/rust-lang/rust-bindgen/tags.
-# The current hash below corresponds to something between 0.72.0 and 0.73.0.
-BINDGEN_GIT_VERSION = '2426dd68cd12e0ac022bca18efb9c7d0acd27e12'
+# The current hash below corresponds to 0.72.1
+BINDGEN_GIT_VERSION = 'd874de8d646d9b8a3e7ba2db2bcd52f2fba8f1f5'
 BINDGEN_GIT_REPO = ('https://chromium.googlesource.com/external/' +
                     'github.com/rust-lang/rust-bindgen')
 
