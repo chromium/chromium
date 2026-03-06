@@ -206,7 +206,8 @@ views::ProposedLayout VerticalTabStripTopContainer::CalculateProposedLayout(
 
     int right_alignment = host_size.width();
 
-    bool wrap_during_animation = available_width < GetPreferredWidth();
+    bool wrap_during_animation =
+        caption_button_width_ != 0 && available_width < GetPreferredWidth();
 
     if (combo_button_) {
       const gfx::Size pref_size = combo_button_->GetPreferredSizeForOrientation(
