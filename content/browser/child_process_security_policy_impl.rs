@@ -92,7 +92,7 @@ impl ChildProcessSecurityPolicyImpl {
     fn get_instance() -> &'static Mutex<ChildProcessSecurityPolicyImpl> {
         static INSTANCE: LazyLock<Mutex<ChildProcessSecurityPolicyImpl>> =
             LazyLock::new(|| Mutex::new(ChildProcessSecurityPolicyImpl::new()));
-        &*INSTANCE
+        &INSTANCE
     }
     /// Helper to retrieve the global ChildProcessSecurityPolicyImpl and then
     /// acquire the Mutex.
