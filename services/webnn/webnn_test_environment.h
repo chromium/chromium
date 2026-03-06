@@ -73,10 +73,6 @@ class WebNNTestEnvironment {
 
   ~WebNNTestEnvironment();
 
-  WebNNContextProviderImpl* context_provider() const {
-    return context_provider_.get();
-  }
-
   void RunUntilIdle() { task_environment_->RunUntilIdle(); }
 
   void BindWebNNContextProvider(

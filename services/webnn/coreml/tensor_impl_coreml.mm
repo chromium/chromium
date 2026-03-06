@@ -25,6 +25,7 @@
 #include "services/webnn/public/mojom/webnn_tensor.mojom.h"
 #include "services/webnn/queueable_resource_state.h"
 #include "services/webnn/resource_task.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 
 namespace webnn::coreml {
 
@@ -384,17 +385,11 @@ void TensorImplCoreml::ExportTensorImpl(ScopedAccessPtr access,
               return;
             }
 
-            context->scheduler_task_runner()->PostTask(
-                FROM_HERE,
-                base::BindOnce(
-                    [](base::WeakPtr<WebNNContextImpl> context,
-                       ExportTensorCallback callback) {
-                      if (!context) {
-                        return;
-                      }
-                      std::move(callback).Run(context->GenVerifiedSyncToken());
-                    },
-                    context, std::move(callback)));
+            // Schedule a task first to ensure export waits until ResourceTask
+            // completes.
+            context->gpu_sequence()->ScheduleGpuTask(base::DoNothing());
+            std::move(callback).Run(
+                context->gpu_sequence()->GenVerifiedSyncToken());
           },
           context_->AsWeakPtr(), std::move(callback)));
   task->Enqueue();

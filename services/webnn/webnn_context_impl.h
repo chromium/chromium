@@ -164,12 +164,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
   // sequence. Does not support nested loops or delayed tasks.
   const scoped_refptr<gpu::SchedulerTaskRunner>& scheduler_task_runner() const;
 
-  // Waits for the given SyncToken to release before executing WebNN operations.
-  void WaitSyncToken(const gpu::SyncToken& fence);
+  // Exposes the ScopedGpuSequence which can be used to schedule tasks
+  // in sequence with this WebNNContext -- that is, on the same gpu::Scheduler
+  // sequence.
+  ScopedGpuSequence* gpu_sequence() const;
 
   // Generates a verified SyncToken that will be released once pending WebNN
   // operations complete execution.
-  gpu::SyncToken GenVerifiedSyncToken();
+  gpu::SyncToken GenVerifiedSyncToken() const;
 
   // Returns true if the data pipe consumer handle for WriteTensor() is valid.
   bool HasValidWriteTensorConsumer() const;
@@ -218,12 +220,14 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNContextImpl
     return main_task_runner_;
   }
 
-  // Posts `task` to `scheduler_task_runner()`, passing it a reference to this
+  // Schedules `task` to `gpu_sequence()`, passing it a reference to this
   // context. This allows arbitrary logic to be safely executed on the context's
   // task runner. The context is guaranteed to remain alive for the duration of
   // the task.
-  using ScheduleTaskCallback = base::OnceCallback<void(WebNNContextImpl&)>;
-  void ScheduleTaskWithThisContext(ScheduleTaskCallback task);
+  using ScheduleGpuTaskCallback = base::OnceCallback<void(WebNNContextImpl&)>;
+  void ScheduleGpuTaskWithThisContext(ScheduleGpuTaskCallback task);
+  void ScheduleGpuTaskWithThisContext(ScheduleGpuTaskCallback task,
+                                      const gpu::SyncToken& fence);
 
  protected:
   friend struct OnTaskRunnerDeleter;

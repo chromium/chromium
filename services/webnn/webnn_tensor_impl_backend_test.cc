@@ -388,43 +388,6 @@ TEST_F(WebNNTensorImplBackendTest, CreateContextImplManyTest) {
   EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
 }
 
-TEST_F(WebNNTensorImplBackendTest, ContextImplSyncToken) {
-  BadMessageTestHelper bad_message_helper;
-
-  blink::WebNNContextToken webnn_context_handle;
-  mojo::Remote<mojom::WebNNContext> webnn_context_remote;
-  base::expected<CreateContextSuccess, webnn::mojom::Error::Code>
-      context_result = CreateWebNNContext();
-  if (!context_result.has_value() &&
-      context_result.error() == mojom::Error::Code::kNotSupportedError) {
-    GTEST_SKIP() << "WebNN not supported on this platform.";
-  } else {
-    webnn_context_remote =
-        std::move(context_result.value().webnn_context_remote);
-    webnn_context_handle =
-        std::move(context_result.value().webnn_context_handle);
-  }
-
-  base::optional_ref<WebNNContextImpl> context_impl =
-      webnn_test_environment_.context_provider()->GetWebNNContextImplForTesting(
-          webnn_context_handle);
-
-  gpu::SyncToken last_sync_token_fence = context_impl->GenVerifiedSyncToken();
-  EXPECT_EQ(last_sync_token_fence.release_count(), 1u);
-
-  // Tell WebNN IPC to flush itself by waiting on its own SyncToken it had
-  // previously generated.
-  context_impl->WaitSyncToken(last_sync_token_fence);
-
-  last_sync_token_fence = context_impl->GenVerifiedSyncToken();
-  EXPECT_EQ(last_sync_token_fence.release_count(), 2u);
-
-  // Waiting on the same SyncToken should nop.
-  context_impl->WaitSyncToken(last_sync_token_fence);
-  context_impl->WaitSyncToken(last_sync_token_fence);
-
-  EXPECT_FALSE(bad_message_helper.GetLastBadMessage().has_value());
-}
 
 }  // namespace
 

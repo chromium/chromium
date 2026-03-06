@@ -18,6 +18,7 @@
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
+#include "services/webnn/scoped_gpu_sequence.h"
 #include "services/webnn/webnn_context_impl.h"
 #include "services/webnn/webnn_tensor_impl.h"
 
@@ -185,8 +186,7 @@ void WebNNGraphImpl::Dispatch(
   }
 
   // Call DispatchImpl() implemented by an `mojom::WebNNGraph` backend.
-  context_->scheduler_task_runner()->PostTask(
-      FROM_HERE,
+  context_->gpu_sequence()->ScheduleGpuTask(
       base::BindOnce(
           [](WebNNGraphImpl* self,
              base::flat_map<std::string, scoped_refptr<WebNNTensorImpl>>

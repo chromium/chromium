@@ -393,18 +393,6 @@ void WebNNContextProviderImpl::OnCreateWebNNContextImpl(
       mojom::CreateContextResult::NewSuccess(std::move(success)));
 }
 
-base::optional_ref<WebNNContextImpl>
-WebNNContextProviderImpl::GetWebNNContextImplForTesting(
-    const blink::WebNNContextToken& handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(main_sequence_checker_);
-  const auto it = context_impls_.find(handle);
-  if (it == context_impls_.end()) {
-    mojo::ReportBadMessage(kBadMessageInvalidContext);
-    return std::nullopt;
-  }
-  return it->get();
-}
-
 void WebNNContextProviderImpl::CreateWeightsFile(
     viz::mojom::GpuHost::CreateWebNNWeightsFileCallback callback) {
   gpu_host_->CreateWebNNWeightsFile(std::move(callback));

@@ -119,8 +119,7 @@ class FakeWebNNContextImpl final : public WebNNContextImpl {
     // Asynchronously resolve `callback` so there's an opportunity for
     // subsequent messages to be (illegally) sent from the `WebNNGraphBuilder`
     // remote before it's disconnected.
-    scheduler_task_runner()->PostTask(
-        FROM_HERE,
+    gpu_sequence()->ScheduleGpuTask(
         base::BindOnce(
             [](mojo::PendingAssociatedReceiver<mojom::WebNNGraph> receiver,
                base::WeakPtr<WebNNContextImpl> context,
