@@ -7,7 +7,6 @@
 #include <memory>
 #include <vector>
 
-#include "absl/debugging/leak_check.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -140,10 +139,6 @@ void BrowserWithTestWindowTest::SetUp() {
 
     auto window = CreateBrowserWindow();
     window_ = window.get();
-// TODO(crbug.com/489567903): Fix memory leak and re-enable LSan.
-#if BUILDFLAG(IS_CHROMEOS) && defined(LEAK_SANITIZER)
-    absl::IgnoreLeak(window.get());
-#endif
 
     browser_ =
         CreateBrowser(profile(), browser_type_, hosted_app_, window.release());
