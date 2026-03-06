@@ -150,6 +150,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
+  void AnimationEnded(const gfx::Animation* animation) override;
+  void AnimationCanceled(const gfx::Animation* animation) override;
 
   bool IsPositionInWindowCaption(const gfx::Point& point);
 

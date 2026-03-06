@@ -280,6 +280,17 @@ void VerticalTabStripView::SetCollapsedState(bool is_collapsed) {
   }
 }
 
+void VerticalTabStripView::SetIsAnimatingSize(bool is_animating) {
+  for (views::ScrollView* scroll_view :
+       {pinned_tabs_scroll_view_, unpinned_tabs_scroll_view_}) {
+    if (scroll_view) {
+      static_cast<VerticalTabStripScrollBar*>(
+          scroll_view->vertical_scroll_bar())
+          ->SetIsAnimatingSize(is_animating);
+    }
+  }
+}
+
 bool VerticalTabStripView::IsPositionInWindowCaption(const gfx::Point& point) {
   for (views::View* child : children()) {
     if (!child->GetVisible()) {

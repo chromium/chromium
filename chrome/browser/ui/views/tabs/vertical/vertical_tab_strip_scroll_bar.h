@@ -31,6 +31,8 @@ class VerticalTabStripScrollBar : public views::ScrollBar {
 
   ~VerticalTabStripScrollBar() override;
 
+  void SetIsAnimatingSize(bool is_animating);
+
   // ScrollBar:
   void OnMouseEntered(const ui::MouseEvent& event) override;
   void OnMouseExited(const ui::MouseEvent& event) override;
@@ -57,6 +59,10 @@ class VerticalTabStripScrollBar : public views::ScrollBar {
     // Starts a countdown that hides the thumb when it fires.
     void StartHideCountdown();
 
+    void set_is_animating_size(bool is_animating) {
+      is_animating_size_ = is_animating;
+    }
+
    protected:
     // BaseScrollBarThumb:
     gfx::Size CalculatePreferredSize(
@@ -67,6 +73,7 @@ class VerticalTabStripScrollBar : public views::ScrollBar {
    private:
     base::OneShotTimer hide_timer_;
     raw_ptr<VerticalTabStripScrollBar> scroll_bar_ = nullptr;
+    bool is_animating_size_ = false;
   };
   friend class Thumb;
 

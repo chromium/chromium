@@ -472,6 +472,8 @@ void VerticalTabStripRegionView::HandleDragExited() {
 
 void VerticalTabStripRegionView::OnResize(int resize_amount,
                                           bool done_resizing) {
+  CHECK(tab_strip_view_);
+  tab_strip_view_->SetIsAnimatingSize(!done_resizing);
   if (!starting_width_on_resize_.has_value()) {
     starting_width_on_resize_ = width();
   }
@@ -513,7 +515,25 @@ void VerticalTabStripRegionView::OnResize(int resize_amount,
 void VerticalTabStripRegionView::AnimationProgressed(
     const gfx::Animation* animation) {
   DCHECK_EQ(animation, &resize_animation_);
+  if (tab_strip_view_) {
+    tab_strip_view_->SetIsAnimatingSize(true);
+  }
   InvalidateLayout();
+}
+
+void VerticalTabStripRegionView::AnimationEnded(
+    const gfx::Animation* animation) {
+  DCHECK_EQ(animation, &resize_animation_);
+  if (tab_strip_view_) {
+    tab_strip_view_->SetIsAnimatingSize(false);
+  }
+}
+void VerticalTabStripRegionView::AnimationCanceled(
+    const gfx::Animation* animation) {
+  DCHECK_EQ(animation, &resize_animation_);
+  if (tab_strip_view_) {
+    tab_strip_view_->SetIsAnimatingSize(false);
+  }
 }
 
 bool VerticalTabStripRegionView::IsPositionInWindowCaption(
@@ -673,6 +693,9 @@ void VerticalTabStripRegionView::UpdateCollapseState(
   bool previously_collapsed = target_collapse_state_.collapsed;
   target_collapse_state_ = new_state;
   if (previously_collapsed != target_collapse_state_.collapsed) {
+    if (tab_strip_view_) {
+      tab_strip_view_->SetIsAnimatingSize(true);
+    }
     if (target_collapse_state_.collapsed) {
       resize_animation_.Hide();
     } else {

@@ -45,6 +45,8 @@ class VerticalTabStripView final : public views::View,
 
   void SetCollapsedState(bool is_collapsed);
 
+  void SetIsAnimatingSize(bool is_animating);
+
   bool IsPositionInWindowCaption(const gfx::Point& point);
 
   // LayoutDelegate:

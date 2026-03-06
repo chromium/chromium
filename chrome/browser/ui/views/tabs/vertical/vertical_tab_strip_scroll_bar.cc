@@ -73,6 +73,13 @@ void VerticalTabStripScrollBar::Thumb::OnPaint(gfx::Canvas* canvas) {
 
 void VerticalTabStripScrollBar::Thumb::OnBoundsChanged(
     const gfx::Rect& previous_bounds) {
+  // When the tab strip is animating its size (i.e. during collapse or expand),
+  // the scrollbar thumb should be hidden and not update its bounds until the
+  // animation is complete.
+  if (is_animating_size_) {
+    Hide();
+    return;
+  }
   Show();
   // Don't start the hide countdown if the thumb is still hovered or pressed.
   if (GetState() == views::Button::STATE_NORMAL) {
@@ -120,6 +127,14 @@ VerticalTabStripScrollBar::VerticalTabStripScrollBar(
 }
 
 VerticalTabStripScrollBar::~VerticalTabStripScrollBar() = default;
+
+void VerticalTabStripScrollBar::SetIsAnimatingSize(bool is_animating) {
+  Thumb* thumb = views::AsViewClass<Thumb>(GetThumb());
+  thumb->set_is_animating_size(is_animating);
+  if (is_animating) {
+    thumb->Hide();
+  }
+}
 
 void VerticalTabStripScrollBar::OnMouseEntered(const ui::MouseEvent& event) {
   VerticalTabStripScrollBar::Thumb* thumb =
