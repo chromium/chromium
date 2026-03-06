@@ -595,8 +595,6 @@ public class MultiWindowUtils implements ActivityStateListener {
 
     static boolean isRestorableInstance(int index) {
         return MultiInstancePersistentStore.readNormalTabCount(index) != 0
-                || (IncognitoUtils.shouldOpenIncognitoAsWindow()
-                        && MultiInstancePersistentStore.readIncognitoTabCount(index) != 0)
                 || MultiInstancePersistentStore.readTaskId(index) != INVALID_TASK_ID;
     }
 

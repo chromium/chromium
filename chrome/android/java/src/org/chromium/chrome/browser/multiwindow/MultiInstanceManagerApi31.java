@@ -1115,6 +1115,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl
         Intent intent =
                 MultiWindowUtils.createNewWindowIntent(
                         mActivity, instanceId, /* preferNew= */ false, openAdjacently, source);
+        if (IncognitoUtils.shouldOpenIncognitoAsWindow()) {
+            intent.putExtra(
+                    IntentHandler.EXTRA_OPEN_NEW_INCOGNITO_WINDOW,
+                    MultiInstancePersistentStore.readProfileType(instanceId)
+                            == SupportedProfileType.OFF_THE_RECORD);
+        }
         MultiInstancePersistentStore.writeMarkedForDeletion(
                 instanceId, /* markedForDeletion= */ false);
         mActivity.startActivity(intent);
