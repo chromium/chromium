@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
 
 #include <string>
 #include <vector>
 
-#include "components/accessibility_annotator/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 
-namespace annotation_reducer {
+namespace accessibility_annotator {
 
 class QueryClassifier {
  public:
@@ -25,6 +25,6 @@ class QueryClassifier {
   void InitializeStopWords();
 };
 
-}  // namespace annotation_reducer
+}  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_CLASSIFIER_H_

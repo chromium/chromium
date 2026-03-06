@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/annotation_reducer/query_classifier.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 
 #include <algorithm>
 #include <ranges>
@@ -16,9 +16,9 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/accessibility_annotator/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 
-namespace annotation_reducer {
+namespace accessibility_annotator {
 
 namespace {
 
@@ -296,4 +296,4 @@ QueryIntentType QueryClassifier::Classify(const std::u16string& query) {
   return QueryIntentType::kUnknown;
 }
 
-}  // namespace annotation_reducer
+}  // namespace accessibility_annotator

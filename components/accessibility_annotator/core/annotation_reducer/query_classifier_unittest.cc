@@ -2,23 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/accessibility_annotator/annotation_reducer/query_classifier.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_classifier.h"
 
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace annotation_reducer {
+namespace accessibility_annotator {
 
 class QueryClassifierTest : public ::testing::Test {
  public:
   QueryClassifierTest() = default;
   ~QueryClassifierTest() override = default;
 
-  void SetUp() override {
-    classifier_ = std::make_unique<QueryClassifier>();
-  }
+  void SetUp() override { classifier_ = std::make_unique<QueryClassifier>(); }
 
  protected:
   std::unique_ptr<QueryClassifier> classifier_;
@@ -227,4 +225,4 @@ TEST_F(QueryClassifierTest, MultiWordEntityIntents) {
             QueryIntentType::kDriversLicenseFull);
 }
 
-}  // namespace annotation_reducer
+}  // namespace accessibility_annotator

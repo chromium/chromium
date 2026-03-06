@@ -7,7 +7,7 @@
 #include <optional>
 #include <variant>
 
-#include "components/accessibility_annotator/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -16,7 +16,7 @@
 namespace autofill {
 namespace {
 
-using annotation_reducer::QueryIntentType;
+using accessibility_annotator::QueryIntentType;
 using testing::Eq;
 using testing::Optional;
 using testing::VariantWith;

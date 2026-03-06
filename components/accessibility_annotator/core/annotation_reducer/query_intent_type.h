@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
-#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
+#ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
+#define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
 
-namespace annotation_reducer {
+namespace accessibility_annotator {
 
 // Represents the type of data a query or piece of information is related to.
 enum class QueryIntentType {
@@ -71,6 +71,6 @@ enum class QueryIntentType {
   kOrderGrandTotal,
 };
 
-}  // namespace annotation_reducer
+}  // namespace accessibility_annotator
 
-#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_
+#endif  // COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_ANNOTATION_REDUCER_QUERY_INTENT_TYPE_H_

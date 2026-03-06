@@ -8,7 +8,7 @@
 #include <optional>
 #include <variant>
 
-#include "components/accessibility_annotator/annotation_reducer/query_intent_type.h"
+#include "components/accessibility_annotator/core/annotation_reducer/query_intent_type.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -21,9 +21,9 @@ namespace autofill {
 // variant of existing, well-defined types.
 using AtMemoryDataType = std::variant<FieldType, EntityType, AttributeType>;
 
-// Converts an annotation_reducer::QueryIntentType to an AtMemoryDataType.
+// Converts an accessibility_annotator::QueryIntentType to an AtMemoryDataType.
 std::optional<AtMemoryDataType> ToAtMemoryDataType(
-    annotation_reducer::QueryIntentType query_intent_type);
+    accessibility_annotator::QueryIntentType query_intent_type);
 
 }  // namespace autofill
 
