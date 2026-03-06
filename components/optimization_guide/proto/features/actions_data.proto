@@ -652,7 +652,7 @@ message TabObservation {
 
 // All relevant state in chrome after the actions are taken or an error has
 // occurred.
-// Next ID: 7
+// Next ID: 8
 message ActionsResult {
   // The result of the actions. See
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/common/actor.mojom
@@ -662,6 +662,9 @@ message ActionsResult {
   // If a specific action failed, the index of the failed action. -1 for no
   // failure.
   int32 index_of_failed_action = 2 [features = { field_presence: EXPLICIT }];
+
+  // A human-readable error message from first failed action, if any.
+  string error_message = 7 [features = { field_presence: EXPLICIT }];
 
   // Observations after all actions are finished or an error has occurred. The
   // client will determine the relevant windows and tabs.

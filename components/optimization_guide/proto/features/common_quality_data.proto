@@ -768,7 +768,7 @@ message FrameData {
   repeated ScriptTool script_tools = 9;
 
   // The results of executing script tools.
-  // TODO(khushalsagar): Remove this field once all consumers move to using
+  // TODO: crbug.com/489841640 - Remove this field once all consumers move to using
   // the field in ActionsResult.
   repeated ScriptToolResult script_tool_results = 11;
 
@@ -897,7 +897,7 @@ message ScriptToolAnnotations {
 
 // Result of executing a script tool.
 // Next ID: 6
-// TODO(khushalsagar): Move this to actions_data.proto.
+// TODO: crbug.com/489841640 - Move this to actions_data.proto.
 message ScriptToolResult {
   // The index of the ScriptToolAction in the Actions proto. This is used to
   // match the result to the corresponding action.
