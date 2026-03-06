@@ -35,6 +35,7 @@ import android.view.Window;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowCompat;
@@ -96,6 +97,7 @@ import org.chromium.ui.UiUtils;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
 import org.chromium.ui.base.EventForwarder;
 import org.chromium.ui.base.EventOffsetHandler;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.SPenSupport;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.base.ViewportInsets;
@@ -1252,6 +1254,13 @@ public class CompositorViewHolder extends FrameLayout
         // mSideUiStateProvider. This is done, since we need the offset every time we update the
         // WebContents size and we want to avoid caching the specs here.
         updateWebContentsSize(getCurrentTab());
+        @Px
+        int contentOffsetX =
+                LocalizationUtils.isLayoutRtl()
+                        ? sideUiSpecs.mEndContainerWidth
+                        : sideUiSpecs.mStartContainerWidth;
+        mLayoutManager.setContentOffsetX(contentOffsetX);
+        onViewportChanged();
         // TODO(crbug.com/483748424): Update #getWindowViewport and #getVisibleViewport through
         //  #onViewportChanged as well. This change is not trivial, since other items, such as
         //  the tab strip, infer their bounds from the viewport. For SidePanel, however, we only
@@ -1353,6 +1362,8 @@ public class CompositorViewHolder extends FrameLayout
             float bottomControlOffset = mBrowserControlsManager.getBottomControlOffset();
             outRect.bottom -= (getBottomControlsHeightPixels() - bottomControlOffset);
         }
+
+        adjustRectForSideUi(outRect);
     }
 
     @Override
@@ -1366,6 +1377,24 @@ public class CompositorViewHolder extends FrameLayout
         // mApplicationBottomInsetSupplier doesn't include browser controls.
         outRect.top += getTopControlsHeightPixels();
         outRect.bottom -= getBottomControlsHeightPixels();
+
+        adjustRectForSideUi(outRect);
+    }
+
+    private void adjustRectForSideUi(RectF outRect) {
+        if (mSideUiStateProvider != null) {
+            SideUiSpecs sideUiSpecs = mSideUiStateProvider.getCurrentSideUiSpecs();
+            int leftOffset =
+                    LocalizationUtils.isLayoutRtl()
+                            ? sideUiSpecs.mEndContainerWidth
+                            : sideUiSpecs.mStartContainerWidth;
+            int rightOffset =
+                    LocalizationUtils.isLayoutRtl()
+                            ? sideUiSpecs.mStartContainerWidth
+                            : sideUiSpecs.mEndContainerWidth;
+            outRect.left += leftOffset;
+            outRect.right -= rightOffset;
+        }
     }
 
     @Override
@@ -1470,7 +1499,6 @@ public class CompositorViewHolder extends FrameLayout
     public void setSideUiStateProvider(SideUiStateProvider sideUiStateProvider) {
         mSideUiStateProvider = sideUiStateProvider;
         mSideUiStateProvider.addObserver(this);
-        updateWebContentsSize(getCurrentTab());
     }
 
     public int getTopControlsHeightPixels() {

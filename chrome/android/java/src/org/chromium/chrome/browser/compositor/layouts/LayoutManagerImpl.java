@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -202,8 +203,8 @@ public class LayoutManagerImpl
     private @Nullable ShowingEventSequencer mShowingEventSequencer;
 
     /**
-     * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will
-     * need to override any related calls to add new functionality
+     * Protected class to handle {@link TabModelObserver} related tasks. Extending classes will need
+     * to override any related calls to add new functionality
      */
     protected class LayoutManagerTabModelObserver implements TabModelObserver {
         @Override
@@ -881,9 +882,14 @@ public class LayoutManagerImpl
         }
     }
 
+    /** Sets the {@link LayoutTab#CONTENT_OFFSET_X} for the static layout. */
+    public void setContentOffsetX(@Px int contentOffsetX) {
+        mStaticLayout.setContentOffsetX(contentOffsetX);
+    }
+
     /**
      * @return The default {@link Layout} to show when {@link Layout}s get hidden and the next
-     *         {@link Layout} to show isn't known.
+     *     {@link Layout} to show isn't known.
      */
     protected Layout getDefaultLayout() {
         return mStaticLayout;

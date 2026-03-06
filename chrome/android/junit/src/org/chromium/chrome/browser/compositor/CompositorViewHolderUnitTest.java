@@ -37,6 +37,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.test.core.app.ApplicationProvider;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -91,6 +92,7 @@ import org.chromium.components.prefs.PrefService;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.ApplicationViewportInsetTracker;
+import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.insets.InsetObserver;
 import org.chromium.ui.mojom.VirtualKeyboardMode;
@@ -291,6 +293,11 @@ public class CompositorViewHolderUnitTest {
         IBinder windowToken = mock(IBinder.class);
         when(mContainerView.getWindowToken()).thenReturn(windowToken);
         when(mContentView.getWindowToken()).thenReturn(windowToken);
+    }
+
+    @After
+    public void tearDown() {
+        LocalizationUtils.setRtlForTesting(false);
     }
 
     private List<EventSource> observeTouchAndMotionEvents() {
@@ -1224,7 +1231,7 @@ public class CompositorViewHolderUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
-    public void testOnSideUiSpecsChanged() {
+    public void testOnSideUiSpecsChanged_updateWebContentsSize() {
         // Setup.
         reset(mWebContents);
 
@@ -1245,8 +1252,40 @@ public class CompositorViewHolderUnitTest {
         // the set SideUiStateProvider.
         mCompositorViewHolder.onSideUiSpecsChanged(SideUiSpecs.EMPTY_SIDE_UI_SPECS);
 
-        // Verify. Once through #setSideUiStateProvider and once through #onSideUiSpecsChanged.
-        verify(mWebContents, times(2))
+        // Verify.
+        verify(mWebContents)
                 .setSize(viewportWidth - (startContainerWidth + endContainerWidth), viewportHeight);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testOnSideUiSpecsChanged_updateContentOffsetX() {
+        doTestOnSideUiSpecsChanged_updateContentOffsetX(/* shouldBeRtl= */ false);
+    }
+
+    @Test
+    @EnableFeatures(ChromeFeatureList.ENABLE_ANDROID_SIDE_PANEL)
+    public void testOnSideUiSpecsChanged_updateContentOffsetX_rtl() {
+        doTestOnSideUiSpecsChanged_updateContentOffsetX(/* shouldBeRtl= */ true);
+    }
+
+    private void doTestOnSideUiSpecsChanged_updateContentOffsetX(boolean shouldBeRtl) {
+        // Setup.
+        LocalizationUtils.setRtlForTesting(shouldBeRtl);
+        reset(mWebContents);
+
+        // Arbitrary Side UI width.
+        int startContainerWidth = 50;
+        int endContainerWidth = 150;
+        SideUiSpecs currentSideUiSpecs = new SideUiSpecs(startContainerWidth, endContainerWidth);
+        when(mSideUiStateProvider.getCurrentSideUiSpecs()).thenReturn(currentSideUiSpecs);
+        mCompositorViewHolder.setSideUiStateProvider(mSideUiStateProvider);
+
+        // Act.
+        mCompositorViewHolder.onSideUiSpecsChanged(currentSideUiSpecs);
+
+        // Verify.
+        int expectedContentOffsetX = shouldBeRtl ? endContainerWidth : startContainerWidth;
+        verify(mLayoutManager).setContentOffsetX(expectedContentOffsetX);
     }
 }

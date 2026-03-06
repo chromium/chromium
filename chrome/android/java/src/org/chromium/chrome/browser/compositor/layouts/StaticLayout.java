@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
 
+import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -95,7 +96,8 @@ public class StaticLayout extends Layout {
      * @param updateHost The {@link LayoutUpdateHost} view for this layout.
      * @param renderHost The {@link LayoutRenderHost} view for this layout.
      * @param viewHost The {@link LayoutManagerHost} view for this layout.
-     * @param requestSupplier Frame request supplier for Compositor MCP.
+     * @param frameRequestSupplier Frame request supplier for Compositor MCP.
+     * @param requestFrameRunnable Frame request runnable for Compositor MCP.
      * @param tabModelSelector {@link TabModelSelector} instance.
      * @param tabContentManager {@link TabContentsManager} instance.
      * @param browserControlsStateProvider A {@link BrowserControlsStateProvider}.
@@ -508,6 +510,11 @@ public class StaticLayout extends Layout {
     protected void setIsActive(boolean active) {
         super.setIsActive(active);
         mModel.set(LayoutTab.IS_ACTIVE_LAYOUT, active);
+    }
+
+    /** Sets the {@link LayoutTab#CONTENT_OFFSET_X} for this layout. */
+    protected void setContentOffsetX(@Px int contentOffsetX) {
+        mModel.set(LayoutTab.CONTENT_OFFSET_X, contentOffsetX);
     }
 
     @Override

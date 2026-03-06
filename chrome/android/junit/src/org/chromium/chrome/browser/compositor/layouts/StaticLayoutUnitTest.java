@@ -510,4 +510,16 @@ public class StaticLayoutUnitTest {
         // The update will be handled by compositorMCP.
         verify(mStaticTabSceneLayer, times(0)).update(mModel);
     }
+
+    @Test
+    public void testSetContentOffsetX() {
+        int contentOffsetX = 125;
+        mStaticLayout.setContentOffsetX(contentOffsetX);
+
+        assertEquals(
+                "Unexpected CONTENT_OFFSET_X.",
+                contentOffsetX,
+                mModel.get(LayoutTab.CONTENT_OFFSET_X),
+                0);
+    }
 }
