@@ -313,6 +313,13 @@ void PageActionModel::SetAnchoredMessageCloseIcon(
   NotifyChange(Property::kAnchoredMessageCloseIcon);
 }
 
+void PageActionModel::SetAnchoredMessageIcon(
+    base::PassKey<PageActionController>,
+    const std::optional<ui::ImageModel>& icon) {
+  anchored_message_icon_ = icon;
+  NotifyChange(Property::kAnchoredMessageIcon);
+}
+
 bool PageActionModel::ShouldShowAnchoredMessage() const {
   return should_show_anchored_message_;
 }
@@ -337,6 +344,11 @@ const std::u16string& PageActionModel::GetAnchoredMessageText() const {
 
 bool PageActionModel::GetAnchoredMessageCloseIcon() const {
   return anchored_message_show_close_icon_;
+}
+
+const std::optional<ui::ImageModel>& PageActionModel::GetAnchoredMessageIcon()
+    const {
+  return anchored_message_icon_;
 }
 
 }  // namespace page_actions

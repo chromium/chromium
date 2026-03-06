@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_controller.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -330,6 +331,18 @@ void PageActionControllerImpl::SetAnchoredMessageText(
     const std::u16string& anchored_message_text) {
   FindPageActionModel(action_id).SetAnchoredMessageText(PassKey(),
                                                         anchored_message_text);
+}
+
+void PageActionControllerImpl::SetAnchoredMessageIcon(
+    actions::ActionId action_id,
+    const ui::ImageModel& icon) {
+  FindPageActionModel(action_id).SetAnchoredMessageIcon(PassKey(), icon);
+}
+
+void PageActionControllerImpl::ClearAnchoredMessageIcon(
+    actions::ActionId action_id) {
+  FindPageActionModel(action_id).SetAnchoredMessageIcon(PassKey(),
+                                                        std::nullopt);
 }
 
 void PageActionControllerImpl::ShouldShowAnchoredMessageCloseIcon(

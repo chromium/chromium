@@ -66,6 +66,11 @@ class MockPageActionController : public PageActionController {
               (actions::ActionId, bool),
               (override));
   MOCK_METHOD(void,
+              SetAnchoredMessageIcon,
+              (actions::ActionId, const ui::ImageModel&),
+              (override));
+  MOCK_METHOD(void, ClearAnchoredMessageIcon, (actions::ActionId), (override));
+  MOCK_METHOD(void,
               AddObserver,
               (actions::ActionId,
                (base::ScopedObservation<PageActionModelInterface,

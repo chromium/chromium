@@ -35,6 +35,10 @@ class MockPageActionModel : public PageActionModelInterface {
               (),
               (const, override));
   MOCK_METHOD(bool, GetAnchoredMessageCloseIcon, (), (const, override));
+  MOCK_METHOD(const std::optional<ui::ImageModel>&,
+              GetAnchoredMessageIcon,
+              (),
+              (const, override));
   MOCK_METHOD(const std::u16string&, GetTooltipText, (), (const, override));
   MOCK_METHOD(const ui::ImageModel&, GetImage, (), (const, override));
   MOCK_METHOD(bool, GetActionActive, (), (const, override));
@@ -79,6 +83,11 @@ class MockPageActionModel : public PageActionModelInterface {
               SetAnchoredMessageCloseIcon,
               (base::PassKey<PageActionController>,
                const bool anchored_message_show_close_icon),
+              (override));
+  MOCK_METHOD(void,
+              SetAnchoredMessageIcon,
+              (base::PassKey<PageActionController>,
+               const std::optional<ui::ImageModel>& icon),
               (override));
   MOCK_METHOD(void,
               SetIsChipShowing,

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ANCHORED_MESSAGE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_ANCHORED_MESSAGE_VIEW_H_
 
+#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"
@@ -52,6 +53,8 @@ class AnchoredMessageBubbleView : public views::BubbleDialogDelegate,
   raw_ptr<views::Label> label_ = nullptr;
   raw_ptr<views::View> chip_container_ = nullptr;
   raw_ptr<views::ImageButton> close_button_ = nullptr;
+  raw_ptr<views::ImageView> icon_view_ = nullptr;
+  std::optional<ui::ImageModel> icon_ = std::nullopt;
   const std::u16string label_text_;
   const bool show_close_button_;
   base::RepeatingClosure chip_callback_;

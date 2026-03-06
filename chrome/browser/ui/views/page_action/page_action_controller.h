@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <optional>
 #include <ostream>
 #include <set>
 #include <string>
@@ -171,6 +172,9 @@ class PageActionController {
       const std::u16string& anchored_message_text) = 0;
   virtual void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
                                                   bool show) = 0;
+  virtual void SetAnchoredMessageIcon(actions::ActionId action_id,
+                                      const ui::ImageModel& icon) = 0;
+  virtual void ClearAnchoredMessageIcon(actions::ActionId action_id) = 0;
 
   // Adds a scope of activity for the given action. Returns a scoped object
   // that manages the activity counter. The action is considered active as
@@ -277,6 +281,9 @@ class PageActionControllerImpl : public PageActionController,
       const std::u16string& anchored_message_text) override;
   void ShouldShowAnchoredMessageCloseIcon(actions::ActionId action_id,
                                           bool show) override;
+  void SetAnchoredMessageIcon(actions::ActionId action_id,
+                              const ui::ImageModel& icon) override;
+  void ClearAnchoredMessageIcon(actions::ActionId action_id) override;
   ScopedPageActionActivity AddActivity(actions::ActionId action_id) override;
   void AddObserver(
       actions::ActionId action_id,

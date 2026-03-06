@@ -73,6 +73,9 @@ class PageActionModelInterface {
   virtual void SetAnchoredMessageCloseIcon(
       base::PassKey<PageActionController>,
       const bool anchored_message_show_close_icon) = 0;
+  virtual void SetAnchoredMessageIcon(
+      base::PassKey<PageActionController>,
+      const std::optional<ui::ImageModel>& icon) = 0;
   virtual void SetActionActive(base::PassKey<PageActionController>,
                                bool is_active) = 0;
   virtual void SetIsSuppressedByOmnibox(base::PassKey<PageActionController>,
@@ -99,6 +102,8 @@ class PageActionModelInterface {
   virtual const std::u16string& GetTooltipText() const = 0;
   virtual const std::u16string& GetAccessibleName() const = 0;
   virtual const std::u16string& GetAnchoredMessageText() const = 0;
+  virtual const std::optional<ui::ImageModel>& GetAnchoredMessageIcon()
+      const = 0;
   virtual bool GetAnchoredMessageCloseIcon() const = 0;
   virtual bool GetActionItemIsShowingBubble() const = 0;
   virtual bool GetActionActive() const = 0;
@@ -158,6 +163,10 @@ class PageActionModel : public PageActionModelInterface {
       base::PassKey<PageActionController>,
       const bool anchored_message_show_close_icon) override;
 
+  void SetAnchoredMessageIcon(
+      base::PassKey<PageActionController>,
+      const std::optional<ui::ImageModel>& icon) override;
+
   void SetActionActive(base::PassKey<PageActionController>,
                        bool is_active) override;
 
@@ -188,6 +197,7 @@ class PageActionModel : public PageActionModelInterface {
   const std::u16string& GetAccessibleName() const override;
   const std::u16string& GetAnchoredMessageText() const override;
   bool GetAnchoredMessageCloseIcon() const override;
+  const std::optional<ui::ImageModel>& GetAnchoredMessageIcon() const override;
   const std::u16string& GetTooltipText() const override;
   bool GetActionItemIsShowingBubble() const override;
   bool GetActionActive() const override;
@@ -217,7 +227,8 @@ class PageActionModel : public PageActionModelInterface {
     kAnchoredMessageText,
     kAnchoredMessageCloseIcon,
     kIsAnchoredMessageShowing,
-    kMaxValue = kIsAnchoredMessageShowing,
+    kAnchoredMessageIcon,
+    kMaxValue = kAnchoredMessageIcon,
   };
   using PropertySet =
       base::EnumSet<Property, Property::kShowRequested, Property::kMaxValue>;
@@ -285,6 +296,9 @@ class PageActionModel : public PageActionModelInterface {
   std::u16string anchored_message_text_;
   // Whether the anchored message should have a close icon.
   bool anchored_message_show_close_icon_ = false;
+  // Special anchored message icon. If set, the normal page action icon will not
+  // show on the anchored message.
+  std::optional<ui::ImageModel> anchored_message_icon_ = std::nullopt;
 
   // When set, it will always take precedence over `text_` because by default
   // `text_` will be used.

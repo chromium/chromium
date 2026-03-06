@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_action/anchored_message_view.h"
 
 #include <memory>
+#include <optional>
 #include <string>
 
 #include "base/functional/callback_forward.h"
@@ -38,12 +39,16 @@ class ChipContainerView : public views::View {
   METADATA_HEADER(ChipContainerView, views::View)
  public:
   ChipContainerView(const std::u16string& label_text,
-                    const ui::ImageModel& icon,
+                    const std::optional<ui::ImageModel>& icon,
                     base::RepeatingClosure callback)
       : icon_(icon), callback_(callback) {
-    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
-    label_ = AddChildView(std::make_unique<views::Label>(label_text));
-    label_->SetAutoColorReadabilityEnabled(false);
+    if (icon_) {
+      icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+    }
+    if (label_text.size() > 0) {
+      label_ = AddChildView(std::make_unique<views::Label>(label_text));
+      label_->SetAutoColorReadabilityEnabled(false);
+    }
 
     SetLayoutManager(
         std::make_unique<views::BoxLayout>(
@@ -64,15 +69,15 @@ class ChipContainerView : public views::View {
 
     SetBackground(views::CreateRoundedRectBackground(
         color_provider->GetColor(ui::kColorSysPrimary), 18));
-    if (icon_view_) {
+    if (icon_view_ && icon_) {
       // Assuming `icon_` is a vector icon, re-colorize it.
-      if (icon_.IsVectorIcon()) {
+      if (icon_->IsVectorIcon()) {
         ui::ImageModel colored_icon = ui::ImageModel::FromVectorIcon(
-            *icon_.GetVectorIcon().vector_icon(),
+            *icon_->GetVectorIcon().vector_icon(),
             color_provider->GetColor(ui::kColorSysOnPrimary), 20);
         icon_view_->SetImage(colored_icon);
       } else {
-        icon_view_->SetImage(icon_);
+        icon_view_->SetImage(icon_.value());
       }
       icon_view_->SetImageSize(gfx::Size(20, 20));
     }
@@ -94,7 +99,7 @@ class ChipContainerView : public views::View {
  private:
   raw_ptr<views::ImageView> icon_view_ = nullptr;
   raw_ptr<views::Label> label_ = nullptr;
-  ui::ImageModel icon_;
+  std::optional<ui::ImageModel> icon_;
   base::RepeatingClosure callback_;
 };
 
@@ -112,6 +117,7 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
                            views::BubbleBorder::Arrow::TOP_RIGHT,
                            views::BubbleBorder::DIALOG_SHADOW,
                            true),
+      icon_(model.GetAnchoredMessageIcon()),
       label_text_(model.GetAnchoredMessageText()),
       show_close_button_(model.GetAnchoredMessageCloseIcon()),
       chip_callback_(std::move(chip_callback)),
@@ -126,15 +132,32 @@ AnchoredMessageBubbleView::AnchoredMessageBubbleView(
   layout->SetMainAxisAlignment(views::LayoutAlignment::kStart);
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
+  if (icon_) {
+    icon_view_ = AddChildView(std::make_unique<views::ImageView>());
+    icon_view_->SetImage(icon_.value());
+    icon_view_->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 0, 12));
+    icon_view_->SetImageSize(gfx::Size(20, 20));
+  }
+
   label_ = AddChildView(std::make_unique<views::Label>(label_text_));
   label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label_->SetVerticalAlignment(gfx::ALIGN_MIDDLE);
   label_->SetMultiLine(false);
 
-  chip_container_ = AddChildView(std::make_unique<ChipContainerView>(
-      model.GetText(), model.GetImage(),
-      base::BindRepeating(&AnchoredMessageBubbleView::ChipCallback,
-                          base::Unretained(this))));
+  std::optional<ui::ImageModel> chip_icon;
+
+  if (icon_) {
+    chip_icon = std::nullopt;
+  } else {
+    chip_icon = model.GetImage();
+  }
+
+  if (chip_icon || model.GetText().size() > 0) {
+    chip_container_ = AddChildView(std::make_unique<ChipContainerView>(
+        model.GetText(), chip_icon,
+        base::BindRepeating(&AnchoredMessageBubbleView::ChipCallback,
+                            base::Unretained(this))));
+  }
 
   if (show_close_button_) {
     close_button_ =
