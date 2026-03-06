@@ -192,4 +192,22 @@ public class SearchBoxCoordinator {
         mMediator.getSearchBoxBounds(
                 bounds, translation, parentView, scrollDelegate, searchBoxBoundsVerticalInset);
     }
+
+    /**
+     * Called in onMeasure() to set the width of the search box. Note: we don't call
+     * setLayoutParams() to prevent a second pass of onMeasure().
+     *
+     * @param widthPx The width of the search box in pixels.
+     */
+    public void setLayoutWidth(int widthPx) {
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
+        if (marginLayoutParams.width != widthPx
+                || marginLayoutParams.leftMargin != 0
+                || marginLayoutParams.rightMargin != 0) {
+            marginLayoutParams.width = widthPx;
+            marginLayoutParams.leftMargin = 0;
+            marginLayoutParams.rightMargin = 0;
+        }
+    }
 }

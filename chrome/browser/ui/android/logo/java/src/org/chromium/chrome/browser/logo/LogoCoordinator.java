@@ -10,7 +10,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.view.View.MeasureSpec;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import androidx.annotation.ColorInt;
 import androidx.core.content.ContextCompat;
@@ -166,13 +166,22 @@ public class LogoCoordinator {
     }
 
     /**
-     * Convenience method to call measure() on the logo view with MeasureSpecs converted from the
-     * given dimensions (in pixels) with MeasureSpec.EXACTLY.
+     * Sets the width of the logo view in LayoutParams and clears its margins. This should be called
+     * before the parent view's measure pass to avoid double measurement.
+     *
+     * @param widthPx The expected width of the logo view.
      */
-    public void measureExactlyLogoView(int widthPx) {
-        mLogoView.measure(
-                MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(mLogoView.getMeasuredHeight(), MeasureSpec.EXACTLY));
+    public void setLayoutWidth(int widthPx) {
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mLogoView.getLayoutParams();
+        if (layoutParams.width == widthPx
+                && layoutParams.leftMargin == 0
+                && layoutParams.rightMargin == 0) {
+            return;
+        }
+
+        layoutParams.width = widthPx;
+        layoutParams.leftMargin = 0;
+        layoutParams.rightMargin = 0;
     }
 
     /** Jumps to the end of the logo view's cross-fading animation, if any.*/

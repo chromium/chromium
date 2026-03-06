@@ -737,12 +737,14 @@ public class NewTabPageLayout extends LinearLayout
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
         if (mIsTablet) {
-            calculateTabletMvtWidth(MeasureSpec.getSize(widthMeasureSpec));
+            calculateTabletMvtWidth(width);
         }
 
+        unifyElementWidths(width);
+
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        unifyElementWidths();
     }
 
     /** Updates the width of the MV tiles container when used in NTP on the tablet. */
@@ -1202,27 +1204,19 @@ public class NewTabPageLayout extends LinearLayout
     }
 
     /** Makes the Search Box and Logo as wide as Most Visited. */
-    private void unifyElementWidths() {
-        View searchBoxView = getSearchBoxView();
-        final int width = getMeasuredWidth();
+    private void unifyElementWidths(int width) {
         int searchBoxWidth = width - mSearchBoxTwoSideMargin;
-        measureExactly(searchBoxView, searchBoxWidth, searchBoxView.getMeasuredHeight());
+        if (mSearchBoxCoordinator != null) {
+            mSearchBoxCoordinator.setLayoutWidth(searchBoxWidth);
+        }
 
-        if (mLogoCoordinator != null) mLogoCoordinator.measureExactlyLogoView(width);
+        if (mLogoCoordinator != null) {
+            mLogoCoordinator.setLayoutWidth(width);
+        }
 
         if (mComposeplateCoordinator != null) {
-            mComposeplateCoordinator.measureExactlyComposeplateView(searchBoxWidth);
+            mComposeplateCoordinator.setLayoutWidth(searchBoxWidth);
         }
-    }
-
-    /**
-     * Convenience method to call measure() on the given View with MeasureSpecs converted from the
-     * given dimensions (in pixels) with MeasureSpec.EXACTLY.
-     */
-    private static void measureExactly(View view, int widthPx, int heightPx) {
-        view.measure(
-                MeasureSpec.makeMeasureSpec(widthPx, MeasureSpec.EXACTLY),
-                MeasureSpec.makeMeasureSpec(heightPx, MeasureSpec.EXACTLY));
     }
 
     LogoCoordinator getLogoCoordinatorForTesting() {

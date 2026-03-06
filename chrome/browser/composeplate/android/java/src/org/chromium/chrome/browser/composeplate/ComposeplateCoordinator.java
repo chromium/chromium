@@ -130,18 +130,26 @@ public class ComposeplateCoordinator {
     }
 
     /**
-     * Convenience method to call measure() on the composeplate view with MeasureSpecs converted
-     * from the given dimensions (in pixels) with MeasureSpec.EXACTLY.
+     * Sets the width of the composeplate view in LayoutParams and clears its margins. This should
+     * be called before the parent view's measure pass to avoid double measurement.
+     *
+     * @param searchBoxWidthPx The width of the fake search box.
      */
-    public void measureExactlyComposeplateView(int searchBoxWidthPx) {
+    public void setLayoutWidth(int searchBoxWidthPx) {
         // In landscape mode on tablets, the composeplate view has a maximum width of 680dp.
         // Otherwise, its width matches the fake search box.
         int composeplateViewWidth = Math.min(searchBoxWidthPx, mComposeplateViewMaxiumWidth);
+        ViewGroup.MarginLayoutParams layoutParams =
+                (ViewGroup.MarginLayoutParams) mView.getLayoutParams();
+        if (layoutParams.width == composeplateViewWidth
+                && layoutParams.leftMargin == 0
+                && layoutParams.rightMargin == 0) {
+            return;
+        }
 
-        mView.measure(
-                View.MeasureSpec.makeMeasureSpec(composeplateViewWidth, View.MeasureSpec.EXACTLY),
-                View.MeasureSpec.makeMeasureSpec(
-                        mView.getMeasuredHeight(), View.MeasureSpec.EXACTLY));
+        layoutParams.width = composeplateViewWidth;
+        layoutParams.leftMargin = 0;
+        layoutParams.rightMargin = 0;
     }
 
     /**
