@@ -2166,6 +2166,30 @@ public class AutofillPaymentMethodsFragmentTest {
         assertTrue(mAutofillTestRule.getLastestShownFragment() instanceof AutofillOptionsFragment);
     }
 
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testTitle_HoTDisabled_showsPaymentMethods() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillPaymentMethodsFragment fragment =
+                (AutofillPaymentMethodsFragment) activity.getMainFragment();
+        assertThat(fragment.getPageTitle().get())
+                .isEqualTo(activity.getString(R.string.autofill_payment_methods));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID})
+    public void testTitle_HoTEnabled_showsPayments() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillPaymentMethodsFragment fragment =
+                (AutofillPaymentMethodsFragment) activity.getMainFragment();
+        assertThat(fragment.getPageTitle().get())
+                .isEqualTo(activity.getString(R.string.autofill_payments_title));
+    }
+
     private void setUpBiometricAuthenticationResult(boolean success) {
         // We have to manually invoke the passed-in callback.
         doAnswer(

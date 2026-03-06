@@ -691,6 +691,12 @@
       Info from your Google Account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph> can help you fill forms faster in Chrome
     </message>
   </if>
+  <!-- Autofill Settings Pages -->
+  <!-- Common on all platforms -->
+  <message name="IDS_AUTOFILL_PAYMENTS_TITLE" desc="Title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
+    Payments
+  </message>
+
   <!-- Used on Desktop: -->
   <if expr="not is_android and not is_ios">
     <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
@@ -800,9 +806,6 @@
     </message>
     <message name="IDS_AUTOFILL_CONTACT_INFO_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved addresses and Autofill preferences for addresses. Sentence-Cased." formatter_data="android_java">
       Contact info
-    </message>
-    <message name="IDS_AUTOFILL_PAYMENTS_TITLE" desc="Title for the Autofill settings page that allows user to manage their list of saved payment methods and Autofill preferences for payment methods. Sentence-Cased." formatter_data="android_java">
-      Payments
     </message>
     <message name="IDS_AUTOFILL_IDENTITY_DOCS_TITLE" desc="Title for the Your saved info settings sub page that allows user to manage their list of saved identity documents. Sentence-Cased." formatter_data="android_java">
       Identity docs
