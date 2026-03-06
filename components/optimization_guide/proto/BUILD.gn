@@ -21,6 +21,7 @@ proto_library("optimization_guide_proto") {
     "features/actions_data.proto",
     "features/actor_login.proto",
     "features/amount_extraction.proto",
+    "features/annotation_reducer_one_p_resolver.proto",
     "features/bling_prototyping.proto",
     "features/classify_api.proto",
     "features/common_quality_data.proto",
