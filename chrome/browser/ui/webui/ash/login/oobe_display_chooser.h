@@ -5,10 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OOBE_DISPLAY_CHOOSER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_LOGIN_OOBE_DISPLAY_CHOOSER_H_
 
-#include "ash/display/cros_display_config.h"
-#include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 
@@ -20,8 +21,7 @@ namespace ash {
 
 class OobeDisplayChooser : public ui::InputDeviceEventObserver {
  public:
-  // `cros_display_config` must outlive the constructed object.
-  explicit OobeDisplayChooser(ash::CrosDisplayConfig* cros_display_config);
+  OobeDisplayChooser();
 
   OobeDisplayChooser(const OobeDisplayChooser&) = delete;
   OobeDisplayChooser& operator=(const OobeDisplayChooser&) = delete;
@@ -31,6 +31,13 @@ class OobeDisplayChooser : public ui::InputDeviceEventObserver {
   // Tries to put the OOBE UI on a connected touch display (if available).
   // Must be called on the BrowserThread::UI thread.
   void TryToPlaceUiOnTouchDisplay();
+
+  void set_cros_display_config_for_test(
+      mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+          cros_display_config) {
+    cros_display_config_.reset();
+    cros_display_config_.Bind(std::move(cros_display_config));
+  }
 
  private:
   // Calls MoveToTouchDisplay() if touch device list is ready, otherwise adds an
@@ -46,7 +53,8 @@ class OobeDisplayChooser : public ui::InputDeviceEventObserver {
 
   base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
       scoped_observation_{this};
-  const raw_ref<ash::CrosDisplayConfig> cros_display_config_;
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
 
   base::WeakPtrFactory<OobeDisplayChooser> weak_ptr_factory_{this};
 };

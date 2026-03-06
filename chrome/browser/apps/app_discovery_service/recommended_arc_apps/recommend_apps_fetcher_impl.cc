@@ -9,10 +9,7 @@
 #include <string_view>
 #include <utility>
 
-#include "ash/display/cros_display_config.h"
-#include "ash/shell.h"
 #include "base/base64url.h"
-#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -255,27 +252,16 @@ RecommendAppsFetcherImpl::ScopedGpuInfoForTest::~ScopedGpuInfoForTest() {
 
 RecommendAppsFetcherImpl::RecommendAppsFetcherImpl(
     RecommendAppsFetcherDelegate* delegate,
-    ash::CrosDisplayConfig* cros_display_config,
+    mojo::PendingRemote<crosapi::mojom::CrosDisplayConfigController>
+        display_config,
     network::mojom::URLLoaderFactory* url_loader_factory)
     : delegate_(delegate),
       url_loader_factory_(url_loader_factory),
       arc_features_getter_(
           base::BindRepeating(&arc::ArcFeaturesParser::GetArcFeatures)),
-      cros_display_config_(cros_display_config) {
-  CHECK(cros_display_config_);
-  if (ash::Shell::HasInstance()) {
-    shell_observation_.Observe(ash::Shell::Get());
-  } else {
-    CHECK_IS_TEST();
-  }
-}
+      cros_display_config_(std::move(display_config)) {}
 
 RecommendAppsFetcherImpl::~RecommendAppsFetcherImpl() = default;
-
-void RecommendAppsFetcherImpl::OnShellDestroying() {
-  shell_observation_.Reset();
-  cros_display_config_ = nullptr;
-}
 
 void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
   if (!HasTouchScreen()) {
@@ -324,12 +310,10 @@ void RecommendAppsFetcherImpl::PopulateDeviceConfig() {
 }
 
 void RecommendAppsFetcherImpl::StartAshRequest() {
-  if (cros_display_config_) {
-    cros_display_config_->GetDisplayUnitInfoList(
-        false /* single_unified */,
-        base::BindOnce(&RecommendAppsFetcherImpl::OnAshResponse,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
+  cros_display_config_->GetDisplayUnitInfoList(
+      false /* single_unified */,
+      base::BindOnce(&RecommendAppsFetcherImpl::OnAshResponse,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void RecommendAppsFetcherImpl::MaybeStartCompressAndEncodeProtoMessage() {

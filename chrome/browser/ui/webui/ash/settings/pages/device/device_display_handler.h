@@ -5,16 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_DISPLAY_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_SETTINGS_PAGES_DEVICE_DEVICE_DISPLAY_HANDLER_H_
 
-#include "base/memory/raw_ref.h"
+#include "chromeos/crosapi/mojom/cros_display_config.mojom.h"
 #include "content/public/browser/web_ui_message_handler.h"
-
-namespace ash {
-class CrosDisplayConfig;
-}  // namespace ash
-
-namespace base {
-class ListValue;
-}  // namespace base
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash::settings {
 
@@ -35,7 +28,8 @@ class DisplayHandler : public content::WebUIMessageHandler {
   void HandleHighlightDisplay(const base::ListValue& args);
   void HandleDragDisplayDelta(const base::ListValue& args);
 
-  const raw_ref<CrosDisplayConfig> cros_display_config_;
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController>
+      cros_display_config_;
 };
 
 }  // namespace ash::settings

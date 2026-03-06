@@ -608,8 +608,7 @@ void OobeUI::ConfigureOobeDisplay() {
   }
 
   if (policy::EnrollmentRequisitionManager::IsMeetDevice()) {
-    oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>(
-        ash::Shell::Get()->cros_display_config());
+    oobe_display_chooser_ = std::make_unique<OobeDisplayChooser>();
   }
 }
 

@@ -8,8 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/display/cros_display_config.h"
-#include "ash/shell.h"
 #include "base/functional/bind.h"
 #include "base/values.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
@@ -192,7 +190,7 @@ void DisplayResolutionHandler::OnSettingUpdate() {
 // Applies settings received with |OnSettingUpdate| to each supported display
 // from |info_list| if |policy_enabled_| is true.
 void DisplayResolutionHandler::ApplyChanges(
-    ash::CrosDisplayConfig& cros_display_config,
+    crosapi::mojom::CrosDisplayConfigController* cros_display_config,
     const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   if (!policy_enabled_)
     return;
@@ -219,7 +217,7 @@ void DisplayResolutionHandler::ApplyChanges(
       continue;
 
     resized_display_ids_.insert(display_id);
-    cros_display_config.SetDisplayProperties(
+    cros_display_config->SetDisplayProperties(
         display_unit_info->id, std::move(new_config),
         crosapi::mojom::DisplayConfigSource::kPolicy,
         base::BindOnce([](crosapi::mojom::DisplayConfigResult result) {

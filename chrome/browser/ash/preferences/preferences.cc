@@ -15,7 +15,7 @@
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/geolocation_access_level.h"
-#include "ash/display/cros_display_config.h"
+#include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/lobster/lobster_enums.h"
@@ -125,7 +125,10 @@ Preferences::Preferences(input_method::InputMethodManager* input_method_manager)
     : prefs_(nullptr),
       input_method_manager_(input_method_manager),
       user_(nullptr),
-      user_is_primary_(false) {}
+      user_is_primary_(false) {
+  BindCrosDisplayConfigController(
+      cros_display_config_.BindNewPipeAndPassReceiver());
+}
 
 Preferences::~Preferences() {
   prefs_->RemoveObserver(this);
@@ -964,8 +967,8 @@ void Preferences::ApplyPreferences(ApplyReason reason,
       pref_name == ::prefs::kUnifiedDesktopEnabledByDefault) {
     // "Unified Desktop" is a per-user policy setting which will not be applied
     // until a user logs in.
-    if (ash::Shell::HasInstance()) {
-      ash::Shell::Get()->cros_display_config()->SetUnifiedDesktopEnabled(
+    if (cros_display_config_) {  // May be null in tests.
+      cros_display_config_->SetUnifiedDesktopEnabled(
           unified_desktop_enabled_by_default_.GetValue());
     }
   }

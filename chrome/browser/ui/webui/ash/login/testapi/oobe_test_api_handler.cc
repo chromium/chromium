@@ -8,11 +8,10 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
-#include "ash/display/cros_display_config.h"
+#include "ash/public/ash_interfaces.h"
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
-#include "ash/shell.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -221,7 +220,11 @@ void OobeTestAPIHandler::ShowGaiaDialog() {
 
 void OobeTestAPIHandler::HandleGetPrimaryDisplayName(
     const std::string& callback_id) {
-  ash::Shell::Get()->cros_display_config()->GetDisplayUnitInfoList(
+  mojo::Remote<crosapi::mojom::CrosDisplayConfigController> cros_display_config;
+  BindCrosDisplayConfigController(
+      cros_display_config.BindNewPipeAndPassReceiver());
+
+  cros_display_config->GetDisplayUnitInfoList(
       false /* single_unified */,
       base::BindOnce(&OobeTestAPIHandler::OnGetDisplayUnitInfoList,
                      base::Unretained(this), callback_id));

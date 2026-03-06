@@ -6,8 +6,6 @@
 
 #include <utility>
 
-#include "ash/display/cros_display_config.h"
-#include "ash/shell.h"
 #include "base/functional/callback_helpers.h"
 
 namespace policy {
@@ -92,7 +90,7 @@ void DisplayRotationDefaultHandler::OnSettingUpdate() {
 }
 
 void DisplayRotationDefaultHandler::ApplyChanges(
-    ash::CrosDisplayConfig& cros_display_config,
+    crosapi::mojom::CrosDisplayConfigController* cros_display_config,
     const std::vector<crosapi::mojom::DisplayUnitInfoPtr>& info_list) {
   if (!policy_enabled_)
     return;
@@ -114,7 +112,7 @@ void DisplayRotationDefaultHandler::ApplyChanges(
     auto config_properties = crosapi::mojom::DisplayConfigProperties::New();
     config_properties->rotation = crosapi::mojom::DisplayRotation::New(
         RotationOptionsFromDisplayRotation(display_rotation_default_));
-    cros_display_config.SetDisplayProperties(
+    cros_display_config->SetDisplayProperties(
         display_unit_info->id, std::move(config_properties),
         crosapi::mojom::DisplayConfigSource::kPolicy, base::DoNothing());
   }

@@ -1,10 +1,7 @@
 specific_include_rules = {
-  "display_info_provider_chromeos*": [
+  "display_info_provider_chromeos_unittest\.cc": [
     "+ash/display",
     "+ash/shell.h",
-    "+ash/shell_observer.h",
-  ],
-  "display_info_provider_chromeos_unittest\\.cc": [
     "+ash/test",
     "+ash/wm/tablet_mode/tablet_mode_controller.h",
   ],

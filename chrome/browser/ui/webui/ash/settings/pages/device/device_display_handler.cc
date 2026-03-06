@@ -4,9 +4,7 @@
 
 #include "chrome/browser/ui/webui/ash/settings/pages/device/device_display_handler.h"
 
-#include "ash/display/cros_display_config.h"
-#include "ash/shell.h"
-#include "base/check_deref.h"
+#include "ash/public/ash_interfaces.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
@@ -15,8 +13,10 @@
 
 namespace ash::settings {
 
-DisplayHandler::DisplayHandler()
-    : cros_display_config_(CHECK_DEREF(Shell::Get()->cros_display_config())) {}
+DisplayHandler::DisplayHandler() {
+  BindCrosDisplayConfigController(
+      cros_display_config_.BindNewPipeAndPassReceiver());
+}
 
 DisplayHandler::~DisplayHandler() {
   cros_display_config_->HighlightDisplay(display::kInvalidDisplayId);

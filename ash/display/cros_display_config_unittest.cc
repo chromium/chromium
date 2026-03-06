@@ -233,16 +233,22 @@ class CrosDisplayConfigTest : public AshTestBase {
                 .empty();
   }
 
-  CrosDisplayConfigImpl* cros_display_config() { return cros_display_config_; }
+  CrosDisplayConfig* cros_display_config() { return cros_display_config_; }
 
  private:
-  raw_ptr<CrosDisplayConfigImpl> cros_display_config_ = nullptr;
+  raw_ptr<CrosDisplayConfig> cros_display_config_ = nullptr;
+
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
   TestObserver observer;
-  cros_display_config()->AddObserver(&observer);
+  mojo::AssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+      observer_remote;
+  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver> receiver(
+      &observer, observer_remote.BindNewEndpointAndPassDedicatedReceiver());
+  cros_display_config()->AddObserver(observer_remote.Unbind());
+  base::RunLoop().RunUntilIdle();
 
   // Adding one display should trigger one notification.
   UpdateDisplay("500x400");
@@ -254,8 +260,6 @@ TEST_F(CrosDisplayConfigTest, OnDisplayConfigChanged) {
   UpdateDisplay("500x400,500x400");
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, observer.display_changes());
-
-  cros_display_config()->RemoveObserver(&observer);
 }
 
 TEST_F(CrosDisplayConfigTest, GetDisplayLayoutInfo) {
@@ -889,7 +893,12 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotationInternalOnly) {
 
 TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   TestObserver observer;
-  cros_display_config()->AddObserver(&observer);
+  mojo::AssociatedRemote<crosapi::mojom::CrosDisplayConfigObserver>
+      observer_remote;
+  mojo::AssociatedReceiver<crosapi::mojom::CrosDisplayConfigObserver> receiver(
+      &observer, observer_remote.BindNewEndpointAndPassDedicatedReceiver());
+  cros_display_config()->AddObserver(observer_remote.Unbind());
+  base::RunLoop().RunUntilIdle();
 
   display::test::DisplayManagerTestApi(display_manager())
       .SetFirstDisplayAsInternalDisplay();
@@ -969,8 +978,6 @@ TEST_F(CrosDisplayConfigTest, TabletModeAutoRotation) {
   EXPECT_FALSE(screen_orientation_controller_test_api.IsAutoRotationAllowed());
   EXPECT_FALSE(display::Screen::Get()->InTabletMode());
   EXPECT_EQ(display::Display::ROTATE_0, display.rotation());
-
-  cros_display_config()->RemoveObserver(&observer);
 }
 
 TEST_F(CrosDisplayConfigTest, HighlightDisplayValid) {
