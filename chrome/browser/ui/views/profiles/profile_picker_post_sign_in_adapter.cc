@@ -186,8 +186,12 @@ void ProfilePickerPostSignInAdapter::ShowHistorySyncOptinScreen(
 
 void ProfilePickerPostSignInAdapter::ShowAccountManagementScreen(
     signin::SigninChoiceCallback on_account_management_screen_closed) {
+  ManagedUserProfileNoticeUI::ScreenType screen_type =
+      signin_access_point_ == signin_metrics::AccessPoint::kForYouFre
+          ? ManagedUserProfileNoticeUI::ScreenType::kFirstRun
+          : ManagedUserProfileNoticeUI::ScreenType::kProfilePicker;
   SwitchToManagedUserProfileNotice(
-      ManagedUserProfileNoticeUI::ScreenType::kProfilePicker,
+      screen_type,
       base::BindOnce(&OnManagementUserChoice,
                      std::move(on_account_management_screen_closed)));
 }

@@ -135,6 +135,7 @@ ManagedUserProfileNoticeHandler::ManagedUserProfileNoticeHandler(
       browser_ ||
       (type_ !=
            ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation ||
+       // TODO(crbug.com/490053225): Clean this "||" up
        type_ == ManagedUserProfileNoticeUI::ScreenType::kProfilePicker));
   if (browser_) {
     browser_did_close_subscription_ = browser_->RegisterBrowserDidClose(
@@ -445,6 +446,8 @@ base::DictValue ManagedUserProfileNoticeHandler::GetProfileInfoValue() {
                        ? IDS_ENTERPRISE_PROFILE_WELCOME_CREATE_PROFILE_BUTTON
                        : IDS_APP_CONTINUE));
       break;
+    case ManagedUserProfileNoticeUI::ScreenType::kFirstRun:
+      // TODO(crbug.com/483637730): Specify the exact UI for the First Run case
     case ManagedUserProfileNoticeUI::ScreenType::kProfilePicker:
     case ManagedUserProfileNoticeUI::ScreenType::kEnterpriseAccountCreation:
       title = l10n_util::GetStringUTF8(
