@@ -87,8 +87,6 @@ const char* kAnswerSunriseIconResourceName =
     "//resources/cr_components/searchbox/icons/sunrise.svg";
 const char* kAnswerTranslationIconResourceName =
     "//resources/cr_components/searchbox/icons/translation.svg";
-const char* kAnswerWhenIsIconResourceName =
-    "//resources/cr_components/searchbox/icons/when_is.svg";
 const char* kBookmarkIconResourceName = "//resources/images/icon_bookmark.svg";
 const char* kCalculatorIconResourceName =
     "//resources/cr_components/searchbox/icons/calculator.svg";
@@ -188,8 +186,6 @@ static void DefineChromeRefreshRealboxIcons() {
       "//resources/cr_components/searchbox/icons/sunrise_cr23.svg";
   kAnswerTranslationIconResourceName =
       "//resources/cr_components/searchbox/icons/translation_cr23.svg";
-  kAnswerWhenIsIconResourceName =
-      "//resources/cr_components/searchbox/icons/when_is_cr23.svg";
   kBookmarkIconResourceName =
       "//resources/cr_components/searchbox/icons/bookmark_cr23.svg";
   kCalculatorIconResourceName =

@@ -64,8 +64,6 @@ generate_grd("build_grdp") {
     "translation.svg",
     "trending_up_cr23.svg",
     "trending_up.svg",
-    "when_is_cr23.svg",
-    "when_is.svg",
     "win_share_cr23.svg",
     "win_share.svg",
   ]
