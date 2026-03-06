@@ -85,6 +85,9 @@ const char kEnableRGBA4444Textures[] = "enable-rgba-4444-textures";
 const char kEnableRasterSideDarkModeForImages[] =
     "enable-raster-side-dark-mode-for-images";
 
+// Enables WebGL rendering into a scanout buffer for overlay support.
+const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
+
 // Enable rasterizer that writes directly to GPU memory associated with tiles.
 const char kEnableZeroCopy[] = "enable-zero-copy";
 

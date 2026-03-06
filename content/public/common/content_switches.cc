@@ -428,9 +428,6 @@ const char kEnableWebGLDeveloperExtensions[] =
 // Enables WebGL extensions not yet approved by the community.
 const char kEnableWebGLDraftExtensions[] = "enable-webgl-draft-extensions";
 
-// Enables WebGL rendering into a scanout buffer for overlay support.
-const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
-
 // Define an alias root directory which is replaced with the replacement string
 // in file URLs. The format is "/alias=/replacement", which would turn
 // file:///alias/some/path.html into file:///replacement/some/path.html.

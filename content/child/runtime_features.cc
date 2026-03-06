@@ -80,7 +80,7 @@ void SetRuntimeFeatureDefaultsForPlatform(
       blink::switches::kEnableGpuMemoryBufferCompositorResources);
 #else
   const bool enable_web_gl_image_chromium =
-      command_line.HasSwitch(switches::kEnableWebGLImageChromium);
+      command_line.HasSwitch(blink::switches::kEnableWebGLImageChromium);
 #endif
   WebRuntimeFeatures::EnableWebGLImageChromium(enable_web_gl_image_chromium);
 

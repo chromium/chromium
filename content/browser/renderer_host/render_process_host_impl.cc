@@ -3729,7 +3729,6 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kEnableVtune,
       switches::kEnableWebGLDeveloperExtensions,
       switches::kEnableWebGLDraftExtensions,
-      switches::kEnableWebGLImageChromium,
       switches::kEnableWebGPUDeveloperFeatures,
       switches::kFileUrlPathAlias,
       switches::kForceDeviceScaleFactor,
@@ -3788,6 +3787,7 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       blink::switches::kEnablePreferCompositingToLCDText,
       blink::switches::kEnableRGBA4444Textures,
       blink::switches::kEnableRasterSideDarkModeForImages,
+      blink::switches::kEnableWebGLImageChromium,
       blink::switches::kForceGpuMemAvailableMb,
       blink::switches::
           kGpuMemoryBufferReadbackFromTextureForceDisabledForDebugging,
