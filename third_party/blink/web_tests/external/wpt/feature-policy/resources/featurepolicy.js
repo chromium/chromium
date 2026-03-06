@@ -7,10 +7,9 @@ function assert_feature_policy_supported() {
 // as expected.
 // Arguments:
 //    feature_description: a short string describing what feature is being
-//        tested. Examples: "usb.GetDevices()", "PaymentRequest()".
+//        tested. Examples: "usb.GetDevices()".
 //    test: test created by testharness. Examples: async_test, promise_test.
 //    src: URL where a feature's availability is checked. Examples:
-//        "/feature-policy/resources/feature-policy-payment.html",
 //        "/feature-policy/resources/feature-policy-usb.html".
 //    expect_feature_available: a callback(data, feature_description) to
 //        verify if a feature is available or unavailable as expected.
