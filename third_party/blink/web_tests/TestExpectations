@@ -1281,6 +1281,9 @@ crbug.com/393395931 external/wpt/css/css-shadow/slotted-has-004.html [ Failure ]
 # css-will-change
 crbug.com/403372462 external/wpt/css/css-will-change/will-change-stacking-context-z-index-4.html [ Failure ]
 
+# Incorrect scroll-padding-* zoom
+crbug.com/490355858 external/wpt/css/css-viewport/zoom/scroll-padding.html [ Failure ]
+
 # URL modifiers
 # https://drafts.csswg.org/css-values-5/#request-url-modifiers
 crbug.com/435625756 external/wpt/css/css-values/urls/cross-origin/url-image-cross-origin-anonymous.sub.html [ Failure ]
@@ -2875,7 +2878,6 @@ crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/extern
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-optgroup-no-shadow-tree.html [ Failure ]
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-after-select.html [ Failure ]
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree.html [ Failure ]
-crbug.com/489022940 external/wpt/css/css-viewport/zoom/scroll-padding.html [ Failure ]
 crbug.com/489043704 [ Linux ] external/wpt/wasm/core/gc/array_init_elem.wast.js.html [ Crash ]
 crbug.com/488651384 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
 crbug.com/488651384 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
