@@ -1130,8 +1130,9 @@ TEST_F(HomeBackgroundCustomizationServiceTest, DelegateCacheAndRestoreTheme) {
 
   observer_.on_background_changed_called = false;
 
-  // Simulate stopping sync (which triggers a restore)
+  // Simulate stopping sync AND clearing data, which triggers a restore.
   theme_sync_service()->StopSyncing(syncer::THEMES_IOS);
+  theme_sync_service()->StayStoppedAndMaybeClearData(syncer::THEMES_IOS);
 
   // Expect a revert back to initial theme.
   EXPECT_TRUE(observer_.on_background_changed_called);

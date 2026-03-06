@@ -90,7 +90,7 @@ void ThemeSyncableServiceIOS::StopSyncing(syncer::DataType type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(type, syncer::THEMES_IOS);
 
-  StopSyncingAndRevertToLocalTheme();
+  sync_processor_.reset();
 }
 
 void ThemeSyncableServiceIOS::OnBrowserShutdown(syncer::DataType type) {
@@ -105,8 +105,13 @@ void ThemeSyncableServiceIOS::StayStoppedAndMaybeClearData(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK_EQ(type, syncer::THEMES_IOS);
 
+  sync_processor_.reset();
+
   // For this service, "clearing data" means reverting to the pre-sync theme.
-  StopSyncingAndRevertToLocalTheme();
+  delegate_->RestoreCachedTheme();
+
+  base::UmaHistogramEnumeration(kThemeSyncStopAction,
+                                IOSThemeSyncStopAction::kRestoredLocalTheme);
 }
 
 std::optional<ModelError> ThemeSyncableServiceIOS::ProcessSyncChanges(
@@ -208,19 +213,6 @@ std::optional<ModelError> ThemeSyncableServiceIOS::ValidateAndApplyRemoteTheme(
   delegate_->ApplyTheme(remote_theme);
 
   return std::nullopt;
-}
-
-void ThemeSyncableServiceIOS::StopSyncingAndRevertToLocalTheme() {
-  if (!sync_processor_) {
-    return;
-  }
-
-  sync_processor_.reset();
-
-  delegate_->RestoreCachedTheme();
-
-  base::UmaHistogramEnumeration(kThemeSyncStopAction,
-                                IOSThemeSyncStopAction::kRestoredLocalTheme);
 }
 
 base::WeakPtr<syncer::SyncableService> ThemeSyncableServiceIOS::AsWeakPtr() {

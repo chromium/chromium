@@ -87,9 +87,6 @@ class ThemeSyncableServiceIOS : public syncer::SyncableService {
   std::optional<syncer::ModelError> ValidateAndApplyRemoteTheme(
       const syncer::SyncData& sync_data);
 
-  // Stops sync and restores the user's pre-sync theme.
-  void StopSyncingAndRevertToLocalTheme();
-
   // Delegate to interact with the local device.
   raw_ptr<Delegate> delegate_ = nullptr;
 

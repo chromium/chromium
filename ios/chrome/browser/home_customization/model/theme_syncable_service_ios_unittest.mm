@@ -483,15 +483,22 @@ TEST_F(ThemeSyncableServiceIOSTest, OnThemeChangedSendsUpdate) {
 
 #pragma mark - Stop / Clear Data Tests
 
-// Verifies the cached theme is restored when syncing is explicitly stopped.
-TEST_F(ThemeSyncableServiceIOSTest, StopSyncingRestoresCachedTheme) {
+// Verifies that merely stopping sync drops the processor but does NOT restore
+// the cached theme.
+TEST_F(ThemeSyncableServiceIOSTest,
+       StopSyncingDropsProcessorButDoesNotRestoreTheme) {
   StartSyncing();
-  EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(1);
+
+  // The theme should NOT be restored on a simple toggle off.
+  EXPECT_CALL(delegate_, RestoreCachedTheme()).Times(0);
 
   service_->StopSyncing(syncer::THEMES_IOS);
 
-  histogram_tester_.ExpectUniqueSample(
-      kThemeSyncStopAction, IOSThemeSyncStopAction::kRestoredLocalTheme, 1);
+  // Sync processor should be dropped.
+  EXPECT_FALSE(service_->IsSyncing());
+
+  // Do NOT log a stop action metric for just toggling sync off.
+  histogram_tester_.ExpectTotalCount(kThemeSyncStopAction, 0);
 }
 
 // Checks that the IsSyncing state accurately reflects the service's current
