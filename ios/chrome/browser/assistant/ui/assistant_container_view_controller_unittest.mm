@@ -7,6 +7,7 @@
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_detent_utils.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
@@ -45,7 +46,9 @@ class AssistantContainerViewControllerTest : public PlatformTest {
         [[AssistantContainerViewController alloc] initWithViewController:child];
 
     // Setup view hierarchy with fixed bounds.
-    window_ = [[UIWindow alloc] initWithFrame:CGRectMake(0, 0, 320, 580)];
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+    window_.frame = CGRectMake(0, 0, 320, 580);
     window_.backgroundColor = [UIColor whiteColor];
     [window_ makeKeyAndVisible];  // Ensure it behaves like a real window
     [window_ addSubview:view_controller_.view];
