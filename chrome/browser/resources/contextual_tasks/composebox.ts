@@ -25,7 +25,17 @@ import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
 import {VoiceSearchState} from './constants.js';
+import {IconType} from './contextual_tasks.mojom-webui.js';
 import type {ContextualTasksOnboardingTooltipElement} from './onboarding_tooltip.js';
+
+const ICON_TYPE_TO_NAME: {[id: number]: string} = {
+  [IconType.kUnspecified]: 'unspecified',
+  [IconType.kAdd]: 'add',
+  [IconType.kFormatQuoteFilled]: 'quoteFilled',
+  [IconType.kImage]: 'image',
+  [IconType.kDrivePdf]: 'drivePdf',
+  [IconType.kCheck]: 'check',
+};
 
 function recordVoiceSearchAction(voiceSearchState: VoiceSearchState) {
   // Safety return statement in rare case chrome metrics is not available.
@@ -429,6 +439,13 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
 
   injectInput(title: string, thumbnail: string, fileToken: UnguessableToken) {
     this.$.composebox.injectInput(title, thumbnail, fileToken);
+  }
+
+  injectInputWithIcon(
+      title: string, iconId: IconType, fileToken: UnguessableToken) {
+    this.$.composebox.injectInput(
+        title, '', fileToken,
+        ICON_TYPE_TO_NAME[iconId as number] ?? 'unspecified');
   }
 
   deleteFile(fileToken: UnguessableToken) {

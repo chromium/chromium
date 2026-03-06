@@ -100,6 +100,12 @@ class MockContextualTasksPage : public contextual_tasks::mojom::Page {
                const base::UnguessableToken& file_token),
               (override));
   MOCK_METHOD(void,
+              InjectInputWithIcon,
+              (const std::string& title,
+               contextual_tasks::mojom::IconType icon_id,
+               const base::UnguessableToken& file_token),
+              (override));
+  MOCK_METHOD(void,
               RemoveInjectedInput,
               (const base::UnguessableToken& file_token),
               (override));
