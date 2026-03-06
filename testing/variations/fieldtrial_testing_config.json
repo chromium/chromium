@@ -38,6 +38,27 @@
             ]
         }
     ],
+    "AIMEligibilityImprovements": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AimEligibilityServiceIdentityImprovements",
+                        "AimUrlNavigationFetchEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "AIMHintText": [
         {
             "platforms": [
