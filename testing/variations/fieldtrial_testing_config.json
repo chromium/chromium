@@ -19750,6 +19750,30 @@
             ]
         }
     ],
+    "PrivateAI": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "api-key": "xxxxxxxxxxxxxxxxxxxxxx",
+                        "url": "example.com/ws/mdi.privatearatea.PrivateArateaService.StartNoiseSession"
+                    },
+                    "enable_features": [
+                        "PrivateAi",
+                        "PrivateAiUseTokenAttestation",
+                        "ZeroStateSuggestionsUsePrivateAi"
+                    ]
+                }
+            ]
+        }
+    ],
     "PrivateAggregationApiErrorReporting": [
         {
             "platforms": [
