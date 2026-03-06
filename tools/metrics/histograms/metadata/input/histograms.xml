@@ -2218,13 +2218,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TextInputClient.CharacterIndex" units="ms"
-    expires_after="M147">
+    expires_after="2026-08-16">
   <owner>joenotcharles@google.com</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
     Recorded per call from a browser process thread to query
-    GetCharacterIndexAtPoint on a renderer process. The call is effectively
-    synchronous, blocking all other tasks from running on the browser thread.
+    GetCharacterIndexAtPoint on a renderer process, with the duration of the
+    query. The call is effectively synchronous, blocking all other tasks from
+    running on the browser thread for that duration.
 
     Only recorded on macOS.
 
@@ -2239,13 +2240,44 @@ chromium-metrics-reviews@google.com.
   <owner>input-dev@chromium.org</owner>
   <summary>
     Recorded per call from a browser process thread to query
-    GetFirstRectForRange on a renderer process. The call is effectively
-    synchronous, blocking all other tasks from running on the browser thread.
+    GetFirstRectForRange on a renderer process, with the duration of the query.
+    The call is effectively synchronous, blocking all other tasks from running
+    on the browser thread for that duration.
 
     Only recorded on macOS.
 
     Warning: this histogram was missing its entry until 2024-01 and expired from
     2025-02-23 to 2026-02-09; data may be missing.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.InSyncRequest.CharacterIndex" enum="Boolean"
+    expires_after="2026-08-16">
+  <owner>joenotcharles@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetCharacterIndexAtPoint on a renderer process, with True if the thread is
+    already inside a call to GetCharacterIndexAtPoint or GetFirstRectForRange,
+    False otherwise. The call is intended to be synchronous, but nested event
+    loops can cause it to re-enter. This counts how often that happens.
+
+    Only recorded on macOS.
+  </summary>
+</histogram>
+
+<histogram name="TextInputClient.InSyncRequest.FirstRect" enum="Boolean"
+    expires_after="2026-08-16">
+  <owner>joenotcharles@google.com</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Recorded per call from a browser process thread to query
+    GetFirstRectForRange on a renderer process, with True if the thread is
+    already inside a call to GetCharacterIndexAtPoint or GetFirstRectForRange,
+    False otherwise. The call is intended to be synchronous, but nested event
+    loops can cause it to re-enter. This counts how often that happens.
+
+    Only recorded on macOS.
   </summary>
 </histogram>
 

@@ -7,9 +7,11 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/message_loop/message_pump_apple.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -130,13 +132,19 @@ uint32_t TextInputClientMac::GetCharacterIndexAtPoint(
     return 0;
   }
 
+  base::UmaHistogramBoolean("TextInputClient.InSyncRequest.CharacterIndex",
+                            in_sync_request_);
+  if (in_sync_request_) {
+    return 0;
+  }
+
   base::TimeTicks start = base::TimeTicks::Now();
   base::TimeDelta wait_timeout = features::kTextInputClientIPCTimeout.Get();
 
   BeforeRequest();
   async_request_delegate_->GetCharacterIndexAtPoint(
       rfhi.get(), current_request_.value(), point);
-  if (features::kTextInputClientUseNestedLoop.Get()) {
+  if (base::FeatureList::IsEnabled(features::kTextInputClientUseNestedLoop)) {
     EnterNestedLoop(wait_timeout);
     // IMPORTANT: After this point the nested loop may have invalidated any
     // pointers and references passed in from the caller (notably `rfhi`).
@@ -174,13 +182,19 @@ gfx::Rect TextInputClientMac::GetFirstRectForRange(
     return gfx::Rect();
   }
 
+  base::UmaHistogramBoolean("TextInputClient.InSyncRequest.FirstRect",
+                            in_sync_request_);
+  if (in_sync_request_) {
+    return gfx::Rect();
+  }
+
   base::TimeTicks start = base::TimeTicks::Now();
   base::TimeDelta wait_timeout = features::kTextInputClientIPCTimeout.Get();
 
   BeforeRequest();
   async_request_delegate_->GetFirstRectForRange(
       rfhi.get(), current_request_.value(), range);
-  if (features::kTextInputClientUseNestedLoop.Get()) {
+  if (base::FeatureList::IsEnabled(features::kTextInputClientUseNestedLoop)) {
     EnterNestedLoop(wait_timeout);
     // IMPORTANT: After this point the nested loop may have invalidated any
     // pointers and references passed in from the caller (notably `rfhi`).
@@ -223,7 +237,7 @@ void TextInputClientMac::SetCharacterIndexAndSignal(
       return;
     }
     character_index_ = index;
-    if (features::kTextInputClientUseNestedLoop.Get()) {
+    if (base::FeatureList::IsEnabled(features::kTextInputClientUseNestedLoop)) {
       CHECK(nested_loop_);
       nested_loop_->Quit();
       return;
@@ -243,7 +257,7 @@ void TextInputClientMac::SetFirstRectAndSignal(
       return;
     }
     first_rect_ = first_rect;
-    if (features::kTextInputClientUseNestedLoop.Get()) {
+    if (base::FeatureList::IsEnabled(features::kTextInputClientUseNestedLoop)) {
       CHECK(nested_loop_);
       nested_loop_->Quit();
       return;
@@ -302,7 +316,7 @@ void TextInputClientMac::BeforeRequest() {
   first_rect_.reset();
 
   CHECK(!nested_loop_);
-  if (features::kTextInputClientUseNestedLoop.Get()) {
+  if (base::FeatureList::IsEnabled(features::kTextInputClientUseNestedLoop)) {
     nested_loop_.emplace(base::RunLoop::Type::kNestableTasksAllowed);
   }
 }
@@ -335,10 +349,12 @@ void TextInputClientMac::EnterNestedLoop(base::TimeDelta timeout) {
     nested_loop_timer.Start(FROM_HERE, timeout, this,
                             &TextInputClientMac::OnNestedLoopTimeout);
 
-    // Don't pump UI events in the nested loop, to prevent re-entering from
-    // queued AppKit NSTextInputContext events.
-    base::ScopedRestrictNSEventMask event_mask(
-        base::PassKey<TextInputClientMac>{});
+    std::optional<base::ScopedRestrictNSEventMask> event_mask;
+    if (features::kTextInputClientNestedLoopEventMask.Get()) {
+      // Don't pump UI events in the nested loop, to prevent re-entering from
+      // queued AppKit NSTextInputContext events.
+      event_mask.emplace(base::PassKey<TextInputClientMac>{});
+    }
 
     // The loop will exit either when a response is received, or the timer
     // fires.
