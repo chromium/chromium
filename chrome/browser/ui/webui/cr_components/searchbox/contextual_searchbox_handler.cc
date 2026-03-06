@@ -483,8 +483,6 @@ void ContextualSearchboxHandler::ContinueAddTabContext(
   tab_contextualization_controller->GetPageContext(base::BindOnce(
       &ContextualSearchboxHandler::OnGetTabPageContext,
       weak_ptr_factory_.GetWeakPtr(), delay_upload, context_token));
-  // base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-  //     FROM_HERE, base::BindOnce(std::move(callback), context_token));
 
   std::move(callback).Run(base::ok(context_token));
 }
