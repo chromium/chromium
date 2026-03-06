@@ -53,6 +53,7 @@ import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.DevToolsServer;
 import org.chromium.chrome.browser.FileProviderHelper;
 import org.chromium.chrome.browser.accessibility.settings.AccessibilitySettingsBridge;
+import org.chromium.chrome.browser.actor.ActorForegroundServiceManager;
 import org.chromium.chrome.browser.app.bluetooth.BluetoothNotificationService;
 import org.chromium.chrome.browser.app.flags.ChromeCachedFlags;
 import org.chromium.chrome.browser.app.usb.UsbNotificationService;
@@ -471,6 +472,10 @@ public class ProcessInitializationHandler {
 
         JavalessRenderersFeatureList.setRegisterSyntheticFieldTrialCallback(
                 UmaSessionStats::registerSyntheticFieldTrial);
+
+        if (ChromeFeatureList.sGlic.isEnabled()) {
+            ActorForegroundServiceManager.initialize();
+        }
     }
 
     /**

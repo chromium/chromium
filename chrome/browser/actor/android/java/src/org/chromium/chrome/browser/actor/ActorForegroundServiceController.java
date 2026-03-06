@@ -6,8 +6,10 @@ package org.chromium.chrome.browser.actor;
 
 import android.app.Notification;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 
 /**
  * Interface for controlling the ActorForegroundService lifecycle and interaction from the browser
@@ -47,9 +49,19 @@ public interface ActorForegroundServiceController {
 
     /** Returns the singleton instance. */
     static ActorForegroundServiceController get() {
+        if (Holder.sInstanceForTesting != null) return Holder.sInstanceForTesting;
         ActorForegroundServiceController ret =
                 ServiceLoaderUtil.maybeCreate(ActorForegroundServiceController.class);
         if (ret != null) return ret;
         return NoOpActorForegroundServiceController.getInstance();
+    }
+
+    static void setInstanceForTesting(ActorForegroundServiceController controller) {
+        Holder.sInstanceForTesting = controller;
+        ResettersForTesting.register(() -> Holder.sInstanceForTesting = null);
+    }
+
+    class Holder {
+        static @Nullable ActorForegroundServiceController sInstanceForTesting;
     }
 }

@@ -9,8 +9,10 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/actor/ActorBroadcastReceiver.java",
     "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceController.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManager.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorKeyedServiceFactory.java",
+    "java/src/org/chromium/chrome/browser/actor/ActorNotificationService.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureController.java",
     "java/src/org/chromium/chrome/browser/actor/ActorServiceTabUtils.java",
     "java/src/org/chromium/chrome/browser/actor/ActorTask.java",
@@ -34,9 +36,11 @@ android_library("java") {
     "//base:base_java",
     "//base:service_loader_java",
     "//build/android:build_java",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/app:java_strings_grd",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/notifications:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
@@ -108,6 +112,7 @@ android_resources("java_resources") {
 
 robolectric_library("junit") {
   sources = [
+    "java/src/org/chromium/chrome/browser/actor/ActorForegroundServiceManagerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ActorPictureInPictureControllerTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorControlCoordinatorTest.java",
     "java/src/org/chromium/chrome/browser/actor/ui/ActorOverlayCoordinatorTest.java",
@@ -120,6 +125,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/browser_controls/android:java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/notifications:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
