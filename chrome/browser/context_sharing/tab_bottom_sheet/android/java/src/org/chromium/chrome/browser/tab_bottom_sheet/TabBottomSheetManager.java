@@ -101,20 +101,22 @@ public class TabBottomSheetManager implements Destroyable {
     private BottomSheetObserver buildBottomSheetObserver() {
         return new EmptyBottomSheetObserver() {
             @Override
-            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {}
-
-            @Override
-            public void onSheetClosed(@StateChangeReason int reason) {
-                mBottomSheetController.removeObserver(mBottomSheetObserver);
-                if (mNativeInterfaceDelegate != null) {
-                    mNativeInterfaceDelegate.onBottomSheetClosed();
-                    mNativeInterfaceDelegate = null;
-                }
-                if (mTabBottomSheetCoordinator != null) {
-                    mTabBottomSheetCoordinator.destroy();
-                    mTabBottomSheetCoordinator = null;
+            public void onSheetStateChanged(@SheetState int state, @StateChangeReason int reason) {
+                if (state == SheetState.HIDDEN) {
+                    mBottomSheetController.removeObserver(mBottomSheetObserver);
+                    if (mNativeInterfaceDelegate != null) {
+                        mNativeInterfaceDelegate.onBottomSheetClosed();
+                        mNativeInterfaceDelegate = null;
+                    }
+                    if (mTabBottomSheetCoordinator != null) {
+                        mTabBottomSheetCoordinator.destroy();
+                        mTabBottomSheetCoordinator = null;
+                    }
                 }
             }
+
+            @Override
+            public void onSheetClosed(@StateChangeReason int reason) {}
         };
     }
 
