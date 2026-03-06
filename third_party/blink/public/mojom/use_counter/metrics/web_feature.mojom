@@ -5128,6 +5128,7 @@ enum WebFeature {
   kPerformanceScriptTimingForcedStyleDuration = 5811,
   kPerformanceScriptTimingForcedLayoutDuration = 5812,
   kPaymentRequestGetSecurePaymentConfirmationCapabilities = 5813,
+  kOpaqueRange = 5814,
 
   // Add new features immediately above this line. Don't change the existing
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/dom/opaque_range.h"
 
 #include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/text.h"
@@ -14,6 +15,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
 namespace blink {
 
@@ -21,6 +23,7 @@ OpaqueRange* OpaqueRange::Create(Document& document,
                                  TextControlElement* element,
                                  unsigned start_offset,
                                  unsigned end_offset) {
+  UseCounter::Count(document, WebFeature::kOpaqueRange);
   return MakeGarbageCollected<OpaqueRange>(document, element, start_offset,
                                            end_offset);
 }

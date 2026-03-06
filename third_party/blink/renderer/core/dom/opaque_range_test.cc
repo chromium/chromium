@@ -9,6 +9,8 @@
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
@@ -119,4 +121,47 @@ TEST_F(OpaqueRangeTest, RemovalClearsOpaqueRanges) {
   EXPECT_TRUE(textarea->opaque_ranges_.empty());
 }
 
+TEST_F(OpaqueRangeTest, UseCounterFiresForTextarea) {
+  SetBodyContent("<textarea>Hello</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+  OpaqueRange::Create(GetDocument(), textarea, 0, 5);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+}
+
+TEST_F(OpaqueRangeTest, UseCounterFiresForTextInput) {
+  SetBodyContent("<input type='text' value='Hello'>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstElementChild());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+  OpaqueRange::Create(GetDocument(), input, 0, 5);
+  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+}
+
+TEST_F(OpaqueRangeTest, UseCounterNotFiredForInvalidOffsets) {
+  SetBodyContent("<textarea>Hi</textarea>");
+  auto* textarea =
+      To<HTMLTextAreaElement>(GetDocument().body()->firstElementChild());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+
+  // Attempt to create a range with offsets exceeding value length. The
+  // createValueRange method should throw and never call OpaqueRange::Create.
+  DummyExceptionStateForTesting exception_state;
+  textarea->createValueRange(100, 200, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+}
+
+TEST_F(OpaqueRangeTest, UseCounterNotFiredForNonTextInput) {
+  SetBodyContent("<input type='number' value='42'>");
+  auto* input = To<HTMLInputElement>(GetDocument().body()->firstElementChild());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+
+  // Number inputs do not support the selection API, so createValueRange
+  // should throw without counting.
+  DummyExceptionStateForTesting exception_state;
+  input->createValueRange(0, 1, exception_state);
+  EXPECT_TRUE(exception_state.HadException());
+  EXPECT_FALSE(GetDocument().IsUseCounted(WebFeature::kOpaqueRange));
+}
 }  // namespace blink
