@@ -387,7 +387,7 @@ export class OverlayShimmerCanvasElement extends PolymerElement {
   private onSparklesLoad() {
     // If the flag to enable sparkles is off, ignore the SVG loading in which
     // will cause skip initializing sparklesPattern so no sparkles appear.
-    if (!this.enableSparkles) {
+    if (!this.enableSparkles || !this.context) {
       return;
     }
 

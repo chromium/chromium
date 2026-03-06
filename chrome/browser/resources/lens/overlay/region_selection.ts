@@ -301,15 +301,23 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
     this.canvasHeight = height;
     this.canvasPhysicalWidth = width * window.devicePixelRatio;
     this.canvasPhysicalHeight = height * window.devicePixelRatio;
-    this.context.setTransform(
-        window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    if (this.context) {
+      this.context.setTransform(
+          window.devicePixelRatio, 0, 0, window.devicePixelRatio, 0, 0);
+    }
   }
 
   private clearCanvas() {
-    this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    if (this.context) {
+      this.context.clearRect(0, 0, this.canvasWidth, this.canvasHeight);
+    }
   }
 
   private renderBoundingBox(event: GestureEvent, idealCornerRadius = 24) {
+    if (!this.context || !this.selectionOverlayRect) {
+      return;
+    }
+
     const parentRect = this.selectionOverlayRect;
 
     // Get the drag event coordinates relative to the canvas
@@ -361,9 +369,15 @@ export class RegionSelectionElement extends RegionSelectionElementBase {
           right,
           top,
       );
-      gradient.addColorStop(0, this.shaderLayerColorHexes[0]);
-      gradient.addColorStop(0.5, this.shaderLayerColorHexes[1]);
-      gradient.addColorStop(1, this.shaderLayerColorHexes[2]);
+      if (this.shaderLayerColorHexes &&
+          this.shaderLayerColorHexes.length >= 3) {
+        gradient.addColorStop(0, this.shaderLayerColorHexes[0]);
+        gradient.addColorStop(0.5, this.shaderLayerColorHexes[1]);
+        gradient.addColorStop(1, this.shaderLayerColorHexes[2]);
+      } else {
+        gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        gradient.addColorStop(1, 'rgba(255, 255, 255, 1)');
+      }
     }
 
     const strokeWidth = 3;

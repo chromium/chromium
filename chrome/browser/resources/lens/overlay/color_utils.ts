@@ -63,6 +63,9 @@ export function skColorToRgbaWithCustomAlpha(
 
 // Returns an array of the Shader hex colors from the given theme.
 export function getShaderLayerColorHexes(theme: OverlayTheme): string[] {
+  if (!theme || !theme.shaderLayer1) {
+    return [];
+  }
   return [
     skColorToHexColor(theme.shaderLayer1),
     skColorToHexColor(theme.shaderLayer2),
@@ -74,6 +77,9 @@ export function getShaderLayerColorHexes(theme: OverlayTheme): string[] {
 
 // Returns an array of the Shader rgba colors from the given theme.
 export function getShaderLayerColorRgbas(theme: OverlayTheme): string[] {
+  if (!theme || !theme.shaderLayer1) {
+    return [];
+  }
   return [
     skColorToRgba(theme.shaderLayer1),
     skColorToRgba(theme.shaderLayer2),

@@ -281,6 +281,10 @@ export class PostSelectionRendererElement extends
   }
 
   handleGestureDrag(event: GestureEvent) {
+    if (!this.selectionOverlayRect) {
+      return;
+    }
+
     const imageBounds = this.selectionOverlayRect;
     const normalizedX = (event.clientX - imageBounds.left) / imageBounds.width;
     const normalizedY = (event.clientY - imageBounds.top) / imageBounds.height;
@@ -399,6 +403,9 @@ export class PostSelectionRendererElement extends
     }
 
     const imageBounds = this.selectionOverlayRect;
+    if (!imageBounds) {
+      return;
+    }
     const normalizedMinBoxWidth = MIN_BOX_SIZE_PX / imageBounds.width;
     const normalizedMinBoxHeight = MIN_BOX_SIZE_PX / imageBounds.height;
 
@@ -571,6 +578,15 @@ export class PostSelectionRendererElement extends
   private getClampedBounds(bounds?: PostSelectionBoundingBox):
       PostSelectionBoundingBox {
     const imageBounds = this.selectionOverlayRect;
+    if (!imageBounds) {
+      return bounds || {
+        left: this.left,
+        top: this.top,
+        width: this.width,
+        height: this.height,
+      };
+    }
+
     const left = bounds ? bounds.left : this.left;
     const top = bounds ? bounds.top : this.top;
     const right = bounds ? bounds.left + bounds.width : this.left + this.width;
@@ -663,7 +679,8 @@ export class PostSelectionRendererElement extends
 
   private triggerNewBoxAnimation() {
     const parentBoundingRect = this.selectionOverlayRect;
-    if (parentBoundingRect.width === 0 || parentBoundingRect.height === 0) {
+    if (!parentBoundingRect || parentBoundingRect.width === 0 ||
+        parentBoundingRect.height === 0) {
       // Renderer has probably not been sized yet. Defer until resize.
       this.animateOnResize = true;
       return;
@@ -681,6 +698,9 @@ export class PostSelectionRendererElement extends
   private getNewBoxAnimationKeyframes() {
     const parentBoundingRect = this.selectionOverlayRect;
     const cornerDimensions = this.getCornerDimensions();
+    if (!parentBoundingRect) {
+      return [];
+    }
     return [
       {
         [`--post-selection-corner-horizontal-length`]:
@@ -699,7 +719,7 @@ export class PostSelectionRendererElement extends
 
   private getCornerDimensions(): CornerDimensions {
     const imageBounds = this.selectionOverlayRect;
-    if (imageBounds.width === 0 || imageBounds.height === 0) {
+    if (!imageBounds || imageBounds.width === 0 || imageBounds.height === 0) {
       // Renderer has probably not been sized yet. Return default values.
       return {
         length: MAX_CORNER_LENGTH_PX,

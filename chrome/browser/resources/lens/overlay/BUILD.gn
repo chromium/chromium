@@ -77,6 +77,7 @@ build_webui("build_overlay") {
     "screenshot_utils.ts",
     "searchbox_utils.ts",
     "selection_overlay_base_element.ts",
+    "selection_overlay_base_lit_element.ts",
     "selection_overlay_base_handler.ts",
     "selection_utils.ts",
     "side_panel/feedback_toast.html.ts",
