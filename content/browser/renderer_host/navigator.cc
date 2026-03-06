@@ -860,6 +860,8 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
   bool is_duplicate_navigation = false;
   bool start_diff_under_threshold = false;
   base::TimeDelta nav_start_diff;
+  bool is_on_target_origin =
+      GetContentClient()->IsUrlInIgnoreDuplicateNavsOrigins(request->GetURL());
   if (ongoing_navigation_request &&
       ongoing_navigation_request->IsRendererInitiated() ==
           request->IsRendererInitiated() &&
@@ -907,11 +909,23 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
       base::UmaHistogramEnumeration(
           "Navigation.BrowserInitiated.DuplicateNavCookieStatus.UnderThreshold",
           cookie_status);
+      if (is_on_target_origin) {
+        base::UmaHistogramEnumeration(
+            "Navigation.BrowserInitiated.DuplicateNavCookieStatus."
+            "UnderThreshold.OnTargetOrigins",
+            cookie_status);
+      }
     }
   }
   base::UmaHistogramBoolean(
       "Navigation.BrowserInitiated.IsDuplicateWithoutThresholdCheck2",
       is_duplicate_navigation);
+  if (is_on_target_origin) {
+    base::UmaHistogramBoolean(
+        "Navigation.BrowserInitiated.IsDuplicateWithoutThresholdCheck2."
+        "OnTargetOrigins",
+        is_duplicate_navigation);
+  }
   if (is_duplicate_navigation) {
     // The navigation is similar to a previous navigation. Check if it's started
     // close enough to the start of the previous navigation, in which case we
@@ -922,6 +936,16 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
     base::UmaHistogramTimes(
         "Navigation.BrowserInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
+    if (is_on_target_origin) {
+      base::UmaHistogramBoolean(
+          "Navigation.BrowserInitiated.DuplicateNavIsUnderThreshold2."
+          "OnTargetOrigins",
+          start_diff_under_threshold);
+      base::UmaHistogramTimes(
+          "Navigation.BrowserInitiated.DuplicateNavStartTimeDiff2."
+          "OnTargetOrigins",
+          nav_start_diff);
+    }
     if (!request->IsRendererInitiated()) {
       const auto& new_input_start = request->common_params().input_start;
       const auto& old_input_start =
@@ -944,6 +968,12 @@ void Navigator::Navigate(std::unique_ptr<NavigationRequest> request,
         base::UmaHistogramTimes(
             "Navigation.BrowserInitiated.DuplicateNavInputTimeDiff2",
             input_diff);
+        if (is_on_target_origin) {
+          base::UmaHistogramTimes(
+              "Navigation.BrowserInitiated.DuplicateNavInputTimeDiff2."
+              "OnTargetOrigins",
+              input_diff);
+        }
       }
     }
     if (start_diff_under_threshold &&

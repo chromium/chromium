@@ -177,20 +177,7 @@ bool ContentClient::ShouldIgnoreDuplicateNavs(
   bool is_match = false;
   // Check if the origin matches the origins list if it is not empty.
   if (!origins_list_str.empty()) {
-    static const base::NoDestructor<std::vector<url::Origin>>
-        target_origin_ignorelist([&origins_list_str] {
-          std::vector<url::Origin> origins;
-          const auto& origin_strings =
-              base::SplitString(origins_list_str, ",", base::TRIM_WHITESPACE,
-                                base::SPLIT_WANT_NONEMPTY);
-          origins.reserve(origin_strings.size());
-          for (const auto& origin_str : origin_strings) {
-            origins.push_back(url::Origin::Create(GURL(origin_str)));
-          }
-          return origins;
-        }());
-    is_match = std::ranges::contains(*target_origin_ignorelist,
-                                     url::Origin::Create(url));
+    is_match = IsUrlInIgnoreDuplicateNavsOrigins(url);
     base::UmaHistogramBoolean(
         is_renderer_initiated
             ? "Navigation.RendererInitiated.DuplicateNavOriginMatch"
@@ -206,6 +193,29 @@ bool ContentClient::ShouldIgnoreDuplicateNavs(
   // skip flag is off.
   return (origins_list_str.empty() || is_match) &&
          !features::kSkipIgnoreRendererInitiatedNavs.Get();
+}
+
+bool ContentClient::IsUrlInIgnoreDuplicateNavsOrigins(const GURL& url) const {
+  const std::string& origins_list_str =
+      features::kIgnoreDuplicateNavsOrigins.Get();
+  if (origins_list_str.empty()) {
+    return false;
+  }
+  static const base::NoDestructor<std::vector<url::Origin>>
+      target_origin_ignorelist([&origins_list_str] {
+        std::vector<url::Origin> origins;
+        const auto& origin_strings =
+            base::SplitString(origins_list_str, ",", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY);
+        origins.reserve(origin_strings.size());
+        for (const auto& origin_str : origin_strings) {
+          origins.push_back(url::Origin::Create(GURL(origin_str)));
+        }
+        return origins;
+      }());
+
+  return std::ranges::contains(*target_origin_ignorelist,
+                               url::Origin::Create(url));
 }
 
 bool ContentClient::IsFilePickerAllowedForCrossOriginSubframe(

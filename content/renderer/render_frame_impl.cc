@@ -6270,7 +6270,8 @@ void RenderFrameImpl::BeginNavigationInternal(
 
   bool is_duplicate_navigation = false;
   base::TimeDelta nav_start_diff;
-
+  bool is_on_target_origin =
+      GetContentClient()->IsUrlInIgnoreDuplicateNavsOrigins(common_params->url);
   if (navigation_client_impl_ &&
       navigation_client_impl_->HasBeginNavigationParams()) {
     // We ignore navigations that are identical to the ongoing navigation. This
@@ -6300,6 +6301,12 @@ void RenderFrameImpl::BeginNavigationInternal(
   base::UmaHistogramBoolean(
       "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck2",
       is_duplicate_navigation);
+  if (is_on_target_origin) {
+    base::UmaHistogramBoolean(
+        "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck2."
+        "OnTargetOrigins",
+        is_duplicate_navigation);
+  }
   if (is_duplicate_navigation) {
     // The navigation is similar to a previous navigation. Check if it's started
     // close enough to the start of the previous navigation, in which case we
@@ -6312,6 +6319,16 @@ void RenderFrameImpl::BeginNavigationInternal(
     base::UmaHistogramTimes(
         "Navigation.RendererInitiated.DuplicateNavStartTimeDiff2",
         nav_start_diff);
+    if (is_on_target_origin) {
+      base::UmaHistogramBoolean(
+          "Navigation.RendererInitiated.DuplicateNavIsUnderThreshold2."
+          "OnTargetOrigins",
+          start_diff_under_threshold);
+      base::UmaHistogramTimes(
+          "Navigation.RendererInitiated.DuplicateNavStartTimeDiff2."
+          "OnTargetOrigins",
+          nav_start_diff);
+    }
     const auto& new_input_start = common_params->input_start;
     const auto& old_input_start =
         navigation_client_impl_->common_params().input_start;
@@ -6333,6 +6350,12 @@ void RenderFrameImpl::BeginNavigationInternal(
       base::UmaHistogramTimes(
           "Navigation.RendererInitiated.DuplicateNavInputTimeDiff2",
           input_diff);
+      if (is_on_target_origin) {
+        base::UmaHistogramTimes(
+            "Navigation.RendererInitiated.DuplicateNavInputTimeDiff2."
+            "OnTargetOrigins",
+            input_diff);
+      }
     }
     if (start_diff_under_threshold &&
         GetContentClient()->ShouldIgnoreDuplicateNavs(

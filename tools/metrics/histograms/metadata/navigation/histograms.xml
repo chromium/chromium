@@ -22,6 +22,13 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="DuplicateNavTargetScope">
+  <variant name="" summary="for all sites"/>
+  <variant name=".OnTargetOrigins"
+      summary="for navigations to origins in the IgnoreDuplicateNavsOrigins
+               feature param"/>
+</variants>
+
 <variants name="FrameTypes">
   <variant name="MainFrame"/>
   <variant name="Subframe"/>
@@ -929,7 +936,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Navigation.BrowserInitiated.DuplicateNavCookieStatus.UnderThreshold"
+    name="Navigation.BrowserInitiated.DuplicateNavCookieStatus.UnderThreshold{DuplicateNavTargetScope}"
     enum="DuplicateNavsCookieStatus" expires_after="2026-08-19">
   <owner>annasato@google.com</owner>
   <owner>rakina@google.com</owner>
@@ -940,8 +947,9 @@ chromium-metrics-reviews@google.com.
     specifically for those that occurred within the duplicate navigation time
     threshold. It distinguishes whether a CookieChangeListener was missing,
     cookies actually changed since the ongoing navigation started, or cookies
-    remained the same.
+    remained the same. This is recorded {DuplicateNavTargetScope}.
   </summary>
+  <token key="DuplicateNavTargetScope" variants="DuplicateNavTargetScope"/>
 </histogram>
 
 <histogram name="Navigation.BrowserInitiatedSessionHistoryCount"
@@ -3596,20 +3604,23 @@ chromium-metrics-reviews@google.com.
   <token key="Initiator" variants="Initiator"/>
 </histogram>
 
-<histogram name="Navigation{Initiator}.DuplicateNavInputTimeDiff2" units="ms"
-    expires_after="2026-12-01">
+<histogram
+    name="Navigation{Initiator}.DuplicateNavInputTimeDiff2{DuplicateNavTargetScope}"
+    units="ms" expires_after="2026-12-01">
   <owner>annasato@google.com</owner>
   <owner>chrome-navigation@google.com</owner>
   <summary>
     When a new navigation is a duplicate of a currently ongoing navigation,
     where the destination and params are the same, records the difference
     between the new navigation's input start time and the ongoing (old)
-    navigation's input start time.
+    navigation's input start time {DuplicateNavTargetScope}.
   </summary>
   <token key="Initiator" variants="Initiator"/>
+  <token key="DuplicateNavTargetScope" variants="DuplicateNavTargetScope"/>
 </histogram>
 
-<histogram name="Navigation{Initiator}.DuplicateNavIsUnderThreshold2"
+<histogram
+    name="Navigation{Initiator}.DuplicateNavIsUnderThreshold2{DuplicateNavTargetScope}"
     enum="Boolean" expires_after="2026-08-23">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -3621,9 +3632,10 @@ chromium-metrics-reviews@google.com.
     kDuplicateNavThreshold (defaults to 2s).
 
     Logged when the new navigation is triggered and about to take the place of
-    the old navigation.
+    the old navigation {DuplicateNavTargetScope}.
   </summary>
   <token key="Initiator" variants="Initiator"/>
+  <token key="DuplicateNavTargetScope" variants="DuplicateNavTargetScope"/>
 </histogram>
 
 <histogram name="Navigation{Initiator}.DuplicateNavOriginMatch" enum="Boolean"
@@ -3640,8 +3652,9 @@ chromium-metrics-reviews@google.com.
   <token key="Initiator" variants="Initiator"/>
 </histogram>
 
-<histogram name="Navigation{Initiator}.DuplicateNavStartTimeDiff2" units="ms"
-    expires_after="2026-08-16">
+<histogram
+    name="Navigation{Initiator}.DuplicateNavStartTimeDiff2{DuplicateNavTargetScope}"
+    units="ms" expires_after="2026-08-16">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>
@@ -3651,12 +3664,14 @@ chromium-metrics-reviews@google.com.
     time.
 
     Logged when the new navigation is triggered and about to take the place of
-    the old navigation.
+    the old navigation {DuplicateNavTargetScope}.
   </summary>
   <token key="Initiator" variants="Initiator"/>
+  <token key="DuplicateNavTargetScope" variants="DuplicateNavTargetScope"/>
 </histogram>
 
-<histogram name="Navigation{Initiator}.IsDuplicateWithoutThresholdCheck2"
+<histogram
+    name="Navigation{Initiator}.IsDuplicateWithoutThresholdCheck2{DuplicateNavTargetScope}"
     enum="Boolean" expires_after="2026-08-23">
   <owner>rakina@chromium.org</owner>
   <owner>chrome-navigation@google.com</owner>
@@ -3667,9 +3682,10 @@ chromium-metrics-reviews@google.com.
     started a long time after the previous navigation.
 
     Logged when the new navigation is triggered and about to take the place of
-    the old navigation.
+    the old navigation {DuplicateNavTargetScope}.
   </summary>
   <token key="Initiator" variants="Initiator"/>
+  <token key="DuplicateNavTargetScope" variants="DuplicateNavTargetScope"/>
 </histogram>
 
 <histogram name="Navigation{Initiator}.ShouldDispatchBeforeUnload"

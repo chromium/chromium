@@ -241,6 +241,11 @@ class CONTENT_EXPORT ContentClient {
   virtual bool ShouldIgnoreDuplicateNavs(const GURL& url,
                                          bool is_renderer_initiated) const;
 
+  // Returns whether the navigation's origin is included in the
+  // kIgnoreDuplicateNavsOrigins parameter list for the
+  // IgnoreDuplicateNavs feature. If the origin list is empty, returns false.
+  virtual bool IsUrlInIgnoreDuplicateNavsOrigins(const GURL& url) const;
+
  private:
   // For SetBrowserClientAlwaysAllowForTesting().
   friend class BrowserTestBase;

@@ -24427,10 +24427,31 @@ IN_PROC_BROWSER_TEST_P(RestrictDuplicateNavsToOriginsBrowserTest,
     histogram_tester.ExpectUniqueSample(
         "Navigation.RendererInitiated.DuplicateNavOriginMatch",
         navigate_to_target_origin(), 1);
+    if (navigate_to_target_origin()) {
+      // The first navigation is recorded as non-duplicate, and the second one
+      // as duplicate.
+      EXPECT_THAT(
+          histogram_tester.GetAllSamples(
+              "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck2."
+              "OnTargetOrigins"),
+          base::BucketsAre(base::Bucket(false, 1), base::Bucket(true, 1)));
+      histogram_tester.ExpectUniqueSample(
+            "Navigation.RendererInitiated.DuplicateNavIsUnderThreshold2."
+            "OnTargetOrigins",
+            true, 1);
+    } else {
+      histogram_tester.ExpectTotalCount(
+          "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck2."
+          "OnTargetOrigins", 0);
+    }
   } else {
     // Otherwise, ensure that the histogram is not recorded.
     histogram_tester.ExpectTotalCount(
         "Navigation.RendererInitiated.DuplicateNavOriginMatch", 0);
+    histogram_tester.ExpectTotalCount(
+        "Navigation.RendererInitiated.IsDuplicateWithoutThresholdCheck2."
+        "OnTargetOrigins",
+        0);
   }
 }
 
