@@ -424,6 +424,8 @@ void WebMediaPlayerMS::Shutdown() {
     video_frame_provider_->Stop();
   }
 
+  stop_force_begin_frames_timer_.reset();
+
   // This must be destroyed before `compositor_` since it will grab a couple of
   // final metrics during destruction.
   watch_time_reporter_.reset();
