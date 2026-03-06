@@ -19,6 +19,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "components/history/core/browser/history_context.h"
 #include "components/history/core/browser/url_row.h"
 #include "components/query_parser/query_parser.h"
@@ -73,6 +74,10 @@ using VisitSourceMap = std::map<VisitID, VisitSource>;
 
 // Constant used to represent that no app_id is used for matching.
 inline constexpr std::optional<std::string> kNoAppIdFilter;
+
+// Corresponds to the `cluster_id` column of the `clusters` and
+// `clusters_and_visits` SQL tables.
+using ClusterId = base::IdType64<class ClusterIdTag>;
 
 // VisitRow -------------------------------------------------------------------
 

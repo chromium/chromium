@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_STORAGE_INTENT_TABLE_H_
 #define COMPONENTS_ACCESSIBILITY_ANNOTATOR_CORE_STORAGE_INTENT_TABLE_H_
 
+#include <vector>
+
 #include "base/memory/raw_ptr.h"
 
 namespace history {
@@ -17,7 +19,8 @@ class Database;
 
 namespace accessibility_annotator {
 
-class TaskIntent;
+struct TaskIntent;
+enum class TaskIntentStatusType;
 
 // This class manages the tables storing task intents and provenance metadata
 // for clusters of history within the SQLite database passed to initialization.
@@ -51,10 +54,9 @@ class TaskIntent;
 class IntentTable {
  public:
   IntentTable();
-  ~IntentTable();
-
   IntentTable(const IntentTable&) = delete;
   IntentTable& operator=(const IntentTable&) = delete;
+  ~IntentTable();
 
   // Initializes the table with the given SQLite database. Returns true on
   // success. Must be called before any other methods.
@@ -63,6 +65,10 @@ class IntentTable {
   // Adds a new task intent to the table, or updates an existing task intent if
   // one already exists with the same cluster ID. Returns true on success.
   bool AddOrUpdateTaskIntent(const TaskIntent& task_intent);
+
+  // Returns all task intents matching the given `TaskIntentStatusType`.
+  std::vector<TaskIntent> GetTaskIntentsByStatusType(
+      TaskIntentStatusType status_type);
 
   // Invalidates all task intents sourced from history deleted in the given
   // `DeletionInfo`. Returns true on success.

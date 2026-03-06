@@ -5,6 +5,7 @@
 #include "components/accessibility_annotator/core/storage/intent_table.h"
 
 #include "base/notimplemented.h"
+#include "components/accessibility_annotator/core/data_models/intent.h"
 #include "components/history/core/browser/history_types.h"
 
 namespace accessibility_annotator {
@@ -24,6 +25,12 @@ bool IntentTable::Init(sql::Database* database) {
 bool IntentTable::AddOrUpdateTaskIntent(const TaskIntent& task_intent) {
   NOTIMPLEMENTED();
   return false;
+}
+
+std::vector<TaskIntent> IntentTable::GetTaskIntentsByStatusType(
+    TaskIntentStatusType status_type) {
+  NOTIMPLEMENTED();
+  return {};
 }
 
 bool IntentTable::InvalidateTaskIntentsForDeletedHistory(
