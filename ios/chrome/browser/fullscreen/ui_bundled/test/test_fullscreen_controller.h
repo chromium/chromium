@@ -11,7 +11,7 @@
 
 class FullscreenModel;
 @class FullscreenAnimator;
-enum class FullscreenModeTransitionTrigger;
+enum class FullscreenExitReason;
 
 // Test version of FullscreenController with limited functionality:
 // - Enables/disables a FullscreenModel.
@@ -45,8 +45,7 @@ class TestFullscreenController : public FullscreenController {
   UIEdgeInsets GetCurrentViewportInsets() const override;
   void EnterFullscreen() override;
   void ExitFullscreen() override;
-  void ExitFullscreen(
-      FullscreenModeTransitionTrigger fullscreen_exit_trigger) override;
+  void ExitFullscreen(FullscreenExitReason fullscreen_exit_reason) override;
   void ExitFullscreenWithoutAnimation() override;
   bool IsForceFullscreenMode() const override;
   void EnterForceFullscreenMode(bool insets_update_enabled) override;

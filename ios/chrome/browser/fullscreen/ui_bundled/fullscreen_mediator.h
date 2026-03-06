@@ -13,11 +13,12 @@
 #import "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_model_observer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
 
 class FullscreenController;
 class FullscreenControllerObserver;
-enum class FullscreenModeTransitionTrigger;
 enum class FullscreenModelScrollDirection;
 @class FullscreenResetAnimator;
 @class FullscreenScrollEndAnimator;
@@ -59,7 +60,7 @@ class FullscreenMediator : public FullscreenModelObserver {
 
   // Enters or exits fullscreen, animating the changes.
   void EnterFullscreen();
-  void ExitFullscreen(FullscreenModeTransitionTrigger fullscreen_exit_trigger);
+  void ExitFullscreen(FullscreenExitReason fullscreen_exit_reason);
 
   // Force enters fullscreen without animation. This enters fullscreen even when
   // the model is disabled.
@@ -99,6 +100,10 @@ class FullscreenMediator : public FullscreenModelObserver {
   // Records fullscreen exit entrypoints in a histogram.
   void RecordFullscreenExitMode();
 
+  // Converts `FullscreenExitReason` enum to `FullscreenModeTransitionReason`
+  // enum.
+  FullscreenModeTransitionReason ConvertFullscreenExitReasonToTransitionReason(
+      FullscreenExitReason exit_reason);
 
   // Progress value when scroll event started.
   float start_progress_;
@@ -120,8 +125,7 @@ class FullscreenMediator : public FullscreenModelObserver {
   // changes.
   base::ObserverList<FullscreenControllerObserver, true> observers_;
   // Type of entrypoint that triggers the exit of fullscreen mode.
-  std::optional<FullscreenModeTransitionTrigger> fullscreen_exit_trigger_;
-
+  std::optional<FullscreenExitReason> fullscreen_exit_reason_;
   // Whether the user has scrolled to the bottom of the page for the first time
   // on the current page. This is reset to false as soon as the user scrolls up.
   bool has_reached_bottom_once_ = false;

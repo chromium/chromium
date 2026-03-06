@@ -5,14 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_METRICS_H_
 #define IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_METRICS_H_
 
-extern const char kEnterFullscreenModeTransitionTriggerHistogram[];
-extern const char kExitFullscreenModeTransitionTriggerHistogram[];
+extern const char kEnterFullscreenModeTransitionReasonHistogram[];
+extern const char kExitFullscreenModeTransitionReasonHistogram[];
 
-// These values are persisted to IOS.Fullscreen.TransitionTrigger.{Enter,Exit}
+// These values are persisted to IOS.Fullscreen.TransitionReason.{Enter,Exit}
 // histograms. Entries should not be renumbered and numeric values should never
 // be reused.
-// LINT.IfChange(FullscreenModeTransitionTrigger)
-enum class FullscreenModeTransitionTrigger {
+// LINT.IfChange(FullscreenModeTransitionReason)
+enum class FullscreenModeTransitionReason {
   // Reported when fullscreen mode is triggered by a sustained downward scroll
   // gesture, with the animation of entering or exiting fullscreen mode being
   // fully controlled by the scroll action.
@@ -34,6 +34,6 @@ enum class FullscreenModeTransitionTrigger {
   kNoChange = 5,
   kMaxValue = kNoChange,
 };
-// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:FullscreenModeTransitionTrigger)
+// LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:FullscreenModeTransitionReason)
 
 #endif  // IOS_CHROME_BROWSER_FULLSCREEN_UI_BUNDLED_FULLSCREEN_METRICS_H_

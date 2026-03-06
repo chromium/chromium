@@ -4,8 +4,8 @@
 
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 
-const char kEnterFullscreenModeTransitionTriggerHistogram[] =
-    "IOS.Fullscreen.TransitionTrigger.Enter";
+const char kEnterFullscreenModeTransitionReasonHistogram[] =
+    "IOS.Fullscreen.TransitionReason.Enter";
 
-const char kExitFullscreenModeTransitionTriggerHistogram[] =
-    "IOS.Fullscreen.TransitionTrigger.Exit";
+const char kExitFullscreenModeTransitionReasonHistogram[] =
+    "IOS.Fullscreen.TransitionReason.Exit";

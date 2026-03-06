@@ -7,7 +7,6 @@
 #import "base/memory/ptr_util.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/broadcaster/ui_bundled/chrome_broadcaster.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_system_notification_observer.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/toolbar/legacy/ui_bundled/fullscreen/toolbars_size.h"
@@ -156,12 +155,12 @@ void FullscreenControllerImpl::EnterFullscreen() {
 
 // Needs to be cleanup.
 void FullscreenControllerImpl::ExitFullscreen() {
-  mediator_.ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByCode);
+  mediator_.ExitFullscreen(FullscreenExitReason::kForcedByCode);
 }
 
 void FullscreenControllerImpl::ExitFullscreen(
-    FullscreenModeTransitionTrigger fullscreen_exit_trigger) {
-  mediator_.ExitFullscreen(fullscreen_exit_trigger);
+    FullscreenExitReason fullscreen_exit_reason) {
+  mediator_.ExitFullscreen(fullscreen_exit_reason);
 }
 
 void FullscreenControllerImpl::ExitFullscreenWithoutAnimation() {

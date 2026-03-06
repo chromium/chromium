@@ -70,7 +70,7 @@ void FullscreenMediator::EnterFullscreen() {
 }
 
 void FullscreenMediator::ExitFullscreen(
-    FullscreenModeTransitionTrigger fullscreen_exit_trigger) {
+    FullscreenExitReason fullscreen_exit_reason) {
   if (model_->IsForceFullscreenMode()) {
     return;
   }
@@ -79,7 +79,7 @@ void FullscreenMediator::ExitFullscreen(
   // hidden if AnimateModelReset() is called while a scroll view is
   // decelerating.
   model_->IgnoreRemainderOfCurrentScroll();
-  fullscreen_exit_trigger_ = fullscreen_exit_trigger;
+  fullscreen_exit_reason_ = fullscreen_exit_reason;
   AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
 }
 
@@ -165,7 +165,7 @@ void FullscreenMediator::FullscreenModelScrollEventStarted(
   if (model_->enabled() && model_->is_scrolled_to_bottom() &&
       AreCGFloatsEqual(model_->progress(), 0.0) &&
       model_->can_collapse_toolbar()) {
-    ExitFullscreen(FullscreenModeTransitionTrigger::kForcedByCode);
+    ExitFullscreen(FullscreenExitReason::kForcedByCode);
   }
 }
 
@@ -174,8 +174,8 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
   DCHECK_EQ(model_, model);
   if (base::FeatureList::IsEnabled(web::features::kSmoothScrollingDefault)) {
     if (model_->progress() >= 0.5) {
-      fullscreen_exit_trigger_ =
-          FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode;
+      fullscreen_exit_reason_ =
+          FullscreenExitReason::kUserInitiatedFinishedByCode;
       AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
     } else {
       AnimateWithStyle(FullscreenAnimatorStyle::ENTER_FULLSCREEN);
@@ -189,8 +189,7 @@ void FullscreenMediator::FullscreenModelScrollEventEnded(
   if (scrolled_to_bottom) {
     if (has_reached_bottom_once_) {
       // Subsequent times reaching the bottom: exit fullscreen.
-      fullscreen_exit_trigger_ =
-          FullscreenModeTransitionTrigger::kBottomReached;
+      fullscreen_exit_reason_ = FullscreenExitReason::kBottomReached;
       AnimateWithStyle(FullscreenAnimatorStyle::EXIT_FULLSCREEN);
     } else {
       // First time reaching the bottom.
@@ -256,11 +255,11 @@ void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
     mediator->animator_ = nil;
 
     // Histogram for entering or exiting Fullscreen mode based on
-    // FullscreenModeTransitionTrigger value.
+    // FullscreenModeTransitionReason value.
     if (model_->progress() == 0) {
       base::UmaHistogramEnumeration(
-          kEnterFullscreenModeTransitionTriggerHistogram,
-          FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode);
+          kEnterFullscreenModeTransitionReasonHistogram,
+          FullscreenModeTransitionReason::kUserInitiatedFinishedByCode);
     } else if (model_->progress() == 1) {
       RecordFullscreenExitMode();
     }
@@ -305,12 +304,12 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
     FullscreenModelScrollDirection direction) {
   switch (direction) {
     case FullscreenModelScrollDirection::kUp:
-      fullscreen_exit_trigger_ =
-          FullscreenModeTransitionTrigger::kUserInitiatedFinishedByCode;
+      fullscreen_exit_reason_ =
+          FullscreenExitReason::kUserInitiatedFinishedByCode;
       return FullscreenAnimatorStyle::EXIT_FULLSCREEN;
     case FullscreenModelScrollDirection::kNone:
       // Leave in fullscreen, if still in fullscreen.
-      fullscreen_exit_trigger_ = FullscreenModeTransitionTrigger::kNoChange;
+      fullscreen_exit_reason_ = FullscreenExitReason::kNoChange;
       return AreCGFloatsEqual(model_->progress(), 0.0)
                  ? FullscreenAnimatorStyle::ENTER_FULLSCREEN
                  : FullscreenAnimatorStyle::EXIT_FULLSCREEN;
@@ -320,7 +319,29 @@ FullscreenAnimatorStyle FullscreenMediator::AnimatorStyleFromScrollDirection(
 }
 
 void FullscreenMediator::RecordFullscreenExitMode() {
-  CHECK(fullscreen_exit_trigger_.has_value());
-  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionTriggerHistogram,
-                                fullscreen_exit_trigger_.value());
+  CHECK(fullscreen_exit_reason_.has_value());
+  FullscreenModeTransitionReason reason =
+      ConvertFullscreenExitReasonToTransitionReason(
+          fullscreen_exit_reason_.value());
+  base::UmaHistogramEnumeration(kExitFullscreenModeTransitionReasonHistogram,
+                                reason);
+}
+
+FullscreenModeTransitionReason
+FullscreenMediator::ConvertFullscreenExitReasonToTransitionReason(
+    FullscreenExitReason exit_reason) {
+  switch (exit_reason) {
+    case FullscreenExitReason::kUserTapped:
+      return FullscreenModeTransitionReason::kUserTapped;
+    case FullscreenExitReason::kBottomReached:
+      return FullscreenModeTransitionReason::kBottomReached;
+    case FullscreenExitReason::kForcedByCode:
+      return FullscreenModeTransitionReason::kForcedByCode;
+    case FullscreenExitReason::kUserInitiatedFinishedByCode:
+      return FullscreenModeTransitionReason::kUserInitiatedFinishedByCode;
+    case FullscreenExitReason::kNoChange:
+      return FullscreenModeTransitionReason::kNoChange;
+    case FullscreenExitReason::kUserControlled:
+      NOTREACHED();
+  }
 }
