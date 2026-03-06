@@ -105,6 +105,7 @@ import org.chromium.components.browser_ui.accessibility.PageZoomIndicatorCoordin
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -784,14 +785,14 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         AutocompleteInput input = new AutocompleteInput();
-        input.setKeyword("keyword");
+        input.setSiteSearchData(new SiteSearchData("keyword", "Search keyword"));
         mMediator.beginInput(input);
 
         doReturn("").when(mUrlCoordinator).getTextWithoutAutocomplete();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
 
         assertTrue(mMediator.onKey(mView, KeyEvent.KEYCODE_DEL, mKeyEvent));
-        assertNull(input.getKeyword());
+        assertNull(input.getSiteSearchData());
     }
 
     @Test
@@ -799,14 +800,14 @@ public class LocationBarMediatorTest {
         mMediator.onFinishNativeInitialization();
         mProfileSupplier.set(mProfile);
         AutocompleteInput input = new AutocompleteInput();
-        input.setKeyword("keyword");
+        input.setSiteSearchData(new SiteSearchData("keyword", "Search keyword"));
         mMediator.beginInput(input);
 
         doReturn("text").when(mUrlCoordinator).getTextWithoutAutocomplete();
         doReturn(KeyEvent.ACTION_DOWN).when(mKeyEvent).getAction();
 
         assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_DEL, mKeyEvent));
-        assertEquals("keyword", input.getKeyword());
+        assertEquals("keyword", input.getSiteSearchData().keyword);
     }
 
     @Test
@@ -817,7 +818,7 @@ public class LocationBarMediatorTest {
         mMediator.beginInput(input);
 
         assertFalse(mMediator.onKey(mView, KeyEvent.KEYCODE_DEL, mKeyEvent));
-        assertNull(input.getKeyword());
+        assertNull(input.getSiteSearchData());
     }
 
     @Test

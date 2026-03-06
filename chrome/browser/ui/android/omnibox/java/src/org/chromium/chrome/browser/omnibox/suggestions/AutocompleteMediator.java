@@ -59,6 +59,7 @@ import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteInput.RefineActionUsage;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteRequestType;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -126,7 +127,8 @@ class AutocompleteMediator
             this::onToolbarPositionChanged;
     private final Callback<@AutocompleteRequestType Integer> mOnAutocompleteRequestTypeChanged =
             this::onAutocompleteRequestTypeChanged;
-    private final Callback<@Nullable String> mOnKeywordChanged = this::onKeywordChanged;
+    private final Callback<@Nullable SiteSearchData> mOnSiteSearchDataChanged =
+            this::onSiteSearchDataChanged;
     private final Callback<Integer> mOnFuseboxStateChanged = this::onFuseboxStateChanged;
 
     private @Nullable AutocompleteController mAutocomplete;
@@ -549,7 +551,7 @@ class AutocompleteMediator
             mAutocompleteInput
                     .getRequestTypeSupplier()
                     .removeObserver(mOnAutocompleteRequestTypeChanged);
-            mAutocompleteInput.getKeywordSupplier().removeObserver(mOnKeywordChanged);
+            mAutocompleteInput.getSiteSearchDataSupplier().removeObserver(mOnSiteSearchDataChanged);
             mUrlBarEditingTextProvider.setSiteSearchChip(null);
         }
         mAutocompleteInput = input;
@@ -558,7 +560,9 @@ class AutocompleteMediator
             mAutocompleteInput
                     .getRequestTypeSupplier()
                     .addSyncObserver(mOnAutocompleteRequestTypeChanged);
-            mAutocompleteInput.getKeywordSupplier().addSyncObserver(mOnKeywordChanged);
+            mAutocompleteInput
+                    .getSiteSearchDataSupplier()
+                    .addSyncObserver(mOnSiteSearchDataChanged);
         }
     }
 
@@ -1060,8 +1064,9 @@ class AutocompleteMediator
         onTextChanged(mAutocompleteInput.getUserText(), /* isOnFocusContext= */ false);
     }
 
-    private void onKeywordChanged(@Nullable String keyword) {
-        mUrlBarEditingTextProvider.setSiteSearchChip(keyword);
+    private void onSiteSearchDataChanged(@Nullable SiteSearchData siteSearchData) {
+        mUrlBarEditingTextProvider.setSiteSearchChip(
+                siteSearchData != null ? siteSearchData.fullName : null);
         if (isInInputSession()) {
             onTextChanged(
                     mUrlBarEditingTextProvider.getTextWithoutAutocomplete(),

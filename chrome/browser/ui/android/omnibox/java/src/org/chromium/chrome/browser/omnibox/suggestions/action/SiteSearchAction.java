@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.omnibox.suggestions.action;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.R;
 import org.chromium.components.omnibox.action.OmniboxAction;
 import org.chromium.components.omnibox.action.OmniboxActionDelegate;
@@ -35,7 +36,7 @@ public class SiteSearchAction extends OmniboxAction {
     @Override
     public boolean execute(OmniboxActionDelegate delegate) {
         if (delegate.getAutocompleteInput() != null) {
-            delegate.getAutocompleteInput().setKeyword(keyword);
+            delegate.getAutocompleteInput().setSiteSearchData(new SiteSearchData(keyword, hint));
         }
         return false; // do not clear omnibox focus.
     }

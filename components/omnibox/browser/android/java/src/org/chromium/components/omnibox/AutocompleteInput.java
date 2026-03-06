@@ -26,6 +26,7 @@ import org.chromium.url.GURL;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
+import java.util.Objects;
 
 /**
  * AutocompleteInput encompasses the input to autocomplete and fusebox.
@@ -53,6 +54,17 @@ public class AutocompleteInput implements UserData {
         int COUNT = 4;
     }
 
+    /** Data class representing the active site search mode state in the Omnibox. */
+    public static class SiteSearchData {
+        public final String keyword;
+        public final String fullName;
+
+        public SiteSearchData(String keyword, String fullName) {
+            this.keyword = keyword;
+            this.fullName = fullName;
+        }
+    }
+
     private long mUrlFocusTime;
     private GURL mPageUrl;
     private int mPageClassification;
@@ -70,7 +82,7 @@ public class AutocompleteInput implements UserData {
                     ObservableSuppliers.createNonNull(AutocompleteRequestType.SEARCH);
     private final SettableNonNullObservableSupplier<Integer> mToolModeSupplier =
             ObservableSuppliers.createNonNull(ToolMode.TOOL_MODE_UNSPECIFIED_VALUE);
-    private final SettableNullableObservableSupplier<String> mCurrentKeyword =
+    private final SettableNullableObservableSupplier<SiteSearchData> mSiteSearchData =
             ObservableSuppliers.createNullable();
 
     public AutocompleteInput() {
@@ -197,24 +209,25 @@ public class AutocompleteInput implements UserData {
     }
 
     /** Set the current keyword */
-    public AutocompleteInput setKeyword(@Nullable String keyword) {
-        mCurrentKeyword.set(keyword);
+    public AutocompleteInput setSiteSearchData(@Nullable SiteSearchData siteSearchData) {
+        if (Objects.equals(siteSearchData, mSiteSearchData.get())) return this;
+        mSiteSearchData.set(siteSearchData);
         return this;
     }
 
-    /** Returns the current keyword. */
-    public @Nullable String getKeyword() {
-        return mCurrentKeyword.get();
+    /** Returns the current SiteSearchData. */
+    public @Nullable SiteSearchData getSiteSearchData() {
+        return mSiteSearchData.get();
     }
 
     /**
      * Returns the supplier for the current keyword.
      *
      * <p>Use sparingly - to install/remove observers. Readers should use {@see getKeyword()}.
-     * Writers should use {@see setKeyword()}.
+     * Writers should use {@see setSiteSearchData()}.
      */
-    public NullableObservableSupplier<String> getKeywordSupplier() {
-        return mCurrentKeyword;
+    public NullableObservableSupplier<SiteSearchData> getSiteSearchDataSupplier() {
+        return mSiteSearchData;
     }
 
     /**
@@ -346,7 +359,7 @@ public class AutocompleteInput implements UserData {
         mPageClassification = PageClassification.BLANK_VALUE;
         mFocusReason = OmniboxFocusReason.OMNIBOX_TAP;
         mRequestTypeSupplier.set(AutocompleteRequestType.SEARCH);
-        mCurrentKeyword.set(null);
+        mSiteSearchData.set(null);
         mUrlFocusTime = 0;
         mSuggestionsListScrolled = false;
         mSuppressAutomaticSuggestionsUntilUserStartsTyping = false;

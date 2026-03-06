@@ -1864,9 +1864,9 @@ class LocationBarMediator
                         && tv.getSelectionEnd() == tv.getText().length();
             } else if (keyCode == KeyEvent.KEYCODE_DEL) {
                 if (mCurrentInput != null
-                        && !TextUtils.isEmpty(mCurrentInput.getKeyword())
+                        && mCurrentInput.getSiteSearchData() != null
                         && TextUtils.isEmpty(mUrlCoordinator.getTextWithoutAutocomplete())) {
-                    mCurrentInput.setKeyword(null);
+                    mCurrentInput.setSiteSearchData(null);
                     return true;
                 }
             }

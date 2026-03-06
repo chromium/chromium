@@ -81,6 +81,7 @@ import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridgeJni;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.components.omnibox.AutocompleteInput;
+import org.chromium.components.omnibox.AutocompleteInput.SiteSearchData;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteRequestType;
@@ -313,8 +314,9 @@ public class AutocompleteMediatorUnitTest {
     public void endInput_clearsSiteSearchChip() {
         var session = createEmptySession();
         mMediator.beginInput(session);
-        session.getAutocompleteInput().setKeyword("history");
-        verify(mTextStateProvider).setSiteSearchChip("history");
+        session.getAutocompleteInput()
+                .setSiteSearchData(new SiteSearchData("history", "Search history"));
+        verify(mTextStateProvider).setSiteSearchChip("Search history");
 
         mMediator.endInput();
         verify(mTextStateProvider).setSiteSearchChip(null);

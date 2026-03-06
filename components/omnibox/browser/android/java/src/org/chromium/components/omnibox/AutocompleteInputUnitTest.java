@@ -57,11 +57,11 @@ public class AutocompleteInputUnitTest {
     @Test
     public void testReset_clearsKeyword() {
         AutocompleteInput input = new AutocompleteInput();
-        input.setKeyword("history");
-        assertEquals("history", input.getKeyword());
+        input.setSiteSearchData(new AutocompleteInput.SiteSearchData("history", "Search history"));
+        assertEquals("history", input.getSiteSearchData().keyword);
 
         input.reset();
-        assertEquals(null, input.getKeyword());
+        assertEquals(null, input.getSiteSearchData());
     }
 
     @Test
