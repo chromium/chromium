@@ -9707,3 +9707,10 @@ crbug.com/489532990 [ Mac ] http/tests/devtools/console/console-xpath.js [ Pass 
 # Temporary to allow crrev.com/c/7575525 to land in DevTools before roll and re-enable.
 crbug.com/351662727 http/tests/devtools/elements/navigate-styles-sidebar-with-arrow-keys.js [ Failure Pass ]
 crbug.com/351662727 http/tests/devtools/elements/styles-4/styles-grid-template.js [ Failure Pass ]
+
+# Gardener 2026-03-06
+
+# Flaky on Linux MSan.
+crbug.com/488337157 [ Linux ] external/wpt/css/css-pseudo/input-element-pseudo-open-click.optional.html [ Failure Pass ]
+crbug.com/490381610 [ Linux ] external/wpt/wasm/core/simd/simd_f32x4_arith.wast.js.html [ Failure Pass ]
+crbug.com/446167772 [ Linux ] external/wpt/webcodecs/audio-encoder-codec-specific.https.any.html [ Failure Pass ]
