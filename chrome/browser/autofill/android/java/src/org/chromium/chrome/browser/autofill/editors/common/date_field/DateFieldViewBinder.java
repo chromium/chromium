@@ -29,7 +29,10 @@ public class DateFieldViewBinder {
         } else if (key == ERROR_MESSAGE) {
             view.setErrorMessage(model.get(ERROR_MESSAGE));
         } else if (key == FOCUSED) {
-            // TODO: crbug.com/476755159 - Implement focusability.
+            if (model.get(FOCUSED)) {
+                // TODO: crbug.com/490311866 - Refactor focused property.
+                view.scrollToAndFocus();
+            }
         } else if (key == DATE_VALID) {
             // Doesn't require binding at the moment.
         } else {

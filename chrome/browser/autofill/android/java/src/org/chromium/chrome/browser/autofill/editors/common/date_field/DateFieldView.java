@@ -224,7 +224,8 @@ public class DateFieldView extends LinearLayout implements FieldView {
 
     @Override
     public void scrollToAndFocus() {
-        // TODO: crbug.com/467563819 - Implement.
+        // Just request focus on the first dropdown.
+        mMonthDropdown.scrollToAndFocus();
     }
 
     @Override
