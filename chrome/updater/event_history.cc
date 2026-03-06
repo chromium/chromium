@@ -26,11 +26,13 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/system/sys_info.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 
@@ -105,6 +107,43 @@ std::string UpdateStateToString(UpdateService::UpdateState::State state) {
       return "DECOMPRESSING";
     case UpdateService::UpdateState::State::kPatching:
       return "PATCHING";
+  }
+}
+
+std::string UpdateResultToString(UpdateService::Result result) {
+  switch (result) {
+    case mojom::UpdateService_Result::kSuccess:
+      return "SUCCESS";
+    case mojom::UpdateService_Result::kUpdateInProgress:
+      return "UPDATE_IN_PROGRESS";
+    case mojom::UpdateService_Result::kUpdateCanceled:
+      return "UPDATE_CANCELED";
+    case mojom::UpdateService_Result::kRetryLater:
+      return "RETRY_LATER";
+    case mojom::UpdateService_Result::kServiceFailed:
+      return "SERVICE_FAILED";
+    case mojom::UpdateService_Result::kUpdateCheckFailed:
+      return "UPDATE_CHECK_FAILED";
+    case mojom::UpdateService_Result::kAppNotFound:
+      return "APP_NOT_FOUND";
+    case mojom::UpdateService_Result::kInvalidArgument:
+      return "INVALID_ARGUMENT";
+    case mojom::UpdateService_Result::kInactive:
+      return "INACTIVE";
+    case mojom::UpdateService_Result::kIPCConnectionFailed:
+      return "IPC_CONNECTION_FAILED";
+    case mojom::UpdateService_Result::kInstallFailed:
+      return "INSTALL_FAILED";
+    case mojom::UpdateService_Result::kPermissionDenied:
+      return "PERMISSION_DENIED";
+    case mojom::UpdateService_Result::kUnknown:
+      return "UNKNOWN";
+    case mojom::UpdateService_Result::kServiceStopped:
+      return "SERVICE_STOPPED";
+    case mojom::UpdateService_Result::kEulaRequiredOrOemMode:
+      return "EULA_REQUIRED_OR_OEM_MODE";
+    case mojom::UpdateService_Result::kFetchPoliciesFailed:
+      return "FETCH_POLICIES_FAILED";
   }
 }
 
@@ -586,15 +625,22 @@ UpdateEndEvent::UpdateEndEvent(UpdateEndEvent&&) = default;
 UpdateEndEvent& UpdateEndEvent::operator=(UpdateEndEvent&&) = default;
 UpdateEndEvent::~UpdateEndEvent() = default;
 
-UpdateEndEvent& UpdateEndEvent::SetOutcome(
-    UpdateService::UpdateState::State outcome) {
-  outcome_ = outcome;
-  return *this;
-}
-
 UpdateEndEvent& UpdateEndEvent::SetNextVersion(
     const std::string& next_version) {
   next_version_ = next_version;
+  return *this;
+}
+
+UpdateEndEvent& UpdateEndEvent::AddUpdateState(
+    UpdateService::UpdateState::State state) {
+  update_states_.push_back(
+      State{.deviceUptime = base::SysInfo::Uptime(), .state = state});
+  outcome_ = state;
+  return *this;
+}
+
+UpdateEndEvent& UpdateEndEvent::SetResult(UpdateService::Result result) {
+  result_ = result;
   return *this;
 }
 
@@ -603,11 +649,27 @@ std::optional<base::DictValue> UpdateEndEvent::BuildInternal(
   event.Set("eventType", "UPDATE");
   event.Set("bound", "END");
   if (outcome_) {
+    // TODO(crbug.com/489810753): Stop recording `outcome` once Chrome no longer
+    // reads it.
     event.Set("outcome", UpdateStateToString(*outcome_));
   }
   if (next_version_) {
     event.Set("nextVersion", *next_version_);
   }
+  if (!update_states_.empty()) {
+    base::ListValue update_states;
+    for (const State& state : update_states_) {
+      update_states.Append(
+          base::DictValue()
+              .Set("deviceUptime", base::TimeDeltaToValue(state.deviceUptime))
+              .Set("state", UpdateStateToString(state.state)));
+    }
+    event.Set("updateStates", std::move(update_states));
+  }
+  if (result_) {
+    event.Set("result", UpdateResultToString(*result_));
+  }
+
   return event;
 }
 

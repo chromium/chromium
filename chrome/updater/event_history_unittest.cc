@@ -4,7 +4,11 @@
 
 #include "chrome/updater/event_history.h"
 
+#include <concepts>
+#include <cstddef>
 #include <memory>
+#include <ostream>
+#include <type_traits>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
+#include "chrome/updater/mojom/updater_service.mojom.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -41,21 +46,89 @@ MATCHER(IsTimeValue, "") {
 using ExpectedFields =
     std::vector<std::pair<std::string, testing::Matcher<const base::Value&>>>;
 
-MATCHER_P(DictHasFields, expected_fields, "") {
-  const base::DictValue& dict = arg;
-  if (dict.size() != expected_fields.size()) {
-    *result_listener << "has " << dict.size() << " fields, but "
-                     << expected_fields.size() << " were expected.";
-    return false;
-  }
-  for (const auto& [key, value_matcher] : expected_fields) {
-    const base::Value* value = dict.Find(key);
-    if (!value) {
-      *result_listener << "is missing field '" << key << "'";
+class DictHasFieldsMatcher {
+ public:
+  explicit DictHasFieldsMatcher(ExpectedFields expected_fields)
+      : expected_fields_(std::move(expected_fields)) {}
+
+  template <typename T>
+    requires(std::same_as<std::remove_cvref_t<T>, base::Value> ||
+             std::same_as<std::remove_cvref_t<T>, base::DictValue>)
+  bool MatchAndExplain(const T& arg,
+                       testing::MatchResultListener* result_listener) const {
+    const base::DictValue* dict = GetIfDict(arg);
+
+    if (!dict) {
+      *result_listener << "is not a dictionary";
       return false;
     }
-    if (!testing::ExplainMatchResult(value_matcher, *value, result_listener)) {
-      *result_listener << " for field '" << key << "'";
+
+    if (dict->size() != expected_fields_.size()) {
+      *result_listener << "has " << dict->size() << " fields, but "
+                       << expected_fields_.size() << " were expected";
+      return false;
+    }
+
+    for (const auto& [key, value_matcher] : expected_fields_) {
+      const base::Value* value = dict->Find(key);
+      if (!value) {
+        *result_listener << "is missing field '" << key << "'";
+        return false;
+      }
+
+      if (!testing::ExplainMatchResult(value_matcher, *value,
+                                       result_listener)) {
+        *result_listener << " (in field '" << key << "')";
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void DescribeTo(std::ostream* os) const {
+    *os << "is a dictionary with " << expected_fields_.size()
+        << " specific fields";
+  }
+
+  void DescribeNegationTo(std::ostream* os) const {
+    *os << "is not a dictionary or has mismatched fields";
+  }
+
+ private:
+  // Overloads to extract the Dict pointer regardless of input type.
+  static const base::DictValue* GetIfDict(const base::Value& v) {
+    return v.GetIfDict();
+  }
+  static const base::DictValue* GetIfDict(const base::DictValue& d) {
+    return &d;
+  }
+
+  ExpectedFields expected_fields_;
+};
+
+inline testing::PolymorphicMatcher<DictHasFieldsMatcher> DictHasFields(
+    ExpectedFields expected_fields) {
+  return testing::MakePolymorphicMatcher(
+      DictHasFieldsMatcher(std::move(expected_fields)));
+}
+
+using ExpectedListElements = std::vector<testing::Matcher<const base::Value&>>;
+
+MATCHER_P(ListValueElementsAre, expected_list_elements, "") {
+  const base::ListValue* list = arg.GetIfList();
+  if (!list) {
+    *result_listener << "is not a list, but a list was expected";
+    return false;
+  }
+  if (list->size() != expected_list_elements.size()) {
+    *result_listener << "has size " << list->size() << " (expected "
+                     << expected_list_elements.size() << ")";
+    return false;
+  }
+  for (size_t i = 0; i < list->size(); ++i) {
+    if (!testing::ExplainMatchResult(expected_list_elements[i], (*list)[i],
+                                     result_listener)) {
+      *result_listener << " for item at index " << i;
       return false;
     }
   }
@@ -512,20 +585,35 @@ TEST_F(EventHistoryTest, UpdateEndEventToDict) {
   std::optional<base::DictValue> event =
       UpdateEndEvent()
           .SetEventId("test-event-id")
-          .SetOutcome(UpdateService::UpdateState::State::kUpdateError)
           .SetNextVersion("1.2.3.4")
+          .AddUpdateState(UpdateService::UpdateState::State::kNotStarted)
+          .AddUpdateState(UpdateService::UpdateState::State::kUpdateError)
+          .SetResult(mojom::UpdateService_Result::kSuccess)
           .Build();
+
   ASSERT_TRUE(event);
-  EXPECT_THAT(*event, DictHasFields(ExpectedFields({
-                          {"eventType", ValueIs("UPDATE")},
-                          {"bound", ValueIs("END")},
-                          {"eventId", ValueIs("test-event-id")},
-                          {"outcome", ValueIs("UPDATE_ERROR")},
-                          {"nextVersion", ValueIs("1.2.3.4")},
-                          {"deviceUptime", IsPositiveTimeDeltaValue()},
-                          {"pid", ValueIs(GetCurrentPid())},
-                          {"processToken", ValueIs(GetProcessToken())},
-                      })));
+  EXPECT_THAT(*event,
+              DictHasFields(ExpectedFields({
+                  {"eventType", ValueIs("UPDATE")},
+                  {"bound", ValueIs("END")},
+                  {"eventId", ValueIs("test-event-id")},
+                  {"outcome", ValueIs("UPDATE_ERROR")},
+                  {"nextVersion", ValueIs("1.2.3.4")},
+                  {"updateStates",
+                   ListValueElementsAre(ExpectedListElements(
+                       {DictHasFields(ExpectedFields({
+                            {"deviceUptime", IsPositiveTimeDeltaValue()},
+                            {"state", ValueIs("NOT_STARTED")},
+                        })),
+                        DictHasFields(ExpectedFields{
+                            {"deviceUptime", IsPositiveTimeDeltaValue()},
+                            {"state", ValueIs("UPDATE_ERROR")},
+                        })}))},
+                  {"result", ValueIs("SUCCESS")},
+                  {"deviceUptime", IsPositiveTimeDeltaValue()},
+                  {"pid", ValueIs(GetCurrentPid())},
+                  {"processToken", ValueIs(GetProcessToken())},
+              })));
 }
 
 TEST_F(EventHistoryTest, UpdateEndEventNoOptionalFieldsToDict) {

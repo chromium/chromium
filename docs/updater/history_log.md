@@ -121,11 +121,25 @@ The schema defines the following event types:
     * `appId` (string): The ID of the application being checked.
     * `priority` (string): Enum: `"BACKGROUND"`, `"FOREGROUND"`.
   * `END`:
-    * `outcome` (string): The result of the update operation. Enum: possible
+    * ~~`outcome`~~ (string): The result of the update operation. Enum: possible
       values are the upper snake case UpdaterState::State enum labels defined in
       UpdateService. Includes `"UPDATED"`, `"NO_UPDATE"`, and `"UPDATE_ERROR"`.
+      **Deprecated:** superseded by `updateStates` and `result`.
     * `nextVersion` (string): The version of the application which the updater
       tried to update to.
+    * `updateStates` (array): A sequence of details on the state of an update.
+      Each item is an object with:
+      * `deviceUptime` (string): The uptime of the system when the state change
+        was observed in integer microseconds.
+      * `state` (string, required): The state of the update. Enum: possible
+        values are the upper snake case UpdaterState::State enum labels defined
+        in UpdateService. Includes `"UPDATED"`, `"NO_UPDATE"`, and
+        `"UPDATE_ERROR"`.
+    * `result` (string): The value returned by the completion callback of the
+      update operation as a result of the non-blocking invocation of the service
+      functions. Enum: possible values are the upper snake case
+      UpdaterState::Result enum labels defined in UpdateService. Includes
+      `"SUCCESS"` and `"UPDATE_IN_PROGRESS"`.
 
 ### `UPDATER_PROCESS`: Updater Process Lifetime
 

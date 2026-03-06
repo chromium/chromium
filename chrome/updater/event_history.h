@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/update_service.h"
@@ -449,15 +450,23 @@ class UpdateEndEvent : public HistoryEventBuilder<UpdateEndEvent> {
   UpdateEndEvent& operator=(const UpdateEndEvent&) = delete;
   ~UpdateEndEvent() override;
 
-  UpdateEndEvent& SetOutcome(UpdateService::UpdateState::State outcome);
   UpdateEndEvent& SetNextVersion(const std::string& next_version);
+  UpdateEndEvent& AddUpdateState(UpdateService::UpdateState::State state);
+  UpdateEndEvent& SetResult(UpdateService::Result result);
 
  private:
+  struct State {
+    base::TimeDelta deviceUptime;
+    UpdateService::UpdateState::State state;
+  };
+
   std::optional<base::DictValue> BuildInternal(
       base::DictValue event) const override;
 
   std::optional<UpdateService::UpdateState::State> outcome_;
   std::optional<std::string> next_version_;
+  std::vector<State> update_states_;
+  std::optional<UpdateService::Result> result_;
 };
 
 class UpdateStartEvent : public HistoryEventBuilder<UpdateStartEvent> {

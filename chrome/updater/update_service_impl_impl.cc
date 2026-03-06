@@ -1074,14 +1074,14 @@ void UpdateServiceImplImpl::Update(
             if (!update_state.next_version.empty()) {
               event->SetNextVersion(update_state.next_version);
             }
-            event->SetOutcome(update_state.state);
+            event->AddUpdateState(update_state.state);
             return update_state;
           },
           event.get())
           .Then(state_update);
   callback = base::BindOnce(
                  [](std::unique_ptr<UpdateEndEvent> event, Result result) {
-                   event->WriteAsync();
+                   event->SetResult(result).WriteAsync();
                    return result;
                  },
                  std::move(event))
@@ -1172,7 +1172,7 @@ void UpdateServiceImplImpl::UpdateAll(
               if (!update_state.next_version.empty()) {
                 event.SetNextVersion(update_state.next_version);
               }
-              event.SetOutcome(update_state.state);
+              event.AddUpdateState(update_state.state);
             }
             return update_state;
           },
@@ -1183,7 +1183,7 @@ void UpdateServiceImplImpl::UpdateAll(
                         events_by_app_id,
                     Result result) {
                    for (auto& [_, event] : *events_by_app_id) {
-                     event.WriteAsync();
+                     event.SetResult(result).WriteAsync();
                    }
                    return result;
                  },
