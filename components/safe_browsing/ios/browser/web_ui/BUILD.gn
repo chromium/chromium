@@ -6,19 +6,33 @@ source_set("web_ui") {
   sources = [
     "chrome_ios_safe_browsing_local_state_delegate.h",
     "chrome_ios_safe_browsing_local_state_delegate.mm",
+    "safe_browsing_ios_ui_handler.h",
+    "safe_browsing_ios_ui_handler.mm",
     "web_ui_ios_info_singleton.h",
     "web_ui_ios_info_singleton.mm",
   ]
 
   deps = [
     "//base",
+    "//components/os_crypt/async/browser",
+    "//components/os_crypt/async/common",
     "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/core/browser:download_check_result",
+    "//components/safe_browsing/core/browser/db:v4_local_database_manager",
     "//components/safe_browsing/core/browser/web_ui:event_observer",
     "//components/safe_browsing/core/browser/web_ui:event_observer_impl",
+    "//components/safe_browsing/core/browser/web_ui:handler",
     "//components/safe_browsing/core/browser/web_ui:info_singleton",
     "//components/safe_browsing/core/browser/web_ui:local_state_delegate",
+    "//components/safe_browsing/core/browser/web_ui:util",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto_extras",
+    "//components/user_prefs",
     "//ios/chrome/browser/shared/model/application_context",
+    "//ios/web/public",
     "//ios/web/public/thread",
+    "//ios/web/public/webui",
+    "//net",
     "//services/network/public/mojom",
   ]
 }

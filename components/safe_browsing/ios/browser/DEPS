@@ -3,4 +3,5 @@ include_rules = [
   "+components/safe_browsing/core/common",
   "+ios/chrome/browser/shared/model/application_context/application_context.h",
   "+ios/web/public",
+  "+net/cookies/canonical_cookie.h"
 ]
