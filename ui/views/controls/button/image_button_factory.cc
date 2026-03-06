@@ -38,12 +38,8 @@ class ColorTrackingVectorImageButton : public ImageButton {
         icon_(icon),
         dip_size_(dip_size),
         icon_color_id_(icon_color_id),
-        icon_disabled_color_id_(icon_disabled_color_id) {
-    const ui::ImageModel hovered_image =
-        ui::ImageModel::FromVectorIcon(icon, icon_hovered_color_id, dip_size);
-    SetImageModel(Button::STATE_HOVERED, hovered_image);
-    SetImageModel(Button::STATE_PRESSED, hovered_image);
-  }
+        icon_disabled_color_id_(icon_disabled_color_id),
+        icon_hovered_color_id_(icon_hovered_color_id) {}
 
   // ImageButton:
   void OnThemeChanged() override {
@@ -51,8 +47,9 @@ class ColorTrackingVectorImageButton : public ImageButton {
     const ui::ColorProvider* cp = GetColorProvider();
     const SkColor color = cp->GetColor(icon_color_id_);
     const SkColor disabled_color = cp->GetColor(icon_disabled_color_id_);
-    SetImageFromVectorIconWithColor(this, *icon_, dip_size_,
-                                    {color, disabled_color});
+    SetImageFromVectorIconWithColor(
+        this, *icon_, dip_size_,
+        {color, disabled_color, icon_hovered_color_id_});
   }
 
  private:
@@ -60,6 +57,7 @@ class ColorTrackingVectorImageButton : public ImageButton {
   int dip_size_;
   ui::ColorId icon_color_id_;
   ui::ColorId icon_disabled_color_id_;
+  ui::ColorId icon_hovered_color_id_;
 };
 
 }  // namespace
