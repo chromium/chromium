@@ -403,6 +403,7 @@ AimEligibilityService::AimEligibilityService(
   template_url_service_->AddObserver(this);
 
   LoadMostRecentResponse();
+  BuildFallbackConfig(most_recent_response_, fallback_config_);
 
   bool startup_request_enabled =
       base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
@@ -656,7 +657,6 @@ const omnibox::SearchboxConfig* AimEligibilityService::GetSearchboxConfig()
     return &most_recent_response_.searchbox_config();
   }
 
-  BuildFallbackConfig(most_recent_response_, fallback_config_);
   return &fallback_config_;
 }
 
@@ -864,6 +864,7 @@ void AimEligibilityService::UpdateMostRecentResponse(
   // correct.
   most_recent_response_ = response_proto;
   most_recent_response_source_ = response_source;
+  BuildFallbackConfig(most_recent_response_, fallback_config_);
 
   // Update the prefs.
   std::string response_string;

@@ -438,7 +438,7 @@ class AimEligibilityService
   base::OneShotTimer request_debounce_timer_;
 
   // Used to store the default config when the response doesn't have one.
-  mutable omnibox::SearchboxConfig fallback_config_;
+  omnibox::SearchboxConfig fallback_config_;
 
   // A configuration for the service.
   const Configuration configuration_;
