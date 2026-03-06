@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
@@ -25,6 +26,9 @@
 #include "components/session_manager/core/session_manager_observer.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/browser/app_window/app_window_registry.h"
+
+class ApplicationLocaleStorage;
+class PrefService;
 
 namespace base {
 class OneShotTimer;
@@ -112,7 +116,13 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // If the device is set up to run in demo mode, marks demo session as started,
   // and requests load of demo session resources.
   // Creates global DemoSession instance if required.
-  static DemoSession* StartIfInDemoMode();
+  //
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive the created DemoSession. (I.e., they must be valid until
+  // `ShutDownIfInitialized` is called.)
+  static DemoSession* StartIfInDemoMode(
+      PrefService* local_state,
+      const ApplicationLocaleStorage* application_locale_storage);
 
   // Deletes the global DemoSession instance if it was previously created.
   static void ShutDownIfInitialized();
@@ -185,7 +195,10 @@ class DemoSession : public session_manager::SessionManagerObserver,
   scoped_refptr<base::SequencedTaskRunner> GetBlockingTaskRunnerForTest();
 
  private:
-  DemoSession();
+  // `local_state` and `application_locale_storage` must be non-null and must
+  // outlive `this`.
+  DemoSession(PrefService* local_state,
+              const ApplicationLocaleStorage* application_locale_storage);
   ~DemoSession() override;
 
   // DemoModeIdleHandler::Observer:
@@ -215,6 +228,11 @@ class DemoSession : public session_manager::SessionManagerObserver,
   // brightness to the max level.
   void SetKeyboardBrightnessToOneHundredPercentFromCurrentLevel(
       std::optional<double> keyboard_brightness_percentage);
+
+  void RestoreDefaultLocaleForNextSession();
+
+  const raw_ref<PrefService> local_state_;
+  const raw_ref<const ApplicationLocaleStorage> application_locale_storage_;
 
   // Whether demo session has been started.
   bool started_ = false;

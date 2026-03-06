@@ -43,6 +43,7 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -1109,7 +1110,9 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest,
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
   ash::test::LockDemoDeviceInstallAttributes();
-  ash::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::StartIfInDemoMode(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
 
   SetAccountAndProfile(user_manager::UserType::kPublicAccount);
 
@@ -1136,7 +1139,9 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest,
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
   ash::test::LockDemoDeviceInstallAttributes();
-  ash::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::StartIfInDemoMode(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
 
   SetAccountAndProfile(user_manager::UserType::kPublicAccount);
 
@@ -1167,7 +1172,9 @@ IN_PROC_BROWSER_TEST_F(ArcRobotAccountAuthServiceTest,
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kOnline);
   ash::test::LockDemoDeviceInstallAttributes();
-  ash::DemoSession::StartIfInDemoMode();
+  ash::DemoSession::StartIfInDemoMode(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
 
   SetAccountAndProfile(user_manager::UserType::kPublicAccount);
 

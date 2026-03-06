@@ -59,6 +59,7 @@ static_library("demo_mode") {
     "//chromeos/ash/experiences/arc:arc_base_utils",
     "//chromeos/ash/experiences/idle_detector",
     "//chromeos/constants",
+    "//components/application_locale_storage",
     "//components/language/core/browser",
     "//components/policy/core/common:common_constants",
     "//components/prefs",

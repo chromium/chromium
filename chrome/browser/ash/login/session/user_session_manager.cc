@@ -1350,7 +1350,9 @@ void UserSessionManager::VoteForSavingLoginPassword(
 }
 
 void UserSessionManager::InitDemoSessionIfNeeded(base::OnceClosure callback) {
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
+  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
+      g_browser_process->local_state(),
+      g_browser_process->GetFeatures()->application_locale_storage());
   if (!demo_session || !demo_session->started()) {
     std::move(callback).Run();
     return;

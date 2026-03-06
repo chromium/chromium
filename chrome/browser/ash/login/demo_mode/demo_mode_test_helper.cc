@@ -15,6 +15,7 @@
 #include "base/test/scoped_path_override.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/global_features.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
@@ -55,7 +56,11 @@ void DemoModeTestHelper::InitializeSession(DemoSession::DemoModeConfig config) {
   DemoSession::SetDemoConfigForTesting(config);
 
   InitializeComponentManager();
-  CHECK(DemoSession::StartIfInDemoMode());
+  CHECK(DemoSession::StartIfInDemoMode(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage()));
   FinishLoadingComponent();
 }
 
@@ -65,7 +70,11 @@ void DemoModeTestHelper::InitializeSessionWithPendingComponent(
   DemoSession::SetDemoConfigForTesting(config);
   InitializeComponentManager();
 
-  DemoSession* demo_session = DemoSession::StartIfInDemoMode();
+  DemoSession* demo_session = DemoSession::StartIfInDemoMode(
+      TestingBrowserProcess::GetGlobal()->local_state(),
+      TestingBrowserProcess::GetGlobal()
+          ->GetFeatures()
+          ->application_locale_storage());
   DCHECK_EQ(demo_session == nullptr,
             config == DemoSession::DemoModeConfig::kNone);
 }

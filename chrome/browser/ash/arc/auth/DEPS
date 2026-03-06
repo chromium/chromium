@@ -35,7 +35,10 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  "arc_robot_auth_code_fetcher_browsertest\.cc": [
+  "arc_robot_auth_code_fetcher_browsertest\\.cc": [
     "+chrome/browser/ash/test",
+  ],
+  "arc_auth_service_browsertest\\.cc": [
+    "+chrome/browser/global_features.h",
   ]
 }

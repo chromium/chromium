@@ -15,6 +15,7 @@
 #include "ash/public/cpp/locale_update_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "base/barrier_closure.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
@@ -59,6 +60,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/account_manager_core/pref_names.h"
+#include "components/application_locale_storage/application_locale_storage.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -145,50 +147,6 @@ std::string GetSwitchOrDefault(std::string_view switch_string,
     return command_line->GetSwitchValueASCII(switch_string);
   }
   return default_value;
-}
-
-// If the current locale is not the default one, ensure it is reverted to the
-// default when demo session restarts (i.e. user-selected locale is only allowed
-// to be used for a single session), unless the restart is triggered by the user
-// explicitly changing the locale. (e.g. if the current locale is de-de and the
-// user changes the locale to fr-fr from the system tray, when the demo session
-// restarts, the system doesn't revert to the default locale en-us, but instead,
-// goes to fr-fr as specified.
-void RestoreDefaultLocaleForNextSession() {
-  auto* user = user_manager::UserManager::Get()->GetActiveUser();
-  // Tests may not have an active user.
-  if (!user)
-    return;
-  if (!user->is_profile_created()) {
-    user->AddProfileCreatedObserver(
-        base::BindOnce(&RestoreDefaultLocaleForNextSession));
-    return;
-  }
-  Profile* profile = ProfileManager::GetActiveUserProfile();
-  DCHECK(profile);
-  const std::string current_locale =
-      profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
-  if (current_locale.empty()) {
-    LOG(WARNING) << "Current locale read from kApplicationLocale is empty!";
-    return;
-  }
-  const std::string default_locale =
-      g_browser_process->local_state()->GetString(
-          prefs::kDemoModeDefaultLocale);
-  if (default_locale.empty()) {
-    // If the default locale is uninitialized, consider the current locale to be
-    // the default. This is safe because users are not allowed to change the
-    // locale prior to introduction of this code.
-    g_browser_process->local_state()->SetString(prefs::kDemoModeDefaultLocale,
-                                                current_locale);
-    return;
-  }
-  if (current_locale != default_locale) {
-    // If the user has changed the locale, request to change it back (which will
-    // take effect when the session restarts).
-    profile->ChangeAppLocale(
-        default_locale, Profile::APP_LOCALE_CHANGED_VIA_DEMO_SESSION_REVERT);
-  }
 }
 
 // Returns the list of locales (and related info) supported by demo mode.
@@ -351,7 +309,9 @@ void DemoSession::ResetDemoConfigForTesting() {
 }
 
 // static
-DemoSession* DemoSession::StartIfInDemoMode() {
+DemoSession* DemoSession::StartIfInDemoMode(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage) {
   if (!ash::demo_mode::IsDeviceInDemoMode()) {
     return nullptr;
   }
@@ -360,7 +320,7 @@ DemoSession* DemoSession::StartIfInDemoMode() {
     return g_demo_session;
 
   if (!g_demo_session)
-    g_demo_session = new DemoSession();
+    g_demo_session = new DemoSession(local_state, application_locale_storage);
 
   g_demo_session->started_ = true;
   return g_demo_session;
@@ -525,8 +485,12 @@ void DemoSession::ActiveUserChanged(user_manager::User* active_user) {
   active_user->AddProfileCreatedObserver(hide_web_store_icon);
 }
 
-DemoSession::DemoSession()
-    : ignore_pin_policy_offline_apps_(GetIgnorePinPolicyApps()),
+DemoSession::DemoSession(
+    PrefService* local_state,
+    const ApplicationLocaleStorage* application_locale_storage)
+    : local_state_(CHECK_DEREF(local_state)),
+      application_locale_storage_(CHECK_DEREF(application_locale_storage)),
+      ignore_pin_policy_offline_apps_(GetIgnorePinPolicyApps()),
       remove_splash_screen_fallback_timer_(
           std::make_unique<base::OneShotTimer>()),
       blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -548,6 +512,7 @@ DemoSession::~DemoSession() {
   user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
 }
 
+// static
 std::vector<CountryCodeAndFullNamePair>
 DemoSession::GetSortedCountryCodeAndNamePairList() {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
@@ -749,7 +714,7 @@ void DemoSession::ShowSplashScreen(base::FilePath image_path) {
 }
 
 void DemoSession::ConfigureAndStartSplashScreen() {
-  const std::string current_locale = g_browser_process->GetApplicationLocale();
+  const std::string current_locale = application_locale_storage_->Get();
   base::FilePath localized_image_path = components_->resources_component_path()
                                             .Append(kSplashScreensPath)
                                             .Append(current_locale + ".jpg");
@@ -778,6 +743,50 @@ void DemoSession::RemoveSplashScreen() {
   ash::WallpaperController::Get()->RemoveOverrideWallpaper();
   remove_splash_screen_fallback_timer_.reset();
   splash_screen_activated_ = false;
+}
+
+// If the current locale is not the default one, ensure it is reverted to the
+// default when demo session restarts (i.e. user-selected locale is only allowed
+// to be used for a single session), unless the restart is triggered by the user
+// explicitly changing the locale. (e.g. if the current locale is de-de and the
+// user changes the locale to fr-fr from the system tray, when the demo session
+// restarts, the system doesn't revert to the default locale en-us, but instead,
+// goes to fr-fr as specified.
+void DemoSession::RestoreDefaultLocaleForNextSession() {
+  auto* user = user_manager::UserManager::Get()->GetActiveUser();
+  // Tests may not have an active user.
+  if (!user) {
+    return;
+  }
+  if (!user->is_profile_created()) {
+    user->AddProfileCreatedObserver(
+        base::BindOnce(&DemoSession::RestoreDefaultLocaleForNextSession,
+                       weak_ptr_factory_.GetWeakPtr()));
+    return;
+  }
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+  const std::string current_locale =
+      profile->GetPrefs()->GetString(language::prefs::kApplicationLocale);
+  if (current_locale.empty()) {
+    LOG(WARNING) << "Current locale read from kApplicationLocale is empty!";
+    return;
+  }
+  const std::string default_locale =
+      local_state_->GetString(prefs::kDemoModeDefaultLocale);
+  if (default_locale.empty()) {
+    // If the default locale is uninitialized, consider the current locale to be
+    // the default. This is safe because users are not allowed to change the
+    // locale prior to introduction of this code.
+    local_state_->SetString(prefs::kDemoModeDefaultLocale, current_locale);
+    return;
+  }
+  if (current_locale != default_locale) {
+    // If the user has changed the locale, request to change it back (which will
+    // take effect when the session restarts).
+    profile->ChangeAppLocale(
+        default_locale, Profile::APP_LOCALE_CHANGED_VIA_DEMO_SESSION_REVERT);
+  }
 }
 
 }  // namespace ash
