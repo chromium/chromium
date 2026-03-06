@@ -38,8 +38,10 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
   TestCrosDisplayConfig& operator=(const TestCrosDisplayConfig&) = delete;
 
   // CrosDisplayConfig:
-  void AddObserver(Observer* observer) override {}
-  void RemoveObserver(Observer* observer) override {}
+  void AddObserver(
+      crosapi::mojom::CrosDisplayConfigObserver* observer) override {}
+  void RemoveObserver(
+      crosapi::mojom::CrosDisplayConfigObserver* observer) override {}
   void GetDisplayLayoutInfo(GetDisplayLayoutInfoCallback callback) override {}
   void SetDisplayLayoutInfo(crosapi::mojom::DisplayLayoutInfoPtr info,
                             SetDisplayLayoutInfoCallback callback) override {}
@@ -75,7 +77,7 @@ class TestCrosDisplayConfig final : public ash::CrosDisplayConfig {
 
 class OobeDisplayChooserTest : public ChromeAshTestBase {
  public:
-  OobeDisplayChooserTest() = default;
+  OobeDisplayChooserTest() : ChromeAshTestBase() {}
 
   OobeDisplayChooserTest(const OobeDisplayChooserTest&) = delete;
   OobeDisplayChooserTest& operator=(const OobeDisplayChooserTest&) = delete;
