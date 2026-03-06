@@ -32,6 +32,7 @@
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_sync_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/tips_notifications_promo.h"
 #endif
 
 namespace segmentation_platform::home_modules {
@@ -522,12 +523,17 @@ TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardEnabled) {
 }
 
 // Tests that the Registry won't register the TipsNotificationsPromo card when
-// it is disabled because of user's interaction history.
+// it is disabled because of user's impression history.
 TEST_F(HomeModulesCardRegistryTest, TestTipsNotificationsPromoCardDisabled) {
   feature_list_.InitWithFeatures({features::kAndroidTipsNotifications}, {});
-  profile_pref_service_.SetUserPref(
-      kTipsNotificationsPromoImpressionCounterPref,
-      std::make_unique<base::Value>(11));
+
+  // Simulate showing the card across enough sessions to reach its max limit.
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto card =
+        std::make_unique<TipsNotificationsPromo>(&profile_pref_service_);
+    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
+  }
+
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 

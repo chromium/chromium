@@ -15,12 +15,6 @@ class PrefService;
 
 namespace segmentation_platform::home_modules {
 
-// Impression counters for Android cards.
-extern const char kTipsNotificationsPromoImpressionCounterPref[];
-
-// Interaction flags for Android cards.
-extern const char kTipsNotificationsPromoInteractedPref[];
-
 // The Android-specific implementation of the HomeModulesCardRegistry.
 class HomeModulesCardRegistryAndroid : public HomeModulesCardRegistry {
  public:
@@ -42,16 +36,6 @@ class HomeModulesCardRegistryAndroid : public HomeModulesCardRegistry {
   // `HomeModulesCardRegistry` overrides:
   void NotifyCardShown(const char* card_name) override;
   void NotifyCardInteracted(const char* card_name) override;
-
- private:
-  // Returns true if this is the first time the card is displayed to the user in
-  // the current session and the event should be recorded.
-  bool ShouldNotifyCardShownPerSession(const std::string& card_name);
-
-  // A list that includes all educational tip card types (excluding the default
-  // browser promo card) that have been displayed to the user during the current
-  // session.
-  std::unordered_set<std::string> shown_in_current_session_;
 };
 
 }  // namespace segmentation_platform::home_modules

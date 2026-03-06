@@ -4,11 +4,13 @@
 
 #include "components/segmentation_platform/embedder/home_modules/tips_notifications_promo.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_signals.h"
 #include "components/segmentation_platform/embedder/home_modules/constants.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #include "components/segmentation_platform/embedder/home_modules/test_utils.h"
+#include "components/segmentation_platform/public/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace segmentation_platform::home_modules {
@@ -19,7 +21,8 @@ class TipsNotificationsPromoTest : public testing::Test {
   ~TipsNotificationsPromoTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    feature_list_.InitWithFeatures({features::kAndroidTipsNotifications}, {});
+    TipsNotificationsPromo::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TestComputeCardResultImpl(bool tipsNotificationsPromoInteracted,
@@ -27,10 +30,12 @@ class TipsNotificationsPromoTest : public testing::Test {
                                  float isEligibleToTipsOptIn,
                                  float educationalTipShownCount,
                                  EphemeralHomeModuleRank position) {
-    pref_service_.SetUserPref(
-        kTipsNotificationsPromoInteractedPref,
-        std::make_unique<base::Value>(tipsNotificationsPromoInteracted));
     auto card = std::make_unique<TipsNotificationsPromo>(&pref_service_);
+
+    if (tipsNotificationsPromoInteracted) {
+      card->OnInteract(&pref_service_, nullptr);
+    }
+
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {tipsNotificationsPromoShownCount, isEligibleToTipsOptIn,
                      educationalTipShownCount});
@@ -41,6 +46,7 @@ class TipsNotificationsPromoTest : public testing::Test {
 
  protected:
   TestingPrefServiceSimple pref_service_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(TipsNotificationsPromoTest, GetInputsReturnsExpectedInputs) {
@@ -96,6 +102,26 @@ TEST_F(TipsNotificationsPromoTest,
       /* tipsNotificationsPromoShownCount */ 0,
       /* isEligibleToTipsOptIn */ 0,
       /* educationalTipShownCount */ 1, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(TipsNotificationsPromoTest,
+       IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<TipsNotificationsPromo>(&pref_service_);
+
+  EXPECT_TRUE(TipsNotificationsPromo::IsEnabled(&pref_service_));
+
+  // Recreate the card each iteration to simulate separate sessions.
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto session_card =
+        std::make_unique<TipsNotificationsPromo>(&pref_service_);
+    EXPECT_TRUE(TipsNotificationsPromo::IsEnabled(&pref_service_));
+    session_card->OnShow(&pref_service_, nullptr);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(TipsNotificationsPromo::IsEnabled(&pref_service_));
 }
 
 }  // namespace segmentation_platform::home_modules
