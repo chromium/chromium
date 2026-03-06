@@ -31,6 +31,10 @@
 - (void)loadView {
   SceneView* view = [[SceneView alloc] init];
   view.delegate = self;
+  if (!IsFullscreenRefactoringEnabled()) {
+    view.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  }
   self.view = view;
 }
 
@@ -39,7 +43,12 @@
   [super viewDidLoad];
   UIView* view = self.view;
   _appContentView = [[UIView alloc] init];
-  _appContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  if (IsFullscreenRefactoringEnabled()) {
+    _appContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  } else {
+    _appContentView.autoresizingMask =
+        UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  }
   [view addSubview:_appContentView];
   _appContentView.frame = view.bounds;
   [self.layoutGuideCenter referenceView:_appContentView
@@ -58,7 +67,7 @@
   [coordinator
       animateAlongsideTransition:^(
           id<UIViewControllerTransitionCoordinatorContext> context) {
-        [weakSelf updateLayout];
+        [weakSelf updateLayoutForAppBar];
       }
                       completion:nil];
 }
@@ -88,6 +97,11 @@
   UIView* appBarRealView =
       [self.layoutGuideCenter referencedViewUnderName:kAppBarGuide];
 
+  if (!IsFullscreenRefactoringEnabled()) {
+    [self updateLayoutForAppBar];
+    return;
+  }
+
   _portraitConstraints = @[
     [_appContentView.topAnchor constraintEqualToAnchor:view.topAnchor],
     [_appContentView.leadingAnchor constraintEqualToAnchor:view.leadingAnchor],
@@ -112,19 +126,19 @@
     [_appContentView.bottomAnchor constraintEqualToAnchor:view.bottomAnchor],
   ];
 
-  [self updateLayout];
+  [self updateLayoutForAppBar];
 }
 
 #pragma mark - SceneViewDelegate
 
 - (void)sceneViewDidMoveToWindow:(SceneView*)sceneView {
-  [self updateLayout];
+  [self updateLayoutForAppBar];
 }
 
 #pragma mark - Private
 
 // Updates the layout to adapt to screen changes.
-- (void)updateLayout {
+- (void)updateLayoutForAppBar {
   UIWindowScene* windowScene = self.view.window.windowScene;
   if (!windowScene || !_appBar) {
     return;
@@ -132,6 +146,28 @@
 
   UIInterfaceOrientation orientation =
       windowScene.effectiveGeometry.interfaceOrientation;
+
+  if (!IsFullscreenRefactoringEnabled()) {
+    CGRect frame = self.view.bounds;
+    UIEdgeInsets insets = UIEdgeInsetsZero;
+    switch (orientation) {
+      case UIInterfaceOrientationLandscapeLeft:
+        insets = UIEdgeInsetsMake(0, kAppBarHeight, 0, 0);
+        break;
+
+      case UIInterfaceOrientationLandscapeRight:
+        insets = UIEdgeInsetsMake(0, 0, 0, kAppBarHeight);
+        break;
+
+      case UIInterfaceOrientationPortrait:
+        insets = UIEdgeInsetsMake(0, 0, kAppBarHeight, 0);
+        break;
+
+      default:
+        break;
+    }
+    _appContentView.frame = UIEdgeInsetsInsetRect(frame, insets);
+  }
 
   [NSLayoutConstraint deactivateConstraints:_portraitConstraints];
   [NSLayoutConstraint deactivateConstraints:_landscapeLeftConstraints];

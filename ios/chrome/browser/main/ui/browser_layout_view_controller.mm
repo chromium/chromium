@@ -48,7 +48,7 @@
 - (void)viewDidLoad {
   [super viewDidLoad];
 
-  if (IsChromeNextIaEnabled()) {
+  if (IsFullscreenRefactoringEnabled()) {
     self.view.translatesAutoresizingMaskIntoConstraints = NO;
   }
   // Register for trait changes that affect the tab strip visibility.
@@ -99,7 +99,7 @@
 
   // Add the new active view controller.
   [self addChildViewController:browserViewController];
-  if (IsChromeNextIaEnabled()) {
+  if (IsFullscreenRefactoringEnabled()) {
     browserViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view insertSubview:browserViewController.view atIndex:0];
     AddSameConstraints(self.view, browserViewController.view);

@@ -34,7 +34,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  if (!IsChromeNextIaEnabled()) {
+  if (!IsFullscreenRefactoringEnabled()) {
     self.view.autoresizingMask =
         UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   }

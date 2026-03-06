@@ -860,7 +860,7 @@ const CGFloat kTopDynamicIslandInset = 24;
   self.view.autoresizingMask = initialViewAutoresizing;
 
   [self addChildViewController:self.browserContentViewController];
-  if (IsChromeNextIaEnabled()) {
+  if (IsFullscreenRefactoringEnabled()) {
     self.contentArea.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:self.contentArea];
     AddSameConstraints(self.view, self.contentArea);
@@ -930,7 +930,7 @@ const CGFloat kTopDynamicIslandInset = 24;
     [self updateToolbarState];
   }
 
-  if (!IsChromeNextIaEnabled()) {
+  if (!IsFullscreenRefactoringEnabled()) {
     if (self.ntpCoordinator.isNTPActiveForCurrentWebState &&
         self.webUsageEnabled) {
       self.ntpCoordinator.viewController.view.frame =
@@ -1385,14 +1385,14 @@ const CGFloat kTopDynamicIslandInset = 24;
       self.currentWebState->GetNavigationManager()->LoadIfNecessary();
       self.browserContentViewController.contentView = nil;
       self.browserContentViewController.contentViewController = viewController;
-      if (IsChromeNextIaEnabled()) {
+      if (IsFullscreenRefactoringEnabled()) {
         viewController.view.translatesAutoresizingMaskIntoConstraints = NO;
         [self updateNTPConstraints];
       }
       [NTPCoordinator constrainNamedGuideForFeedIPH];
     } else {
       self.browserContentViewController.contentView = view;
-      if (IsChromeNextIaEnabled()) {
+      if (IsFullscreenRefactoringEnabled()) {
         if (ios::provider::IsFullscreenSmoothScrollingSupported()) {
           view.translatesAutoresizingMaskIntoConstraints = NO;
           AddSameConstraints(self.browserContentViewController.view, view);
@@ -1485,7 +1485,7 @@ const CGFloat kTopDynamicIslandInset = 24;
 
 // Updates the constraints for the NTP view.
 - (void)updateNTPConstraints {
-  CHECK(IsChromeNextIaEnabled());
+  CHECK(IsFullscreenRefactoringEnabled());
   [NSLayoutConstraint deactivateConstraints:_NTPConstraints];
   DCHECK(self.ntpCoordinator.isNTPActiveForCurrentWebState);
   UIViewController* NTPViewController = self.ntpCoordinator.viewController;
@@ -1591,7 +1591,7 @@ const CGFloat kTopDynamicIslandInset = 24;
     return;
   }
 
-  if (IsChromeNextIaEnabled() &&
+  if (IsFullscreenRefactoringEnabled() &&
       self.ntpCoordinator.isNTPActiveForCurrentWebState &&
       self.webUsageEnabled) {
     [self updateNTPConstraints];

@@ -38,6 +38,7 @@
 
 - (void)loadView {
   self.view = [[AppBarContainerView alloc] init];
+  self.view.delegate = self;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
