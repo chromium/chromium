@@ -64,6 +64,9 @@ TEST_F(OmniboxContextMenuControllerTest,
       IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
       omnibox::ToolMode::TOOL_MODE_UNSPECIFIED, file_infos, max_num_files,
       OmniboxPopupState::kNone));
+  EXPECT_TRUE(controller()->IsCommandIdEnabledHelper(
+      IDC_OMNIBOX_CONTEXT_CANVAS, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
+      file_infos, max_num_files, OmniboxPopupState::kNone));
 }
 
 TEST_F(OmniboxContextMenuControllerTest,
@@ -96,6 +99,9 @@ TEST_F(OmniboxContextMenuControllerTest,
       IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
       omnibox::ToolMode::TOOL_MODE_UNSPECIFIED, file_infos, max_num_files,
       OmniboxPopupState::kNone));
+  EXPECT_FALSE(controller()->IsCommandIdEnabledHelper(
+      IDC_OMNIBOX_CONTEXT_CANVAS, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
+      file_infos, max_num_files, OmniboxPopupState::kNone));
   EXPECT_TRUE(controller()->IsCommandIdEnabledHelper(
       IDC_OMNIBOX_CONTEXT_ADD_IMAGE, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
       file_infos, max_num_files, OmniboxPopupState::kNone));
@@ -114,6 +120,9 @@ TEST_F(OmniboxContextMenuControllerTest,
       IDC_OMNIBOX_CONTEXT_CREATE_IMAGES,
       omnibox::ToolMode::TOOL_MODE_UNSPECIFIED, file_infos, max_num_files,
       OmniboxPopupState::kNone));
+  EXPECT_FALSE(controller()->IsCommandIdEnabledHelper(
+      IDC_OMNIBOX_CONTEXT_CANVAS, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
+      file_infos, max_num_files, OmniboxPopupState::kNone));
   EXPECT_TRUE(controller()->IsCommandIdEnabledHelper(
       IDC_OMNIBOX_CONTEXT_ADD_IMAGE, omnibox::ToolMode::TOOL_MODE_UNSPECIFIED,
       file_infos, max_num_files, OmniboxPopupState::kNone));
