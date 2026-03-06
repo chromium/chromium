@@ -95,15 +95,16 @@ CastStreamingSession::ReceiverSessionClient::ReceiverSessionClient(
       environment_(&openscreen::Clock::now,
                    task_runner_,
                    GetReceiverStreamingEndpoint()),
-      cast_message_port_converter_(CastMessagePortConverter::Create(
-          std::move(message_port_provider),
-          base::BindOnce(
-              &CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed,
-              base::Unretained(this)))),
       client_(client),
       weak_factory_(this) {
   DCHECK(task_runner);
   DCHECK(client_);
+
+  cast_message_port_converter_ = CastMessagePortConverter::Create(
+      std::move(message_port_provider),
+      base::BindOnce(
+          &CastStreamingSession::ReceiverSessionClient::OnCastChannelClosed,
+          weak_factory_.GetWeakPtr()));
 
   // This will fail if the "trivial" implementation of
   // CastMessagePortConverter::Create is linked.
