@@ -8,23 +8,15 @@
 <script>
 "use strict";
 
-// Set the 'loopback-network' permission then attempt to fetch a URL in the
-// loopback address space from a dedicated worker.
+// Set permissions, then attempts to fetch a URL in the loopback address space
+// from a dedicated worker.
 //
-// By default, 'loopback-network' permission is set to 'granted'. This can
-// be changed by passing in a different value via the 'permission' URL parameter.
-// Valid values:
-//
-//    * granted
-//    * denied
-//    * prompt
+// Permission setting is documented in the sourceResolveOptions() function in
+// support.sub.js.
 Promise.resolve().then(async () => {
     const window_url = new URL(window.location.href);
-    let permission_name = 'loopback-network'
-    let permission_value = 'granted';
-    if (window_url.searchParams.has('permission')) {
-        permission_value = window_url.searchParams.get('permission');
-    }
+    let permission_name = getPermissionName(window_url);
+    let permission_value = getPermissionValue(window_url);
     test_driver.set_test_context(opener);
     await test_driver.set_permission({ name: permission_name }, permission_value);
 

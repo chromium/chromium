@@ -11,12 +11,14 @@
   "use strict";
 
   promise_test(t => {
-
     const sourceUrl = resolveUrl("resources/dedicated-worker.html",
-        sourceResolveOptions({ server: Server.HTTPS_PUBLIC }));
+        sourceResolveOptions({
+            server: Server.HTTPS_PUBLIC,
+            permissionName: 'loopback-network',
+            permissionValue: 'granted'}));
 
     function checkResult(evt) {
-      checkTestResult(evt.data, FetchTestResult.SUCCESS);
+      checkFetchTestResult(evt.data, FetchTestResult.SUCCESS);
       t.done();
     }
 
