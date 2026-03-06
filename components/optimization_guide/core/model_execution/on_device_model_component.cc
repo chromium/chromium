@@ -84,7 +84,7 @@ void LogInstallCriteria(
       !criteria.is_already_installing) {
     LogInstallCriteria(
         "InitialInstall", "IsBackground",
-        criteria.get_install_mode() == ModelInstallMode::kBackground);
+        criteria.get_install_mode() == ModelInstallMode::kRegisterOnly);
   }
 }
 
@@ -573,21 +573,6 @@ void OnDeviceModelComponentStateManager::UpdateRegistration() {
   }
 
   if (component_installer_state_ == ComponentInstallerState::kRegistered) {
-    if (registration_criteria_->get_install_mode() ==
-        ModelInstallMode::kOnDemand) {
-      component_installer_state_ =
-          ComponentInstallerState::kOnDemandDownloading;
-      delegate_->RequestUpdate(/*is_background=*/false);
-    } else {
-      component_installer_state_ =
-          ComponentInstallerState::kBackgroundDownloading;
-      delegate_->RequestUpdate(/*is_background=*/true);
-    }
-    return;
-  }
-
-  if (component_installer_state_ ==
-      ComponentInstallerState::kBackgroundDownloading) {
     if (registration_criteria_->get_install_mode() ==
         ModelInstallMode::kOnDemand) {
       component_installer_state_ =

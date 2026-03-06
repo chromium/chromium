@@ -758,7 +758,6 @@ TEST_F(OnDeviceModelComponentTest,
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
-  EXPECT_TRUE(broker_.component_state().requested_background_update());
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "InitialInstall.IsBackground",
@@ -774,7 +773,6 @@ TEST_F(OnDeviceModelComponentTest, BackgroundDownloadBlockedOnExperimentFlag) {
 
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
-  EXPECT_FALSE(broker_.component_state().requested_background_update());
 }
 
 TEST_F(OnDeviceModelComponentTest,
@@ -810,7 +808,6 @@ TEST_F(OnDeviceModelComponentTest, FeatureUseUpgradesToOnDemand) {
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
 
-  EXPECT_TRUE(broker_.component_state().requested_background_update());
   EXPECT_FALSE(broker_.component_state().requested_foreground_update());
 
   broker_.GetOrCreateBrokerState().usage_tracker().OnDeviceEligibleFeatureUsed(

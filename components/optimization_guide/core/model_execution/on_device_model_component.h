@@ -135,11 +135,12 @@ class OnDeviceModelComponentState {
 };
 
 enum class ModelInstallMode {
-  // Install the model on-demand (foreground download).
+  // Install the model with on-demand install (foreground download).
   kOnDemand = 0,
-  // Install the model on regular schedule (background download).
-  kBackground = 1,
-  kMaxValue = kBackground,
+  // Install the model by registering the component and wait for regular
+  // schedule.
+  kRegisterOnly = 1,
+  kMaxValue = kRegisterOnly,
 };
 
 // The attributes selected when registering an on-device model component.
@@ -274,7 +275,7 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
             features::
                 IsFreeDiskSpaceSufficientForBackgroundOnDeviceModelInstall(
                     disk_space_free)) {
-          return ModelInstallMode::kBackground;
+          return ModelInstallMode::kRegisterOnly;
         }
       }
       return std::nullopt;
@@ -294,8 +295,6 @@ class OnDeviceModelComponentStateManager final : public UsageTracker::Observer {
     kRegistering,
     // Registration completed, installation may or may not be happening yet.
     kRegistered,
-    // Registered and requested on demand update with background priority.
-    kBackgroundDownloading,
     // Registered and requested on demand update with foreground priority.
     kOnDemandDownloading,
     // Component is fully installed.
