@@ -641,6 +641,54 @@
             "--bucket",
             "chromium-result-details",
             "--test-name",
+            "cast_unittests"
+          ],
+          "script": "//build/android/pylib/results/presentation/test_results_presentation.py"
+        },
+        "module_name": "//media/cast:cast_unittests",
+        "module_scheme": "gtest",
+        "name": "cast_unittests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "swarming": {
+          "dimensions": {
+            "cores": "8",
+            "cpu": "x86-64",
+            "device_os": null,
+            "device_type": null,
+            "os": "Ubuntu-22.04",
+            "pool": "chromium.tests.avd"
+          },
+          "named_caches": [
+            {
+              "name": "android_35_google_apis_x64_tablet",
+              "path": ".android_emulator/android_35_google_apis_x64_tablet"
+            }
+          ],
+          "optional_dimensions": {
+            "60": {
+              "caches": "android_35_google_apis_x64_tablet"
+            }
+          },
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "cast_unittests",
+        "test_id_prefix": "ninja://media/cast:cast_unittests/"
+      },
+      {
+        "args": [
+          "--avd-config=../../tools/android/avd/proto/android_35_google_apis_x64_tablet.textpb",
+          "--gs-results-bucket=chromium-result-details",
+          "--recover-devices"
+        ],
+        "description": "Run with android_35_google_apis_x64_tablet",
+        "merge": {
+          "args": [
+            "--bucket",
+            "chromium-result-details",
+            "--test-name",
             "cc_unittests"
           ],
           "script": "//build/android/pylib/results/presentation/test_results_presentation.py"

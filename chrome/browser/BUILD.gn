@@ -2134,6 +2134,7 @@ static_library("browser") {
     "//components/metrics/structured:structured_events",
     "//components/metrics/structured:structured_metrics_validator",
     "//components/metrics_services_manager",
+    "//components/mirroring/service:mirroring_service",
     "//components/navigation_interception",
     "//components/navigation_metrics",
     "//components/net_log",
@@ -7426,15 +7427,6 @@ static_library("browser") {
     deps += [ "//media/mojo/mojom:remoting" ]
   }
 
-  if (!is_android) {
-    deps += [
-      "//components/mirroring/browser",
-      "//components/mirroring/mojom:service",
-      "//components/mirroring/service:mirroring_service",
-      "//media/cast:sender",
-    ]
-  }
-
   if (is_android && !enable_desktop_android_extensions) {
     sources += [ "download/download_crx_util_android.cc" ]
   }
@@ -7720,6 +7712,13 @@ static_library("browser") {
       "//google_apis/calendar",
       "//google_apis/common",
       "//google_apis/drive",
+      "//media/cast:sender",
+    ]
+    deps += [
+      # TODO(crbug.com/41410773): mirroring shouldn't depend on enable_extensions.
+      "//components/mirroring/browser",
+      "//components/mirroring/mojom:service",
+      "//components/mirroring/service:mirroring_service",
     ]
     deps += [
       # TODO(crbug.com/402488726): Support supervised user UI on desktop

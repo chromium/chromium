@@ -7377,6 +7377,7 @@ test("unit_tests") {
     "//components/metrics/private_metrics",
     "//components/metrics/structured",
     "//components/metrics/structured/lib",
+    "//components/mirroring:mirroring_tests",
     "//components/no_state_prefetch/browser",
     "//components/no_state_prefetch/common",
     "//components/offline_items_collection/core/test_support",
@@ -7643,11 +7644,6 @@ test("unit_tests") {
   # Duplicate these tests here because PathService has more providers in
   # unit_tests than in base_unittests.
   deps += [ "//base:path_service_unittest" ]
-
-  # The mirroring service is not currently built on Android.
-  if (!is_android) {
-    deps += [ "//components/mirroring:mirroring_tests" ]
-  }
 
   if (enable_captive_portal_detection) {
     deps += [ "//chrome/browser/captive_portal" ]

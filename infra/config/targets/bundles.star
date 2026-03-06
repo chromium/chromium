@@ -29,7 +29,7 @@ targets.bundle(
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
@@ -79,7 +79,7 @@ targets.bundle(
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
@@ -111,7 +111,7 @@ targets.bundle(
         # Already includes gl_gtests.
         "android_specific_chromium_gtests",
         "chrome_profile_generator_tests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
         "jni_zero_sample_apk_test",
@@ -152,7 +152,7 @@ targets.bundle(
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chrome_profile_generator_tests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "fieldtrial_android_tests",
         "jni_zero_sample_apk_test",
@@ -218,7 +218,7 @@ targets.bundle(
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
@@ -241,7 +241,7 @@ targets.bundle(
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chrome_public_tests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
@@ -275,7 +275,7 @@ targets.bundle(
     name = "android_15_emulator_gtests",
     targets = [
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
@@ -317,7 +317,7 @@ targets.bundle(
     targets = [
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chrome_profile_generator_tests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
@@ -363,7 +363,7 @@ targets.bundle(
     targets = [
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chrome_profile_generator_tests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "android_emulator_specific_chrome_public_tests",
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
@@ -679,7 +679,7 @@ targets.bundle(
         "android_trichrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
@@ -724,7 +724,7 @@ targets.bundle(
     targets = [
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "chrome_public_tests",
         "linux_flavor_specific_chromium_gtests",
@@ -741,7 +741,7 @@ targets.bundle(
         "android_emulator_specific_network_enabled_content_browsertests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",
@@ -790,7 +790,7 @@ targets.bundle(
         "android_emulator_specific_network_enabled_content_browsertests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",
@@ -822,7 +822,7 @@ targets.bundle(
         "android_emulator_specific_chrome_public_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "system_webview_shell_instrumentation_tests",  # Not an experimental test
@@ -840,7 +840,7 @@ targets.bundle(
         "android_pie_rel_reduced_capacity_gtests",
         "android_smoke_tests",
         # "android_specific_chromium_gtests",  # Already includes gl_gtests.
-        # "chromium_gtests_android",
+        # "chromium_gtests",
         # "chromium_gtests_for_devices_with_graphical_output",
         "chrome_public_tests",
         # "linux_flavor_specific_chromium_gtests",
@@ -1616,7 +1616,7 @@ targets.bundle(
         "android_smoke_tests",
         "android_specific_chromium_gtests",  # Already includes gl_gtests.
         "chrome_public_tests",
-        "chromium_gtests_android",
+        "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
         "vr_android_specific_chromium_tests",
@@ -1757,14 +1757,6 @@ targets.bundle(
                 shards = 3,
             ),
         ),
-    },
-)
-
-targets.bundle(
-    name = "chromium_gtests_android",
-    targets = ["chromium_gtests"],
-    per_test_modifications = {
-        "cast_unittests": targets.remove(reason = "Does not build on Android"),
     },
 )
 

@@ -201,6 +201,7 @@ group("gn_all") {
         "//gpu:gpu_unittests",
         "//media:media_unittests",
         "//media/capture:capture_unittests",
+        "//media/cast:cast_unittests",
         "//media/midi:midi_unittests",
         "//media/mojo:media_mojo_unittests",
         "//mojo",
@@ -227,10 +228,6 @@ group("gn_all") {
 
       if (!v8_use_external_startup_data) {
         deps += [ "//v8:v8_snapshot" ]
-      }
-
-      if (!is_android) {
-        deps += [ "//media/cast:cast_unittests" ]
       }
     }
 
