@@ -4837,6 +4837,7 @@ static_library("ui") {
       "//chrome/browser/ui/webauthn:impl",
       "//chrome/browser/ui/webui/app_service_internals",
       "//chrome/browser/ui/webui/autofill_ml_internals",
+      "//chrome/browser/ui/webui/content_annotator_internals",
       "//chrome/browser/ui/webui/side_panel/customize_chrome",
       "//chrome/browser/ui/window_name_prompt",
       "//components/collaboration/public",

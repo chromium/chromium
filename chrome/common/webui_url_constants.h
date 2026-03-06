@@ -89,6 +89,12 @@ inline constexpr char kChromeUIConstrainedHTMLTestHost[] = "constrained-test";
 inline constexpr char kChromeUIConstrainedHTMLTestURL[] =
     "chrome://constrained-test/";
 inline constexpr char kChromeUIContactInfoPath[] = "/contactInfo";
+#if !BUILDFLAG(IS_ANDROID)
+inline constexpr char kChromeUIContentAnnotatorInternalsHost[] =
+    "content-annotator-internals";
+inline constexpr char kChromeUIContentAnnotatorInternalsURL[] =
+    "chrome://content-annotator-internals/";
+#endif
 inline constexpr char kChromeUIContextualTasksHost[] = "contextual-tasks";
 inline constexpr char kChromeUIContextualTasksURL[] =
     "chrome://contextual-tasks/";

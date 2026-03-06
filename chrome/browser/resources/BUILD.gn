@@ -43,6 +43,7 @@ group("resources") {
       "autofill_ml_internals:resources",
       "bookmarks:resources",
       "certificate_manager:resources",
+      "content_annotator_internals:resources",
       "data_sharing:resources",
       "downloads:resources",
       "feedback:resources",

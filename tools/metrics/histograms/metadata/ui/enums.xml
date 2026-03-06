@@ -920,6 +920,7 @@ chromium-metrics-reviews@google.com.
   <int value="745470397" label="chrome://parent-access/"/>
   <int value="749881882" label="chrome://webuijserror/"/>
   <int value="754315733" label="chrome://theme/"/>
+  <int value="757366070" label="chrome://content-annotator-internals/"/>
   <int value="762064551" label="chrome://graduation/"/>
   <int value="770641362" label="chrome://shortcut-customization/"/>
   <int value="784140714" label="chrome://predictors/"/>

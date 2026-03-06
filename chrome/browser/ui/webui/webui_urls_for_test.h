@@ -53,6 +53,9 @@ static const char* const kChromeUrls[] = {
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
     "chrome://connectors-internals",
+#if !BUILDFLAG(IS_ANDROID)
+    "chrome://content-annotator-internals",
+#endif
     "chrome://crashes",
 // TODO(crbug.com/40913109): Re-enable this test
 #if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
