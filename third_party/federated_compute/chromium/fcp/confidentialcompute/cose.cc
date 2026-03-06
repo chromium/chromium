@@ -39,6 +39,7 @@ namespace {
 // CWT Claims; see https://www.iana.org/assignments/cwt/cwt.xhtml.
 enum CwtClaim {
   kExp = 4,  // Expiration time.
+  kNbf = 5,  // Not before.
   kIat = 6,  // Issued at.
 
   // Claims in the private space (-65537 and below).
@@ -46,10 +47,14 @@ enum CwtClaim {
   // this project and
   // https://github.com/project-oak/oak/blob/main/oak_dice/src/cert.rs for Oak
   // claims.
-  kPublicKey = -65537,           // Claim containing serialized public key.
-  kConfigProperties = -65538,    // Claim containing configuration properties.
-  kAccessPolicySha256 = -65543,  // Claim containing access policy hash.
-  kOakPublicKey = -4670552,      // Oak claim containing serialized public key.
+  kPublicKey = -65537,            // Claim containing serialized public key.
+  kConfigProperties = -65538,     // Claim containing configuration properties.
+  kLogicalPipelineName = -65539,  // Claim containing logical pipeline name.
+  kInvocationId = -65540,         // Claim containing pipeline invocation ID.
+  kTransformIndex = -65541,       // Claim containing transform index in policy.
+  kDstNodeIds = -65542,           // Claim containing transform dst node IDs.
+  kAccessPolicySha256 = -65543,   // Claim containing access policy hash.
+  kOakPublicKey = -4670552,       // Oak claim containing serialized public key.
 };
 
 // COSE Header parameters; see https://www.iana.org/assignments/cose/cose.xhtml.
@@ -77,6 +82,12 @@ enum CoseKeyParameter {
   kOkpX = -2,
   kOkpD = -4,
 
+  // EC2 parameters.
+  kEc2Crv = -1,
+  kEc2X = -2,
+  kEc2Y = -3,
+  kEc2D = -4,
+
   // Symmetric parameters.
   kSymmetricK = -1,
 };
@@ -84,6 +95,7 @@ enum CoseKeyParameter {
 // COSE Key types; see https://www.iana.org/assignments/cose/cose.xhtml.
 enum CoseKeyType {
   kOkp = 1,
+  kEc2 = 2,
   kSymmetric = 4,
 };
 
@@ -118,11 +130,17 @@ std::vector<uint8_t> BuildProtectedHeader(
 
 // Builds the payload for a CWT, which is a map of CWT claims encoded as a bstr.
 // See RFC 8392 section 7.1.
-absl::StatusOr<std::vector<uint8_t>> BuildCwtPayload(const OkpCwt& cwt) {
+template <typename T>
+absl::StatusOr<std::vector<uint8_t>> BuildCwtPayload(
+    const cose_internal::BaseCwt<T>& cwt) {
   cbor::Value::MapValue map;
   if (cwt.expiration_time) {
     map.emplace(cbor::Value(CwtClaim::kExp),
                 cbor::Value(absl::ToUnixSeconds(*cwt.expiration_time)));
+  }
+  if (cwt.not_before) {
+    map.emplace(cbor::Value(CwtClaim::kNbf),
+                cbor::Value(absl::ToUnixSeconds(*cwt.not_before)));
   }
   if (cwt.issued_at) {
     map.emplace(cbor::Value(CwtClaim::kIat),
@@ -139,6 +157,26 @@ absl::StatusOr<std::vector<uint8_t>> BuildCwtPayload(const OkpCwt& cwt) {
     map.emplace(
         cbor::Value(CwtClaim::kConfigProperties),
         cbor::Value(cwt.config_properties, cbor::Value::Type::BYTE_STRING));
+  }
+  if (!cwt.logical_pipeline_name.empty()) {
+    map.emplace(cbor::Value(CwtClaim::kLogicalPipelineName),
+                cbor::Value(cwt.logical_pipeline_name));
+  }
+  if (!cwt.invocation_id.empty()) {
+    map.emplace(cbor::Value(CwtClaim::kInvocationId),
+                cbor::Value(cwt.invocation_id, cbor::Value::Type::BYTE_STRING));
+  }
+  if (cwt.transform_index) {
+    map.emplace(cbor::Value(CwtClaim::kTransformIndex),
+                static_cast<int64_t>(*cwt.transform_index));
+  }
+  if (!cwt.dst_node_ids.empty()) {
+    cbor::Value::ArrayValue dst_node_ids_array;
+    for (uint32_t dst_node_id : cwt.dst_node_ids) {
+      dst_node_ids_array.emplace_back(static_cast<int64_t>(dst_node_id));
+    }
+    map.emplace(cbor::Value(CwtClaim::kDstNodeIds),
+                std::move(dst_node_ids_array));
   }
   if (!cwt.access_policy_sha256.empty()) {
     map.emplace(
@@ -215,9 +253,10 @@ absl::Status ParseProtectedHeader(
   return absl::OkStatus();
 }
 
-// Parses a serialized CWT payload and updates the OkpCwt.
+// Parses a serialized CWT payload and updates the CWT.
+template <typename T>
 absl::Status ParseCwtPayload(const std::vector<uint8_t>& serialized_payload,
-                             OkpCwt& cwt) {
+                             cose_internal::BaseCwt<T>& cwt) {
   std::optional<cbor::Value> payload = cbor::Reader::Read(serialized_payload);
   if (!payload || !payload->is_map()) {
     return absl::InvalidArgumentError("cwt payload is invalid");
@@ -238,6 +277,14 @@ absl::Status ParseCwtPayload(const std::vector<uint8_t>& serialized_payload,
         cwt.expiration_time = absl::FromUnixSeconds(value.GetInteger());
         break;
 
+      case CwtClaim::kNbf:
+        if (!value.is_integer()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported nbf type ", value.type()));
+        }
+        cwt.not_before = absl::FromUnixSeconds(value.GetInteger());
+        break;
+
       case CwtClaim::kIat:
         if (!value.is_integer()) {
           return absl::InvalidArgumentError(
@@ -253,7 +300,7 @@ absl::Status ParseCwtPayload(const std::vector<uint8_t>& serialized_payload,
               absl::StrCat("unsupported public_key type ", value.type()));
         }
         FCP_ASSIGN_OR_RETURN(cwt.public_key,
-                             OkpKey::Decode(value.GetBytestringAsString()));
+                             T::Decode(value.GetBytestringAsString()));
         break;
       }
 
@@ -263,6 +310,45 @@ absl::Status ParseCwtPayload(const std::vector<uint8_t>& serialized_payload,
               absl::StrCat("unsupported configuration type ", value.type()));
         }
         cwt.config_properties = value.GetBytestringAsString();
+        break;
+
+      case CwtClaim::kLogicalPipelineName:
+        if (!value.is_string()) {
+          return absl::InvalidArgumentError(absl::StrCat(
+              "unsupported logical_pipeline_name type ", value.type()));
+        }
+        cwt.logical_pipeline_name = value.GetString();
+        break;
+
+      case CwtClaim::kInvocationId:
+        if (!value.is_bytestring()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported invocation_id type ", value.type()));
+        }
+        cwt.invocation_id = value.GetBytestringAsString();
+        break;
+
+      case CwtClaim::kTransformIndex:
+        if (!value.is_integer()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported transform_index type ", value.type()));
+        }
+        cwt.transform_index = value.GetInteger();
+        break;
+
+      case CwtClaim::kDstNodeIds:
+        if (!value.is_array()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported dst_node_ids type ", value.type()));
+        }
+        for (const auto& element : value.GetArray()) {
+          if (!element.is_integer()) {
+            return absl::InvalidArgumentError(absl::StrCat(
+                "unsupported dst_node_ids element type ", element.type()));
+          }
+          cwt.dst_node_ids.push_back(
+              static_cast<uint32_t>(element.GetInteger()));
+        }
         break;
 
       case CwtClaim::kAccessPolicySha256:
@@ -554,6 +640,144 @@ absl::StatusOr<std::string> OkpKey::Encode() const {
   return std::string(encoded_key->begin(), encoded_key->end());
 }
 
+absl::StatusOr<Ec2Key> Ec2Key::Decode(absl::string_view encoded) {
+  std::optional<cbor::Value> item =
+      cbor::Reader::Read(std::vector<uint8_t>(encoded.begin(), encoded.end()));
+  if (!item || !item->is_map()) {
+    return absl::InvalidArgumentError("Ec2Key is invalid");
+  }
+
+  // Process the parameters map.
+  std::optional<uint64_t> kty;
+  Ec2Key ec2_key;
+  for (const auto& [key, value] : item->GetMap()) {
+    if (!key.is_integer()) {
+      continue;  // Ignore other key types.
+    }
+    switch (key.GetInteger()) {
+      case CoseKeyParameter::kKty:
+        if (!value.is_integer()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported kty type ", value.type()));
+        }
+        kty = value.GetInteger();
+        break;
+
+      case CoseKeyParameter::kKid:
+        if (!value.is_bytestring()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported kid type ", value.type()));
+        }
+        ec2_key.key_id = value.GetBytestringAsString();
+        break;
+
+      case CoseKeyParameter::kAlg:
+        if (!value.is_integer()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported alg type ", value.type()));
+        }
+        ec2_key.algorithm = value.GetInteger();
+        break;
+
+      case CoseKeyParameter::kKeyOps:
+        if (!value.is_array()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported key_ops type ", value.type()));
+        }
+        for (const auto& entry : value.GetArray()) {
+          if (!entry.is_integer()) {
+            return absl::InvalidArgumentError(
+                absl::StrCat("unsupported key_ops entry type", entry.type()));
+          }
+          ec2_key.key_ops.push_back(entry.GetInteger());
+        }
+        break;
+
+      case CoseKeyParameter::kEc2Crv:
+        if (!value.is_integer()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported curve type ", value.type()));
+        }
+        ec2_key.curve = value.GetInteger();
+        break;
+
+      case CoseKeyParameter::kEc2X:
+        if (!value.is_bytestring()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported x type ", value.type()));
+        }
+        ec2_key.x = value.GetBytestringAsString();
+        break;
+
+      case CoseKeyParameter::kEc2Y:
+        if (!value.is_bytestring()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported y type ", value.type()));
+        }
+        ec2_key.y = value.GetBytestringAsString();
+        break;
+
+      case CoseKeyParameter::kEc2D:
+        if (!value.is_bytestring()) {
+          return absl::InvalidArgumentError(
+              absl::StrCat("unsupported d type ", value.type()));
+        }
+        ec2_key.d = value.GetBytestringAsString();
+        break;
+
+      default:
+        break;
+    }
+  }
+
+  if (!kty.has_value() || *kty != CoseKeyType::kEc2) {
+    return absl::InvalidArgumentError("missing or wrong Cose_Key type");
+  }
+  return ec2_key;
+}
+
+absl::StatusOr<std::string> Ec2Key::Encode() const {
+  // Generate a map containing the parameters that are set.
+  cbor::Value::MapValue map;
+  map.emplace(CoseKeyParameter::kKty, CoseKeyType::kEc2);
+  if (!key_id.empty()) {
+    map.emplace(CoseKeyParameter::kKid,
+                cbor::Value(key_id, cbor::Value::Type::BYTE_STRING));
+  }
+  if (algorithm) {
+    map.emplace(CoseKeyParameter::kAlg, *algorithm);
+  }
+  if (!key_ops.empty()) {
+    cbor::Value::ArrayValue array;
+    for (int64_t key_op : key_ops) {
+      array.emplace_back(key_op);
+    }
+    map.emplace(CoseKeyParameter::kKeyOps, std::move(array));
+  }
+  if (curve) {
+    map.emplace(CoseKeyParameter::kEc2Crv, *curve);
+  }
+  if (!x.empty()) {
+    map.emplace(CoseKeyParameter::kEc2X,
+                cbor::Value(x, cbor::Value::Type::BYTE_STRING));
+  }
+  if (!y.empty()) {
+    map.emplace(CoseKeyParameter::kEc2Y,
+                cbor::Value(y, cbor::Value::Type::BYTE_STRING));
+  }
+  if (!d.empty()) {
+    map.emplace(CoseKeyParameter::kEc2D,
+                cbor::Value(d, cbor::Value::Type::BYTE_STRING));
+  }
+
+  std::optional<std::vector<uint8_t>> encoded_key =
+      cbor::Writer::Write(cbor::Value(std::move(map)));
+  if (!encoded_key) {
+    return absl::InternalError("failed to encode Ec2Key");
+  }
+  return std::string(encoded_key->begin(), encoded_key->end());
+}
+
 absl::StatusOr<SymmetricKey> SymmetricKey::Decode(absl::string_view encoded) {
   std::optional<cbor::Value> symmetric_key_value =
       cbor::Reader::Read(std::vector<uint8_t>(encoded.begin(), encoded.end()));
@@ -618,7 +842,9 @@ absl::StatusOr<SymmetricKey> SymmetricKey::Decode(absl::string_view encoded) {
   return symmetric_key;
 }
 
-absl::StatusOr<std::string> OkpCwt::BuildSigStructureForSigning(
+template <typename T>
+absl::StatusOr<std::string>
+cose_internal::BaseCwt<T>::BuildSigStructureForSigning(
     absl::string_view aad) const {
   std::vector<uint8_t> protected_header =
       BuildProtectedHeader(algorithm, /*src_state=*/std::nullopt,
@@ -628,7 +854,9 @@ absl::StatusOr<std::string> OkpCwt::BuildSigStructureForSigning(
                            std::move(payload));
 }
 
-absl::StatusOr<std::string> OkpCwt::GetSigStructureForVerifying(
+template <typename T>
+absl::StatusOr<std::string>
+cose_internal::BaseCwt<T>::GetSigStructureForVerifying(
     absl::string_view encoded,
     absl::string_view aad) {
   std::vector<uint8_t> body_protected, payload;
@@ -640,13 +868,15 @@ absl::StatusOr<std::string> OkpCwt::GetSigStructureForVerifying(
                            aad, std::move(payload));
 }
 
-absl::StatusOr<OkpCwt> OkpCwt::Decode(absl::string_view encoded) {
+template <typename T>
+absl::StatusOr<cose_internal::BaseCwt<T>> cose_internal::BaseCwt<T>::Decode(
+    absl::string_view encoded) {
   std::vector<uint8_t> body_protected, payload, signature;
   std::optional<std::vector<uint8_t>> sign_protected;
   FCP_ASSIGN_OR_RETURN(
       std::tie(body_protected, sign_protected, payload, signature),
       ParseCoseSign(encoded));
-  OkpCwt cwt;
+  cose_internal::BaseCwt<T> cwt;
   // When decoding a COSE_Sign structure, information will be in the signer
   // protected header instead of the body protected header.
   FCP_RETURN_IF_ERROR(ParseProtectedHeader(
@@ -658,7 +888,8 @@ absl::StatusOr<OkpCwt> OkpCwt::Decode(absl::string_view encoded) {
   return cwt;
 }
 
-absl::StatusOr<std::string> OkpCwt::Encode() const {
+template <typename T>
+absl::StatusOr<std::string> cose_internal::BaseCwt<T>::Encode() const {
   // See RFC 9052 section 4.2 for the contents of the COSE_Sign1 structure.
   cbor::Value::ArrayValue array;
   array.emplace_back(BuildProtectedHeader(algorithm, /*src_state=*/std::nullopt,
@@ -792,6 +1023,9 @@ absl::StatusOr<std::string> ReleaseToken::Encode() const {
   }
   return std::string(encoded_array->begin(), encoded_array->end());
 }
+
+template struct cose_internal::BaseCwt<OkpKey>;
+template struct cose_internal::BaseCwt<Ec2Key>;
 
 absl::StatusOr<std::string> SymmetricKey::Encode(
     bool _encode_without_libcppbor) const {

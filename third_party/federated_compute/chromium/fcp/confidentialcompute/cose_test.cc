@@ -98,6 +98,70 @@ TEST(OkpKeyTest, DecodeInvalid) {
               IsCode(absl::StatusCode::kInvalidArgument));
 }
 
+TEST(Ec2KeyTest, EncodeEmpty) {
+  EXPECT_THAT(Ec2Key().Encode(),
+              IsOkAndHolds("\xa1"      // map with 1 item:
+                           "\x01\x02"  // key type (1): EC2 (2)
+                           ));
+}
+
+TEST(Ec2KeyTest, EncodeFull) {
+  EXPECT_THAT((Ec2Key{
+                   .key_id = "key-id",
+                   .algorithm = 7,
+                   .key_ops = {1, 2},
+                   .curve = 45,
+                   .x = "x-value",
+                   .y = "y-value",
+                   .d = "d-value",
+               })
+                  .Encode(),
+              IsOkAndHolds("\xa8"                // map with 7 items:
+                           "\x01\x02"            // key type (1): EC2 (2)
+                           "\x02\x46key-id"      // key id (2): b"key-id"
+                           "\x03\x07"            // algorithm (3): 7
+                           "\x04\x82\x01\x02"    // key_ops (4): [1, 2]
+                           "\x20\x18\x2d"        // curve (-1): 45
+                           "\x21\x47x-value"     // x (-2): b"x-value"
+                           "\x22\x47y-value"     // y (-3): b"y-value"
+                           "\x23\x47\x64-value"  // d (-4): b"d-value"
+                           ));
+}
+
+TEST(Ec2KeyTest, DecodeEmpty) {
+  absl::StatusOr<Ec2Key> key = Ec2Key::Decode("\xa1\x01\x02");
+  ASSERT_OK(key);
+  EXPECT_EQ(key->key_id, "");
+  EXPECT_EQ(key->algorithm, std::nullopt);
+  EXPECT_THAT(key->key_ops, IsEmpty());
+  EXPECT_EQ(key->curve, std::nullopt);
+  EXPECT_EQ(key->x, "");
+  EXPECT_EQ(key->y, "");
+  EXPECT_EQ(key->d, "");
+}
+
+TEST(Ec2KeyTest, DecodeFull) {
+  absl::StatusOr<Ec2Key> key = Ec2Key::Decode(
+      "\xa8\x01\x02\x02\x46key-id\x03\x07\x04\x82\x01\x02\x20\x18\x2d\x21\x47x-"
+      "value\x22\x47y-value\x23\x47\x64-value");
+  ASSERT_OK(key);
+  EXPECT_EQ(key->key_id, "key-id");
+  EXPECT_EQ(key->algorithm, 7);
+  EXPECT_THAT(key->key_ops, ElementsAre(1, 2));
+  EXPECT_EQ(key->curve, 45);
+  EXPECT_EQ(key->x, "x-value");
+  EXPECT_EQ(key->y, "y-value");
+  EXPECT_EQ(key->d, "d-value");
+}
+
+TEST(Ec2KeyTest, DecodeInvalid) {
+  EXPECT_THAT(Ec2Key::Decode(""), IsCode(absl::StatusCode::kInvalidArgument));
+  EXPECT_THAT(Ec2Key::Decode("\xa5"),  // map with 5 items
+              IsCode(absl::StatusCode::kInvalidArgument));
+  EXPECT_THAT(Ec2Key::Decode("\xa0 extra"),  // map with 0 items + " extra"
+              IsCode(absl::StatusCode::kInvalidArgument));
+}
+
 using SymmetricKeyEncodeTest = testing::TestWithParam<bool>;
 INSTANTIATE_TEST_SUITE_P(EncodeWithoutLibcppbor,
                          SymmetricKeyEncodeTest,
@@ -215,12 +279,22 @@ TEST(OkpCwtTest, BuildSigStructureForSigningEmpty) {
 }
 
 TEST(OkpCwtTest, BuildSigStructureForSigningFull) {
+  google::protobuf::Struct config_properties;
+  (*config_properties.mutable_fields())["x"].set_bool_value(true);
+
   EXPECT_THAT(
       (OkpCwt{
            .algorithm = 7,
            .issued_at = absl::FromUnixSeconds(1000),
+           .not_before = absl::FromUnixSeconds(900),
            .expiration_time = absl::FromUnixSeconds(2000),
            .public_key = OkpKey(),
+           .config_properties = config_properties.SerializeAsString(),
+           .logical_pipeline_name = "name",
+           .invocation_id = "id",
+           .transform_index = 3,
+           .dst_node_ids = {0, 1, 2},
+           .access_policy_sha256 = "hash",
            .signature = "signature",
        })
           .BuildSigStructureForSigning("aad"),
@@ -231,20 +305,46 @@ TEST(OkpCwtTest, BuildSigStructureForSigningFull) {
           "\x01\x07"        // alg: 7
           "\x43"            // associated data: 3-byte string
           "aad"
-          "\x52\xa3"          // payload: bstr map w/ 3 items (claims)
+          "\x58\x50\xaa"      // payload: bstr map w/ 10 items (claims)
           "\x04\x19\x07\xd0"  // expiration time (4) = 2000
+          "\x05\x19\x03\x84"  // not before (5) = 900
           "\x06\x19\x03\xe8"  // issued at (6) = 1000
-          "\x3a\x00\x01\x00\x00\x43\xa1\x01\x01",  // public key (-65537)
-                                                   // = empty OkpKey
-          39)));
+          "\x3a\x00\x01\x00\x00\x43\xa1\x01\x01"  // public key (-65537)
+                                                  // = empty OkpKey
+          "\x3a\x00\x01\x00\x01\x49"              // config (-65538) = {
+          "\x0a\x07"                              //   fields (1) {
+          "\x0a\x01x"                             //     key (1): "x"
+          "\x12\x02"                              //     value (2): {
+          "\x20\x01"                              //     bool_value (4): true
+                                                  //   }
+                                                  // }
+          "\x3a\x00\x01\x00\x02\x64name"          // logical pipeline name
+                                                  // (-65539) = "name"
+          "\x3a\x00\x01\x00\x03\x42id"  // invocation id (-65540) = b"id"
+          "\x3a\x00\x01\x00\x04\x03"    // transform index (-64441) = 3
+          "\x3a\x00\x01\x00\x05\x83\x00\x01\x02"  // dst node ids (-64442) =
+                                                  // [0, 1, 2]
+          "\x3a\x00\x01\x00\x06\x44hash",  // access policy sha256 (-64443) =
+                                           // b"hash"
+          102)));
 }
 
 TEST(OkpCwtTest, GetSigStructureForVerifyingMatchesStructureForSigning) {
+  google::protobuf::Struct config_properties;
+  (*config_properties.mutable_fields())["x"].set_bool_value(true);
+
   OkpCwt cwt{
       .algorithm = 7,
       .issued_at = absl::FromUnixSeconds(1000),
+      .not_before = absl::FromUnixSeconds(900),
       .expiration_time = absl::FromUnixSeconds(2000),
       .public_key = OkpKey(),
+      .config_properties = config_properties.SerializeAsString(),
+      .logical_pipeline_name = "name",
+      .invocation_id = "id",
+      .transform_index = 3,
+      .dst_node_ids = {0, 1, 2},
+      .access_policy_sha256 = "hash",
       .signature = "signature",
   };
   absl::StatusOr<std::string> expected = cwt.BuildSigStructureForSigning("aad");
@@ -338,9 +438,14 @@ TEST(OkpCwtTest, EncodeFull) {
       (OkpCwt{
            .algorithm = 7,
            .issued_at = absl::FromUnixSeconds(1000),
+           .not_before = absl::FromUnixSeconds(900),
            .expiration_time = absl::FromUnixSeconds(2000),
            .public_key = OkpKey(),
            .config_properties = config_properties.SerializeAsString(),
+           .logical_pipeline_name = "name",
+           .invocation_id = "id",
+           .transform_index = 3,
+           .dst_node_ids = {0, 1, 2},
            .access_policy_sha256 = "hash",
            .signature = "signature",
        })
@@ -349,8 +454,9 @@ TEST(OkpCwtTest, EncodeFull) {
           "\x84"              // array with 4 items:
           "\x43\xa1\x01\x07"  // bstr containing { alg: 7 } (protected headers)
           "\xa0"              // empty map (unprotected headers)
-          "\x58\x2b\xa5"      // bstr containing a map with 5 items: (claims)
+          "\x58\x50\xaa"      // bstr containing a map with 10 items: (claims)
           "\x04\x19\x07\xd0"  // expiration time (4) = 2000
+          "\x05\x19\x03\x84"  // not before (5) = 900
           "\x06\x19\x03\xe8"  // issued at (6) = 1000
           "\x3a\x00\x01\x00\x00\x43\xa1\x01\x01"  // public key (-65537)
                                                   // = empty OkpKey
@@ -361,10 +467,16 @@ TEST(OkpCwtTest, EncodeFull) {
           "\x20\x01"                              //     bool_value (4): true
                                                   //   }
                                                   // }
-          "\x3a\x00\x01\x00\x06\x44hash"  // access_policy_sha256 (-65543) =
+          "\x3a\x00\x01\x00\x02\x64name"          // logical pipeline name
+                                                  // (-65539) = "name"
+          "\x3a\x00\x01\x00\x03\x42id"  // invocation id (-65540) = b"id"
+          "\x3a\x00\x01\x00\x04\x03"    // transform index (-64441) = 3
+          "\x3a\x00\x01\x00\x05\x83\x00\x01\x02"  // dst node ids (-64442) =
+                                                  // [0, 1, 2]
+          "\x3a\x00\x01\x00\x06\x44hash"  // access policy sha256 (-64443) =
                                           // b"hash"
           "\x49signature",
-          61)));
+          98)));
 }
 
 TEST(OkpCwtTest, DecodeEmpty) {
@@ -380,14 +492,21 @@ TEST(OkpCwtTest, DecodeEmpty) {
 
 TEST(OkpCwtTest, DecodeFull) {
   absl::StatusOr<OkpCwt> cwt = OkpCwt::Decode(absl::string_view(
-      "\x84\x43\xa1\x01\x07\xa0\x58\x2b\xa5\x04\x19\x07\xd0\x06\x19\x03\xe8\x3a"
-      "\x00\x01\x00\x00\x43\xa1\x01\x01\x3a\x00\x01\x00\x01\x49\x0a\x07\x0a\x01"
-      "x\x12\x02\x20\x01\x3a\x00\x01\x00\x06\x44hash\x49signature",
-      61));
+      "\x84\x43\xa1\x01\x07\xa0\x58\x50\xaa\x04\x19\x07\xd0\x05\x19\x03\x84"
+      "\x06\x19\x03\xe8\x3a\x00\x01\x00\x00\x43\xa1\x01\x01\x3a\x00\x01\x00"
+      "\x01\x49\x0a\x07\x0a\x01x\x12\x02\x20\x01\x3a\x00\x01\x00\x02\x64nam"
+      "e\x3a\x00\x01\x00\x03\x42id\x3a\x00\x01\x00\x04\x03\x3a\x00\x01\x00"
+      "\x05\x83\x00\x01\x02\x3a\x00\x01\x00\x06\x44hash\x49signature",
+      98));
   ASSERT_OK(cwt);
   EXPECT_EQ(cwt->issued_at, absl::FromUnixSeconds(1000));
+  EXPECT_EQ(cwt->not_before, absl::FromUnixSeconds(900));
   EXPECT_EQ(cwt->expiration_time, absl::FromUnixSeconds(2000));
   EXPECT_TRUE(cwt->public_key.has_value());
+  EXPECT_EQ(cwt->logical_pipeline_name, "name");
+  EXPECT_EQ(cwt->invocation_id, "id");
+  EXPECT_EQ(cwt->transform_index, 3);
+  EXPECT_THAT(cwt->dst_node_ids, ElementsAre(0, 1, 2));
   EXPECT_EQ(cwt->access_policy_sha256, "hash");
   EXPECT_EQ(cwt->signature, "signature");
 
@@ -503,6 +622,27 @@ TEST(OkpCwtTest, VerifyAndDecodeCoseSign) {
   EXPECT_EQ(cwt->public_key->curve, 4);
   EXPECT_NE(cwt->public_key->x, "");
 }
+
+TEST(Ec2CwtTest, EncodeWithPublicKey) {
+  EXPECT_THAT((Ec2Cwt{.public_key = Ec2Key()}).Encode(),
+              IsOkAndHolds(absl::string_view(
+                  "\x84"      // array with 4 items:
+                  "\x41\xa0"  // bstr containing empty map (protected headers)
+                  "\xa0"      // empty map (unprotected headers)
+                  "\x4a\xa1"  // bstr containing a map with 1 item (claims)
+                  "\x3a\x00\x01\x00\x00\x43\xa1\x01\x02"  // public key (-65537)
+                                                          // = empty Ec2Key
+                  "\x40",                                 // empty signature
+                  16)));
+}
+
+TEST(Ec2CwtTest, DecodeWithPublicKey) {
+  absl::StatusOr<Ec2Cwt> cwt = Ec2Cwt::Decode(absl::string_view(
+      "\x84\x41\xa0\xa0\x4a\xa1\x3a\x00\x01\x00\x00\x43\xa1\x01\x02\x40", 16));
+  ASSERT_OK(cwt);
+  EXPECT_TRUE(cwt->public_key.has_value());
+}
+
 TEST(ReleaseTokenTest, EncodeEmpty) {
   EXPECT_THAT(
       ReleaseToken().Encode(),
