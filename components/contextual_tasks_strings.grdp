@@ -82,6 +82,9 @@
   <message name="IDS_CONTEXTUAL_TASKS_SIDE_PANEL_CLOSE_TOOL_TIP" desc="Tool tip text displayed on the close button on the side panel to allow user to close the side panel.">
     Close side panel
   </message>
+  <message name="IDS_CONTEXTUAL_TASKS_TOOLBAR_CLOSE_TAB_TOOL_TIP" desc="Tool tip text displayed close tab button on the toolbar to close the active tab and expand the side panel to be the active tab.">
+    Close website
+  </message>
   <message name="IDS_CONTEXTUAL_TASKS_ADD_TAB_CONTEXT_ERROR_TOAST" desc="An error toast shown on the compose box on the contextual task page when user try to add a tab context to the current thread.">
     Add up to 10 tabs
   </message>
