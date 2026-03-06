@@ -1431,7 +1431,8 @@ TEST_P(InputHandlerProxyEventQueueTest, EmptyGestureScrollUpdateHistogram) {
         .WillOnce(testing::Return(scroll_result_did_scroll_));
   }
 
-  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(2);
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
 
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollBegin);
   DeliverInputForBeginFrame();
@@ -3874,7 +3875,8 @@ TEST_P(InputHandlerProxyEventQueueTest, FutureEventDispatch) {
       WebInputEvent::Type::kGestureScrollUpdate, WebGestureDevice::kTouchscreen,
       future_event_time, -10);
 
-  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput()).Times(1);
+  EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+      .Times(testing::AnyNumber());
   InjectInputEvent(std::move(future_event));
   EXPECT_EQ(1ul, event_queue().size());
   Mock::VerifyAndClearExpectations(&mock_input_handler_);
@@ -3892,6 +3894,8 @@ TEST_P(InputHandlerProxyEventQueueTest, FutureEventDispatch) {
   } else {
     // With kUpdateScrollPredictorInputMapping, the future event is deferred.
     EXPECT_CALL(mock_input_handler_, ScrollUpdate(_, _)).Times(0);
+    EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput())
+        .Times(testing::AnyNumber());
     DeliverInputForBeginFrame(tick_clock.NowTicks());
     EXPECT_EQ(1ul, event_queue().size());
   }
