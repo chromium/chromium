@@ -63,6 +63,7 @@ class ScriptToolHost : public Tool, content::WebContentsObserver {
   void OnResultReceivedFromNewDocument(const std::string& result);
   void PostErrorResult(ToolCallback tool_callback,
                        mojom::ActionResultCode code);
+  void RecordMetrics(const mojom::ActionResult& result);
 
   Lifecycle lifecycle_{Lifecycle::kInitial};
   tabs::TabHandle target_tab_;

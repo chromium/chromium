@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/tools/script_tool_host.h"
 
+#include "chrome/browser/actor/actor_metrics.h"
 #include "chrome/browser/actor/actor_proto_conversion.h"
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/common/actor/action_result.h"
@@ -70,6 +71,9 @@ void ScriptToolHost::Invoke(ToolCallback callback) {
   journal().EnsureJournalBound(*frame);
 
   tool_done_callback_ = std::move(callback);
+
+  const auto& script_tool = action_->get_script_tool();
+  RecordScriptToolInputSizeBytes(script_tool->input_arguments.size());
 
   auto invocation = actor::mojom::ToolInvocation::New();
   invocation->action = action_->Clone();
@@ -158,6 +162,7 @@ void ScriptToolHost::OnToolInvokedInOldDocument(mojom::ActionResultPtr result) {
   }
 
   lifecycle_ = Lifecycle::kDone;
+  RecordMetrics(*result);
   std::move(tool_done_callback_).Run(std::move(result));
 }
 
@@ -168,7 +173,16 @@ void ScriptToolHost::OnResultReceivedFromNewDocument(
 
   lifecycle_ = Lifecycle::kDone;
   pending_result_->script_tool_response->result = result;
+  RecordMetrics(*pending_result_);
   std::move(tool_done_callback_).Run(std::move(pending_result_));
+}
+
+void ScriptToolHost::RecordMetrics(const mojom::ActionResult& result) {
+  RecordScriptToolActionResultCode(result.code);
+  if (result.code == mojom::ActionResultCode::kOk) {
+    RecordScriptToolOutputSizeBytes(
+        result.script_tool_response->result->size());
+  }
 }
 
 void ScriptToolHost::RenderFrameHostChanged(
@@ -261,8 +275,10 @@ void ScriptToolHost::PostErrorResult(ToolCallback tool_callback,
                                      mojom::ActionResultCode code) {
   lifecycle_ = Lifecycle::kDone;
   TearDown();
+  auto result = MakeResult(code);
+  RecordMetrics(*result);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(tool_callback), MakeResult(code)));
+      FROM_HERE, base::BindOnce(std::move(tool_callback), std::move(result)));
 }
 
 void ScriptToolHost::TearDown() {

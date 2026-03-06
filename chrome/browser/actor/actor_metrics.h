@@ -80,6 +80,12 @@ void RecordDownloadSaveAsDialogTriggered(bool success);
 void RecordActorNavigationGatingListSize(size_t allow_list_size,
                                          size_t confirmed_list_size);
 
+// Records script tool specific metrics.
+void RecordScriptToolActionResultCode(
+    actor::mojom::ActionResultCode action_result_code);
+void RecordScriptToolInputSizeBytes(size_t size_bytes);
+void RecordScriptToolOutputSizeBytes(size_t size_bytes);
+
 // Records the outcome of navigation gating decisions.
 void RecordNavigationGatingDecision(ExecutionEngine::GatingDecision decision);
 

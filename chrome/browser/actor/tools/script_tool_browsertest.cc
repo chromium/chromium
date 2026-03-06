@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/values_test_util.h"
@@ -224,6 +225,42 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool,
   // Verify that the task can be stopped cleanly.
   actor_task().Stop(ActorTask::StoppedReason::kTaskComplete);
   EXPECT_EQ(actor_keyed_service().GetTask(task_id_), nullptr);
+}
+
+IN_PROC_BROWSER_TEST_F(ActorToolsTestScriptTool, Histograms) {
+  base::HistogramTester histogram_tester;
+  const GURL url = embedded_test_server()->GetURL("/actor/script_tool.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  const std::string valid_input_arguments = R"JSON({"text": "test"})JSON";
+  auto action =
+      MakeScriptToolRequest(*main_frame(), "echo", valid_input_arguments);
+  auto response = RunScriptTool(std::move(action));
+
+  histogram_tester.ExpectUniqueSample("Actor.Tools.ScriptTool.InputSizeBytes",
+                                      valid_input_arguments.size(), 1);
+  histogram_tester.ExpectUniqueSample("Actor.Tools.ScriptTool.InvocationResult",
+                                      true, 1);
+  histogram_tester.ExpectUniqueSample("Actor.Tools.ScriptTool.ActionResultCode",
+                                      mojom::ActionResultCode::kOk, 1);
+  histogram_tester.ExpectUniqueSample("Actor.Tools.ScriptTool.OutputSizeBytes",
+                                      std::string("test").size(), 1);
+
+  // Test a failure case.
+  const std::string input_arguments = R"JSON({})JSON";
+  auto bad_action =
+      MakeScriptToolRequest(*main_frame(), "invalid", input_arguments);
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(bad_action), result.GetCallback());
+  ExpectErrorResult(result, mojom::ActionResultCode::kScriptToolInvalidName);
+
+  histogram_tester.ExpectBucketCount("Actor.Tools.ScriptTool.InputSizeBytes",
+                                     input_arguments.size(), 1);
+  histogram_tester.ExpectBucketCount("Actor.Tools.ScriptTool.InvocationResult",
+                                     false, 1);
+  histogram_tester.ExpectBucketCount(
+      "Actor.Tools.ScriptTool.ActionResultCode",
+      mojom::ActionResultCode::kScriptToolInvalidName, 1);
 }
 
 }  // namespace

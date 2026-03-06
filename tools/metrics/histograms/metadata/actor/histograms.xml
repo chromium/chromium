@@ -903,6 +903,46 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Tools.ScriptTool.ActionResultCode"
+    enum="ActionResultCode" expires_after="2027-03-05">
+  <owner>mfoltz@google.com</owner>
+  <owner>agentic-web-platform-team@google.com</owner>
+  <summary>
+    Recorded for every script tool invocation. Reports the outcome of the script
+    tool, using the ActionResultCode from the ActionResult.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Tools.ScriptTool.InputSizeBytes" units="bytes"
+    expires_after="2027-03-05">
+  <owner>mfoltz@google.com</owner>
+  <owner>agentic-web-platform-team@google.com</owner>
+  <summary>
+    Recorded for every script tool invocation. Measures the size of the input
+    arguments string in bytes.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Tools.ScriptTool.InvocationResult" enum="BooleanSuccess"
+    expires_after="2027-03-05">
+  <owner>mfoltz@google.com</owner>
+  <owner>agentic-web-platform-team@google.com</owner>
+  <summary>
+    Recorded whenever a script tool is invoked. Indicates whether the invocation
+    succeeded or failed. Success means ActionResult.code is kOk.
+  </summary>
+</histogram>
+
+<histogram name="Actor.Tools.ScriptTool.OutputSizeBytes" units="bytes"
+    expires_after="2027-03-05">
+  <owner>mfoltz@google.com</owner>
+  <owner>agentic-web-platform-team@google.com</owner>
+  <summary>
+    Recorded for successful script tool invocations. Measures the size of the
+    result string returned by the script tool in bytes.
+  </summary>
+</histogram>
+
 <histogram name="Actor.Tools.TimeOfUseReValidation" enum="TimeOfUseResult"
     expires_after="2027-02-12">
   <owner>jacobstanley@google.com</owner>
