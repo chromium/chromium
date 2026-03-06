@@ -8,8 +8,10 @@
 #include "chrome/browser/autocomplete/chrome_aim_eligibility_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_ui_interface.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
+#include "chrome/browser/contextual_tasks/contextual_tasks_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -18,6 +20,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_button.h"
+#include "chrome/browser/ui/views/contextual_tasks/contextual_tasks_close_tab_button.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_ui.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -342,7 +345,8 @@ class ContextualTasksEphemeralButtonInteractiveTest
   void SetUp() override {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{contextual_tasks::kContextualTasks,
-          {{"ContextualTasksEntryPoint", "toolbar-revisit"}}}},
+          {{"ContextualTasksEntryPoint", "toolbar-revisit"},
+           {"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}}},
         {});
     InteractiveBrowserTest::SetUp();
   }
@@ -406,6 +410,16 @@ class ContextualTasksEphemeralButtonInteractiveTest
     return Do([&] {
       contextual_tasks::ContextualTasksPanelController::From(browser())
           ->Close();
+    });
+  }
+
+  auto SimulateNavigateToAiPage() {
+    return Do([&]() {
+      content::WebContents* side_panel_contents =
+          contextual_tasks::ContextualTasksPanelController::From(browser())
+              ->GetActiveWebContents();
+      contextual_tasks::GetWebUiInterface(side_panel_contents)
+          ->SetIsAiPage(true);
     });
   }
 
@@ -486,7 +500,14 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksEphemeralButtonInteractiveTest,
       PressButton(ContextualTasksButton::kContextualTasksToolbarButton),
       WaitForShow(kSidePanelElementId),
       EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      EnsureNotPresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
+      SimulateNavigateToAiPage(),
+      EnsurePresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton),
       PressButton(ContextualTasksButton::kContextualTasksToolbarButton),
       WaitForHide(kSidePanelElementId),
-      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton));
+      EnsurePresent(ContextualTasksButton::kContextualTasksToolbarButton),
+      EnsureNotPresent(
+          ContextualTasksCloseTabButton::kContextualTasksCloseTabButton));
 }

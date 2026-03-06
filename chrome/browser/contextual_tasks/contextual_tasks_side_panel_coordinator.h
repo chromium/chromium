@@ -10,6 +10,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_panel_controller.h"
 #include "chrome/browser/tab_list/tab_list_interface_observer.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -121,6 +122,12 @@ class ContextualTasksSidePanelCoordinator
             contextual_search::ContextualSearchSessionHandle*>
   GetSessionHandleForActiveTabOrSidePanel() override;
   size_t GetNumberOfActiveTasks() const override;
+  void MoveTaskUiToNewTab() override;
+  void NotifyExpandToFullTabStateChanged() override;
+  bool CanExpandToFullTab() const override;
+
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
 
   // Check if the side panel is currently showing
   bool IsSidePanelOpen();
@@ -262,6 +269,8 @@ class ContextualTasksSidePanelCoordinator
       scoped_unowned_user_data_;
 
   bool in_cobrowsing_session_ = false;
+
+  base::ObserverList<Observer> observers_;
 
   base::WeakPtrFactory<ContextualTasksSidePanelCoordinator> weak_ptr_factory_{
       this};

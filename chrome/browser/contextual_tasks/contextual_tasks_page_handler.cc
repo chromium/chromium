@@ -286,15 +286,7 @@ void ContextualTasksPageHandler::OpenUrl(const GURL& url,
 }
 
 void ContextualTasksPageHandler::MoveTaskUiToNewTab() {
-  auto* browser = web_ui_controller_->GetBrowser();
-  const auto& task_id = web_ui_controller_->GetTaskId();
-  if (!task_id.has_value()) {
-    LOG(ERROR) << "Attempted to open in new tab with no valid task ID.";
-    return;
-  }
-
-  ui_service_->MoveTaskUiToNewTab(task_id.value(), browser,
-                                  web_ui_controller_->GetInnerFrameUrl());
+  web_ui_controller_->MoveTaskUiToNewTab();
 }
 
 void ContextualTasksPageHandler::OnTabClickedFromSourcesMenu(int32_t tab_id,
