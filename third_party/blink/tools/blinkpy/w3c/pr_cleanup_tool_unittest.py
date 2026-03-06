@@ -50,7 +50,6 @@ class PrCleanupToolTest(LoggingTestCase):
                     'commit_with_footers': 'a commit with footers'
                 }
             },
-            'submittable': False,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -88,7 +87,6 @@ class PrCleanupToolTest(LoggingTestCase):
                     'commit_with_footers': 'a commit with footers'
                 }
             },
-            'submittable': False,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -125,7 +123,6 @@ class PrCleanupToolTest(LoggingTestCase):
                     }
                 }
             },
-            'submittable': False,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -164,7 +161,6 @@ class PrCleanupToolTest(LoggingTestCase):
                     'commit_with_footers': 'a commit with footers'
                 }
             },
-            'submittable': False,
             'owner': {
                 'email': 'test@chromium.org'
             },

@@ -210,7 +210,7 @@ class ImportNotifierTest(unittest.TestCase):
             'https://chromium-review.googlesource.com/changes/?q='
             f'prefixsubject:"Import+wpt%40{"f" * 40}"+status:merged'
             '&n=1&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
-            '&o=DETAILED_ACCOUNTS&o=MESSAGES&o=SUBMITTABLE')
+            '&o=DETAILED_ACCOUNTS&o=MESSAGES')
         payload = {
             '_number': 77777,
             'change_id': 'I8888',

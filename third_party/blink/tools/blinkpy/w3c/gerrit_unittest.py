@@ -30,7 +30,7 @@ class GerritAPITest(unittest.TestCase):
         host = MockHost()
         url = ('https://chromium-review.googlesource.com/changes/chromium%2F'
                'src~main~I012345?o=CURRENT_FILES&o=CURRENT_REVISION'
-               '&o=COMMIT_FOOTERS&o=DETAILED_ACCOUNTS&o=SUBMITTABLE')
+               '&o=COMMIT_FOOTERS&o=DETAILED_ACCOUNTS')
         payload = {'change_id': 'I012345'}
         host.web.urls = {
             url: RESPONSE_PREFIX + b'\n' + json.dumps(payload).encode(),
@@ -54,9 +54,9 @@ class GerritAPITest(unittest.TestCase):
     def test_query_exportable_cls(self):
         host = MockHost()
         url = ('https://chromium-review.googlesource.com/changes/'
-               '?q=project:"chromium%2Fsrc"+branch:main+-is:wip'
+               '?q=project:"chromium%2Fsrc"+branch:main+is:submittable+-is:wip'
                '&n=200&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
-               '&o=DETAILED_ACCOUNTS&o=SUBMITTABLE')
+               '&o=DETAILED_ACCOUNTS')
         payload = []
         host.web.urls = {
             url: RESPONSE_PREFIX + b'\n' + json.dumps(payload).encode(),
@@ -85,7 +85,6 @@ class GerritCLTest(unittest.TestCase):
             'revisions': {
                 '1': {}
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -117,12 +116,12 @@ class GerritCLTest(unittest.TestCase):
                         'http': {
                             'url':
                             'https://chromium.googlesource.com/chromium/src',
-                            'ref': 'refs/changes/50/638250/1'
+                            'ref':
+                            'refs/changes/50/638250/1'
                         }
                     }
                 }
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -148,7 +147,6 @@ class GerritCLTest(unittest.TestCase):
             'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
             'subject': 'fake subject',
             '_number': 638250,
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -171,7 +169,6 @@ class GerritCLTest(unittest.TestCase):
                     }
                 }
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -193,7 +190,6 @@ class GerritCLTest(unittest.TestCase):
                     }
                 }
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -215,58 +211,12 @@ class GerritCLTest(unittest.TestCase):
                     }
                 }
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         self.assertFalse(gerrit_cl.is_exportable())
-
-    def test_not_submittable_is_not_exportable(self):
-        data = {
-            'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
-            'subject': 'fake subject',
-            '_number': 638250,
-            'current_revision': '1',
-            'revisions': {
-                '1': {
-                    'commit_with_footers': 'fake subject',
-                    'files': {
-                        RELATIVE_WPT_TESTS + 'foo/bar.html': '',
-                    }
-                }
-            },
-            'submittable': False,
-            'owner': {
-                'email': 'test@chromium.org'
-            },
-        }
-        gerrit_cl = GerritCL(data, MockGerritAPI())
-        self.assertFalse(gerrit_cl.is_exportable())
-
-    def test_not_submittable_with_force_export_is_exportable(self):
-        data = {
-            'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
-            'subject': 'fake subject',
-            '_number': 638250,
-            'current_revision': '1',
-            'revisions': {
-                '1': {
-                    'commit_with_footers':
-                    'fake subject\nForce-WPT-Export: true',
-                    'files': {
-                        RELATIVE_WPT_TESTS + 'foo/bar.html': '',
-                    }
-                }
-            },
-            'submittable': False,
-            'owner': {
-                'email': 'test@chromium.org'
-            },
-        }
-        gerrit_cl = GerritCL(data, MockGerritAPI())
-        self.assertTrue(gerrit_cl.is_exportable())
 
     def test_legacy_noexport_is_not_exportable(self):
         data = {
@@ -282,7 +232,6 @@ class GerritCLTest(unittest.TestCase):
                     }
                 }
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
@@ -304,7 +253,6 @@ class GerritCLTest(unittest.TestCase):
                     }
                 }
             },
-            'submittable': True,
             'owner': {
                 'email': 'test@chromium.org'
             },
