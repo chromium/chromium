@@ -49,7 +49,7 @@ suite('Searchbox', () => {
 
   test('Escape hides ghost loader', async () => {
     assertTrue(isVisible(lensOverlayElement.$.searchbox));
-    lensOverlayElement.$.searchbox.$.input.value = 'hello';
+    lensOverlayElement.$.searchbox.$.input.inputElement.value = 'hello';
 
     // Simulate searchbox being focused and the autocomplete request being
     // started.

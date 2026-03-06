@@ -216,7 +216,8 @@ constexpr char kCheckSearchboxInput[] =
     "document.getElementsByTagName('lens-side-panel-app')[0].shadowRoot;"
     "const searchboxInputLoaded = "
     "  "
-    "root.getElementById('searchbox').shadowRoot.getElementById('input').value "
+    "root.getElementById('searchbox').shadowRoot.getElementById('input')."
+    "shadowRoot.getElementById('input').value "
     "  === $1; return  searchboxInputLoaded;})();";
 
 constexpr char kRequestNotificationsScript[] = R"(
@@ -234,7 +235,8 @@ constexpr char kCheckSidePanelResultsLoadedScript[] =
     "  root.getElementById('results').src.includes('q=' + $1);"
     "const searchboxInputLoaded = "
     "  "
-    "root.getElementById('searchbox').shadowRoot.getElementById('input').value "
+    "root.getElementById('searchbox').shadowRoot.getElementById('input')."
+    "shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && searchboxInputLoaded;})();";
 
 constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
@@ -246,7 +248,8 @@ constexpr char kCheckSidePanelTranslateResultsLoadedScript[] =
     "  root.getElementById('results').src.includes('stick=');"
     "const searchboxInputLoaded = "
     "  "
-    "root.getElementById('searchbox').shadowRoot.getElementById('input').value "
+    "root.getElementById('searchbox').shadowRoot.getElementById('input')."
+    "shadowRoot.getElementById('input').value "
     "  === $1; return iframeSrcLoaded && stickPresent && "
     "  searchboxInputLoaded;})();";
 

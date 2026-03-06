@@ -16,6 +16,7 @@ build_webui_tests("build") {
     "searchbox_dropdown_test.ts",
     "searchbox_focus_test.ts",
     "searchbox_icon_test.ts",
+    "searchbox_input_test.ts",
     "searchbox_lens_test.ts",
     "searchbox_match_test.ts",
     "searchbox_test.ts",

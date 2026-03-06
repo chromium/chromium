@@ -830,11 +830,13 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, NavigationsUpdateCSB) {
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
   const DeepQuery kPathToOverlayGhostLoaderText{
@@ -918,7 +920,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, NavigationsUpdateCSB) {
               kOverlayId, kPathToOverlaySearchboxInput,
               base::StringPrintf(
                   "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
-                  "key:'%s', bubbles: true }));}",
+                  "key:'%s', bubbles: true, cancelable: true, composed: true }));}",
                   "Enter"),
               ExecuteJsMode::kFireAndForget)),
 
@@ -1354,6 +1356,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpTest,
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
 
@@ -1426,6 +1429,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerStraightToSrpCustomQueryTest,
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
 
@@ -1598,6 +1602,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerZeroStateCsbTest,
   const DeepQuery kPathToSidePanelSearchboxInput{
       "lens-side-panel-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
 
@@ -1844,6 +1849,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
 
@@ -1870,7 +1876,7 @@ IN_PROC_BROWSER_TEST_F(ContextualTasksLensOverlayControllerInteractiveUiTest,
           ExecuteJsAt(
               kOverlayId, kPathToOverlaySearchboxInput,
               "(el) => { el.dispatchEvent(new KeyboardEvent('keydown', { "
-              "key:'Enter', bubbles: true })); }",
+              "key:'Enter', bubbles: true, cancelable: true, composed: true })); }",
               ExecuteJsMode::kFireAndForget)),
       // Screenshot is implicitly uploaded with CSB query.
       FinishScreenshotUpload(), WaitForHide(kOverlayId),
@@ -2052,6 +2058,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCsbTest, ShowsCsbWhenEnabled) {
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
 
@@ -2074,6 +2081,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCsbTest, HidesCsbWhenDisabled) {
   const DeepQuery kPathToOverlaySearchboxInput{
       "lens-overlay-app",
       "cr-searchbox",
+      "cr-searchbox-input",
       "input",
   };
 

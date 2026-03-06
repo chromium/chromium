@@ -96,6 +96,11 @@ IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTest) {
           "runMochaSuite('SearchboxTest');");
 }
 
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, SearchboxInputTest) {
+  set_test_loader_host(chrome::kChromeUINewTabPageHost);
+  RunTest("cr_components/searchbox/searchbox_input_test.js", "mocha.run()");
+}
+
 IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxPlaceholderTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
   RunTest("cr_components/searchbox/placeholder_text_cycler_test.js",

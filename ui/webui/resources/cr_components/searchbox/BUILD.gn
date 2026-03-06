@@ -23,6 +23,8 @@ build_webui("build") {
     "searchbox_dropdown.ts",
     "searchbox_icon.html.ts",
     "searchbox_icon.ts",
+    "searchbox_input.html.ts",
+    "searchbox_input.ts",
     "searchbox_match.html.ts",
     "searchbox_match.ts",
     "searchbox_recent_tab_chip.html.ts",
@@ -38,6 +40,7 @@ build_webui("build") {
     "searchbox_dropdown.css",
     "searchbox_dropdown_shared_style.css",
     "searchbox_icon.css",
+    "searchbox_input.css",
     "searchbox_match.css",
     "searchbox_thumbnail.css",
   ]

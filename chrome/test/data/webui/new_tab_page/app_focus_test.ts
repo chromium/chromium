@@ -110,7 +110,9 @@ suite('NewTabPageAppFocusTest', () => {
     await microtasksFinished();
     assertStyle($$(app, '#searchbox')!, 'visibility', 'visible');
 
-    const input = searchbox.shadowRoot.getElementById('input');
+    const inputWrapper = searchbox.shadowRoot.getElementById('input');
+    assertTrue(!!inputWrapper);
+    const input = inputWrapper.shadowRoot!.getElementById('input');
     assertTrue(!!input);
     input.focus();
     await microtasksFinished();

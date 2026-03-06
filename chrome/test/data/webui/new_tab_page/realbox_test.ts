@@ -172,7 +172,8 @@ suite('NewTabPageRealboxTabsTest', () => {
 
     realbox.$.input.focus();
     await microtasksFinished();
-    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+    realbox.$.input.inputElement.dispatchEvent(
+        new MouseEvent('mousedown', {button: 0}));
     await testProxy.handler.whenCalled('getRecentTabs');
 
     // Show dropdown (required for chip visibility)
@@ -204,7 +205,8 @@ suite('NewTabPageRealboxTabsTest', () => {
 
     realbox.$.input.focus();
     await microtasksFinished();
-    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+    realbox.$.input.inputElement.dispatchEvent(
+        new MouseEvent('mousedown', {button: 0}));
     await testProxy.handler.whenCalled('getRecentTabs');
 
     testProxy.callbackRouterRemote.autocompleteResultChanged(
@@ -389,7 +391,7 @@ suite('NewTabPageRealboxNextTest', () => {
     });
 
     const whenOpenComposeBox = eventToPromise('open-composebox', realbox);
-    realbox.$.input.dispatchEvent(pasteEvent);
+    realbox.$.input.inputElement.dispatchEvent(pasteEvent);
     await microtasksFinished();
     const event = await whenOpenComposeBox;
 
@@ -401,7 +403,7 @@ suite('NewTabPageRealboxNextTest', () => {
     const file2 = event.detail.contextFiles[1];
     assertEquals('pasted.pdf', file2.file.name);
     assertEquals('application/pdf', file2.file.type);
-    assertFalse((realbox as any).pastedInInput_);
+    assertFalse((realbox.$.input as any).pastedInInput_);
   });
 
   test('pasting text sets pastedInInput flag', async () => {
@@ -422,11 +424,11 @@ suite('NewTabPageRealboxNextTest', () => {
       composed: true,
     });
 
-    realbox.$.input.dispatchEvent(pasteEvent);
+    realbox.$.input.inputElement.dispatchEvent(pasteEvent);
     await microtasksFinished();
 
     assertFalse(pasteEvent.defaultPrevented);
     assertFalse(openComposeboxCalled);
-    assertTrue((realbox as any).pastedInInput_);
+    assertTrue((realbox.$.input as any).pastedInInput_);
   });
 });

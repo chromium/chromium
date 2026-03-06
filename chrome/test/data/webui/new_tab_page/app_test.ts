@@ -1131,9 +1131,9 @@ suite('NewTabPageAppTest', () => {
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer!.shadowRoot
+            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
                 .querySelector<HTMLInputElement>('#input')!.value = 'hello';
-            searchboxContainer!.shadowRoot
+            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
                 .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
                     new InputEvent('input'));
 
@@ -1172,7 +1172,7 @@ suite('NewTabPageAppTest', () => {
         const composeButton = getComposeButton();
         assertTrue(!!composeButton);
 
-        searchboxContainer!.shadowRoot
+        searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
             .querySelector<HTMLInputElement>('#input')!.value = 'hello';
 
         // Act.
@@ -1244,9 +1244,9 @@ suite('NewTabPageAppTest', () => {
             const composeButton = getComposeButton();
             assertTrue(!!composeButton);
 
-            searchboxContainer!.shadowRoot
+            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
                 .querySelector<HTMLInputElement>('#input')!.value = 'hello';
-            searchboxContainer!.shadowRoot
+            searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
                 .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
                     new InputEvent('input'));
 
@@ -1415,9 +1415,9 @@ suite('NewTabPageAppTest', () => {
           const composeButton = getComposeButton();
           assertTrue(!!composeButton);
 
-          searchboxContainer!.shadowRoot
+          searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
               .querySelector<HTMLInputElement>('#input')!.value = 'hello';
-          searchboxContainer!.shadowRoot
+          searchboxContainer!.shadowRoot.querySelector('#input')!.shadowRoot!
               .querySelector<HTMLInputElement>('#input')!.dispatchEvent(
                   new InputEvent('input'));
 
@@ -1476,8 +1476,9 @@ suite('NewTabPageAppTest', () => {
 
             assertEquals(
                 'hello',
-                searchboxContainer!.shadowRoot
-                    .querySelector<HTMLInputElement>('#input')!.value);
+                searchboxContainer!.shadowRoot.querySelector('#input')!
+                    .shadowRoot!.querySelector<HTMLInputElement>(
+                                    '#input')!.value);
           });
     });
     suite('Close options disabled', () => {
