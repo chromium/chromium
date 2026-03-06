@@ -116,4 +116,9 @@ tast.inputs.InputMethodManagement.guest
 tast.secagentd.NetworkEvents.relaxed_icmp@chromeos-betty-cfi-thin-lto-chrome
 tast.secagentd.NetworkEvents.relaxed_udp@chromeos-betty-cfi-thin-lto-chrome
 
+# b/490145848
+tast.camera.EncodeAccelJPEG@brya
+tast.camera.EncodeAccelJPEG@jacuzzi
+tast.camera.EncodeAccelJPEG@volteer
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
