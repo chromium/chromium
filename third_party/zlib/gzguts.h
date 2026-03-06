@@ -136,6 +136,11 @@
 #  endif
 #endif
 
+/* some environments don't define EWOULDBLOCK */
+#ifndef EWOULDBLOCK
+#  define EWOULDBLOCK EAGAIN
+#endif
+
 /* provide prototypes for these when building zlib without LFS */
 #if !defined(_LARGEFILE64_SOURCE) || _LFS64_LARGEFILE-0 == 0
     ZEXTERN gzFile ZEXPORT gzopen64(const char *, const char *);
