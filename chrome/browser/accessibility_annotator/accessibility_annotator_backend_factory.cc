@@ -42,10 +42,12 @@ AccessibilityAnnotatorBackendFactory::~AccessibilityAnnotatorBackendFactory() =
 std::unique_ptr<KeyedService>
 AccessibilityAnnotatorBackendFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
-  // TODO(crbug.com/486856790): Also check the kAccessibilityAnnotator feature
-  // once setup.
+  // The backend is shared between the content annotator and the accessibility
+  // annotator services. Disable if BOTH features are disabled.
   if (!base::FeatureList::IsEnabled(
-          accessibility_annotator::kContentAnnotator)) {
+          accessibility_annotator::kContentAnnotator) &&
+      !base::FeatureList::IsEnabled(
+          accessibility_annotator::kAccessibilityAnnotator)) {
     return nullptr;
   }
 

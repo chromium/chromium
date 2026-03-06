@@ -64,4 +64,9 @@ void AccessibilityAnnotatorBackend::
   // TODO(crbug.com/486856790): Implement logic to handle sync bridge loaded.
 }
 
+AccessibilityAnnotationSyncBridge*
+AccessibilityAnnotatorBackend::accessibility_annotation_sync_bridge() {
+  return accessibility_annotation_sync_bridge_.get();
+}
+
 }  // namespace accessibility_annotator

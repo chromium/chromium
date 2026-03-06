@@ -20,7 +20,7 @@ class AccessibilityAnnotatorBackendFactoryTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_{
-      accessibility_annotator::kContentAnnotator};
+      accessibility_annotator::kAccessibilityAnnotator};
 };
 
 TEST_F(AccessibilityAnnotatorBackendFactoryTest,
