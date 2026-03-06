@@ -93,8 +93,6 @@ SVGUseElement::SVGUseElement(Document& document)
           CSSPropertyID::kHeight)),
       element_url_is_local_(true),
       needs_shadow_tree_recreation_(false) {
-  DCHECK(HasCustomStyleCallbacks() ||
-         RuntimeEnabledFeatures::Svg2CascadeEnabled());
   CreateUserAgentShadowRoot();
 }
 
@@ -460,39 +458,11 @@ static void PostProcessInstanceTree(SVGElement& target_root,
   DCHECK(!instance_element);
 }
 
-static void MoveChildrenToReplacementElement(ContainerNode& source_root,
-                                             ContainerNode& destination_root) {
-  for (Node* child = source_root.firstChild(); child;) {
-    Node* next_child = child->nextSibling();
-    destination_root.AppendChild(child);
-    child = next_child;
-  }
-}
-
 SVGElement* SVGUseElement::CreateInstanceTree(SVGElement& target_root) const {
   NodeCloningData data{CloneOption::kIncludeDescendants};
   SVGElement* instance_root = &To<SVGElement>(target_root.CloneWithChildren(
       data, /*document*/ nullptr, /*append_to*/ nullptr,
       /*fallback_registry*/ nullptr));
-  if (!RuntimeEnabledFeatures::Svg2CascadeEnabled() &&
-      IsA<SVGSymbolElement>(target_root)) {
-    // Spec: The referenced 'symbol' and its contents are deep-cloned into
-    // the generated tree, with the exception that the 'symbol' is replaced
-    // by an 'svg'. This generated 'svg' will always have explicit values
-    // for attributes width and height. If attributes width and/or height
-    // are provided on the 'use' element, then these attributes will be
-    // transferred to the generated 'svg'. If attributes width and/or
-    // height are not specified, the generated 'svg' element will use
-    // values of 100% for these attributes.
-    auto* svg_element =
-        MakeGarbageCollected<SVGSVGElement>(target_root.GetDocument());
-    // Transfer all attributes from the <symbol> to the new <svg>
-    // element.
-    svg_element->CloneAttributesFrom(*instance_root);
-    // Move already cloned elements to the new <svg> element.
-    MoveChildrenToReplacementElement(*instance_root, *svg_element);
-    instance_root = svg_element;
-  }
   TransferUseWidthAndHeightIfNeeded(*this, *instance_root, target_root);
   PostProcessInstanceTree(target_root, *instance_root);
   return instance_root;

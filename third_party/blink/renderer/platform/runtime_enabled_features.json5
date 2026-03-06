@@ -5393,10 +5393,6 @@
       status: "experimental",
     },
     {
-      name: "Svg2Cascade",
-      status: "stable",
-    },
-    {
       name: "SvgAnchorElementAttributes",
       status: "stable",
     },

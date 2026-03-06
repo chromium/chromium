@@ -3262,8 +3262,6 @@ TEST_F(StyleResolverTestCQ, StyleRulesForElementContainerQuery) {
 }
 
 TEST_F(StyleResolverTest, StyleRulesForSVGUseInstanceElement) {
-  ScopedSvg2CascadeForTest enabled(true);
-
   SetBodyInnerHTML(R"HTML(
       <style>
         rect { fill: green; }

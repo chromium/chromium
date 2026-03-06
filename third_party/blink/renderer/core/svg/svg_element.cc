@@ -726,32 +726,12 @@ void SVGElement::AttributeChanged(const AttributeModificationParams& params) {
     return;
   }
 
-  if (!RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
-    if (params.name == html_names::kIdAttr) {
-      // TODO(crbug.com/40550039): Id attributes also need to be synchronized
-      // instead of rebuilding the tree as animations/transitions would
-      // otherwise not work correctly.
-      InvalidateInstances();
-      return;
-    }
-
-    // Changes to the style attribute are processed lazily (see
-    // Element::getAttribute() and related methods), so we don't want changes to
-    // the style attribute to result in extra work here.
-    if (params.name == html_names::kStyleAttr) {
-      return;
-    }
-  }
-
   CSSPropertyID prop_id =
       CssPropertyIdForSVGAttributeName(GetExecutionContext(), params.name);
   if (prop_id > CSSPropertyID::kInvalid) {
     UpdatePresentationAttributeStyle(prop_id, params.name, params.new_value);
   }
-  if (prop_id > CSSPropertyID::kInvalid ||
-      RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
-    SynchronizeAttributeInShadowInstances(params.name, params.new_value);
-  }
+  SynchronizeAttributeInShadowInstances(params.name, params.new_value);
 }
 
 void SVGElement::SvgAttributeChanged(const SvgAttributeChangedParams& params) {
@@ -886,29 +866,6 @@ void SVGElement::AddAnimatedPropertyToPresentationAttributeStyle(
                                           *value);
 }
 
-const ComputedStyle* SVGElement::CustomStyleForLayoutObject(
-    const StyleRecalcContext& style_recalc_context) {
-  SVGElement* corresponding_element = CorrespondingElement();
-  if (!corresponding_element || RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
-    return GetDocument().GetStyleResolver().ResolveStyle(this,
-                                                         style_recalc_context);
-  }
-
-  const ComputedStyle* style = nullptr;
-  if (Element* parent = ParentOrShadowHostElement())
-    style = parent->GetComputedStyle();
-
-  StyleRequest style_request;
-  style_request.parent_override = style;
-  style_request.layout_parent_override = style;
-  style_request.styled_element = this;
-  StyleRecalcContext corresponding_recalc_context(style_recalc_context);
-  corresponding_recalc_context.old_style =
-      PostStyleUpdateScope::GetOldStyle(*this);
-  return GetDocument().GetStyleResolver().ResolveStyle(
-      corresponding_element, corresponding_recalc_context, style_request);
-}
-
 bool SVGElement::LayoutObjectIsNeeded(const DisplayStyle& style) const {
   return IsValid() && HasSVGParent() && Element::LayoutObjectIsNeeded(style);
 }
@@ -964,8 +921,7 @@ void SVGElement::NotifyResourceClients() const {
 void SVGElement::InvalidateStyleAttribute(
     bool only_changed_independent_properties) {
   Element::InvalidateStyleAttribute(only_changed_independent_properties);
-  if (RuntimeEnabledFeatures::Svg2CascadeEnabled() &&
-      !InstancesForElement().empty()) {
+  if (!InstancesForElement().empty()) {
     SynchronizeAttributeInShadowInstances(html_names::kStyleAttr,
                                           getAttribute(html_names::kStyleAttr));
   }

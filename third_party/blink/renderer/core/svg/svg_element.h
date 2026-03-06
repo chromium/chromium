@@ -154,8 +154,6 @@ class CORE_EXPORT SVGElement : public Element {
   void SynchronizeSVGAttribute(const QualifiedName&) const;
   virtual void SynchronizeAllSVGAttributes() const;
 
-  const ComputedStyle* CustomStyleForLayoutObject(
-      const StyleRecalcContext&) final;
   bool LayoutObjectIsNeeded(const DisplayStyle&) const override;
 
 #if DCHECK_IS_ON()
