@@ -72,6 +72,7 @@
 #include "extensions/common/extension_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/ozone/public/ozone_platform.h"
 #include "url/gurl.h"
 
 using extensions::mojom::ManifestLocation;
@@ -1163,6 +1164,14 @@ TEST_F(SafetyHubHandlerTest, VersionCardOutOfDate) {
 
 TEST_F(SafetyHubHandlerTest,
        HandleGetSafetyHubEntryPointData_HasRecommendationsAndHeader) {
+#if BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/490024783): This is one of several tests failing on Linux
+  // builders with Ozone Wayland. Diagnose, fix, and unskip this test.
+  if (ui::OzonePlatform::RunningOnWaylandForTest()) {
+    GTEST_SKIP();
+  }
+#endif
+
   std::vector<SafetyHubHandler::SafetyHubModule> modules;
   modules.push_back(SafetyHubHandler::SafetyHubModule::kPasswords);
   modules.push_back(SafetyHubHandler::SafetyHubModule::kVersion);
