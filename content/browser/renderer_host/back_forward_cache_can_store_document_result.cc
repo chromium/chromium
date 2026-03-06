@@ -208,6 +208,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::SHARED_WORKER_WITH_NO_ACTIVE_CLIENT;
     case Reason::kWebLocksContention:
       return ProtoEnum::WEB_LOCKS_CONTENTION;
+    case Reason::kForwardCacheDisabled:
+      return ProtoEnum::FORWARD_CACHE_DISABLED;
   }
   NOTREACHED();
 }
@@ -472,6 +474,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "SharedWorker has no active clients";
     case Reason::kWebLocksContention:
       return "Pages with web locks in bfcache encountered a lock contention";
+    case Reason::kForwardCacheDisabled:
+      return "Forward cache is disabled";
   }
 }
 
@@ -598,6 +602,7 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
     case Reason::kWebViewMessageListenerInjected:
     case Reason::kWebViewSafeBrowsingAllowlistChanged:
     case Reason::kWebViewDocumentStartJavascriptChanged:
+    case Reason::kForwardCacheDisabled:
     case Reason::kUnknown:
       return "masked";
   }

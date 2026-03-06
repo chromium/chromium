@@ -2558,6 +2558,12 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
   if (new_entry_index != -1 && new_entry_index < last_committed_entry_index_) {
     // Record the number of forward BFCache entries when we go back.
     GetBackForwardCache().RecordForwardEntriesCount(new_entry_index);
+    // For multi-step back navigations, also prune any existing cached entries
+    // that are now forward entries.
+    if (!GetBackForwardCache().IsCachingForwardEntriesAllowed() &&
+        last_committed_entry_index_ - new_entry_index > 1) {
+      GetBackForwardCache().PruneForwardEntries(new_entry_index);
+    }
   }
 
   // Update the last committed index to reflect the committed entry. Do this

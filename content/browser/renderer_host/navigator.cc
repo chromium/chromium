@@ -588,6 +588,8 @@ void Navigator::DidNavigate(
       view_transition_commit_info(
           navigation_request->GetViewTransitionResources(),
           navigation_request->HasViewTransitionDelayLayerTreeViewDeletion());
+  const bool is_backward_navigation =
+      navigation_request->GetNavigationEntryOffset() < 0;
   frame_tree_node->render_manager()->DidNavigateFrame(
       render_frame_host,
       navigation_request->common_params().has_possibly_filtered_user_gesture,
@@ -595,7 +597,8 @@ void Navigator::DidNavigate(
       navigation_request->browsing_context_group_swap()
           .ShouldClearProxiesOnCommit(),
       navigation_request->commit_params().frame_policy, allow_paint_holding,
-      view_transition_commit_info, navigation_request->GetURL());
+      view_transition_commit_info, navigation_request->GetURL(),
+      is_backward_navigation);
 
   // Reset the old frame host's weak pointer to auction initiator page when it
   // is a cross-document navigation and the frame does not go into bfcache.

@@ -1992,6 +1992,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
           SharedWorkerWithNoActiveClient;
     case Reason::kWebLocksContention:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebLocksContention;
+    case Reason::kForwardCacheDisabled:
+      return Page::BackForwardCacheNotRestoredReasonEnum::ForwardCacheDisabled;
   }
 }
 
@@ -2240,6 +2242,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
   switch (reason) {
     case Reason::kNotPrimaryMainFrame:
     case Reason::kBackForwardCacheDisabled:
+    case Reason::kForwardCacheDisabled:
     case Reason::kRelatedActiveContentsExist:
     case Reason::kHTTPStatusNotOK:
     case Reason::kSchemeNotHTTPOrHTTPS:

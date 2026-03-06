@@ -241,8 +241,11 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // browser has not received an IPC ACK from the renderer. See also the
   // comments for |RequestedFeatures|. If you always want to include non-sticky
   // features, use GetCompleteBackForwardCacheEligibilityForReporting() instead.
+  // |is_becoming_forward_entry| is true for back navigations, which might
+  // prevent caching if the embedder disallows forward entries.
   BackForwardCacheCanStoreDocumentResultWithTree
-  GetCurrentBackForwardCacheEligibility(RenderFrameHostImpl* render_frame_host);
+  GetCurrentBackForwardCacheEligibility(RenderFrameHostImpl* render_frame_host,
+                                        bool is_becoming_forward_entry);
 
   // Whether a RenderFrameHost could be stored into the BackForwardCache at some
   // point in the future. Different than GetCurrentBackForwardCacheEligibility()
@@ -266,7 +269,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // cache, and this result will include them anyway.
   BackForwardCacheCanStoreDocumentResultWithTree
   GetCompleteBackForwardCacheEligibilityForReporting(
-      RenderFrameHostImpl* render_frame_host);
+      RenderFrameHostImpl* render_frame_host,
+      bool is_becoming_forward_entry);
 
   // Moves the specified BackForwardCache entry into the BackForwardCache. It
   // can be reused in a future history navigation by using RestoreEntry(). When
@@ -421,6 +425,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // and checks for an exact match at |target_nav_entry_index|.
   void RecordEntryMatch(const GURL& new_url, int target_nav_entry_index);
 
+  bool IsCachingForwardEntriesAllowed() const;
+
   // BackForwardCache overrides:
   void Flush() override;
   void Flush(NotRestoredReason reason) override;
@@ -429,6 +435,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
       size_t embedder_supplied_cache_size) override;
   void SetEmbedderSuppliedTimeToLive(
       base::TimeDelta embedder_supplied_time_to_live) override;
+  void SetEmbedderSuppliedCacheForwardEntriesAllowed(
+      bool embedder_supplied_cache_forward_entries_allowed) override;
   void DisableForTesting(DisableForTestingReason reason) override;
 
   // Evict all entries from the BackForwardCache that match the removal filter.
@@ -495,6 +503,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
       const std::optional<url::Origin>& initiator_origin,
       bool require_no_subframes) const;
 
+  // Removes all BackForwardCache entries that have a navigation index greater
+  // than |target_entry_index|.
+  void PruneForwardEntries(int target_entry_index);
+
  private:
   // Destroys all evicted frames in the BackForwardCache.
   void DestroyEvictedFrames();
@@ -503,7 +515,8 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // browser settings, the main document's URL & HTTP status, etc.
   void PopulateReasonsForMainDocument(
       BackForwardCacheCanStoreDocumentResult& result,
-      RenderFrameHostImpl* render_frame_host);
+      RenderFrameHostImpl* render_frame_host,
+      bool is_becoming_forward_entry);
 
   // This enum indicates what features to include when recording
   // NotRestoredReasons.
@@ -524,10 +537,13 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // through its return value.
   // |requested_features| controls whether we include non-sticky reasons in the
   // result.
+  // |is_becoming_forward_entry| indicates whether the |rfh| is becoming a
+  // forward entry.
   BackForwardCacheCanStoreDocumentResultWithTree PopulateReasonsForPage(
       RenderFrameHostImpl* rfh,
       BackForwardCacheCanStoreDocumentResult& flattened_result,
-      RequestedFeatures requested_features);
+      RequestedFeatures requested_features,
+      bool is_becoming_forward_entry);
 
   // Updates the result to include CacheControlNoStore reasons if the flag is
   // on.
@@ -546,6 +562,10 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // background processes because Android will kill the process if memory
   // becomes scarce.
   size_t GetForegroundedEntriesCacheSize();
+
+  // Returns the associated NavigationControllerImpl. We can just retrieve it
+  // from the first entry since they all share the same NavigationController.
+  NavigationControllerImpl& GetNavigationController();
 
   // Enforces a limit on the number of entries. Which entries are counted
   // towards the limit depends on the values of `reason`.
@@ -714,6 +734,7 @@ class CONTENT_EXPORT BackForwardCacheImpl
 
   std::optional<size_t> embedder_supplied_cache_size_;
   std::optional<base::TimeDelta> embedder_supplied_time_to_live_;
+  std::optional<bool> embedder_supplied_cache_forward_entries_allowed_;
 
   std::optional<base::MemoryPressureListenerRegistration>
       memory_pressure_listener_registration_;

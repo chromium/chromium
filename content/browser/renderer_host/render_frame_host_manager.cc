@@ -944,11 +944,12 @@ void RenderFrameHostManager::DidNavigateFrame(
     const blink::FramePolicy& frame_policy,
     bool allow_paint_holding,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url) {
+    const base::optional_ref<const GURL> navigation_request_url,
+    bool is_backward_navigation) {
   CommitPendingIfNecessary(render_frame_host, was_caused_by_user_gesture,
                            is_same_document_navigation, clear_proxies_on_commit,
                            allow_paint_holding, view_transition_commit_info,
-                           navigation_request_url);
+                           navigation_request_url, is_backward_navigation);
 
   // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
@@ -987,7 +988,8 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     bool clear_proxies_on_commit,
     bool allow_paint_holding,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url) {
+    const base::optional_ref<const GURL> navigation_request_url,
+    bool is_backward_navigation) {
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
     // RenderFrameHost completed a navigation.
@@ -999,7 +1001,7 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     CommitPending(std::move(speculative_render_frame_host_),
                   std::move(stored_page_to_restore_), clear_proxies_on_commit,
                   allow_paint_holding, view_transition_commit_info,
-                  navigation_request_url);
+                  navigation_request_url, is_backward_navigation);
 
     if (GetNavigationQueueingFeatureLevel() >=
         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
@@ -1255,7 +1257,8 @@ void RenderFrameHostManager::UpdateOpener(
 void RenderFrameHostManager::UnloadOldFrame(
     std::unique_ptr<RenderFrameHostImpl> old_render_frame_host,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url) {
+    const base::optional_ref<const GURL> navigation_request_url,
+    bool is_backward_navigation) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::UnloadOldFrame",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
 
@@ -1307,7 +1310,7 @@ void RenderFrameHostManager::UnloadOldFrame(
     // evicted from BFCache.
     BackForwardCacheCanStoreDocumentResultWithTree bfcache_eligibility =
         back_forward_cache.GetCurrentBackForwardCacheEligibility(
-            old_render_frame_host.get());
+            old_render_frame_host.get(), is_backward_navigation);
     bool can_store = bfcache_eligibility.CanStore();
     if (old_page_back_forward_cache_metrics &&
         old_page_back_forward_cache_metrics->had_form_data_associated()) {
@@ -1380,7 +1383,7 @@ void RenderFrameHostManager::UnloadOldFrame(
           eligibility_including_non_sticky =
               back_forward_cache
                   .GetCompleteBackForwardCacheEligibilityForReporting(
-                      old_render_frame_host.get());
+                      old_render_frame_host.get(), is_backward_navigation);
       old_page_back_forward_cache_metrics->SetNotRestoredReasons(
           eligibility_including_non_sticky);
     }
@@ -1803,7 +1806,8 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
       /*pending_stored_page=*/nullptr,
       request->browsing_context_group_swap().ShouldClearProxiesOnCommit(),
       /*allow_paint_holding=*/false, view_transition_commit_info,
-      /*navigation_request_url=*/request->GetURL());
+      /*navigation_request_url=*/request->GetURL(),
+      /*is_backward_navigation=*/false);
   request->SetAssociatedRFHType(
       NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
@@ -3098,7 +3102,8 @@ RenderFrameHostManager::ShouldProactivelySwapBrowsingInstance(
               GetNavigationController()
                   .GetBackForwardCache()
                   .GetCompleteBackForwardCacheEligibilityForReporting(
-                      render_frame_host_.get());
+                      render_frame_host_.get(),
+                      /*is_becoming_forward_entry=*/false);
       back_forward_cache_metrics->SetNotRestoredReasons(
           eligibility_including_non_sticky);
     }
@@ -5110,7 +5115,8 @@ void RenderFrameHostManager::CommitPending(
     bool clear_proxies_on_commit,
     bool allow_paint_holding,
     const ViewTransitionCommitInfo& view_transition_commit_info,
-    const base::optional_ref<const GURL> navigation_request_url) {
+    const base::optional_ref<const GURL> navigation_request_url,
+    bool is_backward_navigation) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::CommitPending",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
   CHECK(pending_rfh);
@@ -5467,7 +5473,7 @@ void RenderFrameHostManager::CommitPending(
   // This will unload it and schedule it for deletion when the unload ack
   // arrives (or immediately if the process isn't live).
   UnloadOldFrame(std::move(old_render_frame_host), view_transition_commit_info,
-                 navigation_request_url);
+                 navigation_request_url, is_backward_navigation);
 
   // Since the new RenderFrameHost is now committed, there must be no proxies
   // for its SiteInstance. Delete any existing ones.
@@ -5966,7 +5972,8 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
                 /*pending_stored_page=*/nullptr,
                 /*clear_proxies_on_commit=*/false,
                 /*allow_paint_holding=*/false, view_transition_commit_info,
-                /*navigation_request_url=*/std::nullopt);
+                /*navigation_request_url=*/std::nullopt,
+                /*is_backward_navigation=*/false);
   NotifyPrepareForInnerDelegateAttachComplete(true /* success */);
 }
 

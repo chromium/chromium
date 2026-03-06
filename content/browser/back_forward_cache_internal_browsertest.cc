@@ -4333,6 +4333,99 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 }
 #endif  // defined(USE_AURA)
 
+// Verify that existing forward entries are pruned when the setting is changed.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       FlushForwardEntriesOnSettingChange) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // Navigate A -> B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // A should be in BFCache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
+
+  // B should be in BFCache.
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // Disable forward caching via the embedder setting.
+  web_contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedCacheForwardEntriesAllowed(false);
+
+  // B should be evicted immediately.
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+
+  // A is still active and should be unaffected.
+  EXPECT_EQ(rfh_a.get(), current_frame_host());
+
+  // Go forward to B to check if the NotRestoredReason is logged correctly.
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
+  histogram_tester.ExpectBucketCount(
+      "BackForwardCache.HistoryNavigationOutcome.NotRestoredReason",
+      NotRestoredReason::kForwardCacheDisabled, 1);
+}
+
+// Verify that a page is not cached if it is a forward entry upon navigation.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       DoNotCacheForwardEntryOnBackNavigation) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // Disable forward caching.
+  web_contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .SetEmbedderSuppliedCacheForwardEntriesAllowed(false);
+
+  // Navigate A -> B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImplWrapper rfh_a(current_frame_host());
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b(current_frame_host());
+
+  // A should be in BFCache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+
+  // Go back to A, which should evict B.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ASSERT_TRUE(rfh_b.WaitUntilRenderFrameDeleted());
+
+  // Navigate to B -> C.
+  ASSERT_TRUE(NavigateToURL(shell(), url_b));
+  RenderFrameHostImplWrapper rfh_b2(current_frame_host());
+  ASSERT_TRUE(NavigateToURL(shell(), url_c));
+  RenderFrameHostImplWrapper rfh_c(current_frame_host());
+
+  // Back to A, which should evict B and C.
+  ASSERT_TRUE(HistoryGoToOffset(web_contents(), -2));
+  ASSERT_TRUE(rfh_b2.WaitUntilRenderFrameDeleted());
+  ASSERT_TRUE(rfh_c.WaitUntilRenderFrameDeleted());
+  EXPECT_EQ(web_contents()->GetLastCommittedURL(), url_a);
+
+  // Go forward to B and C to check if the NotRestoredReason is logged
+  // correctly.
+  base::HistogramTester histogram_tester;
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
+  ASSERT_TRUE(HistoryGoForward(web_contents()));
+  histogram_tester.ExpectBucketCount(
+      "BackForwardCache.HistoryNavigationOutcome.NotRestoredReason",
+      NotRestoredReason::kForwardCacheDisabled, 2);
+}
+
 class BackForwardCacheBrowserTestWithFencedFrames
     : public BackForwardCacheBrowserTest {
  public:
@@ -4611,7 +4704,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
       web_contents()
           ->GetController()
           .GetBackForwardCache()
-          .GetCurrentBackForwardCacheEligibility(rfh_a.get());
+          .GetCurrentBackForwardCacheEligibility(
+              rfh_a.get(), /*is_becoming_forward_entry=*/false);
   ASSERT_TRUE(can_store_result.tree_reasons);
 
   // 4. Check that tree results refers only to the fenced frames. We should

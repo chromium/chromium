@@ -263,7 +263,8 @@ void DidNavigateFrame(RenderFrameHostManager* rfh_manager,
       false /* is_same_document_navigation */,
       false /* clear_proxies_on_commit */, blink::FramePolicy(),
       true /* allow_paint_holding */, view_transition_commit_info,
-      /*navigation_request_url=*/std::nullopt);
+      /*navigation_request_url=*/std::nullopt,
+      false /* is_backward_navigation */);
 }
 
 class TestDevToolsClientHost : public DevToolsAgentHostClient {

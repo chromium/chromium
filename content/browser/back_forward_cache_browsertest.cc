@@ -2479,7 +2479,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, TreeResultFeatureUsage) {
       web_contents()
           ->GetController()
           .GetBackForwardCache()
-          .GetCurrentBackForwardCacheEligibility(rfh.get());
+          .GetCurrentBackForwardCacheEligibility(
+              rfh.get(), /*is_becoming_forward_entry=*/false);
   ASSERT_TRUE(NavigateToURL(shell(), url_b));
   ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
 
@@ -2958,7 +2959,8 @@ IN_PROC_BROWSER_TEST_P(
                 ->GetController()
                 .GetBackForwardCache()
                 .GetCurrentBackForwardCacheEligibility(
-                    static_cast<RenderFrameHostImpl*>(main_frame));
+                    static_cast<RenderFrameHostImpl*>(main_frame),
+                    /*is_becoming_forward_entry=*/false);
         EXPECT_TRUE(can_store_result.flattened_reasons.HasNotRestoredReason(
             BackForwardCacheMetrics::NotRestoredReason::kSubframeIsNavigating));
       }));
