@@ -538,6 +538,8 @@ export class ContextualTasksAppElement extends CrLitElement {
           // Update the height of the forced composebox bounds if it is set.
           if (this.forcedComposeboxBounds_) {
             this.forcedComposeboxBounds_.height = e.detail.height;
+          } else {
+            this.requestUpdate();
           }
         });
     // </if>
