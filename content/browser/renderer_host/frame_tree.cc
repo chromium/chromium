@@ -391,7 +391,8 @@ FrameTreeNode* FrameTree::AddFrame(
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     bool was_discarded,
     blink::FrameOwnerElementType owner_type,
-    bool is_dummy_frame_for_inner_tree) {
+    bool is_dummy_frame_for_inner_tree,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
   CHECK_NE(new_routing_id, IPC::mojom::kRoutingIdNone);
   // Normally this path is for blink adding a child local frame. But fenced
   // frames add a dummy child frame that never gets a corresponding
@@ -432,7 +433,7 @@ FrameTreeNode* FrameTree::AddFrame(
   FrameTreeNode* added_node = parent->AddChild(
       std::move(new_node), new_routing_id, std::move(frame_remote), frame_token,
       document_token, devtools_frame_token, frame_policy, frame_name,
-      frame_unique_name);
+      frame_unique_name, std::move(sandbox_origin_token));
 
   added_node->SetFencedFramePropertiesIfNeeded();
 

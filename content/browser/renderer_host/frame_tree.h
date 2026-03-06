@@ -399,7 +399,8 @@ class CONTENT_EXPORT FrameTree {
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       bool was_discarded,
       blink::FrameOwnerElementType owner_type,
-      bool is_dummy_frame_for_inner_tree);
+      bool is_dummy_frame_for_inner_tree,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
 
   // Removes a frame from the frame tree. |child|, its children, and objects
   // owned by their RenderFrameHostManagers are immediately deleted. The root

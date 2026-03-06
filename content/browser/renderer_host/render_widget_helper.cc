@@ -31,16 +31,17 @@ void AddWidgetHelper(int render_process_id,
 RenderWidgetHelper::FrameTokens::FrameTokens(
     int32_t routing_id,
     const base::UnguessableToken& devtools_frame_token,
-    const blink::DocumentToken& document_token)
+    const blink::DocumentToken& document_token,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token)
     : routing_id(routing_id),
       devtools_frame_token(devtools_frame_token),
-      document_token(document_token) {}
+      document_token(document_token),
+      sandbox_origin_token(std::move(sandbox_origin_token)) {}
 
-RenderWidgetHelper::FrameTokens::FrameTokens(const FrameTokens& other) =
-    default;
+RenderWidgetHelper::FrameTokens::FrameTokens(FrameTokens&&) = default;
 
 RenderWidgetHelper::FrameTokens& RenderWidgetHelper::FrameTokens::operator=(
-    const FrameTokens& other) = default;
+    FrameTokens&&) = default;
 
 RenderWidgetHelper::FrameTokens::~FrameTokens() = default;
 
@@ -77,7 +78,8 @@ bool RenderWidgetHelper::TakeStoredDataForFrameToken(
     const blink::LocalFrameToken& frame_token,
     int32_t& routing_id,
     base::UnguessableToken& devtools_frame_token,
-    blink::DocumentToken& document_token) {
+    blink::DocumentToken& document_token,
+    std::unique_ptr<base::UnguessableToken>& sandbox_origin_token) {
   base::AutoLock lock(frame_token_map_lock_);
   auto iter = frame_storage_map_.find(frame_token);
   if (iter == frame_storage_map_.end()) {
@@ -86,6 +88,7 @@ bool RenderWidgetHelper::TakeStoredDataForFrameToken(
   routing_id = iter->second.routing_id;
   devtools_frame_token = iter->second.devtools_frame_token;
   document_token = iter->second.document_token;
+  sandbox_origin_token = std::move(iter->second.sandbox_origin_token);
   frame_storage_map_.erase(iter);
   return true;
 }
@@ -94,12 +97,14 @@ void RenderWidgetHelper::StoreNextFrameRoutingID(
     int32_t routing_id,
     const blink::LocalFrameToken& frame_token,
     const base::UnguessableToken& devtools_frame_token,
-    const blink::DocumentToken& document_token) {
+    const blink::DocumentToken& document_token,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
   base::AutoLock lock(frame_token_map_lock_);
   bool result =
       frame_storage_map_
-          .emplace(frame_token, FrameTokens(routing_id, devtools_frame_token,
-                                            document_token))
+          .emplace(frame_token,
+                   FrameTokens(routing_id, devtools_frame_token, document_token,
+                               std::move(sandbox_origin_token)))
           .second;
   DCHECK(result);
 }

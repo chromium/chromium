@@ -3088,9 +3088,11 @@ bool RenderProcessHostImpl::TakeStoredDataForFrameToken(
     const blink::LocalFrameToken& frame_token,
     int32_t& new_routing_id,
     base::UnguessableToken& devtools_frame_token,
-    blink::DocumentToken& document_token) {
+    blink::DocumentToken& document_token,
+    std::unique_ptr<base::UnguessableToken>& sandbox_origin_token) {
   return widget_helper_->TakeStoredDataForFrameToken(
-      frame_token, new_routing_id, devtools_frame_token, document_token);
+      frame_token, new_routing_id, devtools_frame_token, document_token,
+      sandbox_origin_token);
 }
 
 void RenderProcessHostImpl::AddObserver(RenderProcessHostObserver* observer) {

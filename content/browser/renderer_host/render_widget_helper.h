@@ -41,10 +41,12 @@ class RenderWidgetHelper
 
   // Retrieve a previously stored data. Returns true if the tokens
   // were found.
-  bool TakeStoredDataForFrameToken(const blink::LocalFrameToken& frame_token,
-                                   int32_t& routing_id,
-                                   base::UnguessableToken& devtools_frame_token,
-                                   blink::DocumentToken& document_token);
+  bool TakeStoredDataForFrameToken(
+      const blink::LocalFrameToken& frame_token,
+      int32_t& routing_id,
+      base::UnguessableToken& devtools_frame_token,
+      blink::DocumentToken& document_token,
+      std::unique_ptr<base::UnguessableToken>& sandbox_origin_token);
 
   // Store a set of frame tokens given a routing id. This is usually called on
   // the IO thread, and |GetFrameTokensForFrameRoutingID| will be called on the
@@ -53,7 +55,8 @@ class RenderWidgetHelper
       int32_t routing_id,
       const blink::LocalFrameToken& frame_token,
       const base::UnguessableToken& devtools_frame_token,
-      const blink::DocumentToken& document_token);
+      const blink::DocumentToken& document_token,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token);
 
   // IO THREAD ONLY -----------------------------------------------------------
 
@@ -69,14 +72,16 @@ class RenderWidgetHelper
   struct FrameTokens {
     FrameTokens(int32_t routing_id,
                 const base::UnguessableToken& devtools_frame_token,
-                const blink::DocumentToken& document_token);
-    FrameTokens(const FrameTokens& other);
-    FrameTokens& operator=(const FrameTokens& other);
+                const blink::DocumentToken& document_token,
+                std::unique_ptr<base::UnguessableToken> sandbox_origin_token);
+    FrameTokens(FrameTokens&&);
+    FrameTokens& operator=(FrameTokens&&);
     ~FrameTokens();
 
     int32_t routing_id;
     base::UnguessableToken devtools_frame_token;
     blink::DocumentToken document_token;
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token;
   };
 
   // Lock that is used to provide access to `frame_storage_map_`

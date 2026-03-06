@@ -872,7 +872,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const blink::FramePolicy& frame_policy,
       const blink::mojom::FrameOwnerProperties& frame_owner_properties,
       blink::FrameOwnerElementType owner_type,
-      ukm::SourceId document_ukm_source_id);
+      ukm::SourceId document_ukm_source_id,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
 
   void OnPreloadingHeuristicsModelDone(const GURL& url, float score) override;
 
@@ -907,7 +908,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       base::UnguessableToken devtools_frame_token,
       const blink::FramePolicy& frame_policy,
       std::string frame_name,
-      std::string frame_unique_name);
+      std::string frame_unique_name,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token);
   void RemoveChild(FrameTreeNode* child);
   void ResetChildren();
 
@@ -2408,6 +2410,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   int renderer_exit_count() const { return renderer_exit_count_; }
 
+  std::unique_ptr<base::UnguessableToken> TakeSandboxOriginToken() {
+    return std::move(sandbox_origin_token_);
+  }
+
   // Re-creates loader factories and pushes them to |RenderFrame|.
   // Used in case we need to add or remove intercepting proxies to the
   // running renderer, or in case of Network Service connection errors.
@@ -2961,12 +2967,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // children, or nullptr if there is no such node.
   FrameTreeNode* NextSibling() const;
 
-  // Set the |last_committed_origin_|, |isolation_info_|,
+  // Sets the |last_committed_origin_|, |isolation_info_|,
   // |permissions_policy_|, and the RuntimeFeatureStateDocumentData of |this|
-  // frame, inheriting both the origin from |creator_frame| as appropriate (e.g.
+  // frame, inheriting the origin from |creator_frame| as appropriate (e.g.
   // depending on whether |this| frame should be sandboxed / should have an
   // opaque origin instead).
-  void SetOriginDependentStateOfNewFrame(RenderFrameHostImpl* creator_frame);
+  //
+  // |sandbox_origin_token| is used to deterministically derive the opaque
+  // origin when the frame is sandboxed (i.e., has the `kOrigin` sandbox flag).
+  // For child iframes, the token is passed in from frame creation. For
+  // sandboxed popups via `window.open()`, it is null here and generated
+  // on-demand, then stored in `sandbox_origin_token_` to be sent to the
+  // renderer.
+  void SetOriginDependentStateOfNewFrame(
+      RenderFrameHostImpl* creator_frame,
+      std::unique_ptr<base::UnguessableToken> sandbox_origin_token = nullptr);
 
   // Calculates the storage key for this RenderFrameHostImpl using the passed
   // `new_rfh_origin`, and `nonce`, and deriving the storage key's
@@ -5598,6 +5613,21 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   base::MemoryPressureListenerRegistration
       memory_pressure_listener_registration_;
+
+  // Token used to deterministically generate the opaque origin for the initial
+  // empty document of a sandboxed popup (e.g.,
+  // `window.open('', '', 'sandbox=allow-scripts')`). Sent to the renderer via
+  // `mojom::CreateNewWindowReply` and `mojom::CreateViewParams` so both
+  // processes derive the same origin.
+  //
+  // Generated on-demand in `SetOriginDependentStateOfNewFrame()`
+  // when the main frame is sandboxed. Consumed (reset to nullptr) by
+  // `TakeSandboxOriginToken()` when building the reply.
+  //
+  // TODO(crbug.com/489973915): Move this to PageImpl, as it is only needed
+  // for main frames (popups). For iframes, the token is consumed immediately
+  // in `SetOriginDependentStateOfNewFrame()` and does not need to be stored.
+  std::unique_ptr<base::UnguessableToken> sandbox_origin_token_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

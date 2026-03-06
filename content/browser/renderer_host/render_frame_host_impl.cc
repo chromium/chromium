@@ -158,6 +158,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/renderer_host/view_transition_opt_in_state.h"
+#include "content/browser/sandboxed_opaque_origin_creator.h"
 #include "content/browser/scoped_active_url.h"
 #include "content/browser/security/coop/cross_origin_opener_policy_reporter.h"
 #include "content/browser/serial/serial_service.h"
@@ -5078,7 +5079,8 @@ void RenderFrameHostImpl::OnCreateChildFrame(
     const blink::FramePolicy& frame_policy,
     const blink::mojom::FrameOwnerProperties& frame_owner_properties,
     blink::FrameOwnerElementType owner_type,
-    ukm::SourceId document_ukm_source_id) {
+    ukm::SourceId document_ukm_source_id,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
   // TODO(lukasza): Call ReceivedBadMessage when |frame_unique_name| is empty.
   DCHECK(!frame_unique_name.empty());
   DCHECK(browser_interface_broker_receiver.is_valid());
@@ -5116,7 +5118,7 @@ void RenderFrameHostImpl::OnCreateChildFrame(
       frame_unique_name, is_created_by_script, frame_token,
       devtools_frame_token, document_token, frame_policy,
       frame_owner_properties, was_discarded_, owner_type,
-      /*is_dummy_frame_for_inner_tree=*/false);
+      /*is_dummy_frame_for_inner_tree=*/false, std::move(sandbox_origin_token));
 }
 
 void RenderFrameHostImpl::OnPreloadingHeuristicsModelDone(const GURL& url,
@@ -5146,10 +5148,17 @@ void RenderFrameHostImpl::CreateChildFrame(
   int new_routing_id = IPC::mojom::kRoutingIdNone;
   base::UnguessableToken devtools_frame_token;
   blink::DocumentToken document_token;
+  // The sandbox_origin_token was stored by the browser process when it
+  // pre-allocated the frame routing IDs, and also sent to the renderer in
+  // `FrameRoutingInfo`. Both browser and renderer use this token to
+  // deterministically generate identical opaque origins for the new frame's
+  // initial empty document. It is passed directly to
+  // `SetOriginDependentStateOfNewFrame()` (via `AddChild()`).
+  std::unique_ptr<base::UnguessableToken> sandbox_origin_token;
   if (!static_cast<RenderProcessHostImpl*>(GetProcess())
            ->TakeStoredDataForFrameToken(frame_token, new_routing_id,
-                                         devtools_frame_token,
-                                         document_token)) {
+                                         devtools_frame_token, document_token,
+                                         sandbox_origin_token)) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_CREATE_CHILD_FRAME_TOKENS_NOT_FOUND);
     return;
@@ -5174,7 +5183,7 @@ void RenderFrameHostImpl::CreateChildFrame(
                      frame_name, frame_unique_name, is_created_by_script,
                      frame_token, devtools_frame_token, document_token,
                      frame_policy, *frame_owner_properties, owner_type,
-                     document_ukm_source_id);
+                     document_ukm_source_id, std::move(sandbox_origin_token));
 }
 
 void RenderFrameHostImpl::DidNavigate(
@@ -5607,7 +5616,8 @@ blink::StorageKey RenderFrameHostImpl::CalculateStorageKey(
 }
 
 void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
-    RenderFrameHostImpl* creator_frame) {
+    RenderFrameHostImpl* creator_frame,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
   // This method should only be called for *new* frames, that haven't committed
   // a navigation yet.
   DCHECK(!has_committed_any_navigation_);
@@ -5621,9 +5631,42 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
       network::mojom::WebSandboxFlags::kOrigin ==
       (browsing_context_state_->active_sandbox_flags() &
        network::mojom::WebSandboxFlags::kOrigin);
-  url::Origin new_frame_origin = new_frame_should_be_sandboxed
-                                     ? creator_origin.DeriveNewOpaqueOrigin()
-                                     : creator_origin;
+
+  url::Origin new_frame_origin;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kUseSandboxTokenForOriginDerivation)) {
+    if (new_frame_should_be_sandboxed) {
+      if (sandbox_origin_token) {
+        // Child iframes always receive a token during creation, so verify
+        // we are in a child iframe.
+        CHECK(parent_);
+        new_frame_origin = content::SandboxedOpaqueOriginCreator::
+            CreateOriginForSandboxedFrame(
+                base::PassKey<RenderFrameHostImpl>(), *sandbox_origin_token,
+                creator_origin.GetTupleOrPrecursorTupleIfOpaque());
+      } else {
+        // When no sandbox origin token is provided for a sandboxed window,
+        // generate one now and use it to create the sandboxed origin. This
+        // only happens for renderer-initiated top-level windows
+        // (window.open()). Child iframes always receive a token during
+        // creation, so verify we're not in the child iframe path.
+        CHECK(!parent_);
+        sandbox_origin_token_ = std::make_unique<base::UnguessableToken>(
+            base::UnguessableToken::Create());
+        new_frame_origin = content::SandboxedOpaqueOriginCreator::
+            CreateOriginForSandboxedFrame(
+                base::PassKey<RenderFrameHostImpl>(), *sandbox_origin_token_,
+                creator_origin.GetTupleOrPrecursorTupleIfOpaque());
+      }
+    } else {
+      new_frame_origin = creator_origin;
+    }
+  } else {
+    new_frame_origin = new_frame_should_be_sandboxed
+                           ? creator_origin.DeriveNewOpaqueOrigin()
+                           : creator_origin;
+  }
+
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther,
       IsCredentialless(),
@@ -5731,7 +5774,8 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
     base::UnguessableToken devtools_frame_token,
     const blink::FramePolicy& frame_policy,
     std::string frame_name,
-    std::string frame_unique_name) {
+    std::string frame_unique_name,
+    std::unique_ptr<base::UnguessableToken> sandbox_origin_token) {
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kActive ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering);
 
@@ -5755,7 +5799,8 @@ FrameTreeNode* RenderFrameHostImpl::AddChild(
   // after the first commit) and other state (such as the
   // RuntimeFeatureStateReadContext) from its parent. See also
   // https://crbug.com/932067.
-  child->current_frame_host()->SetOriginDependentStateOfNewFrame(this);
+  child->current_frame_host()->SetOriginDependentStateOfNewFrame(
+      this, std::move(sandbox_origin_token));
 
   children_.push_back(std::move(child));
   return children_.back().get();
@@ -10227,11 +10272,27 @@ void RenderFrameHostImpl::CreateNewWindow(
   // below, we at least want to transmit screen info based on the screen of the
   // initiating frame, which is what new_rwh is constructed with.
   visual_properties.screen_infos = new_rwh->GetScreenInfos();
+
+  // Sandbox origin token handling for popups:
+  // Normally sandboxed popups token is generated by
+  // `SetOriginDependentStateOfNewFrame()`. Popups that escape sandbox (CSP
+  // "sandbox" + "allow-popups-to-escape-sandbox"):
+  //   - Browser sees no sandbox flags, so `TakeSandboxOriginToken()` is null
+  //   - Renderer still inherits CSP sandbox flags and will create opaque origin
+  //   - So generate a new token here as fallback
+  //
+  // TODO(crbug.com/486082219): Remove this fallback logic and only set
+  // sandbox_origin_token when the window is actually sandboxed.
+  auto token = new_main_rfh->TakeSandboxOriginToken();
+  std::optional<base::UnguessableToken> sandbox_origin_token =
+      token ? std::make_optional(*token)
+            : std::make_optional(base::UnguessableToken::Create());
+
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
       new_rwh->GetRoutingID(), visual_properties, cloned_namespace->id(),
       new_main_rfh->GetDevToolsFrameToken(), wait_for_debugger,
-      new_main_rfh->GetDocumentToken(),
+      new_main_rfh->GetDocumentToken(), std::move(sandbox_origin_token),
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
       new_main_rfh->GetSiteInstance()->browsing_instance_token(),
       delegate_->GetColorProviderColorMaps(),

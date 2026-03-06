@@ -213,6 +213,13 @@ struct CreateLocalMainFrameParams {
   // frame that is not yet swapped in.
   blink.mojom.DocumentToken document_token;
 
+  // Token used to deterministically generate the opaque origin for the initial
+  // empty document of a sandboxed main frame (e.g., via `window.open()` with
+  // sandbox flags). Generated in the browser by
+  // `SetOriginDependentStateOfNewFrame()` and sent here so both browser and
+  // renderer derive the same origin. Null if the frame is not sandboxed.
+  mojo_base.mojom.UnguessableToken? sandbox_origin_token;
+
   // Null when the main frame has no policy container yet (for example, because
   // it is a speculative RenderFrameHost), and the policy container will be
   // sent during CommitNavigation.
@@ -702,6 +709,14 @@ struct CreateNewWindowReply {
   bool wait_for_debugger;
 
   blink.mojom.DocumentToken document_token;
+
+  // Token used to deterministically generate the opaque origin for the initial
+  // empty document of a sandboxed popup (e.g., `window.open()` with sandbox
+  // flags). Generated in the browser by `SetOriginDependentStateOfNewFrame()`
+  // and sent here so both browser and renderer derive the same origin.
+  // TODO(crbug.com/486082219): Once the fallback logic for popups escaping
+  // sandbox is removed, this will only be set for truly sandboxed cases.
+  mojo_base.mojom.UnguessableToken? sandbox_origin_token;
 
   // The policy container for the new frame that will be created by Blink in
   // response.

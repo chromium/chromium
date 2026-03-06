@@ -14,6 +14,11 @@ struct FrameRoutingInfo {
   blink.mojom.LocalFrameToken frame_token;
   mojo_base.mojom.UnguessableToken devtools_frame_token;
   blink.mojom.DocumentToken document_token;
+  // Token used to deterministically generate opaque origins for newly created
+  // sandboxed child iframes. Pre-allocated here so that both browser and
+  // renderer processes can derive the same origin independently. Only used if
+  // the frame actually ends up being sandboxed, ignored otherwise.
+  mojo_base.mojom.UnguessableToken sandbox_origin_token;
 };
 
 // A interface to the browser process that is handled on the IO thread.

@@ -1407,6 +1407,8 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUpdatedDeviceMemoryLimitsFor2026);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseAncestorRenderFrameForWorker);
 
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kUseSandboxTokenForOriginDerivation);
+
 // Whether first-party to third-party different-bucket same-origin post messages
 // are blocked.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
