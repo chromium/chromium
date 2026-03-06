@@ -19,12 +19,6 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "ui/views/widget/widget.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "chrome/browser/win/taskbar_manager.h"
-#include "chrome/installer/util/install_util.h"
-#include "chrome/installer/util/shell_util.h"
-#endif
-
 DefaultBrowserBubbleDialogManager::DefaultBrowserBubbleDialogManager() =
     default;
 
@@ -61,20 +55,6 @@ void DefaultBrowserBubbleDialogManager::CloseForBrowser(
 }
 
 void DefaultBrowserBubbleDialogManager::OnAccept() {
-  if (can_pin_to_taskbar()) {
-#if BUILDFLAG(IS_WIN)
-    // Attempt the pin to taskbar in parallel with bringing up the Windows
-    // settings UI. Serializing the operations is an option, but since the user
-    // might not complete the first operation, serializing would probably make
-    // the second operation less likely to happen.
-    browser_util::PinAppToTaskbar(
-        ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
-        base::DoNothing());
-#else
-    NOTREACHED();
-#endif  // BUILDFLAG(IS_WIN)
-  }
   HandleAccept();
 
   DefaultBrowserPromptManager::GetInstance()->CloseAllPrompts(
