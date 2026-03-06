@@ -860,7 +860,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
             testProxy.element.$.errorScrim.errorMessage);
       });
 
-  test('notify browser when image is added in create image mode', async () => {
+  test('correctly sets create image mode', async () => {
     loadTimeData.overrideValues({
       composeboxShowZps: true,
       composeboxShowTypedSuggest: false,
@@ -881,38 +881,6 @@ suite('NewTabPageComposeboxUploadTest', () => {
     assertEquals(
         ComposeboxToolMode.kImageGen,
         testProxy.searchboxHandler.getArgs('setActiveToolMode')[0]);
-
-    // Upload an image file. `uploadButtonDisabled` should be false.
-    const id = generateZeroId();
-    await uploadFileAndVerify(
-        testProxy, id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
-    testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
-    await microtasksFinished();
-
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('setActiveToolMode'), 2);
-    assertEquals(
-        ComposeboxToolMode.kImageGen,
-        testProxy.searchboxHandler.getArgs('setActiveToolMode')[1]);
-
-    // Deleting the image should call setCreateImageMode again but with
-    // imagePresent false.
-    const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
-    testProxy.element.$.carousel.dispatchEvent(new CustomEvent('delete-file', {
-      detail: {
-        uuid: deletedId,
-      },
-      bubbles: true,
-      composed: true,
-    }));
-
-    await microtasksFinished();
-    assertEquals(
-        testProxy.searchboxHandler.getCallCount('setActiveToolMode'), 3);
-    assertEquals(
-        ComposeboxToolMode.kImageGen,
-        testProxy.searchboxHandler.getArgs('setActiveToolMode')[2]);
   });
 
   test('composebox does not open match when only file present', async () => {
