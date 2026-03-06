@@ -751,4 +751,36 @@ TEST_F(InputStateModelTest,
   local_model->OnContextChanged();
 }
 
+// Regression test for crbug.com/487756923.
+TEST_F(InputStateModelTest,
+       Regression_Bug487756923_CopyConstructorCopiesPrefService) {
+  TestingPrefServiceSimple prefs;
+  prefs.registry()->RegisterIntegerPref(
+      contextual_search::kSearchContentSharingSettings,
+      static_cast<int>(
+          contextual_search::SearchContentSharingSettingsValue::kDisabled));
+
+  omnibox::SearchboxConfig config;
+  config.mutable_rule_set()->add_allowed_input_types(
+      omnibox::InputType::INPUT_TYPE_LENS_IMAGE);
+
+  auto model_with_image = std::make_unique<InputStateModel>(
+      session_handle_, config, /*is_off_the_record=*/false);
+  model_with_image->SetPrefService(&prefs);
+
+  const auto& state = model_with_image->get_state_for_testing();
+  EXPECT_EQ(std::find(state.allowed_input_types.begin(),
+                      state.allowed_input_types.end(),
+                      omnibox::InputType::INPUT_TYPE_LENS_IMAGE),
+            state.allowed_input_types.end());
+
+  MockContextualSearchSessionHandle new_session;
+  InputStateModel cloned_model(*model_with_image, new_session);
+  const auto& cloned_state = cloned_model.get_state_for_testing();
+  EXPECT_EQ(std::find(cloned_state.allowed_input_types.begin(),
+                      cloned_state.allowed_input_types.end(),
+                      omnibox::InputType::INPUT_TYPE_LENS_IMAGE),
+            cloned_state.allowed_input_types.end());
+}
+
 }  // namespace contextual_search
