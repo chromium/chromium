@@ -34,6 +34,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity_manager.h"
 #import "ios/chrome/browser/sync/model/mock_sync_service_utils.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -71,7 +72,8 @@ class TwoScreensSigninCoordinatorTest : public PlatformTest {
     [standardDefaults removeObjectForKey:kSigninPromoViewDisplayCountKey];
 
     UIView.animationsEnabled = NO;
-    window_ = [[UIWindow alloc] init];
+    window_ = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
     window_.rootViewController = [[UIViewController alloc] init];
     [window_ addSubview:window_.rootViewController.view];
 
