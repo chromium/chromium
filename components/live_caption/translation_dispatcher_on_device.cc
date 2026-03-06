@@ -20,15 +20,14 @@ TranslationDispatcherOnDevice::TranslationDispatcherOnDevice() = default;
 
 TranslationDispatcherOnDevice::TranslationDispatcherOnDevice(
     std::unique_ptr<OnDeviceTranslationController> translation_controller)
-    : origin_(url::Origin()),
-      translation_controller_(std::move(translation_controller)) {}
+    : translation_controller_(std::move(translation_controller)) {}
 
 TranslationDispatcherOnDevice::~TranslationDispatcherOnDevice() = default;
 
 void TranslationDispatcherOnDevice::GetTranslation(
-    absl::string_view result,
-    absl::string_view source_language,
-    absl::string_view target_language,
+    std::string_view result,
+    std::string_view source_language,
+    std::string_view target_language,
     TranslateEventCallback callback) {
   std::string base_source_language =
       GetBaseLanguage(std::string(source_language));

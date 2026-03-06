@@ -32,9 +32,9 @@ class TranslationDispatcher {
   TranslationDispatcher& operator=(const TranslationDispatcher&) = delete;
   virtual ~TranslationDispatcher() = default;
 
-  virtual void GetTranslation(absl::string_view result,
-                              absl::string_view source_language,
-                              absl::string_view target_language,
+  virtual void GetTranslation(std::string_view result,
+                              std::string_view source_language,
+                              std::string_view target_language,
                               TranslateEventCallback callback) = 0;
 };
 

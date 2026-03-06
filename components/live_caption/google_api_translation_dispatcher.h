@@ -37,9 +37,9 @@ class GoogleApiTranslationDispatcher : public TranslationDispatcher {
   GoogleApiTranslationDispatcher(std::string api_key,
                                  content::BrowserContext* browser_context);
 
-  void GetTranslation(absl::string_view result,
-                      absl::string_view source_language,
-                      absl::string_view target_language,
+  void GetTranslation(std::string_view result,
+                      std::string_view source_language,
+                      std::string_view target_language,
                       TranslateEventCallback callback) override;
 
   void SetURLLoaderFactoryForTest(

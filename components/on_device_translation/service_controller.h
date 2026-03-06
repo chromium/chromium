@@ -53,6 +53,26 @@ class OnDeviceTranslationController {
                             CanTranslateCallback callback) = 0;
 };
 
+class TranslationServiceControllerInterface {
+ public:
+  TranslationServiceControllerInterface() = default;
+  virtual ~TranslationServiceControllerInterface() = default;
+
+  virtual void CreateTranslator(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      base::OnceCallback<void(
+          base::expected<mojo::PendingRemote<mojom::Translator>,
+                         blink::mojom::CreateTranslatorError>)> callback) = 0;
+
+  virtual void CanTranslate(
+      const std::string& source_lang,
+      const std::string& target_lang,
+      base::OnceCallback<void(blink::mojom::CanCreateTranslatorResult)>
+          callback) = 0;
+  virtual bool IsServiceRunning() const = 0;
+};
+
 // This class is the controller that launches the on-device translation service
 // and delegates the functionalities. It is designed to be shared by multiple
 // `TranslationManagerImpl` instances.  A single instance of this class is
@@ -94,16 +114,10 @@ class OnDeviceTranslationServiceController
   // service is started.
   void SetServiceIdleTimeoutForTesting(base::TimeDelta service_idle_timeout);
 
-  // The information of a language pack.
-  struct LanguagePackInfo;
-
- protected:
   // OnDeviceTranslationInstaller::Observer
   void OnLanguagePackInstalled(const LanguagePackKey lang_pack) override;
-  // OnDeviceTranslationInstaller::Observer
   void OnLanguagePackInstallationChanged(
       const LanguagePackKey lang_pack) override;
-  // OnDeviceTranslationInstaller::Observer
   void OnInstallationChanged() override;
 
  private:
@@ -170,10 +184,6 @@ class OnDeviceTranslationServiceController
       file_operation_proxy_;
   // The pending tasks that are waiting for the language packs to be installed.
   std::vector<PendingTask> pending_tasks_;
-  // The LanguagePackInfo from the command line. This is nullopt if the command
-  // line flag `--translate-kit-packages` is not set.
-  const std::optional<std::vector<LanguagePackInfo>>
-      language_packs_from_command_line_;
 };
 
 }  // namespace on_device_translation

@@ -8,7 +8,6 @@
 #include "base/run_loop.h"
 #include "components/on_device_translation/service_controller.h"
 #include "components/on_device_translation/test/fake_installer.h"
-#include "components/on_device_translation/test/fake_service_controller_manager.h"
 #include "components/on_device_translation/test/fake_translator.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"

@@ -94,9 +94,9 @@ GoogleApiTranslationDispatcher::GoogleApiTranslationDispatcher(
 GoogleApiTranslationDispatcher::~GoogleApiTranslationDispatcher() = default;
 
 void GoogleApiTranslationDispatcher::GetTranslation(
-    absl::string_view result,
-    absl::string_view source_language,
-    absl::string_view target_language,
+    std::string_view result,
+    std::string_view source_language,
+    std::string_view target_language,
     TranslateEventCallback callback) {
   if (!url_loader_factory_.is_bound() || !url_loader_factory_.is_connected()) {
     ResetURLLoaderFactory();

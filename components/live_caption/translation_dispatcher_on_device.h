@@ -32,9 +32,9 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
       std::unique_ptr<on_device_translation::OnDeviceTranslationController>
           translation_controller);
 
-  void GetTranslation(absl::string_view result,
-                      absl::string_view source_language,
-                      absl::string_view target_language,
+  void GetTranslation(std::string_view result,
+                      std::string_view source_language,
+                      std::string_view target_language,
                       TranslateEventCallback callback) override;
 
   void SetURLLoaderFactoryForTest(
@@ -64,8 +64,6 @@ class TranslationDispatcherOnDevice : public TranslationDispatcher {
 
   std::string source_language_;
   std::string target_language_;
-
-  const url::Origin origin_;
 
   std::unique_ptr<on_device_translation::OnDeviceTranslationController>
       translation_controller_;

@@ -76,10 +76,9 @@ class ServiceControllerManager : public KeyedService {
 
   // This LRU cache maintains at most K service controllers in it. We assume
   // that all of them have services running. Whenever a new controller needs to
-  // be created, the cache will remove the least used one and consequently stop
-  // its service that could be running. To be able to do this, we do not expose
-  // the controller directly, rather we expose its methods `CreateTranslator`
-  // and `CanTranslate` here.
+  // be created, the cache will remove the least used one. To be able to do
+  // this, we do not expose the controller directly, rather we expose its
+  // methods `CreateTranslator` and `CanTranslate` here.
   base::LRUCache<url::Origin, std::unique_ptr<OnDeviceTranslationController>>
       service_controllers_;
   // Safe because BrowserProcess::local_state() outlives the Profile.
@@ -88,4 +87,5 @@ class ServiceControllerManager : public KeyedService {
 };
 
 }  // namespace on_device_translation
+
 #endif  // COMPONENTS_ON_DEVICE_TRANSLATION_SERVICE_CONTROLLER_MANAGER_H_
