@@ -411,7 +411,7 @@ export class ComposeboxElement extends I18nMixinLit
     return this.showDropdown_ &&
         (this.showFileCarousel_ ||
          this.searchboxLayoutMode === 'TallTopContext' ||
-         this.shouldShowSubmitButton_);
+         this.shouldShowSubmitButton_ || this.inToolMode_);
   }
 
   protected get shouldShowSubmitButton_(): boolean {
