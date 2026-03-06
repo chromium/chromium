@@ -130,6 +130,7 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       selectedMatchIndex_: {type: Number},
+      enableFileHint_: {type: Boolean},
     };
   }
 
@@ -161,6 +162,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   protected accessor activeToolMode_: ToolMode = ToolMode.kUnspecified;
   protected accessor showSuggestionsActivityLink_: boolean = false;
   protected accessor selectedMatchIndex_: number = -1;
+  protected accessor enableFileHint_: boolean =
+      loadTimeData.getBoolean('enableFileHint');
   protected searchboxHandler_: SearchboxPageHandlerRemote;
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;

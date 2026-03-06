@@ -13,6 +13,7 @@ import {ContextUploadStatus, ModelMode, ToolMode as ComposeboxToolMode} from 'ch
 import type {InputState} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {WindowProxy} from 'chrome://resources/cr_components/composebox/window_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import type {TabInfo} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -216,6 +217,30 @@ suite('ComposeboxInputPlaceholder', () => {
     await composebox.updateComplete;
 
     assertEquals('Ask about this tab', composebox.$.input.placeholder);
+  });
+
+  test('SingleAutoTabFileDoesNotUpdatePlaceholder', async () => {
+    loadTimeData.overrideValues({
+      composeboxHintTextAskAboutThisTab: 'Ask about this tab',
+    });
+    composebox.enableFileHint = true;
+    const token = {high: 0n, low: 1n};
+    searchboxHandler.setResultFor('addTabContext', Promise.resolve({token}));
+
+    const tab: TabInfo = {
+      tabId: 1,
+      title: 'Auto Tab',
+      url: 'http://example.com',
+      showInCurrentTabChip: false,
+      showInPreviousTabChip: false,
+      lastActive: {internalValue: BigInt(1)} as any,
+    };
+
+    composebox.updateAutoSuggestedTabContextForTesting(tab);
+    await searchboxHandler.whenCalled('addTabContext');
+    await composebox.updateComplete;
+
+    assertEquals(defaultApiHint, composebox.$.input.placeholder);
   });
 
   test('SingleImageFileUpdatesPlaceholder', async () => {

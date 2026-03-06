@@ -1347,7 +1347,11 @@ export class ComposeboxElement extends I18nMixinLit
       return;
     }
 
+    // The file hint should only be shown when there is context that was
+    // deliberately added by the user (i.e. not the automatic active tab).
+    const isOnlyAutoTab = this.files_.size === 1 && !!this.automaticActiveTab_;
     const shouldUseFileHint = this.enableFileHint && this.hasFiles() &&
+        !isOnlyAutoTab &&
         this.activeToolMode_ === ComposeboxToolMode.kUnspecified;
     if (shouldUseFileHint) {
       if (this.files_.size > 1) {
@@ -2503,8 +2507,16 @@ export class ComposeboxElement extends I18nMixinLit
     this.onFileContextAdded_(file);
   }
 
+  setAutomaticActiveTabForTesting(file: ComposeboxFile) {
+    this.automaticActiveTab_ = file;
+  }
+
   onToolClickForTesting(toolMode: ComposeboxToolMode) {
     this.handleToolClick_(toolMode);
+  }
+
+  updateAutoSuggestedTabContextForTesting(tab: TabInfo|null) {
+    this.updateAutoSuggestedTabContext_(tab);
   }
 }
 

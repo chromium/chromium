@@ -389,6 +389,7 @@ ContextualTasksUI::ContextualTasksUI(content::WebUI* web_ui)
   source->AddBoolean(
       "enableLockAndUnlockInputCapability",
       contextual_tasks::ShouldEnableLockAndUnlockInputCapability());
+  source->AddBoolean("enableFileHint", contextual_tasks::GetEnableFileHint());
 
   source->AddString(
       "composeboxSource",

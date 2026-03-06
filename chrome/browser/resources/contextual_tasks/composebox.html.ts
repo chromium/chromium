@@ -65,7 +65,7 @@ export function getHtml(this: ContextualTasksComposeboxElement) {
           .lensButtonTriggersOverlay="${true}"
           .enableCarouselScrolling="${true}"
           .isFollowupQuery="${!this.isZeroState}"
-          .enableFileHint="${true}"
+          .enableFileHint="${this.enableFileHint_}"
           @result-changed="${this.onSuggestionsResultChanged_}"
           @open-image-upload="${this.onOpenImageUpload_}"
           @open-file-upload="${this.onOpenFileUpload_}"

@@ -251,6 +251,9 @@ extern bool ShouldEnableCookieSync();
 // from AIM.
 extern bool ShouldEnableLockAndUnlockInputCapability();
 
+// Returns whether the file hint is enabled in the composebox.
+extern bool GetEnableFileHint();
+
 // Returns the UI option to expand contextual tasks side panel to tab.
 extern ExpandButtonOption GetExpandButtonOption();
 

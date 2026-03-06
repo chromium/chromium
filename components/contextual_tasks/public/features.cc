@@ -66,6 +66,8 @@ BASE_FEATURE(kContextualTasksUrlRedirectToAimUrl,
 // If enabled, animates the caret.
 BASE_FEATURE(kContextualTasksAnimatedCaret, base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kContextualTasksEnableFileHint, base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 BASE_FEATURE(kContextualTasksInsertWebContentsAt,
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -450,6 +452,10 @@ bool ShouldEnableCookieSync() {
 bool ShouldEnableLockAndUnlockInputCapability() {
   return base::FeatureList::IsEnabled(kContextualTasks) &&
          kContextualTasksLockAndUnlockInputCapability.Get();
+}
+
+bool GetEnableFileHint() {
+  return base::FeatureList::IsEnabled(kContextualTasksEnableFileHint);
 }
 
 ExpandButtonOption GetExpandButtonOption() {
