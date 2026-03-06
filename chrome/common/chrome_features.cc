@@ -497,9 +497,9 @@ const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay{
 
 // Controls country and locale filtering for Glic.
 // See chrome/browser/glic/public/glic_enabling.cc for more details.
-// TODO(b/454431875): Re-enable after Finch configs are updated to allow
-// internal usage worldwide.
 BASE_FEATURE(kGlicCountryFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE(kGlicUseSessionCountryForFiltering,
+             base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicLocaleFiltering, base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the Glic FRE dialog is displayed in the same window as the

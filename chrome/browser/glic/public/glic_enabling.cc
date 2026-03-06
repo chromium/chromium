@@ -112,19 +112,31 @@ bool GetCountryEnablement(GlicGlobalEnabling::Delegate& delegate) {
         GlicFilteringResult::kAllowedFilteringDisabled);
     return true;
   }
-  std::vector<std::string> enabled_countries = GetFieldTrialParamAsSplitString(
-      features::kGlicCountryFiltering, "enabled_countries",
-      kDefaultEnabledCountries);
+  const std::vector<std::string> enabled_countries =
+      GetFieldTrialParamAsSplitString(features::kGlicCountryFiltering,
+                                      "enabled_countries",
+                                      kDefaultEnabledCountries);
 
-  std::vector<std::string> disabled_countries = GetFieldTrialParamAsSplitString(
-      features::kGlicCountryFiltering, "disabled_countries", "");
+  const std::vector<std::string> disabled_countries =
+      GetFieldTrialParamAsSplitString(features::kGlicCountryFiltering,
+                                      "disabled_countries", "");
 
-  std::string country_code = delegate.GetCountryCode();
-  auto country_matches = [&](const std::string& c) {
-    return base::EqualsCaseInsensitiveASCII(c, country_code);
+  const bool use_session_country = base::FeatureList::IsEnabled(
+      features::kGlicUseSessionCountryForFiltering);
+
+  const std::string permanent_country_code = delegate.GetPermanentCountryCode();
+  auto permanent_country_matches = [&](const std::string& c) {
+    return base::EqualsCaseInsensitiveASCII(c, permanent_country_code);
   };
 
-  if (std::ranges::any_of(disabled_countries, country_matches)) {
+  const std::string session_country_code = delegate.GetSessionCountryCode();
+  auto session_country_matches = [&](const std::string& c) {
+    return base::EqualsCaseInsensitiveASCII(c, session_country_code);
+  };
+
+  if (std::ranges::any_of(disabled_countries, permanent_country_matches) ||
+      (use_session_country &&
+       std::ranges::any_of(disabled_countries, session_country_matches))) {
     base::UmaHistogramEnumeration("Glic.CountryFilteringResult",
                                   GlicFilteringResult::kBlockedInExclusionList);
     return false;
@@ -137,7 +149,9 @@ bool GetCountryEnablement(GlicGlobalEnabling::Delegate& delegate) {
     return true;
   }
 
-  if (std::ranges::any_of(enabled_countries, country_matches)) {
+  if (std::ranges::any_of(enabled_countries, permanent_country_matches) ||
+      (use_session_country &&
+       std::ranges::any_of(enabled_countries, session_country_matches))) {
     base::UmaHistogramEnumeration("Glic.CountryFilteringResult",
                                   GlicFilteringResult::kAllowedInInclusionList);
     return true;
@@ -208,12 +222,24 @@ void GlicEnabling::SetBypassEnablementChecksForTesting(bool bypass) {
   g_bypass_enablement_checks_for_testing = bypass;
 }
 
-std::string GlicGlobalEnabling::Delegate::GetCountryCode() {
-  std::string country_code =
+std::string GlicGlobalEnabling::Delegate::GetPermanentCountryCode() {
+  std::string permanent_country_code =
       base::ToLowerASCII(variations::GetCurrentCountryCode(
           g_browser_process->variations_service()));
-  DLOG_IF(WARNING, country_code.empty()) << "Couldn't get country info.";
-  return country_code;
+  DLOG_IF(WARNING, permanent_country_code.empty())
+      << "Couldn't get permanent country info.";
+  return permanent_country_code;
+}
+
+std::string GlicGlobalEnabling::Delegate::GetSessionCountryCode() {
+  std::string latest_country;
+  if (g_browser_process->variations_service()) {
+    latest_country = base::ToLowerASCII(
+        g_browser_process->variations_service()->GetLatestCountry());
+  }
+  DLOG_IF(WARNING, latest_country.empty())
+      << "Couldn't get latest country info.";
+  return latest_country;
 }
 
 std::string GlicGlobalEnabling::Delegate::GetLocale() {

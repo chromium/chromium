@@ -69,7 +69,8 @@ class GlicGlobalEnabling {
     Delegate(const Delegate&) = delete;
     Delegate& operator=(const Delegate&) = delete;
 
-    virtual std::string GetCountryCode();
+    virtual std::string GetPermanentCountryCode();
+    virtual std::string GetSessionCountryCode();
     virtual std::string GetLocale();
   };
   explicit GlicGlobalEnabling(Delegate& delegate);

@@ -358,6 +358,8 @@ extern const base::FeatureParam<base::TimeDelta> kGlicActorMoveBeforeClickDelay;
 COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicCountryFiltering);
 COMPONENT_EXPORT(CHROME_FEATURES)
+BASE_DECLARE_FEATURE(kGlicUseSessionCountryForFiltering);
+COMPONENT_EXPORT(CHROME_FEATURES)
 BASE_DECLARE_FEATURE(kGlicLocaleFiltering);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
@@ -552,7 +554,6 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicWarmingDelayMs;
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<int> kGlicWarmingJitterMs;
-
 
 COMPONENT_EXPORT(CHROME_FEATURES) BASE_DECLARE_FEATURE(kGlicWarmMultiple);
 
