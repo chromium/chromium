@@ -228,9 +228,12 @@ using chrome_test_util::TabGroupCreationView;
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_allOf(chrome_test_util::TabGridOverflowMenuButton(),
-                            grey_sufficientlyVisible(), nil)]
+  id<GREYMatcher> overflowOrEditButton =
+      grey_anyOf(chrome_test_util::TabGridOverflowMenuButton(),
+                 chrome_test_util::TabGridEditButton(), nil);
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(overflowOrEditButton,
+                                          grey_sufficientlyVisible(), nil)]
       assertWithMatcher:grey_not(grey_enabled())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       assertWithMatcher:grey_notVisible()];
