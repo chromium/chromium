@@ -9673,6 +9673,9 @@ crbug.com/469578374 [ Win ] external/wpt/html/semantics/permission-element/geolo
 crbug.com/486315292 external/wpt/geolocation/enabled-on-self-origin-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 crbug.com/486315292 external/wpt/geolocation/enabled-by-permissions-policy.https.sub.html [ Failure Pass Timeout ]
 
+# Temporary to unblock crrev.com/c/7639450 landing.
+crbug.com/490314415 http/tests/devtools/elements/elements-img-tooltip.js [ Failure Pass ]
+
 # Gardener 2026-02-27: Flaky on several Linux bots
 crbug.com/487829615 [ Linux ] virtual/run-snapshot-post-layout/external/wpt/scroll-animations/scroll-timelines/scroll-animation-effect-phases.tentative.html [ Failure Pass ]
 
