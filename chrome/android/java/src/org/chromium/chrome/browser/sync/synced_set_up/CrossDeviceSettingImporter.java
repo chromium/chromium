@@ -17,11 +17,13 @@ import static org.chromium.chrome.browser.ui.messages.snackbar.Snackbar.UMA_CROS
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.NullableObservableSupplier;
@@ -53,6 +55,8 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.url.GURL;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -60,6 +64,24 @@ import java.util.function.Supplier;
 
 @NullMarked
 public class CrossDeviceSettingImporter implements TopResumedActivityChangedObserver {
+
+    // These values are persisted to logs. Entries should not be renumbered and numeric values
+    // should never be reused.
+    // LINT.IfChange(CrossDeviceSettingImportOutcome)
+    @IntDef({
+        CrossDeviceSettingImportOutcome.SYNC_NOT_CONFIGURED,
+        CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT,
+        CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN
+    })
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface CrossDeviceSettingImportOutcome {
+        int SYNC_NOT_CONFIGURED = 0;
+        int NO_SETTINGS_TO_IMPORT = 1;
+        int SNACKBAR_SHOWN = 2;
+        int NUM_ENTRIES = 3;
+    }
+
+    // LINT.ThenChange(//tools/metrics/histograms/metadata/sync/enums.xml:CrossDeviceSettingImportOutcome)
 
     private static final String TAG = "XplatSyncedSetup";
 
@@ -218,6 +240,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             return;
         }
 
+        // Record a single action for checking for remote settings, regardless of whether we're in
+        // an omnibox-only case.
+        recordAction(/* onlyOmniboxPosition= */ false, "CheckForRemoteSettings");
         if (status == ServiceStatus.AVAILABLE) {
             if (availableImmediately) {
                 // If there was no delay, apply the settings immediately (skipping the user straight
@@ -235,7 +260,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             // If the status was not AVAILABLE, the user does not have their "Settings" sync toggle
             // on in their account settings.
             // Either way, because the CrossDevicePrefTracker became "ready", we are now done.
-            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
+            markCrossDeviceSettingImportComplete(
+                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.SYNC_NOT_CONFIGURED);
         }
     }
 
@@ -244,7 +270,9 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
      *
      * @param onlyOmniboxPosition Whether only the omnibox position setting is in scope.
      */
-    private static void markCrossDeviceSettingImportComplete(boolean onlyOmniboxPosition) {
+    private static void markCrossDeviceSettingImportComplete(
+            boolean onlyOmniboxPosition, @CrossDeviceSettingImportOutcome int reason) {
+        recordOutcome(reason);
         SharedPreferencesManager sharedPrefManager = ChromeSharedPreferences.getInstance();
 
         sharedPrefManager.writeBoolean(
@@ -277,12 +305,15 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         @Override
                         public void onLastDialogDismissed() {
                             snackbarManager.showSnackbar(snackbar);
-                            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
+                            markCrossDeviceSettingImportComplete(
+                                    onlyOmniboxPosition,
+                                    CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
                         }
                     });
         } else {
             snackbarManager.showSnackbar(snackbar);
-            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
+            markCrossDeviceSettingImportComplete(
+                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.SNACKBAR_SHOWN);
         }
     }
 
@@ -306,7 +337,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                             new SnackbarManager.SnackbarController() {
                                 @Override
                                 public void onAction(@Nullable Object actionData) {
-                                    recordUma(onlyOmniboxPosition, "Apply");
+                                    recordAction(onlyOmniboxPosition, "Apply");
                                     applyAndNotifySettingImport(
                                             preferencesToApply, onlyOmniboxPosition);
                                 }
@@ -318,7 +349,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                     /* actionData= */ Map.of());
             showSnackbarAfterDialogs(offerApplySnackbar, onlyOmniboxPosition);
         } else {
-            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
+            markCrossDeviceSettingImportComplete(
+                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
         }
     }
 
@@ -347,7 +379,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                                         applySettings(currentPreferences);
                                     }
 
-                                    recordUma(onlyOmniboxPosition, "Undo");
+                                    recordAction(onlyOmniboxPosition, "Undo");
                                     askToRedoSettingImport(preferencesToApply, onlyOmniboxPosition);
                                 }
                             },
@@ -359,7 +391,8 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
             showSnackbarAfterDialogs(offerUndoSnackbar, onlyOmniboxPosition);
             applySettings(preferencesToApply);
         } else {
-            markCrossDeviceSettingImportComplete(onlyOmniboxPosition);
+            markCrossDeviceSettingImportComplete(
+                    onlyOmniboxPosition, CrossDeviceSettingImportOutcome.NO_SETTINGS_TO_IMPORT);
         }
     }
 
@@ -379,7 +412,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
                         new SnackbarManager.SnackbarController() {
                             @Override
                             public void onAction(@Nullable Object actionData) {
-                                recordUma(onlyOmniboxPosition, "Redo");
+                                recordAction(onlyOmniboxPosition, "Redo");
                                 applyAndNotifySettingImport(
                                         preferencesToApply, onlyOmniboxPosition);
                             }
@@ -598,7 +631,7 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
     }
 
     /** Logs UMA with suffix {@param suffix} (omnibox-psecific if {@param onlyOmniboxPosition}) */
-    private void recordUma(boolean onlyOmniboxPosition, String suffix) {
+    private void recordAction(boolean onlyOmniboxPosition, String suffix) {
         StringBuilder action = new StringBuilder("Android.CrossDeviceSettingImport");
         if (onlyOmniboxPosition) {
             action.append(".OmniboxPosition");
@@ -606,6 +639,14 @@ public class CrossDeviceSettingImporter implements TopResumedActivityChangedObse
         action.append('.');
         action.append(suffix);
         RecordUserAction.record(action.toString());
+    }
+
+    /** Logs outcome of cross device setting import (reports showing the feature, or why not. */
+    private static void recordOutcome(@CrossDeviceSettingImportOutcome int value) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Sync.CrossDeviceSettingImportOutcome",
+                value,
+                CrossDeviceSettingImportOutcome.NUM_ENTRIES);
     }
 
     /** Destroys the {@link CrossDeviceSettingImporter}. */

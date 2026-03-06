@@ -180,6 +180,26 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(/components/sync_preferences/cross_device_pref_tracker/cross_device_pref_tracker.h:ServiceStatus) -->
 
+<!-- LINT.IfChange(CrossDeviceSettingImportOutcome) -->
+
+<enum name="CrossDeviceSettingImportOutcome">
+  <int value="0" label="Sync not configured">
+    The user had their setting sync toggle off in their Google profile settings.
+    As a result, cross-device setting import is unavailable.
+  </int>
+  <int value="1" label="No settings to import">
+    The user did not have any settings from remote devices to apply. This may
+    happen if the user has not had any mobile devices before or if they never
+    configured settingss on any of their previous devices.
+  </int>
+  <int value="2" label="Snackbar shown">
+    A snackbar was shown to the user allowing them to apply/undo their settings
+    from a remote device.
+  </int>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/sync/synced_set_up/CrossDeviceSettingImporter.java:CrossDeviceSettingImportOutcome,//tools/metrics/histograms/metadata/sync/histograms.xml:CrossDeviceSettingImportOutcome) -->
+
 <!-- LINT.IfChange(InvalidBookmarkSpecificsError) -->
 
 <enum name="InvalidBookmarkSpecificsError">

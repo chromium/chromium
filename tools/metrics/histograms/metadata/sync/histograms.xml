@@ -751,6 +751,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!-- LINT.IfChange(CrossDeviceSettingImportOutcome) -->
+
+<histogram name="Sync.CrossDeviceSettingImportOutcome"
+    enum="CrossDeviceSettingImportOutcome" expires_after="2026-12-30">
+  <owner>jhimawan@google.com</owner>
+  <owner>bwwilliams@google.com</owner>
+  <owner>treib@chromium.org</owner>
+  <owner>src/components/sync/OWNERS</owner>
+  <summary>
+    Records the possible outcomes after checking for settings to import from a
+    remote device. Recorded when we conclude that the user has no settings to
+    import (which can happen for several reasons) or when we show a snackbar
+    allowing the user to undo/redo.
+  </summary>
+</histogram>
+
+<!-- LINT.ThenChange() -->
+
 <histogram
     name="Sync.Crypto.CustomPassphraseKeyDerivationMethodOnSuccessfulDecryption"
     enum="SyncCustomPassphraseKeyDerivationMethodState"

@@ -414,7 +414,7 @@ public class CrossDeviceSettingImporterUnitTest {
     }
 
     @Test
-    public void testRecordUma_UndoRedo() {
+    public void testRecordAction_UndoRedo() {
         Map<String, Object> preferencesToApply = new HashMap<>();
         preferencesToApply.put(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION, false);
         when(mLocalPrefService.getBoolean(Pref.IS_OMNIBOX_IN_BOTTOM_POSITION)).thenReturn(true);

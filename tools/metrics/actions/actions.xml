@@ -4162,6 +4162,17 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.CrossDeviceSettingImport.CheckForRemoteSettings"
+    not_user_triggered="true">
+  <owner>clank-app-team@google.com</owner>
+  <owner>jhimawan@google.com</owner>
+  <description>
+    Recorded after checking for remote settings to import from another device.
+    This happens the first time the user lands on the NTP or a URL page (after
+    FRE or if a user arrives in Chrome through a URL intent).
+  </description>
+</action>
+
 <action name="Android.CrossDeviceSettingImport.OmniboxPosition.Apply">
   <owner>clank-app-team@google.com</owner>
   <owner>jhimawan@google.com</owner>
