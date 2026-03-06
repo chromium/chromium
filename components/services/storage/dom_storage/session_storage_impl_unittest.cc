@@ -20,6 +20,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "base/uuid.h"
@@ -45,6 +46,14 @@ class SessionStorageImplTest : public base::test::WithFeatureOverride,
  public:
   SessionStorageImplTest()
       : base::test::WithFeatureOverride(kDomStorageSqlite) {
+    // Match the state of `kDomStorageSqliteInMemory` to the top level
+    // kDomStorageSqlite. That way in-memory databases will use the backend
+    // expected by the param state.
+    if (IsSqliteEnabled()) {
+      feature_list_.InitAndEnableFeature(kDomStorageSqliteInMemory);
+    } else {
+      feature_list_.InitAndDisableFeature(kDomStorageSqliteInMemory);
+    }
     CHECK(temp_dir_.CreateUniqueTempDir());
   }
 
@@ -165,6 +174,7 @@ class SessionStorageImplTest : public base::test::WithFeatureOverride,
   bool bad_message_called_ = false;
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   base::ScopedTempDir temp_dir_;
   SessionStorageImpl::BackingMode backing_mode_ =

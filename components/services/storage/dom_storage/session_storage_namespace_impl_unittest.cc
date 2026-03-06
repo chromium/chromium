@@ -14,6 +14,7 @@
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/with_feature_override.h"
 #include "base/trace_event/memory_allocator_dump_guid.h"
@@ -65,7 +66,16 @@ class SessionStorageNamespaceImplTest
       : base::test::WithFeatureOverride(kDomStorageSqlite),
         test_namespace_id1_(base::Uuid::GenerateRandomV4().AsLowercaseString()),
         test_namespace_id2_(
-            base::Uuid::GenerateRandomV4().AsLowercaseString()) {}
+            base::Uuid::GenerateRandomV4().AsLowercaseString()) {
+    // Match the state of `kDomStorageSqliteInMemory` to the top level
+    // kDomStorageSqlite. That way in-memory databases will use the backend
+    // expected by the param state.
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(kDomStorageSqliteInMemory);
+    } else {
+      feature_list_.InitAndDisableFeature(kDomStorageSqliteInMemory);
+    }
+  }
   ~SessionStorageNamespaceImplTest() override = default;
 
   void SetUp() override {
@@ -148,6 +158,7 @@ class SessionStorageNamespaceImplTest
   }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   const std::string test_namespace_id1_;
   const std::string test_namespace_id2_;

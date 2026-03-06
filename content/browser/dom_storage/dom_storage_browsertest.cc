@@ -6,6 +6,7 @@
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -41,7 +42,16 @@ class DOMStorageBrowserTest : public base::test::WithFeatureOverride,
                               public ContentBrowserTest {
  public:
   DOMStorageBrowserTest()
-      : base::test::WithFeatureOverride(storage::kDomStorageSqlite) {}
+      : base::test::WithFeatureOverride(storage::kDomStorageSqlite) {
+    // Match the state of `kDomStorageSqliteInMemory` to the top level
+    // kDomStorageSqlite. That way in-memory databases (e.g. incognito) will
+    // use the backend expected by the param state.
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(storage::kDomStorageSqliteInMemory);
+    } else {
+      feature_list_.InitAndDisableFeature(storage::kDomStorageSqliteInMemory);
+    }
+  }
 
   void SimpleTest(const GURL& test_url, bool incognito) {
     // The test page will perform tests then navigate to either
@@ -86,6 +96,9 @@ class DOMStorageBrowserTest : public base::test::WithFeatureOverride,
     return static_cast<DOMStorageContextWrapper*>(
         partition()->GetDOMStorageContext());
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 static const bool kIncognito = true;

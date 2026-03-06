@@ -166,7 +166,12 @@ class StorageAreaImplTestBase : public testing::Test,
   };
 
   explicit StorageAreaImplTestBase(bool is_sqlite_enabled) {
-    feature_list_.InitWithFeatureState(kDomStorageSqlite, is_sqlite_enabled);
+    // `kDomStorageSqlite` enables SQLite for all databases (on-disk and
+    // in-memory). Also explicitly control `kDomStorageSqliteInMemory` so that
+    // LevelDB tests don't accidentally use the SQLite in-memory backend.
+    feature_list_.InitWithFeatureStates(
+        {{kDomStorageSqlite, is_sqlite_enabled},
+         {kDomStorageSqliteInMemory, is_sqlite_enabled}});
 
     // Create an in-memory database.
     base::RunLoop loop;

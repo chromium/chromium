@@ -792,8 +792,10 @@ class StoragePartitionImplTest : public testing::Test {
     std::vector<base::test::FeatureRef> disabled_features;
     if (is_local_storage_sqlite_enabled) {
       enabled_features.push_back(storage::kDomStorageSqlite);
+      enabled_features.push_back(storage::kDomStorageSqliteInMemory);
     } else {
       disabled_features.push_back(storage::kDomStorageSqlite);
+      disabled_features.push_back(storage::kDomStorageSqliteInMemory);
     }
     feature_list_.InitWithFeatures(enabled_features, disabled_features);
   }

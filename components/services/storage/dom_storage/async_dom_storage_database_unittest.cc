@@ -8,6 +8,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/test/with_feature_override.h"
@@ -35,6 +36,7 @@ class AsyncDomStorageDatabaseTest : public base::test::WithFeatureOverride,
   bool IsSqliteEnabled() const { return GetParam(); }
 
  protected:
+  base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
   const blink::StorageKey kFirstStorageKey;
   const blink::StorageKey kSecondStorageKey;
@@ -60,6 +62,14 @@ AsyncDomStorageDatabaseTest::AsyncDomStorageDatabaseTest()
           blink::StorageKey::CreateFromStringForTesting(kThirdFakeUrlString)),
       kFourthStorageKey(
           blink::StorageKey::CreateFromStringForTesting(kFourthFakeUrlString)) {
+  // Match the state of `kDomStorageSqliteInMemory` to the top level
+  // kDomStorageSqlite. That way in-memory databases will use the backend
+  // expected by the param state.
+  if (IsSqliteEnabled()) {
+    feature_list_.InitAndEnableFeature(kDomStorageSqliteInMemory);
+  } else {
+    feature_list_.InitAndDisableFeature(kDomStorageSqliteInMemory);
+  }
 }
 
 TEST_P(AsyncDomStorageDatabaseTest,
