@@ -152,6 +152,10 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
         if (notificationIds == null) return;
         Iterator<String> iterator = notificationIds.iterator();
         while (iterator.hasNext()) {
+            // When background media capturing is enabled, this operation is a no-op because the
+            // foreground service handles notification updates. We avoid calling
+            // isBackgroundMediaCapturingEnabled() here because this code may execute during early
+            // startup before the JNI library is initialized.
             mNotificationManager.cancel(NOTIFICATION_NAMESPACE, Integer.parseInt(iterator.next()));
         }
         mSharedPreferences.removeKey(ChromePreferenceKeys.MEDIA_WEBRTC_NOTIFICATION_IDS);
@@ -246,8 +250,8 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
                 // by the foreground service. If disabled, we have to cancel the notification
                 // manually.
                 mNotificationManager.cancel(NOTIFICATION_NAMESPACE, notificationId);
-                updateSharedPreferencesEntry(notificationId, true);
             }
+            updateSharedPreferencesEntry(notificationId, true);
         }
     }
 
@@ -327,8 +331,8 @@ public class MediaCaptureNotificationServiceImpl extends SplitCompatService.Impl
             mNotifications.add(new Pair<>(notificationId, notification));
         } else {
             mNotificationManager.notify(notification);
-            updateSharedPreferencesEntry(notificationId, false);
         }
+        updateSharedPreferencesEntry(notificationId, false);
         NotificationUmaTracker.getInstance()
                 .onNotificationShown(
                         NotificationUmaTracker.SystemNotificationType.MEDIA_CAPTURE,
