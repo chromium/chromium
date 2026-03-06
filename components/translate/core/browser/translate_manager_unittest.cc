@@ -34,6 +34,7 @@
 #include "components/translate/core/browser/translate_pref_names.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/browser/translate_step.h"
+#include "components/translate/core/common/translate_switches.h"
 #include "components/translate/core/common/translate_util.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
@@ -1563,6 +1564,176 @@ TEST_F(TranslateManagerTest, HrefTranslateSimilarLanguages) {
       histogram_tester.GetAllSamples(kTranslatePageLoadTriggerDecision),
       ElementsAre(Bucket(
           static_cast<int>(TriggerDecision::kAutomaticTranslationByHref), 1)));
+}
+
+TEST_F(TranslateManagerTest, TranslatedLanguageFlagAutoTranslatesPage) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set up the command line flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTranslateTargetLanguage, "de");
+
+  network_notifier_.SimulateOnline();
+  // The language of the page is determined to be French.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Verify translation is initiated.
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, "fr", "de",
+                      TranslateErrors::NONE, /*triggered_from_menu=*/false))
+      .WillOnce(Return(true));
+
+  translate_manager_->InitiateTranslation("fr");
+
+  // Clean up the command line flag.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kTranslateTargetLanguage);
+}
+
+TEST_F(TranslateManagerTest, AutoTranslatePrecedesTranslatedLanguageFlag) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set auto translate to false
+  translate_manager_->SetEnableAutoTranslate(false);
+  // Set the command line flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTranslateTargetLanguage, "de");
+
+  network_notifier_.SimulateOnline();
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Verify translation bubble is shown.
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowIcon);
+  EXPECT_CALL(
+      *mock_translate_metrics_logger_,
+      LogTriggerDecision(TriggerDecision::kAutomaticTranslationByCommandline))
+      .Times(0);
+
+  translate_manager_->InitiateTranslation("fr");
+
+  // Clean up the command line flag.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kTranslateTargetLanguage);
+}
+
+TEST_F(TranslateManagerTest, AlwaysTranslatePreceedsTranslatedLanguageFlag) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set always translate from French to German.
+  translate_prefs_.AddLanguagePairToAlwaysTranslateList("fr", "es");
+  // Set the command line flag to German.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTranslateTargetLanguage, "de");
+
+  network_notifier_.SimulateOnline();
+  // The language of the page is determined to be French.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Verify that translation is initiated automatically with "es" as the target
+  // language.
+  EXPECT_CALL(
+      mock_translate_client_,
+      ShowTranslateUI(translate::TRANSLATE_STEP_TRANSLATING, "fr", "es",
+                      TranslateErrors::NONE, /*triggered_from_menu=*/false))
+      .WillOnce(Return(true));
+
+  translate_manager_->InitiateTranslation("fr");
+
+  // Clean up the command line flag.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kTranslateTargetLanguage);
+}
+
+TEST_F(TranslateManagerTest, TranslatedLanguageFlagUnsupportedLanguage) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set the command line flag to an unsupported language.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTranslateTargetLanguage, "und");
+
+  network_notifier_.SimulateOnline();
+  // The language of the page is determined to be French.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Verify translate bubble is shown.
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowIcon);
+  EXPECT_CALL(
+      *mock_translate_metrics_logger_,
+      LogTriggerDecision(TriggerDecision::kAutomaticTranslationByCommandline))
+      .Times(0);
+
+  translate_manager_->InitiateTranslation("fr");
+  // Clean up the command line flag.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kTranslateTargetLanguage);
+}
+
+TEST_F(TranslateManagerTest, TranslatedLanguageFlagIncognito) {
+  PrepareTranslateManager();
+  manager_->set_application_locale("en");
+  // Set incognito mode.
+  driver_.set_incognito();
+
+  ON_CALL(mock_translate_client_, IsTranslatableURL(GURL()))
+      .WillByDefault(Return(true));
+  language::AcceptLanguagesService accept_languages(&prefs_,
+                                                    accept_languages_prefs);
+  ON_CALL(mock_translate_client_, GetAcceptLanguagesService())
+      .WillByDefault(Return(&accept_languages));
+
+  // Set the command line flag to German.
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kTranslateTargetLanguage, "de");
+
+  network_notifier_.SimulateOnline();
+  // The language of the page is determined to be French.
+  translate_manager_->GetLanguageState()->LanguageDetermined("fr", true);
+
+  // Verify translate bubble is shown but no auto translate.
+  ExpectHighestPriorityTriggerDecision(TriggerDecision::kShowIcon);
+  EXPECT_CALL(
+      *mock_translate_metrics_logger_,
+      LogTriggerDecision(TriggerDecision::kAutomaticTranslationByCommandline))
+      .Times(0);
+
+  translate_manager_->InitiateTranslation("fr");
+
+  // Clean up the command line flag.
+  base::CommandLine::ForCurrentProcess()->RemoveSwitch(
+      switches::kTranslateTargetLanguage);
 }
 
 TEST_F(TranslateManagerTest, PreventAutoTranslate) {

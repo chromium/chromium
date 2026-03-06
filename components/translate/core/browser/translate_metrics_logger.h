@@ -95,7 +95,8 @@ enum class TranslationType {
   kManualContextMenuReTranslation = 8,
   kAutomaticTranslationToPredefinedTarget = 9,
   kAutomaticTranslationByHref = 10,
-  kMaxValue = kAutomaticTranslationByHref,
+  kAutomaticTranslationByCommandline = 11,
+  kMaxValue = kAutomaticTranslationByCommandline,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and
@@ -122,7 +123,8 @@ enum class TriggerDecision {
   kAutomaticTranslationToPredefinedTarget = 18,
   kShowIcon = 19,
   kDisabledMatchesPreviousLanguage = 20,
-  kMaxValue = kDisabledMatchesPreviousLanguage,
+  kAutomaticTranslationByCommandline = 21,
+  kMaxValue = kAutomaticTranslationByCommandline,
 };
 
 // These values are persisted to logs. Entries should not be renumbered and

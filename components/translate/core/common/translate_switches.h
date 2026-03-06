@@ -11,6 +11,7 @@ namespace switches {
 extern const char kTranslateScriptURL[];
 extern const char kTranslateSecurityOrigin[];
 extern const char kTranslateRankerModelURL[];
+extern const char kTranslateTargetLanguage[];
 
 }  // namespace switches
 }  // namespace translate

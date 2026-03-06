@@ -101,7 +101,8 @@ bool IsAutomaticTranslationType(translate::TranslationType type) {
          type == translate::TranslationType::kAutomaticTranslationByLink ||
          type == translate::TranslationType::kAutomaticTranslationByPref ||
          type == translate::TranslationType::
-                     kAutomaticTranslationToPredefinedTarget;
+                     kAutomaticTranslationToPredefinedTarget ||
+         type == translate::TranslationType::kAutomaticTranslationByCommandline;
 }
 #endif
 

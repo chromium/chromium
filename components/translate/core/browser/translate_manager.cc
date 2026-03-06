@@ -907,16 +907,29 @@ void TranslateManager::FilterAutoTranslate(
   std::string always_translate_target =
       GetAutoTargetLanguage(page_language_code, translate_prefs);
   std::string link_auto_translate_target = language_state_.AutoTranslateTo();
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  std::string command_line_target =
+      command_line->GetSwitchValueASCII(switches::kTranslateTargetLanguage);
+
   if (!translate_driver_->IsIncognito() && !always_translate_target.empty()) {
-    // If the user has previously selected "always translate" for this language
-    // we automatically translate.  Note that in incognito mode we disable that
-    // feature; the user will get an infobar, so they can control whether the
-    // page's text is sent to the translate server.
+    // If the user has previously selected "always translate" for this
+    // language we automatically translate.  Note that in incognito mode we
+    // disable that feature; the user will get an infobar, so they can control
+    // whether the page's text is sent to the translate server.
     decision->auto_translate_target = always_translate_target;
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::AUTO_TRANSLATION_BY_PREF);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kAutomaticTranslationByPref);
+  } else if (!translate_driver_->IsIncognito() &&
+             TranslateDownloadManager::IsSupportedLanguage(
+                 command_line_target)) {
+    // If the user has specified a target language via the command line,
+    // automatically translate to that language.
+    decision->auto_translate_target = command_line_target;
+    GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+        TriggerDecision::kAutomaticTranslationByCommandline);
+
   } else if (!link_auto_translate_target.empty()) {
     // This page was navigated through a click from a translated page.
     decision->auto_translate_target = link_auto_translate_target;
