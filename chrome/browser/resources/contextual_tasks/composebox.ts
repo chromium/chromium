@@ -166,6 +166,8 @@ export class ContextualTasksComposeboxElement extends I18nMixinLit
   private tooltipImpressionTimer_: number|null = null;
   private readonly tooltipImpressionDelay_: number =
       loadTimeData.getInteger('composeboxShowOnboardingTooltipImpressionDelay');
+  protected caretAnimationsEnabled_: boolean =
+      loadTimeData.getBoolean('caretAnimationEnabled');
 
   constructor() {
     super();

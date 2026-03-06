@@ -58,6 +58,7 @@ export enum VoiceSearchAction {
 }
 
 const DEBOUNCE_TIMEOUT_MS: number = 20;
+const ZERO_SPACE_STRING: string = '\u200b';
 
 function debounce(context: Object, func: () => void, delay: number) {
   let timeout: number;
@@ -79,6 +80,8 @@ export interface ComposeboxElement {
     matches: ComposeboxDropdownElement,
     errorScrim: ErrorScrimElement,
     voiceSearch: ComposeboxVoiceSearchElement,
+    caret: HTMLInputElement,
+    mirror: HTMLDivElement,
   };
 }
 
@@ -218,7 +221,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
       },
       showMenuOnClick: {type: Boolean},
-      entrypointName: {type: String},
+      entrypointName: {type: String, reflect: true},
       transcript_: {type: String},
       receivedSpeech_: {type: Boolean},
       maxSuggestions: {type: Number},
@@ -291,6 +294,7 @@ export class ComposeboxElement extends I18nMixinLit
   // file status is updated from backend. Ghost files will be
   // shown as image chip with spinner in file carousel.
   accessor shouldShowGhostFiles: boolean = false;
+  protected isRtl_: boolean = document.documentElement.dir === 'rtl';
 
   protected composeboxNoFlickerSuggestionsFix_: boolean =
       loadTimeData.getBoolean('composeboxNoFlickerSuggestionsFix');
@@ -451,6 +455,18 @@ export class ComposeboxElement extends I18nMixinLit
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.computeSubmitEnabled_();
     });
+
+    if (!this.disableCaretColorAnimation) {
+      this.updateCaret_();
+
+      this.eventTracker_.add(this.$.input, 'focus', () => {
+        this.$.caret.classList.add('caret-visible');
+      });
+      this.eventTracker_.add(this.$.input, 'blur', () => {
+        this.$.caret.classList.remove('caret-visible');
+      });
+    }
+
     this.focusInput();
     // For "next" searchboxes (Realbox Next, Omnibox Next, etc.), the zps
     // autocomplete query is triggered after the state has been initialized.
@@ -745,6 +761,12 @@ export class ComposeboxElement extends I18nMixinLit
       this.searchboxHandler_.setActiveModelMode(this.inputState_.allowedModels[0]!);
     }
     this.updateInputPlaceholder_();
+
+    await this.updateComplete;
+    if (!this.disableCaretColorAnimation) {
+      this.updateMirror_();
+      this.updateCaret_();
+    }
   }
 
   protected addToPendingUploads_(token: UnguessableToken) {
@@ -1251,6 +1273,10 @@ export class ComposeboxElement extends I18nMixinLit
                           /* shouldBlockAutoSuggestedTabs= */ true);
       this.focusInput();
       this.queryAutocomplete_(/* clearMatches= */ true);
+
+      if (!this.disableCaretColorAnimation) {
+        this.resetCaret();
+      }
     } else {
       this.closeComposebox_();
     }
@@ -1392,6 +1418,12 @@ export class ComposeboxElement extends I18nMixinLit
   protected handleInput_(e: Event) {
     const inputElement = e.target as HTMLInputElement;
     this.input_ = inputElement.value;
+
+    if (!this.disableCaretColorAnimation) {
+      this.updateMirror_();
+      this.updateCaret_();
+    }
+
     // `clearMatches` is true if input is empty stop any in progress providers
     // before requerying for on-focus (zero-suggest) inputs. The searchbox
     // doesn't allow zero-suggest requests to be made while the ACController
@@ -1407,6 +1439,126 @@ export class ComposeboxElement extends I18nMixinLit
     } else {
       this.queryAutocomplete_(/* clearMatches= */ this.input_ === '');
     }
+  }
+
+  private updateMirror_() {
+    const mirror = this.$.mirror;
+    if (!mirror) {
+      return;
+    }
+
+    mirror.textContent = '';
+
+    const chars = this.input_.split('');
+
+    if (chars.length === 0) {
+      const emptySpan = document.createElement('span');
+      emptySpan.textContent = ZERO_SPACE_STRING;
+      mirror.appendChild(emptySpan);
+      return;
+    }
+
+    chars.forEach(char => {
+      const span = document.createElement('span');
+      if (char === ' ') {
+        span.textContent = ' ';
+      } else if (char === '\n') {
+        span.textContent = `\n${ZERO_SPACE_STRING}`;
+      } else {
+        span.textContent = char;
+      }
+      mirror.appendChild(span);
+    });
+
+    if (chars.length === 0) {
+      mirror.textContent = ZERO_SPACE_STRING;
+    }
+  }
+
+  protected updateCaret_() {
+    const caret = this.$.caret;
+    const input = this.$.input;
+    const mirror = this.$.mirror;
+
+    if (!caret || !input || !mirror) {
+      return;
+    }
+
+    if (mirror.textContent.length !== input.value.length) {
+      this.updateMirror_();
+    }
+
+    // The reset below is required because the color cycling must restart
+    // anytime a new character is typed, so it will go back to blue.
+    // If this is not present then the color cycling will continue.
+    caret.classList.remove('animating');
+    void caret.offsetHeight;
+    caret.classList.add('animating');
+
+    const {selectionEnd} = input;
+    const wrapperRect = this.$.input.getBoundingClientRect();
+
+    if (selectionEnd === 0) {
+      const mirrorTextSpan = mirror.firstChild as HTMLElement;
+
+      if (mirrorTextSpan) {
+        const rect = mirrorTextSpan.getBoundingClientRect();
+
+        // In LTR, the start of the string is on the left edge.
+        // In RTL, the start of the string is on the right edge.
+        const xOffset = this.isRtl_ ? rect.right : rect.left;
+
+        // Calculate the transform translation:
+        // LTR: positive distance from the left edge.
+        // RTL: negative distance from the right edge.
+        const caretX = this.isRtl_ ? (xOffset - wrapperRect.right) :
+                                     (xOffset - wrapperRect.left);
+        const caretY = rect.top - wrapperRect.top;
+
+        caret.style.transform = `translate(${caretX}px, ${caretY}px)`;
+      } else {
+        this.resetCaret();
+      }
+      return;
+    }
+
+    const charBeforeCursor =
+        mirror.childNodes[selectionEnd! - 1] as HTMLElement;
+
+    if (charBeforeCursor) {
+      const rect = charBeforeCursor.getBoundingClientRect();
+
+      // In LTR, the caret goes *after* the character (on its right).
+      // In RTL, text flows right-to-left, so *after* the character is on its
+      // left.
+      const xOffset = this.isRtl_ ? rect.left : rect.right;
+
+      // Calculate the transform translation again based on the origin:
+      const caretX = this.isRtl_ ? (xOffset - wrapperRect.right) :
+                                   (xOffset - wrapperRect.left);
+      const caretY = rect.top - wrapperRect.top;
+
+      caret.style.transform = `translate(${caretX}px, ${caretY}px)`;
+    }
+  }
+
+  resetCaret() {
+    // 12 origin must be set as this fixes spacing to match the box padding
+    // around the caret
+    const isRtl = document.documentElement.dir === 'rtl';
+    const boxPaddingOffset = 12;
+
+    let originX =
+        this.entrypointName === 'ContextualTasks' ? 0 : boxPaddingOffset;
+
+    // In RTL layouts translate negatively to push the caret
+    // inwards (to the left).
+    if (isRtl) {
+      originX = -originX;
+    }
+
+    const originY = boxPaddingOffset;
+    this.$.caret.style.transform = `translate(${originX}px, ${originY}px)`;
   }
 
   protected onKeydown_(e: KeyboardEvent) {

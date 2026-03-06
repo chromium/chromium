@@ -250,6 +250,9 @@ BASE_FEATURE(kNtpFeatureOptimizationShortcutsRemoval,
 BASE_FEATURE(kNtpFeatureOptimizationDismissModulesRemoval,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, animates the AIM caret on the NTP.
+BASE_FEATURE(kNtpAnimatedCaret, base::FEATURE_ENABLED_BY_DEFAULT);
+
 const char kNtpModuleIgnoredCriteriaThreshold[] =
     "NtpModuleIgnoredCriteriaThreshold";
 const char kNtpModuleIgnoredHaTSDelayTimeParam[] =

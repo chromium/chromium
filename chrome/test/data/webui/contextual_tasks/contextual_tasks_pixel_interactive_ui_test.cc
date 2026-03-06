@@ -42,7 +42,7 @@ class ContextualTasksPixelTestBase : public WebUIComposeBoxPixelTest {
         {{contextual_tasks::kContextualTasks,
           {{"ContextualTasksExpandButtonOptions", "toolbar-close-button"}}},
          {contextual_tasks::kContextualTasksForceEntryPointEligibility, {}}},
-        {});
+        {contextual_tasks::kContextualTasksAnimatedCaret});
     WebUIComposeBoxPixelTest::SetUp();
   }
 
