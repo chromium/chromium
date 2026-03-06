@@ -577,25 +577,6 @@ source_set("headless_browser") {
   } else {
     deps += [ "//ui/aura" ]
   }
-
-  if (headless_use_embedded_resources) {
-    defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
-    deps += [
-      ":embedded_resource_pack_data",
-      ":embedded_resource_pack_strings",
-    ]
-    sources += [
-      "$root_gen_dir/headless/embedded_resource_pack_data.cc",
-      "$root_gen_dir/headless/embedded_resource_pack_data.h",
-      "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
-      "$root_gen_dir/headless/embedded_resource_pack_strings.h",
-    ]
-  } else {
-    deps += [
-      ":resource_pack_data",
-      ":resource_pack_strings",
-    ]
-  }
 }
 
 group("headless_tests") {
@@ -892,6 +873,25 @@ component("headless_shell_lib") {
 
   if (headless_use_prefs) {
     deps += [ "//components/prefs" ]
+  }
+
+  if (headless_use_embedded_resources) {
+    defines += [ "HEADLESS_USE_EMBEDDED_RESOURCES" ]
+    deps += [
+      ":embedded_resource_pack_data",
+      ":embedded_resource_pack_strings",
+    ]
+    sources += [
+      "$root_gen_dir/headless/embedded_resource_pack_data.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_data.h",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.cc",
+      "$root_gen_dir/headless/embedded_resource_pack_strings.h",
+    ]
+  } else {
+    deps += [
+      ":resource_pack_data",
+      ":resource_pack_strings",
+    ]
   }
 }
 
