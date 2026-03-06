@@ -2704,7 +2704,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records a single ineligibility reason for Gemini. Logged whenever
     eligibility checks fail. Each ineligibility reason gets recorded
-    individually and can't be meaningfully used for eligibility distribution.
+    individually and can't be meaning fully used for eligibility distribution.
     Instead use the IOS.Gemini.Eligibility histogram for that purpose.
   </summary>
 </histogram>
@@ -2715,6 +2715,16 @@ chromium-metrics-reviews@google.com.
   <owner>bling-alchemy-eng@google.com</owner>
   <summary>
     Records the attachment option that was tapped in the input plate in Gemini.
+  </summary>
+</histogram>
+
+<histogram name="IOS.Gemini.PageEligible" enum="Boolean"
+    expires_after="2027-01-01">
+  <owner>tarekmakkouk@google.com</owner>
+  <owner>bling-alchemy@google.com</owner>
+  <summary>
+    Records whether a page is eligible for Gemini. This is logged once per
+    navigation to a new URL.
   </summary>
 </histogram>
 

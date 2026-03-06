@@ -8,6 +8,7 @@
 #import "base/functional/callback_helpers.h"
 #import "base/ios/block_types.h"
 #import "base/memory/weak_ptr.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
@@ -449,6 +450,9 @@ void BwgTabHelper::DidStartNavigation(
   const bool gemini_available = IsGeminiAvailableForWebState() &&
                                 gemini_service &&
                                 gemini_service->IsProfileEligibleForGemini();
+
+  base::UmaHistogramBoolean("IOS.Gemini.PageEligible", gemini_available);
+
   if (gemini_available &&
       profile->GetPrefs()->GetBoolean(prefs::kIOSBWGPageContentSetting)) {
     bool can_request_metadata =
