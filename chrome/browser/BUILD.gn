@@ -496,8 +496,6 @@ static_library("browser") {
     "icon_manager.h",
     "idle/idle_detection_permission_context.cc",
     "idle/idle_detection_permission_context.h",
-    "invalidation/profile_invalidation_provider_factory.cc",
-    "invalidation/profile_invalidation_provider_factory.h",
     "language/accept_languages_service_factory.cc",
     "language/accept_languages_service_factory.h",
     "language/language_model_manager_factory.cc",
@@ -1734,6 +1732,8 @@ static_library("browser") {
     "//chrome/browser/image_decoder",
     "//chrome/browser/image_fetcher",
     "//chrome/browser/interstitials:impl",
+    "//chrome/browser/invalidation",
+    "//chrome/browser/invalidation:impl",
     "//chrome/browser/k_anonymity_service",
     "//chrome/browser/k_anonymity_service:impl",
     "//chrome/browser/lifetime:termination_notification",
@@ -5404,6 +5404,10 @@ static_library("browser") {
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:google_key_proto",
       "//chrome/browser/enterprise/connectors/device_trust/attestation/common/proto:interface_proto",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/browser_process_platform_part_ash.h gets modularized.
+      "//chrome/browser/invalidation:impl",
       "//chrome/browser/metrics/perf",
       "//chrome/browser/nearby_sharing:share_target",
       "//chrome/browser/nearby_sharing/certificates",
@@ -5915,6 +5919,10 @@ static_library("browser") {
       "//chrome/browser/chromeos/tablet_mode",
       "//chrome/browser/chromeos/upload_office_to_cloud",
       "//chrome/browser/extensions/api/enterprise_networking_attributes",
+
+      # TODO(crbug.com/353332589): Remove this circular dependency when
+      # c/b/browser_process_platform_part_ash.h gets modularized.
+      "//chrome/browser/invalidation:impl",
       "//chrome/browser/policy:onc",
       "//chrome/browser/support_tool/ash",
       "//chrome/browser/ui/ash/accelerator",

@@ -1,0 +1,67 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("invalidation") {
+  sources = [ "profile_invalidation_provider_factory.h" ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+  ]
+}
+
+source_set("impl") {
+  sources = [ "profile_invalidation_provider_factory.cc" ]
+
+  deps = [
+    ":invalidation",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/gcm",
+    "//chrome/browser/signin",
+    "//components/gcm_driver/instance_id",
+    "//components/invalidation",
+    "//components/invalidation:legacy_topics_cleanup",
+    "//services/network/public/cpp",
+  ]
+
+  if (!is_android) {
+    # device_identity includes are guarded by #if IS_CHROMEOS in the .cc but
+    # the target exists on all non-Android platforms, so add the dep here to
+    # satisfy GN include checking without nogncheck.
+    deps += [ "//chrome/browser/device_identity" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chrome/browser/ash/policy/core",
+      "//chromeos/ash/components/browser_context_helper",
+      "//components/user_manager",
+    ]
+  }
+
+  # Standard for impl targets; on ChromeOS also provides access to browser
+  # headers (e.g. browser_process_platform_part_ash.h) via
+  # allow_circular_includes_from set in chrome/browser/BUILD.gn.
+  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+}
+
+if (is_chromeos) {
+  source_set("browser_tests") {
+    testonly = true
+    defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+    sources = [ "profile_invalidation_provider_factory_browsertest.cc" ]
+    deps = [
+      ":invalidation",
+      "//ash/constants",
+      "//base",
+      "//chrome/browser/ash/profiles",
+      "//chrome/common",
+      "//chrome/test:test_support",
+      "//components/account_id",
+      "//components/invalidation",
+      "//components/user_manager",
+      "//testing/gtest",
+    ]
+  }
+}

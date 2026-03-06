@@ -1431,6 +1431,7 @@ source_set("platform_browser_tests") {
     "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/gcm",
     "//chrome/browser/history",
+    "//chrome/browser/invalidation",
     "//chrome/browser/lookalikes",
     "//chrome/browser/optimization_guide",
     "//chrome/browser/password_manager/factories",
@@ -3547,7 +3548,6 @@ if (!is_android) {
       "../browser/iframe_browsertest.cc",
       "../browser/image_fetcher/image_fetcher_impl_browsertest.cc",
       "../browser/infobars/infobars_browsertest.cc",
-      "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",
       "../browser/lifetime/browser_close_manager_browsertest.cc",
       "../browser/lifetime/browser_shutdown_browsertest.cc",
@@ -4470,6 +4470,7 @@ if (!is_android) {
       deps += [
         "//chrome/browser/chromeos/cros_apps:all_browser_tests",
         "//chrome/browser/chromeos/video_conference",
+        "//chrome/browser/invalidation:browser_tests",
         "//chrome/browser/ui/ash:test_support",
         "//chrome/browser/web_applications/app_service",
         "//chromeos/constants",
@@ -4654,10 +4655,7 @@ if (!is_android) {
         "../browser/ui/views/download/bubble/download_toolbar_ui_controller_browsertest.cc",
         "../browser/ui/views/profiles/signin_view_controller_delegate_views_browsertest.cc",
       ]
-      sources -= [
-        "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
-        "../browser/net/nss_context_chromeos_browsertest.cc",
-      ]
+      sources -= [ "../browser/net/nss_context_chromeos_browsertest.cc" ]
       deps += [
         ":dump_accessibility_events_views_browsertest_base",
         "//chrome/browser/default_browser:browser_tests",
