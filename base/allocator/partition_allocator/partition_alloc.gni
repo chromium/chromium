@@ -543,3 +543,6 @@ declare_args() {
   enable_partition_lock_priority_inheritance =
       is_android && (current_cpu == "x64" || current_cpu == "arm64")
 }
+
+# Activates bounds checks for two-arg constructor of `base::span`.
+use_checked_span = use_partition_alloc && false

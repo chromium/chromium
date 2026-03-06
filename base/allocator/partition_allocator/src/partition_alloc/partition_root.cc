@@ -65,44 +65,6 @@ void RecordAllocOrFree(uintptr_t addr, size_t size) {
 }
 #endif  // PA_BUILDFLAG(RECORD_ALLOC_INFO)
 
-#if PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-PtrPosWithinAlloc IsPtrWithinSameAlloc(uintptr_t orig_address,
-                                       uintptr_t test_address,
-                                       size_t type_size) {
-  PA_DCHECK(ReservationOffsetTable::Get(orig_address)
-                .IsManagedByNormalBucketsOrDirectMap(orig_address));
-  DCheckIfManagedByPartitionAllocBRPPool(orig_address);
-
-  auto [slot_start, _] =
-      PartitionAllocGetSlotStartAndSizeInBRPPool(orig_address);
-  // Don't use |orig_address| beyond this point at all. It was needed to
-  // pick the right slot, but now we're dealing with very concrete addresses.
-  // Zero it just in case, to catch errors.
-  orig_address = 0;
-
-  const std::ptrdiff_t offset =
-      internal::GetMetadataOffset(pool_handle::kBRPPoolHandle);
-  auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start, offset);
-  auto* root = PartitionRoot::FromSlotSpanMetadata(slot_span);
-  // Double check that in-slot metadata is indeed present. Currently that's the
-  // case only when BRP is used.
-  PA_DCHECK(root->brp_enabled());
-
-  uintptr_t object_addr = slot_start.value();
-  uintptr_t object_end = object_addr + root->GetSlotUsableSize(slot_span);
-  if (test_address < object_addr || object_end < test_address) {
-    return PtrPosWithinAlloc::kFarOOB;
-#if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-  } else if (object_end - type_size < test_address) {
-    // Not even a single element of the type referenced by the pointer can fit
-    // between the pointer and the end of the object.
-    return PtrPosWithinAlloc::kAllocEnd;
-#endif
-  } else {
-    return PtrPosWithinAlloc::kInBounds;
-  }
-}
-#endif  // PA_BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 }  // namespace partition_alloc::internal
 

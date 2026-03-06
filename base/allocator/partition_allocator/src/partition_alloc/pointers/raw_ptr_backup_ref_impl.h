@@ -407,7 +407,7 @@ struct RawPtrBackupRefImpl {
     // TODO(bartekn): Consider adding support for non-BRP pool too.
     if (IsSupportedAndNotNull(address1)) {
       PA_BASE_CHECK(IsSupportedAndNotNull(address2));
-      PA_BASE_CHECK(partition_alloc::internal::IsPtrWithinSameAlloc(
+      PA_BASE_CHECK(partition_alloc::internal::IsPtrWithinSameAllocInBRPPool(
                         address2, address1, sizeof(T)) !=
                     partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
     } else {

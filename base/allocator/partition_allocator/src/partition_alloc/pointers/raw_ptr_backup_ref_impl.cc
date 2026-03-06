@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "partition_alloc/slot_start.h"
-
 #include "partition_alloc/pointers/raw_ptr_backup_ref_impl.h"
 
 #include <cstdint>
 
+#include "partition_alloc/bounds_checks.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/in_slot_metadata.h"
@@ -15,6 +14,7 @@
 #include "partition_alloc/partition_alloc_base/check.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/reservation_offset_table.h"
+#include "partition_alloc/slot_start.h"
 
 namespace base::internal {
 
@@ -25,7 +25,7 @@ void RawPtrBackupRefImpl<AllowDangling>::AcquireInternal(uintptr_t address) {
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
-      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::SlotAddressAndSize::FromBRPPool(address);
   if constexpr (AllowDangling) {
     partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
         partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size)
@@ -44,7 +44,7 @@ void RawPtrBackupRefImpl<AllowDangling>::ReleaseInternal(uintptr_t address) {
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
-      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::SlotAddressAndSize::FromBRPPool(address);
   if constexpr (AllowDangling) {
     if (partition_alloc::PartitionRoot::
             InSlotMetadataPointerFromSlotStartAndSize(
@@ -72,7 +72,7 @@ void RawPtrBackupRefImpl<AllowDangling>::ReportIfDanglingInternal(
   if (partition_alloc::internal::IsUnretainedDanglingRawPtrCheckEnabled()) {
     if (IsSupportedAndNotNull(address)) {
       auto [slot_start, slot_size] =
-          partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+          partition_alloc::SlotAddressAndSize::FromBRPPool(address);
       partition_alloc::PartitionRoot::InSlotMetadataPointerFromSlotStartAndSize(
           partition_alloc::internal::UntaggedSlotStart(slot_start), slot_size)
           ->ReportIfDangling();
@@ -86,18 +86,17 @@ bool RawPtrBackupRefImpl<AllowDangling>::CheckPointerWithinSameAlloc(
     uintptr_t before_addr,
     uintptr_t after_addr,
     size_t type_size) {
-  partition_alloc::internal::PtrPosWithinAlloc ptr_pos_within_alloc =
-      partition_alloc::internal::IsPtrWithinSameAlloc(before_addr, after_addr,
-                                                      type_size);
+  partition_alloc::PtrPosWithinAlloc ptr_pos_within_alloc =
+      partition_alloc::IsPtrWithinSameAllocInBRPPool(before_addr, after_addr,
+                                                     type_size);
   // No need to check that |new_ptr| is in the same pool, as
-  // IsPtrWithinSameAlloc() checks that it's within the same allocation, so
-  // must be the same pool.
+  // IsPtrWithinSameAllocInBRPPool() checks that it's within the same
+  // allocation, so must be the same pool.
   PA_BASE_CHECK(ptr_pos_within_alloc !=
-                partition_alloc::internal::PtrPosWithinAlloc::kFarOOB);
+                partition_alloc::PtrPosWithinAlloc::kFarOOB);
 
 #if PA_BUILDFLAG(BACKUP_REF_PTR_POISON_OOB_PTR)
-  return ptr_pos_within_alloc ==
-         partition_alloc::internal::PtrPosWithinAlloc::kAllocEnd;
+  return ptr_pos_within_alloc == partition_alloc::PtrPosWithinAlloc::kAllocEnd;
 #else
   return false;
 #endif
@@ -110,7 +109,7 @@ bool RawPtrBackupRefImpl<AllowDangling>::IsPointeeAlive(uintptr_t address) {
   PA_BASE_CHECK(UseBrp(address));
 #endif
   auto [slot_start, slot_size] =
-      partition_alloc::PartitionAllocGetSlotStartAndSizeInBRPPool(address);
+      partition_alloc::SlotAddressAndSize::FromBRPPool(address);
   return partition_alloc::PartitionRoot::
       InSlotMetadataPointerFromSlotStartAndSize(
              partition_alloc::internal::UntaggedSlotStart(slot_start),

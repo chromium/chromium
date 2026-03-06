@@ -86,7 +86,7 @@ std::ptrdiff_t GetMetadataOffset([[maybe_unused]] const T* root) {
 #if PA_BUILDFLAG(DCHECKS_ARE_ON)
   PA_DCHECK(root);
 #endif  // PA_BUILDFLAG(DCHECKS_ARE_ON)
-  return static_cast<std::ptrdiff_t>(root->MetadataOffset());
+  return root->MetadataOffset();
 #else
   return static_cast<std::ptrdiff_t>(SystemPageSize());
 #endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
