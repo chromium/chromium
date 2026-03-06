@@ -320,8 +320,18 @@ void InProcessBrowserTest::RunScheduledLayouts() {
   widgets_to_layout = views::test::WidgetTest::GetAllWidgets();
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+  // Collect WeakPtrs to handle cases where a widget is destroyed
+  // synchronously during another widget's layout (e.g. Tooltips on
+  // Linux).
+  std::vector<base::WeakPtr<views::Widget>> widgets_to_layout_weak;
   for (views::Widget* widget : widgets_to_layout) {
-    widget->LayoutRootViewIfNecessary();
+    widgets_to_layout_weak.push_back(widget->GetWeakPtr());
+  }
+
+  for (base::WeakPtr<views::Widget> widget : widgets_to_layout_weak) {
+    if (widget) {
+      widget->LayoutRootViewIfNecessary();
+    }
   }
 #endif  // defined(TOOLKIT_VIEWS)
 }
