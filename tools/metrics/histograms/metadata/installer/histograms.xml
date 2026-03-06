@@ -205,7 +205,7 @@ chromium-metrics-reviews@google.com.
     enum="UnPackStatus" expires_after="never">
 <!-- expires-never: used to monitor unpack status of setup installer. -->
 
-  <owner>waffles@chromium.org</owner>
+  <owner>ganesh@chromium.org</owner>
   <owner>grt@chromium.org</owner>
   <summary>
     Record the status of unpacking the contents of a 7z file. {UnPackConsumer}

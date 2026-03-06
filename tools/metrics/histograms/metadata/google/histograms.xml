@@ -27,7 +27,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core metric for monitoring on-demand updates. -->
 
   <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
+  <owner>omaha-team@google.com</owner>
   <summary>The HRESULT for a failed on-demand update check.</summary>
 </histogram>
 
@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
     enum="GoogleUpdateHashedCohortId" expires_after="never">
 <!-- expires-never: Core metric for monitoring per-milestone regressions. -->
 
-  <owner>waffles@chromium.org</owner>
+  <owner>sorin@chromium.org</owner>
   <owner>chrome-metrics-team@google.com</owner>
   <owner>omaha-team@google.com</owner>
   <summary>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core metric for monitoring on-demand updates. -->
 
   <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
+  <owner>omaha-team@google.com</owner>
   <summary>The error code for a failed on-demand update check.</summary>
 </histogram>
 
@@ -140,7 +140,7 @@ chromium-metrics-reviews@google.com.
 <!-- expires-never: Core metric for monitoring on-demand updates. -->
 
   <owner>sorin@chromium.org</owner>
-  <owner>waffles@chromium.org</owner>
+  <owner>omaha-team@google.com</owner>
   <summary>
     The result of an on-demand update check. Expired 2024-01-14, and revived
     2024-07-16. Data is incomplete.
