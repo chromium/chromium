@@ -37,10 +37,9 @@ class ManagedSessionServiceTest : public ::testing::Test,
     ::ash::SessionManagerClient::InitializeFake();
     session_termination_manager_ =
         std::make_unique<::ash::SessionTerminationManager>();
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    user_manager_ = user_manager.get();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     managed_session_service_ =
         std::make_unique<ManagedSessionService>(&test_clock_);
@@ -48,7 +47,10 @@ class ManagedSessionServiceTest : public ::testing::Test,
 
   void TearDown() override {
     managed_session_service_.reset();
+    session_manager_.reset();
+    user_manager_.Reset();
     session_termination_manager_.reset();
+    ::ash::SessionManagerClient::Shutdown();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -83,10 +85,10 @@ class ManagedSessionServiceTest : public ::testing::Test,
   }
 
   session_manager::SessionManager* session_manager() {
-    return &session_manager_;
+    return session_manager_.get();
   }
 
-  ash::FakeChromeUserManager* user_manager() { return user_manager_; }
+  ash::FakeChromeUserManager* user_manager() { return user_manager_.Get(); }
 
   chromeos::FakePowerManagerClient* power_manager_client() {
     return chromeos::FakePowerManagerClient::Get();
@@ -149,14 +151,11 @@ class ManagedSessionServiceTest : public ::testing::Test,
  private:
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
-
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
-
   std::unique_ptr<::ash::SessionTerminationManager>
       session_termination_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
 
   base::SimpleTestClock test_clock_;
 

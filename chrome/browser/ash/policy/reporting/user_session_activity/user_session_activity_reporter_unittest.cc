@@ -53,16 +53,23 @@ class UserSessionActivityReporterTest : public ::testing::Test {
  protected:
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-
     ash::SessionManagerClient::InitializeFake();
 
     session_termination_manager_ =
         std::make_unique<ash::SessionTerminationManager>();
 
+    session_manager_ = std::make_unique<session_manager::SessionManager>(
+        std::make_unique<session_manager::FakeSessionManagerDelegate>());
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
-  void TearDown() override { chromeos::PowerManagerClient::Shutdown(); }
+  void TearDown() override {
+    session_manager_.reset();
+    fake_user_manager_.Reset();
+    session_termination_manager_.reset();
+    ash::SessionManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
+  }
 
   std::unique_ptr<UserSessionActivityReporter> CreateReporter(
       policy::ManagedSessionService* managed_session_service,
@@ -111,16 +118,13 @@ class UserSessionActivityReporterTest : public ::testing::Test {
     reporter->OnUnlocked();
   }
 
-  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
-      fake_user_manager_;
-
-  std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
-
-  session_manager::SessionManager session_manager_{
-      std::make_unique<session_manager::FakeSessionManagerDelegate>()};
-
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  std::unique_ptr<ash::SessionTerminationManager> session_termination_manager_;
+  std::unique_ptr<session_manager::SessionManager> session_manager_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      fake_user_manager_;
 };
 
 // Mocks all of the reporting::UserSessionActivityReporter::Delegate` class so

@@ -9,9 +9,9 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_deref.h"
 #include "base/functional/callback_helpers.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -31,14 +31,15 @@ namespace reporting {
 
 class TestHelper : public UserEventReporterHelper {
  public:
+  // `mock_queue` must be non-null and must outlive this test helper.
   TestHelper(std::unique_ptr<::reporting::ReportQueue,
                              base::OnTaskRunnerDeleter> report_queue,
-             base::WeakPtr<::reporting::MockReportQueueStrict> mock_queue,
+             ::reporting::ReportQueue* mock_queue,
              bool should_report_event,
              bool should_report_user,
              bool is_user_new)
       : UserEventReporterHelper(std::move(report_queue)),
-        mock_queue_(mock_queue),
+        mock_queue_(CHECK_DEREF(mock_queue)),
         should_report_event_(should_report_event),
         should_report_user_(should_report_user),
         is_user_new_(is_user_new) {}
@@ -61,7 +62,7 @@ class TestHelper : public UserEventReporterHelper {
     mock_queue_->Enqueue(std::move(record), priority, std::move(enqueue_cb));
   }
 
-  base::WeakPtr<::reporting::MockReportQueueStrict> mock_queue_;
+  const raw_ref<::reporting::ReportQueue> mock_queue_;
 
   bool should_report_event_;
 
@@ -76,20 +77,14 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
  protected:
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
-
-    auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
-    user_manager_ = user_manager.get();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::move(user_manager));
-
-    mock_queue_ = new ::reporting::MockReportQueueStrict();
-    weak_mock_queue_factory_ = std::make_unique<
-        base::WeakPtrFactory<::reporting::MockReportQueueStrict>>(mock_queue_);
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+    mock_queue_ = std::make_unique<::reporting::MockReportQueueStrict>();
   }
 
   void TearDown() override {
+    mock_queue_.reset();
+    user_manager_.Reset();
     chromeos::PowerManagerClient::Shutdown();
-    delete mock_queue_;
   }
 
   std::unique_ptr<TestingProfile> LoginRegularProfile(
@@ -135,15 +130,11 @@ class UserAddedRemovedReporterTest : public ::testing::Test {
     return profile;
   }
 
-  raw_ptr<::reporting::MockReportQueueStrict, DanglingUntriaged> mock_queue_;
-
-  std::unique_ptr<base::WeakPtrFactory<::reporting::MockReportQueueStrict>>
-      weak_mock_queue_factory_;
+  std::unique_ptr<::reporting::MockReportQueueStrict> mock_queue_;
 
  private:
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
 
   content::BrowserTaskEnvironment task_environment_;
 };
@@ -154,11 +145,10 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   UserAddedRemovedRecord record;
   ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord)
+  EXPECT_CALL(*mock_queue_.get(), AddRecord)
       .WillOnce(
           [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
@@ -168,7 +158,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserAdded) {
           });
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
@@ -193,11 +183,10 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
   ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord)
+  EXPECT_CALL(*mock_queue_.get(), AddRecord)
       .WillOnce(
           [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
@@ -207,7 +196,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserAdded) {
           });
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/false, /*user_new=*/true);
   auto managed_session_service =
@@ -234,11 +223,10 @@ TEST_F(UserAddedRemovedReporterTest, TestReportingDisabled) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+  EXPECT_CALL(*mock_queue_.get(), AddRecord).Times(0);
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/false,
                                    /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
@@ -260,11 +248,10 @@ TEST_F(UserAddedRemovedReporterTest, TestExistingUserLogin) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+  EXPECT_CALL(*mock_queue_.get(), AddRecord).Times(0);
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/true, /*user_new=*/false);
   auto managed_session_service =
@@ -282,11 +269,10 @@ TEST_F(UserAddedRemovedReporterTest, TestGuestSessionLogsIn) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+  EXPECT_CALL(*mock_queue_.get(), AddRecord).Times(0);
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
@@ -307,11 +293,10 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserLogsIn) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+  EXPECT_CALL(*mock_queue_.get(), AddRecord).Times(0);
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
@@ -332,11 +317,10 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
   ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord)
+  EXPECT_CALL(*mock_queue_.get(), AddRecord)
       .WillOnce(
           [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
@@ -346,7 +330,7 @@ TEST_F(UserAddedRemovedReporterTest, TestAffiliatedUserRemoval) {
           });
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/true, /*user_new=*/false);
   auto managed_session_service =
@@ -379,11 +363,10 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
   ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord)
+  EXPECT_CALL(*mock_queue_.get(), AddRecord)
       .WillOnce(
           [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
@@ -393,7 +376,7 @@ TEST_F(UserAddedRemovedReporterTest, TestUnaffiliatedUserRemoval) {
           });
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/false, /*user_new=*/false);
   auto managed_session_service =
@@ -424,11 +407,10 @@ TEST_F(UserAddedRemovedReporterTest, TestKioskUserRemoved) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
-  EXPECT_CALL(*mock_queue, AddRecord).Times(0);
+  EXPECT_CALL(*mock_queue_.get(), AddRecord).Times(0);
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/true, /*user_new=*/true);
   auto managed_session_service =
@@ -451,11 +433,10 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
       std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>(
           nullptr, base::OnTaskRunnerDeleter(
                        base::SequencedTaskRunner::GetCurrentDefault()));
-  auto mock_queue = weak_mock_queue_factory_->GetWeakPtr();
 
   ::reporting::UserAddedRemovedRecord record;
   ::reporting::Priority priority;
-  EXPECT_CALL(*mock_queue, AddRecord)
+  EXPECT_CALL(*mock_queue_.get(), AddRecord)
       .WillOnce(
           [&record, &priority](std::string_view record_string,
                                ::reporting::Priority event_priority,
@@ -465,7 +446,7 @@ TEST_F(UserAddedRemovedReporterTest, TestRemoteRemoval) {
           });
 
   auto test_helper =
-      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue,
+      std::make_unique<TestHelper>(std::move(dummy_queue), mock_queue_.get(),
                                    /*report_event=*/true,
                                    /*report_user=*/false, /*user_new=*/true);
   auto managed_session_service =

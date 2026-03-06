@@ -50,7 +50,11 @@ class LoginLogoutTestHelper {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
-  void Shutdown() { chromeos::PowerManagerClient::Shutdown(); }
+  void Shutdown() {
+    fake_user_manager_.Reset();
+    session_termination_manager_.reset();
+    chromeos::PowerManagerClient::Shutdown();
+  }
 
   std::unique_ptr<TestingProfile> CreateProfile(user_manager::User* user) {
     TestingProfile::Builder profile_builder;

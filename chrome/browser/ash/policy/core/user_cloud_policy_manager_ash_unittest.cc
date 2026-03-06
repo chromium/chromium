@@ -143,8 +143,6 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
         task_runner_(base::MakeRefCounted<base::TestMockTimeTaskRunner>()),
         profile_(nullptr),
         signin_profile_(nullptr),
-        user_manager_(new ash::FakeChromeUserManager()),
-        user_manager_enabler_(base::WrapUnique(user_manager_.get())),
         test_signin_shared_loader_factory_(
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_signin_url_loader_factory_)),
@@ -155,11 +153,14 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
   void SetUp() override {
     ash::ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
 
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
+
     // The initialization path that blocks on the initial policy fetch requires
     // a signin Profile to use its URLRequestContext.
     profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
+
     TestingProfile::TestingFactories factories =
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories();
@@ -228,9 +229,11 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     signin_profile_ = nullptr;
     profile_ = nullptr;
     identity_test_env_profile_adaptor_.reset();
-    profile_manager_->DeleteTestingProfile(chrome::kInitialProfile);
+    profile_manager_.reset();
     test_system_shared_loader_factory_->Detach();
     test_signin_shared_loader_factory_->Detach();
+
+    user_manager_.Reset();
 
     ash::ConciergeClient::Shutdown();
   }
@@ -381,8 +384,9 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
       identity_test_env_profile_adaptor_;
   user_manager::UserType user_type_ = user_manager::UserType::kRegular;
 
-  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> user_manager_;
-  user_manager::ScopedUserManager user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
+
   // This is automatically checked in TearDown() to ensure that we get a
   // fatal error iff |fatal_error_expected_| is true.
   bool fatal_error_expected_ = false;

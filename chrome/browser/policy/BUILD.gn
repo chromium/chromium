@@ -617,6 +617,7 @@ source_set("unit_tests") {
       "//chromeos/components/onc",
       "//chromeos/components/onc:test_support",
       "//components/onc",
+      "//components/session_manager/test:test_support",
     ]
   }
 }

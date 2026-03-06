@@ -44,6 +44,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     // Enable Kerberos via policy.
     SetPref(prefs::kKerberosEnabled, base::Value(true));
 
+    user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
     user_manager_->AddUser(AccountId::FromUserEmail(kProfileEmail));
 
     // Initialize User, Profile and KerberosCredentialsManager.
@@ -61,6 +62,8 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     credentials_updater_.reset();
     credentials_manager_.reset();
     KerberosClient::Shutdown();
+
+    user_manager_.Reset();
   }
 
  protected:
@@ -85,8 +88,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
-      std::make_unique<FakeChromeUserManager>()};
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<KerberosCredentialsManager> credentials_manager_;
   std::unique_ptr<SmbKerberosCredentialsUpdater> credentials_updater_;

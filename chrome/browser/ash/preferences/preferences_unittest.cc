@@ -154,9 +154,7 @@ class PreferencesTest : public testing::Test {
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(profile_manager_->SetUp());
 
-    user_manager_ = new FakeChromeUserManager();
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        base::WrapUnique(user_manager_.get()));
+    user_manager_.Reset(std::make_unique<FakeChromeUserManager>());
 
     const char test_user_email[] = "test_user@example.com";
     const AccountId test_account_id(AccountId::FromUserEmail(test_user_email));
@@ -190,13 +188,24 @@ class PreferencesTest : public testing::Test {
   void TearDown() override {
     // `prefs_` accesses UpdateEngineClient in its destructor.
     prefs_.reset();
+
+    fake_update_engine_client_ = nullptr;
     UpdateEngineClient::Shutdown();
 
+    mock_manager_ = nullptr;
     input_method::Shutdown();
+
+    pref_service_ = nullptr;
+    test_profile_ = nullptr;
+    profile_manager_.reset();
+
     // UserSessionManager doesn't listen to profile destruction, so make sure
     // the default IME state isn't still cached in case test_profile_ is
     // given the same address in the next test.
     UserSessionManager::GetInstance()->RemoveProfileForTesting(test_profile_);
+
+    test_user_ = nullptr;
+    user_manager_.Reset();
   }
 
   void InitPreferences() {
@@ -207,20 +216,18 @@ class PreferencesTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_;
   std::unique_ptr<Preferences> prefs_;
   StringPrefMember previous_input_method_;
   StringPrefMember current_input_method_;
   BooleanPrefMember consumer_auto_update_toggle_;
 
   // Not owned.
-  raw_ptr<FakeChromeUserManager> user_manager_;
-  raw_ptr<const user_manager::User> test_user_;
-  raw_ptr<TestingProfile> test_profile_;
-  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_;
-  raw_ptr<input_method::MyMockInputMethodManager, DanglingUntriaged>
-      mock_manager_;
-  raw_ptr<FakeUpdateEngineClient, DanglingUntriaged> fake_update_engine_client_;
+  raw_ptr<const user_manager::User> test_user_ = nullptr;
+  raw_ptr<TestingProfile> test_profile_ = nullptr;
+  raw_ptr<sync_preferences::TestingPrefServiceSyncable> pref_service_ = nullptr;
+  raw_ptr<input_method::MyMockInputMethodManager> mock_manager_ = nullptr;
+  raw_ptr<FakeUpdateEngineClient> fake_update_engine_client_ = nullptr;
 };
 
 TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {

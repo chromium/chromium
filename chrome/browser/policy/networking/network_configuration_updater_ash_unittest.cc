@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/networking/device_network_configuration_updater_ash.h"
 #include "chrome/browser/policy/networking/user_network_configuration_updater_ash.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
 #include "chromeos/ash/components/network/fake_network_device_handler.h"
@@ -43,6 +44,7 @@
 #include "components/policy/core/common/policy_service_impl.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/policy_constants.h"
+#include "components/session_manager/test/test_user_session_manager.h"
 #include "components/user_manager/fake_user_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user.h"
@@ -290,15 +292,25 @@ ACTION_P(SetCertificateList, list) {
 
 class NetworkConfigurationUpdaterAshTest : public testing::Test {
  protected:
-  NetworkConfigurationUpdaterAshTest() : certificate_importer_(nullptr) {}
+  NetworkConfigurationUpdaterAshTest() = default;
+  ~NetworkConfigurationUpdaterAshTest() override = default;
 
   void SetUp() override {
-    fake_user_ = static_cast<ash::FakeChromeUserManager*>(
-                     user_manager::UserManager::Get())
-                     ->AddUser(AccountId::FromUserEmail(kFakeUserEmail));
+    test_user_session_manager_ =
+        std::make_unique<ash::test::TestUserSessionManager>(
+            TestingBrowserProcess::GetGlobal()->local_state());
 
+    const AccountId account_id =
+        AccountId::FromUserEmailGaiaId(kFakeUserEmail, GaiaId("12345"));
+    fake_user_ = test_user_session_manager_->AddRegularUser(account_id);
+    ASSERT_TRUE(fake_user_);
+
+    // Simulate log-in.
     ash::UserSessionManager::GetInstance()->set_start_session_type_for_testing(
         ash::UserSessionManager::StartSessionType::kPrimary);
+    test_user_session_manager_->LogIn(account_id);
+
+    profile_ = std::make_unique<TestingProfile>();
 
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   kFakeSerialNumber);
@@ -334,6 +346,20 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
         .Times(AnyNumber());
   }
 
+  void TearDown() override {
+    certificate_importer_ = nullptr;
+    network_configuration_updater_.reset();
+    client_certificate_importer_owned_.reset();
+    fake_certificates_.reset();
+    policy_service_.reset();
+    provider_.Shutdown();
+    base::RunLoop().RunUntilIdle();
+
+    profile_.reset();
+    fake_user_ = nullptr;
+    test_user_session_manager_.reset();
+  }
+
   base::ListValue* GetExpectedFakeNetworkConfigs(::onc::ONCSource source) {
     std::optional<base::DictValue> fake_toplevel_onc =
         chromeos::onc::ReadDictionaryFromJson(kFakeONC);
@@ -349,12 +375,6 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
 
   base::DictValue* GetExpectedFakeGlobalNetworkConfig() {
     return &fake_global_network_config_;
-  }
-
-  void TearDown() override {
-    network_configuration_updater_.reset();
-    provider_.Shutdown();
-    base::RunLoop().RunUntilIdle();
   }
 
   void MarkPolicyProviderInitialized() {
@@ -378,7 +398,7 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
       bool set_client_cert_importer) {
     UserNetworkConfigurationUpdaterAsh* updater =
         UserNetworkConfigurationUpdaterAsh::CreateForUserPolicy(
-            &profile_, *fake_user_, policy_service_.get(),
+            profile_.get(), *fake_user_, policy_service_.get(),
             &network_config_handler_)
             .release();
     if (set_client_cert_importer) {
@@ -413,15 +433,17 @@ class NetworkConfigurationUpdaterAshTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
 
+  std::unique_ptr<ash::test::TestUserSessionManager> test_user_session_manager_;
+
   // Ownership of client_certificate_importer_owned_ is passed to the
   // NetworkConfigurationUpdater. When that happens, |certificate_importer_|
   // continues to point to that instance but
   // |client_certificate_importer_owned_| is released.
-  raw_ptr<FakeCertificateImporter, DanglingUntriaged> certificate_importer_;
+  raw_ptr<FakeCertificateImporter> certificate_importer_ = nullptr;
   std::unique_ptr<ash::onc::CertificateImporter>
       client_certificate_importer_owned_;
 
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
 
   StrictMock<MockConfigurationPolicyProvider> provider_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;

@@ -58,7 +58,11 @@ class LockUnlockTestHelper {
     fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   }
 
-  void Shutdown() { chromeos::PowerManagerClient::Shutdown(); }
+  void Shutdown() {
+    fake_user_manager_.Reset();
+    SessionManagerClient::Shutdown();
+    chromeos::PowerManagerClient::Shutdown();
+  }
 
   session_manager::SessionManager* session_manager() {
     return &session_manager_;

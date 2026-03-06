@@ -119,29 +119,6 @@ class ScreenLockerUnitTest : public testing::Test {
     SystemSaltGetter::Initialize();
   }
 
-  void CreateSessionForUser(bool is_public_account) {
-    ASSERT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
-    user_manager::User* user = nullptr;
-    if (is_public_account) {
-      user = fake_user_manager_->AddPublicAccountUser(test_account_id_);
-    } else {
-      user = fake_user_manager_->AddUser(test_account_id_);
-    }
-    auto* session_manager = session_manager::SessionManager::Get();
-    session_manager->CreateSession(user->GetAccountId(),
-                                   user->GetAccountId().GetUserEmail(),
-                                   /*new_user=*/false,
-                                   /*has_active_session=*/false);
-    auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
-    ASSERT_TRUE(primary_user);
-    ProfileHelper::Get()->SetUserToProfileMappingForTesting(primary_user,
-                                                            user_profile_);
-    fake_user_manager_->SimulateUserProfileLoad(test_account_id_);
-    session_manager->NotifyUserProfileLoaded(test_account_id_);
-
-    ASSERT_TRUE(ProfileManager::GetActiveUserProfile() == user_profile_);
-  }
-
   void TearDown() override {
     SystemSaltGetter::Shutdown();
     input_method::InputMethodManager::Shutdown();
@@ -166,6 +143,29 @@ class ScreenLockerUnitTest : public testing::Test {
     ConciergeClient::Shutdown();
   }
 
+  void CreateSessionForUser(bool is_public_account) {
+    ASSERT_FALSE(user_manager::UserManager::Get()->GetPrimaryUser());
+    user_manager::User* user = nullptr;
+    if (is_public_account) {
+      user = fake_user_manager_->AddPublicAccountUser(test_account_id_);
+    } else {
+      user = fake_user_manager_->AddUser(test_account_id_);
+    }
+    auto* session_manager = session_manager::SessionManager::Get();
+    session_manager->CreateSession(user->GetAccountId(),
+                                   user->GetAccountId().GetUserEmail(),
+                                   /*new_user=*/false,
+                                   /*has_active_session=*/false);
+    auto* primary_user = user_manager::UserManager::Get()->GetPrimaryUser();
+    ASSERT_TRUE(primary_user);
+    ProfileHelper::Get()->SetUserToProfileMappingForTesting(primary_user,
+                                                            user_profile_);
+    fake_user_manager_->SimulateUserProfileLoad(test_account_id_);
+    session_manager->NotifyUserProfileLoaded(test_account_id_);
+
+    ASSERT_TRUE(ProfileManager::GetActiveUserProfile() == user_profile_);
+  }
+
  protected:
   const AccountId test_account_id_ = AccountId::FromUserEmail(kFakeUsername);
 
@@ -183,7 +183,7 @@ class ScreenLockerUnitTest : public testing::Test {
       fake_user_manager_;
   std::unique_ptr<session_manager::SessionManager> session_manager_;
   std::unique_ptr<TestingProfileManager> testing_profile_manager_;
-  raw_ptr<Profile> user_profile_ = nullptr;
+  raw_ptr<TestingProfile> user_profile_ = nullptr;
 
   // ScreenLocker dependencies:
   // * LoginScreenClientImpl dependencies:
