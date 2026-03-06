@@ -329,6 +329,17 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   IgnorePaintTimingScope::SetIsDocumentElementInvisible(
       is_document_element_invisible);
 
+  // Canvas children need to ensure that a composited cc::Layer exists for
+  // canvas draw element, even if no other content is painted.
+  bool force_chunk_for_canvas_draw_element = false;
+  if (const auto* properties = object.FirstFragment().PaintProperties()) {
+    if (const auto* effect = properties->Effect()) {
+      if (effect->HasCanvasChildState()) {
+        force_chunk_for_canvas_draw_element = true;
+      }
+    }
+  }
+
   bool is_self_painting_layer = paint_layer_.IsSelfPaintingLayer();
   bool should_paint_content =
       paint_layer_.HasVisibleContent() &&
@@ -342,7 +353,9 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       // When printing, the LayoutView's background should extend infinitely
       // regardless of LayoutView's visual rect, so don't check intersection
       // between the visual rect and the cull rect (custom for each page).
-      (IsA<LayoutView>(object) && object.GetDocument().Printing())) {
+      (IsA<LayoutView>(object) && object.GetDocument().Printing()) ||
+      // Canvas children must paint, regardless of intersection.
+      force_chunk_for_canvas_draw_element) {
     result = kMayBeClippedByCullRect;
   } else {
     gfx::Rect visual_rect = FirstFragmentVisualRect(object);
@@ -421,12 +434,15 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
         controller, object.FirstFragment().LocalBorderBoxProperties(),
         paint_layer_, DisplayItem::kLayerChunk);
 
+    bool ensure_chunk = force_chunk_for_canvas_draw_element;
     // When a reference filter applies to the layer, ensure a chunk is
     // generated so that the filter paints even if no other content is painted
     // by the layer (see `SVGContainerPainter::Paint`).
     auto* properties = object.FirstFragment().PaintProperties();
-    if (properties && properties->Filter() &&
-        properties->Filter()->HasReferenceFilter()) {
+    ensure_chunk |= properties && properties->Filter() &&
+                    properties->Filter()->HasReferenceFilter();
+
+    if (ensure_chunk) {
       controller.EnsureChunk();
     }
   }

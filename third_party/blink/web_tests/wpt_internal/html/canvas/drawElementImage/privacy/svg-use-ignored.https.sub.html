@@ -24,11 +24,7 @@
         await new Promise(setTimeout);
         var context = canvas.getContext("2d", { willReadFrequently: true });
         context.drawElementImage(document.getElementById("child-same"), 0, 0);
-        assert_throws_dom(
-          "InvalidStateError",
-          () => context.drawElementImage(document.getElementById("child-cross"), 0, 100),
-          'drawElementImage cannot draw cross-origin svg `use`.'
-        );
+        context.drawElementImage(document.getElementById("child-cross"), 0, 100);
 
         pixel = context.getImageData(50, 50, 1, 1).data;
         assert_equals(pixel[0], 0, "Same origin should draw red");
