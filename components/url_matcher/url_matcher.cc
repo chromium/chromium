@@ -876,10 +876,10 @@ URLMatcher::~URLMatcher() = default;
 
 void URLMatcher::AddConditionSets(
     const URLMatcherConditionSet::Vector& condition_sets) {
-  for (auto i = condition_sets.begin(); i != condition_sets.end(); ++i) {
-    DCHECK(url_matcher_condition_sets_.find((*i)->id()) ==
+  for (const auto& condition_set : condition_sets) {
+    DCHECK(url_matcher_condition_sets_.find(condition_set->id()) ==
            url_matcher_condition_sets_.end());
-    url_matcher_condition_sets_[(*i)->id()] = *i;
+    url_matcher_condition_sets_[condition_set->id()] = condition_set;
   }
   UpdateInternalDatastructures();
 }

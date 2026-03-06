@@ -40,18 +40,16 @@ void EventFilter::EventMatcherEntry::DontRemoveConditionSetsInDestructor() {
   condition_set_ids_.clear();
 }
 
-EventFilter::EventFilter()
-    : next_id_(0),
-      next_condition_set_id_(0) {
-}
+EventFilter::EventFilter() : next_id_(0), next_condition_set_id_(0) {}
 
 EventFilter::~EventFilter() {
   // Normally when an event matcher entry is removed from event_matchers_ it
   // will remove its condition sets from url_matcher_, but as url_matcher_ is
   // being destroyed anyway there is no need to do that step here.
   for (auto& matcher_map : event_matchers_) {
-    for (auto& matcher : matcher_map.second)
+    for (auto& matcher : matcher_map.second) {
       matcher.second->DontRemoveConditionSetsInDestructor();
+    }
   }
 }
 
@@ -59,8 +57,9 @@ EventFilter::MatcherID EventFilter::AddEventMatcher(
     const std::string& event_name,
     std::unique_ptr<EventMatcher> matcher) {
   URLMatcherConditionSet::Vector condition_sets;
-  if (!CreateConditionSets(matcher.get(), &condition_sets))
+  if (!CreateConditionSets(matcher.get(), &condition_sets)) {
     return -1;
+  }
 
   MatcherID id = next_id_++;
   for (const scoped_refptr<URLMatcherConditionSet>& condition_set :
@@ -97,10 +96,12 @@ bool EventFilter::CreateConditionSets(
   }
   for (int i = 0; i < url_filter_count; i++) {
     const base::DictValue* url_filter = matcher->GetURLFilter(i);
-    if (!url_filter)
+    if (!url_filter) {
       return false;
-    if (!AddDictionaryAsConditionSet(*url_filter, condition_sets))
+    }
+    if (!AddDictionaryAsConditionSet(*url_filter, condition_sets)) {
       return false;
+    }
   }
   return true;
 }
@@ -111,10 +112,7 @@ bool EventFilter::AddDictionaryAsConditionSet(
   std::string error;
   base::MatcherStringPattern::ID condition_set_id = next_condition_set_id_++;
   condition_sets->push_back(URLMatcherFactory::CreateFromURLFilterDictionary(
-      url_matcher_.condition_factory(),
-      url_filter,
-      condition_set_id,
-      &error));
+      url_matcher_.condition_factory(), url_filter, condition_set_id, &error));
   if (!error.empty()) {
     LOG(ERROR) << "CreateFromURLFilterDictionary failed: " << error;
     url_matcher_.ClearUnusedConditionSets();
@@ -145,8 +143,9 @@ std::set<EventFilter::MatcherID> EventFilter::MatchEvent(
   std::set<MatcherID> matchers;
 
   auto it = event_matchers_.find(event_name);
-  if (it == event_matchers_.end())
+  if (it == event_matchers_.end()) {
     return matchers;
+  }
 
   const EventMatcherMap& matcher_map = it->second;
   const GURL& url_to_match_against = event_info.url ? *event_info.url : GURL();

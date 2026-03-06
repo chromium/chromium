@@ -75,8 +75,7 @@ TEST_F(EventFilterUnittest, AddingEventMatcherDoesntCrash) {
   event_filter_.AddEventMatcher("event1", AllURLs());
 }
 
-TEST_F(EventFilterUnittest,
-    DontMatchAgainstMatchersForDifferentEvents) {
+TEST_F(EventFilterUnittest, DontMatchAgainstMatchersForDifferentEvents) {
   event_filter_.AddEventMatcher("event1", AllURLs());
   std::set<int> matches = event_filter_.MatchEvent("event2", empty_event_,
                                                    IPC::mojom::kRoutingIdNone);
@@ -121,8 +120,8 @@ TEST_F(EventFilterUnittest, MultipleEventMatches) {
 TEST_F(EventFilterUnittest, TestURLMatching) {
   mojom::EventFilteringInfo info;
   info.url = GURL("http://www.google.com");
-  int id = event_filter_.AddEventMatcher("event1",
-                                         HostSuffixMatcher("google.com"));
+  int id =
+      event_filter_.AddEventMatcher("event1", HostSuffixMatcher("google.com"));
   std::set<int> matches =
       event_filter_.MatchEvent("event1", info, IPC::mojom::kRoutingIdNone);
   ASSERT_EQ(1u, matches.size());
@@ -225,10 +224,10 @@ TEST_F(EventFilterUnittest, EmptyListOfURLFiltersMatchesAllURLs) {
 }
 
 TEST_F(EventFilterUnittest,
-    InternalURLMatcherShouldBeEmptyWhenThereAreNoEventMatchers) {
+       InternalURLMatcherShouldBeEmptyWhenThereAreNoEventMatchers) {
   ASSERT_TRUE(event_filter_.IsURLMatcherEmptyForTesting());
-  int id = event_filter_.AddEventMatcher("event1",
-                                         HostSuffixMatcher("google.com"));
+  int id =
+      event_filter_.AddEventMatcher("event1", HostSuffixMatcher("google.com"));
   ASSERT_FALSE(event_filter_.IsURLMatcherEmptyForTesting());
   event_filter_.RemoveEventMatcher(id);
   ASSERT_TRUE(event_filter_.IsURLMatcherEmptyForTesting());
@@ -243,7 +242,7 @@ TEST_F(EventFilterUnittest, EmptyURLsShouldBeMatchedByEmptyURLFilters) {
 }
 
 TEST_F(EventFilterUnittest,
-    EmptyURLsShouldBeMatchedByEmptyURLFiltersWithAnEmptyItem) {
+       EmptyURLsShouldBeMatchedByEmptyURLFiltersWithAnEmptyItem) {
   std::unique_ptr<EventMatcher> matcher(
       MatcherFromURLFilterList(ValueAsList(base::Value(base::DictValue()))));
   int id = event_filter_.AddEventMatcher("event1", std::move(matcher));

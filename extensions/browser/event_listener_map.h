@@ -24,7 +24,7 @@
 namespace content {
 class BrowserContext;
 class RenderProcessHost;
-}
+}  // namespace content
 
 namespace extensions {
 struct Event;

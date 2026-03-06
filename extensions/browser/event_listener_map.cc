@@ -152,9 +152,7 @@ EventListener::EventListener(const std::string& event_name,
   }
 }
 
-EventListenerMap::EventListenerMap(Delegate* delegate)
-    : delegate_(delegate) {
-}
+EventListenerMap::EventListenerMap(Delegate* delegate) : delegate_(delegate) {}
 
 EventListenerMap::~EventListenerMap() = default;
 
@@ -368,8 +366,9 @@ std::set<const EventListener*> EventListenerMap::GetEventListeners(
       interested_listeners.insert(listener);
     }
   } else {
-    for (const auto& listener : listeners_[event.event_name])
+    for (const auto& listener : listeners_[event.event_name]) {
       interested_listeners.insert(listener.get());
+    }
   }
 
   return interested_listeners;

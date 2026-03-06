@@ -82,9 +82,7 @@ class EventFilter {
     // and clean them up anyway.
     void DontRemoveConditionSetsInDestructor();
 
-    EventMatcher* event_matcher() {
-      return event_matcher_.get();
-    }
+    EventMatcher* event_matcher() { return event_matcher_.get(); }
 
    private:
     std::unique_ptr<EventMatcher> event_matcher_;

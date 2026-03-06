@@ -40,13 +40,15 @@ std::pair<bool, int> ListenerTracker::AddFilteredListener(
   int filter_id = event_filter_.AddEventMatcher(
       event_name,
       std::make_unique<EventMatcher>(std::move(filter), routing_id));
-  if (filter_id == -1)
+  if (filter_id == -1) {
     return std::make_pair(false, -1);
+  }
 
   FilteredEventListenerKey key(context_owner_id, event_name);
   std::unique_ptr<ValueCounter>& counts = filtered_listeners_[key];
-  if (!counts)
+  if (!counts) {
     counts = std::make_unique<ValueCounter>();
+  }
 
   const EventMatcher* matcher = event_filter_.GetEventMatcher(filter_id);
   bool was_first_of_kind = counts->Add(base::Value(matcher->value()->Clone()));
