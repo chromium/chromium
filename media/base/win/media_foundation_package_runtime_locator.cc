@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/native_library.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
@@ -23,10 +24,17 @@ namespace media {
 
 namespace {
 
+// To get the family name of the codec package, run a PowerShell command to
+// query the installed video extension codec package (e.g., "get-appxpackage
+// *AV1VideoExtension* | Select-Object PackageFamilyName").
+constexpr wchar_t kMfPackageFamilyName_AV1[] =
+    L"Microsoft.AV1VideoExtension_8wekyb3d8bbwe";
 constexpr wchar_t kMfPackageFamilyName_HEVC[] =
     L"Microsoft.HEVCVideoExtension_8wekyb3d8bbwe";
 constexpr wchar_t kMfPackageFamilyName_HEVC_2[] =
     L"Microsoft.HEVCVideoExtensions_8wekyb3d8bbwe";
+constexpr wchar_t kMfPackageFamilyName_VP9[] =
+    L"Microsoft.VP9VideoExtensions_8wekyb3d8bbwe";
 constexpr wchar_t kMfPackageFamilyName_DolbyVision[] =
     L"DolbyLaboratories.DolbyVisionAccess_rz1tebttyb220";
 constexpr wchar_t kMfPackageFamilyName_DolbyVision_2[] =
@@ -38,25 +46,31 @@ constexpr wchar_t kMfPackageFamilyName_EAC3[] =
 constexpr wchar_t kMfLibraryName_AC4[] = L"DolbyAc4DecMft.dll";
 constexpr wchar_t kMfLibraryName_EAC3[] = L"DolbyDDPDecMft.dll";
 
-constexpr MediaFoundationCodecPackage kMfCodecPackages[] = {
-    MediaFoundationCodecPackage::kEAC3, MediaFoundationCodecPackage::kAC4,
-    MediaFoundationCodecPackage::kHEVC,
-    MediaFoundationCodecPackage::kDolbyVision};
+constexpr char kMediaFoundationPackageDecoderUmaPrefixName[] =
+    "Media.MediaFoundationPackageDecoder.";
 
-std::wstring GetMfCodecPackageName(MediaFoundationCodecPackage codec_package) {
+constexpr MediaFoundationCodecPackage kMfCodecPackages[] = {
+    MediaFoundationCodecPackage::kEAC3,
+    MediaFoundationCodecPackage::kAC4,
+    MediaFoundationCodecPackage::kHEVC,
+    MediaFoundationCodecPackage::kDolbyVision,
+    MediaFoundationCodecPackage::kAV1,
+    MediaFoundationCodecPackage::kVP9};
+
+std::string GetMfCodecPackageName(MediaFoundationCodecPackage codec_package) {
   switch (codec_package) {
     case MediaFoundationCodecPackage::kAV1:
-      return L"kAV1";
+      return "AV1";
     case MediaFoundationCodecPackage::kHEVC:
-      return L"kHEVC";
+      return "HEVC";
     case MediaFoundationCodecPackage::kVP9:
-      return L"kVP9";
+      return "VP9";
     case MediaFoundationCodecPackage::kDolbyVision:
-      return L"kDolbyVision";
+      return "DolbyVision";
     case MediaFoundationCodecPackage::kAC4:
-      return L"kAC4";
+      return "AC4";
     case MediaFoundationCodecPackage::kEAC3:
-      return L"kEAC3";
+      return "EAC3";
   }
 }
 
@@ -64,9 +78,15 @@ std::vector<std::wstring_view> GetMfCodecPackageFamilyNames(
     MediaFoundationCodecPackage codec_package) {
   std::vector<std::wstring_view> package_family_names;
   switch (codec_package) {
+    case MediaFoundationCodecPackage::kAV1:
+      package_family_names.push_back(kMfPackageFamilyName_AV1);
+      break;
     case MediaFoundationCodecPackage::kHEVC:
       package_family_names.push_back(kMfPackageFamilyName_HEVC);
       package_family_names.push_back(kMfPackageFamilyName_HEVC_2);
+      break;
+    case MediaFoundationCodecPackage::kVP9:
+      package_family_names.push_back(kMfPackageFamilyName_VP9);
       break;
     case MediaFoundationCodecPackage::kDolbyVision:
       package_family_names.push_back(kMfPackageFamilyName_DolbyVision);
@@ -253,6 +273,25 @@ bool FindMediaFoundationPackageDecoder(AudioCodec codec) {
              ? MediaFoundationPackageRuntimeLocator::GetInstance().FoundModule(
                    codec_package.value())
              : false;
+}
+
+void ReportMediaFoundationPackageDecoderStatus() {
+  DVLOG(3) << __func__;
+  for (auto& codec_package : kMfCodecPackages) {
+    auto found =
+        MediaFoundationPackageRuntimeLocator::GetInstance().FoundModule(
+            codec_package);
+    const auto codec_package_name = GetMfCodecPackageName(codec_package);
+    DVLOG(3) << __func__ << ": Codec package (" << codec_package_name
+             << ") found=" << found;
+    base::UmaHistogramBoolean(
+        kMediaFoundationPackageDecoderUmaPrefixName + codec_package_name,
+        found);
+  }
+  // H264 is always supported, so we report it as true for UMA consistency and
+  // to use as total count (denominator).
+  base::UmaHistogramBoolean(
+      std::string(kMediaFoundationPackageDecoderUmaPrefixName) + "H264", true);
 }
 
 }  // namespace media

@@ -11,14 +11,23 @@
 
 namespace media {
 
+// An enum for checking and recording MediaFoundation codec packages. Reported
+// to UMA. Do not change existing values. Updates to
+// MediaFoundationCodecPackage also requires the changes updated to
+// tools/metrics/histograms/metadata/media/histograms.xml.
+//
+// LINT.IfChange(MediaFoundationCodecPackage)
 enum class MediaFoundationCodecPackage {
   kAV1 = 0,
   kHEVC,
   kVP9,
   kDolbyVision,
   kAC4,
-  kEAC3
+  kEAC3,
+  // Add new values here and update `kMaxValue`. Never reuse existing  values.
+  kMaxValue = kEAC3,
 };
+// LINT.ThenChange(/tools/metrics/histograms/metadata/media/histograms.xml:MediaFoundationCodecPackage)
 
 // Locate Media Foundation based Codec Pack install paths by using Win32
 // AppModel APIs.

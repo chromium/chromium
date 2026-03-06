@@ -106,6 +106,18 @@ chromium-metrics-reviews@google.com.
       summary="Software secure Widevine key system"/>
 </variants>
 
+<variants name="MediaFoundationCodecPackage">
+  <variant name="AC4"/>
+  <variant name="AV1"/>
+  <variant name="DolbyVision"/>
+  <variant name="EAC3"/>
+<!-- NOTE: H264 is always supported. Do not remove this. -->
+
+  <variant name="H264"/>
+  <variant name="HEVC"/>
+  <variant name="VP9"/>
+</variants>
+
 <variants name="MediaRebufferingCategories">
   <variant name=".Audio.EME"
       summary="Metric for EME media with an audio track."/>
@@ -5298,6 +5310,19 @@ chromium-metrics-reviews@google.com.
     occurs.
   </summary>
   <token key="VideoCodec" variants="VideoCodec"/>
+</histogram>
+
+<histogram
+    name="Media.MediaFoundationPackageDecoder.{MediaFoundationCodecPackage}"
+    enum="Boolean" expires_after="2026-12-09">
+  <owner>sangbaekpark@chromium.org</owner>
+  <owner>media-dev-uma@chromium.org</owner>
+  <summary>
+    Whether or not a {MediaFoundationCodecPackage} was found. Recorded once when
+    the MediaFoundation Renderer is initialized.
+  </summary>
+  <token key="MediaFoundationCodecPackage"
+      variants="MediaFoundationCodecPackage"/>
 </histogram>
 
 <histogram name="Media.MediaFoundationRenderer.CreateMediaEngineError"

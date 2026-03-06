@@ -32,6 +32,7 @@
 #include "media/base/key_systems.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
+#include "media/base/win/media_foundation_package_runtime_locator.h"
 #include "media/cdm/win/media_foundation_cdm_module.h"
 #include "media/cdm/win/media_foundation_cdm_util.h"
 #include "media/media_buildflags.h"
@@ -589,6 +590,8 @@ void MediaFoundationService::IsKeySystemSupported(
   IsTypeSupportedCallback is_type_supported_cb;
 
   if (is_os_cdm_) {
+    media::ReportMediaFoundationPackageDecoderStatus();
+
     // `IMFContentDecryptionModuleFactory::IsTypeSupported()` returns
     // 'supported' for OS PlayReady backed implementation regardless of the
     // value passed in for the `contentType` parameter. Use

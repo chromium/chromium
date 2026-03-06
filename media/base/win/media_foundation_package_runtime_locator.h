@@ -13,6 +13,11 @@ namespace media {
 MEDIA_EXPORT bool LoadMediaFoundationPackageDecoder(AudioCodec codec);
 MEDIA_EXPORT bool FindMediaFoundationPackageDecoder(AudioCodec codec);
 
+// Reports the status of Media Foundation package decoders for UMA. This is used
+// to understand the availability of Media Foundation package decoders on user
+// devices.
+MEDIA_EXPORT void ReportMediaFoundationPackageDecoderStatus();
+
 }  // namespace media
 
 #endif  // MEDIA_BASE_WIN_MEDIA_FOUNDATION_PACKAGE_RUNTIME_LOCATOR_H_
