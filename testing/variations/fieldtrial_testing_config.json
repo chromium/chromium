@@ -17981,7 +17981,10 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled2048_20260302",
+                    "params": {
+                        "spin_count": "2048"
+                    },
                     "enable_features": [
                         "PartitionAllocLockTuneSpin"
                     ]
