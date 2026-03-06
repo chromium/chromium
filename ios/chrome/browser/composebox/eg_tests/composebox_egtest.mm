@@ -14,7 +14,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/omnibox/browser/aim_eligibility_service_features.h"
 #import "ios/chrome/browser/composebox/coordinator/composebox_constants.h"
-#import "ios/chrome/browser/composebox/ui/composebox_app_interface.h"
+#import "ios/chrome/browser/composebox/eg_tests/composebox_app_interface.h"
 #import "ios/chrome/browser/composebox/ui/composebox_ui_constants.h"
 #import "ios/chrome/browser/omnibox/public/omnibox_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -216,11 +216,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that the Composebox is visible when tapping the omnibox.
 - (void)testComposeboxVisibility {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
 
@@ -248,11 +243,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that the Composebox is hidden when not eligible.
 - (void)testComposeboxHiddenWhenNotEligible {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ComposeboxAppInterface setAimEligible:NO];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -267,11 +257,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that typing in the Composebox shows the Send button.
 - (void)testComposeboxSendButtonVisibility {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
 
@@ -301,11 +286,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that image generation action is present when eligible.
 - (void)testComposeboxCreateImageEligible {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ComposeboxAppInterface setCreateImagesEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -335,11 +315,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that the image generation action is not available when not eligible.
 - (void)testComposeboxCreateImageNotEligible {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ComposeboxAppInterface setCreateImagesEligible:NO];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -363,11 +338,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that the AI mode action works as expected.
 - (void)testComposeboxAIModeAction {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ComposeboxAppInterface setAimEligible:YES];
 
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
@@ -408,11 +378,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 
 // Tests that all buttons in the plus menu are enabled.
 - (void)testPlusMenuButtonsEnabled {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGreyUI focusOmnibox];
 
@@ -459,11 +424,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that tapping the attach tabs button opens the tab picker. Ensures that
 // the title is set correctly and buttons are correctly enabled or disabled.
 - (void)testTabPickerUI {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   OpenTabPicker();
 
@@ -526,11 +486,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // (User should not be able to attach NTPs to the composebox). It also ensure
 // that the user can dismiss the view.
 - (void)testTabPickerEmptyStateView {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ChromeEarlGrey closeAllNormalTabs];
   [ChromeEarlGrey openNewTab];
   [ChromeEarlGrey waitForMainTabCount:1];
@@ -566,11 +521,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that multiple tabs selected from the tab picker are displayed in the
 // carousel, the attachment limit is respected, and the AIM button is visible.
 - (void)testAttachMultipleTabsAndLimit {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   std::vector<GURL> URLS;
   NSUInteger totalNumberOfTabs = kAttachmentLimit + 1;
   [ChromeEarlGrey closeAllNormalTabs];
@@ -670,11 +620,6 @@ void RemoveAttachmentWithTitle(NSString* title) {
 // Tests that a tab cannot be attached when in image generation mode, and that
 // image generation mode can be entered after attachments are removed.
 - (void)testNoTabAttachmentsInImageGeneration {
-  // Composebox is not available on iPad.
-  if ([ChromeEarlGrey isIPadIdiom]) {
-    EARL_GREY_TEST_SKIPPED(@"Skipped for iPad as composebox is not available.");
-  }
-
   [ComposeboxAppInterface setCreateImagesEligible:YES];
 
   // Add a tab and attach it.
