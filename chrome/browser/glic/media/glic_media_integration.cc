@@ -299,7 +299,14 @@ void GlicMediaIntegrationImpl::AppendContextForFrame(
   if (size_t result_size = result.length()) {
     if (result_size > max_size_bytes_) {
       // Remove the beginning of the result, leaving the end.
-      result = result.substr(result_size - max_size_bytes_);
+      size_t start_index = result_size - max_size_bytes_;
+      // Ensure we don't cut in the middle of a UTF-8 multi-byte character.
+      // UTF-8 continuation bytes start with 10xxxxxx (0x80 to 0xBF).
+      while (start_index < result_size &&
+             (static_cast<unsigned char>(result[start_index]) & 0xC0) == 0x80) {
+        start_index++;
+      }
+      result = result.substr(start_index);
     }
   }
 
