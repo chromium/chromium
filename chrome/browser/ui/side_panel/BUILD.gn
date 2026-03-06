@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 source_set("side_panel") {
   sources = [
     "side_panel_entry_id.cc",
@@ -32,8 +34,11 @@ source_set("side_panel") {
     "//chrome/browser/ui/actions:actions_headers",
     "//chrome/browser/ui/tabs:tab_model",
     "//components/pref_registry",
-    "//extensions/common:common_constants",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
 }
 
 source_set("side_panel_views_dependent") {
@@ -56,10 +61,12 @@ source_set("side_panel_views_dependent") {
   deps = [
     ":side_panel",
     "//base",
+    "//chrome/browser/ui/actions:actions_headers",
+    "//chrome/browser/ui/browser_window",
     "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/views/side_panel",
-    "//extensions/common:common_constants",
     "//ui/base",
+    "//ui/base/unowned_user_data",
     "//ui/views",
   ]
 

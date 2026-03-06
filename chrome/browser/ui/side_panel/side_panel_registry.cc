@@ -17,7 +17,6 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/extension_id.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 
 DEFINE_USER_DATA(SidePanelRegistry);

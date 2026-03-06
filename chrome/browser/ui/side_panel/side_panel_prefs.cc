@@ -14,6 +14,8 @@
 namespace side_panel_prefs {
 
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+// TODO(crbug.com/489780965): Move policies over as features are implemented.
+#if !BUILDFLAG(IS_ANDROID)
   // When in RTL mode, the side panel should default to the left of the screen.
   // Otherwise, the side panel should default to the right side of the screen.
   // TODO(dljames): Add enum values kAlternateSide / kDefaultSide that will
@@ -22,6 +24,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 !base::i18n::IsRTL());
   registry->RegisterBooleanPref(prefs::kGoogleSearchSidePanelEnabled, true);
   registry->RegisterDictionaryPref(prefs::kSidePanelIdToWidth);
+#endif
 }
 
 }  // namespace side_panel_prefs
