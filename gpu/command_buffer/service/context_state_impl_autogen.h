@@ -220,45 +220,57 @@ void ContextState::InitState(const ContextState* prev_state) const {
     if ((blend_color_red != prev_state->blend_color_red) ||
         (blend_color_green != prev_state->blend_color_green) ||
         (blend_color_blue != prev_state->blend_color_blue) ||
-        (blend_color_alpha != prev_state->blend_color_alpha))
+        (blend_color_alpha != prev_state->blend_color_alpha)) {
       api()->glBlendColorFn(blend_color_red, blend_color_green,
                             blend_color_blue, blend_color_alpha);
+    }
     if ((blend_equation_rgb != prev_state->blend_equation_rgb) ||
-        (blend_equation_alpha != prev_state->blend_equation_alpha))
+        (blend_equation_alpha != prev_state->blend_equation_alpha)) {
       api()->glBlendEquationSeparateFn(blend_equation_rgb,
                                        blend_equation_alpha);
+    }
     if ((blend_source_rgb != prev_state->blend_source_rgb) ||
         (blend_dest_rgb != prev_state->blend_dest_rgb) ||
         (blend_source_alpha != prev_state->blend_source_alpha) ||
-        (blend_dest_alpha != prev_state->blend_dest_alpha))
+        (blend_dest_alpha != prev_state->blend_dest_alpha)) {
       api()->glBlendFuncSeparateFn(blend_source_rgb, blend_dest_rgb,
                                    blend_source_alpha, blend_dest_alpha);
+    }
     if ((color_clear_red != prev_state->color_clear_red) ||
         (color_clear_green != prev_state->color_clear_green) ||
         (color_clear_blue != prev_state->color_clear_blue) ||
-        (color_clear_alpha != prev_state->color_clear_alpha))
+        (color_clear_alpha != prev_state->color_clear_alpha)) {
       api()->glClearColorFn(color_clear_red, color_clear_green,
                             color_clear_blue, color_clear_alpha);
-    if ((depth_clear != prev_state->depth_clear))
+    }
+    if ((depth_clear != prev_state->depth_clear)) {
       api()->glClearDepthFn(depth_clear);
-    if ((stencil_clear != prev_state->stencil_clear))
+    }
+    if ((stencil_clear != prev_state->stencil_clear)) {
       api()->glClearStencilFn(stencil_clear);
+    }
     if ((cached_color_mask_red != prev_state->cached_color_mask_red) ||
         (cached_color_mask_green != prev_state->cached_color_mask_green) ||
         (cached_color_mask_blue != prev_state->cached_color_mask_blue) ||
-        (cached_color_mask_alpha != prev_state->cached_color_mask_alpha))
+        (cached_color_mask_alpha != prev_state->cached_color_mask_alpha)) {
       api()->glColorMaskFn(cached_color_mask_red, cached_color_mask_green,
                            cached_color_mask_blue, cached_color_mask_alpha);
-    if ((cull_mode != prev_state->cull_mode))
+    }
+    if ((cull_mode != prev_state->cull_mode)) {
       api()->glCullFaceFn(cull_mode);
-    if ((depth_func != prev_state->depth_func))
+    }
+    if ((depth_func != prev_state->depth_func)) {
       api()->glDepthFuncFn(depth_func);
-    if ((cached_depth_mask != prev_state->cached_depth_mask))
+    }
+    if ((cached_depth_mask != prev_state->cached_depth_mask)) {
       api()->glDepthMaskFn(cached_depth_mask);
-    if ((z_near != prev_state->z_near) || (z_far != prev_state->z_far))
+    }
+    if ((z_near != prev_state->z_near) || (z_far != prev_state->z_far)) {
       api()->glDepthRangeFn(z_near, z_far);
-    if ((front_face != prev_state->front_face))
+    }
+    if ((front_face != prev_state->front_face)) {
       api()->glFrontFaceFn(front_face);
+    }
     if (prev_state->hint_generate_mipmap != hint_generate_mipmap) {
       api()->glHintFn(GL_GENERATE_MIPMAP_HINT, hint_generate_mipmap);
     }
@@ -269,8 +281,9 @@ void ContextState::InitState(const ContextState* prev_state) const {
                         hint_fragment_shader_derivative);
       }
     }
-    if ((line_width != prev_state->line_width))
+    if ((line_width != prev_state->line_width)) {
       DoLineWidth(line_width);
+    }
     if (prev_state->pack_alignment != pack_alignment) {
       api()->glPixelStoreiFn(GL_PACK_ALIGNMENT, pack_alignment);
     }
@@ -278,50 +291,60 @@ void ContextState::InitState(const ContextState* prev_state) const {
       api()->glPixelStoreiFn(GL_UNPACK_ALIGNMENT, unpack_alignment);
     }
     if ((polygon_offset_factor != prev_state->polygon_offset_factor) ||
-        (polygon_offset_units != prev_state->polygon_offset_units))
+        (polygon_offset_units != prev_state->polygon_offset_units)) {
       api()->glPolygonOffsetFn(polygon_offset_factor, polygon_offset_units);
+    }
     if ((sample_coverage_value != prev_state->sample_coverage_value) ||
-        (sample_coverage_invert != prev_state->sample_coverage_invert))
+        (sample_coverage_invert != prev_state->sample_coverage_invert)) {
       api()->glSampleCoverageFn(sample_coverage_value, sample_coverage_invert);
+    }
     if ((scissor_x != prev_state->scissor_x) ||
         (scissor_y != prev_state->scissor_y) ||
         (scissor_width != prev_state->scissor_width) ||
-        (scissor_height != prev_state->scissor_height))
+        (scissor_height != prev_state->scissor_height)) {
       api()->glScissorFn(scissor_x, scissor_y, scissor_width, scissor_height);
+    }
     if ((stencil_front_func != prev_state->stencil_front_func) ||
         (stencil_front_ref != prev_state->stencil_front_ref) ||
-        (stencil_front_mask != prev_state->stencil_front_mask))
+        (stencil_front_mask != prev_state->stencil_front_mask)) {
       api()->glStencilFuncSeparateFn(GL_FRONT, stencil_front_func,
                                      stencil_front_ref, stencil_front_mask);
+    }
     if ((stencil_back_func != prev_state->stencil_back_func) ||
         (stencil_back_ref != prev_state->stencil_back_ref) ||
-        (stencil_back_mask != prev_state->stencil_back_mask))
+        (stencil_back_mask != prev_state->stencil_back_mask)) {
       api()->glStencilFuncSeparateFn(GL_BACK, stencil_back_func,
                                      stencil_back_ref, stencil_back_mask);
+    }
     if ((cached_stencil_front_writemask !=
-         prev_state->cached_stencil_front_writemask))
+         prev_state->cached_stencil_front_writemask)) {
       api()->glStencilMaskSeparateFn(GL_FRONT, cached_stencil_front_writemask);
+    }
     if ((cached_stencil_back_writemask !=
-         prev_state->cached_stencil_back_writemask))
+         prev_state->cached_stencil_back_writemask)) {
       api()->glStencilMaskSeparateFn(GL_BACK, cached_stencil_back_writemask);
+    }
     if ((stencil_front_fail_op != prev_state->stencil_front_fail_op) ||
         (stencil_front_z_fail_op != prev_state->stencil_front_z_fail_op) ||
-        (stencil_front_z_pass_op != prev_state->stencil_front_z_pass_op))
+        (stencil_front_z_pass_op != prev_state->stencil_front_z_pass_op)) {
       api()->glStencilOpSeparateFn(GL_FRONT, stencil_front_fail_op,
                                    stencil_front_z_fail_op,
                                    stencil_front_z_pass_op);
+    }
     if ((stencil_back_fail_op != prev_state->stencil_back_fail_op) ||
         (stencil_back_z_fail_op != prev_state->stencil_back_z_fail_op) ||
-        (stencil_back_z_pass_op != prev_state->stencil_back_z_pass_op))
+        (stencil_back_z_pass_op != prev_state->stencil_back_z_pass_op)) {
       api()->glStencilOpSeparateFn(GL_BACK, stencil_back_fail_op,
                                    stencil_back_z_fail_op,
                                    stencil_back_z_pass_op);
+    }
     if ((viewport_x != prev_state->viewport_x) ||
         (viewport_y != prev_state->viewport_y) ||
         (viewport_width != prev_state->viewport_width) ||
-        (viewport_height != prev_state->viewport_height))
+        (viewport_height != prev_state->viewport_height)) {
       api()->glViewportFn(viewport_x, viewport_y, viewport_width,
                           viewport_height);
+    }
   } else {
     api()->glBlendColorFn(blend_color_red, blend_color_green, blend_color_blue,
                           blend_color_alpha);

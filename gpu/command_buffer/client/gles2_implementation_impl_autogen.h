@@ -517,8 +517,9 @@ void GLES2Implementation::DeleteProgram(GLuint program) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDeleteProgram(" << program
                      << ")");
-  if (program == 0)
+  if (program == 0) {
     return;
+  }
   DeleteProgramHelper(program);
   CheckGLError();
 }
@@ -571,8 +572,9 @@ void GLES2Implementation::DeleteSamplers(GLsizei n, const GLuint* samplers) {
 void GLES2Implementation::DeleteSync(GLsync sync) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDeleteSync(" << sync << ")");
-  if (sync == 0)
+  if (sync == 0) {
     return;
+  }
   DeleteSyncHelper(sync);
   CheckGLError();
 }
@@ -580,8 +582,9 @@ void GLES2Implementation::DeleteSync(GLsync sync) {
 void GLES2Implementation::DeleteShader(GLuint shader) {
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   GPU_CLIENT_LOG("[" << GetLogPrefix() << "] glDeleteShader(" << shader << ")");
-  if (shader == 0)
+  if (shader == 0) {
     return;
+  }
   DeleteShaderHelper(shader);
   CheckGLError();
 }
@@ -773,8 +776,9 @@ void GLES2Implementation::GenFramebuffers(GLsizei n, GLuint* framebuffers) {
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   IdAllocator* id_allocator = GetIdAllocator(IdNamespaces::kFramebuffers);
-  for (GLsizei ii = 0; ii < n; ++ii)
+  for (GLsizei ii = 0; ii < n; ++ii) {
     framebuffers[ii] = id_allocator->AllocateID();
+  }
   GenFramebuffersHelper(n, framebuffers);
   helper_->GenFramebuffersImmediate(n, framebuffers);
   GPU_CLIENT_LOG_CODE_BLOCK({
@@ -852,8 +856,9 @@ void GLES2Implementation::GenTransformFeedbacks(GLsizei n, GLuint* ids) {
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   IdAllocator* id_allocator = GetIdAllocator(IdNamespaces::kTransformFeedbacks);
-  for (GLsizei ii = 0; ii < n; ++ii)
+  for (GLsizei ii = 0; ii < n; ++ii) {
     ids[ii] = id_allocator->AllocateID();
+  }
   GenTransformFeedbacksHelper(n, ids);
   helper_->GenTransformFeedbacksImmediate(n, ids);
   GPU_CLIENT_LOG_CODE_BLOCK({
@@ -3009,8 +3014,9 @@ void GLES2Implementation::GenQueriesEXT(GLsizei n, GLuint* queries) {
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   IdAllocator* id_allocator = GetIdAllocator(IdNamespaces::kQueries);
-  for (GLsizei ii = 0; ii < n; ++ii)
+  for (GLsizei ii = 0; ii < n; ++ii) {
     queries[ii] = id_allocator->AllocateID();
+  }
   GenQueriesEXTHelper(n, queries);
   helper_->GenQueriesEXTImmediate(n, queries);
   GPU_CLIENT_LOG_CODE_BLOCK({
@@ -3069,8 +3075,9 @@ void GLES2Implementation::GenVertexArraysOES(GLsizei n, GLuint* arrays) {
   }
   GPU_CLIENT_SINGLE_THREAD_CHECK();
   IdAllocator* id_allocator = GetIdAllocator(IdNamespaces::kVertexArrays);
-  for (GLsizei ii = 0; ii < n; ++ii)
+  for (GLsizei ii = 0; ii < n; ++ii) {
     arrays[ii] = id_allocator->AllocateID();
+  }
   GenVertexArraysOESHelper(n, arrays);
   helper_->GenVertexArraysOESImmediate(n, arrays);
   GPU_CLIENT_LOG_CODE_BLOCK({

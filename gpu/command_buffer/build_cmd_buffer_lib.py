@@ -7426,5 +7426,8 @@ def Format(generated_files, output_dir, chromium_root_dir):
   formatter = os.path.join(chromium_root_dir, formatter)
   generated_files = map(lambda filename: os.path.join(output_dir, filename),
                         generated_files)
+  chromium_clang_format = os.path.abspath(os.path.join(chromium_root_dir,
+                                                       ".clang-format"))
+  style_arg = "-style=file:" + chromium_clang_format
   for filename in generated_files:
-    call([formatter, "-i", "-style=chromium", filename], cwd=chromium_root_dir)
+    call([formatter, "-i", style_arg, filename], cwd=chromium_root_dir)
