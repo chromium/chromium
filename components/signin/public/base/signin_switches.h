@@ -466,6 +466,13 @@ extern const base::FeatureParam<ProfilePickerVariation>
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kProfilesReordering);
 
+#if BUILDFLAG(IS_IOS)
+// Feature flag controlling whether Chrome uses the contextual version of
+// relevant account capabilities on supported platforms.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kReadContextualAccountCapabilities);
+#endif
+
 #if !BUILDFLAG(IS_ANDROID)
 // Kill switch for Device Management Service OAuth scope.
 COMPONENT_EXPORT(SIGNIN_SWITCHES)

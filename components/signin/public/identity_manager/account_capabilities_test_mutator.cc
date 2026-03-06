@@ -10,6 +10,7 @@
 #include "base/check.h"
 #include "build/build_config.h"
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
+#include "components/signin/public/base/signin_switches.h"
 
 AccountCapabilitiesTestMutator::AccountCapabilitiesTestMutator(
     AccountCapabilities* capabilities)
@@ -121,7 +122,18 @@ void AccountCapabilitiesTestMutator::set_can_use_manta_service(bool value) {
 
 void AccountCapabilitiesTestMutator::set_can_use_model_execution_features(
     bool value) {
+#if BUILDFLAG(IS_IOS)
+  if (base::FeatureList::IsEnabled(
+          switches::kReadContextualAccountCapabilities)) {
+    capabilities_
+        ->capabilities_map_[kCanContextuallyUseModelExecutionFeaturesName] =
+        value;
+  } else {
+    capabilities_->capabilities_map_[kCanUseModelExecutionFeaturesName] = value;
+  }
+#else
   capabilities_->capabilities_map_[kCanUseModelExecutionFeaturesName] = value;
+#endif
 }
 
 void AccountCapabilitiesTestMutator::set_can_use_speaker_label_in_recorder_app(

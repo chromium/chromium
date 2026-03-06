@@ -150,6 +150,13 @@ ACCOUNT_CAPABILITY(kIsSubjectToParentalControlsCapabilityName,
                    "accountcapabilities/guydolldmfya")
 
 #if BUILDFLAG(IS_IOS)
+ACCOUNT_CAPABILITY_F(kCanContextuallyUseModelExecutionFeaturesName,
+                     CAN_CONTEXTUALLY_USE_MODEL_EXECUTION_FEATURES_NAME,
+                     "accountcapabilities/giztinznmnqxa",
+                     switches::kReadContextualAccountCapabilities)
+#endif
+
+#if BUILDFLAG(IS_IOS)
 ACCOUNT_CAPABILITY_F(kCanSignInToChromeCapabilityName,
                      CAN_SIGN_IN_TO_CHROME_CAPABILITY_NAME,
                      "accountcapabilities/giztambnmnqxa",
