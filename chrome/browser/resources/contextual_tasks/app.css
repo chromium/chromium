@@ -282,10 +282,12 @@ error-page {
   top: 76px;
 }
 
+:host([is-loading-zero-state-from-results_]) #threadFrame,
 :host([is-error-page-visible_]) #threadFrame,
 :host([is-error-page-visible_]) #composebox,
 :host([is-error-page-visible_]) #flexCenterContainer,
 :host([is-ghost-loader-visible_]) #threadFrame,
+:host([is-zero-state_]) #ghostLoader,
 :host([is-shown-in-tab_]) #ghostLoader,
 :host(:not([is-ghost-loader-visible_])) #ghostLoader,
 :host([is-error-page-visible_]) #ghostLoader {

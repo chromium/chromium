@@ -182,6 +182,10 @@ export class ContextualTasksAppElement extends CrLitElement {
       isInputLocked_: {
         type: Boolean,
       },
+      isLoadingZeroStateFromResults_: {
+        type: Boolean,
+        reflect: true,
+      },
       forcedComposeboxBounds_: {type: Object},
       friendlyZeroStateGaiaName_: {type: String},
       friendlyZeroStateTitleBeforeName_: {type: String},
@@ -219,6 +223,7 @@ export class ContextualTasksAppElement extends CrLitElement {
       loadTimeData.getBoolean('enableNativeZeroStateSuggestions');
   protected accessor isGhostLoaderVisible_: boolean = false;
   protected accessor isInputLocked_: boolean = false;
+  protected accessor isLoadingZeroStateFromResults_: boolean = false;
   // The bounds of the composebox that are forced by the embedded page. These
   // bounds are relative to the <webview> and not the viewport.
   protected accessor forcedComposeboxBounds_: Rect|null = null;
@@ -559,6 +564,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     // Set frame loading to true initially to avoid race conditions.
     this.isFrameLoading = true;
     const wasAiPage = this.isAiPage_;
+    const wasZeroState = this.isZeroState_;
     const {isAiPage} = await this.browserProxy_.handler.isAiPage(ev.url);
     const {isZeroState} = await this.browserProxy_.handler.isZeroState(ev.url);
 
@@ -574,6 +580,10 @@ export class ContextualTasksAppElement extends CrLitElement {
     if (isAiPage && isZeroState) {
       this.isZeroState_ = true;
       this.playZeroStateAnimations_();
+    }
+
+    if (!wasZeroState && isZeroState) {
+      this.isLoadingZeroStateFromResults_ = true;
     }
 
     if (!isAiPage) {
@@ -613,12 +623,14 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   private onThreadFrameContentLoad() {
     this.isFrameLoading = false;
+    this.isLoadingZeroStateFromResults_ = false;
     this.setIsGhostLoaderVisible(false);
     this.updateBasicModeAfterNavigation();
   }
 
   private onThreadFrameLoadAbort() {
     this.isFrameLoading = false;
+    this.isLoadingZeroStateFromResults_ = false;
     this.setIsGhostLoaderVisible(false);
     this.updateBasicModeAfterNavigation();
   }
