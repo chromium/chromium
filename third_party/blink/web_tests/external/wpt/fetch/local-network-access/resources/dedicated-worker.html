@@ -5,6 +5,8 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 <script src="support.sub.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/webtransport/resources/webtransport-test-helpers.sub.js"></script>
 <script>
 "use strict";
 
@@ -20,11 +22,7 @@ Promise.resolve().then(async () => {
     test_driver.set_test_context(opener);
     await test_driver.set_permission({ name: permission_name }, permission_value);
 
-    const target = {
-      server: Server.HTTPS_LOOPBACK,
-      behavior: { response: ResponseBehavior.allowCrossOrigin() },
-    };
-    const targetUrl = resolveTargetUrl(target);
+    let method = window_url.searchParams.get('method');
 
     const worker = new Worker('dedicated-worker.js');
 
@@ -36,6 +34,25 @@ Promise.resolve().then(async () => {
       opener.postMessage({ error: evt.message || "unknown error" }, "*");
     });
 
-    worker.postMessage(targetUrl.toString());
+    let targetUrl;
+
+    switch (method) {
+      case 'fetch':
+        const target = {
+          server: Server.HTTPS_LOOPBACK,
+          behavior: { response: ResponseBehavior.allowCrossOrigin() },
+        };
+        targetUrl = resolveTargetUrl(target);
+
+        break;
+      case 'websocket':
+        targetUrl = resolveUrl("/echo", Server.WSS_LOOPBACK);
+        break;
+      case 'webtransport':
+        targetUrl = webtransport_url('custom-response.py?:status=204');
+        break;
+    }
+
+    worker.postMessage({url: targetUrl.toString(), method: method});
 });
 </script>
