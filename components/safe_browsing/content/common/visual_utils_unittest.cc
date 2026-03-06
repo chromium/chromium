@@ -14,6 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/private/chromium/SkPMColor.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace safe_browsing::visual_utils {
 
@@ -45,25 +46,51 @@ class VisualUtilsTest : public testing::Test {
     base::DiscardableMemoryAllocator::SetInstance(nullptr);
   }
 
-  void ExpectPixel(base::span<const unsigned char> pixel,
-                   const VisualFeatures::BlurredImage& image,
-                   size_t row,
-                   size_t col) {
-    ASSERT_LT(static_cast<int>(row), image.height());
-    ASSERT_LT(static_cast<int>(col), image.width());
-    EXPECT_EQ(pixel[0], static_cast<unsigned char>(
-                            image.data()[3 * row * image.width() + 3 * col]))
-        << "R component of pixel at row " << row << " and column " << col
+  void ExpectBlurredImageOneColor(SkColor expected_color,
+                                  const VisualFeatures::BlurredImage& image) {
+    ExpectBlurredImagePixels(expected_color, image,
+                             gfx::Rect(image.width(), image.height()));
+  }
+
+  void ExpectBlurredImagePixels(SkColor expected_color,
+                                const VisualFeatures::BlurredImage& image,
+                                gfx::Rect area) {
+    ExpectPixels(expected_color, image.data(), area, image.width());
+  }
+
+  void ExpectPixels(SkColor expected_color,
+                    const std::string& data_to_check,
+                    gfx::Rect area,
+                    int width) {
+    ASSERT_LE(area.right(), width);
+    size_t bottom_right_index =
+        ((area.bottom() - 1) * width + area.right() - 1) * 3;
+    ASSERT_LT(bottom_right_index, data_to_check.size());
+    for (int x = area.x(); x < area.right(); ++x) {
+      for (int y = area.y(); y < area.bottom(); ++y) {
+        size_t index = (y * width + x) * 3;
+        ExpectPixel(expected_color, data_to_check, x, y, index);
+      }
+    }
+  }
+
+  void ExpectPixel(SkColor expected_color,
+                   const std::string& data_to_check,
+                   size_t x,
+                   size_t y,
+                   size_t index) {
+    ASSERT_LT(index + 2, data_to_check.size());
+    EXPECT_EQ(SkColorGetR(expected_color),
+              static_cast<unsigned char>(data_to_check[index]))
+        << "R component of pixel at x " << x << " and y " << y
         << " is incorrect.";
-    EXPECT_EQ(pixel[1],
-              static_cast<unsigned char>(
-                  image.data()[3 * row * image.width() + 3 * col + 1]))
-        << "G component of pixel at row " << row << " and column " << col
+    EXPECT_EQ(SkColorGetG(expected_color),
+              static_cast<unsigned char>(data_to_check[index + 1]))
+        << "G component of pixel at x " << x << " and y " << y
         << " is incorrect.";
-    EXPECT_EQ(pixel[2],
-              static_cast<unsigned char>(
-                  image.data()[3 * row * image.width() + 3 * col + 2]))
-        << "B component of pixel at row " << row << " and column " << col
+    EXPECT_EQ(SkColorGetB(expected_color),
+              static_cast<unsigned char>(data_to_check[index + 2]))
+        << "B component of pixel at x " << x << " and y " << y
         << " is incorrect.";
   }
 
@@ -84,26 +111,18 @@ TEST_F(VisualUtilsTest, BlurImageWhite) {
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
 
-  constexpr std::array<const unsigned char, 3> kWhite = {0xff, 0xff, 0xff};
 #if BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(18, blurred.width());
-  ASSERT_EQ(32, blurred.height());
-  ASSERT_EQ(3u * 18u * 32u, blurred.data().size());
-  for (size_t i = 0; i < 32u; i++) {
-    for (size_t j = 0; i < 18u; i++) {
-      ExpectPixel(kWhite, blurred, i, j);
-    }
-  }
+  const int kExpectedBlurredWidth = 18;
+  const int kExpectedBlurredHeight = 32;
 #else
-  ASSERT_EQ(48, blurred.width());
-  ASSERT_EQ(48, blurred.height());
-  ASSERT_EQ(3u * 48u * 48u, blurred.data().size());
-  for (size_t i = 0; i < 48u; i++) {
-    for (size_t j = 0; i < 48u; i++) {
-      ExpectPixel(kWhite, blurred, i, j);
-    }
-  }
+  const int kExpectedBlurredWidth = 48;
+  const int kExpectedBlurredHeight = 48;
 #endif
+  ASSERT_EQ(kExpectedBlurredWidth, blurred.width());
+  ASSERT_EQ(kExpectedBlurredHeight, blurred.height());
+  ASSERT_EQ(3u * kExpectedBlurredWidth * kExpectedBlurredHeight,
+            blurred.data().size());
+  ExpectBlurredImageOneColor(SK_ColorWHITE, blurred);
 }
 
 TEST_F(VisualUtilsTest, BlurImageRed) {
@@ -115,26 +134,18 @@ TEST_F(VisualUtilsTest, BlurImageRed) {
       *bitmap_.getAddr32(x, y) = kSkPMRed;
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
-  constexpr std::array<const unsigned char, 3> kRed = {0xff, 0x00, 0x00};
 #if BUILDFLAG(IS_ANDROID)
-  ASSERT_EQ(18, blurred.width());
-  ASSERT_EQ(32, blurred.height());
-  ASSERT_EQ(3u * 18u * 32u, blurred.data().size());
-  for (size_t i = 0; i < 32u; i++) {
-    for (size_t j = 0; i < 18u; i++) {
-      ExpectPixel(kRed, blurred, i, j);
-    }
-  }
+  const int kExpectedBlurredWidth = 18;
+  const int kExpectedBlurredHeight = 32;
 #else
-  ASSERT_EQ(48, blurred.width());
-  ASSERT_EQ(48, blurred.height());
-  ASSERT_EQ(3u * 48u * 48u, blurred.data().size());
-  for (size_t i = 0; i < 48u; i++) {
-    for (size_t j = 0; i < 48u; i++) {
-      ExpectPixel(kRed, blurred, i, j);
-    }
-  }
+  const int kExpectedBlurredWidth = 48;
+  const int kExpectedBlurredHeight = 48;
 #endif
+  ASSERT_EQ(kExpectedBlurredWidth, blurred.width());
+  ASSERT_EQ(kExpectedBlurredHeight, blurred.height());
+  ASSERT_EQ(3u * kExpectedBlurredWidth * kExpectedBlurredHeight,
+            blurred.data().size());
+  ExpectBlurredImageOneColor(SK_ColorRED, blurred);
 }
 
 TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
@@ -147,42 +158,22 @@ TEST_F(VisualUtilsTest, BlurImageHalfWhiteHalfBlack) {
   bitmap_.erase(SK_ColorWHITE, SkIRect::MakeXYWH(0, 500, 1000, 1000));
 
   ASSERT_TRUE(GetBlurredImage(bitmap_, &blurred));
-  constexpr std::array<const unsigned char, 3> kBlack = {0x00, 0x00, 0x00};
-  constexpr std::array<const unsigned char, 3> kWhite = {0xff, 0xff, 0xff};
 #if BUILDFLAG(IS_ANDROID)
   ASSERT_EQ(18, blurred.width());
   ASSERT_EQ(32, blurred.height());
   ASSERT_EQ(3u * 18u * 32u, blurred.data().size());
   // The middle blocks may have been blurred to something between white and
   // black, so only verify the first 14 and last 14 rows.
-  for (size_t i = 0; i < 14u; i++) {
-    for (size_t j = 0; j < 18u; j++) {
-      ExpectPixel(kBlack, blurred, i, j);
-    }
-  }
-
-  for (size_t i = 18u; i < 32u; i++) {
-    for (size_t j = 0; j < 18u; j++) {
-      ExpectPixel(kWhite, blurred, i, j);
-    }
-  }
+  ExpectBlurredImagePixels(SK_ColorBLACK, blurred, gfx::Rect(18, 14));
+  ExpectBlurredImagePixels(SK_ColorWHITE, blurred, gfx::Rect(0, 18, 18, 14));
 #else
   ASSERT_EQ(48, blurred.width());
   ASSERT_EQ(48, blurred.height());
   ASSERT_EQ(3u * 48u * 48u, blurred.data().size());
   // The middle blocks may have been blurred to something between white and
   // black, so only verify the first 22 and last 22 rows.
-  for (size_t i = 0; i < 22u; i++) {
-    for (size_t j = 0; j < 48u; j++) {
-      ExpectPixel(kBlack, blurred, i, j);
-    }
-  }
-
-  for (size_t i = 26u; i < 48u; i++) {
-    for (size_t j = 0; j < 48u; j++) {
-      ExpectPixel(kWhite, blurred, i, j);
-    }
-  }
+  ExpectBlurredImagePixels(SK_ColorBLACK, blurred, gfx::Rect(48, 22));
+  ExpectBlurredImagePixels(SK_ColorWHITE, blurred, gfx::Rect(0, 26, 48, 22));
 #endif
 }
 
@@ -244,6 +235,27 @@ TEST_F(VisualUtilsTest, NonSquareBlurredImage) {
     EXPECT_EQ('\xff', blurred.data()[3 * i + 1]);
     EXPECT_EQ('\xff', blurred.data()[3 * i + 2]);
   }
+}
+
+TEST_F(VisualUtilsTest, EncodeScreenshot) {
+  const int kBitmapWidth = 40;
+  const int kBitmapHeight = 40;
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(kBitmapWidth, kBitmapHeight);
+  bitmap.eraseColor(SK_ColorWHITE);
+  bitmap.erase(SK_ColorRED, SkIRect::MakeXYWH(0, 0, 20, 10));
+  bitmap.erase(SK_ColorBLUE, SkIRect::MakeXYWH(20, 0, 20, 10));
+
+  VisualFeatures::Screenshot encoded_screenshot;
+  EncodeScreenshot(bitmap, &encoded_screenshot);
+  EXPECT_EQ(kBitmapWidth, encoded_screenshot.width());
+  EXPECT_EQ(kBitmapHeight, encoded_screenshot.height());
+  ExpectPixels(SK_ColorRED, encoded_screenshot.data(), gfx::Rect(20, 10),
+               kBitmapWidth);
+  ExpectPixels(SK_ColorBLUE, encoded_screenshot.data(),
+               gfx::Rect(20, 0, 20, 10), kBitmapWidth);
+  ExpectPixels(SK_ColorWHITE, encoded_screenshot.data(),
+               gfx::Rect(0, 10, 40, 30), kBitmapWidth);
 }
 
 }  // namespace safe_browsing::visual_utils

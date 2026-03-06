@@ -817,7 +817,7 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsAllowlist) {
 
   // Now trigger USER_REPORT. It should skip allowlist and start classification.
   // CheckCsdAllowlistUrl should NOT be called again.
-  csd_host_->ReportUnsafeSite(std::nullopt, std::nullopt, std::nullopt);
+  csd_host_->ReportUnsafeSite(SkBitmap());
 
   base::RunLoop().RunUntilIdle();
 
@@ -854,7 +854,7 @@ TEST_F(ClientSideDetectionHostTest, UserReportSkipsReportLimit) {
 
   // Now trigger USER_REPORT. It should skip report limit and start
   // classification.
-  csd_host_->ReportUnsafeSite(std::nullopt, std::nullopt, std::nullopt);
+  csd_host_->ReportUnsafeSite(SkBitmap());
 
   base::RunLoop().RunUntilIdle();
 

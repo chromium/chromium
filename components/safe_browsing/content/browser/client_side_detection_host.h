@@ -45,6 +45,8 @@
 #include "components/safe_browsing/core/browser/referring_app_info.h"  // nogncheck
 #endif
 
+class SkBitmap;
+
 namespace base {
 class TickClock;
 }
@@ -128,6 +130,9 @@ class ClientSideDetectionHost
 #endif
   };
 
+  static const int kMaxHighResScreenshotWidth;
+  static const int kMaxHighResScreenshotHeight;
+
   // The caller keeps ownership of the tab object and is responsible for
   // ensuring that it stays valid until WebContentsDestroyed is called.
   // The caller also keeps ownership of pref_service. The
@@ -189,9 +194,7 @@ class ClientSideDetectionHost
 
   // User requests to report a site as unsafe. The screenshot values come from
   // the report dialog view.
-  void ReportUnsafeSite(std::optional<int> screenshot_width,
-                        std::optional<int> screenshot_height,
-                        const std::optional<std::string>& screenshot_data);
+  void ReportUnsafeSite(SkBitmap screenshot);
 
  protected:
   explicit ClientSideDetectionHost(
@@ -215,6 +218,7 @@ class ClientSideDetectionHost
   friend class ClientSideDetectionHostCreditCardFormTest;
   friend class ClientSideDetectionHostClipboardDataTest;
   friend class ClientSideDetectionHostGeminiAntiscamProtectionTest;
+  friend class ClientSideDetectionHostPrerenderBrowserTest_Screenshot;
   class ShouldClassifyUrlRequest;
   friend class ShouldClassifyUrlRequest;
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
@@ -230,10 +234,6 @@ class ClientSideDetectionHost
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderBrowserTest,
       CheckDebuggingMetadataCacheAfterClearingCacheAfterNavigation);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
-                           ReportUnsafeSiteWithScreenshot);
-  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostPrerenderBrowserTest,
-                           ReportUnsafeSiteNoScreenshot);
   FRIEND_TEST_ALL_PREFIXES(
       ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
       KeyboardLockTriggersPreclassificationCheck);
@@ -650,11 +650,9 @@ class ClientSideDetectionHost
   // The last text that was copied to the clipboard.
   std::u16string last_copied_text_;
 
-  // The high resolution screenshot of the current tab. These fields should only
-  // be populated when a user reports a site as unsafe.
-  std::optional<int> screenshot_width_;
-  std::optional<int> screenshot_height_;
-  std::optional<std::string> screenshot_data_;
+  // The high resolution screenshot of the current tab. Should only be populated
+  // when a user reports a site as unsafe.
+  std::optional<SkBitmap> screenshot_;
 
   base::CancelableTaskTracker task_tracker_;
 

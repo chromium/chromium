@@ -125,6 +125,32 @@ bool GetBlurredImage(const SkBitmap& image,
   return true;
 }
 
+void EncodeScreenshot(const SkBitmap& screenshot,
+                      VisualFeatures::Screenshot* encoded_screenshot) {
+  TRACE_EVENT0("safe_browsing", "EncodeScreenshot");
+  if (screenshot.drawsNothing()) {
+    return;
+  }
+
+  encoded_screenshot->set_width(screenshot.width());
+  encoded_screenshot->set_height(screenshot.height());
+
+  const int data_size = screenshot.width() * screenshot.height();
+  encoded_screenshot->mutable_data()->reserve(data_size);
+
+  for (int y = 0; y < screenshot.height(); ++y) {
+    for (int x = 0; x < screenshot.width(); ++x) {
+      SkColor color = screenshot.getColor(x, y);
+      *encoded_screenshot->mutable_data() +=
+          static_cast<char>(SkColorGetR(color));
+      *encoded_screenshot->mutable_data() +=
+          static_cast<char>(SkColorGetG(color));
+      *encoded_screenshot->mutable_data() +=
+          static_cast<char>(SkColorGetB(color));
+    }
+  }
+}
+
 std::unique_ptr<SkBitmap> BlockMeanAverage(const SkBitmap& image,
                                            int block_size) {
   // Compute the number of blocks in the target image, rounding up to account

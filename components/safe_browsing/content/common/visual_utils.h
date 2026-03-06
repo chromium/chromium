@@ -30,6 +30,10 @@ enum class CanExtractVisualFeaturesResult {
 bool GetBlurredImage(const SkBitmap& image,
                      VisualFeatures::BlurredImage* blurred_image);
 
+// Generates VisualFeatures::Screenshot for the passed-in `screenshot`.
+void EncodeScreenshot(const SkBitmap& screenshot,
+                      VisualFeatures::Screenshot* encoded_screenshot);
+
 // Downsizes an image by averaging all the pixels in the source image that
 // contribute to the target image. Groups pixels into squares of size
 // |block_size|, potentially with partial blocks at the edge. The output
