@@ -6,8 +6,12 @@
 
 #import <memory>
 
+#import "components/policy/core/common/policy_pref_names.h"
+#import "components/sync_preferences/testing_pref_service_syncable.h"
 #import "ios/chrome/browser/app_bar/ui/app_bar_consumer.h"
 #import "ios/chrome/browser/menu/ui_bundled/browser_action_factory.h"
+#import "ios/chrome/browser/policy/model/policy_util.h"
+#import "ios/chrome/browser/shared/coordinator/scene/state/incognito_lock_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/incognito_state.h"
 #import "ios/chrome/browser/shared/coordinator/scene/state/tab_grid_state.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
@@ -17,6 +21,7 @@
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/url_loading/model/fake_url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
@@ -75,7 +80,7 @@ class AppBarMediatorTest : public PlatformTest {
     mediator_ = [[AppBarMediator alloc]
         initWithRegularWebStateList:regular_web_state_list_.get()
               incognitoWebStateList:incognito_web_state_list_.get()
-                        prefService:regular_profile_->GetPrefs()
+                        prefService:regular_profile_->GetTestingPrefService()
                           URLLoader:url_loader_
                        tabGridState:tab_grid_state_
                      incognitoState:incognito_state_];
@@ -139,6 +144,7 @@ TEST_F(AppBarMediatorTest, TestSwitchToIncognitoNonTabGrid) {
 
   // Switch to incognito.
   OCMExpect([consumer_ updateTabCount:1]);
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
   incognito_state_.incognitoContentVisible = YES;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -154,11 +160,13 @@ TEST_F(AppBarMediatorTest, TestSwitchToRegularNonTabGrid) {
 
   // Switch to incognito (empty).
   OCMExpect([consumer_ updateTabCount:0]);
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
   incognito_state_.incognitoContentVisible = YES;
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   // Switch back to regular.
   OCMExpect([consumer_ updateTabCount:1]);
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
   incognito_state_.incognitoContentVisible = NO;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -174,6 +182,7 @@ TEST_F(AppBarMediatorTest, TestSwitchToIncognitoTabGrid) {
 
   // Switch to incognito.
   OCMExpect([consumer_ updateTabCount:1]);
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
   tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
   EXPECT_OCMOCK_VERIFY(consumer_);
 }
@@ -188,11 +197,13 @@ TEST_F(AppBarMediatorTest, TestSwitchToRegularTabGrid) {
   regular_web_state_list_->InsertWebState(std::move(web_state));
 
   // Switch to incognito (empty).
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
   OCMExpect([consumer_ updateTabCount:0]);
   tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
   EXPECT_OCMOCK_VERIFY(consumer_);
 
   // Switch back to regular.
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
   OCMExpect([consumer_ updateTabCount:1]);
   tab_grid_state_.currentPage = TabGridPageRegularTabs;
   EXPECT_OCMOCK_VERIFY(consumer_);
@@ -230,4 +241,35 @@ TEST_F(AppBarMediatorTest, TestCreateNewTabTabGridIncognito) {
 
   EXPECT_TRUE(url_loader_->last_params.in_incognito);
   EXPECT_EQ(1, url_loader_->load_new_tab_call_count);
+}
+
+// Tests that buttons are enabled/disabled based on policy.
+TEST_F(AppBarMediatorTest, TestSetButtonsEnabledByPolicy) {
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+  tab_grid_state_.tabGridVisible = YES;
+
+  // Disable incognito by policy.
+  regular_profile_->GetTestingPrefService()->SetManagedPref(
+      policy::policy_prefs::kIncognitoModeAvailability,
+      std::make_unique<base::Value>(
+          static_cast<int>(IncognitoModePrefs::kForced)));
+
+  // Switch to incognito page: buttons should be disabled.
+  OCMExpect([consumer_ setButtonsEnabled:YES]);
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+
+  // Switch to regular page: buttons should be enabled.
+  OCMExpect([consumer_ setButtonsEnabled:NO]);
+  tab_grid_state_.currentPage = TabGridPageRegularTabs;
+  EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests that buttons are disabled when incognito authentication is required.
+TEST_F(AppBarMediatorTest, TestSetButtonsDisabledOnAuthenticationRequired) {
+  tab_grid_state_.tabGridVisible = YES;
+  tab_grid_state_.currentPage = TabGridPageIncognitoTabs;
+  OCMExpect([consumer_ setButtonsEnabled:NO]);
+  incognito_state_.lockState = IncognitoLockState::kReauth;
+  EXPECT_OCMOCK_VERIFY(consumer_);
 }

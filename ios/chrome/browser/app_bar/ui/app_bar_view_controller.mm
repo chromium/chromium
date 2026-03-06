@@ -179,6 +179,12 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   [self updateNewTabButtonForTabGroupsVisibility];
 }
 
+- (void)setButtonsEnabled:(BOOL)enabled {
+  _assistantButton.enabled = enabled;
+  _openNewTabButton.enabled = enabled;
+  _tabGridButton.enabled = enabled;
+}
+
 #pragma mark - Private
 
 // Returns a new "Assistant" button.
@@ -214,6 +220,14 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
 
 // Returns a new "TabGrid" button.
 - (UIButton*)createTabGridButton {
+  // Use a custom Symbol and Label instead of the ones from the button to be
+  // able to modify them as necessary.
+  UIImageView* tabGridSymbolView = [[UIImageView alloc] init];
+  tabGridSymbolView.translatesAutoresizingMaskIntoConstraints = NO;
+  tabGridSymbolView.image = DefaultAppBarSymbol(kAppSymbol);
+  _tabGridSymbolView = tabGridSymbolView;
+
+  // Set up button.
   NSString* title = l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_ALL_TABS);
   UIImage* image = DefaultAppBarSymbol(kAppSymbol);
   UIButton* button = [self buttonWithTitle:title image:image];
@@ -223,6 +237,7 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   // Make the base image clear so we can overlay our own with the label while
   // keeping the right size.
   configuration.imageColorTransformer = ^UIColor*(UIColor* color) {
+    tabGridSymbolView.tintColor = color;
     return UIColor.clearColor;
   };
   button.configuration = configuration;
@@ -233,15 +248,8 @@ UIImage* CustomAppBarSymbol(NSString* symbol_name) {
   [button addTarget:self
                 action:@selector(didTapTabGridButton)
       forControlEvents:UIControlEventTouchUpInside];
-
-  // Use a custom Symbol and Label instead of the ones from the button to be
-  // able to modify them as necessary.
-  _tabGridSymbolView = [[UIImageView alloc] init];
-  _tabGridSymbolView.translatesAutoresizingMaskIntoConstraints = NO;
-  _tabGridSymbolView.tintColor = UIColor.whiteColor;
-  _tabGridSymbolView.image = DefaultAppBarSymbol(kAppSymbol);
-  [button addSubview:_tabGridSymbolView];
-  AddSameCenterConstraints(_tabGridSymbolView, button.imageView);
+  [button addSubview:tabGridSymbolView];
+  AddSameCenterConstraints(tabGridSymbolView, button.imageView);
 
   _tabCountLabel = [[UILabel alloc] init];
   _tabCountLabel.translatesAutoresizingMaskIntoConstraints = NO;

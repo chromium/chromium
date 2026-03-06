@@ -32,6 +32,9 @@ typedef NS_ENUM(NSUInteger, AppBarButtonType) {
 // Sets the context menu for the App Bar button with `buttonType`.
 - (void)setMenu:(UIMenu*)menu forButtonType:(AppBarButtonType)buttonType;
 
+// Enables or disables the buttons.
+- (void)setButtonsEnabled:(BOOL)enabled;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_APP_BAR_UI_APP_BAR_CONSUMER_H_

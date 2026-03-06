@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/scene_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_grid_commands.h"
 #import "ios/chrome/browser/shared/public/commands/tab_groups_commands.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/model/url_loading_params.h"
@@ -108,6 +109,8 @@
     self.currentWebStateList->RemoveObserver(_observerBridge.get());
     self.currentWebStateList = nullptr;
   }
+  [_tabGridState removeObserver:self];
+  [_incognitoState removeObserver:self];
   _observerBridge.reset();
   _regularWebStateList = nullptr;
   _incognitoWebStateList = nullptr;
@@ -170,6 +173,16 @@
     return;
   }
   self.currentWebStateList = _regularWebStateList;
+}
+
+- (void)didUpdateAuthenticationRequirementForState:
+    (IncognitoState*)incognitoState {
+  CHECK_EQ(incognitoState, _incognitoState);
+  [self updateButtonsForCurrentTabGridPage];
+}
+
+- (void)didUpdateIncognitoLockStateForState:(IncognitoState*)incognitoState {
+  [self didUpdateAuthenticationRequirementForState:incognitoState];
 }
 
 #pragma mark - TabGridStateObserver
@@ -286,6 +299,7 @@
            forButtonType:AppBarButtonTypeNewTab];
   [self.consumer setMenu:[self createContextMenuForTabGridButton]
            forButtonType:AppBarButtonTypeTabGrid];
+  [self updateButtonsForCurrentTabGridPage];
 }
 
 // Updates for entering tab grid `page`.
@@ -302,6 +316,24 @@
       [self updateForTabGridPage:_tabGridState.originPage];
       break;
   }
+  [self updateButtonsForCurrentTabGridPage];
+}
+
+// Updates the buttons in the tab grid.
+- (void)updateButtonsForCurrentTabGridPage {
+  TabGridPage page = _currentPage == TabGridPageTabGroups
+                         ? _tabGridState.originPage
+                         : _currentPage;
+  BOOL enableButtons = IsAddNewTabAllowedByPolicy(
+      _prefService, page == TabGridPageIncognitoTabs);
+  if (page == TabGridPageIncognitoTabs) {
+    enableButtons = enableButtons && !_incognitoState.authenticationRequired;
+    if (IsIOSSoftLockEnabled()) {
+      // TODO(crbug.com/484000564): Hide background if authentication is
+      // required.
+    }
+  }
+  [self.consumer setButtonsEnabled:enableButtons];
 }
 
 // Updates for `incognito` being visible.
