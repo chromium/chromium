@@ -15,6 +15,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ui.side_ui.SideUiContainer;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator;
 import org.chromium.chrome.browser.ui.side_ui.SideUiCoordinator.AnchorSide;
@@ -33,6 +34,8 @@ final class SidePanelContainerCoordinatorImpl
     private final Activity mParentActivity;
     private final FrameLayout mContainerView;
     private final SideUiCoordinator mSideUiCoordinator;
+
+    private @Nullable SidePanelContent mCurrentContent;
 
     SidePanelContainerCoordinatorImpl(
             Activity parentActivity, SideUiCoordinator sideUiCoordinator) {
@@ -53,6 +56,7 @@ final class SidePanelContainerCoordinatorImpl
     @Override
     public void populateContent(SidePanelContent content) {
         ThreadUtils.assertOnUiThread();
+        mCurrentContent = content;
 
         mContainerView.removeAllViews();
         mContainerView.addView(content.mView);
@@ -69,6 +73,14 @@ final class SidePanelContainerCoordinatorImpl
         mContainerView.removeAllViews();
         mSideUiCoordinator.requestUpdateContainer(
                 new SideUiContainerProperties(SIDE_PANEL_DEFAULT_ANCHOR_SIDE, /* width= */ 0));
+
+        mCurrentContent = null;
+    }
+
+    @Override
+    public boolean isShowing(SidePanelContent sidePanelContent) {
+        ThreadUtils.assertOnUiThread();
+        return sidePanelContent == mCurrentContent;
     }
 
     @Override

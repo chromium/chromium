@@ -42,6 +42,9 @@ public interface SidePanelContainerCoordinator {
      */
     void removeContent();
 
+    /** Returns whether the given {@link SidePanelContent} is shown in this side panel container. */
+    boolean isShowing(SidePanelContent sidePanelContent);
+
     /** Destroys all objects owned by this coordinator. */
     void destroy();
 }

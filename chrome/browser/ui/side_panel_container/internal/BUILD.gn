@@ -13,6 +13,8 @@ android_library("java") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinatorFactory.java",
     "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/SidePanelContainerCoordinatorImpl.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureFactory.java",
+    "android/java/src/org/chromium/chrome/browser/ui/side_panel_container/dev/SidePanelDevFeatureImpl.java",
   ]
 
   deps = [

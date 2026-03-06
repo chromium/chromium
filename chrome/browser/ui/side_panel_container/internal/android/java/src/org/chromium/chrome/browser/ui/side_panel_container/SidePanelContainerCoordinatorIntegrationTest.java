@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.ui.side_panel_container;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -128,6 +129,62 @@ public class SidePanelContainerCoordinatorIntegrationTest {
 
         // Assert.
         assertEquals(0, containerView.getChildCount());
+    }
+
+    @Test
+    @MediumTest
+    public void isShowingContent_beforePopulatingContent_returnsFalse() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var sidePanelContent = createSidePanelContent("Side Panel Content");
+
+        // Assert.
+        assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
+    }
+
+    @Test
+    @MediumTest
+    public void isShowing_containerHasContent_returnsTrueForSameContent() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var sidePanelContent = createSidePanelContent("Side Panel Content");
+        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        waitForContainerViewWithValidWidth(coordinator);
+
+        // Assert.
+        assertTrue(
+                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
+    }
+
+    @Test
+    @MediumTest
+    public void isShowing_containerHasContent_returnsFalseForDifferentContent() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var sidePanelContent1 = createSidePanelContent("Side Panel Content 1");
+        var sidePanelContent2 = createSidePanelContent("Side Panel Content 2");
+        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent1));
+        waitForContainerViewWithValidWidth(coordinator);
+
+        // Assert.
+        assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent2)));
+    }
+
+    @Test
+    @MediumTest
+    public void isShowing_afterRemovingContent_returnsFalse() {
+        // Arrange.
+        var coordinator = getSidePanelContainerCoordinator();
+        var sidePanelContent = createSidePanelContent("Side Panel Content To Remove");
+        ThreadUtils.runOnUiThreadBlocking(() -> coordinator.populateContent(sidePanelContent));
+        waitForContainerViewWithValidWidth(coordinator);
+        ThreadUtils.runOnUiThreadBlocking(coordinator::removeContent);
+
+        // Assert.
+        assertFalse(
+                ThreadUtils.runOnUiThreadBlocking(() -> coordinator.isShowing(sidePanelContent)));
     }
 
     @SuppressLint("SetTextI18n")
