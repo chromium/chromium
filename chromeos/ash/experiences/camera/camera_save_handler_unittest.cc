@@ -241,8 +241,8 @@ TEST_F(CameraSaveHandlerTest, UploadFile_GoogleDrive_MultiUpload_Success) {
                     base::RepeatingCallback<void(int64_t)> progress_callback,
                     base::OnceCallback<void(
                         bool, std::optional<base::FilePath>)> done_callback) {
-        // Initially there should be no progress shown.
-        ValidateUploadProgressNotification(0);
+        // Initially there should be no progress notification shown.
+        EXPECT_FALSE(UploadProgressNotificationShown());
 
         // Simulate some progress.
         progress_callback.Run(5);
@@ -274,6 +274,7 @@ TEST_F(CameraSaveHandlerTest, UploadFile_GoogleDrive_MultiUpload_Success) {
                   done_callback2) {
             // When second upload starts, progress should drop to 25 to reflect
             // both uploads.
+            progress_callback2.Run(0);
             ValidateUploadProgressNotification(25, 2);
 
             progress_callback2.Run(5);
