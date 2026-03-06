@@ -1631,17 +1631,16 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     CHECK(rgb_shared_image);
 
     // Copy the source video frame into the intermediate (cached) SI if
-    // necessary and generate the sync token that the following access of that
-    // cached SI will wait on.
+    // necessary and generate the sync token that the following GL access of
+    // that cached SI will wait on.
     gpu::SyncToken sync_token;
     if (status == VideoFrameSharedImageCache::Status::kMatchedVideoFrameId) {
-      // Cache hit: Wait on the `rgb_sync_token` passed from the cache that may
-      // have been updated from the previous frame.
-      sync_token = gpu::RasterScopedAccess::EndAccess(
-          rgb_shared_image->BeginRasterAccess(canvas_ri, rgb_sync_token,
-                                              /*readonly=*/false));
+      // Cache hit: Ensure that the GL access below waits on the
+      // `rgb_sync_token` passed from the cache.
+      sync_token = rgb_sync_token;
     } else {
-      // Cache miss: Copy the VideoFrame into the cached SI.
+      // Cache miss: Copy the VideoFrame into the cached SI and ensure that the
+      // GL access below waits on the copy operation to complete.
       sync_token =
           CopyVideoFrameToSharedImage(raster_context_provider, video_frame,
                                       rgb_shared_image, rgb_sync_token,
