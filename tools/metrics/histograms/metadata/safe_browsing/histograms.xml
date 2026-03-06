@@ -908,7 +908,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.Enhanced.ProtegoRequestSentInLast7Days"
-    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2026-03-08">
+    enum="SafeBrowsingEnhancedProtegoPingType" expires_after="2026-09-08">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3375,7 +3375,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurity.IsRecoveryTriggered"
-    enum="Boolean" expires_after="2026-02-22">
+    enum="Boolean" expires_after="2026-08-22">
   <owner>awado@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -3387,13 +3387,16 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="SafeBrowsing.TailoredSecurity.ShouldRetryOutcome"
     enum="SafeBrowsingTailoredSecurityShouldRetryOutcome"
-    expires_after="2026-02-01">
+    expires_after="2026-08-01">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Records the outcome of running the tailored security retry logic. It is
     logged once each time Chrome starts for syncing users in the cases where the
     retry attempt could occur.
+
+    Warning: this histogram was expired from 2026-02-01 to 2026-03-05; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3432,13 +3435,16 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityService.OAuthTokenCompletion"
-    enum="BooleanSuccess" expires_after="2025-09-29">
+    enum="BooleanSuccess" expires_after="2026-07-26">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Safe Browsing needs a token in order to make a request to get the tailored
     security service bit. This histogram tracks whether getting a token is
     successful or not.
+
+    Warning: this histogram was expired from 2025-09-29 to 2026-03-05; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -3467,19 +3473,22 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityUnconsentedModalOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2025-12-24">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-06-24">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
     Logs the outcome of displaying a modal dialog on Desktop when a signed-in,
     non-syncing user changes their account tailored security setting in the flow
     of consenting.
+
+    Warning: this histogram was expired from 2025-12-24 to 2026-03-05; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram
     name="SafeBrowsing.TailoredSecurityUnconsentedPromotionNotificationOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-02-09">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-08-09">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
@@ -3490,7 +3499,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="SafeBrowsing.TailoredSecurityUnconsented{Flow}MessageOutcome"
-    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-03-08">
+    enum="SafeBrowsingTailoredSecurityOutcome" expires_after="2026-09-08">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
