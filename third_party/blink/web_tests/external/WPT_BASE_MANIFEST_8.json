@@ -202281,6 +202281,19 @@
        {}
       ]
      ],
+     "first-letter-insert-text-node-dynamic.html": [
+      "b772a854df0c33eda4c8fb42528ba7d133d96c30",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-letter-insert-text-node-dynamic-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "first-letter-list-item-dynamic-001.html": [
       "f990cd2bb716aafff143f99889d2be61c72b6171",
       [
@@ -202587,6 +202600,19 @@
        [
         [
          "/css/css-pseudo/first-line-inherited-with-transition-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "first-line-insert-text-node-dynamic.html": [
+      "4b23622a67f3f4ace506aba4252362435ce34212",
+      [
+       null,
+       [
+        [
+         "/css/css-pseudo/first-line-insert-text-node-dynamic-ref.html",
          "=="
         ]
        ],
@@ -327322,6 +327348,19 @@
           }
          ]
         ],
+        "select-optgroup-legend-label.html": [
+         "c591428001fc5126773c933ed09a4851dbaa1964",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-optgroup-legend-label-ref.html",
+            "=="
+           ]
+          ],
+          {}
+         ]
+        ],
         "select-option-images.html": [
          "85624bb08cb49ebd81e15d301ce5e9c77c0a420d",
          [
@@ -327348,6 +327387,96 @@
              ]
             ]
            ],
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-picker-pseudo-backdrop.html": [
+         "fa5d34381cc799abeb12be3c063bd11e865eedcd",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-backdrop-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-picker-pseudo-before-after.html": [
+         "86510ed2c2933ec7e3bdfbc0e70039c6db364d1b",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-before-after-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-picker-pseudo-first-letter-first-line.html": [
+         "11f414dca5092a5a9834f6b7e515f86fbe9b4331",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-first-letter-first-line-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-picker-pseudo-highlight.html": [
+         "9eeff75bd4046bdc46fe46c53bbffc88ffc2fdfd",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-highlight-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-picker-pseudo-selection.html": [
+         "b773133110bc56cd22b068a1e06e4ff9fe1ec77b",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-selection-ref.html",
+            "=="
+           ]
+          ],
+          {
+           "testdriver": true
+          }
+         ]
+        ],
+        "select-picker-pseudo-target-text.html": [
+         "02159e7e76fd65e0682d22a91773bab782756423",
+         [
+          null,
+          [
+           [
+            "/html/semantics/forms/the-select-element/customizable-select/select-picker-pseudo-target-text-ref.html",
+            "=="
+           ]
+          ],
+          {
            "testdriver": true
           }
          ]
@@ -396298,15 +396427,15 @@
        []
       ],
       "custom-property-animation-transform-function-expected.txt": [
-       "2bbf4cba7a75a68190fbad0e5b219bcda73d8219",
+       "6c9c61a22f640f4b300ece759715811a93ffb4d3",
        []
       ],
       "custom-property-animation-transform-list-multiple-values-expected.txt": [
-       "23026cd70a46c4a2a1fb76f0ab732c7c9c407eec",
+       "3cd6b8f42e03b21a4e1e83db8eb9723a0be0898d",
        []
       ],
       "custom-property-animation-transform-list-single-values-expected.txt": [
-       "590a4a32fc40e3be622b61c823fb7514774896cd",
+       "95fc1833b9f69d5135fadd8913de9c21d4b82056",
        []
       ],
       "custom-property-transition-property-all-expected.txt": [
@@ -396470,6 +396599,10 @@
       "4d573a04a9517726a005c30d42378b6469ce755e",
       []
      ],
+     "first-letter-insert-text-node-dynamic-ref.html": [
+      "093e5c224c14e15fc549b57e2cecae1be647b89f",
+      []
+     ],
      "first-letter-list-item-dynamic-001-ref.html": [
       "26d50ade6259326ee40b99d0cc2739ee77cf2e1f",
       []
@@ -396552,6 +396685,10 @@
      ],
      "first-line-inherited-with-transition-ref.html": [
       "b28c17436a67030b1e7edf9fce17475e7c88d8f2",
+      []
+     ],
+     "first-line-insert-text-node-dynamic-ref.html": [
+      "4d63592c58d98827d358da414d9f3f0460f29598",
       []
      ],
      "first-line-line-height-001-ref.html": [
@@ -443329,12 +443466,40 @@
          "73833127a03ad6791751c557f9ef80858877d347",
          []
         ],
+        "select-optgroup-legend-label-ref.html": [
+         "0d0b2b773e2c52763913c6d47cfc7f097c98ca6a",
+         []
+        ],
         "select-option-images-ref.html": [
          "436d3a068be154099ee2410843ff7dd7d52ab023",
          []
         ],
         "select-picker-popover-open-invalid.tentative-expected.txt": [
          "7fe581785d3d29f44e825a15dde5bf9f2259db6e",
+         []
+        ],
+        "select-picker-pseudo-backdrop-ref.html": [
+         "397e441144a67264dce4fb66703c2d5f625d607f",
+         []
+        ],
+        "select-picker-pseudo-before-after-ref.html": [
+         "f4e0afa270a942810f87e79ece97da65dc4e3c7b",
+         []
+        ],
+        "select-picker-pseudo-first-letter-first-line-ref.html": [
+         "8576828d123fb2b96c3f921c4a247ca9e6f586e9",
+         []
+        ],
+        "select-picker-pseudo-highlight-ref.html": [
+         "7fef9a5f294b409fd888f2e7bee38a7c92b79de4",
+         []
+        ],
+        "select-picker-pseudo-selection-ref.html": [
+         "a94d68aa8f7d5af2c272fecdc2132b9de595e6e8",
+         []
+        ],
+        "select-picker-pseudo-target-text-ref.html": [
+         "9cb9163b0d2808145fdc57486f04ded07af40ebf",
          []
         ],
         "select-popover-exit-animation-ref.html": [
@@ -460659,6 +460824,10 @@
      "428aeee63a2a8a03f720d24edb7d743aa7ceab2e",
      []
     ],
+    "sanitizer-javascript-url-expected.txt": [
+     "27dcb367dc3656fada4101c77799b2fd4980eb21",
+     []
+    ],
     "sethtml-safety.sub.dat": [
      "314d5ac37b135f9303a76ad84bce5d8065524140",
      []
@@ -472599,10 +472768,6 @@
      "keyframe-effects": {
       "computed-keyframes-shorthands-expected.txt": [
        "bcb39cee5195f13425321e2cc913d238d807d172",
-       []
-      ],
-      "effect-value-iteration-composite-operation-expected.txt": [
-       "5592f560c9be7d74ac26f466614ea9e14178d2aa",
        []
       ],
       "effect-value-opacity-replaced-effect-in-shadow-root-ref.html": [
@@ -544669,6 +544834,13 @@
      ],
      "revert-rule-layer.html": [
       "18dc4fd34d2b76995c2ac2f16c68e3a772cf129b",
+      [
+       null,
+       {}
+      ]
+     ],
+     "revert-rule-shadow.html": [
+      "38c740ef4e4032150a5d84d90deefddb3b72324d",
       [
        null,
        {}
@@ -733593,7 +733765,7 @@
     ],
     "with-lcp": {
      "fcp-document-opacity-image.html": [
-      "e7be8b716f005c37270efdcc352ca73991afb891",
+      "09c0efce6929fcf0fcce0b4f6a05f0ee511eacb0",
       [
        null,
        {}
