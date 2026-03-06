@@ -4540,11 +4540,11 @@ const FeatureEntry::FeatureVariation kDisableU18FeedbackDesktopVariations[] = {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kAndroidBookmarkBarFastFollowStandard[] = {
-    {"dynamic_width_enabled", "false"}};
+const FeatureEntry::FeatureParam kAndroidBookmarkBarFastFollowDynamic[] = {
+    {"dynamic_width_enabled", "true"}};
 const FeatureEntry::FeatureVariation kAndroidBookmarkBarFastFollowVariations[] =
-    {{"(Standard Width - with animations)",
-      kAndroidBookmarkBarFastFollowStandard, nullptr}};
+    {{"(Dynamic Width - no animations)", kAndroidBookmarkBarFastFollowDynamic,
+      nullptr}};
 const FeatureEntry::FeatureParam kDefaultBrowserPromoEntryPointSettingsOnly[] =
     {{"show_app_menu_item", "false"}};
 const FeatureEntry::FeatureVariation

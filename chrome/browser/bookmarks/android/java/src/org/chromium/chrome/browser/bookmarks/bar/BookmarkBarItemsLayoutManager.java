@@ -63,7 +63,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
                         && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
                                 ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW,
                                 DYNAMIC_WIDTH_PARAM,
-                                true);
+                                false);
     }
 
     @Override
@@ -177,7 +177,7 @@ class BookmarkBarItemsLayoutManager extends RecyclerView.LayoutManager {
         // NOTE: Width must be constrained via both layout params and measure spec. Otherwise a
         // child which requests an exact width via layout params will *not* be properly constrained.
 
-        // When the fast-follow feature is enabled, we will use the dynamic width calculation.
+        // When the fast-follow feature is enabled, we use the standard width with animation.
         final var width =
                 mIsDynamicWidthEnabled
                         ? Math.min(mEffectiveItemWidth, lp.width)

@@ -152,7 +152,8 @@ public class BookmarkBarItemsLayoutManagerTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW)
+    @Features.EnableFeatures(
+            ChromeFeatureList.ANDROID_BOOKMARK_BAR_FAST_FOLLOW + ":dynamic_width_enabled/true")
     public void testLayout_shrinksToFit() {
         // Set up items that will overflow at max width, but fit at min width.
         final var itemHeight = 10;
