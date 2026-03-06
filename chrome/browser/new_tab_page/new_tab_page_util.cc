@@ -5,6 +5,8 @@
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 
 #include "base/command_line.h"
+#include "base/hash/hash.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -31,6 +33,15 @@
 #include "components/variations/service/variations_service.h"
 
 namespace {
+
+constexpr char kAutoRemovalReasonManagedPreference[] =
+    "NewTabPage.Modules.AutoRemovalSkipped.ManagedPreference";
+constexpr char kAutoRemovalReasonDisabledAllModules[] =
+    "NewTabPage.Modules.AutoRemovalSkipped.DisabledAllModules";
+constexpr char kAutoRemovalReasonDisabled[] =
+    "NewTabPage.Modules.AutoRemovalSkipped.Disabled";
+constexpr char kAutoRemovalReasonStaleDaysCount[] =
+    "NewTabPage.Modules.AutoRemovalSkipped.StaleDaysCount";
 
 bool IsOsSupportedForCart() {
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -384,7 +395,8 @@ void UpdateModulesStaleness(Profile* profile,
     return;
   }
 
-  // (3) Do not update staleness if feature is disabled for all modules.
+  // (3) Do not update staleness if feature is disabled for all modules,
+  // and log the reason for why the auto-removal was skipped for all modules.
   const base::DictValue& auto_removal_disabled_dict =
       profile->GetPrefs()->GetDict(
           ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
@@ -392,6 +404,10 @@ void UpdateModulesStaleness(Profile* profile,
       auto_removal_disabled_dict.FindBool(ntp_modules::kAllModulesId)
           .value_or(false);
   if (is_disabled_for_all_modules) {
+    for (const std::string& module_id : module_ids) {
+      LogModuleAutoRemovalMetrics(profile, auto_removal_disabled_dict,
+                                  module_id, /*prev_count=*/0);
+    }
     return;
   }
 
@@ -408,10 +424,12 @@ void UpdateModulesStaleness(Profile* profile,
   for (const std::string& module_id : module_ids) {
     const bool is_disabled_for_module =
         auto_removal_disabled_dict.FindBool(module_id).value_or(false);
+    const int prev_count = staleness_counts_dict.FindInt(module_id).value_or(0);
     if (!is_disabled_for_module) {
-      std::optional<int> prev_count = staleness_counts_dict.FindInt(module_id);
-      update->Set(module_id, prev_count.value_or(0) + 1);
+      update->Set(module_id, prev_count + 1);
     }
+    LogModuleAutoRemovalMetrics(profile, auto_removal_disabled_dict, module_id,
+                                prev_count);
   }
 }
 
@@ -432,5 +450,56 @@ void DisableModuleListAutoRemoval(Profile* profile,
                               ntp_prefs::kNtpModulesAutoRemovalDisabledDict);
   for (const auto& module_id : module_ids) {
     update->Set(module_id, true);
+  }
+}
+
+void LogModuleAutoRemovalMetrics(
+    Profile* profile,
+    const base::DictValue& auto_removal_disabled_dict,
+    const std::string& module_id,
+    const int prev_count) {
+  // Auto-removal skipped due to managed preference.
+  if (profile->GetPrefs()->IsManagedPreference(prefs::kNtpModulesVisible)) {
+    base::UmaHistogramSparse(kAutoRemovalReasonManagedPreference,
+                             base::PersistentHash(module_id));
+    return;
+  }
+
+  // Auto-removal skipped due to it being disabled for all modules.
+  const bool is_disabled_for_all_modules =
+      auto_removal_disabled_dict.FindBool(ntp_modules::kAllModulesId)
+          .value_or(false);
+  if (is_disabled_for_all_modules) {
+    base::UmaHistogramSparse(kAutoRemovalReasonDisabledAllModules,
+                             base::PersistentHash(module_id));
+    return;
+  }
+
+  // Auto-removal skipped due to it being disabled for the module.
+  const bool is_disabled_for_module =
+      auto_removal_disabled_dict.FindBool(module_id).value_or(false);
+  if (is_disabled_for_module) {
+    base::UmaHistogramSparse(kAutoRemovalReasonDisabled,
+                             base::PersistentHash(module_id));
+    return;
+  }
+
+  // Log the new staleness count for this module. We're only logging it here
+  // because the auto-removal will be skipped anyway due to conditions above.
+  // If for whatever reason the logged count is above the threshold, we'll
+  // need to investigate why the auto-removal was not performed.
+  // NOTE: An exclusive max of 101 days was picked as the max staleness
+  // threshold; if the auto-removal threshold is changed to above that, then
+  // the logging should be changed to using COUNT instead.
+  // See: UmaHistogramExactLinear documentation for more details.
+  base::UmaHistogramExactLinear(
+      "NewTabPage.Modules.AutoRemovalStaleDays." + module_id, prev_count, 101);
+
+  // Auto-removal skipped due to the staleness threshold.
+  const int staleness_threshold =
+      ntp_features::kStaleModulesCountThreshold.Get();
+  if (prev_count < staleness_threshold) {
+    base::UmaHistogramSparse(kAutoRemovalReasonStaleDaysCount,
+                             base::PersistentHash(module_id));
   }
 }

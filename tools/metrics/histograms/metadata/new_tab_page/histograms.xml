@@ -1610,6 +1610,52 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="NewTabPage.Modules.AutoRemovalSkipped{Reason}"
+    enum="NtpModules" expires_after="2026-08-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when the auto-removal logic is skipped for a module. This can happen
+    due to a variety of reasons, and it's the default steady state for modules.
+    The recorded metric value is the persistent hash of the module ID.
+
+    Only logged on the 1P NTP. Note that even if the user has Google as their
+    default search engine, Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
+  </summary>
+  <token key="Reason">
+    <variant name="" summary="any reason"/>
+    <variant name=".Disabled"
+        summary="auto-removal skipped due to being disabled for the module"/>
+    <variant name=".DisabledAllModules"
+        summary="auto-removal skipped due to being disabled for all modules"/>
+    <variant name=".ManagedPreference"
+        summary="auto-removal skipped due to managed preference"/>
+    <variant name=".StaleDaysCount"
+        summary="auto-removal skipped due to the staleness threshold"/>
+  </token>
+</histogram>
+
+<histogram name="NewTabPage.Modules.AutoRemovalStaleDays{NewTabPageModules}"
+    units="count" expires_after="2026-08-30">
+  <owner>romanarora@chromium.org</owner>
+  <owner>tiborg@chromium.org</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Logged when the staleness count is updated for a module. This is logged only
+    once per staleness threshold update interval, which is typically once a day.
+    Note that the value being logged is the old staleness count.
+
+    Only logged on the 1P NTP. Note that even if the user has Google as their
+    default search engine, Incognito and Guest mode NTPs are not considered 1P
+    and don't log this histogram.
+  </summary>
+  <token key="NewTabPageModules" variants="NewTabPageModules">
+    <variant name=""/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Modules.AutoRemovalUndone" units="count"
     expires_after="2026-06-30">
   <owner>romanarora@chromium.org</owner>
