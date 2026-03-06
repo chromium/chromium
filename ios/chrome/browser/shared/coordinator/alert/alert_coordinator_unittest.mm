@@ -9,6 +9,7 @@
 #import "base/apple/foundation_util.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest_mac.h"
@@ -92,8 +93,9 @@ TEST_F(AlertCoordinatorTest, ValidateIsVisible) {
 // visible view.
 TEST_F(AlertCoordinatorTest, ValidateIsNotVisible) {
   // Setup.
-  UIWindow* window =
-      [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+  UIWindow* window = [[UIWindow alloc]
+      initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+  window.frame = [[UIScreen mainScreen] bounds];
   UIViewController* view_controller = [[UIViewController alloc] init];
   [window setRootViewController:view_controller];
 
