@@ -63,6 +63,19 @@ PrintPreviewDialogControllerCros::CreatePrintPreviewDialog(
   // TODO(jimmyxgong): Add dialog to task manager.
 }
 
+void PrintPreviewDialogControllerCros::ClosePrintPreviewDialog(
+    base::UnguessableToken token) {
+  PrintPreviewCrosDialog* found_dialog = GetPrintPreviewDialogForToken(token);
+  if (!found_dialog) {
+    PRINTER_LOG(ERROR)
+        << "Attempted to close non-existent print preview with token: "
+        << token.ToString();
+    return;
+  }
+
+  found_dialog->Close();
+}
+
 void PrintPreviewDialogControllerCros::RemovePrintPreviewDialog(
     base::UnguessableToken token) {
   PrintPreviewCrosDialog* found_dialog = GetPrintPreviewDialogForToken(token);

@@ -68,3 +68,31 @@ source_set("unit_tests") {
     "//url",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  sources = [ "print_view_manager_cros_browsertest.cc" ]
+
+  deps = [
+    ":print_preview",
+    "//ash/webui/print_preview_cros:url_constants",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/ash/browser_delegate",
+    "//chrome/browser/ash/printing/print_preview",
+    "//chrome/browser/ui",
+    "//chrome/browser/ui/webui/ash/system_web_dialog",
+    "//chrome/common:chrome_features",
+    "//chrome/test:test_support_ui",
+    "//components/printing/common:mojo_interfaces",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//url",
+  ]
+}

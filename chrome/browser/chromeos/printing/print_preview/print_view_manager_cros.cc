@@ -113,9 +113,15 @@ void PrintViewManagerCros::PrintPreviewDone() {
   auto* dialog_controller =
       ash::PrintPreviewDialogControllerCros::GetInstance();
   if (dialog_controller->HasDialogForToken(token_)) {
-    // This synchronously triggers OnDialogClosed() on this instance,
-    // which handles the rest of the cleanup.
-    dialog_controller->OnDialogClosed(token_);
+    // Clear renderer/UI state before dialog widget teardown. The dialog close
+    // signal can be asynchronous, and this avoids retaining an RFH reference
+    // longer than needed when cleanup is initiated from RenderFrameDeleted().
+    if (render_frame_host_) {
+      HandlePrintPreviewRemoved();
+    }
+    // This closes the actual SystemWebDialog widget. OnDialogClosed() will be
+    // delivered by the dialog lifecycle callback path.
+    dialog_controller->ClosePrintPreviewDialog(token_);
   } else if (render_frame_host_) {
     HandlePrintPreviewRemoved();
   }
