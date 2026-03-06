@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -127,6 +128,9 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                 mContainer
                         .getResources()
                         .getDimensionPixelSize(R.dimen.settings_detailed_title_height);
+
+        // TODO(crbug.com/480084682): Remove this listener after search is enabled, since
+        //     title views will be horizontally scrollable.
         mContainer.addOnLayoutChangeListener(
                 (View v,
                         int left,
@@ -280,6 +284,11 @@ class MultiColumnTitleUpdater implements MultiColumnSettings.Observer {
                         }
                     });
             mContainer.addView(view);
+        }
+
+        // Make the last-added/tapped one visible after adding titles.
+        if (mContainer.getParent() instanceof HorizontalScrollView scrollView) {
+            scrollView.post(() -> scrollView.fullScroll(HorizontalScrollView.FOCUS_RIGHT));
         }
     }
 

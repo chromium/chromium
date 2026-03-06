@@ -13,18 +13,24 @@ found in the LICENSE file.
     android:layout_weight="@integer/preferences_detail_pane_weight">
     <!-- Detailed pane title placeholder.
          Visible only in two pane UI -->
-    <LinearLayout
-        android:id="@+id/settings_title_in_detailed_pane"
+    <HorizontalScrollView
+        android:id="@+id/settings_title_container"
+        android:fillViewport="true"
         android:layout_alignParentTop="true"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/settings_detailed_title_height"
-        android:orientation="horizontal"
+        android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/settings_title_margin"
-        android:layout_gravity="top|start"
-        android:visibility="gone"/>
+        android:layout_marginEnd="@dimen/settings_title_margin">
+        <LinearLayout
+            android:id="@+id/settings_title_in_detailed_pane"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/settings_detailed_title_height"
+            android:orientation="horizontal"
+            android:visibility="gone"/>
+    </HorizontalScrollView>
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/preferences_detail"
-        android:layout_below="@id/settings_title_in_detailed_pane"
+        android:layout_below="@id/settings_title_container"
         android:layout_alignParentBottom="true"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
