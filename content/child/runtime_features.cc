@@ -76,10 +76,8 @@ void SetRuntimeFeatureDefaultsForPlatform(
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-  const bool enable_web_gl_image_chromium =
-      command_line.HasSwitch(
-          blink::switches::kEnableGpuMemoryBufferCompositorResources) &&
-      !command_line.HasSwitch(switches::kDisableGpu);
+  const bool enable_web_gl_image_chromium = command_line.HasSwitch(
+      blink::switches::kEnableGpuMemoryBufferCompositorResources);
 #else
   const bool enable_web_gl_image_chromium =
       command_line.HasSwitch(switches::kEnableWebGLImageChromium);
