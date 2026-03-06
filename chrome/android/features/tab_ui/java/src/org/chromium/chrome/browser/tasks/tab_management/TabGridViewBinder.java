@@ -495,6 +495,8 @@ class TabGridViewBinder {
             ViewLookupCachingFrameLayout view,
             PropertyModel model,
             boolean onlyUpdateIfPlaceholder) {
+        if (model.get(TabProperties.SHOW_THUMBNAIL_SPINNER)) return;
+
         TabThumbnailView thumbnail = view.fastFindViewById(R.id.tab_thumbnail);
 
         // To GC on hide set a background color and remove the thumbnail.
@@ -522,7 +524,8 @@ class TabGridViewBinder {
         // the callback matches the current thumbnail fetcher and grid card size.
         Callback<@Nullable Drawable> callback =
                 result -> {
-                    ((TabGridView) view).setThumbnailSpinnerVisibility(false);
+                    if (model.get(TabProperties.SHOW_THUMBNAIL_SPINNER)) return;
+
                     if (result != null) {
                         thumbnail.setThumbnailViewState(ThumbnailViewState.THUMBNAIL_LOADED);
                         TabUtils.setDrawableAndUpdateImageMatrix(thumbnail, result, thumbnailSize);

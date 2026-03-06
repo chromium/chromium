@@ -529,11 +529,6 @@ class TabListEditorMediator
     }
 
     @Override
-    public void updateThumbnail(Tab tab) {
-        // No-op.
-    }
-
-    @Override
     public void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible) {
         mTabListCoordinator.setThumbnailSpinnerVisibility(tab, isVisible);
     }

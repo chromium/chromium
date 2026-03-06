@@ -3362,6 +3362,9 @@ class TabListMediator implements TabListNotificationHandler {
         if (model == null) return;
 
         model.set(TabProperties.SHOW_THUMBNAIL_SPINNER, isVisible);
+        if (!isVisible) {
+            updateThumbnailFetcher(model, tab.getId());
+        }
     }
 
     private void updateThumbnailFetcher(PropertyModel model, int tabId) {

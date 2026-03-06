@@ -372,6 +372,7 @@ public class TabItemPickerCoordinator {
         private final Activity mActivity;
         private final MonotonicObservableSupplier<TabListEditorController> mControllerSupplier;
         private final TabModelSelector mTabModelSelector;
+        private final TabContentManager mTabContentManager;
         private final Set<Integer> mCachedTabIds;
         private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds;
         private final Set<Tab> mTabsBeingLoaded = new HashSet<>();
@@ -379,6 +380,8 @@ public class TabItemPickerCoordinator {
                 new EmptyTabObserver() {
                     @Override
                     public void onPageLoadFinished(Tab tab, GURL url) {
+                        // TODO(crbug.com/488046553): Consider adding a delay here for the page to
+                        // load more completely.
                         onTabLoadFinished(tab);
                     }
 
@@ -398,15 +401,19 @@ public class TabItemPickerCoordinator {
                     }
                 };
 
+        private boolean mIsDestroyed;
+
         public ItemPickerNavigationProvider(
                 Activity activity,
                 MonotonicObservableSupplier<TabListEditorController> controllerSupplier,
                 TabModelSelector tabModelSelector,
+                TabContentManager tabContentManager,
                 Set<Integer> cachedTabIds,
                 Set<TabListEditorItemSelectionId> initialSelectedTabIds) {
             mActivity = activity;
             mControllerSupplier = controllerSupplier;
             mTabModelSelector = tabModelSelector;
+            mTabContentManager = tabContentManager;
             mCachedTabIds = cachedTabIds;
             mInitialSelectedTabIds = initialSelectedTabIds;
         }
@@ -456,6 +463,9 @@ public class TabItemPickerCoordinator {
             // Avoid double-observing the same tab if it's already being loaded.
             if (mTabsBeingLoaded.contains(tab)) return;
 
+            // Clear the thumbnail to avoid showing a stale thumbnail immediately after selection.
+            mTabContentManager.removeTabThumbnail(tab.getId(), /* forceRemoval= */ true);
+
             mTabsBeingLoaded.add(tab);
             tab.addObserver(mLoadObserver);
 
@@ -467,13 +477,22 @@ public class TabItemPickerCoordinator {
         }
 
         private void onTabLoadFinished(Tab tab) {
+            if (mIsDestroyed) return;
+
             tab.removeObserver(mLoadObserver);
             if (!mTabsBeingLoaded.remove(tab)) return;
 
-            var controller = mControllerSupplier.get();
-            if (controller != null) {
-                controller.updateThumbnail(tab);
-            }
+            mTabContentManager.cacheTabThumbnailWithCallback(
+                    tab,
+                    /* returnBitmap= */ false,
+                    (unused) -> {
+                        if (mIsDestroyed) return;
+
+                        var controller = mControllerSupplier.get();
+                        if (controller != null) {
+                            controller.setThumbnailSpinnerVisibility(tab, /* isVisible= */ false);
+                        }
+                    });
         }
 
         /** Cleans up observers and state. */
@@ -482,6 +501,10 @@ public class TabItemPickerCoordinator {
                 if (tab != null) tab.removeObserver(mLoadObserver);
             }
             mTabsBeingLoaded.clear();
+            if (mTabContentManager != null) {
+                mTabContentManager.destroy();
+            }
+            mIsDestroyed = true;
         }
 
         @Override
@@ -606,6 +629,7 @@ public class TabItemPickerCoordinator {
                         mActivity,
                         controllerSupplier,
                         assumeNonNull(mTabModelSelector),
+                        tabContentManager,
                         mCachedTabIdsSet,
                         mInitialSelectedTabIds);
 

@@ -6140,5 +6140,6 @@ public class TabListMediatorUnitTest {
         verify(observer, times(2))
                 .onPropertyChanged(eq(model), eq(TabProperties.SHOW_THUMBNAIL_SPINNER));
         assertFalse(model.get(TabProperties.SHOW_THUMBNAIL_SPINNER));
+        verify(observer).onPropertyChanged(eq(model), eq(TabProperties.THUMBNAIL_FETCHER));
     }
 }

@@ -193,13 +193,6 @@ public class TabListEditorCoordinator {
          * @param isVisible Whether the spinner should be visible.
          */
         void setThumbnailSpinnerVisibility(Tab tab, boolean isVisible);
-
-        /**
-         * Requests a thumbnail update for a specific tab.
-         *
-         * @param tab The tab to update.
-         */
-        void updateThumbnail(Tab tab);
     }
 
     /** An interface for embedders to provide navigation. */
@@ -318,11 +311,6 @@ public class TabListEditorCoordinator {
                 @Override
                 public void selectTabs(Set<TabListEditorItemSelectionId> itemIds) {
                     mTabListEditorMediator.selectTabs(itemIds);
-                }
-
-                @Override
-                public void updateThumbnail(Tab tab) {
-                    mTabContentManager.cacheTabThumbnail(tab);
                 }
 
                 @Override

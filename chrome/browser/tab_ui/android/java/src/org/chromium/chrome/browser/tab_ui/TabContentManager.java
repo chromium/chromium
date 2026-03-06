@@ -683,7 +683,20 @@ public class TabContentManager {
      * @param tabId The Id of the tab whose thumbnail is being removed.
      */
     public void removeTabThumbnail(int tabId) {
-        if (!mTabWindowManager.canTabThumbnailBeDeleted(tabId)) return;
+        removeTabThumbnail(tabId, /* forceRemoval= */ false);
+    }
+
+    /**
+     * Removes a thumbnail of the tab whose id is |tabId|.
+     *
+     * @param tabId The Id of the tab whose thumbnail is being removed.
+     * @param forceRemoval Whether to force the removal of the thumbnail even if the tab might be
+     *     archived.
+     */
+    public void removeTabThumbnail(int tabId, boolean forceRemoval) {
+        if (!forceRemoval && !mTabWindowManager.canTabThumbnailBeDeleted(tabId)) {
+            return;
+        }
 
         if (mNativeTabContentManager != 0) {
             TabContentManagerJni.get().removeTabThumbnail(mNativeTabContentManager, tabId);

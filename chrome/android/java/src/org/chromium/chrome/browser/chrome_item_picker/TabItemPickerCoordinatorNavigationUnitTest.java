@@ -7,8 +7,10 @@ package org.chromium.chrome.browser.chrome_item_picker;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -32,6 +34,7 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.Callback;
 import org.chromium.base.supplier.NonNullObservableSupplier;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.OneshotSupplierImpl;
@@ -45,6 +48,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.TabObserver;
+import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
 import org.chromium.chrome.browser.tasks.tab_management.TabListEditorCoordinator;
@@ -71,7 +75,9 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
     @Mock private ChromeItemPickerActivity mActivity;
     @Mock private TabListEditorCoordinator mTabListEditorCoordinator;
     @Mock private TabListEditorController mTabListEditorController;
+    @Mock private TabContentManager mTabContentManager;
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
+    @Captor private ArgumentCaptor<Callback<android.graphics.Bitmap>> mCallbackCaptor;
 
     private final Set<TabListEditorItemSelectionId> mInitialSelectedTabIds = new HashSet<>();
 
@@ -124,6 +130,7 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
                         mActivity,
                         ObservableSuppliers.createMonotonic(mTabListEditorController),
                         mTabModelSelector,
+                        mTabContentManager,
                         mCachedTabIds,
                         mInitialSelectedTabIds);
 
@@ -273,7 +280,10 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         observer.onPageLoadFinished(tab, JUnitTestGURLs.URL_1);
 
         verify(tab).removeObserver(observer);
-        verify(mTabListEditorController).updateThumbnail(tab);
+        verify(mTabContentManager)
+                .cacheTabThumbnailWithCallback(eq(tab), eq(false), mCallbackCaptor.capture());
+        mCallbackCaptor.getValue().onResult(null);
+        verify(mTabListEditorController).setThumbnailSpinnerVisibility(tab, false);
     }
 
     @Test
@@ -294,7 +304,8 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.onSelectionStateChange(selection);
 
         verify(tab, never()).addObserver(any());
-        verify(mTabListEditorController, never()).updateThumbnail(tab);
+        verify(mTabContentManager, never())
+                .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
     }
 
     @Test
@@ -397,8 +408,9 @@ public class TabItemPickerCoordinatorNavigationUnitTest {
         mNavigationProvider.onSelectionStateChange(selection);
 
         verify(tab, times(2)).loadIfNeeded(anyInt());
-        // updateThumbnail is not called yet because the tab is still loading.
-        verify(mTabListEditorController, never()).updateThumbnail(tab);
+        // cacheTabThumbnailWithCallback is not called yet because the tab is still loading.
+        verify(mTabContentManager, never())
+                .cacheTabThumbnailWithCallback(any(), anyBoolean(), any());
         // Spinner is shown once.
         verify(mTabListEditorController, times(1)).setThumbnailSpinnerVisibility(tab, true);
     }
