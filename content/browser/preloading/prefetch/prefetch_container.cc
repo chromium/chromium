@@ -823,11 +823,12 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
   // ------------------------------------------------------------------------
   // WebContents override (`User-Agent`):
   // TODO(crbug.com/441612842): Support User-Agent overrides, which is applied
-  // for the initial request by `MaybeApplyOverrideForUserAgentHeader()`.
+  // for the initial request by
+  // `MaybeApplyOverrideForWebContentsUserAgentHeader()`.
 
   // ------------------------------------------------------------------------
   // Client Hints:
-  // DevTools overrides (Client Hints, `User-Agent`, `Accept`):
+  // DevTools overrides (User-Agent Client Hints):
   // Remove any existing client hints headers, then (re-)add the new client
   // hints that are appropriate for the redirect.
   if (base::FeatureList::IsEnabled(features::kPrefetchClientHints)) {
@@ -851,6 +852,21 @@ PrefetchContainer::PrepareUpdateHeaders(const GURL& url) const {
       }
       AddClientHintsHeaders(url::Origin::Create(url),
                             &updates_for_follow_redirect.modified_headers);
+    }
+  }
+
+  // ------------------------------------------------------------------------
+  // Devtools override (`User-Agent`, `Accept-Language`, non-UA Client Hints):
+  // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
+  // override of non-UA Client Hints.
+  {
+    MaybeApplyOverrideForDevtoolsUserAgentHeader(
+        &updates_for_resource_request.modified_headers);
+
+    if (base::FeatureList::IsEnabled(
+            features::kPrefetchFixHeaderUpdatesOnRedirect)) {
+      MaybeApplyOverrideForDevtoolsUserAgentHeader(
+          &updates_for_follow_redirect.modified_headers);
     }
   }
 
@@ -1542,8 +1558,10 @@ void PrefetchContainer::MakeInitialResourceRequest() {
   // latter (if any) should override the former.
   // [1] `request().additional_headers()`
   // [2] Chromium's default headers
-  // [3] WebContents overrides (`MaybeApplyOverrideForUserAgentHeader()`)
-  // [4] DevTools overrides (implemented in `AddClientHintsHeaders()`)
+  // [3] WebContents overrides
+  //     (`MaybeApplyOverrideForWebContentsUserAgentHeader()`)
+  // [4] DevTools overrides
+  //     (implemented in `MaybeApplyOverrideForDevtoolsUserAgentHeader()`)
 
   // ------------------------------------------------------------------------
   // [1] Additional headers:
@@ -1600,12 +1618,22 @@ void PrefetchContainer::MakeInitialResourceRequest() {
 
   // ------------------------------------------------------------------------
   // [3] `User-Agent` override:
-  MaybeApplyOverrideForUserAgentHeader(*resource_request);
+  MaybeApplyOverrideForWebContentsUserAgentHeader(*resource_request);
 
   // ------------------------------------------------------------------------
   // [2] Client Hints:
-  // [4] DevTools overrides (Client Hints, `User-Agent`, `Accept`):
+  // [4] DevTools overrides (Client Hints):
+  // TODO(crbug.com/422193319): Reconsider the appropriate place to set DevTools
+  // override of non-UA Client Hints.
   AddClientHintsHeaders(origin, &resource_request->headers);
+
+  // ------------------------------------------------------------------------
+  // [4] DevTools overrides (`User-Agent`, `Accept-Language`, non-UA Client
+  // Hints): The DevTools override is executed AFTER the WebContents override
+  // above because the DevTools override has higher priority than the
+  // WebContents override. See also the comment in
+  // `PrefetchContainer::MakeResourceRequest()` for the overriding order.
+  MaybeApplyOverrideForDevtoolsUserAgentHeader(&resource_request->headers);
 
   // ------------------------------------------------------------------------
   // There are sometimes other headers that are set during navigation.  These
@@ -1688,7 +1716,7 @@ bool PrefetchContainer::ShouldApplyUserAgentOverride(
   return nav_controller.ShouldOverrideUserAgentInNextNavigation(option);
 }
 
-void PrefetchContainer::MaybeApplyOverrideForUserAgentHeader(
+void PrefetchContainer::MaybeApplyOverrideForWebContentsUserAgentHeader(
     network::ResourceRequest& resource_request) {
   if (!ShouldApplyUserAgentOverride(resource_request.url)) {
     return;
@@ -1706,6 +1734,41 @@ void PrefetchContainer::MaybeApplyOverrideForUserAgentHeader(
   CHECK(!ua_override.ua_string_override.empty());
   resource_request.headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
                                      ua_override.ua_string_override);
+}
+
+void PrefetchContainer::MaybeApplyOverrideForDevtoolsUserAgentHeader(
+    net::HttpRequestHeaders* request_headers) const {
+  if (!base::FeatureList::IsEnabled(
+          features::kPrefetchDevtoolsUserAgentOverride) ||
+      !request_headers || !request().referring_web_contents()) {
+    return;
+  }
+
+  auto* referring_ftn = FrameTreeNode::From(
+      RenderFrameHostImpl::FromID(request()
+                                      .referring_web_contents()
+                                      ->GetPrimaryMainFrame()
+                                      ->GetGlobalId()));
+  // This is an initial guess (crbug.com/444065296), e.g. ideally, the
+  // DevTools UA overrides of the navigation target FrameTreeNode should be
+  // used, but this is not available at the time of prefetch, so we use the
+  // prefetch initiator's FrameTreeNode instead as an initial guess.
+  // TODO(crbug.com/444065296): Validate the header against the actual
+  // navigation's request header.
+  //
+  // For now, we only apply a part of
+  // `devtools_instrumentation::ApplyNetworkRequestOverrides()` which is
+  // applied to navigational request in
+  // `NavigationRequest::OnStartChecksComplete()`.
+  if (referring_ftn && RenderFrameDevToolsAgentHost::GetFor(referring_ftn)) {
+    // Add/override `User-Agent` headers for DevTools emulation mode  by
+    // `referring_ftn`'s devtools emulation mode.
+    // TODO(crbug.com/422193319): This part only addresses devtools emulation
+    // mode UA override. There are other types of UA overrides, which are at
+    // WebContents level.
+    devtools_instrumentation::ApplyEmulationOverrides(
+        RenderFrameDevToolsAgentHost::GetFor(referring_ftn), request_headers);
+  }
 }
 
 void PrefetchContainer::AddClientHintsHeaders(
@@ -1754,30 +1817,6 @@ void PrefetchContainer::AddClientHintsHeaders(
     AddClientHintsHeadersToPrefetchNavigation(
         origin, &client_hints_headers, request().browser_context(),
         client_hints_delegate, is_ua_override_on, referring_ftn);
-
-    // This is an initial guess (crbug.com/444065296), e.g. ideally, the
-    // DevTools UA overrides of the navigation target FrameTreeNode should be
-    // used, but this is not available at the time of prefetch, so we use the
-    // prefetch initiator's FrameTreeNode instead as an initial guess.
-    // TODO(crbug.com/444065296): Validate the header against the actual
-    // navigation's request header.
-    //
-    // For now, we only apply a part of
-    // `devtools_instrumentation::ApplyNetworkRequestOverrides()` which is
-    // applied to navigational request in
-    // `NavigationRequest::OnStartChecksComplete()`.
-    if (base::FeatureList::IsEnabled(
-            features::kPrefetchDevtoolsUserAgentOverride) &&
-        referring_ftn && RenderFrameDevToolsAgentHost::GetFor(referring_ftn)) {
-      // Add/override `User-Agent` headers for DevTools emulation mode  by
-      // `referring_ftn`'s devtools emulation mode.
-      // TODO(crbug.com/422193319): This part only addresses devtools emulation
-      // mode UA override. There are other types of UA overrides, which are at
-      // WebContents level.
-      devtools_instrumentation::ApplyEmulationOverrides(
-          RenderFrameDevToolsAgentHost::GetFor(referring_ftn),
-          &client_hints_headers);
-    }
   }
 
   // Merge in the client hints which are suitable to include given this is a

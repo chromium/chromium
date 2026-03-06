@@ -903,7 +903,8 @@
       "Linux"
     ],
     "bases": [
-      "http/tests/inspector-protocol/prefetch/prefetch-ua-override.js"
+      "http/tests/inspector-protocol/prefetch/prefetch-ua-override.js",
+      "http/tests/inspector-protocol/prefetch/prefetch-ua-no-ch-override.js"
     ],
     "exclusive_tests": "ALL",
     "args": [
