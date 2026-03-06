@@ -414,7 +414,10 @@ bool HasGuid(const Suggestion::Payload& payload) {
       suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
       suggestion.type == SuggestionType::kFillAutofillAi ||
       (base::FeatureList::IsEnabled(kAutofillUndoIos) &&
-       suggestion.type == SuggestionType::kUndoOrClear)) {
+       suggestion.type == SuggestionType::kUndoOrClear) ||
+      (base::FeatureList::IsEnabled(
+           autofill::features::kAutofillEnableBottomSheetScanCardAndFill) &&
+       suggestion.type == SuggestionType::kSaveAndFillCreditCardEntry)) {
     CHECK(suggestion.type != SuggestionType::kFillAutofillAi ||
           base::FeatureList::IsEnabled(
               autofill::features::kAutofillAiCreateEntityDataManager));
@@ -628,7 +631,11 @@ bool HasGuid(const Suggestion::Payload& payload) {
         popup_suggestion.type == SuggestionType::kAddressEntry ||
         popup_suggestion.type == SuggestionType::kCreditCardEntry ||
         popup_suggestion.type == SuggestionType::kVirtualCreditCardEntry ||
-        popup_suggestion.type == SuggestionType::kAddressFieldByFieldFilling) {
+        popup_suggestion.type == SuggestionType::kAddressFieldByFieldFilling ||
+        (base::FeatureList::IsEnabled(
+             autofill::features::kAutofillEnableBottomSheetScanCardAndFill) &&
+         popup_suggestion.type ==
+             SuggestionType::kSaveAndFillCreditCardEntry)) {
       // Filter out any key/value suggestions if the user hasn't typed yet.
       if (popup_suggestion.type == SuggestionType::kAutocompleteEntry &&
           _typedValue.length == 0) {
