@@ -287,6 +287,9 @@ class GlicInstanceMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void OnSessionStarted();
   void OnSessionFinished();
 
+  // Called when the instance is opened from a closed state.
+  void OnOpen(glic::mojom::InvocationSource source, const ShowOptions& options);
+
   void OnPinnedTabsChanged(
       const std::vector<content::WebContents*>& pinned_contents);
 

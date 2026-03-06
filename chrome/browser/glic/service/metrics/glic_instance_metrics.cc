@@ -475,12 +475,22 @@ void GlicInstanceMetrics::OnClose() {
                                 last_web_ui_state_);
 }
 
+void GlicInstanceMetrics::OnOpen(glic::mojom::InvocationSource source,
+                                 const ShowOptions& options) {
+  invocation_start_time_ = base::TimeTicks::Now();
+  last_invocation_source_ = source;
+  if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {
+    base::UmaHistogramEnumeration("Glic.Instance.Floaty.OpenSource", source);
+  } else {
+    base::UmaHistogramEnumeration("Glic.Instance.SidePanel.OpenSource", source);
+  }
+}
+
 void GlicInstanceMetrics::OnToggle(glic::mojom::InvocationSource source,
                                    const ShowOptions& options,
                                    bool is_showing) {
   if (!is_showing) {
-    invocation_start_time_ = base::TimeTicks::Now();
-    last_invocation_source_ = source;
+    OnOpen(source, options);
   }
   base::RecordAction(base::UserMetricsAction("Glic.Instance.Toggle"));
   if (std::holds_alternative<FloatingShowOptions>(options.embedder_options)) {

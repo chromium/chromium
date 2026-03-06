@@ -732,13 +732,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.Floaty.OpenSource" enum="GlicInvocationSource"
+    expires_after="2026-08-02">
+  <owner>basiaz@google.com</owner>
+  <owner>birnie@google.com</owner>
+  <summary>
+    Records the source of the invocation that opened the floaty GlicInstance.
+    Recorded each time toggle is called for showing the floaty and is a
+    companion metric to Glic.Instance.Floaty.ToggleSource which included
+    invocations that close Floaty.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.Floaty.ToggleSource" enum="GlicInvocationSource"
     expires_after="2026-06-01">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the source of the invocation that caused the floaty GlicInstance to
-    be toggled. Recorded each time the instance is toggled.
+    be toggled. Recorded each time the instance is toggled. See
+    Glic.Instance.Floaty.OpenSource for the metric only including invocations
+    that open Floaty.
   </summary>
 </histogram>
 
@@ -1066,13 +1080,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.SidePanel.OpenSource"
+    enum="GlicInvocationSource" expires_after="2026-08-02">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the source of the invocation that opened the side panel
+    GlicInstance. Recorded each time toggle is called for showing the side panel
+    and is a companion metric to Glic.Instance.SidePanel.ToggleSource which also
+    includes invocations that close the side panel.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.SidePanel.ToggleSource"
     enum="GlicInvocationSource" expires_after="2026-08-02">
   <owner>birnie@google.com</owner>
   <owner>perrier@google.com</owner>
   <summary>
     Records the source of the invocation that caused the side panel GlicInstance
-    to be toggled. Recorded each time the instance is toggled.
+    to be toggled. Recorded each time the instance is toggled. See
+    Glic.Instance.SidePanel.OpenSource for the metric only including invocations
+    that open the side panel.
   </summary>
 </histogram>
 
