@@ -8,7 +8,6 @@
 
 #include "base/check_is_test.h"
 #include "components/history/core/browser/history_service.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/sync/base/features.h"
 #include "components/sync/service/sync_service.h"
@@ -37,14 +36,8 @@ GetDelegateFromHistoryService(HistoryService* history_service,
 
 syncer::DataTypeController::PreconditionState
 GetPreconditionStateFromManagedStatus(
-    const signin::AccountManagedStatusFinder* finder) {
-  // The finder should generally exist, but if it doesn't, "stop and keep data"
-  // is a safe default.
-  if (!finder) {
-    return syncer::DataTypeController::PreconditionState::kMustStopAndKeepData;
-  }
-
-  switch (finder->GetOutcome()) {
+    signin::AccountManagedStatusFinder::Outcome managed_status) {
+  switch (managed_status) {
     case signin::AccountManagedStatusFinder::Outcome::kConsumerGmail:
     case signin::AccountManagedStatusFinder::Outcome::kConsumerWellKnown:
     case signin::AccountManagedStatusFinder::Outcome::kConsumerNotWellKnown:
@@ -93,7 +86,6 @@ syncer::DataTypeController::PreconditionState GetStricterPreconditionState(
 
 HistoryDataTypeController::HistoryDataTypeController(
     syncer::SyncService* sync_service,
-    signin::IdentityManager* identity_manager,
     HistoryService* history_service,
     PrefService* pref_service)
     : DataTypeController(
@@ -105,18 +97,8 @@ HistoryDataTypeController::HistoryDataTypeController(
           GetDelegateFromHistoryService(history_service,
                                         /*for_transport_mode=*/true)),
       helper_(syncer::HISTORY, sync_service, pref_service),
-      identity_manager_(identity_manager),
       history_service_(history_service) {
   sync_observation_.Observe(helper_.sync_service());
-  CoreAccountInfo account = helper_.sync_service()->GetAccountInfo();
-  // If there's already a signed-in account, figure out its "managed" state.
-  if (!account.IsEmpty()) {
-    managed_status_finder_ =
-        std::make_unique<signin::AccountManagedStatusFinder>(
-            identity_manager_, account,
-            base::BindOnce(&HistoryDataTypeController::AccountTypeDetermined,
-                           base::Unretained(this)));
-  }
 }
 
 HistoryDataTypeController::~HistoryDataTypeController() = default;
@@ -130,7 +112,7 @@ HistoryDataTypeController::GetPreconditionState(
   }
 
   PreconditionState enterprise_state =
-      GetPreconditionStateFromManagedStatus(managed_status_finder_.get());
+      GetPreconditionStateFromManagedStatus(context.account_managed_status);
 
   PreconditionState helper_state = helper_.GetPreconditionState(context);
 
@@ -141,18 +123,6 @@ void HistoryDataTypeController::OnStateChanged(syncer::SyncService* sync) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(helper_.sync_service(), sync);
 
-  // If there wasn't an account previously, or the account has changed, recreate
-  // the managed-status finder.
-  if (!managed_status_finder_ ||
-      managed_status_finder_->GetAccountInfo().account_id !=
-          helper_.sync_service()->GetAccountInfo().account_id) {
-    managed_status_finder_ =
-        std::make_unique<signin::AccountManagedStatusFinder>(
-            identity_manager_, helper_.sync_service()->GetAccountInfo(),
-            base::BindOnce(&HistoryDataTypeController::AccountTypeDetermined,
-                           base::Unretained(this)));
-  }
-
   // `history_service_` is null in many unit tests.
   if (history_service_) {
     history_service_->SetSyncTransportState(
@@ -160,17 +130,10 @@ void HistoryDataTypeController::OnStateChanged(syncer::SyncService* sync) {
   } else {
     CHECK_IS_TEST();
   }
-
-  // Most of these calls will be no-ops but SyncService handles that just fine.
-  helper_.sync_service()->DataTypePreconditionChanged(type());
 }
 
 void HistoryDataTypeController::OnSyncShutdown(syncer::SyncService* sync) {
   // Nothing to be done, `this` will be destructed imminently.
-}
-
-void HistoryDataTypeController::AccountTypeDetermined() {
-  helper_.sync_service()->DataTypePreconditionChanged(type());
 }
 
 }  // namespace history

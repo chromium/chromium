@@ -554,8 +554,7 @@ CommonControllerBuilder::Build(syncer::DataTypeSet disabled_types,
 
   if (!disabled_types.Has(syncer::HISTORY)) {
     controllers.push_back(std::make_unique<history::HistoryDataTypeController>(
-        sync_service, identity_manager_.value(), history_service_.value(),
-        pref_service_.value()));
+        sync_service, history_service_.value(), pref_service_.value()));
   }
 
   if (!disabled_types.Has(syncer::HISTORY_DELETE_DIRECTIVES)) {
