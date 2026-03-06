@@ -413,16 +413,24 @@ void ComposeboxQueryController::CreateSearchUrl(
       !active_files_.empty() && !search_url_request_info->file_tokens.empty();
   // If a multimodal URL is requested, but the cluster info has not been
   // received yet, store the request info and callback for later use.
-  if (should_create_multimodal_url &&
-      query_controller_state_ ==
-          QueryControllerState::kAwaitingClusterInfoResponse) {
+  if ((should_create_multimodal_url &&
+       query_controller_state_ ==
+           QueryControllerState::kAwaitingClusterInfoResponse) ||
+      is_any_context_uploading()) {
+    // Since 1) `startFileUploadFlow` should clear past pending/files,
+    // and 2) resuming the "pause" by running `pending_search_url_request`
+    // clears the stashed request (callback) and calls this function:
+    // the stashed request should always be empty here.
+    assert(!has_stashed_search_url_request());
+    // Pause the url creation until all pending uploads are complete.
     pending_search_url_request_ =
-        base::BindOnce(&ComposeboxQueryController::CreateSearchUrl,
+        base::BindOnce(&ComposeboxQueryController::BeforeCreateSearchUrl,
                        weak_ptr_factory_.GetWeakPtr(),
                        std::move(search_url_request_info), std::move(callback));
     return;
   }
 
+  // If we are here, it is not multimodal URL, and all context is uploaded.
   bool is_aim_search =
       search_url_request_info->search_url_type == SearchUrlType::kAim;
   if (is_aim_search) {
@@ -716,6 +724,13 @@ void ComposeboxQueryController::StartFileUploadFlow(
     const base::UnguessableToken& file_token,
     std::unique_ptr<lens::ContextualInputData> contextual_input_data,
     std::optional<lens::ImageEncodingOptions> image_options) {
+  if (pending_search_url_request_) {
+    // If there is a pending search url creation request, fail it immediately,
+    // as the new file upload should take priority and the pending url creation
+    // request is now stale.
+    std::move(pending_search_url_request_).Run(/*failure=*/true);
+    ClearFiles();
+  }
   // Create a file info struct to hold the file upload data.
   auto file_info = std::make_unique<FileInfo>();
   file_info->file_token = file_token;
@@ -724,6 +739,11 @@ void ComposeboxQueryController::StartFileUploadFlow(
   } else {
     file_info->mime_type = lens::MimeType::kUnknown;
   }
+
+  // At this lower level, files start off as `kNotUploaded`. At
+  // this level, this counts as uploading.
+  // But when delayed tabs come into consideration,
+  // `kNotUploaded` should not be considered uploading.
   file_info->upload_status = contextual_search::FileUploadStatus::kNotUploaded;
   file_info->tab_url = contextual_input_data->page_url;
   file_info->tab_title = contextual_input_data->page_title;
@@ -734,6 +754,7 @@ void ComposeboxQueryController::StartFileUploadFlow(
   file_info->input_data =
       std::make_unique<lens::ContextualInputData>(*contextual_input_data);
 
+  pending_context_uploads_.insert(file_token);
   auto [it, inserted] = active_files_.emplace(file_token, std::move(file_info));
   DCHECK(inserted);
   FileInfo& current_file_info = *it->second;
@@ -952,11 +973,19 @@ lens::LensOverlayClientContext ComposeboxQueryController::CreateClientContext()
 
 bool ComposeboxQueryController::DeleteFile(
     const base::UnguessableToken& file_token) {
+  MarkFileUploadAsInTerminalState(file_token);
   return !!active_files_.erase(file_token);
 }
 
 void ComposeboxQueryController::ClearFiles() {
+  pending_context_uploads_.clear();
   active_files_.clear();
+
+  // Uploading files no longer block the search URL creation.
+  // Try to resume any pending search URL creation, if it exists.
+  if (pending_search_url_request_) {
+    std::move(pending_search_url_request_).Run(/*failure=*/false);
+  }
 }
 
 std::unique_ptr<lens::proto::LensOverlaySuggestInputs>
@@ -1233,7 +1262,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   if (response->http_status_code != google_apis::ApiErrorCode::HTTP_SUCCESS) {
     SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
     if (pending_search_url_request_) {
-      std::move(pending_search_url_request_).Run();
+      std::move(pending_search_url_request_).Run(/*failure=*/false);
     }
     return;
   }
@@ -1242,7 +1271,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   if (!server_response.ParseFromString(response->response)) {
     SetQueryControllerState(QueryControllerState::kClusterInfoInvalid);
     if (pending_search_url_request_) {
-      std::move(pending_search_url_request_).Run();
+      std::move(pending_search_url_request_).Run(/*failure=*/false);
     }
     return;
   }
@@ -1290,7 +1319,7 @@ void ComposeboxQueryController::HandleClusterInfoResponse(
   }
 
   if (pending_search_url_request_) {
-    std::move(pending_search_url_request_).Run();
+    std::move(pending_search_url_request_).Run(/*failure=*/false);
   }
 
   // Clear the cluster info after its lifetime expires.
@@ -1312,8 +1341,29 @@ void ComposeboxQueryController::SetQueryControllerState(
   }
 }
 
+bool ComposeboxQueryController::IsTerminalFileStatus(
+    contextual_search::FileUploadStatus status) {
+  return status == contextual_search::FileUploadStatus::kUploadFailed ||
+         status == contextual_search::FileUploadStatus::kUploadSuccessful ||
+         status == contextual_search::FileUploadStatus::kValidationFailed ||
+         status == contextual_search::FileUploadStatus::kUploadExpired ||
+         status == contextual_search::FileUploadStatus::kUploadReplaced;
+}
+
+// Marks the file upload as in terminal state and creates search URL
+// if request was stashed. File token is passed by value to avoid use-after-free
+// error caused by erasing the file info from the `active_files_` map before
+// this method is called.
+void ComposeboxQueryController::MarkFileUploadAsInTerminalState(
+    base::UnguessableToken file_token) {
+  pending_context_uploads_.erase(file_token);
+  if (pending_context_uploads_.empty() && pending_search_url_request_) {
+    std::move(pending_search_url_request_).Run(/*failure=*/false);
+  }
+}
+
 void ComposeboxQueryController::UpdateFileUploadStatus(
-    const base::UnguessableToken& file_token,
+    base::UnguessableToken file_token,
     contextual_search::FileUploadStatus status,
     std::optional<contextual_search::FileUploadErrorType> error_type) {
   auto* file_info = GetMutableFileInfo(file_token);
@@ -1328,8 +1378,17 @@ void ComposeboxQueryController::UpdateFileUploadStatus(
   if (!IsValidFileUploadStatusForMultimodalRequest(status) &&
       status != contextual_search::FileUploadStatus::kUploadExpired) {
     active_files_.erase(file_token);
+    // Once we start uploading a file in `StartFileUploadFlow`, if
+    // we get `kNotUploaded` status outside of `StartFileUploadFlow`,
+    // we consider it a failure, as it is the second `kNotUploaded`.
+    if (status == contextual_search::FileUploadStatus::kNotUploaded) {
+      MarkFileUploadAsInTerminalState(file_token);
+    }
   } else {
     file_info->upload_status = status;
+  }
+  if (IsTerminalFileStatus(status)) {
+    MarkFileUploadAsInTerminalState(file_token);
   }
 }
 
@@ -1859,6 +1918,18 @@ ComposeboxQueryController::FindTokenForInjectedInput(const std::string& id) {
 base::WeakPtr<contextual_search::ContextualSearchContextController>
 ComposeboxQueryController::AsWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
+}
+
+void ComposeboxQueryController::BeforeCreateSearchUrl(
+    std::unique_ptr<CreateSearchUrlRequestInfo> search_url_request_info,
+    base::OnceCallback<void(GURL)> callback,
+    bool failed_creation) {
+  if (failed_creation) {
+    std::move(callback).Run(GURL());
+    return;
+  }
+  ComposeboxQueryController::CreateSearchUrl(std::move(search_url_request_info),
+                                             std::move(callback));
 }
 
 ComposeboxQueryController::FileInfo*
