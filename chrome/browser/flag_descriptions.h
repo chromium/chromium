@@ -7222,13 +7222,6 @@ inline constexpr char
     kExperimentalAccessibilityDictationContextCheckingDescription[] =
         "Enables experimental dictation context checking.";
 
-inline constexpr char
-    kExperimentalAccessibilityGoogleTtsHighQualityVoicesName[] =
-        "Experimental accessibility Google TTS High Quality Voices.";
-inline constexpr char
-    kExperimentalAccessibilityGoogleTtsHighQualityVoicesDescription[] =
-        "Enables downloading Google TTS High Quality Voices.";
-
 inline constexpr char kExperimentalAccessibilityManifestV3Name[] =
     "Changes accessibility features from extension manifest v2 to v3.";
 inline constexpr char kExperimentalAccessibilityManifestV3Description[] =

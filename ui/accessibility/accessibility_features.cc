@@ -240,13 +240,6 @@ bool IsAccessibilityReducedAnimationsInKioskEnabled() {
       ::features::kAccessibilityReducedAnimationsInKiosk);
 }
 
-BASE_FEATURE(kExperimentalAccessibilityGoogleTtsHighQualityVoices,
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled() {
-  return base::FeatureList::IsEnabled(
-      ::features::kExperimentalAccessibilityGoogleTtsHighQualityVoices);
-}
-
 BASE_FEATURE(kExperimentalAccessibilityDictationContextChecking,
              base::FEATURE_DISABLED_BY_DEFAULT);
 bool IsExperimentalAccessibilityDictationContextCheckingEnabled() {

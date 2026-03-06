@@ -3268,11 +3268,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "enable-experimental-accessibility-google-tts-high-quality-voices",
-    "owners": [ "josiahk@chromium.org", "akihiroota@chromium.org", "//ui/accessibility/OWNERS" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "enable-experimental-accessibility-language-detection",
     "owners": [ "chrishall@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 130

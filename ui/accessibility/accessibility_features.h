@@ -217,12 +217,6 @@ AX_BASE_EXPORT BASE_DECLARE_FEATURE(
 AX_BASE_EXPORT bool
 IsExperimentalAccessibilityDictationContextCheckingEnabled();
 
-// Download Google TTS High Quality voices.
-AX_BASE_EXPORT BASE_DECLARE_FEATURE(
-    kExperimentalAccessibilityGoogleTtsHighQualityVoices);
-AX_BASE_EXPORT bool
-IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
-
 // Whether the screen magnifier can follow the ChromeVox focus.
 AX_BASE_EXPORT BASE_DECLARE_FEATURE(kAccessibilityMagnifierFollowsChromeVox);
 AX_BASE_EXPORT bool IsAccessibilityMagnifierFollowsChromeVoxEnabled();

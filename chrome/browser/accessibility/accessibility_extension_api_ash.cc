@@ -493,8 +493,7 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
   switch (params_feature) {
     case accessibility_private::AccessibilityFeature::
         kGoogleTtsHighQualityVoices:
-      enabled = ::features::
-          IsExperimentalAccessibilityGoogleTtsHighQualityVoicesEnabled();
+      enabled = true;
       break;
     case accessibility_private::AccessibilityFeature::kDictationContextChecking:
       enabled = ::features::
