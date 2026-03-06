@@ -42,12 +42,6 @@
 //
 //   For a thread-safe observer list, see ObserverListThreadSafe.
 //
-//   An observer should not modify the observed object during the notification.
-//   This can lead to infinite loops and the situation that observers are first
-//   notified about the new state (from the inner loop) and then notified about
-//   the old state (from the outer loop).
-//   Consider if using base::SequencedTaskRunner::PostTask() to defer the
-//   state modification is a safer alternative.
 //
 // TYPICAL USAGE:
 //
@@ -104,38 +98,16 @@ enum class ObserverListPolicy {
 
 // Enumeration of reentrancy policy for ObserverList.
 enum class ObserverListReentrancyPolicy {
-  // Recommended default. Starting a new iteration (e.g., calling Notify())
-  // while an iteration is already in progress will result in a CHECK failure.
-  //
-  // Use this when:
-  // - You want to catch potential infinite loops or complex side effects early.
-  // - Observers are expected to be independent and not trigger immediate
-  //   state changes that require re-notifying the same list.
-  // - You want to ensure the state remains consistent for all observers
-  //   throughout a single notification pass.
+  // Specifies that iterating through the list while already in the iteration
+  // loop is prohibited and results in a check failure.
   kDisallowReentrancy,
 
-  // Allows nested iterations. Use with extreme caution.
-  //
-  // Use this when:
-  // - An observer's reaction to a notification *must* trigger an immediate
-  //   subsequent notification on the same list.
-  // - You have a guaranteed termination condition (e.g., the triggered
-  //   notification only occurs if a value actually changed, and that value
-  //   will eventually stabilize).
-  //
-  // Risk: Can lead to stack overflows (infinite recursion) or observers
-  // receiving notifications in an unexpected order.
-  //
-  // Consider if using base::SequencedTaskRunner::PostTask() to defer the
-  // second notification is a safer alternative.
+  // Specifies that iterating through the list while already in the iteration
+  // loop is allowed.
   kAllowReentrancy,
 
-  // Legacy/transitional policy. Indicates the code allows reentrancy but has
-  // not been audited for safety or correctness.
-  //
-  // DO NOT use this in new code. New code should explicitly choose
-  // kDisallowReentrancy (preferred) or kAllowReentrancy (if necessary).
+  // Specifies that iterating through the list while already in the iteration
+  // loop is allowed, but this is untriaged.
   kAllowReentrancyUntriaged,
 };
 
