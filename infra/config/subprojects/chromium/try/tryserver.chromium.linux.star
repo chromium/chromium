@@ -995,6 +995,7 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-webium-product-eng@google.com",
+    execution_timeout = 4 * time.hour,
     siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
 )
 

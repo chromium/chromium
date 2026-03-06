@@ -60,6 +60,7 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 5
         },
@@ -82,6 +83,7 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "interactive_ui_tests",
@@ -103,6 +105,7 @@
           "dimensions": {
             "os": "Ubuntu-22.04"
           },
+          "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test": "unit_tests",

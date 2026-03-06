@@ -495,6 +495,9 @@ ci.thin_tester(
                 args = [
                     "--enable-features=InitialWebUI,WebUIReloadButton,WebUISplitTabsButton,SkipIPCChannelPausingForNonGuests,WebUIInProcessResourceLoadingV2,InitialWebUISyncNavStartToCommit",
                 ],
+                swarming = targets.swarming(
+                    hard_timeout_sec = 14400,
+                ),
             ),
         ],
         per_test_modifications = {
@@ -521,6 +524,7 @@ ci.thin_tester(
         short_name = "webium-product",
     ),
     contact_team_email = "chrome-webium-product-eng@google.com",
+    execution_timeout = 4 * time.hour,
 )
 
 ci.thin_tester(
