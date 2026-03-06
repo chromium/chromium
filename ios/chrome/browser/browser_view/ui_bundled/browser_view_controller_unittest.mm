@@ -85,6 +85,7 @@
 #import "ios/chrome/browser/web/model/web_navigation_browser_agent.h"
 #import "ios/chrome/browser/web/model/web_state_update_browser_agent.h"
 #import "ios/chrome/browser/web_state_list/model/web_usage_enabler/web_usage_enabler_browser_agent.h"
+#import "ios/chrome/test/app/uikit_test_util.h"
 #import "ios/chrome/test/block_cleanup_test.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -349,7 +350,9 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     tab_events_mediator_.consumer = bvc_;
 
     // Force the view to load.
-    UIWindow* window = [[UIWindow alloc] initWithFrame:CGRectZero];
+    UIWindow* window = [[UIWindow alloc]
+        initWithWindowScene:chrome_test_util::GetAnyWindowScene()];
+    window_.frame = CGRectZero;
     window.rootViewController = bvc_;
     [window makeKeyAndVisible];
     window_ = window;
