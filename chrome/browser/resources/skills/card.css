@@ -23,7 +23,7 @@
 .card {
   align-items: flex-start;
   background-color: var(--color-sys-surface2);
-  border-radius: var(--cr-card-border-radius);
+  border-radius: 12px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -34,11 +34,16 @@
   width: 100%;
 }
 
+#editIcon {
+  --cr-icon-size: 16px;
+}
+
 #cardHeader {
   align-items: center;
   display: flex;
   justify-content: space-between;
   width: 100%;
+  height: 20px;
 }
 
 #infoContainer {

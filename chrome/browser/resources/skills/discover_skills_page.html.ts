@@ -24,7 +24,7 @@ ${this.topSkills_().length > 0 ? html`
     </skill-card>`)}
 </div>` : ''}
 ${this.getOtherCategories_().length > 0 ? html`
-<h2 class="page-title">$i18n{browseSkillsTitle}</h2>
+<h2 class="page-title" id="browseSkillsTitle">$i18n{browseSkillsTitle}</h2>
 <div id="discoverCategories">
   ${this.getOtherCategories_().map(category => html`
     <cr-chip ?selected="${this.isCategorySelected_(category)}"

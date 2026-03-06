@@ -59,7 +59,7 @@ export function getHtml(this: SkillCardElement) {
     ` : html`
       <cr-button id="editButton" @click="${this.onEditButtonClick_}"
           aria-label="${this.ariaLabelForSkill_('edit')}">
-        <cr-icon icon="cr:create" slot="prefix-icon"></cr-icon>
+        <cr-icon id="editIcon" icon="skills:create" slot="prefix-icon"></cr-icon>
         $i18n{edit}
       </cr-button>
     `}
