@@ -6,10 +6,13 @@
 #define BASE_TRACE_EVENT_MEASURED_MEMORY_DUMP_PROVIDER_INFO_H_
 
 #include <optional>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/trace_event/memory_dump_request_args.h"
 
 namespace base::trace_event {
 
@@ -67,8 +70,9 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // Default constructor for containers.
   MeasuredMemoryDumpProviderInfo();
 
-  explicit MeasuredMemoryDumpProviderInfo(
-      scoped_refptr<MemoryDumpProviderInfo> provider_info);
+  MeasuredMemoryDumpProviderInfo(
+      scoped_refptr<MemoryDumpProviderInfo> provider_info,
+      MemoryDumpRequestArgs request_args);
 
   // Logs all metrics for the wrapped MemoryDumpProvider.
   ~MeasuredMemoryDumpProviderInfo();
@@ -88,6 +92,9 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
     return provider_info_.get();
   }
 
+  // Returns the args for the CreateProcessDump() call that started this dump.
+  const MemoryDumpRequestArgs& request_args() const { return request_args_; }
+
   // Sets the number of providers that are queued to run after this one. This
   // must be called before deletion.
   void set_num_following_providers(size_t num_following_providers) {
@@ -99,8 +106,24 @@ class BASE_EXPORT MeasuredMemoryDumpProviderInfo {
   // MemoryDumpProviderInfo to a new state.
   void SetStatus(Status status);
 
+  // Logs Memory.DumpProvider.MemoryDumpTime.* histograms for this provider.
+  void LogMemoryDumpTimeHistograms(base::TimeDelta time) const;
+
+  // Logs Memory.DumpProvider.Count.* histograms for the provider named
+  // `provider_name`.
+  static void LogProviderCountHistograms(
+      std::string_view provider_name,
+      MemoryDumpLevelOfDetail level_of_detail,
+      size_t count);
+
+  // Returns a string to use in histogram variants for `level_of_detail`.
+  static std::string_view LevelOfDetailString(
+      MemoryDumpLevelOfDetail level_of_detail);
+
  private:
   scoped_refptr<MemoryDumpProviderInfo> provider_info_;
+  MemoryDumpRequestArgs request_args_{};
+
   std::optional<size_t> num_following_providers_;
   Status status_ = Status::kQueued;
 

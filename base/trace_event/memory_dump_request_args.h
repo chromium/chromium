@@ -26,12 +26,18 @@ class ProcessMemoryDump;
 // selective enabling of dumps, filtering and post-processing. Keep this
 // consistent with memory_instrumentation.mojo and
 // memory_instrumentation_struct_traits.{h,cc}
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(MemoryDumpType)
 enum class MemoryDumpType {
-  kPeriodicInterval,     // Dumping memory at periodic intervals.
-  kExplicitlyTriggered,  // Non maskable dump request.
-  kSummaryOnly,          // Calculate just the summary & don't add to the trace.
-  kLast = kSummaryOnly
+  kPeriodicInterval = 0,     // Dumping memory at periodic intervals.
+  kExplicitlyTriggered = 1,  // Non maskable dump request.
+  kSummaryOnly = 2,  // Calculate just the summary & don't add to the trace.
+  kMaxValue = kSummaryOnly
 };
+// LINT.ThenChange(//tools/metrics/histograms/metadata/memory/enums.xml:MemoryDumpType)
 
 // Tells the MemoryDumpProvider(s) how much detailed their dumps should be.
 // Keep this consistent with memory_instrumentation.mojo and

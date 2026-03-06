@@ -46,7 +46,15 @@ chromium-metrics-reviews@google.com.
   <variant name="Scroll" summary="Scroll"/>
 </variants>
 
+<variants name="MemoryDumpLevelOfDetail">
+  <variant name="AllDetailLevels" summary="all levels of detail"/>
+  <variant name="Background" summary="Background level of detail"/>
+  <variant name="Detailed" summary="Detailed level of detail"/>
+  <variant name="Light" summary="Light level of detail"/>
+</variants>
+
 <variants name="MemoryDumpProviderName">
+  <variant name="AllProviders" summary="(all provider types, aggregated)"/>
   <variant name="android__ResourceManagerImpl"
       summary="android::ResourceManagerImpl"/>
   <variant name="android_meminfo"/>
@@ -1423,51 +1431,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Memory.DumpProvider.Count" units="objects"
+<histogram name="Memory.Dump.Type.{DetailLevel}" enum="MemoryDumpType"
     expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    The total number of MemoryDumpProvider instances that are queued during a
-    memory dump. Logged whenever a memory dump starts.
-
-    Variants of this metric are also logged for each type of MemoryDumpProvider,
-    with the provider name as a suffix.
+    Logged whenever a memory dump starts for {DetailLevel}, with the reason the
+    dump is being requested.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.Count.{Name}" units="objects"
-    expires_after="2026-08-30">
+<histogram name="Memory.DumpProvider.Count.{DetailLevel}.{Name}"
+    units="objects" expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The number of instances of MemoryDumpProvider {Name} that are queued during
-    a memory dump. Logged whenever a memory dump starts.
-
-    An unsuffixed variant of this metric is also logged, covering all types of
-    MemoryDumpProvider.
+    a memory dump. Logged whenever a memory dump starts for {DetailLevel}.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.FinalStatus"
-    enum="MemoryDumpProviderStatus" expires_after="2026-08-30">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The status of a MemoryDumpProvider instance when it finishes running or is
-    skipped. During a memory dump, a list of MemoryDumpProvider objects is
-    queued to run in sequence. This metric is logged for each object when it's
-    destroyed, with the reason it was destroyed. Usually this when it's removed
-    from the queue to run it, or to explicitly skip it. Objects can also be
-    destroyed if they're still in the queue when the queue is destroyed.
-
-    Variants of this metric are also logged for each type of MemoryDumpProvider,
-    with the provider name as a suffix.
-  </summary>
-</histogram>
-
-<histogram name="Memory.DumpProvider.FinalStatus.{Name}"
+<histogram name="Memory.DumpProvider.FinalStatus.{DetailLevel}.{Name}"
     enum="MemoryDumpProviderStatus" expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
@@ -1475,156 +1462,77 @@ chromium-metrics-reviews@google.com.
     The status of an instance of MemoryDumpProvider {Name} when it finishes
     running or is skipped. During a memory dump, a list of MemoryDumpProvider
     objects is queued to run in sequence. This metric is logged for each object
-    of type {Name} when it's destroyed, with the reason it was destroyed.
-    Usually this when it's removed from the queue to run it, or to explicitly
-    skip it. Objects can also be destroyed if they're still in the queue when
-    the queue is destroyed.
-
-    An unsuffixed variant of this metric is also logged, covering all types of
-    MemoryDumpProvider.
+    in a dump of {DetailLevel} when it's destroyed, with the reason it was
+    destroyed. Usually this is when it's removed from the queue to run it, or to
+    explicitly skip it. Objects can also be destroyed if they're still in the
+    queue when the queue is destroyed.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.FollowingProviders3" units="objects"
-    expires_after="2026-08-30">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The number of MemoryDumpProviders remaining in the queue after a
-    MemoryDumpProvider instance is destroyed. Logged at the same time as
-    Memory.DumpProvider.FinalStatus.
-
-    Variants of this metric are also logged for each type of MemoryDumpProvider,
-    with the provider name as a suffix.
-  </summary>
-</histogram>
-
-<histogram name="Memory.DumpProvider.FollowingProviders3.{Name}"
+<histogram name="Memory.DumpProvider.FollowingProviders.{DetailLevel}.{Name}"
     units="objects" expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    The number of MemoryDumpProviders remaining in the queue after an instance
-    of MemoryDumpProvider {Name} is destroyed. Logged at the same time as
-    Memory.DumpProvider.FinalStatus.
-
-    An unsuffixed variant of this metric is also logged, covering all types of
-    MemoryDumpProvider.
+    The number of MemoryDumpProviders remaining in the queue for a dump of
+    {DetailLevel} after an instance of MemoryDumpProvider {Name} is destroyed.
+    Logged at the same time as Memory.DumpProvider.FinalStatus.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.MemoryDumpTime2" units="microseconds"
-    expires_after="2026-08-30">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The length of time a MemoryDumpProvider instance spent executing, not
-    including time the system was suspended. Memory.DumpProvider.TotalTime,
-    which includes the time it spent queued, will also be logged when this is
-    logged.
-
-    Variants of this metric are also logged for each type of MemoryDumpProvider,
-    with the provider name as a suffix.
-
-    Note: this metric is only recorded on clients with a high-resolution clock.
-  </summary>
-</histogram>
-
-<histogram name="Memory.DumpProvider.MemoryDumpTime2.{Name}"
+<histogram name="Memory.DumpProvider.MemoryDumpTime.{DetailLevel}.{Name}"
     units="microseconds" expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
-    The length of time an instance of MemoryDumpProvider {Name} spent executing,
-    not including time the system was suspended. Memory.DumpProvider.TotalTime,
-    which includes the time it spent queued, will also be logged when this is
-    logged.
-
-    An unsuffixed variant of this metric is also logged, covering all types of
-    MemoryDumpProvider.
+    The length of time an instance of MemoryDumpProvider {Name} spent executing
+    for {DetailLevel}, not including time the system was suspended.
+    Memory.DumpProvider.TotalTime, which includes the time it spent queued, will
+    also be logged when this is logged.
 
     Note: this metric is only recorded on clients with a high-resolution clock.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.PostTaskTime" units="ms"
-    expires_after="2026-08-30">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The length of time between a MemoryDumpProvider instance being posted to
-    take a memory dump on another thread, and Memory.DumpProvider.FinalStatus
-    being recorded for that instance, not including time the system was
-    suspended. If FinalStatus was recorded because the instance finished
-    running, Memory.DumpProvider.MemoryDumpTime will also be recorded with the
-    time that it took to run.
-
-    Variants of this metric are also logged for each type of MemoryDumpProvider,
-    with the provider name as a suffix.
-
-    Note: this metric is only recorded on clients with a high-resolution clock.
-  </summary>
-</histogram>
-
-<histogram name="Memory.DumpProvider.PostTaskTime.{Name}" units="ms"
-    expires_after="2026-08-30">
+<histogram name="Memory.DumpProvider.PostTaskTime.{DetailLevel}.{Name}"
+    units="ms" expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The length of time between an instance of MemoryDumpProvider {Name} being
-    posted to take a memory dump on another thread, and
+    posted to take a memory dump for {DetailLevel} on another thread, and
     Memory.DumpProvider.FinalStatus being recorded for that instance, not
     including time the system was suspended. If FinalStatus was recorded because
     the instance finished running, Memory.DumpProvider.MemoryDumpTime will also
     be recorded with the time that it took to run.
 
-    An unsuffixed variant of this metric is also logged, covering all types of
-    MemoryDumpProvider.
-
     Note: this metric is only recorded on clients with a high-resolution clock.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 
-<histogram name="Memory.DumpProvider.TotalTime2" units="ms"
-    expires_after="2026-08-30">
-  <owner>joenotcharles@google.com</owner>
-  <owner>chrome-catan@google.com</owner>
-  <summary>
-    The length of time between a MemoryDumpProvider instance being queued for a
-    memory dump, and Memory.DumpProvider.FinalStatus being recorded for that
-    instance, not including time the system was suspended. If FinalStatus was
-    recorded because the instance finished running,
-    Memory.DumpProvider.MemoryDumpTime will also be recorded with the time that
-    it took to run.
-
-    Variants of this metric are also logged for each type of MemoryDumpProvider,
-    with the provider name as a suffix.
-
-    Note: this metric is only recorded on clients with a high-resolution clock.
-  </summary>
-</histogram>
-
-<histogram name="Memory.DumpProvider.TotalTime2.{Name}" units="ms"
+<histogram name="Memory.DumpProvider.TotalTime.{DetailLevel}.{Name}" units="ms"
     expires_after="2026-08-30">
   <owner>joenotcharles@google.com</owner>
   <owner>chrome-catan@google.com</owner>
   <summary>
     The length of time between an instance of MemoryDumpProvider {Name} being
-    queued for a memory dump, and Memory.DumpProvider.FinalStatus being recorded
-    for that instance, not including time the system was suspended. If
-    FinalStatus was recorded because the instance finished running,
-    Memory.DumpProvider.MemoryDumpTime will also be recorded with the time that
-    it took to run.
-
-    An unsuffixed variant of this metric is also logged, covering all types of
-    MemoryDumpProvider.
+    queued for a memory dump of {DetailLevel}, and
+    Memory.DumpProvider.FinalStatus being recorded for that instance, not
+    including time the system was suspended. If FinalStatus was recorded because
+    the instance finished running, Memory.DumpProvider.MemoryDumpTime will also
+    be recorded with the time that it took to run.
 
     Note: this metric is only recorded on clients with a high-resolution clock.
   </summary>
+  <token key="DetailLevel" variants="MemoryDumpLevelOfDetail"/>
   <token key="Name" variants="MemoryDumpProviderName"/>
 </histogram>
 

@@ -63,14 +63,17 @@ class BASE_EXPORT MemoryDumpProvider {
     // Purposely not explicit to avoid requiring callers to wrap their string.
     // Since this is consteval the value of `name` is validated at compile time.
     consteval Name(const char* name) : static_name_(name) {
+      // This will never actually invoke what's under NOTREACHED(), but
+      // NOTREACHED() is invalid in a consteval context so compilation will fail
+      // iff the string is invalid.
       if (!trace_event_metrics::IsValidMemoryDumpProviderName(
               histogram_name())) {
-        // This will never actually invoke what's under NOTREACHED(), but
-        // NOTREACHED() is invalid in a consteval context so compilation will
-        // fail iff the string is invalid.
         NOTREACHED()
             << "Invalid provider name. Did you add it to the "
                "MemoryDumpProviderName variant in memory/histograms.xml?";
+      }
+      if (histogram_name() == "AllProviders") {
+        NOTREACHED() << "Invalid provider name. 'AllProviders' is reserved.";
       }
     }
 

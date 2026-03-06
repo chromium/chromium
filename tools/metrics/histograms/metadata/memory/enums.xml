@@ -61,6 +61,16 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//base/trace_event/measured_memory_dump_provider_info.h:MemoryDumpProviderStatus) -->
 
+<!-- LINT.IfChange(MemoryDumpType) -->
+
+<enum name="MemoryDumpType">
+  <int value="0" label="Periodic Interval"/>
+  <int value="1" label="Explicitly Triggered"/>
+  <int value="2" label="Summary Only"/>
+</enum>
+
+<!-- LINT.ThenChange(//base/trace_event/memory_dump_request_args.h:MemoryDumpType) -->
+
 <enum name="MemoryPressureLevel">
   <int value="0" label="No memory pressure"/>
   <int value="1" label="Moderate memory pressure"/>
