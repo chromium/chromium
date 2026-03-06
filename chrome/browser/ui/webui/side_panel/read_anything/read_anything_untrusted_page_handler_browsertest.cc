@@ -2050,11 +2050,23 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerDistillerTest,
     // 3) Page is a pdf with the frame loaded
     // OnReadabilityDistillationStateChanged should only be called on non-pdfs.
     // Previously we were calling it in step 2 above, but we know it's a pdf at
-    // that point, so we shouldn't be. Hence this check that's it's called
-    // only once.
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(1);
+    // that point, so we shouldn't be. Now, Chrome
+    // detects the PDF frame immediately via PdfViewerStreamManager which
+    // triggers an early return in `OnActiveAXTreeIDChanged`, bypassing the
+    // Readability distillation block entirely. The 2 expected calls come solely
+    // from the initial test setup on `about:blank` (once for
+    // kDistillationInProgress, once for kDistillationEmpty).
+    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(2);
   } else {
-    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(3);
+    // When kPdfOopif is disabled, Chrome goes through a transient loading
+    // state where it briefly thinks the PDF is a regular webpage before
+    // the inner PDF frame initializes. During this transient phase, the
+    // Readability distillation block is (incorrectly) executed. The 5 expected
+    // calls are: 2 calls from the initial `about:blank` setup + 3 calls during
+    // the transient phase (kDistillationInProgress in OnActiveAXTreeIDChanged,
+    // the second kDistillationInProgress in RequestDomDistillerDistillation,
+    // and finally kDistillationEmpty).
+    EXPECT_CALL(page_, OnReadabilityDistillationStateChanged).Times(5);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -2233,6 +2245,9 @@ IN_PROC_BROWSER_TEST_P(ReadAnythingUntrustedPageHandlerAutomationTest,
       WindowOpenDisposition::CURRENT_TAB,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
+  EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
+                         read_anything::mojom::ReadAnythingDistillationState::
+                             kDistillationInProgress));
   EXPECT_CALL(page_, OnReadabilityDistillationStateChanged(
                          read_anything::mojom::ReadAnythingDistillationState::
                              kDistillationEmpty));
