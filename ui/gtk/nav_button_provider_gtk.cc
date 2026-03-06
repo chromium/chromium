@@ -329,6 +329,22 @@ class NavButtonImageSource : public gfx::ImageSkiaSource {
                           button_size_.height());
     gtk_render_frame(button_context, cr, 0, 0, button_size_.width(),
                      button_size_.height());
+    if (GtkCheckVersion(4)) {
+      // In GTK4, themes can style the image child of titlebar buttons rather
+      // than the button itself.  Render the image background too.
+      auto image_context = AppendCssNodeToStyleContext(button_context, "image");
+      int icon_w = icon_size.width() / pixbuf_scale;
+      int icon_h = icon_size.height() / pixbuf_scale;
+      auto img_size = GetMinimumWidgetSize(gfx::Size(icon_w, icon_h), nullptr,
+                                           image_context);
+      double img_x = (button_size_.width() - img_size.width()) / 2.0;
+      double img_y = (button_size_.height() - img_size.height()) / 2.0;
+
+      gtk_render_background(image_context, cr, img_x, img_y, img_size.width(),
+                            img_size.height());
+      gtk_render_frame(image_context, cr, img_x, img_y, img_size.width(),
+                       img_size.height());
+    }
     cairo_restore(cr);
     cairo_save(cr);
     float pixbuf_extra_scale = scale / pixbuf_scale;
