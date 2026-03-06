@@ -206,7 +206,6 @@ def __step_config(ctx, step_config):
         "includes": [
             "*.o",
             "*.rlib",
-            "*.rs",
             "*.so",
         ],
     }
