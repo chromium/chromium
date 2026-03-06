@@ -305,10 +305,11 @@ class ExtensionTabUtil {
   // contexts.
   static void ClearBackForwardCache();
 
-  // Check TabStripModel editability in every browser because a drag session
-  // could be running in another browser that reverts to the current browser. Or
-  // a drag could be mid-handoff if from one browser to another.
-  static bool IsTabStripEditable();
+  // Check TabStripModel editability in every browser in the given profile
+  // because a drag session could be running in another browser that reverts to
+  // the current browser or a drag could be mid-handoff if from one browser to
+  // another (but tabs can't be dragged between different profiles).
+  static bool IsTabStripEditable(Profile& profile);
 
   // Retrieve the corresponding TabListInterface for the specified `browser` if
   // and only if every browser's tab list is editable. See comments above

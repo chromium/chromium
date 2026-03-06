@@ -367,6 +367,7 @@ class TabsUpdateFunction : public ExtensionFunction {
   // Updates the active or selected tab. Returns true on success or if there was
   // nothing to do. Returns false on failure with an error message.
   bool UpdateActiveTab(const api::tabs::Update::Params& params,
+                       Profile& profile,
                        TabListInterface& tab_list,
                        int tab_index,
                        std::string& error);
@@ -374,6 +375,7 @@ class TabsUpdateFunction : public ExtensionFunction {
   // Updates the highlight state of the given tab. Returns true on success or if
   // there was nothing to do. Returns false on failure with an error.
   bool UpdateHighlightedTab(const api::tabs::Update::Params& params,
+                            Profile& profile,
                             TabListInterface& tab_list,
                             ::tabs::TabInterface& target_tab,
                             std::string& error);

@@ -1267,29 +1267,11 @@ void ExtensionTabUtil::ClearBackForwardCache() {
 }
 
 // static
-bool ExtensionTabUtil::IsTabStripEditable() {
+bool ExtensionTabUtil::IsTabStripEditable(Profile& profile) {
   if (g_disable_tab_list_editing_for_testing) {
     return false;
   }
-
-  // TODO(https://crbug.com/482088886): Migrate this to just use
-  // TabListInterface::CanEditTabList().
-
-  // See comments in the header for why we need to check all of them.
-  for (WindowController* window : *WindowControllerList::GetInstance()) {
-    BrowserWindowInterface* browser_window_interface =
-        window->GetBrowserWindowInterface();
-    // browser_window_interface can be null for non-browser windows on ChromeOS.
-    if (!browser_window_interface) {
-      continue;
-    }
-    TabListInterface* tab_list =
-        TabListInterface::From(browser_window_interface);
-    if (tab_list && !tab_list->IsThisTabListEditable()) {
-      return false;
-    }
-  }
-  return true;
+  return TabListInterface::CanEditTabList(profile);
 }
 
 // static

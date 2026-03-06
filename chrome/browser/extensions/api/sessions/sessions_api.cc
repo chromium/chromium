@@ -1024,7 +1024,7 @@ ExtensionFunction::ResponseAction SessionsRestoreFunction::Run() {
     return RespondNow(Error(kRestoreInIncognitoError));
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*profile)) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 

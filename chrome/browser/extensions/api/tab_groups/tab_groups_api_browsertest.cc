@@ -788,7 +788,7 @@ IN_PROC_BROWSER_TEST_F(TabGroupsApiBrowserTest, IsTabStripEditable) {
   const std::string args =
       base::StringPrintf(R"([%d, {"index": %d}])", group_id, 1);
 
-  EXPECT_TRUE(ExtensionTabUtil::IsTabStripEditable());
+  EXPECT_TRUE(ExtensionTabUtil::IsTabStripEditable(*profile()));
 
   // Succeed moving group when tab strip is editable.
   {

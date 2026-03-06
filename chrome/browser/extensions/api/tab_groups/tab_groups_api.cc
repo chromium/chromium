@@ -251,7 +251,7 @@ ExtensionFunction::ResponseAction TabGroupsUpdateFunction::Run() {
     title = base::UTF8ToUTF16(*params->update_properties.title);
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 
@@ -362,7 +362,7 @@ bool TabGroupsMoveFunction::MoveGroup(int group_id,
     return false;
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }

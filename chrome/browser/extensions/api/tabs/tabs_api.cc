@@ -168,7 +168,8 @@ bool SetOpenerOfTab(content::WebContents& tab,
                     std::string& error) {
   // Bug fix for crbug.com/1197888. Don't let the extension update the tab
   // if the user is dragging tabs.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(
+          *Profile::FromBrowserContext(tab.GetBrowserContext()))) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -396,7 +397,7 @@ int MoveTabToWindow(ExtensionFunction* function,
     return -1;
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return -1;
   }
@@ -1267,7 +1268,7 @@ std::string WindowsCreateFunction::ValidateTab(
   }
 #endif
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*window_profile)) {
     return ExtensionTabUtil::kTabStripNotEditableError;
   }
 
@@ -1891,9 +1892,6 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
   std::optional<tabs::Create::Params> params =
       tabs::Create::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-  }
 
   const tabs::Create::Params::CreateProperties& create_properties =
       params->create_properties;
@@ -2015,6 +2013,10 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
         *profile_to_use, include_incognito);
   }
 
+  if (!ExtensionTabUtil::IsTabStripEditable(*profile_to_use)) {
+    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
+  }
+
   // Found a suitable browser. Use it!
   if (browser) {
     OpenTabInBrowser(*browser, opener);
@@ -2116,9 +2118,6 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   std::optional<tabs::Duplicate::Params> params =
       tabs::Duplicate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
-    return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
-  }
   int tab_id = params->tab_id;
 
   WindowController* window = nullptr;
@@ -2135,7 +2134,8 @@ ExtensionFunction::ResponseAction TabsDuplicateFunction::Run() {
   }
   BrowserWindowInterface* browser = window->GetBrowserWindowInterface();
 
-  if (!browser || !ExtensionTabUtil::IsTabStripEditable()) {
+  if (!browser ||
+      !ExtensionTabUtil::IsTabStripEditable(*browser->GetProfile())) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 
@@ -2307,14 +2307,16 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
   TabListInterface* tab_list =
       TabListInterface::From(window->GetBrowserWindowInterface());
   CHECK(tab_list);
-  if (!UpdateActiveTab(*params, *tab_list, tab_index, error)) {
+  if (!UpdateActiveTab(*params, *window->profile(), *tab_list, tab_index,
+                       error)) {
     return RespondNow(Error(std::move(error)));
   }
 
   // Update the highlighted tab.
   ::tabs::TabInterface* target_tab = tab_list->GetTab(tab_index);
   CHECK(target_tab);
-  if (!UpdateHighlightedTab(*params, *tab_list, *target_tab, error)) {
+  if (!UpdateHighlightedTab(*params, *window->profile(), *tab_list, *target_tab,
+                            error)) {
     return RespondNow(Error(std::move(error)));
   }
 
@@ -2360,7 +2362,7 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
     if (target_tab->IsPinned() != pinned) {
       // Bug fix for crbug.com/1197888. Don't let the extension update the tab
       // if the user is dragging tabs.
-      if (!ExtensionTabUtil::IsTabStripEditable()) {
+      if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
         return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
       }
 
@@ -2419,7 +2421,7 @@ bool TabsUpdateFunction::ComputeDefaultTabId(int& tab_id,
     error = ExtensionTabUtil::kNoCurrentWindowError;
     return false;
   }
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*window_controller->profile())) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -2434,6 +2436,7 @@ bool TabsUpdateFunction::ComputeDefaultTabId(int& tab_id,
 
 bool TabsUpdateFunction::UpdateActiveTab(
     const api::tabs::Update::Params& params,
+    Profile& profile,
     TabListInterface& tab_list,
     int tab_index,
     std::string& error) {
@@ -2456,7 +2459,7 @@ bool TabsUpdateFunction::UpdateActiveTab(
 
   // Bug fix for crbug.com/1197888. Don't let the extension update the tab
   // if the user is dragging tabs.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(profile)) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -2471,6 +2474,7 @@ bool TabsUpdateFunction::UpdateActiveTab(
 
 bool TabsUpdateFunction::UpdateHighlightedTab(
     const api::tabs::Update::Params& params,
+    Profile& profile,
     TabListInterface& tab_list,
     ::tabs::TabInterface& target_tab,
     std::string& error) {
@@ -2487,7 +2491,7 @@ bool TabsUpdateFunction::UpdateHighlightedTab(
 
   // Bug fix for crbug.com/1197888. Don't let the extension update the tab
   // if the user is dragging tabs.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(profile)) {
     error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -2665,7 +2669,7 @@ bool TabsMoveFunction::MoveTab(int tab_id,
   }
 
   // Don't let the extension move the tab if the user is dragging tabs.
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*source_window->profile())) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -2949,7 +2953,7 @@ ExtensionFunction::ResponseAction TabsGroupFunction::Run() {
         Error(ExtensionTabUtil::kTabStripDoesNotSupportTabGroupsError));
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*target_window->profile())) {
     return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
   }
 
@@ -3082,7 +3086,7 @@ bool TabsUngroupFunction::UngroupTab(int tab_id, std::string* error) {
     return false;
   }
 
-  if (!ExtensionTabUtil::IsTabStripEditable()) {
+  if (!ExtensionTabUtil::IsTabStripEditable(*window->profile())) {
     *error = ExtensionTabUtil::kTabStripNotEditableError;
     return false;
   }
@@ -3139,7 +3143,7 @@ ExtensionFunction::ResponseAction TabsDetectLanguageFunction::Run() {
     if (!window_controller) {
       return RespondNow(Error(ExtensionTabUtil::kNoCurrentWindowError));
     }
-    if (!ExtensionTabUtil::IsTabStripEditable()) {
+    if (!ExtensionTabUtil::IsTabStripEditable(*window_controller->profile())) {
       return RespondNow(Error(ExtensionTabUtil::kTabStripNotEditableError));
     }
     contents = window_controller->GetActiveTab();
