@@ -304,4 +304,46 @@ TEST_F(GeneratedSafeBrowsingPrefTest, ManagementState) {
   }
 }
 
+TEST_F(GeneratedSafeBrowsingPrefTest,
+       OnSettingsBundleChanged_PrefChangedExternally) {
+  // Verify initial preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+
+  // Set up an observer for generated Safe Browsing preferences.
+  auto pref = std::make_unique<GeneratedSafeBrowsingPref>(profile());
+  settings_private::TestGeneratedPrefObserver test_observer;
+  pref->AddObserver(&test_observer);
+
+  // Set bundled settings state to ENHANCED programmatically.
+  prefs()->SetUserPref(prefs::kSecuritySettingsBundle,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           SecuritySettingsBundleSetting::ENHANCED)));
+
+  // Verify current preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::ENHANCED);
+  EXPECT_FALSE(
+      prefs()
+          ->GetUserPref(prefs::kEnhancedProtectionEnabledViaTailoredSecurity)
+          ->GetBool());
+  test_observer.Reset();
+
+  // Set bundled settings state to STANDARD programmatically.
+  prefs()->SetUserPref(prefs::kSecuritySettingsBundle,
+                       std::make_unique<base::Value>(static_cast<int>(
+                           SecuritySettingsBundleSetting::STANDARD)));
+
+  // Verify current preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
+  EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
+            SecuritySettingsBundleSetting::STANDARD);
+  test_observer.Reset();
+}
+
 }  // namespace safe_browsing

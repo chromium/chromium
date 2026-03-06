@@ -9,8 +9,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/extensions/api/settings_private/generated_pref_test_base.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/generated_safe_browsing_pref.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
@@ -591,20 +593,30 @@ TEST_F(ChromeTailoredSecurityServiceTest, EnableEnhancedBundlePref) {
       safe_browsing::kBundledSecuritySettings);
 
   // Verify initial preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::STANDARD);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Set up an observer for generated Safe Browsing preferences.
+  GeneratedSafeBrowsingPref generatedSafeBrowsingPref(profile());
+  extensions::settings_private::TestGeneratedPrefObserver test_observer;
+  generatedSafeBrowsingPref.AddObserver(&test_observer);
 
   // Enable ESB through account integration.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
 
   // Verify current preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::ENHANCED);
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest, DisableEnhancedBundlePref) {
@@ -613,57 +625,80 @@ TEST_F(ChromeTailoredSecurityServiceTest, DisableEnhancedBundlePref) {
       safe_browsing::kBundledSecuritySettings);
 
   // Verify initial preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::STANDARD);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Set up an observer for generated Safe Browsing preferences.
+  GeneratedSafeBrowsingPref generatedSafeBrowsingPref(profile());
+  extensions::settings_private::TestGeneratedPrefObserver test_observer;
+  generatedSafeBrowsingPref.AddObserver(&test_observer);
 
   // Enable ESB through account integration.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
 
   // Verify current preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::ENHANCED);
   EXPECT_TRUE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 
   // Disable ESB through account integration.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
 
   // Verify current preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::STANDARD);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
        EsbAlreadyEnabledBundlePrefNotChanged) {
+  // Set up an observer for generated Safe Browsing preferences.
+  GeneratedSafeBrowsingPref generatedSafeBrowsingPref(profile());
+  extensions::settings_private::TestGeneratedPrefObserver test_observer;
+  generatedSafeBrowsingPref.AddObserver(&test_observer);
+
   // Set initial state.
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kBundledSecuritySettings);
-  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   SetSecurityBundleSetting(*prefs(), SecuritySettingsBundleSetting::ENHANCED);
 
   // Verify initial preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::ENHANCED);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 
   // Attempt to enable ESB through account integration.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityEnabled,
                                                    base::Time::Now());
 
   // Verify that the current preference state has not changed.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::ENHANCED);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
   EXPECT_EQ(prefs()->GetInteger(prefs::kTailoredSecuritySyncFlowRetryState),
             safe_browsing::TailoredSecurityRetryState::NO_RETRY_NEEDED);
+  test_observer.Reset();
 }
 
 TEST_F(ChromeTailoredSecurityServiceTest,
@@ -673,45 +708,66 @@ TEST_F(ChromeTailoredSecurityServiceTest,
       safe_browsing::kBundledSecuritySettings);
 
   // Verify initial preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::STANDARD);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+
+  // Set up an observer for generated Safe Browsing preferences.
+  GeneratedSafeBrowsingPref generatedSafeBrowsingPref(profile());
+  extensions::settings_private::TestGeneratedPrefObserver test_observer;
+  generatedSafeBrowsingPref.AddObserver(&test_observer);
 
   // Attempt to disable ESB through account integration.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
 
   // Verify that the current preference state has not changed.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::STANDARD_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::STANDARD);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 }
 
-TEST_F(ChromeTailoredSecurityServiceTest,
-       EnhancedBundleEnabledManuallyAttemptToDisable) {
+TEST_F(
+    ChromeTailoredSecurityServiceTest,
+    EnhancedBundleEnabledManuallyTailoredSecurityDisabledDoesNotChangeBundle) {
+  // Set up an observer for generated Safe Browsing preferences.
+  GeneratedSafeBrowsingPref generatedSafeBrowsingPref(profile());
+  extensions::settings_private::TestGeneratedPrefObserver test_observer;
+  generatedSafeBrowsingPref.AddObserver(&test_observer);
+
   // Set initial state.
   scoped_feature_list_.InitAndEnableFeature(
       safe_browsing::kBundledSecuritySettings);
-  SetSafeBrowsingState(prefs(), SafeBrowsingState::ENHANCED_PROTECTION);
   SetSecurityBundleSetting(*prefs(), SecuritySettingsBundleSetting::ENHANCED);
 
   // Verify initial preference state.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::ENHANCED);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 
   // Attempt to disable ESB through account integration.
   tailored_security_service()->MaybeNotifySyncUser(kTailoredSecurityDisabled,
                                                    base::Time::Now());
 
   // Verify that the current preference state has not changed.
+  EXPECT_EQ(GetSafeBrowsingState(*prefs()),
+            SafeBrowsingState::ENHANCED_PROTECTION);
   EXPECT_EQ(GetSecurityBundleSetting(*prefs()),
             SecuritySettingsBundleSetting::ENHANCED);
   EXPECT_FALSE(prefs()->GetBoolean(
       prefs::kEnhancedProtectionEnabledViaTailoredSecurity));
+  test_observer.Reset();
 }
 
 }  // namespace safe_browsing

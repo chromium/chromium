@@ -25,6 +25,10 @@ GeneratedSafeBrowsingPref::GeneratedSafeBrowsingPref(Profile* profile)
       base::BindRepeating(
           &GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged,
           base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kSecuritySettingsBundle,
+      base::BindRepeating(&GeneratedSafeBrowsingPref::OnSettingsBundleChanged,
+                          base::Unretained(this)));
 }
 
 extensions::settings_private::SetPrefResult GeneratedSafeBrowsingPref::SetPref(
@@ -94,6 +98,24 @@ GeneratedSafeBrowsingPref::GetPrefObject() const {
 
 void GeneratedSafeBrowsingPref::OnSafeBrowsingPreferencesChanged() {
   NotifyObservers(kGeneratedSafeBrowsingPref);
+}
+
+void GeneratedSafeBrowsingPref::OnSettingsBundleChanged() {
+  auto bundle = GetSecurityBundleSetting(*profile_->GetPrefs());
+  switch (bundle) {
+    case SecuritySettingsBundleSetting::STANDARD:
+      SetPref(std::make_unique<base::Value>(
+                  static_cast<int>(SafeBrowsingState::STANDARD_PROTECTION))
+                  .get());
+      break;
+    case SecuritySettingsBundleSetting::ENHANCED:
+      SetPref(std::make_unique<base::Value>(
+                  static_cast<int>(SafeBrowsingState::ENHANCED_PROTECTION))
+                  .get());
+      break;
+    default:
+      NOTREACHED();
+  }
 }
 
 /* static */

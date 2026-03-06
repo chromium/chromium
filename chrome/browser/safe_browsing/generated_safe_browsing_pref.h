@@ -33,6 +33,9 @@ class GeneratedSafeBrowsingPref
   // Fired when underlying Safe Browsing preferences are changed.
   void OnSafeBrowsingPreferencesChanged();
 
+  // Fired when the selected bundled setting is changed programmatically.
+  void OnSettingsBundleChanged();
+
  private:
   // Applies the effective management state of Safe Browsing for |profile| to
   // |pref_object|.

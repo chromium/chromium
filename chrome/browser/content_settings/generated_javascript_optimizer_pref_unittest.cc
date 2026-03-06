@@ -307,4 +307,45 @@ TEST_F(GeneratedJavascriptOptimizerPrefTest, SetPref_OutOfRange) {
   EXPECT_EQ(result, SetPrefResult::PREF_TYPE_MISMATCH);
 }
 
+TEST_F(GeneratedJavascriptOptimizerPrefTest,
+       OnSettingsBundleChanged_PrefChangedExternally) {
+  // Verify initial preference state.
+  EXPECT_EQ(static_cast<int>(JavascriptOptimizerSetting::kAllowed),
+            GetGeneratedPrefValue(profile()));
+  EXPECT_EQ(safe_browsing::GetSecurityBundleSetting(*prefs()),
+            safe_browsing::SecuritySettingsBundleSetting::STANDARD);
+
+  // Set up an observer for generated Javascript Optimizer preferences.
+  GeneratedJavascriptOptimizerPref pref(profile());
+  TestObserver observer;
+  pref.AddObserver(&observer);
+
+  // Set bundled settings state to ENHANCED programmatically.
+  prefs()->SetDefaultPrefValue(
+      prefs::kSecuritySettingsBundle,
+      base::Value(static_cast<int>(
+          safe_browsing::SecuritySettingsBundleSetting::ENHANCED)));
+
+  // Validate that the JavaScript Optimizer preferences are correctly set.
+  observer.WaitForGeneratedPrefChange();
+  EXPECT_EQ(
+      static_cast<int>(JavascriptOptimizerSetting::kBlockedForUnfamiliarSites),
+      GetGeneratedPrefValue(profile()));
+  EXPECT_EQ(safe_browsing::GetSecurityBundleSetting(*prefs()),
+            safe_browsing::SecuritySettingsBundleSetting::ENHANCED);
+
+  // Set bundled settings state to STANDARD programmatically.
+  prefs()->SetDefaultPrefValue(
+      prefs::kSecuritySettingsBundle,
+      base::Value(static_cast<int>(
+          safe_browsing::SecuritySettingsBundleSetting::STANDARD)));
+
+  // Validate that the JavaScript Optimizer preferences are correctly set.
+  observer.WaitForGeneratedPrefChange();
+  EXPECT_EQ(static_cast<int>(JavascriptOptimizerSetting::kAllowed),
+            GetGeneratedPrefValue(profile()));
+  EXPECT_EQ(safe_browsing::GetSecurityBundleSetting(*prefs()),
+            safe_browsing::SecuritySettingsBundleSetting::STANDARD);
+}
+
 }  // namespace content_settings

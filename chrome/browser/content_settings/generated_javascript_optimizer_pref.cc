@@ -34,6 +34,11 @@ GeneratedJavascriptOptimizerPref::GeneratedJavascriptOptimizerPref(
       base::BindRepeating(
           &GeneratedJavascriptOptimizerPref::OnPreferencesChanged,
           base::Unretained(this)));
+  user_prefs_registrar_.Add(
+      prefs::kSecuritySettingsBundle,
+      base::BindRepeating(
+          &GeneratedJavascriptOptimizerPref::OnSettingsBundleChanged,
+          base::Unretained(this)));
 
   host_content_settings_map_ =
       HostContentSettingsMapFactory::GetForProfile(profile_);
@@ -116,6 +121,26 @@ PrefObject GeneratedJavascriptOptimizerPref::GetPrefObject() const {
 
 void GeneratedJavascriptOptimizerPref::OnPreferencesChanged() {
   NotifyObservers(kGeneratedJavascriptOptimizerPref);
+}
+
+void GeneratedJavascriptOptimizerPref::OnSettingsBundleChanged() {
+  auto bundle = safe_browsing::GetSecurityBundleSetting(*profile_->GetPrefs());
+  switch (bundle) {
+    case safe_browsing::SecuritySettingsBundleSetting::STANDARD: {
+      base::Value pref_value(
+          static_cast<int>(JavascriptOptimizerSetting::kAllowed));
+      SetPref(&pref_value);
+      break;
+    }
+    case safe_browsing::SecuritySettingsBundleSetting::ENHANCED: {
+      base::Value pref_value(static_cast<int>(
+          JavascriptOptimizerSetting::kBlockedForUnfamiliarSites));
+      SetPref(&pref_value);
+      break;
+    }
+    default:
+      NOTREACHED();
+  }
 }
 
 content_settings::JavascriptOptimizerSetting

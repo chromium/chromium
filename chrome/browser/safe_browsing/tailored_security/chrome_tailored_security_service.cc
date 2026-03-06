@@ -152,17 +152,11 @@ void ChromeTailoredSecurityService::OnSyncNotificationMessageRequest(
     bool tailored_security_pref_registered = profile_pref->FindPreference(
         prefs::kEnhancedProtectionEnabledViaTailoredSecurity);
     if (tailored_security_pref_registered) {
+      SetSecurityBundleSetting(
+          *profile_pref, is_enabled ? SecuritySettingsBundleSetting::ENHANCED
+                                    : SecuritySettingsBundleSetting::STANDARD);
       profile_pref->SetBoolean(
           prefs::kEnhancedProtectionEnabledViaTailoredSecurity, is_enabled);
-
-      auto generated_pref =
-          std::make_unique<GeneratedSecuritySettingsBundlePref>(profile_);
-      generated_pref->SetPref(
-          std::make_unique<base::Value>(
-              static_cast<int>((is_enabled
-                                    ? SecuritySettingsBundleSetting::ENHANCED
-                                    : SecuritySettingsBundleSetting::STANDARD)))
-              .get());
     }
   } else {
     SetSafeBrowsingState(profile_->GetPrefs(),
