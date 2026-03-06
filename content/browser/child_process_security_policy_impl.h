@@ -54,6 +54,17 @@ class IsolationContext;
 class ProcessLock;
 struct UrlInfo;
 
+// Note: This class's implementation is migrating to Rust in
+// https://crbug.com/482216433. Existing functions will be replaced with
+// wrappers that can forward to a Rust implementation or a C++ implementation
+// (named with a _Cpp suffix), based on the following feature flags:
+//   --enable-features=ChildProcessSecurityPolicyRust for only running the Rust
+//     implementations.
+//   --enable-features=ChildProcessSecurityPolicyRust:policy/rust-and-cpp for
+//     running both implementations and ensuring their results match. By
+//     default, only the C++ implementations are used.
+// The _Cpp implementations and the wrapper functions will be removed after
+// the Rust features have launched.
 class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
     : public ChildProcessSecurityPolicy {
  public:
@@ -143,8 +154,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
 
   // ChildProcessSecurityPolicy implementation.
   void RegisterWebSafeScheme(const std::string& scheme) override;
+  void RegisterWebSafeScheme_Cpp(const std::string& scheme);
   void RegisterWebSafeIsolatedScheme(const std::string& scheme) override;
+  void RegisterWebSafeIsolatedScheme_Cpp(const std::string& scheme);
   bool IsWebSafeScheme(const std::string& scheme) override;
+  bool IsWebSafeScheme_Cpp(const std::string& scheme);
   void GrantReadFile(ChildProcessId child_id,
                      const base::FilePath& file) override;
   void GrantCreateReadWriteFile(int child_id,
@@ -642,6 +656,7 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
   size_t BrowsingInstanceIdCountForTesting(ChildProcessId child_id);
 
   void ClearRegisteredSchemeForTesting(const std::string& scheme);
+  void ClearRegisteredSchemeForTesting_Cpp(const std::string& scheme);
 
   // Checks if the provided `url` matches any committed origin in the process
   // `child_id`. Currently only exposed for testing, since normally this check
@@ -1072,6 +1087,11 @@ class CONTENT_EXPORT ChildProcessSecurityPolicyImpl
       const BrowsingInstanceId& browsing_instance_id,
       const url::Origin& origin)
       EXCLUSIVE_LOCKS_REQUIRED(origins_isolation_opt_in_lock_);
+
+  // Helper used by CanCommitURL() to check if `scheme` can be committed in any
+  // process.
+  bool CanCommitSchemeInAnyProcess(const std::string& scheme);
+  bool CanCommitSchemeInAnyProcess_Cpp(const std::string& scheme);
 
   // You must acquire this lock before reading or writing any members of this
   // class, except for isolated_origins_, schemes_okay_to_*, and

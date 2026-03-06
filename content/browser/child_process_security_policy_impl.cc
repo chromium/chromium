@@ -20,6 +20,7 @@
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -27,6 +28,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
+#include "content/browser/child_process_security_policy_impl.rs.h"
 #include "content/browser/isolated_origin_util.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
@@ -75,6 +77,99 @@ BASE_FEATURE(kDumpWithoutCrashingForMissingSecurityState,
 namespace content {
 
 namespace {
+
+// When enabled, replaces certain ChildProcessSecurityPolicy functionality with
+// an experimental Rust implementation. See https://crbug.com/482216433.
+BASE_FEATURE(kChildProcessSecurityPolicyRust,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Determines how the experimental Rust ChildProcessSecurityPolicy
+// implementation should be enabled.
+enum class RustPolicy {
+  // The Rust ChildProcessSecurityPolicy implementation is not used, and only
+  // the legacy C++ implementation is used.
+  kCppOnly,
+  // The Rust ChildProcessSecurityPolicy implementation is used, and the legacy
+  // C++ implementation is not used.
+  kRustOnly,
+  // Both Rust and C++ ChildProcessSecurityPolicy implementations run in
+  // parallel, and runtime checks ensure that they match.
+  kRustAndCpp,
+};
+
+// Defines a FeatureParam to control `RustPolicy` in field trials or from
+// command line. Note that the `kCppOnly` policy is achieved by turning off
+// kChildProcessSecurityPolicyRust; this param controls whether to run in
+// kRustOnly or kRustAndCpp mode if that feature is enabled. The default is
+// Rust-only. To enable kRustAndCpp for command-line testing, use:
+// --enable-features=ChildProcessSecurityPolicyRust:policy/rust-and-cpp
+constexpr base::FeatureParam<RustPolicy>::Option rust_policy_options[] = {
+    {RustPolicy::kRustOnly, "rust-only"},
+    {RustPolicy::kRustAndCpp, "rust-and-cpp"}};
+
+const base::FeatureParam<RustPolicy> kRustPolicyParam{
+    &kChildProcessSecurityPolicyRust, "policy", RustPolicy::kRustOnly,
+    &rust_policy_options};
+
+// Helpers to determine whether the experimental Rust ChildProcessSecurityPolicy
+// implementation is enabled, and whether both Rust and the legacy C++
+// implementations should run in parallel.
+RustPolicy GetRustPolicy() {
+  if (!base::FeatureList::IsEnabled(kChildProcessSecurityPolicyRust)) {
+    return RustPolicy::kCppOnly;
+  }
+  return kRustPolicyParam.Get();
+}
+bool IsRustEnabled() {
+  return GetRustPolicy() == RustPolicy::kRustAndCpp ||
+         GetRustPolicy() == RustPolicy::kRustOnly;
+}
+bool IsCppEnabled() {
+  return GetRustPolicy() == RustPolicy::kCppOnly ||
+         GetRustPolicy() == RustPolicy::kRustAndCpp;
+}
+
+// Helper function that ensures that the values calculated by Rust and C++ code
+// match. This is used as a return value for functions that are implemented in
+// both languages.
+template <typename T>
+T CheckAndReturnRustAndCppResults(const T& rust_result, const T& cpp_result) {
+  if (GetRustPolicy() == RustPolicy::kRustAndCpp) {
+    // TODO(crbug.com/482216433): CHECK_EQ doesn't support std::optional types;
+    // comparing those types will need another helper.
+    CHECK_EQ(rust_result, cpp_result)
+        << "Rust: " << rust_result << " vs C++: " << cpp_result;
+  }
+  // Rust return values get priority.
+  return IsRustEnabled() ? rust_result : cpp_result;
+}
+
+// Macro for gating whether a void function should use its Rust or C++
+// implementation (or both), based on current feature flags.
+#define RUST_CPP_VOID_FUNCTION(rust_function_call, cpp_function_call) \
+  if (IsRustEnabled()) {                                              \
+    rust_function_call;                                               \
+  }                                                                   \
+  if (IsCppEnabled()) {                                               \
+    cpp_function_call;                                                \
+  }
+
+// Macro for gating whether a function with a return value should use its Rust
+// or C++ implementation (or both), based on current feature flags. If both Rust
+// and C++ are enabled, then the return values of both implementations are
+// compared, causing a CHECK failure if they differ.
+// `ReturnType` specifies what type to use for the return value.
+#define RUST_CPP_RETURN_FUNCTION(rust_function_call, cpp_function_call, \
+                                 ReturnType)                            \
+  ReturnType rust_result{};                                             \
+  if (IsRustEnabled()) {                                                \
+    rust_result = rust_function_call;                                   \
+    if (GetRustPolicy() == RustPolicy::kRustOnly) {                     \
+      return rust_result;                                               \
+    }                                                                   \
+  }                                                                     \
+  ReturnType cpp_result = cpp_function_call;                            \
+  return CheckAndReturnRustAndCppResults(rust_result, cpp_result);
 
 // Used internally only. These bit positions have no relationship to any
 // underlying OS and can be changed to accommodate finer-grained permissions.
@@ -1120,6 +1215,13 @@ void ChildProcessSecurityPolicyImpl::SecurityStateMaps::PrepareToRemoveState(
 
 void ChildProcessSecurityPolicyImpl::RegisterWebSafeScheme(
     const std::string& scheme) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::register_web_safe_scheme(scheme),
+      RegisterWebSafeScheme_Cpp(scheme));
+}
+
+void ChildProcessSecurityPolicyImpl::RegisterWebSafeScheme_Cpp(
+    const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
   DCHECK_EQ(0U, schemes_okay_to_request_in_any_process_.count(scheme))
       << "Add schemes at most once.";
@@ -1132,6 +1234,13 @@ void ChildProcessSecurityPolicyImpl::RegisterWebSafeScheme(
 
 void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme(
     const std::string& scheme) {
+  RUST_CPP_VOID_FUNCTION(rust::child_process_security_policy::
+                             register_web_safe_request_only_scheme(scheme),
+                         RegisterWebSafeIsolatedScheme_Cpp(scheme));
+}
+
+void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme_Cpp(
+    const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
   DCHECK_EQ(0U, schemes_okay_to_request_in_any_process_.count(scheme))
       << "Add schemes at most once.";
@@ -1143,11 +1252,16 @@ void ChildProcessSecurityPolicyImpl::RegisterWebSafeIsolatedScheme(
 
 bool ChildProcessSecurityPolicyImpl::IsWebSafeScheme(
     const std::string& scheme) {
-  base::AutoLock lock(schemes_lock_);
-
-  return schemes_okay_to_request_in_any_process_.contains(scheme);
+  RUST_CPP_RETURN_FUNCTION(
+      rust::child_process_security_policy::is_web_safe_scheme(scheme),
+      IsWebSafeScheme_Cpp(scheme), bool);
 }
 
+bool ChildProcessSecurityPolicyImpl::IsWebSafeScheme_Cpp(
+    const std::string& scheme) {
+  base::AutoLock lock(schemes_lock_);
+  return schemes_okay_to_request_in_any_process_.contains(scheme);
+}
 void ChildProcessSecurityPolicyImpl::RegisterPseudoScheme(
     const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
@@ -1167,6 +1281,21 @@ bool ChildProcessSecurityPolicyImpl::IsPseudoScheme(const std::string& scheme) {
 }
 
 void ChildProcessSecurityPolicyImpl::ClearRegisteredSchemeForTesting(
+    const std::string& scheme) {
+  RUST_CPP_VOID_FUNCTION(
+      rust::child_process_security_policy::clear_web_safe_scheme_for_testing(
+          scheme),                                   // IN-TEST
+      ClearRegisteredSchemeForTesting_Cpp(scheme));  // IN-TEST
+
+  // TODO(crbug.com/482216433): Remove when pseudo_schemes_ is handled in Rust.
+  // For now, this C++ set still gets populated in RustOnly mode.
+  if (GetRustPolicy() == RustPolicy::kRustOnly) {
+    base::AutoLock lock(schemes_lock_);
+    pseudo_schemes_.erase(scheme);
+  }
+}
+
+void ChildProcessSecurityPolicyImpl::ClearRegisteredSchemeForTesting_Cpp(
     const std::string& scheme) {
   base::AutoLock lock(schemes_lock_);
   schemes_okay_to_request_in_any_process_.erase(scheme);
@@ -1579,6 +1708,20 @@ bool ChildProcessSecurityPolicyImpl::CanRedirectToURL(const GURL& url) {
   return true;
 }
 
+bool ChildProcessSecurityPolicyImpl::CanCommitSchemeInAnyProcess(
+    const std::string& scheme) {
+  RUST_CPP_RETURN_FUNCTION(
+      rust::child_process_security_policy::can_commit_scheme_in_any_process(
+          scheme),
+      CanCommitSchemeInAnyProcess_Cpp(scheme), bool);
+}
+
+bool ChildProcessSecurityPolicyImpl::CanCommitSchemeInAnyProcess_Cpp(
+    const std::string& scheme) {
+  base::AutoLock schemes_lock(schemes_lock_);
+  return schemes_okay_to_commit_in_any_process_.contains(scheme);
+}
+
 bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
                                                   const GURL& url) {
   if (!url.is_valid()) {
@@ -1644,16 +1787,13 @@ bool ChildProcessSecurityPolicyImpl::CanCommitURL(int child_id,
     base::AutoLock lock(lock_);
 
     // Most schemes can commit in any process. Note that we check
-    // schemes_okay_to_commit_in_any_process_ here, which is stricter than
+    // CanCommitSchemeInAnyProcess() here, which is stricter than
     // IsWebSafeScheme().
     //
     // TODO(creis, nick): https://crbug.com/515309: The line below does not
     // enforce that http pages cannot commit in an extension process.
-    {
-      base::AutoLock schemes_lock(schemes_lock_);
-      if (schemes_okay_to_commit_in_any_process_.contains(scheme)) {
-        return true;
-      }
+    if (CanCommitSchemeInAnyProcess(scheme)) {
+      return true;
     }
 
     auto* state = security_states_.GetSecurityStateForQuery(
