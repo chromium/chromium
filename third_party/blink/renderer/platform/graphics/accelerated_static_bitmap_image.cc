@@ -34,7 +34,6 @@
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
 #include "third_party/skia/include/gpu/ganesh/GrBackendSurface.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "third_party/skia/include/gpu/ganesh/GrTypes.h"
 #include "third_party/skia/include/gpu/ganesh/SkImageGanesh.h"
 #include "third_party/skia/include/gpu/ganesh/gl/GrGLBackendSurface.h"

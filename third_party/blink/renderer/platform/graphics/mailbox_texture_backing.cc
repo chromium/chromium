@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/web_graphics_context_3d_provider_wrapper.h"
 #include "third_party/skia/include/core/SkImage.h"
-#include "third_party/skia/include/gpu/ganesh/GrDirectContext.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
