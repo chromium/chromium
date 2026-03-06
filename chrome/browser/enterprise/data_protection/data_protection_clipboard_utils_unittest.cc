@@ -444,6 +444,90 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
 }
 
 TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       CustomDataReplacement) {
+#if BUILDFLAG(IS_ANDROID)
+  EnableDataControls();
+#endif  // BUILDFLAG(IS_ANDROID)
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  ui::ClipboardMetadata metadata = CopyMetadata();
+  metadata.seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  metadata.format_type = ui::ClipboardFormatType::WebCustomFormatMap();
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+
+  // `WebCustomFormatMap` passes empty `ClipboardPasteData` because the real
+  // data is passed as an opaque `BigBuffer`. We invoke policy checks using
+  // empty object sizes or metadata overrides instead.
+  content::ClipboardPasteData empty_custom_data;
+
+  IsClipboardCopyAllowedByPolicy(CopyEndpoint(GURL("https://source.com")),
+                                 metadata, std::move(empty_custom_data),
+                                 copy_future.GetCallback());
+
+  auto data = copy_future.Get<content::ClipboardPasteData>();
+  EXPECT_TRUE(data.custom_data.empty());
+
+  auto replacement = copy_future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
+            u"Pasting this content here is blocked by your administrator.");
+
+  // This triggers the clipboard observer started by the
+  // `IsClipboardCopyAllowedByPolicy` calls so that they're aware of the new
+  // seqno.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // Since the rule only applied to copying to the OS clipboard, pasting should
+  // still be allowed and use cached data.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      first_paste_future;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), metadata,
+                         content::ClipboardPasteData(),
+                         first_paste_future.GetCallback());
+
+  auto first_paste_data = first_paste_future.Get();
+  EXPECT_TRUE(first_paste_data);
+  EXPECT_TRUE(first_paste_data->empty());
+
+  // Same-tab replacement does not apply to `WebCustomFormatMap` because the
+  // policy engine receives and caches empty object, not opaque `BigBuffer`.
+  content::ClipboardPasteData same_tab_data;
+  ReplaceSameTabClipboardDataIfRequiredByPolicy(metadata.seqno, same_tab_data);
+  EXPECT_TRUE(same_tab_data.custom_data.empty());
+
+  // Pasting again with a new seqno means new data in the clipboard from
+  // outside of Chrome, so it should be let through without replacement when it
+  // triggers no rule.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      second_paste_future;
+  ui::ClipboardMetadata new_metadata;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(), new_metadata,
+                         MakeClipboardPasteData("text", "image", {}),
+                         second_paste_future.GetCallback());
+
+  auto new_data = second_paste_future.Get();
+  EXPECT_TRUE(new_data);
+  EXPECT_TRUE(new_data->custom_data.empty());
+  EXPECT_EQ(new_data->text, u"text");
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
        StringReplacement_MultiType) {
 #if BUILDFLAG(IS_ANDROID)
   EnableDataControls();
