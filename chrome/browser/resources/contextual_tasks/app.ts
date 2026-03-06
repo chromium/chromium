@@ -799,6 +799,7 @@ export class ContextualTasksAppElement extends CrLitElement {
     const {params} = await this.browserProxy_.handler.getCommonSearchParams(
         /*isDarkMode=*/ this.darkMode_,
         /*isSidePanel=*/ !this.isShownInTab_);
+    this.updateBackgroundColor_();
     this.commonSearchParams_ = params;
     this.maybeLoadPendingUrl_();
   }
@@ -945,6 +946,14 @@ export class ContextualTasksAppElement extends CrLitElement {
 
   setIsZeroStateForTesting(isZeroState: boolean) {
     this.isZeroState_ = isZeroState;
+  }
+
+  private updateBackgroundColor_() {
+    if (this.darkMode_) {
+      document.body.style.backgroundColor = 'rgba(16, 18, 23, 1)';
+    } else {
+      document.body.style.backgroundColor = 'rgba(255, 255, 255, 1)';
+    }
   }
 }
 
