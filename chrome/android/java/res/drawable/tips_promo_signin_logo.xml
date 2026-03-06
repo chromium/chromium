@@ -178,22 +178,26 @@ found in the LICENSE file.
     <path
         android:pathData="M115.64,73.29m-3.59,0a3.59,3.59 0,1 1,7.17 0a3.59,3.59 0,1 1,-7.17 0"
         android:fillColor="#D3E3FD"/>
-    <path
-        android:pathData="M297.08,164.27C296.85,164.16 296.58,164.16 296.34,164.27L269.48,176.47C269.15,176.61 268.95,176.93 268.95,177.28L268.95,195.88C268.95,214.53 280.76,231.64 296.55,237.15C296.67,237.19 296.81,237.19 296.93,237.15C312.7,231.63 324.53,214.53 324.53,195.88L324.53,177.29C324.53,176.93 324.33,176.61 324.01,176.47L297.08,164.27Z"
-        android:strokeWidth="5.37906"
-        android:fillColor="#C4EED0">
-      <aapt:attr name="android:strokeColor">
-        <gradient
-            android:startX="296.74"
-            android:startY="161.15"
-            android:endX="296.74"
-            android:endY="240.04"
-            android:type="linear">
-          <item android:offset="0" android:color="#FFC4EED0"/>
-          <item android:offset="1" android:color="#FF37BE5F"/>
-        </gradient>
-      </aapt:attr>
-    </path>
+    <group>
+      <clip-path
+          android:pathData="M298.19,161.82C297.25,161.4 296.17,161.4 295.23,161.82L268.36,174.02C267.08,174.6 266.26,175.88 266.26,177.28L266.26,195.88C266.26,215.57 278.69,233.76 295.67,239.69C296.36,239.93 297.12,239.93 297.81,239.69C314.76,233.76 327.22,215.57 327.22,195.88L327.22,177.29C327.22,175.88 326.4,174.6 325.11,174.02L298.19,161.82Z"/>
+      <path
+          android:pathData="M298.19,161.82C297.25,161.4 296.17,161.4 295.23,161.82L268.36,174.02C267.08,174.6 266.26,175.88 266.26,177.28L266.26,195.88C266.26,215.57 278.69,233.76 295.67,239.69C296.36,239.93 297.12,239.93 297.81,239.69C314.76,233.76 327.22,215.57 327.22,195.88L327.22,177.29C327.22,175.88 326.4,174.6 325.11,174.02L298.19,161.82Z"
+          android:strokeWidth="10.7581"
+          android:fillColor="#C4EED0">
+        <aapt:attr name="android:strokeColor">
+          <gradient
+              android:startX="296.74"
+              android:startY="161.15"
+              android:endX="296.74"
+              android:endY="240.04"
+              android:type="linear">
+            <item android:offset="0" android:color="#FFC4EED0"/>
+            <item android:offset="1" android:color="#FF37BE5F"/>
+          </gradient>
+        </aapt:attr>
+      </path>
+    </group>
     <path
         android:pathData="M105.78,212.25m-6.28,0a6.28,6.28 0,1 1,12.55 0a6.28,6.28 0,1 1,-12.55 0"
         android:fillColor="#6DD58C"/>
@@ -218,29 +222,18 @@ found in the LICENSE file.
       </aapt:attr>
     </path>
     <path
-        android:pathData="M110.27,55.36L110.27,55.36A8.97,8.97 0,0 1,119.23 64.33L119.23,75.08A8.97,8.97 0,0 1,110.27 84.05L110.27,84.05A8.97,8.97 0,0 1,101.3 75.08L101.3,64.33A8.97,8.97 0,0 1,110.27 55.36z"
+        android:pathData="M101.3,64.33C101.3,59.38 105.32,55.36 110.27,55.36C115.22,55.36 119.23,59.38 119.23,64.33V75.08C119.23,80.04 115.22,84.05 110.27,84.05C105.32,84.05 101.3,80.04 101.3,75.08V64.33Z"
         android:strokeWidth="5.37906"
         android:fillColor="#00000000"
         android:strokeColor="#37BE5F"/>
     <group>
       <clip-path
-          android:pathData="M184.67,0L216.95,0A3.59,3.59 0,0 1,220.53 3.59L220.53,28.69A3.59,3.59 0,0 1,216.95 32.27L184.67,32.27A3.59,3.59 0,0 1,181.09 28.69L181.09,3.59A3.59,3.59 0,0 1,184.67 0z"/>
+          android:pathData="M90.54,98.39C90.54,100.38 92.15,101.98 94.13,101.98H126.4C128.38,101.98 129.99,100.38 129.99,98.39V73.29C129.99,71.31 128.38,69.71 126.4,69.71H94.13C92.15,69.71 90.54,71.31 90.54,73.29V98.39Z"/>
       <path
-          android:pathData="M94.13,101.98L126.4,101.98A3.59,3.59 0,0 0,129.99 98.39L129.99,73.29A3.59,3.59 0,0 0,126.4 69.71L94.13,69.71A3.59,3.59 0,0 0,90.54 73.29L90.54,98.39A3.59,3.59 0,0 0,94.13 101.98z"
+          android:pathData="M90.54,98.39C90.54,100.38 92.15,101.98 94.13,101.98H126.4C128.38,101.98 129.99,100.38 129.99,98.39V73.29C129.99,71.31 128.38,69.71 126.4,69.71H94.13C92.15,69.71 90.54,71.31 90.54,73.29V98.39Z"
           android:strokeWidth="10.7581"
-          android:fillColor="#C4EED0">
-        <aapt:attr name="android:strokeColor">
-          <gradient
-              android:startX="93.23"
-              android:startY="99.29"
-              android:endX="103.99"
-              android:endY="85.84"
-              android:type="linear">
-            <item android:offset="0" android:color="#FFC4EED0"/>
-            <item android:offset="1" android:color="#FF37BE5F"/>
-          </gradient>
-        </aapt:attr>
-      </path>
+          android:fillColor="#C4EED0"
+          android:strokeColor="#37BE5F"/>
     </group>
     <path
         android:pathData="M110.27,85.84m-5.38,0a5.38,5.38 0,1 1,10.76 0a5.38,5.38 0,1 1,-10.76 0"
