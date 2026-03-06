@@ -2,18 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/search_engines/template_url_table_model.h"
+#include "components/search_engines/ui_utils.h"
 
 #include <memory>
 #include <string>
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
-#include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_data.h"
-#include "content/public/test/browser_task_environment.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
@@ -39,21 +38,24 @@ std::unique_ptr<TemplateURL> CreateTemplateURL(const std::u16string& short_name,
 }  // namespace
 
 // Test fixture for the internal sorting logic
-class OrderByManagedAndAlphabeticallyTest : public testing::Test {
+class OrderTemplateUrlsByManagedAndAlphabeticallyTest : public testing::Test {
  public:
-  OrderByManagedAndAlphabeticallyTest() = default;
-  ~OrderByManagedAndAlphabeticallyTest() override = default;
+  OrderTemplateUrlsByManagedAndAlphabeticallyTest() = default;
+  ~OrderTemplateUrlsByManagedAndAlphabeticallyTest() override = default;
 
  protected:
   void SetUp() override {
-    comparator_ = std::make_unique<internal::OrderByManagedAndAlphabetically>();
+    comparator_ = std::make_unique<
+        internal::OrderTemplateUrlsByManagedAndAlphabetically>();
   }
 
-  std::unique_ptr<internal::OrderByManagedAndAlphabetically> comparator_;
+  std::unique_ptr<internal::OrderTemplateUrlsByManagedAndAlphabetically>
+      comparator_;
 };
 
 // Test basic alphabetical sorting
-TEST_F(OrderByManagedAndAlphabeticallyTest, BasicAlphabeticalSorting) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest,
+       BasicAlphabeticalSorting) {
   auto google = CreateTemplateURL(u"Google", u"google.com",
                                   "https://google.com/search?q={searchTerms}");
   auto bing = CreateTemplateURL(u"Bing", u"bing.com",
@@ -73,7 +75,7 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, BasicAlphabeticalSorting) {
 }
 
 // Test that managed engines come before non-managed engines
-TEST_F(OrderByManagedAndAlphabeticallyTest, ManagedEnginesFirst) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest, ManagedEnginesFirst) {
   auto managed_yahoo = CreateTemplateURL(
       u"Yahoo", u"yahoo.com", "https://yahoo.com/search?q={searchTerms}", true);
   auto regular_bing = CreateTemplateURL(
@@ -86,7 +88,7 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, ManagedEnginesFirst) {
 }
 
 // Test sorting within managed and non-managed groups
-TEST_F(OrderByManagedAndAlphabeticallyTest, SortingWithinGroups) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest, SortingWithinGroups) {
   auto managed_google =
       CreateTemplateURL(u"Google", u"google.com",
                         "https://google.com/search?q={searchTerms}", true);
@@ -110,7 +112,8 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, SortingWithinGroups) {
 }
 
 // Test case-insensitive sorting
-TEST_F(OrderByManagedAndAlphabeticallyTest, CaseInsensitiveSorting) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest,
+       CaseInsensitiveSorting) {
   auto lower_google = CreateTemplateURL(
       u"google", u"google.com", "https://google.com/search?q={searchTerms}");
   auto upper_bing = CreateTemplateURL(
@@ -122,7 +125,7 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, CaseInsensitiveSorting) {
 }
 
 // Test Unicode string handling
-TEST_F(OrderByManagedAndAlphabeticallyTest, UnicodeStringHandling) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest, UnicodeStringHandling) {
   auto ascii_engine = CreateTemplateURL(
       u"Google", u"google.com", "https://google.com/search?q={searchTerms}");
   auto unicode_engine = CreateTemplateURL(
@@ -142,7 +145,7 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, UnicodeStringHandling) {
 }
 
 // Test fallback to keyword when short names are identical
-TEST_F(OrderByManagedAndAlphabeticallyTest, FallbackToKeyword) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest, FallbackToKeyword) {
   auto engine1 = CreateTemplateURL(
       u"Search", u"search1.com", "https://search1.com/search?q={searchTerms}");
   auto engine2 = CreateTemplateURL(
@@ -154,7 +157,8 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, FallbackToKeyword) {
 }
 
 // Test buffer overflow protection in GetShortNameSortKey
-TEST_F(OrderByManagedAndAlphabeticallyTest, BufferOverflowProtection) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest,
+       BufferOverflowProtection) {
   // Create a very long string that would exceed the 1000 byte buffer
   std::u16string very_long_name;
   // Use multi-byte Unicode characters to more easily exceed buffer
@@ -186,7 +190,8 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, BufferOverflowProtection) {
 }
 
 // Test GetShortNameSortKey with various Unicode scenarios
-TEST_F(OrderByManagedAndAlphabeticallyTest, GetShortNameSortKeyUnicode) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest,
+       GetShortNameSortKeyUnicode) {
   // Test with ASCII
   std::string ascii_key = comparator_->GetShortNameSortKey(u"Google");
   EXPECT_FALSE(ascii_key.empty());
@@ -206,7 +211,7 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, GetShortNameSortKeyUnicode) {
 }
 
 // Test edge cases with special characters
-TEST_F(OrderByManagedAndAlphabeticallyTest, SpecialCharacters) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest, SpecialCharacters) {
   auto numeric_engine =
       CreateTemplateURL(u"123Search", u"123search.com",
                         "https://123search.com/search?q={searchTerms}");
@@ -230,7 +235,7 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, SpecialCharacters) {
 }
 
 // Test with extremely long Unicode sequences that could cause buffer issues
-TEST_F(OrderByManagedAndAlphabeticallyTest, ExtremelyLongUnicode) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest, ExtremelyLongUnicode) {
   // Create string with combining characters that could expand during
   // normalization
   std::u16string base_char = u"a";
@@ -260,7 +265,8 @@ TEST_F(OrderByManagedAndAlphabeticallyTest, ExtremelyLongUnicode) {
 }
 
 // Test with exact buffer boundary conditions
-TEST_F(OrderByManagedAndAlphabeticallyTest, BufferBoundaryConditions) {
+TEST_F(OrderTemplateUrlsByManagedAndAlphabeticallyTest,
+       BufferBoundaryConditions) {
   // Test string that should be exactly at buffer limit
   std::u16string near_limit_string;
   // Create a string that when converted to sort key approaches the 1000 byte
