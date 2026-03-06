@@ -542,11 +542,65 @@ TEST_F(SigninHeaderHelperTest, TestMirrorHeaderRequestDriveSignedIn) {
   }
 }
 
+TEST_F(SigninHeaderHelperTest, DiceResponseParamsIsValid) {
+  {
+    // NONE action is invalid.
+    DiceResponseParams params;
+    params.user_intention = DiceAction::NONE;
+    EXPECT_FALSE(params.IsValid());
+  }
+
+  {
+    // SIGNIN action.
+    DiceResponseParams params;
+    params.user_intention = DiceAction::SIGNIN;
+    params.signin_info = std::make_unique<DiceResponseParams::SigninInfo>();
+    // Missing account info.
+    EXPECT_FALSE(params.IsValid());
+    params.signin_info->account_info =
+        DiceResponseParams::AccountInfo(GaiaId("id"), "email", 1);
+    // Missing auth code.
+    EXPECT_FALSE(params.IsValid());
+    params.signin_info->authorization_code = "code";
+    EXPECT_TRUE(params.IsValid());
+    // No auth code is also valid if no_authorization_code is true.
+    params.signin_info->authorization_code.clear();
+    params.signin_info->no_authorization_code = true;
+    EXPECT_TRUE(params.IsValid());
+  }
+
+  {
+    // SIGNOUT action.
+    DiceResponseParams params;
+    params.user_intention = DiceAction::SIGNOUT;
+    params.signout_info = std::make_unique<DiceResponseParams::SignoutInfo>();
+    // Empty account infos is invalid.
+    EXPECT_FALSE(params.IsValid());
+    params.signout_info->account_infos.emplace_back(GaiaId("id"), "email", 1);
+    EXPECT_TRUE(params.IsValid());
+  }
+
+  {
+    // ENABLE_SYNC action.
+    DiceResponseParams params;
+    params.user_intention = DiceAction::ENABLE_SYNC;
+    params.enable_sync_info =
+        std::make_unique<DiceResponseParams::EnableSyncInfo>();
+    // Missing account info.
+    EXPECT_FALSE(params.IsValid());
+    params.enable_sync_info->account_info =
+        DiceResponseParams::AccountInfo(GaiaId("id"), "email", 1);
+    EXPECT_TRUE(params.IsValid());
+  }
+}
+
 TEST_F(SigninHeaderHelperTest, TestDiceInvalidResponseParams) {
   DiceResponseParams params = BuildDiceSigninResponseParams("blah");
+  EXPECT_FALSE(params.IsValid());
   EXPECT_EQ(DiceAction::NONE, params.user_intention);
   params = BuildDiceSignoutResponseParams("blah");
-  EXPECT_EQ(DiceAction::NONE, params.user_intention);
+  EXPECT_FALSE(params.IsValid());
+  EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention);
 }
 
 TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
@@ -655,7 +709,8 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
     DiceResponseParams params = BuildDiceSigninResponseParams(
         base::StringPrintf("action=SIGNIN,id=%s,email=%s,authuser=%i",
                            kGaiaID.ToString(), kEmail, kSessionIndex));
-    EXPECT_EQ(DiceAction::NONE, params.user_intention);
+    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+    EXPECT_FALSE(params.IsValid());
     histogram_tester.ExpectTotalCount("Signin.DiceAuthorizationCode", 0);
   }
 
@@ -665,7 +720,8 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
         BuildDiceSigninResponseParams(base::StringPrintf(
             "action=SIGNIN,id=%s,authuser=%i,authorization_code=%s",
             kGaiaID.ToString(), kSessionIndex, kAuthorizationCode));
-    EXPECT_EQ(DiceAction::NONE, params.user_intention);
+    EXPECT_EQ(DiceAction::SIGNIN, params.user_intention);
+    EXPECT_FALSE(params.IsValid());
   }
 
   {
@@ -674,7 +730,8 @@ TEST_F(SigninHeaderHelperTest, TestBuildDiceResponseParams) {
         base::StringPrintf("email=%s, sessionindex=%i, obfuscatedid=%s, "
                            "sessionindex=2, obfuscatedid=bar",
                            kEmail, kSessionIndex, kGaiaID.ToString()));
-    EXPECT_EQ(DiceAction::NONE, params.user_intention);
+    EXPECT_EQ(DiceAction::SIGNOUT, params.user_intention);
+    EXPECT_FALSE(params.IsValid());
   }
 }
 

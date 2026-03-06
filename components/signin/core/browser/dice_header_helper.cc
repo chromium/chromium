@@ -11,6 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "components/signin/core/browser/signin_header_helper.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -102,7 +103,8 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     } else if (key_name == kSigninAuthUserAttrName) {
       bool parse_success = base::StringToInt(value, &info->session_index);
       if (!parse_success) {
-        info->session_index = -1;
+        info->session_index =
+            DiceResponseParams::AccountInfo::kInvalidSessionIndex;
       }
     } else if (key_name == kSigninAuthorizationCodeAttrName) {
       if (params.signin_info) {
@@ -129,20 +131,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     }
   }
 
-  if (info->gaia_id.empty() || info->email.empty() ||
-      info->session_index == -1) {
-    DLOG(WARNING) << "Missing account info in Dice header: " << header_value;
-    return DiceResponseParams();
-  }
-
-  if (params.signin_info) {
-    if (params.signin_info->authorization_code.empty() &&
-        !params.signin_info->no_authorization_code) {
-      DLOG(WARNING)
-          << "Missing authorization code  and no authorization code headers"
-          << "in Dice SIGNIN header: " << header_value;
-      return DiceResponseParams();
-    }
+  if (params.signin_info && params.signin_info->IsValid()) {
     // Uma histogram that records whether the authorization code was present or
     // not.
     base::UmaHistogramBoolean("Signin.DiceAuthorizationCode",
@@ -173,7 +162,7 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
       std::string trimmed_value = value;
       // The Gaia ID is wrapped in quotes.
       base::TrimString(value, "\"", &trimmed_value);
-      gaia_ids.push_back(GaiaId(std::move(trimmed_value)));
+      gaia_ids.emplace_back(std::move(trimmed_value));
     } else if (key_name == kSignoutEmailAttrName) {
       // The email is wrapped in quotes.
       emails.push_back(value);
@@ -189,16 +178,9 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSignoutResponseParams(
     }
   }
 
-  if ((gaia_ids.size() != emails.size()) ||
-      (gaia_ids.size() != session_indices.size())) {
-    DLOG(WARNING) << "Invalid parameter count for Dice SIGNOUT header: "
-                  << header_value;
-    return DiceResponseParams();
-  }
-
-  if (gaia_ids.empty()) {
-    DLOG(WARNING) << "No account specified in Dice SIGNOUT header";
-    return DiceResponseParams();
+  if (gaia_ids.size() != emails.size() ||
+      gaia_ids.size() != session_indices.size()) {
+    return params;
   }
 
   params.signout_info = std::make_unique<DiceResponseParams::SignoutInfo>();

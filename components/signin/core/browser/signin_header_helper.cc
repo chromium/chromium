@@ -11,6 +11,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_split.h"
 #include "components/google/core/common/google_util.h"
@@ -45,6 +46,20 @@ DiceResponseParams::DiceResponseParams(DiceResponseParams&&) = default;
 DiceResponseParams& DiceResponseParams::operator=(DiceResponseParams&&) =
     default;
 
+bool DiceResponseParams::IsValid() const {
+  switch (user_intention) {
+    case DiceAction::NONE:
+      return false;
+    case DiceAction::SIGNIN:
+      return signin_info && signin_info->IsValid();
+    case DiceAction::SIGNOUT:
+      return signout_info && signout_info->IsValid();
+    case DiceAction::ENABLE_SYNC:
+      return enable_sync_info && enable_sync_info->IsValid();
+  }
+  NOTREACHED();
+}
+
 DiceResponseParams::AccountInfo::AccountInfo() = default;
 DiceResponseParams::AccountInfo::AccountInfo(const GaiaId& gaia_id,
                                              const std::string& email,
@@ -52,6 +67,16 @@ DiceResponseParams::AccountInfo::AccountInfo(const GaiaId& gaia_id,
     : gaia_id(gaia_id), email(email), session_index(session_index) {}
 DiceResponseParams::AccountInfo::~AccountInfo() = default;
 DiceResponseParams::AccountInfo::AccountInfo(const AccountInfo&) = default;
+
+bool DiceResponseParams::AccountInfo::IsValid() const {
+  return !gaia_id.empty() && !email.empty() &&
+         session_index != DiceResponseParams::AccountInfo::kInvalidSessionIndex;
+}
+
+bool DiceResponseParams::SigninInfo::IsValid() const {
+  return account_info.IsValid() &&
+         (!authorization_code.empty() || no_authorization_code);
+}
 
 DiceResponseParams::SigninInfo::SigninInfo() = default;
 DiceResponseParams::SigninInfo::~SigninInfo() = default;
@@ -61,10 +86,21 @@ DiceResponseParams::SignoutInfo::SignoutInfo() = default;
 DiceResponseParams::SignoutInfo::~SignoutInfo() = default;
 DiceResponseParams::SignoutInfo::SignoutInfo(const SignoutInfo&) = default;
 
+bool DiceResponseParams::SignoutInfo::IsValid() const {
+  if (account_infos.empty()) {
+    return false;
+  }
+  return true;
+}
+
 DiceResponseParams::EnableSyncInfo::EnableSyncInfo() = default;
 DiceResponseParams::EnableSyncInfo::~EnableSyncInfo() = default;
 DiceResponseParams::EnableSyncInfo::EnableSyncInfo(const EnableSyncInfo&) =
     default;
+
+bool DiceResponseParams::EnableSyncInfo::IsValid() const {
+  return account_info.IsValid();
+}
 
 RequestAdapter::RequestAdapter(const GURL& url,
                                const net::HttpRequestHeaders& original_headers,

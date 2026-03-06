@@ -259,7 +259,7 @@ DiceResponseHandler::~DiceResponseHandler() = default;
 void DiceResponseHandler::ProcessDiceHeader(
     const signin::DiceResponseParams& dice_params,
     std::unique_ptr<ProcessDiceHeaderDelegate> delegate) {
-  DCHECK(delegate);
+  CHECK(delegate);
   switch (dice_params.user_intention) {
     case signin::DiceAction::SIGNIN: {
       const signin::DiceResponseParams::AccountInfo& info =

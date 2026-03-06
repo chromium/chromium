@@ -102,6 +102,8 @@ struct ManageAccountsParams {
 // Struct describing the parameters received in the Dice response header.
 struct DiceResponseParams {
   struct AccountInfo {
+    static constexpr int kInvalidSessionIndex = -1;
+
     AccountInfo();
     AccountInfo(const GaiaId& gaia_id,
                 const std::string& email,
@@ -109,12 +111,14 @@ struct DiceResponseParams {
     ~AccountInfo();
     AccountInfo(const AccountInfo&);
 
+    bool IsValid() const;
+
     // Gaia ID of the account.
     GaiaId gaia_id;
     // Email of the account.
     std::string email;
     // Session index for the account.
-    int session_index;
+    int session_index = kInvalidSessionIndex;
   };
 
   // Parameters for the SIGNIN action.
@@ -122,6 +126,8 @@ struct DiceResponseParams {
     SigninInfo();
     SigninInfo(const SigninInfo&);
     ~SigninInfo();
+
+    bool IsValid() const;
 
     // AccountInfo of the account signed in.
     AccountInfo account_info;
@@ -141,6 +147,8 @@ struct DiceResponseParams {
     SignoutInfo(const SignoutInfo&);
     ~SignoutInfo();
 
+    bool IsValid() const;
+
     // Account infos for the accounts signed out.
     std::vector<AccountInfo> account_infos;
   };
@@ -150,6 +158,8 @@ struct DiceResponseParams {
     EnableSyncInfo();
     EnableSyncInfo(const EnableSyncInfo&);
     ~EnableSyncInfo();
+
+    bool IsValid() const;
 
     // AccountInfo of the account enabling Sync.
     AccountInfo account_info;
@@ -164,6 +174,8 @@ struct DiceResponseParams {
   DiceResponseParams& operator=(DiceResponseParams&&);
 
   ~DiceResponseParams();
+
+  bool IsValid() const;
 
   DiceAction user_intention = DiceAction::NONE;
 
