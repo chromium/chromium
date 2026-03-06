@@ -163,6 +163,24 @@ TEST_F(ProjectsPanelControllerTest, AddsGroupAtCorrectPosition) {
   EXPECT_EQ(GetGroup2DaysOld().saved_guid(), tab_groups[2].saved_guid());
 }
 
+TEST_F(ProjectsPanelControllerTest, AddsGroupAtTopIfNoPosition) {
+  std::vector<tab_groups::SavedTabGroup> groups = {GetGroup(),
+                                                   GetGroup2DaysOld()};
+  EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())
+      .WillOnce(testing::Return(groups));
+
+  auto controller = GetInitializedController();
+
+  tab_groups::SavedTabGroup group_to_add =
+      CreateGroup(u"New Group", kFixedTime + base::Days(10));
+  controller->OnTabGroupAdded(group_to_add, tab_groups::TriggerSource::REMOTE);
+
+  const auto& tab_groups = controller->GetTabGroups();
+  ASSERT_EQ(3u, tab_groups.size());
+  EXPECT_EQ(group_to_add.saved_guid(), tab_groups[0].saved_guid());
+  EXPECT_EQ(GetGroup().saved_guid(), tab_groups[1].saved_guid());
+}
+
 TEST_F(ProjectsPanelControllerTest, UpdatesExistingGroup) {
   std::vector<tab_groups::SavedTabGroup> groups = {GetGroup()};
   EXPECT_CALL(mock_tab_group_sync_service_, GetAllGroups())

@@ -115,9 +115,10 @@ void ProjectsPanelController::OnInitialized() {
 void ProjectsPanelController::OnTabGroupAdded(
     const tab_groups::SavedTabGroup& group,
     tab_groups::TriggerSource source) {
-  const int index =
-      std::min(static_cast<int>(tab_groups_.size()),
-               static_cast<int>(group.position().value_or(tab_groups_.size())));
+  // When adding a group, we clamp the position between 0 and the size of the
+  // tab groups to prevent an accidental out-of-bounds error.
+  const int index = std::clamp(static_cast<int>(group.position().value_or(0)),
+                               0, static_cast<int>(tab_groups_.size()));
   tab_groups_.insert(tab_groups_.begin() + index, group);
 
   for (auto& observer : observers_) {
