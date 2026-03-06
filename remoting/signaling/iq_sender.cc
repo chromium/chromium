@@ -61,11 +61,10 @@ void IqSender::RemoveRequest(IqRequest* request) {
   }
 }
 
-void IqSender::OnSignalStrategyStateChange(SignalStrategy::State state) {}
+void IqSender::OnSignalingStateChanged(SignalStrategy::State state) {}
 
-bool IqSender::OnSignalStrategyIncomingMessage(
-    const SignalingAddress& sender_address,
-    const SignalingMessage& message) {
+bool IqSender::OnSignalingMessage(const SignalingAddress& sender_address,
+                                  const SignalingMessage& message) {
   // Currently JingleMessageFromXml only returns JingleMessage for 'set' IQs.
   // IQ results and errors are parsed into JingleMessageReply by the signal
   // strategy and handled above. If this changes in the future, we might need

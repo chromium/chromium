@@ -52,7 +52,7 @@ void FakeSignalStrategy::SetState(State state) {
   }
   state_ = state;
   for (auto& observer : listeners_) {
-    observer.OnSignalStrategyStateChange(state_);
+    observer.OnSignalingStateChanged(state_);
   }
 }
 
@@ -215,7 +215,7 @@ void FakeSignalStrategy::NotifyListeners(SignalingMessage message) {
   received_messages_.push_back(message_to_dispatch);
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(from, message_to_dispatch)) {
+    if (listener.OnSignalingMessage(from, message_to_dispatch)) {
       break;
     }
   }

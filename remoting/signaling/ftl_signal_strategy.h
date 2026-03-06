@@ -94,7 +94,7 @@ class FtlSignalStrategy : public SignalStrategy {
                   std::unique_ptr<FtlMessagingClient> messaging_client);
 
   // This ensures that even if a Listener deletes the current instance during
-  // OnSignalStrategyIncomingMessage(), we can delete |core_| asynchronously.
+  // OnSignalingMessage(), we can delete |core_| asynchronously.
   class Core;
 
   std::unique_ptr<Core> core_;

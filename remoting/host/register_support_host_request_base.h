@@ -70,7 +70,7 @@ class RegisterSupportHostRequestBase : public RegisterSupportHostRequest,
   };
 
   // SignalStrategy::Listener interface.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override;
+  void OnSignalingStateChanged(SignalStrategy::State state) override;
 
   void RegisterHostInternal();
   void OnRegisterHostResult(const HttpStatus& status,

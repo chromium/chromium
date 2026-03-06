@@ -132,7 +132,7 @@ void FtlSignalStrategy::Core::Connect() {
           &Core::OnMessageReceived, weak_factory_.GetWeakPtr()));
 
   for (auto& observer : listeners_) {
-    observer.OnSignalStrategyStateChange(CONNECTING);
+    observer.OnSignalingStateChanged(CONNECTING);
   }
 
   StartReceivingMessages();
@@ -147,7 +147,7 @@ void FtlSignalStrategy::Core::Disconnect() {
     messaging_client_->StopReceivingMessages();
 
     for (auto& observer : listeners_) {
-      observer.OnSignalStrategyStateChange(DISCONNECTED);
+      observer.OnSignalingStateChanged(DISCONNECTED);
     }
   }
 }
@@ -321,7 +321,7 @@ void FtlSignalStrategy::Core::OnReceiveMessagesStreamStarted() {
       user_email_, registration_manager_->GetRegistrationId());
 
   for (auto& observer : listeners_) {
-    observer.OnSignalStrategyStateChange(CONNECTED);
+    observer.OnSignalingStateChanged(CONNECTED);
   }
 }
 
@@ -386,8 +386,7 @@ void FtlSignalStrategy::Core::OnMessageReceived(
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(sender_address,
-                                                 *parsed_message)) {
+    if (listener.OnSignalingMessage(sender_address, *parsed_message)) {
       return;
     }
   }

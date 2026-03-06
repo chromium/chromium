@@ -234,7 +234,7 @@ class FtlSignalStrategyTest : public testing::Test,
     signal_strategy_->AddFtlListener(this);
 
     // By default, messages will be collected in received_messages_.
-    ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
+    ON_CALL(*this, OnSignalingMessage(_, _))
         .WillByDefault([&](const SignalingAddress& sender_address,
                            const SignalingMessage& message) {
           if (const auto* jingle_message =
@@ -277,7 +277,7 @@ class FtlSignalStrategyTest : public testing::Test,
   }
 
   MOCK_METHOD(bool,
-              OnSignalStrategyIncomingMessage,
+              OnSignalingMessage,
               (const SignalingAddress&, const SignalingMessage&),
               (override));
 
@@ -302,7 +302,7 @@ class FtlSignalStrategyTest : public testing::Test,
 
  private:
   // SignalStrategy::Listener overrides.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override {
+  void OnSignalingStateChanged(SignalStrategy::State state) override {
     state_history_.push_back(state);
   }
 };
@@ -542,7 +542,7 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
   ftl::ChromotingMessage message;
   message.mutable_xmpp()->set_stanza(stanza_string);
 
-  EXPECT_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
+  EXPECT_CALL(*this, OnSignalingMessage(_, _))
       .WillOnce([&](const SignalingAddress& sender_address,
                     const SignalingMessage& received_message) {
         SignalingAddress expected_address =
@@ -569,7 +569,7 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
   messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
                                message);
 
-  // Message has already been consumed in OnSignalStrategyIncomingMessage().
+  // Message has already been consumed in OnSignalingMessage().
   ASSERT_EQ(0u, received_messages_.size());
 }
 

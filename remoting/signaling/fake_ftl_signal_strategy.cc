@@ -91,7 +91,7 @@ void FakeFtlSignalStrategy::SetState(State state) {
   }
   state_ = state;
   for (auto& observer : listeners_) {
-    observer.OnSignalStrategyStateChange(state_);
+    observer.OnSignalingStateChanged(state_);
   }
 }
 

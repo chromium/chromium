@@ -71,10 +71,10 @@ void JingleSessionManager::RemoveSessionObserver(SessionObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void JingleSessionManager::OnSignalStrategyStateChange(
+void JingleSessionManager::OnSignalingStateChanged(
     SignalStrategy::State state) {}
 
-bool JingleSessionManager::OnSignalStrategyIncomingMessage(
+bool JingleSessionManager::OnSignalingMessage(
     const SignalingAddress& sender_address,
     const SignalingMessage& signaling_message) {
   const auto* message = std::get_if<JingleMessage>(&signaling_message);

@@ -75,7 +75,7 @@ void CorpSignalingConnector::Start() {
   TryReconnect(base::TimeDelta());
 }
 
-void CorpSignalingConnector::OnSignalStrategyStateChange(
+void CorpSignalingConnector::OnSignalingStateChanged(
     SignalStrategy::State state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

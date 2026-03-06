@@ -85,7 +85,7 @@ void FtlSignalingConnector::Start() {
   TryReconnect(base::TimeDelta());
 }
 
-void FtlSignalingConnector::OnSignalStrategyStateChange(
+void FtlSignalingConnector::OnSignalingStateChanged(
     SignalStrategy::State state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 

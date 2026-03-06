@@ -306,7 +306,7 @@ void RemotingClient::OnRouteChanged(const std::string& channel_name,
              << " connection for " << channel_name << " channel";
 }
 
-void RemotingClient::OnSignalStrategyStateChange(SignalStrategy::State state) {
+void RemotingClient::OnSignalingStateChanged(SignalStrategy::State state) {
   switch (state) {
     case SignalStrategy::CONNECTING:
       CLIENT_LOG << "Signaling channel is being established.";

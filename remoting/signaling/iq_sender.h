@@ -49,10 +49,9 @@ class IqSender : public SignalStrategy::Listener {
                                     ReplyCallback callback);
 
   // SignalStrategy::Listener implementation.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingMessage(
-      const SignalingAddress& sender_address,
-      const SignalingMessage& message) override;
+  void OnSignalingStateChanged(SignalStrategy::State state) override;
+  bool OnSignalingMessage(const SignalingAddress& sender_address,
+                          const SignalingMessage& message) override;
 
  private:
   typedef std::map<std::string, raw_ptr<IqRequest, CtnExperimental>>

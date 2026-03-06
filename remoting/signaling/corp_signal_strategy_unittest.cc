@@ -111,7 +111,7 @@ class CorpSignalStrategyTest : public testing::Test,
     signal_strategy_->AddListener(this);
 
     // By default, messages will be collected in received_messages_.
-    ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
+    ON_CALL(*this, OnSignalingMessage(_, _))
         .WillByDefault([&](const SignalingAddress& sender_address,
                            const SignalingMessage& message) {
           if (const auto* jingle_message =
@@ -131,7 +131,7 @@ class CorpSignalStrategyTest : public testing::Test,
 
  protected:
   MOCK_METHOD(bool,
-              OnSignalStrategyIncomingMessage,
+              OnSignalingMessage,
               (const SignalingAddress&, const SignalingMessage&),
               (override));
 
@@ -147,7 +147,7 @@ class CorpSignalStrategyTest : public testing::Test,
 
  private:
   // SignalStrategy::Listener overrides.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override {
+  void OnSignalingStateChanged(SignalStrategy::State state) override {
     state_history_.push_back(state);
   }
 };

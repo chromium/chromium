@@ -63,7 +63,7 @@ std::optional<SignalingMessage> SignalStrategy::ParseStanzaXml(
   return std::nullopt;
 }
 
-bool SignalStrategy::Listener::OnSignalStrategyIncomingMessage(
+bool SignalStrategy::Listener::OnSignalingMessage(
     const SignalingAddress& sender_address,
     const SignalingMessage& message) {
   return false;

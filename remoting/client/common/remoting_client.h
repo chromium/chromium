@@ -91,7 +91,7 @@ class RemotingClient : public SignalStrategy::Listener,
                       const protocol::TransportRoute& route) override;
 
   // SignalStrategy::Listener interface.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override;
+  void OnSignalingStateChanged(SignalStrategy::State state) override;
 
   void OnGetManagedChromeOsHostRetrieved(
       const HttpStatus& status,

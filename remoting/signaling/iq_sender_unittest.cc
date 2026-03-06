@@ -91,8 +91,8 @@ class IqSenderTest : public testing::Test {
     reply.message_id = kStanzaId;
     reply.from = SignalingAddress(from);
 
-    bool result = sender_->OnSignalStrategyIncomingMessage(
-        SignalingAddress(from), SignalingMessage(reply));
+    bool result = sender_->OnSignalingMessage(SignalingAddress(from),
+                                              SignalingMessage(reply));
 
     if (reply_out) {
       *reply_out = std::move(reply);

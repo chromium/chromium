@@ -47,7 +47,7 @@ class PassthroughRegisterSupportHostRequest final
 
  private:
   // SignalStrategy::Listener interface.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override;
+  void OnSignalingStateChanged(SignalStrategy::State state) override;
 
   void RunCallback(const std::string& support_id,
                    base::TimeDelta lifetime,

@@ -230,8 +230,7 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingMessage(sender_address,
-                                                 *parsed_message)) {
+    if (listener.OnSignalingMessage(sender_address, *parsed_message)) {
       return;
     }
   }
@@ -273,7 +272,7 @@ void CorpSignalStrategy::Core::SetState(State state) {
   }
   state_ = state;
   for (auto& observer : listeners_) {
-    observer.OnSignalStrategyStateChange(state_);
+    observer.OnSignalingStateChanged(state_);
   }
 }
 

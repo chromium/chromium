@@ -33,7 +33,7 @@ void PassthroughRegisterSupportHostRequest::StartRequest(
   signal_strategy_->AddListener(this);
 }
 
-void PassthroughRegisterSupportHostRequest::OnSignalStrategyStateChange(
+void PassthroughRegisterSupportHostRequest::OnSignalingStateChanged(
     SignalStrategy::State state) {
   switch (state) {
     case SignalStrategy::State::CONNECTED:

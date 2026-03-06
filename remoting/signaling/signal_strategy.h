@@ -36,24 +36,21 @@ class SignalStrategy {
     PROTOCOL_ERROR,
   };
 
-  // Callback interface for signaling event. Event handlers are not
-  // allowed to destroy SignalStrategy, but may add or remove other
-  // listeners.
+  // Callback interface for signaling event. Event handlers are not allowed to
+  // destroy SignalStrategy, but may add or remove other listeners.
   class Listener : public base::CheckedObserver {
    public:
     ~Listener() override = default;
 
-    // Called after state of the connection has changed. If the state
-    // is DISCONNECTED, then GetError() can be used to get the reason
-    // for the disconnection.
-    virtual void OnSignalStrategyStateChange(State state) = 0;
+    // Called after state of the connection has changed. If the state is
+    // DISCONNECTED, GetError() will provide the reason for the disconnection.
+    virtual void OnSignalingStateChanged(State state) = 0;
 
     // Must return true if the message was handled, false otherwise. The signal
     // strategy must not be deleted from a handler of this message.
     // TODO: joedow - Update this method to accept a JingleMessage.
-    virtual bool OnSignalStrategyIncomingMessage(
-        const SignalingAddress& sender_address,
-        const SignalingMessage& message);
+    virtual bool OnSignalingMessage(const SignalingAddress& sender_address,
+                                    const SignalingMessage& message);
   };
 
   SignalStrategy() = default;
@@ -63,14 +60,12 @@ class SignalStrategy {
 
   virtual ~SignalStrategy() = default;
 
-  // Starts connection attempt. If connection is currently active
-  // disconnects it and opens a new connection (implicit disconnect
-  // triggers CLOSED notification). Connection is finished
-  // asynchronously.
+  // Starts connection attempt. If connection is currently active disconnects it
+  // and opens a new connection (implicit disconnect triggers CLOSED
+  // notification). Connection is finished asynchronously.
   virtual void Connect() = 0;
 
-  // Disconnects current connection if connected. Triggers CLOSED
-  // notification.
+  // Disconnects current connection if connected. Triggers CLOSED notification.
   virtual void Disconnect() = 0;
 
   // Returns current state.
@@ -82,8 +77,7 @@ class SignalStrategy {
   // Local address. An empty value is returned when not connected.
   virtual const SignalingAddress& GetLocalAddress() const = 0;
 
-  // Add a |listener| that can listen to all incoming
-  // messages. Doesn't take ownership of the |listener|. All listeners
+  // Add a |listener| that can listen to all incoming messages. All listeners
   // must be removed before this object is destroyed.
   virtual void AddListener(Listener* listener) = 0;
 
@@ -93,8 +87,7 @@ class SignalStrategy {
   // Sends a message. Returns false if the message couldn't be sent.
   virtual bool SendMessage(SignalingMessage&& message) = 0;
 
-  // Returns new ID that should be used for the next outgoing IQ
-  // request.
+  // Returns new ID that should be used for the next outgoing IQ request.
   virtual std::string GetNextId() = 0;
 
   // Returns true if the signal strategy gets into an error state when it tries
