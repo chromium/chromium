@@ -8,15 +8,20 @@
 
 #include <windows.h>
 
+#include <optional>
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/win/access_token.h"
 #include "base/win/com_init_util.h"
+#include "base/win/registry.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/security_descriptor.h"
@@ -26,8 +31,37 @@
 #include "chrome/elevation_service/elevator.h"
 #include "chrome/install_static/install_util.h"
 #include "chrome/installer/util/isolation_support.h"
+#include "content/public/browser/browser_thread.h"
+#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 
 namespace chrome {
+
+namespace {
+
+constexpr wchar_t kIsolationStateValue[] = L"IsolationState";
+
+base::expected<base::win::RegKey, LONG> GetIsolatedBrowserRegistryKey(
+    REGSAM access) {
+  base::win::RegKey regkey(HKEY_CURRENT_USER);
+
+  auto result =
+      regkey.OpenKey(install_static::GetRegistryPath().c_str(), access);
+
+  // Create the key if it does not exist. This should not happen in production
+  // since this key is used for many other values, but can happen in tests.
+  if (result == ERROR_FILE_NOT_FOUND && access & KEY_WRITE) {
+    result =
+        regkey.CreateKey(install_static::GetRegistryPath().c_str(), access);
+  }
+
+  if (result != ERROR_SUCCESS) {
+    return base::unexpected(result);
+  }
+
+  return regkey;
+}
+
+}  // namespace
 
 base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
     const base::CommandLine& command_line) {
@@ -92,30 +126,52 @@ base::expected<base::Process, HRESULT> LaunchIsolatedBrowser(
   return base::Process(reinterpret_cast<base::ProcessHandle>(proc_handle));
 }
 
-bool IsIsolationEnabled(const base::CommandLine& command_line) {
+bool IsIsolationEnabled(const base::CommandLine* command_line) {
   if (!install_static::IsSystemInstall()) {
     return false;
   }
 
-  // Set of switches that will never result in an attempt to launch an isolated
-  // browser.
-  const char* const kNoIsolationSwitches[] = {
-      // Custom user data dir always runs uninsolated as it's not possible to
-      // determine the isolation state of any cryptographic data.
-      ::switches::kUserDataDir,
-      // If this browser is running isolated, never attempt to launch isolated
-      // again.
-      ::switches::kIsolated,
-  };
+  if (command_line) {
+    // Set of switches that will never result in an attempt to launch an
+    // isolated browser.
+    const char* const kNoIsolationSwitches[] = {
+        // Custom user data dir always runs uninsolated as it's not possible to
+        // determine the isolation state of any cryptographic data.
+        ::switches::kUserDataDir,
+        // If this browser is running isolated, never attempt to launch isolated
+        // again.
+        ::switches::kIsolated,
+    };
 
-  for (const auto* no_isolation_switch : kNoIsolationSwitches) {
-    if (command_line.HasSwitch(no_isolation_switch)) {
-      return false;
+    for (const auto* no_isolation_switch : kNoIsolationSwitches) {
+      if (command_line->HasSwitch(no_isolation_switch)) {
+        return false;
+      }
     }
   }
 
-  // TODO(crbug.com/433545123): Replace with a persistent backed config.
-  return command_line.HasSwitch(::switches::kLaunchIsolated);
+  auto regkey = GetIsolatedBrowserRegistryKey(KEY_READ);
+  if (!regkey.has_value()) {
+    return false;
+  }
+
+  DWORD out_value = 0;
+  if (regkey->ReadValueDW(kIsolationStateValue, &out_value) != ERROR_SUCCESS) {
+    return false;
+  }
+
+  if (out_value > static_cast<DWORD>(IsolationState::kMaxValue)) {
+    return false;
+  }
+
+  IsolationState state = static_cast<IsolationState>(out_value);
+
+  switch (state) {
+    case IsolationState::kIsolationDisabled:
+      return false;
+    case IsolationState::kProcessIsolation:
+      return true;
+  }
 }
 
 bool IsRunningIsolated() {
@@ -132,6 +188,52 @@ bool IsRunningIsolated() {
     return true;
   }
   return false;
+}
+
+void SetIsolationState(
+    IsolationState state,
+    base::OnceCallback<void(base::expected<IsolationState, HRESULT>)>
+        completed) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  std::optional<base::expected<IsolationState, HRESULT>> return_value;
+
+  absl::Cleanup fire_callback = [&return_value,
+                                 callback = std::move(completed)]() mutable {
+    // Make sure the return value has been set.
+    CHECK(return_value.has_value());
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), *std::move(return_value)));
+  };
+
+  if (!install_static::IsSystemInstall()) {
+    return_value.emplace(base::unexpected(E_NOTIMPL));
+    return;
+  }
+
+  auto regkey = GetIsolatedBrowserRegistryKey(KEY_READ | KEY_WRITE);
+  if (!regkey.has_value()) {
+    return_value.emplace(base::unexpected(HRESULT_FROM_WIN32(regkey.error())));
+    return;
+  }
+
+  LONG result = ERROR_SUCCESS;
+  if (state == IsolationState::kIsolationDisabled) {
+    result = regkey->DeleteValue(kIsolationStateValue);
+  } else {
+    result =
+        regkey->WriteValue(kIsolationStateValue, static_cast<DWORD>(state));
+  }
+
+  if (result != ERROR_SUCCESS) {
+    return_value.emplace(base::unexpected(HRESULT_FROM_WIN32(result)));
+    return;
+  }
+
+  // TODO(crbug.com/433545123): Migrate any encrypted/secured data to/from
+  // isolated environment here.
+  return_value.emplace(state);
 }
 
 }  // namespace chrome

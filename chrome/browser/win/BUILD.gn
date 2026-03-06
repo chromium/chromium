@@ -45,5 +45,6 @@ source_set("isolated_browser_support") {
     "//chrome/elevation_service:public_headers",
     "//chrome/install_static:install_static_util",
     "//chrome/installer/util:isolation_support",
+    "//content/public/browser",
   ]
 }
