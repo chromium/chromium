@@ -139,53 +139,82 @@ BASE_FEATURE(kNetworkServiceIncreasedPriorityAlways,
 BASE_FEATURE(kNetworkServiceIncreasedPriorityWhileLoading,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// MatchingScenarioObserver that boosts the priority of the thread it was
-// created on while the scenario matches a specified pattern.
-class BoostThreadOnMatchedScenario
+// Boosts the priority of the network service thread depending on the feature
+// that is enabled. If `kNetworkServiceIncreasedPriorityAlways` is enabled, the
+// network service thread will always be boosted. If
+// `kNetworkServiceIncreasedPriorityWhileLoading` is enabled, the network
+// service thread will be boosted when the scenario indicates that the user is
+// actively loading a page.
+class BoostNetworkThreadPriority
     : public performance_scenarios::MatchingScenarioObserver {
  public:
-  BoostThreadOnMatchedScenario(base::ThreadType thread_type,
-                               performance_scenarios::ScenarioPattern pattern)
+  BoostNetworkThreadPriority(base::ThreadType boosted_thread_type,
+                             performance_scenarios::ScenarioPattern pattern)
       : performance_scenarios::MatchingScenarioObserver(pattern),
-        thread_type_(thread_type) {}
+        boosted_thread_type_(boosted_thread_type) {}
 
-  ~BoostThreadOnMatchedScenario() override = default;
+  ~BoostNetworkThreadPriority() override = default;
 
+  static BoostNetworkThreadPriority& GetInstance() {
+    static base::NoDestructor<BoostNetworkThreadPriority> instance{
+        base::ThreadType::kPresentation, kBoostScenarioPattern};
+    return *instance;
+  }
+
+  void Initialize() {
+    DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+    // If there is no observer list, return before checking the feature list to
+    // prevent the client from entering any arm of the experiment.
+    auto observer_list =
+        performance_scenarios::PerformanceScenarioObserverList::GetForScope(
+            performance_scenarios::ScenarioScope::kGlobal);
+    if (!observer_list) {
+      return;
+    }
+
+    // The two features that boost network thread priority interact and
+    // therefore enforce that at most one of them is enabled.
+    CHECK(
+        !base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways) ||
+        !base::FeatureList::IsEnabled(
+            kNetworkServiceIncreasedPriorityWhileLoading));
+
+    if (base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways)) {
+      scoped_boost_priority_.emplace(base::ThreadType::kPresentation);
+    } else if (base::FeatureList::IsEnabled(
+                   kNetworkServiceIncreasedPriorityWhileLoading)) {
+      // Add to the global scope since the goal is to boost the network thread
+      // while any page is loading.
+      observer_list->AddMatchingObserver(this);
+    }
+  }
+
+  // performance_scenarios::MatchingScenarioObserver::OnScenarioMatchChanged
   void OnScenarioMatchChanged(performance_scenarios::ScenarioScope scope,
                               bool matches_pattern) override {
     // Callbacks must be received on the thread the object was created on.
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
     if (matches_pattern) {
-      scoped_boost_priority_.emplace(thread_type_);
+      scoped_boost_priority_.emplace(boosted_thread_type_);
     } else {
       scoped_boost_priority_.reset();
     }
   }
 
  private:
+  static constexpr performance_scenarios::ScenarioPattern
+      kBoostScenarioPattern = {
+          .loading =
+              {performance_scenarios::LoadingScenario::kFocusedPageLoading},
+          .input = performance_scenarios::InputScenarios::All()};
+
   THREAD_CHECKER(thread_checker_);
 
-  const base::ThreadType thread_type_;
+  const base::ThreadType boosted_thread_type_;
   std::optional<base::ScopedBoostPriority> scoped_boost_priority_;
 };
-
-void BoostNetworkThreadWhileLoading() {
-  constexpr performance_scenarios::ScenarioPattern kBoostScenarioPattern = {
-      .loading = {performance_scenarios::LoadingScenario::kFocusedPageLoading},
-      .input = performance_scenarios::InputScenarios::All()};
-
-  static base::NoDestructor<BoostThreadOnMatchedScenario> boost_thread{
-      base::ThreadType::kPresentation, kBoostScenarioPattern};
-
-  // Add to the global scope since the goal is to boost the network thread
-  // while any page is loading.
-  if (auto observer_list =
-          performance_scenarios::PerformanceScenarioObserverList::GetForScope(
-              performance_scenarios::ScenarioScope::kGlobal)) {
-    observer_list->AddMatchingObserver(boost_thread.get());
-  }
-}
 
 std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
   static base::SequenceLocalStorageSlot<
@@ -385,15 +414,6 @@ void CreateInProcessNetworkService(
       options.thread_type = base::ThreadType::kPresentation;
     }
 #endif  // BUILDFLAG(IS_ANDROID)
-    // The two features that boost network thread priority interact and
-    // therefore enforce that only one of them is enabled.
-    CHECK(
-        !base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways) ||
-        !base::FeatureList::IsEnabled(
-            kNetworkServiceIncreasedPriorityWhileLoading));
-    if (base::FeatureList::IsEnabled(kNetworkServiceIncreasedPriorityAlways)) {
-      options.thread_type = base::ThreadType::kPresentation;
-    }
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
     task_runner->PostTask(
@@ -414,11 +434,10 @@ void CreateInProcessNetworkService(
   GetNetworkTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&CreateInProcessNetworkServiceOnThread,
                                 std::move(receiver)));
-  if (base::FeatureList::IsEnabled(
-          kNetworkServiceIncreasedPriorityWhileLoading)) {
-    GetNetworkTaskRunner()->PostTask(
-        FROM_HERE, base::BindOnce(&BoostNetworkThreadWhileLoading));
-  }
+  GetNetworkTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        BoostNetworkThreadPriority::GetInstance().Initialize();
+      }));
 }
 
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
