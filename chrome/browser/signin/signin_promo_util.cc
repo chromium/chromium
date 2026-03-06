@@ -4,11 +4,16 @@
 
 #include "chrome/browser/signin/signin_promo_util.h"
 
+#include <optional>
+#include <string_view>
+
 #include "base/check_deref.h"
 #include "base/functional/bind.h"
+#include "base/json/values_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service.h"
 #include "chrome/browser/profiles/batch_upload/batch_upload_service_factory.h"
@@ -83,29 +88,33 @@ constexpr char kAvatarButtonPromoProfileDictionary[] =
 // stored.
 //
 // The following prefs are only attached to a `GaiaId`.
-constexpr char kAvatarButtonHistorySyncPromoShownCount[] =
+constexpr std::string_view kAvatarButtonHistorySyncPromoShownCount =
     "AvatarButtonHistorySyncPromoShownCount";
-constexpr char kAvatarButtonHistorySyncPromoUsedCount[] =
+constexpr std::string_view kAvatarButtonHistorySyncPromoUsedCount =
     "AvatarButtonHistorySyncPromoUsedCount";
-constexpr char kAvatarButtonBatchUploadPromoShownCount[] =
+constexpr std::string_view kAvatarButtonBatchUploadPromoShownCount =
     "AvatarButtonBatchUploadPromoShownCount";
-constexpr char kAvatarButtonBatchUploadPromoUsedCount[] =
+constexpr std::string_view kAvatarButtonBatchUploadPromoUsedCount =
     "AvatarButtonBatchUploadPromoUsedCount";
-constexpr char kAvatarButtonBatchUploadBookmarkPromoShownCount[] =
+constexpr std::string_view kAvatarButtonBatchUploadBookmarkPromoShownCount =
     "AvatarButtonBatchUploadBookmarkPromoShownCount";
-constexpr char kAvatarButtonBatchUploadBookmarkPromoUsedCount[] =
+constexpr std::string_view kAvatarButtonBatchUploadBookmarkPromoUsedCount =
     "AvatarButtonBatchUploadBookmarkPromoUsedCount";
-constexpr char kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount[] =
-    "AvatarButtonBatchUploadWindows10DepreciationPromoShownCount";
-constexpr char kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount[] =
-    "AvatarButtonBatchUploadWindows10DepreciationPromoUsedCount";
+constexpr std::string_view
+    kAvatarButtonBatchUploadWindows10DepreciationPromoShownCount =
+        "AvatarButtonBatchUploadWindows10DepreciationPromoShownCount";
+constexpr std::string_view
+    kAvatarButtonBatchUploadWindows10DepreciationPromoUsedCount =
+        "AvatarButtonBatchUploadWindows10DepreciationPromoUsedCount";
 // The following prefs can be attached to a `GaiaId` or the Profile.
-constexpr char kAvatarButtonSigninPromoShownCount[] =
+constexpr std::string_view kAvatarButtonSigninPromoShownCount =
     "AvatarButtonSigninPromoShownCount";
-constexpr char kAvatarButtonSigninPromoUsedCount[] =
+constexpr std::string_view kAvatarButtonSigninPromoUsedCount =
     "AvatarButtonSigninPromoUsedCount";
+constexpr std::string_view kAvatarButtonSigninPromoLastShownTime =
+    "AvatarButtonSigninPromoLastShownTime";
 
-const char* GetAvatarButtonPromoShownKey(
+std::string_view GetAvatarButtonPromoShownKey(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
   switch (promo_type) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
@@ -125,7 +134,7 @@ const char* GetAvatarButtonPromoShownKey(
   }
 }
 
-const char* GetAvatarButtonPromoUsedKey(
+std::string_view GetAvatarButtonPromoUsedKey(
     ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
   switch (promo_type) {
     case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
@@ -146,10 +155,10 @@ const char* GetAvatarButtonPromoUsedKey(
 }
 
 // Returns the Gaia tied dictionary or the global profile dictionary for the
-// promo counts.
-base::DictValue& GetPromoCountsDictionary(PrefService& pref_service,
-                                          SigninPrefs& signin_prefs,
-                                          const GaiaId& gaia) {
+// promo prefs.
+base::DictValue& GetPromoDictionary(PrefService& pref_service,
+                                    SigninPrefs& signin_prefs,
+                                    const GaiaId& gaia) {
   if (gaia.empty()) {
     return ScopedDictPrefUpdate(pref_service,
                                 kAvatarButtonPromoProfileDictionary)
@@ -158,25 +167,79 @@ base::DictValue& GetPromoCountsDictionary(PrefService& pref_service,
   return signin_prefs.GetOrCreateAvatarButtonPromoCountDictionary(gaia);
 }
 
-// Returns the Shown/Used count pair for `promo_type`.
-std::pair<int, int> GetPromoUsageCounts(
+// May return `std::nullopt` when the `promo_type` does not depend on the shown
+// time of the promo.
+std::optional<std::string_view> MaybeGetLastShownTimePref(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+      // Those promos do not need to record the shown time pref as deciding to
+      // show the promo does not depend on it.
+      return std::nullopt;
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      return kAvatarButtonSigninPromoLastShownTime;
+  }
+}
+
+base::TimeDelta GetMinimumThresholdSinceLastShownTime(
+    ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+  switch (promo_type) {
+    case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::
+        kBatchUploadWindows10DepreciationPromo:
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+      NOTREACHED() << "The promo does not support shown time checking.";
+    case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+      // TODO(crbug.com/486109449): Use a feature param instead.
+      return base::Days(7);
+  }
+}
+
+struct PromoUsageInfo {
+  int shown_count = 0;
+  int used_count = 0;
+  // Optional as not every promo type supports it.
+  std::optional<base::Time> last_shown_time = std::nullopt;
+};
+
+PromoUsageInfo GetPromoUsageInfo(
     PrefService& pref_service,
     SigninPrefs& signin_prefs,
     ProfileMenuAvatarButtonPromoInfo::Type promo_type,
     GaiaId gaia) {
   if (promo_type == ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo) {
     CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
-    return {signin_prefs.GetSyncPromoIdentityPillShownCount(gaia),
-            signin_prefs.GetSyncPromoIdentityPillUsedCount(gaia)};
+    return {
+        .shown_count = signin_prefs.GetSyncPromoIdentityPillShownCount(gaia),
+        .used_count = signin_prefs.GetSyncPromoIdentityPillUsedCount(gaia)};
   }
 
   std::string_view shown_key = GetAvatarButtonPromoShownKey(promo_type);
   std::string_view used_key = GetAvatarButtonPromoUsedKey(promo_type);
-  base::DictValue& promo_counts =
-      GetPromoCountsDictionary(pref_service, signin_prefs, gaia);
+  base::DictValue& promo_dict =
+      GetPromoDictionary(pref_service, signin_prefs, gaia);
 
-  return {promo_counts.FindInt(shown_key).value_or(0),
-          promo_counts.FindInt(used_key).value_or(0)};
+  PromoUsageInfo usage_info{
+      .shown_count = promo_dict.FindInt(shown_key).value_or(0),
+      .used_count = promo_dict.FindInt(used_key).value_or(0)};
+
+  if (std::optional<std::string_view> last_shown_time_pref =
+          MaybeGetLastShownTimePref(promo_type);
+      last_shown_time_pref.has_value()) {
+    if (base::Value* last_shown_time =
+            promo_dict.Find(last_shown_time_pref.value())) {
+      usage_info.last_shown_time = base::ValueToTime(*last_shown_time);
+    }
+  }
+
+  return usage_info;
 }
 
 bool WasPreviouslySyncingWithPrimaryAccount(Profile* profile) {
@@ -755,7 +818,7 @@ void RecordAvatarButtonPromoAcceptedAtPromoShownCount(
 
   SigninPrefs signin_prefs(prefs);
   int promo_shown_count =
-      GetPromoUsageCounts(prefs, signin_prefs, promo_type, gaia_id).first;
+      GetPromoUsageInfo(prefs, signin_prefs, promo_type, gaia_id).shown_count;
   base::UmaHistogramExactLinear(
       base::StrCat({kAvatarPillPromoAcceptedAtShownCountBaseHistogram,
                     promo_type_suffix}),
@@ -848,8 +911,17 @@ bool AvatarButtonPromoManager::ShouldShowPromo(
 
   const AccountInfo account =
       signin_ui_util::GetSingleAccountForPromos(identity_manager_);
-  auto [promo_shown_count, promo_used_count] = GetPromoUsageCounts(
-      *pref_service_.get(), *signin_prefs_.get(), promo_type, account.gaia);
+  auto [promo_shown_count, promo_used_count, promo_last_shown_time] =
+      GetPromoUsageInfo(*pref_service_.get(), *signin_prefs_.get(), promo_type,
+                        account.gaia);
+
+  // Only check the `promo_last_shown_time` for eligible `promo_type`.
+  if (promo_last_shown_time.has_value() &&
+      (base::Time::Now() - promo_last_shown_time.value()) <
+          GetMinimumThresholdSinceLastShownTime(promo_type)) {
+    return false;
+  }
+
   return promo_shown_count < max_shown_count_ &&
          promo_used_count < max_used_count_;
 }
@@ -869,11 +941,20 @@ void AvatarButtonPromoManager::RecordPromoShown(
     return;
   }
 
-  base::DictValue& promo_counts = GetPromoCountsDictionary(
+  base::DictValue& promo_dict = GetPromoDictionary(
       *pref_service_.get(), *signin_prefs_.get(), account.gaia);
-  const char* shown_key = GetAvatarButtonPromoShownKey(promo_type);
-  int new_conut = promo_counts.FindInt(shown_key).value_or(0) + 1;
-  promo_counts.Set(shown_key, new_conut);
+
+  // Only update the last shown time if the `promo_type` supports it.
+  if (std::optional<std::string_view> last_shown_time_pref =
+          MaybeGetLastShownTimePref(promo_type);
+      last_shown_time_pref.has_value()) {
+    promo_dict.Set(last_shown_time_pref.value(),
+                   base::TimeToValue(base::Time::Now()));
+  }
+
+  std::string_view shown_key = GetAvatarButtonPromoShownKey(promo_type);
+  int new_conut = promo_dict.FindInt(shown_key).value_or(0) + 1;
+  promo_dict.Set(shown_key, new_conut);
 }
 
 GaiaId AvatarButtonPromoManager::RecordPromoUsed(
@@ -891,11 +972,11 @@ GaiaId AvatarButtonPromoManager::RecordPromoUsed(
     return account.gaia;
   }
 
-  base::DictValue& promo_counts = GetPromoCountsDictionary(
+  base::DictValue& promo_dict = GetPromoDictionary(
       *pref_service_.get(), *signin_prefs_.get(), account.gaia);
-  const char* used_key = GetAvatarButtonPromoUsedKey(promo_type);
-  int new_conut = promo_counts.FindInt(used_key).value_or(0) + 1;
-  promo_counts.Set(used_key, new_conut);
+  std::string_view used_key = GetAvatarButtonPromoUsedKey(promo_type);
+  int new_conut = promo_dict.FindInt(used_key).value_or(0) + 1;
+  promo_dict.Set(used_key, new_conut);
   return account.gaia;
 }
 

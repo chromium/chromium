@@ -11,6 +11,7 @@
 #include "base/strings/to_string.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/extensions/sync/extension_sync_util.h"
@@ -1051,6 +1052,28 @@ class AvatarButtonPromoManagerTest : public testing::Test {
     }
   }
 
+  // Fast forwarding is required for promos that have a shown time check.
+  void FastForwardToBypassPromoTypeShownTimeCheck(
+      ProfileMenuAvatarButtonPromoInfo::Type promo_type) {
+    switch (promo_type) {
+      case ProfileMenuAvatarButtonPromoInfo::Type::kHistorySyncPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kBatchUploadBookmarksPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::
+          kBatchUploadWindows10DepreciationPromo:
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSyncPromo:
+        break;
+      case ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo:
+        // TODO(crbug.com/486109449): Use a feature param instead.
+        task_environment_.FastForwardBy(base::Days(7) + base::Days(1));
+        break;
+    }
+  }
+
+  void FastForwardBy(base::TimeDelta time_delta) {
+    task_environment_.FastForwardBy(time_delta);
+  }
+
   IdentityManager* identity_manager() {
     return identity_test_environment_.identity_manager();
   }
@@ -1060,7 +1083,8 @@ class AvatarButtonPromoManagerTest : public testing::Test {
   }
 
  private:
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   network::TestURLLoaderFactory test_url_loader_factory_;
   IdentityTestEnvironment identity_test_environment_;
   TestingPrefServiceSimple pref_service_;
@@ -1087,6 +1111,7 @@ TEST_F(AvatarButtonPromoManagerTest, PromoTypesUseDifferentShownLimits) {
     SCOPED_TRACE("Iteration: promo_type - " + base::ToString(promo_type));
     SetSigninStateFromPromoType(promo_type);
     for (size_t count = 0; count < max_shown_count; ++count) {
+      FastForwardToBypassPromoTypeShownTimeCheck(promo_type);
       ASSERT_TRUE(manager.ShouldShowPromo(promo_type));
       manager.RecordPromoShown(promo_type);
     }
@@ -1135,6 +1160,7 @@ TEST_F(AvatarButtonPromoManagerTest,
     // Exhaust max used count for the signed out profile.
     for (int i = 0; i < max_shown_count; ++i) {
       SCOPED_TRACE("Iteration: " + base::ToString(i));
+      FastForwardToBypassPromoTypeShownTimeCheck(promo_type);
       // The promo should be shown if the used count is below the max.
       EXPECT_TRUE(manager.ShouldShowPromo(promo_type));
       manager.RecordPromoShown(promo_type);
@@ -1157,6 +1183,7 @@ TEST_F(AvatarButtonPromoManagerTest,
     // able to reach the maximum in the same manner as the signed out profile.
     for (int i = 0; i < max_shown_count; ++i) {
       SCOPED_TRACE("Iteration: " + base::ToString(i));
+      FastForwardToBypassPromoTypeShownTimeCheck(promo_type);
       // The promo should be shown if the used count is below the max.
       EXPECT_TRUE(manager.ShouldShowPromo(promo_type));
       manager.RecordPromoShown(promo_type);
@@ -1210,6 +1237,70 @@ TEST_F(AvatarButtonPromoManagerTest,
   }
 }
 
+TEST_F(AvatarButtonPromoManagerTest,
+       SigninPromoHasShownTimeCheckForSignedOutState) {
+  ProfileMenuAvatarButtonPromoInfo::Type signin_promo_type =
+      ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo;
+  AvatarButtonPromoManager manager(identity_manager(), &pref_service(),
+                                   /*max_shown_count=*/3, /*max_used_count=*/2);
+
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kSignedOut);
+
+  ASSERT_TRUE(manager.ShouldShowPromo(signin_promo_type));
+  manager.RecordPromoShown(signin_promo_type);
+
+  // Promo shown time check does not allow the promo to show yet.
+  ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Fast forward by less than expected.
+  base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
+  // TODO(crbug.com/486109449): Use a feature param instead.
+  FastForwardBy(base::Days(7) - time_remaining_for_promo_to_show);
+  // Promo shown time check should still not allow the promo to show yet.
+  ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Add enough time to allow promo to show.
+  FastForwardBy(2 * time_remaining_for_promo_to_show);
+
+  ASSERT_TRUE(manager.ShouldShowPromo(signin_promo_type));
+}
+
+TEST_F(AvatarButtonPromoManagerTest,
+       SigninPromoHasShownTimeCheckForWebSigninState) {
+  ProfileMenuAvatarButtonPromoInfo::Type signin_promo_type =
+      ProfileMenuAvatarButtonPromoInfo::Type::kSigninPromo;
+  AvatarButtonPromoManager manager(identity_manager(), &pref_service(),
+                                   /*max_shown_count=*/3, /*max_used_count=*/2);
+
+  std::string_view email1("test1@email.com");
+  signin::MakeAccountAvailable(
+      identity_manager(),
+      AccountAvailabilityOptionsBuilder(test_url_loader_factory())
+          .WithCookie()
+          .Build(email1));
+  ASSERT_EQ(signin_util::GetSignedInState(identity_manager()),
+            signin_util::SignedInState::kWebOnlySignedIn);
+
+  ASSERT_TRUE(manager.ShouldShowPromo(signin_promo_type));
+  manager.RecordPromoShown(signin_promo_type);
+
+  // Promo shown time check does not allow the promo to show yet.
+  ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Fast forward by less than expected.
+  base::TimeDelta time_remaining_for_promo_to_show = base::Days(1);
+  // TODO(crbug.com/486109449): Use a feature param instead.
+  FastForwardBy(base::Days(7) - time_remaining_for_promo_to_show);
+  // Promo shown time check should still not allow the promo to show yet.
+  ASSERT_FALSE(manager.ShouldShowPromo(signin_promo_type));
+
+  // Add enough time to allow promo to show.
+  FastForwardBy(2 * time_remaining_for_promo_to_show);
+
+  ASSERT_TRUE(manager.ShouldShowPromo(signin_promo_type));
+}
+
 class AvatarButtonPromoManagerPromoTypeParamTest
     : public AvatarButtonPromoManagerTest,
       public testing::WithParamInterface<
@@ -1224,6 +1315,7 @@ TEST_P(AvatarButtonPromoManagerPromoTypeParamTest, MaxShownCountReached) {
 
   for (int i = 0; i < max_shown_count; ++i) {
     SCOPED_TRACE("Iteration: " + base::ToString(i));
+    FastForwardToBypassPromoTypeShownTimeCheck(GetParam());
     // The promo should be shown if the shown count is below the max.
     EXPECT_TRUE(manager.ShouldShowPromo(GetParam()));
     manager.RecordPromoShown(GetParam());
