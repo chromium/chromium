@@ -1322,7 +1322,7 @@ config("compiler_cpu_abi") {
       }
       cflags += [ "-msse3" ]
       if (target_os == "chromeos" && cros_target_cpu_arch != "" &&
-          current_cpu == target_cpu) {
+          is_a_target_toolchain) {
         cflags += [ "-march=$cros_target_cpu_arch" ]
         ldflags += [ "-march=$cros_target_cpu_arch" ]
       }
@@ -1353,7 +1353,7 @@ config("compiler_cpu_abi") {
         ldflags += [ "--target=aarch64-linux-gnu" ]
       }
       if (target_os == "chromeos" && cros_target_cpu_arch != "" &&
-          current_cpu == target_cpu) {
+          is_a_target_toolchain) {
         cflags += [ "-march=$cros_target_cpu_arch" ]
         ldflags += [ "-march=$cros_target_cpu_arch" ]
       }
