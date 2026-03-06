@@ -33,6 +33,7 @@
 #include "content/browser/webid/test/mock_permission_delegate.h"
 #include "content/browser/webid/webid_utils.h"
 #include "content/common/content_navigation_policy.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "content/public/common/content_features.h"
@@ -2410,6 +2411,20 @@ TEST_F(RequestServiceTest, LoginStateFailedSignUpNotGrantSharingPermission) {
       /*selected_idp_config_url=*/std::nullopt};
   RunAuthTest(kDefaultRequestParameters, expectations, configuration);
   EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
+}
+
+TEST_F(RequestServiceTest,
+       EmbedderInitiatedLoginDoesNotGrantSharingPermission) {
+  FederatedEmbedderLoginRequest::Set(web_contents(),
+                                     OriginFromString(kProviderUrlFull),
+                                     kAccountId, base::DoNothing());
+
+  EXPECT_CALL(*test_permission_delegate_, GetLastUsedTimestamp)
+      .WillRepeatedly(Return(std::nullopt));
+  EXPECT_CALL(*test_permission_delegate_, GrantSharingPermission).Times(0);
+
+  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
+              kConfigurationValid);
 }
 
 // Test that auto re-authn permission is not embargoed upon explicit sign-in.

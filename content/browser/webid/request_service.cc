@@ -44,6 +44,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/webid/federated_embedder_login_request.h"
 #include "content/public/browser/webid/federated_identity_api_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_auto_reauthn_permission_context_delegate.h"
 #include "content/public/browser/webid/federated_identity_permission_context_delegate.h"
@@ -1954,18 +1955,31 @@ void RequestService::OnTokenResponseReceived(
 
 void RequestService::MarkUserAsSignedIn(const GURL& idp_config_url,
                                         const std::string& account_id) {
+  CHECK(!account_id_.empty());
   // Auto re-authentication can only be triggered when there's already a
   // sharing permission OR the IdP is exempted with 3PC access. Either way
   // we shouldn't explicitly grant permission here.
-  CHECK(!account_id_.empty());
-  if (identity_selection_type_ == kExplicit) {
-    permission_delegate_->GrantSharingPermission(
-        origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
-        account_id);
-  } else {
+  if (identity_selection_type_ == kAutoPassive ||
+      identity_selection_type_ == kAutoActive) {
     permission_delegate_->RefreshExistingSharingPermission(
         origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
         account_id);
+  } else {
+    // A sharing permission should only be granted after we explicitly ask for
+    // user permission to sign in. It has a high bar because its extensive
+    // capability such as storage access auto-grant. If a login request is
+    // initiated by the embedder, a deemed sign-in user may have not granted
+    // such permission via a FedCM flow yet so we skip granting the sharing
+    // permission in this case.
+    CHECK_EQ(identity_selection_type_, kExplicit);
+    FederatedEmbedderLoginRequest* embedder_login_request =
+        FederatedEmbedderLoginRequest::Get(
+            WebContents::FromRenderFrameHost(&render_frame_host()));
+    if (!embedder_login_request) {
+      permission_delegate_->GrantSharingPermission(
+          origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
+          account_id);
+    }
   }
 
   SetRequiresUserMediation(false, base::DoNothing());
