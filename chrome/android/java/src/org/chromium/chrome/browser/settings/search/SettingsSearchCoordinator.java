@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.accessibility.AccessibilityNodeInfo;
+import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 
 import androidx.activity.OnBackPressedCallback;
@@ -1110,6 +1111,8 @@ public class SettingsSearchCoordinator
     }
 
     private void setUpQueryEdit(EditText queryEdit) {
+        // Prevents the fullscreen "Extract Mode" in landscape.
+        queryEdit.setImeOptions(EditorInfo.IME_ACTION_DONE | EditorInfo.IME_FLAG_NO_EXTRACT_UI);
         queryEdit.addTextChangedListener(
                 new TextWatcher() {
                     @Override
