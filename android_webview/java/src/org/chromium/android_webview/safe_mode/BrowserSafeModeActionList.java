@@ -35,5 +35,6 @@ public final class BrowserSafeModeActionList {
         new DisableOriginTrialsSafeModeAction(),
         new AwSupervisedUserSafeModeAction(),
         new DisableStartupTasksSafeModeAction(),
+        new DisableCrashyClassSafeModeAction(),
     };
 }

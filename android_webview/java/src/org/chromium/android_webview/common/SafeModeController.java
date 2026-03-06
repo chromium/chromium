@@ -78,7 +78,8 @@ public class SafeModeController {
         SafeModeActionName.DISABLE_SAFE_BROWSING,
         SafeModeActionName.RESET_COMPONENT_UPDATER,
         SafeModeActionName.DISABLE_SUPERVISION_CHECKS,
-        SafeModeActionName.DISABLE_STARTUP_TASKS_LOGIC
+        SafeModeActionName.DISABLE_STARTUP_TASKS_LOGIC,
+        SafeModeActionName.DISABLE_CRASHY_CLASS
     })
     private @interface SafeModeActionName {
         int DELETE_VARIATIONS_SEED = 0;
@@ -91,7 +92,8 @@ public class SafeModeController {
         int RESET_COMPONENT_UPDATER = 7;
         int DISABLE_SUPERVISION_CHECKS = 8;
         int DISABLE_STARTUP_TASKS_LOGIC = 9;
-        int COUNT = 10;
+        int DISABLE_CRASHY_CLASS = 10;
+        int COUNT = 11;
     }
 
     // Maps the SafeModeAction ID to its histogram enum
@@ -121,6 +123,7 @@ public class SafeModeController {
         map.put(
                 SafeModeActionIds.DISABLE_STARTUP_TASKS_LOGIC,
                 SafeModeActionName.DISABLE_STARTUP_TASKS_LOGIC);
+        map.put(SafeModeActionIds.DISABLE_CRASHY_CLASS, SafeModeActionName.DISABLE_CRASHY_CLASS);
         return map;
     }
 

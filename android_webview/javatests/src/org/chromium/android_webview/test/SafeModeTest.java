@@ -33,6 +33,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 
+import org.chromium.android_webview.AwCrashyClassUtils;
+import org.chromium.android_webview.common.AwFeatures;
+import org.chromium.android_webview.common.AwSwitches;
 import org.chromium.android_webview.common.SafeModeAction;
 import org.chromium.android_webview.common.SafeModeActionIds;
 import org.chromium.android_webview.common.SafeModeController;
@@ -40,6 +43,7 @@ import org.chromium.android_webview.common.VariationsFastFetchModeUtils;
 import org.chromium.android_webview.common.services.ISafeModeService;
 import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.android_webview.safe_mode.BrowserSafeModeActionList;
+import org.chromium.android_webview.safe_mode.DisableCrashyClassSafeModeAction;
 import org.chromium.android_webview.services.AwVariationsSeedFetcher;
 import org.chromium.android_webview.services.NonEmbeddedFastVariationsSeedSafeModeAction;
 import org.chromium.android_webview.services.NonEmbeddedSafeModeAction;
@@ -55,7 +59,9 @@ import org.chromium.android_webview.variations.VariationsSeedSafeModeAction;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.PathUtils;
+import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.BuildConfig;
 import org.chromium.components.background_task_scheduler.TaskIds;
@@ -1646,6 +1652,35 @@ public class SafeModeTest extends AwParameterizedTest {
 
         setSafeMode(Arrays.asList());
         mScheduler.assertNotScheduled();
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({AwFeatures.WEBVIEW_ENABLE_CRASH})
+    @CommandLineFlags.Add({
+        AwSwitches.WEBVIEW_FORCE_CRASH_JAVA,
+        AwSwitches.WEBVIEW_FORCE_CRASH_NATIVE
+    })
+    public void testDisableCrashyClassSafeModeAction() throws Throwable {
+        DisableCrashyClassSafeModeAction testAction = new DisableCrashyClassSafeModeAction();
+        Assert.assertTrue(
+                "Crashy class should not be disabled initially",
+                AwCrashyClassUtils.shouldCrashJava());
+        Assert.assertTrue(
+                "Crashy class should not be disabled initially",
+                AwCrashyClassUtils.shouldCrashJava());
+
+        SafeModeController.getInstance().registerActions(new SafeModeAction[] {testAction});
+        SafeModeController.getInstance()
+                .executeActions(Set.of(SafeModeActionIds.DISABLE_CRASHY_CLASS));
+
+        Assert.assertFalse(
+                "Crashy class should be disabled after executing the action",
+                AwCrashyClassUtils.shouldCrashJava());
+        Assert.assertFalse(
+                "Crashy class should be disabled after executing the action",
+                AwCrashyClassUtils.shouldCrashNative());
     }
 
     private void setSafeMode(List<String> actions) throws RemoteException {
