@@ -32,7 +32,6 @@
 #include "base/types/expected_macros.h"
 #include "build/build_config.h"
 #include "content/browser/indexed_db/indexed_db_data_format_version.h"
-#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "content/browser/indexed_db/indexed_db_value.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/browser/indexed_db/instance/blob_reader.h"
@@ -2343,15 +2342,15 @@ DatabaseConnection::CreateAllExternalObjects(
             base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                            base::Unretained(this), object.blob_number(),
                            /*is_legacy_blob=*/false),
-            base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
-                                in_memory()));
+            backing_store_->on_blob_read_complete());
       } else {
         endpoint = std::make_unique<BlobReader>(
             object,
             // Unretained is safe because `this` owns `endpoint`.
             base::BindOnce(&DatabaseConnection::OnBlobBecameInactive,
                            base::Unretained(this), object.blob_number(),
-                           /*is_legacy_blob=*/true));
+                           /*is_legacy_blob=*/true),
+            backing_store_->on_blob_read_complete());
       }
       it = active_blobs_.emplace(object.blob_number(), std::move(endpoint))
                .first;

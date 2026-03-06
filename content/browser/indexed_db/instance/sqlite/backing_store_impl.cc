@@ -33,10 +33,12 @@ BackingStoreImpl::BackingStoreImpl(
     base::FilePath directory,
     storage::mojom::BlobStorageContext& blob_storage_context,
     base::RepeatingCallback<
-        std::vector<PartitionedLock>(const std::u16string& name)> lock_database)
+        std::vector<PartitionedLock>(const std::u16string& name)> lock_database,
+    base::RepeatingCallback<void(net::Error)> on_blob_read_complete)
     : directory_(std::move(directory)),
       blob_storage_context_(blob_storage_context),
-      lock_database_(std::move(lock_database)) {}
+      lock_database_(std::move(lock_database)),
+      on_blob_read_complete_(std::move(on_blob_read_complete)) {}
 
 BackingStoreImpl::~BackingStoreImpl() = default;
 
@@ -186,7 +188,8 @@ BackingStoreImpl::GetDatabaseNamesAndVersions() {
       std::ignore =
           LOG_RESULT(DatabaseConnection::Open(/*name=*/{}, path, *this,
                                               /*erase_if_zygotic=*/true),
-                     "IndexedDB.SQLite.OpenToReadMetadataResult", in_memory())
+                     "IndexedDB.SQLite.OpenToReadMetadataResult",
+                     in_memory() ? ".InMemory" : ".OnDisk")
               .transform([&](std::unique_ptr<DatabaseConnection> connection) {
                 const std::u16string& name = connection->metadata().name;
                 int64_t version = connection->metadata().version;

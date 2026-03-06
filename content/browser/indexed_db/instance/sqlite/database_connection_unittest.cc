@@ -97,7 +97,8 @@ class DatabaseConnectionTest : public testing::Test {
     backing_store_ = std::make_unique<BackingStoreImpl>(
         temp_dir_.GetPath(), blob_context_,
         base::BindRepeating(&DatabaseConnectionTest::AcquireDatabaseLocks,
-                            base::Unretained(this)));
+                            base::Unretained(this)),
+        base::DoNothing());
   }
 
   void TearDown() override {

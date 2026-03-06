@@ -10,6 +10,7 @@
 #include <unordered_map>
 
 #include "base/files/file_path.h"
+#include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
@@ -19,6 +20,7 @@
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "content/browser/indexed_db/instance/backing_store.h"
 #include "content/common/content_export.h"
+#include "net/base/net_errors.h"
 
 namespace content::indexed_db::sqlite {
 
@@ -31,11 +33,14 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   // assumed to already exist. `lock_database` will be called to acquire locks
   // on the given database for cleanup purposes. It is guaranteed to be called
   // when no other operation on the database is ongoing, and hence locks are
-  // expected to be granted synchronously.
-  BackingStoreImpl(base::FilePath directory,
-                   storage::mojom::BlobStorageContext& blob_storage_context,
-                   base::RepeatingCallback<std::vector<PartitionedLock>(
-                       const std::u16string& name)> lock_database);
+  // expected to be granted synchronously. `on_blob_read_complete` will be
+  // called with the result of every blob read attempt across all databases.
+  BackingStoreImpl(
+      base::FilePath directory,
+      storage::mojom::BlobStorageContext& blob_storage_context,
+      base::RepeatingCallback<std::vector<PartitionedLock>(
+          const std::u16string& name)> lock_database,
+      base::RepeatingCallback<void(net::Error)> on_blob_read_complete);
   BackingStoreImpl(const BackingStoreImpl&) = delete;
   BackingStoreImpl& operator=(const BackingStoreImpl&) = delete;
   ~BackingStoreImpl() override;
@@ -87,6 +92,11 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
     return *blob_storage_context_;
   }
 
+  const base::RepeatingCallback<void(net::Error)>& on_blob_read_complete()
+      const {
+    return on_blob_read_complete_;
+  }
+
  private:
   friend class DatabaseConnectionTest;
 
@@ -109,6 +119,8 @@ class CONTENT_EXPORT BackingStoreImpl : public BackingStore {
   base::RepeatingCallback<std::vector<PartitionedLock>(
       const std::u16string& name)>
       lock_database_;
+
+  base::RepeatingCallback<void(net::Error)> on_blob_read_complete_;
 
   std::unordered_map<std::u16string, std::unique_ptr<DatabaseConnection>>
       open_connections_;

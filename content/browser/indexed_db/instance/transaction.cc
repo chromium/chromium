@@ -797,7 +797,7 @@ void Transaction::BlobWriteComplete(base::TimeTicks start_time, Status result) {
   CHECK_EQ(state_, COMMITTING);
 
   LogStatus(result, "IndexedDB.BackingStore.WriteBlobs",
-            bucket_context_->in_memory());
+            bucket_context_->GetHistogramSuffix());
 
   if (!result.ok()) {
     Status status = Abort(
@@ -812,7 +812,7 @@ void Transaction::BlobWriteComplete(base::TimeTicks start_time, Status result) {
 
   LogDuration(base::TimeTicks::Now() - start_time,
               "IndexedDB.BackendDuration.WriteBlobs",
-              bucket_context_->in_memory());
+              bucket_context_->GetHistogramSuffix());
   ScheduleTask(
       /*operation_name_for_metrics=*/{},
       base::IgnoreArgs<Transaction*>(base::BindOnce(
@@ -899,7 +899,7 @@ Status Transaction::DoPendingCommit() {
                   },
                   ptr_factory_.GetWeakPtr())),
           "IndexedDB.BackingStore.CommitPhaseOne",
-          bucket_context_->in_memory()));
+          bucket_context_->GetHistogramSuffix()));
   commit_synchronous_duration_ = timer.Elapsed();
   if (async_work_in_progress) {
     return Status::OK();
@@ -925,13 +925,13 @@ Status Transaction::CommitPhaseTwo() {
     base::ElapsedTimer timer;
     s = LogStatus(backing_store_transaction_->CommitPhaseTwo(),
                   "IndexedDB.BackingStore.CommitPhaseTwo",
-                  bucket_context_->in_memory());
+                  bucket_context_->GetHistogramSuffix());
     commit_synchronous_duration_ += timer.Elapsed();
 
     if (s.ok()) {
       LogDuration(commit_synchronous_duration_,
                   "IndexedDB.BackendDuration.CommitTransaction",
-                  bucket_context_->in_memory());
+                  bucket_context_->GetHistogramSuffix());
     }
 
     // This measurement includes the time it takes to commit to the backing
@@ -1021,9 +1021,9 @@ Status Transaction::RunTasks() {
     IDB_RETURN_IF_ERROR(LogStatus(
         backing_store_transaction_->Begin(std::move(locks_receiver_.locks)),
         "IndexedDB.BackingStore.BeginTransaction",
-        bucket_context_->in_memory()));
+        bucket_context_->GetHistogramSuffix()));
     LogDuration(timer.Elapsed(), "IndexedDB.BackendDuration.BeginTransaction",
-                bucket_context_->in_memory());
+                bucket_context_->GetHistogramSuffix());
     backing_store_transaction_begun_ = true;
   }
 
@@ -1052,18 +1052,18 @@ Status Transaction::RunTasks() {
         task.verify ? std::move(task.verify).Run(*this) : Status::OK();
     if (result.ok()) {
       // The operation may invalidate the bucket context handle.
-      bool in_memory = bucket_context_->in_memory();
+      std::string_view histogram_suffix = bucket_context_->GetHistogramSuffix();
       result = std::move(task.operation).Run(this);
       if (!task.operation_name_for_metrics.empty()) {
         LogStatus(result,
                   base::StrCat({"IndexedDB.BackingStore.",
                                 task.operation_name_for_metrics}),
-                  in_memory);
+                  histogram_suffix);
         if (result.ok()) {
           LogDuration(timer.Elapsed(),
                       base::StrCat({"IndexedDB.BackendDuration.",
                                     task.operation_name_for_metrics}),
-                      in_memory);
+                      histogram_suffix);
         }
       }
     }

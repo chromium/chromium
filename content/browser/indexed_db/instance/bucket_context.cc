@@ -237,6 +237,14 @@ bool ShouldUseSqlite(SqliteRolloutStage stage,
   }
 }
 
+std::string_view DetermineHistogramSuffix(const base::FilePath& data_path) {
+  if (data_path.empty()) {
+    return ".InMemory";
+  }
+  // This will change when additional SQLite rollout stages are added.
+  return ".OnDisk";
+}
+
 }  // namespace
 
 BucketContext::Delegate::Delegate()
@@ -509,9 +517,14 @@ void BucketContext::CreateAllExternalObjects(
   }
 }
 
-bool BucketContext::IsUsingSqlite() {
+bool BucketContext::IsUsingSqlite() const {
   CHECK(backing_store_);
   return std::get<bool>(*backing_store_);
+}
+
+std::string_view BucketContext::GetHistogramSuffix() const {
+  CHECK(backing_store_);
+  return std::get<std::string_view>(*backing_store_);
 }
 
 void BucketContext::QueueRunTasks() {
@@ -534,7 +547,7 @@ void BucketContext::RunTasks() {
   if (last_idle_tasks_completion_time_) {
     base::UmaHistogramMediumTimes(
         base::StrCat({"IndexedDB.IdleTasksCompletionToNextActivity",
-                      ToVariantSuffix(in_memory())}),
+                      GetHistogramSuffix()}),
         base::TimeTicks::Now() - *last_idle_tasks_completion_time_);
     last_idle_tasks_completion_time_.reset();
   }
@@ -581,7 +594,7 @@ void BucketContext::RunIdleTasks() {
   backing_store()->RunIdleTasks();
   base::TimeTicks end = base::TimeTicks::Now();
   LogDuration(end - start, "IndexedDB.BackendDuration.RunIdleTasks",
-              in_memory());
+              GetHistogramSuffix());
   last_idle_tasks_completion_time_ = end;
 }
 
@@ -627,9 +640,10 @@ void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
     }
   }
 
-  auto names_and_versions = LOG_RESULT(
-      backing_store()->GetDatabaseNamesAndVersions(),
-      "IndexedDB.BackingStore.GetDatabaseNamesAndVersions", in_memory());
+  auto names_and_versions =
+      LOG_RESULT(backing_store()->GetDatabaseNamesAndVersions(),
+                 "IndexedDB.BackingStore.GetDatabaseNamesAndVersions",
+                 GetHistogramSuffix());
   if (!names_and_versions.has_value()) {
     std::move(callback).Run({}, blink::mojom::IDBError::New(
                                     blink::mojom::IDBException::kUnknownError,
@@ -638,7 +652,7 @@ void BucketContext::GetDatabaseInfo(GetDatabaseInfoCallback callback) {
     return;
   }
   LogDuration(timer.Elapsed(), "IndexedDB.BackendDuration.GetDatabaseInfo",
-              in_memory());
+              GetHistogramSuffix());
   std::move(callback).Run(
       std::move(*names_and_versions),
       blink::mojom::IDBError::New(blink::mojom::IDBException::kNoError,
@@ -671,11 +685,14 @@ void BucketContext::Open(
 
   IndexedDBDataLossInfo data_loss_info;
   if (!backing_store_) {
+    std::string_view suffix_if_init_fails =
+        DetermineHistogramSuffix(data_path_);
     Status s;
     DatabaseError error;
     std::tie(s, error, data_loss_info) =
         InitBackingStore(/*create_if_missing=*/true);
-    LogStatus(s, "IndexedDB.BackingStore.CreateIfMissing", in_memory());
+    LogStatus(s, "IndexedDB.BackingStore.CreateIfMissing",
+              s.ok() ? GetHistogramSuffix() : suffix_if_init_fails);
     if (!s.ok()) {
       std::move(factory_client)->Error(error.code(), error.message());
       if (s.IsCorruption()) {
@@ -899,8 +916,11 @@ void BucketContext::BindBlobReader(
   if (itr == file_reader_map_.end()) {
     // Unretained is safe because `this` owns the reader.
     auto reader = std::make_unique<BlobReader>(
-        blob_info, base::BindOnce(&BucketContext::RemoveBoundReaders,
-                                  base::Unretained(this), path));
+        blob_info,
+        base::BindOnce(&BucketContext::RemoveBoundReaders,
+                       base::Unretained(this), path),
+        base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
+                            GetHistogramSuffix()));
     itr =
         file_reader_map_
             .insert({path, std::make_tuple(std::move(reader),
@@ -1028,6 +1048,7 @@ BucketContext::InitBackingStore(bool create_if_missing) {
   CHECK(!backing_store_);
   bool should_use_sqlite =
       ShouldUseSqlite(sqlite_rollout_stage_, bucket_locator(), data_path_);
+  std::string_view histogram_suffix = DetermineHistogramSuffix(data_path_);
 
   // Construct paths and create required directories.
   base::FilePath blob_path;
@@ -1143,8 +1164,10 @@ BucketContext::InitBackingStore(bool create_if_missing) {
                   CHECK_EQ(lock_holder.locks.size(), 1U);
                   return std::move(lock_holder.locks);
                 },
-                std::ref(*lock_manager))),
-        /*is_sqlite=*/true);
+                std::ref(*lock_manager)),
+            base::BindRepeating(&LogNetError, "IndexedDB.BackingStore.ReadBlob",
+                                histogram_suffix)),
+        /*is_sqlite=*/true, histogram_suffix);
   } else {
     bool create_sqlite_if_missing =
         !in_memory() && create_if_missing &&
@@ -1213,7 +1236,8 @@ BucketContext::InitBackingStore(bool create_if_missing) {
       return {status, CreateDefaultError(), data_loss_info};
     }
 
-    backing_store_.emplace(std::move(backing_store), /*is_sqlite=*/false);
+    backing_store_.emplace(std::move(backing_store), /*is_sqlite=*/false,
+                           histogram_suffix);
   }
 
   if (!in_memory()) {

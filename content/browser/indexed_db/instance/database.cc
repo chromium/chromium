@@ -226,7 +226,7 @@ StatusOr<int64_t> Database::DeleteDatabase(std::vector<PartitionedLock> locks,
   Status s = LogStatus(backing_store_db_->DeleteDatabase(
                            std::move(locks), std::move(on_complete)),
                        "IndexedDB.BackingStore.DeleteDatabase",
-                       bucket_context_->in_memory());
+                       bucket_context_->GetHistogramSuffix());
   backing_store_db_.reset();
   if (!s.ok()) {
     return base::unexpected(s);
@@ -1018,7 +1018,7 @@ void Database::CallUpgradeTransactionStartedForTesting(int64_t old_version) {
 Status Database::OpenInternal() {
   auto result = LOG_RESULT(backing_store()->CreateOrOpenDatabase(name_),
                            "IndexedDB.BackingStore.CreateOrOpenDatabase",
-                           bucket_context_->in_memory());
+                           bucket_context_->GetHistogramSuffix());
   if (result.has_value()) {
     backing_store_db_ = std::move(result.value());
     return Status::OK();

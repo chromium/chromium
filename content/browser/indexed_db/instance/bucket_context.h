@@ -179,7 +179,11 @@ class CONTENT_EXPORT BucketContext
 
   // Whether the backing store is using SQLite. `CHECK`s that the backing store
   // exists.
-  bool IsUsingSqlite();
+  bool IsUsingSqlite() const;
+
+  // Returns the suffix to append to histogram names based on the backing store
+  // type. `CHECK`s that the backing store exists.
+  std::string_view GetHistogramSuffix() const;
 
   void QueueRunTasks();
 
@@ -422,9 +426,11 @@ class CONTENT_EXPORT BucketContext
   std::optional<base::TimeTicks> last_idle_tasks_completion_time_;
   base::OneShotTimer close_timer_;
   std::unique_ptr<PartitionedLockManager> lock_manager_;
-  // <BackingStore, is_sqlite>. Set only after a successful call to
-  // `InitBackingStore()`.
-  std::optional<std::tuple<std::unique_ptr<BackingStore>, bool>> backing_store_;
+  // <BackingStore, is_sqlite, histogram_suffix>. Set only after a successful
+  // call to `InitBackingStore()`.
+  std::optional<
+      std::tuple<std::unique_ptr<BackingStore>, bool, std::string_view>>
+      backing_store_;
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
   // Databases in the backing store which are already loaded/represented by

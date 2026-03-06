@@ -11,7 +11,6 @@
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "content/browser/indexed_db/indexed_db_reporting.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/net_adapters.h"
@@ -20,7 +19,8 @@ namespace content::indexed_db {
 
 namespace {
 using TransferCompletionCallback =
-    base::OnceCallback<void(int /*result*/, uint64_t /*transferred_bytes*/)>;
+    base::OnceCallback<void(net::Error /*result*/,
+                            uint64_t /*transferred_bytes*/)>;
 
 // TODO(estade): rename this class and this file.
 class FileStreamReaderToDataPipe {
@@ -170,8 +170,6 @@ void FileStreamReaderToDataPipe::OnComplete(net::Error result) {
   dest_.reset();
 
   std::move(completion_callback_).Run(result, transferred_bytes_);
-  // `this` is only used by on-disk backing stores.
-  LogNetError("IndexedDB.BackingStore.ReadBlob", /*in_memory=*/false, result);
   delete this;
 }
 

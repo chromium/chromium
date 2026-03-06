@@ -6,11 +6,12 @@
 #define CONTENT_BROWSER_INDEXED_DB_INSTANCE_BLOB_READER_H_
 
 #include "base/files/file_path.h"
-#include "base/functional/callback_forward.h"
+#include "base/functional/callback.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
 #include "content/browser/indexed_db/instance/blob_endpoint.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/base/net_errors.h"
 
 namespace content::indexed_db {
 
@@ -26,7 +27,8 @@ namespace content::indexed_db {
 class BlobReader : public BlobEndpoint {
  public:
   BlobReader(const IndexedDBExternalObject& blob_info,
-             base::OnceClosure on_last_receiver_disconnected);
+             base::OnceClosure on_last_receiver_disconnected,
+             base::RepeatingCallback<void(net::Error)> on_read_complete);
   ~BlobReader() override;
 
   BlobReader(const BlobReader&) = delete;
@@ -112,6 +114,10 @@ class BlobReader : public BlobEndpoint {
   mojo::Remote<blink::mojom::Blob> registry_blob_;
 
   base::OnceClosure on_last_receiver_disconnected_;
+
+  // Run on the completion of every attempt to read the contents of the
+  // underlying blob.
+  base::RepeatingCallback<void(net::Error)> on_read_complete_;
 };
 
 }  // namespace content::indexed_db

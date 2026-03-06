@@ -263,7 +263,7 @@ class ConnectionCoordinator::OpenRequest
                 db_->version() == IndexedDBDatabaseMetadata::NO_VERSION
                     ? "IndexedDB.BackendDuration.CreateDatabase"
                     : "IndexedDB.BackendDuration.OpenDatabase",
-                bucket_context_handle_->in_memory());
+                bucket_context_handle_->GetHistogramSuffix());
     ContinueOpening(has_connections);
   }
 
@@ -585,7 +585,7 @@ class ConnectionCoordinator::DeleteRequest
       state_ = RequestState::kDone;
       LogDuration(synchronous_duration_ += timer.Elapsed(),
                   "IndexedDB.BackendDuration.DeleteDatabase",
-                  bucket_context_handle_->in_memory());
+                  bucket_context_handle_->GetHistogramSuffix());
     } else {
       // TODO(jsbell): Consider including sanitized leveldb status
       // message.
