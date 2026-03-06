@@ -139,9 +139,9 @@ ContentClassificationResult ContentClassifier::Classify(
 
   // 2. Check whether the page is within the sensitivity threshold.
   result.is_sensitive =
-      *input.sensitivity_score < kContentAnnotatorSensitivityThreshold.Get();
+      *input.sensitivity_score > kContentAnnotatorSensitivityThreshold.Get();
   base::UmaHistogramBoolean("AccessibilityAnnotator.SensitivityCheck",
-                            result.is_sensitive.value());
+                            !result.is_sensitive.value());
 
   // 3. Run value classifiers.
   std::string title_classifier_result(ClassifierResultStatusToString(
