@@ -40,23 +40,17 @@ namespace content {
 // TODO(dcheng): File a bug. This class incorrectly passes just a frame ID,
 // which is not sufficient to identify a frame (since frame IDs are scoped per
 // render process, and so may collide).
-WebContentsObserverProxy::WebContentsObserverProxy(
-    JNIEnv* env,
-    const base::android::JavaRef<jobject>& obj,
-    WebContents* web_contents)
-    : WebContentsObserver(web_contents), java_observer_(env, obj) {
-  DCHECK(obj);
-}
+WebContentsObserverProxy::WebContentsObserverProxy(WebContents* web_contents)
+    : WebContentsObserver(web_contents) {}
 
 WebContentsObserverProxy::~WebContentsObserverProxy() {}
 
 static int64_t JNI_WebContentsObserverProxy_Init(JNIEnv* env,
-                                                 const JavaRef<jobject>& obj,
                                                  WebContents* web_contents) {
   CHECK(web_contents);
 
   WebContentsObserverProxy* native_observer =
-      new WebContentsObserverProxy(env, obj, web_contents);
+      new WebContentsObserverProxy(web_contents);
   return reinterpret_cast<intptr_t>(native_observer);
 }
 
@@ -382,7 +376,9 @@ void WebContentsObserverProxy::WasDiscarded() {
 
 ScopedJavaLocalRef<jobject> WebContentsObserverProxy::GetJavaObjectChecked(
     JNIEnv* env) const {
-  auto obj = java_observer_.get(env);
+  CHECK(web_contents());
+  auto obj =
+      Java_WebContentsObserverProxy_getFromWebContents(env, web_contents());
   DCHECK(!obj.is_null());
   return obj;
 }

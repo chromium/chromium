@@ -24,9 +24,7 @@ class RenderFrameHost;
 // the calls it receives.
 class WebContentsObserverProxy : public WebContentsObserver {
  public:
-  WebContentsObserverProxy(JNIEnv* env,
-                           const base::android::JavaRef<jobject>& obj,
-                           WebContents* web_contents);
+  explicit WebContentsObserverProxy(WebContents* web_contents);
 
   WebContentsObserverProxy(const WebContentsObserverProxy&) = delete;
   WebContentsObserverProxy& operator=(const WebContentsObserverProxy&) = delete;
@@ -90,10 +88,6 @@ class WebContentsObserverProxy : public WebContentsObserver {
   base::android::ScopedJavaLocalRef<jobject> GetJavaObjectChecked(
       JNIEnv* env) const;
 
-  // This object is owned by the WebContentsImpl in Java and is destroyed by it.
-  // Due to this lifecycle it is safe to use a weak reference to avoid an entry
-  // in the finite global reference table.
-  JavaObjectWeakGlobalRef java_observer_;
   GURL base_url_of_last_started_data_url_;
 };
 

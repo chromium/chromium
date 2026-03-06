@@ -36,7 +36,7 @@ public class WebContentsObserverProxyTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         WebContentsObserverProxyJni.setInstanceForTesting(mWebContentsObserverProxyJni);
-        when(mWebContentsObserverProxyJni.init(any(), any())).thenReturn(1L);
+        when(mWebContentsObserverProxyJni.init(any())).thenReturn(1L);
     }
 
     @Test

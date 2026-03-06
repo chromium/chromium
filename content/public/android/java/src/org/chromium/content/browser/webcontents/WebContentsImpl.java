@@ -305,10 +305,7 @@ public class WebContentsImpl
         long nativeWebContentsAndroid = mNativeWebContentsAndroid;
         assert nativeWebContentsAndroid != 0;
         mNativeWebContentsAndroid = 0;
-        if (mObserverProxy != null) {
-            mObserverProxy.webContentsDestroyed();
-            mObserverProxy = null;
-        }
+        clearJavaWebContentsObservers();
         UserDataHost userDataHost = getUserDataHost();
         if (userDataHost != null) {
             userDataHost.destroy();
@@ -1323,6 +1320,10 @@ public class WebContentsImpl
     public @Nullable WebContents getDocumentPictureInPictureOpener() {
         return WebContentsImplJni.get()
                 .getDocumentPictureInPictureOpener(mNativeWebContentsAndroid);
+    }
+
+    /*package*/ @Nullable WebContentsObserverProxy getWebContentsObserverProxy() {
+        return mObserverProxy;
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)

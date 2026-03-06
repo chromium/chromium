@@ -4,6 +4,8 @@
 
 package org.chromium.content.browser.webcontents;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.JniType;
@@ -51,7 +53,7 @@ class WebContentsObserverProxy extends WebContentsObserver {
      */
     public WebContentsObserverProxy(WebContents webContents) {
         ThreadUtils.assertOnUiThread();
-        mNativeWebContentsObserverProxy = WebContentsObserverProxyJni.get().init(this, webContents);
+        mNativeWebContentsObserverProxy = WebContentsObserverProxyJni.get().init(webContents);
         mObservers = new ObserverList<WebContentsObserver>();
         mObserverCallsCurrentlyHandling = 0;
     }
@@ -568,11 +570,15 @@ class WebContentsObserverProxy extends WebContentsObserver {
         }
     }
 
+    @CalledByNative
+    private static WebContentsObserverProxy getFromWebContents(
+            @JniType("content::WebContents*") WebContents webContents) {
+        return assertNonNull(((WebContentsImpl) webContents).getWebContentsObserverProxy());
+    }
+
     @NativeMethods
     interface Natives {
-        long init(
-                WebContentsObserverProxy self,
-                @JniType("content::WebContents*") WebContents webContents);
+        long init(@JniType("content::WebContents*") WebContents webContents);
 
         void destroy(long nativeWebContentsObserverProxy);
     }
