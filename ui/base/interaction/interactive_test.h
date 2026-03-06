@@ -1074,7 +1074,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
   auto step = CheckElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
-          [](InteractiveTestApi* api, ElementIdentifier id,
+          [](InteractiveTestApi* api, UntypedStateIdentifier id,
              std::unique_ptr<Observer> observer, TrackedElement* el) {
             return api->private_test_impl().AddStateObserver(
                 id, el->context(), std::move(observer));
@@ -1092,7 +1092,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::ObserveState(
   auto step = CheckElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
-          [](InteractiveTestApi* api, ElementIdentifier id,
+          [](InteractiveTestApi* api, UntypedStateIdentifier id,
              std::remove_cvref_t<Args>... args, TrackedElement* el) {
             return api->private_test_impl().AddStateObserver(
                 id, el->context(),
@@ -1113,7 +1113,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollState(
   auto step = CheckElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
-          [](InteractiveTestApi* api, ElementIdentifier id, Cb callback,
+          [](InteractiveTestApi* api, UntypedStateIdentifier id, Cb callback,
              base::TimeDelta polling_interval, TrackedElement* el) {
             return api->private_test_impl().AddStateObserver(
                 id, el->context(),
@@ -1137,7 +1137,7 @@ InteractionSequence::StepBuilder InteractiveTestApi::PollElement(
   auto step = WithElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
-          [](InteractiveTestApi* api, ElementIdentifier id,
+          [](InteractiveTestApi* api, UntypedStateIdentifier id,
              ElementIdentifier element_id, Cb callback,
              base::TimeDelta polling_interval, InteractionSequence* seq,
              TrackedElement* el) {
@@ -1168,6 +1168,8 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
     V&& value) {
   using T = typename O::ValueType;
   using U = internal::MatcherTypeFor<V>;
+  const auto element_id =
+      internal::InteractiveTestPrivate::StateToElementId(id.identifier());
   auto wait_callback = base::BindOnce(
       [](ElementIdentifier id, U value, InteractionSequence* seq,
          TrackedElement* el) {
@@ -1182,10 +1184,10 @@ InteractiveTestApi::MultiStep InteractiveTestApi::WaitForState(
         }
         typed->SetTarget(internal::CreateMatcherFromValue<T>(value));
       },
-      id.identifier(), U(std::forward<V>(value)));
+      element_id, U(std::forward<V>(value)));
   auto result = Steps(WithElement(internal::kInteractiveTestPivotElementId,
                                   std::move(wait_callback)),
-                      WaitForShow(id.identifier()));
+                      WaitForShow(element_id));
   AddDescriptionPrefix(result, "WaitForState()");
   return result;
 }
@@ -1199,10 +1201,11 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::CheckState(
   using T = typename O::ValueType;
   using U = internal::MatcherTypeFor<V>;
   auto check_callback = base::BindOnce(
-      [](ElementIdentifier id, U value, InteractionSequence* seq,
+      [](UntypedStateIdentifier id, U value, InteractionSequence* seq,
          TrackedElement* el) {
         auto* const typed = internal::StateObserverElementT<T>::LookupElement(
-            id, el->context(), seq->IsCurrentStepInAnyContextForTesting());
+            internal::InteractiveTestPrivate::StateToElementId(id),
+            el->context(), seq->IsCurrentStepInAnyContextForTesting());
         if (!typed) {
           LOG(ERROR) << "No state observer registered for identifier " << id
                      << " in the current context. You must observe a state in "
@@ -1233,7 +1236,7 @@ InteractiveTestApi::StepBuilder InteractiveTestApi::StopObservingState(
   auto step = WithElement(
       internal::kInteractiveTestPivotElementId,
       base::BindOnce(
-          [](InteractiveTestApi* api, ElementIdentifier id,
+          [](InteractiveTestApi* api, UntypedStateIdentifier id,
              InteractionSequence* seq, TrackedElement* el) {
             const auto context = seq->IsCurrentStepInAnyContextForTesting()
                                      ? ElementContext()

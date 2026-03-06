@@ -50,10 +50,10 @@
 #include "extensions/common/extension_urls.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/base/interaction/typed_identifier.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/native_theme/mock_os_settings_provider.h"
 #include "ui/views/interaction/polling_view_observer.h"
@@ -132,7 +132,7 @@ struct NtpPromoUiTestParams {
 
 using ObserverType =
     views::test::PollingViewPropertyObserver<std::u16string, OmniboxViewViews>;
-DEFINE_LOCAL_TYPED_IDENTIFIER_VALUE_OLD(ObserverType, kLocationBarTextValue);
+DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, kLocationBarTextValue);
 MATCHER_P(OptionalStringContains, text, "Optional string contains") {
   return arg.has_value() && arg.value().find(text) != std::u16string::npos;
 }

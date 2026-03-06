@@ -267,14 +267,14 @@ class InteractiveTestPrivate {
   // `id` and context `context`. Must be unique in its context.
   // Returns true on success.
   template <typename Observer, typename V = Observer::ValueType>
-  bool AddStateObserver(ElementIdentifier id,
+  bool AddStateObserver(UntypedStateIdentifier id,
                         ElementContext context,
                         std::unique_ptr<Observer> state_observer);
 
   // Removes `StateObserver` with identifier `id` in `context`; if the context
   // is null, assumes there is exactly one matching observer in some context.
   // Returns true on success.
-  bool RemoveStateObserver(ElementIdentifier id, ElementContext context);
+  bool RemoveStateObserver(UntypedStateIdentifier id, ElementContext context);
 
   // Creates an additional context that will persist as long as copies of the
   // context exist.
@@ -327,6 +327,9 @@ class InteractiveTestPrivate {
     }
     return result;
   }
+
+  // Converts a state identifier to an element identifier.
+  static ElementIdentifier StateToElementId(UntypedStateIdentifier id);
 
  protected:
   // Dumps the entire tree of named elements. Default implementation organizes
@@ -499,7 +502,6 @@ class StateObserverElementT : public StateObserverElement {
     return *lookup_table;
   }
 
- private:
   // Since the context can be updated on observer shutdown and needs access to
   // the current value, it needs to be destructed last.
   TestContext test_context_;
@@ -534,20 +536,23 @@ bool MatchAndExplain(std::string_view test_name,
 
 template <typename Observer, typename V>
 bool InteractiveTestPrivate::AddStateObserver(
-    ElementIdentifier id,
+    UntypedStateIdentifier id,
     ElementContext context,
     std::unique_ptr<Observer> state_observer) {
   CHECK(id);
   CHECK(context);
+  const auto element_id = StateToElementId(id);
   for (const auto& existing : state_observer_elements_) {
-    if (existing->identifier() == id && existing->context() == context) {
+    if (existing->identifier() == element_id &&
+        existing->context() == context) {
       LOG(ERROR) << "AddStateObserver: Duplicate observer added for " << id;
       return false;
     }
   }
   state_observer_elements_.emplace_back(
-      std::make_unique<StateObserverElementT<V>>(
-          id, context, std::move(state_observer), CreateAdditionalContext()));
+      std::make_unique<StateObserverElementT<V>>(StateToElementId(id), context,
+                                                 std::move(state_observer),
+                                                 CreateAdditionalContext()));
   return true;
 }
 

@@ -1767,7 +1767,8 @@ TEST_F(InteractiveTestTest, StopObservingState) {
       ObserveState(kIntTestState,
                    std::make_unique<TestStateObserver<int>>(&observable)),
       WaitForState(kIntTestState, 1), StopObservingState(kIntTestState),
-      EnsureNotPresent(kIntTestState.identifier()),
+      EnsureNotPresent(internal::InteractiveTestPrivate::StateToElementId(
+          kIntTestState.identifier())),
       Check([this]() { return state_observers().empty(); }));
 }
 

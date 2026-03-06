@@ -18,6 +18,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/types/pass_key.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -246,14 +247,16 @@ TrackedElement* InteractiveTestPrivate::GetPivotElement(
   return it->second.get();
 }
 
-bool InteractiveTestPrivate::RemoveStateObserver(ElementIdentifier id,
+bool InteractiveTestPrivate::RemoveStateObserver(UntypedStateIdentifier id,
                                                  ElementContext context) {
   using It = decltype(state_observer_elements_.begin());
   It found = state_observer_elements_.end();
+  const auto element_id = StateToElementId(id);
   for (It it = state_observer_elements_.begin();
        it != state_observer_elements_.end(); ++it) {
     auto& entry = **it;
-    if (entry.identifier() == id && (!context || entry.context() == context)) {
+    if (entry.identifier() == element_id &&
+        (!context || entry.context() == context)) {
       CHECK(found == state_observer_elements_.end())
           << "RemoveStateObserver: Duplicate entries found for " << id;
       found = it;
@@ -422,6 +425,13 @@ void PrintDebugTree(std::ostream& stream,
 void InteractiveTestPrivate::DebugTreeNode::PrintTo(
     std::ostream& stream) const {
   PrintDebugTree(stream, *this, "", true);
+}
+
+// static
+ElementIdentifier InteractiveTestPrivate::StateToElementId(
+    UntypedStateIdentifier id) {
+  return ElementIdentifier::FromRawValue(
+      id.GetRawValue(base::PassKey<InteractiveTestPrivate>()));
 }
 
 InteractiveTestPrivate::DebugTreeNode InteractiveTestPrivate::DebugDumpElements(

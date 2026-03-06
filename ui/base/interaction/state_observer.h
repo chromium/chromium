@@ -13,11 +13,18 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interactive_test_definitions.h"
-#include "ui/base/interaction/typed_identifier.h"
 
 namespace ui::test {
+
+namespace internal {
+class InteractiveTestPrivate;
+}
+
+DECLARE_UNIQUE_IDENTIFIER_TYPE(UntypedStateIdentifier,
+                               internal::InteractiveTestPrivate);
 
 // Base class for all state change observers. Observes some state of the system,
 // which we can then wait on.
@@ -112,7 +119,7 @@ class ObservationStateObserver : public StateObserver<T>, public Observer {
 };
 
 template <typename T>
-using StateIdentifier = TypedIdentifierOld<T>;
+using StateIdentifier = TypedIdentifier<UntypedStateIdentifier, T>;
 
 }  // namespace ui::test
 
@@ -125,22 +132,24 @@ using StateIdentifier = TypedIdentifierOld<T>;
 // ```
 //
 // `DECLARE_STATE_IDENTIFIER_VALUE()` and `DEFINE_STATE_IDENTIFIER_VALUE()` are
-// for use in .h and .cc files, respectively, as with declaring
-// `ElementIdentifier`s.
+// for use in .h and .cc files, respectively.
 //
 // To declare a `StateIdentifier` local to a .cc file or method body, use
 // DEFINE_LOCAL_STATE_IDENTIFIER_VALUE() instead. This will create a file- and
 // line-mangled name that will not suffer name collisions with other
 // identifiers.
 
-#define DECLARE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DECLARE_TYPED_IDENTIFIER_VALUE_OLD(ObserverType, Name)
+#define DECLARE_STATE_IDENTIFIER_VALUE(ObserverType, Name)           \
+  DECLARE_TYPED_IDENTIFIER_VALUE(::ui::test::UntypedStateIdentifier, \
+                                 ObserverType, Name)
 
-#define DEFINE_STATE_IDENTIFIER_VALUE(ObserverType, Name) \
-  DEFINE_TYPED_IDENTIFIER_VALUE_OLD(ObserverType, Name)
+#define DEFINE_STATE_IDENTIFIER_VALUE(ObserverType, Name)           \
+  DEFINE_TYPED_IDENTIFIER_VALUE(::ui::test::UntypedStateIdentifier, \
+                                ObserverType, Name)
 
 #define DEFINE_LOCAL_STATE_IDENTIFIER_VALUE(ObserverType, Name)             \
-  DEFINE_MACRO_TYPED_IDENTIFIER_VALUE_OLD(__FILE__, __LINE__, ObserverType, \
-                                          Name)
+  DEFINE_MACRO_LOCAL_TYPED_IDENTIFIER_VALUE(                                \
+      __FILE__, __LINE__, ::ui::test::UntypedStateIdentifier, ObserverType, \
+      Name)
 
 #endif  // UI_BASE_INTERACTION_STATE_OBSERVER_H_
