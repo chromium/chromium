@@ -181,7 +181,8 @@ public class ActorUiTabController implements UserData {
     }
 
     /** Instance method to update state and notify observers. */
-    private void onUiTabStateChange(UiTabState state) {
+    @VisibleForTesting
+    void onUiTabStateChange(UiTabState state) {
         mCurrentState = state;
         for (Observer observer : mObservers) {
             observer.onUiTabStateChanged(state);

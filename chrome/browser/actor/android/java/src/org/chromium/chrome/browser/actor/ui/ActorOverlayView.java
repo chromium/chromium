@@ -23,15 +23,6 @@ public class ActorOverlayView extends FrameLayout {
     }
 
     /**
-     * Sets the visibility of the view.
-     *
-     * @param visible True to show the view, false to hide it (GONE).
-     */
-    public void setVisible(boolean visible) {
-        setVisibility(visible ? VISIBLE : GONE);
-    }
-
-    /**
      * Sets the top and bottom margins of the view.
      *
      * @param top The top margin in pixels.

@@ -5,12 +5,16 @@
 package org.chromium.chrome.browser.actor.ui;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
+import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.ViewStub;
+import android.widget.FrameLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -25,11 +29,17 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSuppliers;
 import org.chromium.base.supplier.SettableNullableObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.ActorOverlayState;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.HandoffButtonState;
+import org.chromium.chrome.browser.actor.ui.ActorUiTabController.UiTabState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObscuringHandler;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -39,27 +49,43 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 /** Tests for {@link ActorOverlayCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@EnableFeatures(ChromeFeatureList.GLIC)
 public class ActorOverlayCoordinatorTest {
     @Mock private ViewStub mViewStub;
-    @Mock private ActorOverlayView mView;
     @Mock private TabModelSelector mTabModelSelector;
     @Mock private BrowserControlsVisibilityManager mBrowserControlsVisibilityManager;
     @Mock private Tab mTab;
     @Mock private SnackbarManager mSnackbarManager;
+    @Mock private ActorUiTabController.Natives mTabControllerNatives;
 
+    private ActorOverlayView mView;
+    private static final int TAB_ID = 123;
+
+    private ActorUiTabController mTabController;
     private TabObscuringHandler mTabObscuringHandler;
     private ActorOverlayCoordinator mCoordinator;
     private SettableNullableObservableSupplier<Tab> mCurrentTabSupplier;
+    private UserDataHost mUserDataHost;
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
     @Before
     public void setUp() {
         Activity activity = Robolectric.buildActivity(Activity.class).get();
-        Mockito.when(mView.getContext()).thenReturn(activity);
+        mView = Mockito.spy(new ActorOverlayView(activity, null));
+        mView.setLayoutParams(
+                new FrameLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         Mockito.when(mViewStub.inflate()).thenReturn(mView);
 
         mTabObscuringHandler = new TabObscuringHandler();
+        mUserDataHost = new UserDataHost();
+        Mockito.when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
+        Mockito.when(mTab.getId()).thenReturn(TAB_ID);
+
+        // Make ActorUiTabController.from() return a real instance.
+        mTabController = ActorUiTabController.from(mTab);
+        ActorUiTabControllerJni.setInstanceForTesting(mTabControllerNatives);
 
         mCurrentTabSupplier = ObservableSuppliers.createNullable();
         Mockito.when(mTabModelSelector.getCurrentTabSupplier()).thenReturn(mCurrentTabSupplier);
@@ -94,7 +120,7 @@ public class ActorOverlayCoordinatorTest {
         verify(mSnackbarManager).showSnackbar(any());
 
         // Snackbar should NOT be shown if already showing.
-        Mockito.clearInvocations(mSnackbarManager);
+        clearInvocations(mSnackbarManager);
         when(mSnackbarManager.isShowing()).thenReturn(true);
         clickListener.onClick(mView);
         verify(mSnackbarManager, Mockito.never()).showSnackbar(any());
@@ -102,15 +128,16 @@ public class ActorOverlayCoordinatorTest {
 
     @Test
     public void testVisibility() {
-        Mockito.clearInvocations(mView);
+        clearInvocations(mView);
 
         ActorOverlayMediator mediator = mCoordinator.getMediator();
         mediator.setOverlayVisible(true);
         // CAN_SHOW is true by default from Coordinator init, so VISIBLE=true makes view visible.
-        verify(mView).setVisible(true);
+        verify(mView).setVisibility(View.VISIBLE);
 
+        clearInvocations(mView);
         mediator.setOverlayVisible(false);
-        verify(mView).setVisible(false);
+        verify(mView).setVisibility(View.GONE);
     }
 
     @Test
@@ -119,30 +146,194 @@ public class ActorOverlayCoordinatorTest {
                 ArgumentCaptor.forClass(TabModelSelectorObserver.class);
         verify(mTabModelSelector).addObserver(observerCaptor.capture());
 
-        Mockito.clearInvocations(mView);
+        clearInvocations(mView);
 
         ActorOverlayMediator mediator = mCoordinator.getMediator();
         mediator.setOverlayVisible(true);
-        verify(mView).setVisible(true);
+        verify(mView).setVisibility(View.VISIBLE);
 
+        clearInvocations(mView);
         observerCaptor.getValue().onTabHidden(mTab);
-        verify(mView).setVisible(false);
+        verify(mView).setVisibility(View.GONE);
     }
 
     @Test
     public void testUpdateCanShowOverlayOnTabShown() {
-        Mockito.clearInvocations(mView);
+        clearInvocations(mView);
 
         ActorOverlayMediator mediator = mCoordinator.getMediator();
         mediator.setOverlayVisible(true);
-        verify(mView).setVisible(true);
+        verify(mView).setVisibility(View.VISIBLE);
 
         // Simulate a new tab showing. This should trigger updateCanShowOverlay, which currently
         // sets CAN_SHOW to false for native pages.
         Mockito.when(mTab.isNativePage()).thenReturn(true);
+        clearInvocations(mView);
         mCurrentTabSupplier.set(mTab);
 
-        verify(mView).setVisible(false);
+        verify(mView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void testTabSwitchToNullHidesOverlay() {
+        mCurrentTabSupplier.set(mTab);
+
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mediator.setOverlayVisible(true);
+        verify(mView).setVisibility(View.VISIBLE);
+
+        clearInvocations(mView);
+        mCurrentTabSupplier.set(null);
+        verify(mView).setVisibility(View.GONE);
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+    }
+
+    @Test
+    public void testTabSwitchToClosingTab() {
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mediator.setOverlayVisible(true);
+
+        Mockito.when(mTab.isClosing()).thenReturn(true);
+        clearInvocations(mView);
+        mCurrentTabSupplier.set(mTab);
+
+        verify(mView).setVisibility(View.GONE);
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+    }
+
+    @Test
+    public void testTabSwitchToDestroyedTab() {
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mediator.setOverlayVisible(true);
+
+        Mockito.when(mTab.isDestroyed()).thenReturn(true);
+        clearInvocations(mView);
+        mCurrentTabSupplier.set(mTab);
+
+        verify(mView).setVisibility(View.GONE);
+        Assert.assertFalse(mCoordinator.getModelForTesting().get(ActorOverlayProperties.CAN_SHOW));
+    }
+
+    @Test
+    public void testInitialStateAppliedOnTabSwitch() {
+        ActorUiTabController tabController = ActorUiTabController.from(mTab);
+        UiTabState state =
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false);
+
+        // Set initial state on the tab controller before it's observed.
+        tabController.onUiTabStateChange(state);
+
+        // Switching to the tab should immediately apply its active state.
+        mCurrentTabSupplier.set(mTab);
+        verify(mView).setVisibility(View.VISIBLE);
+    }
+
+    @Test
+    public void testResetVisibilityIfNoInitialState() {
+        ActorOverlayMediator mediator = mCoordinator.getMediator();
+        mediator.setOverlayVisible(true);
+        verify(mView).setVisibility(View.VISIBLE);
+
+        // Switch to a new tab that has no state.
+        Tab tab2 = Mockito.mock(Tab.class);
+        UserDataHost userDataHost2 = new UserDataHost();
+        Mockito.when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+
+        clearInvocations(mView);
+        mCurrentTabSupplier.set(tab2);
+        // It should hide because no state is available for tab2.
+        verify(mView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void testVisibilityDrivenByTabController() {
+        clearInvocations(mView);
+
+        // Initial state: CAN_SHOW is true (default in Mediator for non-native tab),
+        // VISIBLE is false (default in Mediator).
+        mCurrentTabSupplier.set(mTab);
+
+        // Set state via TabController.
+        ActorUiTabController tabController = ActorUiTabController.from(mTab);
+        UiTabState state =
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false);
+
+        // Use the package-private testing method.
+        tabController.onUiTabStateChange(state);
+
+        verify(mView).setVisibility(View.VISIBLE);
+
+        // Now set isActive to false.
+        UiTabState state2 =
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ false,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false);
+
+        clearInvocations(mView);
+        tabController.onUiTabStateChange(state2);
+
+        verify(mView).setVisibility(View.GONE);
+    }
+
+    @Test
+    public void testTabSwitchUnregistersObserver() {
+        mCurrentTabSupplier.set(mTab);
+        ActorUiTabController tabController1 = ActorUiTabController.from(mTab);
+
+        Tab tab2 = Mockito.mock(Tab.class);
+        UserDataHost userDataHost2 = new UserDataHost();
+        Mockito.when(tab2.getUserDataHost()).thenReturn(userDataHost2);
+        mCurrentTabSupplier.set(tab2);
+        ActorUiTabController tabController2 = ActorUiTabController.from(tab2);
+
+        // tabController1 should no longer have the mediator as observer.
+        // We can check this by triggering an update on tabController1 and seeing if it affects
+        // mView.
+        clearInvocations(mView);
+        UiTabState state =
+                new UiTabState(
+                        /* tabId= */ TAB_ID,
+                        /* actorOverlay= */ new ActorOverlayState(
+                                /* isActive= */ true,
+                                /* borderGlowVisible= */ false,
+                                /* mouseDown= */ false),
+                        /* handoffButton= */ new HandoffButtonState(
+                                /* isActive= */ false, /* controller= */ 0),
+                        /* tabIndicator= */ 0,
+                        /* borderGlowVisible= */ false);
+
+        tabController1.onUiTabStateChange(state);
+
+        verify(mView, Mockito.never()).setVisibility(any(Integer.class));
+
+        // Trigger on tabController2 should work.
+        tabController2.onUiTabStateChange(state);
+        verify(mView).setVisibility(View.VISIBLE);
     }
 
     @Test

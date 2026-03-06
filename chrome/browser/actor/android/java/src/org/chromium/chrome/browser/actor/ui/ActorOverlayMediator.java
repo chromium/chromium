@@ -17,7 +17,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Mediator for the Actor Overlay. */
 @NullMarked
-class ActorOverlayMediator {
+class ActorOverlayMediator implements ActorUiTabController.Observer {
     private final PropertyModel mModel;
     private final TabModelSelector mTabModelSelector;
     private final TabModelSelectorObserver mTabModelSelectorObserver;
@@ -26,6 +26,8 @@ class ActorOverlayMediator {
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
     private final TabObscuringHandler mTabObscuringHandler;
 
+    private @Nullable Tab mCurrentTab;
+    private @Nullable ActorUiTabController mTabController;
     private TabObscuringHandler.@Nullable Token mTabObscuringToken;
 
     /**
@@ -53,12 +55,7 @@ class ActorOverlayMediator {
                 };
         mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
-        mCurrentTabObserver =
-                (tab) -> {
-                    if (tab != null) {
-                        updateCanShowOverlay(tab);
-                    }
-                };
+        mCurrentTabObserver = this::onCurrentTabChanged;
         mTabModelSelector
                 .getCurrentTabSupplier()
                 .addSyncObserverAndCallIfNonNull(mCurrentTabObserver);
@@ -84,6 +81,43 @@ class ActorOverlayMediator {
         mModel.set(
                 ActorOverlayProperties.BOTTOM_MARGIN,
                 mBrowserControlsVisibilityManager.getBottomControlsHeight());
+    }
+
+    @Override
+    public void onUiTabStateChanged(ActorUiTabController.UiTabState state) {
+        setOverlayVisible(state.actorOverlay.isActive);
+    }
+
+    private void onCurrentTabChanged(@Nullable Tab tab) {
+        if (mCurrentTab != null && mTabController != null) {
+            mTabController.removeObserver(this);
+        }
+
+        mCurrentTab = tab;
+        mTabController = null;
+
+        if (mCurrentTab == null) {
+            setCanShow(false);
+            setOverlayVisible(false);
+            return;
+        }
+
+        mTabController = ActorUiTabController.from(mCurrentTab);
+        if (mTabController == null) {
+            setCanShow(false);
+            setOverlayVisible(false);
+            return;
+        }
+        mTabController.addObserver(this);
+
+        updateCanShowOverlay(mCurrentTab);
+        ActorUiTabController.UiTabState state = mTabController.getUiTabState();
+        if (state != null) {
+            onUiTabStateChanged(state);
+        } else {
+            // Reset visibility if no state is available.
+            setOverlayVisible(false);
+        }
     }
 
     private void updateCanShowOverlay(@Nullable Tab tab) {
@@ -124,6 +158,11 @@ class ActorOverlayMediator {
 
     /** Cleans up the mediator. */
     public void destroy() {
+        if (mCurrentTab != null && mTabController != null) {
+            mTabController.removeObserver(this);
+            mTabController = null;
+            mCurrentTab = null;
+        }
         if (mTabObscuringToken != null) {
             mTabObscuringHandler.unobscure(mTabObscuringToken);
             mTabObscuringToken = null;
