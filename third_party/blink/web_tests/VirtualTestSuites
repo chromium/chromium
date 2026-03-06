@@ -2678,12 +2678,12 @@
       "http/tests/inspector-protocol/prerender/prefetch-events-for-ahead-of-prerender.js"
     ],
     "args": [
-      "--enable-features=Prerender2FallbackPrefetchSpecRules:kPrerender2FallbackPrefetchSchedulerPolicy/Burst"
+      "--enable-features=Prerender2FallbackPrefetchSpecRules:kPrerender2FallbackPrefetchSchedulerPolicy/NotUse"
     ],
     "owners": [
       "kenoss@chromium.org"
     ],
-    "expires": "Nov 30, 2025"
+    "expires": "Jan 1, 2027"
   },
   {
     "prefix": "presentation",
