@@ -1127,17 +1127,6 @@ class AppControllerProfileObserver : public ProfileAttributesStorage::Observer,
                                             ? IDS_TAB_CXMENU_CLOSETABSTOLEFT
                                             : IDS_TAB_CXMENU_CLOSETABSTORIGHT)];
   }
-
-  // Updates the `View` menu's "Move Tabs to the ..." accordingly.
-  NSMenu* viewSubmenu = [[[NSApp mainMenu] itemWithTag:IDC_VIEW_MENU] submenu];
-  NSMenuItem* toggleVerticalItem =
-      [viewSubmenu itemWithTag:IDC_TOGGLE_VERTICAL_TABS];
-
-  if (toggleVerticalItem) {
-    [toggleVerticalItem
-        setTitle:l10n_util::GetNSString(enabled ? IDS_SWITCH_TO_HORIZONTAL_TAB
-                                                : IDS_SWITCH_TO_VERTICAL_TAB)];
-  }
 }
 
 // Called when shutting down or logging out.

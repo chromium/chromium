@@ -23,6 +23,7 @@
 #import "chrome/browser/ui/cocoa/touchbar/browser_window_touch_bar_controller.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/omnibox_next_features.h"
+#include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/frame/browser_frame_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/browser_widget.h"
@@ -235,15 +236,6 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
                                             : IDS_ENTER_FULLSCREEN_MAC));
       break;
     }
-    case IDC_TOGGLE_VERTICAL_TABS: {
-      // TODO(crbug.com/475222200): When in immersive, swapping between tab
-      // strip types create duplicate tab strips. Until that is resolved,
-      // disable the ability to swap between tab strips while in immersive.
-      result->set_hidden_state = true;
-      result->new_hidden_state =
-          ImmersiveModeController::From(browser)->IsEnabled();
-      break;
-    }
     case IDC_SHOW_AS_TAB: {
       // Hide this menu option if the window is tabbed or is the devtools
       // window.
@@ -362,6 +354,18 @@ void BrowserNativeWidgetMac::ValidateUserInterfaceItem(
       result->new_toggle_state = prefs->GetBoolean(omnibox::kShowSearchTools);
       // Disable this menu option if the toolbelt feature is not enabled.
       result->enable = omnibox_feature_configs::Toolbelt::Get().enabled;
+      break;
+    }
+    case IDC_TOGGLE_VERTICAL_TABS: {
+      // TODO(crbug.com/475222200): When in immersive, swapping between tab
+      // strip types create duplicate tab strips. Until that is resolved,
+      // disable the ability to swap between tab strips while in immersive.
+      result->set_hidden_state = true;
+      result->new_hidden_state =
+          ImmersiveModeController::From(browser)->IsEnabled();
+      result->new_toggle_state =
+          tabs::VerticalTabStripStateController::From(browser)
+              ->ShouldDisplayVerticalTabs();
       break;
     }
     case IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS: {

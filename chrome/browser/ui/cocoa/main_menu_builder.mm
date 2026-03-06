@@ -308,6 +308,9 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                   .command_id(IDC_SHOW_AI_MODE_OMNIBOX_BUTTON),
               Item(IDS_CONTEXT_MENU_SHOW_SEARCH_TOOLS)
                   .command_id(IDC_SHOW_SEARCH_TOOLS),
+              Item(IDS_SWITCH_TO_VERTICAL_TAB)
+                  .command_id(IDC_TOGGLE_VERTICAL_TABS)
+                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
               Item(IDS_CUSTOMIZE_TOUCH_BAR)
                   .tag(IDC_CUSTOMIZE_TOUCH_BAR)
                   .action(@selector(toggleTouchBarCustomizationPalette:))
@@ -353,12 +356,6 @@ NSMenuItem* BuildViewMenu(NSApplication* nsapp,
                       Item(IDS_ALLOW_JAVASCRIPT_APPLE_EVENTS_MAC)
                           .command_id(IDC_TOGGLE_JAVASCRIPT_APPLE_EVENTS),
                   }),
-              Item().is_separator()
-                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
-              Item(IDS_SWITCH_TO_VERTICAL_TAB)
-                  .command_id(IDC_TOGGLE_VERTICAL_TABS)
-                  .remove_if(!tabs::IsVerticalTabsFeatureEnabled()),
-
         })
         .Build();
   // clang-format on
