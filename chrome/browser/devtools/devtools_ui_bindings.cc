@@ -2687,10 +2687,10 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
 
   base::ListValue results;
   base::ListValue forbidden_origins;
-  bool have_user_installed_devtools_extensions = false;
   extensions::ExtensionManagement* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(
           web_contents_->GetBrowserContext());
+
   forbidden_origins.Append(
       url::Origin::Create(search::GetNewTabPageURL(profile_)).Serialize());
   for (const scoped_refptr<const extensions::Extension>& extension :
@@ -2742,18 +2742,6 @@ void DevToolsUIBindings::AddDevToolsExtensionsToClient() {
             .Set("runtimeAllowedHosts", std::move(runtime_allowed_hosts))
             .Set("runtimeBlockedHosts", std::move(runtime_blocked_hosts)));
     results.Append(std::move(extension_info));
-
-    if (!(extensions::Manifest::IsPolicyLocation(extension->location()) ||
-          extensions::Manifest::IsComponentLocation(extension->location()))) {
-      have_user_installed_devtools_extensions = true;
-    }
-  }
-
-  if (have_user_installed_devtools_extensions) {
-    bool is_developer_mode =
-        profile_->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-    base::UmaHistogramBoolean("Extensions.DevTools.UserIsInDeveloperMode",
-                              is_developer_mode);
   }
 
   CallClientMethod("DevToolsAPI", "setOriginsForbiddenForExtensions",

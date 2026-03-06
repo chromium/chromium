@@ -1509,17 +1509,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.DevTools.UserIsInDeveloperMode"
-    enum="InDeveloperMode" expires_after="2023-07-02">
-  <owner>ghazale@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether DevTools extensions are being loaded while the user has
-    extensions developer mode enabled. This excludes extensions installed by the
-    enterprise policy and component extensions.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DidCreateScriptContext_Blessed" units="ms"
     expires_after="2026-11-15">
   <owner>rdevlin.cronin@chromium.org</owner>

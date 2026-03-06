@@ -3810,30 +3810,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest,
                       base::NumberToString(websocket_port).c_str());
   CloseDevToolsWindow();
 }
-
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, IsDeveloperModeTrueHistogram) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kExtensionsUIDeveloperMode, true);
-  base::HistogramTester histograms;
-  const char* histogram_name = "Extensions.DevTools.UserIsInDeveloperMode";
-
-  LoadExtension("devtools_extension");
-  RunTest("waitForTestResultsInConsole", kArbitraryPage);
-
-  histograms.ExpectBucketCount(histogram_name, true, 2);
-}
-
-IN_PROC_BROWSER_TEST_F(DevToolsExtensionTest, IsDeveloperModeFalseHistogram) {
-  browser()->profile()->GetPrefs()->SetBoolean(
-      prefs::kExtensionsUIDeveloperMode, false);
-  base::HistogramTester histograms;
-  const char* histogram_name = "Extensions.DevTools.UserIsInDeveloperMode";
-
-  LoadExtension("devtools_extension");
-  RunTest("waitForTestResultsInConsole", kArbitraryPage);
-
-  histograms.ExpectBucketCount(histogram_name, false, 2);
-}
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
