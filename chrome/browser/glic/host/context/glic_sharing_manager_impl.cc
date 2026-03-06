@@ -14,6 +14,7 @@
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/host/glic_features.mojom.h"
+#include "chrome/browser/glic/public/glic_enabling.h"
 #include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/webui_url_constants.h"
@@ -274,7 +275,12 @@ void GlicSharingManagerImpl::GetContextFromTab(
   }
 
   // If tab context was allowed to be extracted, report to metrics.
-  metrics_->DidRequestContextFromTab(*tab->GetContents());
+  // Instance-level metrics for context requests are recorded by the caller
+  // (e.g., GlicPageHandler) to ensure correct attribution in multi-instance
+  // mode.
+  if (!GlicEnabling::IsMultiInstanceEnabled()) {
+    metrics_->DidRequestContextFromTab(*tab);
+  }
 
   GetContextFromTabImpl(tab, options, std::move(callback));
 }

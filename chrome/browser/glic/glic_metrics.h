@@ -300,21 +300,23 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   ~GlicMetrics() override;
 
   // `GlicInstanceMetricsBackwardsCompatibility`:
+  void OnUserInputSubmitted(mojom::WebClientMode mode) override;
+  void OnReaction(mojom::MetricUserInputReactionType reaction_type) override;
+  void OnResponseStarted() override;
+  void OnResponseStopped(mojom::ResponseStopCause cause) override;
+  void OnTurnCompleted(mojom::WebClientModel model,
+                       base::TimeDelta duration) override;
+  void DidRequestContextFromTab(tabs::TabInterface& tab) override;
   void OnGlicScrollAttempt() override;
   void OnGlicScrollComplete(bool success) override;
 
   // See glic.mojom for details. These are events from the web client. The
   // lifetime of the web client is scoped to that of the window, so if these
   // methods are called then controller_ is guaranteed to exist.
-  void OnUserInputSubmitted(mojom::WebClientMode mode);
   void OnContextUploadStarted();
   void OnContextUploadCompleted();
-  void OnReaction(mojom::MetricUserInputReactionType reaction_type);
-  void OnResponseStarted();
-  void OnResponseStopped(mojom::ResponseStopCause cause);
   void OnSessionTerminated();
   void OnResponseRated(bool positive);
-  void OnTurnCompleted(mojom::WebClientModel model, base::TimeDelta duration);
   void OnRecordUseCounter(uint16_t counter);
 
   void OnAttachedToBrowser(AttachChangeReason reason);
@@ -390,9 +392,6 @@ class GlicMetrics : public GlicInstanceMetricsBackwardsCompatibility {
   void ClearControllers();
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate);
-
-  // Must be called when context is requested from a tab.
-  void DidRequestContextFromTab(content::WebContents& web_contents);
 
   // Sets the input mode of the web client. Should be called when the panel is
   // opened and in every subsequent mode change.

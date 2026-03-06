@@ -1170,8 +1170,10 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     }
 
     tabs::TabInterface* tab = ftd.focus();
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->DidRequestContextFromFocusedTab();
+    if (tab) {
+      host()
+          .instance_metrics_backwards_compatibility()
+          .DidRequestContextFromTab(*tab);
     }
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
     sharing_manager().GetContextFromTab(
@@ -1704,10 +1706,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnUserInputSubmitted(mojom::WebClientMode mode) override {
     glic_service_->OnUserInputSubmitted(mode);
-    glic_service_->metrics()->OnUserInputSubmitted(mode);
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->OnUserInputSubmitted(mode);
-    }
+    host().instance_metrics_backwards_compatibility().OnUserInputSubmitted(
+        mode);
 
     // TODO(crbug.com/462769104): move this to a non-metrics API.
     sharing_manager().OnConversationTurnSubmitted();
@@ -1724,18 +1724,14 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // TODO(crbug.com/450026474): Remove call to GlicMetrics once
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnReaction(mojom::MetricUserInputReactionType reaction_type) override {
-    glic_service_->metrics()->OnReaction(reaction_type);
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->OnReaction(reaction_type);
-    }
+    host().instance_metrics_backwards_compatibility().OnReaction(reaction_type);
   }
 
   // TODO(crbug.com/450026474): Remove call to GlicMetrics once
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnResponseStarted() override {
-    glic_service_->metrics()->OnResponseStarted();
+    host().instance_metrics_backwards_compatibility().OnResponseStarted();
     if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->OnResponseStarted();
       instance_metrics->RecordAttachedContextTabCount(
           sharing_manager().GetNumPinnedTabs());
     }
@@ -1748,10 +1744,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     if (details) {
       cause = details->cause;
     }
-    glic_service_->metrics()->OnResponseStopped(cause);
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->OnResponseStopped(cause);
-    }
+    host().instance_metrics_backwards_compatibility().OnResponseStopped(cause);
   }
 
   void OnSessionTerminated() override {
@@ -1762,10 +1755,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   // non-profile-scoped metrics are logged entirely from GlicInstanceMetrics.
   void OnTurnCompleted(glic::mojom::WebClientModel model,
                        base::TimeDelta duration) override {
-    glic_service_->metrics()->OnTurnCompleted(model, duration);
-    if (auto* instance_metrics = host().instance_metrics()) {
-      instance_metrics->OnTurnCompleted(model, duration);
-    }
+    host().instance_metrics_backwards_compatibility().OnTurnCompleted(model,
+                                                                      duration);
   }
 
   void OnRecordUseCounter(uint16_t counter) override {

@@ -32,6 +32,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/tabs/public/mock_tab_interface.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
@@ -55,6 +56,7 @@ using ::base::BucketsAre;
 using ::testing::_;
 using ::testing::IsEmpty;
 using ::testing::Pair;
+using ::testing::Return;
 using ::testing::UnorderedElementsAre;
 
 class MockDelegate : public GlicMetrics::Delegate {
@@ -328,7 +330,10 @@ TEST_F(GlicMetricsTest, ResponseStartTime_WithFocusedTab) {
   InitializeTestWebContents();
   delegate()->SetFocusedWebContents(test_web_contents());
 
-  metrics()->DidRequestContextFromTab(*test_web_contents());
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(Return(test_web_contents()));
+  metrics()->DidRequestContextFromTab(mock_tab);
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics()->OnResponseStarted();
 
@@ -350,7 +355,10 @@ TEST_F(GlicMetricsTest, ResponseStartTime_WithPinnedAndSharedTab) {
   InitializeTestWebContents();
   delegate()->AddToPinnedSharedTabs(test_web_contents());
 
-  metrics()->DidRequestContextFromTab(*test_web_contents());
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(Return(test_web_contents()));
+  metrics()->DidRequestContextFromTab(mock_tab);
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
   metrics()->OnResponseStarted();
 
@@ -411,7 +419,10 @@ TEST_F(GlicMetricsTest, BasicUkmWithTarget) {
 
   metrics()->OnGlicWindowStartedOpening(/*attached=*/false,
                                         mojom::InvocationSource::kFre);
-  metrics()->DidRequestContextFromTab(*test_web_contents());
+  tabs::MockTabInterface mock_tab;
+  EXPECT_CALL(mock_tab, GetContents())
+      .WillRepeatedly(Return(test_web_contents()));
+  metrics()->DidRequestContextFromTab(mock_tab);
   metrics()->OnUserInputSubmitted(mojom::WebClientMode::kText);
   metrics()->OnResponseStarted();
   metrics()->OnResponseStopped(mojom::ResponseStopCause::kUnknown);
