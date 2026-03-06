@@ -10914,6 +10914,33 @@
             ]
         }
     ],
+    "FontDataServiceChromeOS": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Fontations_Enabled",
+                    "params": {
+                        "typeface": "Fontations"
+                    },
+                    "enable_features": [
+                        "FontDataServiceChromeOS"
+                    ]
+                },
+                {
+                    "name": "Freetype_Enabled",
+                    "params": {
+                        "typeface": "Freetype"
+                    },
+                    "enable_features": [
+                        "FontDataServiceChromeOS"
+                    ]
+                }
+            ]
+        }
+    ],
     "FontDataServiceLinux": [
         {
             "platforms": [
