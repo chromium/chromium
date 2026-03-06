@@ -406,6 +406,19 @@ bool IsFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region) {
   }
   return base::FeatureList::IsEnabled(kFirstRunDesktopRefresh);
 }
+constexpr base::FeatureParam<FirstRunDesktopSignInPromoVariation>::Option
+    kFirstRunDesktopSignInPromoVariations[] = {
+        {FirstRunDesktopSignInPromoVariation::kDefault, "default"},
+        {FirstRunDesktopSignInPromoVariation::kDontSignInInTheTopCorner,
+         "dont-sign-in-in-the-top-corner"},
+        {FirstRunDesktopSignInPromoVariation::kDontSignInOnGaiaPage,
+         "dont-sign-in-on-gaia-page"},
+};
+constexpr base::FeatureParam<FirstRunDesktopSignInPromoVariation>
+    kFirstRunDesktopSignInPromoVariation{
+        &kFirstRunDesktopRefresh, "sign-in-promo-variation",
+        FirstRunDesktopSignInPromoVariation::kDefault,
+        &kFirstRunDesktopSignInPromoVariations};
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

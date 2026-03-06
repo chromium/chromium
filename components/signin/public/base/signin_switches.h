@@ -336,6 +336,21 @@ BASE_DECLARE_FEATURE(kFirstRunDesktopChoiceScreenRefresh);
 // flags).
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsFirstRunDesktopRefreshEnabled(bool is_in_search_engine_choice_region);
+enum class FirstRunDesktopSignInPromoVariation {
+  // Default sign-in promo containing both sign-in and don't sign-in buttons
+  // next to each other on the promo page.
+  kDefault = 0,
+  // Sign-in promo containing both sign-in and don't sign-in buttons but the
+  // don't sign in button is moved to the top corner of the promo page and the
+  // page informs the user they can create an account in the next step(s).
+  kDontSignInInTheTopCorner = 1,
+  // Sign-in promo containing only the sign-in button on the promo page. The
+  // don't sign in button is moved to the Gaia page.
+  kDontSignInOnGaiaPage = 2,
+};
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+extern const base::FeatureParam<FirstRunDesktopSignInPromoVariation>
+    kFirstRunDesktopSignInPromoVariation;
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
