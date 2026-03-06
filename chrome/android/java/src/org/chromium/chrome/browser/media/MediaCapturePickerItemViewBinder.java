@@ -25,7 +25,7 @@ public class MediaCapturePickerItemViewBinder {
         } else if (MediaCapturePickerItemProperties.SELECTED == propertyKey) {
             if (model.get(MediaCapturePickerItemProperties.SELECTED)) {
                 view.setBackgroundColor(
-                        SemanticColorUtils.getColorSurfaceContainerHigh(view.getContext()));
+                        SemanticColorUtils.getColorPrimaryContainer(view.getContext()));
             } else {
                 view.setBackgroundResource(android.R.color.transparent);
             }
