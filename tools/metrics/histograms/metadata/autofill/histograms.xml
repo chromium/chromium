@@ -1064,6 +1064,23 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   </token>
 </histogram>
 
+<histogram name="Autofill.Actor.KeyMetrics.FillingCorrectness.{FormType}"
+    enum="BooleanAutofillFillingCorrectness" expires_after="2026-11-30">
+  <owner>battre@chromium.org</owner>
+  <owner>jkeitel@google.com</owner>
+  <owner>sygiet@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records, at form submission, whether any of the fields filled by the actor
+    were modified by the user. Only recorded if the actor was used to fill the
+    form.
+  </summary>
+  <token key="FormType">
+    <variant name="Address" summary="Address form"/>
+    <variant name="CreditCard" summary="Credit card form"/>
+  </token>
+</histogram>
+
 <histogram name="Autofill.Actor.KeyMetrics.FillingReadiness.{FormType}"
     enum="BooleanAutofillFillingReadiness" expires_after="2026-11-30">
   <owner>battre@chromium.org</owner>

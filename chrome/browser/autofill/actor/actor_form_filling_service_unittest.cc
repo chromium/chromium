@@ -1313,6 +1313,237 @@ TEST_F(ActorFormFillingServiceTest, FillingAssistanceMetrics_CreditCardFilled) {
       "Autofill.Actor.KeyMetrics.FillingAssistance.CreditCard", true, 1);
 }
 
+// Tests that FillingCorrectness metrics are correctly recorded as true when all
+// fields filled by the actor are submitted unchanged.
+TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_AddressCorrect) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate all fields being submitted as autofilled (unchanged).
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  for (auto& field : fields) {
+    field.set_is_autofilled_according_to_renderer(true);
+  }
+  form.set_fields(std::move(fields));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.Address", true, 1);
+}
+
+// Tests that FillingCorrectness metrics are correctly recorded as false when at
+// least one field filled by the actor is modified by the user.
+TEST_F(ActorFormFillingServiceTest,
+       FillingCorrectnessMetrics_AddressIncorrect) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate one field being modified.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[0].set_is_autofilled_according_to_renderer(false);
+  fields[1].set_is_autofilled_according_to_renderer(true);
+  form.set_fields(std::move(fields));
+
+  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
+                                    base::TimeTicks::Now());
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.Address", false, 1);
+}
+
+// Tests that FillingCorrectness metrics are correctly recorded for credit cards
+// if all fields are submitted unchanged.
+TEST_F(ActorFormFillingServiceTest,
+       FillingCorrectnessMetrics_CreditCardCorrect) {
+  base::HistogramTester histogram_tester;
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form = SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                                      {.server_type = CREDIT_CARD_NUMBER}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate all fields being submitted as autofilled.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  for (auto& field : fields) {
+    field.set_is_autofilled_according_to_renderer(true);
+  }
+  form.set_fields(std::move(fields));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.CreditCard", true, 1);
+}
+
+// Tests that FillingCorrectness metrics are correctly recorded for credit cards
+// if one field is modified by the user.
+TEST_F(ActorFormFillingServiceTest,
+       FillingCorrectnessMetrics_CreditCardIncorrect) {
+  base::HistogramTester histogram_tester;
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
+  FormData form = SeeForm({.fields = {{.server_type = CREDIT_CARD_NAME_FULL},
+                                      {.server_type = CREDIT_CARD_NUMBER}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[0].global_id()})},
+      future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Simulate one field being modified.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[1].set_is_autofilled_according_to_renderer(false);
+  form.set_fields(std::move(fields));
+
+  manager().OnTextFieldValueChanged(form, form.fields()[1].global_id(),
+                                    base::TimeTicks::Now());
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.CreditCard", false, 1);
+}
+
+// Tests that FillingCorrectness metrics are correctly recorded for both
+// products in a mixed form.
+TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_MixedForm) {
+  base::HistogramTester histogram_tester;
+  const CreditCard card = test::GetCreditCard();
+  payments_data_manager().AddCreditCard(card);
+
+  FormData form = SeeForm({.fields = {{.server_type = NAME_FULL},
+                                      {.server_type = ADDRESS_HOME_LINE1},
+                                      {.server_type = CREDIT_CARD_NAME_FULL},
+                                      {.server_type = CREDIT_CARD_NUMBER}}});
+
+  // Fill address.
+  GetSuggestionsFuture addr_future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           addr_future.GetCallback());
+  std::vector<ActorFormFillingRequest> addr_requests =
+      addr_future.Take().value();
+  FillSuggestionsFuture addr_fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(addr_requests[0].suggestions[0].id)},
+      addr_fill_future.GetCallback());
+  EXPECT_THAT(addr_fill_future.Get(), HasValue());
+
+  // Fill credit card.
+  GetSuggestionsFuture cc_future;
+  service().GetSuggestions(
+      tab(), {CreditCardFillRequest({form.fields()[2].global_id()})},
+      cc_future.GetCallback());
+  std::vector<ActorFormFillingRequest> cc_requests = cc_future.Take().value();
+  FillSuggestionsFuture cc_fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(cc_requests[0].suggestions[0].id)},
+      cc_fill_future.GetCallback());
+  ASSERT_TRUE(credit_card_access_manager().RunCreditCardFetchedCallback(card));
+  EXPECT_THAT(cc_fill_future.Get(), HasValue());
+
+  // Simulate address being modified, but CC remains unchanged.
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[0].set_is_autofilled_according_to_renderer(false);
+  fields[1].set_is_autofilled_according_to_renderer(true);
+  fields[2].set_is_autofilled_according_to_renderer(true);
+  fields[3].set_is_autofilled_according_to_renderer(true);
+  form.set_fields(std::move(fields));
+
+  manager().OnTextFieldValueChanged(form, form.fields()[0].global_id(),
+                                    base::TimeTicks::Now());
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.Address", false, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.CreditCard", true, 1);
+}
+
+// Tests that FillingCorrectness metrics are correctly recorded as true when the
+// actor only filled some fields, and the user manually filled the rest (but did
+// not modify the actor-filled ones).
+TEST_F(ActorFormFillingServiceTest, FillingCorrectnessMetrics_PartialFilling) {
+  base::HistogramTester histogram_tester;
+  FormData form = SeeForm(
+      {.fields = {{.server_type = NAME_FULL}, {.server_type = UNKNOWN_TYPE}}});
+
+  GetSuggestionsFuture future;
+  service().GetSuggestions(tab(),
+                           {AddressFillRequest({form.fields()[0].global_id()})},
+                           future.GetCallback());
+  std::vector<ActorFormFillingRequest> requests = future.Take().value();
+
+  FillSuggestionsFuture fill_future;
+  service().FillSuggestions(
+      tab(), {ActorFormFillingSelection(requests[0].suggestions[0].id)},
+      fill_future.GetCallback());
+  EXPECT_THAT(fill_future.Get(), HasValue());
+
+  // Verify that only the NAME_FULL field was filled by the actor.
+  EXPECT_THAT(last_filled_values(), AllOf(Contains(Pair(form.fields()[0].global_id(), _)),
+                    Not(Contains(Pair(form.fields()[1].global_id(), _)))));
+
+  // Simulate submission:
+  // - Field 0 (NAME_FULL): Filled by actor, unchanged (is_autofilled = true).
+  // - Field 1 (UNKNOWN_TYPE): Filled by user manually (is_autofilled = false).
+  std::vector<FormFieldData> fields = form.ExtractFields();
+  fields[0].set_is_autofilled_according_to_renderer(true);
+  fields[1].set_is_autofilled_according_to_renderer(false);
+  fields[1].set_value(u"User Content");
+  form.set_fields(std::move(fields));
+
+  manager().OnFormSubmitted(form, mojom::SubmissionSource::FORM_SUBMISSION);
+
+  // Should be recorded as Correct (true) because the actor-filled field was not
+  // modified.
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.Actor.KeyMetrics.FillingCorrectness.Address", true, 1);
+}
+
 // Tests that the state for recorded forms is cleared when the forms are
 // removed (e.g. on navigation).
 TEST_F(ActorFormFillingServiceTest,

@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -75,6 +76,7 @@ void ActorKeyMetricsRecorder::RecordKeyMetrics(
     RecordFillingReadiness(form_structure, state, product_str);
     if (is_fillable) {
       RecordFillingAssistance(form_structure, state, product_str);
+      RecordFillingCorrectness(form_structure, state, product_str);
     }
   };
 
@@ -116,6 +118,38 @@ void ActorKeyMetricsRecorder::RecordFillingReadiness(
       base::StrCat(
           {"Autofill.Actor.KeyMetrics.FillingReadiness.", product_str}),
       state.with_actor_suggestions.contains(form_structure.global_id()));
+}
+
+void ActorKeyMetricsRecorder::RecordFillingCorrectness(
+    const FormStructure& form_structure,
+    const ProductState& state,
+    std::string_view product_str) {
+  if (state.actor_filled_fields.find(form_structure.global_id()) ==
+      state.actor_filled_fields.end()) {
+    return;
+  }
+
+  if (const base::flat_set<FieldGlobalId>* filled_fields = base::FindOrNull(
+          state.actor_filled_fields, form_structure.global_id())) {
+    bool all_unchanged = true;
+    bool has_actor_fields = false;
+    for (const std::unique_ptr<AutofillField>& field : form_structure) {
+      if (!filled_fields->contains(field->global_id())) {
+        continue;
+      }
+      has_actor_fields = true;
+      if (field->last_modifier() != FieldModifier::kAutofill) {
+        all_unchanged = false;
+        break;
+      }
+    }
+    if (has_actor_fields) {
+      base::UmaHistogramBoolean(
+          base::StrCat(
+              {"Autofill.Actor.KeyMetrics.FillingCorrectness.", product_str}),
+          all_unchanged);
+    }
+  }
 }
 
 }  // namespace autofill

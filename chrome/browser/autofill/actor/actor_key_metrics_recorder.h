@@ -70,6 +70,9 @@ class ActorKeyMetricsRecorder {
   void RecordFillingAssistance(const FormStructure& form_structure,
                                const ProductState& state,
                                std::string_view product_str);
+  void RecordFillingCorrectness(const FormStructure& form_structure,
+                                const ProductState& state,
+                                std::string_view product_str);
   void RecordFillingReadiness(const FormStructure& form_structure,
                               const ProductState& state,
                               std::string_view product_str);
