@@ -36,6 +36,9 @@ class GeminiThreadSyncBridge : public syncer::DataTypeSyncBridge {
     // Invoked when a Gemini Thread is created or updated.
     virtual void OnGeminiThreadAddedOrUpdatedRemotely(
         const std::vector<sync_pb::GeminiThreadSpecifics>& specifics) = 0;
+    // Invoked when a Gemini thread is removed.
+    virtual void OnGeminiThreadRemovedRemotely(
+        const std::vector<base::Uuid>& thread_ids) = 0;
   };
   GeminiThreadSyncBridge(
       std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,

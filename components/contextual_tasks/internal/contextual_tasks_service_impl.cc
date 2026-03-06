@@ -598,24 +598,7 @@ void ContextualTasksServiceImpl::OnThreadAddedOrUpdatedRemotely(
 
 void ContextualTasksServiceImpl::OnThreadRemovedRemotely(
     const std::vector<base::Uuid>& thread_ids) {
-  std::set<std::string> removed_thread_server_ids;
-  for (const auto& id : thread_ids) {
-    removed_thread_server_ids.insert(id.AsLowercaseString());
-  }
-
-  std::vector<base::Uuid> tasks_to_delete;
-  for (const auto& task_entry : tasks_) {
-    const ContextualTask& task = task_entry.second;
-    if (task.GetThread()) {
-      if (removed_thread_server_ids.count(task.GetThread()->server_id)) {
-        tasks_to_delete.push_back(task.GetTaskId());
-      }
-    }
-  }
-
-  for (const auto& task_id : tasks_to_delete) {
-    RemoveTaskInternal(task_id, TriggerSource::kRemote);
-  }
+  OnThreadRemovedRemotelyInternal(ThreadType::kAiMode, thread_ids);
 }
 
 void ContextualTasksServiceImpl::OnGeminiThreadDataStoreLoaded() {
@@ -669,6 +652,11 @@ void ContextualTasksServiceImpl::OnGeminiThreadAddedOrUpdatedRemotely(
   }
 }
 
+void ContextualTasksServiceImpl::OnGeminiThreadRemovedRemotely(
+    const std::vector<base::Uuid>& thread_ids) {
+  OnThreadRemovedRemotelyInternal(ThreadType::kGemini, thread_ids);
+}
+
 std::pair<std::map<base::Uuid, ContextualTask>::iterator, bool>
 ContextualTasksServiceImpl::FindOrCreateTask(const base::Uuid& task_id,
                                              ThreadType thread_type,
@@ -713,6 +701,29 @@ void ContextualTasksServiceImpl::RemoveTaskInternal(const base::Uuid& task_id,
       FROM_HERE,
       base::BindOnce(&ContextualTasksServiceImpl::NotifyTaskRemoved,
                      weak_ptr_factory_.GetWeakPtr(), task_id, source));
+}
+
+void ContextualTasksServiceImpl::OnThreadRemovedRemotelyInternal(
+    ThreadType thread_type_filter,
+    const std::vector<base::Uuid>& thread_ids) {
+  std::set<std::string> removed_thread_server_ids;
+  for (const auto& id : thread_ids) {
+    removed_thread_server_ids.insert(id.AsLowercaseString());
+  }
+
+  std::vector<base::Uuid> tasks_to_delete;
+  for (const auto& task_entry : tasks_) {
+    const ContextualTask& task = task_entry.second;
+    if (task.GetThread() && task.GetThread()->type == thread_type_filter) {
+      if (removed_thread_server_ids.count(task.GetThread()->server_id)) {
+        tasks_to_delete.push_back(task.GetTaskId());
+      }
+    }
+  }
+
+  for (const auto& task_id : tasks_to_delete) {
+    RemoveTaskInternal(task_id, TriggerSource::kRemote);
+  }
 }
 
 size_t ContextualTasksServiceImpl::GetTabIdMapSizeForTesting() const {

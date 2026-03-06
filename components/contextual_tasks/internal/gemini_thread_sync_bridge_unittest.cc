@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "base/uuid.h"
 #include "components/sync/base/data_type.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_store.h"
@@ -16,10 +17,10 @@
 
 namespace {
 
-const char kInitConversationId[] = "init_conversation_id";
+const char kInitConversationId[] = "00000000-0000-0000-0000-000000000001";
 const char kInitTitle[] = "init_title";
 const int64_t kInitLastTurnTimeUnixEpochMillis = 1700000000;
-const char kMockConversationId[] = "my_conversation_id";
+const char kMockConversationId[] = "00000000-0000-0000-0000-000000000002";
 const char kMockTitle[] = "my_title";
 const int64_t kMockLastTurnTimeUnixEpochMillis = 1771020815;
 
@@ -86,6 +87,12 @@ MATCHER_P3(SpecificsMatcher, conversation_id, title, last_turn_time, "") {
          arg[0].last_turn_time_unix_epoch_millis() == last_turn_time;
 }
 
+MATCHER_P(UuidMatcher, uuid, "") {
+  *result_listener << "Actual uuid " << arg[0] << "\n";
+  *result_listener << "Expected uuid:  " << uuid << "\n";
+  return arg[0].AsLowercaseString() == uuid;
+}
+
 }  // namespace
 
 namespace contextual_tasks {
@@ -117,6 +124,10 @@ class MockObserver : public GeminiThreadSyncBridge::Observer {
   MOCK_METHOD(void,
               OnGeminiThreadAddedOrUpdatedRemotely,
               (const std::vector<sync_pb::GeminiThreadSpecifics>& specifics),
+              (override));
+  MOCK_METHOD(void,
+              OnGeminiThreadRemovedRemotely,
+              (const std::vector<base::Uuid>& thread_ids),
               (override));
 };
 
@@ -269,6 +280,18 @@ TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, TestUpdateObserver) {
 
   bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
                                         std::move(entity_change_list));
+}
+
+TEST_F(GeminiThreadSyncBridgeWithInitSpecificsTest, TestRemoveObserver) {
+  syncer::EntityChangeList delete_changes;
+  delete_changes.push_back(syncer::EntityChange::CreateDelete(
+      kInitConversationId, syncer::EntityData()));
+  EXPECT_CALL(*observer(),
+              OnGeminiThreadRemovedRemotely(UuidMatcher(kInitConversationId)))
+      .Times(1);
+
+  bridge()->ApplyIncrementalSyncChanges(bridge()->CreateMetadataChangeList(),
+                                        std::move(delete_changes));
 }
 
 }  // namespace
