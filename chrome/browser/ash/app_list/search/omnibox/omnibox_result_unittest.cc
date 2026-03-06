@@ -168,7 +168,7 @@ class OmniboxResultTest : public testing::Test {
         std::make_unique<::test::TestAppListControllerDelegate>();
 
     favicon_cache_ = std::make_unique<FaviconCache>(
-        /*favicon_service=*/&favicon_service_, /*history_service=*/nullptr);
+        &favicon_service_, /*history_service=*/nullptr);
 
     // Ensure the bookmark model is loaded.
     bookmark_model_ =
@@ -204,9 +204,8 @@ class OmniboxResultTest : public testing::Test {
 
     return std::make_unique<OmniboxResult>(
         profile_.get(), app_list_controller_delegate_.get(),
-        CreateResult(match, /*controller=*/nullptr, favicon_cache_.get(),
-                     bookmark_model_, input_),
-        /*query=*/query);
+        CreateResult(match, /*controller=*/nullptr, bookmark_model_, input_),
+        /*query=*/query, favicon_cache_.get());
   }
 
   const GURL& GetLastOpenedUrl() const {

@@ -49,9 +49,6 @@ struct SearchResult {
   // Favicon of the result, if available. The presence or absence of this field
   // is what defines a result as a "favicon-type result".
   gfx.mojom.ImageSkia? favicon@8;
-  // Handle through which to receive asynchronously-fetched data about this
-  // search result.
-  [MinVersion=5] pending_receiver<SearchResultConsumer>? receiver@21;
 
   // The accessibility label to use for the second image line, if one exists.
   [MinVersion=3] mojo_base.mojom.String16? description_a11y_label@19;
@@ -127,13 +124,4 @@ struct SearchResult {
     kTyped = 1,
     kGenerated = 2,
   };
-};
-
-// Interface implemented by result objects to receive asynchronously-updated
-// data for one search result.
-// Next min method ID: 1
-[Uuid="d3294d1e-dadb-4bc2-a1ce-5b731f11cce1"]
-interface SearchResultConsumer {
-  // Called once with a favicon if it was successfully asynchronously fetched.
-  OnFaviconReceived@0(gfx.mojom.ImageSkia favicon);
 };

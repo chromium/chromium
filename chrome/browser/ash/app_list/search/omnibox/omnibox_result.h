@@ -15,23 +15,23 @@
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_delegate.h"
 #include "chromeos/crosapi/mojom/launcher_search.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 class AppListControllerDelegate;
 class BitmapFetcher;
 class Profile;
+class FaviconCache;
 
 namespace app_list {
 
 class OmniboxResult : public ChromeSearchResult,
                       public BitmapFetcherDelegate,
-                      public ash::ColorModeObserver,
-                      public crosapi::mojom::SearchResultConsumer {
+                      public ash::ColorModeObserver {
  public:
   OmniboxResult(Profile* profile,
                 AppListControllerDelegate* list_controller,
                 crosapi::mojom::SearchResultPtr search_result,
-                const std::u16string& query);
+                const std::u16string& query,
+                FaviconCache* favicon_cache);
   ~OmniboxResult() override;
 
   OmniboxResult(const OmniboxResult&) = delete;
@@ -50,9 +50,8 @@ class OmniboxResult : public ChromeSearchResult,
   // ash::ColorModeObserver:
   void OnColorModeChanged(bool dark_mode_enabled) override;
 
-  // crosapi::mojom::SearchResultConsumer:
-  void OnFaviconReceived(const gfx::ImageSkia& icon) override;
-
+  void FetchFavicon(FaviconCache* favicon_cache);
+  void OnFetchedFavicon(const gfx::Image& icon);
   void UpdateIcon();
   // Creates a generic backup icon: used when rich icons are not available.
   void SetGenericIcon();
@@ -82,10 +81,6 @@ class OmniboxResult : public ChromeSearchResult,
   // Indicates the priority of a result for deduplicatin. Results with the same
   // ID but lower |dedup_priority| are removed.
   int dedup_priority_ = 0;
-
-  // Handle used to receive asynchronous data about this search result over
-  // Mojo.
-  const mojo::Receiver<crosapi::mojom::SearchResultConsumer> consumer_receiver_;
 
   const raw_ptr<Profile> profile_;
   const raw_ptr<AppListControllerDelegate> list_controller_;

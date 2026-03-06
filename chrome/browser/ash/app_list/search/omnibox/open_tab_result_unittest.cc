@@ -76,9 +76,9 @@ class OpenTabResultTest : public testing::Test {
     TokenizedString tokenized_query(query, TokenizedString::Mode::kCamelCase);
     return std::make_unique<OpenTabResult>(
         /*profile=*/nullptr, app_list_controller_delegate_.get(),
-        CreateResult(match, /*controller=*/nullptr, favicon_cache_.get(),
+        CreateResult(match, /*controller=*/nullptr,
                      /*bookmark_model=*/nullptr, AutocompleteInput()),
-        tokenized_query);
+        tokenized_query, favicon_cache_.get());
   }
 
   const GURL& GetLastOpenedUrl() const {

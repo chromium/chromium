@@ -131,10 +131,10 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       DCHECK(last_tokenized_query_.has_value());
       new_results.emplace_back(std::make_unique<OpenTabResult>(
           profile_, list_controller_,
-          CreateResult(match, controller_.get(), &favicon_cache_,
+          CreateResult(match, controller_.get(),
                        BookmarkModelFactory::GetForBrowserContext(profile_),
                        input_),
-          last_tokenized_query_.value()));
+          last_tokenized_query_.value(), &favicon_cache_));
     } else if (!IsAnswer(match)) {
       // Filters out omnibox results if web is disabled in launcher search
       // controls.
@@ -143,10 +143,10 @@ void OmniboxProvider::PopulateFromACResult(const AutocompleteResult& result) {
       }
       list_results.emplace_back(std::make_unique<OmniboxResult>(
           profile_, list_controller_,
-          CreateResult(match, controller_.get(), &favicon_cache_,
+          CreateResult(match, controller_.get(),
                        BookmarkModelFactory::GetForBrowserContext(profile_),
                        input_),
-          last_query_));
+          last_query_, &favicon_cache_));
     } else {
       new_results.emplace_back(std::make_unique<OmniboxAnswerResult>(
           profile_, list_controller_,

@@ -17,7 +17,6 @@
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/favicon_cache.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "url/gurl.h"
 
 namespace app_list {
@@ -26,7 +25,6 @@ namespace {
 
 using crosapi::mojom::SearchResult;
 using crosapi::mojom::SearchResultPtr;
-using RemoteConsumer = mojo::Remote<crosapi::mojom::SearchResultConsumer>;
 using RequestSource = SearchTermsData::RequestSource;
 
 SearchResult::AnswerType MatchTypeToAnswerType(const int type) {
@@ -276,6 +274,12 @@ ui::PageTransition PageTransitionToUiPageTransition(
   }
 }
 
+bool IsEligibleForFavicon(SearchResult::OmniboxType type) {
+  return type == SearchResult::OmniboxType::kBookmark ||
+         type == SearchResult::OmniboxType::kDomain ||
+         type == SearchResult::OmniboxType::kOpenTab;
+}
+
 SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
                                    AutocompleteController* controller,
                                    std::u16string_view query,
@@ -342,11 +346,9 @@ SearchResultPtr CreateAnswerResult(const AutocompleteMatch& match,
 
 SearchResultPtr CreateResult(const AutocompleteMatch& match,
                              AutocompleteController* controller,
-                             FaviconCache* favicon_cache,
                              bookmarks::BookmarkModel* bookmark_model,
                              const AutocompleteInput& input) {
   SearchResultPtr result = CreateBaseResult(match, controller, input);
-
   result->is_answer = false;
   result->contents = match.contents;
   result->contents_type = ClassesToType(match.contents_class);
@@ -364,31 +366,8 @@ SearchResultPtr CreateResult(const AutocompleteMatch& match,
   if (match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY &&
       !match.image_url.is_empty()) {
     result->image_url = match.image_url;
-  } else {
-    // Set the favicon if this result is eligible.
-    bool use_favicon =
-        result->omnibox_type == SearchResult::OmniboxType::kBookmark ||
-        result->omnibox_type == SearchResult::OmniboxType::kDomain ||
-        result->omnibox_type == SearchResult::OmniboxType::kOpenTab;
-    if (use_favicon && favicon_cache) {
-      // Provide hook by which a result object can receive an
-      // asychronously-fetched favicon. Use a pointer so that our callback can
-      // own the remote interface.
-      RemoteConsumer consumer;
-      result->receiver = consumer.BindNewPipeAndPassReceiver();
-      auto emit_favicon = base::BindOnce(
-          [](RemoteConsumer consumer, const gfx::Image& icon) {
-            consumer->OnFaviconReceived(icon.AsImageSkia());
-          },
-          std::move(consumer));
-
-      const auto icon = favicon_cache->GetFaviconForPageUrl(
-          match.destination_url, std::move(emit_favicon));
-      if (!icon.IsEmpty()) {
-        result->favicon = icon.AsImageSkia();
-      }
-    }
   }
+
   return result;
 }
 

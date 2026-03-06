@@ -16,7 +16,6 @@
 #include "ui/base/page_transition_types.h"
 
 class AutocompleteController;
-class FaviconCache;
 class GURL;
 
 namespace bookmarks {
@@ -82,6 +81,10 @@ void RemoveDuplicateResults(
 ui::PageTransition PageTransitionToUiPageTransition(
     crosapi::mojom::SearchResult::PageTransition transition);
 
+// Determines whether a result with the given omnibox type is eligible for a
+// favicon.
+bool IsEligibleForFavicon(crosapi::mojom::SearchResult::OmniboxType type);
+
 // Creates an Omnibox answer card result from the AutocompleteMatch. Match must
 // either have its answer field populated or be a calculator result.
 crosapi::mojom::SearchResultPtr CreateAnswerResult(
@@ -92,10 +95,10 @@ crosapi::mojom::SearchResultPtr CreateAnswerResult(
 
 // Creates an Omnibox search result from the AutocompleteMatch. Match must not
 // have its answer field populated or be a calculator result.
+// The `favicon` field will not be populated.
 crosapi::mojom::SearchResultPtr CreateResult(
     const AutocompleteMatch& match,
     AutocompleteController* controller,
-    FaviconCache* favicon_cache,
     bookmarks::BookmarkModel* bookmark_model,
     const AutocompleteInput& input);
 

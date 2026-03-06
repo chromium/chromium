@@ -82,7 +82,7 @@ TEST(OmniboxUtilTest, CreateResult) {
       ACMatchClassification(0, ACMatchClassification::Style::MATCH)};
 
   const auto result =
-      CreateResult(match, nullptr, nullptr, nullptr, AutocompleteInput());
+      CreateResult(match, nullptr, nullptr, AutocompleteInput());
   EXPECT_EQ(result->relevance, 300);
   ASSERT_TRUE(result->destination_url.has_value());
   EXPECT_EQ(result->destination_url.value(), GURL("http://www.example.com/"));
