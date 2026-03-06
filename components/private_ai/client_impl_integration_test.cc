@@ -110,20 +110,18 @@ TEST_F(ClientImplIntegrationTest, FullStackSuccess) {
   // 2. SecureChannel (Basic) is created and gets the attestation request.
   auto* channel = last_secure_channel();
   ASSERT_TRUE(channel);
-  EXPECT_TRUE(channel->last_written_request().has_anonymous_token_request());
 
-  // 3. Respond to attestation.
-  proto::PrivateAiResponse attestation_response;
-  attestation_response.set_request_id(
-      channel->last_written_request().request_id());
-  channel->send_back_response(attestation_response);
+  // 3. Now the original text request should be sent immediately after
+  // attestation.
+  ASSERT_EQ(channel->written_requests().size(), 2u);
+  EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
+  EXPECT_EQ(channel->written_requests()[0].feature_name(),
+            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+  EXPECT_TRUE(channel->written_requests()[1].has_generate_content_request());
 
-  // 4. Now the original text request should be sent.
-  EXPECT_TRUE(channel->last_written_request().has_generate_content_request());
-
-  // 5. Respond to text request.
+  // 4. Respond to text request.
   proto::PrivateAiResponse text_response;
-  text_response.set_request_id(channel->last_written_request().request_id());
+  text_response.set_request_id(channel->written_requests()[1].request_id());
   text_response.mutable_generate_content_response()
       ->add_candidates()
       ->mutable_content()
@@ -158,17 +156,17 @@ TEST_F(ClientImplIntegrationTest, Timeout) {
                            "hello", future.GetCallback(),
                            {.timeout = base::Seconds(5)});
 
-  // Complete attestation successfully.
+  // Provide the token.
   token_manager_.RunPendingCallbacks();
   auto* channel = last_secure_channel();
   ASSERT_TRUE(channel);
-  proto::PrivateAiResponse attestation_response;
-  attestation_response.set_request_id(
-      channel->last_written_request().request_id());
-  channel->send_back_response(attestation_response);
 
-  // Text request is sent.
-  EXPECT_TRUE(channel->last_written_request().has_generate_content_request());
+  // Text request is sent immediately after attestation.
+  ASSERT_EQ(channel->written_requests().size(), 2u);
+  EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
+  EXPECT_EQ(channel->written_requests()[0].feature_name(),
+            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
+  EXPECT_TRUE(channel->written_requests()[1].has_generate_content_request());
 
   // Wait for timeout.
   task_environment_.FastForwardBy(base::Seconds(6));
@@ -194,14 +192,11 @@ TEST_F(ClientImplIntegrationTest, ConcurrentRequestsDuringAttestation) {
   auto* channel = last_secure_channel();
   ASSERT_TRUE(channel);
 
-  // 2. Complete attestation.
-  proto::PrivateAiResponse attestation_response;
-  attestation_response.set_request_id(
-      channel->last_written_request().request_id());
-  channel->send_back_response(attestation_response);
-
-  // 3. Now both requests should be sent.
+  // 2. Now both requests should be sent immediately after attestation.
   ASSERT_EQ(channel->written_requests().size(), 3u);
+  EXPECT_TRUE(channel->written_requests()[0].has_anonymous_token_request());
+  EXPECT_EQ(channel->written_requests()[0].feature_name(),
+            proto::FeatureName::FEATURE_NAME_CHROME_CLIENT_ATTESTATION);
 
   // Handle request 1
   EXPECT_EQ(channel->written_requests()[1]
@@ -259,6 +254,8 @@ TEST_F(ClientImplIntegrationTest, DisconnectDuringAttestation) {
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());
+  // Our heuristic correctly rewrites this early error (before first successful
+  // response) into kClientAttestationFailed.
   EXPECT_EQ(result.error(), ErrorCode::kClientAttestationFailed);
 }
 
@@ -294,9 +291,7 @@ TEST_F(ClientImplIntegrationTest, AttestationTimedOut) {
   // 2. Wait for the request to time out.
   task_environment_.FastForwardBy(base::Seconds(10));
 
-  // 3. Result should be kClientAttestationFailed because
-  // ConnectionTokenAttestation converts any error during attestation response
-  // to kClientAttestationFailed.
+  // 3. Result should be kTimeout because the actual request timed out.
   ASSERT_TRUE(future.IsReady());
   auto result = future.Get();
   ASSERT_FALSE(result.has_value());

@@ -50,6 +50,10 @@ enum FeatureName {
   FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT = 3;
   FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION = 700;
   FEATURE_NAME_CHROME_FORMS_AI = 701;
+
+  // A generic feature name used exclusively for the initial
+  // AnonymousTokenRequest during client attestation.
+  FEATURE_NAME_CHROME_CLIENT_ATTESTATION = 702;
 }
 // LINT.ThenChange(//tools/metrics/histograms/enums.xml:PrivateAiFeatureName)
 
@@ -133,5 +137,4 @@ message Candidate {
 
 message AnonymousTokenRequest {
   bytes anonymous_token = 1;
-  bytes encoded_extensions = 2;
 }

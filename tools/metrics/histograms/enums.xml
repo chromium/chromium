@@ -24052,6 +24052,7 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="FEATURE_NAME_DEMO_GEMINI_GENERATE_CONTENT"/>
   <int value="700" label="FEATURE_NAME_CHROME_ZERO_STATE_SUGGESTION"/>
   <int value="701" label="FEATURE_NAME_CHROME_FORMS_AI"/>
+  <int value="702" label="FEATURE_NAME_CHROME_CLIENT_ATTESTATION"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/private_ai/proto/private_ai.proto:FeatureName) -->

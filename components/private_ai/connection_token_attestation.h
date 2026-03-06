@@ -22,6 +22,10 @@ namespace phosphor {
 class TokenManager;
 }
 
+namespace internal {
+std::string Base64ToWebSafeBase64(std::string str);
+}  // namespace internal
+
 // A decorator for `Connection` that ensures that client attestation request
 // is sent first before sending any other requests.
 //
@@ -65,14 +69,17 @@ class ConnectionTokenAttestation : public Connection {
 
   enum class AttestationState {
     kFetchingToken,
-    kWaitingAttestationResponse,
-    kSuccess,
-    kFailed,
+    // Token is sent. There is no attestation confirmation from the server,
+    // but we can already send requests.
+    kTokenSent,
+    kTokenSuccess,
+    kTokenFailed,
   };
 
   void FetchToken();
   void OnTokenFetched(std::optional<phosphor::BlindSignedAuthToken> auth_token);
-  void OnAttestationResponse(
+  void OnInnerConnectionResponse(
+      OnRequestCallback original_callback,
       base::expected<proto::PrivateAiResponse, ErrorCode> result);
   void CallOnDisconnect(ErrorCode error_code);
 
