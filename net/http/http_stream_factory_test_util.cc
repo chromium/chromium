@@ -29,6 +29,7 @@ void MockHttpStreamRequestDelegate::OnStreamReady(
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<HttpStream> stream) {
   CHECK(!IsDone());
+  CHECK(!is_websocket_);
 
   used_proxy_info_ = used_proxy_info;
   http_stream_ = std::move(stream);
@@ -38,7 +39,12 @@ void MockHttpStreamRequestDelegate::OnStreamReady(
 void MockHttpStreamRequestDelegate::OnWebSocketHandshakeStreamReady(
     const ProxyInfo& used_proxy_info,
     std::unique_ptr<WebSocketHandshakeStreamBase> stream) {
-  NOTREACHED();
+  CHECK(!IsDone());
+  CHECK(is_websocket_);
+
+  used_proxy_info_ = used_proxy_info;
+  websocket_stream_ = std::move(stream);
+  done_run_loop_.Quit();
 }
 
 void MockHttpStreamRequestDelegate::OnBidirectionalStreamImplReady(
@@ -85,6 +91,14 @@ std::unique_ptr<HttpStream> MockHttpStreamRequestDelegate::WaitForHttpStream() {
   done_run_loop_.Run();
   EXPECT_TRUE(http_stream_);
   return std::move(http_stream_);
+}
+
+std::unique_ptr<WebSocketHandshakeStreamBase>
+MockHttpStreamRequestDelegate::WaitForWebSocketStream() {
+  CHECK(is_websocket_);
+  done_run_loop_.Run();
+  EXPECT_TRUE(websocket_stream_);
+  return std::move(websocket_stream_);
 }
 
 int MockHttpStreamRequestDelegate::WaitForError() {
@@ -164,38 +178,49 @@ std::unique_ptr<HttpStreamFactory::Job> TestJobFactory::CreateJob(
         quic::ParsedQuicVersion::Unsupported(),
     std::optional<ConnectionManagementConfig> management_config =
         std::nullopt) {
+  std::unique_ptr<HttpStreamFactory::Job> job;
+
   if (use_real_jobs_) {
-    return std::make_unique<HttpStreamFactory::Job>(
+    job = std::make_unique<HttpStreamFactory::Job>(
         delegate, job_type, session, request_info, priority, proxy_info,
         allowed_bad_certs, std::move(destination), alternative_protocol,
         quic_version, is_websocket, enable_ip_based_pooling_for_h2,
         std::move(management_config), net_log);
+  } else {
+    auto mock_job = std::make_unique<MockHttpStreamFactoryJob>(
+        delegate, job_type, session, request_info, priority, proxy_info,
+        allowed_bad_certs, std::move(destination), alternative_protocol,
+        quic_version, is_websocket, enable_ip_based_pooling_for_h2,
+        management_config, net_log);
+
+    // Keep raw pointer to Job but pass ownership.
+    switch (job_type) {
+      case HttpStreamFactory::MAIN:
+        main_job_ = mock_job.get();
+        break;
+      case HttpStreamFactory::ALTERNATIVE:
+        alternative_job_ = mock_job.get();
+        break;
+      case HttpStreamFactory::DNS_ALPN_H3:
+        dns_alpn_h3_job_ = mock_job.get();
+        break;
+      case HttpStreamFactory::PRECONNECT:
+        main_job_ = mock_job.get();
+        break;
+      case HttpStreamFactory::PRECONNECT_DNS_ALPN_H3:
+        main_job_ = mock_job.get();
+        break;
+      case HttpStreamFactory::WS_OVER_H3:
+        ws_over_h3_job_ = mock_job.get();
+        break;
+    }
+    job = std::move(mock_job);
   }
 
-  auto job = std::make_unique<MockHttpStreamFactoryJob>(
-      delegate, job_type, session, request_info, priority, proxy_info,
-      allowed_bad_certs, std::move(destination), alternative_protocol,
-      quic_version, is_websocket, enable_ip_based_pooling_for_h2,
-      management_config, net_log);
-
-  // Keep raw pointer to Job but pass ownership.
-  switch (job_type) {
-    case HttpStreamFactory::MAIN:
-      main_job_ = job.get();
-      break;
-    case HttpStreamFactory::ALTERNATIVE:
-      alternative_job_ = job.get();
-      break;
-    case HttpStreamFactory::DNS_ALPN_H3:
-      dns_alpn_h3_job_ = job.get();
-      break;
-    case HttpStreamFactory::PRECONNECT:
-      main_job_ = job.get();
-      break;
-    case HttpStreamFactory::PRECONNECT_DNS_ALPN_H3:
-      main_job_ = job.get();
-      break;
+  if (on_create_callback_) {
+    on_create_callback_.Run(job_type);
   }
+
   return job;
 }
 

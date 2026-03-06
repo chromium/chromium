@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -85,6 +86,10 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
   // received. Otherwise, returns nullptr and fails the current test.
   std::unique_ptr<HttpStream> WaitForHttpStream();
 
+  // Waits until the request is complete. Returns the WebSocket stream if one
+  // was received. Otherwise, returns nullptr and fails the current test.
+  std::unique_ptr<WebSocketHandshakeStreamBase> WaitForWebSocketStream();
+
   // Waits until the request is complete. Returns the net Error if one was
   // received. Otherwise, returns ERR_UNEXPECTED and fails the current test.
   int WaitForError();
@@ -98,11 +103,16 @@ class MockHttpStreamRequestDelegate : public HttpStreamRequest::Delegate {
   // invoked.
   bool IsDone();
 
+  // When true, the delegate expects WebSocket callbacks instead of HTTP ones.
+  void set_is_websocket(bool is_websocket) { is_websocket_ = is_websocket; }
+
  private:
   std::optional<ProxyInfo> used_proxy_info_;
   std::unique_ptr<HttpStream> http_stream_;
+  std::unique_ptr<WebSocketHandshakeStreamBase> websocket_stream_;
   std::optional<int> net_error_;
   base::RunLoop done_run_loop_;
+  bool is_websocket_ = false;
 };
 
 class MockHttpStreamFactoryJob : public HttpStreamFactory::Job {
@@ -157,8 +167,18 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
   MockHttpStreamFactoryJob* main_job() const { return main_job_; }
   MockHttpStreamFactoryJob* alternative_job() const { return alternative_job_; }
   MockHttpStreamFactoryJob* dns_alpn_h3_job() const { return dns_alpn_h3_job_; }
+  MockHttpStreamFactoryJob* ws_over_h3_job() const { return ws_over_h3_job_; }
 
   void set_use_real_jobs() { use_real_jobs_ = true; }
+
+  // Set a callback to be invoked after a job of `job_type` is created.
+  // Used to inject side effects (e.g. closing a QUIC session) between job
+  // creation and job start.
+  using OnCreateCallback =
+      base::RepeatingCallback<void(HttpStreamFactory::JobType)>;
+  void set_on_create_callback(OnCreateCallback callback) {
+    on_create_callback_ = std::move(callback);
+  }
 
  private:
   raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged> main_job_ =
@@ -167,9 +187,12 @@ class TestJobFactory : public HttpStreamFactory::JobFactory {
       alternative_job_ = nullptr;
   raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged>
       dns_alpn_h3_job_ = nullptr;
+  raw_ptr<MockHttpStreamFactoryJob, AcrossTasksDanglingUntriaged>
+      ws_over_h3_job_ = nullptr;
 
   // When set to true, creates real jobs, and accessors don't work.
   bool use_real_jobs_ = false;
+  OnCreateCallback on_create_callback_;
 };
 
 }  // namespace net

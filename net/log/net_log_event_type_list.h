@@ -1521,6 +1521,23 @@ EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_PROXY_SERVER_RESOLVED)
 //   }
 EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_ALT_SVC_FOUND)
 
+// Logs that a WebSocket-over-HTTP/3 job was created to attempt reusing an
+// existing QUIC session with Extended CONNECT support.
+// The event parameters are:
+//   {
+//      "destination": The destination (scheme://host:port) for the WebSocket.
+//   }
+EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_WS_OVER_H3_CREATED)
+
+// Logs that a WebSocket-over-HTTP/3 job was not created because no existing
+// QUIC session with Extended CONNECT support was found.
+// The event parameters are:
+//   {
+//      "destination": The destination (scheme://host:port) for the WebSocket.
+//      "reason": Why the job was skipped.
+//   }
+EVENT_TYPE(HTTP_STREAM_JOB_CONTROLLER_WS_OVER_H3_SKIPPED)
+
 // ------------------------------------------------------------------------
 // HttpStreamPool
 // ------------------------------------------------------------------------

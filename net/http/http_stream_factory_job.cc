@@ -90,6 +90,8 @@ const char* NetLogHttpStreamJobType(HttpStreamFactory::JobType job_type) {
       return "preconnect";
     case HttpStreamFactory::PRECONNECT_DNS_ALPN_H3:
       return "preconnect_dns_alpn_h3";
+    case HttpStreamFactory::WS_OVER_H3:
+      return "ws_over_h3";
   }
   return "";
 }
@@ -141,7 +143,8 @@ HttpStreamFactory::Job::Job(
       using_quic_(
           alternative_protocol == NextProto::kProtoQUIC ||
           session->ShouldForceQuic(destination_, proxy_info, is_websocket_) ||
-          job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3),
+          job_type == DNS_ALPN_H3 || job_type == PRECONNECT_DNS_ALPN_H3 ||
+          job_type == WS_OVER_H3),
       quic_version_(quic_version),
       expect_spdy_(alternative_protocol == NextProto::kProtoHTTP2 &&
                    !using_quic_),
@@ -173,7 +176,8 @@ HttpStreamFactory::Job::Job(
 
   if (using_quic_) {
     DCHECK((quic_version_ != quic::ParsedQuicVersion::Unsupported()) ||
-           (job_type_ == DNS_ALPN_H3) || (job_type_ == PRECONNECT_DNS_ALPN_H3));
+           (job_type_ == DNS_ALPN_H3) ||
+           (job_type_ == PRECONNECT_DNS_ALPN_H3) || (job_type_ == WS_OVER_H3));
   }
 
   DCHECK(session);
@@ -339,6 +343,13 @@ bool HttpStreamFactory::Job::HasAvailableQuicSession() const {
       request_info_.socket_tag, request_info_.network_anonymization_key,
       request_info_.secure_dns_policy, require_dns_https_alpn,
       disable_cert_verification_network_fetches());
+
+  // `WS_OVER_H3` requires a QUIC session that supports Extended CONNECT.
+  if (job_type_ == WS_OVER_H3) {
+    return session_->quic_session_pool()->CanUseExistingSessionForWebSocket(
+        quic_session_key, destination_);
+  }
+
   return session_->quic_session_pool()->CanUseExistingSession(quic_session_key,
                                                               destination_);
 }
@@ -863,6 +874,12 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
       disable_cert_verification_network_fetches();
   int server_cert_verifier_flags = server_ssl_config.GetCertVerifyFlags();
 
+  // WS_OVER_H3 is reuse-only. If the session found during DoCreateJobs()
+  // is gone, fail immediately so OnStreamFailed() can resume `main_job_`.
+  if (job_type_ == WS_OVER_H3 && !HasAvailableQuicSession()) {
+    return ERR_CONNECTION_CLOSED;
+  }
+
   // The QuicSessionRequest will take care of connecting to any proxies in the
   // proxy chain.
   int rv = quic_request_.Request(
@@ -878,6 +895,9 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic() {
   if (rv == OK) {
     using_existing_quic_session_ = true;
   } else if (rv == ERR_IO_PENDING) {
+    // WS_OVER_H3 never reaches here; the guard above returns
+    // ERR_CONNECTION_CLOSED if the session is gone.
+    CHECK_NE(job_type_, WS_OVER_H3);
     // There's no available QUIC session. Inform the delegate how long to
     // delay the main job.
     delegate_->MaybeSetWaitTimeForMainJob(
@@ -1033,6 +1053,27 @@ int HttpStreamFactory::Job::DoInitConnectionComplete(int result) {
   if (using_quic_) {
     if (result < 0) {
       return result;
+    }
+
+    // Create a WebSocket handshake stream over the existing QUIC session using
+    // Extended CONNECT.
+    if (is_websocket_) {
+      CHECK_EQ(job_type_, WS_OVER_H3);
+      std::unique_ptr<QuicChromiumClientSession::Handle> session =
+          quic_request_.ReleaseSessionHandle();
+      if (!session) {
+        // QUIC session closed before stream could be created.
+        return ERR_CONNECTION_CLOSED;
+      }
+      auto dns_aliases =
+          session->GetDnsAliasesForSessionKey(quic_request_.session_key());
+      // Use the existing CreateHttp3Stream helper which creates a
+      // WebSocketHttp3HandshakeStream wrapping the QUIC session.
+      websocket_stream_ =
+          delegate_->websocket_handshake_stream_create_helper()
+              ->CreateHttp3Stream(std::move(session), std::move(dns_aliases));
+      next_state_ = STATE_CREATE_STREAM_COMPLETE;
+      return OK;
     }
 
     if (stream_type_ == HttpStreamRequest::BIDIRECTIONAL_STREAM) {

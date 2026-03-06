@@ -285,6 +285,7 @@ void HttpStreamFactory::JobController::OnRequestComplete() {
     alternative_job_.reset();
     main_job_.reset();
     dns_alpn_h3_job_.reset();
+    ws_over_h3_job_.reset();
   } else {
     if (bound_job_->job_type() == MAIN) {
       bound_job_ = nullptr;
@@ -292,6 +293,9 @@ void HttpStreamFactory::JobController::OnRequestComplete() {
     } else if (bound_job_->job_type() == ALTERNATIVE) {
       bound_job_ = nullptr;
       alternative_job_.reset();
+    } else if (bound_job_->job_type() == WS_OVER_H3) {
+      bound_job_ = nullptr;
+      ws_over_h3_job_.reset();
     } else {
       DCHECK(bound_job_->job_type() == DNS_ALPN_H3);
       bound_job_ = nullptr;
@@ -315,6 +319,9 @@ void HttpStreamFactory::JobController::SetPriority(RequestPriority priority) {
   }
   if (dns_alpn_h3_job_) {
     dns_alpn_h3_job_->SetPriority(priority);
+  }
+  if (ws_over_h3_job_) {
+    ws_over_h3_job_->SetPriority(priority);
   }
   if (preconnect_backup_job_) {
     preconnect_backup_job_->SetPriority(priority);
@@ -428,6 +435,8 @@ void HttpStreamFactory::JobController::OnStreamFailed(Job* job, int status) {
     DCHECK_EQ(alternative_job_.get(), job);
     DCHECK_NE(NextProto::kProtoUnknown, advertised_alt_svc_.info.protocol());
     alternative_job_net_error_ = status;
+  } else if (job->job_type() == WS_OVER_H3) {
+    CHECK_EQ(ws_over_h3_job_.get(), job);
   } else {
     DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
     DCHECK_EQ(dns_alpn_h3_job_.get(), job);
@@ -459,6 +468,9 @@ void HttpStreamFactory::JobController::OnStreamFailed(Job* job, int status) {
       } else if (job->job_type() == ALTERNATIVE) {
         DCHECK_EQ(alternative_job_.get(), job);
         alternative_job_.reset();
+      } else if (job->job_type() == WS_OVER_H3) {
+        CHECK_EQ(ws_over_h3_job_.get(), job);
+        ws_over_h3_job_.reset();
       } else {
         DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
         DCHECK_EQ(dns_alpn_h3_job_.get(), job);
@@ -597,6 +609,9 @@ void HttpStreamFactory::JobController::OnOrphanedJobComplete(const Job* job) {
   } else if (job->job_type() == ALTERNATIVE) {
     DCHECK_EQ(alternative_job_.get(), job);
     alternative_job_.reset();
+  } else if (job->job_type() == WS_OVER_H3) {
+    CHECK_EQ(ws_over_h3_job_.get(), job);
+    ws_over_h3_job_.reset();
   } else {
     DCHECK_EQ(job->job_type(), DNS_ALPN_H3);
     DCHECK_EQ(dns_alpn_h3_job_.get(), job);
@@ -660,7 +675,7 @@ void HttpStreamFactory::JobController::MaybeResumeMainJob(
     const base::TimeDelta& delay) {
   DCHECK(delay == base::TimeDelta() || delay == main_job_wait_time_);
   DCHECK(job == main_job_.get() || job == alternative_job_.get() ||
-         job == dns_alpn_h3_job_.get());
+         job == dns_alpn_h3_job_.get() || job == ws_over_h3_job_.get());
 
   if (job == main_job_.get()) {
     return;
@@ -698,8 +713,10 @@ void HttpStreamFactory::JobController::OnConnectionInitialized(Job* job,
 }
 
 bool HttpStreamFactory::JobController::ShouldWait(Job* job) {
-  // The alternative job never waits.
-  if (job == alternative_job_.get() || job == dns_alpn_h3_job_.get()) {
+  // The `alternative_job_`, `dns_alpn_h3_job_`, and `ws_over_h3_job_` never
+  // wait.
+  if (job == alternative_job_.get() || job == dns_alpn_h3_job_.get() ||
+      job == ws_over_h3_job_.get()) {
     return false;
   }
   DCHECK_EQ(main_job_.get(), job);
@@ -848,7 +865,10 @@ int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
   int supported_proxies = ProxyServer::SCHEME_HTTP | ProxyServer::SCHEME_HTTPS |
                           ProxyServer::SCHEME_SOCKS4 |
                           ProxyServer::SCHEME_SOCKS5;
-  // WebSockets is not supported over QUIC.
+  // WebSockets is not supported over QUIC proxies. Direct
+  // WebSocket-over-HTTP/3 is supported via the `WS_OVER_H3` job type
+  // when an existing QUIC session with Extended CONNECT support is
+  // available (see `DoCreateJobs()`).
   if (session_->IsQuicEnabled() && !is_websocket_) {
     supported_proxies |= ProxyServer::SCHEME_QUIC;
   }
@@ -866,6 +886,7 @@ int HttpStreamFactory::JobController::DoResolveProxyComplete(int rv) {
 int HttpStreamFactory::JobController::DoCreateJobs() {
   DCHECK(!main_job_);
   DCHECK(!alternative_job_);
+  CHECK(!ws_over_h3_job_);
   DCHECK(request_info_.url.is_valid());
   DCHECK(request_info_.url.IsStandard());
   stream_creation_attempt_start_time_ = base::TimeTicks::Now();
@@ -955,6 +976,51 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     main_job_->Preconnect(num_streams_);
     return OK;
   }
+  // WebSocket-over-HTTP/3 reuse: check for an existing QUIC session that
+  // supports Extended CONNECT before creating `main_job_`, so that
+  // `ws_over_h3_job_` can consume `destination` directly without copying.
+  // This is a synchronous check -- no new QUIC connections are created.
+  if (is_websocket_ && session_->IsQuicEnabled() &&
+      base::FeatureList::IsEnabled(features::kEnableWebsocketsOverHttp3) &&
+      proxy_info_.is_direct()) {
+    QuicSessionKey ws_session_key(
+        HostPortPair::FromSchemeHostPort(destination),
+        request_info_.privacy_mode, proxy_info_.proxy_chain(),
+        SessionUsage::kDestination, request_info_.socket_tag,
+        request_info_.network_anonymization_key,
+        request_info_.secure_dns_policy,
+        /*require_dns_https_alpn=*/false,
+        disable_cert_verification_network_fetches());
+
+    quic::ParsedQuicVersion ws_quic_version =
+        quic::ParsedQuicVersion::Unsupported();
+    if (session_->quic_session_pool()->CanUseExistingSessionForWebSocket(
+            ws_session_key, destination, &ws_quic_version)) {
+      ws_over_h3_job_ = job_factory_->CreateJob(
+          this, WS_OVER_H3, session_, request_info_, priority_, proxy_info_,
+          allowed_bad_certs_, destination, is_websocket_,
+          enable_ip_based_pooling_for_h2_, net_log_.net_log(),
+          // Not an alternative service -- pass `kProtoUnknown`.
+          NextProto::kProtoUnknown,
+          // Version from the existing session.
+          ws_quic_version, management_config_);
+      net_log_.AddEvent(
+          NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_WS_OVER_H3_CREATED, [&] {
+            return base::DictValue().Set("destination",
+                                         request_info_.url.spec());
+          });
+      // TODO(crbug.com/40210995): Add histogram for WebSocket-over-HTTP/3 reuse
+      // rate.
+    } else {
+      net_log_.AddEvent(
+          NetLogEventType::HTTP_STREAM_JOB_CONTROLLER_WS_OVER_H3_SKIPPED, [&] {
+            return base::DictValue()
+                .Set("destination", request_info_.url.spec())
+                .Set("reason", "no_existing_session_with_extended_connect");
+          });
+    }
+  }
+
   main_job_ = job_factory_->CreateJob(
       this, MAIN, session_, request_info_, priority_, proxy_info_,
       allowed_bad_certs_, std::move(destination), is_websocket_,
@@ -1004,7 +1070,7 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 
   ClearInappropriateJobs();
 
-  if (main_job_ && (alternative_job_ ||
+  if (main_job_ && (alternative_job_ || ws_over_h3_job_ ||
                     (dns_alpn_h3_job_ &&
                      (!main_job_->TargettedSocketGroupHasActiveSocket() &&
                       !main_job_->HasAvailableSpdySession())))) {
@@ -1022,6 +1088,10 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
     dns_alpn_h3_job_->Start(request_->stream_type());
   }
 
+  if (ws_over_h3_job_) {
+    ws_over_h3_job_->Start(request_->stream_type());
+  }
+
   if (main_job_) {
     main_job_->Start(request_->stream_type());
   }
@@ -1029,6 +1099,13 @@ int HttpStreamFactory::JobController::DoCreateJobs() {
 }
 
 void HttpStreamFactory::JobController::ClearInappropriateJobs() {
+  if (ws_over_h3_job_) {
+    // `alternative_job_` and `dns_alpn_h3_job_` should not exist for
+    // WebSocket requests.
+    CHECK(!alternative_job_);
+    CHECK(!dns_alpn_h3_job_);
+  }
+
   if (dns_alpn_h3_job_ && dns_alpn_h3_job_->HasAvailableQuicSession()) {
     // Clear |main_job_| and |alternative_job_| here not to start them when
     // there is an active session available for |dns_alpn_h3_job_|.
@@ -1051,7 +1128,7 @@ void HttpStreamFactory::JobController::BindJob(Job* job) {
   DCHECK(request_);
   DCHECK(job);
   DCHECK(job == alternative_job_.get() || job == main_job_.get() ||
-         job == dns_alpn_h3_job_.get());
+         job == dns_alpn_h3_job_.get() || job == ws_over_h3_job_.get());
   DCHECK(!job_bound_);
   DCHECK(!bound_job_);
 
@@ -1088,6 +1165,7 @@ void HttpStreamFactory::JobController::OrphanUnboundJob() {
       DCHECK(!is_websocket_);
       dns_alpn_h3_job_->Orphan();
     }
+    ws_over_h3_job_.reset();
     return;
   }
 
@@ -1127,6 +1205,11 @@ void HttpStreamFactory::JobController::OrphanUnboundJob() {
       DCHECK(!is_websocket_);
       alternative_job_->Orphan();
     }
+  }
+
+  // When `ws_over_h3_job_` is bound, the H3 path won. Reset `main_job_`.
+  if (bound_job_->job_type() == WS_OVER_H3) {
+    main_job_.reset();
   }
 }
 

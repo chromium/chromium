@@ -57,6 +57,7 @@ class HttpStreamFactory::JobController
   const Job* main_job() const { return main_job_.get(); }
   const Job* alternative_job() const { return alternative_job_.get(); }
   const Job* dns_alpn_h3_job() const { return dns_alpn_h3_job_.get(); }
+  const Job* ws_over_h3_job() const { return ws_over_h3_job_.get(); }
 
   // Methods below are called by HttpStreamFactory only.
   // Creates request and hands out to HttpStreamFactory, this will also create
@@ -290,7 +291,7 @@ class HttpStreamFactory::JobController
 
   int GetJobCount() const {
     return (main_job_ ? 1 : 0) + (alternative_job_ ? 1 : 0) +
-           (dns_alpn_h3_job_ ? 1 : 0);
+           (dns_alpn_h3_job_ ? 1 : 0) + (ws_over_h3_job_ ? 1 : 0);
   }
 
   // Called when the request needs to use the HttpStreamPool instead of `this`.
@@ -332,12 +333,17 @@ class HttpStreamFactory::JobController
   // |alternative_job_| or |dns_alpn_h3_job_| can reuse a connection. If both
   // |alternative_job_| and |dns_alpn_h3_job_| are unable to do so, |this| will
   // notify |main_job_| to proceed and then race the two jobs.
+  // For WebSocket requests, |ws_over_h3_job_| may also be created to reuse an
+  // existing QUIC session. It resolves synchronously: if it finds a session,
+  // |main_job_| is cleared; otherwise |ws_over_h3_job_| is cleared and
+  // |main_job_| proceeds to HTTP/1.1 or HTTP/2.
   // For preconnect job, |main_job_| is started first, and if it fails with
   // ERR_DNS_NO_MATCHING_SUPPORTED_ALPN, |preconnect_backup_job_| will be
   // started.
   std::unique_ptr<Job> main_job_;
   std::unique_ptr<Job> alternative_job_;
   std::unique_ptr<Job> dns_alpn_h3_job_;
+  std::unique_ptr<Job> ws_over_h3_job_;
 
   std::unique_ptr<Job> preconnect_backup_job_;
 

@@ -332,6 +332,14 @@ class NET_EXPORT_PRIVATE QuicSessionPool
   bool CanUseExistingSession(const QuicSessionKey& session_key,
                              const url::SchemeHostPort& destination) const;
 
+  // Returns true if there is an existing session that also advertises
+  // Extended CONNECT (SETTINGS_ENABLE_CONNECT_PROTOCOL). If true and
+  // `quic_version` is non-null, writes the negotiated version to it.
+  bool CanUseExistingSessionForWebSocket(
+      const QuicSessionKey& session_key,
+      const url::SchemeHostPort& destination,
+      quic::ParsedQuicVersion* quic_version = nullptr) const;
+
   // Returns a session for `session_key` or if the request can be pooled to an
   // existing session to the IP address of `destination`.
   QuicChromiumClientSession* FindExistingSession(

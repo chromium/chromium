@@ -64,6 +64,10 @@ class NET_EXPORT HttpStreamFactory {
     // Job that will preconnect via HTTP/3 iff an "h3" value was found in the
     // ALPN list of an HTTPS DNS record.
     PRECONNECT_DNS_ALPN_H3,
+    // Job that reuses an existing HTTP/3 session for WebSocket via Extended
+    // CONNECT. Never creates a new connection -- yields to `main_job_` if no
+    // suitable session exists.
+    WS_OVER_H3,
   };
 
   // This is the subset of HttpRequestInfo needed by the HttpStreamFactory

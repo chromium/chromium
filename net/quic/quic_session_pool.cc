@@ -718,6 +718,26 @@ bool QuicSessionPool::CanUseExistingSession(
   return FindExistingSession(session_key, destination) != nullptr;
 }
 
+bool QuicSessionPool::CanUseExistingSessionForWebSocket(
+    const QuicSessionKey& session_key,
+    const url::SchemeHostPort& destination,
+    quic::ParsedQuicVersion* quic_version) const {
+  QuicChromiumClientSession* session =
+      FindExistingSession(session_key, destination);
+  if (!session) {
+    return false;
+  }
+  // The server must have sent SETTINGS_ENABLE_CONNECT_PROTOCOL=1 in its
+  // SETTINGS frame, which enables Extended CONNECT for WebSocket-over-HTTP/3.
+  if (!session->allow_extended_connect()) {
+    return false;
+  }
+  if (quic_version) {
+    *quic_version = session->GetQuicVersion();
+  }
+  return true;
+}
+
 QuicChromiumClientSession* QuicSessionPool::FindExistingSession(
     const QuicSessionKey& session_key,
     const url::SchemeHostPort& destination) const {
