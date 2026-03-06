@@ -82,6 +82,7 @@ class IsolateDaemon(AbstractContextManager):
             # Decreasing the rate to 1 (from 5) increases the timeout in
             # swarming, where large files can take longer to transfer.
             ScopedFfxConfig('fastboot.flash.timeout_rate', '1'),
+            ScopedFfxConfig('fastboot.flash.min_timeout_secs', '600'),
             ScopedFfxConfig('fastboot.reboot.reconnect_timeout', '120'),
             ScopedFfxConfig('fastboot.usb.disabled', 'true'),
             ScopedFfxConfig('log.level', 'debug')
