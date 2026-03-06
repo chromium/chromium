@@ -65,6 +65,9 @@ class Logger {
 
     LogMessageBuilder& operator<<(const char* message);
     LogMessageBuilder& operator<<(const std::string& message);
+    LogMessageBuilder& operator<<(int message);
+    LogMessageBuilder& operator<<(size_t message);
+    LogMessageBuilder& operator<<(const GURL& message);
 
    private:
     const std::string tag_;

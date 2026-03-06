@@ -46,6 +46,23 @@ Logger::LogMessageBuilder& Logger::LogMessageBuilder::operator<<(
   return *this;
 }
 
+Logger::LogMessageBuilder& Logger::LogMessageBuilder::operator<<(int message) {
+  messages_.push_back(base::NumberToString(message));
+  return *this;
+}
+
+Logger::LogMessageBuilder& Logger::LogMessageBuilder::operator<<(
+    size_t message) {
+  messages_.push_back(base::NumberToString(message));
+  return *this;
+}
+
+Logger::LogMessageBuilder& Logger::LogMessageBuilder::operator<<(
+    const GURL& message) {
+  messages_.push_back(message.spec());
+  return *this;
+}
+
 Logger::LogMessage::LogMessage(base::Time event_time,
                                const std::string& tag,
                                const std::string& source_file,
