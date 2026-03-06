@@ -17,6 +17,7 @@ namespace feedback {
 bool ReportUnsafeSiteDialog::IsEnabled(const Profile& profile) {
   const PrefService* prefs = profile.GetPrefs();
   return base::FeatureList::IsEnabled(features::kReportUnsafeSite) &&
+         !profile.IsOffTheRecord() &&
          prefs->GetBoolean(prefs::kUserFeedbackAllowed) &&
          safe_browsing::IsSafeBrowsingEnabled(*prefs);
 }

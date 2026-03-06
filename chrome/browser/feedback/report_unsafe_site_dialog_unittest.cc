@@ -66,15 +66,28 @@ TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled, IsEnabled_Enabled) {
 
 TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled,
        IsEnabled_FeedbackDisallowed) {
+  EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
+
   profile_.GetPrefs()->SetBoolean(prefs::kUserFeedbackAllowed, false);
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
 }
 
 TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled,
        IsEnabled_SafeBrowsingDisabled) {
+  EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
+
   safe_browsing::SetSafeBrowsingState(
       profile_.GetPrefs(), safe_browsing::SafeBrowsingState::NO_SAFE_BROWSING);
   EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(profile_));
+}
+
+TEST_F(ReportUnsafeSiteDialogTest_FeatureEnabled, IsEnabled_Incognito) {
+  EXPECT_TRUE(ReportUnsafeSiteDialog::IsEnabled(profile_));
+
+  Profile* incognito_profile = profile_.GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUnique("Test::Foo"),
+      /*create_if_needed=*/true);
+  EXPECT_FALSE(ReportUnsafeSiteDialog::IsEnabled(*incognito_profile));
 }
 
 }  // namespace feedback
