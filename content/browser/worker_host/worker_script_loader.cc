@@ -22,7 +22,7 @@
 namespace content {
 
 WorkerScriptLoader::WorkerScriptLoader(
-    int process_id,
+    ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     int32_t request_id,
     uint32_t options,

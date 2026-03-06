@@ -20,7 +20,7 @@
 namespace content {
 
 WorkerScriptLoaderFactory::WorkerScriptLoaderFactory(
-    int process_id,
+    ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     const net::IsolationInfo& isolation_info,
     ServiceWorkerMainResourceHandle* service_worker_handle,

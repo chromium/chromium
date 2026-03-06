@@ -9,6 +9,7 @@
 #include "content/browser/navigation_subresource_loader_params.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/isolation_info.h"
@@ -44,7 +45,7 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   // the NetworkService. However, it may internally contain non-NetworkService
   // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   WorkerScriptLoaderFactory(
-      int process_id,
+      ChildProcessId process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       const net::IsolationInfo& isolation_info,
       ServiceWorkerMainResourceHandle* service_worker_handle,
@@ -72,7 +73,7 @@ class CONTENT_EXPORT WorkerScriptLoaderFactory
   base::WeakPtr<WorkerScriptLoader> GetScriptLoader() { return script_loader_; }
 
  private:
-  const int process_id_;
+  const ChildProcessId process_id_;
   const DedicatedOrSharedWorkerToken worker_token_;
   const net::IsolationInfo isolation_info_;
   base::WeakPtr<ServiceWorkerMainResourceHandle> service_worker_handle_;

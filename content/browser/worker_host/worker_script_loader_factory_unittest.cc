@@ -26,7 +26,7 @@ namespace content {
 
 namespace {
 
-const int kProcessId = 1;
+const ChildProcessId kProcessId(1);
 
 }  // namespace
 

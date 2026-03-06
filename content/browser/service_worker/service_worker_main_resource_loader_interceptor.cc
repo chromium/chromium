@@ -129,7 +129,7 @@ std::unique_ptr<ServiceWorkerMainResourceLoaderInterceptor>
 ServiceWorkerMainResourceLoaderInterceptor::CreateForWorker(
     const network::ResourceRequest& resource_request,
     const net::IsolationInfo& isolation_info,
-    int process_id,
+    ChildProcessId process_id,
     const DedicatedOrSharedWorkerToken& worker_token,
     base::WeakPtr<ServiceWorkerMainResourceHandle> navigation_handle) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);

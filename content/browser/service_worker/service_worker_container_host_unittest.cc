@@ -1085,6 +1085,7 @@ class ServiceWorkerContainerHostTestByClientType
  public:
   ServiceWorkerContainerHostTestByClientType() = default;
 
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   ScopedServiceWorkerClient CreateClient() {
     switch (GetParam()) {
       case ClientType::kWindow:
@@ -1094,14 +1095,16 @@ class ServiceWorkerContainerHostTestByClientType
             helper_->context()
                 ->service_worker_client_owner()
                 .CreateServiceWorkerClientForWorker(
-                    helper_->mock_render_process_id(),
+                    ChildProcessId::FromUnsafeValue(
+                        helper_->mock_render_process_id()),
                     ServiceWorkerClientInfo(blink::DedicatedWorkerToken())));
       case ClientType::kSharedWorker:
         return ScopedServiceWorkerClient(
             helper_->context()
                 ->service_worker_client_owner()
                 .CreateServiceWorkerClientForWorker(
-                    helper_->mock_render_process_id(),
+                    ChildProcessId::FromUnsafeValue(
+                        helper_->mock_render_process_id()),
                     ServiceWorkerClientInfo(blink::SharedWorkerToken())));
     }
   }

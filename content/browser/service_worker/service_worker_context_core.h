@@ -31,6 +31,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/service_worker_context.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -226,7 +227,7 @@ class CONTENT_EXPORT ServiceWorkerClientOwner final {
   // Used for starting a web worker (dedicated worker or shared worker). Returns
   // a service worker client for the worker.
   ScopedServiceWorkerClient CreateServiceWorkerClientForWorker(
-      int process_id,
+      ChildProcessId process_id,
       ServiceWorkerClientInfo client_info);
 
   // Binds the ServiceWorkerContainerHost mojo receiver for `container_host`.

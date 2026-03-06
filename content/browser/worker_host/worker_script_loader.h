@@ -12,6 +12,7 @@
 
 #include "content/browser/loader/navigation_loader_interceptor.h"
 #include "content/public/browser/service_worker_client_info.h"
+#include "content/public/common/child_process_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -59,7 +60,7 @@ class CONTENT_EXPORT WorkerScriptLoader
   // NetworkService. However, it may internally contain non-NetworkService
   // factories used for non-http(s) URLs, e.g., a chrome-extension:// URL.
   WorkerScriptLoader(
-      int process_id,
+      ChildProcessId process_id,
       const DedicatedOrSharedWorkerToken& worker_token,
       int32_t request_id,
       uint32_t options,

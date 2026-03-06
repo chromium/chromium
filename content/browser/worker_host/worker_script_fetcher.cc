@@ -557,10 +557,11 @@ void WorkerScriptFetcher::CreateScriptLoader(
                           std::move(service_worker_context));
 
   // This fetcher will delete itself. See the class level comment.
+  // TODO(crbug.com/379869738) Remove FromUnsafeValue.
   auto* script_fetcher = new WorkerScriptFetcher(
       std::make_unique<WorkerScriptLoaderFactory>(
-          worker_process_id, worker_token, trusted_isolation_info,
-          service_worker_handle, browser_context_getter,
+          ChildProcessId::FromUnsafeValue(worker_process_id), worker_token,
+          trusted_isolation_info, service_worker_handle, browser_context_getter,
           std::move(url_loader_factory)),
       std::move(resource_request),
       base::BindOnce(DidCreateScriptLoader, std::move(callback),
