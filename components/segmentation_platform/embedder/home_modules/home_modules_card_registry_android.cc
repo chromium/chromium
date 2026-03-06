@@ -2,15 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "components/prefs/pref_registry_simple.h"
@@ -92,9 +86,10 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
   TipsNotificationsPromo::RegisterProfilePrefs(registry);
 }
 
-void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
+void HomeModulesCardRegistryAndroid::NotifyCardShown(
+    std::string_view card_name) {
   for (const auto& card : get_all_cards_by_priority()) {
-    if (strcmp(card->card_name(), card_name) == 0) {
+    if (card->card_name() == card_name) {
       card->OnShow(profile_prefs_, local_state_prefs_);
       break;
     }
@@ -102,9 +97,9 @@ void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
 }
 
 void HomeModulesCardRegistryAndroid::NotifyCardInteracted(
-    const char* card_name) {
+    std::string_view card_name) {
   for (const auto& card : get_all_cards_by_priority()) {
-    if (strcmp(card->card_name(), card_name) == 0) {
+    if (card->card_name() == card_name) {
       card->OnInteract(profile_prefs_, local_state_prefs_);
       break;
     }

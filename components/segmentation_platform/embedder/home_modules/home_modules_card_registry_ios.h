@@ -36,8 +36,8 @@ class HomeModulesCardRegistryIOS : public HomeModulesCardRegistry {
   static bool IsEphemeralTipsModuleLabel(std::string_view label);
 
   // `HomeModulesCardRegistry` overrides:
-  void NotifyCardShown(const char* card_name) override;
-  void NotifyCardInteracted(const char* card_name) override;
+  void NotifyCardShown(std::string_view card_name) override;
+  void NotifyCardInteracted(std::string_view card_name) override;
 };
 
 }  // namespace segmentation_platform::home_modules

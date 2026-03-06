@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_ios.h"
 
 #include <algorithm>
@@ -188,10 +183,10 @@ bool HomeModulesCardRegistryIOS::IsEphemeralTipsModuleLabel(
          LensEphemeralModule::IsModuleLabel(label);
 }
 
-void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
+void HomeModulesCardRegistryIOS::NotifyCardShown(std::string_view card_name) {
   for (const auto& card : get_all_cards_by_priority()) {
     const auto& labels = card->OutputLabels();
-    if (strcmp(card->card_name(), card_name) == 0 ||
+    if (card->card_name() == card_name ||
         (std::find(labels.begin(), labels.end(), card_name) != labels.end())) {
       card->OnShow(profile_prefs_, local_state_prefs_);
       break;
@@ -199,10 +194,11 @@ void HomeModulesCardRegistryIOS::NotifyCardShown(const char* card_name) {
   }
 }
 
-void HomeModulesCardRegistryIOS::NotifyCardInteracted(const char* card_name) {
+void HomeModulesCardRegistryIOS::NotifyCardInteracted(
+    std::string_view card_name) {
   for (const auto& card : get_all_cards_by_priority()) {
     const auto& labels = card->OutputLabels();
-    if (strcmp(card->card_name(), card_name) == 0 ||
+    if (card->card_name() == card_name ||
         (std::find(labels.begin(), labels.end(), card_name) != labels.end())) {
       card->OnInteract(profile_prefs_, local_state_prefs_);
       break;

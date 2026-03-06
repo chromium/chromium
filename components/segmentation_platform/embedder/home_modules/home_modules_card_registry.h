@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -43,11 +44,11 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // Indicates that `card_name` was shown to the user.
-  virtual void NotifyCardShown(const char* card_name) = 0;
+  virtual void NotifyCardShown(std::string_view card_name) = 0;
 
   // Indicates that the user interacted with `card_name`. This could be
   // through clicking, tapping, or engaging with the card in some way.
-  virtual void NotifyCardInteracted(const char* card_name) = 0;
+  virtual void NotifyCardInteracted(std::string_view card_name) = 0;
 
   // Returns the helper responsible for fetching card ranks.
   RankFetcherHelper* get_rank_fetcher_helper() { return &rank_fetcher_helper_; }

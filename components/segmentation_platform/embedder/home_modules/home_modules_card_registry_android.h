@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_HOME_MODULES_CARD_REGISTRY_ANDROID_H_
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry.h"
@@ -34,8 +35,8 @@ class HomeModulesCardRegistryAndroid : public HomeModulesCardRegistry {
   static void RegisterLocalStatePrefs(PrefRegistrySimple* registry);
 
   // `HomeModulesCardRegistry` overrides:
-  void NotifyCardShown(const char* card_name) override;
-  void NotifyCardInteracted(const char* card_name) override;
+  void NotifyCardShown(std::string_view card_name) override;
+  void NotifyCardInteracted(std::string_view card_name) override;
 };
 
 }  // namespace segmentation_platform::home_modules

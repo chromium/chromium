@@ -17,8 +17,9 @@ TestHomeModulesCardRegistry::TestHomeModulesCardRegistry(
   InitializeAfterAddingCards();
 }
 
-void TestHomeModulesCardRegistry::NotifyCardShown(const char* card_name) {}
+void TestHomeModulesCardRegistry::NotifyCardShown(std::string_view card_name) {}
 
-void TestHomeModulesCardRegistry::NotifyCardInteracted(const char* card_name) {}
+void TestHomeModulesCardRegistry::NotifyCardInteracted(
+    std::string_view card_name) {}
 
 }  // namespace segmentation_platform::home_modules

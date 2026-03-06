@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_TEST_HOME_MODULES_CARD_REGISTRY_H_
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
@@ -30,8 +31,8 @@ class TestHomeModulesCardRegistry : public HomeModulesCardRegistry {
       delete;
 
   // `HomeModulesCardRegistry` overrides:
-  void NotifyCardShown(const char* card_name) override;
-  void NotifyCardInteracted(const char* card_name) override;
+  void NotifyCardShown(std::string_view card_name) override;
+  void NotifyCardInteracted(std::string_view card_name) override;
 };
 
 }  // namespace segmentation_platform::home_modules
