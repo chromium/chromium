@@ -16,6 +16,7 @@
 #include "ui/base/prediction/kalman_predictor.h"
 #include "ui/base/prediction/least_squares_predictor.h"
 #include "ui/base/prediction/linear_predictor.h"
+#include "ui/base/prediction/linear_resampling.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -132,6 +133,16 @@ class ScrollPredictorTest : public testing::Test {
     return scroll_predictor_->last_predicted_accumulated_delta_;
   }
 
+  gfx::PointF GetLastRawSyntheticPos() {
+    return scroll_predictor_->last_raw_synthetic_pos_;
+  }
+
+  gfx::PointF GetLastRawLinearPos() {
+    return scroll_predictor_->last_raw_linear_pos_;
+  }
+
+  ui::InputFilter* filter() { return scroll_predictor_->filter_.get(); }
+
   bool GetResamplingState() {
     return scroll_predictor_->should_resample_scroll_events_;
   }
@@ -210,7 +221,11 @@ class ScrollPredictorTest : public testing::Test {
   }
 
   void VerifyPredictorType(const char* expected_type) {
-    EXPECT_EQ(expected_type, scroll_predictor_->predictor_->GetName());
+    EXPECT_EQ(expected_type, predictor()->GetName());
+  }
+
+  void VerifySyntheticPredictorType(const char* expected_type) {
+    EXPECT_EQ(expected_type, synthetic_predictor()->GetName());
   }
 
   void VerifyFilterType(const char* expected_type) {
@@ -740,6 +755,120 @@ TEST_F(ScrollPredictorTest, AlgorithmDivergence) {
   // Empty should return exactly the last sample (-20).
   EXPECT_EQ(real_result->pos.y(), -30);
   EXPECT_EQ(synthetic_result->pos.y(), -20);
+}
+
+TEST_F(ScrollPredictorTest, ContinuityBridgeLifecycle) {
+  // 1. Setup: Enable Hybrid Kalman feature.
+  // Note: kFilteringScrollPrediction is intentionally disabled here so we
+  // can test the pure math of the relative delta bridge without filter lag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kScrollPredictorSyntheticKalman},
+      {blink::features::kFilteringScrollPrediction});
+
+  // Re-initialize to ensure the constructor picks up the feature flag.
+  scroll_predictor_ = std::make_unique<ScrollPredictor>();
+  VerifySyntheticPredictorType(::features::kPredictorNameKalman);
+
+  SendGestureScrollBegin();
+
+  // 2. Phase 1 (Real): Establish accelerating motion.
+  // t=10, 20, 30, 40ms.
+  for (int i = 1; i <= 4; ++i) {
+    std::unique_ptr<WebInputEvent> gsu =
+        CreateGestureScrollUpdate(0, -10 * i, 10 * i);
+    HandleResampleScrollEvents(gsu, 10 * i);
+  }
+
+  // Kalman should have successfully established an anchor during the last real
+  // frame.
+  EXPECT_FALSE(GetLastRawSyntheticPos().IsOrigin());
+
+  // 3. Phase 2 (Handover): First Synthetic frame at T=50ms.
+  base::TimeTicks t50 =
+      WebInputEvent::GetStaticTimeStampForTests() + base::Milliseconds(50);
+  base::TimeDelta interval = base::Milliseconds(10);
+
+  // Capture the state BEFORE the synthetic gap.
+  gfx::PointF prev_on_screen_pos = GetLastAccumulatedDelta();
+  gfx::PointF prev_raw_syn_pos = GetLastRawSyntheticPos();
+
+  auto synthetic_event = scroll_predictor_->GenerateSyntheticScrollUpdate(
+      t50, interval, mojom::blink::GestureDevice::kTouchscreen, 0);
+  ASSERT_TRUE(synthetic_event);
+
+  // Continuity Bridge Verification:
+  // The movement on screen (last_predicted_accumulated_delta_ change) must
+  // exactly match the relative movement of the synthetic predictor's
+  // raw coordinate space (Kalman_now - Kalman_prev).
+  gfx::Vector2dF screen_movement =
+      GetLastAccumulatedDelta() - prev_on_screen_pos;
+  gfx::Vector2dF model_movement = GetLastRawSyntheticPos() - prev_raw_syn_pos;
+
+  EXPECT_NEAR(screen_movement.y(), model_movement.y(), kEpsilon);
+
+  // 4. Phase 3 (Persistence): Second Synthetic frame.
+  prev_on_screen_pos = GetLastAccumulatedDelta();
+  prev_raw_syn_pos = GetLastRawSyntheticPos();
+
+  scroll_predictor_->GenerateSyntheticScrollUpdate(
+      t50 + interval, interval, mojom::blink::GestureDevice::kTouchscreen, 0);
+
+  screen_movement = GetLastAccumulatedDelta() - prev_on_screen_pos;
+  model_movement = GetLastRawSyntheticPos() - prev_raw_syn_pos;
+
+  EXPECT_NEAR(screen_movement.y(), model_movement.y(), kEpsilon);
+
+  // 5. Phase 4 (Anchor Reset): New real events arrive.
+  for (int i = 1; i <= 4; ++i) {
+    std::unique_ptr<WebInputEvent> real_gsu =
+        CreateGestureScrollUpdate(0, -10, 70 + 10 * i);
+    HandleResampleScrollEvents(real_gsu, 70 + 10 * i);
+  }
+
+  EXPECT_FALSE(GetLastRawSyntheticPos().IsOrigin());
+}
+
+TEST_F(ScrollPredictorTest, SyntheticFilterBypass) {
+  // 1. Setup: Enable Hybrid Kalman, Filtering, and the Bypass flag.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kScrollPredictorSyntheticKalman,
+       blink::features::kScrollPredictorFilteringBypassOnSynthetic,
+       blink::features::kFilteringScrollPrediction},
+      {});
+
+  // Re-initialize to ensure flags are picked up.
+  scroll_predictor_ = std::make_unique<ScrollPredictor>();
+  SetUpLSQPredictor();  // Enable primary momentum for fallbacks.
+  SendGestureScrollBegin();
+  ASSERT_TRUE(filter());  // Verify 1 Euro filter is active.
+
+  // 2. Real Frames: Populate history.
+  for (int i = 1; i <= 4; ++i) {
+    std::unique_ptr<WebInputEvent> gsu =
+        CreateGestureScrollUpdate(0, -10, 10 * i);
+    HandleResampleScrollEvents(gsu, 10 * i);
+  }
+
+  // 3. Synthetic Frame: Verify Filtering BYPASS.
+  base::TimeTicks t50 =
+      WebInputEvent::GetStaticTimeStampForTests() + base::Milliseconds(50);
+  base::TimeDelta interval = base::Milliseconds(10);
+
+  gfx::PointF prev_on_screen_pos = GetLastAccumulatedDelta();
+  gfx::PointF prev_raw_syn_pos = GetLastRawSyntheticPos();
+
+  scroll_predictor_->GenerateSyntheticScrollUpdate(
+      t50, interval, mojom::blink::GestureDevice::kTouchscreen, 0);
+
+  // Because the filter is bypassed for synthetic frames, the output movement
+  // must exactly match the relative Kalman movement.
+  gfx::Vector2dF screen_movement =
+      GetLastAccumulatedDelta() - prev_on_screen_pos;
+  gfx::Vector2dF model_movement = GetLastRawSyntheticPos() - prev_raw_syn_pos;
+
+  EXPECT_NEAR(screen_movement.y(), model_movement.y(), kEpsilon);
 }
 
 }  // namespace test

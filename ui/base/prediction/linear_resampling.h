@@ -52,6 +52,8 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) LinearResampling
   base::TimeDelta ResampleLatency(
       base::TimeDelta frame_interval) const override;
 
+  bool AppliesResampleLatencyInternally() const override;
+
  private:
   // Class to cache the Resample Latency to avoid its recalculation each frame.
   class LatencyCalculator {

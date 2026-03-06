@@ -12,4 +12,8 @@ base::TimeDelta InputPredictor::ResampleLatency(
   return base::TimeDelta();
 }
 
+bool InputPredictor::AppliesResampleLatencyInternally() const {
+  return false;
+}
+
 }  // namespace ui

@@ -131,6 +131,12 @@ base::TimeDelta LinearResampling::ResampleLatency(
   return latency_calculator_.GetResampleLatencyInternal(frame_interval);
 }
 
+bool LinearResampling::AppliesResampleLatencyInternally() const {
+  // This internally calculates and applies the resample latency during its own
+  // GeneratePrediction() call.
+  return true;
+}
+
 base::TimeDelta LinearResampling::LatencyCalculator::GetResampleLatencyInternal(
     base::TimeDelta frame_interval) {
   // Cache |resample_latency_| and recalculate only when |frame_interval|

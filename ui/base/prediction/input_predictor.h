@@ -68,6 +68,10 @@ class COMPONENT_EXPORT(UI_BASE_PREDICTION) InputPredictor {
   // Default implementation returns zero, indicating no offset.
   virtual base::TimeDelta ResampleLatency(base::TimeDelta frame_interval) const;
 
+  // Returns true if the predictor adds ResampleLatency() to the prediction time
+  // internally.
+  virtual bool AppliesResampleLatencyInternally() const;
+
  protected:
   static constexpr base::TimeDelta kMaxTimeDelta = base::Milliseconds(20);
 

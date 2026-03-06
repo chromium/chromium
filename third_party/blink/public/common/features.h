@@ -1621,9 +1621,6 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingInputEvents);
 // feature param.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kResamplingScrollEvents);
 
-// Enables the refined timeout logic in ScrollPredictor::HasPrediction.
-BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScrollPredictorRefinedHasPrediction);
-
 // This bypasses restrictions on selection sources and allows the spelling and
 // grammar checks to proceed for testing purposes.
 // https://explainers-by-googlers.github.io/user-dictionary-leaks/
@@ -1670,6 +1667,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kShowHudDisplayForPausedPages);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScriptStreaming);
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScriptStreamingForNonHTTP);
+
+// Bypasses the 1 Euro filter for synthetic (Kalman) frames in ScrollPredictor.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
+    kScrollPredictorFilteringBypassOnSynthetic);
+
+// Enables the refined timeout logic in ScrollPredictor::HasPrediction.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScrollPredictorRefinedHasPrediction);
+
+// Enables the synthetic predictor (Kalman) for scroll gap-filling.
+BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kScrollPredictorSyntheticKalman);
 
 // If enabled, prefetches from NoStatePrefetchURLLoaderThrottle will be sent
 // with the Sec-Purpose: "prefetch" header.

@@ -2160,9 +2160,6 @@ BASE_FEATURE(kResamplingInputEvents, base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kResamplingScrollEvents, base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kScrollPredictorRefinedHasPrediction,
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kRestrictLinkHeaderOnSubresource,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE_PARAM(bool,
@@ -2210,6 +2207,15 @@ BASE_FEATURE(kScriptStreamingForNonHTTP,
              base::FEATURE_ENABLED_BY_DEFAULT
 #endif
 );
+
+BASE_FEATURE(kScrollPredictorFilteringBypassOnSynthetic,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kScrollPredictorRefinedHasPrediction,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kScrollPredictorSyntheticKalman,
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sending Sec-Purpose: "prefetch" header for
 // NoStatePrefetchURLLoaderThrottle.
