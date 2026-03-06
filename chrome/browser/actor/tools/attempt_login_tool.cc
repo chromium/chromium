@@ -270,8 +270,8 @@ void AttemptLoginTool::FetchIcons() {
   }
 
   // TODO(https://crbug.com/488443317): For federated credentials, consider
-  // providing to the client `IdentityRequestAccount::picture` and
-  // `IdentityProviderMetadata::brand_icon_url` in lieu of a favicon.
+  // providing to the client `IdentityProviderMetadata::brand_decoded_icon` in
+  // lieu of a favicon.
   base::flat_set<GURL> unique_sites;
   for (const auto& cred : credentials_) {
     if (cred.type == actor_login::CredentialType::kPassword &&

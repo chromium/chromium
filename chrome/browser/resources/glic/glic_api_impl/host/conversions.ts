@@ -502,6 +502,9 @@ export function selectCredentialDialogRequestToClient(
           ...credential,
           requestOrigin: originToClient(credential.requestOrigin),
           type: enumToClient(credential.type),
+          accountPicture: credential.accountPicture ?
+              bitmapN32ToRGBAImage(credential.accountPicture) :
+              undefined,
         })),
     icons,
   };

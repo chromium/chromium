@@ -19,6 +19,7 @@ source_set("common") {
     "//base",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/translate/core/browser",
+    "//ui/gfx",
     "//url",
   ]
 }

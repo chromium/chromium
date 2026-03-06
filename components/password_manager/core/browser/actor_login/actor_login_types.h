@@ -14,6 +14,7 @@
 #include "base/types/id_type.h"
 #include "base/types/strong_alias.h"
 #include "components/optimization_guide/proto/features/actor_login.pb.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -30,6 +31,9 @@ struct FederationDetail {
 
   // The account ID provided by the identity provider.
   std::string account_id;
+
+  // The picture for the account provided by the identity provider.
+  gfx::Image account_picture;
 
 #if defined(UNIT_TEST)
   friend bool operator==(const FederationDetail&,

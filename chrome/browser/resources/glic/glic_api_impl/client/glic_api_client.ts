@@ -339,13 +339,15 @@ class WebClientMessageHandler implements WebClientMessageHandlerInterface {
       const credentials =
           request.credentials.map((credential: CredentialPrivate) => {
             const getIcon = iconsGetter.get(credential.sourceSiteOrApp);
-            if (getIcon) {
-              return {
-                ...credential,
-                getIcon,
-              };
-            }
-            return credential;
+            const accountPicture = credential.accountPicture;
+            const getAccountPicture = accountPicture ?
+                () => rgbaImageToBlob(accountPicture) :
+                undefined;
+            return {
+              ...credential,
+              getIcon,
+              getAccountPicture,
+            };
           });
       const requestWithCallback: SelectCredentialDialogRequest = {
         ...request,

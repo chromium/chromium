@@ -1172,7 +1172,9 @@ export declare interface InvokeOptionsPrivate extends
   context?: AdditionalContextPrivate;
 }
 
-export declare interface CredentialPrivate extends Omit<Credential, 'getIcon'> {
+export declare interface CredentialPrivate extends
+    Omit<Credential, 'getIcon'|'getAccountPicture'> {
+  accountPicture?: RgbaImage;
 }
 
 export declare interface SelectCredentialDialogRequestPrivate extends Omit<

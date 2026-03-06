@@ -100,7 +100,8 @@ void ActorLoginFederatedCredentialsFetcher::OnGetIdentityCredentialSuggestions(
     credential.federation_detail = FederationDetail{
         .idp_origin = url::Origin::Create(
             account->identity_provider->idp_metadata.config_url),
-        .account_id = account->id};
+        .account_id = account->id,
+        .account_picture = account->decoded_picture};
     credential.immediatelyAvailableToLogin = true;
     result.push_back(std::move(credential));
   }

@@ -56,6 +56,11 @@ struct Credential {
   url.mojom.Origin request_origin;
   string display_origin;
   CredentialType type;
+
+  // For federated credentials, this is the account picture provided by the
+  // identity provider.
+  // Empty for other credential types.
+  skia.mojom.BitmapN32? account_picture;
 };
 
 struct SelectCredentialDialogRequest {

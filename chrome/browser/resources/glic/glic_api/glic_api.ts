@@ -2196,6 +2196,10 @@ export declare interface Credential {
   getIcon?(): Promise<Blob>;
   // The login method for this credential.
   type?: CredentialType;
+  // For federated credentials, an optional picture for the account, provided by
+  // the identity provider, encoded as a PNG image.
+  // Not provided for password based credentials.
+  getAccountPicture?(): Promise<Blob>;
 }
 
 export declare interface SelectCredentialDialogRequest {

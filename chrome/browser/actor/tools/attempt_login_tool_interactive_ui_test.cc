@@ -88,9 +88,11 @@ void SetCredentialRequestHandler(
 
               const credentialsWithIcons = await Promise.all(
                 request.credentials.map(async (cred) => {
-                  const {getIcon, ...rest} = cred;
+                  const {getIcon, getAccountPicture, ...rest} = cred;
                   const icon = await iconGetterToDataUrl(getIcon);
-                  return {...rest, icon};
+                  const accountPicture =
+                      await iconGetterToDataUrl(getAccountPicture);
+                  return {...rest, icon, accountPicture};
                 })
               );
 
@@ -288,8 +290,22 @@ class AttemptLoginToolInteractiveUiTest
       "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
       "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
       "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//w=="};
+  // Likewise for `blue_bitmap_`.
+  const GURL kBlueIconDataUrl{
+      "data:image/bmp;base64,Qk0aAgAAAAAAAIoAAAB8AAAACgAAAPb///"
+      "8BACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/"
+      "yBuaVcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEA"
+      "AAAAAAAAAAAAAAAAAAA/wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA/"
+      "/8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
+      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
+      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//"
+      "AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//"
+      "wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//"
+      "8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA//8AAP//AAD//wAA/w=="};
 
   const gfx::Image& red_image() const { return red_image_; }
+  const gfx::Image& blue_image() const { return blue_image_; }
 
  protected:
   MockActorLoginService mock_login_service_;
@@ -298,6 +314,8 @@ class AttemptLoginToolInteractiveUiTest
  private:
   const SkBitmap red_bitmap_ = GenerateSquareBitmap(/*size=*/10, SK_ColorRED);
   const gfx::Image red_image_ = gfx::Image::CreateFrom1xBitmap(red_bitmap_);
+  const SkBitmap blue_bitmap_ = GenerateSquareBitmap(/*size=*/10, SK_ColorBLUE);
+  const gfx::Image blue_image_ = gfx::Image::CreateFrom1xBitmap(blue_bitmap_);
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -575,6 +593,93 @@ IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
   EXPECT_EQ(actor_login::CredentialType::kFederated,
             last_credential_used->type);
   EXPECT_TRUE(mock_login_service().last_permission_was_permanent());
+}
+
+// TODO(https://crbug.com/456675144): Flaky on asan.
+#if defined(ADDRESS_SANITIZER)
+#define MAYBE_FederatedAccountPicture DISABLED_FederatedAccountPicture
+#else
+#define MAYBE_FederatedAccountPicture FederatedAccountPicture
+#endif
+IN_PROC_BROWSER_TEST_P(AttemptLoginToolInteractiveUiTest,
+                       MAYBE_FederatedAccountPicture) {
+  const GURL url =
+      embedded_https_test_server().GetURL("example.com", "/actor/blank.html");
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
+
+  actor_login::Credential cred1 =
+      MakeTestCredentialFederated(u"username1", url);
+  actor_login::Credential cred2 =
+      MakeTestCredentialFederated(u"username2", url);
+  cred1.federation_detail->account_picture = blue_image();
+  cred2.federation_detail->account_picture = red_image();
+
+  mock_login_service().SetCredentials(std::vector{cred1, cred2});
+  // TODO(crbug.com/486835283): Use a more meaningful status.
+  mock_login_service().SetLoginStatus(
+      actor_login::LoginStatusResult::kSuccessUsernameAndPasswordFilled);
+
+  // Toggle the glic window.
+  RunTestSequence(InAnyContext(WithElement(
+      glic::test::kGlicContentsElementId, [](::ui::TrackedElement* el) {
+        content::WebContents* glic_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        SetCredentialRequestHandler(
+            glic_contents, 0,
+            webui::mojom::UserGrantedPermissionDuration::kAlwaysAllow);
+      })));
+
+  std::unique_ptr<ToolRequest> action = MakeAttemptLoginRequest(*active_tab());
+  ActResultFuture result;
+  actor_task().Act(ToRequestList(action), result.GetCallback());
+  // The ActResultFuture `result` will be resolved in a RunLoop of kDefault. It
+  // shouldn't be placed inside `RunTestSequence()`.
+  ExpectOkResult(result);
+
+  const std::string expected_request_origin =
+      url::Origin::Create(url).Serialize();
+  const std::string expected_display_origin = "example.com:12345";
+  auto expected_request =
+      base::DictValue()
+          .Set("taskId", actor_task().id().value())
+          .Set("showDialog", true)
+          .Set("credentials",
+               base::ListValue()
+                   .Append(base::DictValue()
+                               .Set("id", GenerateCredentialId().value())
+                               .Set("username", "username1")
+                               .Set("sourceSiteOrApp", url.host())
+                               .Set("requestOrigin", expected_request_origin)
+                               .Set("displayOrigin", expected_display_origin)
+                               .Set("accountPicture", kBlueIconDataUrl.spec())
+                               .Set("type",
+                                    actor_login::CredentialType::kFederated))
+                   .Append(base::DictValue()
+                               .Set("id", GenerateCredentialId().value())
+                               .Set("username", "username2")
+                               .Set("sourceSiteOrApp", url.host())
+                               .Set("requestOrigin", expected_request_origin)
+                               .Set("displayOrigin", expected_display_origin)
+                               .Set("accountPicture", kRedIconDataUrl.spec())
+                               .Set("type",
+                                    actor_login::CredentialType::kFederated)));
+
+  // Verify the dialog request content.
+  RunTestSequence(InAnyContext(WithElement(
+      glic::test::kGlicContentsElementId, [&](::ui::TrackedElement* el) {
+        content::WebContents* glic_contents =
+            AsInstrumentedWebContents(el)->web_contents();
+        const base::DictValue actual_request =
+            ExtractRequestData(glic_contents);
+        ASSERT_EQ(expected_request, actual_request);
+      })));
+
+  const auto& last_credential_used =
+      mock_login_service().last_credential_used();
+  ASSERT_TRUE(last_credential_used.has_value());
+  EXPECT_EQ(u"username1", last_credential_used->username);
+  EXPECT_EQ(actor_login::CredentialType::kFederated,
+            last_credential_used->type);
 }
 
 // TODO(https://crbug.com/456675144): Flaky on asan.

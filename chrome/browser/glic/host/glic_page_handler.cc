@@ -2285,6 +2285,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           return actor::webui::mojom::CredentialType::kFederated;
       }
     };
+    auto maybe_account_picture =
+        [](const actor_login::Credential& cred) -> SkBitmap {
+      return cred.federation_detail
+                 ? cred.federation_detail->account_picture.AsBitmap()
+                 : SkBitmap();
+    };
 
     // Note: mojom::<Type>Ptr is not copyable, meaning it can't be passed to the
     // argument of base::RepeatingCallbackList::Notify (who makes a copy of the
@@ -2297,7 +2303,8 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
           base::UTF16ToUTF8(credential.source_site_or_app),
           credential.request_origin,
           base::UTF16ToUTF8(credential.display_origin),
-          cred_type_to_mojo(credential.type)));
+          cred_type_to_mojo(credential.type),
+          maybe_account_picture(credential)));
     }
     base::flat_map<std::string, SkBitmap> mojo_icons;
     for (const auto& [site_or_app, image] : icons) {
