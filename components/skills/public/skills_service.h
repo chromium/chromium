@@ -59,6 +59,15 @@ class SkillsService : public KeyedService {
     kReady,
   };
 
+  // Behavior of the skill display in the UI.
+  enum class DisplayState {
+    // When the skill is temporarily deleted in the UI.
+    kDeleted,
+    // When the skill is reshown in the UI if it was previously deleted from the
+    // UI (e.g. when undo is pressed after a delete)
+    kReshown,
+  };
+
   // Map of id to skill.
   using SkillsMap = absl::flat_hash_map<std::string, skills::proto::Skill>;
 
@@ -71,6 +80,14 @@ class SkillsService : public KeyedService {
     virtual void OnSkillUpdated(std::string_view skill_id,
                                 UpdateSource update_source,
                                 bool is_position_changed) {}
+
+    // Called whenever a skill should be removed from the UI or brought back to
+    // the UI via an undo.
+    // NOTE: This will not actually delete the skill from the service, it will
+    // just be hidden from the UI.
+    virtual void OnTemporarySkillDisplay(
+        std::string_view skill_id,
+        SkillsService::DisplayState display_state) {}
 
     // Called when the service status is changed.
     virtual void OnStatusChanged() {}
@@ -169,6 +186,14 @@ class SkillsService : public KeyedService {
   // Sets the service status for testing purposes. This is useful for testing in
   // browser tests where the sync server is not available.
   virtual void SetServiceStatusForTesting(ServiceStatus status) = 0;
+
+  // Called when a skill should be removed from the UI or brought back to the UI
+  // via an undo.
+  // NOTE: This will not actually delete the skill from the
+  // service, it will just be hidden from the UI.
+  virtual void NotifyTemporarySkillDisplayChanged(
+      std::string_view skill_id,
+      DisplayState display_state) = 0;
 };
 
 }  // namespace skills
