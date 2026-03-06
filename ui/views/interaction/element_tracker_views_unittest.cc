@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
@@ -40,8 +41,8 @@ namespace views {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestElementID2);
-DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
-DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType);
+DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType2);
 
 namespace {
 
@@ -90,9 +91,20 @@ class ElementEventWatcher {
             tracker->AddElementHiddenCallback(id, context, callback);
         break;
       case ElementEventType::kCustom:
-        subscription_ = tracker->AddCustomEventCallback(id, context, callback);
-        break;
+        NOTREACHED();
     }
+  }
+
+  // Watches the specified `event_type` on Views with identifier `id` in
+  // `context`.
+  ElementEventWatcher(ui::CustomElementEventType custom_event,
+                      ui::ElementContext context)
+      : event_type_(ElementEventType::kCustom) {
+    auto callback = base::BindRepeating(&ElementEventWatcher::OnEvent,
+                                        base::Unretained(this));
+    ui::ElementTracker* const tracker = ui::ElementTracker::GetElementTracker();
+    subscription_ =
+        tracker->AddCustomEventCallback(custom_event, context, callback);
   }
 
   int event_count() const { return event_count_; }
@@ -347,8 +359,7 @@ TEST_F(ElementTrackerViewsTest, MenuButtonPressedSendsActivatedSignal) {
 }
 
 TEST_F(ElementTrackerViewsTest, SendCustomEventWithNamedElement) {
-  ElementEventWatcher watcher(kCustomEventType, context(),
-                              ElementEventType::kCustom);
+  ElementEventWatcher watcher(kCustomEventType, context());
   auto* const target = widget_->SetContentsView(std::make_unique<View>());
   target->SetProperty(kElementIdentifierKey, kTestElementID);
   EXPECT_EQ(0, watcher.event_count());
@@ -356,9 +367,9 @@ TEST_F(ElementTrackerViewsTest, SendCustomEventWithNamedElement) {
                                                         target);
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(target, watcher.last_view());
-  // Send an event with a different ID (which happens to be the element's ID;
-  // this shouldn't happen but we should handle it gracefully).
-  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kTestElementID, target);
+  // Send an event with a different ID.
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType2,
+                                                        target);
   EXPECT_EQ(1, watcher.event_count());
   // Send another event.
   ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,
@@ -368,8 +379,7 @@ TEST_F(ElementTrackerViewsTest, SendCustomEventWithNamedElement) {
 }
 
 TEST_F(ElementTrackerViewsTest, SendCustomEventWithUnnamedElement) {
-  ElementEventWatcher watcher(kCustomEventType, context(),
-                              ElementEventType::kCustom);
+  ElementEventWatcher watcher(kCustomEventType, context());
   auto* const target = widget_->SetContentsView(std::make_unique<View>());
   // View has no pre-set identifier, but this should still work.
   EXPECT_EQ(0, watcher.event_count());
@@ -378,7 +388,8 @@ TEST_F(ElementTrackerViewsTest, SendCustomEventWithUnnamedElement) {
   EXPECT_EQ(1, watcher.event_count());
   EXPECT_EQ(target, watcher.last_view());
   // Send an extraneous event.
-  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kTestElementID, target);
+  ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType2,
+                                                        target);
   EXPECT_EQ(1, watcher.event_count());
   // Send another event.
   ElementTrackerViews::GetInstance()->NotifyCustomEvent(kCustomEventType,

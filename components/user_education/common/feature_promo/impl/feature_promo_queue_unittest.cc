@@ -26,13 +26,12 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence_test_util.h"
-#include "ui/base/interaction/typed_identifier.h"
 
 namespace user_education::internal {
 
 namespace {
 
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAnchorId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAnchorId);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond1);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond2);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond3);

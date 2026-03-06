@@ -10,7 +10,6 @@
 #include "base/test/mock_callback.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_test_util.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
@@ -602,10 +601,8 @@ TEST(ElementTrackerTest, AddClassCustomEventCallback) {
 }
 
 TEST(ElementTrackerTest, MultipleCustomEventCallbacks) {
-  // We will test that custom events work with multiple event types, including
-  // in the edge case that the event type is the same as an element identifier
-  // (this should never happen, but should also never break).
-  const CustomElementEventType kCustomEventType2 = kElementIdentifier1;
+  // We will test that custom events work with multiple event types.
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCustomEventType2);
   UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback);
   UNCALLED_MOCK_CALLBACK(ElementTracker::Callback, callback2);
   auto subscription =

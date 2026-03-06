@@ -6,9 +6,9 @@
 
 #include "ui/base/interaction/element_identifier.h"
 
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebUiInteractiveTestMixinBase,
-                                      kElementRenders);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebUiInteractiveTestMixinBase,
-                                      kButtonWasClicked);
-DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(WebUiInteractiveTestMixinBase,
-                                      kIronCollapseContentShows);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(WebUiInteractiveTestMixinBase,
+                                       kElementRenders);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(WebUiInteractiveTestMixinBase,
+                                       kButtonWasClicked);
+DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(WebUiInteractiveTestMixinBase,
+                                       kIronCollapseContentShows);

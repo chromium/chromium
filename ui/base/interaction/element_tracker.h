@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "ui/base/identifier/unique_identifier.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/framework_specific_implementation.h"
 #include "ui/gfx/geometry/rect.h"
@@ -24,16 +25,15 @@
 
 namespace ui {
 
+class ElementTracker;
+
 // Represents a unique type of event, you may create these as needed using the
 // DECLARE_CUSTOM_ELEMENT_EVENT_TYPE() and DEFINE_CUSTOM_ELEMENT_EVENT_TYPE()
 // macros (see definitions at the bottom of this file).
 //
 // For testing purposes, if you need a local event type guaranteed to avoid
 // global name collisions, use DEFINE_LOCAL_ELEMENT_EVENT_TYPE() instead.
-//
-// Currently, custom event types are imlpemented using ElementIdentifier, since
-// both have the same API requirements.
-using CustomElementEventType = ElementIdentifier;
+DECLARE_UNIQUE_IDENTIFIER_TYPE(CustomElementEventType, ElementTracker);
 
 // Represents a visible UI element in a platform-agnostic manner.
 //
@@ -252,7 +252,7 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTracker
   friend class base::NoDestructor<ElementTracker>;
   class ElementData;
   class GarbageCollector;
-  using LookupKey = std::pair<ElementIdentifier, ElementContext>;
+  using LookupKey = std::pair<internal::UniqueIdentifier, ElementContext>;
   FRIEND_TEST_ALL_PREFIXES(ElementTrackerTest, CleanupAfterElementHidden);
   FRIEND_TEST_ALL_PREFIXES(ElementTrackerTest, CleanupAfterCallbacksRemoved);
   FRIEND_TEST_ALL_PREFIXES(ElementTrackerTest, HideDuringShowCallback);
@@ -267,10 +267,13 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) ElementTracker
   void NotifyCustomEvent(TrackedElement* element,
                          CustomElementEventType event_type) override;
 
-  ElementData* GetOrAddElementData(ElementIdentifier id,
+  ElementData* GetOrAddElementData(internal::UniqueIdentifier id,
                                    ElementContext context);
 
   void MaybeCleanup(ElementData* data);
+
+  static internal::UniqueIdentifier Unwrap(ElementIdentifier id);
+  static internal::UniqueIdentifier Unwrap(CustomElementEventType event);
 
   // Use a list to keep track of elements we're in the process of sending
   // notifications for; this allows us to zero out the reference in realtime if
@@ -331,37 +334,42 @@ class COMPONENT_EXPORT(UI_BASE_INTERACTION) SafeElementReference {
 // Note: if you need to use the identifier outside the current component, use
 // DECLARE/DEFINE_EXPORTED_... below.
 #define DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
-  DECLARE_ELEMENT_IDENTIFIER_VALUE(EventName)
+  DECLARE_UNIQUE_IDENTIFIER_VALUE(::ui::CustomElementEventType, EventName)
 #define DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
-  DEFINE_ELEMENT_IDENTIFIER_VALUE(EventName)
+  DEFINE_UNIQUE_IDENTIFIER_VALUE(::ui::CustomElementEventType, EventName)
 
 // Macros for declaring custom element event types that can be accessed in other
 // components. Put the DECLARE call in your public header file and the DEFINE
 // call in the corresponding .cc file.
 #define DECLARE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(ExportName, EventName) \
-  DECLARE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(ExportName, EventName)
-#define DEFINE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
-  DEFINE_EXPORTED_ELEMENT_IDENTIFIER_VALUE(EventName)
+  DECLARE_EXPORTED_UNIQUE_IDENTIFIER_VALUE(                               \
+      ExportName, ::ui::CustomElementEventType, EventName)
+#define DEFINE_EXPORTED_CUSTOM_ELEMENT_EVENT_TYPE(EventName)            \
+  DEFINE_EXPORTED_UNIQUE_IDENTIFIER_VALUE(::ui::CustomElementEventType, \
+                                          EventName)
 
 // Macros for declaring custom class element event type. Put the DECLARE call in
 // your .h file in your class declaration, and the DEFINE in the corresponding
 // .cc file.
 #define DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(EventName)
+  DECLARE_CLASS_UNIQUE_IDENTIFIER_VALUE(::ui::CustomElementEventType, EventName)
 #define DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(ClassName, EventName) \
-  DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, EventName)
+  DEFINE_CLASS_UNIQUE_IDENTIFIER_VALUE(                              \
+      ClassName, ::ui::CustomElementEventType, EventName)
 
 // This produces a unique, mangled name that can safely be used in macros called
 // by tests without having to worry about global name collisions. For production
 // code, use DECLARE/DEFINE above instead. You should pass __FILE__ and __LINE__
 // for `File`, and `Line`, respectively.
 #define DEFINE_MACRO_CUSTOM_ELEMENT_EVENT_TYPE(File, Line, EventName) \
-  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(File, Line, EventName)
+  DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(                         \
+      File, Line, ::ui::CustomElementEventType, EventName)
 
 // This produces a unique, mangled name that can safely be used in tests
 // without having to worry about global name collisions. For production code,
 // use DECLARE/DEFINE above instead.
 #define DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
-  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, EventName)
+  DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(             \
+      __FILE__, __LINE__, ::ui::CustomElementEventType, EventName)
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_TRACKER_H_

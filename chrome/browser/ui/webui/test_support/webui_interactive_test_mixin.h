@@ -22,9 +22,9 @@
 
 class WebUiInteractiveTestMixinBase {
  public:
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kElementRenders);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kButtonWasClicked);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kIronCollapseContentShows);
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kButtonWasClicked);
+  DECLARE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(kIronCollapseContentShows);
 };
 
 // Template to be used as a mixin class for performance settings webui

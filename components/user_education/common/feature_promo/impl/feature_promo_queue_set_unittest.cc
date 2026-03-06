@@ -34,13 +34,13 @@ namespace user_education::internal {
 
 namespace {
 
-using PromoId = FeaturePromoPrecondition::Identifier;
+using PrecondId = FeaturePromoPrecondition::Identifier;
 using ResultCallback = FeaturePromoController::ShowPromoResultCallback;
 using Priority = FeaturePromoPriorityProvider::PromoPriority;
 using PromoType = FeaturePromoSpecification::PromoType;
 using PromoSubtype = FeaturePromoSpecification::PromoSubtype;
 
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kAnchorId);
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kAnchorId);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond1);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond2);
 DEFINE_LOCAL_FEATURE_PROMO_PRECONDITION_IDENTIFIER_VALUE(kPrecond3);
@@ -76,7 +76,7 @@ base::TimeDelta kMediumPriorityTimeout = base::Seconds(20);
 base::TimeDelta kHighPriorityTimeout = base::Seconds(15);
 
 struct PreconditionInfo {
-  PromoId id;
+  PrecondId id;
   FeaturePromoResult::Failure failure;
   std::string name;
 };
@@ -704,7 +704,7 @@ class FeaturePromoQueueSetCachedDataTest : public FeaturePromoQueueSetTest {
 
   template <typename T, typename U>
   static std::unique_ptr<CachingFeaturePromoPrecondition> CreatePrecondition(
-      FeaturePromoPrecondition::Identifier id,
+      PrecondId id,
       FeaturePromoResult::Failure failure,
       std::string name,
       ui::TypedIdentifier<T> key,
