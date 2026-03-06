@@ -14,8 +14,9 @@ import "model_mode.proto";
 import "searchbox_config.proto";
 
 // AIM Eligibility Response.
-// Next ID: 10
+// Next ID: 11
 message AimEligibilityResponse {
+  // Whether the user is eligible for Chrome AIM features.
   optional bool is_eligible = 1;
   optional bool is_pdf_upload_eligible = 2;
   optional bool is_deep_search_eligible = 3;
@@ -44,6 +45,9 @@ message AimEligibilityResponse {
   // these criteria sets.
   repeated AimDetectionUrlRule aim_detection_url_rule = 8;
 
-  // Whether the user is eligible for Co-Browse.
+  // Whether the user is eligible for Chrome Co-Browse.
   optional bool is_cobrowse_eligible = 9;
+
+  // Whether the user is eligible for Chrome Fusebox features.
+  optional bool is_fusebox_eligible = 10;
 }
