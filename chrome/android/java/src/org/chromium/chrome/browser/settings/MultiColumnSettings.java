@@ -140,6 +140,14 @@ public class MultiColumnSettings extends PreferenceHeaderFragmentCompat {
         return mHeaderView;
     }
 
+    /**
+     * Open the (detail) pane. In single-column mode, this has the detail pane outside the screen
+     * slide in and come into view.
+     */
+    public void slideInDetailPane() {
+        getSlidingPaneLayout().openPane();
+    }
+
     /** Whether the detail panel is open. */
     public boolean isLayoutOpen() {
         return getSlidingPaneLayout().isOpen();

@@ -667,16 +667,22 @@ public class SettingsSearchCoordinator
             // Focus is required only when we display a zero-state illustration, not when we simply
             // mean to clear fragment at activity restoration.
             queryEdit.requestFocus();
-            clearFragment(
-                    R.drawable.settings_zero_state, /* addToBackStack= */ true, emptyRunnable());
+            boolean slideInDetailPane =
+                    mMultiColumnSettings != null && !mUseMultiColumn && isShowingMainSettings();
+            clearFragmentWithCallback(
+                    R.drawable.settings_zero_state,
+                    /* addToBackStack= */ true,
+                    emptyRunnable(),
+                    () -> {
+                        if (slideInDetailPane) {
+                            assumeNonNull(mMultiColumnSettings).slideInDetailPane();
+                            mPaneOpenedBySearch = true;
+                        }
+                    });
         }
         KeyboardUtils.showKeyboard(queryEdit);
         mFragmentState = FS_SEARCH;
         mBackActionCallback.setEnabled(true);
-        if (mMultiColumnSettings != null && !mUseMultiColumn && isShowingMainSettings()) {
-            mMultiColumnSettings.getSlidingPaneLayout().openPane();
-            mPaneOpenedBySearch = true;
-        }
         if (mUseMultiColumn) {
             // When being restored, MultiColumnTitleUpdater restores the first-visible title index
             // from the saved bundle. Do not override it.
@@ -800,7 +806,26 @@ public class SettingsSearchCoordinator
     }
 
     @SuppressWarnings("ReferenceEquality")
-    private void clearFragment(int imageId, boolean addToBackStack, Runnable openHelpCenter) {
+    private void clearFragmentWithCallback(
+            int imageId, boolean addToBackStack, Runnable openHelpCenter, Runnable callback) {
+        Fragment emptyFragment = clearFragment(imageId, addToBackStack, openHelpCenter);
+        var fragmentManager = getSettingsFragmentManager();
+        fragmentManager.registerFragmentLifecycleCallbacks(
+                new FragmentManager.FragmentLifecycleCallbacks() {
+                    @Override
+                    public void onFragmentResumed(FragmentManager fm, Fragment f) {
+                        if (f == emptyFragment) {
+                            fm.unregisterFragmentLifecycleCallbacks(this);
+                            callback.run();
+                        }
+                    }
+                },
+                false);
+    }
+
+    @SuppressWarnings("ReferenceEquality")
+    private EmptyFragment clearFragment(
+            int imageId, boolean addToBackStack, Runnable openHelpCenter) {
         var fragmentManager = getSettingsFragmentManager();
         int viewId = getViewIdForSearchDisplay();
         var transaction = fragmentManager.beginTransaction();
@@ -827,6 +852,7 @@ public class SettingsSearchCoordinator
                     false);
         }
         mShowingEmptyFragment = true;
+        return emptyFragment;
     }
 
     private void openHelpCenter() {
