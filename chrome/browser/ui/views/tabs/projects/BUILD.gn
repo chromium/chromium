@@ -134,6 +134,7 @@ source_set("interactive_ui_tests") {
     "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/tabs/projects",
     "//chrome/test:test_support",
+    "//components/contextual_tasks/public:test_support",
     "//components/saved_tab_groups/public",
     "//components/saved_tab_groups/test_support",
     "//content/test:test_support",

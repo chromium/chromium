@@ -12,9 +12,11 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controller.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_item_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
+#include "ui/menus/simple_menu_model.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/view.h"
 
@@ -29,6 +31,7 @@ class STGTabsMenuModel;
 namespace views {
 class ActionViewController;
 class EventMonitor;
+class MenuButton;
 class MenuRunner;
 class ViewShadow;
 }  // namespace views
@@ -43,6 +46,7 @@ class ProjectsPanelTabGroupsView;
 // Parent view of the Projects Panel - holds together the views
 // hierarchy including Tab Groups and AI threads.
 class ProjectsPanelView : public views::View,
+                          public ui::SimpleMenuModel::Delegate,
                           gfx::AnimationDelegate,
                           ProjectsPanelController::Observer {
   METADATA_HEADER(ProjectsPanelView, views::View)
@@ -92,17 +96,22 @@ class ProjectsPanelView : public views::View,
   void OnThreadsInitialized(
       const std::vector<contextual_tasks::Thread>& threads) override;
 
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+  bool IsCommandIdChecked(int command_id) const override;
+  bool IsCommandIdEnabled(int command_id) const override;
+
   views::View* content_container_for_testing() { return content_container_; }
   views::View* threads_container_for_testing() { return threads_container_; }
   views::Separator* separator_for_testing() { return separator_; }
-
-  static void disable_animations_for_testing();
-
   void set_on_close_animation_ended_callback_for_testing(
       base::OnceClosure on_close_animation_ended_callback) {
     on_close_animation_ended_callback_ =
         std::move(on_close_animation_ended_callback);
   }
+
+  static void set_threads_visible_for_testing(bool visible);
+  static void disable_animations_for_testing();
 
  private:
   // Detects if mouse presses occur outside of the panel.
@@ -124,6 +133,7 @@ class ProjectsPanelView : public views::View,
   void OnTabGroupButtonPressed(const base::Uuid& group_guid);
   void OnTabGroupMoreButtonPressed(const base::Uuid& group_guid,
                                    views::MenuButton& button);
+  void OnThreadsActivityMenuButtonPressed();
   void OnTabGroupMoved(const base::Uuid& group_guid, int new_index);
   void OnCreateNewTabGroupButtonPressed();
   void OnThreadButtonPressed(const std::string& thread_server_id);
@@ -137,6 +147,7 @@ class ProjectsPanelView : public views::View,
   raw_ptr<views::View> threads_container_ = nullptr;
   raw_ptr<ProjectsPanelRecentThreadsView> threads_view_ = nullptr;
   raw_ptr<views::Separator> separator_ = nullptr;
+  raw_ptr<views::MenuButton> threads_activity_menu_button_ = nullptr;
 
   std::unique_ptr<views::ViewShadow> content_shadow_;
 
@@ -153,6 +164,9 @@ class ProjectsPanelView : public views::View,
 
   std::unique_ptr<tab_groups::STGTabsMenuModel> tab_group_menu_model_;
   std::unique_ptr<views::MenuRunner> tab_group_menu_runner_;
+
+  std::unique_ptr<ui::SimpleMenuModel> threads_activity_menu_model_;
+  std::unique_ptr<views::MenuRunner> threads_activity_menu_runner_;
 
   // The target width of the panel when expanded. Used when vertical tabs is
   // enabled since the panel width needs to match when expanded.

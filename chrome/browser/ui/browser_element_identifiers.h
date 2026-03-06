@@ -156,6 +156,11 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kProjectsPanelTabGroupsItemViewSharedIconElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelTabGroupsViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelThreadListItemViewElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kProjectsPanelThreadsActivityAiModeItemElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelThreadsActivityButtonElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(
+    kProjectsPanelThreadsActivityGeminiItemElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kProjectsPanelViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kReadLaterSidePanelWebViewElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kRecordButtonElementId);

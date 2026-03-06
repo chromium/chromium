@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_interactive_test_mixin.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
@@ -25,13 +26,17 @@
 
 namespace base::test {
 
+DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabElementId);
+
 class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
  public:
   ProjectsPanelInteractiveUiTest() {
-    scoped_feature_list_.InitWithFeatures(/* enabled_features */
-                                          {tabs::kVerticalTabs,
-                                           tab_groups::kProjectsPanel},
-                                          /* disabled_features */ {});
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{tabs::kVerticalTabs, {}},
+         {tab_groups::kProjectsPanel,
+          {{tab_groups::kProjectsPanelWithThreads.name, "true"}}}},
+        {});
+    ProjectsPanelView::set_threads_visible_for_testing(true);
     ProjectsPanelView::disable_animations_for_testing();
   }
   ~ProjectsPanelInteractiveUiTest() override = default;
@@ -43,6 +48,14 @@ class ProjectsPanelInteractiveUiTest : public InteractiveBrowserTest {
     tabs::VerticalTabStripStateController::From(browser())
         ->SetVerticalTabsEnabled(true);
     RunScheduledLayouts();
+  }
+
+  auto OpenProjectsPanel() {
+    return Steps(WaitForShow(kVerticalTabStripProjectsButtonElementId),
+                 PressButton(kVerticalTabStripProjectsButtonElementId),
+                 Do([this]() { RunScheduledLayouts(); }),
+                 WaitForShow(kProjectsPanelViewElementId),
+                 Do([this]() { RunScheduledLayouts(); }));
   }
 
   auto ResizeVerticalTabsRegionToWidth(int width) {
@@ -250,6 +263,48 @@ IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
       CheckPanelHasExpectedWidthAndStyling(
           projects_panel::kProjectsPanelMinWidth - views::Separator::kThickness,
           /*should_have_rounded_corners=*/false));
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
+                       ThreadsActivityMenu_GeminiActivityOpensURL) {
+  RunTestSequence(
+      OpenProjectsPanel(),
+      // Click the threads activity menu button.
+      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
+      InstrumentNextTab(kNewTabElementId),
+      // Select "Gemini app activity" from the menu.
+      SelectMenuItem(kProjectsPanelThreadsActivityGeminiItemElementId),
+      // Verify that a new tab was opened with the correct URL.
+      WaitForWebContentsNavigation(kNewTabElementId,
+                                   GURL(chrome::kMyActivityGeminiAppsUrl)),
+      // Verify Projects Panel is hidden.
+      WaitForHide(kProjectsPanelViewElementId),
+      CheckResult(
+          [this]() {
+            return projects_panel_state_controller()->IsProjectsPanelVisible();
+          },
+          false));
+}
+
+IN_PROC_BROWSER_TEST_F(ProjectsPanelInteractiveUiTest,
+                       ThreadsActivityMenu_AiModeActivityOpensURL) {
+  RunTestSequence(
+      OpenProjectsPanel(),
+      // Click the threads activity menu button.
+      MoveMouseTo(kProjectsPanelThreadsActivityButtonElementId), ClickMouse(),
+      InstrumentNextTab(kNewTabElementId),
+      // Select "AI Mode activity" from the menu.
+      SelectMenuItem(kProjectsPanelThreadsActivityAiModeItemElementId),
+      // Verify that a new tab was opened with the correct URL.
+      WaitForWebContentsNavigation(kNewTabElementId,
+                                   GURL(chrome::kMyActivityAiModeUrl)),
+      // Verify Projects Panel is hidden.
+      WaitForHide(kProjectsPanelViewElementId),
+      CheckResult(
+          [this]() {
+            return projects_panel_state_controller()->IsProjectsPanelVisible();
+          },
+          false));
 }
 
 }  // namespace base::test

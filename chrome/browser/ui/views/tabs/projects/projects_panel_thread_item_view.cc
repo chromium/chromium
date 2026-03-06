@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_thread_item_view.h"
 
-#include "build/branding_buildflags.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
@@ -29,7 +28,7 @@ inline constexpr gfx::Insets kChatTypeIconMargins = gfx::Insets(4);
 ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
     const contextual_tasks::Thread& thread,
     ThreadPressedCallback pressed_callback)
-    : chat_type_icon_(vector_icons::kChatSparkIcon) {
+    : chat_type_icon_(projects_panel::GetIconForThreadType(thread.type)) {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetInteriorMargin(projects_panel::kListItemMargins)
       .SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -38,20 +37,6 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
   GetViewAccessibility().SetName(thread.title);
 
   projects_panel::ConfigureInkDropForButton(this);
-
-  chat_type_icon_ = vector_icons::kChatSparkIcon;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  switch (thread.type) {
-    case contextual_tasks::ThreadType::kAiMode:
-      chat_type_icon_ = vector_icons::kGoogleGLogoMonochromeIcon;
-      break;
-    case contextual_tasks::ThreadType::kGemini:
-      chat_type_icon_ = vector_icons::kGoogleAgentspaceMonochromeLogo25Icon;
-      break;
-    case contextual_tasks::ThreadType::kUnknown:
-      NOTREACHED();
-  }
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   auto chat_type_image_model_ = ui::ImageModel::FromVectorIcon(
       *chat_type_icon_, kColorProjectsPanelButtonIcon, kChatTypeIconSize);

@@ -10,6 +10,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_ui_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,20 +30,26 @@
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_controls_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_recent_threads_view.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_tab_groups_view.h"
+#include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_view_layout.h"
 #include "chrome/browser/ui/views/tabs/vertical/top_container_button.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/saved_tab_groups/public/features.h"
+#include "components/vector_icons/vector_icons.h"
 #include "ui/actions/actions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/mojom/menu_source_type.mojom.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor_extra/shadow.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/actions/action_view_controller.h"
 #include "ui/views/background.h"
+#include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/menu_button.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -55,13 +62,29 @@
 #include "ui/views/widget/widget.h"
 
 namespace {
+
+enum ThreadsActivityMenuCommandId {
+  kGeminiActivity = 1,
+  kAiModeActivity = 2,
+};
+
 constexpr int kClipRectMarginForShadow = 32;
 constexpr int kProjectPanelRightCornerRadius = 16;
 constexpr int kShadowElevation = 2;
-constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(10, 8);
+constexpr gfx::Insets kListHeaderMargins = gfx::Insets::VH(8, 8);
+constexpr int kListHeaderHeight = 28;
 
 constexpr base::TimeDelta kPanelShowAnimationDuration = base::Milliseconds(250);
 constexpr base::TimeDelta kPanelHideAnimationDuration = base::Milliseconds(200);
+
+constexpr int kThreadsActivityMenuButtonIconSize = 18;
+constexpr gfx::Size kThreadsActivityMenuButtonSize =
+    gfx::Size(kListHeaderHeight, kListHeaderHeight);
+constexpr int kThreadsActivityMenuIconSize = 16;
+
+// Whether the threads section should be visible even if no threads exist. This
+// setting is applied the next time the panel is opened.
+static bool show_threads_for_testing_ = false;
 
 static bool disable_animations_for_testing_ = false;
 
@@ -69,7 +92,11 @@ static bool disable_animations_for_testing_ = false;
 void SetListTitleProperties(views::Label& label) {
   label.SetTextStyle(views::style::TextStyle::STYLE_HEADLINE_5);
   label.SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_TO_HEAD);
-  label.SetProperty(views::kMarginsKey, kListHeaderMargins);
+}
+
+void SetListTitleContainerProperties(views::View& list_title_container) {
+  list_title_container.SetProperty(views::kMarginsKey, kListHeaderMargins);
+  list_title_container.SetPreferredSize(gfx::Size(0, kListHeaderHeight));
 }
 
 void SetScrollViewProperties(views::ScrollView& scroll_view) {
@@ -156,6 +183,7 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
   groups_list_title->SetProperty(views::kElementIdentifierKey,
                                  kProjectsPanelTabGroupsListTitleElementId);
   SetListTitleProperties(*groups_list_title);
+  SetListTitleContainerProperties(*groups_list_title);
 
   views::ScrollView* tab_groups_scroll_view =
       tab_groups_container_->AddChildView(std::make_unique<views::ScrollView>(
@@ -187,11 +215,45 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
     threads_container->SetOrientation(views::LayoutOrientation::kVertical);
     threads_container_ = threads_container;
 
+    auto* threads_title_container = threads_container_->AddChildView(
+        std::make_unique<views::FlexLayoutView>());
+    threads_title_container->SetOrientation(
+        views::LayoutOrientation::kHorizontal);
+    threads_title_container->SetCrossAxisAlignment(
+        views::LayoutAlignment::kCenter);
+    threads_title_container->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kPreferred));
+    SetListTitleContainerProperties(*threads_title_container);
+
     auto* threads_list_title =
-        threads_container_->AddChildView(std::make_unique<views::Label>());
+        threads_title_container->AddChildView(std::make_unique<views::Label>());
     threads_list_title->SetText(
         l10n_util::GetStringUTF16(IDS_RECENT_CHATS_TITLE));
+    threads_list_title->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                                 views::MaximumFlexSizeRule::kUnbounded));
     SetListTitleProperties(*threads_list_title);
+
+    threads_activity_menu_button_ = threads_title_container->AddChildView(
+        std::make_unique<views::MenuButton>(base::BindRepeating(
+            &ProjectsPanelView::OnThreadsActivityMenuButtonPressed,
+            base::Unretained(this))));
+    threads_activity_menu_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        ui::ImageModel::FromVectorIcon(kBrowserToolsChromeRefreshIcon,
+                                       kColorProjectsPanelButtonIcon,
+                                       kThreadsActivityMenuButtonIconSize));
+    threads_activity_menu_button_->SetPreferredSize(
+        kThreadsActivityMenuButtonSize);
+    threads_activity_menu_button_->SetTooltipText(
+        l10n_util::GetStringUTF16(IDS_TAB_GROUP_MORE_OPTIONS));
+    threads_activity_menu_button_->SetProperty(
+        views::kElementIdentifierKey,
+        kProjectsPanelThreadsActivityButtonElementId);
+    ConfigureInkDropForToolbar(threads_activity_menu_button_);
 
     views::ScrollView* threads_scroll_view =
         threads_container_->AddChildView(std::make_unique<views::ScrollView>(
@@ -201,6 +263,33 @@ ProjectsPanelView::ProjectsPanelView(BrowserWindowInterface* browser,
             &ProjectsPanelView::OnThreadButtonPressed, base::Unretained(this)));
     threads_view_ = threads_scroll_view->SetContents(std::move(threads_view));
     SetScrollViewProperties(*threads_scroll_view);
+
+    threads_activity_menu_model_ = std::make_unique<ui::SimpleMenuModel>(this);
+    threads_activity_menu_model_->AddItemWithIcon(
+        kGeminiActivity,
+        l10n_util::GetStringUTF16(IDS_PROJECTS_PANEL_GEMINI_ACTIVITY),
+        ui::ImageModel::FromVectorIcon(
+            projects_panel::GetIconForThreadType(
+                contextual_tasks::ThreadType::kGemini),
+            ui::kColorIcon, kThreadsActivityMenuIconSize));
+    threads_activity_menu_model_->SetElementIdentifierAt(
+        threads_activity_menu_model_->GetItemCount() - 1,
+        kProjectsPanelThreadsActivityGeminiItemElementId);
+
+    threads_activity_menu_model_->AddItemWithIcon(
+        kAiModeActivity,
+        l10n_util::GetStringUTF16(IDS_PROJECTS_PANEL_AI_MODE_ACTIVITY),
+        ui::ImageModel::FromVectorIcon(
+            projects_panel::GetIconForThreadType(
+                contextual_tasks::ThreadType::kAiMode),
+            ui::kColorIcon, kThreadsActivityMenuIconSize));
+    threads_activity_menu_model_->SetElementIdentifierAt(
+        threads_activity_menu_model_->GetItemCount() - 1,
+        kProjectsPanelThreadsActivityAiModeItemElementId);
+
+    threads_activity_menu_runner_ = std::make_unique<views::MenuRunner>(
+        threads_activity_menu_model_.get(),
+        views::MenuRunner::CONTEXT_MENU | views::MenuRunner::IS_NESTED);
   }
 
   content_container_->SetLayoutManager(
@@ -256,7 +345,7 @@ void ProjectsPanelView::OnProjectsPanelStateChanged(
       threads_view_->SetThreads(threads);
 
       // Hide the threads section when empty.
-      const bool show_threads = threads.size() > 0;
+      const bool show_threads = show_threads_for_testing_ || threads.size() > 0;
       threads_container_->SetVisible(show_threads);
       separator_->SetVisible(show_threads);
     }
@@ -395,6 +484,11 @@ void ProjectsPanelView::OnThreadsInitialized(
 }
 
 // static
+void ProjectsPanelView::set_threads_visible_for_testing(bool visible) {
+  show_threads_for_testing_ = visible;
+}
+
+// static
 void ProjectsPanelView::disable_animations_for_testing() {
   disable_animations_for_testing_ = true;
 }
@@ -471,6 +565,37 @@ void ProjectsPanelView::OnThreadButtonPressed(
     const std::string& thread_server_id) {
   panel_controller_->OpenThread(thread_server_id);
   ClosePanel();
+}
+
+void ProjectsPanelView::OnThreadsActivityMenuButtonPressed() {
+  threads_activity_menu_runner_->RunMenuAt(
+      GetWidget(), threads_activity_menu_button_->button_controller(),
+      threads_activity_menu_button_->GetAnchorBoundsInScreen(),
+      views::MenuAnchorPosition::kTopLeft, ui::mojom::MenuSourceType::kNone);
+}
+
+void ProjectsPanelView::ExecuteCommand(int command_id, int event_flags) {
+  GURL activity_url;
+  switch (command_id) {
+    case ThreadsActivityMenuCommandId::kGeminiActivity:
+      activity_url = GURL(chrome::kMyActivityGeminiAppsUrl);
+      break;
+    case ThreadsActivityMenuCommandId::kAiModeActivity:
+      activity_url = GURL(chrome::kMyActivityAiModeUrl);
+      break;
+    default:
+      return;
+  }
+  browser_->OpenGURL(activity_url, WindowOpenDisposition::SINGLETON_TAB);
+  ClosePanel();
+}
+
+bool ProjectsPanelView::IsCommandIdChecked(int command_id) const {
+  return false;
+}
+
+bool ProjectsPanelView::IsCommandIdEnabled(int command_id) const {
+  return true;
 }
 
 ProjectsPanelView::MouseEventHandler::MouseEventHandler(

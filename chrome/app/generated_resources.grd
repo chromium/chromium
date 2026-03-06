@@ -10410,7 +10410,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
             Tab Groups
           </message>
           <message name="IDS_RECENT_CHATS_TITLE" desc="In Title Case: The title for the recent chats container in the projects panel.">
-            Recent Chats
+            Recent Chats &amp; Threads
           </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="In Title Case: The tooltip for the button in a tab group item that opens the options menu.">
             More options
@@ -10426,14 +10426,20 @@ Keep your key file in a safe place. You will need it to create new versions of y
           <message name="IDS_TAB_GROUPS_TITLE" desc="The title for the tab groups container in the projects panel.">
             Tab groups
           </message>
-          <message name="IDS_RECENT_CHATS_TITLE" desc="In Title Case: The title for the recent chats container in the projects panel.">
-            Recent chats
+          <message name="IDS_RECENT_CHATS_TITLE" desc="The title for the recent chats container in the projects panel.">
+            Recent chats &amp; threads
           </message>
           <message name="IDS_TAB_GROUP_MORE_OPTIONS" desc="The tooltip for the button in a tab group item that opens the options menu.">
             More options
           </message>
         </else>
       </if>
+      <message name="IDS_PROJECTS_PANEL_GEMINI_ACTIVITY" desc="The label for the Gemini app activity menu item in the projects panel.">
+        Gemini app activity
+      </message>
+      <message name="IDS_PROJECTS_PANEL_AI_MODE_ACTIVITY" desc="The label for the AI Mode activity menu item in the projects panel.">
+        AI Mode activity
+      </message>
       <message name="IDS_TAB_GROUPS_NO_TAB_GROUPS" desc="Text indicating the user has no Tab groups.">
         Organize your tabs by grouping them together and label them with a custom name and color
       </message>
