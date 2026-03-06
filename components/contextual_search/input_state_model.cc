@@ -190,6 +190,7 @@ InputStateModel::InputStateModel(
       is_off_the_record_(new_input_state_model.is_off_the_record_) {
   state_ = new_input_state_model.state_;
   rule_set_ = new_input_state_model.rule_set_;
+  pref_service_ = new_input_state_model.pref_service_;
 }
 
 InputStateModel::~InputStateModel() = default;
