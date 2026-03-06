@@ -55,6 +55,9 @@ BASE_DECLARE_FEATURE(kContextualTasksSendFullVersionListEnabled);
 // contextual tasks URL and redirect to aim URL.
 BASE_DECLARE_FEATURE(kContextualTasksUrlRedirectToAimUrl);
 
+// If enabled, animates the caret.
+BASE_DECLARE_FEATURE(kContextualTasksAnimatedCaret);
+
 // Enum denoting which entry point can show when enabled.
 enum class EntryPointOption {
   kNoEntryPoint,

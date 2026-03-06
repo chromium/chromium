@@ -43,6 +43,8 @@ export class OmniboxAimAppElement extends CrLitElement {
       loadTimeData.getBoolean('caretColorAnimationDisabled');
   protected disableComposeboxAnimation_: boolean =
       loadTimeData.getBoolean('composeboxAnimationDisabled');
+  protected caretAnimationsEnabled_: boolean =
+      loadTimeData.getBoolean('caretAnimationEnabled');
 
   private eventTracker_ = new EventTracker();
   private pageHandler_: PageHandlerInterface;
@@ -122,6 +124,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.$.composebox.playGlowAnimation();
       this.$.composebox.setDefaultModel();
     }
+    this.$.composebox.resetCaret();
     this.$.composebox.addSearchContext(context);
     this.$.composebox.focusInput();
     this.preserveContextOnClose_ = false;
