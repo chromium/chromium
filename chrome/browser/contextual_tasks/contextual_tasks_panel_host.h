@@ -7,6 +7,8 @@
 
 #include <memory>
 
+#include "base/observer_list_types.h"
+
 class BrowserWindowInterface;
 
 namespace content {
@@ -21,25 +23,69 @@ namespace contextual_tasks {
 // desktop).
 class ContextualTasksPanelHost {
  public:
+  // The visibility status of the contextual tasks panel.
+  enum class SurfaceState {
+    kVisible,  // Panel opened
+    kClosed,   // Panel dismissed
+  };
+
+  // The origin of the event that caused a visibility change for the panel.
+  enum class StateChangeReason {
+    kUserAction,    // e.g. swipe down, close button
+    kSystemAction,  // e.g. priority interruption
+  };
+
+  // The means by which the panel should be animated to open/close.
+  enum class AnimationStyle {
+    kStandard,           // Animate panel open/close from edge
+    kTransitionFromTab,  // Animate panel from the active tab content's bounds
+    kNoAnimation,        // Disable animation (e.g. when user closes tab)
+  };
+
+  // Observer to be notified of state changes on the panel UI (e.g. user-
+  // initiated show/hide actions).
+  class Observer : public base::CheckedObserver {
+   public:
+    // Notifies that the physical UI state changed.
+    virtual void OnSurfaceStateChanged(SurfaceState state,
+                                       StateChangeReason reason) = 0;
+  };
+
   static std::unique_ptr<ContextualTasksPanelHost> Create(
       BrowserWindowInterface* browser_window);
 
   virtual ~ContextualTasksPanelHost() = default;
 
+  // Register/unregister observers.
+  virtual void AddObserver(Observer* observer) = 0;
+
+  virtual void RemoveObserver(Observer* observer) = 0;
+
   // Visibility commands.
-  // Show the panel. If |transition_from_tab| is true, trigger the panel content
-  // to animate from the active tab content's bounds.
-  virtual void Show(bool transition_from_tab = false) = 0;
-  // Close the panel.
-  virtual void Close() = 0;
+  // Show the panel.
+  virtual void Show(AnimationStyle animation) = 0;
+
+  // Close the panel. `kTransitionFromTab` is not supported for closing.
+  virtual void Close(AnimationStyle animation) = 0;
+
+  // State checks.
+  // Return whether the panel is ready to display WebContents.
+  virtual bool IsPanelInitialized() = 0;
+
+  // Check if the panel is currently opening for Contextual Task as another
+  // feature might also show panel.
+  virtual bool IsPanelOpenForContextualTask() const = 0;
+
+  // Whether panel should not be opened for Contextual Task given the current UI
+  // state, e.g. on desktop if the glic side panel is open.
+  virtual bool IsPanelSuppressed() const = 0;
 
   // Content management.
+  // Get current WebContents attached to panel, or nullptr if none attached.
+  virtual content::WebContents* GetWebContents() = 0;
+
   // Configures the panel to display the provided WebContents.
   virtual void SetWebContents(content::WebContents* web_contents) = 0;
-
-  // Promotion.
-  // Transitions the panel content into a full browser tab.
-  virtual void PromoteToTab() = 0;
 };
 
 }  // namespace contextual_tasks
