@@ -241,6 +241,29 @@ TEST_F(GlicInstanceMetricsTest, ValidResponseFlow_DoesNotLogError) {
   EXPECT_EQ(1, user_action_tester_.GetActionCount("GlicResponseStopByUser"));
 }
 
+TEST_F(GlicInstanceMetricsTest, InputModesUsed_IgnoresUnknown) {
+  {
+    GlicInstanceMetrics metrics;
+    metrics.OnVisibilityChanged(true);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  }
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.InputModesUsed", 1);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.InputModesUsed",
+                                      InputModesUsed::kOnlyAudio, 1);
+
+  {
+    GlicInstanceMetrics metrics;
+    metrics.OnVisibilityChanged(true);
+    metrics.OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
+  }
+
+  histogram_tester_.ExpectTotalCount("Glic.Instance.InputModesUsed", 2);
+  histogram_tester_.ExpectBucketCount("Glic.Instance.InputModesUsed",
+                                      InputModesUsed::kNone, 1);
+}
+
 TEST_F(GlicInstanceMetricsTest, OnTurnCompleted_LogsHistograms) {
   metrics_.OnTurnCompleted(mojom::WebClientModel::kDefault,
                            base::Milliseconds(100));

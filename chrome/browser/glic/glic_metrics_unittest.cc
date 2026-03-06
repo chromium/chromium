@@ -818,6 +818,19 @@ TEST_F(GlicMetricsTest, InputModesUsed) {
   histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 4);
   histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
                                        InputModesUsed::kOnlyAudio, 1);
+
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kAudio);
+  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 5);
+  histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
+                                       InputModesUsed::kOnlyAudio, 2);
+
+  metrics()->OnUserInputSubmitted(mojom::WebClientMode::kUnknown);
+  metrics()->OnGlicWindowClose(nullptr, std::nullopt, gfx::Rect());
+  histogram_tester().ExpectTotalCount("Glic.Session.InputModesUsed", 6);
+  histogram_tester().ExpectBucketCount("Glic.Session.InputModesUsed",
+                                       InputModesUsed::kNone, 2);
 }
 
 TEST_F(GlicMetricsTest, AttachStateChanges) {
