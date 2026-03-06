@@ -23,3 +23,25 @@ source_set("storage") {
     "//sql",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "accessibility_annotation_sync_bridge_unittest.cc",
+    "accessibility_annotator_database_unittest.cc",
+    "intent_table_unittest.cc",
+  ]
+
+  deps = [
+    ":storage",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+    "//components/sync/model",
+    "//components/sync/protocol",
+    "//sql",
+    "//sql:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

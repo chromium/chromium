@@ -25,3 +25,15 @@ source_set("data_models") {
     "//third_party/abseil-cpp:absl",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "entity_converter_unittest.cc" ]
+
+  deps = [
+    ":data_models",
+    "//base/test:test_support",
+    "//components/sync/protocol",
+    "//testing/gtest",
+  ]
+}

@@ -30,26 +30,15 @@ source_set("features") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "data_models/entity_converter_unittest.cc",
-    "direct_server_entity_provider_unittest.cc",
-    "storage/accessibility_annotation_sync_bridge_unittest.cc",
-    "storage/accessibility_annotator_database_unittest.cc",
-    "storage/intent_table_unittest.cc",
-  ]
+  sources = [ "direct_server_entity_provider_unittest.cc" ]
 
   deps = [
     ":core",
     "//base",
     "//base/test:test_support",
     "//components/accessibility_annotator/core/annotation_reducer:unit_tests",
-    "//components/accessibility_annotator/core/data_models",
-    "//components/accessibility_annotator/core/storage",
-    "//components/sync:test_support",
-    "//components/sync/model",
-    "//components/sync/protocol",
-    "//sql",
-    "//sql:test_support",
+    "//components/accessibility_annotator/core/data_models:unit_tests",
+    "//components/accessibility_annotator/core/storage:unit_tests",
     "//testing/gmock",
     "//testing/gtest",
   ]
