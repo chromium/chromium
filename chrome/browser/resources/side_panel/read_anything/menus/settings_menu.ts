@@ -387,11 +387,36 @@ export class SettingsMenuElement extends SettingsMenuElementBase {
     }, delay);
   }
 
-  protected onPointerleave_() {
+  protected onPointerleave_(event: PointerEvent) {
     // Clear the open timer so that submenus aren't opened after the cursor
     // stops hovering.
     this.clearOpenTimer_();
-    this.startCloseTimer_();
+
+    // TODO (crbug.com/473578189): Make submenus children of the settings menu
+    // The submenus are siblings of this menu, living inside the same host
+    // (the toolbar). We use the host as a boundary to avoid traversing the
+    // entire document if the cursor leaves the toolbar completely.
+    const boundary = (this.getRootNode() as ShadowRoot)?.host;
+    let current = event.relatedTarget as Element | null;
+    let isOverSubmenu = false;
+
+    // Manually walk up the DOM to check if the cursor moved into a submenu.
+    // We cannot use element.closest() because it does not pierce Shadow DOM
+    // boundaries, and event.composedPath() only applies to the event target
+    // (the element we are leaving), not the relatedTarget (the destination).
+    while (current && current !== boundary) {
+      if (current.classList && current.classList.contains('settings-submenu')) {
+        isOverSubmenu = true;
+        break;
+      }
+      // Move up the tree, piercing through shadow roots if necessary.
+      current =
+          current.parentElement || (current.getRootNode() as ShadowRoot)?.host;
+    }
+
+    if (!isOverSubmenu) {
+      this.startCloseTimer_();
+    }
   }
 
   private startCloseTimer_() {
