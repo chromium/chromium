@@ -32,6 +32,8 @@
 #include "chrome/browser/file_system_access/file_system_access_features.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/file_system_access/file_system_access_tab_helper.h"
+#include "chrome/browser/finds/core/finds_tab_helper.h"
+#include "chrome/browser/finds/finds_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/top_sites_factory.h"
 #include "chrome/browser/history_clusters/history_clusters_tab_helper.h"
@@ -633,6 +635,11 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
                           *web_contents));
   }
   ContextMenuHelper::CreateForWebContents(web_contents);
+
+  if (base::FeatureList::IsEnabled(chrome::android::kChromeFinds)) {
+    finds::FindsTabHelper::CreateForWebContents(
+        web_contents, finds::FindsServiceFactory::GetForProfile(profile));
+  }
 
   if (base::FeatureList::IsEnabled(
           page_load_metrics::features::kBeaconLeakageLogging)) {

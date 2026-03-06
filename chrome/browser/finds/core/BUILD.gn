@@ -1,0 +1,18 @@
+# Copyright 2026 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("core") {
+  sources = [
+    "finds_service.cc",
+    "finds_service.h",
+    "finds_tab_helper.cc",
+    "finds_tab_helper.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//content/public/browser",
+  ]
+}

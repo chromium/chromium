@@ -936,6 +936,7 @@ if (_is_default_toolchain) {
       "//chrome/browser/download/internal/android:java",
       "//chrome/browser/facilitated_payments/ui/android/internal:java",
       "//chrome/browser/feedback/android:internal_java",
+      "//chrome/browser/finds/android:java",
       "//chrome/browser/hub/internal:java",
       "//chrome/browser/mandatory_reauth/android/internal:java",
       "//chrome/browser/partnerbookmarks:java",
