@@ -1014,6 +1014,8 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
           'Local (const/let) variable \'{{variableName}}\' found in the HTML template file. Logic should be delegated to the class definition file',
       functionDefinitionFound:
           'Extra function definition \'{{functionName}}\' found in the HTML template file. Complex logic should be delegated to the class definition file. Standalone/separate chunks of templates may need a dedicated custom element',
+      incorrectEventListenerNameFound:
+          'Incorrect event listener naming found for event \'{{eventName}}\'. Rename \'{{listenerName}}\' to follow the \'{{suggestedListenerName}}\' pattern',
     },
   },
   defaultOptions: [],
@@ -1021,8 +1023,6 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
     const templateFilename = context.filename.replaceAll('\\', '/');
     assert.ok(templateFilename.endsWith('.html.ts'));
 
-    const services = ESLintUtils.getParserServices(context);
-    const compilerOptions = services.program.getCompilerOptions();
     let hasLitImport = false;
 
     return {
@@ -1041,6 +1041,51 @@ const litElementTemplateStructure = ESLintUtils.RuleCreator.withoutDocs({
             functionName: node.id.name,
           },
         });
+      },
+      ['FunctionDeclaration[id.name="getHtml"] TemplateLiteral'](node) {
+        const listenerExpressionRegex = /@(?<eventName>[a-zA-Z-]+)="$/;
+        for (let i = 0; i < node.quasis.length; i++) {
+          const match = listenerExpressionRegex.exec(node.quasis[i].value.raw);
+          if (!match) {
+            continue;
+          }
+
+          const eventName = match.groups['eventName'];
+          if (node.expressions[i].type !== 'MemberExpression') {
+            // Ignore the following pattern for now.
+            // @dragenter="${this.dragAndDropHandler_?.handleDragEnter}"
+            return;
+          }
+
+          if (node.expressions[i].object.type !== 'ThisExpression') {
+            // Ignore the following pattern for now.
+            // @dragenter="${this.dragAndDropHandler_.handleDragEnter}"
+            return;
+          }
+
+          const listenerName = node.expressions[i].property.name;
+          const listenerNameRegex = new RegExp(`on(?<context>[a-zA-Z0-9]+)?${
+              dashCaseToCamelCase('-' + eventName)}[_]?$`);
+
+          if (!listenerNameRegex.test(listenerName)) {
+            const camelCaseEventName = dashCaseToCamelCase('-' + eventName);
+            let suggestedListenerName =
+                `on<OptionalContext>${camelCaseEventName}`;
+            if (listenerName.endsWith('_')) {
+              suggestedListenerName += '_';
+            }
+
+            context.report({
+              node: node.expressions[i],
+              messageId: 'incorrectEventListenerNameFound',
+              data: {
+                eventName,
+                suggestedListenerName,
+                listenerName,
+              },
+            });
+          }
+        }
       },
       ['FunctionDeclaration[id.name="getHtml"] ForStatement'](node) {
         if (!hasLitImport) {

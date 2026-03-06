@@ -27,19 +27,19 @@ export class TestCustomHelpBubbleElement extends CrLitElement {
     this.handler_ = CustomHelpBubbleProxyImpl.getInstance().getHandler();
   }
 
-  protected onCancelButton_() {
+  protected onCancelClick_() {
     this.handler_.notifyUserAction(CustomHelpBubbleUserAction.kCancel);
   }
 
-  protected onDismissButton_() {
+  protected onDismissClick_() {
     this.handler_.notifyUserAction(CustomHelpBubbleUserAction.kDismiss);
   }
 
-  protected onSnoozeButton_() {
+  protected onSnoozeClick_() {
     this.handler_.notifyUserAction(CustomHelpBubbleUserAction.kSnooze);
   }
 
-  protected onActionButton_() {
+  protected onActionClick_() {
     this.handler_.notifyUserAction(CustomHelpBubbleUserAction.kAction);
   }
 }

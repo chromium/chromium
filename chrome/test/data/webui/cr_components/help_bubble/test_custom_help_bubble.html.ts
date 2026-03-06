@@ -9,10 +9,10 @@ import type {TestCustomHelpBubbleElement} from './test_custom_help_bubble.js';
 export function getHtml(this: TestCustomHelpBubbleElement) {
   // clang-format off
   return html`
-<button id="cancel" @click="${this.onCancelButton_}">Cancel</button>
-<button id="dismiss" @click="${this.onDismissButton_}">Dismiss</button>
-<button id="snooze" @click="${this.onSnoozeButton_}">Snooze</button>
-<button id="action" @click="${this.onActionButton_}">Action</button>
+<button id="cancel" @click="${this.onCancelClick_}">Cancel</button>
+<button id="dismiss" @click="${this.onDismissClick_}">Dismiss</button>
+<button id="snooze" @click="${this.onSnoozeClick_}">Snooze</button>
+<button id="action" @click="${this.onActionClick_}">Action</button>
 `;
   // clang-format on
 }

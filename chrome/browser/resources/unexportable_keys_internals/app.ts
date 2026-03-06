@@ -106,7 +106,7 @@ export class UnexportableKeysInternalsAppElement extends CrLitElement {
     this.sortKeys_();
   }
 
-  protected onSortKeyDown_(e: KeyboardEvent) {
+  protected onSortKeydown_(e: KeyboardEvent) {
     if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       this.onSortClick_(e);

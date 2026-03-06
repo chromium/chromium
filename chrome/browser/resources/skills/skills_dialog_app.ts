@@ -450,7 +450,7 @@ export class SkillsDialogAppElement extends CrLitElement {
   }
 
   /** Deletes skill and closes the dialog. */
-  protected deleteSkill_() {
+  protected onDeleteSkillClick_() {
     SkillsDialogBrowserProxy.getInstance().handler.deleteSkill(this.skill_.id);
   }
 
