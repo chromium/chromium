@@ -1074,6 +1074,11 @@ class LocationBarMediator
         UrlBarData data = UrlBarData.forNonUrlText(mCurrentInput.getUserText());
         mUrlCoordinator.setUrlBarData(
                 data, UrlBar.ScrollType.NO_SCROLL, mCurrentInput.getSelection());
+
+        // Serve the cached suggestions while we wait for Profile.
+        if (mCurrentInput.isInCacheableContext() && mAutocompleteCoordinator != null) {
+            mAutocompleteCoordinator.serveCachedZeroSuggest(mCurrentInput);
+        }
     }
 
     /** Ends the current Omnibox input session. */
