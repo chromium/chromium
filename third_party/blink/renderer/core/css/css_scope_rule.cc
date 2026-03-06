@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/css/css_style_sheet.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
+#include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -113,8 +114,16 @@ void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
         child_rule->Clone(new_style_scope->RuleForNesting(),
                           /*mixin_parameter_bindings=*/nullptr));
   }
-  group_rule_ = MakeGarbageCollected<StyleRuleScope>(
+  StyleRuleScope* new_group_rule = MakeGarbageCollected<StyleRuleScope>(
       *new_style_scope, std::move(new_child_rules));
+
+  if (parentStyleSheet()) {
+    parentStyleSheet()->Contents()->ReplaceRuleIfExists(group_rule_,
+                                                        new_group_rule,
+                                                        /*position_hint=*/0);
+  }
+
+  Reattach(new_group_rule);
 }
 
 StyleRuleScope& CSSScopeRule::GetStyleRuleScope() {

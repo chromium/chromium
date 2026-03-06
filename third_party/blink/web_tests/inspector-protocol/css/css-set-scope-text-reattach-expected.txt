@@ -1,0 +1,12 @@
+Tests CSS.setScopeText with scope nested in a rule.
+
+Running test: testNestedEdit
+==== Style sheet text ====
+
+  .outer {
+    @scope (.b) {
+      .inner { color: red; }
+    }
+  }
+
+
