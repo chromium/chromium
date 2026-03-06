@@ -27,6 +27,7 @@
 #elif BUILDFLAG(IS_ANDROID)
 #include "components/segmentation_platform/embedder/home_modules/auxiliary_search_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
+#include "components/segmentation_platform/embedder/home_modules/history_sync_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/tab_group_promo.h"
@@ -471,10 +472,14 @@ TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardEnabled) {
 }
 
 // Tests that the Registry won't register the HistorySyncPromo card when it is
-// disabled because of user's interaction history.
+// disabled because of user's impression history.
 TEST_F(HomeModulesCardRegistryTest, TestHistorySyncPromoCardDisabled) {
-  profile_pref_service_.SetUserPref(kHistorySyncPromoImpressionCounterPref,
-                                    std::make_unique<base::Value>(11));
+  // Simulate showing the card across enough sessions to reach its max limit.
+  for (int i = 0; i < kSingleEphemeralCardMaxImpressions; ++i) {
+    auto card = std::make_unique<HistorySyncPromo>(&profile_pref_service_);
+    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
+  }
+
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 

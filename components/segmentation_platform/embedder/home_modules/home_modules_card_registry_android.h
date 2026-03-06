@@ -16,11 +16,9 @@ class PrefService;
 namespace segmentation_platform::home_modules {
 
 // Impression counters for Android cards.
-extern const char kHistorySyncPromoImpressionCounterPref[];
 extern const char kTipsNotificationsPromoImpressionCounterPref[];
 
 // Interaction flags for Android cards.
-extern const char kHistorySyncPromoInteractedPref[];
 extern const char kTipsNotificationsPromoInteractedPref[];
 
 // The Android-specific implementation of the HomeModulesCardRegistry.

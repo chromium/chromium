@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_HISTORY_SYNC_PROMO_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_EMBEDDER_HOME_MODULES_HISTORY_SYNC_PROMO_H_
 
-#include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/embedder/home_modules/card_selection_info.h"
+
+class PrefRegistrySimple;
+class PrefService;
 
 namespace segmentation_platform::home_modules {
 
@@ -20,16 +22,24 @@ class HistorySyncPromo : public CardSelectionInfo {
   explicit HistorySyncPromo(PrefService* profile_prefs);
   ~HistorySyncPromo() override = default;
 
-  static bool IsEnabled(int impression_count);
+  static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // CardSelectionInfo
+  static bool IsEnabled(PrefService* profile_prefs);
+
+  // `CardSelectionInfo` overrides.
   std::map<SignalKey, FeatureQuery> GetInputs() override;
-
   ShowResult ComputeCardResult(
       const CardSelectionSignals& signals) const override;
+  void OnShow(PrefService* profile_prefs, PrefService* local_state) override;
+  void OnInteract(PrefService* profile_prefs,
+                  PrefService* local_state) override;
 
  private:
   raw_ptr<PrefService> profile_prefs_;
+
+  // Tracks whether the card has already recorded an impression during this
+  // session so it doesn't overcount if displayed multiple times.
+  bool has_been_shown_this_session_ = false;
 };
 
 }  // namespace segmentation_platform::home_modules

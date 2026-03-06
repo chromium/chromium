@@ -19,7 +19,7 @@ class HistorySyncPromoTest : public testing::Test {
   ~HistorySyncPromoTest() override = default;
 
   void SetUp() override {
-    HomeModulesCardRegistry::RegisterProfilePrefs(pref_service_.registry());
+    HistorySyncPromo::RegisterProfilePrefs(pref_service_.registry());
   }
 
   void TestComputeCardResultImpl(bool historySyncPromoInteracted,
@@ -27,10 +27,12 @@ class HistorySyncPromoTest : public testing::Test {
                                  float isEligibleToHistoryOptIn,
                                  float educationalTipShownCount,
                                  EphemeralHomeModuleRank position) {
-    pref_service_.SetUserPref(
-        kHistorySyncPromoInteractedPref,
-        std::make_unique<base::Value>(historySyncPromoInteracted));
     auto card = std::make_unique<HistorySyncPromo>(&pref_service_);
+
+    if (historySyncPromoInteracted) {
+      card->OnInteract(&pref_service_, nullptr);
+    }
+
     AllCardSignals all_signals = CreateAllCardSignals(
         card.get(), {educationalTipShownCount, historySyncPromoShownCount,
                      isEligibleToHistoryOptIn});
@@ -83,7 +85,7 @@ TEST_F(HistorySyncPromoTest, HiddenWhenUserHasInteractedWithCard) {
 
 TEST_F(HistorySyncPromoTest, HiddenWhenUserHasReachedLimit) {
   TestComputeCardResultImpl(
-      /* historySyncPromoInteracted */ true,
+      /* historySyncPromoInteracted */ false,
       /* historySyncPromoShownCount */ 1,
       /* isEligibleToHistoryOptIn */ 1,
       /* educationalTipShownCount */ 0, EphemeralHomeModuleRank::kNotShown);
@@ -92,10 +94,30 @@ TEST_F(HistorySyncPromoTest, HiddenWhenUserHasReachedLimit) {
 TEST_F(HistorySyncPromoTest,
        HiddenForEducationalTipCardHasReachedSessionLimit) {
   TestComputeCardResultImpl(
-      /* historySyncPromoInteracted */ true,
-      /* historySyncPromoShownCount */ 1,
+      /* historySyncPromoInteracted */ false,
+      /* historySyncPromoShownCount */ 0,
       /* isEligibleToHistoryOptIn */ 1,
       /* educationalTipShownCount */ 1, EphemeralHomeModuleRank::kNotShown);
+}
+
+// Validates that `IsEnabled()` returns true when under the impression limit and
+// false otherwise.
+TEST_F(HistorySyncPromoTest, IsEnabledReturnsFalseWhenImpressionLimitReached) {
+  auto card = std::make_unique<HistorySyncPromo>(&pref_service_);
+
+  EXPECT_TRUE(HistorySyncPromo::IsEnabled(&pref_service_));
+
+  int max_impressions = kSingleEphemeralCardMaxImpressions;
+
+  // Recreate the card each iteration to simulate separate sessions.
+  for (int i = 0; i < max_impressions; ++i) {
+    auto session_card = std::make_unique<HistorySyncPromo>(&pref_service_);
+    EXPECT_TRUE(HistorySyncPromo::IsEnabled(&pref_service_));
+    session_card->OnShow(&pref_service_, nullptr);
+  }
+
+  // Once max impressions are hit, it should no longer be enabled.
+  EXPECT_FALSE(HistorySyncPromo::IsEnabled(&pref_service_));
 }
 
 }  // namespace segmentation_platform::home_modules

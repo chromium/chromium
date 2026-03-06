@@ -29,10 +29,6 @@
 
 namespace segmentation_platform::home_modules {
 
-const char kHistorySyncPromoImpressionCounterPref[] =
-    "ephemeral_pref_counter.history_sync_promo_counter";
-const char kHistorySyncPromoInteractedPref[] =
-    "ephemeral_pref_interacted.history_sync_promo_interacted";
 const char kTipsNotificationsPromoImpressionCounterPref[] =
     "ephemeral_pref_counter.tips_notifications_promo_counter";
 const char kTipsNotificationsPromoInteractedPref[] =
@@ -53,9 +49,7 @@ HomeModulesCardRegistryAndroid::HomeModulesCardRegistryAndroid(
         std::make_unique<DefaultBrowserPromo>(profile_prefs_));
   }
 
-  int history_sync_educational_promo_show_count =
-      profile_prefs_->GetInteger(kHistorySyncPromoImpressionCounterPref);
-  if (HistorySyncPromo::IsEnabled(history_sync_educational_promo_show_count)) {
+  if (HistorySyncPromo::IsEnabled(profile_prefs_)) {
     all_cards_by_priority_.push_back(
         std::make_unique<HistorySyncPromo>(profile_prefs_));
   }
@@ -101,8 +95,7 @@ void HomeModulesCardRegistryAndroid::RegisterProfilePrefs(
   TabGroupSyncPromo::RegisterProfilePrefs(registry);
   QuickDeletePromo::RegisterProfilePrefs(registry);
   AuxiliarySearchPromo::RegisterProfilePrefs(registry);
-  registry->RegisterIntegerPref(kHistorySyncPromoImpressionCounterPref, 0);
-  registry->RegisterBooleanPref(kHistorySyncPromoInteractedPref, false);
+  HistorySyncPromo::RegisterProfilePrefs(registry);
   registry->RegisterIntegerPref(kTipsNotificationsPromoImpressionCounterPref,
                                 0);
   registry->RegisterBooleanPref(kTipsNotificationsPromoInteractedPref, false);
@@ -124,12 +117,7 @@ void HomeModulesCardRegistryAndroid::NotifyCardShown(const char* card_name) {
     // Educational tip cards, except for the default browser promo card, will
     // send a notification when the card is shown once per session, rather than
     // every time it is displayed.
-    if (strcmp(card_name, kHistorySyncPromo) == 0) {
-      int freshness_impression_count =
-          profile_prefs_->GetInteger(kHistorySyncPromoImpressionCounterPref);
-      profile_prefs_->SetInteger(kHistorySyncPromoImpressionCounterPref,
-                                 freshness_impression_count + 1);
-    } else if (strcmp(card_name, kTipsNotificationsPromo) == 0) {
+    if (strcmp(card_name, kTipsNotificationsPromo) == 0) {
       int freshness_impression_count = profile_prefs_->GetInteger(
           kTipsNotificationsPromoImpressionCounterPref);
       profile_prefs_->SetInteger(kTipsNotificationsPromoImpressionCounterPref,
@@ -151,9 +139,7 @@ void HomeModulesCardRegistryAndroid::NotifyCardInteracted(
 
   // TODO(crbug.com/489042527): Remove the legacy if/else block below when
   // all cards have been migrated to the new `OnInteract()` lifecycle hook.
-  if (strcmp(card_name, kHistorySyncPromo) == 0) {
-    profile_prefs_->SetBoolean(kHistorySyncPromoInteractedPref, true);
-  } else if (strcmp(card_name, kTipsNotificationsPromo) == 0) {
+  if (strcmp(card_name, kTipsNotificationsPromo) == 0) {
     profile_prefs_->SetBoolean(kTipsNotificationsPromoInteractedPref, true);
   }
 }
