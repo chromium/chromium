@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/observer_list_types.h"
-#include "remoting/signaling/signaling_message.h"
+#include "remoting/signaling/jingle_data_structures.h"
 
 namespace remoting {
 
@@ -36,6 +36,8 @@ class SignalStrategy {
     PROTOCOL_ERROR,
   };
 
+  using Message = std::variant<JingleMessage, JingleMessageReply>;
+
   // Callback interface for signaling event. Event handlers are not allowed to
   // destroy SignalStrategy, but may add or remove other listeners.
   class Listener : public base::CheckedObserver {
@@ -48,9 +50,10 @@ class SignalStrategy {
 
     // Must return true if the message was handled, false otherwise. The signal
     // strategy must not be deleted from a handler of this message.
-    // TODO: joedow - Update this method to accept a JingleMessage.
     virtual bool OnSignalingMessage(const SignalingAddress& sender_address,
-                                    const SignalingMessage& message);
+                                    const JingleMessage& message);
+    virtual bool OnSignalingReply(const SignalingAddress& sender_address,
+                                  const JingleMessageReply& message);
   };
 
   SignalStrategy() = default;
@@ -85,7 +88,11 @@ class SignalStrategy {
   virtual void RemoveListener(Listener* listener) = 0;
 
   // Sends a message. Returns false if the message couldn't be sent.
-  virtual bool SendMessage(SignalingMessage&& message) = 0;
+  virtual bool SendMessage(JingleMessage&& message) = 0;
+
+  // Sends a reply to an incoming message. Returns false if the message couldn't
+  // be sent.
+  virtual bool SendReply(JingleMessageReply&& message) = 0;
 
   // Returns new ID that should be used for the next outgoing IQ request.
   virtual std::string GetNextId() = 0;
@@ -95,10 +102,11 @@ class SignalStrategy {
   // The default implementation always returns false.
   virtual bool IsSignInError() const;
 
-  // Generates a SignalingMessage from an XMPP stanza serialized to |xml|.
-  // Returns nullopt if |xml| does not contain an XMPP stanza.
+  // Generates a JingleMessage or JingleMessageReply from an XMPP stanza
+  // serialized to |xml|. Returns nullopt if |xml| does not contain an XMPP
+  // stanza.
   // TODO: joedow - Remove this function when XML conversions are not needed.
-  static std::optional<SignalingMessage> ParseStanzaXml(const std::string& xml);
+  static std::optional<Message> ParseStanzaXml(const std::string& xml);
 };
 
 }  // namespace remoting

@@ -36,7 +36,7 @@ std::unique_ptr<IqRequest> IqSender::SendIq(JingleMessage&& message,
   std::string id = message.message_id;
   std::string to = message.to.id();
 
-  if (!signal_strategy_->SendMessage(SignalingMessage(std::move(message)))) {
+  if (!signal_strategy_->SendMessage(std::move(message))) {
     return nullptr;
   }
 
@@ -63,18 +63,9 @@ void IqSender::RemoveRequest(IqRequest* request) {
 
 void IqSender::OnSignalingStateChanged(SignalStrategy::State state) {}
 
-bool IqSender::OnSignalingMessage(const SignalingAddress& sender_address,
-                                  const SignalingMessage& message) {
-  // Currently JingleMessageFromXml only returns JingleMessage for 'set' IQs.
-  // IQ results and errors are parsed into JingleMessageReply by the signal
-  // strategy and handled above. If this changes in the future, we might need
-  // to handle JingleMessage responses here.
-  const auto* jingle_reply = std::get_if<JingleMessageReply>(&message);
-  if (!jingle_reply) {
-    return false;
-  }
-
-  auto it = requests_.find(jingle_reply->message_id);
+bool IqSender::OnSignalingReply(const SignalingAddress& sender_address,
+                                const JingleMessageReply& message) {
+  auto it = requests_.find(message.message_id);
   if (it == requests_.end()) {
     return false;
   }
@@ -82,15 +73,15 @@ bool IqSender::OnSignalingMessage(const SignalingAddress& sender_address,
   IqRequest* request = it->second;
 
   if (NormalizeSignalingId(request->addressee_) !=
-      NormalizeSignalingId(jingle_reply->from.id())) {
+      NormalizeSignalingId(message.from.id())) {
     LOG(ERROR) << "Received IQ response from an invalid JID. Ignoring it."
-               << " Message received from: " << jingle_reply->from.id()
+               << " Message received from: " << message.from.id()
                << " Original JID: " << request->addressee_;
     return false;
   }
 
   requests_.erase(it);
-  request->OnResponse(*jingle_reply);
+  request->OnResponse(message);
 
   return true;
 }

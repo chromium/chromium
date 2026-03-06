@@ -76,32 +76,27 @@ void JingleSessionManager::OnSignalingStateChanged(
 
 bool JingleSessionManager::OnSignalingMessage(
     const SignalingAddress& sender_address,
-    const SignalingMessage& signaling_message) {
-  const auto* message = std::get_if<JingleMessage>(&signaling_message);
-  if (!message) {
-    return false;
-  }
-
-  // TODO: joedow - Use std::visit(absl::Overload(...), message->payload()) here
+    const JingleMessage& message) {
+  // TODO: joedow - Use std::visit(absl::Overload(...), message.payload()) here
   // once the JingleMessage payload is being populated for incoming messages.
-  if (message->action() == JingleMessage::ActionType::kSessionInitiate) {
+  if (message.action() == JingleMessage::ActionType::kSessionInitiate) {
     // Description must be present in session-initiate messages.
-    DCHECK(message->description.get());
+    DCHECK(message.description.get());
 
-    SendReply(*message);
+    SendReply(message);
 
     std::unique_ptr<Authenticator> authenticator =
         authenticator_factory_->CreateAuthenticator(
-            signal_strategy_->GetLocalAddress().id(), message->from.id());
+            signal_strategy_->GetLocalAddress().id(), message.from.id());
 
     JingleSession* session = new JingleSession(this);
-    session->InitializeIncomingConnection(*message, std::move(authenticator));
+    session->InitializeIncomingConnection(message, std::move(authenticator));
     sessions_[session->session_id_] = session;
 
     // Destroy the session if it was rejected due to incompatible protocol.
     if (session->state_ != Session::ACCEPTING) {
       delete session;
-      DCHECK(sessions_.find(message->sid) == sessions_.end());
+      DCHECK(sessions_.find(message.sid) == sessions_.end());
       return true;
     }
 
@@ -114,7 +109,7 @@ bool JingleSessionManager::OnSignalingMessage(
     }
 
     if (response == SessionManager::ACCEPT) {
-      session->AcceptIncomingConnection(*message);
+      session->AcceptIncomingConnection(message);
     } else {
       ErrorCode error;
       switch (response) {
@@ -132,20 +127,20 @@ bool JingleSessionManager::OnSignalingMessage(
 
       session->Close(error, rejection_reason, rejection_location);
       delete session;
-      DCHECK(sessions_.find(message->sid) == sessions_.end());
+      DCHECK(sessions_.find(message.sid) == sessions_.end());
     }
 
     return true;
   }
 
-  auto it = sessions_.find(message->sid);
+  auto it = sessions_.find(message.sid);
   if (it == sessions_.end()) {
-    SendReply(*message, JingleMessageReply::INVALID_SID);
+    SendReply(message, JingleMessageReply::INVALID_SID);
     return true;
   }
 
   it->second->OnIncomingMessage(
-      JingleMessage(*message),
+      JingleMessage(message),
       base::BindOnce(&JingleSessionManager::SendReply, base::Unretained(this)));
   return true;
 }
@@ -159,7 +154,7 @@ void JingleSessionManager::SendReply(
   }
   reply.message_id = original_message.message_id;
   reply.to = original_message.from;
-  signal_strategy_->SendMessage(SignalingMessage(std::move(reply)));
+  signal_strategy_->SendReply(std::move(reply));
 }
 
 void JingleSessionManager::SessionDestroyed(JingleSession* session) {

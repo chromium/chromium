@@ -68,7 +68,8 @@ class FtlSignalStrategy : public SignalStrategy {
   const SignalingAddress& GetLocalAddress() const override;
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
-  bool SendMessage(SignalingMessage&& message) override;
+  bool SendMessage(JingleMessage&& message) override;
+  bool SendReply(JingleMessageReply&& message) override;
 
   // Sends an FTL message. Returns false if the message couldn't be sent.
   virtual bool SendFtlMessage(const SignalingAddress& destination_address,

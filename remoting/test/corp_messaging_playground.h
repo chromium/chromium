@@ -16,7 +16,6 @@
 #include "remoting/base/internal_headers.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/signaling/signaling_address.h"
-#include "remoting/signaling/signaling_message.h"
 
 namespace base {
 class RunLoop;

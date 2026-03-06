@@ -89,7 +89,7 @@ void FakeSignalStrategy::SimulateTwoStageConnect() {
   simulate_two_stage_connect_ = true;
 }
 
-void FakeSignalStrategy::OnIncomingMessage(SignalingMessage message) {
+void FakeSignalStrategy::OnIncomingMessage(SignalStrategy::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!simulate_reorder_) {
@@ -146,26 +146,31 @@ void FakeSignalStrategy::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FakeSignalStrategy::SendMessage(SignalingMessage&& message) {
+bool FakeSignalStrategy::SendMessage(JingleMessage&& message) {
+  return Send(std::move(message));
+}
+
+bool FakeSignalStrategy::SendReply(JingleMessageReply&& message) {
+  return Send(std::move(message));
+}
+
+template <typename T>
+bool FakeSignalStrategy::Send(T&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
-    jingle_message->from = address_;
-  }
-
-  if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
-    jingle_reply->from = address_;
-  }
+  message.from = address_;
 
   if (peer_callback_.is_null()) {
     return false;
   }
 
+  SignalStrategy::Message message_variant(std::move(message));
+
   if (send_delay_.is_zero()) {
-    peer_callback_.Run(std::move(message));
+    peer_callback_.Run(std::move(message_variant));
   } else {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE, base::BindOnce(peer_callback_, std::move(message)),
+        FROM_HERE, base::BindOnce(peer_callback_, std::move(message_variant)),
         send_delay_);
   }
   return true;
@@ -184,16 +189,16 @@ bool FakeSignalStrategy::IsSignInError() const {
 void FakeSignalStrategy::DeliverMessageOnThread(
     scoped_refptr<base::SingleThreadTaskRunner> thread,
     base::WeakPtr<FakeSignalStrategy> target,
-    SignalingMessage message) {
+    SignalStrategy::Message message) {
   thread->PostTask(
       FROM_HERE, base::BindOnce(&FakeSignalStrategy::OnIncomingMessage, target,
                                 std::move(message)));
 }
 
-void FakeSignalStrategy::NotifyListeners(SignalingMessage message) {
+void FakeSignalStrategy::NotifyListeners(SignalStrategy::Message message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  SignalingMessage message_to_dispatch = std::move(message);
+  SignalStrategy::Message message_to_dispatch = std::move(message);
   SignalingAddress from;
   SignalingAddress to;
 
@@ -215,8 +220,15 @@ void FakeSignalStrategy::NotifyListeners(SignalingMessage message) {
   received_messages_.push_back(message_to_dispatch);
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalingMessage(from, message_to_dispatch)) {
-      break;
+    if (const auto* jm = std::get_if<JingleMessage>(&message_to_dispatch)) {
+      if (listener.OnSignalingMessage(from, *jm)) {
+        break;
+      }
+    } else {
+      if (listener.OnSignalingReply(
+              from, std::get<JingleMessageReply>(message_to_dispatch))) {
+        break;
+      }
     }
   }
 }

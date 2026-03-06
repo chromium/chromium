@@ -60,25 +60,13 @@ class IqSenderTest : public testing::Test {
     message.message_id = kStanzaId;
     message.SetPayload(SessionTerminate());
 
-    auto to = message.to;
-    auto sid = message.sid;
-    auto message_id = message.message_id;
-    auto action = message.action();
-
     EXPECT_CALL(signal_strategy_, SendMessage(_))
-        .WillOnce([&](SignalingMessage&& message_arg) {
-          auto* sent_jingle_message = std::get_if<JingleMessage>(&message_arg);
-          EXPECT_TRUE(sent_jingle_message);
-          if (!sent_jingle_message) {
-            return false;
-          }
-
-          EXPECT_EQ(sent_jingle_message->to, to);
-          EXPECT_EQ(sent_jingle_message->sid, sid);
-          EXPECT_EQ(sent_jingle_message->message_id, message_id);
-          EXPECT_EQ(sent_jingle_message->action(), action);
-          EXPECT_TRUE(
-              std::get_if<SessionTerminate>(&sent_jingle_message->payload()));
+        .WillOnce([&](JingleMessage&& message_arg) {
+          EXPECT_EQ(message_arg.to, message.to);
+          EXPECT_EQ(message_arg.sid, message.sid);
+          EXPECT_EQ(message_arg.message_id, message.message_id);
+          EXPECT_EQ(message_arg.action(), message.action());
+          EXPECT_TRUE(std::get_if<SessionTerminate>(&message_arg.payload()));
           return true;
         });
     request_ = sender_->SendIq(std::move(message), callback_.Get());
@@ -91,8 +79,7 @@ class IqSenderTest : public testing::Test {
     reply.message_id = kStanzaId;
     reply.from = SignalingAddress(from);
 
-    bool result = sender_->OnSignalingMessage(SignalingAddress(from),
-                                              SignalingMessage(reply));
+    bool result = sender_->OnSignalingReply(SignalingAddress(from), reply);
 
     if (reply_out) {
       *reply_out = std::move(reply);

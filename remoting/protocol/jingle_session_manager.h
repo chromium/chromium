@@ -60,7 +60,7 @@ class JingleSessionManager : public SessionManager,
   // SignalStrategy::Listener interface.
   void OnSignalingStateChanged(SignalStrategy::State state) override;
   bool OnSignalingMessage(const SignalingAddress& sender_address,
-                          const SignalingMessage& message) override;
+                          const JingleMessage& message) override;
 
   typedef std::map<std::string, raw_ptr<JingleSession, CtnExperimental>>
       SessionsMap;

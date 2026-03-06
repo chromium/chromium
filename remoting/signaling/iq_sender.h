@@ -50,8 +50,8 @@ class IqSender : public SignalStrategy::Listener {
 
   // SignalStrategy::Listener implementation.
   void OnSignalingStateChanged(SignalStrategy::State state) override;
-  bool OnSignalingMessage(const SignalingAddress& sender_address,
-                          const SignalingMessage& message) override;
+  bool OnSignalingReply(const SignalingAddress& sender_address,
+                        const JingleMessageReply& message) override;
 
  private:
   typedef std::map<std::string, raw_ptr<IqRequest, CtnExperimental>>

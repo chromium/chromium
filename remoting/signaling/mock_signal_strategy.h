@@ -28,7 +28,8 @@ class MockSignalStrategy : public SignalStrategy {
   MOCK_METHOD1(AddListener, void(Listener* listener));
   MOCK_METHOD1(RemoveListener, void(Listener* listener));
   MOCK_METHOD0(GetNextId, std::string());
-  MOCK_METHOD1(SendMessage, bool(SignalingMessage&& message));
+  MOCK_METHOD1(SendMessage, bool(JingleMessage&& message));
+  MOCK_METHOD1(SendReply, bool(JingleMessageReply&& message));
 
   const SignalingAddress& GetLocalAddress() const override;
 
@@ -48,7 +49,8 @@ class MockFtlSignalStrategy : public FtlSignalStrategy {
   MOCK_METHOD1(AddListener, void(Listener* listener));
   MOCK_METHOD1(RemoveListener, void(Listener* listener));
   MOCK_METHOD0(GetNextId, std::string());
-  MOCK_METHOD1(SendMessage, bool(SignalingMessage&& message));
+  MOCK_METHOD1(SendMessage, bool(JingleMessage&& message));
+  MOCK_METHOD1(SendReply, bool(JingleMessageReply&& message));
   MOCK_METHOD2(SendFtlMessage,
                bool(const SignalingAddress& destination_address,
                     ftl::ChromotingMessage&& message));

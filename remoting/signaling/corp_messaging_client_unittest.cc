@@ -21,8 +21,8 @@
 #include "remoting/base/protobuf_http_test_responder.h"
 #include "remoting/proto/messaging_service.h"
 #include "remoting/signaling/corp_message_channel_strategy.h"
+#include "remoting/signaling/jingle_data_structures.h"
 #include "remoting/signaling/signaling_address.h"
-#include "remoting/signaling/signaling_message.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

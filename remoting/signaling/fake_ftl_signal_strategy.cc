@@ -53,7 +53,16 @@ void FakeFtlSignalStrategy::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool FakeFtlSignalStrategy::SendMessage(SignalingMessage&& message) {
+bool FakeFtlSignalStrategy::SendMessage(JingleMessage&& message) {
+  return Send(std::move(message));
+}
+
+bool FakeFtlSignalStrategy::SendReply(JingleMessageReply&& message) {
+  return Send(std::move(message));
+}
+
+template <typename T>
+bool FakeFtlSignalStrategy::Send(T&& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return true;
 }

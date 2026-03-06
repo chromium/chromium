@@ -113,13 +113,15 @@ class CorpSignalStrategyTest : public testing::Test,
     // By default, messages will be collected in received_messages_.
     ON_CALL(*this, OnSignalingMessage(_, _))
         .WillByDefault([&](const SignalingAddress& sender_address,
-                           const SignalingMessage& message) {
-          if (const auto* jingle_message =
-                  std::get_if<JingleMessage>(&message)) {
-            received_messages_.push_back(JingleMessageToXml(*jingle_message));
-            return true;
-          }
-          return false;
+                           const JingleMessage& jingle_message) {
+          received_messages_.push_back(JingleMessageToXml(jingle_message));
+          return true;
+        });
+    ON_CALL(*this, OnSignalingReply(_, _))
+        .WillByDefault([&](const SignalingAddress& sender_address,
+                           const JingleMessageReply& jingle_reply) {
+          received_messages_.push_back(JingleMessageReplyToXml(jingle_reply));
+          return true;
         });
   }
 
@@ -132,7 +134,12 @@ class CorpSignalStrategyTest : public testing::Test,
  protected:
   MOCK_METHOD(bool,
               OnSignalingMessage,
-              (const SignalingAddress&, const SignalingMessage&),
+              (const SignalingAddress&, const JingleMessage&),
+              (override));
+
+  MOCK_METHOD(bool,
+              OnSignalingReply,
+              (const SignalingAddress&, const JingleMessageReply&),
               (override));
 
   base::test::TaskEnvironment task_environment_;
@@ -269,7 +276,7 @@ TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_Success) {
         std::move(on_done).Run(HttpStatus::OK());
       });
 
-  signal_strategy_->SendMessage(SignalingMessage(std::move(jingle_message)));
+  signal_strategy_->SendMessage(std::move(jingle_message));
 }
 
 TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_NotConnected) {
@@ -280,8 +287,7 @@ TEST_F(CorpSignalStrategyTest, SendMessage_XmlElement_NotConnected) {
   std::string error;
   ASSERT_TRUE(JingleMessageFromXml(stanza.get(), &jingle_message, &error));
 
-  ASSERT_FALSE(signal_strategy_->SendMessage(
-      SignalingMessage(std::move(jingle_message))));
+  ASSERT_FALSE(signal_strategy_->SendMessage(std::move(jingle_message)));
 }
 
 TEST_F(CorpSignalStrategyTest, ReceiveStanza_Success) {

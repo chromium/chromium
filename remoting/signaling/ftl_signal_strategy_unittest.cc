@@ -236,19 +236,15 @@ class FtlSignalStrategyTest : public testing::Test,
     // By default, messages will be collected in received_messages_.
     ON_CALL(*this, OnSignalingMessage(_, _))
         .WillByDefault([&](const SignalingAddress& sender_address,
-                           const SignalingMessage& message) {
-          if (const auto* jingle_message =
-                  std::get_if<JingleMessage>(&message)) {
-            received_messages_.push_back(JingleMessageToXml(*jingle_message));
-            return true;
-          }
-          if (const auto* jingle_reply =
-                  std::get_if<JingleMessageReply>(&message)) {
-            received_messages_.push_back(
-                JingleMessageReplyToXml(*jingle_reply));
-            return true;
-          }
-          return false;
+                           const JingleMessage& jingle_message) {
+          received_messages_.push_back(JingleMessageToXml(jingle_message));
+          return true;
+        });
+    ON_CALL(*this, OnSignalingReply(_, _))
+        .WillByDefault([&](const SignalingAddress& sender_address,
+                           const JingleMessageReply& jingle_reply) {
+          received_messages_.push_back(JingleMessageReplyToXml(jingle_reply));
+          return true;
         });
   }
 
@@ -278,7 +274,12 @@ class FtlSignalStrategyTest : public testing::Test,
 
   MOCK_METHOD(bool,
               OnSignalingMessage,
-              (const SignalingAddress&, const SignalingMessage&),
+              (const SignalingAddress&, const JingleMessage&),
+              (override));
+
+  MOCK_METHOD(bool,
+              OnSignalingReply,
+              (const SignalingAddress&, const JingleMessageReply&),
               (override));
 
   MOCK_METHOD(bool,
@@ -439,7 +440,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_Success) {
                     FtlMessagingClient::DoneCallback on_done) {
         std::move(on_done).Run(HttpStatus::OK());
       });
-  signal_strategy_->SendMessage(SignalingMessage{std::move(jingle_message)});
+  signal_strategy_->SendMessage(std::move(jingle_message));
 }
 
 TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
@@ -464,7 +465,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_AuthError) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAUTHENTICATED, "unauthenticated"));
       });
-  signal_strategy_->SendMessage(SignalingMessage{std::move(jingle_message)});
+  signal_strategy_->SendMessage(std::move(jingle_message));
 
   ASSERT_EQ(3u, state_history_.size());
   ASSERT_EQ(SignalStrategy::State::CONNECTING, state_history_[0]);
@@ -497,7 +498,7 @@ TEST_F(FtlSignalStrategyTest, SendMessage_XmlElement_NetworkError) {
         std::move(on_done).Run(
             HttpStatus(HttpStatus::Code::UNAVAILABLE, "unavailable"));
       });
-  signal_strategy_->SendMessage(SignalingMessage{std::move(jingle_message)});
+  signal_strategy_->SendMessage(std::move(jingle_message));
 
   ASSERT_EQ(1u, received_messages_.size());
   auto& error_message = received_messages_[0];
@@ -544,20 +545,15 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessage_DelieverMessageAndDropStanza) {
 
   EXPECT_CALL(*this, OnSignalingMessage(_, _))
       .WillOnce([&](const SignalingAddress& sender_address,
-                    const SignalingMessage& received_message) {
+                    const JingleMessage& received_message) {
         SignalingAddress expected_address =
             SignalingAddress::CreateFtlSignalingAddress(
                 kFakeRemoteUsername, kFakeRemoteRegistrationId);
         EXPECT_EQ(expected_address.id(), sender_address.id());
 
-        const auto* jingle_message =
-            std::get_if<JingleMessage>(&received_message);
-        EXPECT_TRUE(jingle_message);
-        if (jingle_message) {
-          auto xml = JingleMessageToXml(*jingle_message);
-          EXPECT_EQ(std::string(kFakeLocalFtlId), xml->Attr(kQNameTo));
-          EXPECT_EQ(std::string(kFakeRemoteFtlId), xml->Attr(kQNameFrom));
-        }
+        auto xml = JingleMessageToXml(received_message);
+        EXPECT_EQ(std::string(kFakeLocalFtlId), xml->Attr(kQNameTo));
+        EXPECT_EQ(std::string(kFakeRemoteFtlId), xml->Attr(kQNameFrom));
         return true;
       });
 

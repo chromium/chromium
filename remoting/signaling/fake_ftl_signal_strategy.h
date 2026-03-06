@@ -31,7 +31,8 @@ class FakeFtlSignalStrategy : public FtlSignalStrategy {
   const SignalingAddress& GetLocalAddress() const override;
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
-  bool SendMessage(SignalingMessage&& message) override;
+  bool SendMessage(JingleMessage&& message) override;
+  bool SendReply(JingleMessageReply&& message) override;
   std::string GetNextId() override;
   bool IsSignInError() const override;
 
@@ -42,6 +43,9 @@ class FakeFtlSignalStrategy : public FtlSignalStrategy {
   void RemoveFtlListener(FtlListener* listener) override;
 
  private:
+  template <typename T>
+  bool Send(T&& message);
+
   void SetState(State state);
 
   Error error_ = OK;

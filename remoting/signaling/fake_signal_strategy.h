@@ -22,7 +22,8 @@ namespace remoting {
 
 class FakeSignalStrategy : public SignalStrategy {
  public:
-  using PeerCallback = base::RepeatingCallback<void(SignalingMessage message)>;
+  using PeerCallback =
+      base::RepeatingCallback<void(SignalStrategy::Message message)>;
 
   // Calls ConnectTo() to connect |peer1| and |peer2|. Both |peer1| and |peer2|
   // must belong to the current thread.
@@ -35,7 +36,7 @@ class FakeSignalStrategy : public SignalStrategy {
 
   ~FakeSignalStrategy() override;
 
-  const std::vector<SignalingMessage>& received_messages() {
+  const std::vector<SignalStrategy::Message>& received_messages() {
     return received_messages_;
   }
 
@@ -62,7 +63,7 @@ class FakeSignalStrategy : public SignalStrategy {
   void SimulateTwoStageConnect();
 
   // Called by the |peer_|.
-  void OnIncomingMessage(SignalingMessage message);
+  void OnIncomingMessage(SignalStrategy::Message message);
 
   void ProceedConnect();
 
@@ -74,17 +75,20 @@ class FakeSignalStrategy : public SignalStrategy {
   const SignalingAddress& GetLocalAddress() const override;
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
-  bool SendMessage(SignalingMessage&& message) override;
+  bool SendMessage(JingleMessage&& message) override;
+  bool SendReply(JingleMessageReply&& message) override;
   std::string GetNextId() override;
   bool IsSignInError() const override;
 
  private:
+  template <typename T>
+  bool Send(T&& message);
   static void DeliverMessageOnThread(
       scoped_refptr<base::SingleThreadTaskRunner> thread,
       base::WeakPtr<FakeSignalStrategy> target,
-      SignalingMessage message);
+      SignalStrategy::Message message);
 
-  void NotifyListeners(SignalingMessage message);
+  void NotifyListeners(SignalStrategy::Message message);
 
   scoped_refptr<base::SingleThreadTaskRunner> main_thread_{
       base::SingleThreadTaskRunner::GetCurrentDefault()};
@@ -103,10 +107,10 @@ class FakeSignalStrategy : public SignalStrategy {
 
   bool simulate_reorder_ = false;
   bool simulate_two_stage_connect_ = false;
-  std::optional<SignalingMessage> pending_message_;
+  std::optional<SignalStrategy::Message> pending_message_;
 
   // All received messages, includes those still in |pending_messages_|.
-  std::vector<SignalingMessage> received_messages_;
+  std::vector<SignalStrategy::Message> received_messages_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

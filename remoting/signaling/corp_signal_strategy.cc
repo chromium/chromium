@@ -48,11 +48,14 @@ class CorpSignalStrategy::Core {
   const SignalingAddress& GetLocalAddress() const;
   void AddListener(Listener* listener);
   void RemoveListener(Listener* listener);
-  bool SendMessage(SignalingMessage&& message);
+  bool SendMessage(JingleMessage&& message);
+  bool SendReply(JingleMessageReply&& message);
   std::string GetNextId();
   bool IsSignInError() const;
 
  private:
+  template <typename T>
+  bool Send(T&& message, const char* message_type);
   void OnIncomingMessage(const SignalingAddress& sender_address,
                          const internal::PeerMessageStruct& message);
   void OnChannelReady();
@@ -149,11 +152,20 @@ void CorpSignalStrategy::Core::RemoveListener(Listener* listener) {
   listeners_.RemoveObserver(listener);
 }
 
-bool CorpSignalStrategy::Core::SendMessage(SignalingMessage&& message) {
+bool CorpSignalStrategy::Core::SendMessage(JingleMessage&& message) {
+  return Send(std::move(message), "message");
+}
+
+bool CorpSignalStrategy::Core::SendReply(JingleMessageReply&& message) {
+  return Send(std::move(message), "reply");
+}
+
+template <typename T>
+bool CorpSignalStrategy::Core::Send(T&& message, const char* message_type) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (GetState() != CONNECTED) {
-    LOG(WARNING) << "Dropping message because not connected.";
+    LOG(WARNING) << "Dropping " << message_type << " because not connected.";
     return false;
   }
 
@@ -162,22 +174,18 @@ bool CorpSignalStrategy::Core::SendMessage(SignalingMessage&& message) {
     return false;
   }
 
-  auto on_done = base::BindOnce([](const HttpStatus& status) {
-    if (!status.ok()) {
-      LOG(WARNING) << "Failed to send message. Status: "
-                   << static_cast<int>(status.error_code())
-                   << ", message: " << status.error_message();
-    }
-  });
+  auto on_done = base::BindOnce(
+      [](const char* type, const HttpStatus& status) {
+        if (!status.ok()) {
+          LOG(WARNING) << "Failed to send " << type
+                       << ". Status: " << static_cast<int>(status.error_code())
+                       << ", message: " << status.error_message();
+        }
+      },
+      message_type);
 
   internal::IqStanzaStruct iq_stanza;
-  if (auto* jingle_message = std::get_if<JingleMessage>(&message)) {
-    iq_stanza.xml = jingle_message->ToSerializedXml();
-  } else if (auto* jingle_reply = std::get_if<JingleMessageReply>(&message)) {
-    iq_stanza.xml = jingle_reply->ToSerializedXml();
-  } else {
-    NOTREACHED() << "Unsupported message type.";
-  }
+  iq_stanza.xml = message.ToSerializedXml();
 
   internal::PeerMessageStruct peer_message;
   peer_message.payload = std::move(iq_stanza);
@@ -230,8 +238,15 @@ void CorpSignalStrategy::Core::OnIncomingMessage(
   }
 
   for (auto& listener : listeners_) {
-    if (listener.OnSignalingMessage(sender_address, *parsed_message)) {
-      return;
+    if (const auto* jm = std::get_if<JingleMessage>(&*parsed_message)) {
+      if (listener.OnSignalingMessage(sender_address, *jm)) {
+        return;
+      }
+    } else {
+      if (listener.OnSignalingReply(
+              sender_address, std::get<JingleMessageReply>(*parsed_message))) {
+        return;
+      }
     }
   }
 }
@@ -326,8 +341,12 @@ void CorpSignalStrategy::RemoveListener(Listener* listener) {
   core_->RemoveListener(listener);
 }
 
-bool CorpSignalStrategy::SendMessage(SignalingMessage&& message) {
+bool CorpSignalStrategy::SendMessage(JingleMessage&& message) {
   return core_->SendMessage(std::move(message));
+}
+
+bool CorpSignalStrategy::SendReply(JingleMessageReply&& message) {
+  return core_->SendReply(std::move(message));
 }
 
 std::string CorpSignalStrategy::GetNextId() {
