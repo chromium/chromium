@@ -5439,11 +5439,19 @@
       status: "test",
     },
     {
+      name: "SvgLengthListClearOnParsingFailure",
+      status: "stable",
+    },
+    {
       name: "SvgLengthResolveUnparsedValue",
       status: "stable",
     },
     {
       name: "SvgNonScalingStrokePrecisionFix",
+      status: "stable",
+    },
+    {
+      name: "SvgNumberListClearOnParsingFailure",
       status: "stable",
     },
     {
