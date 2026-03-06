@@ -92,6 +92,7 @@ suite('AppTest', function() {
       // Use setup instead of suiteSetup to ensure a clean state for each test.
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
       loadTimeData.overrideValues({
+        omniboxAimPopupEnabled: true,
         searchboxLayoutMode: 'TallTopContext',
       });
 
@@ -212,6 +213,9 @@ suite('AppTest', function() {
     setup(async () => {
       // Use setup instead of suiteSetup to ensure a clean state for each test.
       document.body.innerHTML = window.trustedTypes!.emptyHTML;
+      loadTimeData.overrideValues({
+        omniboxAimPopupEnabled: true,
+      });
       localApp = document.createElement('omnibox-popup-app');
       document.body.appendChild(localApp);
 

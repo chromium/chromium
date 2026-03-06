@@ -78,6 +78,8 @@ OmniboxPopupUI::OmniboxPopupUI(content::WebUI* web_ui)
                                          /*enable_lens_search=*/false);
 
   source->AddBoolean("isTopChromeSearchbox", true);
+  source->AddBoolean("omniboxAimPopupEnabled",
+                     omnibox::IsAimPopupFeatureEnabled());
   source->AddBoolean(
       "omniboxPopupDebugEnabled",
       base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopupDebug));
