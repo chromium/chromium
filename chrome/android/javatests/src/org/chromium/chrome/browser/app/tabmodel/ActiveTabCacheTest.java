@@ -25,6 +25,7 @@ import org.chromium.base.Holder;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.crypto.CipherFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
@@ -157,6 +158,10 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
+    @DisabledTest(
+            message =
+                    "Test consistently fails on CI; to be fixed as part of"
+                            + " http://crbug.com/485907357")
     public void testSaveIncognito_NullCipherFactory_ThrowsException() {
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
@@ -176,6 +181,10 @@ public class ActiveTabCacheTest {
 
     @Test
     @MediumTest
+    @DisabledTest(
+            message =
+                    "Test consistently fails on CI; to be fixed as part of"
+                            + " http://crbug.com/485907357")
     public void testRestoreIncognito_NullCipherFactory_ThrowsException() {
         WebPageStation page = mActivityTestRule.startOnIncognitoBlankPage();
         Tab tab = page.getTab();
