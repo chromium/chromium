@@ -122,6 +122,8 @@ public class SelectLanguageFragment extends Fragment
     private final SettableMonotonicObservableSupplier<String> mPageTitle =
             ObservableSuppliers.createMonotonic();
 
+    private @Nullable OnBackPressedCallback mBackPressCallback;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -231,23 +233,26 @@ public class SelectLanguageFragment extends Fragment
                     }
                 });
 
-        var callback =
+        mBackPressCallback =
                 new OnBackPressedCallback(true) {
                     @Override
                     public void handleOnBackPressed() {
                         if (!assumeNonNull(mSearchView).isIconified()) {
                             KeyboardUtils.hideAndroidSoftKeyboard(mSearchView);
+                            mSearchView.clearFocus();
                         } else {
                             // If search is already closed, disable this callback and
                             // let the Activity handle the back press (e.g., exit the fragment).
                             setEnabled(false);
                             requireActivity().onBackPressed();
                         }
+                        assumeNonNull(mBackPressCallback).remove();
+                        mBackPressCallback = null;
                     }
                 };
         requireActivity()
                 .getOnBackPressedDispatcher()
-                .addCallback(getViewLifecycleOwner(), callback);
+                .addCallback(getViewLifecycleOwner(), mBackPressCallback);
     }
 
     @Override
@@ -259,6 +264,7 @@ public class SelectLanguageFragment extends Fragment
     public void onDestroy() {
         super.onDestroy();
         if (mSearchViewObserver != null) mSearchViewObserver.onUpdated(false);
+        if (mBackPressCallback != null) mBackPressCallback.remove();
     }
 
     @Override
