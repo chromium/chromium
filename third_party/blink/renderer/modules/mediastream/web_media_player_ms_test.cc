@@ -545,6 +545,7 @@ class WebMediaPlayerMSTest
     submitter_ptr_ = submitter_.get();
   }
   ~WebMediaPlayerMSTest() override {
+    player_->Shutdown();
     player_.reset();
     base::RunLoop().RunUntilIdle();
   }
@@ -698,6 +699,7 @@ class WebMediaPlayerMSTest
 
 void WebMediaPlayerMSTest::InitializeWebMediaPlayerMS() {
   enable_surface_layer_for_video_ = testing::get<0>(GetParam());
+  CHECK(!player_);
   player_ = std::make_unique<WebMediaPlayerMS>(
       nullptr, this, &delegate_, std::make_unique<media::NullMediaLog>(),
       scheduler::GetSingleThreadTaskRunnerForTesting(),

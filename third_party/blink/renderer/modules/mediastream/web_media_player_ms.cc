@@ -12,7 +12,6 @@
 #include <string>
 #include <utility>
 
-#include "base/debug/alias.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
@@ -64,19 +63,6 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier_media.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-
-// Put this macro in a scope to prevent `client_` from being GC'd.
-// This is important for any method that might be called from anywhere
-// where GC of the element is not prevented.  GC is prevented if the
-// call into `this` came from the element itself (directly or indirectly,
-// as long as the element's `this` is on the stack), or HasPendingActivation()
-// returns true.  In other cases, especially callbacks from the "outside
-// world", one should PREVENT_CLIENT_GC to keep the element from being
-// garbage collected.  Failure to do this can cause `this` to be destroyed
-// when the player is finalized.
-#define PREVENT_CLIENT_GC      \
-  auto client_copy_ = client_; \
-  base::debug::Alias(&client_copy_)
 
 namespace blink {
 
@@ -410,6 +396,12 @@ WebMediaPlayerMS::WebMediaPlayerMS(
 
 WebMediaPlayerMS::~WebMediaPlayerMS() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Ensure Shutdown() has been called.
+  CHECK(!client_);
+}
+
+void WebMediaPlayerMS::Shutdown() {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   SendLogMessage(
       String::Format("%s() [delegate_id=%d]", __func__, delegate_id_));
 
@@ -458,11 +450,14 @@ WebMediaPlayerMS::~WebMediaPlayerMS() {
 
   delegate_->PlayerGone(delegate_id_);
   delegate_->RemoveObserver(delegate_id_);
+  delegate_ = nullptr;
+  client_ = nullptr;
+  gpu_factories_ = nullptr;
+  weak_factory_.InvalidateWeakPtrsAndDoom();
 }
 
 void WebMediaPlayerMS::OnAudioRenderErrorCallback() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  PREVENT_CLIENT_GC;
 
   if (watch_time_reporter_)
     watch_time_reporter_->OnError(media::AUDIO_RENDERER_ERROR);
@@ -1322,7 +1317,6 @@ void WebMediaPlayerMS::OnFirstFrameReceived(
     bool is_opaque) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  PREVENT_CLIENT_GC;
 
   has_first_frame_ = true;
   OnTransformChanged(video_transform);
@@ -1341,7 +1335,6 @@ void WebMediaPlayerMS::OnFirstFrameReceived(
 void WebMediaPlayerMS::OnOpacityChanged(bool is_opaque) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  PREVENT_CLIENT_GC;
 
   opaque_ = is_opaque;
   if (!bridge_) {
@@ -1358,7 +1351,6 @@ void WebMediaPlayerMS::OnTransformChanged(
     media::VideoTransformation video_transform) {
   DVLOG(1) << __func__;
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  PREVENT_CLIENT_GC;
 
   if (!bridge_) {
     // Keep the old |video_layer_| alive until SetCcLayer() is called with a new

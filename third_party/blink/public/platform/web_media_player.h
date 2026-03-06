@@ -188,6 +188,11 @@ class WebMediaPlayer {
 
   virtual ~WebMediaPlayer() = default;
 
+  // Called just before the WebMediaPlayer is posted for destruction such that
+  // the WebMediaPlayer can clear any references to WebMediaPlayerClient and
+  // perform any other necessary cleanup.
+  virtual void Shutdown() = 0;
+
   virtual LoadTiming Load(LoadType,
                           const WebMediaPlayerSource&,
                           CorsMode,

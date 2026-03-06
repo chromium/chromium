@@ -50,6 +50,7 @@ class MockWebMediaPlayer : public WebMediaPlayer {
                   bool is_cache_disabled) override {
     return LoadTiming::kImmediate;
   }
+  void Shutdown() override {}
   void Play() override {}
   void Pause(PauseReason pause_reason) override {}
   void Seek(double seconds) override {}
