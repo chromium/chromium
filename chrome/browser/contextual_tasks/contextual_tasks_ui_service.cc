@@ -103,6 +103,8 @@ constexpr net::BackoffEntry::Policy
 constexpr char kAiPageHost[] = "https://google.com";
 constexpr char kTaskQueryParam[] = "task";
 constexpr char kAimUrlQueryParam[] = "aim_url";
+constexpr char kDebugParam[] = "deb";
+constexpr char kDebugNoCobrowseValue[] = "nocobrowse1";
 
 // Parameters that the search results page must contain at least one of to be
 // considered a valid search results page.
@@ -683,7 +685,9 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // If the target URL is a contextual tasks "display URL", then replace it with
   // the proper AIM URL.
+  bool original_url_is_virtual = false;
   if (IsContextualTasksDisplayUrl(url_params.url)) {
+    original_url_is_virtual = true;
     const GURL aim_url =
         GetUrlForAim(TemplateURLServiceFactory::GetForProfile(profile_.get()),
                      omnibox::UNKNOWN_AIM_ENTRY_POINT, base::Time::Now(), u"",
@@ -703,6 +707,31 @@ bool ContextualTasksUiService::HandleNavigationImpl(
   }
 
   bool is_nav_to_ai = IsAiUrl(url_params.url);
+
+  // The "deb" param is a debugging tool that allows a client to specify whether
+  // the browser intercepts an AI navigation, optionally allowing it to be shown
+  // in a top-level tab. In this case, if "nocobrowse1" is the value of this
+  // param and if set on a "virtual" URL, will cause a new navigation to the AI
+  // URL. If specified on a non-virtual AI URL, the navigation is simply allowed
+  // to proceed.
+  std::string debug_param_value;
+  if (is_nav_to_ai &&
+      net::GetValueForKeyInQuery(url_params.url, kDebugParam,
+                                 &debug_param_value) &&
+      debug_param_value.contains(kDebugNoCobrowseValue)) {
+    if (original_url_is_virtual) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&ContextualTasksUiService::LoadUrlInWebContents,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         net::AppendQueryParameter(url_params.url, kDebugParam,
+                                                   kDebugNoCobrowseValue),
+                         source_contents));
+      return true;
+    } else {
+      return false;
+    }
+  }
 
   // If the user is not signed in to Chrome, do not intercept.
   if (!IsSignedInToBrowserWithValidCredentials()) {
@@ -825,6 +854,14 @@ bool ContextualTasksUiService::HandleNavigationImpl(
 
   // Allow anything else.
   return false;
+}
+
+void ContextualTasksUiService::LoadUrlInWebContents(
+    const GURL& url,
+    content::WebContents* web_contents) {
+  content::NavigationController::LoadURLParams params(url);
+  params.transition_type = ::ui::PAGE_TRANSITION_AUTO_TOPLEVEL;
+  web_contents->GetController().LoadURLWithParams(params);
 }
 
 bool ContextualTasksUiService::IsUrlForPrimaryAccount(const GURL& url) {
