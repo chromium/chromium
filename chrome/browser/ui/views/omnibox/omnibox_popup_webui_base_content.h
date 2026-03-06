@@ -76,8 +76,8 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
 
-  // Notifies the page the widget was hidden.
-  virtual void OnPopupHidden();
+  // Notifies the page the widget was hidden and performs cleanup.
+  virtual void Clear() = 0;
 
   // Returns the WebContents from within the wrapper. Don't use
   // GetWebContents() since that may be nullptr if the popup isn't visible.
@@ -101,6 +101,9 @@ class OmniboxPopupWebUIBaseContent : public views::WebView,
   LocationBarView* location_bar_view() { return location_bar_view_.get(); }
 
   bool top_rounded_corners() const { return top_rounded_corners_; }
+
+  // Detaches the WebContents and cleans up.
+  void Detach();
 
  private:
   // Loads the WebUI content using the cached `content_url`. Creates a new

@@ -64,8 +64,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.callbackRouter_.onPopupShown.addListener(
           this.onPopupShown_.bind(this)),
       this.callbackRouter_.addContext.addListener(this.addContext_.bind(this)),
-      this.callbackRouter_.onPopupHidden.addListener(
-          this.onPopupHidden_.bind(this)),
+      this.callbackRouter_.clearPopup.addListener(this.clearPopup_.bind(this)),
       this.callbackRouter_.setPreserveContextOnClose.addListener(
           this.setPreserveContextOnClose_.bind(this)),
     ];
@@ -133,7 +132,7 @@ export class OmniboxAimAppElement extends CrLitElement {
     this.$.composebox.focusInput();
   }
 
-  private onPopupHidden_(): Promise<{input: string}> {
+  private async clearPopup_(): Promise<{input: string}> {
     const input = this.$.composebox.getInputText();
     if (!this.preserveContextOnClose_) {
       this.$.composebox.clearAllInputs(
@@ -143,6 +142,7 @@ export class OmniboxAimAppElement extends CrLitElement {
       this.$.composebox.resetModes();
       this.$.composebox.resetToolsAndModels();
     }
+    await this.updateComplete;
     // Transfer input text to the location bar.
     return Promise.resolve({input});
   }

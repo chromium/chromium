@@ -49,15 +49,16 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   void NavigateCurrentTab(const GURL& url) override;
   void ShowContextMenu(const gfx::Point& point) override;
 
-  // Forwards an `OnWidgetShown()` call to the page.
+  // Forwards an `OnPopupShown()` call to the page.
   void OnPopupShown(std::unique_ptr<SearchboxContextData::Context> context);
 
   // Sets whether the context should be preserved when the popup is closed. This
   // value is reset to false when the popup is shown again.
   void SetPreserveContextOnClose(bool preserve_context_on_close);
 
-  // Forwards an `OnWidgetClosed()` call to the page.
-  void OnPopupHidden();
+  // Forwards a `ClearPopup()` call to the page. `callback` is called
+  // with the final input text from the page.
+  void ClearPopup(base::OnceCallback<void(const std::string&)> callback);
 
   // Forwards an `AddContext()` call to the page. This call is intended to be
   // used to notify the page that searchbox context has been added.
@@ -67,8 +68,6 @@ class OmniboxPopupAimHandler : public omnibox_popup_aim::mojom::PageHandler {
   virtual OmniboxAimPopupWebUIContent* GetAimPopupContent();
 
  private:
-  void OnPopupHiddenCallback(const std::string& input);
-
   mojo::Receiver<omnibox_popup_aim::mojom::PageHandler> receiver_;
   mojo::Remote<omnibox_popup_aim::mojom::Page> page_;
   raw_ptr<content::WebContents> web_contents_;

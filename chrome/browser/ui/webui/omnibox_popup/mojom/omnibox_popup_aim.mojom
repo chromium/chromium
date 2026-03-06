@@ -31,7 +31,7 @@ interface PageHandler {
 // The WebUI page for the Omnibox AIM Popup.
 interface Page {
   // The AI Mode popup is always rendered and hidden/shown by the
-  // `OmniboxPopupPresenter`. This means that we can't rely on standard
+  // `OmniboxPopupAimPresenter`. This means that we can't rely on standard
   // visibility events to know when the popup is shown/hidden. The following
   // methods are used to fill in the gap.
 
@@ -42,9 +42,9 @@ interface Page {
   // Called when searchbox context is added outside of a OnShow call.
   AddContext(searchbox.mojom.SearchContext context);
 
-  // Called when the widget in which the AIM popup view is embedded in is
-  // hidden. The page is expected to return the input text via the callback.
-  OnPopupHidden() => (string input);
+  // Called when the popup is hidden. The page is expected to perform any
+  // necessary cleanup and return the input text via the callback.
+  ClearPopup() => (string input);
 
   // Sets whether the context should be preserved when the popup is closed.
   // Intended to be called while the popup is open before an interstitial
