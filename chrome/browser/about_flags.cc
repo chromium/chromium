@@ -13125,6 +13125,11 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillTouchToFillShowManualFillForVcnFix)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"apb144-patch1", flag_descriptions::kApb144Patch1Name,
+     flag_descriptions::kApb144Patch1Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kApb144Patch1)},
+#endif
     // Add new entries above this line.
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

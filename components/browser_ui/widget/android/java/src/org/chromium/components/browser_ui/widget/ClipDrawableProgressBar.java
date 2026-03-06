@@ -435,4 +435,17 @@ public class ClipDrawableProgressBar extends ImageView {
     public int getCompositedVisibilityForTesting() {
         return mCompositedLayersVisibility;
     }
+
+    @Override
+    public int getVisibility() {
+        if (shouldAnimateCompositedLayer()) {
+            if (ChromeFeatureList.sAndroidApb144Patch1.isEnabled()) {
+                return super.getVisibility();
+            } else {
+                return mCompositedLayersVisibility;
+            }
+        } else {
+            return super.getVisibility();
+        }
+    }
 }

@@ -69,6 +69,7 @@ BASE_DECLARE_FEATURE(kAndroidXRUsesSurfaceControl);
 BASE_DECLARE_FEATURE(kAnimatedGifRefactor);
 BASE_DECLARE_FEATURE(kAnimatedImageDragShadow);
 BASE_DECLARE_FEATURE(kAnnotatedPageContentsVirtualStructure);
+BASE_DECLARE_FEATURE(kApb144Patch1);
 BASE_DECLARE_FEATURE(kAppSpecificHistory);
 BASE_DECLARE_FEATURE(kAppSpecificHistoryViewIntent);
 BASE_DECLARE_FEATURE(kAsyncNotificationManager);
