@@ -56,4 +56,7 @@ message LensOverlayRequestId {
   // Identifier for the contextualized document in this request. Stable across
   // follow-up requests for the same document.
   optional int64 context_id = 12;
+
+  // True if the context/media is derived from a Chrome tab.
+  optional bool has_chrome_tab_data = 15;
 }

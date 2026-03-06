@@ -88,6 +88,11 @@ class LensOverlayRequestIdGenerator {
   // context id.
   void SetContextId(int64_t context_id) { context_id_ = context_id; }
 
+  // Updates the has_chrome_tab_data field in future request ids.
+  void SetHasChromeTabData(bool has_chrome_tab_data) {
+    has_chrome_tab_data_ = has_chrome_tab_data;
+  }
+
   // Sets the routing info to be included in the request id and returns the new
   // request id with this routing info.
   std::unique_ptr<lens::LensOverlayRequestId> SetRoutingInfo(
@@ -127,6 +132,9 @@ class LensOverlayRequestIdGenerator {
   // The context ID to use for the request ID. This is generated once and
   // reused for all requests.
   int64_t context_id_;
+
+  // Whether the request id has Chrome tab data.
+  bool has_chrome_tab_data_;
 
   // The current routing info. Not guaranteed to exist if not returned from the
   // server.

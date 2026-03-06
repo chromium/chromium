@@ -353,4 +353,22 @@ TEST_F(LensOverlayRequestIdGeneratorTest,
   ASSERT_EQ(request_id->context_id(), 12345);
 }
 
+TEST_F(LensOverlayRequestIdGeneratorTest,
+       SetHasChromeTabData_SetsHasChromeTabDataOnNextRequest) {
+  lens::LensOverlayRequestIdGenerator request_id_generator;
+  request_id_generator.SetHasChromeTabData(true);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kInitialRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_TRUE(request_id->has_chrome_tab_data());
+
+  request_id_generator.SetHasChromeTabData(false);
+  std::unique_ptr<lens::LensOverlayRequestId> request_id2 =
+      request_id_generator.GetNextRequestId(
+          RequestIdUpdateMode::kPageContentRequest,
+          lens::LensOverlayRequestId::MEDIA_TYPE_DEFAULT_IMAGE);
+  ASSERT_FALSE(request_id2->has_chrome_tab_data());
+}
+
 }  // namespace lens
