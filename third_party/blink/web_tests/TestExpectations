@@ -1305,6 +1305,10 @@ crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/strict-orig
 crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-cross-origin.sub.html [ Failure ]
 crbug.com/435625756 external/wpt/css/css-values/urls/referrer-policy/unsafe-url/url-image-referrer-policy-same-origin.sub.html [ Failure ]
 
+# border-radius with zoom
+crbug.com/490355657 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
+crbug.com/490355657 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
+
 # Media queries
 crbug.com/1001078 external/wpt/css/mediaqueries/mq-non-matching-lazy-load.tentative.html [ Failure ]
 crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Failure ]
@@ -2879,8 +2883,6 @@ crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/extern
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree-after-select.html [ Failure ]
 crbug.com/489882869 virtual/option-mutation-observer-improvement-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/standalone-option-no-shadow-tree.html [ Failure ]
 crbug.com/489043704 [ Linux ] external/wpt/wasm/core/gc/array_init_elem.wast.js.html [ Crash ]
-crbug.com/488651384 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
-crbug.com/488651384 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
 crbug.com/488651384 [ Win ] external/wpt/css/css-viewport/zoom/svg-computed-style.html [ Pass Timeout ]
 crbug.com/488362582 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/encrypt_decrypt/aes_cbc.https.any.html [ Pass Timeout ]
