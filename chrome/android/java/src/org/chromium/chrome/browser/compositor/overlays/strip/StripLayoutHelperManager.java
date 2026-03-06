@@ -188,21 +188,6 @@ public class StripLayoutHelperManager
     private static final float BUTTON_DESIRED_TOUCH_TARGET_SIZE =
             StripLayoutUtils.shouldApplyMoreDensity() ? 32.f : 48.f;
 
-    // Glic button constants.
-    private static final float GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP = 5.f;
-    private static final float GLIC_BUTTON_BACKGROUND_WIDTH_DP = 28.f;
-    static final float GLIC_BUTTON_BACKGROUND_HEIGHT_DP = 28.f;
-    private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.24f;
-    private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
-    private static final float GLIC_BUTTON_CLICK_SLOP_DP =
-            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
-    static final float GLIC_MSB_BUTTON_PADDING_DP = 18.f;
-    private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
-    private static final float GLIC_ICON_WIDTH_DP = 16.f;
-    private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
-    private static final float GLIC_BUTTON_END_PADDING_DP = 10.f;
-    private static final float GLIC_BUTTON_CORNER_RADIUS = 12.f;
-
     // Model selector button constants.
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_Y_OFFSET_DP = 3.f;
     private static final float MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP = 32.f;
@@ -211,6 +196,23 @@ public class StripLayoutHelperManager
     private static final float MODEL_SELECTOR_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
     private static final float MODEL_SELECTOR_BUTTON_CLICK_SLOP_DP =
             (BUTTON_DESIRED_TOUCH_TARGET_SIZE - MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP) / 2;
+
+    // Glic button constants.
+    private static final float GLIC_BUTTON_BACKGROUND_Y_OFFSET_DP = 5.f;
+    private static final float GLIC_BUTTON_BACKGROUND_WIDTH_DP = 28.f;
+    private static final float GLIC_BUTTON_BACKGROUND_HEIGHT_DP = 28.f;
+    private static final float GLIC_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.24f;
+    private static final float GLIC_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.16f;
+    private static final float GLIC_BUTTON_CLICK_SLOP_DP =
+            (BUTTON_DESIRED_TOUCH_TARGET_SIZE - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
+    private static final float GLIC_BUTTON_START_PADDING_DP = 6.f;
+    private static final float GLIC_ICON_WIDTH_DP = 16.f;
+    private static final float GLIC_ICON_TEXT_PADDING_DP = 4.f;
+    private static final float GLIC_BUTTON_END_PADDING_DP = 10.f;
+    private static final float GLIC_BUTTON_CORNER_RADIUS = 12.f;
+    // 2dp accounts for the smaller Glic background and aligns it with the toolbar buttons
+    private static final float GLIC_ALIGNMENT_OFFSET_DP =
+            (MODEL_SELECTOR_BUTTON_BACKGROUND_WIDTH_DP - GLIC_BUTTON_BACKGROUND_WIDTH_DP) / 2;
 
     // Tab strip transition constants.
     @VisibleForTesting
@@ -961,7 +963,7 @@ public class StripLayoutHelperManager
 
         updateGlicButtonWidth();
         updateGlicButtonPosition();
-        updateStripButtons();
+        updateButtonMargins();
         mUpdateHost.requestUpdate();
     }
 
@@ -995,21 +997,21 @@ public class StripLayoutHelperManager
         boolean isMsbVisible = mModelSelectorButton != null && mModelSelectorButton.isVisible();
 
         if (!LocalizationUtils.isLayoutRtl()) {
-            mGlicButton.setDrawX(
-                    mWidth
-                            - mRightPadding
-                            - (isMsbVisible
-                                    ? (getModelSelectorButtonWidthWithEndPadding()
-                                            + mGlicButton.getWidth()
-                                            + GLIC_MSB_BUTTON_PADDING_DP)
-                                    : getGlicButtonWidthWithEndPadding()));
+            // We anchor the right side so when the Glic button expands, it will grow to the left
+            // while the right edge stays fixed.
+            float rightSideAnchor =
+                    mWidth - mRightPadding - mStripEndPadding - GLIC_ALIGNMENT_OFFSET_DP;
+            if (isMsbVisible) {
+                rightSideAnchor -= BUTTON_DESIRED_TOUCH_TARGET_SIZE;
+            }
+            mGlicButton.setDrawX(rightSideAnchor - mGlicButton.getWidth());
         } else {
-            mGlicButton.setDrawX(
-                    mLeftPadding
-                            + (isMsbVisible
-                                    ? (getModelSelectorButtonWidthWithEndPadding()
-                                            + GLIC_MSB_BUTTON_PADDING_DP)
-                                    : mStripEndPadding));
+            // Symmetric logic for RTL: anchor the left side.
+            float leftSideAnchor = mLeftPadding + mStripEndPadding + GLIC_ALIGNMENT_OFFSET_DP;
+            if (isMsbVisible) {
+                leftSideAnchor += BUTTON_DESIRED_TOUCH_TARGET_SIZE;
+            }
+            mGlicButton.setDrawX(leftSideAnchor);
         }
     }
 
@@ -1424,7 +1426,7 @@ public class StripLayoutHelperManager
 
     private float getGlicButtonWidthWithEndPadding() {
         if (mGlicButton == null) return 0.f;
-        return mGlicButton.getWidth() + mStripEndPadding;
+        return mGlicButton.getWidth() + mStripEndPadding + GLIC_ALIGNMENT_OFFSET_DP;
     }
 
     /**
@@ -1433,7 +1435,7 @@ public class StripLayoutHelperManager
      */
     private float getGlicButtonStartPaddingForTouchTarget() {
         if (mGlicButton != null && mGlicButton.isVisible()) {
-            return BUTTON_DESIRED_TOUCH_TARGET_SIZE - mGlicButton.getWidth() - mStripEndPadding;
+            return mStripEndPadding + GLIC_ALIGNMENT_OFFSET_DP;
         } else {
             return 0.f;
         }
@@ -2002,15 +2004,27 @@ public class StripLayoutHelperManager
         if (mGlicButton != null) mGlicButton.setVisible(newGlicVisibility);
         if (mModelSelectorButton != null) mModelSelectorButton.setVisible(newMsbVisibility);
 
+        // The Glic button position depends on the MSB's visibility.
+        if (msbChanged) {
+            updateGlicButtonPosition();
+        }
+
+        updateButtonMargins();
+    }
+
+    private void updateButtonMargins() {
+        boolean isGlicVisible = mGlicButton != null && mGlicButton.isVisible();
+        boolean isMsbVisible = mModelSelectorButton != null && mModelSelectorButton.isVisible();
+
         // Calculate layout sizes and update margins. We use (width + end padding + start spacing)
         // to create a larger gap between buttons to meet touch target size requirements.
         float glicTouchTargetSize =
-                newGlicVisibility
+                isGlicVisible
                         ? (getGlicButtonWidthWithEndPadding()
                                 + getGlicButtonStartPaddingForTouchTarget())
                         : 0.0f;
         float msbTouchTargetSize =
-                newMsbVisibility
+                isMsbVisible
                         ? (getModelSelectorButtonWidthWithEndPadding()
                                 + getMsbStartPaddingForTouchTarget())
                         : 0.0f;
