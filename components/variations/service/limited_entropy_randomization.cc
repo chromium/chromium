@@ -139,6 +139,9 @@ bool ConsumesEntropy(const Study& study) {
     return false;
   }
   for (const auto& experiment : study.experiment()) {
+    if (experiment.probability_weight() == 0) {
+      continue;
+    }
     if (experiment.has_google_web_experiment_id() ||
         experiment.has_google_web_trigger_experiment_id() ||
         experiment.has_google_app_experiment_id()) {
