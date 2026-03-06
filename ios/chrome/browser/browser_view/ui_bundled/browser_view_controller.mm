@@ -1972,6 +1972,10 @@ const CGFloat kTopDynamicIslandInset = 24;
   if (IsChromeNextIaEnabled() ||
       ![self.toolbarCoordinator showingOmniboxPopup]) {
     self.secondaryToolbarHeightConstraint.constant = height;
+    // Force a layout to cause the frame to be recalculated.
+    UIView* view = self.view;
+    [view setNeedsLayout];
+    [view layoutIfNeeded];
   }
 }
 

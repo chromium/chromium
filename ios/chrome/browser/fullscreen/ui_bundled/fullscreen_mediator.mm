@@ -263,7 +263,6 @@ void FullscreenMediator::AnimateWithStyle(FullscreenAnimatorStyle style) {
     } else if (model_->progress() == 1) {
       RecordFullscreenExitMode();
     }
-    [mediator->resizer_ forceToUpdateToProgress:final_progress];
     for (auto& observer : mediator->observers_) {
       observer.FullscreenDidAnimate(mediator->controller_, style);
     }
