@@ -625,6 +625,15 @@ TEST_F(AutofillExternalDelegateTest, GetMainFillingProduct) {
             FillingProduct::kCreditCard);
 }
 
+TEST_F(AutofillExternalDelegateTest, AtMemoryDoesNotHideOnEmptySuggestions) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kAtMemory);
+
+  EXPECT_CALL(autofill_client(), HideAutofillSuggestions).Times(0);
+
+  // Return empty suggestions.
+  OnSuggestionsReturned(queried_field().global_id(), {});
+}
+
 // Test that our external delegate called the virtual methods at the right time.
 TEST_F(AutofillExternalDelegateTest, TestExternalDelegateVirtualCalls) {
   IssueOnQuery();

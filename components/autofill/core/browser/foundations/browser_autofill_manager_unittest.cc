@@ -1547,6 +1547,17 @@ class BrowserAutofillManagerTest
   syncer::TestSyncService sync_service_;
 };
 
+TEST_F(BrowserAutofillManagerTest, AtMemoryTriggersEmptySuggestions) {
+  FormData form = CreateTestAddressFormData();
+  FormsSeen({form});
+
+  // For AtMemory, the manager immediately returns empty suggestions so the UI
+  // can show the search bar.
+  OnAskForValuesToFill(form, form.fields()[0],
+                       AutofillSuggestionTriggerSource::kAtMemory);
+  external_delegate()->CheckNoSuggestions(form.fields()[0].global_id());
+}
+
 // Test that the correct logger is returned for an address field.
 TEST_F(BrowserAutofillManagerTest, GetEventFormLogger_Address) {
   AutofillField field;

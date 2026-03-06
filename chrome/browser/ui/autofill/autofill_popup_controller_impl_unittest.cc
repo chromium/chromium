@@ -547,6 +547,23 @@ TEST_F(AutofillPopupControllerImplTest, HideInMainFrameOnZoomChange) {
   Mock::VerifyAndClearExpectations(&client().suggestion_controller(manager()));
 }
 
+TEST_F(AutofillPopupControllerImplTest, AtMemoryShowsSearchBarAndNoFiltering) {
+  AutofillPopupController& controller =
+      client().suggestion_controller(manager());
+  manager().external_delegate().OnQuery(
+      FormData(), FormFieldData(), gfx::Rect(),
+      AutofillSuggestionTriggerSource::kAtMemory,
+      /*update_datalist=*/false);
+  ShowSuggestions(manager(),
+                  {Suggestion(u"abc", SuggestionType::kAtMemorySearchResult)},
+                  AutofillSuggestionTriggerSource::kAtMemory);
+
+  EXPECT_EQ(controller.GetMainFillingProduct(), FillingProduct::kAtMemory);
+
+  controller.SetFilter(AutofillPopupController::SuggestionFilter(u"nono"));
+  EXPECT_EQ(controller.GetSuggestions().size(), 0u);
+}
+
 TEST_F(AutofillPopupControllerImplTest,
        SuggestionFiltering_NoFilteringByDefault) {
   AutofillPopupController& controller =

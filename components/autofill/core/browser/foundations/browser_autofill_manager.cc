@@ -1265,6 +1265,13 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   const FormFieldData& field = CHECK_DEREF(form.FindFieldByGlobalId(field_id));
   external_delegate_->OnQuery(form, field, caret_bounds, trigger_source,
                               /*update_datalist=*/true);
+
+  if (trigger_source == AutofillSuggestionTriggerSource::kAtMemory) {
+    // Show empty suggestions with a search bar to start the flow.
+    external_delegate_->OnSuggestionsReturned(field_id, {});
+    return;
+  }
+
   // TODO(crbug.com/409962888): Cleanup once the new logic is launched.
   if (!base::FeatureList::IsEnabled(
           features::kAutofillNewSuggestionGeneration)) {
@@ -3400,6 +3407,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
     case FillingProduct::kOneTimePassword:
       suggestions = BuildOtpSuggestions(one_time_passwords, field.global_id());
       break;
+    case FillingProduct::kAtMemory:
+      return {};
     default:
       // Skip other filling products.
       break;

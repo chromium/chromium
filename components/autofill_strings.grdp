@@ -774,6 +774,9 @@
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_INPUT_PLACEHOLDER" desc="The placeholder of the autofill popup search bar input for passwords.">
       Search passwords
     </message>
+    <message name="IDS_AUTOFILL_AT_MEMORY_POPUP_SEARCH_BAR_PLACEHOLDER" desc="Placeholder in the Autofill @memory search bar, used for filling personal data.">
+      Search and fill from anywhere...
+    </message>
     <message name="IDS_AUTOFILL_POPUP_SEARCH_BAR_PASSWORDS_NOT_FOUND" desc="On the autofill popup for paswords, the label to be used when no passwords matching user's request were found.">
       No passwords found
     </message>
