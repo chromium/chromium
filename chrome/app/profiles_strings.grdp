@@ -1028,6 +1028,9 @@
     <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu">
       This will permanently delete your browsing data from this device. To recover the data, turn on sync as
     </message>
+    <message name="IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_SIGN_IN_AS" desc="Remove warning message shown for signed in profiles shown when the user selects remove from the 3 dotted menu for users that can only sign back in (not Turning on Sync).">
+      This will permanently delete your browsing data from this device. To recover the data, sign in as
+    </message>
     <message name="IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO"
       desc="Profile picker profile type choice subtitle"> Sign in to get your passwords and more on all your devices
     </message>

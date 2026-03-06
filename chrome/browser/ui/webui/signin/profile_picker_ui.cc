@@ -212,8 +212,6 @@ void AddStrings(content::WebUIDataSource* html_source,
        IDS_PROFILE_PICKER_PROFILE_SWITCH_SWITCH_BUTTON_LABEL},
       {"removeWarningLocalProfile",
        IDS_PROFILE_PICKER_REMOVE_WARNING_LOCAL_PROFILE},
-      {"removeWarningSignedInProfile",
-       IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE},
       {"ok", IDS_OK},
       {"signInButtonLabel",
        IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_SIGNIN_BUTTON_LABEL},
@@ -244,6 +242,12 @@ void AddStrings(content::WebUIDataSource* html_source,
       base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
           ? IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO_BOOKMARKS
           : IDS_PROFILE_PICKER_PROFILE_CREATION_FLOW_PROFILE_TYPE_CHOICE_SUBTITLE_UNO);
+
+  html_source->AddLocalizedString(
+      "removeWarningSignedInProfile",
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE_SIGN_IN_AS
+          : IDS_PROFILE_PICKER_REMOVE_WARNING_SIGNED_IN_PROFILE);
 
   html_source->AddString("minimumPickerSize",
                          base::StringPrintf("%ipx", kMinimumPickerSizePx));
