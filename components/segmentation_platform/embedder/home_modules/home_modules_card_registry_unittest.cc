@@ -25,6 +25,7 @@
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo_ephemeral_module.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_ios.h"
 #elif BUILDFLAG(IS_ANDROID)
+#include "components/segmentation_platform/embedder/home_modules/auxiliary_search_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/default_browser_promo.h"
 #include "components/segmentation_platform/embedder/home_modules/home_modules_card_registry_android.h"
 #include "components/segmentation_platform/embedder/home_modules/quick_delete_promo.h"
@@ -421,11 +422,17 @@ TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardEnabled) {
 }
 
 // Tests that the Registry won't register the AuxiliarySearchPromo card when it
-// is disabled because of user's interaction history.
+// is disabled because of user's impression history.
 TEST_F(HomeModulesCardRegistryTest, TestAuxiliarySearchPromoCardDisabled) {
   feature_list_.InitWithFeatures({features::kAndroidAppIntegrationModule}, {});
-  profile_pref_service_.SetUserPref(kAuxiliarySearchPromoImpressionCounterPref,
-                                    std::make_unique<base::Value>(4));
+
+  // Simulate showing the card across enough sessions to reach its max limit.
+  int max_impressions = features::kMaxAuxiliarySearchCardImpressions.Get();
+  for (int i = 0; i < max_impressions; ++i) {
+    auto card = std::make_unique<AuxiliarySearchPromo>(&profile_pref_service_);
+    card->OnShow(&profile_pref_service_, &local_state_pref_service_);
+  }
+
   registry_ = HomeModulesCardRegistry::Create(&profile_pref_service_,
                                               &local_state_pref_service_);
 
