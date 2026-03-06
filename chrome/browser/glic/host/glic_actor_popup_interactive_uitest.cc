@@ -77,8 +77,8 @@ class GlicActorPopupUiTest : public GlicActorUiTest,
            "before searching annotated page content.";
     CHECK(annotated_page_content_->has_popup_window());
 
-    // Traverse the APC in depth-first preorder, returning the parent of the
-    // first node that matches the given text.
+    // Traverse the APC in depth-first preorder, returning the first node
+    // that is a select control (FORM_CONTROL_TYPE_SELECT_ONE).
     std::stack<const ContentNode*> nodes;
     nodes.push(&annotated_page_content_->popup_window().root_node());
 
