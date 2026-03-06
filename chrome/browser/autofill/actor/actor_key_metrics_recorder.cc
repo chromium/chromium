@@ -5,7 +5,9 @@
 #include "chrome/browser/autofill/actor/actor_key_metrics_recorder.h"
 
 #include <string>
+#include <string_view>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/map_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -28,17 +30,22 @@ ActorKeyMetricsRecorder::ProductState::~ProductState() = default;
 ActorKeyMetricsRecorder::ActorKeyMetricsRecorder() = default;
 ActorKeyMetricsRecorder::~ActorKeyMetricsRecorder() = default;
 
-void ActorKeyMetricsRecorder::OnSuggestionsGenerated(FormGlobalId form_id,
-                                                     FillingProduct product) {
-  states_[std::to_underlying(product)].with_actor_suggestions.insert(form_id);
+void ActorKeyMetricsRecorder::OnSuggestionsGenerated(
+    FormGlobalId form_id,
+    const base::flat_set<FillingProduct>& products) {
+  for (FillingProduct product : products) {
+    states_[std::to_underlying(product)].with_actor_suggestions.insert(form_id);
+  }
 }
 
 void ActorKeyMetricsRecorder::OnFormFilled(
     FormGlobalId form_id,
     base::span<const FieldGlobalId> field_ids,
-    FillingProduct product) {
-  states_[std::to_underlying(product)].actor_filled_fields[form_id].insert(
-      field_ids.begin(), field_ids.end());
+    const base::flat_set<FillingProduct>& products) {
+  for (FillingProduct product : products) {
+    states_[std::to_underlying(product)].actor_filled_fields[form_id].insert(
+        field_ids.begin(), field_ids.end());
+  }
 }
 
 void ActorKeyMetricsRecorder::OnFormsRemoved(

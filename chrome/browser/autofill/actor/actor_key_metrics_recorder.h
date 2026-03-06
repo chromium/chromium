@@ -26,14 +26,15 @@ class ActorKeyMetricsRecorder {
   ActorKeyMetricsRecorder& operator=(const ActorKeyMetricsRecorder&) = delete;
   ~ActorKeyMetricsRecorder();
 
-  // Tracks that suggestions were generated for a `product` on a form.
-  void OnSuggestionsGenerated(FormGlobalId form_id, FillingProduct product);
+  // Tracks that suggestions were generated for `products` on a form.
+  void OnSuggestionsGenerated(FormGlobalId form_id,
+                              const base::flat_set<FillingProduct>& products);
 
-  // Tracks that the actor filled a form for a `product`. `field_ids` are the
+  // Tracks that the actor filled a form for `products`. `field_ids` are the
   // fields that were filled.
   void OnFormFilled(FormGlobalId form_id,
                     base::span<const FieldGlobalId> field_ids,
-                    FillingProduct product);
+                    const base::flat_set<FillingProduct>& products);
 
   // Cleans up tracking data for the given forms.
   void OnFormsRemoved(base::span<const FormGlobalId> form_ids);

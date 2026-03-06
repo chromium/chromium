@@ -509,6 +509,10 @@ void ActorFormFillingServiceImpl::GetSuggestions(
   suggestion_trigger_field_id_.clear();
   std::vector<ActorFormFillingRequest> requests;
   requests.reserve(fill_requests.size());
+
+  // Collect products per form to record metrics.
+  base::flat_map<FormGlobalId, base::flat_set<FillingProduct>> products_by_form;
+
   for (const auto& [requested_data, trigger_fields] : fill_requests) {
     using enum ActorFormFillingRequest::RequestedData;
 
@@ -615,8 +619,7 @@ void ActorFormFillingServiceImpl::GetSuggestions(
 
       if (const FormStructure* form_structure =
               autofill_manager.FindCachedFormById(trigger_fields[0])) {
-        metrics_recorder_.OnSuggestionsGenerated(
-            form_structure->global_id(),
+        products_by_form[form_structure->global_id()].insert(
             sub_request.requested_data ==
                     FormFillingRequest_RequestedData_CREDIT_CARD
                 ? FillingProduct::kCreditCard
@@ -639,6 +642,11 @@ void ActorFormFillingServiceImpl::GetSuggestions(
       }
     }
   }
+
+  for (auto& [form_id, products] : products_by_form) {
+    metrics_recorder_.OnSuggestionsGenerated(form_id, products);
+  }
+
   std::move(callback_with_metrics).Run(std::move(requests));
 }
 
@@ -859,9 +867,9 @@ void ActorFormFillingServiceImpl::OnFillOrPreviewForm(
 
   metrics_recorder_.OnFormFilled(
       form_id, filled_field_ids,
-      std::holds_alternative<const CreditCard*>(filling_payload)
-          ? FillingProduct::kCreditCard
-          : FillingProduct::kAddress);
+      {std::holds_alternative<const CreditCard*>(filling_payload)
+           ? FillingProduct::kCreditCard
+           : FillingProduct::kAddress});
 }
 
 void ActorFormFillingServiceImpl::ObserveManager(AutofillManager& manager) {
