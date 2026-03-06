@@ -225,9 +225,9 @@ bool TileDisplayLayerImpl::AppendQuadForTile(
                            offset_visible_geometry_rect);
 
     // NOTE: TileDisplayLayerImpl does not currently track missing tiles, as
-    // that info is used only to pass to `checkerboarded_needs_raster` on the
-    // client side.  TODO(crbug.com/401566175): Determine if we need to track
-    // `checkerboarded_needs_raster` on the Viz side in the longer term.
+    // that info is used only to pass to `AppendQuadsData::num_missing_tiles` on
+    // the client side.  TODO(crbug.com/401566175): Determine if we need to
+    // track `num_missing_tiles` on the Viz side in the longer term.
     return true;
   }
 
