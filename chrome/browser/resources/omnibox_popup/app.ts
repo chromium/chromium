@@ -167,6 +167,8 @@ export class OmniboxPopupAppElement extends I18nMixinLit
 
   private callbackRouter_: SearchboxPageCallbackRouter;
   private eventTracker_ = new EventTracker();
+  private isAimPopupEnabled_: boolean =
+      loadTimeData.getBoolean('omniboxAimPopupEnabled');
   private listenerIds_: number[] = [];
   private pageHandler_: SearchboxPageHandlerInterface;
   private popupCallbackRouter_: OmniboxPopupPageCallbackRouter;
@@ -302,7 +304,7 @@ export class OmniboxPopupAppElement extends I18nMixinLit
         showContextualChips && this.searchboxLayoutMode_ === 'Compact';
     return this.isAimEligible_ && this.showAiModePrefEnabled_ &&
         (isTallSearchbox || showContextualChipsInCompactMode) &&
-        !this.isInKeywordMode_;
+        !this.isInKeywordMode_ && this.isAimPopupEnabled_;
   }
 
   private onCanShowSecondarySideChanged_(e: MediaQueryListEvent) {
