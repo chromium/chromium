@@ -163,9 +163,10 @@ class RefreshTracker {
 class SessionServiceImplTest : public ::testing::Test,
                                public WithTaskEnvironment {
  public:
-  SessionServiceImplTest()
-      : WithTaskEnvironment(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+  explicit SessionServiceImplTest(
+      base::test::TaskEnvironment::TimeSource time_source =
+          base::test::TaskEnvironment::TimeSource::MOCK_TIME)
+      : WithTaskEnvironment(time_source) {
     auto context_builder = CreateTestURLRequestContextBuilder();
     auto network_delegate = std::make_unique<TestNetworkDelegate>();
     network_delegate_ = network_delegate.get();
@@ -1761,6 +1762,34 @@ TEST_F(SessionServiceImplTest, SessionSigningQuota) {
 
   // After 9 minutes, the quota is restored.
   FastForwardBy(base::Minutes(9));
+  EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
+}
+
+class SessionServiceImplSystemTimeTest : public SessionServiceImplTest {
+ public:
+  // NOTE: We can't use MOCK_TIME here, since the task environment does not
+  // support going back in time.
+  SessionServiceImplSystemTimeTest()
+      : SessionServiceImplTest(
+            base::test::TaskEnvironment::TimeSource::SYSTEM_TIME) {}
+};
+
+TEST_F(SessionServiceImplSystemTimeTest, PrunesFutureSignings) {
+  base::test::ScopedFeatureList feature_list(
+      features::kDeviceBoundSessionSigningQuotaAndCaching);
+  SessionKey session_key{SchemefulSite(GURL(kTestUrl)),
+                         Session::Id(kSessionId)};
+
+  // Add signings in the future
+  {
+    base::subtle::ScopedTimeClockOverrides time_override(
+        [] { return base::Time::Max(); }, nullptr, nullptr);
+    for (size_t i = 0; i < 10; ++i) {
+      service().AddSigningOccurrence(session_key.site);
+    }
+  }
+
+  // Back to present time, verify these future signings are discarded.
   EXPECT_FALSE(service().SigningQuotaExceeded(session_key.site));
 }
 

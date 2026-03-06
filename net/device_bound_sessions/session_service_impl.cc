@@ -1341,7 +1341,7 @@ void SessionServiceImpl::RefreshSessionInternal(
 
   if (!base::FeatureList::IsEnabled(
           features::kDeviceBoundSessionSigningQuotaAndCaching)) {
-    refresh_times_[session_key.site].push_back(base::TimeTicks::Now());
+    refresh_times_[session_key.site].push_back(base::Time::Now());
   }
 
   Session* session = GetSession(session_key);
@@ -1383,8 +1383,8 @@ bool SessionServiceImpl::RefreshQuotaExceeded(const SchemefulSite& site) {
     return false;
   }
 
-  std::erase_if(it->second, [](base::TimeTicks time) {
-    return base::TimeTicks::Now() - time >= kSigningQuotaInterval;
+  std::erase_if(it->second, [](base::Time time) {
+    return base::Time::Now() - time >= kSigningQuotaInterval;
   });
 
   size_t refresh_count = it->second.size();
@@ -1419,8 +1419,10 @@ bool SessionServiceImpl::SigningQuotaExceeded(const SchemefulSite& site) {
     return false;
   }
 
-  std::erase_if(it->second, [](base::TimeTicks time) {
-    return base::TimeTicks::Now() - time >= kSigningQuotaInterval;
+  // This also discards "future" signings since `base::Time` can decrease.
+  const base::Time now = base::Time::Now();
+  std::erase_if(it->second, [now](base::Time time) {
+    return time > now || now - time >= kSigningQuotaInterval;
   });
 
   size_t sign_count = it->second.size();
@@ -1440,7 +1442,7 @@ bool SessionServiceImpl::SigningQuotaExceeded(const SchemefulSite& site) {
 }
 
 void SessionServiceImpl::AddSigningOccurrence(const SchemefulSite& site) {
-  signing_times_[site].push_back(base::TimeTicks::Now());
+  signing_times_[site].push_back(base::Time::Now());
 }
 
 void SessionServiceImpl::RemoveFetcher(RegistrationFetcher* fetcher) {
