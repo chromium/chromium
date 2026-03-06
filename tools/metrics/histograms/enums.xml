@@ -10651,6 +10651,7 @@ from previous Chrome versions.
   <int value="-1300934428" label="ExternalNavigationDebugLogs:enabled"/>
   <int value="-1300692087" label="SplitTabStrip:enabled"/>
   <int value="-1299599424" label="VcDlcUi:disabled"/>
+  <int value="-1299405787" label="FixStaticIpForTwoManagedEthPorts:enabled"/>
   <int value="-1298383654"
       label="IsPaintableChecksResourceProviderInsteadOfBridge:enabled"/>
   <int value="-1298273481" label="http2-grease-settings"/>
@@ -16858,6 +16859,7 @@ from previous Chrome versions.
   <int value="804119864"
       label="AutofillEnableRankingAddressFormulaProfiles:enabled"/>
   <int value="804733996" label="GlicMultiInstance:enabled"/>
+  <int value="804841140" label="FixStaticIpForTwoManagedEthPorts:disabled"/>
   <int value="804958673" label="LensCameraAssistedSearch:enabled"/>
   <int value="805882800" label="SafetyCheckChromeCleanerChild:disabled"/>
   <int value="806035639" label="EnableNeuralPalmDetectionFilter:disabled"/>
@@ -20588,6 +20590,7 @@ from previous Chrome versions.
       label="AutofillEnableCardBenefitsForCapitalOne:disabled"/>
   <int value="2068914329" label="WebViewXRequestedWithHeader:enabled"/>
   <int value="2069146088" label="AndroidOpenPdfInlineBackport:disabled"/>
+  <int value="2069316678" label="kFixStaticIpForTwoManagedEthPorts:disabled"/>
   <int value="2069999572"
       label="AllowSignedHTTPExchangeCertsWithoutExtension:disabled"/>
   <int value="2070207131" label="OpenscreenCastStreamingSession:disabled"/>

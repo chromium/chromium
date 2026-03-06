@@ -4878,6 +4878,11 @@
     "owners": [ "ernn@google.com", "chrome-signin-team@google.com" ],
     "expiry_milestone": 156
   },
+    {
+    "name": "fix-static-ip-for-two-managed-ethernet-ports",
+    "owners": [ "olsa@google.com", "chromeos-commercial-networking@google.com" ],
+    "expiry_milestone": 160
+  },
   {
     "name": "flex-firmware-update",
     "owners": [ "nicholasbishop@google.com", "chromeos-flex-eng@google.com" ],
