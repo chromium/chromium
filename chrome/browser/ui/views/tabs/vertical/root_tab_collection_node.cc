@@ -75,6 +75,12 @@ RootTabCollectionNode::RegisterOnChildRemovedCallback(
 }
 
 base::CallbackListSubscription
+RootTabCollectionNode::RegisterOnChildMovedCallback(
+    base::RepeatingClosure callback) {
+  return on_child_moved_callback_list_.Add(std::move(callback));
+}
+
+base::CallbackListSubscription
 RootTabCollectionNode::RegisterOnActiveTabChangedCallback(
     RootTabCollectionNode::ActiveTabChangedCallback callback) {
   return on_active_tab_changed_callback_list_.Add(std::move(callback));
@@ -150,6 +156,8 @@ void RootTabCollectionNode::OnChildMoved(
                                  to_position.index, src_parent_node,
                                  dst_parent_node);
   }
+
+  on_child_moved_callback_list_.Notify();
 }
 
 void RootTabCollectionNode::OnTabStripModelChanged(

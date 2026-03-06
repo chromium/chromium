@@ -30,6 +30,7 @@ class VerticalPinnedTabContainerView;
 class VerticalTabStripBottomContainer;
 class VerticalTabStripTopContainer;
 class TabDragContext;
+class HoverTabSelector;
 
 namespace tabs {
 class VerticalTabStripStateController;
@@ -183,6 +184,8 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
 
   void RecordNewTabButtonPressed();
   void OnChildrenAdded();
+  void OnChildrenRemoved();
+  void OnChildMoved();
 
   void SetLinkDropArrow(const std::optional<BrowserRootView::DropIndex>& index);
   gfx::Rect GetLinkDropBounds(const BrowserRootView::DropIndex& drop_index,
@@ -225,9 +228,14 @@ class VerticalTabStripRegionView final : public TabStripRegionView,
   const raw_ptr<tabs::VerticalTabStripStateController> state_controller_;
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<TabHoverCardController> hover_card_controller_;
+  std::unique_ptr<HoverTabSelector> hover_tab_selector_;
+
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
   std::optional<base::CallbackListSubscription> on_children_added_subscription_;
+  std::optional<base::CallbackListSubscription>
+      on_children_removed_subscription_;
+  std::optional<base::CallbackListSubscription> on_child_moved_subscription_;
   std::optional<base::CallbackListSubscription>
       on_active_tab_changed_subscription_;
 

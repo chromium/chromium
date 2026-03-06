@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/tabs/hover_tab_selector.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_feature.h"
@@ -81,6 +82,7 @@ VerticalTabStripRegionView::VerticalTabStripRegionView(
       hover_card_controller_(
           std::make_unique<TabHoverCardController>(this,
                                                    browser_view->browser())),
+      hover_tab_selector_(std::make_unique<HoverTabSelector>(tab_strip_model_)),
       resize_animation_(this) {
   // For z-ordering purposes this needs to be on a layer.
   SetPaintToLayer();
@@ -229,6 +231,13 @@ void VerticalTabStripRegionView::InitializeTabStrip() {
   on_children_added_subscription_ = root_node_->RegisterOnChildrenAddedCallback(
       base::BindRepeating(&VerticalTabStripRegionView::OnChildrenAdded,
                           base::Unretained(this)));
+  on_children_removed_subscription_ =
+      root_node_->RegisterOnChildRemovedCallback(
+          base::BindRepeating(&VerticalTabStripRegionView::OnChildrenRemoved,
+                              base::Unretained(this)));
+  on_child_moved_subscription_ =
+      root_node_->RegisterOnChildMovedCallback(base::BindRepeating(
+          &VerticalTabStripRegionView::OnChildMoved, base::Unretained(this)));
 }
 
 void VerticalTabStripRegionView::ResetTabStrip() {
@@ -237,6 +246,8 @@ void VerticalTabStripRegionView::ResetTabStrip() {
   }
 
   on_children_added_subscription_.reset();
+  on_children_removed_subscription_.reset();
+  on_child_moved_subscription_.reset();
 
   root_node_->Reset();
 
@@ -247,6 +258,8 @@ void VerticalTabStripRegionView::ResetTabStrip() {
   auto* drag_handler = drag_handler_.get();
   drag_handler_ = nullptr;
   RemoveChildViewT(drag_handler->GetDragContext());
+
+  hover_tab_selector_->CancelTabTransition();
 
   root_node_.reset();
 }
@@ -746,6 +759,15 @@ void VerticalTabStripRegionView::OnChildrenAdded() {
         base::TimeTicks::Now() - new_tab_button_pressed_start_time_.value());
     new_tab_button_pressed_start_time_.reset();
   }
+  hover_tab_selector_->CancelTabTransition();
+}
+
+void VerticalTabStripRegionView::OnChildrenRemoved() {
+  hover_tab_selector_->CancelTabTransition();
+}
+
+void VerticalTabStripRegionView::OnChildMoved() {
+  hover_tab_selector_->CancelTabTransition();
 }
 
 TabDragTarget* VerticalTabStripRegionView::GetTabDragTarget(
@@ -803,9 +825,21 @@ void VerticalTabStripRegionView::OnDragExited() {
 
 void VerticalTabStripRegionView::SetLinkDropArrow(
     const std::optional<BrowserRootView::DropIndex>& index) {
+  if (!tab_strip_controller_) {
+    return;
+  }
+
   if (!index.has_value()) {
+    hover_tab_selector_->CancelTabTransition();
     drop_arrow_.reset();
     return;
+  }
+
+  if (index->relative_to_index ==
+      BrowserRootView::DropIndex::RelativeToIndex::kInsertBeforeIndex) {
+    hover_tab_selector_->CancelTabTransition();
+  } else {
+    hover_tab_selector_->StartTabTransition(index->index);
   }
 
   if (!drop_arrow_) {

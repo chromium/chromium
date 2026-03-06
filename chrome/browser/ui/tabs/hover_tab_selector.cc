@@ -42,7 +42,9 @@ void HoverTabSelector::StartTabTransition(int index) {
 }
 
 void HoverTabSelector::CancelTabTransition() {
-  weak_factory_.InvalidateWeakPtrs();
+  if (weak_factory_.HasWeakPtrs()) {
+    weak_factory_.InvalidateWeakPtrs();
+  }
 }
 
 void HoverTabSelector::PerformTabTransition() {
