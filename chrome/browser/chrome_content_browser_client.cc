@@ -97,6 +97,7 @@
 #include "chrome/browser/media/audio_service_util.h"
 #include "chrome/browser/media/prefs/capture_device_ranking.h"
 #include "chrome/browser/media/router/media_router_feature.h"
+#include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/media/webrtc/audio_debug_recordings_handler.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/media/webrtc/chrome_screen_enumerator.h"
@@ -526,7 +527,6 @@
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/digital_credentials/digital_identity_provider_desktop.h"
 #include "chrome/browser/direct_sockets/chrome_direct_sockets_delegate.h"
-#include "chrome/browser/media/unified_autoplay_config.h"
 #include "chrome/browser/metrics/usage_scenario/chrome_responsiveness_calculator_delegate.h"
 #include "chrome/browser/new_tab_page/new_tab_page_util.h"
 #include "chrome/browser/picture_in_picture/auto_picture_in_picture_tab_helper.h"
@@ -865,10 +865,17 @@ bool IsFileOrDirectoryPickerWithoutGestureAllowed(
       contents->GetURL(), prefs,
       prefs::kFileOrDirectoryPickerWithoutGestureAllowedForOrigins);
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Check if autoplay is allowed by policy configuration.
 bool IsAutoplayAllowedByPolicy(content::WebContents* contents,
                                PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  if (!base::FeatureList::IsEnabled(media::kAutoplayPoliciesAndroid)) {
+    return false;
+  }
+#endif
+
   if (!contents) {
     return false;
   }
@@ -925,9 +932,19 @@ blink::mojom::AutoplayPolicy DetermineWebContentsAutoplayPolicy(
     }
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  // TWAs don't require a user gesture for unmuted autoplay.
+  if (base::FeatureList::IsEnabled(features::kAllowUnmutedAutoplayForTWA)) {
+    if (auto* delegate = TabAndroid::FromWebContents(web_contents)) {
+      if (delegate->IsTrustedWebActivity()) {
+        return blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
+      }
+    }
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
   return current_policy;
 }
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
     WebContents* web_contents) {
@@ -949,19 +966,7 @@ blink::mojom::AutoplayPolicy GetAutoplayPolicyForWebContents(
     NOTREACHED();
   }
 
-#if !BUILDFLAG(IS_ANDROID)
-  result = DetermineWebContentsAutoplayPolicy(web_contents, result);
-#else   // !BUILDFLAG(IS_ANDROID)
-  // TWAs don't require a user gesture for unmuted autoplay.
-  if (base::FeatureList::IsEnabled(features::kAllowUnmutedAutoplayForTWA)) {
-    if (auto* delegate = TabAndroid::FromWebContents(web_contents)) {
-      if (delegate->IsTrustedWebActivity()) {
-        result = blink::mojom::AutoplayPolicy::kNoUserGestureRequired;
-      }
-    }
-  }
-#endif  // BUILDFLAG(IS_ANDROID)
-  return result;
+  return DetermineWebContentsAutoplayPolicy(web_contents, result);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -1502,9 +1507,9 @@ void ChromeContentBrowserClient::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(
       prefs::kDevToolsBackgroundServicesExpirationDict);
   registry->RegisterBooleanPref(prefs::kSignedHTTPExchangeEnabled, true);
-#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kAutoplayAllowed, false);
   registry->RegisterListPref(prefs::kAutoplayAllowlist);
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(
       prefs::kFileOrDirectoryPickerWithoutGestureAllowedForOrigins);
   registry->RegisterIntegerPref(prefs::kFetchKeepaliveDurationOnShutdown, 0);

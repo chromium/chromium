@@ -246,6 +246,7 @@ source_set("policy_specific_browser_tests") {
   sources = [
     "policy_network_browsertest.cc",
     "site_isolation_policy_browsertest.cc",
+    "test/autoplay_policy_browsertest.cc",
     "test/back_forward_cache_policy_browsertest.cc",
     "test/certificate_transparency_policy_browsertest.cc",
     "test/force_permission_policy_unload_default_enabled_policy_browsertest.cc",
@@ -270,11 +271,14 @@ source_set("policy_specific_browser_tests") {
     "//base",
     "//chrome/app:command_ids",
     "//chrome/browser",
+    "//chrome/browser/content_settings:content_settings_factory",
     "//chrome/browser/media/webrtc",
     "//chrome/browser/preloading:prefs",
     "//chrome/browser/ui/autofill",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
     "//components/heap_profiling/in_process",
     "//components/policy/core/common",
     "//components/prefs",
@@ -284,6 +288,7 @@ source_set("policy_specific_browser_tests") {
     "//components/site_isolation",
     "//components/unified_consent",
     "//content/test:test_support",
+    "//media",
     "//testing/gmock",
   ]
 
@@ -310,7 +315,6 @@ source_set("policy_specific_browser_tests") {
       "test/autofill_ai_policy_browsertest.cc",
       "test/autofill_policy_browsertest.cc",
       "test/automatic_fullscreen_policy_browsertest.cc",
-      "test/autoplay_policy_browsertest.cc",
       "test/bookmark_bar_enabled_browsertest.cc",
       "test/clear_window_name_for_new_browsing_context_group_browsertest.cc",
       "test/component_updater_policy_browsertest.cc",
@@ -336,7 +340,6 @@ source_set("policy_specific_browser_tests") {
 
     deps += [
       "//chrome/browser/autofill",
-      "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/devtools",
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/profiles",

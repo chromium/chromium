@@ -3602,6 +3602,7 @@ inline constexpr char kSitePerProcess[] = "site_isolation.site_per_process";
 // TODO(crbug.com/40155376) Remove when migration to COOP+COEP is complete.
 inline constexpr char kSharedArrayBufferUnrestrictedAccessAllowed[] =
     "profile.shared_array_buffer_unrestricted_access_allowed";
+#endif
 
 // Boolean that specifies whether media (audio/video) autoplay is allowed.
 inline constexpr char kAutoplayAllowed[] = "media.autoplay_allowed";
@@ -3612,6 +3613,7 @@ inline constexpr char kAutoplayAllowlist[] = "media.autoplay_whitelist";
 // Boolean that specifies whether autoplay blocking is enabled.
 inline constexpr char kBlockAutoplayEnabled[] = "media.block_autoplay";
 
+#if !BUILDFLAG(IS_ANDROID)
 // Holds URL patterns that specify origins that will be allowed to call
 // `show{OpenFile|SaveFile|Directory}Picker()` without prior user gesture.
 inline constexpr char kFileOrDirectoryPickerWithoutGestureAllowedForOrigins[] =

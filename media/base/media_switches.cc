@@ -1361,6 +1361,10 @@ BASE_FEATURE(kReduceHardwareVideoDecoderBuffers,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enables the Enterprise Autoplay policies (AutoplayAllowed and
+// AutoplayAllowlist) on Android.
+BASE_FEATURE(kAutoplayPoliciesAndroid, base::FEATURE_DISABLED_BY_DEFAULT);
+
 // The following Media Engagement flags are not enabled on mobile platforms:
 // - MediaEngagementBypassAutoplayPolicies: enables the Media Engagement Index
 //   data to be esude to override autoplay policies. An origin with a high MEI
