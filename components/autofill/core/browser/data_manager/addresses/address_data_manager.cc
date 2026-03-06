@@ -63,11 +63,11 @@ void OrderProfiles(std::vector<const AutofillProfile*>& profiles,
           });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyModifiedDesc:
-      std::ranges::sort(
-          profiles, [](const AutofillProfile* a, const AutofillProfile* b) {
-            return a->usage_history().modification_date() >
-                   b->usage_history().modification_date();
-          });
+      std::ranges::sort(profiles,
+                        [](const AutofillProfile* a, const AutofillProfile* b) {
+                          return a->usage_history().modification_date() >
+                                 b->usage_history().modification_date();
+                        });
       break;
     case AddressDataManager::ProfileOrder::kMostRecentlyUsedFirstDesc:
       std::ranges::sort(profiles, [](const AutofillProfile* a,
@@ -669,7 +669,8 @@ bool AddressDataManager::IsAutofillSyncToggleAvailable() const {
   }
 
   return contact_info_precondition_checker_ &&
-         contact_info_precondition_checker_->GetPreconditionState() ==
+         contact_info_precondition_checker_->GetPreconditionState(
+             syncer::DataTypeController::PreconditionContext()) ==
              syncer::DataTypeController::PreconditionState::kPreconditionsMet;
 }
 

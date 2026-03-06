@@ -22,7 +22,7 @@ namespace browser_sync {
 
 // Controls syncing of AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_METADATA.
 class AutofillWalletDataTypeController : public syncer::DataTypeController,
-                                          public syncer::SyncServiceObserver {
+                                         public syncer::SyncServiceObserver {
  public:
   // The delegates and `sync_client` must not be null and must oulive `this`.
   AutofillWalletDataTypeController(
@@ -43,7 +43,8 @@ class AutofillWalletDataTypeController : public syncer::DataTypeController,
 
   // DataTypeController overrides.
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

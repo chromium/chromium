@@ -31,7 +31,8 @@ class FamilyLinkSettingsDataTypeController
   ~FamilyLinkSettingsDataTypeController() override;
 
   // DataTypeController override.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
  private:
   const raw_ptr<PrefService> pref_service_;

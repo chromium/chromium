@@ -53,7 +53,8 @@ void FakeDataTypeController::LoadModels(
 }
 
 DataTypeController::PreconditionState
-FakeDataTypeController::GetPreconditionState() const {
+FakeDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   return precondition_state_;
 }
 

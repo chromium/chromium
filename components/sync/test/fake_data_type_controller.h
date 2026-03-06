@@ -48,7 +48,8 @@ class FakeDataTypeController : public DataTypeController {
   // DataTypeController overrides.
   void LoadModels(const ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
   std::unique_ptr<DataTypeActivationResponse> Connect() override;
 
  private:

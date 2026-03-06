@@ -17,8 +17,8 @@ UserEventDataTypeController::UserEventDataTypeController(
     std::unique_ptr<DataTypeControllerDelegate> delegate_for_full_sync_mode,
     std::unique_ptr<DataTypeControllerDelegate> delegate_for_transport_mode)
     : DataTypeController(syncer::USER_EVENTS,
-                          std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)),
+                         std::move(delegate_for_full_sync_mode),
+                         std::move(delegate_for_transport_mode)),
       sync_service_(sync_service) {
   DCHECK(sync_service_);
   sync_service_->AddObserver(this);
@@ -29,16 +29,17 @@ UserEventDataTypeController::~UserEventDataTypeController() {
 }
 
 void UserEventDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
-                                        StopCallback callback) {
+                                       StopCallback callback) {
   DCHECK(CalledOnValidThread());
   // Special case: For USER_EVENT, we want to clear all data even when Sync is
   // stopped temporarily.
   DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
-                            std::move(callback));
+                           std::move(callback));
 }
 
 DataTypeController::PreconditionState
-UserEventDataTypeController::GetPreconditionState() const {
+UserEventDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   return sync_service_->GetUserSettings()->IsUsingExplicitPassphrase()
              ? PreconditionState::kMustStopAndClearData
              : PreconditionState::kPreconditionsMet;

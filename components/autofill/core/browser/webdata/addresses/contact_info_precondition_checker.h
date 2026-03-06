@@ -30,7 +30,8 @@ class ContactInfoPreconditionChecker : public syncer::SyncServiceObserver {
       base::RepeatingClosure on_precondition_changed);
   ~ContactInfoPreconditionChecker() override;
 
-  syncer::DataTypeController::PreconditionState GetPreconditionState() const;
+  syncer::DataTypeController::PreconditionState GetPreconditionState(
+      const syncer::DataTypeController::PreconditionContext& context) const;
 
   // SyncServiceObserver overrides.
   void OnStateChanged(syncer::SyncService* sync) override;

@@ -44,12 +44,13 @@ void ContactInfoDataTypeController::LoadModels(
 }
 
 syncer::DataTypeController::PreconditionState
-ContactInfoDataTypeController::GetPreconditionState() const {
-  return precondition_checker_.GetPreconditionState();
+ContactInfoDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
+  return precondition_checker_.GetPreconditionState(context);
 }
 
 void ContactInfoDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
-                                          StopCallback callback) {
+                                         StopCallback callback) {
   // In transport-only mode, storage is scoped to the Gaia account. That means
   // it should be cleared if Sync is stopped for any reason (other than browser
   // shutdown).

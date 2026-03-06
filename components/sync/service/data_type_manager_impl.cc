@@ -150,9 +150,9 @@ DataTypeManagerImpl::DataTypeManagerImpl(
 
     if (state == DataTypeController::FAILED) {
       data_type_status_table_.UpdateFailedDataType(
-          type, SyncError::CreateFromModelError(ModelError(
-                    FROM_HERE,
-                    ModelError::Type::kDataTypeControllerInFailedState)));
+          type,
+          SyncError::CreateFromModelError(ModelError(
+              FROM_HERE, ModelError::Type::kDataTypeControllerInFailedState)));
     }
 
     // TODO(crbug.com/40901755): query the initial state of preconditions.
@@ -229,7 +229,8 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(DataType type) {
     return;
   }
 
-  switch (controllers_.find(type)->second->GetPreconditionState()) {
+  switch (controllers_.find(type)->second->GetPreconditionState(
+      DataTypeController::PreconditionContext())) {
     case DataTypeController::PreconditionState::kPreconditionsMet:
       if (preferred_types_.Has(type)) {
         // Only reconfigure if the type is both ready and desired. This will
@@ -493,9 +494,9 @@ void DataTypeManagerImpl::Restart() {
   for (const auto& [type, controller] : controllers_) {
     if (controller->state() == DataTypeController::FAILED) {
       data_type_status_table_.UpdateFailedDataType(
-          type, SyncError::CreateFromModelError(ModelError(
-                    FROM_HERE,
-                    ModelError::Type::kDataTypeControllerInFailedState)));
+          type,
+          SyncError::CreateFromModelError(ModelError(
+              FROM_HERE, ModelError::Type::kDataTypeControllerInFailedState)));
     }
   }
 
@@ -507,8 +508,8 @@ void DataTypeManagerImpl::Restart() {
     encrypted_types.RemoveAll(data_type_status_table_.GetCryptoErrorTypes());
     for (DataType type : encrypted_types) {
       data_type_status_table_.UpdateFailedDataType(
-          type,
-          SyncError::CreateFromErrorType(FROM_HERE, SyncError::CRYPTO_ERROR, ""));
+          type, SyncError::CreateFromErrorType(FROM_HERE,
+                                               SyncError::CRYPTO_ERROR, ""));
     }
   } else {
     data_type_status_table_.ResetCryptoErrors();
@@ -584,7 +585,8 @@ bool DataTypeManagerImpl::UpdatePreconditionError(DataType type) {
     return false;
   }
 
-  switch (iter->second->GetPreconditionState()) {
+  switch (iter->second->GetPreconditionState(
+      DataTypeController::PreconditionContext())) {
     case DataTypeController::PreconditionState::kPreconditionsMet: {
       if (!data_type_status_table_.ResetPreconditionErrorFor(type)) {
         // Nothing changed.
@@ -600,16 +602,16 @@ bool DataTypeManagerImpl::UpdatePreconditionError(DataType type) {
 
     case DataTypeController::PreconditionState::kMustStopAndClearData: {
       return data_type_status_table_.UpdateFailedDataType(
-          type, SyncError::CreateFromErrorType(
-                    FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA,
-                    ""));
+          type,
+          SyncError::CreateFromErrorType(
+              FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_CLEAR_DATA, ""));
     }
 
     case DataTypeController::PreconditionState::kMustStopAndKeepData: {
       return data_type_status_table_.UpdateFailedDataType(
-          type, SyncError::CreateFromErrorType(
-                    FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA,
-                    ""));
+          type,
+          SyncError::CreateFromErrorType(
+              FROM_HERE, SyncError::PRECONDITION_ERROR_WITH_KEEP_DATA, ""));
     }
   }
 

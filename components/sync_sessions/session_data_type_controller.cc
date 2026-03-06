@@ -16,16 +16,17 @@ SessionDataTypeController::SessionDataTypeController(
     std::unique_ptr<syncer::DataTypeControllerDelegate>
         delegate_for_transport_mode)
     : DataTypeController(syncer::SESSIONS,
-                          std::move(delegate_for_full_sync_mode),
-                          std::move(delegate_for_transport_mode)),
+                         std::move(delegate_for_full_sync_mode),
+                         std::move(delegate_for_transport_mode)),
       helper_(syncer::SESSIONS, sync_service, pref_service) {}
 
 SessionDataTypeController::~SessionDataTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-SessionDataTypeController::GetPreconditionState() const {
+SessionDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   DCHECK(CalledOnValidThread());
-  return helper_.GetPreconditionState();
+  return helper_.GetPreconditionState(context);
 }
 
 }  // namespace sync_sessions

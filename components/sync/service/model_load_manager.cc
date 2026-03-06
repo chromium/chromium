@@ -108,7 +108,8 @@ void ModelLoadManager::Configure(DataTypeSet preferred_types_without_errors,
         SyncStopMetadataFate metadata_fate =
             SyncStopMetadataFate::KEEP_METADATA;
         if (!preferred_types.Has(dtc->type()) ||
-            dtc->GetPreconditionState() ==
+            dtc->GetPreconditionState(
+                DataTypeController::PreconditionContext()) ==
                 DataTypeController::PreconditionState::kMustStopAndClearData) {
           metadata_fate = SyncStopMetadataFate::CLEAR_METADATA;
         }

@@ -33,8 +33,9 @@ CollaborationGroupDataTypeController::~CollaborationGroupDataTypeController() =
     default;
 
 syncer::DataTypeController::PreconditionState
-CollaborationGroupDataTypeController::GetPreconditionState() const {
-  return precondition_checker_.GetPreconditionState();
+CollaborationGroupDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
+  return precondition_checker_.GetPreconditionState(context);
 }
 
 }  // namespace collaboration

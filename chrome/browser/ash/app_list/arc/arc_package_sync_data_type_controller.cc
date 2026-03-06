@@ -47,7 +47,7 @@ ArcPackageSyncDataTypeController::ArcPackageSyncDataTypeController(
   auto delegate_for_full_sync_mode =
       std::make_unique<ForwardingDataTypeControllerDelegate>(delegate);
 
-    // Runs in transport-mode and full-sync mode, sharing the bridge's delegate.
+  // Runs in transport-mode and full-sync mode, sharing the bridge's delegate.
   InitDataTypeController(
       std::move(delegate_for_full_sync_mode),
       /*delegate_for_transport_mode=*/
@@ -74,7 +74,8 @@ ArcPackageSyncDataTypeController::~ArcPackageSyncDataTypeController() {
 }
 
 syncer::DataTypeController::PreconditionState
-ArcPackageSyncDataTypeController::GetPreconditionState() const {
+ArcPackageSyncDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   DCHECK(CalledOnValidThread());
   if (!arc::IsArcPlayStoreEnabledForProfile(profile_)) {
     return PreconditionState::kMustStopAndClearData;

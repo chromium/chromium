@@ -25,7 +25,8 @@ class CollaborationServicePreconditionChecker
       base::RepeatingClosure on_precondition_changed);
   ~CollaborationServicePreconditionChecker() override;
 
-  syncer::DataTypeController::PreconditionState GetPreconditionState() const;
+  syncer::DataTypeController::PreconditionState GetPreconditionState(
+      const syncer::DataTypeController::PreconditionContext& context) const;
 
   // CollaborationService::Observer overrides.
   void OnServiceStatusChanged(

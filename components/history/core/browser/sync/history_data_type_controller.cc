@@ -122,7 +122,8 @@ HistoryDataTypeController::HistoryDataTypeController(
 HistoryDataTypeController::~HistoryDataTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-HistoryDataTypeController::GetPreconditionState() const {
+HistoryDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   // syncer::HISTORY doesn't support custom passphrase encryption.
   if (helper_.sync_service()->GetUserSettings()->IsEncryptEverythingEnabled()) {
     return PreconditionState::kMustStopAndClearData;
@@ -131,7 +132,7 @@ HistoryDataTypeController::GetPreconditionState() const {
   PreconditionState enterprise_state =
       GetPreconditionStateFromManagedStatus(managed_status_finder_.get());
 
-  PreconditionState helper_state = helper_.GetPreconditionState();
+  PreconditionState helper_state = helper_.GetPreconditionState(context);
 
   return GetStricterPreconditionState(enterprise_state, helper_state);
 }

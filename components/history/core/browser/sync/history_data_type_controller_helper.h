@@ -36,7 +36,8 @@ class HistoryDataTypeControllerHelper {
   ~HistoryDataTypeControllerHelper();
 
   // Must be called from DataTypeController::GetPreconditionState().
-  syncer::DataTypeController::PreconditionState GetPreconditionState() const;
+  syncer::DataTypeController::PreconditionState GetPreconditionState(
+      const syncer::DataTypeController::PreconditionContext& context) const;
 
   syncer::SyncService* sync_service() const { return sync_service_; }
 

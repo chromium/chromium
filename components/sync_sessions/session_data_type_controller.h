@@ -34,7 +34,8 @@ class SessionDataTypeController : public syncer::DataTypeController {
   ~SessionDataTypeController() override;
 
   // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
  private:
   history::HistoryDataTypeControllerHelper helper_;

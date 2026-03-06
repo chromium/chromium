@@ -33,8 +33,8 @@ void CollaborationServicePreconditionChecker::OnServiceStatusChanged(
   on_precondition_changed_.Run();
 }
 
-PreconditionState
-CollaborationServicePreconditionChecker::GetPreconditionState() const {
+PreconditionState CollaborationServicePreconditionChecker::GetPreconditionState(
+    const syncer::DataTypeController::PreconditionContext& context) const {
   ServiceStatus service_status = collaboration_service_->GetServiceStatus();
   switch (service_status.collaboration_status) {
     case CollaborationStatus::kDisabled:

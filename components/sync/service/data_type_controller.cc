@@ -252,8 +252,8 @@ DataTypeController::State DataTypeController::state() const {
   return state_;
 }
 
-DataTypeController::PreconditionState DataTypeController::GetPreconditionState()
-    const {
+DataTypeController::PreconditionState DataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   return PreconditionState::kPreconditionsMet;
 }
 

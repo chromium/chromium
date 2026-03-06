@@ -46,7 +46,8 @@ class PlusAddressDataTypeController : public syncer::DataTypeController,
   ~PlusAddressDataTypeController() override;
 
   // DataTypeController:
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
   // SyncServiceObserver:
   void OnStateChanged(syncer::SyncService*) override;

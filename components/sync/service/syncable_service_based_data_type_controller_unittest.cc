@@ -41,7 +41,8 @@ TEST_F(SyncableServiceBasedDataTypeControllerTest, HandlesNullService) {
 
   // Call various methods on the controller. These should essentially all do
   // nothing, but not crash.
-  controller.GetPreconditionState();
+  controller.GetPreconditionState(
+      syncer::DataTypeController::PreconditionContext());
   controller.LoadModels(configure_context, base::DoNothing());
   controller.GetUnsyncedDataCount(base::DoNothing());
   controller.GetTypeEntitiesCount(base::DoNothing());

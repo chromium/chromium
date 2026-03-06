@@ -39,7 +39,8 @@ class CollaborationGroupDataTypeController : public syncer::DataTypeController {
       const CollaborationGroupDataTypeController&) = delete;
 
   // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
  private:
   CollaborationServicePreconditionChecker precondition_checker_;

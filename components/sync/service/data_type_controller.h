@@ -121,12 +121,16 @@ class DataTypeController {
   // Whether preconditions are met for the datatype to start. This is useful for
   // example if the datatype depends on certain user preferences other than the
   // ones for sync settings themselves.
+  struct PreconditionContext {
+    // TODO(crbug.com/40897778): Add "account_managed_status" here.
+  };
   enum class PreconditionState {
     kPreconditionsMet,
     kMustStopAndClearData,
     kMustStopAndKeepData,
   };
-  virtual PreconditionState GetPreconditionState() const;
+  virtual PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const;
 
   // Returns whether this data type has any unsynced changes, i.e. any local
   // changes that are waiting to be committed.

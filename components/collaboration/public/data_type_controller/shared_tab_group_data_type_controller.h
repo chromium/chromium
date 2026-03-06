@@ -39,7 +39,8 @@ class SharedTabGroupDataTypeController : public syncer::DataTypeController {
       const SharedTabGroupDataTypeController&) = delete;
 
   // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
  private:
   collaboration::CollaborationServicePreconditionChecker precondition_checker_;

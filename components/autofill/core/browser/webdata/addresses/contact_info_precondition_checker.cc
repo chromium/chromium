@@ -75,7 +75,8 @@ ContactInfoPreconditionChecker::ContactInfoPreconditionChecker(
 
 ContactInfoPreconditionChecker::~ContactInfoPreconditionChecker() = default;
 
-PreconditionState ContactInfoPreconditionChecker::GetPreconditionState() const {
+PreconditionState ContactInfoPreconditionChecker::GetPreconditionState(
+    const syncer::DataTypeController::PreconditionContext& context) const {
   const syncer::SyncService* sync_service = GetSyncService();
   // Can happen if this gets called after `OnSyncShutdown()` - in that case,
   // "stop and keep data" is a safe default.

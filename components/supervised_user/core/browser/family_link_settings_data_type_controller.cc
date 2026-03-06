@@ -10,12 +10,11 @@
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync/model/data_type_store_service.h"
 
-FamilyLinkSettingsDataTypeController::
-    FamilyLinkSettingsDataTypeController(
-        const base::RepeatingClosure& dump_stack,
-        syncer::OnceDataTypeStoreFactory store_factory,
-        base::WeakPtr<syncer::SyncableService> syncable_service,
-        PrefService* pref_service)
+FamilyLinkSettingsDataTypeController::FamilyLinkSettingsDataTypeController(
+    const base::RepeatingClosure& dump_stack,
+    syncer::OnceDataTypeStoreFactory store_factory,
+    base::WeakPtr<syncer::SyncableService> syncable_service,
+    PrefService* pref_service)
     : SyncableServiceBasedDataTypeController(
           syncer::SUPERVISED_USER_SETTINGS,
           std::move(store_factory),
@@ -26,11 +25,12 @@ FamilyLinkSettingsDataTypeController::
   DCHECK(pref_service);
 }
 
-FamilyLinkSettingsDataTypeController::
-    ~FamilyLinkSettingsDataTypeController() = default;
+FamilyLinkSettingsDataTypeController::~FamilyLinkSettingsDataTypeController() =
+    default;
 
 syncer::DataTypeController::PreconditionState
-FamilyLinkSettingsDataTypeController::GetPreconditionState() const {
+FamilyLinkSettingsDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   DCHECK(CalledOnValidThread());
   // TODO(b/292493941): use IsSubjectToParentalControls() once it is decoupled
   // from SupervisedUserService.

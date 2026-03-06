@@ -31,7 +31,8 @@ CookieSyncDataTypeController::CookieSyncDataTypeController(
 CookieSyncDataTypeController::~CookieSyncDataTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-CookieSyncDataTypeController::GetPreconditionState() const {
+CookieSyncDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   DCHECK(CalledOnValidThread());
 
   if (!prefs_->GetBoolean(chromeos::prefs::kFloatingSsoEnabled)) {

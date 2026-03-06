@@ -43,16 +43,17 @@ AutofillWalletDataTypeController::~AutofillWalletDataTypeController() {
 }
 
 void AutofillWalletDataTypeController::Stop(syncer::SyncStopMetadataFate fate,
-                                             StopCallback callback) {
+                                            StopCallback callback) {
   DCHECK(CalledOnValidThread());
   // Special case: For Wallet-related data types, we want to clear all data
   // even when Sync is stopped temporarily, regardless of incoming fate value.
   DataTypeController::Stop(syncer::SyncStopMetadataFate::CLEAR_METADATA,
-                            std::move(callback));
+                           std::move(callback));
 }
 
 syncer::DataTypeController::PreconditionState
-AutofillWalletDataTypeController::GetPreconditionState() const {
+AutofillWalletDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   DCHECK(CalledOnValidThread());
   bool preconditions_met =
       pref_service_->GetBoolean(autofill::prefs::kAutofillCreditCardEnabled);

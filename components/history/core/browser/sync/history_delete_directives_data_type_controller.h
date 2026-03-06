@@ -44,7 +44,8 @@ class HistoryDeleteDirectivesDataTypeController
   ~HistoryDeleteDirectivesDataTypeController() override;
 
   // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;

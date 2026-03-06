@@ -36,15 +36,15 @@ class ContactInfoDataTypeController : public syncer::DataTypeController {
       std::unique_ptr<syncer::DataTypeLocalDataBatchUploader> batch_uploader);
   ~ContactInfoDataTypeController() override;
 
-  ContactInfoDataTypeController(const ContactInfoDataTypeController&) =
-      delete;
+  ContactInfoDataTypeController(const ContactInfoDataTypeController&) = delete;
   ContactInfoDataTypeController& operator=(
       const ContactInfoDataTypeController&) = delete;
 
   // DataTypeController overrides.
   void LoadModels(const syncer::ConfigureContext& configure_context,
                   const ModelLoadCallback& model_load_callback) override;
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
   void Stop(syncer::SyncStopMetadataFate fate, StopCallback callback) override;
 
  private:

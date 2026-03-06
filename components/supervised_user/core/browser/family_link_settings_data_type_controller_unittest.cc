@@ -38,7 +38,8 @@ TEST_F(FamilyLinkSettingsDataTypeControllerTest,
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
   EXPECT_EQ(DataTypeController::PreconditionState::kPreconditionsMet,
-            controller.GetPreconditionState());
+            controller.GetPreconditionState(
+                syncer::DataTypeController::PreconditionContext()));
 }
 
 TEST_F(FamilyLinkSettingsDataTypeControllerTest,
@@ -48,11 +49,11 @@ TEST_F(FamilyLinkSettingsDataTypeControllerTest,
       /*store_factory=*/base::DoNothing(),
       /*syncable_service=*/nullptr, &pref_service_);
   EXPECT_EQ(DataTypeController::PreconditionState::kMustStopAndClearData,
-            controller.GetPreconditionState());
+            controller.GetPreconditionState(
+                syncer::DataTypeController::PreconditionContext()));
 }
 
-TEST_F(FamilyLinkSettingsDataTypeControllerTest,
-       HasTransportModeDelegate) {
+TEST_F(FamilyLinkSettingsDataTypeControllerTest, HasTransportModeDelegate) {
   FamilyLinkSettingsDataTypeController controller(
       /*dump_stack=*/base::DoNothing(),
       /*store_factory=*/base::DoNothing(),

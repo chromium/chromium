@@ -50,13 +50,12 @@ OutgoingPasswordSharingInvitationDataTypeController::
     ~OutgoingPasswordSharingInvitationDataTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-OutgoingPasswordSharingInvitationDataTypeController::GetPreconditionState()
-    const {
+OutgoingPasswordSharingInvitationDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   DCHECK(CalledOnValidThread());
 
   if (!password_sharing_enabled_policy_.GetValue()) {
-    return syncer::DataTypeController::PreconditionState::
-        kMustStopAndClearData;
+    return syncer::DataTypeController::PreconditionState::kMustStopAndClearData;
   }
 
   return syncer::DataTypeController::PreconditionState::kPreconditionsMet;

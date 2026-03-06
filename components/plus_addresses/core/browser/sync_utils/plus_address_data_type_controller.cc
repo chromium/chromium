@@ -66,7 +66,8 @@ PlusAddressDataTypeController::PlusAddressDataTypeController(
 
 PlusAddressDataTypeController::~PlusAddressDataTypeController() = default;
 
-PreconditionState PlusAddressDataTypeController::GetPreconditionState() const {
+PreconditionState PlusAddressDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
   if (!google_groups_manager_->IsFeatureEnabledForProfile(
           plus_addresses::features::kPlusAddressesEnabled) ||
       plus_addresses::features::kEnterprisePlusAddressServerUrl.Get().empty()) {

@@ -30,12 +30,12 @@ HistoryDataTypeControllerHelper::HistoryDataTypeControllerHelper(
 HistoryDataTypeControllerHelper::~HistoryDataTypeControllerHelper() = default;
 
 syncer::DataTypeController::PreconditionState
-HistoryDataTypeControllerHelper::GetPreconditionState() const {
+HistoryDataTypeControllerHelper::GetPreconditionState(
+    const syncer::DataTypeController::PreconditionContext& context) const {
   return pref_service_->GetBoolean(prefs::kSavingBrowserHistoryDisabled)
              ? syncer::DataTypeController::PreconditionState::
                    kMustStopAndClearData
-             : syncer::DataTypeController::PreconditionState::
-                   kPreconditionsMet;
+             : syncer::DataTypeController::PreconditionState::kPreconditionsMet;
 }
 
 void HistoryDataTypeControllerHelper::OnSavingBrowserHistoryDisabledChanged() {

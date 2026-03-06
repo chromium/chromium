@@ -34,7 +34,8 @@ class CookieSyncDataTypeController : public syncer::DataTypeController {
   ~CookieSyncDataTypeController() override;
 
   // syncer::DataTypeController:
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
  private:
   void OnFloatingSsoPrefChanged();

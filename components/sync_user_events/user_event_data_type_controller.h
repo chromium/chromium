@@ -33,7 +33,8 @@ class UserEventDataTypeController : public syncer::DataTypeController,
 
   // syncer::DataTypeController implementation.
   void Stop(SyncStopMetadataFate fate, StopCallback callback) override;
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

@@ -27,10 +27,9 @@ class SyncService;
 // A DataTypeController for arc package sync datatypes, which enables or
 // disables these types based on whether ArcAppInstance is ready and whether
 // the OS sync feature is enabled.
-class ArcPackageSyncDataTypeController
-    : public syncer::DataTypeController,
-      public ArcAppListPrefs::Observer,
-      public arc::ArcSessionManagerObserver {
+class ArcPackageSyncDataTypeController : public syncer::DataTypeController,
+                                         public ArcAppListPrefs::Observer,
+                                         public arc::ArcSessionManagerObserver {
  public:
   // |dump_stack| is called when an unrecoverable error occurs.
   ArcPackageSyncDataTypeController(
@@ -48,7 +47,8 @@ class ArcPackageSyncDataTypeController
   ~ArcPackageSyncDataTypeController() override;
 
   // DataTypeController overrides.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
   // ArcAppListPrefs::Observer overrides.
   void OnPackageListInitialRefreshed() override;

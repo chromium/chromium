@@ -25,12 +25,12 @@ class HistoryService;
 
 // DataTypeController for syncer::HISTORY.
 class HistoryDataTypeController : public syncer::DataTypeController,
-                                   public syncer::SyncServiceObserver {
+                                  public syncer::SyncServiceObserver {
  public:
   HistoryDataTypeController(syncer::SyncService* sync_service,
-                             signin::IdentityManager* identity_manager,
-                             HistoryService* history_service,
-                             PrefService* pref_service);
+                            signin::IdentityManager* identity_manager,
+                            HistoryService* history_service,
+                            PrefService* pref_service);
 
   HistoryDataTypeController(const HistoryDataTypeController&) = delete;
   HistoryDataTypeController& operator=(const HistoryDataTypeController&) =
@@ -39,7 +39,8 @@ class HistoryDataTypeController : public syncer::DataTypeController,
   ~HistoryDataTypeController() override;
 
   // syncer::DataTypeController implementation.
-  PreconditionState GetPreconditionState() const override;
+  PreconditionState GetPreconditionState(
+      const PreconditionContext& context) const override;
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;

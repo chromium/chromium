@@ -32,8 +32,9 @@ SharedTabGroupDataTypeController::SharedTabGroupDataTypeController(
 SharedTabGroupDataTypeController::~SharedTabGroupDataTypeController() = default;
 
 syncer::DataTypeController::PreconditionState
-SharedTabGroupDataTypeController::GetPreconditionState() const {
-  return precondition_checker_.GetPreconditionState();
+SharedTabGroupDataTypeController::GetPreconditionState(
+    const PreconditionContext& context) const {
+  return precondition_checker_.GetPreconditionState(context);
 }
 
 }  // namespace collaboration
