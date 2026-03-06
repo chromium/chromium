@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/inspector_contrast.h"
 #include "third_party/blink/renderer/core/inspector/protocol/audits.h"
 
 namespace blink {
@@ -39,7 +38,6 @@ class CORE_EXPORT InspectorAuditsAgent final
   // Protocol methods.
   protocol::Response enable() override;
   protocol::Response disable() override;
-  protocol::Response checkContrast(std::optional<bool> report_aaa) override;
   protocol::Response checkFormsIssues(
       std::unique_ptr<protocol::Array<protocol::Audits::GenericIssueDetails>>*
           out_formIssues) override;
@@ -57,7 +55,6 @@ class CORE_EXPORT InspectorAuditsAgent final
 
  private:
   void InnerEnable();
-  void CheckContrastForDocument(Document* document, bool report_aaa);
 
   InspectorIssueStorage* const inspector_issue_storage_;
   InspectorAgentState::Boolean enabled_;

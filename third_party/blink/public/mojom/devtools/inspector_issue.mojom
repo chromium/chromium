@@ -20,7 +20,6 @@ enum InspectorIssueCode {
   kSharedArrayBufferIssue,
   kHeavyAdIssue,
   kAttributionReportingIssue,
-  kLowTextContrastIssue,
   kFederatedAuthRequestIssue,
   kBounceTrackingIssue,
   kCookieDeprecationMetadataIssue,
@@ -210,16 +209,6 @@ struct SharedArrayBufferIssueDetails {
   SharedArrayBufferIssueType type;
 };
 
-struct LowTextContrastIssue {
-  int32 violating_node_id;
-  string violating_node_selector;
-  float contrast_ratio;
-  float threshold_aa;
-  float threshold_aaa;
-  string font_size;
-  string font_weight;
-};
-
 // Represents the fetch result from a federated authentication request. Should
 // be updated alongside FederatedAuthRequestIssueReason in
 // third_party/blink/public/devtools_protocol/domains/Audits.pdl, which includes
@@ -381,7 +370,6 @@ struct InspectorIssueDetails {
   SharedArrayBufferIssueDetails? sab_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   AttributionReportingIssueDetails? attribution_reporting_issue_details;
-  LowTextContrastIssue? low_text_contrast_details;
   FederatedAuthRequestIssueDetails? federated_auth_request_details;
   BounceTrackingIssueDetails? bounce_tracking_issue_details;
   PartitioningBlobURLIssueDetails? partitioning_blob_url_issue_details;

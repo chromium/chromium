@@ -53,8 +53,6 @@ blink::protocol::String InspectorIssueCodeValue(
           ContentSecurityPolicyIssue;
     case mojom::blink::InspectorIssueCode::kSharedArrayBufferIssue:
       return protocol::Audits::InspectorIssueCodeEnum::SharedArrayBufferIssue;
-    case mojom::blink::InspectorIssueCode::kLowTextContrastIssue:
-      return protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue;
     case mojom::blink::InspectorIssueCode::kUserReidentificationIssue:
       return protocol::Audits::InspectorIssueCodeEnum::
           UserReidentificationIssue;
@@ -474,21 +472,6 @@ ConvertInspectorIssueToProtocolFormat(InspectorIssue* issue) {
             .setSourceCodeLocation(BuildAffectedLocation(d->affected_location))
             .build();
     issueDetails.setSharedArrayBufferIssueDetails(std::move(details));
-  }
-
-  if (issue->Details()->low_text_contrast_details) {
-    const auto* d = issue->Details()->low_text_contrast_details.get();
-    auto lowContrastDetails =
-        protocol::Audits::LowTextContrastIssueDetails::create()
-            .setThresholdAA(d->threshold_aa)
-            .setThresholdAAA(d->threshold_aaa)
-            .setFontSize(d->font_size)
-            .setFontWeight(d->font_weight)
-            .setContrastRatio(d->contrast_ratio)
-            .setViolatingNodeSelector(d->violating_node_selector)
-            .setViolatingNodeId(d->violating_node_id)
-            .build();
-    issueDetails.setLowTextContrastIssueDetails(std::move(lowContrastDetails));
   }
 
   if (issue->Details()->performance_issue_details) {

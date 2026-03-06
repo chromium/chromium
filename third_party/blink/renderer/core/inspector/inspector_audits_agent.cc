@@ -74,41 +74,6 @@ bool EncodeAsImage(base::span<const uint8_t> body,
   return image_to_encode->EncodeImage(mime_type, quality, output);
 }
 
-std::unique_ptr<protocol::Audits::InspectorIssue> CreateLowTextContrastIssue(
-    const ContrastInfo& info) {
-  Element* element = info.element;
-
-  StringBuilder sb;
-  auto element_id = element->GetIdAttribute().LowerASCII();
-  sb.Append(element->nodeName().LowerASCII());
-  if (!element_id.empty()) {
-    sb.Append("#");
-    sb.Append(element_id);
-  }
-  for (unsigned i = 0; i < element->classList().length(); i++) {
-    sb.Append(".");
-    sb.Append(element->classList().item(i));
-  }
-
-  auto issue_details = protocol::Audits::InspectorIssueDetails::create();
-  auto low_contrast_details =
-      protocol::Audits::LowTextContrastIssueDetails::create()
-          .setThresholdAA(info.threshold_aa)
-          .setThresholdAAA(info.threshold_aaa)
-          .setFontSize(info.font_size)
-          .setFontWeight(info.font_weight)
-          .setContrastRatio(info.contrast_ratio)
-          .setViolatingNodeSelector(sb.ToString())
-          .setViolatingNodeId(element->GetDomNodeId())
-          .build();
-  issue_details.setLowTextContrastIssueDetails(std::move(low_contrast_details));
-
-  return protocol::Audits::InspectorIssue::create()
-      .setCode(protocol::Audits::InspectorIssueCodeEnum::LowTextContrastIssue)
-      .setDetails(issue_details.build())
-      .build();
-}
-
 }  // namespace
 
 void InspectorAuditsAgent::Trace(Visitor* visitor) const {
@@ -169,33 +134,6 @@ protocol::Response InspectorAuditsAgent::getEncodedResponse(
   if (!size_only.value_or(false)) {
     *out_body = protocol::Binary::fromVector(std::move(encoded_image));
   }
-  return protocol::Response::Success();
-}
-
-void InspectorAuditsAgent::CheckContrastForDocument(Document* document,
-                                                    bool report_aaa) {
-  InspectorContrast contrast(document);
-  unsigned max_elements = 100;
-  for (ContrastInfo info :
-       contrast.GetElementsWithContrastIssues(report_aaa, max_elements)) {
-    GetFrontend()->issueAdded(CreateLowTextContrastIssue(info));
-  }
-  GetFrontend()->flush();
-}
-
-protocol::Response InspectorAuditsAgent::checkContrast(
-    std::optional<bool> report_aaa) {
-  if (!inspected_frames_) {
-    return protocol::Response::ServerError(
-        "Inspected frames are not available");
-  }
-
-  auto* main_window = inspected_frames_->Root()->DomWindow();
-  if (!main_window)
-    return protocol::Response::ServerError("Document is not available");
-
-  CheckContrastForDocument(main_window->document(), report_aaa.value_or(false));
-
   return protocol::Response::Success();
 }
 
