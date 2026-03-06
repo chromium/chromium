@@ -167,7 +167,6 @@ void CameraSaveHandler::TrackUpload(const base::FilePath& upload_from_path,
             .emplace(std::pair(upload_from_path.BaseName(), std::move(upload)))
             .second)
       << "Duplicate file upload: " << upload_from_path.BaseName();
-  UpdateProgressNotification();
 }
 
 void CameraSaveHandler::UntrackUpload(const base::FilePath& upload_from_path,
