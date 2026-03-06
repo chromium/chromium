@@ -937,8 +937,6 @@ int HttpCache::CreateBackend(CompletionOnceCallback callback) {
     return ERR_FAILED;
   }
 
-  building_backend_ = true;
-
   const bool callback_is_null = callback.is_null();
   std::unique_ptr<WorkItem> item = std::make_unique<WorkItem>(
       WI_CREATE_BACKEND, nullptr, std::move(callback));
@@ -946,12 +944,14 @@ int HttpCache::CreateBackend(CompletionOnceCallback callback) {
   // This is the only operation that we can do that is not related to any given
   // entry, so we use an empty key for it.
   PendingOp* pending_op = GetPendingOp(std::string());
-  if (pending_op->writer) {
+  if (building_backend_) {
+    DCHECK(pending_op->writer);
     if (!callback_is_null) {
       pending_op->pending_queue.push_back(std::move(item));
     }
     return ERR_IO_PENDING;
   }
+  building_backend_ = true;
 
   DCHECK(pending_op->pending_queue.empty());
 
