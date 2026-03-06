@@ -811,7 +811,6 @@ void Sanitizer::SanitizeJavascriptNavigationAttributes(Element* element,
 
     // SVG animations of navigating attributes:
   } else if (qname == svg_names::kAnimateTag ||
-             qname == svg_names::kAnimateMotionTag ||
              qname == svg_names::kAnimateTransformTag ||
              qname == svg_names::kSetTag) {
     RemoveAttributeIfValueIsHref(element, svg_names::kAttributeNameAttr);
