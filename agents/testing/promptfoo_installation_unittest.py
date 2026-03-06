@@ -6,6 +6,7 @@
 
 import pathlib
 import subprocess
+import signal
 import unittest
 from unittest import mock
 
@@ -21,7 +22,7 @@ class FromCipdPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
 
     def setUp(self):
         self.setUpPyfakefs()
-        run_patcher = mock.patch('subprocess.run')
+        run_patcher = mock.patch('promptfoo_installation._run')
         self.mock_run = run_patcher.start()
         self.addCleanup(run_patcher.stop)
         check_call_patcher = mock.patch('subprocess.check_call')
@@ -124,11 +125,7 @@ class FromCipdPromptfooInstallationUnittest(fake_filesystem_unittest.TestCase):
             str(node_path),
             str(executable_path), 'eval', '-c', 'config.yaml'
         ],
-                                              cwd='/tmp/test',
-                                              check=False,
-                                              text=True,
-                                              stdout=subprocess.PIPE,
-                                              stderr=subprocess.STDOUT)
+                                              cwd='/tmp/test')
 
 
 class PreinstalledPromptfooInstallationUnittest(
@@ -137,7 +134,7 @@ class PreinstalledPromptfooInstallationUnittest(
 
     def setUp(self):
         self.setUpPyfakefs()
-        run_patcher = mock.patch('subprocess.run')
+        run_patcher = mock.patch('promptfoo_installation._run')
         self.mock_run = run_patcher.start()
         self.addCleanup(run_patcher.stop)
 
@@ -165,11 +162,72 @@ class PreinstalledPromptfooInstallationUnittest(
         installation.run(['eval', '-c', 'config.yaml'], cwd='/tmp/test')
         self.mock_run.assert_called_once_with(
             [str(pathlib.Path('/tmp/promptfoo')), 'eval', '-c', 'config.yaml'],
-            cwd='/tmp/test',
-            check=False,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.STDOUT)
+            cwd='/tmp/test')
+
+
+class RunUnittest(unittest.TestCase):
+    """Unit tests for _run."""
+
+    @mock.patch('sys.platform', 'win32')
+    @mock.patch('subprocess.run')
+    def test_win32(self, mock_run):
+        mock_run.return_value = subprocess.CompletedProcess(['cmd'], 0, 'out',
+                                                            '')
+        result = promptfoo_installation._run(['cmd'], cwd='/tmp')
+        mock_run.assert_called_once_with(['cmd'],
+                                         cwd='/tmp',
+                                         check=False,
+                                         text=True,
+                                         stdout=subprocess.PIPE,
+                                         stderr=subprocess.STDOUT)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, 'out')
+
+    @mock.patch('signal.SIGKILL', 9, create=True)
+    @mock.patch('sys.platform', 'linux')
+    @mock.patch('os.killpg', create=True)
+    @mock.patch('subprocess.Popen')
+    def test_unix(self, mock_popen, mock_killpg):
+        mock_proc = mock.MagicMock()
+        mock_proc.pid = 12345
+        mock_proc.args = ['cmd']
+        mock_proc.returncode = 0
+        mock_proc.communicate.return_value = ('out', '')
+        mock_proc.__enter__.return_value = mock_proc
+        mock_popen.return_value = mock_proc
+
+        result = promptfoo_installation._run(['cmd'], cwd='/tmp')
+
+        mock_popen.assert_called_once_with(['cmd'],
+                                           cwd='/tmp',
+                                           text=True,
+                                           stdout=subprocess.PIPE,
+                                           stderr=subprocess.STDOUT,
+                                           start_new_session=True)
+        mock_proc.communicate.assert_called_once()
+        mock_killpg.assert_called_once_with(12345, signal.SIGKILL)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, 'out')
+
+    @mock.patch('signal.SIGKILL', 9, create=True)
+    @mock.patch('sys.platform', 'linux')
+    @mock.patch('os.killpg', create=True)
+    @mock.patch('subprocess.Popen')
+    def test_unix_killpg_oserror(self, mock_popen, mock_killpg):
+        mock_proc = mock.MagicMock()
+        mock_proc.pid = 12345
+        mock_proc.args = ['cmd']
+        mock_proc.returncode = 0
+        mock_proc.communicate.return_value = ('out', '')
+        mock_proc.__enter__.return_value = mock_proc
+        mock_popen.return_value = mock_proc
+        mock_killpg.side_effect = OSError('Process not found')
+
+        result = promptfoo_installation._run(['cmd'], cwd='/tmp')
+
+        mock_killpg.assert_called_once_with(12345, signal.SIGKILL)
+        self.assertEqual(result.returncode, 0)
+        self.assertEqual(result.stdout, 'out')
 
 
 if __name__ == '__main__':

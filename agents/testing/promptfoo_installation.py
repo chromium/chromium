@@ -7,13 +7,63 @@ import abc
 import logging
 import os
 import pathlib
+import signal
 import subprocess
+import sys
 
 CIPD_ROOT = pathlib.Path(__file__).resolve().parent / 'cipd' / 'promptfoo'
 CIPD_PACKAGES = [
     ('infra/3pp/tools/nodejs/linux-${arch}', 'version:3@25.6.1'),
     ('infra/3pp/npm/promptfoo/linux-${arch}', 'version:3@0.118.17'),
 ]
+
+
+def _run(cmd: list[str],
+         cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
+    """Runs a command and kills its entire process group after if possible.
+
+    This is used for promptfoo in order to ensure that no orphaned processes
+    can write logs, etc. to temporary directories while they are being
+    deleted.
+
+    Args:
+        cmd: The command to run
+        cwd: An optional path to set as the cwd when running the command
+
+    Returns:
+        The CompletedProcess from running the command.
+    """
+    # os.killpg is not available on Windows. Not handling orphaned processes
+    # for now is acceptable since these tests are really only meant to be
+    # run on Linux. If/when Windows is more officially supported, then an
+    # alternative process group killing approach may be needed. Worst case,
+    # the temporary directory cleanup can be directed to ignore any errors
+    # which will at least prevent cleanup race conditions from causing
+    # failures.
+    if sys.platform == 'win32':
+        return subprocess.run(cmd,
+                              cwd=cwd,
+                              check=False,
+                              text=True,
+                              stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT)
+
+    with subprocess.Popen(cmd,
+                          cwd=cwd,
+                          text=True,
+                          stdout=subprocess.PIPE,
+                          stderr=subprocess.STDOUT,
+                          start_new_session=True) as proc:
+        stdout, _ = proc.communicate()
+        try:
+            os.killpg(proc.pid, signal.SIGKILL)
+        except OSError:
+            # This is expected to happen regularly if all processes in the
+            # group have already terminated by the time killpg is called.
+            pass
+        return subprocess.CompletedProcess(proc.args, proc.returncode, stdout,
+                                           '')
+
 
 class PromptfooInstallation(abc.ABC):
     """Partial implementation of a promptfoo installation."""
@@ -83,16 +133,11 @@ class FromCipdPromptfooInstallation(PromptfooInstallation):
             cmd: list[str],
             cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
         node_path = str(CIPD_ROOT / 'bin' / 'node')
-        return subprocess.run([
+        return _run([
             node_path,
             str(self._executable),
             *cmd,
-        ],
-                              cwd=cwd,
-                              check=False,
-                              text=True,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT)
+        ], cwd=cwd)
 
     @property
     def _executable(self) -> pathlib.Path:
@@ -113,9 +158,4 @@ class PreinstalledPromptfooInstallation(PromptfooInstallation):
     def run(self,
             cmd: list[str],
             cwd: os.PathLike | None = None) -> subprocess.CompletedProcess:
-        return subprocess.run([str(self._executable), *cmd],
-                              cwd=cwd,
-                              check=False,
-                              text=True,
-                              stdout=subprocess.PIPE,
-                              stderr=subprocess.STDOUT)
+        return _run([str(self._executable), *cmd], cwd=cwd)
