@@ -403,7 +403,7 @@ AimEligibilityService::AimEligibilityService(
   template_url_service_->AddObserver(this);
 
   LoadMostRecentResponse();
-  BuildFallbackConfig(most_recent_response_, fallback_config_);
+  UpdateFallbackConfig();
 
   bool startup_request_enabled =
       base::FeatureList::IsEnabled(omnibox::kAimServerRequestOnStartupEnabled);
@@ -872,7 +872,7 @@ void AimEligibilityService::UpdateMostRecentResponse(
   most_recent_response_ = response_proto;
   most_recent_response_source_ = response_source;
   most_recent_response_auth_method_ = auth_method;
-  BuildFallbackConfig(most_recent_response_, fallback_config_);
+  UpdateFallbackConfig();
 
   // Update the prefs.
   std::string response_string;
@@ -892,6 +892,22 @@ void AimEligibilityService::LoadMostRecentResponse() {
 
   most_recent_response_ = prefs_response;
   most_recent_response_source_ = EligibilityResponseSource::kPrefs;
+}
+
+void AimEligibilityService::UpdateFallbackConfig() {
+  if (IsServerEligibilityEnabled()) {
+    BuildFallbackConfig(most_recent_response_, fallback_config_);
+  } else {
+    // If server check is disabled, assume full eligibility. Prevents an empty
+    // config from hiding tools.
+    omnibox::AimEligibilityResponse full_response;
+    full_response.set_is_eligible(true);
+    full_response.set_is_pdf_upload_eligible(true);
+    full_response.set_is_deep_search_eligible(true);
+    full_response.set_is_canvas_eligible(true);
+    full_response.set_is_image_generation_eligible(true);
+    BuildFallbackConfig(full_response, fallback_config_);
+  }
 }
 
 GURL AimEligibilityService::GetRequestUrl(

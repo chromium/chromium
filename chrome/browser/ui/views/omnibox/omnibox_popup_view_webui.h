@@ -58,11 +58,6 @@ class OmniboxPopupViewWebUI : public OmniboxPopupView,
   void OnCharTyped(base::TimeTicks timestamp) override {}
 
  protected:
-  friend class OmniboxPopupViewWebUITest;
-  friend class OmniboxWebUiInteractiveTest;
-  FRIEND_TEST_ALL_PREFIXES(OmniboxPopupViewWebUITest,
-                           PopupLoadsAndAcceptsCalls);
-
   // OmniboxPopupView:
   bool IsOpen() const override;
 

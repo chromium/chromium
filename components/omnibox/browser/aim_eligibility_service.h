@@ -294,6 +294,10 @@ class AimEligibilityService
   // Loads `most_recent_response_` from the prefs, if valid.
   void LoadMostRecentResponse();
 
+  // Updates `fallback_config_` based on `most_recent_response_` and the server
+  // eligibility state.
+  void UpdateFallbackConfig();
+
   // Returns whether the primary account is valid and can be used for OAuth.
   bool HasValidPrimaryAccount() const;
 
