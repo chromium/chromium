@@ -161,9 +161,46 @@ NoDisplay=true
             f"{e.returncode}: {' '.join(daemon_command)}",
             file=sys.stderr)
     except KeyboardInterrupt:
-        print("\\nCaught KeyboardInterrupt. Stopping host daemon...")
+        print("\nCaught KeyboardInterrupt. Stopping host daemon...")
         # subprocess.run handles cleanup on KeyboardInterrupt
     print("CRD host daemon stopped.")
+
+    print("Cleaning up remote sessions...")
+    try:
+        result = subprocess.run(["loginctl", "list-sessions", "--no-legend"],
+                                capture_output=True,
+                                text=True,
+                                check=True)
+        for line in result.stdout.splitlines():
+            parts = line.split()
+            if not parts:
+                continue
+            session_id = parts[0]
+            show_session_command = [
+                "loginctl", "show-session", session_id, "-p", "Remote", "-p",
+                "Type"
+            ]
+            show_result = subprocess.run(show_session_command,
+                                         capture_output=True,
+                                         text=True,
+                                         check=False)
+            if show_result.returncode != 0:
+                continue
+
+            props = {}
+            for show_line in show_result.stdout.splitlines():
+                if "=" in show_line:
+                    k, v = show_line.split("=", 1)
+                    props[k] = v
+
+            if (props.get("Remote") == "yes"
+                    and props.get("Type") in ["wayland", "x11"]):
+                print(f"Terminating remote session {session_id} "
+                      f"(Type={props.get('Type')})...")
+                subprocess.run(["loginctl", "terminate-session", session_id],
+                               check=False)
+    except subprocess.CalledProcessError as e:
+        print(f"Failed to list sessions: {e}", file=sys.stderr)
 
 
 def main():
