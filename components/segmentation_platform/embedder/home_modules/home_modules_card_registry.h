@@ -31,12 +31,6 @@ class HomeModulesCardRegistry : public base::SupportsUserData::Data {
       PrefService* profile_prefs,
       PrefService* local_state_prefs);
 
-  // Creates a test-only registry with mocked or injected cards.
-  static std::unique_ptr<HomeModulesCardRegistry> CreateForTesting(
-      PrefService* profile_prefs,
-      PrefService* local_state_prefs,
-      std::vector<std::unique_ptr<CardSelectionInfo>> test_cards);
-
   ~HomeModulesCardRegistry() override;
 
   HomeModulesCardRegistry(const HomeModulesCardRegistry&) = delete;

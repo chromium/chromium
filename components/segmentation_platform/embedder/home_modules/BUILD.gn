@@ -101,6 +101,8 @@ source_set("unit_tests") {
     "price_tracking_notification_promo_unittest.cc",
     "rank_fetcher_helper_unittest.cc",
     "send_tab_notification_promo_unittest.cc",
+    "test_home_modules_card_registry.cc",
+    "test_home_modules_card_registry.h",
     "test_utils.cc",
     "test_utils.h",
   ]

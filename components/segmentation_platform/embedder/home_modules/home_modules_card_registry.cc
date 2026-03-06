@@ -20,30 +20,6 @@
 
 namespace segmentation_platform::home_modules {
 
-namespace {
-
-// A concrete implementation for testing that accepts a custom list of cards
-// and provides empty implementations for the pure virtual tracking methods.
-//
-// TODO(crbug.com/489045573): Refactor shared test logic into reusable test
-// utils.
-class TestHomeModulesCardRegistry : public HomeModulesCardRegistry {
- public:
-  TestHomeModulesCardRegistry(
-      PrefService* profile_prefs,
-      PrefService* local_state_prefs,
-      std::vector<std::unique_ptr<CardSelectionInfo>> test_cards)
-      : HomeModulesCardRegistry(profile_prefs, local_state_prefs) {
-    all_cards_by_priority_.swap(test_cards);
-    InitializeAfterAddingCards();
-  }
-
-  void NotifyCardShown(const char* card_name) override {}
-  void NotifyCardInteracted(const char* card_name) override {}
-};
-
-}  // namespace
-
 // static
 std::unique_ptr<HomeModulesCardRegistry> HomeModulesCardRegistry::Create(
     PrefService* profile_prefs,
@@ -58,16 +34,6 @@ std::unique_ptr<HomeModulesCardRegistry> HomeModulesCardRegistry::Create(
   // Fallback for platforms that don't support home modules (e.g., Desktop).
   return nullptr;
 #endif
-}
-
-// static
-std::unique_ptr<HomeModulesCardRegistry>
-HomeModulesCardRegistry::CreateForTesting(
-    PrefService* profile_prefs,
-    PrefService* local_state_prefs,
-    std::vector<std::unique_ptr<CardSelectionInfo>> test_cards) {
-  return std::make_unique<TestHomeModulesCardRegistry>(
-      profile_prefs, local_state_prefs, std::move(test_cards));
 }
 
 // static
