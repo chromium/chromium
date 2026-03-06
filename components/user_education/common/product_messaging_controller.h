@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/user_education/common/session/user_education_session_manager.h"
 #include "components/user_education/common/user_education_storage_service.h"
-#include "ui/base/interaction/element_identifier.h"
+#include "ui/base/identifier/unique_identifier.h"
 
 namespace user_education {
 
@@ -23,29 +23,32 @@ class ProductMessagingController;
 //
 // Use DECLARE/DEFINE_REQUIRED_NOTICE_IDENTIFIER() below to create these for
 // your notices.
-using RequiredNoticeId = ui::ElementIdentifier;
+DECLARE_UNIQUE_IDENTIFIER_TYPE(RequiredNoticeId);
 
 // Place this in a .h file:
 #define DECLARE_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DECLARE_ELEMENT_IDENTIFIER_VALUE(name)
+  DECLARE_UNIQUE_IDENTIFIER_VALUE(::user_education::RequiredNoticeId, name)
 
 // Place this in a .cc file:
 #define DEFINE_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DEFINE_ELEMENT_IDENTIFIER_VALUE(name)
+  DEFINE_UNIQUE_IDENTIFIER_VALUE(::user_education::RequiredNoticeId, name)
 
 // This can be used in tests to avoid name conflicts.
 #define DEFINE_LOCAL_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DEFINE_MACRO_ELEMENT_IDENTIFIER_VALUE(__FILE__, __LINE__, name)
+  DEFINE_MACRO_LOCAL_UNIQUE_IDENTIFIER_VALUE(         \
+      __FILE__, __LINE__, ::user_education::RequiredNoticeId, name)
 
 // This can be used to scope an identifier to a class; use this in the public
 // part of the class definition.
-#define DECLARE_CLASS_REQUIRED_NOTICE_IDENTIFIER(name) \
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(name)
+#define DECLARE_CLASS_REQUIRED_NOTICE_IDENTIFIER(name)                      \
+  DECLARE_CLASS_UNIQUE_IDENTIFIER_VALUE(::user_education::RequiredNoticeId, \
+                                        name)
 
 // Use this in the .cc file to define an identifier scoped to a class, this must
 // be paired with the DECLARE macro above.
 #define DEFINE_CLASS_REQUIRED_NOTICE_IDENTIFIER(Class, Name) \
-  DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(Class, Name)
+  DEFINE_CLASS_UNIQUE_IDENTIFIER_VALUE(                      \
+      Class, ::user_education::RequiredNoticeId, Name)
 
 namespace internal {
 // Special value in the "show after" list that causes the notice to happen last.
