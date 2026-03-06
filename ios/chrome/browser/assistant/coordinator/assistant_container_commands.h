@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "base/ios/block_types.h"
+#import <vector>
 
-@protocol AssistantContainerDelegate;
-@class AssistantContainerDetent;
+#import "base/ios/block_types.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
+
+enum class AssistantContainerDetent : NSInteger;
 
 // Commands to control the Assistant Container.
 @protocol AssistantContainerCommands <NSObject>
@@ -27,15 +29,18 @@
 
 // Sets the available detents for the container.
 // The container dynamically adjusts its height within the range defined by
-// these values.
+// these values. Can't be empty.
 - (void)setAssistantContainerDetents:
-    (NSArray<AssistantContainerDetent*>*)detents;
+    (std::vector<AssistantContainerDetent>)detents;
 
-// Animates the container to a specific detent identified by `detentIdentifier`.
-// If the identifier is not found, acts as a no-op.
-- (void)animateAssistantContainerToDetent:(NSString*)detentIdentifier
+// Animates the container to a specific detent.
+// If the detent is not found, acts as a no-op.
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent
                                  duration:(NSTimeInterval)duration
                                     curve:(UIViewAnimationCurve)curve;
+
+// Sets the minimized detent height of the Assistant Container.
+- (void)setAssistantContainerMinimizedDetentHeight:(NSInteger)height;
 
 @end
 

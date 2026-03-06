@@ -9,8 +9,6 @@ source_set("ui") {
     "assistant_container_delegate.h",
     "assistant_container_detent.h",
     "assistant_container_detent.mm",
-    "assistant_container_detent_utils.h",
-    "assistant_container_detent_utils.mm",
     "assistant_container_view.h",
     "assistant_container_view.mm",
     "assistant_container_view_controller.h",
@@ -27,10 +25,7 @@ source_set("ui") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "assistant_container_detent_utils_unittest.mm",
-    "assistant_container_view_controller_unittest.mm",
-  ]
+  sources = [ "assistant_container_view_controller_unittest.mm" ]
   deps = [
     ":ui",
     "//base",

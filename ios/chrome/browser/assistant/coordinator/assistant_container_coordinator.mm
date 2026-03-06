@@ -8,7 +8,7 @@
 #import "ios/chrome/browser/assistant/coordinator/assistant_container_commands.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_animator.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_delegate.h"
-#import "ios/chrome/browser/assistant/ui/assistant_container_detent_utils.h"
+#import "ios/chrome/browser/assistant/ui/assistant_container_detent.h"
 #import "ios/chrome/browser/assistant/ui/assistant_container_view_controller.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -17,13 +17,6 @@
 #import "ios/chrome/browser/shared/ui/util/layout_guide_names.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
-
-namespace {
-
-// The minimal height of the Assistant container.
-constexpr CGFloat kDebugSmallDetentHeight = 60.0;
-
-}  // namespace
 
 @implementation AssistantContainerCoordinator {
   // The view controller for the assistant container.
@@ -37,23 +30,24 @@ constexpr CGFloat kDebugSmallDetentHeight = 60.0;
   // Completion block to be executed after dismissal.
   ProceduralBlock _dismissalCompletion;
   // The available detents for the container.
-  NSArray<AssistantContainerDetent*>* _detents;
+  std::vector<AssistantContainerDetent> _detents;
+  // The height for the minimized detent.
+  NSInteger _minimizedDetentHeight;
+}
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _minimizedDetentHeight = kAssistantContainerMinimizedDetentHeight;
+  }
+  return self;
 }
 
 - (void)start {
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(AssistantContainerCommands)];
-  if (ShouldShowAssistantContainerDebugElements()) {
-    AssistantContainerDetent* smallDetent = AssistantContainerFixedDetent(
-        kDebugSmallDetentHeight, kAssistantContainerMinimizedDetentIdentifier);
-    AssistantContainerDetent* mediumDetent =
-        AssistantContainerMediumDetent(self.baseViewController.view);
-    AssistantContainerDetent* largeDetent =
-        AssistantContainerLargeDetent(self.baseViewController.view);
-
-    _detents = @[ smallDetent, mediumDetent, largeDetent ];
-  }
 }
 
 - (void)stop {
@@ -81,7 +75,8 @@ constexpr CGFloat kDebugSmallDetentHeight = 60.0;
   _containerViewController = [[AssistantContainerViewController alloc]
       initWithViewController:_contentViewController];
   _containerViewController.delegate = _delegate;
-  if (_detents) {
+  _containerViewController.minimizedDetentHeight = _minimizedDetentHeight;
+  if (!_detents.empty()) {
     _containerViewController.detents = _detents;
   }
 
@@ -119,7 +114,7 @@ constexpr CGFloat kDebugSmallDetentHeight = 60.0;
 }
 
 - (void)setAssistantContainerDetents:
-    (NSArray<AssistantContainerDetent*>*)detents {
+    (std::vector<AssistantContainerDetent>)detents {
   if (ShouldShowAssistantContainerDebugElements()) {
     return;
   }
@@ -127,12 +122,19 @@ constexpr CGFloat kDebugSmallDetentHeight = 60.0;
   [_containerViewController setDetents:detents];
 }
 
-- (void)animateAssistantContainerToDetent:(NSString*)detentIdentifier
+- (void)animateAssistantContainerToDetent:(AssistantContainerDetent)detent
                                  duration:(NSTimeInterval)duration
                                     curve:(UIViewAnimationCurve)curve {
-  [_containerViewController animateToDetent:detentIdentifier
+  [_containerViewController animateToDetent:detent
                                    duration:duration
                                       curve:curve];
+}
+
+- (void)setAssistantContainerMinimizedDetentHeight:(NSInteger)height {
+  _minimizedDetentHeight = height;
+  if (_containerViewController) {
+    _containerViewController.minimizedDetentHeight = height;
+  }
 }
 
 - (void)dismissAssistantContainerAnimated:(BOOL)animated
@@ -217,7 +219,7 @@ constexpr CGFloat kDebugSmallDetentHeight = 60.0;
   _animator = nil;
   _contentViewController = nil;
   _delegate = nil;
-  _detents = nil;
+  _detents.clear();
 
   if (_dismissalCompletion) {
     ProceduralBlock completion = _dismissalCompletion;

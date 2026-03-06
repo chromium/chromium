@@ -7,7 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
-@class AssistantContainerDetent;
+#import <vector>
+
+enum class AssistantContainerDetent : NSInteger;
 @protocol AssistantContainerDelegate;
 
 // View Controller for the Assistant Container.
@@ -23,15 +25,19 @@
 // Defaults to NO.
 @property(nonatomic, assign) BOOL anchorToBottom;
 
-// The available detents for the container.
-@property(nonatomic, strong) NSArray<AssistantContainerDetent*>* detents;
+// The available detents for the container. Can't be empty.
+@property(nonatomic, assign) std::vector<AssistantContainerDetent> detents;
+
+// The height to use for the minimized detent. Defaults to
+// kAssistantContainerMinimizedDetentHeight.
+@property(nonatomic, assign) NSInteger minimizedDetentHeight;
 
 // The delegate for the container events.
 @property(nonatomic, weak) id<AssistantContainerDelegate> delegate;
 
-// Animates the container to a specific detent identified by `detentIdentifier`.
-// If the identifier is not found, acts as a no-op.
-- (void)animateToDetent:(NSString*)detentIdentifier
+// Animates the container to a specific detent.
+// If the detent is not found, acts as a no-op.
+- (void)animateToDetent:(AssistantContainerDetent)detent
                duration:(NSTimeInterval)duration
                   curve:(UIViewAnimationCurve)curve;
 

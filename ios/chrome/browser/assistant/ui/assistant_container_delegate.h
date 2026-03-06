@@ -7,8 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+enum class AssistantContainerDetent : NSInteger;
 @class AssistantContainerViewController;
-@class AssistantContainerDetent;
 
 // Describes the presentation context of the Assistant Container.
 enum class AssistantPresentationContext {
@@ -46,7 +46,7 @@ enum class AssistantPresentationContext {
 
 // Called when the container successfully settles on a new detent.
 - (void)assistantContainer:(AssistantContainerViewController*)container
-           didChangeDetent:(AssistantContainerDetent*)newDetent;
+           didChangeDetent:(AssistantContainerDetent)newDetent;
 
 // Called continuously when the container's height changes during an interactive
 // drag. `percentage` is between 0 (min height) and 1 (max height).

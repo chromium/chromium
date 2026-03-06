@@ -5,25 +5,21 @@
 #ifndef IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_DETENT_H_
 #define IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_DETENT_H_
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-// A detent with an identifier and a dynamic value.
-@interface AssistantContainerDetent : NSObject
+// The fallback height for the minimized detent.
+extern const NSInteger kAssistantContainerMinimizedDetentHeight;
 
-// The unique identifier for this detent.
-@property(nonatomic, readonly, copy) NSString* identifier;
-
-// The resolved value for the detent.
-@property(nonatomic, readonly) NSInteger value;
-
-// Creates a new detent with a given identifier and a block providing an integer
-// value for the detent.
-- (instancetype)initWithIdentifier:(NSString*)identifier
-                     valueResolver:(NSInteger (^)())valueResolver;
-
-// Unavailable.
-- (instancetype)init NS_UNAVAILABLE;
-
-@end
+// Represents a detent of the Assistant Container.
+// Backed by NSInteger and explicitly ordered by increasing height.
+// This allows the raw values to be used directly for sorting detent arrays.
+enum class AssistantContainerDetent : NSInteger {
+  // Minimized detent (fixed height).
+  kMinimized = 0,
+  // Medium detent (50%).
+  kMedium,
+  // Large detent (100%).
+  kLarge,
+};
 
 #endif  // IOS_CHROME_BROWSER_ASSISTANT_UI_ASSISTANT_CONTAINER_DETENT_H_
