@@ -396,10 +396,9 @@ TabDragContext* VerticalTabStripRegionView::GetDragContext() {
 
 BrowserRootView::DropTarget* VerticalTabStripRegionView::GetDropTarget(
     gfx::Point loc_in_local_coords) {
-  if (tab_strip_view_) {
-    if (tab_strip_view_->bounds().Contains(loc_in_local_coords)) {
-      return this;
-    }
+  if (tab_strip_view_ && IsTabStripEditable() &&
+      GetLocalBounds().Contains(loc_in_local_coords)) {
+    return this;
   }
   return nullptr;
 }
@@ -412,11 +411,15 @@ std::optional<BrowserRootView::DropIndex>
 VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
   // Check pinned tabs.
   VerticalPinnedTabContainerView* pinned_container = GetPinnedTabsContainer();
-  if (pinned_container) {
+  if (pinned_container && !pinned_container->children().empty()) {
     gfx::Point loc_in_pinned = views::View::ConvertPointToTarget(
         this, pinned_container, event.location());
-    if (loc_in_pinned.y() >= 0 &&
-        loc_in_pinned.y() < pinned_container->height()) {
+    if (loc_in_pinned.y() < 0) {
+      // If the point is above the pinned container, return the beginning of the
+      // container.
+      return pinned_container->GetLinkDropIndex(gfx::Point(0, 0));
+    } else if (loc_in_pinned.y() >= 0 &&
+               loc_in_pinned.y() < pinned_container->height()) {
       return pinned_container->GetLinkDropIndex(loc_in_pinned);
     }
   }
@@ -424,17 +427,20 @@ VerticalTabStripRegionView::GetDropIndex(const ui::DropTargetEvent& event) {
   // Check unpinned tabs.
   VerticalUnpinnedTabContainerView* unpinned_container =
       GetUnpinnedTabsContainer();
-  if (unpinned_container) {
+  if (unpinned_container && !unpinned_container->children().empty()) {
     gfx::Point loc_in_unpinned = views::View::ConvertPointToTarget(
         this, unpinned_container, event.location());
-    if (loc_in_unpinned.y() >= 0 &&
-        loc_in_unpinned.y() < unpinned_container->height()) {
+    if (loc_in_unpinned.y() < 0) {
+      // If the point is above the unpinned container, return the beginning of
+      // the container.
+      return unpinned_container->GetLinkDropIndex(gfx::Point(0, 0));
+    } else if (loc_in_unpinned.y() >= 0 &&
+               loc_in_unpinned.y() < unpinned_container->height()) {
       return unpinned_container->GetLinkDropIndex(loc_in_unpinned);
     }
   }
 
-  // If it's between containers or at the end, return the end of the unpinned
-  // container.
+  // If it's at the end, return the end of the unpinned container.
   if (unpinned_container) {
     return unpinned_container->GetLinkDropIndex(
         gfx::Point(0, unpinned_container->height()));

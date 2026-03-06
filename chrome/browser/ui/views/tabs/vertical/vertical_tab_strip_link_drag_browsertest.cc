@@ -14,6 +14,8 @@
 #include "chrome/browser/ui/views/tabs/vertical/vertical_pinned_tab_container_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_split_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_group_view.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_bottom_container.h"
+#include "chrome/browser/ui/views/tabs/vertical/vertical_tab_strip_top_container.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_tab_view.h"
 #include "chrome/browser/ui/views/tabs/vertical/vertical_unpinned_tab_container_view.h"
 #include "chrome/browser/ui/views/test/vertical_tabs_browser_test_mixin.h"
@@ -59,8 +61,8 @@ class VerticalTabStripLinkDragTest
   std::optional<BrowserRootView::DropIndex> GetDropIndexAt(
       views::View* view,
       gfx::Point loc_in_view) {
-    gfx::Point loc_in_region = loc_in_view;
-    views::View::ConvertPointToTarget(view, region_view(), &loc_in_region);
+    const gfx::Point loc_in_region =
+        views::View::ConvertPointToTarget(view, region_view(), loc_in_view);
     ui::OSExchangeData data;
     ui::DropTargetEvent event(data, gfx::PointF(loc_in_region),
                               gfx::PointF(loc_in_region),
@@ -373,6 +375,32 @@ IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest, DropInPinnedTabs) {
     EXPECT_EQ(drop_index->index, 0);
     EXPECT_EQ(drop_index->relative_to_index,
               BrowserRootView::DropIndex::RelativeToIndex::kReplaceIndex);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(VerticalTabStripLinkDragTest,
+                       DropInRegionViewOutsideTabStrip) {
+  EnsureTabCount(3);
+  RunScheduledLayouts();
+
+  {
+    auto* top_container = region_view()->GetTopContainer();
+    const gfx::Point loc_in_top(top_container->width() / 2,
+                                top_container->height() / 2);
+    const gfx::Point loc_in_region = views::View::ConvertPointToTarget(
+        top_container, region_view(), loc_in_top);
+    EXPECT_EQ(region_view()->GetDropTarget(loc_in_region), region_view());
+    EXPECT_EQ(GetDropIndexAt(top_container, loc_in_top)->index, 0);
+  }
+
+  {
+    auto* bottom_container = region_view()->GetBottomContainer();
+    const gfx::Point loc_in_bottom(bottom_container->width() / 2,
+                                   bottom_container->height() / 2);
+    const gfx::Point loc_in_region = views::View::ConvertPointToTarget(
+        bottom_container, region_view(), loc_in_bottom);
+    EXPECT_EQ(region_view()->GetDropTarget(loc_in_region), region_view());
+    EXPECT_EQ(GetDropIndexAt(bottom_container, loc_in_bottom)->index, 3);
   }
 }
 
