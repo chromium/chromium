@@ -113,33 +113,6 @@ enum DialogState {
   CONFLICTS,
 }
 
-/**
- * Should be kept in sync with PasswordsImportDesktopInteractions in enums.xml.
- * These values are persisted to logs. Entries should not be renumbered and
- * numeric values should never be reused.
- */
-enum PasswordsImportDesktopInteractions {
-  DIALOG_OPENED_FROM_THREE_DOT_MENU = 0,
-  DIALOG_OPENED_FROM_EMPTY_STATE = 1,
-  CANCELED_BEFORE_FILE_SELECT = 2,
-  UPM_STORE_PICKER_OPENED = 3,
-  UPM_FILE_SELECT_LAUNCHED = 4,
-  UPM_VIEW_PASSWORDS_CLICKED = 5,
-  CONFLICTS_CANCELED = 6,
-  CONFLICTS_REAUTH_FAILED = 7,
-  CONFLICTS_SKIP_CLICKED = 8,
-  CONFLICTS_REPLACE_CLICKED = 9,
-  // Must be last.
-  COUNT = 10,
-}
-
-function recordPasswordsImportInteraction(
-    interaction: PasswordsImportDesktopInteractions) {
-  chrome.metricsPrivate.recordEnumerationValue(
-      'PasswordManager.Import.DesktopInteractions', interaction,
-      PasswordsImportDesktopInteractions.COUNT);
-}
-
 const PasswordsImporterElementBase = I18nMixin(PolymerElement);
 
 export class PasswordsImporterElement extends PasswordsImporterElementBase {
@@ -247,8 +220,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
       PasswordManagerImpl.getInstance();
 
   launchImport() {
-    recordPasswordsImportInteraction(
-        PasswordsImportDesktopInteractions.DIALOG_OPENED_FROM_EMPTY_STATE);
     this.dialogState_ = DialogState.IN_PROGRESS;
     // Timeout is needed to allow Polymer to render the Settings page before the
     // system file picker has been opened.
@@ -297,8 +268,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
 
   private onBannerClick_() {
     if (this.isAccountStoreUser && this.isState_(DialogState.NO_DIALOG)) {
-      recordPasswordsImportInteraction(
-          PasswordsImportDesktopInteractions.UPM_STORE_PICKER_OPENED);
       this.dialogState_ = DialogState.STORE_PICKER;
     }
   }
@@ -329,24 +298,16 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
               '#deleteFileOption');
       assert(deleteFileOption);
       deleteFile = deleteFileOption.checked;
-      chrome.metricsPrivate.recordBoolean(
-          'PasswordManager.Import.FileDeletionSelected', deleteFile);
     }
     await this.passwordManager_.resetImporter(deleteFile);
   }
 
   private async onCloseClick_() {
-    if (this.isState_(DialogState.CONFLICTS)) {
-      recordPasswordsImportInteraction(
-          PasswordsImportDesktopInteractions.CONFLICTS_CANCELED);
-    }
     await this.resetImporter();
     this.closeDialog_();
   }
 
   private async onViewPasswordsClick_() {
-    recordPasswordsImportInteraction(
-        PasswordsImportDesktopInteractions.UPM_VIEW_PASSWORDS_CLICKED);
     await this.resetImporter();
     this.closeDialog_();
     Router.getInstance().navigateTo(Page.PASSWORDS);
@@ -378,8 +339,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   }
 
   private async onSelectFileClick_() {
-    recordPasswordsImportInteraction(
-        PasswordsImportDesktopInteractions.UPM_FILE_SELECT_LAUNCHED);
     await this.selectFileHelper_();
   }
 
@@ -389,8 +348,6 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
     this.results_ = await this.passwordManager_.continueImport(selectedIds);
     if (this.results_.status ===
         chrome.passwordsPrivate.ImportResultsStatus.DISMISSED) {
-      recordPasswordsImportInteraction(
-          PasswordsImportDesktopInteractions.CONFLICTS_REAUTH_FAILED);
       // When re-auth fails, restore the conflicts dialog.
       this.dialogState_ = DialogState.CONFLICTS;
       return;
@@ -399,14 +356,10 @@ export class PasswordsImporterElement extends PasswordsImporterElementBase {
   }
 
   private async onSkipClick_() {
-    recordPasswordsImportInteraction(
-        PasswordsImportDesktopInteractions.CONFLICTS_SKIP_CLICKED);
     await this.continueImportHelper_(/*selectedIds=*/[]);
   }
 
   private async onReplaceClick_() {
-    recordPasswordsImportInteraction(
-        PasswordsImportDesktopInteractions.CONFLICTS_REPLACE_CLICKED);
     await this.continueImportHelper_(this.conflictsSelectedForReplace_);
   }
 

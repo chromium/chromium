@@ -1848,26 +1848,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PasswordManager.Import.DesktopInteractions"
-    enum="PasswordsImportDesktopInteractions" expires_after="2026-04-12">
-  <owner>natiahlyi@google.com</owner>
-  <owner>markusheintz@google.com</owner>
-  <summary>
-    Records the user actions related to passwords import flow on desktop.
-    Reported upon interactions with the password settings page.
-  </summary>
-</histogram>
-
-<histogram name="PasswordManager.Import.FileDeletionSelected" enum="Boolean"
-    expires_after="2026-04-12">
-  <owner>natiahlyi@google.com</owner>
-  <owner>markusheintz@google.com</owner>
-  <summary>
-    Records if the user selected to delete a file after a succesful import with
-    no errors. Reported before the import success dialog is closed.
-  </summary>
-</histogram>
-
 <histogram name="PasswordManager.Import.PerFile.ConflictsResolved"
     units="saved credentials" expires_after="2026-08-23">
   <owner>natiahlyi@google.com</owner>
