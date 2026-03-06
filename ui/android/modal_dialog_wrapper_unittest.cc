@@ -82,7 +82,7 @@ class ModalDialogWrapperTest : public testing::Test {
 
     DialogModelBuilder& WithOkButton(
         base::OnceClosure callback,
-        ui::ButtonStyle style = ui::ButtonStyle::kDefault) {
+        std::optional<ui::ButtonStyle> style = std::nullopt) {
       ok_callback_ = std::move(callback);
       ok_button_style_ = style;
       return *this;
@@ -90,7 +90,7 @@ class ModalDialogWrapperTest : public testing::Test {
 
     DialogModelBuilder& WithCancelButton(
         base::OnceClosure callback,
-        ui::ButtonStyle style = ui::ButtonStyle::kDefault) {
+        std::optional<ui::ButtonStyle> style = std::nullopt) {
       has_cancel_button_ = true;
       cancel_callback_ = std::move(callback);
       cancel_button_style_ = style;
@@ -166,16 +166,21 @@ class ModalDialogWrapperTest : public testing::Test {
                 checkbox_is_checked_));
       }
 
-      dialog_builder.AddOkButton(
-          std::move(ok_callback_),
-          ui::DialogModel::Button::Params().SetLabel(u"ok").SetStyle(
-              ok_button_style_));
+      ui::DialogModel::Button::Params ok_params;
+      ok_params.SetLabel(u"ok");
+      if (ok_button_style_) {
+        ok_params.SetStyle(*ok_button_style_);
+      }
+      dialog_builder.AddOkButton(std::move(ok_callback_), ok_params);
 
       if (has_cancel_button_) {
-        dialog_builder.AddCancelButton(
-            std::move(cancel_callback_),
-            ui::DialogModel::Button::Params().SetLabel(u"cancel").SetStyle(
-                cancel_button_style_));
+        ui::DialogModel::Button::Params cancel_params;
+        cancel_params.SetLabel(u"cancel");
+        if (cancel_button_style_) {
+          cancel_params.SetStyle(*cancel_button_style_);
+        }
+        dialog_builder.AddCancelButton(std::move(cancel_callback_),
+                                       cancel_params);
       }
 
       // Capture the pointer to the destruction flag by value. This prevents
@@ -195,13 +200,12 @@ class ModalDialogWrapperTest : public testing::Test {
    private:
     raw_ptr<bool> dialog_destroyed_flag_;
 
-    // Default values match the original CreateDialogModel function.
     base::OnceClosure ok_callback_ = base::DoNothing();
-    ui::ButtonStyle ok_button_style_ = ui::ButtonStyle::kDefault;
+    std::optional<ui::ButtonStyle> ok_button_style_;
 
     bool has_cancel_button_ = false;
     base::OnceClosure cancel_callback_ = base::DoNothing();
-    ui::ButtonStyle cancel_button_style_ = ui::ButtonStyle::kDefault;
+    std::optional<ui::ButtonStyle> cancel_button_style_;
 
     base::OnceClosure close_callback_ = base::DoNothing();
     std::optional<mojom::DialogButton> override_button_;
@@ -288,8 +292,23 @@ TEST_F(ModalDialogWrapperTest, CloseDialogFromNative) {
   EXPECT_TRUE(dialog_destroyed_);
 }
 
-TEST_F(ModalDialogWrapperTest, ModalButtonsNoProminent) {
+TEST_F(ModalDialogWrapperTest, ModalButtonsDefaultPrimaryProminent) {
   auto dialog_model = DialogModelBuilder(&dialog_destroyed_).Build();
+
+  ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
+
+  EXPECT_EQ(static_cast<ui::ModalDialogWrapper::ModalDialogButtonStyles>(
+                fake_dialog_manager_->GetButtonStyles()),
+            ui::ModalDialogWrapper::ModalDialogButtonStyles::
+                kPrimaryFilledNoNegative);
+  EXPECT_FALSE(dialog_destroyed_);
+}
+
+TEST_F(ModalDialogWrapperTest, ModalButtonsNoProminent) {
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::DoNothing(), ui::ButtonStyle::kDefault)
+          .Build();
 
   ModalDialogWrapper::ShowTabModal(std::move(dialog_model), window_->get());
 
@@ -334,6 +353,7 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsPrimaryProminent) {
 TEST_F(ModalDialogWrapperTest, ModalButtonsNegativeProminent) {
   auto dialog_model =
       DialogModelBuilder(&dialog_destroyed_)
+          .WithOkButton(base::DoNothing(), ui::ButtonStyle::kDefault)
           .WithCancelButton(base::DoNothing(), ui::ButtonStyle::kProminent)
           .Build();
 
@@ -394,6 +414,18 @@ TEST_F(ModalDialogWrapperTest, ModalButtonsOverriddenNegative) {
             ui::ModalDialogWrapper::ModalDialogButtonStyles::
                 kPrimaryOutlineNegativeFilled);
   EXPECT_FALSE(dialog_destroyed_);
+}
+
+TEST_F(ModalDialogWrapperTest, ModalButtonsBothProminentNotAllowed) {
+  // If both buttons are set to prominent (and no override is provided), it
+  // should hit NOTREACHED(). Note that OK button is prominent by default.
+  auto dialog_model =
+      DialogModelBuilder(&dialog_destroyed_)
+          .WithCancelButton(base::DoNothing(), ui::ButtonStyle::kProminent)
+          .Build();
+
+  EXPECT_DCHECK_DEATH(ModalDialogWrapper::ShowTabModal(std::move(dialog_model),
+                                                       window_->get()));
 }
 
 TEST_F(ModalDialogWrapperTest, ParagraphsAreSetAndReplaced) {

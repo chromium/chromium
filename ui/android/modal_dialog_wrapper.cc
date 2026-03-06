@@ -185,7 +185,7 @@ ModalDialogWrapper::GetButtonStyles() const {
       dialog_model_->cancel_button(DialogModelHost::GetPassKey());
 
   const ButtonStyle ok_button_style =
-      ok_button->style().value_or(ButtonStyle::kDefault);
+      ok_button->style().value_or(ButtonStyle::kProminent);
   const ButtonStyle cancel_button_style =
       cancel_button ? cancel_button->style().value_or(ui::ButtonStyle::kDefault)
                     : ButtonStyle::kDefault;
