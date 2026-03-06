@@ -1052,7 +1052,7 @@ TEST_F(AILanguageModelTest, MeasureInputUsage) {
   auto session = CreateSession();
   base::test::TestFuture<std::optional<uint32_t>> measure_future;
   session->MeasureInputUsage(MakeInput("foo"), measure_future.GetCallback());
-  EXPECT_EQ(measure_future.Get(), std::string("UfooEM").size());
+  EXPECT_EQ(measure_future.Get(), std::string("UfooE").size());
 }
 
 TEST_F(AILanguageModelTest, TextSafetyInitialPrompts) {
@@ -1252,7 +1252,7 @@ TEST_F(AILanguageModelTest, CrashRecoveryMeasureInputUsage) {
 
   base::test::TestFuture<std::optional<uint32_t>> measure_future;
   session->MeasureInputUsage(MakeInput("foo"), measure_future.GetCallback());
-  EXPECT_EQ(measure_future.Get(), std::string("UfooEM").size());
+  EXPECT_EQ(measure_future.Get(), std::string("UfooE").size());
 }
 
 TEST_F(AILanguageModelTest, CanCreate_WaitsForEligibility) {

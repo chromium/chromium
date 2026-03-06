@@ -47,8 +47,15 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
       MeasureInputUsageCallback callback) override;
 
  private:
-  void DoMockExecution(const std::string& input,
-                       mojo::RemoteSetElementId responder_id);
+  void DoMockExecution(
+      std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+      bool generate_response,
+      mojo::RemoteSetElementId responder_id);
+  void AppendOrPrompt(
+      std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+      mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+          pending_responder,
+      bool generate_response);
 
   // Stringify a list of prompts. Returns nullopt on failure.
   std::optional<std::string> PromptsToText(
@@ -85,12 +92,13 @@ class EchoAILanguageModel : public blink::mojom::AILanguageModel {
 
   // Initial prompts are echoed on the first Prompt call.
   std::vector<blink::mojom::AILanguageModelPromptPtr> initial_prompts_;
-  bool did_echo_initial_prompts_ = false;
-
   std::vector<blink::mojom::AILanguageModelPromptPtr> prompt_history_;
 
   // Tools available for this language model session.
   std::vector<blink::mojom::AILanguageModelToolDeclarationPtr> tools_;
+
+  // Response content from append input that has not yet been emitted.
+  std::string pending_response_;
 
   base::WeakPtrFactory<EchoAILanguageModel> weak_ptr_factory_{this};
 };

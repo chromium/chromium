@@ -637,8 +637,8 @@ void AILanguageModel::MeasureInputUsage(
     std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
     MeasureInputUsageCallback callback) {
   EnsureSessionConnected();
-  auto input = ConvertToInputForExecute(std::move(prompts),
-                                        session_params_->capabilities);
+  auto input =
+      ConvertToInput(std::move(prompts), session_params_->capabilities);
   if (!input) {
     std::move(callback).Run(std::nullopt);
     return;

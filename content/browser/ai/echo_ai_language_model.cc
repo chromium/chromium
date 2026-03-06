@@ -27,6 +27,7 @@
 namespace content {
 
 namespace {
+
 constexpr char kResponsePrefix[] =
     "On-device model is not available in Chromium, this API is just echoing "
     "back the input:\n";
@@ -40,7 +41,29 @@ constexpr std::string_view kGenerateToolCallsTrigger =
 // of tool calls.
 constexpr std::string_view kGenerateMultipleToolCallsTrigger =
     "<GenerateMultipleToolCalls>";
+
+uint32_t MeasureUsage(const blink::mojom::AILanguageModelPrompt& prompt) {
+  size_t total = 0;
+  for (const auto& content : prompt.content) {
+    if (content->is_text()) {
+      total += content->get_text().size();
+    } else {
+      total += 100;  // TODO(crbug.com/415304330): Improve estimate.
+    }
+  }
+  return total;
 }
+
+uint32_t MeasureUsage(
+    const std::vector<blink::mojom::AILanguageModelPromptPtr>& prompts) {
+  size_t total = 0;
+  for (const auto& prompt : prompts) {
+    total += MeasureUsage(*prompt);
+  }
+  return total;
+}
+
+}  // namespace
 
 EchoAILanguageModel::EchoAILanguageModel(
     blink::mojom::AILanguageModelSamplingParamsPtr sampling_params,
@@ -52,12 +75,15 @@ EchoAILanguageModel::EchoAILanguageModel(
       sampling_params_(std::move(sampling_params)),
       input_types_(input_types),
       initial_prompts_(std::move(initial_prompts)),
-      tools_(std::move(tools)) {}
+      tools_(std::move(tools)),
+      pending_response_(base::StrCat(
+          {kResponsePrefix, PromptsToText(initial_prompts_).value_or("")})) {}
 
 EchoAILanguageModel::~EchoAILanguageModel() = default;
 
 void EchoAILanguageModel::DoMockExecution(
-    const std::string& input,
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    bool generate_response,
     mojo::RemoteSetElementId responder_id) {
   blink::mojom::ModelStreamingResponder* responder =
       responder_set_.Get(responder_id);
@@ -65,23 +91,30 @@ void EchoAILanguageModel::DoMockExecution(
     return;
   }
 
-  uint32_t context_window = EchoAIManagerImpl::kMaxContextSizeInTokens;
-  if (input.size() > context_window) {
-    responder->OnError(
-        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
-        blink::mojom::QuotaErrorInfo::New(input.size(), context_window));
+  auto prompts_as_string = PromptsToText(prompts);
+  if (!prompts_as_string.has_value()) {
     return;
   }
-  if (current_tokens_ > context_window - input.size()) {
-    current_tokens_ = input.size();
-    responder->OnContextOverflow();
+
+  const auto usage = MeasureUsage(prompts);
+  uint32_t context_window = EchoAIManagerImpl::kMaxContextSizeInTokens;
+  if (usage > context_window) {
+    responder->OnError(
+        blink::mojom::ModelStreamingResponseStatus::kErrorInputTooLarge,
+        blink::mojom::QuotaErrorInfo::New(usage, context_window));
+    return;
   }
-  current_tokens_ += input.size();
+
+  current_tokens_ += usage;
+  prompt_history_.insert(prompt_history_.end(),
+                         std::make_move_iterator(prompts.begin()),
+                         std::make_move_iterator(prompts.end()));
+  prompts.clear();
 
   // Check if input contains the trigger prefix for generating tool calls.
   bool should_generate_tool_calls = false;
   bool should_generate_multiple_batches = false;
-  std::string_view text_to_echo = input;
+  std::string_view text_to_echo = prompts_as_string.value();
   if (!tools_.empty()) {
     if (text_to_echo.starts_with(kGenerateMultipleToolCallsTrigger)) {
       should_generate_tool_calls = true;
@@ -92,37 +125,55 @@ void EchoAILanguageModel::DoMockExecution(
       text_to_echo.remove_prefix(kGenerateToolCallsTrigger.size());
     }
   }
+  pending_response_.append(text_to_echo);
 
-  // Echo the input text first (before tool calls, if any).
-  responder->OnStreaming(kResponsePrefix);
-  if (!text_to_echo.empty()) {
-    responder->OnStreaming(std::string(text_to_echo));
-  }
+  if (generate_response) {
+    auto prompt = blink::mojom::AILanguageModelPrompt::New();
+    prompt->role = blink::mojom::AILanguageModelPromptRole::kAssistant;
+    prompt->content.push_back(
+        blink::mojom::AILanguageModelPromptContent::NewText(pending_response_));
+    current_tokens_ += MeasureUsage(*prompt);
+    prompt_history_.push_back(std::move(prompt));
+    responder->OnStreaming(pending_response_);
+    pending_response_.clear();
 
-  // Generate tool calls if triggered and tools are available.
-  if (should_generate_tool_calls) {
-    if (should_generate_multiple_batches) {
-      // Split tools into two arbitrary batches to test that the JS side
-      // correctly accumulates tool calls across multiple OnToolCalls events.
-      std::vector<blink::mojom::ToolCallPtr> first_batch =
-          GenerateToolCallsForRange(0, tools_.size() / 2);
-      if (!first_batch.empty()) {
-        responder->OnToolCalls(std::move(first_batch));
-      }
+    // Generate tool calls if triggered and tools are available.
+    if (should_generate_tool_calls) {
+      if (should_generate_multiple_batches) {
+        // Split tools into two arbitrary batches to test that the JS side
+        // correctly accumulates tool calls across multiple OnToolCalls events.
+        std::vector<blink::mojom::ToolCallPtr> first_batch =
+            GenerateToolCallsForRange(0, tools_.size() / 2);
+        if (!first_batch.empty()) {
+          responder->OnToolCalls(std::move(first_batch));
+        }
 
-      std::vector<blink::mojom::ToolCallPtr> second_batch =
-          GenerateToolCallsForRange(tools_.size() / 2, tools_.size());
-      if (!second_batch.empty()) {
-        responder->OnToolCalls(std::move(second_batch));
-      }
-    } else {
-      // Single batch: All tools at once.
-      std::vector<blink::mojom::ToolCallPtr> tool_calls =
-          GenerateSimpleToolCalls();
-      if (!tool_calls.empty()) {
-        responder->OnToolCalls(std::move(tool_calls));
+        std::vector<blink::mojom::ToolCallPtr> second_batch =
+            GenerateToolCallsForRange(tools_.size() / 2, tools_.size());
+        if (!second_batch.empty()) {
+          responder->OnToolCalls(std::move(second_batch));
+        }
+      } else {
+        // Single batch: All tools at once.
+        std::vector<blink::mojom::ToolCallPtr> tool_calls =
+            GenerateSimpleToolCalls();
+        if (!tool_calls.empty()) {
+          responder->OnToolCalls(std::move(tool_calls));
+        }
       }
     }
+  }
+
+  // Overflow and prompt history eviction logic.
+  bool overflow = false;
+  while (current_tokens_ > context_window && !prompt_history_.empty()) {
+    auto& prompt = prompt_history_.front();
+    current_tokens_ = base::ClampSub(current_tokens_, MeasureUsage(*prompt));
+    prompt_history_.erase(prompt_history_.begin());
+    overflow = true;
+  }
+  if (overflow) {
+    responder->OnContextOverflow();
   }
 
   responder->OnCompletion(
@@ -134,6 +185,23 @@ void EchoAILanguageModel::Prompt(
     on_device_model::mojom::ResponseConstraintPtr constraint,
     mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
         pending_responder) {
+  AppendOrPrompt(std::move(prompts), std::move(pending_responder),
+                 /*generate_response=*/true);
+}
+
+void EchoAILanguageModel::Append(
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder) {
+  AppendOrPrompt(std::move(prompts), std::move(pending_responder),
+                 /*generate_response=*/false);
+}
+
+void EchoAILanguageModel::AppendOrPrompt(
+    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
+    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
+        pending_responder,
+    bool generate_response) {
   if (is_destroyed_) {
     mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
         std::move(pending_responder));
@@ -142,25 +210,6 @@ void EchoAILanguageModel::Prompt(
         /*quota_error_info=*/nullptr);
     return;
   }
-  std::string response = "";
-
-  if (!did_echo_initial_prompts_) {
-    auto initial_string = PromptsToText(initial_prompts_);
-    if (!initial_string.has_value()) {
-      return;
-    }
-    response.append(*initial_string);
-    did_echo_initial_prompts_ = true;
-  }
-
-  auto prompts_as_string = PromptsToText(prompts);
-  if (!prompts_as_string.has_value()) {
-    return;
-  }
-  response.append(*prompts_as_string);
-  for (const auto& prompt : prompts) {
-    prompt_history_.push_back(prompt.Clone());
-  }
 
   mojo::RemoteSetElementId responder_id =
       responder_set_.Add(std::move(pending_responder));
@@ -168,21 +217,9 @@ void EchoAILanguageModel::Prompt(
   content::GetUIThreadTaskRunner()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&EchoAILanguageModel::DoMockExecution,
-                     weak_ptr_factory_.GetWeakPtr(), response, responder_id),
+                     weak_ptr_factory_.GetWeakPtr(), std::move(prompts),
+                     generate_response, responder_id),
       base::Seconds(1));
-}
-
-void EchoAILanguageModel::Append(
-    std::vector<blink::mojom::AILanguageModelPromptPtr> prompts,
-    mojo::PendingRemote<blink::mojom::ModelStreamingResponder>
-        pending_responder) {
-  for (const auto& prompt : prompts) {
-    prompt_history_.push_back(prompt.Clone());
-  }
-  mojo::Remote<blink::mojom::ModelStreamingResponder> responder(
-      std::move(pending_responder));
-  responder->OnCompletion(
-      blink::mojom::ModelExecutionContextInfo::New(current_tokens_));
 }
 
 void EchoAILanguageModel::Fork(
@@ -236,17 +273,7 @@ void EchoAILanguageModel::Destroy() {
 void EchoAILanguageModel::MeasureInputUsage(
     std::vector<blink::mojom::AILanguageModelPromptPtr> input,
     MeasureInputUsageCallback callback) {
-  size_t total = 0;
-  for (const auto& prompt : input) {
-    for (const auto& content : prompt->content) {
-      if (content->is_text()) {
-        total += content->get_text().size();
-      } else {
-        total += 100;  // TODO(crbug.com/415304330): Improve estimate.
-      }
-    }
-  }
-  std::move(callback).Run(total);
+  std::move(callback).Run(MeasureUsage(input));
 }
 
 std::optional<std::string> EchoAILanguageModel::PromptsToText(
