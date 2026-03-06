@@ -73,6 +73,7 @@ chromium-metrics-reviews@google.com.
   <variant name="AmountExtraction" summary="Amount Extraction"/>
   <variant name="BlingPrototyping" summary="Bling Prototyping"/>
   <variant name="Compose" summary="Compose"/>
+  <variant name="ContentAnnotation" summary="Content Annotation"/>
   <variant name="EnhancedCalendar" summary="Enhanced Calendar"/>
   <variant name="FormsAnnotations" summary="Forms Annotations"/>
   <variant name="FormsClassifications" summary="Forms Classifications"/>
