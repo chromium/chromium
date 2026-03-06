@@ -48,6 +48,10 @@ BASE_DECLARE_FEATURE(kUndoMigrationOfSyncingUserToSignedIn);
 // requirements.
 BASE_DECLARE_FEATURE(kForceMigrateSyncingUserToSignedIn);
 
+// No-op feature that's checked everywhere where
+// kForceMigrateSyncingUserToSignedIn is checked.
+BASE_DECLARE_FEATURE(kForceMigrateNoopForDebugging);
+
 #if !BUILDFLAG(IS_CHROMEOS)
 // Kill-switch for migration flow of all the users in the sync setup incomplete
 // state to signed-in history-off state.
