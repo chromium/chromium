@@ -84,10 +84,14 @@ void FlexGapAccumulator::BuildGapsForCurrentItem(
   wtf_size_t fragment_relative_line_index =
       flex_line_index - first_flex_line_processed_index_;
 
+  // TODO(490343456): There is a bug in the flex layout
+  // algorithm that can cause the size of a line to be 0. In such cases we make
+  // sure to not create a main gap, while the underlying bug and behaviur is
+  // being investigated.
   const bool need_to_add_main_gap =
       (main_gaps_.empty() ||
        main_gaps_.size() - 1 < fragment_relative_line_index) &&
-      !is_last_line;
+      !is_last_line && line_cross_start != line_cross_end;
   const bool is_first_line = fragment_relative_line_index == 0;
   const bool single_line = is_first_line && is_last_line;
 
