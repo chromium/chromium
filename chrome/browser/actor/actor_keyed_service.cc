@@ -264,6 +264,14 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
         }
       }
     }
+#if BUILDFLAG(IS_ANDROID)
+    if (open_in_background) {
+      // Workaround for b/489440503. On Android we ignore
+      // WindowOpenDisposition::NEW_BACKGROUND_TAB when a tabstrip_index is set,
+      // so revert the index to its default value.
+      params.tabstrip_index = -1;
+    }
+#endif
   } else {
     GetJournal().Log(
         GURL(), task_id, "CreateActorTab",
@@ -275,6 +283,8 @@ void ActorKeyedService::CreateActorTab(TaskId task_id,
     params.window_action = NavigateParams::WindowAction::kShowWindow;
   }
 
+  // TODO(b/490182433) Use async version of Navigate() when b/490180494 is
+  // fixed. This is needed to support opening new windows on Android.
   base::WeakPtr<content::NavigationHandle> handle = Navigate(&params);
   if (!handle) {
     GetJournal().Log(

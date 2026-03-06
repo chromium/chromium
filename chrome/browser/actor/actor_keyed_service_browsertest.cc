@@ -26,12 +26,17 @@
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/core/filters/optimization_hints_component_update_listener.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/sessions/content/session_tab_helper.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_frame_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#endif
 
 using ::base::test::TestFuture;
 
@@ -45,7 +50,11 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
     // TODO(crbug.com/443783931): Add test coverage for
     // kGlicTabScreenshotPaintPreviewBackend.
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kGlic, features::kGlicActor},
+        /*enabled_features=*/{features::kGlic,
+#if BUILDFLAG(IS_ANDROID)
+                              chrome::android::kBrowserWindowInterfaceMobile,
+#endif
+                              features::kGlicActor},
         /*disabled_features=*/{features::kGlicWarming});
   }
   ActorKeyedServiceBrowserTest(const ActorKeyedServiceBrowserTest&) = delete;
@@ -66,9 +75,13 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
     ASSERT_TRUE(embedded_https_test_server().Start());
 
     // Optimization guide uses this histogram to signal initialization in tests.
-    optimization_guide::RetryForHistogramUntilCountReached(
-        &histogram_tester_for_init_,
-        "OptimizationGuide.HintsManager.HintCacheInitialized", 1);
+    auto* optimization_guide_init_histogram =
+        "OptimizationGuide.HintsManager.HintCacheInitialized";
+    if (histogram_tester_for_init_.GetTotalSum(
+            optimization_guide_init_histogram) == 0) {
+      optimization_guide::RetryForHistogramUntilCountReached(
+          &histogram_tester_for_init_, optimization_guide_init_histogram, 1);
+    }
 
     // Simulate the component loading, as the implementation checks it, but the
     // actual list is set via the command line.
@@ -92,6 +105,13 @@ class ActorKeyedServiceBrowserTest : public PlatformBrowserTest {
 
   ActorKeyedService* actor_keyed_service() {
     return ActorKeyedService::Get(GetProfile());
+  }
+
+  void AddTabToTask(tabs::TabHandle tab_handle, ActorTask* actor_task) {
+    TestFuture<mojom::ActionResultPtr> add_tab_future;
+    actor_task->AddTab(tab_handle, add_tab_future.GetCallback());
+    auto add_tab_result = add_tab_future.Take();
+    ASSERT_TRUE(add_tab_result);
   }
 
  private:
@@ -213,6 +233,44 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
+                       CreateActorTabInBackground) {
+  TaskId task_id =
+      actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
+  ASSERT_TRUE(chrome_test_utils::NavigateToURL(
+      web_contents(),
+      embedded_https_test_server().GetURL("/actor/blank.html")));
+
+  actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
+  AddTabToTask(active_tab()->GetHandle(), task);
+
+  TestFuture<tabs::TabInterface*> future;
+  SessionID initiator_window_id =
+      sessions::SessionTabHelper::IdForTab(web_contents());
+
+  // Call CreateActorTab to open a background tab.
+  actor_keyed_service()->CreateActorTab(
+      task_id, /* open_in_background = */ true, active_tab()->GetHandle(),
+      initiator_window_id, future.GetCallback());
+
+  tabs::TabInterface* new_tab = future.Get();
+
+  // Make sure we can run actions on this new tab (this also ensures all new tab
+  // animations are completed).
+  PerformActionsFuture result_future;
+  const GURL url = embedded_https_test_server().GetURL("/actor/simple.html");
+  std::unique_ptr<ToolRequest> action_request =
+      std::make_unique<NavigateToolRequest>(new_tab->GetHandle(), url);
+  actor_keyed_service()->PerformActions(task_id, ToRequestList(action_request),
+                                        ActorTaskMetadata(),
+                                        result_future.GetCallback());
+  ExpectOkResult(result_future);
+
+  // New tab should remain in the background.
+  ASSERT_NE(active_tab()->GetHandle(), new_tab->GetHandle());
+  ASSERT_FALSE(new_tab->IsActivated());
+}
+
+IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
                        RequestTabObservationSkipAsyncObservationInformation) {
   TaskId task_id =
       actor_keyed_service()->CreateTask(NoEnterprisePolicyChecker());
@@ -222,10 +280,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest,
       embedded_https_test_server().GetURL("/actor/blank.html")));
 
   actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
-  TestFuture<mojom::ActionResultPtr> add_tab_future;
-  task->AddTab(active_tab()->GetHandle(), add_tab_future.GetCallback());
-  auto add_tab_result = add_tab_future.Take();
-  ASSERT_TRUE(add_tab_result);
+  AddTabToTask(active_tab()->GetHandle(), task);
 
   TestFuture<base::TimeTicks /*start_time*/, mojom::ActionResultCode,
              std::optional<size_t> /*index_of_failed_actions*/,
@@ -260,10 +315,7 @@ IN_PROC_BROWSER_TEST_F(ActorKeyedServiceBrowserTest, StopPausedTask) {
 
   {
     actor::ActorTask* task = actor_keyed_service()->GetTask(task_id);
-    TestFuture<mojom::ActionResultPtr> add_tab_future;
-    task->AddTab(active_tab()->GetHandle(), add_tab_future.GetCallback());
-    auto add_tab_result = add_tab_future.Take();
-    ASSERT_TRUE(add_tab_result);
+    AddTabToTask(active_tab()->GetHandle(), task);
 
     task->Pause(/*from_actor=*/false);
     CHECK(!task->IsCompleted());

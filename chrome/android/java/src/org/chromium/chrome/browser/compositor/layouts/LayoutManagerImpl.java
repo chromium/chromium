@@ -239,33 +239,23 @@ public class LayoutManagerImpl
                 boolean markedForSelection) {
             int tabId = tab.getId();
             if (launchType == TabLaunchType.FROM_RESTORE) return;
-                boolean incognito = tab.isIncognito();
-                boolean willBeSelected =
-                        (launchType != TabLaunchType.FROM_LONGPRESS_BACKGROUND
-                                        && launchType
-                                                != TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP
-                                        && launchType != TabLaunchType.FROM_RECENT_TABS
-                                        && launchType != TabLaunchType.FROM_RESTORE_TABS_UI
-                                        && launchType != TabLaunchType.FROM_SYNC_BACKGROUND
-                                        && launchType
-                                                != TabLaunchType
-                                                        .FROM_COLLABORATION_BACKGROUND_IN_GROUP)
-                                || (!getTabModelSelector().isIncognitoSelected() && incognito);
-                float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
-                float lastTapY = 0.f;
-                if (launchType != TabLaunchType.FROM_CHROME_UI) {
-                    lastTapX = mPxToDp * mLastTapX;
-                    lastTapY = mPxToDp * mLastTapY;
-                }
+            boolean incognito = tab.isIncognito();
+            boolean willBeSelected = willAddedTabBeSelected(launchType, incognito);
+            float lastTapX = LocalizationUtils.isLayoutRtl() ? mHost.getWidth() * mPxToDp : 0.f;
+            float lastTapY = 0.f;
+            if (launchType != TabLaunchType.FROM_CHROME_UI) {
+                lastTapX = mPxToDp * mLastTapX;
+                lastTapY = mPxToDp * mLastTapY;
+            }
 
-                tabCreated(
-                        tabId,
-                        getTabModelSelector().getCurrentTabId(),
-                        launchType,
-                        incognito,
-                        willBeSelected,
-                        lastTapX,
-                        lastTapY);
+            tabCreated(
+                    tabId,
+                    getTabModelSelector().getCurrentTabId(),
+                    launchType,
+                    incognito,
+                    willBeSelected,
+                    lastTapX,
+                    lastTapY);
         }
 
         @Override
@@ -297,6 +287,26 @@ public class LayoutManagerImpl
         @Override
         public void tabRemoved(Tab tab) {
             tabClosed(tab.getId(), tab.isIncognito(), true);
+        }
+
+        private boolean willAddedTabBeSelected(@TabLaunchType int launchType, boolean incognito) {
+            boolean isBackgroundLaunch;
+            switch (launchType) {
+                case TabLaunchType.FROM_LONGPRESS_BACKGROUND:
+                case TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP:
+                case TabLaunchType.FROM_RECENT_TABS:
+                case TabLaunchType.FROM_RESTORE_TABS_UI:
+                case TabLaunchType.FROM_SYNC_BACKGROUND:
+                case TabLaunchType.FROM_BROWSER_ACTIONS:
+                case TabLaunchType.FROM_COLLABORATION_BACKGROUND_IN_GROUP:
+                    isBackgroundLaunch = true;
+                    break;
+                default:
+                    isBackgroundLaunch = false;
+            }
+
+            return !isBackgroundLaunch
+                    || (!getTabModelSelector().isIncognitoSelected() && incognito);
         }
     }
 

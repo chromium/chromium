@@ -760,6 +760,13 @@ public class NewTabAnimationLayout extends Layout {
         mAnimationRunnable =
                 () -> {
                     mAnimationRunnable = null;
+                    // If the tab to animate over was destroyed then just clean up.
+                    if (animationTab.isDestroyed()) {
+                        if (mTimeoutRunnable != null) {
+                            mTimeoutRunnable.run();
+                        }
+                        return;
+                    }
                     mTimeoutRunnable = null;
                     assumeNonNull(mTabModelSelector);
                     assumeNonNull(mBackgroundHostView);

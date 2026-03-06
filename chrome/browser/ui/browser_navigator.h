@@ -23,8 +23,9 @@ struct NavigateParams;
 base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params);
 
 // Follows the provided |params|. NavigationHandle* return value is provided to
-// the OnceCallback.
-// Note: Always recommended for Android navigations.
+// the OnceCallback. Keep in mind that the received NavigationHandle may be
+// destroyed before the callback is invoked. Note: Always recommended for
+// Android navigations.
 void Navigate(NavigateParams* params,
               base::OnceCallback<void(base::WeakPtr<content::NavigationHandle>)>
                   callback);
