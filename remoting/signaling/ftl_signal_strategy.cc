@@ -47,6 +47,8 @@ class FtlSignalStrategy::Core {
   void AddListener(Listener* listener);
   void RemoveListener(Listener* listener);
   bool SendMessage(SignalingMessage&& message);
+  void AddFtlListener(FtlListener* listener);
+  void RemoveFtlListener(FtlListener* listener);
   bool SendFtlMessage(const SignalingAddress& destination_address,
                       ftl::ChromotingMessage&& message);
   void OnMessageReceived(const SignalingAddress& sender_address,
@@ -87,6 +89,7 @@ class FtlSignalStrategy::Core {
   bool is_sign_in_error_ = false;
 
   base::ObserverList<Listener, true> listeners_;
+  base::ObserverList<FtlListener, true> ftl_listeners_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
@@ -180,6 +183,16 @@ void FtlSignalStrategy::Core::AddListener(Listener* listener) {
 void FtlSignalStrategy::Core::RemoveListener(Listener* listener) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   listeners_.RemoveObserver(listener);
+}
+
+void FtlSignalStrategy::Core::AddFtlListener(FtlListener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ftl_listeners_.AddObserver(listener);
+}
+
+void FtlSignalStrategy::Core::RemoveFtlListener(FtlListener* listener) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ftl_listeners_.RemoveObserver(listener);
 }
 
 bool FtlSignalStrategy::Core::SendMessage(SignalingMessage&& message) {
@@ -331,8 +344,8 @@ void FtlSignalStrategy::Core::OnMessageReceived(
     return;
   }
 
-  for (auto& listener : listeners_) {
-    if (listener.OnSignalStrategyIncomingFtlMessage(sender_address, message)) {
+  for (auto& listener : ftl_listeners_) {
+    if (listener.OnIncomingFtlMessage(sender_address, message)) {
       return;
     }
   }
@@ -532,6 +545,14 @@ void FtlSignalStrategy::RemoveListener(Listener* listener) {
   core_->RemoveListener(listener);
 }
 
+void FtlSignalStrategy::AddFtlListener(FtlListener* listener) {
+  core_->AddFtlListener(listener);
+}
+
+void FtlSignalStrategy::RemoveFtlListener(FtlListener* listener) {
+  core_->RemoveFtlListener(listener);
+}
+
 bool FtlSignalStrategy::SendMessage(SignalingMessage&& message) {
   return core_->SendMessage(std::move(message));
 }
@@ -558,5 +579,7 @@ void FtlSignalStrategy::CreateCore(
                                  std::move(registration_manager),
                                  std::move(messaging_client));
 }
+
+FtlSignalStrategy::FtlSignalStrategy() = default;
 
 }  // namespace remoting

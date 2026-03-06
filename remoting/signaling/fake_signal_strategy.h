@@ -12,14 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
-
-namespace base {
-class SingleThreadTaskRunner;
-}  // namespace base
 
 namespace remoting {
 
@@ -89,7 +86,8 @@ class FakeSignalStrategy : public SignalStrategy {
 
   void NotifyListeners(SignalingMessage message);
 
-  scoped_refptr<base::SingleThreadTaskRunner> main_thread_;
+  scoped_refptr<base::SingleThreadTaskRunner> main_thread_{
+      base::SingleThreadTaskRunner::GetCurrentDefault()};
 
   Error error_ = OK;
   bool is_sign_in_error_ = false;
@@ -99,7 +97,7 @@ class FakeSignalStrategy : public SignalStrategy {
   PeerCallback peer_callback_;
   base::ObserverList<Listener, true> listeners_;
 
-  int last_id_;
+  int last_id_ = 0;
 
   base::TimeDelta send_delay_;
 
@@ -107,7 +105,7 @@ class FakeSignalStrategy : public SignalStrategy {
   bool simulate_two_stage_connect_ = false;
   std::optional<SignalingMessage> pending_message_;
 
-  // All received messages, includes thouse still in |pending_messages_|.
+  // All received messages, includes those still in |pending_messages_|.
   std::vector<SignalingMessage> received_messages_;
 
   SEQUENCE_CHECKER(sequence_checker_);

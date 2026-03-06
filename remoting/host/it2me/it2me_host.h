@@ -27,6 +27,7 @@
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/validating_authenticator.h"
+#include "remoting/signaling/ftl_signal_strategy.h"
 #include "remoting/signaling/signal_strategy.h"
 
 namespace remoting {
@@ -56,7 +57,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
     ~DeferredConnectContext();
 
     std::unique_ptr<RegisterSupportHostRequest> register_request;
-    std::unique_ptr<SignalStrategy> signal_strategy;
+    std::unique_ptr<FtlSignalStrategy> signal_strategy;
 
     // `signaling_token_getter_` is used for signaling, which may require a
     // non-CRD token scope, while `api_token_getter_` is used for all other
@@ -237,7 +238,7 @@ class It2MeHost : public base::RefCountedThreadSafe<It2MeHost>,
   // Caller supplied fields.
   std::unique_ptr<ChromotingHostContext> host_context_;
   base::WeakPtr<It2MeHost::Observer> observer_;
-  std::unique_ptr<SignalStrategy> signal_strategy_;
+  std::unique_ptr<FtlSignalStrategy> signal_strategy_;
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
   std::unique_ptr<OAuthTokenGetter> api_token_getter_;
 

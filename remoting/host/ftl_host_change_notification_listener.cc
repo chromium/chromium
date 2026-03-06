@@ -16,21 +16,17 @@ namespace remoting {
 
 FtlHostChangeNotificationListener::FtlHostChangeNotificationListener(
     Listener* listener,
-    SignalStrategy* signal_strategy)
+    FtlSignalStrategy* signal_strategy)
     : listener_(listener), signal_strategy_(signal_strategy) {
   DCHECK(signal_strategy_);
-
-  signal_strategy_->AddListener(this);
+  signal_strategy_->AddFtlListener(this);
 }
 
 FtlHostChangeNotificationListener::~FtlHostChangeNotificationListener() {
-  signal_strategy_->RemoveListener(this);
+  signal_strategy_->RemoveFtlListener(this);
 }
 
-void FtlHostChangeNotificationListener::OnSignalStrategyStateChange(
-    SignalStrategy::State state) {}
-
-bool FtlHostChangeNotificationListener::OnSignalStrategyIncomingFtlMessage(
+bool FtlHostChangeNotificationListener::OnIncomingFtlMessage(
     const SignalingAddress& sender_address,
     const ftl::ChromotingMessage& message) {
   if (!message.has_status()) {

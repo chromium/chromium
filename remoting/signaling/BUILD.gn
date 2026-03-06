@@ -88,6 +88,8 @@ static_library("test_support") {
   testonly = true
 
   sources = [
+    "fake_ftl_signal_strategy.cc",
+    "fake_ftl_signal_strategy.h",
     "fake_signal_strategy.cc",
     "fake_signal_strategy.h",
     "mock_signal_strategy.cc",

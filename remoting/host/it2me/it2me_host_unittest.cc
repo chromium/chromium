@@ -43,7 +43,7 @@
 #include "remoting/host/register_support_host_request.h"
 #include "remoting/protocol/errors.h"
 #include "remoting/protocol/transport_context.h"
-#include "remoting/signaling/fake_signal_strategy.h"
+#include "remoting/signaling/fake_ftl_signal_strategy.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -418,8 +418,8 @@ void It2MeHostTest::StartHost() {
       webrtc::SocketAddress(kTestStunServer, 100));
   ice_config.expiration_time = base::Time::Now() + base::Hours(2);
 
-  auto fake_signal_strategy =
-      std::make_unique<FakeSignalStrategy>(SignalingAddress("fake_local_jid"));
+  auto fake_signal_strategy = std::make_unique<FakeFtlSignalStrategy>(
+      SignalingAddress("fake_local_jid"));
 
   it2me_host_ = new It2MeHost();
   if (enterprise_params_.has_value()) {
@@ -437,7 +437,7 @@ void It2MeHostTest::StartHost() {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
   auto create_connection_context = base::BindOnce(
-      [](std::unique_ptr<SignalStrategy> signal_strategy,
+      [](std::unique_ptr<FtlSignalStrategy> signal_strategy,
          base::WeakPtr<OAuthTokenGetter> token_getter, bool is_corp_user,
          ChromotingHostContext* host_context) {
         auto context = std::make_unique<It2MeHost::DeferredConnectContext>();

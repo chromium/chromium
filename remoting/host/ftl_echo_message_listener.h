@@ -9,7 +9,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "remoting/signaling/signal_strategy.h"
+#include "remoting/signaling/ftl_signal_strategy.h"
 
 namespace remoting {
 
@@ -18,29 +18,27 @@ namespace remoting {
 // is determine whether this endpoint is reachable without requiring the
 // construction of a well-formed XMPP stanza and won't interfere with the
 // standard signaling process if sent mid-connection negotiation.
-class FtlEchoMessageListener : public SignalStrategy::Listener {
+class FtlEchoMessageListener : public FtlSignalStrategy::FtlListener {
  public:
   using CheckAccessPermissionCallback =
       base::RepeatingCallback<bool(std::string_view)>;
 
   // |signal_strategy| is expected to outlive this object.
   FtlEchoMessageListener(CheckAccessPermissionCallback callback,
-                         SignalStrategy* signal_strategy);
+                         FtlSignalStrategy* ftl_signal_strategy);
 
   FtlEchoMessageListener(const FtlEchoMessageListener&) = delete;
   FtlEchoMessageListener& operator=(const FtlEchoMessageListener&) = delete;
 
   ~FtlEchoMessageListener() override;
 
-  // SignalStrategy::Listener interface.
-  void OnSignalStrategyStateChange(SignalStrategy::State state) override;
-  bool OnSignalStrategyIncomingFtlMessage(
-      const SignalingAddress& sender_address,
-      const ftl::ChromotingMessage& message) override;
+  // FtlSignalStrategy::FtlListener interface.
+  bool OnIncomingFtlMessage(const SignalingAddress& sender_address,
+                            const ftl::ChromotingMessage& message) override;
 
  private:
   CheckAccessPermissionCallback check_access_permission_callback_;
-  raw_ptr<SignalStrategy> signal_strategy_;
+  raw_ptr<FtlSignalStrategy> ftl_signal_strategy_;
 };
 
 }  // namespace remoting

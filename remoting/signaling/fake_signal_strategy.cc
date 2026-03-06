@@ -12,7 +12,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/task/single_thread_task_runner.h"
 #include "remoting/signaling/jingle_message_xml_converter.h"
 #include "remoting/signaling/signaling_id_util.h"
 
@@ -28,9 +27,7 @@ void FakeSignalStrategy::Connect(FakeSignalStrategy* peer1,
 }
 
 FakeSignalStrategy::FakeSignalStrategy(const SignalingAddress& address)
-    : main_thread_(base::SingleThreadTaskRunner::GetCurrentDefault()),
-      address_(address),
-      last_id_(0) {
+    : address_(address) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 

@@ -498,17 +498,17 @@ class HostProcess : public ConfigWatcher::Delegate,
   // Used to specify which window to stream, if enabled.
   webrtc::WindowId window_id_ = 0;
 
-  // Must outlive |signal_strategy_| and |ftl_signaling_connector_|.
+  // Must outlive |ftl_signal_strategy_| and |ftl_signaling_connector_|.
   std::unique_ptr<OAuthTokenGetterImpl> oauth_token_getter_;
 
   // Must outlive |heartbeat_sender_| and |host_|.
   std::unique_ptr<InstanceIdentityTokenGetter> instance_identity_token_getter_;
 
-  // Must outlive |signal_strategy_| and |heartbeat_sender_|.
+  // Must outlive |ftl_signal_strategy_| and |heartbeat_sender_|.
   std::unique_ptr<ZombieHostDetector> zombie_host_detector_;
 
-  // |signal_strategy_| must outlive |ftl_signaling_connector_|.
-  std::unique_ptr<SignalStrategy> signal_strategy_;
+  // |ftl_signal_strategy_| must outlive |ftl_signaling_connector_|.
+  std::unique_ptr<FtlSignalStrategy> ftl_signal_strategy_;
   std::unique_ptr<FtlSignalingConnector> ftl_signaling_connector_;
 
   // |corp_signal_strategy_| must outlive |corp_signaling_connector_|.
@@ -1802,7 +1802,7 @@ std::optional<ErrorCode> HostProcess::OnSessionPoliciesReceived(
 
 void HostProcess::InitializeSignaling() {
   DCHECK(!host_id_.empty());  // ApplyConfig() should already have been run.
-  DCHECK(!signal_strategy_);
+  DCHECK(!ftl_signal_strategy_);
   DCHECK(!corp_signal_strategy_);
   DCHECK(!oauth_token_getter_);
   DCHECK(!ftl_signaling_connector_);
@@ -1834,14 +1834,14 @@ void HostProcess::InitializeSignaling() {
   }
 #endif
 
-  auto ftl_signal_strategy = std::make_unique<FtlSignalStrategy>(
+  ftl_signal_strategy_ = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(
           oauth_token_getter_->GetWeakPtr()),
       context_->url_loader_factory(),
       std::make_unique<FtlHostDeviceIdProvider>(host_id_),
       zombie_host_detector_.get());
   ftl_signaling_connector_ = std::make_unique<FtlSignalingConnector>(
-      ftl_signal_strategy.get(),
+      ftl_signal_strategy_.get(),
       base::BindOnce(&HostProcess::OnAuthFailed, base::Unretained(this)));
   ftl_signaling_connector_->Start();
 
@@ -1873,10 +1873,9 @@ void HostProcess::InitializeSignaling() {
   }
 
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
-      this, host_id_, ftl_signal_strategy.get(), oauth_token_getter_.get(),
+      this, host_id_, ftl_signal_strategy_.get(), oauth_token_getter_.get(),
       std::move(service_client), zombie_host_detector_.get(),
       context_->url_loader_factory(), is_corp_host_);
-  signal_strategy_ = std::move(ftl_signal_strategy);
 
   zombie_host_detector_->Start();
 }
@@ -1970,7 +1969,7 @@ void HostProcess::StartHost() {
           webrtc::ThreadWrapper::current()->SocketServer(),
           std::move(ice_config_fetcher), protocol::TransportRole::SERVER);
   std::unique_ptr<protocol::SessionManager> session_manager(
-      new protocol::JingleSessionManager(signal_strategy_.get()));
+      new protocol::JingleSessionManager(ftl_signal_strategy_.get()));
   std::unique_ptr<protocol::SessionManager> corp_session_manager;
   if (corp_signal_strategy_) {
     corp_session_manager = std::make_unique<protocol::JingleSessionManager>(
@@ -2042,11 +2041,11 @@ void HostProcess::StartHost() {
 
   ftl_host_change_notification_listener_ =
       std::make_unique<FtlHostChangeNotificationListener>(
-          this, signal_strategy_.get());
+          this, ftl_signal_strategy_.get());
 
   ftl_echo_message_listener_ = std::make_unique<FtlEchoMessageListener>(
       base::BindRepeating(&HostProcess::CheckAccessPermission, this),
-      signal_strategy_.get());
+      ftl_signal_strategy_.get());
 
   // Set up reporting the host status notifications.
   if (multi_process_) {
@@ -2148,7 +2147,7 @@ void HostProcess::GoOffline(const std::string& host_offline_reason) {
     OnHostOfflineReasonAck(true);
     return;
   } else if (!config_.empty()) {
-    if (!signal_strategy_) {
+    if (!ftl_signal_strategy_) {
       InitializeSignaling();
     }
 
@@ -2175,7 +2174,7 @@ void HostProcess::OnHostOfflineReasonAck(bool success) {
   instance_identity_token_getter_.reset();
   ftl_signaling_connector_.reset();
   ftl_echo_message_listener_.reset();
-  signal_strategy_.reset();
+  ftl_signal_strategy_.reset();
   corp_signal_strategy_.reset();
   corp_signaling_connector_.reset();
   zombie_host_detector_.reset();

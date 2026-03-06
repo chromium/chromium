@@ -14,4 +14,12 @@ const SignalingAddress& MockSignalStrategy::GetLocalAddress() const {
   return local_address_;
 }
 
+MockFtlSignalStrategy::MockFtlSignalStrategy(const SignalingAddress& address)
+    : local_address_(address) {}
+MockFtlSignalStrategy::~MockFtlSignalStrategy() = default;
+
+const SignalingAddress& MockFtlSignalStrategy::GetLocalAddress() const {
+  return local_address_;
+}
+
 }  // namespace remoting

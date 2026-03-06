@@ -215,7 +215,8 @@ class FakeRegistrationManager : public RegistrationManager {
 }  // namespace
 
 class FtlSignalStrategyTest : public testing::Test,
-                              public SignalStrategy::Listener {
+                              public SignalStrategy::Listener,
+                              public FtlSignalStrategy::FtlListener {
  public:
   FtlSignalStrategyTest() {
     auto token_getter = std::make_unique<MockOAuthTokenGetter>();
@@ -230,6 +231,7 @@ class FtlSignalStrategyTest : public testing::Test,
         std::move(token_getter), std::move(registration_manager),
         std::move(messaging_client)));
     signal_strategy_->AddListener(this);
+    signal_strategy_->AddFtlListener(this);
 
     // By default, messages will be collected in received_messages_.
     ON_CALL(*this, OnSignalStrategyIncomingMessage(_, _))
@@ -252,6 +254,7 @@ class FtlSignalStrategyTest : public testing::Test,
 
   ~FtlSignalStrategyTest() override {
     signal_strategy_->RemoveListener(this);
+    signal_strategy_->RemoveFtlListener(this);
     signal_strategy_.reset();
     task_environment_.FastForwardUntilNoTasksRemain();
   }
@@ -276,6 +279,11 @@ class FtlSignalStrategyTest : public testing::Test,
   MOCK_METHOD(bool,
               OnSignalStrategyIncomingMessage,
               (const SignalingAddress&, const SignalingMessage&),
+              (override));
+
+  MOCK_METHOD(bool,
+              OnIncomingFtlMessage,
+              (const SignalingAddress&, const ftl::ChromotingMessage&),
               (override));
 
   base::test::TaskEnvironment task_environment_{
@@ -702,6 +710,24 @@ TEST_F(FtlSignalStrategyTest, ReceiveMessageFromNonFtlSender_IsIgnored) {
                                                   kFakeRemoteRegistrationId),
       message);
   ASSERT_EQ(received_messages_.size(), 0u);
+}
+
+TEST_F(FtlSignalStrategyTest, ReceiveIncomingFtlMessage) {
+  ExpectGetOAuthTokenSucceedsWithFakeCreds();
+  registration_manager_->ExpectSignInGaiaSucceeds();
+  signal_strategy_->Connect();
+  messaging_client_->AcceptReceivingMessages();
+
+  ftl::ChromotingMessage message;
+  message.mutable_echo()->set_message("echo");
+
+  EXPECT_CALL(*this, OnIncomingFtlMessage(_, _)).WillOnce(Return(true));
+
+  ftl::Id remote_user_id;
+  remote_user_id.set_type(ftl::IdType_Type_EMAIL);
+  remote_user_id.set_id(kFakeRemoteUsername);
+  messaging_client_->OnMessage(remote_user_id, kFakeRemoteRegistrationId,
+                               message);
 }
 
 }  // namespace remoting

@@ -13,10 +13,6 @@
 
 namespace remoting {
 
-namespace ftl {
-class ChromotingMessage;
-}  // namespace ftl
-
 class SignalingAddress;
 
 class SignalStrategy {
@@ -58,11 +54,6 @@ class SignalStrategy {
     virtual bool OnSignalStrategyIncomingMessage(
         const SignalingAddress& sender_address,
         const SignalingMessage& message);
-
-    // Must return true if the message was handled, false otherwise.
-    virtual bool OnSignalStrategyIncomingFtlMessage(
-        const SignalingAddress& sender_address,
-        const ftl::ChromotingMessage& message);
   };
 
   SignalStrategy() = default;
@@ -101,10 +92,6 @@ class SignalStrategy {
 
   // Sends a message. Returns false if the message couldn't be sent.
   virtual bool SendMessage(SignalingMessage&& message) = 0;
-
-  // Sends an FTL message. Returns false if the message couldn't be sent.
-  virtual bool SendFtlMessage(const SignalingAddress& destination_address,
-                              ftl::ChromotingMessage&& message);
 
   // Returns new ID that should be used for the next outgoing IQ
   // request.
