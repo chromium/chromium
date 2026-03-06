@@ -368,7 +368,7 @@ class ScrollableAreaOverscrollTest : public testing::Test,
 
 TEST_F(ScrollableAreaOverscrollTest, ScrollableAreaTraversalVisitsContainer) {
   SetInnerHTML(R"HTML(
-    <div id="container" overscrollcontainer style="overflow: auto; height: 100px; width: 100px;">
+    <div id="container" overscrollcontainer style="height: 100px; width: 100px;">
       <div id="menu"></div>
       <div id="content"></div>
     </div>
