@@ -1309,7 +1309,9 @@ crbug.com/40781325 external/wpt/css/mediaqueries/at-custom-media-basic.html [ Fa
 crbug.com/484218877 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-viewport-metrics-first-line-001.html [ Failure ]
 
 # attr() with namespaces
-crbug.com/488242413 external/wpt/css/css-values/attr-namespace-case-sensitivity.xhtml [ Failure ]
+crbug.com/387281256 external/wpt/css/css-values/attr-namespace-case-sensitivity.xhtml [ Failure ]
+crbug.com/387281256 external/wpt/css/css-values/attr-namespace-non-existing.html [ Failure ]
+crbug.com/387281256 external/wpt/css/css-values/attr-namespace-valid.xhtml [ Failure ]
 
 # Custom highlights
 crbug.com/488137634 external/wpt/css/css-highlight-api/painting/custom-highlight-dynamic-container-metrics-005.html [ Failure ]
@@ -2878,8 +2880,6 @@ crbug.com/489043704 [ Linux ] external/wpt/wasm/core/gc/array_init_elem.wast.js.
 crbug.com/488651384 external/wpt/css/css-viewport/zoom/border-radius.html [ Failure ]
 crbug.com/488651384 external/wpt/css/css-viewport/zoom/scroll-margin.html [ Failure ]
 crbug.com/488651384 [ Win ] external/wpt/css/css-viewport/zoom/svg-computed-style.html [ Pass Timeout ]
-crbug.com/488373052 external/wpt/css/css-values/attr-namespace-non-existing.html [ Failure ]
-crbug.com/488373052 external/wpt/css/css-values/attr-namespace-valid.xhtml [ Failure ]
 crbug.com/488362582 external/wpt/webdriver/tests/bidi/emulation/set_network_conditions/user_contexts.py [ Failure ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/encrypt_decrypt/aes_cbc.https.any.html [ Pass Timeout ]
 crbug.com/488130147 [ Win ] external/wpt/WebCryptoAPI/sign_verify/ecdsa.https.any.html [ Pass Timeout ]
