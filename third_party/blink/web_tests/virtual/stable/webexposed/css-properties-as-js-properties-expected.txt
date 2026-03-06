@@ -97,6 +97,7 @@ borderRight
 borderRightColor
 borderRightStyle
 borderRightWidth
+borderShape
 borderSpacing
 borderStartEndRadius
 borderStartStartRadius
