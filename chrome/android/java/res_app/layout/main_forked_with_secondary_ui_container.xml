@@ -38,31 +38,51 @@ TODO(http://crbug.com/485940935): Delete this.
 
         <include layout="@layout/compositor_view_holder"/>
 
-        <!-- TODO(crbug.com/485308363): Once we can test with some placeholder
-              view, audit to see if we need to change the z-ordering here. -->
-        <!-- These stubs will be inflated into containers for side-anchored UI.
-            UI anchored to the start-side of the window will be added to this
-            container, while UI anchored to the end-side of the window will be
-            added to the following container. The added views' positions/sizes
-            will be maintained by SideUiCoordinator. -->
-        <ViewStub
-            android:id="@+id/side_ui_start_anchor_container_stub"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            android:layout_gravity="start"
-            android:inflatedId="@+id/side_ui_start_anchor_container"
-            android:layout="@layout/side_ui_anchor_container" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/side_ui_constraint_layout"
+                android:layout_height="match_parent"
+                android:layout_width="match_parent">
 
-        <!-- Please do not add anything in between
-            side_ui_start_anchor_container_stub and
-            side_ui_end_anchor_container_stub. -->
-        <ViewStub
-            android:id="@+id/side_ui_end_anchor_container_stub"
-            android:layout_height="match_parent"
-            android:layout_width="wrap_content"
-            android:layout_gravity="end"
-            android:inflatedId="@+id/side_ui_end_anchor_container"
-            android:layout="@layout/side_ui_anchor_container" />
+            <!-- TODO(crbug.com/485308363): Once we can test with some placeholder
+                  view, audit to see if we need to change the z-ordering here. -->
+            <!-- These stubs will be inflated into containers for side-anchored UI.
+                UI anchored to the start-side of the window will be added to this
+                container, while UI anchored to the end-side of the window will be
+                added to the following container. The added views' positions/sizes
+                will be maintained by SideUiCoordinator. -->
+            <ViewStub
+                android:id="@+id/side_ui_start_anchor_container_stub"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:inflatedId="@+id/side_ui_start_anchor_container"
+                android:layout="@layout/side_ui_anchor_container"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <FrameLayout
+                android:id="@+id/secondary_ui_container"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintStart_toEndOf="@+id/side_ui_start_anchor_container"
+                app:layout_constraintEnd_toStartOf="@+id/side_ui_end_anchor_container"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <!-- Please do not add anything in between
+                side_ui_start_anchor_container_stub and
+                side_ui_end_anchor_container_stub. -->
+            <ViewStub
+                android:id="@+id/side_ui_end_anchor_container_stub"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:inflatedId="@+id/side_ui_end_anchor_container"
+                android:layout="@layout/side_ui_anchor_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <!-- Parent holder for the AR SurfaceView, used to render content when
             in AR mode (which has some separate requirements preventing us from
