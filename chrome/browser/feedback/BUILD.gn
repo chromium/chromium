@@ -80,6 +80,8 @@ source_set("feedback_impl") {
       "feedback_uploader_factory_chrome.cc",
       "report_unsafe_site_dialog_views.cc",
       "report_unsafe_site_dialog_views.h",
+      "screenshot_taker.cc",
+      "screenshot_taker.h",
       "show_feedback_page.cc",
       "system_logs/about_system_logs_fetcher.cc",
       "system_logs/about_system_logs_fetcher.h",
