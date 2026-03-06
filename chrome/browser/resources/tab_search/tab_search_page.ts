@@ -98,16 +98,9 @@ export class TabSearchPageElement extends TabSearchSearchFieldBase {
        */
       searchOptions_: {type: Object},
       recentlyClosedDefaultItemDisplayCount_: {type: Number},
-
-      tabOrganizationEnabled: {
-        type: Boolean,
-        reflect: true,
-      },
     };
   }
 
-  accessor tabOrganizationEnabled: boolean =
-      loadTimeData.getBoolean('tabOrganizationEnabled');
   accessor availableHeight: number|undefined;
   private accessor searchText_: string = '';
   protected accessor listMaxHeight_: number|undefined;
