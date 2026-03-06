@@ -182,8 +182,10 @@ class PageLoadMetricsObserverTester : public test::WeakMockTimerProvider {
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
       content::RenderFrameHost* rfh,
-      const mojom::SoftNavigationMetrics& soft_navigation_metrics,
-      const mojom::LargestContentfulPaintTiming& soft_largest_contentful_paint);
+      const std::vector<mojom::SoftNavigationMetricsPtr>&
+          soft_navigation_metrics,
+      const std::vector<mojom::LargestContentfulPaintTimingPtr>&
+          soft_largest_contentful_paint);
 
   content::WebContents* web_contents() const { return web_contents_; }
 

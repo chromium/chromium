@@ -86,6 +86,8 @@ source_set("browser") {
     "protocol_util.h",
     "resource_tracker.cc",
     "resource_tracker.h",
+    "soft_navigation_tracker.cc",
+    "soft_navigation_tracker.h",
   ]
   configs += [
     "//build/config/compiler:wexit_time_destructors",
@@ -166,6 +168,7 @@ source_set("unit_tests") {
     "page_load_metrics_util_unittest.cc",
     "page_load_tracker_unittest.cc",
     "resource_tracker_unittest.cc",
+    "soft_navigation_tracker_unittest.cc",
   ]
   deps = [
     ":browser",

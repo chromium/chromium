@@ -69,8 +69,8 @@ class MojoPageTimingSender : public PageTimingSender {
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
-      const mojom::LargestContentfulPaintTimingPtr&
+      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+      std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) override {
     DCHECK(page_load_metrics_);
@@ -78,8 +78,8 @@ class MojoPageTimingSender : public PageTimingSender {
         limited_sending_mode_ ? CreatePageLoadTiming() : timing->Clone(),
         metadata->Clone(), new_features, std::move(resources),
         render_data.Clone(), cpu_timing->Clone(), std::move(event_timings),
-        subresource_load_metrics, soft_navigation_metrics->Clone(),
-        soft_largest_contentful_paint->Clone(), std::move(user_timings));
+        subresource_load_metrics, std::move(soft_navigation_metrics),
+        std::move(soft_largest_contentful_paint), std::move(user_timings));
   }
 
   void SetUpDroppedFramesReporting(
@@ -225,6 +225,7 @@ void MetricsRenderFrameObserver::DidObserveSoftLargestContentfulPaint(
     // to the (hard) navigation start time.
     mojom::LargestContentfulPaintTimingPtr relative_lcp =
         CreateLargestContentfulPaintTiming();
+    relative_lcp->soft_navigation_offset = lcp.soft_navigation_offset;
 
     if (lcp.image_paint_size > 0) {
       // Set largest image time.

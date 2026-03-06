@@ -230,8 +230,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   void OnMainFrameMetadataChanged() override;
   void OnSubframeMetadataChanged(content::RenderFrameHost* rfh,
                                  const mojom::FrameMetadata& metadata) override;
-  void OnSoftNavigationChanged(
-      const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
+  void OnSoftNavigation() override;
+  void OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) override;
   void UpdateFeaturesUsage(
       content::RenderFrameHost* rfh,
       const std::vector<blink::UseCounterFeature>& new_features) override;
@@ -294,7 +294,8 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
   const LargestContentfulPaintHandler&
   GetExperimentalLargestContentfulPaintHandler() const override;
   ukm::SourceId GetPageUkmSourceId() const override;
-  mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
+  const mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const override;
+  uint64_t GetSoftNavigationCount() const override;
   // Maps main-frame same-document navigation identified
   // by |same_document_metrics_token| to its UKM source id.
   ukm::SourceId GetUkmSourceIdForSameDocumentNavigation(
@@ -468,8 +469,9 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
-      mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint);
+      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+      std::vector<mojom::LargestContentfulPaintTimingPtr>
+          soft_largest_contentful_paint);
 
   void AddCustomUserTimings(
       std::vector<mojom::CustomUserTimingMarkPtr> custom_timings);
@@ -608,8 +610,6 @@ class PageLoadTracker : public PageLoadMetricsUpdateDispatcher::Client,
       largest_contentful_paint_handler_;
   page_load_metrics::LargestContentfulPaintHandler
       experimental_largest_contentful_paint_handler_;
-
-  mojom::SoftNavigationMetricsPtr soft_navigation_metrics_;
 
   // Maps main-frame same-document navigations identified
   // by their token to their UKM source ids.

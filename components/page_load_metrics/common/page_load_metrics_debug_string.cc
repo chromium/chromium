@@ -339,11 +339,18 @@ std::string DebugString(const mojom::BackForwardCacheTiming& timing) {
 std::string DebugString(
     const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
   std::vector<std::pair<std::string, std::string>> entries;
-  entries.emplace_back("count",
-                       base::NumberToString(soft_navigation_metrics.count));
+  entries.emplace_back(
+      "soft_navigation_offset",
+      base::NumberToString(soft_navigation_metrics.soft_navigation_offset));
   entries.emplace_back(
       "start_time", base::NumberToString(
                         soft_navigation_metrics.start_time.InMillisecondsF()));
+  entries.emplace_back(
+      "soft_navigation_slicing_time",
+      base::NumberToString(
+          (soft_navigation_metrics.soft_navigation_slicing_time -
+           base::TimeTicks::UnixEpoch())
+              .InMilliseconds()));
   entries.emplace_back(
       "navigation_type",
       NavigationTypeToString(soft_navigation_metrics.navigation_type));

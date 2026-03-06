@@ -53,8 +53,9 @@ class WaiterMetricsObserver final : public PageLoadMetricsObserver {
   void OnTimingUpdate(content::RenderFrameHost* subframe_rfh,
                       const mojom::PageLoadTiming& timing) override;
 
-  void OnSoftNavigationUpdated(
-      const mojom::SoftNavigationMetrics& soft_navigation_metrics) override;
+  void OnSoftNavigation() override;
+
+  void OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) override;
 
   void OnPageEventTimingUpdate(uint64_t num_interactions) override;
 
@@ -265,6 +266,11 @@ void PageLoadMetricsTestWaiter::AddSoftNavigationCountExpectation(
   expected_soft_navigation_count_ = expected_count;
 }
 
+void PageLoadMetricsTestWaiter::
+    AddSoftNavigationLargestContentfulPaintExpectation(int expected_count) {
+  expected_num_soft_navigation_largest_contentful_paint_ = expected_count;
+}
+
 void PageLoadMetricsTestWaiter::AddOnCompleteCalledExpectation() {
   expected_.on_complete_ = true;
 }
@@ -322,14 +328,14 @@ void PageLoadMetricsTestWaiter::OnTimingUpdated(
     run_loop_->Quit();
 }
 
-void PageLoadMetricsTestWaiter::OnSoftNavigationMetricsUpdated(
-    const page_load_metrics::mojom::SoftNavigationMetrics&
-        new_soft_navigation_metrics) {
+void PageLoadMetricsTestWaiter::OnSoftNavigation() {
   soft_navigation_count_updated_ = true;
-  // Increment soft navigation count.
-  if (new_soft_navigation_metrics.count > current_soft_navigation_count_) {
-    current_soft_navigation_count_ = new_soft_navigation_metrics.count;
-  }
+  ++current_soft_navigation_count_;
+}
+
+void PageLoadMetricsTestWaiter::OnSoftNavigationLargestContentfulPaint(
+    uint64_t num_soft_lcps) {
+  current_num_soft_navigation_largest_contentful_paint_ += num_soft_lcps;
 }
 
 void PageLoadMetricsTestWaiter::OnPageEventTimingUpdated(
@@ -716,6 +722,12 @@ bool PageLoadMetricsTestWaiter::SoftNavigationCountExpectationSatisfied()
   return current_soft_navigation_count_ >= expected_soft_navigation_count_;
 }
 
+bool PageLoadMetricsTestWaiter::
+    SoftNavigationLargestContentfulPaintExpectationSatisfied() const {
+  return current_num_soft_navigation_largest_contentful_paint_ >=
+         expected_num_soft_navigation_largest_contentful_paint_;
+}
+
 bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
   return expected_.page_fields_.AreAllSetIn(observed_.page_fields_) &&
          expected_.subframe_fields_.AreAllSetIn(observed_.subframe_fields_) &&
@@ -735,7 +747,8 @@ bool PageLoadMetricsTestWaiter::ExpectationsSatisfied() const {
          NumLargestContentfulPaintImageSatisfied() &&
          NumLargestContentfulPaintTextSatisfied() &&
          LargestContentfulPaintGreaterThanExpectationSatisfied() &&
-         SoftNavigationCountExpectationSatisfied();
+         SoftNavigationCountExpectationSatisfied() &&
+         SoftNavigationLargestContentfulPaintExpectationSatisfied();
 }
 
 void PageLoadMetricsTestWaiter::AssertExpectationsSatisfied() const {
@@ -789,10 +802,15 @@ void WaiterMetricsObserver::OnTimingUpdate(
   }
 }
 
-void WaiterMetricsObserver::OnSoftNavigationUpdated(
-    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
+void WaiterMetricsObserver::OnSoftNavigation() {
   if (waiter_) {
-    waiter_->OnSoftNavigationMetricsUpdated(soft_navigation_metrics);
+    waiter_->OnSoftNavigation();
+  }
+}
+
+void WaiterMetricsObserver::OnSoftNavigationLargestContentfulPaint(uint64_t num_soft_lcps) {
+  if (waiter_) {
+    waiter_->OnSoftNavigationLargestContentfulPaint(num_soft_lcps);
   }
 }
 

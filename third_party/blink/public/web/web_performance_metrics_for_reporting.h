@@ -40,11 +40,26 @@ struct LargestContentfulPaintDetailsForReporting {
   std::optional<WebURLRequest::Priority> image_request_priority = std::nullopt;
   // The unclamped paint time of the largest content (image/text).
   std::optional<base::TimeTicks> merged_unclamped_paint_time = std::nullopt;
+  // The offset of the corresponding soft navigation; 0 otherwise.
+  // See SoftNavigationMetricsForReporting.soft_navigation_offset.
+  uint64_t soft_navigation_offset = 0;
 };
 
 struct SoftNavigationMetricsForReporting {
-  uint64_t count = 0;
+  // A unique number assigned to this soft navigation from the start of the
+  // page load, 1, 2, 3, ... n. For the last soft navigation, it is synonymous
+  // with a count of the soft navigations for the page load.
+  uint64_t soft_navigation_offset = 0;
+
+  // The navigation start (time origin) relative to the start of the
+  // navigation. Note that this field is initially sent with an absolute time,
+  // and only MetricsRenderFrameObserver::DidObserveSoftNavigation makes it
+  // relative to navigation start.
   base::TimeDelta start_time;
+
+  // The timestamp that we use for slicing the performance timeline. This is
+  // only a Chrome-internal mechanism and never recorded to UKM.
+  base::TimeTicks soft_navigation_slicing_time;
 
   // The type of soft navigation, set based on the type of same document
   // navigation.

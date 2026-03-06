@@ -137,6 +137,8 @@ class SoftNavigationTest : public MetricIntegrationTest,
       page_load_metrics::PageLoadMetricsTestWaiter* waiter,
       int expected_soft_nav_count) {
     waiter->AddSoftNavigationCountExpectation(expected_soft_nav_count);
+    waiter->AddSoftNavigationLargestContentfulPaintExpectation(
+        expected_soft_nav_count);
 
     content::SimulateMouseClickOrTapElementWithId(web_contents(), "link");
 
@@ -430,6 +432,8 @@ class SoftNavigationTest : public MetricIntegrationTest,
     // in UKM against the web exposed values.
     if (soft_nav_heuristics_enabled) {
       EXPECT_EQ(soft_nav_lcp_list.size(), expected_soft_nav_count);
+      ASSERT_EQ(soft_nav_lcp_list.size(), soft_nav_lcp.size());
+      ASSERT_EQ(soft_nav_lcp_list.size(), soft_nav_start_times.size());
       for (uint32_t i = 0; i < soft_nav_lcp_list.size(); ++i) {
         SCOPED_TRACE(base::StringPrintf("soft_nav_lcp_list[%d]", i));
         const base::DictValue& timing = soft_nav_lcp_list[i].GetDict();
@@ -492,6 +496,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   // 1st soft navigation: click on the next page button and wait for soft
   // navigation count and image lcp.
   waiter->AddSoftNavigationCountExpectation(1);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(1);
   WaitForFrameReady();
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
   waiter->Wait();
@@ -499,6 +504,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, ImageLargestContentfulPaint) {
   // 2nd soft navigation: click on the next page button and wait for soft
   // navigation count and image lcp.
   waiter->AddSoftNavigationCountExpectation(2);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(2);
   WaitForFrameReady();
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
   waiter->Wait();
@@ -599,6 +605,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
   // 1st soft navigation: click on the next page button and wait for soft
   // navigation count and text lcp.
   waiter->AddSoftNavigationCountExpectation(1);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(1);
   WaitForFrameReady();
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
   waiter->Wait();
@@ -606,6 +613,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, TextLargestContentfulPaint) {
   // 2nd soft navigation: click on the next page button and wait for soft
   // navigation count and text lcp.
   waiter->AddSoftNavigationCountExpectation(2);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(2);
   WaitForFrameReady();
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
   waiter->Wait();
@@ -660,12 +668,14 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
 
   // 1st soft navigation: click on the next page button.
   waiter->AddSoftNavigationCountExpectation(1);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(1);
   WaitForFrameReady();
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
   waiter->Wait();
 
   // 2nd soft navigation: click on the next page button.
   waiter->AddSoftNavigationCountExpectation(2);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(2);
   WaitForFrameReady();
   content::SimulateMouseClickOrTapElementWithId(web_contents(), "next-page");
   waiter->Wait();
@@ -679,12 +689,14 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, BackButton) {
 
   // 3rd soft navigation: going backwards in history.
   waiter->AddSoftNavigationCountExpectation(3);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(3);
   WaitForFrameReady();
   ASSERT_TRUE(content::HistoryGoToOffset(web_contents(), -1));
   waiter->Wait();
 
   // 4th soft navigation: going backwards in history.
   waiter->AddSoftNavigationCountExpectation(4);
+  waiter->AddSoftNavigationLargestContentfulPaintExpectation(4);
   WaitForFrameReady();
   ASSERT_TRUE(content::HistoryGoToOffset(web_contents(), -1));
   waiter->Wait();

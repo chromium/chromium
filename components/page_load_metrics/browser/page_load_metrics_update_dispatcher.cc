@@ -398,7 +398,7 @@ PageLoadMetricsUpdateDispatcher::PageLoadMetricsUpdateDispatcher(
       main_frame_metadata_(mojom::FrameMetadata::New()),
       subframe_metadata_(mojom::FrameMetadata::New()),
       is_prerendered_page_load_(navigation_handle->IsInPrerenderedMainFrame()),
-      soft_navigation_contentful_paint_candidate_(
+      soft_navigation_largest_contentful_paint_(
           false,
           blink::LargestContentfulPaintType::kNone) {}
 
@@ -430,8 +430,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
-    mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint,
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        soft_largest_contentful_paint,
     internal::PageLoadTrackerPageType page_type) {
   if (embedder_interface_->IsExtensionUrl(
           render_frame_host->GetLastCommittedURL())) {
@@ -456,11 +457,9 @@ void PageLoadMetricsUpdateDispatcher::UpdateMetrics(
     if (subresource_load_metrics) {
       UpdateMainFrameSubresourceLoadMetrics(*subresource_load_metrics);
     }
-    UpdateSoftNavigationIntervalInteractionToNextPaint(render_frame_host,
-                                                       event_timings);
-    UpdateSoftNavigationIntervalLayoutShift(*render_data);
-    UpdateSoftNavigation(*soft_navigation_metrics);
-    UpdateSoftNavigationLargestContentfulPaint(*soft_largest_contentful_paint);
+    UpdateSoftNavigationMetrics(std::move(soft_navigation_metrics),
+                                event_timings, render_data->new_layout_shifts,
+                                soft_largest_contentful_paint);
   } else {
     if (!render_frame_host->GetParentOrOuterDocument()) {
       // TODO(crbug.com/40065854): This can be removed once
@@ -510,45 +509,6 @@ void PageLoadMetricsUpdateDispatcher::UpdateFeatures(
     return;
   }
   client_->UpdateFeaturesUsage(render_frame_host, new_features);
-}
-
-void PageLoadMetricsUpdateDispatcher::
-    UpdateSoftNavigationLargestContentfulPaint(
-        const page_load_metrics::mojom::LargestContentfulPaintTiming&
-            largest_contentful_paint) {
-  if (largest_contentful_paint.largest_text_paint.has_value()) {
-    // Image load start/end are not applicable to text LCP elements.
-    soft_navigation_contentful_paint_candidate_.Text().Reset(
-        largest_contentful_paint.largest_text_paint,
-        largest_contentful_paint.largest_text_paint_size,
-        static_cast<blink::LargestContentfulPaintType>(
-            largest_contentful_paint.type),
-        /*image_bpp=*/0.0,
-        /*image_request_priority=*/std::nullopt,
-        /*image_discovery_time=*/std::nullopt,
-        /*image_load_start=*/std::nullopt,
-        /*image_load_end=*/std::nullopt);
-  }
-  if (largest_contentful_paint.largest_image_paint.has_value()) {
-    std::optional<net::RequestPriority> request_priority;
-    if (largest_contentful_paint.image_request_priority_valid) {
-      request_priority = largest_contentful_paint.image_request_priority_value;
-    }
-    soft_navigation_contentful_paint_candidate_.Image().Reset(
-        largest_contentful_paint.largest_image_paint,
-        largest_contentful_paint.largest_image_paint_size,
-        static_cast<blink::LargestContentfulPaintType>(
-            largest_contentful_paint.type),
-        largest_contentful_paint.image_bpp, request_priority,
-        largest_contentful_paint.resource_load_timings->discovery_time,
-        largest_contentful_paint.resource_load_timings->load_start,
-        largest_contentful_paint.resource_load_timings->load_end);
-  }
-}
-
-void PageLoadMetricsUpdateDispatcher::
-    ClearSoftNavigationLargestContentfulPaint() {
-  soft_navigation_contentful_paint_candidate_.Clear();
 }
 
 void PageLoadMetricsUpdateDispatcher::SetUpSharedMemoryForDroppedFrames(
@@ -651,25 +611,34 @@ void PageLoadMetricsUpdateDispatcher::UpdateMainFrameSubresourceLoadMetrics(
   subresource_load_metrics_ = subresource_load_metrics;
 }
 
-void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigation(
-    const mojom::SoftNavigationMetrics& soft_navigation_metrics) {
-  client_->OnSoftNavigationChanged(soft_navigation_metrics);
-}
-
-void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationIntervalLayoutShift(
-    const mojom::FrameRenderDataUpdate& render_data) {
-  soft_nav_interval_layout_shift_normalization_.AddNewLayoutShifts(
-      render_data.new_layout_shifts, base::TimeTicks::Now());
-}
-
-void PageLoadMetricsUpdateDispatcher::
-    UpdateSoftNavigationIntervalInteractionToNextPaint(
-        content::RenderFrameHost* render_frame_host,
-        const std::vector<mojom::EventTimingPtr>& event_timings) {
-  if (!event_timings.empty()) {
-    soft_navigation_interval_interaction_to_next_paint_calculator_
-        .AddNewEventTimings(render_frame_host->GetGlobalFrameToken(),
-                            event_timings);
+void PageLoadMetricsUpdateDispatcher::UpdateSoftNavigationMetrics(
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    base::span<const mojom::EventTimingPtr> event_timings,
+    base::span<const mojom::LayoutShiftPtr> layout_shifts,
+    base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps) {
+  CHECK(!soft_navigation_tracker_.HasNextSoftNavigation());
+  if (!soft_navigation_tracker_.UpdateAndValidateMetrics(
+          std::move(soft_navigation_metrics))) {
+    return;
+  }
+  while (true) {
+    soft_navigation_tracker_.Process(
+        &event_timings, &soft_navigation_interaction_to_next_paint_);
+    soft_navigation_tracker_.Process(
+        &layout_shifts, &soft_navigation_layout_shift_normalization_);
+    size_t num_soft_lcps_processed = soft_navigation_tracker_.Process(
+        &soft_lcps, &soft_navigation_largest_contentful_paint_);
+    if (num_soft_lcps_processed) {
+      client_->OnSoftNavigationLargestContentfulPaint(num_soft_lcps_processed);
+    }
+    if (!soft_navigation_tracker_.HasNextSoftNavigation()) {
+      break;
+    }
+    client_->OnSoftNavigation();  // Notify observers, via PageLoadTracker.
+    soft_navigation_tracker_.AdvanceToNextSoftNavigation();
+    soft_navigation_interaction_to_next_paint_.ClearEventTimings();
+    soft_navigation_layout_shift_normalization_.ClearAllLayoutShifts();
+    soft_navigation_largest_contentful_paint_.Clear();
   }
 }
 

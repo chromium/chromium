@@ -1179,8 +1179,9 @@ void MetricsWebContentsObserver::OnTimingUpdated(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
-    mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint,
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        soft_largest_contentful_paint,
     std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
   if (PageLoadTracker* tracker = GetPageLoadTrackerIfValid(render_frame_host)) {
     tracker->UpdateMetrics(
@@ -1231,8 +1232,9 @@ void MetricsWebContentsObserver::UpdateTiming(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
-    mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint,
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        soft_largest_contentful_paint,
     std::vector<mojom::CustomUserTimingMarkPtr> user_timings) {
   content::RenderFrameHost* render_frame_host =
       page_load_metrics_receivers_.GetCurrentTargetFrame();

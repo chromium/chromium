@@ -223,11 +223,15 @@ class PageLoadMetricsObserverDelegate {
   virtual const ContentfulPaintTimingInfo&
   GetSoftNavigationLargestContentfulPaint() const = 0;
 
-  // Returns the current soft navigation count - https://bit.ly/soft-navigation
+  // Returns the current soft navigation - https://bit.ly/soft-navigation
   // Soft navigations are JS-driven same-document navigations that are using the
   // history API or the new Navigation API, triggered by a user gesture and
   // meaningfully modify the DOM, replacing the previous content with new one.
-  virtual mojom::SoftNavigationMetrics& GetSoftNavigationMetrics() const = 0;
+  virtual const mojom::SoftNavigationMetrics& GetSoftNavigationMetrics()
+      const = 0;
+
+  // The number of soft navigations that have occurred in the page load.
+  virtual uint64_t GetSoftNavigationCount() const = 0;
 
   // Maps main-frame same-document navigation identified
   // by |same_document_metrics_token| to its UKM source id.

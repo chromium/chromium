@@ -305,7 +305,6 @@ PageLoadTracker::PageLoadTracker(
       is_origin_visit_(
           CalculateIsOriginVisit(*is_first_navigation_in_web_contents,
                                  navigation_handle->GetPageTransition())),
-      soft_navigation_metrics_(mojom::SoftNavigationMetrics::New()),
       page_type_(CalculatePageType(navigation_handle)),
       parent_tracker_(std::move(parent_tracker)) {
   DCHECK(!navigation_handle->HasCommitted());
@@ -1114,26 +1113,22 @@ void PageLoadTracker::OnSubframeMetadataChanged(
   }
 }
 
-void PageLoadTracker::OnSoftNavigationChanged(
-    const mojom::SoftNavigationMetrics& new_soft_navigation_metrics) {
-  if (new_soft_navigation_metrics.count <= soft_navigation_metrics_->count) {
-    return;
-  }
+void PageLoadTracker::OnSoftNavigation() {
   // Notify the observers - including and in particular, this will notify
   // UkmPageLoadMetricsObserver. Usually, these observers will then process the
   // previous soft navigation, and access the previous soft navigation data
   // including LCP, CLS, and INP via the PageLoadMetricsObserverDelegate
   // interface, which the PageLoadTracker implements.
   for (const auto& observer : observers_) {
-    observer->OnSoftNavigationUpdated(new_soft_navigation_metrics);
+    observer->OnSoftNavigation();
   }
-  // Now that the previous soft navigation is consumed by the observers, reset
-  // the CLS, INP, and LCP calculators, and remember the new soft navigation.
-  metrics_update_dispatcher_
-      .ResetSoftNavigationIntervalInteractionToNextPaintCalculator();
-  metrics_update_dispatcher_.ResetSoftNavigationIntervalLayoutShift();
-  metrics_update_dispatcher_.ClearSoftNavigationLargestContentfulPaint();
-  soft_navigation_metrics_ = new_soft_navigation_metrics.Clone();
+}
+
+void PageLoadTracker::OnSoftNavigationLargestContentfulPaint(
+    uint64_t num_soft_lcps) {
+  for (const auto& observer : observers_) {
+    observer->OnSoftNavigationLargestContentfulPaint(num_soft_lcps);
+  }
 }
 
 void PageLoadTracker::OnPrefetchLikely() {
@@ -1315,7 +1310,7 @@ const NormalizedCLSData& PageLoadTracker::GetNormalizedCLSData(
 const NormalizedCLSData&
 PageLoadTracker::GetSoftNavigationIntervalNormalizedCLSData() const {
   return metrics_update_dispatcher_
-      .soft_navigation_interval_normalized_layout_shift();
+      .soft_navigation_layout_shift_normalization();
 }
 
 const InteractionToNextPaintCalculator&
@@ -1326,8 +1321,7 @@ PageLoadTracker::GetInteractionToNextPaintCalculator() const {
 const InteractionToNextPaintCalculator&
 PageLoadTracker::GetSoftNavigationIntervalInteractionToNextPaintCalculator()
     const {
-  return metrics_update_dispatcher_
-      .soft_navigation_interval_interaction_to_next_paint_calculator();
+  return metrics_update_dispatcher_.soft_navigation_interaction_to_next_paint();
 }
 
 const std::optional<blink::SubresourceLoadMetrics>&
@@ -1360,7 +1354,7 @@ PageLoadTracker::GetExperimentalLargestContentfulPaintHandler() const {
 
 const ContentfulPaintTimingInfo&
 PageLoadTracker::GetSoftNavigationLargestContentfulPaint() const {
-  return metrics_update_dispatcher_.GetSoftNavigationLargestContentfulPaint();
+  return metrics_update_dispatcher_.soft_navigation_largest_contentful_paint();
 }
 
 ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {
@@ -1370,9 +1364,13 @@ ukm::SourceId PageLoadTracker::GetPageUkmSourceId() const {
   return source_id_;
 }
 
-mojom::SoftNavigationMetrics& PageLoadTracker::GetSoftNavigationMetrics()
+const mojom::SoftNavigationMetrics& PageLoadTracker::GetSoftNavigationMetrics()
     const {
-  return *soft_navigation_metrics_;
+  return metrics_update_dispatcher_.soft_navigation_metrics();
+}
+
+uint64_t PageLoadTracker::GetSoftNavigationCount() const {
+  return metrics_update_dispatcher_.soft_navigation_count();
 }
 
 ukm::SourceId PageLoadTracker::GetUkmSourceIdForSameDocumentNavigation(
@@ -1488,14 +1486,16 @@ void PageLoadTracker::UpdateMetrics(
     std::vector<mojom::EventTimingPtr> event_timings,
     const std::optional<blink::SubresourceLoadMetrics>&
         subresource_load_metrics,
-    mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
-    mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint) {
+    std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+    std::vector<mojom::LargestContentfulPaintTimingPtr>
+        soft_largest_contentful_paint) {
   if (parent_tracker_) {
     parent_tracker_->UpdateMetrics(
         render_frame_host, new_timing.Clone(), new_metadata.Clone(), features,
         resources, render_data.Clone(), cpu_timing.Clone(),
         mojo::Clone(event_timings), subresource_load_metrics,
-        soft_navigation_metrics.Clone(), soft_largest_contentful_paint.Clone());
+        mojo::Clone(soft_navigation_metrics),
+        mojo::Clone(soft_largest_contentful_paint));
   }
 
   metrics_update_dispatcher_.UpdateMetrics(

@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -16,6 +17,7 @@
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer_delegate.h"
+#include "components/page_load_metrics/browser/soft_navigation_tracker.h"
 #include "components/page_load_metrics/common/page_load_metrics.mojom.h"
 
 namespace content {
@@ -141,8 +143,9 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnSubFrameRenderDataChanged(
         content::RenderFrameHost* rfh,
         const mojom::FrameRenderDataUpdate& render_data) = 0;
-    virtual void OnSoftNavigationChanged(
-        const mojom::SoftNavigationMetrics& soft_navigation_metrics) = 0;
+    virtual void OnSoftNavigation() = 0;
+    virtual void OnSoftNavigationLargestContentfulPaint(
+        uint64_t num_soft_lcps) = 0;
     virtual void UpdateFeaturesUsage(
         content::RenderFrameHost* rfh,
         const std::vector<blink::UseCounterFeature>& new_features) = 0;
@@ -186,8 +189,9 @@ class PageLoadMetricsUpdateDispatcher {
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      mojom::SoftNavigationMetricsPtr soft_navigation_metrics,
-      mojom::LargestContentfulPaintTimingPtr soft_largest_contentful_paint,
+      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+      std::vector<mojom::LargestContentfulPaintTimingPtr>
+          soft_largest_contentful_paint,
       internal::PageLoadTrackerPageType page_type);
 
   void SetUpSharedMemoryForDroppedFrames(
@@ -231,29 +235,28 @@ class PageLoadMetricsUpdateDispatcher {
     return interaction_to_next_paint_calculator_;
   }
 
+  // Access to accumulated metrics for the current soft navigation performance
+  // timeline. These are reset on each soft navigation.
   const InteractionToNextPaintCalculator&
-  soft_navigation_interval_interaction_to_next_paint_calculator() const {
-    return soft_navigation_interval_interaction_to_next_paint_calculator_;
+  soft_navigation_interaction_to_next_paint() const {
+    return soft_navigation_interaction_to_next_paint_;
   }
 
-  const NormalizedCLSData& soft_navigation_interval_normalized_layout_shift()
+  const NormalizedCLSData& soft_navigation_layout_shift_normalization() const {
+    return soft_navigation_layout_shift_normalization_.normalized_cls_data();
+  }
+
+  const ContentfulPaintTimingInfo& soft_navigation_largest_contentful_paint()
       const {
-    return soft_nav_interval_layout_shift_normalization_.normalized_cls_data();
+    return soft_navigation_largest_contentful_paint_.MergeTextAndImageTiming();
   }
 
-  void ResetSoftNavigationIntervalInteractionToNextPaintCalculator() {
-    soft_navigation_interval_interaction_to_next_paint_calculator_
-        .ClearEventTimings();
+  const mojom::SoftNavigationMetrics& soft_navigation_metrics() const {
+    return soft_navigation_tracker_.current_soft_navigation();
   }
 
-  void UpdateSoftNavigationLargestContentfulPaint(
-      const page_load_metrics::mojom::LargestContentfulPaintTiming&);
-  void ClearSoftNavigationLargestContentfulPaint();
-
-  const ContentfulPaintTimingInfo& GetSoftNavigationLargestContentfulPaint()
-      const {
-    return soft_navigation_contentful_paint_candidate_
-        .MergeTextAndImageTiming();
+  uint64_t soft_navigation_count() const {
+    return soft_navigation_tracker_.soft_navigation_count();
   }
 
   const PageRenderData& main_frame_render_data() const {
@@ -268,10 +271,6 @@ class PageLoadMetricsUpdateDispatcher {
   }
   void UpdateLayoutShiftNormalizationForBfcache() {
     layout_shift_normalization_for_bfcache_.ClearAllLayoutShifts();
-  }
-
-  void ResetSoftNavigationIntervalLayoutShift() {
-    soft_nav_interval_layout_shift_normalization_.ClearAllLayoutShifts();
   }
 
   // Ensures all pending updates will get dispatched.
@@ -296,15 +295,11 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateMainFrameSubresourceLoadMetrics(
       const blink::SubresourceLoadMetrics& subresource_load_metrics);
 
-  void UpdateSoftNavigation(
-      const mojom::SoftNavigationMetrics& soft_navigation_metrics);
-
-  void UpdateSoftNavigationIntervalInteractionToNextPaint(
-      content::RenderFrameHost* render_frame_host,
-      const std::vector<mojom::EventTimingPtr>& event_timings);
-
-  void UpdateSoftNavigationIntervalLayoutShift(
-      const mojom::FrameRenderDataUpdate& render_data);
+  void UpdateSoftNavigationMetrics(
+      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+      base::span<const mojom::EventTimingPtr> event_timings,
+      base::span<const mojom::LayoutShiftPtr> layout_shifts,
+      base::span<const mojom::LargestContentfulPaintTimingPtr> soft_lcps);
 
   void UpdatePageEventTiming(
       content::RenderFrameHost* render_frame_host,
@@ -388,7 +383,6 @@ class PageLoadMetricsUpdateDispatcher {
   std::optional<gfx::Rect> main_frame_viewport_rect_;
 
   LayoutShiftNormalization layout_shift_normalization_;
-  LayoutShiftNormalization soft_nav_interval_layout_shift_normalization_;
 
   // Layout shift normalization data for bfcache which needs to be reset each
   // time the page enters the BackForward cache.
@@ -410,16 +404,15 @@ class PageLoadMetricsUpdateDispatcher {
   // time the page enters bfcache.
   InteractionToNextPaintCalculator interaction_to_next_paint_calculator_;
 
-  // Keeps track of user interaction latencies on main frame for soft
-  // navigation intervals. A soft navigation interval is either the
-  // interval from page load start to 1st soft navigation, or an interval
-  // between 2 soft navigations, or the interval from the last soft navigation
-  // to the page load end.
-  InteractionToNextPaintCalculator
-      soft_navigation_interval_interaction_to_next_paint_calculator_;
+  // These fields keep track of metrics on main frame for soft navigation
+  // intervals. A soft navigation interval is either the interval from page load
+  // start to 1st soft navigation, or an interval between 2 soft navigations,
+  // or the interval from the last soft navigation to the page load end.
+  InteractionToNextPaintCalculator soft_navigation_interaction_to_next_paint_;
+  LayoutShiftNormalization soft_navigation_layout_shift_normalization_;
+  ContentfulPaint soft_navigation_largest_contentful_paint_;
 
-  // Keeps track of the LCP candidate of a soft navigation.
-  ContentfulPaint soft_navigation_contentful_paint_candidate_;
+  SoftNavigationTracker soft_navigation_tracker_;
 };
 
 }  // namespace page_load_metrics

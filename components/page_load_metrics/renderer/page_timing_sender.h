@@ -24,8 +24,8 @@ class PageTimingSender {
       std::vector<mojom::EventTimingPtr> event_timings,
       const std::optional<blink::SubresourceLoadMetrics>&
           subresource_load_metrics,
-      const mojom::SoftNavigationMetricsPtr& soft_navigation_metrics,
-      const mojom::LargestContentfulPaintTimingPtr&
+      std::vector<mojom::SoftNavigationMetricsPtr> soft_navigation_metrics,
+      std::vector<mojom::LargestContentfulPaintTimingPtr>
           soft_largest_contentful_paint,
       std::vector<mojom::CustomUserTimingMarkPtr> user_timings) = 0;
   virtual void SetUpDroppedFramesReporting(
