@@ -7,14 +7,43 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
 #include "components/dom_distiller/core/url_constants.h"
+#include "components/search_engines/template_url_service.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
+#include "content/public/common/content_features.h"
+#include "ui/gfx/animation/animation.h"
+
+namespace {
+
+bool IsSrpNavigation(TemplateURLService* template_url_service,
+                     const GURL& url,
+                     const GURL& last_committed_url) {
+  if (!template_url_service) {
+    return false;
+  }
+
+  return template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+             url) ||
+         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
+             last_committed_url);
+}
+
+bool IsReaderModeNavigation(const GURL& url, const GURL& last_committed_url) {
+  return url.SchemeIs(dom_distiller::kDomDistillerScheme) ||
+         last_committed_url.SchemeIs(dom_distiller::kDomDistillerScheme);
+}
+
+}  // namespace
 
 ChromeWebContentsViewDelegateAndroid::ChromeWebContentsViewDelegateAndroid(
     content::WebContents* web_contents)
@@ -32,16 +61,43 @@ ChromeWebContentsViewDelegateAndroid::GetDragDestDelegate() {
 
 bool ChromeWebContentsViewDelegateAndroid::ShouldShowBlurTransitionAnimation(
     content::NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          dom_distiller::kReaderModeBlurTransitionAnimation)) {
+  if (gfx::Animation::PrefersReducedMotion()) {
+    return false;
+  }
+  const GURL& url = navigation_handle->GetURL();
+  const GURL& last_committed_url = web_contents_->GetLastCommittedURL();
+  if (base::FeatureList::IsEnabled(
+          features::kAndroidNavigationBlurTransitionAnimation)) {
+    static const base::FeatureParam<bool> kSkipSrp{
+        &features::kAndroidNavigationBlurTransitionAnimation, "skip_srp",
+        false};
+    if (!kSkipSrp.Get()) {
+      return true;
+    }
+    Profile* profile =
+        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+    TemplateURLService* template_url_service =
+        TemplateURLServiceFactory::GetForProfile(profile);
+    if (!IsSrpNavigation(template_url_service, url, last_committed_url)) {
+      return true;
+    }
+
+    // Skip SRP is true, and the navigation involves SRP. Check if we want to
+    // show Reading Mode navigation.
+    if (IsReaderModeNavigation(url, last_committed_url) &&
+        base::FeatureList::IsEnabled(
+            dom_distiller::kReaderModeBlurTransitionAnimation)) {
+      return true;
+    }
     return false;
   }
 
-  // Check that the navigation is entering or exiting Reading Mode.
-  return navigation_handle->GetURL().SchemeIs(
-             dom_distiller::kDomDistillerScheme) ||
-         web_contents_->GetLastCommittedURL().SchemeIs(
-             dom_distiller::kDomDistillerScheme);
+  if (base::FeatureList::IsEnabled(
+          dom_distiller::kReaderModeBlurTransitionAnimation)) {
+    return IsReaderModeNavigation(url, last_committed_url);
+  }
+
+  return false;
 }
 
 void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(

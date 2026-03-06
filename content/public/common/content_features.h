@@ -35,6 +35,13 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kAndroidEnableBackgroundMediaLargeFormFactors);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidFallbackToNextSlot);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidMediaInsertion);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidNavigationBlurTransitionAnimation);
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kAndroidNavigationAnimationBlurHoldDuration;
+CONTENT_EXPORT extern const base::FeatureParam<int>
+    kAndroidNavigationAnimationFadeOutDuration;
+CONTENT_EXPORT extern const base::FeatureParam<double>
+    kAndroidNavigationAnimationBlurSigma;
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidPkAutocorrectUnderline);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidSpellingUnderlineInCompositionMode);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAndroidWarmUpSpareRendererWithTimeout);

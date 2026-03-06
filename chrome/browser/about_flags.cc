@@ -4300,6 +4300,11 @@ const FeatureEntry::FeatureVariation
         {"Open Fullscreen", kRobustWindowManagementExperimentalOpenAdjacently,
          nullptr}};
 
+const FeatureEntry::FeatureParam kAndroidNavigationBlurSkipSrpParams[] = {
+    {"skip_srp", "true"}};
+const FeatureEntry::FeatureVariation kNavigationBlurVariations[] = {
+    {"- Skip SRP", kAndroidNavigationBlurSkipSrpParams, nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -4572,6 +4577,7 @@ const FeatureEntry::FeatureVariation kAndroidDesktopZoomScalingVariations[] = {
      nullptr},
     {"with 120 scaling, 130 monitor", kAndroidDesktopZoomScalingFactorLarge,
      nullptr}};
+
 #endif  // BUILDFLAG(IS_ANDROID)
 
 // LINT.IfChange(ContextualTasksArms)
@@ -5868,6 +5874,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"nav-bar-color-animation", flag_descriptions::kNavBarColorAnimationName,
      flag_descriptions::kNavBarColorAnimationDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kNavBarColorAnimation)},
+
+    {"android-navigation-blur-transition-animation",
+     flag_descriptions::kAndroidNavigationBlurTransitionAnimationName,
+     flag_descriptions::kAndroidNavigationBlurTransitionAnimationDescription,
+     kOsAndroid,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         features::kAndroidNavigationBlurTransitionAnimation,
+         kNavigationBlurVariations,
+         "AndroidNavigationBlurTransitionAnimation")},
 
     // Tab closure methods refactor.
     {"tab-closure-method-refactor",

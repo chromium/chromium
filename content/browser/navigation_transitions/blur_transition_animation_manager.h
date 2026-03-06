@@ -10,10 +10,12 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "cc/slim/surface_layer.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,7 +28,8 @@ class WindowAndroid;
 }  // namespace ui
 
 namespace cc::slim {
-class Layer;
+class SolidColorLayer;
+class SurfaceLayer;
 }  // namespace cc::slim
 
 namespace content {
@@ -39,10 +42,35 @@ class WebContentsViewAndroid;
  * Manages a navigation blur transition on Android by overlaying a blurred
  * reference to the previous page's live surface during a load.
  *
- * 1. ReadyToCommitNavigation: References the previous page's live surface
- *    (SurfaceId), applies a blur, and starts a "Fade In" (0% -> 100% opacity).
- * 2. DidFirstVisuallyNonEmptyPaint: Starts a "Fade Out" (100% -> 0% opacity)
- *    to reveal the new page once it's content is ready.
+ * 1. ReadyToCommitNavigation: Triggered immediately prior to navigation
+ *    commitment. The manager obtains a reference to the surface of the
+ *    outgoing page and initializes the transition layers.
+ *    `animation_state_` is initialized to `kNone`.
+ *
+ * 2. RenderFrameHostStateChanged: Triggered upon navigation commitment once
+ *    the new frame becomes active. The blurred layer is integrated into the
+ *    view hierarchy and `animation_state_` transitions to `kBlurShown`.
+ *    A timer (GetBlurHoldDuration) is initialized to ensure the transition is
+ *    dismissed should the new page fail to render within the expected duration.
+ *
+ * 3. Fallback Phase (Timer Expiration): Should the new page fail to render
+ *    content before the timer expires, the manager transitions to a solid
+ *    color fallback layer to prevent the persistent display of a stale blur
+ *    or an unpopulated new page.
+ *    - `animation_state_` transitions to `kFadeToFallbackColor`.
+ *    - Following the completion of the fallback layer's opacity transition,
+ *      `animation_state_` transitions to `kFallbackShown`, and the blur layer
+ *      is subsequently released.
+ *
+ * 4. Reveal Phase (DidFirstVisuallyNonEmptyPaint): Triggered when the new page
+ *    performs its initial visually non-empty paint.
+ *    - `animation_state_` transitions to `kFadeOut`.
+ *    - All visible transition layers fade out to reveal the newly committed
+ *      page.
+ *
+ * 5. Cleanup: Upon completion of the fade-out or when the transition is
+ *    interrupted, all layers are destroyed and `animation_state_` is reset to
+ *    `kNone`.
  */
 class CONTENT_EXPORT BlurTransitionAnimationManager
     : public WebContentsObserver,
@@ -62,6 +90,7 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
     virtual gfx::NativeView GetNativeView() = 0;
     virtual ui::WindowAndroid* GetWindowAndroid() = 0;
     virtual viz::SurfaceId GetCurrentSurfaceId() = 0;
+    virtual std::optional<SkColor> GetThemeColor() = 0;
   };
 
   ~BlurTransitionAnimationManager() override;
@@ -72,6 +101,10 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
 
   // WebContentsObserver:
   void ReadyToCommitNavigation(NavigationHandle* navigation_handle) override;
+  void RenderFrameHostStateChanged(
+      RenderFrameHost* render_frame_host,
+      RenderFrameHost::LifecycleState old_state,
+      RenderFrameHost::LifecycleState new_state) override;
   void DidFinishNavigation(NavigationHandle* navigation_handle) override;
   void DidFirstVisuallyNonEmptyPaint() override;
   void PrimaryMainFrameRenderProcessGone(
@@ -92,15 +125,16 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
     kFinished = 0,
     kNavigationInterrupted = 1,
     kRenderProcessGone = 2,
-    kMaxValue = kRenderProcessGone,
+    kAnimationTimerExpired = 3,
+    kMaxValue = kAnimationTimerExpired,
   };
 
   // Stops the animation state machine.
   // |should_animate_out|: If true, and the layer is currently visible, a
   // fade-out animation will play before destruction. If false, or if the layer
   // is not ready, the transition is aborted immediately.
-  virtual void StopFadeInAnimation(TransitionExitReason exit_reason,
-                                   bool should_animate_out);
+  virtual void SignalExit(TransitionExitReason exit_reason,
+                          bool should_animate_out);
 
  protected:
   // Virtual for testing.
@@ -110,10 +144,11 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
   friend class BlurTransitionAnimationManagerTest;
   friend class TestBlurTransitionAnimationManager;
 
-  // Animation state.
   enum class AnimationState {
     kNone,
-    kFadeIn,
+    kBlurShown,
+    kFadeToFallbackColor,
+    kFallbackShown,
     kFadeOut,
   };
 
@@ -121,45 +156,55 @@ class CONTENT_EXPORT BlurTransitionAnimationManager
 
   static const void* UserDataKey();
 
-  void RegisterWindowObserver();
-  void UnregisterWindowObserver();
+  void SetAnimationState(AnimationState state);
+  // Resets the navigation-specific state (ID and target RFH) and records the
+  // exit reason if a navigation was active.
+  void ResetNavigationState(TransitionExitReason exit_reason);
+  void RecordExitReason(TransitionExitReason exit_reason);
 
   void StartFadeOut();
+  void RequestAnimate();
+  void OnBlurHoldTimerExpired();
 
+  void ShowBlurTransitionLayer();
+  void HideBlurTransitionLayer();
   // Removes the layer from the tree, releases the reference (freeing memory),
   // and unregisters the window observer.
   void DestroyLayer();
 
-  void ShowBlurTransitionLayer(scoped_refptr<cc::slim::Layer> layer);
-  void HideBlurTransitionLayer();
-
-  void RecordExitReason(TransitionExitReason exit_reason);
+  void RegisterWindowObserver();
+  void UnregisterWindowObserver();
 
   // The ID of the navigation handle that triggered the blur transition.
   int64_t navigation_id_ = 0;
+  // The ID of the RenderFrameHost that we expect to commit for this navigation.
+  GlobalRenderFrameHostId target_rfh_id_;
 
   AnimationState animation_state_ = AnimationState::kNone;
-  // This captures the moment that the animation actually begins.
-  // It is anchored to the first frame received in OnAnimate.
-  base::TimeTicks animation_start_time_;
-
-  // Tracks if the next OnAnimate call is the very first frame of a new
-  // animation state.
-  bool is_first_frame_of_animation_ = false;
-
-  // Offsets the animation start time to ensure visual continuity.
-  // When a state change (e.g., Fade-In -> Fade-Out) occurs mid-animation, this
-  // allows the new animation to begin at the equivalent opacity of the previous
-  // state.
-  base::TimeDelta initial_animation_offset_;
-
-  bool is_window_observer_registered_ = false;
+  // This captures the moment that the current animation phase actually begins.
+  // It is anchored to the first frame received in OnAnimate for the current
+  // phase.
+  base::TimeTicks animation_phase_start_time_;
+  // Add a timer to ensure that even if no event triggers the fade out, the
+  // blurred layer will not persist indefinitely.
+  base::OneShotTimer blur_hold_timer_;
 
   scoped_refptr<cc::slim::SurfaceLayer> blur_layer_;
+  // This is a defensive measure against the viz compositor still displaying the
+  // old pixels even though the render frame host state has changed and the
+  // animation timer has expired. We do not want to show the user the previous
+  // page, so we default back to status quo behaviour with a white screen before
+  // pixels of the new page are populated and trigger the fade out via
+  // DidFirstVisuallyNonEmptyPaint.
+  scoped_refptr<cc::slim::SolidColorLayer> fallback_color_layer_;
 
+  // Capture values to ensure smooth transitions between animation phases.
+  float initial_blur_opacity_ = 0.0f;
+  float initial_fallback_opacity_ = 0.0f;
+
+  bool is_window_observer_registered_ = false;
   TransitionExitReason last_exit_reason_ =
-      TransitionExitReason::kRenderProcessGone;
-
+      TransitionExitReason::kAnimationTimerExpired;
   std::unique_ptr<WebContentsViewAndroidDelegate>
       web_contents_view_android_delegate_;
 

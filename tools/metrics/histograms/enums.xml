@@ -1079,7 +1079,8 @@ uploading your change for review.  These are checked by presubmit scripts.
 <enum name="BlurTransitionExitReason">
   <int value="0" label="Finished"/>
   <int value="1" label="NavigationInterrupted"/>
-  <int value="3" label="Cleanup"/>
+  <int value="2" label="RenderProcessGone"/>
+  <int value="3" label="AnimationTimerExpired"/>
 </enum>
 
 <enum name="BookmarkBarState">
@@ -10154,6 +10155,8 @@ from previous Chrome versions.
   <int value="-1463286459" label="LogUrlScoringSignals:enabled"/>
   <int value="-1462980793"
       label="SupportSearchSuggestionForPrerender2:disabled"/>
+  <int value="-1462922763"
+      label="AndroidNavigationBlurTransitionAnimation:enabled"/>
   <int value="-1462719639" label="WebAuthenticationImmediateGet:disabled"/>
   <int value="-1461448775" label="FastPairHID:disabled"/>
   <int value="-1461261930" label="OutOfBlinkCORS:disabled"/>
@@ -10985,6 +10988,8 @@ from previous Chrome versions.
   <int value="-1178350793" label="RemoteCopyReceiver:disabled"/>
   <int value="-1178218856" label="OmniboxAimShortcutTypedState:enabled"/>
   <int value="-1177802205" label="enable-hosted-app-quit-notification"/>
+  <int value="-1177471758"
+      label="AndroidNavigationBlurTransitionAnimation:disabled"/>
   <int value="-1177405596" label="OmniboxNumSrpZpsRecentSearches:enabled"/>
   <int value="-1177230990" label="PrefetchAndroidFonts:enabled"/>
   <int value="-1177219752"

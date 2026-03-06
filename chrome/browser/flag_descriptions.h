@@ -5563,6 +5563,12 @@ inline constexpr char kNavBarColorAnimationName[] = "NavBarColorAnimation";
 inline constexpr char kNavBarColorAnimationDescription[] =
     "Enables animations for color changes to the OS navigation bar.";
 
+inline constexpr char kAndroidNavigationBlurTransitionAnimationName[] =
+    "Blur transition animation for cross-site navigations";
+inline constexpr char kAndroidNavigationBlurTransitionAnimationDescription[] =
+    "Display a blur animation during cross-site navigations to provide an "
+    "enhanced transition experience where the white loading screen is avoided.";
+
 inline constexpr char kNavigationCaptureRefactorAndroidName[] =
     "Navigation Capture refactoring for Chrome on Android";
 inline constexpr char kNavigationCaptureRefactorAndroidDescription[] =

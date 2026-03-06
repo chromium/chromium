@@ -55,6 +55,19 @@ BASE_FEATURE(kAndroidFallbackToNextSlot, base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables IMEs to insert media content such as images, gifs and stickers.
 BASE_FEATURE(kAndroidMediaInsertion, base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables a blur animation of the current page when navigating away from it.
+BASE_FEATURE(kAndroidNavigationBlurTransitionAnimation,
+             base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kAndroidNavigationAnimationBlurHoldDuration{
+    &kAndroidNavigationBlurTransitionAnimation,
+    "nav-animation-fade-hold-duration-ms", 350};
+const base::FeatureParam<int> kAndroidNavigationAnimationFadeOutDuration{
+    &kAndroidNavigationBlurTransitionAnimation,
+    "nav-animation-fade-out-duration-ms", 150};
+const base::FeatureParam<double> kAndroidNavigationAnimationBlurSigma{
+    &kAndroidNavigationBlurTransitionAnimation, "nav-animation-blur-sigma",
+    3.0};
+
 // Enables the physical keyboard autocorrect underline feature.
 BASE_FEATURE(kAndroidPkAutocorrectUnderline, base::FEATURE_DISABLED_BY_DEFAULT);
 
