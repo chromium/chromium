@@ -19,6 +19,32 @@
 #include "chrome/installer/util/shell_util.h"
 #endif
 
+namespace {
+
+#if BUILDFLAG(IS_WIN)
+browser_util::PinAppToTaskbarChannel EntrypointToPinToTaskbarChannel(
+    default_browser::DefaultBrowserEntrypointType entrypoint_type) {
+  switch (entrypoint_type) {
+    case default_browser::DefaultBrowserEntrypointType::kBubbleDialog:
+      return browser_util::PinAppToTaskbarChannel::kDefaultBrowserBubbleDialog;
+    case default_browser::DefaultBrowserEntrypointType::
+        kModalDialogWithSettingsIllustration:
+      return browser_util::PinAppToTaskbarChannel::
+          kDefaultBrowserModalDialogWithSettingsImage;
+    case default_browser::DefaultBrowserEntrypointType::
+        kModalDialogWithoutSettingsIllustration:
+      return browser_util::PinAppToTaskbarChannel::
+          kDefaultBrowserModalDialogWithoutSettingsImage;
+    case default_browser::DefaultBrowserEntrypointType::kStartupInfobar:
+      return browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar;
+    default:
+      NOTREACHED();
+  }
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+}  // namespace
+
 DefaultBrowserSurfaceManager::DefaultBrowserSurfaceManager() = default;
 
 DefaultBrowserSurfaceManager::~DefaultBrowserSurfaceManager() {
@@ -93,7 +119,7 @@ void DefaultBrowserSurfaceManager::HandleAccept() {
     // likely get used by other code.
     browser_util::PinAppToTaskbar(
         ShellUtil::GetBrowserModelId(InstallUtil::IsPerUserInstall()),
-        browser_util::PinAppToTaskbarChannel::kDefaultBrowserInfoBar,
+        EntrypointToPinToTaskbarChannel(GetEntrypointType()),
         base::DoNothing());
 #else
     NOTREACHED();

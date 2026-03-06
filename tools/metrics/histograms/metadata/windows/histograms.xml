@@ -30,6 +30,12 @@ chromium-metrics-reviews@google.com.
       summary=", from the default browser bubble dialog"/>
   <variant name=".DefaultBrowserInfoBar"
       summary=", from the default browser infobar"/>
+  <variant name=".DefaultBrowserModalDialogWithoutSettingsImage"
+      summary=", from the default browser modal dialog, without the settings
+               image showing"/>
+  <variant name=".DefaultBrowserModalDialogWithSettingsImage"
+      summary=", from the default browser modal dialog, with the settings
+               image showing"/>
   <variant name=".FirstRunExperience"
       summary=", from the first run experience"/>
   <variant name=".PinToTaskbarInfoBar"

@@ -21,7 +21,9 @@ enum class PinAppToTaskbarChannel {
   kSettingsPage,
   kPinWebApp,
   kDefaultBrowserBubbleDialog,
-  kMaxValue = kDefaultBrowserBubbleDialog,
+  kDefaultBrowserModalDialogWithSettingsImage,
+  kDefaultBrowserModalDialogWithoutSettingsImage,
+  kMaxValue = kDefaultBrowserModalDialogWithoutSettingsImage,
 };
 // LINT.ThenChange(//chrome/browser/win/taskbar_manager.cc:PinAppToTaskbarChannel)
 
