@@ -1094,18 +1094,6 @@ This is emitted for two scenarios when a worker may be unregistered:
   </summary>
 </histogram>
 
-<histogram name="Extensions.Debugger.UserIsInDeveloperMode"
-    enum="InDeveloperMode" expires_after="2023-01-15">
-  <owner>ghazale@chromium.org</owner>
-  <owner>extensions-core@chromium.org</owner>
-  <summary>
-    Reports whether the debugger API is called while the user has extensions
-    developer mode enabled. This excludes extensions installed by the enterprise
-    policy and component extensions. The stat is emitted when the
-    debugger.attach extension function is called.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.DeclarativeAPIFunctionCalls"
     enum="DeclarativeAPIFunctionType" expires_after="never">
 <!-- expires-never: For monitoring usage of declarative APIs. -->

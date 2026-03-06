@@ -6,8 +6,6 @@
 
 #include "chrome/browser/extensions/api/debugger/debugger_api.h"
 
-#include <stddef.h>
-
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -21,12 +19,9 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_view_util.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/api/debugger/extension_dev_tools_infobar_delegate.h"
@@ -36,19 +31,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
-#include "components/guest_view/buildflags/buildflags.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/common/url_utils.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -61,7 +49,6 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/permissions/permissions_data.h"
-#include "extensions/common/switches.h"
 #include "pdf/buildflags.h"
 #include "url/origin.h"
 #include "url/url_constants.h"
@@ -855,14 +842,6 @@ ExtensionFunction::ResponseAction DebuggerAttachFunction::Run() {
   }
 
   host.release();  // An attached client host manages its own lifetime.
-
-  if (!(Manifest::IsPolicyLocation(extension()->location()) ||
-        Manifest::IsComponentLocation(extension()->location()))) {
-    bool is_developer_mode =
-        profile->GetPrefs()->GetBoolean(prefs::kExtensionsUIDeveloperMode);
-    base::UmaHistogramBoolean("Extensions.Debugger.UserIsInDeveloperMode",
-                              is_developer_mode);
-  }
 
   return RespondNow(NoArguments());
 }

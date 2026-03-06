@@ -15,7 +15,6 @@
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/values_test_util.h"
@@ -32,13 +31,11 @@
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
-#include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -994,27 +991,6 @@ IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, CreateTargetToUntrustedWebUI) {
       << message_;
 }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest, IsDeveloperModeTrueHistogram) {
-  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, true);
-  base::HistogramTester histograms;
-  const char* histogram_name = "Extensions.Debugger.UserIsInDeveloperMode";
-
-  ASSERT_TRUE(RunExtensionTest("debugger_is_developer_mode")) << message_;
-
-  histograms.ExpectBucketCount(histogram_name, true, 1);
-}
-
-IN_PROC_BROWSER_TEST_F(DebuggerExtensionApiTest,
-                       IsDeveloperModeFalseHistogram) {
-  profile()->GetPrefs()->SetBoolean(prefs::kExtensionsUIDeveloperMode, false);
-  base::HistogramTester histograms;
-  const char* histogram_name = "Extensions.Debugger.UserIsInDeveloperMode";
-
-  ASSERT_TRUE(RunExtensionTest("debugger_is_developer_mode")) << message_;
-
-  histograms.ExpectBucketCount(histogram_name, false, 1);
-}
 
 class SitePerProcessDebuggerExtensionApiTest : public DebuggerExtensionApiTest {
  public:
