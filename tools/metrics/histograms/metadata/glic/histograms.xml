@@ -848,6 +848,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Instance.InitialInvocationSource"
+    enum="GlicInvocationSource" expires_after="2026-08-02">
+  <owner>birnie@google.com</owner>
+  <owner>perrier@google.com</owner>
+  <summary>
+    Records the first invocation source that was used to open a Glic instance.
+    Recorded when an instance is opened for the first time.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Instance.InputModesUsed" enum="GlicInputModesUsed"
     expires_after="2026-10-16">
   <owner>birnie@google.com</owner>
