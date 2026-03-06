@@ -87,18 +87,16 @@ export class LoadErrorElement extends CrLitElement {
       this.file_ = this.loadError.path;
       this.error_ = this.loadError.error;
 
-      const source = this.loadError.source;
-      // CodeSection expects a RequestFileSourceResponse, rather than an
-      // ErrorFileSource. Massage into place.
-      // TODO(devlin): Make RequestFileSourceResponse use ErrorFileSource.
-      this.codeSectionProperties_ = {
-        beforeHighlight: source ? source.beforeHighlight : '',
-        highlight: source ? source.highlight : '',
-        afterHighlight: source ? source.afterHighlight : '',
-        title: '',
-        message: this.loadError.error,
-      };
-      this.isCodeSectionActive_ = true;
+      if (this.loadError.source) {
+        this.codeSectionProperties_ = {
+          source: this.loadError.source,
+          title: '',
+          message: this.loadError.error,
+        };
+        this.isCodeSectionActive_ = true;
+      } else {
+        this.isCodeSectionActive_ = false;
+      }
     }
   }
 

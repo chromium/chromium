@@ -534,16 +534,9 @@ namespace developerPrivate {
   };
 
   dictionary RequestFileSourceResponse {
-    // The region of the code which threw the error, and should be highlighted.
-    DOMString highlight;
-
-    // The region before the "highlight" portion.
-    // If the region which threw the error was not found, the full contents of
-    // the file will be in the "beforeHighlight" section.
-    DOMString beforeHighlight;
-
-    // The region after the "highlight" portion.
-    DOMString afterHighlight;
+    // The source code related to the request. Only populated if the file
+    // was successfully read.
+    ErrorFileSource? source;
 
     // A title for the file in the form '<extension name>: <file name>'.
     DOMString title;

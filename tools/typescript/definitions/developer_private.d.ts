@@ -381,9 +381,7 @@ declare global {
       }
 
       export interface RequestFileSourceResponse {
-        highlight: string;
-        beforeHighlight: string;
-        afterHighlight: string;
+        source?: ErrorFileSource;
         title: string;
         message: string;
       }

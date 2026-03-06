@@ -1556,9 +1556,13 @@ TEST_F(DeveloperPrivateApiUnitTest, DeveloperPrivateRequestFileSource) {
   std::optional<api::developer_private::RequestFileSourceResponse> response =
       api::developer_private::RequestFileSourceResponse::FromValue(
           response_value);
-  EXPECT_FALSE(response->before_highlight.empty());
-  EXPECT_EQ("\"name\": \"foo\"", response->highlight);
-  EXPECT_FALSE(response->after_highlight.empty());
+
+  ASSERT_TRUE(response);
+  ASSERT_TRUE(response->source);
+
+  EXPECT_FALSE(response->source->before_highlight.empty());
+  EXPECT_EQ("\"name\": \"foo\"", response->source->highlight);
+  EXPECT_FALSE(response->source->after_highlight.empty());
   EXPECT_EQ("foo: manifest.json", response->title);
   EXPECT_EQ(kErrorMessage, response->message);
 }

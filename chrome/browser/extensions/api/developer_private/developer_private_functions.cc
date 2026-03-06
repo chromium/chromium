@@ -2007,9 +2007,12 @@ void DeveloperPrivateRequestFileSourceFunction::Finish(
         file_contents, properties.line_number ? *properties.line_number : 0);
   }
 
-  response.before_highlight = highlighter->GetBeforeFeature();
-  response.highlight = highlighter->GetFeature();
-  response.after_highlight = highlighter->GetAfterFeature();
+  developer::ErrorFileSource source;
+  source.before_highlight = highlighter->GetBeforeFeature();
+  source.highlight = highlighter->GetFeature();
+  source.after_highlight = highlighter->GetAfterFeature();
+
+  response.source = std::move(source);
 
   Respond(WithArguments(response.ToValue()));
 }
