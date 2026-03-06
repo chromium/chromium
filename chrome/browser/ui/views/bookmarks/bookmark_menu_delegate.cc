@@ -1054,12 +1054,34 @@ bool BookmarkMenuDelegate::ShouldCloseOnRemove(
           BookmarkParentFolder::OtherFolder()) == 1u;
   const bool is_child_of_bookmark_bar =
       node->parent()->type() == BookmarkNode::BOOKMARK_BAR;
+
+  // Fast-path for non-bookmark-bar nodes.
+  if (!is_child_of_bookmark_bar) {
+    return is_only_child_of_other_folder;
+  }
+
+  bool is_shown_from_bookmark_bar_overflow = false;
+  if (menu_) {
+    auto active_menu = menu_id_to_node_map_.find(menu_->GetCommand());
+    if (active_menu != menu_id_to_node_map_.end()) {
+      if (const BookmarkParentFolder* active_folder =
+              active_menu->second.GetIfBookmarkFolder();
+          active_folder &&
+          active_folder->as_permanent_folder() ==
+              BookmarkParentFolder::PermanentFolderType::kBookmarkBarNode) {
+        auto menu_start_idx = node_start_child_idx_map_.find(*active_folder);
+        is_shown_from_bookmark_bar_overflow =
+            menu_start_idx != node_start_child_idx_map_.end() &&
+            menu_start_idx->second > 0;
+      }
+    }
+  }
   // The 'other' bookmarks folder hides when it has no more items, so we need
   // to exit the menu when the last node is removed.
-  // If the parent is the bookmark bar, then the menu is showing for an item on
-  // the bookmark bar. When removing this item we need to close the menu (as
-  // there is no longer anything to anchor the menu to).
-  return is_only_child_of_other_folder || is_child_of_bookmark_bar;
+  // If the parent is the bookmark bar and we're not in the overflow menu, then
+  // the menu is anchored to an individual bookmark button. Removing it requires
+  // closing the menu because there is no longer a stable anchor.
+  return is_only_child_of_other_folder || !is_shown_from_bookmark_bar_overflow;
 }
 
 MenuItemView* BookmarkMenuDelegate::CreateMenu(
