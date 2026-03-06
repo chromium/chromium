@@ -153,10 +153,11 @@ using tab_groups::VersioningMessageController;
 
 #pragma mark - AdaptiveToolbarViewControllerDelegate
 
-- (void)exitFullscreen:(FullscreenExitReason)FullscreenExitReason {
+- (void)exitFullscreen:
+    (FullscreenModeTransitionTrigger)fullscreenTransitionTrigger {
   FullscreenController* fullscreenController =
       FullscreenController::FromBrowser(self.browser);
-  fullscreenController->ExitFullscreen(FullscreenExitReason);
+  fullscreenController->ExitFullscreen(fullscreenTransitionTrigger);
 
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();

@@ -5,13 +5,14 @@
 #ifndef IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_
 #define IOS_CHROME_BROWSER_TOOLBAR_LEGACY_UI_BUNDLED_ADAPTIVE_TOOLBAR_VIEW_CONTROLLER_DELEGATE_H_
 
-enum class FullscreenExitReason;
+enum class FullscreenModeTransitionTrigger;
 
 // Protocol implemented by the delegate of the AdaptiveToolbarViewController.
 @protocol AdaptiveToolbarViewControllerDelegate
 
 // Exits fullscreen.
-- (void)exitFullscreen:(FullscreenExitReason)FullscreenExitReason;
+- (void)exitFullscreen:
+    (FullscreenModeTransitionTrigger)fullscreenTransitionTrigger;
 
 // Returns true if Reader Mode is activated for the web page.
 - (BOOL)isReaderModeActive;

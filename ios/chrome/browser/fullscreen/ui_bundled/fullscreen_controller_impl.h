@@ -13,7 +13,7 @@
 class Browser;
 @class ChromeBroadcastOberverBridge;
 @class FullscreenSystemNotificationObserver;
-enum class FullscreenExitReason;
+enum class FullscreenModeTransitionTrigger;
 
 // Implementation of FullscreenController.
 class FullscreenControllerImpl : public FullscreenController {
@@ -45,7 +45,8 @@ class FullscreenControllerImpl : public FullscreenController {
   void EnterFullscreen() override;
   // Needs to be cleanup.
   void ExitFullscreen() override;
-  void ExitFullscreen(FullscreenExitReason fullscreen_exit_reason) override;
+  void ExitFullscreen(
+      FullscreenModeTransitionTrigger fullscreen_exit_trigger) override;
   void ExitFullscreenWithoutAnimation() override;
   bool IsForceFullscreenMode() const override;
   void EnterForceFullscreenMode(bool insets_update_enabled) override;

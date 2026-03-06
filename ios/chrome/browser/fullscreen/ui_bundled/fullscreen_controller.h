@@ -13,7 +13,7 @@
 @class ChromeBroadcaster;
 class FullscreenControllerObserver;
 @class ToolbarsSize;
-enum class FullscreenExitReason;
+enum class FullscreenModeTransitionTrigger;
 
 // An object that observes scrolling events in the main content area and
 // calculates how much of the toolbar should be visible as a result.  When the
@@ -77,7 +77,8 @@ class FullscreenController : public BrowserUserData<FullscreenController> {
 
   // Exits fullscreen mode, animating in toolbars and resetting the progress to
   // 1.0.
-  virtual void ExitFullscreen(FullscreenExitReason fullscreen_exit_reason) = 0;
+  virtual void ExitFullscreen(
+      FullscreenModeTransitionTrigger fullscreen_exit_trigger) = 0;
 
   // Exits fullscreen without animation, resetting the progress to 1.0.
   virtual void ExitFullscreenWithoutAnimation() = 0;

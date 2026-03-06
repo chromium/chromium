@@ -32,7 +32,7 @@
 #import "ios/chrome/browser/discover_feed/model/feed_constants.h"
 #import "ios/chrome/browser/first_run/public/first_run_util.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_animator.h"
-#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_reason.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_metrics.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_element.h"
 #import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/incognito_reauth/ui_bundled/incognito_reauth_constants.h"
@@ -748,7 +748,7 @@ const CGFloat kTopDynamicIslandInset = 24;
     self.inNewTabAnimation = YES;
     // Exit fullscreen if needed.
     self.fullscreenController->ExitFullscreen(
-        FullscreenExitReason::kForcedByCode);
+        FullscreenModeTransitionTrigger::kForcedByCode);
     const CGFloat kAnimatedViewSize = 50;
     BackgroundTabAnimationView* animatedView =
         [[BackgroundTabAnimationView alloc]
