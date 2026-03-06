@@ -218,13 +218,10 @@ export class SettingsAppearancePageElement extends
             {
               value: 'true',
               name: loadTimeData.getString('uiFeatureAlignSide'),
-              searchHint:
-                  loadTimeData.getString('uiFeatureAlignSideSearchHint'),
             },
             {
               value: 'false',
               name: loadTimeData.getString('uiFeatureAlignTop'),
-              searchHint: loadTimeData.getString('uiFeatureAlignTopSearchHint'),
             },
           ];
         },

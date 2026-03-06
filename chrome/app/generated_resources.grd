@@ -10368,10 +10368,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <if expr="use_titlecase">
         <then>
           <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="In Title Case: The button in context menu that switches to vertical tab view.">
-            Move Tabs to the Side
+            Show Tabs Vertically
           </message>
           <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="In Title Case: The button in context menu that switches to horizontal tab view.">
-            Move Tabs to the Top
+            Show Tabs Horizontally
           </message>
           <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="In Title Case: The tooltip for the button in the top container that collapses the vertical tab strip.">
             Collapse Tabs
@@ -10388,10 +10388,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
         </then>
         <else>
           <message name="IDS_SWITCH_TO_VERTICAL_TAB" desc="The button in context menu that switches to vertical tab view.">
-            Move tabs to the side
+            Show tabs vertically
           </message>
           <message name="IDS_SWITCH_TO_HORIZONTAL_TAB" desc="The button in context menu that switches to horizontal tab view.">
-            Move tabs to the top
+            Show tabs horizontally
           </message>
           <message name="IDS_COLLAPSE_VERTICAL_TABS" desc="The tooltip for the button in the top container that collapses the vertical tab strip.">
             Collapse tabs

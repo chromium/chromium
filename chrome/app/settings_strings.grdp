@@ -270,7 +270,7 @@
     Show saved tab groups button
   </message>
   <message name="IDS_SETTINGS_TAB_STRIP_POSITION" desc="Title for the side panel section. Allows the user to toggle which side the tab strip is displayed on.">
-    Tab strip position
+    Tab position
   </message>
   <message name="IDS_SETTINGS_ALLOW_SPLIT_VIEW_DRAG_AND_DROP" desc="Label for the checkbox which enables or disables drag and drop for split view.">
     Allow split view drag-and-drop on left or right edge of window
@@ -306,15 +306,9 @@
     Show on right
   </message>
   <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_SIDE" desc="Label for the button that configures a feature to appear on the side of the browser.">
-    Side
-  </message>
-  <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_SIDE_SEARCH_HINT" desc="Search hint for an option that configures a feature to appear vertically on the side of the browser." is_accessibility_with_no_ui="true">
     Vertical
   </message>
   <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_TOP" desc="Label for the button that configures a feature to appear on the top of the browser.">
-    Top
-  </message>
-  <message name="IDS_SETTINGS_UI_FEATURE_ALIGN_TOP_SEARCH_HINT" desc="Search hint for an option that configures a feature to appear horizontally on the top of the browser." is_accessibility_with_no_ui="true">
     Horizontal
   </message>
   <message name="IDS_SETTINGS_HOME_PAGE_NTP" desc="Description of the New Tab Page when set as the home page.">
