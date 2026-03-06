@@ -145,6 +145,7 @@ bool IdentityCredentialSourceImpl::SelectAccount(
   if (!request_service) {
     return false;
   }
+
   const auto& accounts = request_service->GetAccounts();
   for (const auto& account : accounts) {
     const GURL& idp_config_url =
@@ -154,6 +155,13 @@ bool IdentityCredentialSourceImpl::SelectAccount(
       CHECK_EQ(account->idp_claimed_login_state.value_or(
                    account->browser_trusted_login_state),
                IdentityRequestAccount::LoginState::kSignIn);
+
+      auto it = request_service->idp_infos_.find(idp_config_url);
+      CHECK(it != request_service->idp_infos_.end());
+      if (it->second->client_is_third_party_to_top_frame_origin) {
+        return false;
+      }
+
       request_service->OnAccountSelected(idp_config_url, account->id,
                                          /*is_sign_in=*/true);
       return true;

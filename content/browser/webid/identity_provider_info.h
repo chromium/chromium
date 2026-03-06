@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "content/browser/webid/idp_network_request_manager.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/webid/identity_request_dialog_controller.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 
@@ -21,7 +22,7 @@ using IdentityProviderDataPtr = scoped_refptr<content::IdentityProviderData>;
 
 // Class representing the information about an identity provider. Populated
 // while fetching.
-class IdentityProviderInfo {
+class CONTENT_EXPORT IdentityProviderInfo {
  public:
   IdentityProviderInfo(const blink::mojom::IdentityProviderRequestOptionsPtr&,
                        IdpNetworkRequestManager::Endpoints,

@@ -329,6 +329,7 @@ class CONTENT_EXPORT RequestService
  private:
   friend class RequestServiceTest;
   friend class IdentityCredentialSourceImpl;  // for OnAccountSelected
+  friend class TestIdentityCredentialSourceImpl;
 
   struct FetchData {
     FetchData();
