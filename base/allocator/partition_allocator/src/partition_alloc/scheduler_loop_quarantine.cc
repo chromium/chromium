@@ -128,7 +128,8 @@ template <bool thread_bound>
 void SchedulerLoopQuarantineBranch<thread_bound>::Configure(
     SchedulerLoopQuarantineRoot& root,
     const SchedulerLoopQuarantineConfig& config) {
-  PA_CHECK(pause_quarantine_ == 0);
+  // Note the Quarantine could be paused here because scoped-opt outs are not
+  // aware of the feature being enabled or disabled.
   PA_CHECK(allocator_root_ == &root.allocator_root_);
   if constexpr (kThreadBound) {
     PA_CHECK(tcache_->GetRoot() == &root.allocator_root_);

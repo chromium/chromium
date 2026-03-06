@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/memory/safety_checks.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "base/test/scoped_feature_list.h"
@@ -159,6 +160,26 @@ IN_PROC_BROWSER_TEST_F(SchedulerLoopQuarantineWebContentsObserverBrowserTest,
   ASSERT_FALSE(SchedulerLoopQuarantineWebContentsObserver::
                    AlreadyTriggeredReconfiguration());
 
+  const GURL url = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(NavigateToURL(web_contents(), url));
+
+  // If the PartitionAllocAsMalloc is built then this will be true.
+  EXPECT_EQ(use_partition_alloc_as_malloc_,
+            SchedulerLoopQuarantineWebContentsObserver::
+                AlreadyTriggeredReconfiguration());
+}
+
+// Regression test for crbug.com/489892198.
+IN_PROC_BROWSER_TEST_F(SchedulerLoopQuarantineWebContentsObserverBrowserTest,
+                       FirstNavigationWhilePaused) {
+  base::ScopedSafetyChecksExclusion exclusion;
+  ASSERT_TRUE(embedded_test_server()->Start());
+  ASSERT_FALSE(SchedulerLoopQuarantineWebContentsObserver::
+                   AlreadyTriggeredReconfiguration());
+
+  // This used to crash see crbug.com/489892198 (when
+  // `use_partition_alloc_as_malloc_` is true), because the quarantine had been
+  // paused but we attempted to configure it inside the navigation.
   const GURL url = embedded_test_server()->GetURL("/empty.html");
   ASSERT_TRUE(NavigateToURL(web_contents(), url));
 
