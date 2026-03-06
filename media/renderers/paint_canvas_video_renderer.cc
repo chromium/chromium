@@ -1953,7 +1953,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     scoped_refptr<gpu::ClientSharedImage> dest_shared_image,
     const gpu::SyncToken& dest_sync_token,
     bool use_visible_rect,
-    VideoFrameSharedImageCache* shared_image_cache /*=nullptr*/) {
+    VideoFrameSharedImageCache* yuv_shared_image_cache /*=nullptr*/) {
   auto* ri = raster_context_provider->RasterInterface();
 
   gpu::SyncToken sync_token;
@@ -1982,7 +1982,7 @@ gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
   } else {
     sync_token = ConvertYuvVideoFrameToRgbSharedImage(
         video_frame.get(), raster_context_provider, dest_shared_image,
-        dest_sync_token, use_visible_rect, shared_image_cache);
+        dest_sync_token, use_visible_rect, yuv_shared_image_cache);
   }
 
   return sync_token;

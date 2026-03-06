@@ -211,13 +211,16 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
   // Copies VideoFrame contents to the `destination` shared image. if
   // `use_visible_rect` is set to true, only `VideoFrame::visible_rect()`
   // portion is copied, otherwise copies all underlying buffer.
+  // If `video_frame` holds pixels and `yuv_shared_image_cache` is provided, the
+  // intermediate YUV SharedImage to which the pixels are uploaded will be
+  // obtained from and stored in the cache.
   [[nodiscard]] gpu::SyncToken CopyVideoFrameToSharedImage(
       viz::RasterContextProvider* raster_context_provider,
       scoped_refptr<VideoFrame> video_frame,
       scoped_refptr<gpu::ClientSharedImage> dest_shared_image,
       const gpu::SyncToken& dest_sync_token,
       bool use_visible_rect,
-      VideoFrameSharedImageCache* shared_image_cache = nullptr);
+      VideoFrameSharedImageCache* yuv_shared_image_cache = nullptr);
 
   // Check whether video frame can be uploaded through
   // CopyVideoFrameToSharedImage(). The limitation comes from
