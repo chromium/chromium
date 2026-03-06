@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <set>
 #include <string>
 #include <string_view>
 
@@ -28,6 +29,7 @@
 #include "components/variations/variations_switches.h"
 #include "components/variations/variations_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -37,6 +39,8 @@ namespace {
 
 constexpr char kSeedVersion[] = "20260120-123456.789000";
 constexpr std::string_view kStudyName = "AbcXyzStudy";
+constexpr std::string_view kLimitedLayerStudyName = "LimitedLayerStudy";
+constexpr std::string_view kLowLayerStudyName = "LowLayerStudy";
 
 // Returns a 100-slot layer with the given mode and a single member containing
 // all slots. The given ID is used for both the layer ID and the layer member
@@ -119,6 +123,47 @@ VariationsSeed CreateTestSeedWithLowLayer() {
   return seed;
 }
 
+// Returns a seed with the following:
+// * A version.
+// * A LOW layer with a single member containing all 100 slots.
+// * A two-arm study named `kLowLayerStudyName` that is constrained to the
+//   LOW layer. In addition, this study has one zero-weight group with an
+//   experiment ID.
+// * A limited layer with a single member containing all 100 slots.
+// * A two-arm study (with one group having an experiment ID) constrained to the
+//   limited layer.
+//
+// Note that the study in the LOW layer does not consume entropy because no
+// clients are randomized into the zero-weight group and other two groups do not
+// have experiment IDs.
+VariationsSeed CreateTestSeedWithValidLowAndLimitedLayers() {
+  VariationsSeed seed;
+  seed.set_version(kSeedVersion);
+  *seed.add_layers() = CreateSingleMemberLayer(/*id=*/1, Layer::LIMITED);
+  *seed.add_layers() = CreateSingleMemberLayer(/*id=*/2, Layer::LOW);
+
+  Study limited_layer_study = CreateLayerlessTwoArmStudy();
+  limited_layer_study.set_name(kLimitedLayerStudyName);
+  auto* limited_layer_reference = limited_layer_study.mutable_layer();
+  limited_layer_reference->set_layer_id(1);
+  limited_layer_reference->add_layer_member_ids(1);
+  auto* group = limited_layer_study.mutable_experiment(0);
+  group->set_google_web_experiment_id(3333);
+  *seed.add_study() = limited_layer_study;
+
+  Study low_layer_study = CreateLayerlessTwoArmStudy();
+  low_layer_study.set_name(kLowLayerStudyName);
+  auto* low_layer_reference = low_layer_study.mutable_layer();
+  low_layer_reference->set_layer_id(2);
+  low_layer_reference->add_layer_member_ids(2);
+  group = low_layer_study.add_experiment();
+  group->set_name("GroupWithExperimentId");
+  group->set_probability_weight(0);
+  group->set_google_web_experiment_id(2222);
+  *seed.add_study() = low_layer_study;
+  return seed;
+}
+
 // Returns a seed with a version and with studies constrained to LOW and limited
 // layers. The LOW layer's study has an experiment ID; i.e., it consumes
 // entropy. Such seeds should be dropped.
@@ -153,6 +198,7 @@ struct FieldTrialsProviderTestParams {
   VariationsSeed seed;
   std::string seed_version;
   bool seed_has_active_limited_layer = false;
+  std::set<uint32_t> study_hashes;
 };
 
 class FieldTrialsProviderBrowserTest
@@ -221,28 +267,35 @@ IN_PROC_BROWSER_TEST_P(FieldTrialsProviderBrowserTest, CheckSystemProfile) {
   EXPECT_EQ(system_profile.variations_seed_version(), params.seed_version);
 
   // Verify the SystemProfileProto.field_trial result.
-  uint32_t expected_trial_id = HashName(kStudyName);
-  EXPECT_TRUE(std::any_of(
-      system_profile.field_trial().cbegin(),
-      system_profile.field_trial().cend(),
-      [expected_trial_id](const metrics::SystemProfileProto::FieldTrial& ft) {
-        return ft.name_id() == expected_trial_id;
-      }));
+  std::set<uint32_t> trial_ids;
+  for (const auto& field_trial : system_profile.field_trial()) {
+    trial_ids.insert(static_cast<uint32_t>(field_trial.name_id()));
+  }
+  EXPECT_THAT(trial_ids, ::testing::IsSupersetOf(params.study_hashes));
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         FieldTrialsProviderBrowserTest,
-                         ::testing::Values(
-                             FieldTrialsProviderTestParams{
-                                 .test_name = "SeedWithLimitedLayerApplied",
-                                 .seed = CreateTestSeedWithLimitedLayer(),
-                                 .seed_version = kSeedVersion,
-                                 .seed_has_active_limited_layer = true},
-                             FieldTrialsProviderTestParams{
-                                 .test_name = "SeedWithLowLayerApplied",
-                                 .seed = CreateTestSeedWithLowLayer(),
-                                 .seed_version = kSeedVersion,
-                                 .seed_has_active_limited_layer = false}));
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    FieldTrialsProviderBrowserTest,
+    ::testing::Values(
+        FieldTrialsProviderTestParams{
+            .test_name = "SeedWithLimitedLayerApplied",
+            .seed = CreateTestSeedWithLimitedLayer(),
+            .seed_version = kSeedVersion,
+            .seed_has_active_limited_layer = true,
+            .study_hashes = {HashName(kStudyName)}},
+        FieldTrialsProviderTestParams{.test_name = "SeedWithLowLayerApplied",
+                                      .seed = CreateTestSeedWithLowLayer(),
+                                      .seed_version = kSeedVersion,
+                                      .seed_has_active_limited_layer = false,
+                                      .study_hashes = {HashName(kStudyName)}},
+        FieldTrialsProviderTestParams{
+            .test_name = "SeedWithLowAndLimitedLayersApplied",
+            .seed = CreateTestSeedWithValidLowAndLimitedLayers(),
+            .seed_version = kSeedVersion,
+            .seed_has_active_limited_layer = true,
+            .study_hashes = {HashName(kLowLayerStudyName),
+                             HashName(kLimitedLayerStudyName)}}));
 
 IN_PROC_BROWSER_TEST_P(NoSeedFieldTrialsProviderBrowserTest,
                        CheckSystemProfile) {
