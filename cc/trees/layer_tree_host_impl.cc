@@ -1769,26 +1769,36 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame,
   if (root_render_surface && !has_transparent_background) {
     frame->render_passes.back()->has_transparent_background = false;
 
-    // If any tiles are missing, then fill behind the entire root render
-    // surface.  This is a workaround for this edge case, instead of tracking
-    // individual tiles that are missing.
-    Region fill_region = unoccluded_screen_space_region;
-    if (num_missing_tiles > 0) {
-      fill_region = root_render_surface->content_rect();
-    }
+    if (output_frame_data) {
+      // If any tiles are missing, then fill behind the entire root render
+      // surface.  This is a workaround for this edge case, instead of tracking
+      // individual tiles that are missing.
+      Region fill_region = unoccluded_screen_space_region;
+      if (num_missing_tiles > 0) {
+        fill_region = root_render_surface->content_rect();
+      }
 
-    AppendQuadsToFillScreen(frame->render_passes.back().get(),
-                            root_render_surface,
-                            active_tree_->background_color(), fill_region);
+      AppendQuadsToFillScreen(frame->render_passes.back().get(),
+                              root_render_surface,
+                              active_tree_->background_color(), fill_region);
+    }
   }
 
-  RemoveRenderPasses(frame);
+  if (output_frame_data) {
+    RemoveRenderPasses(frame);
+  }
   // If we're making a frame to draw, it better have at least one render pass.
   DCHECK(!frame->render_passes.empty());
 
-  TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
-                   "draw_result", draw_result, "missing tiles",
-                   num_missing_tiles);
+  if (settings_.TreesInVizInClientProcess()) {
+    // num_missing_tiles is not counted.
+    TRACE_EVENT_END1("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
+                     "draw_result", draw_result);
+  } else {
+    TRACE_EVENT_END2("cc,benchmark", "LayerTreeHostImpl::CalculateRenderPasses",
+                     "draw_result", draw_result, "missing tiles",
+                     num_missing_tiles);
+  }
 
   // Draw has to be successful to not drop the copy request layer.
   // When we have a copy request for a layer, we need to draw even if there

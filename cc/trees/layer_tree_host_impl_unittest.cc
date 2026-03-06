@@ -10780,9 +10780,13 @@ TEST_P(LayerTreeHostImplTest, HasTransparentBackground) {
   EXPECT_EQ(DrawResult::kSuccess, host_impl_->PrepareToDraw(&frame));
   {
     const auto& root_pass = frame.render_passes.back();
-    ASSERT_EQ(1u, root_pass->quad_list.size());
-    EXPECT_EQ(viz::DrawQuad::Material::kSolidColor,
-              root_pass->quad_list.front()->material);
+    if (host_impl_->settings().TreesInVizInClientProcess()) {
+      ASSERT_EQ(0u, root_pass->quad_list.size());
+    } else {
+      ASSERT_EQ(1u, root_pass->quad_list.size());
+      EXPECT_EQ(viz::DrawQuad::Material::kSolidColor,
+                root_pass->quad_list.front()->material);
+    }
   }
   host_impl_->DrawLayers(&frame);
   host_impl_->DidDrawAllLayers(frame);
