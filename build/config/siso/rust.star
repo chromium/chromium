@@ -204,7 +204,6 @@ def __step_config(ctx, step_config):
     ] + rust_toolchain
     rust_indirect_inputs = {
         "includes": [
-            "*.h",
             "*.o",
             "*.rlib",
             "*.rs",
