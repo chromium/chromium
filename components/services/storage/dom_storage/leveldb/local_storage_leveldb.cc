@@ -339,7 +339,7 @@ DbStatus LocalStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
   return ::storage::PurgeOrigins(*this, std::move(origins));
 }
 
-DbStatus LocalStorageLevelDB::RewriteDB() {
+DbStatus LocalStorageLevelDB::CleanUpStaleData() {
   return leveldb_->RewriteDB();
 }
 

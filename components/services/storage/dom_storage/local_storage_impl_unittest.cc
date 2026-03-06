@@ -728,6 +728,7 @@ TEST_P(LocalStorageImplTest, CheckAccessMetaData) {
 }
 
 TEST_P(LocalStorageImplTest, MetaDataClearedOnDelete) {
+  base::HistogramTester histograms;
   blink::StorageKey storage_key1 =
       blink::StorageKey::CreateFromStringForTesting("http://foobar.com");
   blink::StorageKey storage_key2 =
@@ -758,6 +759,15 @@ TEST_P(LocalStorageImplTest, MetaDataClearedOnDelete) {
 
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataCount(1u));
   ASSERT_NO_FATAL_FAILURE(ExpectUsageMetadataExists(storage_key2));
+
+  // Run `CleanUpStorage()` to remove any traces of deleted data.
+  base::RunLoop run_loop;
+  context()->CleanUpStorage(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // `CleanUpStorage()` must succeed.
+  histograms.ExpectUniqueSample("Storage.LocalStorage.CleanUpStaleData.OnDisk",
+                                /*sample=*/0, 1);
 }
 
 TEST_P(LocalStorageImplTest, MetaDataClearedOnDeleteAll) {

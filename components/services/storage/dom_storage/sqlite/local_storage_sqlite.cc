@@ -306,7 +306,7 @@ DbStatus LocalStorageSqlite::PurgeOrigins(std::set<url::Origin> origins) {
   return ::storage::PurgeOrigins(*this, std::move(origins));
 }
 
-DbStatus LocalStorageSqlite::RewriteDB() {
+DbStatus LocalStorageSqlite::CleanUpStaleData() {
   RETURN_STATUS_ON_ERROR(database_->CheckpointDatabase(/*truncate=*/true));
   return DbStatus::OK();
 }

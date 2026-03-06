@@ -79,7 +79,7 @@ class AsyncDomStorageDatabase {
       std::vector<DomStorageDatabase::MapLocator> maps_to_delete,
       StatusCallback callback);
   void PurgeOriginsForShutdown(std::set<url::Origin> origins);
-  void RewriteDB(StatusCallback callback);
+  void CleanUpStaleData(StatusCallback callback);
 
   // Registers or unregisters `source` such that its commits will be batched
   // with other registered committers.

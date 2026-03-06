@@ -2927,6 +2927,7 @@ chromium-metrics-reviews@google.com.
     clobbered.
   </summary>
   <token key="Operation">
+    <variant name="CleanUpStaleData"/>
     <variant name="CloneMap"/>
     <variant name="DeleteSessions"/>
     <variant name="DeleteStorageKeysFromSession"/>

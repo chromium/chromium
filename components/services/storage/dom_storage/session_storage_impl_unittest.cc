@@ -1000,6 +1000,16 @@ TEST_P(SessionStorageImplTest, DeleteStorage) {
   WaitForDatabaseTasks();
   histograms.ExpectUniqueSample(
       "Storage.SessionStorage.DeleteStorageKeysFromSession.OnDisk", 0, 1);
+
+  // Run `CleanUpStorage()` to remove any traces of deleted data.
+  base::RunLoop run_loop;
+  session_storage()->CleanUpStorage(run_loop.QuitClosure());
+  run_loop.Run();
+
+  // `CleanUpStorage()` must succeed.
+  histograms.ExpectUniqueSample(
+      "Storage.SessionStorage.CleanUpStaleData.OnDisk",
+      /*sample=*/0, 1);
 }
 
 TEST_P(SessionStorageImplTest, PurgeInactiveWrappers) {

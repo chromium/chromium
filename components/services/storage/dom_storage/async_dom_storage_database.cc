@@ -155,10 +155,13 @@ void AsyncDomStorageDatabase::PurgeOriginsForShutdown(
       std::move(origins), in_memory_, GetHistogram("PurgeOrigins")));
 }
 
-void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
+void AsyncDomStorageDatabase::CleanUpStaleData(StatusCallback callback) {
   CHECK(is_database_opened_);
 
-  database_.AsyncCall(&DomStorageDatabase::RewriteDB).Then(std::move(callback));
+  database_.AsyncCall(&DomStorageDatabase::CleanUpStaleData)
+      .Then(base::BindOnce(&RecordStatus, GetHistogram("CleanUpStaleData"),
+                           in_memory_)
+                .Then(std::move(callback)));
 }
 
 void AsyncDomStorageDatabase::AddCommitter(Committer* source) {

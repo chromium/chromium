@@ -312,7 +312,11 @@ class DomStorageDatabase {
 
   // Removes all traces of deleted data from the backing storage.  For example,
   // removes all traces of an origin URL that might exist in the deleted data.
-  virtual DbStatus RewriteDB() = 0;
+  //
+  // This can be expensive. For SQLite, it runs a checkpoint that transfers
+  // content from the WAL file to the database file.  For LevelDB, it creates a
+  // new copy of the database that replaces the old copy.
+  virtual DbStatus CleanUpStaleData() = 0;
 
   // Test-only functions.
   virtual DbStatus PutVersionForTesting(int64_t version) = 0;

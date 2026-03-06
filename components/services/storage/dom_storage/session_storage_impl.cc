@@ -365,9 +365,11 @@ void SessionStorageImpl::CleanUpStorage(CleanUpStorageCallback callback) {
     return;
   }
   if (database_) {
-    for (const auto& it : data_maps_)
+    for (const auto& it : data_maps_) {
       it.second->storage_area()->ScheduleImmediateCommit();
-    database_->RewriteDB(base::IgnoreArgs<DbStatus>(std::move(callback)));
+    }
+    database_->CleanUpStaleData(
+        base::IgnoreArgs<DbStatus>(std::move(callback)));
   } else {
     std::move(callback).Run();
   }

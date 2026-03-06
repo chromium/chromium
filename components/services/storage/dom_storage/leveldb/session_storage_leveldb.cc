@@ -284,7 +284,7 @@ DbStatus SessionStorageLevelDB::PurgeOrigins(std::set<url::Origin> origins) {
   NOTREACHED();
 }
 
-DbStatus SessionStorageLevelDB::RewriteDB() {
+DbStatus SessionStorageLevelDB::CleanUpStaleData() {
   return leveldb_->RewriteDB();
 }
 

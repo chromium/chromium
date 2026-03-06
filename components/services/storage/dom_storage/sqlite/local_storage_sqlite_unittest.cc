@@ -907,8 +907,8 @@ TEST_F(LocalStorageSqliteTest, RewriteDB) {
       temp_dir_.GetPath(), /*query=*/kSerializedFirstStorageKey,
       /*expected_is_found=*/true));
 
-  // Use `RewriteDB()` to checkpoint and truncate the WAL file.
-  status = database->RewriteDB();
+  // Checkpoint and truncate SQLite's WAL file.
+  status = database->CleanUpStaleData();
   EXPECT_TRUE(status.ok()) << status.ToString();
 
   // `kFirstStorageKey` must not exist on disk.

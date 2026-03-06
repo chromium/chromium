@@ -262,11 +262,12 @@ void LocalStorageImpl::CleanUpStorage(CleanUpStorageCallback callback) {
   }
 
   if (database_) {
-    // Try to commit all changes before rewriting the database. If
+    // Try to commit all changes before cleaning up the database. If
     // an area is not ready to commit its changes, nothing breaks but the
-    // rewrite doesn't remove all traces of old data.
+    // clean up doesn't remove all traces of old data.
     Flush();
-    database_->RewriteDB(base::BindOnce(&IgnoreStatus, std::move(callback)));
+    database_->CleanUpStaleData(
+        base::BindOnce(&IgnoreStatus, std::move(callback)));
   } else {
     std::move(callback).Run();
   }
