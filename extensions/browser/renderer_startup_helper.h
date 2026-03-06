@@ -84,6 +84,10 @@ class RendererStartupHelper : public KeyedService,
   void GetMessageBundle(const ExtensionId& extension_id,
                         GetMessageBundleCallback callback) override;
 
+  // Initializes the specified process, informing it of system state and loaded
+  // extensions.
+  void InitializeProcess(content::RenderProcessHost* process);
+
   // Sends a message to the specified `process` activating the given extension
   // once the process is initialized. OnExtensionLoaded should have already been
   // called for the extension.
@@ -129,6 +133,11 @@ class RendererStartupHelper : public KeyedService,
   // Flushes any pending Mojo calls for all tracked render processes.
   void FlushAllForTesting();
 
+  bool IsProcessInitializedForTesting(
+      content::RenderProcessHost* process) const {
+    return process_mojo_map_.contains(process);
+  }
+
  protected:
   // Provide ability for tests to override.
   virtual mojo::PendingAssociatedRemote<mojom::Renderer> BindNewRendererRemote(
@@ -141,10 +150,6 @@ class RendererStartupHelper : public KeyedService,
   // Registers a render process for extension communication by creating a Mojo
   // remote and adding this instance as an observer.
   void RegisterProcess(content::RenderProcessHost* process);
-
-  // Initializes the specified process, informing it of system state and loaded
-  // extensions.
-  void InitializeProcess(content::RenderProcessHost* process);
 
   // Untracks the given process.
   void UntrackProcess(content::RenderProcessHost* process);

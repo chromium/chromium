@@ -5,6 +5,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
@@ -20,6 +21,7 @@
 #include "extensions/common/mojom/renderer.mojom.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chromeos/constants/chromeos_features.h"
@@ -612,5 +614,42 @@ TEST_F(RendererStartupHelperTestCaptivePortalPopupWindow,
   EXPECT_TRUE(IsExtensionLoaded(*extension_));
 }
 #endif
+
+TEST_F(RendererStartupHelperTest, InitializeProcessIdempotency) {
+  // 1. First call should initialize the process.
+  // render_process_host_ is already created in SetUp().
+  helper_->InitializeProcess(render_process_host_.get());
+  EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
+
+  // 2. Second call should return early without creating duplicate state.
+  // This is now safe because of your "contains" check in InitializeProcess.
+  helper_->InitializeProcess(render_process_host_.get());
+  EXPECT_TRUE(IsProcessInitialized(render_process_host_.get()));
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(RendererStartupHelperTest, SkipInitializationOnLaunchWithFeature) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      blink::features::kInitialWebUIWithoutExtensions);
+
+  // Use a new mock process to simulate a fresh launch.
+  auto new_process =
+      std::make_unique<content::MockRenderProcessHost>(browser_context());
+
+  new_process->SetIsForInitialWebUI(true);
+
+  // 1. Simulate process launch.
+  helper_->OnRenderProcessLaunched(new_process.get());
+
+  // VERIFY: The process should NOT be initialized yet.
+  EXPECT_FALSE(IsProcessInitialized(new_process.get()));
+
+  // 2. Manually calling InitializeProcess (as ReadyToCommitNavigation would)
+  // should still work.
+  helper_->InitializeProcess(new_process.get());
+  EXPECT_TRUE(IsProcessInitialized(new_process.get()));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
