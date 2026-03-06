@@ -18,7 +18,6 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
   void SetUp() override { BaseLayoutAlgorithmTest::SetUp(); }
 
   void ComputeGeometry(GridLanesLayoutAlgorithm& algorithm) {
-    wtf_size_t start_offset;
     const auto& style = algorithm.Style();
     const GridLineResolver line_resolver(style, /*auto_repetitions=*/0);
 
@@ -29,7 +28,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
         SizingConstraint::kLayout, /*intrinsic_repeat_track_sizes=*/nullptr,
         /*should_apply_inline_size_containment=*/false, grid_lanes_items,
-        start_offset, needs_intrinsic_track_size);
+        needs_intrinsic_track_size);
 
     // We have a repeat() track definition with an intrinsic sized track(s). The
     // previous track sizing pass was used to find the track size to apply
@@ -45,7 +44,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
       grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
           SizingConstraint::kLayout, &intrinsic_repeat_track_sizes,
           /*should_apply_inline_size_containment=*/false, grid_lanes_items,
-          start_offset, needs_intrinsic_track_size);
+          needs_intrinsic_track_size);
     }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
@@ -54,8 +53,7 @@ class GridLanesLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
     for (const auto& grid_lanes_item : algorithm.BuildVirtualGridLanesItems(
              line_resolver, grid_lanes_items, needs_intrinsic_track_size,
              SizingConstraint::kLayout,
-             line_resolver.AutoRepetitions(grid_axis_direction),
-             start_offset)) {
+             line_resolver.AutoRepetitions(grid_axis_direction))) {
       GridLanesItemCachedData item_data;
 
       item_data.resolved_span =
