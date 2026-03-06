@@ -5,11 +5,14 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_GET_CREDENTIALS_HELPER_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_ACTOR_LOGIN_INTERNAL_ACTOR_LOGIN_GET_CREDENTIALS_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credentials_fetcher.h"
 
 namespace actor_login {
+
+class ActorLoginMetricsHelperInterface;
 
 // Helper class to get credentials for the Actor Login feature.
 // It starts multiple fetchers in parallel and merges the results once all are
@@ -18,6 +21,7 @@ class ActorLoginGetCredentialsHelper {
  public:
   ActorLoginGetCredentialsHelper(
       std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers,
+      ActorLoginMetricsHelperInterface* metrics_helper,
       CredentialsOrErrorReply callback);
 
   ActorLoginGetCredentialsHelper(const ActorLoginGetCredentialsHelper&) =
@@ -50,6 +54,8 @@ class ActorLoginGetCredentialsHelper {
   std::vector<Credential> MergeCredentials(std::vector<FetchResult> results);
 
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers_;
+  // Owned by ActorLoginDelegateImpl.
+  raw_ptr<ActorLoginMetricsHelperInterface> metrics_helper_;
   CredentialsOrErrorReply callback_;
 
   base::WeakPtrFactory<ActorLoginGetCredentialsHelper> weak_ptr_factory_{this};

@@ -11,14 +11,18 @@
 #include "base/barrier_callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper_interface.h"
 #include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace actor_login {
 
 ActorLoginGetCredentialsHelper::ActorLoginGetCredentialsHelper(
     std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers,
+    ActorLoginMetricsHelperInterface* metrics_helper,
     CredentialsOrErrorReply callback)
-    : fetchers_(std::move(fetchers)), callback_(std::move(callback)) {
+    : fetchers_(std::move(fetchers)),
+      metrics_helper_(metrics_helper),
+      callback_(std::move(callback)) {
   if (fetchers_.empty()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
@@ -114,6 +118,7 @@ std::vector<Credential> ActorLoginGetCredentialsHelper::MergeCredentials(
       username_to_index.emplace(credential.username, credentials.size());
       credentials.emplace_back(std::move(credential));
     } else {
+      metrics_helper_->RecordDeduplicationOccurred(true);
       credentials[it->second].has_persistent_permission |=
           credential.has_persistent_permission;
     }

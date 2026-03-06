@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper_interface.h"
 #include "content/public/browser/webid/identity_credential_source.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -19,13 +20,16 @@ namespace actor_login {
 // Helper class for recording Actor.Login metrics such as the number and types
 // of accounts shown to the user in an actor login flow. Metrics are recorded in
 // the destructor, using the data collected during the lifetime of this object.
-class ActorLoginMetricsHelper {
+class ActorLoginMetricsHelper : public ActorLoginMetricsHelperInterface {
  public:
   explicit ActorLoginMetricsHelper(ukm::SourceId source_id);
-  ~ActorLoginMetricsHelper();
+  ~ActorLoginMetricsHelper() override;
 
   ActorLoginMetricsHelper(const ActorLoginMetricsHelper&) = delete;
   ActorLoginMetricsHelper& operator=(const ActorLoginMetricsHelper&) = delete;
+
+  // ActorLoginMetricsHelperInterface:
+  void RecordDeduplicationOccurred(bool deduplication_occurred) override;
 
   // Records the types of accounts (password, federated, both) shown to the
   // user.

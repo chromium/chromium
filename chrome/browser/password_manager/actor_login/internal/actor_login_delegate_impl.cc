@@ -150,7 +150,7 @@ void ActorLoginDelegateImpl::GetCredentials(
   fetchers.push_back(std::move(federated_fetcher));
 
   get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers),
+      std::move(fetchers), metrics_helper_.get(),
       base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }

@@ -218,6 +218,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Actor.Login.DeduplicationOccurred" enum="Boolean"
+    expires_after="2027-02-25">
+  <owner>npm@google.com</owner>
+  <owner>ioanap@google.com</owner>
+  <owner>otara@google.com</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Recorded when there was some deduplication performed in order to show the
+    accounts. Recorded at most once per actor request to show accounts to sign
+    in (if multiple accounts are deduplicated in the same request, only one
+    record is made).
+  </summary>
+</histogram>
+
 <histogram name="Actor.Login.Federated.ContinuationShown" enum="Boolean"
     expires_after="2027-02-25">
   <owner>npm@google.com</owner>

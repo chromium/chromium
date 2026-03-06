@@ -18,6 +18,14 @@ ActorLoginMetricsHelper::~ActorLoginMetricsHelper() {
   RecordUkm();
 }
 
+void ActorLoginMetricsHelper::RecordDeduplicationOccurred(
+    bool deduplication_occurred) {
+  if (deduplication_occurred) {
+    builder_.SetDeduplicationOccurred(true);
+    base::UmaHistogramBoolean("Actor.Login.DeduplicationOccurred", true);
+  }
+}
+
 void ActorLoginMetricsHelper::RecordAccountTypesShown(
     ActorLoginAccountTypes types) {
   builder_.SetAccountTypesShown(static_cast<int64_t>(types));

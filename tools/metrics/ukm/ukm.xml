@@ -618,6 +618,13 @@ be describing additional metrics about the same event.
       An enum of the result from a query to get credentials.
     </summary>
   </metric>
+  <metric name="DeduplicationOccurred">
+    <summary>
+      Recorded when there was some deduplication performed in order to show the
+      accounts. Recorded at most once per actor request to show accounts to sign
+      in.
+    </summary>
+  </metric>
   <metric name="FederatedContinuationShown">
     <summary>
       Recorded when the FedCM continuation API is invoked during an actor

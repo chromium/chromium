@@ -16,12 +16,18 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/password_manager/core/browser/actor_login/actor_login_types.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_metrics_helper_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace actor_login {
 
 namespace {
+
+class MockActorLoginMetricsHelper : public ActorLoginMetricsHelperInterface {
+ public:
+  MOCK_METHOD(void, RecordDeduplicationOccurred, (bool), (override));
+};
 
 class FakeCredentialsFetcher : public ActorLoginCredentialsFetcher {
  public:
@@ -50,6 +56,7 @@ class ActorLoginGetCredentialsHelperTest : public ::testing::Test {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  testing::NiceMock<MockActorLoginMetricsHelper> metrics_helper_;
 };
 
 TEST_F(ActorLoginGetCredentialsHelperTest,
@@ -62,7 +69,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
       std::make_unique<FakeCredentialsFetcher>(std::vector<Credential>()));
 
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -87,7 +94,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials1));
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials2));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -111,7 +118,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -146,7 +153,7 @@ TEST_F(
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -176,7 +183,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials1));
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials2));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -200,7 +207,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -226,7 +233,7 @@ TEST_F(
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -251,7 +258,7 @@ TEST_F(
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -277,7 +284,7 @@ TEST_F(
       ActorLoginCredentialsFetcher::Status::kFillingNotAllowed));
 
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_FALSE(future.Get().has_value());
@@ -303,7 +310,7 @@ TEST_F(
       ActorLoginCredentialsFetcher::Status::kFillingNotAllowed));
 
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -337,7 +344,7 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
   fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
   auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
-      std::move(fetchers), future.GetCallback());
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
 
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(future.Get().has_value());
@@ -345,6 +352,28 @@ TEST_F(ActorLoginGetCredentialsHelperTest,
   // Password credentials come after and maintain their relative order.
   EXPECT_THAT(future.Get().value(),
               testing::ElementsAre(user3, user4, user1, user2));
+}
+
+TEST_F(ActorLoginGetCredentialsHelperTest, RecordDeduplicationMetrics) {
+  std::vector<Credential> credentials;
+  Credential user1_password;
+  user1_password.type = CredentialType::kPassword;
+  user1_password.username = u"user1";
+  credentials.push_back(user1_password);
+  Credential user1_federated;
+  user1_federated.type = CredentialType::kFederated;
+  user1_federated.username = u"user1";
+  credentials.push_back(user1_federated);
+
+  EXPECT_CALL(metrics_helper_, RecordDeduplicationOccurred(true)).Times(1);
+
+  base::test::TestFuture<CredentialsOrError> future;
+  std::vector<std::unique_ptr<ActorLoginCredentialsFetcher>> fetchers;
+  fetchers.push_back(std::make_unique<FakeCredentialsFetcher>(credentials));
+  auto helper = std::make_unique<ActorLoginGetCredentialsHelper>(
+      std::move(fetchers), &metrics_helper_, future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
 }
 
 }  // namespace actor_login
