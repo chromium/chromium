@@ -10,7 +10,7 @@
 
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/tabs/vertical_tab_strip_state_controller.h"
 #include "chrome/browser/ui/views/tabs/hover_card_anchor_target.h"
@@ -86,7 +86,7 @@ class VerticalTabView : public views::View,
   // HoverCardAnchorTarget:
   bool IsActive() const override;
   bool IsValid() const override;
-  const TabRendererData& data() const override;
+  const tabs::TabData& data() const override;
   views::BubbleBorder::Arrow GetAnchorPosition() const override;
   const views::View* GetAnchorView() const override;
 
@@ -210,7 +210,7 @@ class VerticalTabView : public views::View,
   base::CallbackListSubscription collapsed_state_changed_subscription_;
   base::CallbackListSubscription paint_as_active_subscription_;
 
-  TabRendererData tab_data_;
+  tabs::TabData tab_data_;
   bool active_ = false;
   bool selected_ = false;
   bool hovered_ = false;

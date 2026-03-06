@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/omnibox/omnibox_edit_model.h"
 #include "chrome/browser/ui/omnibox/omnibox_popup_view.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_widget_sublevel.h"
@@ -29,7 +30,6 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
-#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/common/pref_names.h"
 #include "components/user_education/common/help_bubble/help_bubble_factory_registry.h"
@@ -423,7 +423,7 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   }
 
   // Discarded tabs that don't already have a thumbnail won't get one.
-  const TabRendererData& tab_data = anchor_target->data();
+  const tabs::TabData& tab_data = anchor_target->data();
   bool has_thumbnail = tab_data.thumbnail && tab_data.thumbnail->has_data();
   if (tab_data.is_tab_discarded && !has_thumbnail) {
     thumbnail_observer_->Observe(nullptr);

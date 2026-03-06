@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <utility>
 
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -28,7 +28,7 @@ void FakeBaseTabStripController::AddTab(int index,
   tab_groups_.insert(tab_groups_.begin() + index, std::nullopt);
 
   std::vector<TabStrip::AddTabData> data_list;
-  TabRendererData data;
+  tabs::TabData data;
   if (is_pinned == TabPinned::kPinned) {
     num_pinned_tabs_++;
     data.pinned = true;
@@ -172,7 +172,7 @@ void FakeBaseTabStripController::MoveTab(int from_index, int to_index) {
   tab_groups_.erase(tab_groups_.begin() + from_index);
   tab_groups_.insert(tab_groups_.begin() + to_index, prev_group);
   if (tab_strip_) {
-    tab_strip_->MoveTab(from_index, to_index, TabRendererData());
+    tab_strip_->MoveTab(from_index, to_index, tabs::TabData());
   }
 }
 

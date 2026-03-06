@@ -7,13 +7,12 @@
 
 #include <string>
 
-struct TabRendererData;
-
 namespace split_tabs {
 enum class SplitTabLayout;
 }
 namespace tabs {
 
+struct TabData;
 class TabInterface;
 
 // This function checks for the parameters that influence the accessible name
@@ -21,8 +20,8 @@ class TabInterface;
 // that affect the accessible name, ensure that the corresponding logic in
 // BrowserView::GetAccessibleTabLabel is updated accordingly to maintain
 // consistency.
-bool ShouldUpdateAccessibleName(const TabRendererData& old_data,
-                                const TabRendererData& new_data);
+bool ShouldUpdateAccessibleName(const TabData& old_data,
+                                const TabData& new_data);
 
 // Returns the localized accessible name for a tab.
 std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab);

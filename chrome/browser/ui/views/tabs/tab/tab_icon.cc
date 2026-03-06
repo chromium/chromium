@@ -19,7 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/layout_constants.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/dotted_icon.h"
 #include "chrome/common/webui_url_constants.h"
@@ -124,7 +124,7 @@ TabIcon::TabIcon()
 
 TabIcon::~TabIcon() = default;
 
-void TabIcon::SetData(const TabRendererData& data) {
+void TabIcon::SetData(const tabs::TabData& data) {
   const bool was_showing_load = GetShowingLoadingAnimation();
 
   inhibit_loading_animation_ = data.should_hide_throbber;
@@ -133,7 +133,7 @@ void TabIcon::SetData(const TabRendererData& data) {
   SetNetworkState(data.network_state);
   SetCrashed(data.is_crashed);
   SetDiscarded(data.should_show_discard_status);
-  has_tab_renderer_data_ = true;
+  has_tab_data_ = true;
 
   const bool showing_load = GetShowingLoadingAnimation();
 
@@ -521,7 +521,7 @@ void TabIcon::SetCrashed(bool crashed) {
     hiding_fraction_ = 0.0;
   } else {
     // Transitioned from non-crashed to crashed.
-    if (!has_tab_renderer_data_) {
+    if (!has_tab_data_) {
       // This is the initial SetData(), so show the crashed icon directly
       // without animating.
       should_display_crashed_favicon_ = true;

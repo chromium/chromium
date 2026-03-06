@@ -10,8 +10,8 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert_controller.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/collaboration_messaging_tab_data.h"
+#include "chrome/browser/ui/tabs/tab_data.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
-#include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/permissions/chip/chip_controller.h"
 #include "chrome/grit/generated_resources.h"
@@ -44,8 +44,8 @@ int GetAccessibleTabLabelFormatStringForSplit(split_tabs::SplitTabLayout layout,
 
 namespace tabs {
 
-bool ShouldUpdateAccessibleName(const TabRendererData& old_data,
-                                const TabRendererData& new_data) {
+bool ShouldUpdateAccessibleName(const TabData& old_data,
+                                const TabData& new_data) {
   bool has_old_message = old_data.collaboration_messaging &&
                          old_data.collaboration_messaging->HasMessage();
   bool has_new_message = new_data.collaboration_messaging &&
@@ -82,8 +82,7 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
     return std::u16string();
   }
 
-  const TabRendererData& tab_data =
-      browser_view->tab_strip_view()->GetTabRendererData(index);
+  const TabData& tab_data = browser_view->tab_strip_view()->GetTabData(index);
 
   std::u16string title = is_for_tab ? browser->GetTitleForTab(index)
                                     : browser->GetWindowTitleForTab(index);
@@ -158,10 +157,13 @@ std::u16string GetAccessibleTabLabel(const TabInterface* tab, bool is_for_tab) {
 
   if (tab_data.should_show_discard_status) {
     title = l10n_util::GetStringFUTF16(IDS_TAB_AX_INACTIVE_TAB, title);
-    if (tab_data.discarded_memory_savings.is_positive()) {
+    std::optional<base::ByteSize> discarded_memory_savings =
+        tab_data.discarded_memory_savings;
+    if (discarded_memory_savings.has_value() &&
+        discarded_memory_savings.value().is_positive()) {
       title = l10n_util::GetStringFUTF16(
           IDS_TAB_AX_MEMORY_SAVINGS, title,
-          ui::FormatBytes(tab_data.discarded_memory_savings));
+          ui::FormatBytes(discarded_memory_savings.value()));
     }
   } else if (tab_data.tab_resource_usage &&
              tab_data.tab_resource_usage->memory_usage().is_positive()) {

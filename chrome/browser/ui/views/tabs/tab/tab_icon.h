@@ -25,7 +25,9 @@ namespace base {
 class TickClock;
 }
 
-struct TabRendererData;
+namespace tabs {
+struct TabData;
+}
 
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kDiscardAnimationFinishes);
 
@@ -56,7 +58,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   // Sets the tab data (network state, favicon, load progress, etc.) that are
   // used to render the tab icon.
-  void SetData(const TabRendererData& data);
+  void SetData(const tabs::TabData& data);
 
   // Sets whether this tab is currently active.
   void SetActiveState(bool is_active);
@@ -209,7 +211,7 @@ class TabIcon : public views::View, public views::AnimationDelegateViews {
 
   bool can_paint_to_layer_ = false;
 
-  bool has_tab_renderer_data_ = false;
+  bool has_tab_data_ = false;
 
   bool is_active_tab_ = false;
 
