@@ -80,10 +80,6 @@ std::string AccessPointToTriggerString(DeepScanAccessPoint access_point) {
 
 }  // namespace
 
-FilesRequestHandler::FileInfo::FileInfo() = default;
-FilesRequestHandler::FileInfo::FileInfo(FileInfo&& other) = default;
-FilesRequestHandler::FileInfo::~FileInfo() = default;
-
 FilesRequestHandler::FilesRequestHandler(
     ContentAnalysisInfo* content_analysis_info,
     BinaryUploadService* upload_service,

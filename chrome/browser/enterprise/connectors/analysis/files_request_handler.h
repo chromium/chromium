@@ -35,22 +35,6 @@ namespace enterprise_connectors {
 // called to report a warning bypass of all warned files.
 class FilesRequestHandler : public RequestHandlerBase {
  public:
-  // File information used as an input to event report functions.
-  struct FileInfo {
-    FileInfo();
-    FileInfo(FileInfo&& other);
-    ~FileInfo();
-
-    // Hex-encoded SHA256 hash for the given file.
-    std::string sha256;
-
-    // File size in bytes. -1 represents an unknown size.
-    uint64_t size = 0;
-
-    // File mime type.
-    std::string mime_type;
-  };
-
   // Callback that informs caller of scanning verdicts for each file.
   using CompletionCallback =
       base::OnceCallback<void(std::vector<RequestHandlerResult>)>;

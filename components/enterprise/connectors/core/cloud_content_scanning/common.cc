@@ -8,6 +8,10 @@
 
 namespace enterprise_connectors {
 
+FileInfo::FileInfo() = default;
+FileInfo::FileInfo(FileInfo&& other) = default;
+FileInfo::~FileInfo() = default;
+
 std::string ScanRequestUploadResultToString(ScanRequestUploadResult result) {
   switch (result) {
     case ScanRequestUploadResult::kUnknown:
