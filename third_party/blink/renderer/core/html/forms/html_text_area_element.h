@@ -78,6 +78,9 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
 
   void SetFocused(bool is_focused, mojom::blink::FocusType) override;
 
+ protected:
+  bool SupportsBaseAppearanceInternal(BaseAppearanceValue) const override;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(HTMLTextAreaElementTest, SanitizeUserInputValue);
 

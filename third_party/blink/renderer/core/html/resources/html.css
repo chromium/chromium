@@ -456,10 +456,8 @@ input, textarea, select, button {
    * these styles can apply to textarea, select, and button as well. */
   input {
     margin: -internal-auto-base(0__qem, unset);
-    font: -internal-auto-base(-webkit-small-control, unset);
     /* FIXME: Remove text-rendering:auto when tabs work with optimizeLegibility. */
     text-rendering: -internal-auto-base(auto, unset);
-    color: -internal-auto-base(FieldText, unset);
     letter-spacing: -internal-auto-base(normal, unset);
     word-spacing: -internal-auto-base(normal, unset);
     line-height: -internal-auto-base(normal, unset);
@@ -468,20 +466,36 @@ input, textarea, select, button {
      * initial. Since the auto appearance is also using the initial values, we
      * don't need to use -internal-auto-base() on them. */
   }
+
+  input, textarea {
+    color: -internal-auto-base(FieldText, inherit);
+    font: -internal-auto-base(-webkit-small-control, inherit);
+    box-sizing: -internal-auto-base(content-box, border-box);
+  }
 }
 
 textarea {
-  appearance: auto;
-  border: 1px solid light-dark(#767676, #858585);
-  column-count: initial !important;
-  -webkit-rtl-ordering: logical;
-  resize: -internal-textarea-auto;
-  cursor: text;
-  padding: 2px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  background-color: Field;
-  font-family: monospace;
+    appearance: auto;
+    column-count: initial !important;
+    -webkit-rtl-ordering: logical;
+    cursor: text;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+
+    @supports not blink-feature(AppearanceBase) {
+        border: 1px solid light-dark(#767676, #858585);
+        background-color: Field;
+        resize: -internal-textarea-auto;
+        padding: 2px;
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        border: 1px solid -internal-auto-base(light-dark(#767676, #858585), currentColor);
+        background-color: -internal-auto-base(Field, transparent);
+        resize: -internal-auto-base(-internal-textarea-auto, none);
+        padding: -internal-auto-base(2px, unset);
+    }
 }
 
 input {
@@ -491,7 +505,7 @@ input {
         padding: -internal-auto-base(1px 0, unset);
         border: -internal-auto-base(2px inset light-dark(#767676, #858585), 1px solid);
         -webkit-rtl-ordering: -internal-auto-base(logical, unset);
-        background-color: -internal-auto-base(Field, unset);
+        background-color: -internal-auto-base(Field, transparent);
     }
     @supports not blink-feature(AppearanceBase) {
         padding: 1px 0;
@@ -891,8 +905,16 @@ input[type="button" i]:active:disabled, input[type="submit" i]:active:disabled, 
 
 input:disabled, textarea:disabled {
     cursor: default;
-    background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
-    color: light-dark(#545454, #aaaaaa);
+
+    @supports not blink-feature(AppearanceBase) {
+        background-color: light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+        color: light-dark(#545454, #aaaaaa);
+    }
+
+    @supports blink-feature(AppearanceBase) {
+        background-color: -internal-auto-base(light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3)), unset);
+        color: -internal-auto-base(light-dark(#545454, #aaaaaa), color-mix(currentColor 50%, transparent));
+    }
 }
 
 option:-internal-spatial-navigation-focus {
@@ -1269,7 +1291,12 @@ select:-internal-autofill-selected {
 
 input:disabled,
 textarea:disabled {
-  border-color: rgba(118, 118, 118, 0.3);
+  @supports not blink-feature(AppearanceBase) {
+     border-color: rgba(118, 118, 118, 0.3);
+  }
+  @supports blink-feature(AppearanceBase) {
+    border-color: -internal-auto-base(rgba(118, 118, 118, 0.3), currentColor);
+  }
 }
 select:disabled {
   @supports blink-feature(CustomizableSelectListbox) {

@@ -845,4 +845,12 @@ void HTMLTextAreaElement::SetFocused(bool is_focused,
   TextControlElement::SetFocused(is_focused, focus_type);
 }
 
+bool HTMLTextAreaElement::SupportsBaseAppearanceInternal(
+    Element::BaseAppearanceValue value) const {
+  if (!RuntimeEnabledFeatures::AppearanceBaseEnabled()) {
+    return false;
+  }
+  return value == Element::BaseAppearanceValue::kBase;
+}
+
 }  // namespace blink
