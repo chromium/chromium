@@ -72,6 +72,7 @@ import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.build.annotations.Nullable;
@@ -1467,6 +1468,38 @@ public class AutofillProfilesFragmentTest {
                             vehicleEntity,
                             Matchers.nullValue());
                 });
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testTitle_HoTDisabled_showsAddresses() throws Exception {
+        sSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        assertThat(fragment.getPageTitle().get())
+                .isEqualTo(
+                        sSettingsActivityTestRule
+                                .getActivity()
+                                .getString(R.string.autofill_addresses_settings_title));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.YOUR_SAVED_INFO_SETTINGS_PAGE_ANDROID
+    })
+    public void testTitle_HoTEnabled_showsContactInfo() throws Exception {
+        sSettingsActivityTestRule.startSettingsActivity();
+
+        AutofillProfilesFragment fragment = sSettingsActivityTestRule.getFragment();
+        assertThat(fragment.getPageTitle().get())
+                .isEqualTo(
+                        sSettingsActivityTestRule
+                                .getActivity()
+                                .getString(R.string.autofill_contact_info_title));
     }
 
     private void checkPreferenceCount(int expectedPreferenceCount) {
