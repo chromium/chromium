@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_edit_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
 #import "ios/chrome/browser/settings/ui_bundled/credit_card_scanner/credit_card_scanner_consumer.h"
 
 // Accessibility identifier for the 'Add Credit Card' view.

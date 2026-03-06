@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_AUTOFILL_AUTOFILL_CREDIT_CARD_EDIT_TABLE_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_SETTINGS_UI_BUNDLED_AUTOFILL_AUTOFILL_CREDIT_CARD_EDIT_TABLE_VIEW_CONTROLLER_H_
 
-#import "ios/chrome/browser/settings/ui_bundled/autofill/autofill_edit_table_view_controller.h"
+#import "ios/chrome/browser/settings/autofill/ui/autofill_edit_table_view_controller.h"
 
 namespace autofill {
 class CreditCard;

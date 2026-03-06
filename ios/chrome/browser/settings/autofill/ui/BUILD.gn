@@ -1,0 +1,15 @@
+source_set("ui") {
+  sources = [
+    "autofill_edit_table_view_controller.h",
+    "autofill_edit_table_view_controller.mm",
+  ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/autofill/form_input_accessory/public",
+    "//ios/chrome/browser/autofill/ui_bundled/cells",
+    "//ios/chrome/browser/settings/ui_bundled:settings_root",
+    "//ios/chrome/browser/shared/ui/table_view/cells",
+    "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/common/ui/elements:form_input_accessory",
+  ]
+}
