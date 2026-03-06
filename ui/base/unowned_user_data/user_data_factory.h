@@ -9,10 +9,11 @@
 #include <map>
 #include <memory>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "ui/base/identifier/typed_identifier.h"
+#include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace ui {
 
@@ -116,7 +117,6 @@ namespace ui {
 //  };
 // ```
 
-class UnownedUserDataHost;
 template <typename Owner>
 class UserDataFactoryWithOwner;
 
@@ -129,9 +129,9 @@ class COMPONENT_EXPORT(UNOWNED_USER_DATA) UserDataFactory {
   void operator=(const UserDataFactory&) = delete;
   virtual ~UserDataFactory();
 
+  using UntypedKey = UnownedUserDataHost::UntypedKey;
   template <typename T>
-  using Key = ui::TypedIdentifierOld<T>;
-  using UntypedKey = ui::ElementIdentifier;
+  using Key = UnownedUserDataHost::Key<T>;
 
   // Object that is held while the factory method for a specific type is
   // overridden.

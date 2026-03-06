@@ -10,8 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
-#include "ui/base/interaction/element_identifier.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "ui/base/identifier/typed_identifier.h"
 
 namespace ui {
 
@@ -29,9 +28,9 @@ class COMPONENT_EXPORT(UNOWNED_USER_DATA) UnownedUserDataHost {
   void operator=(const UnownedUserDataHost&) = delete;
   ~UnownedUserDataHost();
 
+  DECLARE_UNIQUE_IDENTIFIER_TYPE(UntypedKey);
   template <typename T>
-  using Key = ui::TypedIdentifierOld<T>;
-  using UntypedKey = ui::ElementIdentifier;
+  using Key = ui::TypedIdentifier<UntypedKey, T>;
   template <typename T>
   using PassKey = base::PassKey<ScopedUnownedUserData<T>>;
 

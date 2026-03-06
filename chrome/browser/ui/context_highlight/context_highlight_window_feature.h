@@ -8,6 +8,7 @@
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "content/public/browser/tracked_element_observer.h"
+#include "ui/base/interaction/element_identifier.h"
 #include "ui/base/unowned_user_data/scoped_unowned_user_data.h"
 #include "ui/views/view_tracker.h"
 

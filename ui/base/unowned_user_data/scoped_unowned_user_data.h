@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/raw_ref.h"
 #include "base/types/pass_key.h"
-#include "ui/base/interaction/typed_identifier.h"
+#include "ui/base/identifier/typed_identifier.h"
 #include "ui/base/unowned_user_data/unowned_user_data_host.h"
 
 namespace ui {
@@ -64,9 +64,10 @@ class ScopedUnownedUserData {
 
 // Helper macros. See above for usage.
 
-#define DECLARE_USER_DATA(ClassName)                             \
-  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(ClassName, kDataKey); \
-  static ClassName* Get(::ui::UnownedUserDataHost& host);        \
+#define DECLARE_USER_DATA(ClassName)                                          \
+  DECLARE_CLASS_TYPED_IDENTIFIER_VALUE(::ui::UnownedUserDataHost::UntypedKey, \
+                                       ClassName, kDataKey);                  \
+  static ClassName* Get(::ui::UnownedUserDataHost& host);                     \
   static const ClassName* Get(const ::ui::UnownedUserDataHost& host)
 
 #define DEFINE_USER_DATA(ClassName)                                        \
@@ -76,6 +77,7 @@ class ScopedUnownedUserData {
   const ClassName* ClassName::Get(const ::ui::UnownedUserDataHost& host) { \
     return ::ui::ScopedUnownedUserData<ClassName>::Get(host);              \
   }                                                                        \
-  DEFINE_CLASS_TYPED_IDENTIFIER_VALUE_OLD(ClassName, ClassName, kDataKey)
+  DEFINE_CLASS_TYPED_IDENTIFIER_VALUE(                                     \
+      ClassName, ::ui::UnownedUserDataHost::UntypedKey, ClassName, kDataKey)
 
 #endif  // UI_BASE_UNOWNED_USER_DATA_SCOPED_UNOWNED_USER_DATA_H_
