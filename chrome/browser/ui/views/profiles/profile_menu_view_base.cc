@@ -60,6 +60,7 @@
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/highlight_path_generator.h"
@@ -257,6 +258,61 @@ class AvatarImageView : public views::ImageView {
 };
 
 BEGIN_METADATA(AvatarImageView)
+END_METADATA
+
+// An extension of HoverButton so that the color pattern on focus matches
+// the other menus' colors.
+class MenuButtonRowView : public HoverButton {
+  METADATA_HEADER(MenuButtonRowView, HoverButton)
+
+ public:
+  MenuButtonRowView(PressedCallback callback,
+                    std::unique_ptr<views::View> icon_view,
+                    const std::u16string& title_text)
+      : HoverButton(std::move(callback),
+                    std::move(icon_view),
+                    title_text,
+                    /*subtitle=*/std::u16string(),
+                    /*secondary_view=*/nullptr,
+                    /*add_vertical_label_spacing=*/false) {
+    SetIconHorizontalMargins(kMenuItemLeftInternalPadding, /*right=*/0);
+
+    // Instead of creating the highlight with an InkDrop, which paints a layer
+    // over this, we paint the highlight directly to the background.
+    views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::OFF);
+    title()->SetEnabledColor(ui::kColorMenuItemForeground);
+    title()->SetBackgroundColor(kColorProfileMenuBackground);
+  }
+  ~MenuButtonRowView() override = default;
+
+  // Note: only focus handling is necessary, because `HoverButton` automatically
+  // requests focus when hovered.
+  //
+  // HoverButton:
+  void OnFocus() override {
+    HoverButton::OnFocus();
+    title()->SetEnabledColor(ui::kColorMenuItemForegroundSelected);
+    title()->SetBackgroundColor(ui::kColorMenuItemBackgroundSelected);
+  }
+
+  void OnBlur() override {
+    HoverButton::OnBlur();
+    title()->SetEnabledColor(ui::kColorMenuItemForeground);
+    title()->SetBackgroundColor(kColorProfileMenuBackground);
+  }
+
+  void OnPaintBackground(gfx::Canvas* canvas) override {
+    if (HasFocus()) {
+      cc::PaintFlags flags;
+      flags.setAntiAlias(true);
+      flags.setColor(
+          GetColorProvider()->GetColor(ui::kColorMenuItemBackgroundSelected));
+      canvas->DrawRect(GetLocalBounds(), flags);
+    }
+  }
+};
+
+BEGIN_METADATA(MenuButtonRowView)
 END_METADATA
 
 }  // namespace
@@ -774,13 +830,10 @@ std::unique_ptr<HoverButton> ProfileMenuViewBase::CreateMenuRowButton(
     std::unique_ptr<views::View> icon_view,
     const std::u16string& text) {
   CHECK(icon_view);
-  auto button = std::make_unique<HoverButton>(
+  return std::make_unique<MenuButtonRowView>(
       base::BindRepeating(&ProfileMenuViewBase::ButtonPressed,
                           base::Unretained(this), std::move(action)),
-      std::move(icon_view), text, /*subtitle=*/std::u16string(),
-      /*secondary_view=*/nullptr, /*add_vertical_label_spacing=*/false);
-  button->SetIconHorizontalMargins(kMenuItemLeftInternalPadding, /*right=*/0);
-  return button;
+      std::move(icon_view), text);
 }
 
 BEGIN_METADATA(ProfileMenuViewBase)
