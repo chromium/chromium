@@ -78,11 +78,8 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                views::MaximumFlexSizeRule::kScaleToMaximum));
 
-  SetCallback(base::BindRepeating(
-      [](ThreadPressedCallback callback, const std::string& server_id) {
-        std::move(callback).Run(server_id);
-      },
-      std::move(pressed_callback), thread.server_id));
+  SetCallback(base::BindRepeating(std::move(pressed_callback), thread.server_id,
+                                  thread.type));
 
   SetProperty(views::kElementIdentifierKey,
               kProjectsPanelThreadListItemViewElementId);

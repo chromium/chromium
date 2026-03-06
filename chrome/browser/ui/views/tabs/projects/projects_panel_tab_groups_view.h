@@ -85,6 +85,9 @@ class ProjectsPanelTabGroupsView : public views::View,
 
   std::optional<gfx::Rect> GetDropIndicatorBoundsForTesting() const;
 
+  // Returns the number of tab groups currently displayed in the UI.
+  int num_tab_groups() { return item_views_.size(); }
+
   std::vector<ProjectsPanelTabGroupsItemView*> item_views_for_testing() const {
     return item_views_;
   }

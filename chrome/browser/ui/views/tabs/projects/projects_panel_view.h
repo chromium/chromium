@@ -142,7 +142,8 @@ class ProjectsPanelView : public views::View,
   void OnThreadsActivityMenuButtonPressed();
   void OnTabGroupMoved(const base::Uuid& group_guid, int new_index);
   void OnCreateNewTabGroupButtonPressed();
-  void OnThreadButtonPressed(const std::string& thread_server_id);
+  void OnThreadButtonPressed(const std::string& thread_server_id,
+                             contextual_tasks::ThreadType thread_type);
   void OnTabGroupDragUpdated(const gfx::Point& location);
   void OnTabGroupDragExited();
 

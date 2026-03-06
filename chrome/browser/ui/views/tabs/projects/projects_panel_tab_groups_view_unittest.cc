@@ -248,3 +248,12 @@ TEST_F(ProjectsPanelTabGroupsViewTest, DragAndDropReorder) {
   std::move(drop_callback).Run(event, output_op, nullptr);
   EXPECT_EQ(ui::mojom::DragOperation::kMove, output_op);
 }
+
+TEST_F(ProjectsPanelTabGroupsViewTest, NumTabGroups) {
+  std::vector<tab_groups::SavedTabGroup> groups = {CreateGroup(u"Group 1"),
+                                                   CreateGroup(u"Group 2"),
+                                                   CreateGroup(u"Group 3")};
+  tab_groups_view_->SetTabGroups(groups);
+
+  EXPECT_EQ(3, tab_groups_view_->num_tab_groups());
+}

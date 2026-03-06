@@ -101,7 +101,9 @@ TEST_F(ProjectsPanelThreadItemViewTest, TriggersCallbackOnPressed) {
   auto thread_item_view = std::make_unique<ProjectsPanelThreadItemView>(
       thread, mock_callback.Get());
 
-  EXPECT_CALL(mock_callback, Run(server_id)).Times(1);
+  EXPECT_CALL(mock_callback,
+              Run(server_id, contextual_tasks::ThreadType::kAiMode))
+      .Times(1);
 
   ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),
                        base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,

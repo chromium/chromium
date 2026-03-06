@@ -61,6 +61,10 @@ TabStripComboButton::TabStripComboButton(BrowserWindowInterface* browser)
   if (tab_groups::IsProjectsPanelFeatureEnabled()) {
     start_button = CreateFlatEdgeButtonFor(
         kActionToggleProjectsPanel, kVerticalTabStripProjectsButtonElementId);
+    projects_panel_button_subscription_ =
+        start_button->RegisterWillInvokeActionCallback(base::BindRepeating(
+            &TabStripComboButton::OnProjectsPanelButtonPressed,
+            base::Unretained(this)));
   } else if (tab_groups::SavedTabGroupUtils::IsEnabledForProfile(
                  browser_->GetProfile())) {
     start_button = CreateFlatEdgeButtonFor(kActionTabGroupsMenu,
@@ -173,6 +177,11 @@ void TabStripComboButton::ShowEverythingMenu() {
       tab_groups::STGEverythingMenu::MenuContext::kVerticalTabStrip);
 
   everything_menu_->RunMenu();
+}
+
+void TabStripComboButton::OnProjectsPanelButtonPressed() {
+  base::RecordAction(
+      base::UserMetricsAction("ProjectsPanel.OpenButtonPressed"));
 }
 
 std::unique_ptr<TabStripFlatEdgeButton>

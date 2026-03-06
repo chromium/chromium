@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/metrics/user_metrics.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/contextual_tasks/contextual_tasks_service_factory.h"
@@ -567,6 +568,8 @@ void ProjectsPanelView::ClosePanel() {
 }
 
 void ProjectsPanelView::OnTabGroupButtonPressed(const base::Uuid& group_guid) {
+  base::RecordAction(
+      base::UserMetricsAction("ProjectsPanel.TabGroups.OpenGroup"));
   panel_controller_->OpenTabGroup(group_guid);
   ClosePanel();
 }
@@ -608,6 +611,10 @@ void ProjectsPanelView::OnTabGroupMoved(const base::Uuid& group_guid,
 }
 
 void ProjectsPanelView::OnCreateNewTabGroupButtonPressed() {
+  base::RecordAction(base::UserMetricsAction(
+      tab_groups_view_->num_tab_groups() > 0
+          ? "ProjectsPanel.TabGroups.CreateNewGroup.WithExistingGroups"
+          : "ProjectsPanel.TabGroups.CreateNewGroup.WithoutExistingGroups"));
   on_close_animation_ended_callback_ = base::BindOnce(
       [](base::WeakPtr<ProjectsPanelView> panel) {
         if (!panel) {
@@ -622,7 +629,22 @@ void ProjectsPanelView::OnCreateNewTabGroupButtonPressed() {
 }
 
 void ProjectsPanelView::OnThreadButtonPressed(
-    const std::string& thread_server_id) {
+    const std::string& thread_server_id,
+    contextual_tasks::ThreadType thread_type) {
+  switch (thread_type) {
+    case contextual_tasks::ThreadType::kAiMode:
+      base::RecordAction(
+          base::UserMetricsAction("ProjectsPanel.Threads.OpenThread.AiMode"));
+      break;
+    case contextual_tasks::ThreadType::kGemini:
+      base::RecordAction(
+          base::UserMetricsAction("ProjectsPanel.Threads.OpenThread.Gemini"));
+      break;
+    case contextual_tasks::ThreadType::kUnknown:
+      base::RecordAction(
+          base::UserMetricsAction("ProjectsPanel.Threads.OpenThread.Unknown"));
+      break;
+  }
   panel_controller_->OpenThread(thread_server_id);
   ClosePanel();
 }

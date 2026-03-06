@@ -106,7 +106,8 @@ TEST_F(ProjectsPanelRecentThreadsViewTest, PropagatesCallbackToItems) {
       std::make_unique<ProjectsPanelRecentThreadsView>(mock_callback.Get());
   recent_threads_view->SetThreads(threads);
 
-  EXPECT_CALL(mock_callback, Run(GetThread1().server_id)).Times(1);
+  EXPECT_CALL(mock_callback, Run(GetThread1().server_id, GetThread1().type))
+      .Times(1);
 
   auto* thread_item_view = recent_threads_view->item_views_for_testing()[0];
   ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(), gfx::Point(),

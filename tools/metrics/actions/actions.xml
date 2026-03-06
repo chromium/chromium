@@ -38854,6 +38854,47 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ProjectsPanel.OpenButtonPressed">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened the projects panel via the tab strip entrypoint.
+  </description>
+</action>
+
+<action name="ProjectsPanel.TabGroups.CreateNewGroup.{HadExistingGroups}">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user created a new tab group from the projects panel.
+  </description>
+  <token key="HadExistingGroups">
+    <variant name="WithExistingGroups"
+        summary="Existing groups were shown in the panel"/>
+    <variant name="WithoutExistingGroups"
+        summary="No existing groups were shown in the panel"/>
+  </token>
+</action>
+
+<action name="ProjectsPanel.TabGroups.OpenGroup">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>
+    The user opened an existing group from the projects panel.
+  </description>
+</action>
+
+<action name="ProjectsPanel.Threads.OpenThread.{ThreadType}">
+  <owner>chazzy@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <description>The user opened a thread from the projects panel.</description>
+  <token key="ThreadType">
+    <variant name="AiMode" summary="AI Mode chat thread"/>
+    <variant name="Gemini" summary="Gemini chat thread"/>
+    <variant name="Unknown" summary="Unknown chat thread type"/>
+  </token>
+</action>
+
 <action name="PWAInstallIcon">
   <owner>alancutter@chromium.org</owner>
   <description>

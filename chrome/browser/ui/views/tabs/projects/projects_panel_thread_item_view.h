@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
+#include "components/contextual_tasks/public/contextual_task.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/view.h"
 
@@ -24,7 +25,8 @@ class ProjectsPanelThreadItemView : public views::Button {
 
  public:
   using ThreadPressedCallback =
-      base::RepeatingCallback<void(const std::string&)>;
+      base::RepeatingCallback<void(const std::string&,
+                                   contextual_tasks::ThreadType)>;
 
   explicit ProjectsPanelThreadItemView(
       const contextual_tasks::Thread& task,

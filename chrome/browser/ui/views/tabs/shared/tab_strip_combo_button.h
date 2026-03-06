@@ -87,6 +87,8 @@ class TabStripComboButton : public views::View,
  private:
   void ShowEverythingMenu();
 
+  void OnProjectsPanelButtonPressed();
+
   void UpdateButtonsVisibility();
 
   std::unique_ptr<TabStripFlatEdgeButton> CreateFlatEdgeButtonFor(
@@ -126,6 +128,8 @@ class TabStripComboButton : public views::View,
   base::OneShotTimer hide_tab_search_timer_;
   base::ScopedObservation<TabSearchBubbleHost, TabSearchBubbleHostObserver>
       tab_search_bubble_host_observation_{this};
+
+  base::CallbackListSubscription projects_panel_button_subscription_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_SHARED_TAB_STRIP_COMBO_BUTTON_H_
