@@ -10,6 +10,13 @@ built-in manager does not work for you then you can configure certificates with
 the
 [NSS command line tools](http://www.mozilla.org/projects/security/pki/nss/tools/).
 
+> Note: Since M146, Chromium defaults to $HOME/.local/share/pki/nssdb
+> for the NSS Shared DB.
+>
+> If you still have an existing $HOME/.pki/nssdb database, Chromium will use
+> that instead. Adjust the paths in the commands below to match whichever
+> location your browser is using.
+
 ## Details
 
 ### Get the tools
@@ -23,16 +30,16 @@ the
 
 ### List all certificates
 
-    certutil -d sql:$HOME/.pki/nssdb -L
+    certutil -d sql:$HOME/.local/share/pki/nssdb -L
 
 ### List details of a certificate
 
-    certutil -d sql:$HOME/.pki/nssdb -L -n <certificate nickname>
+    certutil -d sql:$HOME/.local/share/pki/nssdb -L -n <certificate nickname>
 
 ### Add a certificate
 
 ```shell
-certutil -d sql:$HOME/.pki/nssdb -A -t <TRUSTARGS> -n <certificate nickname> \
+certutil -d sql:$HOME/.local/share/pki/nssdb -A -t <TRUSTARGS> -n <certificate nickname> \
 -i <certificate filename>
 ```
 
@@ -47,21 +54,21 @@ For example, to trust a root CA certificate for issuing SSL server certificates,
 use
 
 ```shell
-certutil -d sql:$HOME/.pki/nssdb -A -t "C,," -n <certificate nickname> \
+certutil -d sql:$HOME/.local/share/pki/nssdb -A -t "C,," -n <certificate nickname> \
 -i <certificate filename>
 ```
 
 To import an intermediate CA certificate, use
 
 ```shell
-certutil -d sql:$HOME/.pki/nssdb -A -t ",," -n <certificate nickname> \
+certutil -d sql:$HOME/.local/share/pki/nssdb -A -t ",," -n <certificate nickname> \
 -i <certificate filename>
 ```
 
 Note: to trust a self-signed server certificate, we should use
 
 ```
-certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n <certificate nickname> \
+certutil -d sql:$HOME/.local/share/pki/nssdb -A -t "P,," -n <certificate nickname> \
 -i <certificate filename>
 ```
 
@@ -69,11 +76,11 @@ certutil -d sql:$HOME/.pki/nssdb -A -t "P,," -n <certificate nickname> \
 
 Use the command:
 
-    pk12util -d sql:$HOME/.pki/nssdb -i PKCS12_file.p12
+    pk12util -d sql:$HOME/.local/share/pki/nssdb -i PKCS12_file.p12
 
 to import a personal certificate and private key stored in a PKCS #12 file. The
 TRUSTARGS of the personal certificate will be set to "u,u,u".
 
 ### Delete a certificate
 
-    certutil -d sql:$HOME/.pki/nssdb -D -n <certificate nickname>
+    certutil -d sql:$HOME/.local/share/pki/nssdb -D -n <certificate nickname>
