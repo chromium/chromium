@@ -345,7 +345,7 @@ const base::FeatureParam<PlaceholderText>::Option kSteadyPlaceholderOptions[] =
 const base::FeatureParam<PlaceholderText> kSteadyPlaceholder(
     &kNtpRealboxNext,
     "SteadyPlaceholder",
-    PlaceholderText::ASK_OR_TYPE,
+    PlaceholderText::ASK,
     &kSteadyPlaceholderOptions);
 
 const base::FeatureParam<bool> kCyclingPlaceholders(&kNtpRealboxNext,
