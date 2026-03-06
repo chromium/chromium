@@ -24001,12 +24001,12 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithEventMask",
                     "params": {
-                        "use_nested_loop": "true"
+                        "enable_event_mask": "true"
                     },
                     "enable_features": [
-                        "TextInputClient"
+                        "TextInputClientUseNestedLoop"
                     ]
                 }
             ]
