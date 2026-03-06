@@ -16,11 +16,6 @@ class DeviceInfo;
 
 namespace send_tab_to_self {
 
-struct SharingDeviceNames {
-  std::string full_name;
-  std::string short_name;
-};
-
 // Device information for generating send tab to self UI.
 struct TargetDeviceInfo {
  public:
@@ -47,9 +42,6 @@ struct TargetDeviceInfo {
   // Last updated timestamp.
   base::Time last_updated_timestamp;
 };
-
-// Returns full and short names for |device|.
-SharingDeviceNames GetSharingDeviceNames(const syncer::DeviceInfo* device);
 
 }  // namespace send_tab_to_self
 

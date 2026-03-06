@@ -8,13 +8,13 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/uuid.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sharing_message/proto/sharing_message_type.pb.h"
 #include "components/sharing_message/sharing_constants.h"
 #include "components/sharing_message/sharing_fcm_sender.h"
 #include "components/sharing_message/sharing_metrics.h"
 #include "components/sharing_message/sharing_utils.h"
 #include "components/sync/protocol/unencrypted_sharing_message.pb.h"
+#include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/local_device_info_provider.h"
 #include "third_party/perfetto/include/perfetto/tracing/track.h"
 
@@ -86,7 +86,7 @@ base::OnceClosure SharingMessageSender::SendMessageToDevice(
 
   message.set_sender_guid(local_device_info->guid());
   message.set_sender_device_name(
-      send_tab_to_self::GetSharingDeviceNames(local_device_info).full_name);
+      syncer::GetDeviceDisplayNames(local_device_info).full_name);
 
   TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
                     perfetto::Track(trace_id));
@@ -139,7 +139,7 @@ base::OnceClosure SharingMessageSender::SendUnencryptedMessageToDevice(
 
   message.set_sender_guid(local_device_info->guid());
   message.set_sender_device_name(
-      send_tab_to_self::GetSharingDeviceNames(local_device_info).full_name);
+      syncer::GetDeviceDisplayNames(local_device_info).full_name);
 
   TRACE_EVENT_BEGIN("sharing", "Sharing.DoSendMessage",
                     perfetto::Track(trace_id));

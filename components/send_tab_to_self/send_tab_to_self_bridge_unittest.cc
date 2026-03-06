@@ -33,6 +33,7 @@
 #include "components/sync/test/test_matchers.h"
 #include "components/sync_device_info/device_info.h"
 #include "components/sync_device_info/device_info_util.h"
+#include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_tracker.h"
 #include "components/sync_sessions/fake_open_tabs_ui_delegate.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -1139,7 +1140,8 @@ TEST_F(SendTabToSelfBridgeTest,
       /*interested_data_types=*/syncer::DataTypeSet(),
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
       /*desktop_to_ios_promo_receiving_enabled=*/false);
-  SharingDeviceNames names1 = GetSharingDeviceNames(device1.get());
+  syncer::DeviceDisplayNames names1 =
+      syncer::GetDeviceDisplayNames(device1.get());
   ASSERT_EQ("Manufacturer Phone model1", names1.full_name);
   ASSERT_EQ("Manufacturer Phone", names1.short_name);
   AddTestDevice(device1.get());
@@ -1160,7 +1162,8 @@ TEST_F(SendTabToSelfBridgeTest,
       /*interested_data_types=*/syncer::DataTypeSet(),
       /*auto_sign_out_last_signin_timestamp=*/std::nullopt,
       /*desktop_to_ios_promo_receiving_enabled=*/false);
-  SharingDeviceNames names2 = GetSharingDeviceNames(device2.get());
+  syncer::DeviceDisplayNames names2 =
+      syncer::GetDeviceDisplayNames(device2.get());
   ASSERT_EQ("Manufacturer Phone model2", names2.full_name);
   ASSERT_EQ("Manufacturer Phone", names2.short_name);
   AddTestDevice(device2.get());
@@ -1356,7 +1359,7 @@ TEST_F(SendTabToSelfBridgeTest,
   // Set local cache GUID.
   SetLocalDeviceCacheGuid(kMyLocalGuid);
 
-  // Add a local device where GetSharingDeviceNames returns a specific full
+  // Add a local device where GetDeviceDisplayNames returns a specific full
   // name. Using a specific model ensures the complex naming logic is used.
   std::unique_ptr<syncer::DeviceInfo> local_device =
       CreateDevice(kMyLocalGuid, "local_name", clock()->Now(), "local_model");
@@ -1383,7 +1386,7 @@ TEST_F(SendTabToSelfBridgeTest, AddEntry_UsesFullName) {
   std::unique_ptr<syncer::DeviceInfo> local_device =
       CreateDevice(kMyLocalGuid, "local_name", clock()->Now(), "local_model");
   const std::string full_name =
-      GetSharingDeviceNames(local_device.get()).full_name;
+      syncer::GetDeviceDisplayNames(local_device.get()).full_name;
 
   device_info_tracker()->Add(std::move(local_device));
   device_info_tracker()->SetLocalCacheGuid(kMyLocalGuid);

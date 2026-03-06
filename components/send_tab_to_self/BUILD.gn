@@ -106,7 +106,6 @@ source_set("unit_tests") {
     "received_tab_forms_filler_unittest.cc",
     "send_tab_to_self_bridge_unittest.cc",
     "send_tab_to_self_entry_unittest.cc",
-    "target_device_info_unittest.cc",
   ]
   deps = [
     ":send_tab_to_self",

@@ -9,7 +9,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "components/send_tab_to_self/target_device_info.h"
 #include "components/sharing_message/fake_device_info.h"
 #include "components/sharing_message/ios_push/sharing_ios_push_sender.h"
 #include "components/sharing_message/proto/sharing_message.pb.h"
@@ -20,6 +19,7 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "components/sync/test/mock_sync_service.h"
 #include "components/sync_device_info/device_info.h"
+#include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/fake_device_info_sync_service.h"
 #include "components/sync_device_info/fake_local_device_info_provider.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -332,9 +332,8 @@ TEST_F(SharingMessageSenderTest, MessageSent_AckReceived) {
             fake_device_info_sync_service_.GetLocalDeviceInfoProvider()
                 ->GetLocalDeviceInfo();
         ASSERT_EQ(local_device->guid(), message.sender_guid());
-        ASSERT_EQ(
-            send_tab_to_self::GetSharingDeviceNames(local_device).full_name,
-            message.sender_device_name());
+        ASSERT_EQ(syncer::GetDeviceDisplayNames(local_device).full_name,
+                  message.sender_device_name());
         ASSERT_TRUE(local_device->sharing_info().has_value());
         auto& fcm_ack_configuration = message.fcm_channel_configuration();
         ASSERT_EQ(kSenderSenderIdFcmToken,

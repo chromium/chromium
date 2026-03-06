@@ -35,6 +35,7 @@
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
+#include "components/sync_device_info/device_name_util.h"
 #include "components/sync_device_info/local_device_info_util.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
 #include "components/sync_sessions/session_sync_service.h"
@@ -525,7 +526,8 @@ SendTabToSelfBridge::GetTargetDeviceInfoSortedList() {
       continue;
     }
 
-    SharingDeviceNames device_names = GetSharingDeviceNames(device);
+    syncer::DeviceDisplayNames device_names =
+        syncer::GetDeviceDisplayNames(device);
 
     // Don't include this device if it has the same name as the local device.
     if (device_names.full_name == local_full_name) {
@@ -706,7 +708,7 @@ std::string SendTabToSelfBridge::GetLocalFullName() const {
       change_processor()->TrackedCacheGuid());
   CHECK(local_device, base::NotFatalUntil::M148);
 
-  return GetSharingDeviceNames(local_device).full_name;
+  return syncer::GetDeviceDisplayNames(local_device).full_name;
 }
 
 bool SendTabToSelfBridge::ShouldIncludeDevice(
