@@ -355,14 +355,14 @@ interface PageHandler {
   AddFileContext(SelectedFileInfo file_info,
                  mojo_base.mojom.BigBuffer file_bytes)
       => result<mojo_base.mojom.UnguessableToken,
-                composebox_query.mojom.FileUploadErrorType>;
+                composebox_query.mojom.ContextUploadErrorType>;
 
   // Attach a tab to the query context. If the tab cannot be attached, the
   // result will contain an error, otherwise it will contain the token
   // identifying the tab context.
   AddTabContext(int32 tab_id, bool delay_upload)
       => result<mojo_base.mojom.UnguessableToken,
-                composebox_query.mojom.FileUploadErrorType>;
+                composebox_query.mojom.ContextUploadErrorType>;
 
   // Notify handler of context deletion. This removes the context data (e.g.
   // File, or tab page content) from the browser-side cache.
@@ -436,8 +436,8 @@ interface Page {
   // updates to the WebUI.
   OnContextualInputStatusChanged(
       mojo_base.mojom.UnguessableToken token,
-      composebox_query.mojom.FileUploadStatus status,
-      composebox_query.mojom.FileUploadErrorType? error_type);
+      composebox_query.mojom.ContextUploadStatus status,
+      composebox_query.mojom.ContextUploadErrorType? error_type);
 
   // Notifies the page that the tab strip has changed.
   OnTabStripChanged();

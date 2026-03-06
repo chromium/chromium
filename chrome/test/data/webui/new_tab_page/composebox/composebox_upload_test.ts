@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
-import {FileUploadErrorType, FileUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
+import {ContextUploadErrorType, ContextUploadStatus, InputType, ToolMode as ComposeboxToolMode} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
 import {createAutocompleteResultForTesting, createSearchMatchForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -25,7 +25,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
         new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         null,
     );
     await testProxy.element.updateComplete;
@@ -58,7 +58,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     await uploadFileAndVerify(
         testProxy, id, new File(['foo'], 'foo.pdf', {type: 'application/pdf'}));
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
+        id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // Autocomplete should be stopped (with matches cleared) and then
@@ -71,7 +71,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     // The suggest request should be triggered before the file has finished
     // uploading.
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kUploadSuccessful, null);
+        id, ContextUploadStatus.kUploadSuccessful, null);
 
     // Delete the uploaded file.
     const deletedId = testProxy.element.$.carousel.files[0]!.uuid;
@@ -106,7 +106,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     await uploadFileAndVerify(
         testProxy, id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
+        id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // Autocomplete should not be queried again since the uploaded file is an
@@ -128,7 +128,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     await uploadFileAndVerify(
         testProxy, id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
+        id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     // Autocomplete should be stopped (with matches cleared) and then
@@ -167,7 +167,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
 
           testProxy.searchboxCallbackRouterRemote
               .onContextualInputStatusChanged(
-                  id, FileUploadStatus.kUploadSuccessful, null);
+                  id, ContextUploadStatus.kUploadSuccessful, null);
           await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
 
           announcementPromise =
@@ -242,15 +242,15 @@ suite('NewTabPageComposeboxUploadTest', () => {
   });
 
   [[
-    FileUploadStatus.kValidationFailed,
-    FileUploadErrorType.kImageProcessingError,
+    ContextUploadStatus.kValidationFailed,
+    ContextUploadErrorType.kImageProcessingError,
   ],
    [
-     FileUploadStatus.kUploadFailed,
+     ContextUploadStatus.kUploadFailed,
      null,
    ],
    [
-     FileUploadStatus.kUploadExpired,
+     ContextUploadStatus.kUploadExpired,
      null,
    ],
   ].forEach(([fileUploadStatus, fileUploadErrorType, ..._]) => {
@@ -264,8 +264,8 @@ suite('NewTabPageComposeboxUploadTest', () => {
 
           testProxy.searchboxCallbackRouterRemote
               .onContextualInputStatusChanged(
-                  id, fileUploadStatus as FileUploadStatus,
-                  fileUploadErrorType as FileUploadErrorType | null);
+                  id, fileUploadStatus as ContextUploadStatus,
+                  fileUploadErrorType as ContextUploadErrorType | null);
           await testProxy.searchboxCallbackRouterRemote.$.flushForTesting();
 
           // Assert no files in the carousel.
@@ -887,7 +887,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     await uploadFileAndVerify(
         testProxy, id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
+        id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
     await microtasksFinished();
 
     assertEquals(
@@ -924,7 +924,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
         new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         FAKE_TOKEN_STRING,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         /*error_type=*/ null,
     );
     await microtasksFinished();
@@ -967,7 +967,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
         testProxy, id, new File(['foo'], 'foo.jpg', {type: 'image/jpeg'}));
 
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-        id, FileUploadStatus.kProcessingSuggestSignalsReady, null);
+        id, ContextUploadStatus.kProcessingSuggestSignalsReady, null);
 
     // Matches should not show when image is present.
     assertFalse(await areMatchesShowing(
@@ -986,7 +986,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     createComposeboxElement(testProxy);
     // Set the promise to reject to simulate a failure.
     testProxy.searchboxHandler.setResultMapperFor(ADD_FILE_CONTEXT_FN, () => {
-      return Promise.reject(FileUploadErrorType.kBrowserProcessingError);
+      return Promise.reject(ContextUploadErrorType.kBrowserProcessingError);
     });
 
     // Assert no files.
@@ -1027,7 +1027,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     const bad_token = FAKE_TOKEN_STRING_2;
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         bad_token,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         null,
     );
     await testProxy.element.updateComplete;
@@ -1052,7 +1052,7 @@ suite('NewTabPageComposeboxUploadTest', () => {
     const bad_token = FAKE_TOKEN_STRING_2;
     testProxy.searchboxCallbackRouterRemote.onContextualInputStatusChanged(
         bad_token,
-        FileUploadStatus.kUploadSuccessful,
+        ContextUploadStatus.kUploadSuccessful,
         null,
     );
     await testProxy.element.updateComplete;

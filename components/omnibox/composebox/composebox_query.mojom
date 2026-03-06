@@ -11,8 +11,8 @@ struct AimUrlParam {
   string param_value;
 };
 
-// Upload status of a file.
-enum FileUploadStatus {
+// Upload status of a context.
+enum ContextUploadStatus {
   // Not uploaded.
   kNotUploaded = 0,
   // File being processed.
@@ -34,7 +34,7 @@ enum FileUploadStatus {
 };
 
 // For upload error notifications and metrics.
-enum FileUploadErrorType {
+enum ContextUploadErrorType {
   // Unknown.
   kUnknown = 0,
   // Browser error before/during request, not covered by validation.
