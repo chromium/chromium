@@ -19,6 +19,7 @@ class WebContents;
 
 namespace contextual_search {
 class ContextualSearchSessionHandle;
+class InputStateModel;
 }  // namespace contextual_search
 
 namespace lens {
@@ -93,6 +94,12 @@ class ContextualTasksUIInterface : public TaskInfoDelegate {
 
   // Returns the Mojo remote used to communicate with the WebUI page.
   virtual mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() = 0;
+
+  // Fetches and assumes unique ownership of the pre-configured input state
+  // model attached to the WebContents for the current task. Subsequent calls
+  // for the same task will return nullptr.
+  virtual std::unique_ptr<contextual_search::InputStateModel>
+  TakeInputStateModel() = 0;
 
   // Helpers.
 

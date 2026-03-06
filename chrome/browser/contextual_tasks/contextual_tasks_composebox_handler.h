@@ -50,7 +50,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
                                          public ui::SelectFileDialog::Listener {
  public:
   friend class ContextualTasksComposeboxHandlerTest;
-  using GetInputStateModelCallback =
+  using TakeInputStateModelCallback =
       base::OnceCallback<std::unique_ptr<contextual_search::InputStateModel>()>;
 
   ContextualTasksComposeboxHandler(
@@ -62,7 +62,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
       mojo::PendingReceiver<searchbox::mojom::PageHandler>
           pending_searchbox_handler,
       GetSessionHandleCallback get_session_callback,
-      GetInputStateModelCallback get_input_model_callback);
+      TakeInputStateModelCallback take_input_model_callback);
   ~ContextualTasksComposeboxHandler() override;
 
   // composebox::mojom::PageHandler:
@@ -85,7 +85,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   void OnTaskChanged();
 
   // We override this method to inject an existing `InputStateModel` if one is
-  // provided by the ContextualTasksUI via the `get_input_model_callback_`.
+  // provided by the ContextualTasksUI via the `take_input_model_callback_`.
   void InitializeInputStateModel() override;
 
   void AddFileContextFromBrowser(
@@ -150,7 +150,7 @@ class ContextualTasksComposeboxHandler : public ComposeboxHandler,
   // Potentially submits query if no other context is uploading.
   void MarkContextUploadFinished(const base::UnguessableToken& token);
 
-  GetInputStateModelCallback get_input_model_callback_;
+  TakeInputStateModelCallback take_input_model_callback_;
 
   // Called when a delayed context upload (tab) has finished.
   // Potentially submits query if no other context is uploading.

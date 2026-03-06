@@ -155,7 +155,8 @@ class ContextualTasksUI
   void PostMessageToWebview(const lens::ClientToAimMessage& message) override;
   contextual_search::ContextualSearchSessionHandle*
   GetOrCreateContextualSessionHandle() override;
-  std::unique_ptr<contextual_search::InputStateModel> GetInputStateModel();
+  std::unique_ptr<contextual_search::InputStateModel> TakeInputStateModel()
+      override;
   mojo::Remote<contextual_tasks::mojom::Page>& GetPageRemote() override;
   const GURL& GetInnerFrameUrl() const override;
 

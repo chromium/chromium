@@ -629,7 +629,7 @@ void ContextualTasksUI::CreatePageHandler(
       base::BindRepeating(
           &ContextualTasksUI::GetOrCreateContextualSessionHandle,
           base::Unretained(this)),
-      base::BindRepeating(&ContextualTasksUI::GetInputStateModel,
+      base::BindRepeating(&ContextualTasksUI::TakeInputStateModel,
                           base::Unretained(this)));
   composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
@@ -686,7 +686,7 @@ ContextualTasksUI::GetOrCreateContextualSessionHandle() {
 }
 
 std::unique_ptr<contextual_search::InputStateModel>
-ContextualTasksUI::GetInputStateModel() {
+ContextualTasksUI::TakeInputStateModel() {
   if (!task_id_.has_value()) {
     return nullptr;
   }
@@ -695,7 +695,7 @@ ContextualTasksUI::GetInputStateModel() {
   auto* helper = ContextualSearchWebContentsHelper::GetOrCreateForWebContents(
       web_contents);
 
-  return helper->GetInputStateModelForTask(task_id_.value());
+  return helper->TakeInputStateModelForTask(task_id_.value());
 }
 
 void ContextualTasksUI::MoveTaskUiToNewTab() {
