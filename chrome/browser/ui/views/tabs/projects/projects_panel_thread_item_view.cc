@@ -8,8 +8,10 @@
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
 #include "chrome/browser/ui/views/tabs/projects/projects_panel_utils.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
@@ -34,7 +36,23 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
       .SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
-  GetViewAccessibility().SetName(thread.title);
+  auto& accessibility = GetViewAccessibility();
+  auto thread_title = base::UTF8ToUTF16(thread.title);
+  switch (thread.type) {
+    case contextual_tasks::ThreadType::kAiMode:
+      accessibility.SetName(l10n_util::GetStringFUTF16(
+          IDS_OPEN_AI_MODE_THREAD_ACCESSIBILITY_LABEL, thread_title));
+      SetTooltipText(
+          l10n_util::GetStringUTF16(IDS_OPEN_AI_MODE_THREAD_TOOLTIP));
+      break;
+    case contextual_tasks::ThreadType::kGemini:
+      accessibility.SetName(l10n_util::GetStringFUTF16(
+          IDS_OPEN_GEMINI_THREAD_ACCESSIBILITY_LABEL, thread_title));
+      SetTooltipText(l10n_util::GetStringUTF16(IDS_OPEN_GEMINI_THREAD_TOOLTIP));
+      break;
+    case contextual_tasks::ThreadType::kUnknown:
+      NOTREACHED();
+  }
 
   projects_panel::ConfigureInkDropForButton(this);
 
@@ -52,6 +70,9 @@ ProjectsPanelThreadItemView::ProjectsPanelThreadItemView(
   title_->SetProperty(views::kMarginsKey,
                       projects_panel::kListItemTitleMargins);
   title_->SetBackgroundColor(SK_ColorTRANSPARENT);
+  // Prevent the title from showing its own tooltip since we've set one for the
+  // entire view.
+  title_->SetHandlesTooltips(false);
   title_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,

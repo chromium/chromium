@@ -10455,6 +10455,18 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NO_TAB_GROUPS" desc="Text indicating the user has no Tab groups.">
         Organize your tabs by grouping them together and label them with a custom name and color
       </message>
+      <message name="IDS_OPEN_GEMINI_THREAD_TOOLTIP" desc="Tooltip for a button that opens a Gemini thread.">
+        Open in Gemini
+      </message>
+      <message name="IDS_OPEN_AI_MODE_THREAD_TOOLTIP" desc="Tooltip for a button that opens an AI Mode thread.">
+        Open in AI Mode
+      </message>
+      <message name="IDS_OPEN_GEMINI_THREAD_ACCESSIBILITY_LABEL" desc="Screenreader label for a button that opens a Gemini thread." is_accessibility_with_no_ui="true">
+        Open "<ph name="THREAD_NAME">$1<ex>Compact SUV Comparison</ex></ph>" in Gemini
+      </message>
+      <message name="IDS_OPEN_AI_MODE_THREAD_ACCESSIBILITY_LABEL" desc="Screenreader label for a button that opens an AI Mode thread." is_accessibility_with_no_ui="true">
+        Open "<ph name="THREAD_NAME">$1<ex>Compact SUV Comparison</ex></ph>" in AI Mode
+      </message>
       <message name="IDS_TAB_SEARCH_BUTTON_CXMENU_UNPIN" desc="Name of the tab search button context menu item for unpinning tab search.">
         Unpin
       </message>

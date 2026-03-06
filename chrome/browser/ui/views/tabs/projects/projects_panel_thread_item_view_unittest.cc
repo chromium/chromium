@@ -8,9 +8,12 @@
 #include "base/test/mock_callback.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/ui/views/tabs/projects/layout_constants.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/contextual_tasks/public/contextual_task.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/color/color_id.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/button_test_api.h"
@@ -56,6 +59,11 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysAimIconAndTitle) {
   const views::Label* label = thread_item_view->title_for_testing();
   EXPECT_TRUE(label);
   EXPECT_EQ(base::UTF8ToUTF16(aim_thread.title), label->GetText());
+
+  EXPECT_TRUE(thread_item_view->GetViewAccessibility().GetCachedName().contains(
+      base::UTF8ToUTF16(aim_thread.title)));
+  EXPECT_EQ(thread_item_view->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_OPEN_AI_MODE_THREAD_TOOLTIP));
 }
 
 TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
@@ -77,6 +85,11 @@ TEST_F(ProjectsPanelThreadItemViewTest, DisplaysGeminiIconAndTitle) {
   const views::Label* label = thread_item_view->title_for_testing();
   EXPECT_TRUE(label);
   EXPECT_EQ(base::UTF8ToUTF16(gemini_thread.title), label->GetText());
+
+  EXPECT_TRUE(thread_item_view->GetViewAccessibility().GetCachedName().contains(
+      base::UTF8ToUTF16(gemini_thread.title)));
+  EXPECT_EQ(thread_item_view->GetTooltipText(),
+            l10n_util::GetStringUTF16(IDS_OPEN_GEMINI_THREAD_TOOLTIP));
 }
 
 TEST_F(ProjectsPanelThreadItemViewTest, TriggersCallbackOnPressed) {
