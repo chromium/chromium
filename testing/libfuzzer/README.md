@@ -31,6 +31,7 @@ Started Guide].
 ## Advanced Topics
 
 * [Using libfuzzer instead of FuzzTest].
+* [Generating local code coverage reports for FuzzTests] to visualize the impact of your fuzzer.
 * [Improving fuzz target efficiency].
 * [Creating a fuzz target that expects a protobuf] instead of a byte stream as
   input.
@@ -72,6 +73,7 @@ Started Guide].
 [Fuzzing]: https://en.wikipedia.org/wiki/Fuzzing
 [Fuzzing browsertests]: fuzzing_browsertests.md
 [Fuzzing mojo interfaces]: ../../mojo/docs/mojolpm.md
+[Generating local code coverage reports for FuzzTests]: fuzz_test_coverage.md
 [Getting Started Guide]: getting_started.md
 [Guided in-process fuzzing of Chrome components]: https://security.googleblog.com/2016/08/guided-in-process-fuzzing-of-chrome.html
 [Improving fuzz target efficiency]: efficient_fuzzing.md
