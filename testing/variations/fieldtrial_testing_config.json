@@ -22548,6 +22548,23 @@
             ]
         }
     ],
+    "SigninPromoOnAvatarPill": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SigninPromoOnAvatarPill"
+                    ]
+                }
+            ]
+        }
+    ],
     "SigninSurveyAndroidBookmarkPromo": [
         {
             "platforms": [
