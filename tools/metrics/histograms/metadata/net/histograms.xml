@@ -7567,7 +7567,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.SharedDictionaryManagerOnDisk.CacheMaxSize" units="MB"
+<histogram name="Net.SharedDictionaryManagerOnDisk.CacheMaxSize2" units="MB"
     expires_after="2026-07-01">
   <owner>pmeenan@chromium.org</owner>
   <owner>src/net/extras/shared_dictionary/OWNERS</owner>
@@ -7575,7 +7575,9 @@ chromium-metrics-reviews@google.com.
     The maximum total size of dictionaries that can be stored in the Shared
     Dictionary cache, calculated based on available disk space in the browser
     process and notified to the network service. This is recorded once per a
-    netwrok context only if the DiskCacheSize enterprise policy is not set.
+    netwrok context only if the DiskCacheSize enterprise policy is not set. The
+    original histogram &quot;CacheMaxSize&quot; didn't correctly recorded the
+    actual maximum total size.
   </summary>
 </histogram>
 

@@ -523,8 +523,8 @@ SharedDictionaryManagerOnDisk::CreateStorage(
 }
 
 void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {
-  base::UmaHistogramMemoryMB("Net.SharedDictionaryManagerOnDisk.CacheMaxSize",
-                             cache_max_size_ / (1000 * 1000));
+  base::UmaHistogramMemoryMB("Net.SharedDictionaryManagerOnDisk.CacheMaxSize2",
+                             cache_max_size / (1000 * 1000));
   cache_max_size_ = cache_max_size;
   MaybePostExpiredDictionaryDeletionTask();
   MaybePostCacheEvictionTask();
