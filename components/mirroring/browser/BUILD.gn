@@ -4,6 +4,9 @@
 
 import("//testing/test.gni")
 
+assert(!is_android,
+       "Mirroring service browser component should not be built on Android.")
+
 source_set("browser") {
   sources = [
     "single_client_video_capture_host.cc",

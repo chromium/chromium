@@ -4,6 +4,8 @@
 
 import("//testing/test.gni")
 
+assert(!is_android, "Mirroring service should not be built on Android.")
+
 component("mirroring_service") {
   sources = [
     "captured_audio_input.cc",
