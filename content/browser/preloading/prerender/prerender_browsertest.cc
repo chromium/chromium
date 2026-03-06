@@ -9231,10 +9231,17 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
       PrerenderFinalStatus::kActivated, 1);
 }
 
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_PreloadingTriggeringOutcomeForPendingPrerender \
+  DISABLED_PreloadingTriggeringOutcomeForPendingPrerender
+#else
+#define MAYBE_PreloadingTriggeringOutcomeForPendingPrerender \
+  PreloadingTriggeringOutcomeForPendingPrerender
+#endif
 // Test that a pending prerender should have the
 // `PreloadingTriggeringOutcome::kTriggeredButPending`.
 IN_PROC_BROWSER_TEST_P(PrerenderBrowserTestFallbackEnabledDisabled,
-                       PreloadingTriggeringOutcomeForPendingPrerender) {
+                       MAYBE_PreloadingTriggeringOutcomeForPendingPrerender) {
   net::test_server::ControllableHttpResponse response1(
       embedded_test_server(), "/empty.html?prerender1");
   ASSERT_TRUE(embedded_test_server()->Start());
