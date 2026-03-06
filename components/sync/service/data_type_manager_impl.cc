@@ -230,7 +230,8 @@ void DataTypeManagerImpl::DataTypePreconditionChanged(DataType type) {
   }
 
   switch (controllers_.find(type)->second->GetPreconditionState(
-      DataTypeController::PreconditionContext())) {
+      DataTypeController::PreconditionContext(
+          last_requested_context_.account_managed_status))) {
     case DataTypeController::PreconditionState::kPreconditionsMet:
       if (preferred_types_.Has(type)) {
         // Only reconfigure if the type is both ready and desired. This will
@@ -586,7 +587,8 @@ bool DataTypeManagerImpl::UpdatePreconditionError(DataType type) {
   }
 
   switch (iter->second->GetPreconditionState(
-      DataTypeController::PreconditionContext())) {
+      DataTypeController::PreconditionContext(
+          last_requested_context_.account_managed_status))) {
     case DataTypeController::PreconditionState::kPreconditionsMet: {
       if (!data_type_status_table_.ResetPreconditionErrorFor(type)) {
         // Nothing changed.

@@ -90,6 +90,8 @@ PreconditionState ContactInfoPreconditionChecker::GetPreconditionState(
     return PreconditionState::kMustStopAndClearData;
   }
   // Exclude Dasher accounts.
+  // TODO(crbug.com/40897778): Use the account-managed status from `context`
+  // once it is always populated.
   return GetPreconditionStateFromAccountManagedStatus(
       managed_status_finder_.get());
 }

@@ -122,7 +122,11 @@ class DataTypeController {
   // example if the datatype depends on certain user preferences other than the
   // ones for sync settings themselves.
   struct PreconditionContext {
-    // TODO(crbug.com/40897778): Add "account_managed_status" here.
+    explicit PreconditionContext(
+        signin::AccountManagedStatusFinderOutcome status)
+        : account_managed_status(status) {}
+
+    signin::AccountManagedStatusFinderOutcome account_managed_status;
   };
   enum class PreconditionState {
     kPreconditionsMet,
