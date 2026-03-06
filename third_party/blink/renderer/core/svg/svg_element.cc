@@ -81,9 +81,8 @@ SVGElement::SVGElement(const QualifiedName& tag_name,
       class_name_(
           MakeGarbageCollected<SVGAnimatedString>(this,
                                                   html_names::kClassAttr)) {
-  if (!RuntimeEnabledFeatures::Svg2CascadeEnabled()) {
-    SetHasCustomStyleCallbacks();
-  }
+  // For WillRecalcStyle()
+  SetHasCustomStyleCallbacks();
 }
 
 void SVGElement::DetachLayoutTree(bool performing_reattach) {
