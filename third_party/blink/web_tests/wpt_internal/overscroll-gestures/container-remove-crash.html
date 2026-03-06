@@ -1,0 +1,20 @@
+<!doctype html>
+<html class="reftest-wait">
+<title>Multicolumn overflow crash test</title>
+<meta name=author content="github.com/vmpstr">
+<style>#container { columns: 2; }</style>
+00
+<script>
+function boom() {
+  document.designMode = 'on';
+  document.execCommand("selectAll");
+  document.execCommand("insertText");
+  document.documentElement.classList.remove("reftest-wait");
+}
+requestAnimationFrame(() => requestAnimationFrame(boom));
+</script>
+
+<div id="container" overscrollcontainer="">
+  <div id="menu"></div>
+  <button "button" command="toggle-overscroll" commandfor="menu">
+</div>
