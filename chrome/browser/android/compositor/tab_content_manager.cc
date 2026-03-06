@@ -23,6 +23,8 @@
 #include "base/metrics/field_trial_params.h"
 #include "cc/slim/layer.h"
 #include "chrome/browser/android/compositor/layer/thumbnail_layer.h"
+#include "chrome/browser/android/compositor/retry_strategy.h"
+#include "chrome/browser/android/compositor/retryable_task.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/thumbnail/cc/thumbnail.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
@@ -34,7 +36,6 @@
 #include "content/public/browser/web_contents.h"
 #include "skia/ext/image_operations.h"
 #include "third_party/skia/include/core/SkBitmap.h"
-#include "ui/android/resources/ui_resource_provider.h"
 #include "ui/android/view_android.h"
 #include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/dip_util.h"
@@ -61,6 +62,9 @@ using TabReadbackCallback = base::OnceCallback<void(float, const SkBitmap&)>;
 // leak memory or cause callbacks to hang indefinitely.
 const base::TimeDelta kTabReadbackTimeout = base::Seconds(15);
 
+constexpr int kMaxReadbackRetries = 5;
+constexpr base::TimeDelta kReadbackRetryDelay = base::Milliseconds(20);
+
 content::RenderWidgetHostView* GetRwhv(content::WebContents* web_contents) {
   content::RenderViewHost* rvh = web_contents->GetRenderViewHost();
   if (!rvh) {
@@ -73,37 +77,58 @@ content::RenderWidgetHostView* GetRwhv(content::WebContents* web_contents) {
 }  // namespace
 
 namespace android {
-
-class TabContentManager::TabReadbackRequest {
+class TabContentManager::TabReadbackRequest : public RetryableTask {
  public:
   TabReadbackRequest(content::WebContents* web_contents,
                      float thumbnail_scale,
-                     TabReadbackCallback end_callback)
-      : thumbnail_scale_(thumbnail_scale),
-        end_callback_(std::move(end_callback)) {
-    auto result_callback =
-        base::BindOnce(&TabReadbackRequest::OnFinishGetTabThumbnailBitmap,
-                       weak_factory_.GetWeakPtr());
-
+                     TabReadbackCallback result_callback)
+      : weak_web_contents_(web_contents->GetWeakPtr()),
+        thumbnail_scale_(thumbnail_scale),
+        result_callback_(std::move(result_callback)),
+        retry_strategy_(std::make_unique<RetryStrategy>(kMaxReadbackRetries,
+                                                        kReadbackRetryDelay)) {
     auto* rwhv = GetRwhv(web_contents);
     if (!rwhv) {
-      std::move(result_callback).Run(viz::CopyOutputBitmapWithMetadata());
+      std::move(result_callback_).Run(0.f, SkBitmap());
       return;
     }
-
     // Cannot increment capturer count for rwhv that is null.
     decrementor_ =
         web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/true,
                                              /*stay_awake=*/false,
                                              /*is_activity=*/false);
+    retry_strategy_->Start(
+        this, base::BindOnce(&TabReadbackRequest::OnRetryLoopFinished,
+                             weak_factory_.GetWeakPtr()));
+  }
+  TabReadbackRequest(const TabReadbackRequest&) = delete;
+  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
+  ~TabReadbackRequest() override = default;
 
+  void Run(base::OnceCallback<void(bool)> should_retry_callback) override {
+    auto* web_contents = weak_web_contents_.get();
+    if (!web_contents) {
+      SetToDropAfterReadback();
+      OnFinishGetTabThumbnailBitmap(std::move(should_retry_callback),
+                                    content::CopyFromSurfaceResult());
+      return;
+    }
+    auto* rwhv = GetRwhv(web_contents);
+    if (!rwhv) {
+      SetToDropAfterReadback();
+      OnFinishGetTabThumbnailBitmap(std::move(should_retry_callback),
+                                    content::CopyFromSurfaceResult());
+      return;
+    }
+    auto result_callback = base::BindOnce(
+        &TabReadbackRequest::OnFinishGetTabThumbnailBitmap,
+        weak_factory_.GetWeakPtr(), std::move(should_retry_callback));
     gfx::Size view_size_in_pixels =
         rwhv->GetNativeView()->GetPhysicalBackingSize();
     if (!rwhv->IsSurfaceAvailableForCopy() || view_size_in_pixels.IsEmpty()) {
-      std::move(result_callback).Run(viz::CopyOutputBitmapWithMetadata());
+      std::move(result_callback).Run(content::CopyFromSurfaceResult());
       return;
     }
-
     gfx::Rect source_rect = gfx::Rect(view_size_in_pixels);
     gfx::Size thumbnail_size(
         gfx::ScaleToCeiledSize(view_size_in_pixels, thumbnail_scale_));
@@ -111,31 +136,64 @@ class TabContentManager::TabReadbackRequest {
                           std::move(result_callback));
   }
 
-  TabReadbackRequest(const TabReadbackRequest&) = delete;
-  TabReadbackRequest& operator=(const TabReadbackRequest&) = delete;
-
-  virtual ~TabReadbackRequest() = default;
+  base::WeakPtr<RetryableTask> GetWeakPtr() override {
+    return weak_factory_.GetWeakPtr();
+  }
 
   void OnFinishGetTabThumbnailBitmap(
+      base::OnceCallback<void(bool)> should_retry_callback,
       const content::CopyFromSurfaceResult& result) {
-    decrementor_.RunAndReset();
-    if (!result.has_value() || drop_after_readback_) {
-      std::move(end_callback_).Run(0.f, SkBitmap());
+    if (drop_after_readback_) {
+      // Release the capturer count as the request is being dropped.
+      decrementor_.RunAndReset();
+      if (result_callback_) {
+        std::move(result_callback_).Run(0.f, SkBitmap());
+      }
+      std::move(should_retry_callback).Run(false);
       return;
     }
 
+    if (!result.has_value()) {
+      std::move(should_retry_callback).Run(true);
+      return;
+    }
+
+    // Release the capturer count as the readback was successful.
+    decrementor_.RunAndReset();
     SkBitmap result_bitmap = result->bitmap;
     result_bitmap.setImmutable();
-    std::move(end_callback_).Run(thumbnail_scale_, result->bitmap);
+    float scale = thumbnail_scale_;
+    if (result_callback_) {
+      std::move(result_callback_).Run(scale, result_bitmap);
+    }
+
+    std::move(should_retry_callback).Run(false);
+  }
+
+  void OnRetryLoopFinished(bool success) {
+    if (success) {
+      // result_callback_ should have already been consumed on the success path.
+      DCHECK(!result_callback_);
+      return;
+    }
+
+    // Release the capturer count as no more retry attempts will be made.
+    decrementor_.RunAndReset();
+
+    if (result_callback_) {
+      std::move(result_callback_).Run(0.f, SkBitmap());
+    }
   }
 
   void SetToDropAfterReadback() { drop_after_readback_ = true; }
 
  private:
+  base::WeakPtr<content::WebContents> weak_web_contents_;
   const float thumbnail_scale_;
-  TabReadbackCallback end_callback_;
+  TabReadbackCallback result_callback_;
   bool drop_after_readback_{false};
   base::ScopedClosureRunner decrementor_;
+  std::unique_ptr<RetryStrategy> retry_strategy_;
 
   base::WeakPtrFactory<TabReadbackRequest> weak_factory_{this};
 };
