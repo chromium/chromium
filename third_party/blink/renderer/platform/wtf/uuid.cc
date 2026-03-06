@@ -11,7 +11,7 @@ namespace blink {
 
 String CreateCanonicalUUIDString() {
   String uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  DCHECK(uuid.IsLowerASCII());
+  DCHECK(uuid.ContainsNoAsciiUpper());
   return uuid;
 }
 

@@ -1016,4 +1016,20 @@ TEST(StringViewTest, SplitByChar) {
   EXPECT_EQ("bar", result[2]);
 }
 
+TEST(StringViewTest, ContainsNoAsciiUpper) {
+  EXPECT_TRUE(StringView().ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView("").ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView("abc").ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView(u"abc").ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView("\xA9").ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView(u"\u3000").ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView("abc\xA9").ContainsNoAsciiUpper());
+  EXPECT_TRUE(StringView(u"abc\u3000").ContainsNoAsciiUpper());
+
+  EXPECT_FALSE(StringView("abcD").ContainsNoAsciiUpper());
+  EXPECT_FALSE(StringView(u"abcD").ContainsNoAsciiUpper());
+  EXPECT_FALSE(StringView("abcABC\xA9").ContainsNoAsciiUpper());
+  EXPECT_FALSE(StringView(u"abcD\u3000").ContainsNoAsciiUpper());
+}
+
 }  // namespace blink

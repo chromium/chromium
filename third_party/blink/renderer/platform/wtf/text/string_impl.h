@@ -244,8 +244,7 @@ class WTF_EXPORT StringImpl {
   }
 
   bool ContainsOnlyASCIIOrEmpty() const;
-
-  bool IsLowerASCII() const;
+  bool ContainsNoAsciiUpper() const;
 
   // The high bits of 'hash' are always empty, but we prefer to store our
   // flags in the low bits because it makes them slightly more efficient to
@@ -721,7 +720,7 @@ ALWAYS_INLINE size_t StringImpl::GetAllocatedSize() const {
   return size;
 }
 
-ALWAYS_INLINE bool StringImpl::IsLowerASCII() const {
+ALWAYS_INLINE bool StringImpl::ContainsNoAsciiUpper() const {
   uint32_t flags = hash_and_flags_.load(std::memory_order_relaxed);
   if (flags & kAsciiPropertyCheckDone)
     return flags & kIsLowerAscii;

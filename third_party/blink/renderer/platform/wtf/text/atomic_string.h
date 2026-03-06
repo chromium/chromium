@@ -241,7 +241,7 @@ class WTF_EXPORT AtomicString {
 
   // Functions to analyze the content -------------------------------
 
-  bool IsLowerASCII() const { return string_.IsLowerASCII(); }
+  bool ContainsNoAsciiUpper() const { return string_.ContainsNoAsciiUpper(); }
 
   // Functions creating new string(s) from `this` string ------------
 

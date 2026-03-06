@@ -628,6 +628,22 @@ TEST(StringTest, StartsWithIgnoringCaseAndAccentsSuffixDiff) {
       String("Donkey").StartsWithIgnoringCaseAndAccents(String("Donka")));
 }
 
+TEST(StringTest, ContainsNoAsciiUpper) {
+  EXPECT_TRUE(String().ContainsNoAsciiUpper());
+  EXPECT_TRUE(String("").ContainsNoAsciiUpper());
+  EXPECT_TRUE(String("abc").ContainsNoAsciiUpper());
+  EXPECT_TRUE(String(u"abc").ContainsNoAsciiUpper());
+  EXPECT_TRUE(String("\xA9").ContainsNoAsciiUpper());
+  EXPECT_TRUE(String(u"\u3000").ContainsNoAsciiUpper());
+  EXPECT_TRUE(String("abc\xA9").ContainsNoAsciiUpper());
+  EXPECT_TRUE(String(u"abc\u3000").ContainsNoAsciiUpper());
+
+  EXPECT_FALSE(String("abcD").ContainsNoAsciiUpper());
+  EXPECT_FALSE(String(u"abcD").ContainsNoAsciiUpper());
+  EXPECT_FALSE(String("abcABC\xA9").ContainsNoAsciiUpper());
+  EXPECT_FALSE(String(u"abcD\u3000").ContainsNoAsciiUpper());
+}
+
 // https://issues.chromium.org/u/1/issues/420990876#comment9
 TEST(StringTest, Issue420990876FuzzerCase) {
   EXPECT_EQ(String(), String::FromUTF8("\364\244\204\244"));

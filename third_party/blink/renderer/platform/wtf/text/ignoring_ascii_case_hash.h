@@ -17,7 +17,7 @@ struct IgnoringAsciiCaseHash {
   STATIC_ONLY(IgnoringAsciiCaseHash);
 
   static unsigned GetHash(const String& string) {
-    if (string.ContainsOnlyASCIIOrEmpty() && string.IsLowerASCII()) {
+    if (string.ContainsOnlyASCIIOrEmpty() && string.ContainsNoAsciiUpper()) {
       return HashTraits<String>::GetHash(string);
     }
     base::span<const char> bytes = base::as_chars(string.RawByteSpan());

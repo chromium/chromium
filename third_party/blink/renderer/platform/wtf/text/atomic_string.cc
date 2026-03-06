@@ -94,11 +94,11 @@ AtomicString AtomicString::FromUTF8(std::string_view utf8_string) {
 }
 
 AtomicString AtomicString::LowerASCII(AtomicString source) {
-  if (source.IsLowerASCII()) [[likely]] {
+  if (source.ContainsNoAsciiUpper()) [[likely]] {
     return source;
   }
   StringImpl* impl = source.Impl();
-  // if impl is null, then IsLowerASCII() should have returned true.
+  // if impl is null, then ContainsNoAsciiUpper() should have returned true.
   DCHECK(impl);
   String new_impl = impl->LowerASCII();
   return AtomicString(String(std::move(new_impl)));

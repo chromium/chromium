@@ -114,8 +114,9 @@ template <>
 WTF_EXPORT AsciiStringAttributes
 CharacterAttributes(base::span<const LChar> chars);
 
+// Returns true if `chars` contains no ASCII upper letters, or is empty.
 template <typename CharacterType>
-ALWAYS_INLINE bool IsLowerAscii(base::span<const CharacterType> chars) {
+ALWAYS_INLINE bool ContainsNoAsciiUpper(base::span<const CharacterType> chars) {
   bool contains_upper_case = false;
   for (CharacterType ch : chars) {
     contains_upper_case |= IsASCIIUpper(ch);
@@ -123,8 +124,9 @@ ALWAYS_INLINE bool IsLowerAscii(base::span<const CharacterType> chars) {
   return !contains_upper_case;
 }
 
+// Returns true if `chars` contains no ASCII lower letters, or is empty.
 template <typename CharacterType>
-ALWAYS_INLINE bool IsUpperAscii(base::span<const CharacterType> chars) {
+ALWAYS_INLINE bool ContainsNoAsciiLower(base::span<const CharacterType> chars) {
   bool contains_lower_case = false;
   for (CharacterType ch : chars) {
     contains_lower_case |= IsASCIILower(ch);
@@ -136,7 +138,7 @@ class LowerConverter {
  public:
   template <typename CharType>
   ALWAYS_INLINE static bool IsCorrectCase(base::span<const CharType> chars) {
-    return IsLowerAscii(chars);
+    return ContainsNoAsciiUpper(chars);
   }
 
   template <typename CharType>
@@ -149,7 +151,7 @@ class UpperConverter {
  public:
   template <typename CharType>
   ALWAYS_INLINE static bool IsCorrectCase(base::span<const CharType> chars) {
-    return IsUpperAscii(chars);
+    return ContainsNoAsciiLower(chars);
   }
 
   template <typename CharType>

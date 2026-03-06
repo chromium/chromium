@@ -87,8 +87,8 @@ AttributeTypeVector BuildAttributeVector() {
 
     // Attribute comparisons are case-insensitive, for both element and
     // attribute name. We rely on the fact that they're stored as lowercase.
-    DCHECK(entry.element.LocalName().IsLowerASCII());
-    DCHECK(entry.attribute.LocalName().IsLowerASCII());
+    DCHECK(entry.element.LocalName().ContainsNoAsciiUpper());
+    DCHECK(entry.attribute.LocalName().ContainsNoAsciiUpper());
     table.push_back(
         AttributeTypeEntry{entry.element, entry.attribute, entry.type});
   }
@@ -132,7 +132,7 @@ AttributeTypeVector BuildPropertyVector() {
 
     // Elements are case-insensitive, but property names are not.
     // Properties don't have a namespace, so we're leaving that blank.
-    DCHECK(entry.element.LocalName().IsLowerASCII());
+    DCHECK(entry.element.LocalName().ContainsNoAsciiUpper());
     table.push_back(AttributeTypeEntry{
         entry.element, QualifiedName(AtomicString(entry.property)),
         entry.type});

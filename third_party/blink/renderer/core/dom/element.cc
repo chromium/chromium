@@ -3773,7 +3773,8 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
   if (name == html_names::kIdAttr) {
     AtomicString lowercase_id;
-    if (GetDocument().InQuirksMode() && !params.new_value.IsLowerASCII()) {
+    if (GetDocument().InQuirksMode() &&
+        !params.new_value.ContainsNoAsciiUpper()) {
       lowercase_id = params.new_value.LowerASCII();
     }
     const AtomicString& new_id = lowercase_id ? lowercase_id : params.new_value;
@@ -4024,7 +4025,7 @@ bool Element::IsExcludedAttribute(
   }
   // HTML elements in an html doc use the lower case name.
   if (attributes_to_exclude == kExcludeLowercaseLazilySynchronizedAttributes ||
-      qname.LocalName().IsLowerASCII()) {
+      qname.LocalName().ContainsNoAsciiUpper()) {
     return false;
   }
   const QualifiedName lower_local_qname(qname.LocalName().LowerASCII());
@@ -11462,13 +11463,13 @@ void Element::DidMoveToNewDocument(Document& old_document) {
     // element should point to the shareable one.
 
     if (const AtomicString& id_attr = GetIdAttribute()) {
-      if (!id_attr.IsLowerASCII()) {
+      if (!id_attr.ContainsNoAsciiUpper()) {
         EnsureUniqueElementData();
         SetIdAttribute(id_attr);
       }
     }
     if (const AtomicString& class_attr = GetClassAttribute()) {
-      if (!class_attr.IsLowerASCII()) {
+      if (!class_attr.ContainsNoAsciiUpper()) {
         EnsureUniqueElementData();
         // Going through setAttribute() to synchronize the attribute is only
         // required when setting the "style" attribute (this sets the "class"
@@ -12872,7 +12873,7 @@ bool Element::checkVisibility(CheckVisibilityOptions* options) const {
 
 AtomicStringTable::WeakResult Element::WeakLowercaseIfNecessary(
     const AtomicString& name) const {
-  if (name.IsLowerASCII()) [[likely]] {
+  if (name.ContainsNoAsciiUpper()) [[likely]] {
     return AtomicStringTable::WeakResult(name);
   }
   if (IsHTMLElement() && IsA<HTMLDocument>(GetDocument())) [[likely]] {

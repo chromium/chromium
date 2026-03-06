@@ -224,7 +224,7 @@ class HashTranslatorLowercaseBuffer {
   explicit HashTranslatorLowercaseBuffer(const StringImpl* impl) : impl_(impl) {
     // We expect already lowercase strings to take another path in
     // Element::WeakLowercaseIfNecessary.
-    DCHECK(!impl_->IsLowerASCII());
+    DCHECK(!impl_->ContainsNoAsciiUpper());
     base::span<const char> bytes = base::as_chars(impl->RawByteSpan());
     if (impl_->Is8Bit()) {
       hash_ =
@@ -274,7 +274,7 @@ struct LowercaseLookupTranslator {
       return false;
     if (bucket->RawByteSpan().data() == query->RawByteSpan().data() &&
         bucket->Is8Bit() == query->Is8Bit()) {
-      return query->IsLowerASCII();
+      return query->ContainsNoAsciiUpper();
     }
     return VisitCharacters(*bucket, [&](auto bch) {
       return VisitCharacters(*query, [&](auto qch) {
@@ -535,14 +535,14 @@ AtomicStringTable::WeakResult AtomicStringTable::WeakFindSlowForTesting(
 AtomicStringTable::WeakResult AtomicStringTable::WeakFindLowercase(
     const AtomicString& string) {
   DCHECK(!string.empty());
-  DCHECK(!string.IsLowerASCII());
+  DCHECK(!string.ContainsNoAsciiUpper());
   DCHECK(string.length());
   HashTranslatorLowercaseBuffer buffer(string.Impl());
   base::AutoLock auto_lock(lock_);
   const auto& it = table_.Find<LowercaseLookupTranslator>(buffer);
   if (it == table_.end())
     return WeakResult();
-  DCHECK(StringView(*it).IsLowerASCII());
+  DCHECK(StringView(*it).ContainsNoAsciiUpper());
   DCHECK(EqualIgnoringAsciiCase(*it, string));
   return WeakResult(*it);
 }

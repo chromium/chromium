@@ -181,11 +181,12 @@ std::string StringView::Utf8(Utf8ConversionMode mode) const {
   return std::string(buffer_vector.data(), buffer_written);
 }
 
-bool StringView::IsLowerASCII() const {
+bool StringView::ContainsNoAsciiUpper() const {
   if (StringImpl* impl = SharedImpl()) {
-    return impl->IsLowerASCII();
+    return impl->ContainsNoAsciiUpper();
   }
-  return VisitCharacters(*this, [](auto chars) { return IsLowerAscii(chars); });
+  return VisitCharacters(
+      *this, [](auto chars) { return blink::ContainsNoAsciiUpper(chars); });
 }
 
 bool StringView::ContainsOnlyASCIIOrEmpty() const {

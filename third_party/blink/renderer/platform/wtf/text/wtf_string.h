@@ -465,7 +465,9 @@ class WTF_EXPORT String {
 
   // Functions to analyze the content -------------------------------
 
-  bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
+  bool ContainsNoAsciiUpper() const {
+    return !impl_ || impl_->ContainsNoAsciiUpper();
+  }
 
   bool ContainsOnlyASCIIOrEmpty() const {
     return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();

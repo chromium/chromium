@@ -58,8 +58,7 @@ void CheckPseudoHasFastRejectFilter::AddElementIdentifierHashes(
     if (IsExcludedAttribute(attribute_name)) {
       continue;
     }
-    auto lower = attribute_name.IsLowerASCII() ? attribute_name
-                                               : attribute_name.LowerASCII();
+    auto lower = attribute_name.LowerASCII();
     filter_->Add(GetAttributeHash(lower));
   }
 }
@@ -112,9 +111,7 @@ void CheckPseudoHasFastRejectFilter::CollectPseudoHasArgumentHashes(
       if (IsExcludedAttribute(attribute_name)) {
         break;
       }
-      auto lower_name = attribute_name.IsLowerASCII()
-                            ? attribute_name
-                            : attribute_name.LowerASCII();
+      auto lower_name = attribute_name.LowerASCII();
       pseudo_has_argument_hashes.push_back(GetAttributeHash(lower_name));
     } break;
     default:

@@ -468,7 +468,7 @@ bool HTMLCapabilityElementBase::IsRendered() const {
 uint16_t HTMLCapabilityElementBase::GetTranslatedMessageID(
     uint16_t message_id,
     const AtomicString& language_string) {
-  DCHECK(language_string.IsLowerASCII());
+  DCHECK(language_string.ContainsNoAsciiUpper());
   if (language_string.empty()) {
     return message_id;
   }
