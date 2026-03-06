@@ -538,7 +538,9 @@ export class ComposeboxElement extends I18nMixinLit
            this.inputState_.allowedInputTypes.length > 0);
     }
 
-    if (changedPrivateProperties.has('inputPlaceholderOverride')) {
+    if (changedPrivateProperties.has('inputPlaceholderOverride') ||
+        changedPrivateProperties.has('inputState_') ||
+        changedPrivateProperties.has('activeToolMode_')) {
       this.updateInputPlaceholder_();
     }
   }
