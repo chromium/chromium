@@ -4,11 +4,16 @@
 
 #include "services/webnn/ort/context_impl_ort.h"
 
+#include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
+#include "base/strings/cstring_view.h"
 #include "services/webnn/ort/graph_impl_ort.h"
 #include "services/webnn/ort/ort_data_type.h"
 #include "services/webnn/ort/ort_status.h"
 #include "services/webnn/ort/tensor_impl_ort.h"
+#include "services/webnn/public/cpp/execution_providers_info.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
 #include "services/webnn/public/mojom/webnn_context_provider.mojom.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -23,6 +28,82 @@ namespace webnn::ort {
 namespace {
 
 using Microsoft::WRL::ComPtr;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Additions to this enum should also be reflected in RecordFirstSelectedEP().
+//
+// LINT.IfChange(WebNNOrtEPUma)
+enum class WebNNOrtEPUma {
+  kOther = 0,
+  kCPU = 1,
+  kDml = 2,
+  kWebGpu = 3,
+  kMIGraphX = 4,
+  kNvTensorRT = 5,
+  kOpenVINO = 6,
+  kQNN = 7,
+  kVitisAI = 8,
+  kMaxValue = kVitisAI,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:WebNNOrtEPUma)
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(WebNNOrtDeviceUma)
+enum class WebNNOrtDeviceUma {
+  kCPU = 0,
+  kGPU = 1,
+  kNPU = 2,
+  kMaxValue = kNPU,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/webnn/enums.xml:WebNNOrtDeviceUma)
+
+void RecordFirstSelectedEP(base::cstring_view ep_name) {
+  // It is expected that `ep_name` is one of the execution providers defined in
+  // `services/webnn/public/cpp/execution_providers_info.h`. If a new EP is
+  // added, it should be added to this map as well. Otherwise, it will be
+  // recorded as `kOther`.
+  static constexpr auto kEPUmaMap =
+      base::MakeFixedFlatMap<base::cstring_view, WebNNOrtEPUma>({
+          {kCPUExecutionProvider, WebNNOrtEPUma::kCPU},
+          {kDmlExecutionProvider, WebNNOrtEPUma::kDml},
+          {kWebGpuExecutionProvider, WebNNOrtEPUma::kWebGpu},
+          {kMIGraphXExecutionProvider, WebNNOrtEPUma::kMIGraphX},
+          {kNvTensorRTRTXExecutionProvider, WebNNOrtEPUma::kNvTensorRT},
+          {kOpenVINOExecutionProvider, WebNNOrtEPUma::kOpenVINO},
+          {kQNNExecutionProvider, WebNNOrtEPUma::kQNN},
+          {kVitisAIExecutionProvider, WebNNOrtEPUma::kVitisAI},
+      });
+  static_assert(
+      kEPUmaMap.size() == static_cast<size_t>(WebNNOrtEPUma::kMaxValue),
+      "All EP enum values (except kOther) must be in kEPUmaMap.");
+
+  auto it = kEPUmaMap.find(ep_name);
+  WebNNOrtEPUma uma_value = WebNNOrtEPUma::kOther;
+  if (it != kEPUmaMap.end()) {
+    uma_value = it->second;
+  }
+  base::UmaHistogramEnumeration("WebNN.ORT.FirstSelectedEP", uma_value);
+}
+
+void RecordFirstSelectedDevice(OrtHardwareDeviceType device_type) {
+  WebNNOrtDeviceUma uma_value;
+  switch (device_type) {
+    case OrtHardwareDeviceType_CPU:
+      uma_value = WebNNOrtDeviceUma::kCPU;
+      break;
+    case OrtHardwareDeviceType_GPU:
+      uma_value = WebNNOrtDeviceUma::kGPU;
+      break;
+    case OrtHardwareDeviceType_NPU:
+      uma_value = WebNNOrtDeviceUma::kNPU;
+      break;
+  }
+  base::UmaHistogramEnumeration("WebNN.ORT.FirstSelectedDevice", uma_value);
+}
 
 // The feature flag allows us to try using device allocator to create device
 // tensors for EPs, e.g. OpenVINO EP.
@@ -123,6 +204,17 @@ ContextImplOrt::ContextImplOrt(
           std::move(main_task_runner)),
       env_(std::move(env)),
       session_options_(std::move(session_options)) {
+  const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
+  const OrtEpDevice* first_selected_device =
+      session_options_->first_selected_device();
+
+  const char* ep_name = ort_api->EpDevice_EpName(first_selected_device);
+  RecordFirstSelectedEP(UNSAFE_BUFFERS(base::cstring_view(ep_name)));
+
+  OrtHardwareDeviceType hardware_device_type = ort_api->HardwareDevice_Type(
+      ort_api->EpDevice_Device(first_selected_device));
+  RecordFirstSelectedDevice(hardware_device_type);
+
   if (base::FeatureList::IsEnabled(kUseDeviceTensor)) {
     device_allocator_ = DeviceAllocator::Create(session_options_, env_);
   }

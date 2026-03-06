@@ -165,6 +165,32 @@ MLGraphOperatorUma in //third_party/blink/renderer/modules/ml/webnn/ml_graph_bui
   <int value="95" label="IsInfinite"/>
 </enum>
 
+<!-- LINT.IfChange(WebNNOrtDeviceUma) -->
+
+<enum name="WebNNOrtDeviceUma">
+  <int value="0" label="CPU"/>
+  <int value="1" label="GPU"/>
+  <int value="2" label="NPU"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/webnn/ort/context_impl_ort.cc:WebNNOrtDeviceUma) -->
+
+<!-- LINT.IfChange(WebNNOrtEPUma) -->
+
+<enum name="WebNNOrtEPUma">
+  <int value="0" label="Other"/>
+  <int value="1" label="CPU"/>
+  <int value="2" label="Dml"/>
+  <int value="3" label="WebGpu"/>
+  <int value="4" label="MIGraphX"/>
+  <int value="5" label="NvTensorRT"/>
+  <int value="6" label="OpenVINO"/>
+  <int value="7" label="QNN"/>
+  <int value="8" label="VitisAI"/>
+</enum>
+
+<!-- LINT.ThenChange(//services/webnn/ort/context_impl_ort.cc:WebNNOrtEPUma) -->
+
 <!-- LINT.IfChange(WinAppRuntimeInstallStateUma) -->
 
 <enum name="WinAppRuntimeInstallStateUma">

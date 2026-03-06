@@ -124,6 +124,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebNN.ORT.FirstSelectedDevice" enum="WebNNOrtDeviceUma"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records the first hardware device selected for the ORT backend.
+  </summary>
+</histogram>
+
+<histogram name="WebNN.ORT.FirstSelectedEP" enum="WebNNOrtEPUma"
+    expires_after="2026-06-27">
+  <owner>reillyg@chromium.org</owner>
+  <owner>src/services/webnn/OWNERS</owner>
+  <summary>
+    Records the first execution provider selected for the ORT backend.
+  </summary>
+</histogram>
+
 <histogram name="WebNN.ORT.TimingMs.{WebNNOrtActions}" units="ms"
     expires_after="2026-06-27">
   <owner>reillyg@chromium.org</owner>

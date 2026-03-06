@@ -13,7 +13,7 @@
 
 namespace webnn {
 
-inline constexpr base::cstring_view kCpuExecutionProvider =
+inline constexpr base::cstring_view kCPUExecutionProvider =
     "CPUExecutionProvider";
 inline constexpr base::cstring_view kDmlExecutionProvider =
     "DmlExecutionProvider";

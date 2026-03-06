@@ -681,7 +681,7 @@ bool Environment::IsDefaultCpuEpDevice(const OrtEpDevice* device) {
   const OrtApi* ort_api = PlatformFunctions::GetInstance()->ort_api();
 
   return UNSAFE_BUFFERS(base::cstring_view(ort_api->EpDevice_EpName(device))) ==
-         kCpuExecutionProvider;
+         kCPUExecutionProvider;
 }
 
 base::span<const OrtEpDevice* const> Environment::GetRegisteredEpDevices()
