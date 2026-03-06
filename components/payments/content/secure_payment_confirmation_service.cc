@@ -33,9 +33,11 @@ namespace payments {
 
 namespace {
 
+#if !BUILDFLAG(IS_IOS)
 constexpr char kIsBbkHardwareSupportedHistogramName[] =
     "PaymentRequest.GetSecurePaymentConfirmationCapabilities."
     "BrowserBoundKeyHardware";
+#endif
 
 void OnIsUserVerifyingPlatformAuthenticatorAvailable(
     SecurePaymentConfirmationService::
