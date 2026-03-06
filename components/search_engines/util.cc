@@ -829,6 +829,18 @@ bool IsAimURL(const GURL& url) {
   return has_udm && udm == kAimUdmQueryParameterValue;
 }
 
+bool IsAimZeroStateURL(const GURL& url) {
+  if (!google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+    return false;
+  }
+  std::string udm;
+  bool has_udm = net::GetValueForKeyInQuery(url, "udm", &udm);
+  return has_udm && udm == kAimUdmQueryParameterValue &&
+         !google_util::IsGoogleSearchUrl(url);
+}
+
 GURL GetUrlForAim(
     TemplateURLService* turl_service,
     omnibox::ChromeAimEntryPoint aim_entrypoint,

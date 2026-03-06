@@ -228,6 +228,12 @@ void BwgTabHelper::SetPageLoadedCallback(base::RepeatingClosure callback) {
 
 GeminiPageContext* BwgTabHelper::GetPartialPageContext() {
   GeminiPageContext* gemini_page_context = [[GeminiPageContext alloc] init];
+  if (!CanExtractPageContextForWebState(web_state_) &&
+      IsGeminiFloatyAllPagesEnabled()) {
+    gemini_page_context.geminiPageContextComputationState =
+        ios::provider::GeminiPageContextComputationState::kBlocked;
+    return gemini_page_context;
+  }
   gemini_page_context.geminiPageContextComputationState =
       ios::provider::GeminiPageContextComputationState::kPending;
   gemini_page_context.favicon = current_favicon_;
@@ -352,14 +358,16 @@ bool BwgTabHelper::IsGeminiAvailableForWebState() {
     return false;
   }
 
-  if (IsGeminiCopresenceEnabled()) {
+  if (IsGeminiCopresenceEnabled() || IsGeminiFloatyAllPagesEnabled()) {
     const GURL& url = web_state_->GetVisibleURL();
-    if (IsAimURL(url)) {
+    if (!url.SchemeIsHTTPOrHTTPS() || google_util::IsGoogleSearchUrl(url) ||
+        google_util::IsGoogleHomePageUrl(url) || IsAimZeroStateURL(url)) {
       return false;
     }
   }
 
-  return CanExtractPageContextForWebState(web_state_);
+  return CanExtractPageContextForWebState(web_state_) ||
+         IsGeminiFloatyAllPagesEnabled();
 }
 
 #pragma mark - WebStateObserver

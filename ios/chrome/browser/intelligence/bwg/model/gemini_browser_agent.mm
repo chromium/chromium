@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/intelligence/bwg/model/gemini_view_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/gemini_constants.h"
 #import "ios/chrome/browser/intelligence/features/features.h"
+#import "ios/chrome/browser/intelligence/proto_wrappers/page_context_utils.h"
 #import "ios/chrome/browser/intelligence/proto_wrappers/page_context_wrapper.h"
 #import "ios/chrome/browser/shared/coordinator/layout_guide/layout_guide_util.h"
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
@@ -70,6 +71,8 @@ GeminiPageContextComputationStateFromPageContextWrapperError(
   switch (error) {
     case PageContextWrapperError::kForceDetachError:
       return ios::provider::GeminiPageContextComputationState::kProtected;
+    case PageContextWrapperError::kPageNotExtractableError:
+      return ios::provider::GeminiPageContextComputationState::kError;
     default:
       return ios::provider::GeminiPageContextComputationState::kError;
   }
@@ -435,26 +438,43 @@ void GeminiBrowserAgent::PresentFloaty(UIViewController* base_view_controller,
                                               : kStartupTimeNoFREHistogram,
                               base::TimeTicks::Now() - start_time);
 
-  // Start the timeout timer to force page context generation if page load
-  // takes too long.
-  page_context_timeout_timer_.Start(
-      FROM_HERE, kFullPageContextTimeout,
-      base::BindOnce(
-          &GeminiBrowserAgent::TriggerBestEffortPageContextGeneration,
-          weak_factory_.GetWeakPtr()));
+  if (CanExtractPageContextForWebState(web_state)) {
+    // Start the timeout timer to force page context generation if page load
+    // takes too long.
+    page_context_timeout_timer_.Start(
+        FROM_HERE, kFullPageContextTimeout,
+        base::BindOnce(
+            &GeminiBrowserAgent::TriggerBestEffortPageContextGeneration,
+            weak_factory_.GetWeakPtr()));
 
-  gemini_tab_helper->SetupPageContextGeneration(
-      std::move(page_context_completion_callback));
+    gemini_tab_helper->SetupPageContextGeneration(
+        std::move(page_context_completion_callback));
+  } else {
+    GeminiPageContext* gemini_page_context =
+        gemini_tab_helper->GetPartialPageContext();
+    ApplyUserPrefsToPageContext(gemini_page_context);
+    ios::provider::UpdatePageContext(gemini_page_context);
+  }
 }
 
 void GeminiBrowserAgent::PresentFloatyWithPendingContext(
     UIViewController* base_view_controller,
     std::unique_ptr<optimization_guide::proto::PageContext> page_context,
     GeminiStartupState* startup_state) {
-  PresentFloatyWithState(
-      base_view_controller, std::move(page_context),
-      ios::provider::GeminiPageContextComputationState::kPending,
-      startup_state);
+  web::WebState* active_web_state =
+      browser_->GetWebStateList()->GetActiveWebState();
+  ios::provider::GeminiPageContextComputationState computation_state =
+      ios::provider::GeminiPageContextComputationState::kPending;
+
+  if (active_web_state && !CanExtractPageContextForWebState(active_web_state)) {
+    computation_state =
+        IsGeminiFloatyAllPagesEnabled()
+            ? ios::provider::GeminiPageContextComputationState::kBlocked
+            : ios::provider::GeminiPageContextComputationState::kError;
+  }
+
+  PresentFloatyWithState(base_view_controller, std::move(page_context),
+                         computation_state, startup_state);
 }
 
 void GeminiBrowserAgent::PresentFloatyWithPendingContext(
@@ -472,10 +492,17 @@ void GeminiBrowserAgent::PresentFloatyWithPendingContext(
   partial_page_context->set_title(
       base::UTF16ToUTF8(active_web_state->GetTitle()));
 
-  PresentFloatyWithState(
-      base_view_controller, std::move(partial_page_context),
-      ios::provider::GeminiPageContextComputationState::kPending,
-      startup_state);
+  ios::provider::GeminiPageContextComputationState computation_state =
+      ios::provider::GeminiPageContextComputationState::kPending;
+  if (!CanExtractPageContextForWebState(active_web_state)) {
+    computation_state =
+        IsGeminiFloatyAllPagesEnabled()
+            ? ios::provider::GeminiPageContextComputationState::kBlocked
+            : ios::provider::GeminiPageContextComputationState::kError;
+  }
+
+  PresentFloatyWithState(base_view_controller, std::move(partial_page_context),
+                         computation_state, startup_state);
 }
 
 void GeminiBrowserAgent::UpdateFloatyPageContext(
@@ -507,9 +534,16 @@ void GeminiBrowserAgent::OnGeminiViewStateExpanded() {
 
   if (tab_helper) {
     tab_helper->SetBwgUiShowing(true);
-    tab_helper->SetupPageContextGeneration(
-        base::BindRepeating(&GeminiBrowserAgent::UpdateFloatyPageContext,
-                            weak_factory_.GetWeakPtr()));
+    if (CanExtractPageContextForWebState(active_web_state)) {
+      tab_helper->SetupPageContextGeneration(
+          base::BindRepeating(&GeminiBrowserAgent::UpdateFloatyPageContext,
+                              weak_factory_.GetWeakPtr()));
+    } else {
+      GeminiPageContext* gemini_page_context =
+          tab_helper->GetPartialPageContext();
+      ApplyUserPrefsToPageContext(gemini_page_context);
+      ios::provider::UpdatePageContext(gemini_page_context);
+    }
   }
   // Show page attachment UI chip every time the floaty is expanded.
   ios::provider::RequestUIChange(

@@ -230,6 +230,9 @@ TemplateURLService::OwnedTemplateURLVector::iterator FindTemplateURL(
 // Returns whether the provided `url` leads to the AIM web page.
 bool IsAimURL(const GURL& url);
 
+// Returns whether the provided `url` leads to the AIM Zero State web page.
+bool IsAimZeroStateURL(const GURL& url);
+
 // TODO(crbug.com/488962351): Consider moving validation logic to
 // template_url.cc or template_url_service.cc.
 // Returns true if |name_input| is a valid search engine name to use.
