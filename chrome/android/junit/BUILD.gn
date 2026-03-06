@@ -1098,6 +1098,7 @@ if (is_android) {
       "src/org/chromium/chrome/browser/suggestions/SuggestionsNavigationDelegateUnitTest.java",
       "src/org/chromium/chrome/browser/suggestions/UrlSimilarityScorerUnitTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/MostVisitedMediatorUnitTest.java",
+      "src/org/chromium/chrome/browser/suggestions/tile/MostVisitedTilesCoordinatorUnitTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/TileGroupDelegateImplUnitTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/TileInteractionDelegateTest.java",
       "src/org/chromium/chrome/browser/suggestions/tile/TileRendererTest.java",

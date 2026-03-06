@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
@@ -22,6 +24,9 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.ViewGroup.MarginLayoutParams;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -44,6 +49,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.suggestions.SiteSuggestion;
@@ -535,6 +541,43 @@ public class MostVisitedMediatorUnitTest {
         verify(mNtpCustomizationConfigManager, never()).removeListener(any());
     }
 
+    @Test
+    public void testUpdateMvtOnTablet() {
+        createMediator(/* isTablet= */ true);
+        int totalWidth = 1000;
+        int lateralMargin = 20;
+        int lateralMarginNarrow = 10;
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                new ViewGroup.MarginLayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        when(mMvTilesLayout.getLayoutParams()).thenReturn(marginLayoutParams);
+        when(mMvTilesLayout.contentFitsOnTablet(totalWidth)).thenReturn(true);
+        when(mResources.getDimensionPixelSize(R.dimen.mvt_container_lateral_margin))
+                .thenReturn(lateralMargin);
+        when(mResources.getDimensionPixelSize(
+                        R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet))
+                .thenReturn(lateralMarginNarrow);
+
+        // Test case of regular tablets.
+        UiConfig.DisplayStyle displayStyleWide =
+                new DisplayStyle(HorizontalDisplayStyle.WIDE, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleWide);
+        assertFalse(
+                NtpCustomizationUtils.isInNarrowWindowOnTablet(/* isTablet= */ true, mUiConfig));
+
+        mMediator.updateMvtOnTablet(totalWidth);
+        verifyLayoutParams(marginLayoutParams, LayoutParams.WRAP_CONTENT, lateralMargin);
+
+        // Test case of narrow window on tablets.
+        UiConfig.DisplayStyle displayStyleRegular =
+                new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
+        when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);
+        assertTrue(NtpCustomizationUtils.isInNarrowWindowOnTablet(true, mUiConfig));
+
+        mMediator.updateMvtOnTablet(totalWidth);
+        verifyLayoutParams(marginLayoutParams, LayoutParams.WRAP_CONTENT, lateralMarginNarrow);
+    }
+
     private void createMediator() {
         createMediator(/* isTablet= */ false);
     }
@@ -567,5 +610,12 @@ public class MostVisitedMediatorUnitTest {
                 mTileGroupDelegate,
                 mOfflinePageBridge,
                 mTileRenderer);
+    }
+
+    private void verifyLayoutParams(
+            MarginLayoutParams marginLayoutParams, int expectedWidth, int expectedLateralMargin) {
+        Assert.assertEquals(expectedWidth, marginLayoutParams.width);
+        Assert.assertEquals(expectedLateralMargin, marginLayoutParams.leftMargin);
+        Assert.assertEquals(expectedLateralMargin, marginLayoutParams.rightMargin);
     }
 }

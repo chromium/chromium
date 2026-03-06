@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.suggestions.tile;
 
+import static android.view.View.GONE;
+
 import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.app.Activity;
@@ -13,6 +15,7 @@ import android.os.Looper;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.chromium.base.ResettersForTesting;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
@@ -39,8 +42,9 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
 
     private final Activity mActivity;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
-    private final MostVisitedTilesMediator mMediator;
     private final UiConfig mUiConfig;
+    private final View mMvTilesContainerLayout;
+    private MostVisitedTilesMediator mMediator;
     private @Nullable TileRenderer mRenderer;
     private @Nullable UserEducationHelper mUserEducationHelper;
     private @Nullable ContextMenuManager mContextMenuManager;
@@ -64,6 +68,7 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
             @Nullable Runnable tileCountChangedRunnable) {
         mActivity = activity;
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+        mMvTilesContainerLayout = mvTilesContainerLayout;
 
         MostVisitedTilesLayout tilesLayout =
                 mvTilesContainerLayout.findViewById(R.id.mv_tiles_layout);
@@ -145,6 +150,35 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
         mMediator.updateMvtVisibility();
     }
 
+    /** Updates the width of the MV tiles container when used in NTP on the tablet. */
+    public void calculateTabletMvtWidth(int totalWidth) {
+        if (mMvTilesContainerLayout.getVisibility() == GONE) return;
+
+        mMediator.updateMvtOnTablet(totalWidth);
+    }
+
+    /**
+     * Updates whether the MV tiles layout stays in the center of the container when used in NTP on
+     * the tablet by changing the width of its container. Also updates the lateral margins.
+     */
+    public void updateMvtOnTablet() {
+        mMediator.updateMvtOnTablet(/* totalWidth= */ null);
+    }
+
+    /**
+     * Updates the margins for the most visited tiles layout based on what is shown above it.
+     *
+     * @param shouldShowLogo Whether the logo is shown.
+     * @param isWhiteBackgroundOnSearchBoxApplied Whether a white background is applied to the fake
+     *     search box.
+     * @param isTablet Whether the device is a tablet.
+     */
+    public void updateTilesLayoutMargins(
+            boolean shouldShowLogo, boolean isWhiteBackgroundOnSearchBoxApplied, boolean isTablet) {
+        mMediator.updateTilesLayoutMargins(
+                shouldShowLogo, isWhiteBackgroundOnSearchBoxApplied, isTablet);
+    }
+
     /** Called when the TasksSurface is hidden or NewTabPageLayout is destroyed. */
     public void destroyMvtiles() {
         mActivityLifecycleDispatcher.unregister(this);
@@ -167,5 +201,11 @@ public class MostVisitedTilesCoordinator implements ConfigurationChangedObserver
     public void onConfigurationChanged(Configuration newConfig) {
         mMediator.onConfigurationChanged();
         mUiConfig.updateDisplayStyle();
+    }
+
+    public void setMediatorForTesting(MostVisitedTilesMediator mediator) {
+        var oldValue = mediator;
+        mMediator = mediator;
+        ResettersForTesting.register(() -> mMediator = oldValue);
     }
 }

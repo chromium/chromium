@@ -83,7 +83,7 @@ public class NewTabPageUtils {
      * Updates the margins for the most visited tiles layout based on whether to apply a white
      * background with shadow on the search box.
      */
-    static void updateTilesLayoutTopMargin(
+    public static void updateTilesLayoutTopMargin(
             View view,
             boolean shouldShowLogo,
             boolean isWhiteBackgroundOnSearchBoxApplied,
