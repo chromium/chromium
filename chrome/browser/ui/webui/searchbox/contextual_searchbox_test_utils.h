@@ -18,6 +18,7 @@
 #include "components/contextual_search/internal/test_composebox_query_controller.h"
 #include "components/lens/contextual_input.h"
 #include "components/lens/lens_overlay_mime_type.h"
+#include "components/variations/scoped_variations_ids_provider.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
