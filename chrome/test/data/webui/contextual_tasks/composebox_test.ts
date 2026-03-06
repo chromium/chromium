@@ -10,17 +10,16 @@ import type {ComposeboxFile} from 'chrome://resources/cr_components/composebox/c
 import {PageCallbackRouter as ComposeboxPageCallbackRouter, PageHandlerRemote as ComposeboxPageHandlerRemote} from 'chrome://resources/cr_components/composebox/composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {ContextUploadStatus} from 'chrome://resources/cr_components/composebox/composebox_query.mojom-webui.js';
-import {GlowAnimationState} from 'chrome://resources/cr_components/search/constants.js';
 import {createAutocompleteMatch, createAutocompleteResultForTesting} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote, type PageRemote as SearchboxPageRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {MockTimer} from 'chrome://webui-test/mock_timer.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {ADD_FILE_CONTEXT_FN, assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
+import {assertStyle, deleteLastFile, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, getSubmitButton, getSubmitContainer, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
 
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
@@ -134,97 +133,6 @@ suite('ContextualTasksComposeboxTest', () => {
     mockTimer.uninstall();
   });
 
-  function getSubmitContainer(): HTMLElement|null {
-    return composebox.shadowRoot.querySelector('#submitContainer');
-  }
-
-  function getSubmitButton(): HTMLButtonElement|null {
-    const submitContainer: HTMLElement|null = getSubmitContainer();
-
-    if (!submitContainer) {
-      return null;
-    }
-
-    const submitButton: HTMLButtonElement|null =
-        submitContainer.querySelector('#submitIcon');
-    return submitButton;
-  }
-  test(
-      'Upload status is tracked properly when adding file via browser',
-      async () => {
-        const fileInfo = {
-          fileName: 'test-image.png',
-          imageDataUrl: 'data:image/png;base64,xxxx',
-          isDeletable: true,
-        };
-        mockSearchboxPageHandler.setResultFor(
-            ADD_FILE_CONTEXT_FN, Promise.resolve({token: FAKE_TOKEN_STRING}));
-        composebox.addFileContextFromBrowser_(FAKE_TOKEN_STRING, fileInfo);
-
-        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            FAKE_TOKEN_STRING,
-            ContextUploadStatus.kProcessingSuggestSignalsReady,
-            /*error_type=*/ null,
-        );
-
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        const remaining = composebox.getRemainingFilesToUpload();
-
-        assertEquals(1, remaining.size, 'Pending uploads should increase');
-        assertTrue(
-            remaining.has(FAKE_TOKEN_STRING),
-            'The set should contain our specific UUID');
-
-        assertFalse(
-            composebox.fileUploadsComplete,
-            'fileUploadsComplete should be false');
-
-        const submitButton: HTMLButtonElement|null = getSubmitButton();
-
-        assertTrue(!!submitButton, 'Submit button should exist');
-        assertTrue(submitButton?.disabled, 'Submit button should be disabled');
-        // Simulate tab upload success.
-        searchboxCallbackRouterRemote.onContextualInputStatusChanged(
-            FAKE_TOKEN_STRING,
-            ContextUploadStatus.kUploadSuccessful,
-            /*error_type=*/ null,
-        );
-
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        await microtasksFinished();
-        await composebox.updateComplete;
-        const submitContainer: HTMLElement|null = getSubmitContainer();
-        assertTrue(!!submitContainer, 'Submit container button should exist');
-        assertFalse(
-            submitButton?.disabled, 'Submit button should not be disabled');
-
-        assertStyle(
-            submitButton, 'pointer-events', 'auto',
-            'Submit button should not be disabled');
-        assertStyle(
-            submitContainer, 'cursor', 'pointer',
-            'Submit button cursor should be pointer');
-        assertTrue(!!submitContainer, 'Submit container button should exist');
-
-        submitContainer?.click();
-
-        // Flush the macrotask queue / event loop
-        await new Promise(resolve => setTimeout(resolve, 0));
-        await composebox.updateComplete;
-        await microtasksFinished();
-
-        assertEquals(0, composebox.files_.size);
-
-        // Should be no longer `EXPANDING` after successful upload and submit
-        // click.
-        assertNotEquals(
-            composebox.animationState, GlowAnimationState.EXPANDING);
-      });
-
   test(
       'Upload status is tracked properly when adding and removing files',
       async () => {
@@ -322,11 +230,11 @@ suite('ContextualTasksComposeboxTest', () => {
 
     assertEquals(0, composebox.files_.size);
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -381,8 +289,10 @@ suite('ContextualTasksComposeboxTest', () => {
 
         assertEquals(1, composebox.getRemainingFilesToUpload().size);
 
-        const submitButton: HTMLButtonElement|null = getSubmitButton();
-        const submitContainer: HTMLElement|null = getSubmitContainer();
+        const submitButton: HTMLButtonElement|null =
+            getSubmitButton(composebox);
+        const submitContainer: HTMLElement|null =
+            getSubmitContainer(composebox);
         assertTrue(!!submitButton, 'Submit button should exist');
 
         // There are no more deletable files, so submit should be disabled.
@@ -651,190 +561,6 @@ suite('ContextualTasksComposeboxTest', () => {
     assertEquals(1, composeboxElement.numberOfTimesTooltipShownForTesting);
   });
 
-  test('TooltipImpressionTimerResetsOnHide', () => {
-    mockTimer.install();
-    const composeboxElement = contextualTasksApp.$.composebox;
-    const tooltip = composeboxElement.$.onboardingTooltip;
-
-    loadTimeData.overrideValues({
-      showOnboardingTooltip: true,
-      isOnboardingTooltipDismissCountBelowCap: true,
-      composeboxShowOnboardingTooltipSessionImpressionCap: 10,
-      composeboxShowOnboardingTooltipImpressionDelay: 3000,
-    });
-    composeboxElement.numberOfTimesTooltipShownForTesting = 0;
-    composeboxElement.userDismissedTooltipForTesting = false;
-
-    const innerComposebox = composeboxElement.$.composebox;
-    // Mock existence of chip.
-    innerComposebox.getHasAutomaticActiveTabChipToken = () => true;
-    innerComposebox.getAutomaticActiveTabChipElement = () =>
-        document.createElement('div');
-
-    // Show tooltip.
-    composeboxElement.updateTooltipVisibilityForTesting();
-    assertTrue(tooltip.shouldShow);
-
-    // Advance time partially.
-    mockTimer.tick(1000);
-    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
-
-    // Hide tooltip (e.g. chip disappears).
-    innerComposebox.getHasAutomaticActiveTabChipToken = () => false;
-    composeboxElement.updateTooltipVisibilityForTesting();
-    assertFalse(tooltip.shouldShow);
-
-    // Advance past original deadline.
-    mockTimer.tick(5000);
-    // Should NOT have incremented because timer was cleared.
-    assertEquals(0, composeboxElement.numberOfTimesTooltipShownForTesting);
-  });
-
-  test(
-      'on focus out does not set animation state as none \
-      when submitting or listening',
-      async () => {
-        const composebox = contextualTasksApp.$.composebox.$.composebox;
-
-        composebox.animationState = GlowAnimationState.SUBMITTING;
-        composebox.dispatchEvent(new CustomEvent('composebox-focus-out', {
-          bubbles: true,
-          composed: true,
-        }));
-        await microtasksFinished();
-        assertEquals(composebox.animationState, GlowAnimationState.SUBMITTING);
-
-        composebox.animationState = GlowAnimationState.LISTENING;
-        composebox.dispatchEvent(new CustomEvent('composebox-focus-out', {
-          bubbles: true,
-          composed: true,
-        }));
-        await microtasksFinished();
-        assertEquals(composebox.animationState, GlowAnimationState.LISTENING);
-      });
-
-  test('on focus out sets animation state as none otherwise', async () => {
-    const composebox = contextualTasksApp.$.composebox.$.composebox;
-    composebox.animationState = GlowAnimationState.EXPANDING;
-    composebox.dispatchEvent(new CustomEvent('composebox-focus-out', {
-      bubbles: true,
-      composed: true,
-    }));
-    await microtasksFinished();
-    assertEquals(composebox.animationState, GlowAnimationState.NONE);
-  });
-
-  test(
-      'side panel handles AIM queries to show side panel zero state correctly',
-      async () => {
-        testProxy.handler.setIsShownInTab(false);
-
-        testProxy.callbackRouterRemote.onZeroStateChange(false);
-        testProxy.callbackRouterRemote.onSidePanelStateChanged();
-
-        await testProxy.callbackRouterRemote.$.flushForTesting();
-        await contextualTasksApp.updateComplete;
-        await contextualTasksApp.$.composebox.updateComplete;
-        await microtasksFinished();
-
-        assertStyle(
-            contextualTasksApp.$.composeboxHeader, 'font-size', '28px',
-            'When in side panel non-zero-state, composebox header font-size');
-        assertStyle(
-            contextualTasksApp.$.composebox.$.composebox, 'min-width', '200px',
-            'When in side panel non-zero-state, composebox min-width');
-
-        testProxy.callbackRouterRemote.onZeroStateChange(true);
-
-        await contextualTasksApp.updateComplete;
-        await contextualTasksApp.$.composebox.updateComplete;
-        await microtasksFinished();
-
-        assertStyle(
-            contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
-            'relative');
-        assertStyle(
-            contextualTasksApp.$.composebox.$.composeboxContainer,
-            'margin-bottom', '0px',
-            'When in side panel zero-state, composebox wrapper margin');
-        assertStyle(
-            contextualTasksApp.$.composebox, 'position', 'relative',
-            'When in side panel zero-state, composebox position');
-
-        testProxy.callbackRouterRemote.onZeroStateChange(false);
-
-        await contextualTasksApp.updateComplete;
-        await contextualTasksApp.$.composebox.updateComplete;
-        await microtasksFinished();
-
-        assertStyle(
-            contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
-            'relative', 'When returning to side panel non-zero-state,\
-                composebox wrapper position');
-        assertStyle(
-            contextualTasksApp.$.composebox.$.composeboxContainer,
-            'margin-bottom', '30px',
-            'When returning to side panel non-zero-state,\
-                composebox wrapper margin');
-        assertStyle(
-            contextualTasksApp.$.composebox, 'position', 'relative',
-            'When returning to side panel non-zero-state,\
-                composebox position');
-      });
-
-  test('full tab handles AIM queries to show 0 state correctly', async () => {
-    testProxy.handler.setIsShownInTab(true);
-
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
-    testProxy.callbackRouterRemote.onSidePanelStateChanged();
-    await contextualTasksApp.updateComplete;
-    await contextualTasksApp.$.composebox.updateComplete;
-    await microtasksFinished();
-
-    assertStyle(
-        contextualTasksApp.$.composebox.$.composebox, 'min-width', '0px',
-        'When in full tab mode non-zero-state, composebox min-width');
-    assertStyle(
-        contextualTasksApp.$.composeboxHeader, 'font-size', '32px',
-        'When in full tab mode non-zero-state, composebox header font-size');
-
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-
-    await contextualTasksApp.updateComplete;
-    await contextualTasksApp.$.composebox.updateComplete;
-    await microtasksFinished();
-
-    assertStyle(
-        contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
-        'relative',
-        'When in full tab mode zero-state, composebox wrapper position');
-    assertStyle(
-        contextualTasksApp.$.composebox.$.composeboxContainer, 'margin-bottom',
-        '0px', 'When in full tab mode zero-state, composebox wrapper margin');
-    assertStyle(
-        contextualTasksApp.$.composebox, 'position', 'relative',
-        'When in full tab mode zero-state, composebox wrapper position');
-
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
-
-    await contextualTasksApp.updateComplete;
-    await contextualTasksApp.$.composebox.updateComplete;
-    await microtasksFinished();
-
-    assertStyle(
-        contextualTasksApp.$.composebox.$.composeboxContainer, 'position',
-        'relative', 'When returning to full tab mode non-zero-state,\
-            composebox wrapper position');
-    assertStyle(
-        contextualTasksApp.$.composebox.$.composeboxContainer, 'margin-bottom',
-        '30px', 'When returning to full tab non-zero-state,\
-            composebox wrapper margin');
-    assertStyle(
-        contextualTasksApp.$.composebox, 'position', 'relative',
-        'When returning to full tab mode non-zero-state,\
-            composebox position');
-  });
-
   test('EnterKeyAfterSubmitDoesNotAddNewLine', async () => {
     mockTimer.install();
     const TEST_QUERY = 'test query';
@@ -863,7 +589,7 @@ suite('ContextualTasksComposeboxTest', () => {
       await Promise.resolve();
     }
 
-    const submitButton = getSubmitButton();
+    const submitButton = getSubmitButton(composebox);
     assertTrue(!!submitButton);
     assertFalse(submitButton.disabled, 'Submit should be enabled');
 
@@ -1269,185 +995,6 @@ suite('ContextualTasksComposeboxTest', () => {
     assertFalse(contextualComposebox.maybeShowOverlayHintText);
     assertEquals('', innerComposebox.inputPlaceholderOverride);
     assertEquals(initialPlaceholder, inputElement.placeholder);
-  });
-
-  test('SuggestionsHiddenWhenDropdownNotShown', async () => {
-    loadTimeData.overrideValues({
-      composeboxShowTypedSuggestWithContext: false,
-      enableNativeZeroStateSuggestions: true,
-    });
-
-    testProxy.handler.setIsShownInTab(true);
-
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    testProxy.callbackRouterRemote.onSidePanelStateChanged();
-
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    const contextualComposebox = contextualTasksApp.$.composebox;
-    await contextualComposebox.updateComplete;
-    await composebox.updateComplete;
-
-    const suggestionsContainer =
-        contextualComposebox.$.contextualTasksSuggestionsContainer;
-    assertTrue(!!suggestionsContainer, 'Suggestions container should exist');
-
-    // Initial state: No matches yet, so show-dropdown_ should be false.
-    assertFalse(
-        composebox.hasAttribute('show-dropdown_'),
-        'Dropdown should not be shown initially');
-    assertEquals(
-        'none', getComputedStyle(suggestionsContainer).display,
-        'Suggestions should be hidden when dropdown is not shown');
-
-    // Add a file.
-    const file = new File(['foo'], 'foo.pdf', {type: 'application/pdf'});
-    await uploadFileAndVerify(
-        FAKE_TOKEN_STRING, file, composebox, mockSearchboxPageHandler);
-
-    // Provide ZPS matches (empty query).
-    await setupAutocompleteResults(
-        searchboxCallbackRouterRemote, '', mockTimer);
-    await contextualComposebox.updateComplete;
-    await composebox.updateComplete;
-
-    // show-dropdown_ should be true now because we have ZPS matches and no
-    // input.
-    assertTrue(
-        composebox.hasAttribute('show-dropdown_'),
-        'Dropdown should be shown with ZPS matches after adding a file');
-
-    // The suggestions container should be visible.
-    assertNotEquals(
-        'none', getComputedStyle(suggestionsContainer).display,
-        'Suggestions should be visible when dropdown is shown');
-
-    // Simulate typing.
-    const inputElement = composebox.$.input;
-    simulateUserInput(inputElement, 'test');
-
-    // Provide typed matches.
-    await setupAutocompleteResults(
-        searchboxCallbackRouterRemote, 'test', mockTimer);
-    await contextualComposebox.updateComplete;
-    await composebox.updateComplete;
-
-    // show-dropdown_ should be false because we have a file and
-    // composeboxShowTypedSuggestWithContext is false.
-    assertFalse(
-        composebox.hasAttribute('show-dropdown_'),
-        'Dropdown should hide when typing with a file and showTypedSuggestWithContext is false');
-
-    // The CSS rule should hide the suggestions container.
-    assertEquals(
-        'none', getComputedStyle(suggestionsContainer).display,
-        'Suggestions should be hidden via CSS when dropdown is hidden');
-  });
-
-  test('zero state animation plays when zero state changes', async () => {
-    loadTimeData.overrideValues({
-      friendlyZeroStateGaiaName: 'Test Name',
-    });
-
-    contextualTasksApp = document.createElement('contextual-tasks-app');
-    document.body.appendChild(contextualTasksApp);
-
-    // Set initial state to true so we can transition to false then back to
-    // true.
-    testProxy.callbackRouterRemote.onZeroStateChange(/*isZeroState=*/ true);
-    testProxy.handler.setIsAiPage(true);
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await contextualTasksApp.updateComplete;
-    await microtasksFinished();
-
-    const composeboxWrapper = contextualTasksApp.$.composebox;
-
-    const headerWrapper = contextualTasksApp.$.composeboxHeaderWrapper;
-    // nameShimmer might not exist if friendlyZeroStateGaiaName_ is not set.
-    const nameShimmer = contextualTasksApp.$.nameShimmer;
-
-    // Mock animate function.
-    let composeboxAnimateCalled = false;
-    let headerAnimateCalled = false;
-    let nameShimmerAnimateCalled = false;
-
-    let resolveCompose: (value: any) => void;
-    let resolveHeader: (value: any) => void;
-    let resolveNameShimmer: (value: any) => void;
-
-    const promisesToWaitOn = [
-      new Promise(r => resolveCompose = r),
-      new Promise(r => resolveHeader = r),
-    ];
-
-    if (nameShimmer) {
-      promisesToWaitOn.push(new Promise(r => resolveNameShimmer = r));
-    }
-
-    const animationsStarted = Promise.all(promisesToWaitOn);
-
-    // Transition out of zero state first.
-    testProxy.callbackRouterRemote.onZeroStateChange(false);
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    // Mock getAnimations to return dummy animations that can be cancelled and
-    // played.
-    const createMockAnimation = (callback: () => void) =>
-        ({
-          cancel: () => {},
-          play: () => {
-            callback();
-            return Promise.resolve();
-          },
-        }) as unknown as Animation;
-
-    composeboxWrapper.getAnimations = () => [createMockAnimation(() => {
-      composeboxAnimateCalled = true;
-      resolveCompose(true);
-    })];
-
-    headerWrapper.getAnimations = () => [createMockAnimation(() => {
-      headerAnimateCalled = true;
-      resolveHeader(true);
-    })];
-
-    if (nameShimmer) {
-      nameShimmer.getAnimations = () => [createMockAnimation(() => {
-        nameShimmerAnimateCalled = true;
-        resolveNameShimmer(true);
-      })];
-    }
-
-    // Mock startExpandAnimation since it is called to trigger the glow
-    // animation.
-    composebox.startExpandAnimation = () => Promise.resolve();
-
-    testProxy.handler.setIsZeroState(true);
-    // Transition back to zero state via mock.
-    // Thread frame load start to trigger animations.
-    testProxy.callbackRouterRemote.onZeroStateChange(true);
-    await testProxy.callbackRouterRemote.$.flushForTesting();
-    await microtasksFinished();
-
-    const event = new Event('loadstart');
-    Object.assign(event, {url: 'http://example.com', isTopLevel: true});
-    contextualTasksApp.onThreadFrameLoadStartForTesting(
-        event as chrome.webviewTag.LoadStartEvent);
-    await composebox.updateComplete;
-    await contextualTasksApp.updateComplete;
-    await microtasksFinished();
-
-    await animationsStarted;
-
-    // Verify animations were played.
-    assertTrue(composeboxAnimateCalled, 'Composebox animation should play');
-    assertTrue(headerAnimateCalled, 'Header animation should play');
-    if (nameShimmer) {
-      assertTrue(
-          nameShimmerAnimateCalled, 'Name shimmer animation should play');
-    }
   });
 
   // Test that the Tab key correctly synchronizes the selected index.

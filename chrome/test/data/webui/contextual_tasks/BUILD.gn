@@ -17,6 +17,7 @@ build_webui_tests("build") {
     "composebox_test.ts",
     "composebox_submit_test.ts",
     "composebox_misc_inputs_test.ts",
+    "composebox_zero_state_test.ts",
     "contextual_tasks_webview_browsertest.ts",
     "post_message_handler_test.ts",
     "test_contextual_tasks_browser_proxy.ts",

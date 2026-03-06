@@ -205,3 +205,19 @@ export async function deleteLastFile(composebox: any) {
   }));
   await microtasksFinished();
 }
+
+export function getSubmitContainer(composebox: any): HTMLElement|null {
+  return composebox.shadowRoot.querySelector('#submitContainer');
+}
+
+export function getSubmitButton(composebox: any): HTMLButtonElement|null {
+  const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
+
+  if (!submitContainer) {
+    return null;
+  }
+
+  const submitButton: HTMLButtonElement|null =
+      submitContainer.querySelector('#submitIcon');
+  return submitButton;
+}

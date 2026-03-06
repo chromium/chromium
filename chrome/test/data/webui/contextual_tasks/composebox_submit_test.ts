@@ -1,9 +1,6 @@
 // Copyright 2026 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-// Copyright 2026 The Chromium Authors
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
 
 // For composebox tests related to tools, secondary inputs (voice, drag/drop).
 import 'chrome://contextual-tasks/app.js';
@@ -24,7 +21,7 @@ import {TestMock} from 'chrome://webui-test/test_mock.js';
 import {isVisible, microtasksFinished} from 'chrome://webui-test/test_util.js';
 
 import {TestContextualTasksBrowserProxy} from './test_contextual_tasks_browser_proxy.js';
-import {ADD_TAB_CONTEXT_FN, assertStyle, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, installMock, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
+import {ADD_TAB_CONTEXT_FN, assertStyle, FAKE_TOKEN_STRING, FAKE_TOKEN_STRING_2, getSubmitButton, getSubmitContainer, installMock, mockInputState, setupAutocompleteResults, simulateUserInput, uploadFileAndVerify} from './test_utils.js';
 
 function pressEnter(element: HTMLElement) {
   element.dispatchEvent(new KeyboardEvent('keydown', {
@@ -132,24 +129,8 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     mockTimer.uninstall();
   });
 
-
-  function getSubmitContainer(): HTMLElement|null {
-    return composebox.shadowRoot.querySelector('#submitContainer');
-  }
-
-  function getSubmitButton(): HTMLButtonElement|null {
-    const submitContainer: HTMLElement|null = getSubmitContainer();
-
-    if (!submitContainer) {
-      return null;
-    }
-    const submitButton: HTMLButtonElement|null =
-        submitContainer.querySelector('#submitIcon');
-    return submitButton;
-  }
-
   test('submit enabled when tool is Deep Search', async () => {
-    const submitContainer = getSubmitContainer();
+    const submitContainer = getSubmitContainer(composebox);
     assertFalse(
         isVisible(submitContainer), 'Submit container should be hidden');
 
@@ -158,7 +139,7 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await microtasksFinished();
 
     // Verify submit button is disabled and clicking it does nothing.
-    const submitButton = getSubmitButton();
+    const submitButton = getSubmitButton(composebox);
     assertTrue(submitButton!.disabled, 'Submit button should be disabled');
     submitButton!.click();
     await microtasksFinished();
@@ -458,11 +439,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await microtasksFinished();
     await composebox.updateComplete;
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertFalse(submitButton?.disabled, 'Submit button should not be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -510,12 +491,12 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
 
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Submit button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -634,12 +615,12 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
 
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Submit button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -729,12 +710,12 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.fileUploadsComplete,
         'Tabs should not be finished uploading');
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
 
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Submit button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -823,11 +804,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await microtasksFinished();
     await composebox.updateComplete;
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertFalse(submitButton?.disabled, 'Submit button should not be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -878,10 +859,10 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     assertTrue(
         composebox.fileUploadsComplete,
         'Delayed context should have not started uploading');
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
 
     assertTrue(!!submitButton, 'Submit button should exist');
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertFalse(
@@ -915,11 +896,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -970,11 +951,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -1025,11 +1006,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
         composebox.fileUploadsComplete,
         'Files should not be finished uploading');
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(
@@ -1074,11 +1055,11 @@ suite('ContextualTasksComposeboxSubmitTest', () => {
     await composebox.updateComplete;
     await microtasksFinished();
 
-    const submitButton: HTMLButtonElement|null = getSubmitButton();
+    const submitButton: HTMLButtonElement|null = getSubmitButton(composebox);
     assertTrue(!!submitButton, 'Submit button should exist');
     assertTrue(submitButton?.disabled, 'Button should be disabled');
 
-    const submitContainer: HTMLElement|null = getSubmitContainer();
+    const submitContainer: HTMLElement|null = getSubmitContainer(composebox);
     assertTrue(!!submitContainer, 'Submit container button should exist');
 
     assertStyle(

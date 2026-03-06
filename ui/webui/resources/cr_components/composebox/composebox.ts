@@ -475,7 +475,10 @@ export class ComposeboxElement extends I18nMixinLit
 
     this.searchboxHandler_.notifySessionStarted();
 
-    this.inputState_ = (await this.searchboxHandler_.getInputState()).state;
+    const inputState = await this.searchboxHandler_.getInputState();
+      if (inputState) {
+        this.inputState_ = inputState.state;
+    }
     await this.updateComplete;
     this.fire('composebox-initialized', {
       initializeComposeboxState: this.initializeState_.bind(this),
