@@ -9,7 +9,7 @@
 #include "chrome/browser/accessibility_annotator/content_annotator/content_annotator_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -22,8 +22,8 @@
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/test/mock_remote_model_executor.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +40,7 @@ class MockContentAnnotatorService : public ContentAnnotatorService {
           page_content_extraction_service,
       optimization_guide::RemoteModelExecutor&
           optimization_guide_remote_model_executor,
-      passage_embeddings::PageEmbeddingsService& page_embeddings_service,
+      page_content_annotations::PageEmbeddingsService& page_embeddings_service,
       std::unique_ptr<ContentClassifier> content_classifier)
       : ContentAnnotatorService(page_content_annotations_service,
                                 page_content_extraction_service,
@@ -76,8 +76,8 @@ class ContentAnnotatorTabHelperTest : public ChromeRenderViewHostTestHarness {
             PageContentExtractionServiceFactory::GetForProfile(profile());
     ASSERT_TRUE(page_content_extraction_service);
 
-    passage_embeddings::PageEmbeddingsService* page_embeddings_service =
-        passage_embeddings::PageEmbeddingsServiceFactory::GetForProfile(
+    page_content_annotations::PageEmbeddingsService* page_embeddings_service =
+        page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
             profile());
     ASSERT_TRUE(page_embeddings_service);
 

@@ -8,24 +8,17 @@ source_set("passage_embeddings") {
     "chrome_passage_embeddings_service_controller.h",
     "cpu_histogram_logger.cc",
     "cpu_histogram_logger.h",
-    "page_embeddings_service_factory.cc",
-    "page_embeddings_service_factory.h",
     "passage_embedder_model_observer_factory.cc",
     "passage_embedder_model_observer_factory.h",
   ]
 
-  public_deps = [
-    "//components/passage_embeddings/content",
-    "//components/passage_embeddings/core",
-  ]
+  public_deps = [ "//components/passage_embeddings/core" ]
 
   deps = [
     "//chrome/browser:browser_process",
     "//chrome/browser/history_embeddings",
     "//chrome/browser/optimization_guide",
-    "//chrome/browser/page_content_annotations:extraction_service",
     "//chrome/browser/profiles",
-    "//components/page_content_annotations/content",
     "//components/page_content_annotations/core",
     "//components/performance_manager",
     "//components/permissions:permissions_common",

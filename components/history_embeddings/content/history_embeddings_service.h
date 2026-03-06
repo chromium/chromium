@@ -33,7 +33,7 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/os_crypt/async/common/encryptor.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 
 namespace optimization_guide {
@@ -43,11 +43,8 @@ class OptimizationGuideDecider;
 namespace page_content_annotations {
 class BatchAnnotationResult;
 class PageContentAnnotationsService;
-}  // namespace page_content_annotations
-
-namespace passage_embeddings {
 class PageEmbeddingsService;
-}
+}  // namespace page_content_annotations
 
 namespace os_crypt_async {
 class OSCryptAsync;
@@ -67,7 +64,7 @@ class HistoryEmbeddingsService
       public HistoryEmbeddingsSearch,
       public history::HistoryServiceObserver,
       public passage_embeddings::EmbedderMetadataObserver,
-      public passage_embeddings::PageEmbeddingsService::Observer {
+      public page_content_annotations::PageEmbeddingsService::Observer {
  public:
   struct VisitMetadata {
     history::URLID url_id;
@@ -88,7 +85,7 @@ class HistoryEmbeddingsService
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      passage_embeddings::PageEmbeddingsService* page_embeddings_service,
+      page_content_annotations::PageEmbeddingsService* page_embeddings_service,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       passage_embeddings::Embedder* embedder,
       std::unique_ptr<Answerer> answerer,
@@ -132,10 +129,10 @@ class HistoryEmbeddingsService
   void OnHistoryDeletions(history::HistoryService* history_service,
                           const history::DeletionInfo& deletion_info) override;
 
-  // passage_embeddings::PageEmbeddingsService::Observer:
-  passage_embeddings::PageEmbeddingsService::Priority GetDefaultPriority()
+  // page_content_annotations::PageEmbeddingsService::Observer:
+  page_content_annotations::PageEmbeddingsService::Priority GetDefaultPriority()
       const override;
-  passage_embeddings::PageEmbeddingsService::UsageMode GetUsageMode()
+  page_content_annotations::PageEmbeddingsService::UsageMode GetUsageMode()
       const override;
   void OnPageEmbeddingsAvailable(content::WebContents* web_contents) override;
 
@@ -232,7 +229,8 @@ class HistoryEmbeddingsService
       history::URLID url_id,
       history::VisitID visit_id,
       base::Time visit_time,
-      std::vector<passage_embeddings::PassageEmbedding> passage_embeddings);
+      std::vector<page_content_annotations::PassageEmbedding>
+          passage_embeddings);
 
   // Invoked after the embeddings for `passages` has been computed. Stores the
   // passages along with their embeddings in the database.
@@ -324,7 +322,8 @@ class HistoryEmbeddingsService
   raw_ptr<optimization_guide::OptimizationGuideDecider>
       optimization_guide_decider_;
 
-  raw_ptr<passage_embeddings::PageEmbeddingsService> page_embeddings_service_;
+  raw_ptr<page_content_annotations::PageEmbeddingsService>
+      page_embeddings_service_;
 
   // Tracks the observed history service, for cleanup.
   base::ScopedObservation<history::HistoryService,
@@ -369,8 +368,9 @@ class HistoryEmbeddingsService
   // Used to cancel the in-flight embedding task for the previous stale query.
   std::optional<passage_embeddings::Embedder::TaskId> query_embedding_task_id_;
 
-  base::ScopedObservation<passage_embeddings::PageEmbeddingsService,
-                          passage_embeddings::PageEmbeddingsService::Observer>
+  base::ScopedObservation<
+      page_content_annotations::PageEmbeddingsService,
+      page_content_annotations::PageEmbeddingsService::Observer>
       page_embeddings_observation_{this};
 
   // Scoped observation for when the embedder metadata is available.

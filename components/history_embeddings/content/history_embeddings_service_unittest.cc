@@ -38,9 +38,9 @@
 #include "components/optimization_guide/core/hints/test_optimization_guide_decider.h"
 #include "components/os_crypt/async/browser/test_utils.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotator.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_test_util.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +70,7 @@ class HistoryEmbeddingsServicePublic : public HistoryEmbeddingsService {
       page_content_annotations::PageContentAnnotationsService*
           page_content_annotations_service,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-      passage_embeddings::PageEmbeddingsService* page_embeddings_service,
+      page_content_annotations::PageEmbeddingsService* page_embeddings_service,
       passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
       passage_embeddings::Embedder* embedder,
       std::unique_ptr<Answerer> answerer,
@@ -128,7 +128,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
         page_content_annotations::PageContentExtractionService>(
         nullptr, base::FilePath(), &mock_tracker_);
     page_embeddings_service_ =
-        std::make_unique<passage_embeddings::PageEmbeddingsService>(
+        std::make_unique<page_content_annotations::PageEmbeddingsService>(
             page_content_extraction_service_.get());
 
     service_ = std::make_unique<HistoryEmbeddingsServicePublic>(
@@ -245,7 +245,7 @@ class HistoryEmbeddingsServiceTest : public testing::Test {
   feature_engagement::test::MockTracker mock_tracker_;
   std::unique_ptr<page_content_annotations::TestPageContentAnnotationsService>
       page_content_annotations_service_;
-  std::unique_ptr<passage_embeddings::PageEmbeddingsService>
+  std::unique_ptr<page_content_annotations::PageEmbeddingsService>
       page_embeddings_service_;
   std::unique_ptr<page_content_annotations::PageContentExtractionService>
       page_content_extraction_service_;

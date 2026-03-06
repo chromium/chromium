@@ -13,8 +13,8 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
 #include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -106,7 +106,8 @@ std::unique_ptr<KeyedService> HistoryEmbeddingsServiceFactory::
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
-      passage_embeddings::PageEmbeddingsServiceFactory::GetForProfile(profile),
+      page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
+          profile),
       embedder_metadata_provider, embedder, std::move(answerer),
       std::move(intent_classifier));
 }
@@ -125,7 +126,8 @@ HistoryEmbeddingsServiceFactory::HistoryEmbeddingsServiceFactory()
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
   DependsOn(
       passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
-  DependsOn(passage_embeddings::PageEmbeddingsServiceFactory::GetInstance());
+  DependsOn(
+      page_content_annotations::PageEmbeddingsServiceFactory::GetInstance());
 }
 
 HistoryEmbeddingsServiceFactory::~HistoryEmbeddingsServiceFactory() = default;
@@ -174,7 +176,8 @@ HistoryEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
                                            ServiceAccessType::EXPLICIT_ACCESS),
       PageContentAnnotationsServiceFactory::GetForProfile(profile),
       optimization_guide_keyed_service,
-      passage_embeddings::PageEmbeddingsServiceFactory::GetForProfile(profile),
+      page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
+          profile),
       passage_embeddings_service_controller,
       passage_embeddings_service_controller->GetEmbedder(), std::move(answerer),
       std::move(intent_classifier));

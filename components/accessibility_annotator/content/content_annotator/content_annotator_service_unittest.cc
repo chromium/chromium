@@ -23,10 +23,10 @@
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotations_common.h"
 #include "components/page_content_annotations/core/page_content_annotations_service.h"
 #include "components/page_content_annotations/core/test_page_content_annotations_service.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -65,7 +65,7 @@ class MockContentClassifier : public ContentClassifier {
 };
 
 class MockPageEmbeddingsService
-    : public passage_embeddings::PageEmbeddingsService {
+    : public page_content_annotations::PageEmbeddingsService {
  public:
   explicit MockPageEmbeddingsService(
       page_content_annotations::PageContentExtractionService*
@@ -73,7 +73,7 @@ class MockPageEmbeddingsService
       : PageEmbeddingsService(page_content_extraction_service) {}
   ~MockPageEmbeddingsService() override = default;
 
-  MOCK_METHOD(std::vector<passage_embeddings::PassageEmbedding>,
+  MOCK_METHOD(std::vector<page_content_annotations::PassageEmbedding>,
               GetEmbeddings,
               (content::WebContents*),
               (const, override));
@@ -93,7 +93,8 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
             page_content_extraction_service,
         optimization_guide::RemoteModelExecutor&
             optimization_guide_remote_model_executor,
-        passage_embeddings::PageEmbeddingsService& page_embeddings_service,
+        page_content_annotations::PageEmbeddingsService&
+            page_embeddings_service,
         std::unique_ptr<ContentClassifier> content_classifier)
         : ContentAnnotatorService(page_content_annotations_service,
                                   page_content_extraction_service,
@@ -178,9 +179,11 @@ class ContentAnnotatorServiceTest : public content::RenderViewHostTestHarness {
     // 4. Send PageEmbeddingsAvailable
     EXPECT_CALL(*mock_page_embeddings_service_,
                 GetEmbeddings(web_contents.get()))
-        .WillOnce(Return(std::vector<passage_embeddings::PassageEmbedding>{
-            {{"Test Title", passage_embeddings::PassageType::kTitle},
-             passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
+        .WillOnce(
+            Return(std::vector<page_content_annotations::PassageEmbedding>{
+                {{"Test Title",
+                  page_content_annotations::EmbeddingPassageType::kTitle},
+                 passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
     service_->OnPageEmbeddingsAvailable(web_contents.get());
   }
 
@@ -272,8 +275,8 @@ TEST_F(ContentAnnotatorServiceTest, TestMaybeAnnotate_TwoUrlsOnlyOneCompletes) {
 
   EXPECT_CALL(*mock_page_embeddings_service_,
               GetEmbeddings(web_contents2.get()))
-      .WillOnce(Return(std::vector<passage_embeddings::PassageEmbedding>{
-          {{"Title 2", passage_embeddings::PassageType::kTitle},
+      .WillOnce(Return(std::vector<page_content_annotations::PassageEmbedding>{
+          {{"Title 2", page_content_annotations::EmbeddingPassageType::kTitle},
            passage_embeddings::Embedding({1.0f, 2.0f, 3.0f})}}));
   service_->OnPageEmbeddingsAvailable(web_contents2.get());
 }

@@ -27,8 +27,8 @@
 #include "components/optimization_guide/proto/features/contextual_tasks_context.pb.h"
 #include "components/page_content_annotations/content/page_content_annotations_web_contents_observer.h"
 #include "components/page_content_annotations/content/page_content_extraction_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_extraction_types.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_types.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/web_contents.h"
@@ -57,7 +57,7 @@ struct TabSimilarityScores {
 std::optional<TabSimilarityScores> GetEmbeddingScores(
     content::WebContents* web_contents,
     const passage_embeddings::Embedding& query_embedding,
-    const std::vector<passage_embeddings::PassageEmbedding>&
+    const std::vector<page_content_annotations::PassageEmbedding>&
         web_contents_embeddings) {
   if (web_contents_embeddings.empty()) {
     return std::nullopt;
@@ -66,7 +66,8 @@ std::optional<TabSimilarityScores> GetEmbeddingScores(
   TabSimilarityScores similarity_scores;
   for (const auto& embedding : web_contents_embeddings) {
     if (kOnlyUseTitlesForSimilarity.Get() &&
-        embedding.passage.second != passage_embeddings::PassageType::kTitle) {
+        embedding.passage.second !=
+            page_content_annotations::EmbeddingPassageType::kTitle) {
       continue;
     }
     float similarity_score = embedding.embedding.ScoreWith(query_embedding);
@@ -134,7 +135,7 @@ double GetTabScore(const TabSelectionOptions& options,
 
 ContextualTasksContextService::ContextualTasksContextService(
     Profile* profile,
-    passage_embeddings::PageEmbeddingsService* page_embeddings_service,
+    page_content_annotations::PageEmbeddingsService* page_embeddings_service,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* embedder,
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
@@ -199,9 +200,9 @@ void ContextualTasksContextService::EmbedderMetadataUpdated(
                                 : std::nullopt;
 }
 
-passage_embeddings::PageEmbeddingsService::Priority
+page_content_annotations::PageEmbeddingsService::Priority
 ContextualTasksContextService::GetDefaultPriority() const {
-  return passage_embeddings::PageEmbeddingsService::Priority::kBackground;
+  return page_content_annotations::PageEmbeddingsService::Priority::kBackground;
 }
 
 void ContextualTasksContextService::OnQueryEmbeddingReady(

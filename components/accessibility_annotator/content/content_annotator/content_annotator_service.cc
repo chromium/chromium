@@ -23,8 +23,8 @@
 #include "components/optimization_guide/core/model_quality/model_quality_log_entry.h"
 #include "components/optimization_guide/proto/features/content_annotation.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/page_content_annotations/core/page_content_annotation_type.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
@@ -53,7 +53,7 @@ std::unique_ptr<ContentAnnotatorService> ContentAnnotatorService::Create(
         page_content_extraction_service,
     optimization_guide::RemoteModelExecutor&
         optimization_guide_remote_model_executor,
-    passage_embeddings::PageEmbeddingsService& page_embeddings_service) {
+    page_content_annotations::PageEmbeddingsService& page_embeddings_service) {
   std::unique_ptr<ContentClassifier> content_classifier =
       ContentClassifier::Create();
   if (!content_classifier) {
@@ -72,7 +72,7 @@ ContentAnnotatorService::ContentAnnotatorService(
         page_content_extraction_service,
     optimization_guide::RemoteModelExecutor&
         optimization_guide_remote_model_executor,
-    passage_embeddings::PageEmbeddingsService& page_embeddings_service,
+    page_content_annotations::PageEmbeddingsService& page_embeddings_service,
     std::unique_ptr<ContentClassifier> content_classifier)
     : page_content_annotations_service_(page_content_annotations_service),
       page_content_extraction_service_(page_content_extraction_service),
@@ -134,16 +134,17 @@ void ContentAnnotatorService::OnPageContentExtracted(
   MaybeAnnotate(it);
 }
 
-passage_embeddings::PageEmbeddingsService::UsageMode
+page_content_annotations::PageEmbeddingsService::UsageMode
 ContentAnnotatorService::GetUsageMode() const {
-  return passage_embeddings::PageEmbeddingsService::UsageMode::kContinuous;
+  return page_content_annotations::PageEmbeddingsService::UsageMode::
+      kContinuous;
 }
 
 void ContentAnnotatorService::OnPageEmbeddingsAvailable(
     content::WebContents* web_contents) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  std::vector<passage_embeddings::PassageEmbedding> embeddings =
+  std::vector<page_content_annotations::PassageEmbedding> embeddings =
       page_embeddings_service_->GetEmbeddings(web_contents);
   if (embeddings.empty()) {
     return;
@@ -154,7 +155,8 @@ void ContentAnnotatorService::OnPageEmbeddingsAvailable(
 
   for (const auto& embedding : embeddings) {
     // TODO(crbug.com/487779615): Add support for body text embeddings.
-    if (embedding.passage.second == passage_embeddings::PassageType::kTitle) {
+    if (embedding.passage.second ==
+        page_content_annotations::EmbeddingPassageType::kTitle) {
       // TODO(crbug.com/489121690): Remove this check once better URL mapping to
       // embeddings are available.
       if (it->second.page_title != embedding.passage.first) {

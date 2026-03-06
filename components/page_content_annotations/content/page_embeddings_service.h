@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PASSAGE_EMBEDDINGS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
-#define COMPONENTS_PASSAGE_EMBEDDINGS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
+#ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
+#define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
 
 #include <map>
 #include <memory>
@@ -26,12 +26,10 @@ class WebContents;
 }
 
 namespace page_content_annotations {
+
 class PageContentExtractionService;
-}
 
-namespace passage_embeddings {
-
-enum PassageType {
+enum EmbeddingPassageType {
   kPageContent,
   kTitle,
 };
@@ -39,18 +37,17 @@ enum PassageType {
 // A passage from a page along with its computed embedding.
 struct PassageEmbedding {
   PassageEmbedding();
-  PassageEmbedding(std::pair<std::string, PassageType> passage,
-                   Embedding embedding);
+  PassageEmbedding(std::pair<std::string, EmbeddingPassageType> passage,
+                   passage_embeddings::Embedding embedding);
   PassageEmbedding(const PassageEmbedding&);
   ~PassageEmbedding();
 
-  std::pair<std::string, PassageType> passage;
-  Embedding embedding;
+  std::pair<std::string, EmbeddingPassageType> passage;
+  passage_embeddings::Embedding embedding;
 };
 
-class PageEmbeddingsService
-    : public KeyedService,
-      public page_content_annotations::PageContentExtractionService::Observer {
+class PageEmbeddingsService : public KeyedService,
+                              public PageContentExtractionService::Observer {
  public:
   // The priority to use when computing embeddings. Higher priorities imply more
   // performance overhead.
@@ -119,18 +116,17 @@ class PageEmbeddingsService
   // embeddings. This is responsible for generating chunked passages from the
   // AnnotatedPageContent and filtering to the top
   // `page_content_passages_to_generate` most useful passages.
-  using EmbeddingCandidatesGenerator =
-      base::RepeatingCallback<std::vector<std::pair<std::string, PassageType>>(
+  using EmbeddingCandidatesGenerator = base::RepeatingCallback<
+      std::vector<std::pair<std::string, EmbeddingPassageType>>(
           const optimization_guide::proto::AnnotatedPageContent&,
           int page_content_passages_to_generate)>;
 
-  PageEmbeddingsService(EmbeddingCandidatesGenerator candidates_generator,
-                        page_content_annotations::PageContentExtractionService*
-                            page_content_extraction_service,
-                        passage_embeddings::Embedder* embedder);
+  PageEmbeddingsService(
+      EmbeddingCandidatesGenerator candidates_generator,
+      PageContentExtractionService* page_content_extraction_service,
+      passage_embeddings::Embedder* embedder);
   explicit PageEmbeddingsService(
-      page_content_annotations::PageContentExtractionService*
-          page_content_extraction_service);
+      PageContentExtractionService* page_content_extraction_service);
   ~PageEmbeddingsService() override;
 
   virtual void AddObserver(Observer* observer);
@@ -153,9 +149,8 @@ class PageEmbeddingsService
   // PageContentExtractionService:
   void OnPageContentExtracted(
       content::Page& page,
-      scoped_refptr<
-          const page_content_annotations::RefCountedAnnotatedPageContent>
-          page_content) override;
+      scoped_refptr<const RefCountedAnnotatedPageContent> page_content)
+      override;
 
  private:
   class WebContentsEventsObserver;
@@ -163,12 +158,13 @@ class PageEmbeddingsService
   void ComputeEmbeddings(content::WebContents* web_contents);
   void ComputeEmbeddingsOnHide(content::WebContents* web_contents);
 
-  void OnEmbeddingsComputed(std::vector<PassageType> passage_types,
-                            base::WeakPtr<content::WebContents> web_contents,
-                            std::vector<std::string> passage_strings,
-                            std::vector<Embedding> embeddings,
-                            Embedder::TaskId task_id,
-                            ComputeEmbeddingsStatus status);
+  void OnEmbeddingsComputed(
+      std::vector<EmbeddingPassageType> passage_types,
+      base::WeakPtr<content::WebContents> web_contents,
+      std::vector<std::string> passage_strings,
+      std::vector<passage_embeddings::Embedding> embeddings,
+      passage_embeddings::Embedder::TaskId task_id,
+      passage_embeddings::ComputeEmbeddingsStatus status);
 
   static Priority GetActivePriority(
       const base::ObserverList<Observer>& observers,
@@ -185,11 +181,8 @@ class PageEmbeddingsService
 
   const raw_ptr<passage_embeddings::Embedder> embedder_;
 
-  raw_ptr<page_content_annotations::PageContentExtractionService>
-      page_content_extraction_service_;
-  base::ScopedObservation<
-      page_content_annotations::PageContentExtractionService,
-      PageEmbeddingsService>
+  raw_ptr<PageContentExtractionService> page_content_extraction_service_;
+  base::ScopedObservation<PageContentExtractionService, PageEmbeddingsService>
       page_content_extraction_observation_{this};
 
   base::ObserverList<Observer> observers_;
@@ -204,6 +197,6 @@ class PageEmbeddingsService
   base::WeakPtrFactory<PageEmbeddingsService> weak_ptr_factory_{this};
 };
 
-}  // namespace passage_embeddings
+}  // namespace page_content_annotations
 
-#endif  // COMPONENTS_PASSAGE_EMBEDDINGS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_
+#endif  // COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CONTENT_PAGE_EMBEDDINGS_SERVICE_H_

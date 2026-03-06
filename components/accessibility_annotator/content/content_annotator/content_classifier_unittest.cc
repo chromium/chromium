@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "components/variations/hashing.h"
 #include "services/metrics/public/cpp/ukm_builders.h"

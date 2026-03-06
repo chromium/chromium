@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
@@ -12,11 +12,11 @@
 #include "chrome/browser/passage_embeddings/passage_embedder_model_observer_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_selections.h"
-#include "components/passage_embeddings/content/embeddings_candidate_generator.h"
-#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/page_content_annotations/content/embeddings_candidate_generator.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 
-namespace passage_embeddings {
+namespace page_content_annotations {
 
 // static
 PageEmbeddingsService* PageEmbeddingsServiceFactory::GetForProfile(
@@ -38,9 +38,9 @@ PageEmbeddingsServiceFactory::PageEmbeddingsServiceFactory()
           ProfileSelections::Builder()
               .WithRegular(ProfileSelection::kOriginalOnly)
               .Build()) {
-  DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
-                GetInstance());
-  DependsOn(PassageEmbedderModelObserverFactory::GetInstance());
+  DependsOn(PageContentExtractionServiceFactory::GetInstance());
+  DependsOn(
+      passage_embeddings::PassageEmbedderModelObserverFactory::GetInstance());
 }
 
 PageEmbeddingsServiceFactory::~PageEmbeddingsServiceFactory() = default;
@@ -55,14 +55,12 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
 
   // Don't bother running if we don't have a model observer since we won't have
   // a model to run.
-  if (!PassageEmbedderModelObserverFactory::GetForProfile(profile)) {
+  if (!passage_embeddings::PassageEmbedderModelObserverFactory::GetForProfile(
+          profile)) {
     return nullptr;
   }
 
-  // Required to ensure the model observer starts.
-  PassageEmbedderModelObserverFactory::GetForProfile(profile);
-
-  auto* page_content_extraction_service = page_content_annotations::
+  auto* page_content_extraction_service =
       PageContentExtractionServiceFactory::GetForProfile(profile);
   if (!page_content_extraction_service) {
     return nullptr;
@@ -71,7 +69,8 @@ PageEmbeddingsServiceFactory::BuildServiceInstanceForBrowserContext(
   return std::make_unique<PageEmbeddingsService>(
       base::BindRepeating(&GenerateEmbeddingsCandidates),
       page_content_extraction_service,
-      ChromePassageEmbeddingsServiceController::Get()->GetEmbedder());
+      passage_embeddings::ChromePassageEmbeddingsServiceController::Get()
+          ->GetEmbedder());
 #endif
 }
 
@@ -79,4 +78,4 @@ bool PageEmbeddingsServiceFactory::ServiceIsCreatedWithBrowserContext() const {
   return true;
 }
 
-}  // namespace passage_embeddings
+}  // namespace page_content_annotations

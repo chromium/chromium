@@ -9,7 +9,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/accessibility_annotator/content/content_annotator/content_annotator_service.h"
 #include "components/accessibility_annotator/core/accessibility_annotator_features.h"
@@ -40,7 +40,8 @@ ContentAnnotatorServiceFactory::ContentAnnotatorServiceFactory()
   DependsOn(page_content_annotations::PageContentExtractionServiceFactory::
                 GetInstance());
   DependsOn(OptimizationGuideKeyedServiceFactory::GetInstance());
-  DependsOn(passage_embeddings::PageEmbeddingsServiceFactory::GetInstance());
+  DependsOn(
+      page_content_annotations::PageEmbeddingsServiceFactory::GetInstance());
 }
 
 ContentAnnotatorServiceFactory::~ContentAnnotatorServiceFactory() = default;
@@ -71,8 +72,9 @@ ContentAnnotatorServiceFactory::BuildServiceInstanceForBrowserContext(
   if (!optimization_guide_service) {
     return nullptr;
   }
-  passage_embeddings::PageEmbeddingsService* page_embeddings_service =
-      passage_embeddings::PageEmbeddingsServiceFactory::GetForProfile(profile);
+  page_content_annotations::PageEmbeddingsService* page_embeddings_service =
+      page_content_annotations::PageEmbeddingsServiceFactory::GetForProfile(
+          profile);
 
   if (!page_embeddings_service) {
     return nullptr;

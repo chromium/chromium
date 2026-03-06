@@ -15,6 +15,7 @@ source_set("page_content_annotations") {
   public_deps = [
     ":extraction_service",
     ":fetcher",
+    ":page_embeddings",
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/continuous_search/browser",
@@ -68,6 +69,26 @@ source_set("fetcher") {
     "//base",
     "//components/content_extraction/content/browser",
     "//components/page_content_annotations/content",
+  ]
+}
+
+source_set("page_embeddings") {
+  sources = [
+    "page_embeddings_service_factory.cc",
+    "page_embeddings_service_factory.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/browser/profiles:profile",
+    "//components/page_content_annotations/content:page_embeddings",
+  ]
+
+  deps = [
+    ":extraction_service",
+    "//chrome/browser/passage_embeddings",
+    "//components/keyed_service/core",
+    "//components/passage_embeddings/core",
   ]
 }
 

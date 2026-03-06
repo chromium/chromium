@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/content/embeddings_candidate_generator.h"
+#include "components/page_content_annotations/content/embeddings_candidate_generator.h"
 
 #include "base/strings/strcat.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 
-namespace passage_embeddings {
+namespace page_content_annotations {
 
 namespace {
 
@@ -99,8 +99,9 @@ std::vector<std::string> CreatePassagesFromAnnotatedPageContent(
       };
 
   const int max_words_per_aggregate_passage =
-      kMaxWordsPerAggregatePassage.Get();
-  const int min_words_per_passage = kMinWordsPerPassage.Get();
+      passage_embeddings::kMaxWordsPerAggregatePassage.Get();
+  const int min_words_per_passage =
+      passage_embeddings::kMinWordsPerPassage.Get();
 
   std::vector<std::string> passages;
   passages.push_back("");
@@ -136,22 +137,24 @@ std::vector<std::string> CreatePassagesFromAnnotatedPageContent(
 
 }  // namespace
 
-std::vector<std::pair<std::string, PassageType>> GenerateEmbeddingsCandidates(
+std::vector<std::pair<std::string, EmbeddingPassageType>>
+GenerateEmbeddingsCandidates(
     const optimization_guide::proto::AnnotatedPageContent& apc,
     int page_content_passages_to_generate) {
-  std::vector<std::pair<std::string, PassageType>> candidates;
+  std::vector<std::pair<std::string, EmbeddingPassageType>> candidates;
 
   // Push back passage candidates.
   std::vector<std::string> passages = CreatePassagesFromAnnotatedPageContent(
       apc, page_content_passages_to_generate);
   for (const auto& passage : passages) {
-    candidates.emplace_back(passage, PassageType::kPageContent);
+    candidates.emplace_back(passage, EmbeddingPassageType::kPageContent);
   }
 
   // Push back title candidate.
-  candidates.emplace_back(apc.main_frame_data().title(), PassageType::kTitle);
+  candidates.emplace_back(apc.main_frame_data().title(),
+                          EmbeddingPassageType::kTitle);
 
   return candidates;
 }
 
-}  // namespace passage_embeddings
+}  // namespace page_content_annotations

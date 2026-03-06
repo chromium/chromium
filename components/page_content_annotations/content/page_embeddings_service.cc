@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/passage_embeddings/content/page_embeddings_service.h"
+#include "components/page_content_annotations/content/page_embeddings_service.h"
 
 #include <algorithm>
 #include <numeric>
 #include <set>
 #include <utility>
 
-#include "components/passage_embeddings/content/embeddings_candidate_generator.h"
+#include "components/page_content_annotations/content/embeddings_candidate_generator.h"
 #include "components/passage_embeddings/core/passage_embeddings_features.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/web_contents.h"
 
-namespace passage_embeddings {
+namespace page_content_annotations {
 
 namespace {
 passage_embeddings::PassagePriority ConvertToPassagePriority(
@@ -38,8 +38,9 @@ passage_embeddings::PassagePriority ConvertToPassagePriority(
 PassageEmbedding::PassageEmbedding() = default;
 PassageEmbedding::~PassageEmbedding() = default;
 PassageEmbedding::PassageEmbedding(const PassageEmbedding& other) = default;
-PassageEmbedding::PassageEmbedding(std::pair<std::string, PassageType> passage,
-                                   Embedding embedding)
+PassageEmbedding::PassageEmbedding(
+    std::pair<std::string, EmbeddingPassageType> passage,
+    passage_embeddings::Embedding embedding)
     : passage(std::move(passage)), embedding(std::move(embedding)) {}
 
 class PageEmbeddingsService::WebContentsEventsObserver
@@ -77,11 +78,11 @@ struct PageEmbeddingsService::WebContentsState {
 
   // pending_passages is non-empty from the time passages are produced via
   // candidates_generator_ to the time that embeddings are requested.
-  std::vector<std::pair<std::string, PassageType>> pending_passages;
+  std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages;
 
   // The currently active task for computing embeddings. Non-empty while the
   // embedding computation is pending.
-  std::optional<Embedder::TaskId> active_task;
+  std::optional<passage_embeddings::Embedder::TaskId> active_task;
 
   // passage_embeddings is empty until embeddings are received.
   std::vector<PassageEmbedding> passage_embeddings;
@@ -149,16 +150,14 @@ PageEmbeddingsService::ScopedPriority::operator=(ScopedPriority&& other) {
 
 PageEmbeddingsService::PageEmbeddingsService(
     EmbeddingCandidatesGenerator candidates_generator,
-    page_content_annotations::PageContentExtractionService*
-        page_content_extraction_service,
+    PageContentExtractionService* page_content_extraction_service,
     passage_embeddings::Embedder* embedder)
     : candidates_generator_(candidates_generator),
       embedder_(embedder),
       page_content_extraction_service_(page_content_extraction_service) {}
 
 PageEmbeddingsService::PageEmbeddingsService(
-    page_content_annotations::PageContentExtractionService*
-        page_content_extraction_service)
+    PageContentExtractionService* page_content_extraction_service)
     : PageEmbeddingsService(base::BindRepeating(&GenerateEmbeddingsCandidates),
                             page_content_extraction_service,
                             nullptr) {}
@@ -236,9 +235,7 @@ std::vector<PassageEmbedding> PageEmbeddingsService::GetEmbeddings(
 
 void PageEmbeddingsService::OnPageContentExtracted(
     content::Page& page,
-    scoped_refptr<
-        const page_content_annotations::RefCountedAnnotatedPageContent>
-        page_content) {
+    scoped_refptr<const RefCountedAnnotatedPageContent> page_content) {
   CHECK(page_content);
   auto* const web_contents =
       content::WebContents::FromRenderFrameHost(&page.GetMainDocument());
@@ -250,7 +247,8 @@ void PageEmbeddingsService::OnPageContentExtracted(
   }
 
   web_contents_state_[web_contents].pending_passages =
-      candidates_generator_.Run(page_content->data, kMaxPassagesPerPage.Get());
+      candidates_generator_.Run(page_content->data,
+                                passage_embeddings::kMaxPassagesPerPage.Get());
 
   if (current_usage_mode_ == kContinuous ||
       web_contents_state_[web_contents].observer->IsWebContentsHidden()) {
@@ -274,10 +272,10 @@ void PageEmbeddingsService::ComputeEmbeddings(
 
   // Ensure that state.pending_passages is cleared before invoking
   // ComputePassagesEmbeddings().
-  std::vector<std::pair<std::string, PassageType>> pending_passages;
+  std::vector<std::pair<std::string, EmbeddingPassageType>> pending_passages;
   pending_passages.swap(state.pending_passages);
 
-  std::vector<PassageType> passage_types;
+  std::vector<EmbeddingPassageType> passage_types;
   passage_types.reserve(pending_passages.size());
   std::vector<std::string> string_passages;
   string_passages.reserve(pending_passages.size());
@@ -303,12 +301,12 @@ void PageEmbeddingsService::ComputeEmbeddingsOnHide(
 }
 
 void PageEmbeddingsService::OnEmbeddingsComputed(
-    std::vector<PassageType> passage_types,
+    std::vector<EmbeddingPassageType> passage_types,
     base::WeakPtr<content::WebContents> web_contents,
     std::vector<std::string> passage_strings,
-    std::vector<Embedding> embeddings,
-    Embedder::TaskId task_id,
-    ComputeEmbeddingsStatus status) {
+    std::vector<passage_embeddings::Embedding> embeddings,
+    passage_embeddings::Embedder::TaskId task_id,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
   if (!web_contents) {
     // The web contents was destroyed while computing the embeddings.
     return;
@@ -370,7 +368,7 @@ void PageEmbeddingsService::UpdateTaskPriorities(Priority priority) {
 
   current_priority_ = priority;
 
-  std::set<Embedder::TaskId> tasks;
+  std::set<passage_embeddings::Embedder::TaskId> tasks;
   for (const auto& [web_contents, web_contents_state] : web_contents_state_) {
     if (web_contents_state.active_task.has_value()) {
       tasks.insert(*web_contents_state.active_task);
@@ -395,4 +393,4 @@ PageEmbeddingsService::WebContentsState::WebContentsState() = default;
 
 PageEmbeddingsService::WebContentsState::~WebContentsState() = default;
 
-}  // namespace passage_embeddings
+}  // namespace page_content_annotations

@@ -25,7 +25,7 @@
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_annotations_service_factory.h"
 #include "chrome/browser/page_content_annotations/page_content_extraction_service_factory.h"
-#include "chrome/browser/passage_embeddings/page_embeddings_service_factory.h"
+#include "chrome/browser/page_content_annotations/page_embeddings_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -81,23 +81,25 @@ class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
     const auto generate_embeddings_candidates =
         [this](const optimization_guide::proto::AnnotatedPageContent&,
                int page_content_passages_to_generate) {
-          std::vector<std::pair<std::string, passage_embeddings::PassageType>>
+          std::vector<std::pair<std::string,
+                                page_content_annotations::EmbeddingPassageType>>
               result;
           for (const std::string& passage : page_passages_) {
-            result.emplace_back(passage,
-                                passage_embeddings::PassageType::kPageContent);
+            result.emplace_back(
+                passage,
+                page_content_annotations::EmbeddingPassageType::kPageContent);
           }
           return result;
         };
 
-    passage_embeddings::PageEmbeddingsServiceFactory::GetInstance()
+    page_content_annotations::PageEmbeddingsServiceFactory::GetInstance()
         ->SetTestingFactory(
             context,
             base::BindLambdaForTesting([this, generate_embeddings_candidates](
                                            content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
               return std::make_unique<
-                  passage_embeddings::PageEmbeddingsService>(
+                  page_content_annotations::PageEmbeddingsService>(
                   base::BindLambdaForTesting(generate_embeddings_candidates),
                   page_content_annotations::
                       PageContentExtractionServiceFactory::GetForProfile(

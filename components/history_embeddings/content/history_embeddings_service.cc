@@ -122,7 +122,7 @@ HistoryEmbeddingsService::HistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    passage_embeddings::PageEmbeddingsService* page_embeddings_service,
+    page_content_annotations::PageEmbeddingsService* page_embeddings_service,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* embedder,
     std::unique_ptr<Answerer> answerer,
@@ -474,14 +474,14 @@ void HistoryEmbeddingsService::OnHistoryDeletions(
                 deletion_info.deleted_visit_ids());
 }
 
-passage_embeddings::PageEmbeddingsService::Priority
+page_content_annotations::PageEmbeddingsService::Priority
 HistoryEmbeddingsService::GetDefaultPriority() const {
-  return passage_embeddings::PageEmbeddingsService::kBackground;
+  return page_content_annotations::PageEmbeddingsService::kBackground;
 }
 
-passage_embeddings::PageEmbeddingsService::UsageMode
+page_content_annotations::PageEmbeddingsService::UsageMode
 HistoryEmbeddingsService::GetUsageMode() const {
-  return passage_embeddings::PageEmbeddingsService::kContinuous;
+  return page_content_annotations::PageEmbeddingsService::kContinuous;
 }
 
 void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(
@@ -492,7 +492,7 @@ void HistoryEmbeddingsService::OnPageEmbeddingsAvailable(
   }
   const VisitMetadata& visit = loc->second;
 
-  std::vector<passage_embeddings::PassageEmbedding> passage_embeddings =
+  std::vector<page_content_annotations::PassageEmbedding> passage_embeddings =
       page_embeddings_service_->GetEmbeddings(web_contents);
   StorePassageEmbeddings(visit.url_id, visit.visit_id, visit.visit_time,
                          passage_embeddings);
@@ -708,9 +708,10 @@ void HistoryEmbeddingsService::StorePassageEmbeddings(
     history::URLID url_id,
     history::VisitID visit_id,
     base::Time visit_time,
-    std::vector<passage_embeddings::PassageEmbedding> passage_embeddings) {
+    std::vector<page_content_annotations::PassageEmbedding>
+        passage_embeddings) {
   UrlData url_data(url_id, visit_id, visit_time);
-  for (const passage_embeddings::PassageEmbedding& passage_embedding :
+  for (const page_content_annotations::PassageEmbedding& passage_embedding :
        passage_embeddings) {
     url_data.passages.add_passages(std::move(passage_embedding.passage.first));
     url_data.embeddings.emplace_back(std::move(passage_embedding.embedding));

@@ -24,7 +24,7 @@ ChromeHistoryEmbeddingsService::ChromeHistoryEmbeddingsService(
     page_content_annotations::PageContentAnnotationsService*
         page_content_annotations_service,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider,
-    passage_embeddings::PageEmbeddingsService* page_embeddings_service,
+    page_content_annotations::PageEmbeddingsService* page_embeddings_service,
     passage_embeddings::EmbedderMetadataProvider* embedder_metadata_provider,
     passage_embeddings::Embedder* embedder,
     std::unique_ptr<Answerer> answerer,
