@@ -172,6 +172,10 @@ class ContextualTasksUI
       const GURL& url,
       contextual_tasks::ContextualTasksUiService* ui_service);
 
+  // Returns true if two URLs are equal. Unlike GURL::operator==, this method
+  // ignores the order of query parameters.
+  static bool AreUrlsEqual(const GURL& a, const GURL& b);
+
   // Returns whether OnActiveTabContextStatusChanged should proceed with trying
   // to add the current tab as an auto-chip.
   bool CanUpdateSuggestedTabContext(tabs::TabInterface* tab,

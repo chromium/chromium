@@ -158,6 +158,42 @@ void AddDefaultZeroStateStrings(content::WebUIDataSource* source) {
   source->AddString("friendlyZeroStateTitleAfterName", "");
 }
 
+bool ContextualTasksUI::AreUrlsEqual(const GURL& a,
+                                     const GURL& b) {
+  if (a == b) {
+    return true;
+  }
+
+  if (a.host() != b.host()) {
+    return false;
+  }
+
+  GURL::Replacements replacements;
+  replacements.ClearQuery();
+  if (a.ReplaceComponents(replacements) != b.ReplaceComponents(replacements)) {
+    return false;
+  }
+
+  std::vector<std::pair<std::string_view, std::string_view>> a_params;
+  for (net::QueryIterator it(a); !it.IsAtEnd(); it.Advance()) {
+    a_params.emplace_back(it.GetKey(), it.GetValue());
+  }
+
+  std::vector<std::pair<std::string_view, std::string_view>> b_params;
+  for (net::QueryIterator it(b); !it.IsAtEnd(); it.Advance()) {
+    b_params.emplace_back(it.GetKey(), it.GetValue());
+  }
+
+  if (a_params.size() != b_params.size()) {
+    return false;
+  }
+
+  std::sort(a_params.begin(), a_params.end());
+  std::sort(b_params.begin(), b_params.end());
+
+  return a_params == b_params;
+}
+
 void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
   if (!profile) {
     AddDefaultZeroStateStrings(source);
@@ -191,9 +227,8 @@ void AddZeroStateStrings(content::WebUIDataSource* source, Profile* profile) {
     source->AddString("friendlyZeroStateGaiaName", gaia_name);
     source->AddString("friendlyZeroStateTitleBeforeName",
                       parts[0].substr(0, offsets[0]));
-    source->AddString(
-        "friendlyZeroStateTitleAfterName",
-        parts[0].substr(offsets[0] + gaia_name.length()));
+    source->AddString("friendlyZeroStateTitleAfterName",
+                      parts[0].substr(offsets[0] + gaia_name.length()));
   } else {
     // Fallback to default behavior if name replacement fails.
     source->AddString("friendlyZeroStateGaiaName", "");
@@ -1026,7 +1061,8 @@ void ContextualTasksUI::FrameNavObserver::DidFinishNavigation(
   }
 
   bool is_url_changed = false;
-  if (url != last_committed_url_) {
+  if (!ContextualTasksUI::AreUrlsEqual(
+          url, last_committed_url_)) {
     last_committed_url_ = url;
     is_url_changed = true;
   }
