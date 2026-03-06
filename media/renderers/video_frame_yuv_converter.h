@@ -26,9 +26,6 @@ class VideoFrameSharedImageCache;
 // Methods are only used by PaintCanvasVideoRenderer.
 namespace internals {
 
-MEDIA_EXPORT bool IsPixelFormatSupportedForYuvSharedImageConversion(
-    VideoPixelFormat video_format);
-
 // Converts YUV video frames to RGB format and stores the results in the
 // provided destination shared image. The caller of this function maintains
 // ownership of the destination shared image. Automatically handles upload of

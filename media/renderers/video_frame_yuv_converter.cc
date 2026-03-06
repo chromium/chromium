@@ -22,53 +22,6 @@
 
 namespace media::internals {
 
-bool IsPixelFormatSupportedForYuvSharedImageConversion(
-    VideoPixelFormat video_format) {
-  // To expand support for additional VideoFormats expand this switch.
-  switch (video_format) {
-    case PIXEL_FORMAT_NV12:
-    case PIXEL_FORMAT_P010LE:
-    case PIXEL_FORMAT_NV16:
-    case PIXEL_FORMAT_P210LE:
-    case PIXEL_FORMAT_NV24:
-    case PIXEL_FORMAT_P410LE:
-    case PIXEL_FORMAT_NV12A:
-    case PIXEL_FORMAT_I420:
-    case PIXEL_FORMAT_I420A:
-      return true;
-    case PIXEL_FORMAT_YV12:
-    case PIXEL_FORMAT_I422:
-    case PIXEL_FORMAT_I444:
-    case PIXEL_FORMAT_YUV420P10:
-    case PIXEL_FORMAT_YUV422P10:
-    case PIXEL_FORMAT_YUV444P10:
-    case PIXEL_FORMAT_YUV420P12:
-    case PIXEL_FORMAT_YUV422P12:
-    case PIXEL_FORMAT_YUV444P12:
-    case PIXEL_FORMAT_ARGB:
-    case PIXEL_FORMAT_XRGB:
-    case PIXEL_FORMAT_ABGR:
-    case PIXEL_FORMAT_XBGR:
-    case PIXEL_FORMAT_NV21:
-    case PIXEL_FORMAT_UYVY:
-    case PIXEL_FORMAT_YUY2:
-    case PIXEL_FORMAT_RGB24:
-    case PIXEL_FORMAT_MJPEG:
-    case PIXEL_FORMAT_Y16:
-    case PIXEL_FORMAT_XR30:
-    case PIXEL_FORMAT_XB30:
-    case PIXEL_FORMAT_BGRA:
-    case PIXEL_FORMAT_RGBAF16:
-    case PIXEL_FORMAT_I422A:
-    case PIXEL_FORMAT_I444A:
-    case PIXEL_FORMAT_YUV420AP10:
-    case PIXEL_FORMAT_YUV422AP10:
-    case PIXEL_FORMAT_YUV444AP10:
-    case PIXEL_FORMAT_UNKNOWN:
-      return false;
-  }
-}
-
 gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
     const VideoFrame* video_frame,
     viz::RasterContextProvider* raster_context_provider,
@@ -78,9 +31,6 @@ gpu::SyncToken ConvertYuvVideoFrameToRgbSharedImage(
     VideoFrameSharedImageCache* shared_image_cache) {
   CHECK(video_frame);
   CHECK(!video_frame->HasSharedImage());
-  DCHECK(
-      IsPixelFormatSupportedForYuvSharedImageConversion(video_frame->format()))
-      << "VideoFrame has an unsupported YUV format " << video_frame->format();
   DCHECK(!video_frame->coded_size().IsEmpty())
       << "|video_frame| must have an area > 0";
   DCHECK(raster_context_provider);
