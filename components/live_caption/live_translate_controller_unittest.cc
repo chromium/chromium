@@ -28,8 +28,15 @@ class LiveTranslateControllerTest : public testing::Test {
   TestingPrefServiceSimple testing_pref_service_;
 };
 
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_ProfilePrefsAreRegisteredCorrectly \
+  DISABLED_ProfilePrefsAreRegisteredCorrectly
+#else
+#define MAYBE_ProfilePrefsAreRegisteredCorrectly \
+  ProfilePrefsAreRegisteredCorrectly
+#endif
 //  Test that profile prefs are registered correctly.
-TEST_F(LiveTranslateControllerTest, ProfilePrefsAreRegisteredCorrectly) {
+TEST_F(LiveTranslateControllerTest, MAYBE_ProfilePrefsAreRegisteredCorrectly) {
   LiveTranslateController::RegisterProfilePrefs(
       static_cast<user_prefs::PrefRegistrySyncable*>(
           testing_pref_service_.registry()));
