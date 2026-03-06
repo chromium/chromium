@@ -9,6 +9,7 @@
 
 #include "base/callback_list.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_nudge_button.h"
+#include "ui/views/controls/button/menu_button_controller.h"
 
 class BrowserWindowInterface;
 
@@ -40,9 +41,16 @@ class TabStripGlicActorTaskIcon : public TabStripNudgeButton {
   // Sets the task icon back to its default colors.
   void SetDefaultColors();
 
+  // Set whether the button is currently pressed or not.
+  void SetPressedState(bool is_pressed);
   // Sets the task icon's color to its pressed state color if `is_pressed` is
   // true, or to its default color otherwise.
   void SetPressedColor(bool is_pressed);
+  // Lock or unlock the task icon based on bubble visibility.
+  void SetOrResetPressedLock(bool is_pressed);
+  // Get whether the button is currently pressed. The button should be pressed
+  // when the task list bubble is showing.
+  bool GetIsPressed() { return pressed_lock_.get(); }
 
   // Show the task nudge with the given text.
   void ShowNudgeLabel(const std::u16string nudge_label);
@@ -83,6 +91,8 @@ class TabStripGlicActorTaskIcon : public TabStripNudgeButton {
   AnimationMode animation_mode_ = AnimationMode::kEntry;
   base::CallbackListSubscription window_did_become_active_subscription_;
   base::CallbackListSubscription window_did_become_inactive_subscription_;
+
+  std::unique_ptr<views::MenuButtonController::PressedLock> pressed_lock_;
 
   const raw_ptr<BrowserWindowInterface> browser_window_interface_;
 };

@@ -150,7 +150,7 @@ void GlicActorNudgeController::CloseBubble() {
 }
 
 void GlicActorNudgeController::OnBubbleVisibilityChange(bool is_bubble_open) {
-  tab_strip_action_container_->glic_actor_task_icon()->SetPressedColor(
+  tab_strip_action_container_->glic_actor_task_icon()->SetPressedState(
       is_bubble_open);
 }
 

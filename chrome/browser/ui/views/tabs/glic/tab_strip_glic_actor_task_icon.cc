@@ -129,9 +129,26 @@ void TabStripGlicActorTaskIcon::SetDefaultColors() {
       kColorNewTabButtonCRBackgroundFrameInactive);
 }
 
+void TabStripGlicActorTaskIcon::SetPressedState(bool is_pressed) {
+  SetPressedColor(is_pressed);
+  SetOrResetPressedLock(is_pressed);
+}
+
 void TabStripGlicActorTaskIcon::SetPressedColor(bool is_pressed) {
   SetHighlighted(is_pressed);
   UpdateColors();
+}
+
+void TabStripGlicActorTaskIcon::SetOrResetPressedLock(bool is_pressed) {
+  // LINT.IfChange(UseMenuButtonController)
+  views::MenuButtonController* controller =
+      static_cast<views::MenuButtonController*>(button_controller());
+  // LINT.ThenChange(//chrome/browser/ui/views/tabs/tab_strip_action_container.cc:SetMenuButtonController)
+  if (is_pressed && controller) {
+    pressed_lock_ = controller->TakeLock();
+  } else {
+    pressed_lock_.reset();
+  }
 }
 
 void TabStripGlicActorTaskIcon::NotifyClick(const ui::Event& event) {
