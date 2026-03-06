@@ -13288,6 +13288,21 @@
             ]
         }
     ],
+    "IOSDockingPromoV2": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IOSDockingPromoV2"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSDownloadAutoDeletionFeatureEnabled": [
         {
             "platforms": [
